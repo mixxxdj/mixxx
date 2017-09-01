@@ -64,10 +64,6 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
     m_pBroadcastEnabled->connectValueChanged(
             SLOT(broadcastEnabledChanged(double)));
 
-    // Enable live broadcasting checkbox
-    enableLiveBroadcasting->setChecked(
-            m_pBroadcastEnabled->toBool());
-
     //Server type combobox
     comboBoxServerType->addItem(tr("Icecast 2"), BROADCAST_SERVER_ICECAST2);
     comboBoxServerType->addItem(tr("Shoutcast 1"), BROADCAST_SERVER_SHOUTCAST);
@@ -127,7 +123,7 @@ void DlgPrefBroadcast::slotResetToDefaults() {
 
 void DlgPrefBroadcast::slotUpdate() {
     updateModel();
-    enableLiveBroadcasting->setChecked(m_pBroadcastEnabled->toBool());
+    connectOnApply->setChecked(false);
 
     // Force select an item to have the current selection
     // set to a profile pointer belonging to the model
@@ -140,6 +136,7 @@ void DlgPrefBroadcast::slotUpdate() {
     btnCreateConnection->setEnabled(!enabled);
     btnRemoveConnection->setEnabled(!enabled);
     btnRenameConnection->setEnabled(!enabled);
+    connectOnApply->setEnabled(!enabled);
 }
 
 void DlgPrefBroadcast::applyModel() {
@@ -152,42 +149,11 @@ void DlgPrefBroadcast::applyModel() {
 
 void DlgPrefBroadcast::slotApply() {
     bool broadcastingEnabled = m_pBroadcastEnabled->toBool();
-    bool enablingBroadcasting = enableLiveBroadcasting->isChecked();
-
-    if(broadcastingEnabled && !enablingBroadcasting) {
-        // If Live Broadcasting goes from enabled to disabled, turn
-        // it off first and then apply settings
-        m_pBroadcastEnabled->set(enableLiveBroadcasting->isChecked());
-        applyModel();
-    }
-    else if(!broadcastingEnabled && enablingBroadcasting) {
-        // If Live Broadcasting goes from disabled to enabled, apply
-        // settings first and turn LB on if possible
-        applyModel();
-
-        bool atLeastOneEnabled = false;
-        QList<BroadcastProfilePtr> profiles = m_pSettingsModel->profiles();
-        for(BroadcastProfilePtr profile : profiles) {
-            if(profile->getEnabled()) {
-                atLeastOneEnabled = true;
-                break;
-            }
-        }
-
-        if(atLeastOneEnabled) {
-            m_pBroadcastEnabled->set(enableLiveBroadcasting->isChecked());
-        } else {
-            enableLiveBroadcasting->setChecked(false);
-            QMessageBox::warning(this, tr("Action failed"),
-                    tr("Please enable at least one connection to use Live Broadcasting."));
-        }
-    }
-    else if(broadcastingEnabled == enablingBroadcasting) {
-        // If Live Broadcasting doesn't change state, only apply settings
-        applyModel();
-    }
 
     applyModel();
+    if(!broadcastingEnabled && connectOnApply->isChecked()) {
+        m_pBroadcastEnabled->set(true);
+    }
 
     // Don't let user modify information if
     // sending is enabled.
@@ -196,6 +162,7 @@ void DlgPrefBroadcast::slotApply() {
     btnCreateConnection->setEnabled(!enabled);
     btnRemoveConnection->setEnabled(!enabled);
     btnRenameConnection->setEnabled(!enabled);
+    connectOnApply->setEnabled(!enabled);
 }
 
 void DlgPrefBroadcast::broadcastEnabledChanged(double value) {
@@ -206,8 +173,7 @@ void DlgPrefBroadcast::broadcastEnabledChanged(double value) {
     btnCreateConnection->setEnabled(!enabled);
     btnRemoveConnection->setEnabled(!enabled);
     btnRenameConnection->setEnabled(!enabled);
-
-    enableLiveBroadcasting->setChecked(enabled);
+    connectOnApply->setEnabled(!enabled);
 }
 
 void DlgPrefBroadcast::checkBoxEnableReconnectChanged(int value) {

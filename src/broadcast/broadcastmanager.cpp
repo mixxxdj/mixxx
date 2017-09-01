@@ -84,6 +84,22 @@ void BroadcastManager::slotControlEnabled(double v) {
     }
 
     if (v > 0.0) {
+        bool atLeastOneEnabled = false;
+        QList<BroadcastProfilePtr> profiles = m_pBroadcastSettings->profiles();
+        for(BroadcastProfilePtr profile : profiles) {
+            if(profile->getEnabled()) {
+                atLeastOneEnabled = true;
+                break;
+            }
+        }
+
+        if(!atLeastOneEnabled) {
+            m_pBroadcastEnabled->set(false);
+            QMessageBox::warning(nullptr, tr("Action failed"),
+                                tr("Please enable at least one connection to use Live Broadcasting."));
+            return;
+        }
+
         slotProfilesChanged();
     } else {
         m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
