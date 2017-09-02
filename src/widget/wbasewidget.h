@@ -54,6 +54,10 @@ class WBaseWidget {
     double getControlParameterRight() const;
     double getControlParameterDisplay() const;
 
+    inline const QList<ControlParameterWidgetConnection*>& connections() const {
+        return m_connections;
+    };
+
   protected:
     // Whenever a connected control is changed, onConnectedControlChanged is
     // called. This allows the widget implementor to respond to the change and

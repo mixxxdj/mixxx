@@ -18,11 +18,17 @@
         <ObjectName>EffectKnob</ObjectName>
         <MinimumSize>0,50</MinimumSize>
         <Children>
-           <Template src="skin:knob_textless.xml">
-             <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>]</SetVariable>
-             <SetVariable name="control">parameter<Variable name="EffectParameter"/></SetVariable>
-           </Template>
-	     </Children>
+          <EffectParameterKnobComposed>
+            <Size>40f,34f</Size>
+            <Knob>knob_indicator.svg</Knob>
+            <BackPath>knob_bg.svg</BackPath>
+            <MinAngle>-135</MinAngle>
+            <MaxAngle>135</MaxAngle>
+            <Connection>
+              <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/></ConfigKey>
+            </Connection>
+          </EffectParameterKnobComposed>
+        </Children>
       </WidgetGroup>
       <EffectParameterName>
         <Size>1me,18f</Size>
