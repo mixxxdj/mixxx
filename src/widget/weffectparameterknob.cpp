@@ -1,23 +1,18 @@
 #include "widget/effectwidgetutils.h"
-#include "widget/weffectparameterknobcomposed.h"
+#include "widget/weffectparameterknob.h"
 
-namespace {
-const QString effectGroupSeparator = "_";
-const QString groupClose = "]";
-} // anonymous namespace
-
-void WEffectParameterKnobComposed::setupEffectParameterSlot(const ConfigKey& configKey) {
+void WEffectParameterKnob::setupEffectParameterSlot(const ConfigKey& configKey) {
     EffectParameterSlotPointer pParameterSlot =
             m_pEffectsManager->getEffectParameterSlot(configKey);
     if (!pParameterSlot) {
-        qWarning() << "EffectParameterKnobComposed" << configKey <<
+        qWarning() << "EffectParameterKnob" << configKey <<
                 "is not an effect parameter.";
         return;
     }
     setEffectParameterSlot(pParameterSlot);
 }
 
-void WEffectParameterKnobComposed::setEffectParameterSlot(
+void WEffectParameterKnob::setEffectParameterSlot(
         EffectParameterSlotPointer pParameterSlot) {
     m_pEffectParameterSlot = pParameterSlot;
     if (m_pEffectParameterSlot) {
@@ -27,7 +22,7 @@ void WEffectParameterKnobComposed::setEffectParameterSlot(
     parameterUpdated();
 }
 
-void WEffectParameterKnobComposed::parameterUpdated() {
+void WEffectParameterKnob::parameterUpdated() {
     if (m_pEffectParameterSlot) {
         setBaseTooltip(QString("%1\n%2").arg(
                        m_pEffectParameterSlot->name(),

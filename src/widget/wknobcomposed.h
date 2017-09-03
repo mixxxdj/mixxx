@@ -12,6 +12,11 @@
 #include "widget/wimagestore.h"
 #include "skin/skincontext.h"
 
+// This is used for knobs, if the knob value can be displayed
+// by rotating a single SVG image.
+// For more complex transitions you may consider to use
+// WEffectParameterKnob, which displays one of e.g. 64
+// pixmaps.
 class WKnobComposed : public WWidget {
     Q_OBJECT
   public:

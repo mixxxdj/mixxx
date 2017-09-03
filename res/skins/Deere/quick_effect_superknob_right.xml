@@ -57,7 +57,7 @@
         </Children>
       </SizeAwareStack>
 
-      <!--Wrap the EffectPushButton in a vertical WidgetGroup with spacers to ensure it stays in the
+      <!--Wrap the PushButton in a vertical WidgetGroup with spacers to ensure it stays in the
       correct position when the knobs get further apart and closer together.-->
       <WidgetGroup>
         <Layout>vertical</Layout>
@@ -69,14 +69,10 @@
             <Children/>
           </WidgetGroup>
 
-          <EffectPushButton>
+          <PushButton>
             <TooltipId><Variable name="button_TooltipId"/></TooltipId>
             <Size>15f,15f</Size>
             <ObjectName>CircleButton</ObjectName>
-            <EffectRackGroup><Variable name="QuickEffectRackGroup"/></EffectRackGroup>
-            <EffectUnitGroup><Variable name="QuickEffectUnitGroup"/></EffectUnitGroup>
-            <Effect><Variable name="QuickEffect"/></Effect>
-            <EffectButtonParameter><Variable name="QuickEffect"/></EffectButtonParameter>
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
@@ -94,7 +90,7 @@
               <ConfigKey><Variable name="QuickEffectEffectGroup"/>,enabled</ConfigKey>
               <ButtonState>LeftButton</ButtonState>
             </Connection>
-          </EffectPushButton>
+          </PushButton>
 
           <WidgetGroup>
             <Layout>vertical</Layout>

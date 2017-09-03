@@ -1,20 +1,19 @@
-#ifndef WEFFECTKNOBCOMPOSED_H
-#define WEFFECTKNOBCOMPOSED_H
+#ifndef WEFFECTKNOB_H
+#define WEFFECTKNOB_H
 
-#include "widget/wknobcomposed.h"
+#include "widget/wknob.h"
 #include "effects/effectparameterslot.h"
 
 // This is used for effect parameter knobs with dynamic
-// tooltips, if the knob value is displayed by rotating a
-// single SVG image.
-// For mor complex transitions you may consider to use
-// WEffectParameterKnob, which displays one of e.g. 64
-// pixmaps
-class WEffectParameterKnobComposed : public WKnobComposed {
+// tooltips, if the knob value is displayed by one of e.g.
+// 64 pixmaps.
+// If the knob value can be displayed by rotating a single
+// SVG, use WEffectParameterKnobComposed.
+class WEffectParameterKnob : public WKnob {
   Q_OBJECT
   public:
-    WEffectParameterKnobComposed(QWidget* pParent, EffectsManager* pEffectsManager) :
-        WKnobComposed(pParent),
+    WEffectParameterKnob(QWidget* pParent, EffectsManager* pEffectsManager) :
+        WKnob(pParent),
         m_pEffectsManager(pEffectsManager) {
     };
 
@@ -32,4 +31,4 @@ class WEffectParameterKnobComposed : public WKnobComposed {
     EffectParameterSlotBasePointer m_pEffectParameterSlot;
 };
 
-#endif // WEFFECTKNOBCOMPOSED_H
+#endif // WEFFECTKNOB_H
