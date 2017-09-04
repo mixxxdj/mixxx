@@ -68,6 +68,11 @@ BroadcastManager::~BroadcastManager() {
 
 void BroadcastManager::setEnabled(bool value) {
     m_pBroadcastEnabled->set(value);
+    // TODO(Palakis): apparently, calling set on a ControlObject and not through
+    // a ControlProxy doesn't trigger the valueChanged signal here.
+    // This is a quick fix, but there has to be a better way to do this, rather
+    // than calling the associated slot directly.
+    slotControlEnabled(value);
 }
 
 bool BroadcastManager::isEnabled() {
