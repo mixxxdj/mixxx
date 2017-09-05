@@ -105,7 +105,7 @@ TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
     CapabilitiesFlags caps =  TRACKMODELCAPS_NONE
             | TRACKMODELCAPS_RECEIVEDROPS
             | TRACKMODELCAPS_ADDTOPLAYLIST
-            | TRACKMODELCAPS_ADDTOCRATE
+            | TRACKMODELCAPS_ADDTOREMOVEFROMCRATE
             | TRACKMODELCAPS_ADDTOAUTODJ
             | TRACKMODELCAPS_FILEMETADATA
             | TRACKMODELCAPS_LOADTODECK

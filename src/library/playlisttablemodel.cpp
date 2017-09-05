@@ -240,7 +240,7 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
     TrackModel::CapabilitiesFlags caps = TRACKMODELCAPS_NONE
             | TRACKMODELCAPS_RECEIVEDROPS
             | TRACKMODELCAPS_REORDER
-            | TRACKMODELCAPS_ADDTOCRATE
+            | TRACKMODELCAPS_ADDTOREMOVEFROMCRATE
             | TRACKMODELCAPS_ADDTOPLAYLIST
             | TRACKMODELCAPS_FILEMETADATA
             | TRACKMODELCAPS_LOADTODECK

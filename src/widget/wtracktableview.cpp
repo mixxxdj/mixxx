@@ -69,8 +69,10 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pSamplerMenu->setTitle(tr("Load to Sampler"));
     m_pPlaylistMenu = new QMenu(this);
     m_pPlaylistMenu->setTitle(tr("Add to Playlist"));
-    m_pCrateMenu = new QMenu(this);
-    m_pCrateMenu->setTitle(tr("Add to Crate"));
+    m_pCrateAddMenu = new QMenu(this);
+    m_pCrateAddMenu->setTitle(tr("Add to Crate"));
+    m_pCrateRemoveMenu = new QMenu(this);
+    m_pCrateRemoveMenu->setTitle(tr("Remove from Crate"));
     m_pBPMMenu = new QMenu(this);
     m_pBPMMenu->setTitle(tr("BPM Options"));
     m_pCoverMenu = new WCoverArtMenu(this);
@@ -94,8 +96,11 @@ WTrackTableView::WTrackTableView(QWidget * parent,
 
     connect(&m_playlistMapper, SIGNAL(mapped(int)),
             this, SLOT(addSelectionToPlaylist(int)));
-    connect(&m_crateMapper, SIGNAL(mapped(int)),
+
+    connect(&m_crateAddMapper, SIGNAL(mapped(int)),
             this, SLOT(addSelectionToCrate(int)));
+    connect(&m_crateRemoveMapper, SIGNAL(mapped(int)),
+            this, SLOT(removeSelectionFromCrate(int)));
 
     m_pCOTGuiTick = new ControlProxy("[Master]", "guiTick50ms", this);
     m_pCOTGuiTick->connectValueChanged(SLOT(slotGuiTick50ms(double)));
@@ -130,7 +135,8 @@ WTrackTableView::~WTrackTableView() {
     delete m_pMenu;
     delete m_pPlaylistMenu;
     delete m_pCoverMenu;
-    delete m_pCrateMenu;
+    delete m_pCrateAddMenu;
+    delete m_pCrateRemoveMenu;
     delete m_pBpmLockAction;
     delete m_pBpmUnlockAction;
     delete m_pBpmDoubleAction;
@@ -831,25 +837,34 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pMenu->addMenu(m_pPlaylistMenu);
     }
 
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOCRATE)) {
-        m_pCrateMenu->clear();
-        CrateSelectResult allCrates(m_pTrackCollection->crates().selectCrates());
-        Crate crate;
-        while (allCrates.populateNext(&crate)) {
-            auto pAction = std::make_unique<QAction>(crate.getName(), m_pCrateMenu);
-            pAction->setEnabled(!crate.isLocked());
-            m_crateMapper.setMapping(pAction.get(), crate.getId().toInt());
-            connect(pAction.get(), SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
-            m_pCrateMenu->addAction(pAction.get());
-            pAction.release();
-        }
-        m_pCrateMenu->addSeparator();
-        QAction* newCrateAction = new QAction(tr("Create New Crate"), m_pCrateMenu);
-        m_pCrateMenu->addAction(newCrateAction);
-        m_crateMapper.setMapping(newCrateAction, CrateId().toInt());// invalid crate id for new crate
-        connect(newCrateAction, SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOREMOVEFROMCRATE)) {
+        m_pCrateAddMenu->clear();
+        m_pCrateRemoveMenu->clear();
 
-        m_pMenu->addMenu(m_pCrateMenu);
+        Crate crate;
+        CrateSelectResult allCrates(m_pTrackCollection->crates().selectCrates());
+        while (allCrates.populateNext(&crate)) {
+            auto pActionAdd = std::make_unique<QAction>(crate.getName(), m_pCrateAddMenu);
+            pActionAdd->setEnabled(!crate.isLocked());
+            m_crateAddMapper.setMapping(pActionAdd.get(), crate.getId().toInt());
+            connect(pActionAdd.get(), SIGNAL(triggered()), &m_crateAddMapper, SLOT(map()));
+            m_pCrateAddMenu->addAction(pActionAdd.get());
+            pActionAdd.release();
+
+            auto pActionRemove = std::make_unique<QAction>(crate.getName(), m_pCrateRemoveMenu);
+            pActionRemove->setEnabled(!crate.isLocked());
+            m_crateRemoveMapper.setMapping(pActionRemove.get(), crate.getId().toInt());
+            connect(pActionRemove.get(), SIGNAL(triggered()), &m_crateRemoveMapper, SLOT(map()));
+            m_pCrateRemoveMenu->addAction(pActionRemove.get());
+            pActionRemove.release();
+        }
+        m_pCrateAddMenu->addSeparator();
+        QAction* newCrateAction = new QAction(tr("Create New Crate"), m_pCrateAddMenu);
+        m_pCrateAddMenu->addAction(newCrateAction);
+        m_crateAddMapper.setMapping(newCrateAction, CrateId().toInt());// invalid crate id for new crate
+        connect(newCrateAction, SIGNAL(triggered()), &m_crateAddMapper, SLOT(map()));
+        m_pMenu->addMenu(m_pCrateAddMenu);
+        m_pMenu->addMenu(m_pCrateRemoveMenu);
     }
     m_pMenu->addSeparator();
 
@@ -1498,10 +1513,9 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
 void WTrackTableView::addSelectionToCrate(int iCrateId) {
     const QList<TrackId> trackIds = getSelectedTrackIds();
     if (trackIds.isEmpty()) {
-        qWarning() << "No tracks selected for crate";
+        qWarning() << "No tracks selected for adding to crate";
         return;
     }
-
     CrateId crateId(iCrateId);
     if (!crateId.isValid()) { // i.e. a new crate is suppose to be created
         crateId = CrateFeatureHelper(
@@ -1511,6 +1525,18 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
         m_pTrackCollection->unhideTracks(trackIds);
         m_pTrackCollection->addCrateTracks(crateId, trackIds);
     }
+}
+
+void WTrackTableView::removeSelectionFromCrate(int iCrateId) {
+    const QList<TrackId> trackIds = getSelectedTrackIds();
+    if (trackIds.isEmpty()) {
+        qWarning() << "No tracks selected for removing from crate";
+        return;
+    }
+    CrateId crateId(iCrateId);
+    DEBUG_ASSERT(crateId.isValid());
+    m_pTrackCollection->unhideTracks(trackIds);
+    m_pTrackCollection->removeCrateTracks(crateId, trackIds);
 }
 
 void WTrackTableView::doSortByColumn(int headerSection) {
