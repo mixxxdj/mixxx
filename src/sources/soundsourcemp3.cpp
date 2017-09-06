@@ -349,12 +349,12 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audio
 
     // Initialize the AudioSource
     setChannelCount(maxChannelCount);
-    initFrameIndexRange(mixxx::IndexRange::forward(0, m_curFrameIndex));
+    initFrameIndexRangeOnce(mixxx::IndexRange::forward(0, m_curFrameIndex));
 
     // Calculate average values
     m_avgSeekFrameCount = frameIndexRange().length() / m_seekFrameList.size();
     const unsigned long avgBitrate = sumBitrate / m_seekFrameList.size();
-    initBitrate(avgBitrate / 1000);
+    initBitrateOnce(avgBitrate / 1000);
 
     // Terminate m_seekFrameList
     addSeekFrame(m_curFrameIndex, 0);
@@ -488,14 +488,9 @@ SINT SoundSourceMp3::findSeekFrameIndex(
     return seekFrameIndex;
 }
 
-ReadableSampleFrames SoundSourceMp3::readSampleFrames(
+ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
         ReadMode readMode,
-        WritableSampleFrames sampleFrames) {
-    const auto writableSampleFrames =
-            clampWritableSampleFrames(readMode, sampleFrames);
-    if (writableSampleFrames.frameIndexRange().empty()) {
-        return ReadableSampleFrames(writableSampleFrames.frameIndexRange());
-    }
+        WritableSampleFrames writableSampleFrames) {
 
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 

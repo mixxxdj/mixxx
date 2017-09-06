@@ -320,7 +320,7 @@ bool SoundSourceM4A::openDecoder() {
 
     setChannelCount(channelCount);
     setSamplingRate(samplingRate);
-    initFrameIndexRange(
+    initFrameIndexRangeOnce(
             mixxx::IndexRange::forward(
                     0,
                     ((m_maxSampleBlockId - kSampleBlockIdMin) + 1) * m_framesPerSampleBlock));
@@ -382,14 +382,9 @@ void SoundSourceM4A::restartDecoding(MP4SampleId sampleBlockId) {
     m_sampleBuffer.reset();
 }
 
-ReadableSampleFrames SoundSourceM4A::readSampleFrames(
+ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
         ReadMode readMode,
-        WritableSampleFrames sampleFrames) {
-    const auto writableSampleFrames =
-            clampWritableSampleFrames(readMode, sampleFrames);
-    if (writableSampleFrames.frameIndexRange().empty()) {
-        return ReadableSampleFrames(writableSampleFrames.frameIndexRange());
-    }
+        WritableSampleFrames writableSampleFrames) {
 
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 

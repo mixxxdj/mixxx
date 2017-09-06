@@ -180,7 +180,7 @@ TEST_F(SoundSourceProxyTest, seekForwardBackward) {
             // Read next chunk of frames for Cont source without seeking
             const auto contSampleFrames =
                     pContReadSource->readSampleFrames(
-                            mixxx::IAudioSource::ReadMode::Store,
+                            mixxx::ISampleFrameSource::ReadMode::Store,
                             mixxx::WritableSampleFrames(
                                     readFrameIndexRange,
                                     SampleBuffer::WritableSlice(contReadData)));
@@ -200,7 +200,7 @@ TEST_F(SoundSourceProxyTest, seekForwardBackward) {
             // Seek source to next chunk and read it
             auto seekSampleFrames =
                     pSeekReadSource->readSampleFrames(
-                            mixxx::IAudioSource::ReadMode::Store,
+                            mixxx::ISampleFrameSource::ReadMode::Store,
                             mixxx::WritableSampleFrames(
                                     readFrameIndexRange,
                                     SampleBuffer::WritableSlice(seekReadData)));
@@ -228,7 +228,7 @@ TEST_F(SoundSourceProxyTest, seekForwardBackward) {
             // Seek backwards to beginning of chunk and read again
             seekSampleFrames =
                     pSeekReadSource->readSampleFrames(
-                            mixxx::IAudioSource::ReadMode::Store,
+                            mixxx::ISampleFrameSource::ReadMode::Store,
                             mixxx::WritableSampleFrames(
                                     readFrameIndexRange,
                                     SampleBuffer::WritableSlice(seekReadData)));
@@ -305,7 +305,7 @@ TEST_F(SoundSourceProxyTest, skipAndRead) {
                                 std::min(minFrameIndex - contFrameIndex, kReadFrameCount));
                 auto const skippedSampleFrames =
                         pContReadSource->readSampleFrames(
-                                mixxx::IAudioSource::ReadMode::Store,
+                                mixxx::ISampleFrameSource::ReadMode::Store,
                                 mixxx::WritableSampleFrames(
                                         skippingFrameIndexRange,
                                         SampleBuffer::WritableSlice(contReadData)));
@@ -316,7 +316,7 @@ TEST_F(SoundSourceProxyTest, skipAndRead) {
             ASSERT_EQ(minFrameIndex, contFrameIndex);
             const auto contSampleFrames =
                     pContReadSource->readSampleFrames(
-                            mixxx::IAudioSource::ReadMode::Store,
+                            mixxx::ISampleFrameSource::ReadMode::Store,
                             mixxx::WritableSampleFrames(
                                     readFrameIndexRange,
                                     SampleBuffer::WritableSlice(contReadData)));
@@ -341,7 +341,7 @@ TEST_F(SoundSourceProxyTest, skipAndRead) {
             ASSERT_EQ(minFrameIndex, skipFrameIndex);
             const auto skippedSampleFrames =
                     pSkipReadSource->readSampleFrames(
-                            mixxx::IAudioSource::ReadMode::Store,
+                            mixxx::ISampleFrameSource::ReadMode::Store,
                             mixxx::WritableSampleFrames(
                                     readFrameIndexRange,
                                     SampleBuffer::WritableSlice(skipReadData)));
@@ -433,7 +433,7 @@ TEST_F(SoundSourceProxyTest, seekBoundaries) {
                     pContReadSource->frames2samples(kReadFrameCount));
             const auto contSampleFrames =
                     pContReadSource->readSampleFrames(
-                            mixxx::IAudioSource::ReadMode::Store,
+                            mixxx::ISampleFrameSource::ReadMode::Store,
                             mixxx::WritableSampleFrames(
                                     readFrameIndexRange,
                                     SampleBuffer::WritableSlice(contReadData)));
@@ -441,7 +441,7 @@ TEST_F(SoundSourceProxyTest, seekBoundaries) {
 
             const auto seekSampleFrames =
                     pSeekReadSource->readSampleFrames(
-                            mixxx::IAudioSource::ReadMode::Store,
+                            mixxx::ISampleFrameSource::ReadMode::Store,
                             mixxx::WritableSampleFrames(
                                     readFrameIndexRange,
                                     SampleBuffer::WritableSlice(seekReadData)));
@@ -503,7 +503,7 @@ TEST_F(SoundSourceProxyTest, readBeyondEnd) {
         EXPECT_EQ(
                 mixxx::IndexRange::forward(seekIndex, remainingFrames),
                 pAudioSource->readSampleFrames(
-                        mixxx::IAudioSource::ReadMode::Store,
+                        mixxx::ISampleFrameSource::ReadMode::Store,
                         mixxx::WritableSampleFrames(
                                 mixxx::IndexRange::forward(seekIndex, kReadFrameCount),
                                 SampleBuffer::WritableSlice(readBuffer))).frameIndexRange());

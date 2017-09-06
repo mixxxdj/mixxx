@@ -416,7 +416,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
 
     setChannelCount(channelCount);
     setSamplingRate(samplingRate);
-    initFrameIndexRange(frameIndexRange);
+    initFrameIndexRangeOnce(frameIndexRange);
 
 #if AVSTREAM_FROM_API_VERSION_3_1
     m_pResample = std::make_unique<EncoderFfmpegResample>(m_pAudioContext);
@@ -887,14 +887,9 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
     return false;
 }
 
-ReadableSampleFrames SoundSourceFFmpeg::readSampleFrames(
+ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
         ReadMode readMode,
-        WritableSampleFrames sampleFrames) {
-    const auto writableSampleFrames =
-            clampWritableSampleFrames(readMode, sampleFrames);
-    if (writableSampleFrames.frameIndexRange().empty()) {
-        return ReadableSampleFrames(writableSampleFrames.frameIndexRange());
-    }
+        WritableSampleFrames writableSampleFrames) {
 
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 

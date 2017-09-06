@@ -208,7 +208,7 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(const AudioSourceConfig& audioS
 
     const ogg_int64_t pcmTotal = op_pcm_total(m_pOggOpusFile, kEntireStreamLink);
     if (0 <= pcmTotal) {
-        initFrameIndexRange(mixxx::IndexRange::forward(0, pcmTotal));
+        initFrameIndexRangeOnce(mixxx::IndexRange::forward(0, pcmTotal));
     } else {
         kLogger.warning()
                 << "Failed to read total length of OggOpus file:"
@@ -218,7 +218,7 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(const AudioSourceConfig& audioS
 
     const opus_int32 bitrate = op_bitrate(m_pOggOpusFile, kEntireStreamLink);
     if (0 < bitrate) {
-        initBitrate(bitrate / 1000);
+        initBitrateOnce(bitrate / 1000);
     } else {
         kLogger.warning()
                 << "Failed to determine bitrate of OggOpus file:"
@@ -240,14 +240,9 @@ void SoundSourceOpus::close() {
     }
 }
 
-ReadableSampleFrames SoundSourceOpus::readSampleFrames(
+ReadableSampleFrames SoundSourceOpus::readSampleFramesClamped(
         ReadMode readMode,
-        WritableSampleFrames sampleFrames) {
-    const auto writableSampleFrames =
-            clampWritableSampleFrames(readMode, sampleFrames);
-    if (writableSampleFrames.frameIndexRange().empty()) {
-        return ReadableSampleFrames(writableSampleFrames.frameIndexRange());
-    }
+        WritableSampleFrames writableSampleFrames) {
 
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 

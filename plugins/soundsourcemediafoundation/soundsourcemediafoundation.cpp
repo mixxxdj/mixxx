@@ -238,14 +238,9 @@ void SoundSourceMediaFoundation::seekSampleFrame(SINT frameIndex) {
     }
 }
 
-ReadableSampleFrames SoundSourceMediaFoundation::readSampleFrames(
+ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
         ReadMode readMode,
-        WritableSampleFrames sampleFrames) {
-    const auto writableSampleFrames =
-            clampWritableSampleFrames(readMode, sampleFrames);
-    if (writableSampleFrames.frameIndexRange().empty()) {
-        return ReadableSampleFrames(writableSampleFrames.frameIndexRange());
-    }
+        WritableSampleFrames writableSampleFrames) {
 
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
@@ -525,7 +520,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
         return false;
     }
 
-    initBitrate( (avgBytesPerSecond * 8) / 1000);
+    initBitrateOnce( (avgBytesPerSecond * 8) / 1000);
     //------
 
     hr = pAudioType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
@@ -711,7 +706,7 @@ bool SoundSourceMediaFoundation::readProperties() {
         kLogger.warning() << "error getting duration";
         return false;
     }
-    initFrameIndexRange(
+    initFrameIndexRangeOnce(
             mixxx::IndexRange::forward(
                     0,
                     m_streamUnitConverter.toFrameIndex(prop.hVal.QuadPart)));

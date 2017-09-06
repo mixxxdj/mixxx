@@ -54,12 +54,12 @@ bool isDisjunct(
 
 }
 
-ReadableSampleFrames AudioSourceStereoProxy::readSampleFrames(
+ReadableSampleFrames AudioSourceStereoProxy::readSampleFramesClamped(
         ReadMode readMode,
         WritableSampleFrames sampleFrames) {
     if ((readMode == ReadMode::Skip) ||
             (m_pAudioSource->channelCount() == channelCount())) {
-        return m_pAudioSource->readSampleFrames(readMode, sampleFrames);
+        return m_pAudioSource->readSampleFramesClamped(readMode, sampleFrames);
     }
 
     // Check location and capacity of temporary buffer
@@ -86,16 +86,13 @@ ReadableSampleFrames AudioSourceStereoProxy::readSampleFrames(
     }
 
     const auto readableSampleFrames =
-            m_pAudioSource->readSampleFrames(
+            m_pAudioSource->readSampleFramesClamped(
                     readMode,
                     WritableSampleFrames(
                             sampleFrames.frameIndexRange(),
                             m_tempOutputBuffer));
+    DEBUG_ASSERT(!readableSampleFrames.frameIndexRange().empty());
     DEBUG_ASSERT(readableSampleFrames.frameIndexRange() <= sampleFrames.frameIndexRange());
-    if (readableSampleFrames.frameIndexRange().empty()) {
-        return ReadableSampleFrames(
-                readableSampleFrames.frameIndexRange());
-    }
     DEBUG_ASSERT(readableSampleFrames.frameIndexRange().start() >= sampleFrames.frameIndexRange().start());
     const SINT frameOffset =
             readableSampleFrames.frameIndexRange().start() - sampleFrames.frameIndexRange().start();

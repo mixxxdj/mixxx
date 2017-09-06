@@ -162,7 +162,7 @@ SoundSource::OpenResult SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*a
 
     setChannelCount(kChannelCount);
     setSamplingRate(kSamplingRate);
-    initFrameIndexRange(
+    initFrameIndexRangeOnce(
             IndexRange::forward(
                     0,
                     samples2frames(m_sampleBuf.size())));
@@ -177,13 +177,12 @@ void SoundSourceModPlug::close() {
     }
 }
 
-ReadableSampleFrames SoundSourceModPlug::readSampleFrames(
+ReadableSampleFrames SoundSourceModPlug::readSampleFramesClamped(
         ReadMode readMode,
-        WritableSampleFrames sampleFrames) {
-    const auto writableSampleFrames =
-            clampWritableSampleFrames(readMode, sampleFrames);
-    if (writableSampleFrames.frameIndexRange().empty()) {
-        return ReadableSampleFrames(writableSampleFrames.frameIndexRange());
+        WritableSampleFrames writableSampleFrames) {
+    if (readMode == ReadMode::Skip) {
+        return ReadableSampleFrames(
+                writableSampleFrames.frameIndexRange());
     }
 
     const SINT readOffset = frames2samples(writableSampleFrames.frameIndexRange().start());

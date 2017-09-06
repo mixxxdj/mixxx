@@ -63,7 +63,7 @@ SoundSource::OpenResult SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*a
 
     setChannelCount(sfInfo.channels);
     setSamplingRate(sfInfo.samplerate);
-    initFrameIndexRange(mixxx::IndexRange::forward(0, sfInfo.frames));
+    initFrameIndexRangeOnce(mixxx::IndexRange::forward(0, sfInfo.frames));
 
     m_curFrameIndex = frameIndexMin();
 
@@ -84,14 +84,9 @@ void SoundSourceSndFile::close() {
     }
 }
 
-ReadableSampleFrames SoundSourceSndFile::readSampleFrames(
+ReadableSampleFrames SoundSourceSndFile::readSampleFramesClamped(
         ReadMode readMode,
-        WritableSampleFrames sampleFrames) {
-    const auto writableSampleFrames =
-            clampWritableSampleFrames(readMode, sampleFrames);
-    if (writableSampleFrames.frameIndexRange().empty()) {
-        return ReadableSampleFrames(writableSampleFrames.frameIndexRange());
-    }
+        WritableSampleFrames writableSampleFrames) {
 
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 

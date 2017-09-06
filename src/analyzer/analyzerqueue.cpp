@@ -196,7 +196,7 @@ bool AnalyzerQueue::doAnalysis(
         DEBUG_ASSERT(!inputFrameIndexRange.empty());
         const auto readableSampleFrames =
                 audioSourceProxy.readSampleFrames(
-                        mixxx::IAudioSource::ReadMode::Store,
+                        mixxx::ISampleFrameSource::ReadMode::Store,
                         mixxx::WritableSampleFrames(
                                 inputFrameIndexRange,
                                 SampleBuffer::WritableSlice(m_sampleBuffer)));
