@@ -127,8 +127,7 @@
 
 	<ObjectName>Mixxx</ObjectName>
 	<Style src="skin:style.qss"/>
-	<MinimumSize>1024,500</MinimumSize>
-	<SizePolicy>me,me</SizePolicy>
+	<Size>1024e,500e</Size>
 	<Layout>vertical</Layout>
     <LaunchImageStyle>
     	LaunchImage { background-color: #202020; }
@@ -156,122 +155,115 @@
 	<Children>
 		<WidgetGroup>
 			<ObjectName>DecksAndMixer</ObjectName>
-			<MinimumSize>1024,265</MinimumSize>
-  			<SizePolicy>e,f</SizePolicy>
+			<MinimumSize>1024e,259f</MinimumSize>
 			<Layout>horizontal</Layout>
   			<Children>
+				<WidgetGroup>
+					<ObjectName>DeckLeftBorder</ObjectName>
+					<Size>3f,259f</Size>
+					<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
+				</WidgetGroup>
   				<WidgetGroup>
-  					<Size>378,265</Size>
-  					<SizePolicy>f,f</SizePolicy>
+  					<Size>0e,259f</Size>
+					<Layout>vertical</Layout>
 					<Children>
 		                <WidgetGroup>
-			                <Pos>1,6</Pos>
-                            <Size>375,255</Size>
+                            <Size>0e,255f</Size>
 			                <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-			                <BackPath>style/style_bg_deck.png</BackPath>
-			                <Children>
-          						<Template src="skin:deck.xml">
-							        <SetVariable name="channum">1</SetVariable>
-						        </Template>
-         						<Template src="skin:deck_transport.xml">
-							        <SetVariable name="channum">1</SetVariable>
-						        </Template>
-                        		<WidgetGroup>
-                        			<Pos>5,200</Pos>
-			                        <Size>372,50</Size>
-                                    <SizePolicy>f,f</SizePolicy>
-					                <Children>
-						                <Template src="skin:microphone.xml">
-							                <SetVariable name="micnum"></SetVariable>
-						                </Template>
-                                		<WidgetGroup>
-			                                <Pos>100,0</Pos>
-			                                <Size>93,50</Size>
-			                                <Children>
-						                    <Template src="skin:microphone.xml">
-						                        <SetVariable name="micnum">2</SetVariable>
-						                    </Template>
-                            				</Children>
-		                                    <Connection>
-                                                <ConfigKey>[Microphone2],enabled</ConfigKey>
-                                                <BindProperty>visible</BindProperty>
-                                            </Connection>
-                                        </WidgetGroup>
-						                <Template src="skin:ducking.xml">
-						                </Template>
-                    				</Children>
-			                        <Connection>
-				                        <ConfigKey>[Microphone],show_microphone</ConfigKey>
-				                        <BindProperty>visible</BindProperty>
-			                        </Connection>
-		                		</WidgetGroup>
-					        </Children>
-				        </WidgetGroup>
+							<Layout>vertical</Layout>			                
+							<Children>
+	      						<Template src="skin:deck.xml">
+								    <SetVariable name="channum">1</SetVariable>
+	      						</Template>
+								<WidgetGroup>
+									<ObjectName>Deck</ObjectName>
+									<Size>0e,54f</Size>
+									<Layout>horizontal</Layout>
+									<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+									<Children>
+										<WidgetGroup>
+											<ObjectName>DeckLeftBorder</ObjectName>
+											<Size>5f,54f</Size>
+											<BackPath>style/style_bg_deck_border.png</BackPath>
+											<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+										</WidgetGroup>
+				 						<Template src="skin:deck_transport.xml">
+											<SetVariable name="channum">1</SetVariable>
+				  						</Template>
+				 						<Template src="skin:deck_microphone.xml"/>
+										<WidgetGroup>
+											<ObjectName>DeckRightBorder</ObjectName>
+											<Size>5f,54f</Size>
+											<BackPath>style/style_bg_deck_border.png</BackPath>
+											<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+										</WidgetGroup>
+		 					        </Children>
+								</WidgetGroup>
+ 					        </Children>
+					    </WidgetGroup>
 					</Children>
 				</WidgetGroup>
 				<WidgetGroup>
-					<Size>260,265</Size>
+					<Size>261f,259f</Size>
 					<Children>
 						<Template src="skin:mixer_panel.xml">
 						</Template>
 					</Children>
 				</WidgetGroup>
 				<WidgetGroup>
-  					<Size>378,265</Size>
-  					<SizePolicy>f,f</SizePolicy>
+  					<Size>0e,259f</Size>
+					<Layout>vertical</Layout>
 					<Children>
-            		    <WidgetGroup>
-			                <Pos>1,6</Pos>
-			                <Size>375,255</Size>
-			                <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-			                <BackPath>style/style_bg_deck.png</BackPath>
-			                <Children>
-					            <Template src="skin:deck.xml">
-						            <SetVariable name="channum">2</SetVariable>
-					            </Template>
-					            <Template src="skin:deck_transport.xml">
-						            <SetVariable name="channum">2</SetVariable>
-					            </Template>
-                        		<WidgetGroup>
-                        			<Pos>5,200</Pos>
-		                            <Size>372,50</Size>
-                                    <SizePolicy>f,f</SizePolicy>
-				                    <Children>
-				                        <Template src="skin:auxiliary.xml">
-				                            <SetVariable name="auxnum">1</SetVariable>
-				                        </Template>
-                                		<WidgetGroup>
-		                                    <Pos>109,0</Pos>
-		                                    <Size>108,50</Size>
-		                                    <Children>
-					                        <Template src="skin:auxiliary.xml">
-					                            <SetVariable name="auxnum">2</SetVariable>
-					                        </Template>
-                            				</Children>
-	                                        <Connection>
-                                                <ConfigKey>[Auxiliary2],enabled</ConfigKey>
-                                                <BindProperty>visible</BindProperty>
-                                            </Connection>
-                                        </WidgetGroup>
-                    				</Children>
-		                            <Connection>
-			                            <ConfigKey>[Microphone],show_microphone</ConfigKey>
-			                            <BindProperty>visible</BindProperty>
-		                            </Connection>
-	                    		</WidgetGroup>
-				            </Children>
-			            </WidgetGroup>
+	        		    <WidgetGroup>
+				            <Size>0e,255f</Size>
+						    <Layout>vertical</Layout>
+				            <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+				            <Children>
+						        <Template src="skin:deck.xml">
+							        <SetVariable name="channum">2</SetVariable>
+						        </Template>
+								<WidgetGroup>
+									<ObjectName>Deck</ObjectName>
+									<Size>0e,54f</Size>
+									<Layout>horizontal</Layout>
+									<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+									<Children>
+										<WidgetGroup>
+											<ObjectName>DeckLeftBorder</ObjectName>
+											<Size>5f,54f</Size>
+											<BackPath>style/style_bg_deck_border.png</BackPath>
+											<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+										</WidgetGroup>
+				 						<Template src="skin:deck_transport.xml">
+											<SetVariable name="channum">1</SetVariable>
+				  						</Template>
+				 	                    <Template src="skin:deck_auxiliary.xml"/>
+										<WidgetGroup>
+											<ObjectName>DeckRightBorder</ObjectName>
+											<Size>5f,54f</Size>
+											<BackPath>style/style_bg_deck_border.png</BackPath>
+											<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+										</WidgetGroup>
+		 					        </Children>
+								</WidgetGroup>
+					        </Children>
+				        </WidgetGroup>
 					</Children>
 				</WidgetGroup>
+				<WidgetGroup>
+					<ObjectName>DeckRightBorder</ObjectName>
+					<Size>3f,259f</Size>
+					<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+				</WidgetGroup>
 			</Children>
-      <Connection>
-        <ConfigKey>[Master],maximize_library</ConfigKey>
-        <BindProperty>visible</BindProperty>
-        <Transform>
-          <Not/>
-        </Transform>
-      </Connection>
-		</WidgetGroup>
+		<Connection>
+			<ConfigKey>[Master],maximize_library</ConfigKey>
+			<BindProperty>visible</BindProperty>
+			<Transform>
+				<Not/>
+			</Transform>
+		</Connection>
+	</WidgetGroup>
 
 		<!--
 		############################################################################################
@@ -289,80 +281,90 @@
 			cause push buttons in library will show up with wrong margin/padding -->
 			<Style>QGroupBox { border: 0px solid red; }</Style>
 			<Children>
-        <!-- Sampler Bank sub-widget -->
-        <WidgetGroup>
-          <SizePolicy>me,f</SizePolicy>
-          <Layout>horizontal</Layout>
-          <!-- I don't now why this works but a WidgetGroup wrapper around a
-             WidgetStack with a 'fixed' size policy makes the group track the
-             minimum size of the current stack widget. -->
-          <Children>
-            <WidgetGroup>
-              <Layout>horizontal</Layout>
-              <Style>QGroupBox { border: 0px solid yellow; margin: 0px 0px 6px 0px;} </Style>
-              <Children>
-                  <Template src="skin:sampler.xml">
-                  <SetVariable name="samplernum">1</SetVariable>
-                </Template>
-                <Template src="skin:sampler.xml">
-                  <SetVariable name="samplernum">2</SetVariable>
-                </Template>
-                <Template src="skin:sampler.xml">
-                  <SetVariable name="samplernum">3</SetVariable>
-                </Template>
-                <Template src="skin:sampler.xml">
-                  <SetVariable name="samplernum">4</SetVariable>
-                </Template>
-              </Children>
-              <Connection>
-                <ConfigKey>[Samplers],show_samplers</ConfigKey>
-                <BindProperty>visible</BindProperty>
-              </Connection>
-            </WidgetGroup>
-          </Children>
-           <Connection>
-             <ConfigKey>[Master],maximize_library</ConfigKey>
-             <BindProperty>visible</BindProperty>
-             <Transform>
-               <Not/>
-             </Transform>
-           </Connection>
-        </WidgetGroup>
+				<!-- Sampler Bank sub-widget -->
+				<WidgetGroup>
+				  <SizePolicy>me,f</SizePolicy>
+				  <Layout>horizontal</Layout>
+				  <!-- I don't now why this works but a WidgetGroup wrapper around a
+				     WidgetStack with a 'fixed' size policy makes the group track the
+				     minimum size of the current stack widget. -->
+				  <Children>
+				    <WidgetGroup>
+				      <Layout>horizontal</Layout>
+				      <Style>QGroupBox { border: 0px solid yellow; margin: 0px;} </Style>
+				      <Children>
+						<WidgetGroup>
+							<ObjectName>SamplerLeftBorder</ObjectName>
+							<Size>3f,100f</Size>
+							<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+						</WidgetGroup>
+				        <Template src="skin:sampler.xml">
+				          <SetVariable name="samplernum">1</SetVariable>
+				        </Template>
+				        <Template src="skin:sampler.xml">
+				          <SetVariable name="samplernum">2</SetVariable>
+				        </Template>
+				        <Template src="skin:sampler.xml">
+				          <SetVariable name="samplernum">3</SetVariable>
+				        </Template>
+				        <Template src="skin:sampler.xml">
+				          <SetVariable name="samplernum">4</SetVariable>
+				        </Template>
+				      </Children>
+				      <Connection>
+				        <ConfigKey>[Samplers],show_samplers</ConfigKey>
+				        <BindProperty>visible</BindProperty>
+				      </Connection>
+				    </WidgetGroup>
+				  </Children>
+				   <Connection>
+				     <ConfigKey>[Master],maximize_library</ConfigKey>
+				     <BindProperty>visible</BindProperty>
+				     <Transform>
+				       <Not/>
+				     </Transform>
+				   </Connection>
+				</WidgetGroup>
 
-        <!-- EffectRack1 sub-widget -->
-        <WidgetGroup>
-          <SizePolicy>me,f</SizePolicy>
-          <Layout>horizontal</Layout>
-          <!-- I don't now why this works but a WidgetGroup wrapper around a
-             WidgetStack with a 'fixed' size policy makes the group track the
-             minimum size of the current stack widget. -->
-          <Children>
-            <WidgetGroup>
-              <SizePolicy>me,min</SizePolicy>
-              <Layout>horizontal</Layout>
-              <Style>QGroupBox { border: 0px solid yellow; margin: 0px 0px 6px 0px;} </Style>
-              <Children>
-                  <Template src="skin:effectunit.xml">
-                  <SetVariable name="effectunitnum">1</SetVariable>
-                </Template>
-                <Template src="skin:effectunit.xml">
-                  <SetVariable name="effectunitnum">2</SetVariable>
-                </Template>
-              </Children>
-              <Connection>
-                <ConfigKey>[EffectRack1],show</ConfigKey>
-                <BindProperty>visible</BindProperty>
-              </Connection>
-            </WidgetGroup>
-          </Children>
-          <Connection>
-            <ConfigKey>[Master],maximize_library</ConfigKey>
-            <BindProperty>visible</BindProperty>
-            <Transform>
-              <Not/>
-            </Transform>
-          </Connection>
-        </WidgetGroup>
+				<!-- EffectRack1 sub-widget -->
+				<WidgetGroup>
+				  <SizePolicy>me,f</SizePolicy>
+				  <Layout>horizontal</Layout>
+				  <!-- I don't now why this works but a WidgetGroup wrapper around a
+				     WidgetStack with a 'fixed' size policy makes the group track the
+				     minimum size of the current stack widget. -->
+				  <Children>
+				    <WidgetGroup>
+				      <SizePolicy>me,min</SizePolicy>
+				      <Layout>horizontal</Layout>
+				      <Style>QGroupBox { border: 0px solid yellow; margin: 1px 0px 6px 0px;} </Style>
+				      <Children>
+						<WidgetGroup>
+							<ObjectName>EffectLeftBorder</ObjectName>
+							<Size>3f,100f</Size>
+							<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+						</WidgetGroup>
+				        <Template src="skin:effectunit.xml">
+				          <SetVariable name="effectunitnum">1</SetVariable>
+				        </Template>
+				        <Template src="skin:effectunit.xml">
+				          <SetVariable name="effectunitnum">2</SetVariable>
+				        </Template>
+				      </Children>
+				      <Connection>
+				        <ConfigKey>[EffectRack1],show</ConfigKey>
+				        <BindProperty>visible</BindProperty>
+				      </Connection>
+				    </WidgetGroup>
+				  </Children>
+				  <Connection>
+				    <ConfigKey>[Master],maximize_library</ConfigKey>
+				    <BindProperty>visible</BindProperty>
+				    <Transform>
+				      <Not/>
+				    </Transform>
+				  </Connection>
+				</WidgetGroup>
 
 				<!--
 				**********************************************
@@ -371,7 +373,6 @@
 				-->
 				<WidgetGroup>
 					<ObjectName>Library</ObjectName>
-					<Pos>0,0</Pos>
 					<Size>e,e</Size>
 					<SizePolicy>me,me</SizePolicy>
 					<Layout>horizontal</Layout>
@@ -417,7 +418,7 @@
 
 					<!--library search bar-->
 					WSearchLineEdit {
-						margin: 0px 0px 5px 5px;
+						margin: 2px 0px 3px 3px;
 						padding: 2px;
 						border: 1px solid #656565;
 						font-size: 10pt;
@@ -455,6 +456,8 @@
 						background: transparent;
 						color: #C1C1C1;}
 
+					WLibrary { margin: 2px 3px 0px 0px; }
+
 					<!--Additional space for QRadionButtons and QLabels-->
 					WLibrary QRadioButton, WLibrary QLabel { margin: 9px 3px 6px 3px; }
 
@@ -483,7 +486,7 @@
 					#DlgAutoDJ > QPushButton#pushButtonShuffle { margin: 9px 3px 6px 12px; }
 
 					<!--Spacing between treeview and searchbar-->
-					QTreeView { margin: 0px 0px 0px 5px; }
+					QTreeView { margin: 2px 0px 0px 3px; }
 
 					<!--triangle for closed/opened branches in treeview-->
 					QTreeView { show-decoration-selected: 0;} <!-- Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588-->
@@ -512,7 +515,7 @@
 										<WidgetGroup>
 											<Style>
 												QGroupBox {
-													margin: 0px 0px 4px 5px;
+													margin: 2px 0px 2px 3px;
 													padding: 0px;
 													border: 1px solid #656565;
 													background: transparent;
@@ -554,7 +557,6 @@
 															}
 															</Style>
 															<Group>[PreviewDeck1]</Group>
-															<Pos></Pos>
 															<Size>50me,15f</Size>
 															<Elide>right</Elide>
 														</Text>
@@ -572,7 +574,6 @@
 																<Pressed>btn_eject1_over.png</Pressed>
 																<Unpressed>btn_eject1.png</Unpressed>
 															</State>
-															<Pos></Pos>
 															<Connection>
 																<ConfigKey>[PreviewDeck1],eject</ConfigKey>
 																<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -608,8 +609,7 @@
 																<Pressed>btn_play_sampler_overdown.png</Pressed>
 																<Unpressed>btn_play_sampler_over.png</Unpressed>
 															</State>
-															<Pos>2,2</Pos>
-															<Connection>
+																<Connection>
 																<ConfigKey>[PreviewDeck1],play</ConfigKey>
 																<EmitOnDownPress>true</EmitOnDownPress>
 																<ButtonState>LeftButton</ButtonState>
@@ -621,12 +621,16 @@
 																<ConnectValueToWidget>false</ConnectValueToWidget>
 															</Connection>
 														</PushButton>
+														<WidgetGroup>
+															<ObjectName>SamplerLeftBorder</ObjectName>
+															<Size>3f,37f</Size>
+															<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+														</WidgetGroup>
 														<Overview>
 															<TooltipId>waveform_overview</TooltipId>
 															<Style></Style>
 															<Group>[PreviewDeck1]</Group>
-															<Size>me,30f</Size>
-															<BgColor>#8D98A3</BgColor>
+															<Size>me,37f</Size>
 															<SignalHighColor>#FFE300</SignalHighColor>
 															<SignalMidColor>#0099FF</SignalMidColor>
 															<SignalLowColor>#FF0035</SignalLowColor>
@@ -670,7 +674,7 @@
 														<Style></Style>
 														<PathStatusLight>btn_clipping_previewdeck_over.png</PathStatusLight>
 														<PathBack>btn_clipping_previewdeck.png</PathBack>
-														<Pos>0,1</Pos>
+														<Pos>0,3</Pos>
 														<Connection>
 															<ConfigKey>[PreviewDeck1],PeakIndicator</ConfigKey>
 														</Connection>
@@ -686,7 +690,7 @@
 														<Style></Style>
 														<PathVu>btn_volume_display_previewdeck_over.png</PathVu>
 														<PathBack>btn_volume_display_previewdeck.png</PathBack>
-														<Pos>0,12</Pos>
+														<Pos>0,14</Pos>
 														<Horizontal>false</Horizontal>
 														<PeakHoldSize>3</PeakHoldSize>
 														<PeakHoldTime>250</PeakHoldTime>
