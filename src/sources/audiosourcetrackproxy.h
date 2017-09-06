@@ -32,17 +32,17 @@ public:
           m_pTrack(std::move(pTrack)) {
     }
 
-    ReadableSampleFrames readSampleFrames(
+    ReadableSampleFrames readSampleFramesClamped(
             ReadMode readMode,
             WritableSampleFrames sampleFrames) override {
-        return m_pAudioSource->readSampleFrames(
+        return m_pAudioSource->readSampleFramesClamped(
                 readMode,
                 sampleFrames);
     }
 
-    IndexRange skipSampleFrames(
+    IndexRange skipSampleFramesClamped(
             IndexRange frameIndexRange) override {
-        return m_pAudioSource->skipSampleFrames(frameIndexRange);
+        return m_pAudioSource->skipSampleFramesClamped(frameIndexRange);
     }
 
 private:

@@ -1,5 +1,7 @@
 #include "sources/v1/legacyaudiosourceadapter.h"
 
+#include "sources/audiosource.h"
+
 #include "util/logger.h"
 
 
@@ -18,15 +20,9 @@ LegacyAudioSourceAdapter::LegacyAudioSourceAdapter(
       m_pImpl(pImpl) {
 }
 
-ReadableSampleFrames LegacyAudioSourceAdapter::readSampleFrames(
+ReadableSampleFrames LegacyAudioSourceAdapter::readSampleFramesClamped(
         ReadMode readMode,
-        WritableSampleFrames sampleFrames) {
-    auto writableSampleFrames =
-            m_pOwner->clampWritableSampleFrames(
-                    readMode, sampleFrames);
-    if (writableSampleFrames.frameIndexRange().empty()) {
-        return ReadableSampleFrames(writableSampleFrames.frameIndexRange());
-    }
+        WritableSampleFrames writableSampleFrames) {
 
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 

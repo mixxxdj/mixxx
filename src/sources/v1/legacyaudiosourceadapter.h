@@ -4,19 +4,22 @@
 
 #include "sources/v1/legacyaudiosource.h"
 
-#include "sources/audiosource.h"
+#include "sources/sampleframesource.h"
 
 
 namespace mixxx {
 
+// forward declaration(s)
+class AudioSource;
+
 // Only required for SoundSourceCoreAudio.
-class LegacyAudioSourceAdapter: public virtual IAudioSource {
+class LegacyAudioSourceAdapter: public virtual ISampleFrameSource {
   public:
     LegacyAudioSourceAdapter(
             AudioSource* pOwner,
             LegacyAudioSource* pImpl);
 
-    ReadableSampleFrames readSampleFrames(
+    ReadableSampleFrames readSampleFramesClamped(
             ReadMode readMode,
             WritableSampleFrames sampleFrames) override;
 

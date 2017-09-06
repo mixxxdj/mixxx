@@ -56,7 +56,7 @@ QString calcFingerprint(const mixxx::AudioSourcePointer& pAudioSource) {
 
     const auto readableSampleFrames =
             audioSourceProxy.readSampleFrames(
-                    mixxx::IAudioSource::ReadMode::Store,
+                    mixxx::ISampleFrameSource::ReadMode::Store,
                     mixxx::WritableSampleFrames(
                             inputFrameIndexRange,
                             SampleBuffer::WritableSlice(sampleBuffer)));

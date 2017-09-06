@@ -121,14 +121,9 @@ void SoundSourceFLAC::close() {
     m_file.close();
 }
 
-ReadableSampleFrames SoundSourceFLAC::readSampleFrames(
+ReadableSampleFrames SoundSourceFLAC::readSampleFramesClamped(
         ReadMode readMode,
-        WritableSampleFrames sampleFrames) {
-    const auto writableSampleFrames =
-            clampWritableSampleFrames(readMode, sampleFrames);
-    if (writableSampleFrames.frameIndexRange().empty()) {
-        return ReadableSampleFrames(writableSampleFrames.frameIndexRange());
-    }
+        WritableSampleFrames writableSampleFrames) {
 
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
@@ -428,7 +423,7 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
     {
         setChannelCount(metadata->data.stream_info.channels);
         setSamplingRate(metadata->data.stream_info.sample_rate);
-        initFrameIndexRange(
+        initFrameIndexRangeOnce(
                 mixxx::IndexRange::forward(
                         0,
                         metadata->data.stream_info.total_samples));

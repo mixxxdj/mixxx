@@ -84,16 +84,16 @@ SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /
     setChannelCount(vi->channels);
     setSamplingRate(vi->rate);
     if (0 < vi->bitrate_nominal) {
-        initBitrate(vi->bitrate_nominal / 1000);
+        initBitrateOnce(vi->bitrate_nominal / 1000);
     } else {
         if ((0 < vi->bitrate_lower) && (vi->bitrate_lower == vi->bitrate_upper)) {
-            initBitrate(vi->bitrate_lower / 1000);
+            initBitrateOnce(vi->bitrate_lower / 1000);
         }
     }
 
     ogg_int64_t pcmTotal = ov_pcm_total(&m_vf, kEntireBitstreamLink);
     if (0 <= pcmTotal) {
-        initFrameIndexRange(mixxx::IndexRange::forward(0, pcmTotal));
+        initFrameIndexRangeOnce(mixxx::IndexRange::forward(0, pcmTotal));
     } else {
         kLogger.warning()
                 << "Failed to read read total length of"
@@ -112,14 +112,9 @@ void SoundSourceOggVorbis::close() {
     m_pFile.reset();
 }
 
-ReadableSampleFrames SoundSourceOggVorbis::readSampleFrames(
+ReadableSampleFrames SoundSourceOggVorbis::readSampleFramesClamped(
         ReadMode readMode,
-        WritableSampleFrames sampleFrames) {
-    const auto writableSampleFrames =
-            clampWritableSampleFrames(readMode, sampleFrames);
-    if (writableSampleFrames.frameIndexRange().empty()) {
-        return ReadableSampleFrames(writableSampleFrames.frameIndexRange());
-    }
+        WritableSampleFrames writableSampleFrames) {
 
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 

@@ -66,7 +66,7 @@ SoundSource::OpenResult SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrc
 
     setChannelCount(WavpackGetReducedChannels(m_wpc));
     setSamplingRate(WavpackGetSampleRate(m_wpc));
-    initFrameIndexRange(
+    initFrameIndexRangeOnce(
             mixxx::IndexRange::forward(
                     0,
                     WavpackGetNumSamples(m_wpc)));
@@ -102,14 +102,9 @@ void SoundSourceWV::close() {
     }
 }
 
-ReadableSampleFrames SoundSourceWV::readSampleFrames(
+ReadableSampleFrames SoundSourceWV::readSampleFramesClamped(
         ReadMode readMode,
-        WritableSampleFrames sampleFrames) {
-    const auto writableSampleFrames =
-            clampWritableSampleFrames(readMode, sampleFrames);
-    if (writableSampleFrames.frameIndexRange().empty()) {
-        return ReadableSampleFrames(writableSampleFrames.frameIndexRange());
-    }
+        WritableSampleFrames writableSampleFrames) {
 
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 

@@ -133,7 +133,7 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& a
     // the code from SoundSource (sample-oriented) to the new
     // AudioSource (frame-oriented) API. It is not documented
     // when m_headerFrames > 0 and what the consequences are.
-    initFrameIndexRange(IndexRange::forward(0/*m_headerFrames*/, totalFrameCount));
+    initFrameIndexRangeOnce(IndexRange::forward(0/*m_headerFrames*/, totalFrameCount));
 
     //Seek to first position, which forces us to skip over all the header frames.
     //This makes sure we're ready to just let the Analyzer rip and it'll

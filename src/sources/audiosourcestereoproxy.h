@@ -24,13 +24,13 @@ public:
             AudioSourcePointer pAudioSource,
             SampleBuffer::WritableSlice tempSampleBufferSlice);
 
-    ReadableSampleFrames readSampleFrames(
+    ReadableSampleFrames readSampleFramesClamped(
             ReadMode readMode,
             WritableSampleFrames sampleFrames) override;
 
-    IndexRange skipSampleFrames(
+    IndexRange skipSampleFramesClamped(
             IndexRange frameIndexRange) override {
-        return m_pAudioSource->skipSampleFrames(frameIndexRange);
+        return m_pAudioSource->skipSampleFramesClamped(frameIndexRange);
     }
 
 private:

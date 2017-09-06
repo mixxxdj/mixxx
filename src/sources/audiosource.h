@@ -1,125 +1,12 @@
 #ifndef MIXXX_AUDIOSOURCE_H
 #define MIXXX_AUDIOSOURCE_H
 
+#include "sources/sampleframesource.h"
 #include "sources/urlresource.h"
-#include "util/audiosignal.h"
-#include "util/indexrange.h"
 #include "util/memory.h"
-#include "util/result.h"
-#include "util/samplebuffer.h"
 
 
 namespace mixxx {
-
-class SampleFrames {
-  public:
-    SampleFrames() = default;
-    explicit SampleFrames(
-            IndexRange frameIndexRange)
-        : m_frameIndexRange(frameIndexRange) {
-    }
-    /*non-virtual*/ ~SampleFrames() = default;
-
-    IndexRange frameIndexRange() const {
-        return m_frameIndexRange;
-    }
-
-  private:
-    IndexRange m_frameIndexRange;
-};
-
-class ReadableSampleFrames: public SampleFrames {
-  public:
-    ReadableSampleFrames() = default;
-    explicit ReadableSampleFrames(
-            IndexRange frameIndexRange,
-            SampleBuffer::ReadableSlice sampleBuffer = SampleBuffer::ReadableSlice())
-          : SampleFrames(frameIndexRange),
-            m_sampleBuffer(sampleBuffer) {
-    }
-    /*non-virtual*/ ~ReadableSampleFrames() = default;
-
-    // The readable slice should cover the whole range of
-    // frame indices and starts with the first frame. An
-    // empty slice indicates that no sample data is available
-    // for reading.
-    SampleBuffer::ReadableSlice sampleBuffer() const {
-        return m_sampleBuffer;
-    }
-
-  private:
-    SampleBuffer::ReadableSlice m_sampleBuffer;
-};
-
-class WritableSampleFrames: public SampleFrames {
-  public:
-    WritableSampleFrames() = default;
-    explicit WritableSampleFrames(
-            IndexRange frameIndexRange,
-            SampleBuffer::WritableSlice sampleBuffer = SampleBuffer::WritableSlice())
-          : SampleFrames(frameIndexRange),
-            m_sampleBuffer(sampleBuffer) {
-    }
-    /*non-virtual*/ ~WritableSampleFrames() = default;
-
-    // The writable slice should cover the whole range of
-    // frame indices and starts with the first frame. An
-    // empty slice indicates that no sample data must
-    // be written.
-    SampleBuffer::WritableSlice sampleBuffer() const {
-        return m_sampleBuffer;
-    }
-
-  private:
-    SampleBuffer::WritableSlice m_sampleBuffer;
-};
-
-// AudioSource v2 interface
-class IAudioSource {
-  public:
-    virtual ~IAudioSource() = default;
-
-    enum class ReadMode {
-        Store, // write/copy decoded sample data into buffer
-        Skip,  // discard decoded sample data
-    };
-
-    // TODO(uklotzde): Rephrase after changing the parameters
-    //
-    // Read sample frames from the requested frame index range. Only
-    // forward-oriented index ranges need to be supported. The implementation
-    // is responsible for restricting the requested range to the range that
-    // is actually readable.
-    //
-    // Only that part of the output buffer corresponding to the returned
-    // range is allowed to be modified. All remaining samples in the output
-    // buffer should stay untouched. The samples in the output buffer need
-    // to be offset properly depending on the difference between the first
-    // requested frame and the actual first read frame, i.e. the first sample
-    // in the output buffer represents the sample of the first channel from
-    // the first requested frame.
-    //
-    // If the output buffer is null all decoded samples must be discarded
-    // immediately. Otherwise the size of the output buffer must be
-    // sufficient to buffer all frames2samples(frameIndexRange.length())
-    // sample values.
-    //
-    // On errors only a sub range of the requested frames might be returned.
-    virtual ReadableSampleFrames readSampleFrames(
-            ReadMode readMode,
-            WritableSampleFrames sampleFrames) {
-        Q_UNUSED(readMode);
-        Q_UNUSED(sampleFrames);
-        return ReadableSampleFrames();
-    }
-
-    virtual IndexRange skipSampleFrames(
-            IndexRange frameIndexRange) {
-        return readSampleFrames(
-                ReadMode::Skip,
-                WritableSampleFrames(frameIndexRange)).frameIndexRange();
-    }
-};
 
 // Common interface and base class for audio sources.
 //
@@ -131,45 +18,8 @@ class IAudioSource {
 //
 // Audio sources are implicitly opened upon creation and
 // closed upon destruction.
-class AudioSource: public UrlResource, public AudioSignal, public virtual /*implements*/ IAudioSource {
+class AudioSource: public UrlResource, public SampleFrameSource {
   public:
-    // All AudioSources are required to produce a signal of frames
-    // where each frame contains samples from all channels that are
-    // coincident in time.
-    //
-    // A frame for a mono signal contains a single sample. A frame
-    // for a stereo signal contains a pair of samples, one for the
-    // left and right channel respectively.
-    static constexpr SampleLayout sampleLayout() {
-        return SampleLayout::Interleaved;
-    }
-
-
-    // The total length of audio data is bounded and measured in frames.
-    IndexRange frameIndexRange() const {
-        return m_frameIndexRange;
-    }
-
-    // The index of the first frame.
-    SINT frameIndexMin() const {
-        DEBUG_ASSERT(m_frameIndexRange.start() <= m_frameIndexRange.end());
-        return m_frameIndexRange.start();
-    }
-
-    // The index after the last frame.
-    SINT frameIndexMax() const {
-        DEBUG_ASSERT(m_frameIndexRange.start() <= m_frameIndexRange.end());
-        return m_frameIndexRange.end();
-    }
-
-    // The sample frame index is valid within the range
-    // [frameIndexMin(), frameIndexMax()]
-    // including the upper bound of the range!
-    bool isValidFrameIndex(SINT frameIndex) const {
-        return m_frameIndexRange.clampIndex(frameIndex) == frameIndex;
-    }
-
-
     // The bitrate is optional and measured in kbit/s (kbps).
     // It depends on the metadata and decoder if a value for the
     // bitrate is available.
@@ -201,46 +51,18 @@ class AudioSource: public UrlResource, public AudioSignal, public virtual /*impl
         return m_bitrate;
     }
 
-
-    // The actual duration in seconds.
-    // Well defined only for valid files!
-    inline bool hasDuration() const {
-        return samplingRate().valid();
-    }
-    inline double getDuration() const {
-        DEBUG_ASSERT(hasDuration()); // prevents division by zero
-        return double(frameIndexRange().length()) / double(samplingRate());
-    }
-
-
     bool verifyReadable() const override;
 
   protected:
     explicit AudioSource(const QUrl& url);
-    explicit AudioSource(const AudioSource& other) = default;
+    AudioSource(const AudioSource& other) = default;
 
-    bool initFrameIndexRange(
-            IndexRange frameIndexRange);
-
-    bool initBitrate(Bitrate bitrate);
-    bool initBitrate(SINT bitrate) {
-        return initBitrate(Bitrate(bitrate));
-    }
-
-    friend class LegacyAudioSourceAdapter;
-    WritableSampleFrames clampWritableSampleFrames(
-            ReadMode readMode,
-            WritableSampleFrames sampleFrames) const;
-    IndexRange clampFrameIndexRange(
-            IndexRange frameIndexRange) const {
-        return intersect(frameIndexRange, this->frameIndexRange());
+    bool initBitrateOnce(Bitrate bitrate);
+    bool initBitrateOnce(SINT bitrate) {
+        return initBitrateOnce(Bitrate(bitrate));
     }
 
   private:
-    friend class AudioSourceConfig;
-
-    IndexRange m_frameIndexRange;
-
     Bitrate m_bitrate;
 };
 
@@ -248,10 +70,10 @@ class AudioSource: public UrlResource, public AudioSignal, public virtual /*impl
 class AudioSourceConfig : public AudioSignal {
   public:
     AudioSourceConfig()
-        : AudioSignal(AudioSource::sampleLayout()) {
+        : AudioSignal(SampleFrameSource::kSampleLayout) {
     }
     AudioSourceConfig(ChannelCount channelCount, SamplingRate samplingRate)
-        : AudioSignal(AudioSource::sampleLayout(), channelCount, samplingRate) {
+        : AudioSignal(SampleFrameSource::kSampleLayout, channelCount, samplingRate) {
     }
 
     using AudioSignal::setChannelCount;
