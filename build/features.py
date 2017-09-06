@@ -12,7 +12,7 @@ class OpenGLES(Feature):
 
     def enabled(self, build):
         build.flags['opengles'] = util.get_flags(build.env, 'opengles', 0)
-	return int(build.flags['opengles'])
+        return int(build.flags['opengles'])
 
     def add_options(self, build, vars):
         vars.Add('opengles', 'Set to 1 to enable OpenGL-ES >= 2.0 support [Experimental]', 0)
@@ -20,8 +20,8 @@ class OpenGLES(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-	if build.flags['opengles']:
-	    build.env.Append(CPPDEFINES='__OPENGLES__')
+        if build.flags['opengles']:
+            build.env.Append(CPPDEFINES='__OPENGLES__')
 
     def sources(self, build):
         return []
@@ -246,6 +246,7 @@ class CoreAudio(Feature):
 
     def sources(self, build):
         return ['sources/soundsourcecoreaudio.cpp',
+                'sources/v1/legacyaudiosourceadapter.cpp',
                 '#lib/apple/CAStreamBasicDescription.cpp']
 
 

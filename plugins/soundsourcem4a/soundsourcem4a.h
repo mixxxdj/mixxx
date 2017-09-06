@@ -24,10 +24,9 @@ public:
 
     void close() override;
 
-    SINT seekSampleFrame(SINT frameIndex) override;
-
-    SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) override;
+    ReadableSampleFrames readSampleFramesClamped(
+            ReadMode readMode,
+            WritableSampleFrames sampleFrames) override;
 
 private:
     OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;

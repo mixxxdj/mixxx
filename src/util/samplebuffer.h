@@ -53,12 +53,14 @@ class SampleBuffer {
     }
 
     CSAMPLE* data(SINT offset = 0) {
+        DEBUG_ASSERT((m_data != nullptr) || (offset == 0));
         DEBUG_ASSERT(0 <= offset);
         // >=: allow access to one element behind allocated memory
         DEBUG_ASSERT(m_size >= offset);
         return m_data + offset;
     }
     const CSAMPLE* data(SINT offset = 0) const {
+        DEBUG_ASSERT((m_data != nullptr) || (offset == 0));
         DEBUG_ASSERT(0 <= offset);
         // >=: allow access to one element behind allocated memory
         DEBUG_ASSERT(m_size >= offset);
@@ -87,14 +89,25 @@ class SampleBuffer {
     // Fills the whole buffer with the same value
     void fill(CSAMPLE value);
 
-    class ReadableChunk {
+    class ReadableSlice {
       public:
-        ReadableChunk(const SampleBuffer& buffer, SINT offset, SINT length)
+        ReadableSlice()
+            : m_data(nullptr),
+              m_size(0) {
+        }
+        ReadableSlice(const CSAMPLE* data, SINT size)
+            : m_data(data),
+              m_size(size) {
+            DEBUG_ASSERT(size >= 0);
+            DEBUG_ASSERT((size == 0) || (m_data != nullptr));
+        }
+        ReadableSlice(const SampleBuffer& buffer, SINT offset, SINT length)
             : m_data(buffer.data(offset)),
               m_size(length) {
             DEBUG_ASSERT((buffer.size() - offset) >= length);
         }
         const CSAMPLE* data(SINT offset = 0) const {
+            DEBUG_ASSERT((m_data != nullptr) || (offset == 0));
             DEBUG_ASSERT(0 <= offset);
             // >=: allow access to one element behind allocated memory
             DEBUG_ASSERT(m_size >= offset);
@@ -102,6 +115,9 @@ class SampleBuffer {
         }
         SINT size() const {
             return m_size;
+        }
+        bool empty() const {
+            return (m_data == nullptr) || (m_size <= 0);
         }
         const CSAMPLE& operator[](SINT index) const {
             return *data(index);
@@ -111,14 +127,29 @@ class SampleBuffer {
         SINT m_size;
     };
 
-    class WritableChunk {
+    class WritableSlice {
       public:
-        WritableChunk(SampleBuffer& buffer, SINT offset, SINT length)
+        WritableSlice()
+            : m_data(nullptr),
+              m_size(0) {
+        }
+        WritableSlice(CSAMPLE* data, SINT size)
+            : m_data(data),
+              m_size(size) {
+            DEBUG_ASSERT(size >= 0);
+            DEBUG_ASSERT((size == 0) || (m_data != nullptr));
+        }
+        explicit WritableSlice(SampleBuffer& buffer)
+            : m_data(buffer.data()),
+              m_size(buffer.size()) {
+        }
+        WritableSlice(SampleBuffer& buffer, SINT offset, SINT length)
             : m_data(buffer.data(offset)),
               m_size(length) {
             DEBUG_ASSERT((buffer.size() - offset) >= length);
         }
         CSAMPLE* data(SINT offset = 0) const {
+            DEBUG_ASSERT((m_data != nullptr) || (offset == 0));
             DEBUG_ASSERT(0 <= offset);
             // >=: allow access to one element behind allocated memory
             DEBUG_ASSERT(m_size >= offset);
@@ -126,6 +157,9 @@ class SampleBuffer {
         }
         SINT size() const {
             return m_size;
+        }
+        bool empty() const {
+            return (m_data == nullptr) || (m_size <= 0);
         }
         CSAMPLE& operator[](SINT index) const {
             return *data(index);

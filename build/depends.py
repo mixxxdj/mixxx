@@ -812,6 +812,8 @@ class MixxxCore(Feature):
                    "errordialoghandler.cpp",
 
                    "sources/audiosource.cpp",
+                   "sources/audiosourcestereoproxy.cpp",
+                   "sources/sampleframesource.cpp",
                    "sources/soundsource.cpp",
                    "sources/soundsourceplugin.cpp",
                    "sources/soundsourcepluginlibrary.cpp",
@@ -1146,6 +1148,7 @@ class MixxxCore(Feature):
                    "util/widgethider.cpp",
                    "util/autohidpi.cpp",
                    "util/screensaver.cpp",
+                   "util/indexrange.cpp",
 
                    '#res/mixxx.qrc'
                    ]

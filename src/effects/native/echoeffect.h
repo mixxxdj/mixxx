@@ -17,13 +17,13 @@ struct EchoGroupState {
     // 2 seconds max.
     static constexpr int kMaxDelaySeconds = 2;
     // TODO(XXX): When we move from stereo to multi-channel this needs updating.
-    static constexpr int kChannelCount = mixxx::AudioSignal::kChannelCountStereo;
+    static constexpr int kChannelCount = 2;
     // Ramp length in samples when we are at the start of an echo.
     // TODO(XXX): make this samplerate independent
     static constexpr int kRampLength = 500;
 
     EchoGroupState()
-            : delay_buf(mixxx::AudioSignal::kSamplingRateMax * kMaxDelaySeconds *
+            : delay_buf(mixxx::AudioSignal::SamplingRate::max() * kMaxDelaySeconds *
                         kChannelCount) {
         delay_buf.clear();
         prev_delay_time = 0.0;
