@@ -1,6 +1,8 @@
 #ifndef MIXXX_AUDIOSIGNAL_H
 #define MIXXX_AUDIOSIGNAL_H
 
+#include <QtDebug>
+
 #include "util/assert.h"
 #include "util/types.h"
 
@@ -31,73 +33,112 @@ public:
         Interleaved
     };
 
-    static constexpr SINT kChannelCountZero    = 0;
-    static constexpr SINT kChannelCountDefault = kChannelCountZero;
-    static constexpr SINT kChannelCountMono    = 1;
-    static constexpr SINT kChannelCountMin     = kChannelCountMono; // lower bound
-    static constexpr SINT kChannelCountStereo  = 2;
-    static constexpr SINT kChannelCountMax     = 256; // upper bound (8-bit unsigned integer)
+    class ChannelCount {
+      private:
+        static constexpr SINT kValueDefault = 0;
 
-    static bool isValidChannelCount(SINT channelCount) {
-        return (kChannelCountMin <= channelCount) && (kChannelCountMax >= channelCount);
+      public:
+        static constexpr SINT kValueMin     = 1;   // lower bound (inclusive)
+        static constexpr SINT kValueMax     = 255; // upper bound (inclusive, 8-bit unsigned integer)
+
+        static constexpr SINT kValueMono    = 1;
+        static constexpr SINT kValueStereo  = 2;
+
+        static constexpr ChannelCount min() { return ChannelCount(kValueMin); }
+        static constexpr ChannelCount max() { return ChannelCount(kValueMax); }
+
+        static constexpr ChannelCount mono() { return ChannelCount(kValueMono); }
+        static constexpr ChannelCount stereo() { return ChannelCount(kValueStereo); }
+
+        bool isMono() const {
+            return m_value == kValueMono;
+        }
+        bool isStereo() const {
+            return m_value == kValueStereo;
+        }
+
+        explicit constexpr ChannelCount(SINT value = kValueDefault)
+            : m_value(value) {
+        }
+
+        bool valid() const {
+            return (kValueMin <= m_value) && (m_value <= kValueMax);
+        }
+
+        /*implicit*/ operator SINT() const {
+            DEBUG_ASSERT(m_value >= 0); // unsigned value
+            return m_value;
+        }
+
+      private:
+        SINT m_value;
+    };
+
+    class SamplingRate {
+      private:
+        static constexpr SINT kValueDefault = 0;
+
+      public:
+        static constexpr SINT kValueMin     = 8000;   // lower bound (inclusive, = minimum MP3 sampling rate)
+        static constexpr SINT kValueMax     = 192000; // upper bound (inclusive)
+
+        static constexpr SamplingRate min() { return SamplingRate(kValueMin); }
+        static constexpr SamplingRate max() { return SamplingRate(kValueMax); }
+
+        static constexpr const char* unit() { return "Hz"; }
+
+        explicit constexpr SamplingRate(SINT value = kValueDefault)
+            : m_value(value) {
+        }
+
+        bool valid() const {
+            return (kValueMin <= m_value) && (m_value <= kValueMax);
+        }
+
+        /*implicit*/ operator SINT() const {
+            DEBUG_ASSERT(m_value >= 0); // unsigned value
+            return m_value;
+        }
+
+      private:
+        SINT m_value;
+    };
+
+    explicit AudioSignal(
+            SampleLayout sampleLayout)
+        : m_sampleLayout(sampleLayout) {
     }
 
-    static constexpr SINT kSamplingRateZero    = 0;
-    static constexpr SINT kSamplingRateDefault = kSamplingRateZero;
-    static constexpr SINT kSamplingRateMin     = 8000; // lower bound (= minimum MP3 sampling rate)
-    static constexpr SINT kSamplingRate32kHz   = 32000;
-    static constexpr SINT kSamplingRateCD      = 44100;
-    static constexpr SINT kSamplingRate48kHz   = 48000;
-    static constexpr SINT kSamplingRate96kHz   = 96000;
-    static constexpr SINT kSamplingRate192kHz  = 192000;
-    static constexpr SINT kSamplingRateMax     = kSamplingRate192kHz; // upper bound
-
-    static bool isValidSamplingRate(SINT samplingRate) {
-        return (kSamplingRateMin <= samplingRate) && (kSamplingRateMax >= samplingRate);
-    }
-
-    explicit AudioSignal(SampleLayout sampleLayout)
-        : m_sampleLayout(sampleLayout),
-          m_channelCount(kChannelCountDefault),
-          m_samplingRate(kSamplingRateDefault) {
-        DEBUG_ASSERT(!hasValidChannelCount());
-        DEBUG_ASSERT(!hasValidSamplingRate());
-    }
-    AudioSignal(SampleLayout sampleLayout, SINT channelCount, SINT samplingRate)
-        : m_sampleLayout(sampleLayout),
-          m_channelCount(channelCount),
-          m_samplingRate(samplingRate) {
-        DEBUG_ASSERT(kChannelCountZero <= m_channelCount); // unsigned value
-        DEBUG_ASSERT(kSamplingRateZero <= m_samplingRate); // unsigned value
+    explicit AudioSignal(
+            SampleLayout sampleLayout,
+            ChannelCount channelCount,
+            SamplingRate samplingRate)
+        : m_sampleLayout(sampleLayout) {
+        setChannelCount(channelCount);
+        setSamplingRate(samplingRate);
     }
 
     virtual ~AudioSignal() = default;
 
-    // Returns the ordering of samples in contiguous buffers
-    SampleLayout getSampleLayout() const {
+    // Returns the ordering of samples in contiguous buffers.
+    SampleLayout sampleLayout() const {
         return m_sampleLayout;
     }
 
     // Returns the number of channels.
-    SINT getChannelCount() const {
+    ChannelCount channelCount() const {
         return m_channelCount;
-    }
-    bool hasValidChannelCount() const {
-        return isValidChannelCount(getChannelCount());
     }
 
     // Returns the sampling rate in Hz. The sampling rate is defined as the
-    // number of samples per second for each channel. Please not that this
+    // number of samples per second for each channel. Please note that this
     // does not equal the total number of samples per second in the stream!
     //
     // NOTE(uklotzde): I consciously avoided the term "sample rate", because
     // that sounds like "number of samples per second" which is wrong for
     // signals with more than a single channel and might be misleading!
-    SINT getSamplingRate() const {
+    SamplingRate samplingRate() const {
         return m_samplingRate;
-    }
-    bool hasValidSamplingRate() const {
-        return isValidSamplingRate(getSamplingRate());
     }
 
     // Verifies various properties to ensure that the audio data is
@@ -121,40 +162,37 @@ public:
     // Conversion: #samples / sample offset -> #frames / frame offset
     template<typename T>
     inline T samples2frames(T samples) const {
-        DEBUG_ASSERT(hasValidChannelCount());
-        DEBUG_ASSERT(0 == (samples % getChannelCount()));
-        return samples / getChannelCount();
+        DEBUG_ASSERT(channelCount().valid());
+        DEBUG_ASSERT(0 == (samples % channelCount()));
+        return samples / channelCount();
     }
 
     // Conversion: #frames / frame offset -> #samples / sample offset
     template<typename T>
     inline T frames2samples(T frames) const {
-        DEBUG_ASSERT(hasValidChannelCount());
-        return frames * getChannelCount();
+        DEBUG_ASSERT(channelCount().valid());
+        return frames * channelCount();
     }
 
 protected:
-    void setChannelCount(SINT channelCount) {
-        DEBUG_ASSERT(kChannelCountZero <= m_channelCount); // unsigned value
-        m_channelCount = channelCount;
+    bool setChannelCount(ChannelCount channelCount);
+    bool setChannelCount(SINT channelCount) {
+        return setChannelCount(ChannelCount(channelCount));
     }
-    void resetChannelCount() {
-        m_channelCount = kChannelCountDefault;
-    }
-
-    void setSamplingRate(SINT samplingRate) {
-        DEBUG_ASSERT(kSamplingRateZero <= m_samplingRate); // unsigned value
-        m_samplingRate = samplingRate;
-    }
-    void resetSamplingRate() {
-        m_samplingRate = kSamplingRateDefault;
+    bool setSamplingRate(SamplingRate samplingRate);
+    bool setSamplingRate(SINT samplingRate) {
+        return setSamplingRate(SamplingRate(samplingRate));
     }
 
 private:
     SampleLayout m_sampleLayout;
-    SINT m_channelCount;
-    SINT m_samplingRate;
+    ChannelCount m_channelCount;
+    SamplingRate m_samplingRate;
 };
+
+QDebug operator<<(QDebug dbg, AudioSignal::SampleLayout arg);
+
+QDebug operator<<(QDebug dbg, const AudioSignal& arg);
 
 }
 

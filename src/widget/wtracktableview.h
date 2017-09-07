@@ -61,9 +61,11 @@ class WTrackTableView : public WLibraryTableView {
     void slotPrevDlgTagFetcher();
     void slotShowTrackInTagFetcher(TrackPointer track);
     void slotReloadTrackMetadata();
+    void slotSaveTrackMetadata();
     void slotResetPlayed();
     void addSelectionToPlaylist(int iPlaylistId);
     void addSelectionToCrate(int iCrateId);
+    void removeSelectionFromCrate(int iCrateId);
     void loadSelectionToGroup(QString group, bool play = false);
     void doSortByColumn(int headerSection);
     void slotLockBpm();
@@ -122,13 +124,16 @@ class WTrackTableView : public WLibraryTableView {
     ControlProxy* m_pNumPreviewDecks;
 
     // Context menu machinery
-    QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateMenu, *m_pSamplerMenu, *m_pBPMMenu;
+    QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateAddMenu, *m_pCrateRemoveMenu, *m_pSamplerMenu, *m_pBPMMenu;
     WCoverArtMenu* m_pCoverMenu;
-    QSignalMapper m_playlistMapper, m_crateMapper, m_deckMapper, m_samplerMapper;
+    QSignalMapper m_playlistMapper, m_crateAddMapper, m_crateRemoveMapper, m_deckMapper, m_samplerMapper;
 
     // Reload Track Metadata Action:
     QAction *m_pReloadMetadataAct;
     QAction *m_pReloadMetadataFromMusicBrainzAct;
+
+    // Save Track Metadata Action:
+    QAction *m_pSaveMetadataAct;
 
     // Load Track to PreviewDeck
     QAction* m_pAddToPreviewDeck;

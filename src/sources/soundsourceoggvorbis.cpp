@@ -84,16 +84,16 @@ SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /
     setChannelCount(vi->channels);
     setSamplingRate(vi->rate);
     if (0 < vi->bitrate_nominal) {
-        setBitrate(vi->bitrate_nominal / 1000);
+        initBitrateOnce(vi->bitrate_nominal / 1000);
     } else {
         if ((0 < vi->bitrate_lower) && (vi->bitrate_lower == vi->bitrate_upper)) {
-            setBitrate(vi->bitrate_lower / 1000);
+            initBitrateOnce(vi->bitrate_lower / 1000);
         }
     }
 
     ogg_int64_t pcmTotal = ov_pcm_total(&m_vf, kEntireBitstreamLink);
     if (0 <= pcmTotal) {
-        setFrameCount(pcmTotal);
+        initFrameIndexRangeOnce(mixxx::IndexRange::forward(0, pcmTotal));
     } else {
         kLogger.warning()
                 << "Failed to read read total length of"
@@ -112,61 +112,38 @@ void SoundSourceOggVorbis::close() {
     m_pFile.reset();
 }
 
-SINT SoundSourceOggVorbis::seekSampleFrame(
-        SINT frameIndex) {
-    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
+ReadableSampleFrames SoundSourceOggVorbis::readSampleFramesClamped(
+        ReadMode readMode,
+        WritableSampleFrames writableSampleFrames) {
 
-    if (frameIndex >= getMaxFrameIndex()) {
-        // EOF
-        m_curFrameIndex = getMaxFrameIndex();
-        return m_curFrameIndex;
-    }
+    const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
-    if (frameIndex == m_curFrameIndex) {
-        return m_curFrameIndex;
-    }
-
-    const int seekResult = ov_pcm_seek(&m_vf, frameIndex);
-    if (0 == seekResult) {
-        m_curFrameIndex = frameIndex;
-    } else {
-        kLogger.warning() << "Failed to seek file:" << seekResult;
-        const ogg_int64_t pcmOffset = ov_pcm_tell(&m_vf);
-        if (0 <= pcmOffset) {
-            m_curFrameIndex = pcmOffset;
+    if (m_curFrameIndex != firstFrameIndex) {
+        const int seekResult = ov_pcm_seek(&m_vf, firstFrameIndex);
+        if (seekResult == 0) {
+            m_curFrameIndex = firstFrameIndex;
         } else {
-            // Reset to EOF
-            m_curFrameIndex = getMaxFrameIndex();
+            kLogger.warning() << "Failed to seek file:" << seekResult;
+            const ogg_int64_t pcmOffset = ov_pcm_tell(&m_vf);
+            if (0 <= pcmOffset) {
+                m_curFrameIndex = pcmOffset;
+            } else {
+                // Reset to EOF
+                m_curFrameIndex = frameIndexMax();
+            }
+            // Abort
+            return ReadableSampleFrames(
+                    mixxx::IndexRange::between(
+                            m_curFrameIndex,
+                            m_curFrameIndex));
         }
     }
+    DEBUG_ASSERT(m_curFrameIndex == firstFrameIndex);
 
-    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-    return m_curFrameIndex;
-}
+    const SINT numberOfFramesTotal = writableSampleFrames.frameIndexRange().length();
 
-SINT SoundSourceOggVorbis::readSampleFrames(
-        SINT numberOfFrames, CSAMPLE* sampleBuffer) {
-    return readSampleFrames(numberOfFrames, sampleBuffer,
-            frames2samples(numberOfFrames), false);
-}
-
-SINT SoundSourceOggVorbis::readSampleFramesStereo(
-        SINT numberOfFrames, CSAMPLE* sampleBuffer,
-        SINT sampleBufferSize) {
-    return readSampleFrames(numberOfFrames, sampleBuffer, sampleBufferSize,
-            true);
-}
-
-SINT SoundSourceOggVorbis::readSampleFrames(
-        SINT numberOfFrames, CSAMPLE* sampleBuffer,
-        SINT sampleBufferSize, bool readStereoSamples) {
-    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-    DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, readStereoSamples) <= sampleBufferSize);
-
-    const SINT numberOfFramesTotal = math_min(
-            numberOfFrames, getMaxFrameIndex() - m_curFrameIndex);
-
-    CSAMPLE* pSampleBuffer = sampleBuffer;
+    CSAMPLE* pSampleBuffer = (readMode == ReadMode::Store) ?
+            writableSampleFrames.sampleBuffer().data() : nullptr;
     SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
         float** pcmChannels;
@@ -179,26 +156,22 @@ SINT SoundSourceOggVorbis::readSampleFrames(
                 numberOfFramesRemaining, &currentSection);
         if (0 < readResult) {
             m_curFrameIndex += readResult;
-            if (pSampleBuffer != nullptr) {
-                if (kChannelCountMono == getChannelCount()) {
-                    if (readStereoSamples) {
-                        for (long i = 0; i < readResult; ++i) {
-                            *pSampleBuffer++ = pcmChannels[0][i];
-                            *pSampleBuffer++ = pcmChannels[0][i];
-                        }
-                    } else {
-                        for (long i = 0; i < readResult; ++i) {
-                            *pSampleBuffer++ = pcmChannels[0][i];
-                        }
+            if (pSampleBuffer) {
+                switch (channelCount()) {
+                case 1:
+                    for (long i = 0; i < readResult; ++i) {
+                        *pSampleBuffer++ = pcmChannels[0][i];
                     }
-                } else if (readStereoSamples || (kChannelCountStereo == getChannelCount())) {
+                    break;
+                case 2:
                     for (long i = 0; i < readResult; ++i) {
                         *pSampleBuffer++ = pcmChannels[0][i];
                         *pSampleBuffer++ = pcmChannels[1][i];
                     }
-                } else {
+                    break;
+                default:
                     for (long i = 0; i < readResult; ++i) {
-                        for (SINT j = 0; j < getChannelCount(); ++j) {
+                        for (SINT j = 0; j < channelCount(); ++j) {
                             *pSampleBuffer++ = pcmChannels[j][i];
                         }
                     }
@@ -213,7 +186,12 @@ SINT SoundSourceOggVorbis::readSampleFrames(
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(numberOfFramesTotal >= numberOfFramesRemaining);
-    return numberOfFramesTotal - numberOfFramesRemaining;
+    const SINT numberOfFrames = numberOfFramesTotal - numberOfFramesRemaining;
+    return ReadableSampleFrames(
+            IndexRange::forward(firstFrameIndex, numberOfFrames),
+            SampleBuffer::ReadableSlice(
+                    writableSampleFrames.sampleBuffer().data(),
+                    std::min(writableSampleFrames.sampleBuffer().size(), frames2samples(numberOfFrames))));
 }
 
 

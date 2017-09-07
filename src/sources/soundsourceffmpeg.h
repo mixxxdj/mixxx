@@ -111,16 +111,16 @@ struct ffmpegCacheObject {
     quint8 *bytes;
 };
 
-class SoundSourceFFmpeg : public SoundSource {
+class SoundSourceFFmpeg: public SoundSource {
   public:
     explicit SoundSourceFFmpeg(const QUrl& url);
     ~SoundSourceFFmpeg() override;
 
     void close() override;
 
-    SINT seekSampleFrame(SINT frameIndex) override;
-
-    SINT readSampleFrames(SINT numberOfFrames, CSAMPLE* sampleBuffer) override;
+    ReadableSampleFrames readSampleFramesClamped(
+            ReadMode readMode,
+            WritableSampleFrames sampleFrames) override;
 
   private:
     OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;

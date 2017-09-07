@@ -287,6 +287,9 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             m_pRecordingManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);
 
+    // Create the singular TrackCache instance
+    TrackCache::createInstance(m_pLibrary);
+
     launchProgress(40);
 
     // Get Music dir
@@ -560,11 +563,20 @@ void MixxxMainWindow::finalize() {
     // CoverArtCache is fairly independent of everything else.
     CoverArtCache::destroy();
 
+    // Evict all remaining tracks from the cache to trigger
+    // updating of modified tracks.
+    TrackCache::instance().evictAll();
+
     // Delete the library after the view so there are no dangling pointers to
     // the data models.
     // Depends on RecordingManager and PlayerManager
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting Library";
     delete m_pLibrary;
+
+    // The TrackCache singleton must be destroyed immediately
+    // after the library has been destroyed!
+    qDebug() << "Destroying TrackCache" << t.elapsed(false);
+    TrackCache::destroyInstance();
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "closing database connection(s)";
     m_pDbConnectionPool->destroyThreadLocalConnection();

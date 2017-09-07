@@ -10,6 +10,7 @@
 #include "library/dao/analysisdao.h"
 #include "mixer/playerinfo.h"
 #include "sources/soundsourceproxy.h"
+#include "sources/audiosourcestereoproxy.h"
 #include "track/track.h"
 #include "util/compatibility.h"
 #include "util/db/dbconnectionpooler.h"
@@ -33,7 +34,7 @@ mixxx::Logger kLogger("AnalyzerQueue");
 // We need to use a smaller block size, because on Linux the AnalyzerQueue
 // can starve the CPU of its resources, resulting in xruns. A block size
 // of 4096 frames per block seems to do fine.
-const SINT kAnalysisChannels = mixxx::AudioSource::kChannelCountStereo;
+const mixxx::AudioSignal::ChannelCount kAnalysisChannels = mixxx::AudioSignal::ChannelCount::stereo();
 const SINT kAnalysisFramesPerBlock = 4096;
 const SINT kAnalysisSamplesPerBlock =
         kAnalysisFramesPerBlock * kAnalysisChannels;
@@ -171,54 +172,56 @@ TrackPointer AnalyzerQueue::dequeueNextBlocking() {
 }
 
 // This is called from the AnalyzerQueue thread
-bool AnalyzerQueue::doAnalysis(TrackPointer pTrack, mixxx::AudioSourcePointer pAudioSource) {
+bool AnalyzerQueue::doAnalysis(
+        TrackPointer pTrack,
+        mixxx::AudioSourcePointer pAudioSource) {
 
     QTime progressUpdateInhibitTimer;
     progressUpdateInhibitTimer.start(); // Inhibit Updates for 60 milliseconds
 
-    SINT frameIndex = pAudioSource->getMinFrameIndex();
+    mixxx::AudioSourceStereoProxy audioSourceProxy(
+            pAudioSource,
+            kAnalysisFramesPerBlock);
+    DEBUG_ASSERT(audioSourceProxy.channelCount() == kAnalysisChannels);
+
+    mixxx::IndexRange remainingFrames = pAudioSource->frameIndexRange();
     bool dieflag = false;
     bool cancelled = false;
-    do {
+    while (!dieflag && !remainingFrames.empty()) {
         ScopedTimer t("AnalyzerQueue::doAnalysis block");
 
-        DEBUG_ASSERT(frameIndex < pAudioSource->getMaxFrameIndex());
-        const SINT framesRemaining =
-                pAudioSource->getMaxFrameIndex() - frameIndex;
-        const SINT framesToRead =
-                math_min(kAnalysisFramesPerBlock, framesRemaining);
-        DEBUG_ASSERT(0 < framesToRead);
-
-        const SINT framesRead =
-                pAudioSource->readSampleFramesStereo(
-                        framesToRead,
-                        &m_sampleBuffer);
-        DEBUG_ASSERT(framesRead <= framesToRead);
-        frameIndex += framesRead;
-        DEBUG_ASSERT(pAudioSource->isValidFrameIndex(frameIndex));
-
+        const auto inputFrameIndexRange =
+                remainingFrames.cutFrontRange(
+                        math_min(kAnalysisFramesPerBlock, remainingFrames.length()));
+        DEBUG_ASSERT(!inputFrameIndexRange.empty());
+        const auto readableSampleFrames =
+                audioSourceProxy.readSampleFrames(
+                        mixxx::ISampleFrameSource::ReadMode::Store,
+                        mixxx::WritableSampleFrames(
+                                inputFrameIndexRange,
+                                SampleBuffer::WritableSlice(m_sampleBuffer)));
         // To compare apples to apples, let's only look at blocks that are
         // the full block size.
-        if (kAnalysisFramesPerBlock == framesRead) {
+        if (readableSampleFrames.frameIndexRange().length() == kAnalysisFramesPerBlock) {
             // Complete analysis block of audio samples has been read.
             for (auto const& pAnalyzer: m_pAnalyzers) {
-                pAnalyzer->process(m_sampleBuffer.data(), m_sampleBuffer.size());
+                pAnalyzer->process(
+                        readableSampleFrames.sampleBuffer().data(),
+                        readableSampleFrames.sampleBuffer().size());
             }
         } else {
             // Partial analysis block of audio samples has been read.
             // This should only happen at the end of an audio stream,
             // otherwise a decoding error must have occurred.
-            if (frameIndex < pAudioSource->getMaxFrameIndex()) {
+            if (!remainingFrames.empty()) {
                 // EOF not reached -> Maybe a corrupt file?
-                kLogger.warning() << "Failed to read sample data from file:"
+                kLogger.warning()
+                        << "Aborting analysis after failed to read sample data from"
                         << pTrack->getLocation()
-                        << "@" << frameIndex;
-                if (0 >= framesRead) {
-                    // If no frames have been read then abort the analysis.
-                    // Otherwise we might get stuck in this loop forever.
-                    dieflag = true; // abort
-                    cancelled = false; // completed, no retry
-                }
+                        << ": expected frames =" << inputFrameIndexRange
+                        << ", actual frames =" << readableSampleFrames.frameIndexRange();
+                dieflag = true; // abort
+                cancelled = false; // completed, no retry
             }
         }
 
@@ -226,9 +229,9 @@ bool AnalyzerQueue::doAnalysis(TrackPointer pTrack, mixxx::AudioSourcePointer pA
         // During the doAnalysis function it goes only to 100% - FINALIZE_PERCENT
         // because the finalize functions will take also some time
         //fp div here prevents insane signed overflow
-        DEBUG_ASSERT(pAudioSource->isValidFrameIndex(frameIndex));
         const double frameProgress =
-                double(frameIndex) / double(pAudioSource->getMaxFrameIndex());
+                double(pAudioSource->frameIndexRange().length() - remainingFrames.length()) /
+                double(pAudioSource->frameIndexRange().length());
         int progressPromille = frameProgress * (1000 - FINALIZE_PROMILLE);
 
         if (m_progressInfo.track_progress != progressPromille) {
@@ -264,7 +267,7 @@ bool AnalyzerQueue::doAnalysis(TrackPointer pTrack, mixxx::AudioSourcePointer pA
         if (dieflag || cancelled) {
             t.cancel();
         }
-    } while (!dieflag && (frameIndex < pAudioSource->getMaxFrameIndex()));
+    }
 
     return !cancelled; //don't return !dieflag or we might reanalyze over and over
 }
@@ -344,7 +347,10 @@ void AnalyzerQueue::execThread() {
         audioSrcCfg.setChannelCount(kAnalysisChannels);
         auto pAudioSource = SoundSourceProxy(nextTrack).openAudioSource(audioSrcCfg);
         if (!pAudioSource) {
-            kLogger.warning() << "Failed to open file for analyzing:" << nextTrack->getLocation();
+            kLogger.warning()
+                    << "Failed to open file for analyzing:"
+                    << nextTrack->getLocation()
+                    << *pAudioSource;
             emptyCheck();
             continue;
         }
@@ -352,7 +358,10 @@ void AnalyzerQueue::execThread() {
         bool processTrack = false;
         for (auto const& pAnalyzer: m_pAnalyzers) {
             // Make sure not to short-circuit initialize(...)
-            if (pAnalyzer->initialize(nextTrack, pAudioSource->getSamplingRate(), pAudioSource->getFrameCount() * kAnalysisChannels)) {
+            if (pAnalyzer->initialize(
+                    nextTrack,
+                    pAudioSource->samplingRate(),
+                    pAudioSource->frameIndexRange().length() * kAnalysisChannels)) {
                 processTrack = true;
             }
         }

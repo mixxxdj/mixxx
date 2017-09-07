@@ -13,17 +13,16 @@
 
 namespace mixxx {
 
-class SoundSourceSndFile: public mixxx::SoundSource {
+class SoundSourceSndFile: public SoundSource {
 public:
     explicit SoundSourceSndFile(const QUrl& url);
     ~SoundSourceSndFile() override;
 
     void close() override;
 
-    SINT seekSampleFrame(SINT frameIndex) override;
-
-    SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) override;
+    ReadableSampleFrames readSampleFramesClamped(
+            ReadMode readMode,
+            WritableSampleFrames sampleFrames) override;
 
 private:
     OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;

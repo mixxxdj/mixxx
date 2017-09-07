@@ -1,20 +1,3 @@
-/***************************************************************************
-                          dlgpreflibrary.cpp  -  description
-                             -------------------
-    begin                : Thu Apr 17 2003
-    copyright            : (C) 2003 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include <QDesktopServices>
 #include <QDir>
 #include <QFileDialog>
@@ -23,23 +6,24 @@
 #include <QApplication>
 #include <QFontDialog>
 #include <QFontMetrics>
+#include <QMessageBox>
 
 #include "preferences/dialog/dlgpreflibrary.h"
 #include "sources/soundsourceproxy.h"
 
 #define MIXXX_ADDONS_URL "http://www.mixxx.org/wiki/doku.php/add-ons"
 
-DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
-                               UserSettingsPointer  config, Library *pLibrary)
-        : DlgPreferencePage(parent),
+DlgPrefLibrary::DlgPrefLibrary(
+        QWidget* pParent,
+        UserSettingsPointer pConfig,
+        Library* pLibrary)
+        : DlgPreferencePage(pParent),
           m_dirListModel(),
-          m_pconfig(config),
+          m_pConfig(pConfig),
           m_pLibrary(pLibrary),
-          m_baddedDirectory(false),
+          m_bAddedDirectory(false),
           m_iOriginalTrackTableRowHeight(Library::kDefaultRowHeightPx) {
     setupUi(this);
-    slotUpdate();
-    checkbox_ID3_sync->setVisible(false);
 
     connect(this, SIGNAL(requestAddDir(QString)),
             m_pLibrary, SLOT(slotRequestAddDir(QString)));
@@ -89,17 +73,26 @@ DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
     builtInFormatsStr += ", ModPlug";
 #endif
     builtInFormats->setText(builtInFormatsStr);
-}
 
-DlgPrefLibrary::~DlgPrefLibrary() {
+    connect(checkBox_WriteAudioTags, SIGNAL(toggled(bool)),
+            this, SLOT(slotWriteAudioTagsToggled()));
+    connect(checkBox_ReloadAudioTags, SIGNAL(clicked(bool)),
+            this, SLOT(slotReloadAudioTagsClicked(bool)));
 }
 
 void DlgPrefLibrary::slotShow() {
-    m_baddedDirectory = false;
+    m_bAddedDirectory = false;
+
+    // Initialize the controls when the dialog is displayed
+    // for the first time.
+    slotUpdate();
+
+    // Ensure that all dependencies between controls are updated
+    slotWriteAudioTagsToggled();
 }
 
 void DlgPrefLibrary::slotHide() {
-    if (!m_baddedDirectory) {
+    if (!m_bAddedDirectory) {
         return;
     }
 
@@ -148,7 +141,8 @@ void DlgPrefLibrary::slotExtraPlugins() {
 
 void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_library_scan->setChecked(false);
-    checkbox_ID3_sync->setChecked(false);
+    checkBox_WriteAudioTags->setChecked(false);
+    checkBox_ReloadAudioTags->setChecked(false);
     checkBox_use_relative_path->setChecked(false);
     checkBox_show_rhythmbox->setChecked(true);
     checkBox_show_banshee->setChecked(true);
@@ -163,22 +157,24 @@ void DlgPrefLibrary::slotResetToDefaults() {
 
 void DlgPrefLibrary::slotUpdate() {
     initializeDirList();
-    checkBox_library_scan->setChecked(m_pconfig->getValue(
+    checkBox_library_scan->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","RescanOnStartup"), false));
-    checkbox_ID3_sync->setChecked(m_pconfig->getValue(
+    checkBox_WriteAudioTags->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","WriteAudioTags"), false));
-    checkBox_use_relative_path->setChecked(m_pconfig->getValue(
+    checkBox_ReloadAudioTags->setChecked(m_pConfig->getValue(
+            ConfigKey("[Library]", "ReloadAudioTags"), false));
+    checkBox_use_relative_path->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","UseRelativePathOnExport"), false));
-    checkBox_show_rhythmbox->setChecked(m_pconfig->getValue(
+    checkBox_show_rhythmbox->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","ShowRhythmboxLibrary"), true));
-    checkBox_show_banshee->setChecked(m_pconfig->getValue(
+    checkBox_show_banshee->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","ShowBansheeLibrary"), true));
-    checkBox_show_itunes->setChecked(m_pconfig->getValue(
+    checkBox_show_itunes->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","ShowITunesLibrary"), true));
-    checkBox_show_traktor->setChecked(m_pconfig->getValue(
+    checkBox_show_traktor->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","ShowTraktorLibrary"), true));
 
-    switch (m_pconfig->getValue<int>(
+    switch (m_pConfig->getValue<int>(
             ConfigKey("[Library]","TrackLoadAction"), LOAD_TRACK_DECK)) {
     case ADD_TRACK_BOTTOM:
             radioButton_dbclick_bottom->setChecked(true);
@@ -210,7 +206,7 @@ void DlgPrefLibrary::slotAddDir() {
     if (!fd.isEmpty()) {
         emit(requestAddDir(fd));
         slotUpdate();
-        m_baddedDirectory = true;
+        m_bAddedDirectory = true;
     }
 }
 
@@ -296,19 +292,21 @@ void DlgPrefLibrary::slotRelocateDir() {
 }
 
 void DlgPrefLibrary::slotApply() {
-    m_pconfig->set(ConfigKey("[Library]","RescanOnStartup"),
+    m_pConfig->set(ConfigKey("[Library]","RescanOnStartup"),
                 ConfigValue((int)checkBox_library_scan->isChecked()));
-    m_pconfig->set(ConfigKey("[Library]","WriteAudioTags"),
-                ConfigValue((int)checkbox_ID3_sync->isChecked()));
-    m_pconfig->set(ConfigKey("[Library]","UseRelativePathOnExport"),
+    m_pConfig->set(ConfigKey("[Library]","WriteAudioTags"),
+                ConfigValue((int)checkBox_WriteAudioTags->isChecked()));
+    m_pConfig->set(ConfigKey("[Library]","ReloadAudioTags"),
+                ConfigValue((int)checkBox_ReloadAudioTags->isChecked()));
+    m_pConfig->set(ConfigKey("[Library]","UseRelativePathOnExport"),
                 ConfigValue((int)checkBox_use_relative_path->isChecked()));
-    m_pconfig->set(ConfigKey("[Library]","ShowRhythmboxLibrary"),
+    m_pConfig->set(ConfigKey("[Library]","ShowRhythmboxLibrary"),
                 ConfigValue((int)checkBox_show_rhythmbox->isChecked()));
-    m_pconfig->set(ConfigKey("[Library]","ShowBansheeLibrary"),
+    m_pConfig->set(ConfigKey("[Library]","ShowBansheeLibrary"),
                 ConfigValue((int)checkBox_show_banshee->isChecked()));
-    m_pconfig->set(ConfigKey("[Library]","ShowITunesLibrary"),
+    m_pConfig->set(ConfigKey("[Library]","ShowITunesLibrary"),
                 ConfigValue((int)checkBox_show_itunes->isChecked()));
-    m_pconfig->set(ConfigKey("[Library]","ShowTraktorLibrary"),
+    m_pConfig->set(ConfigKey("[Library]","ShowTraktorLibrary"),
                 ConfigValue((int)checkBox_show_traktor->isChecked()));
     int dbclick_status;
     if (radioButton_dbclick_bottom->isChecked()) {
@@ -318,23 +316,23 @@ void DlgPrefLibrary::slotApply() {
     } else {
             dbclick_status = LOAD_TRACK_DECK;
     }
-    m_pconfig->set(ConfigKey("[Library]","TrackLoadAction"),
+    m_pConfig->set(ConfigKey("[Library]","TrackLoadAction"),
                 ConfigValue(dbclick_status));
 
     QFont font = m_pLibrary->getTrackTableFont();
     if (m_originalTrackTableFont != font) {
-        m_pconfig->set(ConfigKey("[Library]", "Font"),
+        m_pConfig->set(ConfigKey("[Library]", "Font"),
                        ConfigValue(font.toString()));
     }
 
     int rowHeight = spinBoxRowHeight->value();
     if (m_iOriginalTrackTableRowHeight != rowHeight) {
-        m_pconfig->set(ConfigKey("[Library]","RowHeight"),
+        m_pConfig->set(ConfigKey("[Library]","RowHeight"),
                        ConfigValue(rowHeight));
     }
 
     // TODO(rryan): Don't save here.
-    m_pconfig->save();
+    m_pConfig->save();
 }
 
 void DlgPrefLibrary::slotRowHeightValueChanged(int height) {
@@ -362,5 +360,25 @@ void DlgPrefLibrary::slotSelectFont() {
                                       this, tr("Select Library Font"));
     if (ok) {
         setLibraryFont(font);
+    }
+}
+
+void DlgPrefLibrary::slotWriteAudioTagsToggled() {
+    // Reloading of audio tags is only useful if the files are kept
+    // synchronized with the library!
+    checkBox_ReloadAudioTags->setEnabled(checkBox_WriteAudioTags->isChecked());
+}
+
+void DlgPrefLibrary::slotReloadAudioTagsClicked(bool checked) {
+    if (checked) {
+        const QMessageBox::StandardButton answer =
+            QMessageBox::warning(
+                NULL,
+                tr("Reload Audio Tags"),
+                tr("Enabling this option will update the information stored in your library with the audio tags stored in the file before a track is selected/loaded/edited. You are encouraged to backup your library before enabling this option!\nAre you really sure that you want to enable this option?"),
+                QMessageBox::Yes | QMessageBox::No);
+        if (QMessageBox::Yes != answer) {
+            checkBox_ReloadAudioTags->setChecked(false);
+        }
     }
 }

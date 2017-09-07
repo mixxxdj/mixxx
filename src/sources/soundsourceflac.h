@@ -18,14 +18,11 @@ public:
 
     void close() override;
 
-    SINT seekSampleFrame(SINT frameIndex) override;
+    ReadableSampleFrames readSampleFramesClamped(
+            ReadMode readMode,
+            WritableSampleFrames sampleFrames) override;
 
-    SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) override;
-    SINT readSampleFramesStereo(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer, SINT sampleBufferSize) override;
-
-    // callback methods
+    // Internal callbacks
     FLAC__StreamDecoderReadStatus flacRead(FLAC__byte buffer[], size_t* bytes);
     FLAC__StreamDecoderSeekStatus flacSeek(FLAC__uint64 offset);
     FLAC__StreamDecoderTellStatus flacTell(FLAC__uint64* offset);
@@ -38,10 +35,6 @@ public:
 
 private:
     OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
-
-    SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer, SINT sampleBufferSize,
-            bool readStereoSamples);
 
     QFile m_file;
 
@@ -57,6 +50,10 @@ private:
     CSAMPLE m_sampleScaleFactor;
 
     SingularSampleBuffer m_sampleBuffer;
+
+    void invalidateCurFrameIndex() {
+        m_curFrameIndex = frameIndexMax();
+    }
 
     SINT m_curFrameIndex;
 };

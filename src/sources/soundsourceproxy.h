@@ -39,6 +39,8 @@ class SoundSourceProxy {
         return m_pTrack;
     }
 
+    mixxx::SoundSourceProviderPointer getSoundSourceProvider() const;
+
     // Controls which (metadata/coverart) and how tags are (re-)loaded from
     // audio files when creating a SoundSourceProxy.
     enum class ParseFileTagsMode {
@@ -115,7 +117,6 @@ class SoundSourceProxy {
     const QList<mixxx::SoundSourceProviderRegistration> m_soundSourceProviderRegistrations;
     int m_soundSourceProviderRegistrationIndex;
 
-    mixxx::SoundSourceProviderPointer getSoundSourceProvider() const;
     void nextSoundSourceProvider();
 
     void initSoundSource();

@@ -9,6 +9,7 @@
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
 #include "track/trackmetadatataglib.h"
+#include "track/trackref.h"
 #include "util/assert.h"
 #include "util/logger.h"
 #include "util/compatibility.h"
@@ -47,7 +48,6 @@ Track::Track(
         TrackId trackId)
         : m_fileInfo(fileInfo),
           m_pSecurityToken(openSecurityToken(m_fileInfo, pSecurityToken)),
-          m_bDeleteOnReferenceExpiration(false),
           m_qMutex(QMutex::Recursive),
           m_id(trackId),
           m_bDirty(false),
@@ -81,24 +81,6 @@ TrackPointer Track::newDummy(
                     SecurityTokenPointer(),
                     trackId);
     return TrackPointer(pTrack);
-}
-
-// static
-void Track::onTrackReferenceExpired(Track* pTrack) {
-    VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
-        return;
-    }
-    //qDebug() << "Track::onTrackReferenceExpired"
-    //         << pTrack << pTrack->getId() << pTrack->getInfo();
-    if (pTrack->m_bDeleteOnReferenceExpiration) {
-        delete pTrack;
-    } else {
-        emit(pTrack->referenceExpired(pTrack));
-    }
-}
-
-void Track::setDeleteOnReferenceExpiration(bool deleteOnReferenceExpiration) {
-    m_bDeleteOnReferenceExpiration = deleteOnReferenceExpiration;
 }
 
 void Track::setTrackMetadata(
@@ -161,7 +143,7 @@ QString Track::getLocation() const {
     // (copy-on write). But operating on a single instance of QFileInfo
     // might not be thread-safe due to internal caching!
     QMutexLocker lock(&m_qMutex);
-    return m_fileInfo.absoluteFilePath();
+    return TrackRef::location(m_fileInfo);
 }
 
 QString Track::getCanonicalLocation() const {
@@ -169,7 +151,7 @@ QString Track::getCanonicalLocation() const {
     // (copy-on write). But operating on a single instance of QFileInfo
     // might not be thread-safe due to internal caching!
     QMutexLocker lock(&m_qMutex);
-    return m_fileInfo.canonicalFilePath();
+    return TrackRef::canonicalLocation(m_fileInfo);
 }
 
 QString Track::getDirectory() const {

@@ -165,7 +165,7 @@ TrackModel::CapabilitiesFlags BaseExternalPlaylistModel::getCapabilities() const
     // See src/library/trackmodel.h for the list of TRACKMODELCAPS
     return TRACKMODELCAPS_NONE
             | TRACKMODELCAPS_ADDTOPLAYLIST
-            | TRACKMODELCAPS_ADDTOCRATE
+            | TRACKMODELCAPS_ADDTOREMOVEFROMCRATE
             | TRACKMODELCAPS_ADDTOAUTODJ
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOPREVIEWDECK

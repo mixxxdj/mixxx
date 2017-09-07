@@ -2,7 +2,7 @@
 
 #include "library/trackcollection.h"
 
-#include "track/track.h"
+#include "track/trackcache.h"
 #include "util/logger.h"
 #include "util/db/sqltransaction.h"
 
@@ -66,6 +66,9 @@ void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
 
     QSet<TrackId> movedIds(
             m_directoryDao.relocateDirectory(oldDir, newDir));
+
+    // Discard all cached tracks
+    TrackCache::instance().evictAll();
 
     // Clear cache to that all TIO with the old dir information get updated
     m_trackDao.clearCache();
@@ -326,4 +329,8 @@ bool TrackCollection::updateAutoDjCrate(
     }
     crate.setAutoDjSource(isAutoDjSource);
     return updateCrate(crate);
+}
+
+void TrackCollection::saveTrack(Track* pTrack) {
+    m_trackDao.saveTrack(pTrack);
 }
