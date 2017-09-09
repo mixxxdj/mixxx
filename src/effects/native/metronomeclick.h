@@ -3,6 +3,9 @@
 
 #include "util/types.h"
 
+// This is a new recording from a real metronome 
+// it was coverted from *.wav to plain text using Audacity 
+
 const unsigned int kClickSize = 1024;
 const CSAMPLE kClick[kClickSize] = {
         0.03459,

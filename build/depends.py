@@ -718,7 +718,7 @@ class MixxxCore(Feature):
                    "effects/native/echoeffect.cpp",
                    "effects/native/autopaneffect.cpp",
                    "effects/native/phasereffect.cpp",
-				   "effects/native/metronomeeffect.cpp",
+                   "effects/native/metronomeeffect.cpp",
 
                    "engine/effects/engineeffectsmanager.cpp",
                    "engine/effects/engineeffectrack.cpp",
