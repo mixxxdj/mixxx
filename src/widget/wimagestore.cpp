@@ -109,6 +109,11 @@ void WImageStore::correctImageColors(QImage* p) {
 }
 
 // static
+bool WImageStore::willCorrectColors() {
+    return m_loader->willCorrectColors();
+};
+
+// static
 void WImageStore::setLoader(QSharedPointer<ImgSource> ld) {
     m_loader = ld;
 }

@@ -12,6 +12,7 @@
 #include "preferences/usersettings.h"
 #include "track/track.h"
 
+class AnalyzerManager;
 class Auxiliary;
 class BaseTrackPlayer;
 class ControlObject;
@@ -24,8 +25,6 @@ class PreviewDeck;
 class Sampler;
 class SamplerBank;
 class SoundManager;
-class AnalyzerManager;
-class TrackCollection;
 
 // For mocking PlayerManager.
 class PlayerManagerInterface {
@@ -58,7 +57,6 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
   public:
     PlayerManager(UserSettingsPointer pConfig,
                   SoundManager* pSoundManager,
-                  AnalyzerManager* pAnalyzerManager,
                   EffectsManager* pEffectsManager,
                   EngineMaster* pEngine);
     virtual ~PlayerManager();
@@ -235,10 +233,10 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
     UserSettingsPointer m_pConfig;
     SoundManager* m_pSoundManager;
-    AnalyzerManager* m_pAnalyzerManager;
     EffectsManager* m_pEffectsManager;
     EngineMaster* m_pEngine;
     SamplerBank* m_pSamplerBank;
+    AnalyzerManager* m_pAnalyzerManager;
     ControlObject* m_pCONumDecks;
     ControlObject* m_pCONumSamplers;
     ControlObject* m_pCOSamplerBankLoad;

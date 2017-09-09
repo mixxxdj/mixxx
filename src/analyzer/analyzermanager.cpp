@@ -15,14 +15,16 @@
 #include "util/timer.h"
 #include "util/trace.h"
 
-AnalyzerManager::AnalyzerManager(UserSettingsPointer pConfig) :
-    m_pConfig(pConfig),
-    m_nextWorkerId(0),
-    m_defaultTrackQueue(),
-    m_prioTrackQueue(),
-    m_defaultWorkers(),
-    m_priorityWorkers(),
-    m_pausedWorkers() {
+AnalyzerManager::AnalyzerManager(UserSettingsPointer pConfig,
+        mixxx::DbConnectionPoolPtr pDbConnectionPool) :
+        m_pConfig(pConfig),
+        m_nextWorkerId(0),
+        m_defaultTrackQueue(),
+        m_prioTrackQueue(),
+        m_defaultWorkers(),
+        m_priorityWorkers(),
+        m_pausedWorkers(),
+        m_pDbConnectionPool(std::move(pDbConnectionPool)) {
 
     int ideal = QThread::idealThreadCount();
     int maxThreads = m_pConfig->getValue<int>(ConfigKey("[Library]", "MaxAnalysisThreads"), ideal);
@@ -286,7 +288,7 @@ void AnalyzerManager::slotMaxThreadsChanged(int threads) {
 AnalyzerWorker* AnalyzerManager::createNewWorker(WorkerType wtype) {
     bool priorized = (wtype == WorkerType::priorityWorker);
     QThread* thread = new QThread();
-    AnalyzerWorker* worker = new AnalyzerWorker(m_pConfig, ++m_nextWorkerId, priorized);
+    AnalyzerWorker* worker = new AnalyzerWorker(m_pConfig, m_pDbConnectionPool, ++m_nextWorkerId, priorized);
     worker->moveToThread(thread);
     //Auto startup and auto cleanup of worker and thread.
     connect(thread, SIGNAL(started()), worker, SLOT(slotProcess()));

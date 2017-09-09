@@ -11,7 +11,6 @@
 #include "engine/enginedeck.h"
 #include "engine/enginemaster.h"
 #include "library/library.h"
-#include "library/trackcollection.h"
 #include "mixer/auxiliary.h"
 #include "mixer/deck.h"
 #include "mixer/microphone.h"
@@ -26,17 +25,16 @@
 
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                              SoundManager* pSoundManager,
-                             AnalyzerManager* pAnalyzerManager,
                              EffectsManager* pEffectsManager,
                              EngineMaster* pEngine) :
         m_mutex(QMutex::Recursive),
         m_pConfig(pConfig),
         m_pSoundManager(pSoundManager),
-        m_pAnalyzerManager(pAnalyzerManager),
         m_pEffectsManager(pEffectsManager),
         m_pEngine(pEngine),
         // NOTE(XXX) LegacySkinParser relies on these controls being Controls
         // and not ControlProxies.
+        m_pAnalyzerManager(nullptr),
         m_pCONumDecks(new ControlObject(
             ConfigKey("[Master]", "num_decks"), true, true)),
         m_pCONumSamplers(new ControlObject(
@@ -80,18 +78,6 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
 
     // This is parented to the PlayerManager so does not need to be deleted
     m_pSamplerBank = new SamplerBank(this);
-
-    // register the engine's outputs
-    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::MASTER, 0, 2),
-                                    m_pEngine);
-    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::HEADPHONES, 0, 2),
-                                    m_pEngine);
-    for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
-        m_pSoundManager->registerOutput(AudioOutput(AudioOutput::BUS, 0, 2, o),
-                                        m_pEngine);
-    }
-    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::SIDECHAIN, 0, 2),
-                                    m_pEngine);
 }
 
 PlayerManager::~PlayerManager() {
@@ -122,6 +108,8 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
             this, SLOT(slotLoadTrackIntoNextAvailableDeck(TrackPointer)));
     connect(this, SIGNAL(loadLocationToPlayer(QString, QString)),
             pLibrary, SLOT(slotLoadLocationToPlayer(QString, QString)));
+
+    m_pAnalyzerManager = pLibrary->getAnalyzerManager();
 
     // Connect the player to the analyzer queue so that loaded tracks are
     // analysed.
@@ -358,9 +346,10 @@ void PlayerManager::addDeckInner() {
     connect(pDeck, SIGNAL(noVinylControlInputConfigured()),
             this, SIGNAL(noVinylControlInputConfigured()));
 
-    connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-        m_pAnalyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
-
+    if (m_pAnalyzerManager) {
+        connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
+            m_pAnalyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
+    }
 
     m_players[group] = pDeck;
     m_decks.append(pDeck);
@@ -416,9 +405,10 @@ void PlayerManager::addSamplerInner() {
 
     Sampler* pSampler = new Sampler(this, m_pConfig, m_pEngine,
                                     m_pEffectsManager, orientation, group);
-
-    connect(pSampler, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
+    if (m_pAnalyzerManager) {
+        connect(pSampler, SIGNAL(newTrackLoaded(TrackPointer)),
+                    m_pAnalyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
+    }
 
     m_players[group] = pSampler;
     m_samplers.append(pSampler);
@@ -443,9 +433,10 @@ void PlayerManager::addPreviewDeckInner() {
     PreviewDeck* pPreviewDeck = new PreviewDeck(this, m_pConfig, m_pEngine,
                                                 m_pEffectsManager, orientation,
                                                 group);
-
-    connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
+    if (m_pAnalyzerManager) {
+        connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
+                    m_pAnalyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
+    }
 
     m_players[group] = pPreviewDeck;
     m_preview_decks.append(pPreviewDeck);

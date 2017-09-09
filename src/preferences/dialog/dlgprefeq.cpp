@@ -703,13 +703,7 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
             m_pEQEffectRack->getGroupEffectChainSlot("[Master]");
 
     if (pChainSlot) {
-        EffectChainPointer pChain = pChainSlot->getEffectChain();
-        if (pChain.isNull()) {
-            pChain = EffectChainPointer(new EffectChain(m_pEffectsManager, QString(),
-                                        EffectChainPointer()));
-            pChain->setName(QObject::tr("Empty Chain"));
-            pChainSlot->loadEffectChain(pChain);
-        }
+        EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
         EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
         pChain->replaceEffect(0, pEffect);
 

@@ -219,6 +219,11 @@ void GLSLWaveformRendererSignal::onSetup(const QDomNode& node) {
 }
 
 void GLSLWaveformRendererSignal::onSetTrack() {
+    if (m_loadedTrack) {
+        disconnect(m_loadedTrack.get(), SIGNAL(waveformUpdated()),
+                   this, SLOT(slotWaveformUpdated()));
+    }
+
     slotWaveformUpdated();
 
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
@@ -231,6 +236,8 @@ void GLSLWaveformRendererSignal::onSetTrack() {
     // uploaded to GPU. Otherwise, previous waveform will be shown.
     connect(pTrack.get(), SIGNAL(waveformUpdated()),
             this, SLOT(slotWaveformUpdated()));
+
+    m_loadedTrack = pTrack;
 }
 
 void GLSLWaveformRendererSignal::onResize() {

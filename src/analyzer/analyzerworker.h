@@ -11,10 +11,11 @@
 #include "track/track.h"
 #include "util/samplebuffer.h"
 #include "preferences/usersettings.h"
-
+#include "util/db/dbconnectionpool.h"
 
 class Analyzer;
 class QThread;
+class AnalysisDao;
 
 /* Worker class. 
 * It represents a job that runs on a thread, analyzing tracks until no more tracks need to be analyzed.
@@ -38,7 +39,9 @@ public:
 
     // Constructor. If it is a priorized job, the analyzers are configured differently.
     // Call Qthread->start() when you are ready for the worker to start.
-    AnalyzerWorker(UserSettingsPointer pConfig, int workerIdx, bool priorized);
+    AnalyzerWorker(UserSettingsPointer pConfig, 
+            mixxx::DbConnectionPoolPtr pDbConnectionPool,
+            int workerIdx, bool priorized);
     virtual ~AnalyzerWorker();
 
     //Called by the manager as a response to the waitingForNextTrack signal. and ONLY then.
@@ -82,7 +85,12 @@ private:
     void createAnalyzers();
 
     UserSettingsPointer m_pConfig;
-    QList<Analyzer*> m_analyzelist;
+    mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
+
+    std::unique_ptr<AnalysisDao> m_pAnalysisDao;
+
+    typedef std::unique_ptr<Analyzer> AnalyzerPtr;
+    std::vector<AnalyzerPtr> m_analyzelist;
     bool m_priorizedJob;
     int m_workerIdx;
     SampleBuffer m_sampleBuffer;

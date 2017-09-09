@@ -20,6 +20,7 @@ class WImageStore {
     static void setLoader(QSharedPointer<ImgSource> ld);
     // For external owned images like software generated ones.
     static void correctImageColors(QImage* p);
+    static bool willCorrectColors();
 
   private:
     struct ImageInfoType {

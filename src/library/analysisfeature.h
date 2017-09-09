@@ -13,17 +13,19 @@
 #include <QList>
 
 #include "library/libraryfeature.h"
+#include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
-#include "treeitemmodel.h"
+#include "util/db/dbconnectionpool.h"
 
-class AnalyzerManager;
-class TrackCollection;
 class DlgAnalysis;
+class Library;
+class TrackCollection;
+class AnalyzerManager;
 
 class AnalysisFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    AnalysisFeature(QObject* parent,
+    AnalysisFeature(Library* parent,
                     UserSettingsPointer pConfig,
                     TrackCollection* pTrackCollection,
                     AnalyzerManager* pAnalyzerManager);
@@ -64,6 +66,7 @@ class AnalysisFeature : public LibraryFeature {
     void setTitleProgress(int trackNum, int totalNum);
 
     UserSettingsPointer m_pConfig;
+    mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
     TrackCollection* m_pTrackCollection;
     AnalyzerManager* m_pAnalyzerManager;
     // The title returned by title()

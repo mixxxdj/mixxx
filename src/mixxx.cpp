@@ -37,7 +37,6 @@
 #include "library/library_preferences.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
-#include "analyzer/analyzermanager.h"
 #include "mixer/playermanager.h"
 #include "recording/recordingmanager.h"
 #include "broadcast/broadcastmanager.h"
@@ -48,6 +47,7 @@
 #include "track/track.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/sharedglcontext.h"
+#include "database/mixxxdb.h"
 #include "util/debug.h"
 #include "util/statsmanager.h"
 #include "util/timer.h"
@@ -66,6 +66,8 @@
 #include "preferences/settingsmanager.h"
 #include "widget/wmainmenubar.h"
 #include "util/screensaver.h"
+#include "util/logger.h"
+#include "util/db/dbconnectionpooled.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/vinylcontrolmanager.h"
@@ -74,9 +76,12 @@
 #ifdef __MODPLUG__
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif
-#ifdef __VAMP__
-#include "analyzer/vamp/vampanalyzer.h"
-#endif
+
+namespace {
+
+const mixxx::Logger kLogger("MixxxMainWindow");
+
+} // anonymous namespace
 
 // static
 const int MixxxMainWindow::kMicrophoneCount = 4;
@@ -97,7 +102,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_pBroadcastManager(nullptr),
 #endif
           m_pControllerManager(nullptr),
-          m_pAnalyzerManager(nullptr),
           m_pGuiTick(nullptr),
 #ifdef __VINYLCONTROL__
           m_pVCManager(nullptr),
@@ -168,10 +172,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     QString resourcePath = pConfig->getResourcePath();
 
     FontUtils::initializeFonts(resourcePath); // takes a long time
-#ifdef __VAMP__
-    //This call sets the environment variable so that the plugins can be found.
-    VampAnalyzer::initializePluginPaths();
-#endif
 
     launchProgress(2);
 
@@ -200,11 +200,10 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     launchProgress(8);
 
-    // Initialize player device
-    // while this is created here, setupDevices needs to be called sometime
-    // after the players are added to the engine (as is done currently) -- bkgood
-    // (long)
+    // Although m_pSoundManager is created here, m_pSoundManager->setupDevices()
+    // needs to be called after m_pPlayerManager registers sound IO for each EngineChannel.
     m_pSoundManager = new SoundManager(pConfig, m_pEngine);
+    m_pEngine->registerNonEngineChannelSoundIO(m_pSoundManager);
 
     m_pRecordingManager = new RecordingManager(pConfig, m_pEngine);
 
@@ -213,8 +212,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pBroadcastManager = new BroadcastManager(pConfig, m_pSoundManager);
 #endif
 
-    m_pAnalyzerManager = new AnalyzerManager(pConfig);
-    
     launchProgress(11);
 
     // Needs to be created before CueControl (decks) and WTrackTableView.
@@ -227,7 +224,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 #endif
 
     // Create the player manager. (long)
-    m_pPlayerManager = new PlayerManager(pConfig, m_pSoundManager, m_pAnalyzerManager,
+    m_pPlayerManager = new PlayerManager(pConfig, m_pSoundManager,
                                          m_pEffectsManager, m_pEngine);
     connect(m_pPlayerManager, SIGNAL(noMicrophoneInputConfigured()),
             this, SLOT(slotNoMicrophoneInputConfigured()));
@@ -267,14 +264,29 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     CoverArtCache::create();
 
-    // (long)
-    m_pLibrary = new Library(this, pConfig,
-                             m_pPlayerManager,
-                             m_pRecordingManager,
-                             m_pAnalyzerManager);
-    m_pPlayerManager->bindToLibrary(m_pLibrary);
+    m_pDbConnectionPool = MixxxDb(pConfig).connectionPool();
+    if (!m_pDbConnectionPool) {
+        // TODO(XXX) something a little more elegant
+        exit(-1);
+    }
+    // Create a connection for the main thread
+    m_pDbConnectionPool->createThreadLocalConnection();
+    if (!initializeDatabase()) {
+        // TODO(XXX) something a little more elegant
+        exit(-1);
+    }
 
     launchProgress(35);
+
+    m_pLibrary = new Library(
+            this,
+            pConfig,
+            m_pDbConnectionPool,
+            m_pPlayerManager,
+            m_pRecordingManager);
+    m_pPlayerManager->bindToLibrary(m_pLibrary);
+
+    launchProgress(40);
 
     // Get Music dir
     bool hasChanged_MusicDir = false;
@@ -553,6 +565,10 @@ void MixxxMainWindow::finalize() {
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting Library";
     delete m_pLibrary;
 
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "closing database connection(s)";
+    m_pDbConnectionPool->destroyThreadLocalConnection();
+    m_pDbConnectionPool.reset(); // should drop the last reference
+
     // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting PlayerManager";
     delete m_pPlayerManager;
@@ -640,6 +656,23 @@ void MixxxMainWindow::finalize() {
     // Report the total time we have been running.
     m_runtime_timer.elapsed(true);
     StatsManager::destroy();
+}
+
+bool MixxxMainWindow::initializeDatabase() {
+    kLogger.info() << "Connecting to database";
+    QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
+    if (!dbConnection.isOpen()) {
+        QMessageBox::critical(0, tr("Cannot open database"),
+                            tr("Unable to establish a database connection.\n"
+                                "Mixxx requires QT with SQLite support. Please read "
+                                "the Qt SQL driver documentation for information on how "
+                                "to build it.\n\n"
+                                "Click OK to exit."), QMessageBox::Ok);
+        return false;
+    }
+
+    kLogger.info() << "Initializing or upgrading database schema";
+    return MixxxDb::initDatabaseSchema(dbConnection);
 }
 
 void MixxxMainWindow::initializeWindow() {
@@ -1144,10 +1177,14 @@ void MixxxMainWindow::rebootMixxxView() {
     qDebug() << "Now in rebootMixxxView...";
 
     QPoint initPosition = pos();
-    // this->frameSize()  : Window size including all borders and only if the window manager works.
-    // this->size() : Window without the borders nor title, but including the Menu!
-    // this->centralWidget()->size() : Size of the internal window Widget.
-    QSize initSize = this->centralWidget()->size();
+    // frameSize()  : Window size including all borders and only if the window manager works.
+    // size() : Window without the borders nor title, but including the Menu!
+    // centralWidget()->size() : Size of the internal window Widget.
+    QSize initSize;
+    QWidget* pWidget = centralWidget(); // can be null if previous skin loading fails
+    if (pWidget) {
+        initSize = centralWidget()->size();
+    }
 
     // We need to tell the menu bar that we are about to delete the old skin and
     // create a new one. It holds "visibility" controls (e.g. "Show Samplers")
@@ -1192,7 +1229,7 @@ void MixxxMainWindow::rebootMixxxView() {
 
     if (wasFullScreen) {
         slotViewFullScreen(true);
-    } else {
+    } else if (!initSize.isEmpty()) {
         // Not all OSs and/or window managers keep the window inside of the screen, so force it.
         int newX = initPosition.x() + (initSize.width() - m_pWidgetParent->width()) / 2;
         int newY = initPosition.y() + (initSize.height() - m_pWidgetParent->height()) / 2;

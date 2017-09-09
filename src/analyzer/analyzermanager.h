@@ -27,7 +27,8 @@ enum class WorkerType {
 
 public:
     //There should exist only one AnalyzerManager in order to control the amount of threads executing.
-    AnalyzerManager(UserSettingsPointer pConfig);
+    AnalyzerManager::AnalyzerManager(UserSettingsPointer pConfig,
+        mixxx::DbConnectionPoolPtr pDbConnectionPool);
     virtual ~AnalyzerManager();
 
     //Tell the analyzers of the default queue to stop. If shutdown is true. stop also the priority analyzers.
@@ -78,6 +79,7 @@ private:
     //the thread with low priority.
     AnalyzerWorker* createNewWorker(WorkerType wtype);
 
+    mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
     UserSettingsPointer m_pConfig;
     // Autoincremented ID to use as an identifier for each worker.
     int m_nextWorkerId;

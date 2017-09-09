@@ -182,8 +182,8 @@ void DlgAnalysis::trackAnalysisProgress(int worker, int progress) {
                 QString::number(m_tracksInQueue),
                 perc);
         labelProgress->setText(text);
-        //This isn't strictly necessary, but it is useful to remove foreground (player) worker analysis
-        //which would accumulate otherwise. Another option is to not send this signal for foreground workers.
+        //This isn't strictly necessary, but it is useful to remove priority (player) worker analysis
+        //which would accumulate otherwise. Another option is to not send this signal for priority workers.
         if (progress == 100) {
             m_percentages.remove(worker);
         }

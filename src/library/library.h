@@ -19,6 +19,7 @@
 #include "library/coverartcache.h"
 #include "library/setlogfeature.h"
 #include "library/scanner/libraryscanner.h"
+#include "util/db/dbconnectionpool.h"
 
 class TrackModel;
 class TrackCollection;
@@ -38,13 +39,22 @@ class AnalyzerManager;
 
 class Library : public QObject {
     Q_OBJECT
-public:
+
+  public:
+    static const QString kConfigGroup;
+
+    static const ConfigKey kConfigKeyRepairDatabaseOnNextRestart;
+
     Library(QObject* parent,
             UserSettingsPointer pConfig,
+            mixxx::DbConnectionPoolPtr pDbConnectionPool,
             PlayerManagerInterface* pPlayerManager,
-            RecordingManager* pRecordingManager,
-            AnalyzerManager* pAnalyzerManager);
-    virtual ~Library();
+            RecordingManager* pRecordingManager);
+    ~Library() override;
+
+    mixxx::DbConnectionPoolPtr dbConnectionPool() const {
+        return m_pDbConnectionPool;
+    }
 
     void bindWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* pKeyboard);
@@ -53,14 +63,6 @@ public:
     void addFeature(LibraryFeature* feature);
     QStringList getDirs();
 
-    // TODO(rryan) Transitionary only -- the only reason this is here is so the
-    // waveform widgets can signal to a player to load a track. This can be
-    // fixed by moving the waveform renderers inside player and connecting the
-    // signals directly.
-    TrackCollection* getTrackCollection() {
-        return m_pTrackCollection;
-    }
-    
     AnalyzerManager* getAnalyzerManager() {
         return m_pAnalyzerManager;
     }
@@ -125,9 +127,14 @@ public:
     void scanFinished();
 
   private:
-    UserSettingsPointer m_pConfig;
+    const UserSettingsPointer m_pConfig;
+
+    // The Mixxx database connection pool
+    const mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
+
     SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
+    LibraryControl* m_pLibraryControl;
     QList<LibraryFeature*> m_features;
     const static QString m_sTrackViewName;
     const static QString m_sAutoDJViewName;
@@ -135,8 +142,6 @@ public:
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
     AnalysisFeature* m_pAnalysisFeature;
-    LibraryControl* m_pLibraryControl;
-    RecordingManager* m_pRecordingManager;
     AnalyzerManager* m_pAnalyzerManager;
     LibraryScanner m_scanner;
     QFont m_trackTableFont;

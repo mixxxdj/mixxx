@@ -1,12 +1,7 @@
-/*
- *  Created on: 28/apr/2011
- *      Author: vittorio
- */
-
-#include <vamp-hostsdk/vamp-hostsdk.h>
-
-#include "control/controlobject.h"
 #include "preferences/dialog/dlgprefbeats.h"
+
+#include "analyzer/vamp/vamppluginloader.h"
+#include "control/controlobject.h"
 #include "track/beat_preferences.h"
 
 using Vamp::Plugin;
@@ -226,12 +221,12 @@ void DlgPrefBeats::populate() {
     plugincombo->setDuplicatesEnabled(false);
     connect(plugincombo, SIGNAL(currentIndexChanged(int)),
             this, SLOT(pluginSelected(int)));
-    VampPluginLoader *loader = VampPluginLoader::getInstance();
-    std::vector<PluginLoader::PluginKey> plugins = loader->listPlugins();
+    mixxx::VampPluginLoader vampPluginLoader;
+    std::vector<PluginLoader::PluginKey> plugins = vampPluginLoader.listPlugins();
     qDebug() << "VampPluginLoader::listPlugins() returned" << plugins.size() << "plugins";
     for (unsigned int iplugin=0; iplugin < plugins.size(); iplugin++) {
         // TODO(XXX): WTF, 48000
-        Plugin *plugin = loader->loadPlugin(plugins[iplugin], 48000);
+        Plugin *plugin = vampPluginLoader.loadPlugin(plugins[iplugin], 48000);
         //TODO: find a way to add beat trackers only
         if (plugin) {
             Plugin::OutputList outputs = plugin->getOutputDescriptors();

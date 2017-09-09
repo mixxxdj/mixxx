@@ -12,14 +12,19 @@
 #include "analyzer/analyzergain.h"
 #include "analyzer/analyzerebur128.h"
 #include "analyzer/analyzerwaveform.h"
-
+#include "library/dao/analysisdao.h"
 #include "sources/soundsourceproxy.h"
 #include "util/compatibility.h"
+#include "util/db/dbconnectionpooler.h"
+#include "util/db/dbconnectionpooled.h"
 #include "util/event.h"
 #include "util/timer.h"
 #include "util/trace.h"
+#include "util/logger.h"
 
 namespace {
+    
+    mixxx::Logger kLogger("AnalyzerWorker");
     // Analysis is done in blocks.
     // We need to use a smaller block size, because on Linux the AnalyzerWorker
     // can starve the CPU of its resources, resulting in xruns. A block size
@@ -38,7 +43,8 @@ namespace {
 #define FINALIZE_PROMILLE 1.0
 
 // --- CONSTRUCTOR ---
-AnalyzerWorker::AnalyzerWorker(UserSettingsPointer pConfig, int workerIdx, bool priorized) :
+AnalyzerWorker::AnalyzerWorker(UserSettingsPointer pConfig,
+            mixxx::DbConnectionPoolPtr pDbConnectionPool, int workerIdx, bool priorized) :
     m_pConfig(pConfig),
     m_analyzelist(),
     m_priorizedJob(priorized),
@@ -47,7 +53,8 @@ AnalyzerWorker::AnalyzerWorker(UserSettingsPointer pConfig, int workerIdx, bool 
     m_exit(false),
     m_pauseRequested(false),
     m_qm(),
-    m_qwait() {
+    m_qwait(),
+    m_pDbConnectionPool(std::move(pDbConnectionPool)) {
 }
 
 // --- DESTRUCTOR ---
@@ -56,10 +63,8 @@ AnalyzerWorker::~AnalyzerWorker() {
     // free resources
     m_progressInfo.sema.release();
  
-    QListIterator<Analyzer*> it(m_analyzelist);
-    while (it.hasNext()) {
-        Analyzer* an = it.next();
-        delete an;
+    for (auto& an: m_analyzelist) {
+        delete an.get();
     }
 }
 
@@ -115,9 +120,7 @@ bool AnalyzerWorker::doAnalysis(TrackPointer tio, mixxx::AudioSourcePointer pAud
         // the full block size.
         if (kAnalysisFramesPerBlock == framesRead) {
             // Complete analysis block of audio samples has been read.
-            QListIterator<Analyzer*> it(m_analyzelist);
-            while (it.hasNext()) {
-                Analyzer* an =  it.next();
+            for (auto& an: m_analyzelist) {
                 //qDebug() << typeid(*an).name() << ".process()";
                 an->process(m_sampleBuffer.data(), m_sampleBuffer.size());
                 //qDebug() << "Done " << typeid(*an).name() << ".process()";
@@ -217,11 +220,10 @@ void AnalyzerWorker::slotProcess() {
             continue;
         }
 
-        QListIterator<Analyzer*> it(m_analyzelist);
         bool processTrack = false;
-        while (it.hasNext()) {
+        for (auto& an: m_analyzelist) {
             // Make sure not to short-circuit initialize(...)
-            if (it.next()->initialize(m_currentTrack, pAudioSource->getSamplingRate(), pAudioSource->getFrameCount() * kAnalysisChannels)) {
+            if (an->initialize(m_currentTrack, pAudioSource->getSamplingRate(), pAudioSource->getFrameCount() * kAnalysisChannels)) {
                 processTrack = true;
             }
         }
@@ -233,17 +235,15 @@ void AnalyzerWorker::slotProcess() {
             // or the analysis has been interrupted.
             if (!completed) {
                 // This track was cancelled
-                QListIterator<Analyzer*> itf(m_analyzelist);
-                while (itf.hasNext()) {
-                    itf.next()->cleanup(m_currentTrack);
+                for (auto& an: m_analyzelist) {
+                    an->cleanup(m_currentTrack);
                 }
                 emitUpdateProgress(0);
             } else {
                 // 100% - FINALIZE_PERCENT finished
                 emitUpdateProgress(1000 - FINALIZE_PROMILLE);
-                QListIterator<Analyzer*> itf(m_analyzelist);
-                while (itf.hasNext()) {
-                    itf.next()->finalize(m_currentTrack);
+                for (auto& an: m_analyzelist) {
+                    an->finalize(m_currentTrack);
                 }
                 emitUpdateProgress(1000); // 100%
             }
@@ -253,6 +253,13 @@ void AnalyzerWorker::slotProcess() {
         }
         Event::end(QString("AnalyzerWorker %1 process").arg(m_workerIdx));
     }
+    
+    if (m_pAnalysisDao) {
+        // Invalidate reference to the thread-local database connection
+        // that will be closed soon. Not necessary, just in case ;)
+        m_pAnalysisDao->initialize(QSqlDatabase());
+    }
+    
     emit(workerFinished(this));
     emit(finished());
 }
@@ -283,13 +290,53 @@ void AnalyzerWorker::emitUpdateProgress(int progress) {
         emit(updateProgress(m_workerIdx, &m_progressInfo));
     }
 }
+namespace {
+    inline
+    AnalyzerWaveform::Mode getAnalyzerWorkerMode(
+            const UserSettingsPointer& pConfig) {
+        if (pConfig->getValue<bool>(ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"), true)) {
+            return AnalyzerWaveform::Mode::Default;
+        } else {
+            return AnalyzerWaveform::Mode::WithoutWaveform;
+        }
+    }
+} // anonymous namespace
 
 void AnalyzerWorker::createAnalyzers() {
-    m_analyzelist.append(new AnalyzerWaveform(m_pConfig, m_priorizedJob));
-    m_analyzelist.append(new AnalyzerGain(m_pConfig));
-    m_analyzelist.append(new AnalyzerEbur128(m_pConfig));
+    AnalyzerWaveform::Mode mode;
+    if (m_priorizedJob) {
+        mode = AnalyzerWaveform::Mode::Default;
+    } else {
+        mode = getAnalyzerWorkerMode(m_pConfig);
+    }
+
+    m_pAnalysisDao = std::make_unique<AnalysisDao>(m_pConfig);
+    // The thread-local database connection for waveform analysis must not
+    // be closed before returning from this function. Therefore the
+    // DbConnectionPooler is defined at this outer function scope,
+    // independent of whether a database connection will be opened
+    // or not.
+    mixxx::DbConnectionPooler dbConnectionPooler;
+    // m_pAnalysisDao remains null if no analyzer needs database access.
+    // Currently only waveform analyses makes use of it.
+    if (m_pAnalysisDao) {
+        dbConnectionPooler = mixxx::DbConnectionPooler(m_pDbConnectionPool); // move assignment
+        if (!dbConnectionPooler.isPooling()) {
+            kLogger.warning()
+                    << "Failed to obtain database connection for analyzer queue thread";
+            return;
+        }
+        // Obtain and use the newly created database connection within this thread
+        QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
+        DEBUG_ASSERT(dbConnection.isOpen());
+        m_pAnalysisDao->initialize(dbConnection);
+    }
+
+    m_analyzelist.push_back(std::make_unique<AnalyzerWaveform>(m_pAnalysisDao.get(), mode));
+    m_analyzelist.push_back(std::make_unique<AnalyzerGain>(m_pConfig));
+    m_analyzelist.push_back(std::make_unique<AnalyzerEbur128>(m_pConfig));
 #ifdef __VAMP__
-    m_analyzelist.append(new AnalyzerBeats(m_pConfig, !m_priorizedJob));
-    m_analyzelist.append(new AnalyzerKey(m_pConfig));
+    m_analyzelist.push_back(std::make_unique<AnalyzerBeats>(m_pConfig, !m_priorizedJob));
+    m_analyzelist.push_back(std::make_unique<AnalyzerKey>(m_pConfig));
 #endif
 }

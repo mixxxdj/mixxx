@@ -1,7 +1,6 @@
 #ifndef ANALYZER_ANALYZERQUEUE_H
 #define ANALYZER_ANALYZERQUEUE_H
 
-#include <QList>
 #include <QThread>
 #include <QQueue>
 #include <QWaitCondition>
@@ -9,29 +8,34 @@
 
 #include <vector>
 
-#include "analyzer/analyzer.h"
 #include "preferences/usersettings.h"
 #include "sources/audiosource.h"
 #include "track/track.h"
+#include "util/db/dbconnectionpool.h"
 #include "util/samplebuffer.h"
+#include "util/memory.h"
 
-class TrackCollection;
+class Analyzer;
+class AnalysisDao;
 
 //DEPRECATED. Now we use AnalyzerManager and AnalyzerWorkers.
 class AnalyzerQueue : public QThread {
     Q_OBJECT
 
   public:
-    AnalyzerQueue(TrackCollection* pTrackCollection);
-    virtual ~AnalyzerQueue();
+    enum class Mode {
+        Default,
+        WithoutWaveform,
+    };
+
+    AnalyzerQueue(
+            mixxx::DbConnectionPoolPtr pDbConnectionPool,
+            const UserSettingsPointer& pConfig,
+            Mode mode = Mode::Default);
+    ~AnalyzerQueue() override;
 
     void stop();
     void queueAnalyseTrack(TrackPointer tio);
-
-    static AnalyzerQueue* createDefaultAnalyzerQueue(
-            UserSettingsPointer pConfig, TrackCollection* pTrackCollection);
-    static AnalyzerQueue* createAnalysisFeatureAnalyzerQueue(
-            UserSettingsPointer pConfig, TrackCollection* pTrackCollection);
 
   public slots:
     void slotAnalyseTrack(TrackPointer tio);
@@ -56,15 +60,21 @@ class AnalyzerQueue : public QThread {
         QSemaphore sema;
     };
 
-    void addAnalyzer(Analyzer* an);
+    mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
 
-    QList<Analyzer*> m_aq;
+    std::unique_ptr<AnalysisDao> m_pAnalysisDao;
+
+    typedef std::unique_ptr<Analyzer> AnalyzerPtr;
+    std::vector<AnalyzerPtr> m_pAnalyzers;
+
+    void execThread();
 
     bool isLoadedTrackWaiting(TrackPointer analysingTrack);
     TrackPointer dequeueNextBlocking();
     bool doAnalysis(TrackPointer tio, mixxx::AudioSourcePointer pAudioSource);
     void emitUpdateProgress(TrackPointer tio, int progress);
     void emptyCheck();
+    void updateSize();
 
     bool m_exit;
     QAtomicInt m_aiCheckPriorities;
@@ -72,7 +82,7 @@ class AnalyzerQueue : public QThread {
     SampleBuffer m_sampleBuffer;
 
     // The processing queue and associated mutex
-    QQueue<TrackPointer> m_tioq;
+    QQueue<TrackPointer> m_queuedTracks;
     QMutex m_qm;
     QWaitCondition m_qwait;
     struct progress_info m_progressInfo;

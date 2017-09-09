@@ -4,7 +4,10 @@
 
 #include <QtDebug>
 
+#include "library/library.h"
 #include "library/analysisfeature.h"
+
+#include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
 #include "library/dlganalysis.h"
@@ -15,19 +18,19 @@
 #include "util/dnd.h"
 #include "util/debug.h"
 
-
 const QString AnalysisFeature::m_sAnalysisViewName = QString("Analysis");
 
-AnalysisFeature::AnalysisFeature(QObject* parent,
+AnalysisFeature::AnalysisFeature(Library* parent,
                                UserSettingsPointer pConfig,
                                TrackCollection* pTrackCollection,
                                AnalyzerManager* pAnalyzerManager) :
         LibraryFeature(parent),
         m_pConfig(pConfig),
+        m_pDbConnectionPool(parent->dbConnectionPool()),
         m_pTrackCollection(pTrackCollection),
         m_pAnalyzerManager(pAnalyzerManager),
         m_analysisTitleName(tr("Analyze")),
-        m_pAnalysisView(NULL) {
+        m_pAnalysisView(nullptr) {
     setTitleDefault();
 }
 
@@ -95,7 +98,6 @@ void AnalysisFeature::bindWidget(WLibrary* libraryWidget,
 
     // Let the DlgAnalysis know whether or not analysis is active.
     bool bAnalysisActive = m_pAnalyzerManager->isDefaultQueueActive();
-    qDebug() << "AnalysisFeature::bindWidget " << bAnalysisActive;
     emit(analysisActive(bAnalysisActive));
 
     libraryWidget->registerView(m_sAnalysisViewName, m_pAnalysisView);
@@ -119,6 +121,7 @@ void AnalysisFeature::activate() {
     }
     emit(enableCoverArtDisplay(true));
 }
+
 
 void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
 
