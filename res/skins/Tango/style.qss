@@ -1204,7 +1204,7 @@ WBeatSpinBox {
       font-family: Ubuntu;
       font-weight: normal;
       font-size: 13px/13px;
-      color: #c1cabe;
+      color: #cccccc;
       background-color: transparent;
       /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
       margin: 0px;
@@ -1232,14 +1232,16 @@ WBeatSpinBox {
         }
 
       WEffectSelector QAbstractItemView {
-        min-width: 82px;
+        min-width: 76px;
         max-width: 82px;
         background-color: #202020;
         padding-left: 6px;
         font-family: Ubuntu;
-        font-weight: normal;
-        font-size: 13px/12px;
-        color: #cccccc;
+        font-size: 13px/13px; /*
+        not applied, defined by WEffectSelector
+        color: #cccccc; */
+        border: 0px;
+        border-radius: 2px;
       }
       /* selected item */
       WEffectSelector::checked {
