@@ -430,6 +430,18 @@ void SampleUtil::copyMonoToDualMono(CSAMPLE* M_RESTRICT pDest,
 }
 
 // static
+void SampleUtil::addMonoToStereo(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc, SINT numFrames) {
+    // forward loop
+    // note: LOOP VECTORIZED
+    for (SINT i = 0; i < numFrames; ++i) {
+        const CSAMPLE s = pSrc[i];
+        pDest[i * 2] += s;
+        pDest[i * 2 + 1] += s;
+    }
+}
+
+// static
 void SampleUtil::stripMultiToStereo(CSAMPLE* pBuffer, SINT numFrames,
         int numChannels) {
     // forward loop

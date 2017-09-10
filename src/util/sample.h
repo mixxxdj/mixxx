@@ -242,6 +242,13 @@ class SampleUtil {
     static void copyMonoToDualMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
             SINT numFrames);
 
+    // Adds and doubles the mono samples in pSrc to dual mono samples
+    // to pDest.
+    // (numFrames) samples will be read from pSrc
+    // (numFrames * 2) samples will be added to pDest
+    static void addMonoToStereo(CSAMPLE* pDest, const CSAMPLE* pSrc,
+            SINT numFrames);
+
     // In-place strips interleaved multi-channel samples in pBuffer with
     // numChannels >= 2 down to stereo samples. Only samples from the first
     // two channels will be read and written. Samples from all other

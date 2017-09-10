@@ -94,7 +94,7 @@ void MetronomeEffect::processChannel(const ChannelHandle& handle, MetronomeGroup
         maxFrames = sampleRate * 60 / m_pBpmParameter->value();
     }
 
-    SampleUtil::clear(pOutput, numSamples);
+    SampleUtil::copy(pOutput, pInput, numSamples);
 
     const unsigned int numFrames = numSamples / 2;
 
@@ -102,7 +102,7 @@ void MetronomeEffect::processChannel(const ChannelHandle& handle, MetronomeGroup
         // still in click region, write remaining click frames.
         const unsigned int copyFrames =
                 math_min(numFrames, kClickSize - gs->m_framesSinceClickStart);
-        SampleUtil::copyMonoToDualMono(pOutput, &kClick[gs->m_framesSinceClickStart],
+        SampleUtil::addMonoToStereo(pOutput, &kClick[gs->m_framesSinceClickStart],
                 copyFrames);
     }
 
@@ -122,7 +122,7 @@ void MetronomeEffect::processChannel(const ChannelHandle& handle, MetronomeGroup
                 numFrames - gs->m_framesSinceClickStart;
         const unsigned int copyFrames =
                 math_min(gs->m_framesSinceClickStart, kClickSize);
-        SampleUtil::copyMonoToDualMono(&pOutput[outputOffset * 2], kClick,
+        SampleUtil::addMonoToStereo(&pOutput[outputOffset * 2], kClick,
                 copyFrames);
     }
 }
