@@ -3,7 +3,7 @@
 
 #include "util/types.h"
 
-// This is a new recording from a real metronome 
+// This is a new recording from a real metronome @ 44.2kHz
 // it was coverted from *.wav to plain text using Audacity 
 
 const unsigned int kClickSize = 1024;
