@@ -29,7 +29,7 @@ EffectManifest EchoEffect::getManifest() {
     delay->setId("delay_time");
     delay->setName(QObject::tr("Time"));
     delay->setDescription(QObject::tr("Delay time\n"
-        "1/8 - 2 beats rounded to 1/4 beat if sync parameter is enabled and tempo is detected (decks and samplers) \n"
+        "1/8 - 2 beats if sync parameter is enabled and tempo is detected (decks and samplers) \n"
         "1/8 - 2 seconds if sync parameter is disabled or no tempo is detected (mic & aux inputs, master mix)"));
     delay->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     delay->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
@@ -88,6 +88,18 @@ EffectManifest EchoEffect::getManifest() {
     sync->setMinimum(0);
     sync->setMaximum(1);
 
+    EffectManifestParameter* triplet = manifest.addParameter();
+    triplet->setId("triplet");
+    triplet->setName("Triplets");
+    triplet->setDescription("When disabled, Time parameter is rounded to nearest 1/4 beat, or 1/8 beats at minimum.\n"
+    "When enabled, Time parameter is rounded to nearest 1/3 beat, or 1/6 beats at minimum.");
+    triplet->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
+    triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    triplet->setDefault(0);
+    triplet->setMinimum(0);
+    triplet->setMaximum(1);
+
     return manifest;
 }
 
@@ -96,7 +108,8 @@ EchoEffect::EchoEffect(EngineEffect* pEffect, const EffectManifest& manifest)
           m_pSendParameter(pEffect->getParameterById("send_amount")),
           m_pFeedbackParameter(pEffect->getParameterById("feedback_amount")),
           m_pPingPongParameter(pEffect->getParameterById("pingpong_amount")),
-          m_pSyncParameter(pEffect->getParameterById("sync")) {
+          m_pSyncParameter(pEffect->getParameterById("sync")),
+          m_pTripletParameter(pEffect->getParameterById("triplet")) {
     Q_UNUSED(manifest);
 }
 
@@ -122,10 +135,18 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     int delay_samples;
     if (m_pSyncParameter->toBool() && groupFeatures.has_beat_length) {
         // period is a number of beats
-        if (period < 0.125) {
-            period = 0.125;
+        if (m_pTripletParameter->toBool()) {
+           if (period < 0.16667) {
+              period = 0.16667;
+           } else {
+              period = roundToFraction(period, 3);
+           }
         } else {
-            period = roundToFraction(period, 4);
+           if (period < 0.125) {
+               period = 0.125;
+           } else {
+               period = roundToFraction(period, 4);
+           }
         }
         delay_samples = period * groupFeatures.beat_length;
     } else {
