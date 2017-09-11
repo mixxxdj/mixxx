@@ -77,17 +77,6 @@ EffectManifest EchoEffect::getManifest() {
     send->setDefault(1.0);
     send->setMaximum(1.0);
 
-    EffectManifestParameter* sync = manifest.addParameter();
-    sync->setId("sync");
-    sync->setName(QObject::tr("Sync"));
-    sync->setDescription(QObject::tr("Synchronizes the delay time with the tempo if it can be retrieved"));
-    sync->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
-    sync->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    sync->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    sync->setDefault(1);
-    sync->setMinimum(0);
-    sync->setMaximum(1);
-
     EffectManifestParameter* triplet = manifest.addParameter();
     triplet->setId("triplet");
     triplet->setName("Triplets");
@@ -108,7 +97,6 @@ EchoEffect::EchoEffect(EngineEffect* pEffect, const EffectManifest& manifest)
           m_pSendParameter(pEffect->getParameterById("send_amount")),
           m_pFeedbackParameter(pEffect->getParameterById("feedback_amount")),
           m_pPingPongParameter(pEffect->getParameterById("pingpong_amount")),
-          m_pSyncParameter(pEffect->getParameterById("sync")),
           m_pTripletParameter(pEffect->getParameterById("triplet")) {
     Q_UNUSED(manifest);
 }
@@ -133,7 +121,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     double pingpong_frac = m_pPingPongParameter->value();
 
     int delay_samples;
-    if (m_pSyncParameter->toBool() && groupFeatures.has_beat_length) {
+    if (groupFeatures.has_beat_length) {
         // period is a number of beats
         if (m_pTripletParameter->toBool()) {
            if (period < 0.16667) {
