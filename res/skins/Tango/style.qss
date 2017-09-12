@@ -1299,21 +1299,32 @@ WBeatSpinBox {
       margin-left: 1px;
       }
 
-  #FxLinkTypeButton[value="0"],
-  #FxLinkInvertButton[displayValue="0"] {
+  #FxSuperLinkButton[value="0"],
+  #FxSuperLinkInvertButton[displayValue="0"] {
     background-color: #4b4b4b;
+  }
+  #FxSuperLinkButton[value="0"]:hover { /*
+    background-color: #888888; */
+    border: 1px solid #888888;
+  }
+
+  #FxSuperLinkInvertButton[displayValue="0"]:hover {
+    background-color: #888888;
+  }
+  #FxSuperLinkInvertButton[displayValue="1"] {
+    background-color: #a90000;
     }
-    #FxLinkTypeButton[value="0"]:hover,
-    #FxLinkInvertButton[displayValue="0"]:hover {
-      background-color: #888888;
+    #FxSuperLinkInvertButton[displayValue="1"]:hover {
+      background-color: #ff0000;
     }
-  #FxLinkTypeButton[value="1"] {
+
+  #FxSuperLinkButton[value="1"] {
     background-color: #006596;
     }
-    #FxLinkTypeButton[value="1"]:hover {
+    #FxSuperLinkButton[value="1"]:hover {
       background-color: #078DCD;
     }
-  #FxLinkTypeButton[value="2"] {	/*
+  #FxSuperLinkButton[value="2"] {	/*
     a simple way to achive a partitioning in thirds	*/
     background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
       stop: 0 #006596,
@@ -1321,7 +1332,7 @@ WBeatSpinBox {
       stop: 0.34 #4b4b4b,
       stop: 1 #4b4b4b);
     }
-    #FxLinkTypeButton[value="2"]:hover {	/*
+    #FxSuperLinkButton[value="2"]:hover {	/*
       a simple way to achive a partitioning in thirds	*/
       background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
         stop: 0 #078dcd,
@@ -1329,21 +1340,21 @@ WBeatSpinBox {
         stop: 0.34 #4b4b4b,
         stop: 1 #4b4b4b);
       }
-  #FxLinkTypeButton[value="3"] {
+  #FxSuperLinkButton[value="3"] {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
       stop: 0 #4b4b4b,
       stop: 0.66 #4b4b4b,
       stop: 0.67 #006596,
       stop: 1 #006596);
     }
-    #FxLinkTypeButton[value="3"]:hover {
+    #FxSuperLinkButton[value="3"]:hover {
       background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
         stop: 0 #4b4b4b,
         stop: 0.66 #4b4b4b,
         stop: 0.67 #078dcd,
         stop: 1 #078dcd);
       }
-  #FxLinkTypeButton[value="4"] {
+  #FxSuperLinkButton[value="4"] {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
       stop: 0 #006596,
       stop: 0.330000 #006596,
@@ -1352,7 +1363,7 @@ WBeatSpinBox {
       stop: 0.670000 #006596,
       stop: 1 #006596);
     }
-    #FxLinkTypeButton[value="4"]:hover {
+    #FxSuperLinkButton[value="4"]:hover {
       background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
         stop: 0 #078dcd,
         stop: 0.330000 #078dcd,
@@ -1360,13 +1371,6 @@ WBeatSpinBox {
         stop: 0.660000 #4b4b4b,
         stop: 0.670000 #078dcd,
         stop: 1 #078dcd);
-    }
-
-  #FxLinkInvertButton[displayValue="1"] {
-    background-color: #a90000;
-    }
-    #FxLinkInvertButton[displayValue="1"]:hover {
-      background-color: #ff0000;
     }
 
 #FxAssignButton {

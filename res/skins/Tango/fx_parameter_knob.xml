@@ -62,7 +62,7 @@ Variables:
       <!-- Meta knob link button -->
       <Template src="skin:button_5state.xml">
         <SetVariable name="TooltipId">EffectSlot_parameter_link_type</SetVariable>
-        <SetVariable name="ObjectName">FxLinkTypeButton</SetVariable>
+        <SetVariable name="ObjectName">FxSuperLinkButton</SetVariable>
         <SetVariable name="Size">51f,5f</SetVariable>
         <SetVariable name="ConfigKey"><Variable name="FxGroup_FxNum"/>,parameter<Variable name="parameter"/>_link_type</SetVariable>
       </Template>
@@ -72,7 +72,7 @@ Variables:
       <!-- Meta knob link invert button -->
       <Template src="skin:button_2state.xml">
         <SetVariable name="TooltipId">EffectSlot_parameter_inversion</SetVariable>
-        <SetVariable name="ObjectName">FxLinkInvertButton</SetVariable>
+        <SetVariable name="ObjectName">FxSuperLinkInvertButton</SetVariable>
         <SetVariable name="Size">51f,5f</SetVariable>
         <SetVariable name="ConfigKey"><Variable name="FxGroup_FxNum"/>,parameter<Variable name="parameter"/>_link_inverse</SetVariable>
       </Template>
