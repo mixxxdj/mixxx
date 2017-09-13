@@ -49,7 +49,8 @@ EffectManifest BalanceEffect::getManifest() {
 
     EffectManifestParameter* midLowPass = manifest.addParameter();
     midLowPass->setId("bypassFreq");
-    midLowPass->setName(QObject::tr("Bypass Fr."));
+    midLowPass->setShortName(QObject::tr("Bypass Fr."));
+    midLowPass->setName(QObject::tr("Bypass Frequency"));
     midLowPass->setDescription(QObject::tr("Frequencies below this cutoff are not adjusted in the stereo field"));
     midLowPass->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     midLowPass->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
