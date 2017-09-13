@@ -144,6 +144,10 @@ class SampleUtil {
     static void applyAlternatingGain(CSAMPLE* pBuffer, CSAMPLE_GAIN gain1,
             CSAMPLE_GAIN gain2, SINT numSamples);
 
+    static void applyRampingAlternatingGain(CSAMPLE* pBuffer,
+            CSAMPLE gain1, CSAMPLE gain2,
+            CSAMPLE gain1Old, CSAMPLE gain2Old, SINT numSamples);
+
     // Multiply every sample in pBuffer ramping from gain1 to gain2.
     // We use ramping as often as possible to prevent soundwave discontinuities
     // which can cause audible clicks and pops.
