@@ -29,8 +29,8 @@ EffectManifest EchoEffect::getManifest() {
     delay->setId("delay_time");
     delay->setName(QObject::tr("Time"));
     delay->setDescription(QObject::tr("Delay time\n"
-        "1/8 - 2 beats if sync parameter is enabled and tempo is detected (decks and samplers) \n"
-        "1/8 - 2 seconds if sync parameter is disabled or no tempo is detected (mic & aux inputs, master mix)"));
+        "1/8 - 2 beats if tempo is detected (decks and samplers) \n"
+        "1/8 - 2 seconds if no tempo is detected (mic & aux inputs, master mix)"));
     delay->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     delay->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     delay->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
