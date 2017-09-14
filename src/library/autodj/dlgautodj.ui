@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>560</width>
+    <width>613</width>
     <height>399</height>
    </rect>
   </property>
@@ -122,6 +122,16 @@ If no track sources are configured, the track is added from the library instead.
        </property>
        <property name="text">
         <string>sec.</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="comboBoxSelector">
+       <property name="toolTip">
+        <string>Selects mode how the next track is chosen</string>
+       </property>
+       <property name="whatsThis">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The AutoDj can select the next song based on different stategies. Linear, Random or based on harmonic stategies.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
      </item>
