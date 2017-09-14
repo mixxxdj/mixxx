@@ -84,8 +84,9 @@ void BroadcastManager::slotControlEnabled(double v) {
         // Wrap around manually .
         // Wrapping around in WPushbutton does not work
         // since the status button has 4 states, but this CO is bool
-        m_pBroadcastEnabled->set(0.0);
         v = 0.0;
+        m_pBroadcastEnabled->set(v);
+        emit(broadcastEnabled(v));
     }
 
     if (v > 0.0) {
@@ -100,6 +101,7 @@ void BroadcastManager::slotControlEnabled(double v) {
 
         if(!atLeastOneEnabled) {
             m_pBroadcastEnabled->set(false);
+            emit(broadcastEnabled(0.0));
             QMessageBox::warning(nullptr, tr("Action failed"),
                                 tr("Please enable at least one connection to use Live Broadcasting."));
             return;
