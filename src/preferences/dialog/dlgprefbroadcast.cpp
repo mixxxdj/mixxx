@@ -148,9 +148,41 @@ void DlgPrefBroadcast::applyModel() {
 }
 
 void DlgPrefBroadcast::slotApply() {
-    bool broadcastingEnabled = m_pBroadcastEnabled->toBool();
+    // Make sure the currently selected connection
+    // gets saved as expected
+    setValuesToProfile(m_pProfileListSelection);
+
+    // Check for Icecast connections with identical mountpoints on the same host
+    QMap<QString, QString> mountpoints;
+    for(BroadcastProfilePtr profile : m_pSettingsModel->profiles()) {
+        if (profile->getServertype() != BROADCAST_SERVER_ICECAST2) {
+            continue;
+        }
+
+        QString profileName = profile->getProfileName();
+        QString profileMountpoint = profile->getMountpoint();
+        if (mountpoints.values().contains(profileMountpoint)) {
+            QString profileNameWithSameMountpoint = mountpoints.key(profileMountpoint);
+            BroadcastProfilePtr profileWithSameMountpoint =
+                m_pSettingsModel->getProfileByName(profileNameWithSameMountpoint);
+
+            if (!profileWithSameMountpoint.isNull()
+                && profileWithSameMountpoint->getHost().toLower()
+                    == profile->getHost().toLower()) {
+                QMessageBox::warning(
+                    this, tr("Action failed"),
+                    tr("'%1' has the same Icecast mountpoint as '%2'.\n"
+                       "Two connections on the same server can't have the same mountpoint.")
+                       .arg(profileName).arg(profileNameWithSameMountpoint));
+                return;
+            }
+        }
+
+        mountpoints.insert(profileName, profileMountpoint);
+    }
 
     applyModel();
+    bool broadcastingEnabled = m_pBroadcastEnabled->toBool();
     if(!broadcastingEnabled && connectOnApply->isChecked()) {
         m_pBroadcastEnabled->set(true);
     }
