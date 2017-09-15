@@ -414,6 +414,40 @@ void PlaylistDAO::removeHiddenTracks(const int playlistId) {
     emit(changed(playlistId));
 }
 
+void PlaylistDAO::removeEmptyPlaylists(const HiddenType hidden) {
+    // This query deletes all playlists with zero tracks in them
+    QString queryString = QString(
+        "SELECT id FROM Playlists "
+        "WHERE hidden=:hidden AND "
+        "0=(SELECT COUNT(*) FROM PlaylistTracks  "
+        "   WHERE playlist_id = Playlists.id)");
+
+    QSqlQuery query(m_database);
+    query.setForwardOnly(true);
+
+    if (!query.prepare(queryString)) {
+        LOG_FAILED_QUERY(query);
+        return;
+    }
+
+    query.bindValue(":hidden", (int)hidden);
+
+    // FIXME(poelzi): enable nested transactions
+    //ScopedTransaction transaction(m_database);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return;
+    }
+    while (query.next()) {
+        int playlist = query.value(0).toInt();
+        qDebug() << "remove empty playlist:" << playlist;
+        deletePlaylist(playlist);
+    }
+    // FIXME(poelzi): enable nested transactions
+    //transaction.commit();
+}
+
 
 void PlaylistDAO::removeTrackFromPlaylist(const int playlistId, const TrackId& trackId) {
     ScopedTransaction transaction(m_database);

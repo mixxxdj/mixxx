@@ -94,6 +94,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void removeTrackFromPlaylist(const int playlistId, const TrackId& trackId);
     void removeTrackFromPlaylist(const int playlistId, const int position);
     void removeTracksFromPlaylist(const int playlistId, QList<int>& positions);
+    void removeEmptyPlaylists(const HiddenType hidden);
     // Insert a track into a specific position in a playlist
     bool insertTrackIntoPlaylist(TrackId trackId, int playlistId, int position);
     // Inserts a list of tracks into playlist

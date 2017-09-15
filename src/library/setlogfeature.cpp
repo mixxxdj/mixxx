@@ -6,6 +6,7 @@
 
 #include "control/controlobject.h"
 #include "library/playlisttablemodel.h"
+#include "library/dao/playlistdao.h"
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
 #include "mixer/playerinfo.h"
@@ -19,6 +20,8 @@ SetlogFeature::SetlogFeature(QObject* parent,
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.setlog",
                                                    true); //show all tracks
+    // we cleanup old history playlists that don't have any tracks
+    m_playlistDao.removeEmptyPlaylists(PlaylistDAO::HiddenType::PLHT_SET_LOG);
 
     //construct child model
     auto pRootItem = std::make_unique<TreeItem>(this);
