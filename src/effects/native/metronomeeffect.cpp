@@ -77,15 +77,25 @@ void MetronomeEffect::processChannel(const ChannelHandle& handle, MetronomeGroup
         return;
     }
 
+    unsigned int clickSize = kClickSize44100;
+    const CSAMPLE* click = kClick44100;
+    if (sampleRate <= 48000) {
+        clickSize = kClickSize48000;
+        click = kClick48000;
+    } else if (sampleRate <= 96000) {
+        clickSize = kClickSize96000;
+        click = kClick96000;
+    }
+
     unsigned int maxFrames;
     if (m_pSyncParameter->toBool() && groupFeatures.has_beat_length_sec) {
         maxFrames = sampleRate * groupFeatures.beat_length_sec;
         if (groupFeatures.has_beat_fraction) {
             unsigned int currentFrame =  maxFrames * groupFeatures.beat_fraction;
-            if (maxFrames > kClickSize &&
-                    currentFrame > kClickSize &&
-                    currentFrame < maxFrames - kClickSize &&
-                    gs->m_framesSinceClickStart > kClickSize) {
+            if (maxFrames > clickSize &&
+                    currentFrame > clickSize &&
+                    currentFrame < maxFrames - clickSize &&
+                    gs->m_framesSinceClickStart > clickSize) {
                 // plays a single click on low speed
                 gs->m_framesSinceClickStart = currentFrame;
             }
@@ -98,11 +108,11 @@ void MetronomeEffect::processChannel(const ChannelHandle& handle, MetronomeGroup
 
     const unsigned int numFrames = numSamples / 2;
 
-    if (gs->m_framesSinceClickStart < kClickSize) {
+    if (gs->m_framesSinceClickStart < clickSize) {
         // still in click region, write remaining click frames.
         const unsigned int copyFrames =
-                math_min(numFrames, kClickSize - gs->m_framesSinceClickStart);
-        SampleUtil::addMonoToStereo(pOutput, &kClick[gs->m_framesSinceClickStart],
+                math_min(numFrames, clickSize - gs->m_framesSinceClickStart);
+        SampleUtil::addMonoToStereo(pOutput, &click[gs->m_framesSinceClickStart],
                 copyFrames);
     }
 
@@ -121,8 +131,8 @@ void MetronomeEffect::processChannel(const ChannelHandle& handle, MetronomeGroup
         const unsigned int outputOffset =
                 numFrames - gs->m_framesSinceClickStart;
         const unsigned int copyFrames =
-                math_min(gs->m_framesSinceClickStart, kClickSize);
-        SampleUtil::addMonoToStereo(&pOutput[outputOffset * 2], kClick,
+                math_min(gs->m_framesSinceClickStart, clickSize);
+        SampleUtil::addMonoToStereo(&pOutput[outputOffset * 2], click,
                 copyFrames);
     }
 }
