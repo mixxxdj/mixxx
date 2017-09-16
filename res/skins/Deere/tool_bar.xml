@@ -107,6 +107,28 @@
             </Children>
           </WidgetGroup>
 
+          <WidgetGroup>
+            <ObjectName>BoothControls</ObjectName>
+            <Layout>horizontal</Layout>
+            <Connection>
+              <ConfigKey>[Master],booth_enabled</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+            <Children>
+              <Template src="skin:spacer_hx.xml">
+                <SetVariable name="width">15</SetVariable>
+              </Template>
+
+              <Template src="skin:knob_toolbar.xml">
+                <SetVariable name="TooltipId">master_gain</SetVariable>
+                <SetVariable name="group">[Master]</SetVariable>
+                <SetVariable name="control">booth_gain</SetVariable>
+                <SetVariable name="color">red</SetVariable>
+                <SetVariable name="label">Booth</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
         </Children>
       </WidgetGroup>
 
