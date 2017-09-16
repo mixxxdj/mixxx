@@ -20,6 +20,7 @@
 #include "effects/native/autopaneffect.h"
 #include "effects/native/phasereffect.h"
 #include "effects/native/loudnesscontoureffect.h"
+#include "effects/native/peakingfiltereffect.h"
 
 NativeBackend::NativeBackend(QObject* pParent)
         : EffectsBackend(pParent, tr("Native")) {
@@ -33,6 +34,7 @@ NativeBackend::NativeBackend(QObject* pParent)
     // Compensations EQs
     registerEffect<GraphicEQEffect>();
     registerEffect<LoudnessContourEffect>();
+    registerEffect<PeakingFilterEffect>();
     // Fading Effects
     registerEffect<FilterEffect>();
     registerEffect<MoogLadder4FilterEffect>();
