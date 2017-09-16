@@ -101,7 +101,7 @@
                 <SetVariable name="group">[Master]</SetVariable>
                 <SetVariable name="control">gain</SetVariable>
                 <SetVariable name="color">red</SetVariable>
-                <SetVariable name="label">Gain</SetVariable>
+                <SetVariable name="label">Master</SetVariable>
               </Template>
 
             </Children>
@@ -120,7 +120,7 @@
               </Template>
 
               <Template src="skin:knob_toolbar.xml">
-                <SetVariable name="TooltipId">master_gain</SetVariable>
+                <SetVariable name="TooltipId">booth_gain</SetVariable>
                 <SetVariable name="group">[Master]</SetVariable>
                 <SetVariable name="control">booth_gain</SetVariable>
                 <SetVariable name="color">red</SetVariable>
