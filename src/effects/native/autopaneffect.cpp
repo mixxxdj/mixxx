@@ -88,7 +88,7 @@ EffectManifest AutoPanEffect::getManifest() {
 
 AutoPanEffect::AutoPanEffect(EngineEffect* pEffect, const EffectManifest& manifest)
         : m_pSmoothingParameter(pEffect->getParameterById("smoothing")),
-          m_pPeriodUnitParameter(pEffect->getParameterById("periodUnit")),
+          m_pSyncParameter(pEffect->getParameterById("periodUnit")),
           m_pPeriodParameter(pEffect->getParameterById("period")),
           m_pWidthParameter(pEffect->getParameterById("width")) {
     Q_UNUSED(manifest);
@@ -112,10 +112,9 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, AutoPanGroupStat
     AutoPanGroupState& gs = *pGroupState;
     double width = m_pWidthParameter->value();
     double period = m_pPeriodParameter->value();
-    double periodUnit = m_pPeriodUnitParameter->value();
     double smoothing = 0.5-m_pSmoothingParameter->value();
 
-    if (periodUnit == 1 && groupFeatures.has_beat_length_sec) {
+    if (m_pSyncParameter->toBool() && groupFeatures.has_beat_length_sec) {
         // period is a number of beats
         double beats = std::max(roundToFraction(period, 2), 0.25);
         // NOTE: Assuming engine is working in stereo.
