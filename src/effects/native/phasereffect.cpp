@@ -116,10 +116,8 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
                                   const EffectProcessor::EnableState enableState,
                                   const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
-    Q_UNUSED(enableState);
     Q_UNUSED(groupFeatures);
     Q_UNUSED(sampleRate);
-
 
     if (enableState == EffectProcessor::ENABLING) {
         pState->init();
@@ -140,9 +138,6 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE* oldInRight = pState->oldInRight;
     CSAMPLE* oldOutRight = pState->oldOutRight;
 
-    CSAMPLE_GAIN oldDepth = pState->oldDepth;
-    pState->oldDepth = depth;
-
     // Using two sets of coefficients for left and right channel
     CSAMPLE filterCoefLeft = 0;
     CSAMPLE filterCoefRight = 0;
@@ -150,6 +145,7 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE left = 0, right = 0;
     CSAMPLE freqSkip = frequency * 2.0 * M_PI / sampleRate;
 
+    CSAMPLE_GAIN oldDepth = pState->oldDepth;
     const CSAMPLE_GAIN depthDelta = (depth - oldDepth)
             / CSAMPLE_GAIN(numSamples / 2);
     const CSAMPLE_GAIN depthStart = oldDepth + depthDelta;
@@ -193,4 +189,6 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
         pOutput[i] = pInput[i] * (1.0 - 0.5 * depth) + left * depth * 0.5;
         pOutput[i + 1] = pInput[i + 1] * (1.0 - 0.5 * depth) + right * depth * 0.5;
     }
+
+    pState->oldDepth = depth;
 }
