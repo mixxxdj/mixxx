@@ -78,7 +78,6 @@
                 <Children>
                   <Template src="skin:vumeter_v.xml">
                     <SetVariable name="group"><Variable name="group"/></SetVariable>
-                    <SetVariable name="side">L</SetVariable>
                     <SetVariable name="tooltip_meter">channel_VuMeter</SetVariable>
                     <SetVariable name="tooltip_clip">channel_PeakIndicator</SetVariable>
                   </Template>
