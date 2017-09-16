@@ -79,12 +79,12 @@ void MetronomeEffect::processChannel(const ChannelHandle& handle, MetronomeGroup
 
     unsigned int clickSize = kClickSize44100;
     const CSAMPLE* click = kClick44100;
-    if (sampleRate <= 48000) {
-        clickSize = kClickSize48000;
-        click = kClick48000;
-    } else if (sampleRate <= 96000) {
+    if (sampleRate >= 96000) {
         clickSize = kClickSize96000;
         click = kClick96000;
+    } else if (sampleRate >= 48000) {
+        clickSize = kClickSize48000;
+        click = kClick48000;
     }
 
     unsigned int maxFrames;
