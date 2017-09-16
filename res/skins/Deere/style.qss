@@ -26,6 +26,7 @@
   border-color: #222;
   border-style: solid;
   border-width: 3px 1.5px 3px 1.5px;
+  background-color: #333;
 }
 
 #DeckControls {
@@ -317,27 +318,27 @@ QTreeView::branch:open:has-children:has-siblings {
 /* vertical splitters */
 #LibraryCoverArtSplitter::handle,
 #LibraryVerticalSplitter::handle,
-#DeckSplitter::handle {
+#WaveformSplitter::handle {
   image: url(skin:/image/style_handle_vertical_unchecked.svg);
-  background: none;
+  background: #222;
 }
 
 #LibraryCoverArtSplitter::handle:pressed,
 #LibraryVerticalSplitter::handle:pressed,
-#DeckSplitter::handle:pressed {
+#WaveformSplitter::handle:pressed {
   image: url(skin:/image/style_handle_vertical_checked.svg);
-  background: none;
+  background: #222;
 }
 
 #LibraryCoverArtSplitter::handle:horizontal,
 #LibraryVerticalSplitter::handle:horizontal,
-#DeckSplitter::handle:horizontal {
+#WaveformSplitter::handle:horizontal {
   width: 6px;
 }
 
 #LibraryCoverArtSplitter::handle:vertical,
 #LibraryVerticalSplitter::handle:vertical,
-#DeckSplitter::handle::vertical {
+#WaveformSplitter::handle::vertical {
   height: 6px;
 }
 
@@ -1069,8 +1070,8 @@ WNumberRate {
   padding-bottom: 5px;
 }
 
-#DeckMixer1_ColumnCondensed, #DeckMixer2_ColumnCondensed, #DeckMixer3_ColumnCondensed,
-#DeckMixer4_ColumnCondensed {
+#DeckMixer1_ColumnCondensed, #DeckMixer2_ColumnCondensed,
+#DeckMixer3_ColumnCondensed, #DeckMixer4_ColumnCondensed {
   padding: 5;
   qproperty-layoutAlignment: 'AlignHCenter';
 }
