@@ -781,12 +781,6 @@ def BuildRelease(target, source, env):
             subprocess.check_call(command)
 
         # Compile main wix files
-        command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -arch %(arch)s -out build\wix\warningDlg.wixobj build\wix\warningDlg.wxs' % \
-            {'wix': wix_path,
-             'winlibpath': build.winlib_path,
-             'arch': winArch}
-        print "Using Command: " + command
-        subprocess.check_call(command)
         command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -dImageformats=%(isimageformats)s -dPDB=%(isPDB)s -arch %(arch)s -out build\wix\mixxx.wixobj build\wix\mixxx.wxs' % \
             {'wix': wix_path,
              'winlibpath': build.winlib_path,

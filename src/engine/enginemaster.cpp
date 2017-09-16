@@ -40,6 +40,8 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
           m_boothGainOld(0.0),
           m_headphoneMasterGainOld(0.0),
           m_headphoneGainOld(1.0),
+          m_balleftOld(1.0),
+          m_balrightOld(1.0),
           m_masterHandle(registerChannelGroup("[Master]")),
           m_headphoneHandle(registerChannelGroup("[Headphone]")),
           m_busLeftHandle(registerChannelGroup("[BusLeft]")),
@@ -664,7 +666,11 @@ void EngineMaster::process(const int iBufferSize) {
         }
 
         // Perform balancing on main out
-        SampleUtil::applyAlternatingGain(m_pMaster, balleft, balright, m_iBufferSize);
+        SampleUtil::applyRampingAlternatingGain(m_pMaster, balleft, balright,
+                m_balleftOld, m_balrightOld, iBufferSize);
+
+        m_balleftOld = balleft;
+        m_balrightOld = balright;
 
         // Update VU meter (it does not return anything). Needs to be here so that
         // master balance and talkover is reflected in the VU meter.
@@ -698,11 +704,6 @@ void EngineMaster::applyMasterEffects() {
     // Apply master effects
     if (m_pEngineEffectsManager) {
         GroupFeatureState masterFeatures;
-        // Well, this is delayed by one buffer (it's dependent on the
-        // output). Oh well.
-        if (m_pVumeter != NULL) {
-            m_pVumeter->collectFeatures(&masterFeatures);
-        }
         masterFeatures.has_gain = true;
         masterFeatures.gain = m_pMasterGain->get();
         m_pEngineEffectsManager->processPostFaderInPlace(m_masterHandle.handle(),

@@ -19,10 +19,6 @@
           <EffectPushButton>
             <Size>55f,15f</Size>
             <ObjectName>EffectButton</ObjectName>
-            <EffectRack><Variable name="EffectRack"/></EffectRack>
-            <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
-            <Effect><Variable name="Effect"/></Effect>
-            <EffectButtonParameter><Variable name="EffectButtonParameter"/></EffectButtonParameter>
             <NumberStates>2</NumberStates>
               <State>
                 <Number>0</Number>

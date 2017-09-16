@@ -32,8 +32,6 @@ class KeyControl : public EngineControl {
 
     double getKey();
 
-    void collectFeatures(GroupFeatureState* pGroupFeatures) const;
-
   private slots:
     void slotSetEngineKey(double);
     void slotSetEngineKeyDistance(double);
