@@ -136,7 +136,8 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
                period = roundToFraction(period, 4);
            }
         }
-        delay_samples = period * groupFeatures.beat_length_sec * sampleRate;
+        delay_samples = period * groupFeatures.beat_length_sec
+                * sampleRate * EchoGroupState::kChannelCount;
     } else {
         // period is a number of seconds
         period = std::max(period, 0.125);
