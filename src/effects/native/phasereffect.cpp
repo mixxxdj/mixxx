@@ -77,7 +77,7 @@ EffectManifest PhaserEffect::getManifest() {
     depth->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     depth->setMinimum(0.5);
     depth->setMaximum(1.0);
-    depth->setDefault(0.0);
+    depth->setDefault(0.5);
 
     EffectManifestParameter* stereo = manifest.addParameter();
     stereo->setId("stereo");
@@ -115,14 +115,20 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
                                   const unsigned int sampleRate,
                                   const EffectProcessor::EnableState enableState,
                                   const GroupFeatureState& groupFeatures) {
-
     Q_UNUSED(handle);
-    Q_UNUSED(enableState);
     Q_UNUSED(groupFeatures);
     Q_UNUSED(sampleRate);
 
+    if (enableState == EffectProcessor::ENABLING) {
+        pState->init();
+    }
+
+    CSAMPLE depth = 0;
+    if (enableState != EffectProcessor::DISABLING) {
+        depth = m_pDepthParameter->value();
+    }
+
     CSAMPLE frequency = m_pLFOFrequencyParameter->value();
-    CSAMPLE depth = m_pDepthParameter->value();
     CSAMPLE feedback = m_pFeedbackParameter->value();
     CSAMPLE range = m_pRangeParameter->value();
     int stages = 2 * m_pStagesParameter->value();
@@ -138,6 +144,11 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
 
     CSAMPLE left = 0, right = 0;
     CSAMPLE freqSkip = frequency * 2.0 * M_PI / sampleRate;
+
+    CSAMPLE_GAIN oldDepth = pState->oldDepth;
+    const CSAMPLE_GAIN depthDelta = (depth - oldDepth)
+            / CSAMPLE_GAIN(numSamples / 2);
+    const CSAMPLE_GAIN depthStart = oldDepth + depthDelta;
 
     int stereoCheck = m_pStereoParameter->value();
     int counter = 0;
@@ -172,8 +183,12 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
         left = processSample(left, oldInLeft, oldOutLeft, filterCoefLeft, stages);
         right = processSample(right, oldInRight, oldOutRight, filterCoefRight, stages);
 
+        const CSAMPLE_GAIN depth = depthStart + depthDelta * (i / kChannels);
+
         // Computing output combining the original and processed sample
         pOutput[i] = pInput[i] * (1.0 - 0.5 * depth) + left * depth * 0.5;
         pOutput[i + 1] = pInput[i + 1] * (1.0 - 0.5 * depth) + right * depth * 0.5;
     }
+
+    pState->oldDepth = depth;
 }
