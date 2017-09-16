@@ -1342,13 +1342,7 @@ void EngineBuffer::setScalerForTest(EngineBufferScale* pScaleVinyl,
 }
 
 void EngineBuffer::collectFeatures(GroupFeatureState* pGroupFeatures) const {
-    pGroupFeatures->has_current_position = true;
-    pGroupFeatures->current_position = m_filepos_play;
-
     if (m_pBpmControl != NULL) {
         m_pBpmControl->collectFeatures(pGroupFeatures);
-    }
-    if (m_pKeyControl != NULL) {
-        m_pKeyControl->collectFeatures(pGroupFeatures);
     }
 }

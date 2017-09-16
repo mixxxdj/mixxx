@@ -762,11 +762,6 @@ void EngineMaster::process(const int iBufferSize) {
 void EngineMaster::applyMasterEffects(const int iBufferSize, const int iSampleRate) {
     if (m_pEngineEffectsManager) {
         GroupFeatureState masterFeatures;
-        // Well, this is delayed by one buffer (it's dependent on the
-        // output). Oh well.
-        if (m_pVumeter != NULL) {
-            m_pVumeter->collectFeatures(&masterFeatures);
-        }
         masterFeatures.has_gain = true;
         masterFeatures.gain = m_pMasterGain->get();
         m_pEngineEffectsManager->process(m_masterHandle.handle(), m_pMaster,
