@@ -301,17 +301,17 @@ Description:
 
               <Template src="skin:mixerbar_mic.xml">
                 <SetVariable name="MicLabel">2</SetVariable>
-                <SetVariable name="MicNumber">2</SetVariable>
+                <SetVariable name="micNum">2</SetVariable>
               </Template>
 
               <Template src="skin:mixerbar_mic.xml">
                 <SetVariable name="MicLabel">3</SetVariable>
-                <SetVariable name="MicNumber">3</SetVariable>
+                <SetVariable name="micNum">3</SetVariable>
               </Template>
 
               <Template src="skin:mixerbar_mic.xml">
                 <SetVariable name="MicLabel">4</SetVariable>
-                <SetVariable name="MicNumber">4</SetVariable>
+                <SetVariable name="micNum">4</SetVariable>
               </Template>
             </Children>
             <Connection>
@@ -346,19 +346,19 @@ Description:
             <Children>
 
               <Template src="skin:mixerbar_aux.xml">
-                <SetVariable name="AuxNumber">1</SetVariable>
+                <SetVariable name="auxNum">1</SetVariable>
               </Template>
 
               <Template src="skin:mixerbar_aux.xml">
-                <SetVariable name="AuxNumber">2</SetVariable>
+                <SetVariable name="auxNum">2</SetVariable>
               </Template>
 
               <Template src="skin:mixerbar_aux.xml">
-                <SetVariable name="AuxNumber">3</SetVariable>
+                <SetVariable name="auxNum">3</SetVariable>
               </Template>
 
               <Template src="skin:mixerbar_aux.xml">
-                <SetVariable name="AuxNumber">4</SetVariable>
+                <SetVariable name="auxNum">4</SetVariable>
               </Template>
 
             </Children>

@@ -14,7 +14,7 @@
 
 EngineMicrophone::EngineMicrophone(const ChannelHandleAndGroup& handle_group,
                                    EffectsManager* pEffectsManager)
-        : EngineChannel(handle_group, EngineChannel::CENTER),
+        : EngineChannel(handle_group, EngineChannel::CENTER, true),
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
           m_vuMeter(getGroup()),
           m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_configured"))),
@@ -93,9 +93,6 @@ void EngineMicrophone::process(CSAMPLE* pOut, const int iBufferSize) {
     if (m_pEngineEffectsManager != NULL) {
         // Process effects enabled for this channel
         GroupFeatureState features;
-        // This is out of date by a callback but some effects will want the RMS
-        // volume.
-        m_vuMeter.collectFeatures(&features);
         m_pEngineEffectsManager->process(getHandle(), pOut, iBufferSize,
                                          m_pSampleRate->get(), features);
     }

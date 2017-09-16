@@ -189,14 +189,18 @@
             } else if (this.type === this.types.powerWindow) {
                 if (this.isPress(channel, control, value, status)) {
                     this.inToggle();
+                    this.isLongPressed = false;
                     this.longPressTimer = engine.beginTimer(this.longPressTimeout, function () {
                         this.isLongPressed = true;
+                        this.longPressTimer = 0;
                     }, true);
                 } else {
                     if (this.isLongPressed) {
                         this.inToggle();
-                    } else {
+                    }
+                    if (this.longPressTimer !== 0) {
                         engine.stopTimer(this.longPressTimer);
+                        this.longPressTimer = 0;
                     }
                     this.isLongPressed = false;
                 }
@@ -229,7 +233,11 @@
             this.inKey = 'cue_default';
         },
         shift: function () {
-            this.inKey = 'start_stop';
+            if (this.reverseRollOnShift) {
+                this.inKey = 'reverseroll';
+            } else {
+                this.inKey = 'start_stop';
+            }
         },
         outKey: 'cue_indicator',
     });
@@ -245,12 +253,16 @@
                         engine.setValue(this.group, 'beatsync', 1);
                         this.longPressTimer = engine.beginTimer(this.longPressTimeout, function () {
                             engine.setValue(this.group, 'sync_enabled', 1);
+                            this.longPressTimer = 0;
                         }, true);
                     } else {
                         engine.setValue(this.group, 'sync_enabled', 0);
                     }
                 } else {
-                    engine.stopTimer(this.longPressTimer);
+                    if (this.longPressTimer !== 0) {
+                        engine.stopTimer(this.longPressTimer);
+                        this.longPressTimer = 0;
+                    }
                 }
             };
         },
@@ -734,6 +746,7 @@
                 };
             },
             shift: function () {
+                engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
                 this.valueAtLastEffectSwitch = this.previousValueReceived;
                 // Floor the threshold to ensure that every effect can be selected
                 this.changeThreshold = Math.floor(this.max /

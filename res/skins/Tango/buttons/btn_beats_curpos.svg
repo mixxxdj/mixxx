@@ -25,7 +25,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="4"
-     inkscape:cx="8.5978906"
+     inkscape:cx="-33.902109"
      inkscape:cy="27.203256"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -57,22 +57,14 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-1003.3622)">
-    <rect
-       style="fill:#aaaaaa;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       id="rect3877"
-       width="2"
-       height="32"
-       x="11"
-       y="1008.8622" />
-    <path
-       sodipodi:type="arc"
-       style="fill:#aaaaaa;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       id="path6979"
-       sodipodi:cx="-34.875"
-       sodipodi:cy="13.375"
-       sodipodi:rx="6.625"
-       sodipodi:ry="6.625"
-       d="m -28.25,13.375 a 6.625,6.625 0 1 1 -13.25,0 6.625,6.625 0 1 1 13.25,0 z"
-       transform="matrix(0.22641509,0,0,0.22641509,19.896226,1042.8339)" />
+    <g
+       transform="translate(-5.7226562,993.19599)"
+       style="font-size:48px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#aaaaaa;fill-opacity:1;stroke:none;font-family:Ubuntu;-inkscape-font-specification:Ubuntu"
+       id="flowRoot2984">
+      <path
+         d="m 18.242187,43.429878 -1.039062,0 -2.40625,-22.148437 c -0.109381,-0.966113 -0.164069,-1.686165 -0.164062,-2.160156 -7e-6,-1.148403 0.300774,-2.068975 0.902343,-2.761719 0.619784,-0.692671 1.358065,-1.039025 2.214844,-1.039063 0.856761,3.8e-5 1.576812,0.346392 2.160156,1.039063 0.601551,0.692744 0.902332,1.722691 0.902344,3.089844 -1.2e-5,0.437533 -0.03647,1.048209 -0.109375,1.832031 l -2.460938,22.148437 m -0.546875,4.539063 c 0.838532,5e-6 1.549469,0.300786 2.132813,0.902344 0.60155,0.583337 0.902331,1.285159 0.902344,2.105468 -1.3e-5,0.838543 -0.300794,1.558595 -0.902344,2.160157 -0.583344,0.583332 -1.294281,0.874999 -2.132813,0.875 -0.83855,-10e-7 -1.558601,-0.291668 -2.160156,-0.875 -0.58334,-0.601562 -0.875006,-1.321614 -0.875,-2.160157 -6e-6,-0.820309 0.29166,-1.522131 0.875,-2.105468 0.601555,-0.601558 1.321606,-0.902339 2.160156,-0.902344"
+         style="font-size:56px;text-align:center;text-anchor:middle;font-family:Times New Roman;-inkscape-font-specification:Times New Roman;fill:#aaaaaa;fill-opacity:1"
+         id="path3761" />
+    </g>
   </g>
 </svg>

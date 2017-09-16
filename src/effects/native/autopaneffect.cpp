@@ -97,7 +97,7 @@ AutoPanEffect::AutoPanEffect(EngineEffect* pEffect, const EffectManifest& manife
 AutoPanEffect::~AutoPanEffect() {
 }
 
-void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* pGroupState,
+void AutoPanEffect::processChannel(const ChannelHandle& handle, AutoPanGroupState* pGroupState,
                               const CSAMPLE* pInput,
                               CSAMPLE* pOutput, const unsigned int numSamples,
                               const unsigned int sampleRate,
@@ -109,20 +109,21 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         return;
     }
 
-    PanGroupState& gs = *pGroupState;
+    AutoPanGroupState& gs = *pGroupState;
     double width = m_pWidthParameter->value();
     double period = m_pPeriodParameter->value();
     double periodUnit = m_pPeriodUnitParameter->value();
     double smoothing = 0.5-m_pSmoothingParameter->value();
 
-    if (periodUnit == 1 && groupFeatures.has_beat_length) {
+    if (periodUnit == 1 && groupFeatures.has_beat_length_sec) {
         // period is a number of beats
         double beats = std::max(roundToFraction(period, 2), 0.25);
-        period = groupFeatures.beat_length * beats;
+        // NOTE: Assuming engine is working in stereo.
+        period = beats * groupFeatures.beat_length_sec * sampleRate * 2;
     } else {
         // period is a number of seconds
-        period = std::max(period, 0.25);
-        period *= sampleRate;
+        // NOTE: Assuming engine is working in stereo.
+        period = std::max(period, 0.25) * sampleRate * 2;
     }
 
     // When the period is changed, the position of the sound shouldn't

@@ -1,6 +1,5 @@
 #ifndef MIXXX_TRACK_H
 #define MIXXX_TRACK_H
-
 #include <QAtomicInt>
 #include <QFileInfo>
 #include <QList>
@@ -95,10 +94,9 @@ class Track : public QObject {
     // Returns whether the file exists on disk or not.
     bool exists() const;
 
-    // Returns the file type
-    QString getType() const;
-    // Sets the file type. Only used by TrackDAO and SoundSourceProxy!
+    // File/format type
     void setType(const QString&);
+    QString getType() const;
 
     void setChannels(int iChannels);
     // Get number of channels
@@ -158,7 +156,7 @@ class Track : public QObject {
 
     // Indicates if the metadata has been parsed from file tags.
     bool isHeaderParsed() const;
-    // Only used by TrackDAO!
+    // Only used by a free function in TrackDAO!
     void setHeaderParsed(bool headerParsed);
 
     void setDateAdded(const QDateTime& dateAdded);
@@ -288,7 +286,8 @@ class Track : public QObject {
             bool parsedFromFile);
     void getTrackMetadata(
             mixxx::TrackMetadata* pTrackMetadata,
-            bool* pHeaderParsed) const;
+            bool* pHeaderParsed = nullptr,
+            bool* pDirty = nullptr) const;
 
     // Mark the track dirty if it isn't already.
     void markDirty();
@@ -331,6 +330,10 @@ class Track : public QObject {
           const SecurityTokenPointer& pSecurityToken,
           TrackId trackId);
 
+    // Set a unique identifier for the track. Only used by
+    // TrackDAO!
+    void initId(TrackId id); // write-once
+
     // Set whether the TIO is dirty or not and unlock before emitting
     // any signals. This must only be called from member functions
     // while the TIO is locked.
@@ -339,10 +342,6 @@ class Track : public QObject {
 
     void setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats);
     void setKeysAndUnlock(QMutexLocker* pLock, const Keys& keys);
-
-    // Set a unique identifier for the track.
-    // Only used by TrackDAO!
-    void setId(TrackId id);
 
     enum class DurationRounding {
         SECONDS, // rounded to full seconds
