@@ -6,99 +6,7 @@
  */
 #include "analyzer/vamp/vampanalyzer.h"
 
-#include <QDir>
-#include <QtDebug>
-#include <QDesktopServices>
-#include <QCoreApplication>
-#include <QStringList>
-
-#ifdef __WINDOWS__
-    #include <windows.h>
-    #define PATH_SEPARATOR ";"
-#else
-    #define PATH_SEPARATOR ":"
-#endif
-
-using Vamp::Plugin;
-using Vamp::PluginHostAdapter;
-
-void VampAnalyzer::initializePluginPaths() {
-    const char* pVampPath = getenv("VAMP_PATH");
-    QString vampPath = "";
-    if (pVampPath) {
-        vampPath = QString(pVampPath);
-    }
-
-    // TODO(XXX) use correct split separator here.
-    QStringList pathElements = vampPath.length() > 0 ? vampPath.split(PATH_SEPARATOR)
-            : QStringList();
-
-    const QString dataLocation = QDesktopServices::storageLocation(
-            QDesktopServices::DataLocation);
-    const QString applicationPath = QCoreApplication::applicationDirPath();
-
-#ifdef __WINDOWS__
-    QDir winVampPath(applicationPath);
-    if (winVampPath.cd("plugins") && winVampPath.cd("vamp")) {
-        pathElements << winVampPath.absolutePath().replace("/","\\");
-    } else {
-        qDebug() << winVampPath.absolutePath() << "does not exist!";
-    }
-#elif __APPLE__
-    // Location within the OS X bundle that we store plugins.
-    // blah/Mixxx.app/Contents/MacOS/
-    QDir bundlePluginDir(applicationPath);
-    if (bundlePluginDir.cdUp() && bundlePluginDir.cd("PlugIns")) {
-        pathElements << bundlePluginDir.absolutePath();
-    }
-
-    // For people who build from source.
-    QDir developer32Root(applicationPath);
-    if (developer32Root.cd("osx32_build") && developer32Root.cd("vamp-plugins")) {
-        pathElements << developer32Root.absolutePath();
-    }
-    QDir developer64Root(applicationPath);
-    if (developer64Root.cd("osx64_build") && developer64Root.cd("vamp-plugins")) {
-        pathElements << developer64Root.absolutePath();
-    }
-
-    QDir dataPluginDir(dataLocation);
-    if (dataPluginDir.cd("Plugins") && dataPluginDir.cd("vamp")) {
-        pathElements << dataPluginDir.absolutePath();
-    }
-#elif __LINUX__
-    QDir libPath(UNIX_LIB_PATH);
-    if (libPath.cd("plugins") && libPath.cd("vamp")) {
-        pathElements << libPath.absolutePath();
-    }
-
-    QDir dataPluginDir(dataLocation);
-    if (dataPluginDir.cd("plugins") && dataPluginDir.cd("vamp")) {
-        pathElements << dataPluginDir.absolutePath();
-    }
-
-    // For people who build from source.
-    QDir developer32Root(applicationPath);
-    if (developer32Root.cd("lin32_build") && developer32Root.cd("vamp-plugins")) {
-        pathElements << developer32Root.absolutePath();
-    }
-    QDir developer64Root(applicationPath);
-    if (developer64Root.cd("lin64_build") && developer64Root.cd("vamp-plugins")) {
-        pathElements << developer64Root.absolutePath();
-    }
-#endif
-
-    QString newPath = pathElements.join(PATH_SEPARATOR);
-    qDebug() << "Setting VAMP_PATH to: " << newPath;
-    QByteArray newPathBA = newPath.toLocal8Bit();
-#ifndef __WINDOWS__
-    setenv("VAMP_PATH", newPathBA.constData(), 1);
-#else
-    QString winpath = "VAMP_PATH=" + newPath;
-    QByteArray winpathBA = winpath.toLocal8Bit();
-    putenv(winpathBA.constData());
-#endif
-}
+#include "analyzer/vamp/vamppluginloader.h"
 
 VampAnalyzer::VampAnalyzer()
     : m_iSampleCount(0),
@@ -141,7 +49,6 @@ bool VampAnalyzer::Init(const QString pluginlibrary, const QString pluginid,
         qDebug() << "VampAnalyzer: kill plugin";
     }
 
-    VampPluginLoader *loader = VampPluginLoader::getInstance();
     QStringList pluginlist = pluginid.split(":");
     if (pluginlist.size() != 2) {
         qDebug() << "VampAnalyzer: got malformed pluginid: " << pluginid;
@@ -156,22 +63,23 @@ bool VampAnalyzer::Init(const QString pluginlibrary, const QString pluginid,
     }
 
     QString plugin = pluginlist.at(0);
-    m_key = loader->composePluginKey(pluginlibrary.toStdString(),
+    mixxx::VampPluginLoader pluginLoader;
+    m_key = pluginLoader.composePluginKey(pluginlibrary.toStdString(),
                                      plugin.toStdString());
-    m_plugin = loader->loadPlugin(m_key, m_rate,
+    m_plugin = pluginLoader.loadPlugin(m_key, m_rate,
                                   Vamp::HostExt::PluginLoader::ADAPT_ALL_SAFE);
 
     if (!m_plugin) {
         qDebug() << "VampAnalyzer: Cannot load Vamp Plug-in.";
         qDebug() << "Please copy libmixxxminimal.so from build dir to one of the following:";
 
-        std::vector<std::string> path = PluginHostAdapter::getPluginPath();
+        std::vector<std::string> path = Vamp::PluginHostAdapter::getPluginPath();
         for (unsigned int i = 0; i < path.size(); i++) {
             qDebug() << QString::fromStdString(path[i]);
         }
         return false;
     }
-    Plugin::OutputList outputs = m_plugin->getOutputDescriptors();
+    Vamp::Plugin::OutputList outputs = m_plugin->getOutputDescriptors();
     if (outputs.empty()) {
         qDebug() << "VampAnalyzer: Plugin has no outputs!";
         return false;
@@ -331,7 +239,7 @@ bool VampAnalyzer::SetParameter(const QString parameter, const double value) {
 }
 
 void VampAnalyzer::SelectOutput(const int outputnumber) {
-    Plugin::OutputList outputs = m_plugin->getOutputDescriptors();
+    Vamp::Plugin::OutputList outputs = m_plugin->getOutputDescriptors();
     if (outputnumber >= 0 && outputnumber < int(outputs.size())) {
         m_iOutput = outputnumber;
     }

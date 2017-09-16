@@ -2,7 +2,15 @@
 
 #include "sources/soundsourcesndfile.h"
 
+#include "util/logger.h"
+
 namespace mixxx {
+
+namespace {
+
+const Logger kLogger("SoundSourceSndFile");
+
+} // anonymous namespace
 
 SoundSourceSndFile::SoundSourceSndFile(const QUrl& url)
         : SoundSource(url),
@@ -46,7 +54,7 @@ SoundSource::OpenResult SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*a
             // that contains data in an unsupported format!
             return OpenResult::ABORTED;
         } else {
-            qWarning() << "Error opening libsndfile file:"
+            kLogger.warning() << "Error opening libsndfile file:"
                     << getUrlString()
                     << errorMsg;
             return OpenResult::FAILED;
@@ -69,7 +77,7 @@ void SoundSourceSndFile::close() {
             m_pSndFile = nullptr;
             m_curFrameIndex = getMinFrameIndex();
         } else {
-            qWarning() << "Failed to close file:" << closeResult
+            kLogger.warning() << "Failed to close file:" << closeResult
                     << sf_strerror(m_pSndFile)
                     << getUrlString();
         }
@@ -95,7 +103,7 @@ SINT SoundSourceSndFile::seekSampleFrame(
         m_curFrameIndex = seekResult;
         return seekResult;
     } else {
-        qWarning() << "Failed to seek libsnd file:" << seekResult
+        kLogger.warning() << "Failed to seek libsnd file:" << seekResult
                 << sf_strerror(m_pSndFile);
         return sf_seek(m_pSndFile, 0, SEEK_CUR);
     }
@@ -128,7 +136,7 @@ SINT SoundSourceSndFile::readSampleFrames(
         m_curFrameIndex += readCount;
         return readCount;
     } else {
-        qWarning() << "Failed to read from libsnd file:" << readCount
+        kLogger.warning() << "Failed to read from libsnd file:" << readCount
                 << sf_strerror(m_pSndFile);
         return 0;
     }

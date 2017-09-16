@@ -9,8 +9,11 @@
 #include "engine/effects/engineeffectchain.h"
 #include "util/assert.h"
 
-const char* kEqualizerRackName = "[EqualizerChain]";
-const char* kQuickEffectRackName = "[QuickEffectChain]";
+namespace {
+const QString kEffectGroupSeparator = "_";
+const QString kGroupClose = "]";
+} // anonymous namespace
+
 
 EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig)
         : QObject(pParent),
@@ -218,17 +221,97 @@ EffectRackPointer EffectsManager::getEffectRack(const QString& group) {
     return m_pEffectChainManager->getEffectRack(group);
 }
 
-void EffectsManager::setup() {
-    // Add a general purpose rack
-    QList<std::pair<EffectChainPointer, QDomElement>> savedChains;
-    savedChains = m_pEffectChainManager->loadEffectChains();
+EffectSlotPointer EffectsManager::getEffectSlot(
+        const QString& group) {
+    QRegExp intRegEx(".*(\\d+).*");
 
-    StandardEffectRackPointer pStandardRack = addStandardEffectRack();
-    for (auto chain : savedChains) {
-        pStandardRack->addEffectChainSlot(chain.first, chain.second);
+    QStringList parts = group.split(kEffectGroupSeparator);
+
+    EffectRackPointer pRack = getEffectRack(parts.at(0) + kGroupClose);
+    VERIFY_OR_DEBUG_ASSERT(pRack) {
+        return EffectSlotPointer();
     }
 
-    EffectChainPointer pChain = EffectChainPointer(new EffectChain(
+    EffectChainSlotPointer pChainSlot;
+    if (parts.at(0) == "[EffectRack1") {
+        intRegEx.indexIn(parts.at(1));
+        pChainSlot = pRack->getEffectChainSlot(intRegEx.cap(1).toInt() - 1);
+    } else {
+        // Assume a PerGroupRack
+        const QString chainGroup =
+                parts.at(0) + kEffectGroupSeparator + parts.at(1) + kGroupClose;
+        for (int i = 0; i < pRack->numEffectChainSlots(); ++i) {
+            EffectChainSlotPointer pSlot = pRack->getEffectChainSlot(i);
+            if (pSlot->getGroup() == chainGroup) {
+                pChainSlot = pSlot;
+                break;
+            }
+        }
+    }
+    VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
+        return EffectSlotPointer();
+    }
+
+    intRegEx.indexIn(parts.at(2));
+    EffectSlotPointer pEffectSlot =
+            pChainSlot->getEffectSlot(intRegEx.cap(1).toInt() - 1);
+    return pEffectSlot;
+}
+
+EffectParameterSlotPointer EffectsManager::getEffectParameterSlot(
+        const ConfigKey& configKey) {
+    EffectSlotPointer pEffectSlot =
+             getEffectSlot(configKey.group);
+    VERIFY_OR_DEBUG_ASSERT(pEffectSlot) {
+        return EffectParameterSlotPointer();
+    }
+
+    QRegExp intRegEx(".*(\\d+).*");
+    intRegEx.indexIn(configKey.item);
+    EffectParameterSlotPointer pParameterSlot =
+            pEffectSlot->getEffectParameterSlot(intRegEx.cap(1).toInt() - 1);
+    return pParameterSlot;
+}
+
+EffectButtonParameterSlotPointer EffectsManager::getEffectButtonParameterSlot(
+        const ConfigKey& configKey) {
+    EffectSlotPointer pEffectSlot =
+             getEffectSlot(configKey.group);
+    VERIFY_OR_DEBUG_ASSERT(pEffectSlot) {
+        return EffectButtonParameterSlotPointer();
+    }
+
+    QRegExp intRegEx(".*(\\d+).*");
+    intRegEx.indexIn(configKey.item);
+    EffectButtonParameterSlotPointer pParameterSlot =
+            pEffectSlot->getEffectButtonParameterSlot(intRegEx.cap(1).toInt() - 1);
+    return pParameterSlot;
+}
+
+
+void EffectsManager::setup() {
+    // These controls are used inside EQ Effects
+    m_pLoEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040);
+    m_pHiEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);
+
+    // Add an EqualizerRack.
+    EqualizerRackPointer pEqRack = addEqualizerRack();
+    // Add Master EQ here, because EngineMaster is already up
+    pEqRack->addEffectChainSlotForGroup("[Master]");
+
+    // Add a QuickEffectRack
+    addQuickEffectRack();
+
+    // Add a general purpose rack
+    StandardEffectRackPointer pStandardRack = addStandardEffectRack();
+    for (int i = 0; i < EffectChainManager::kNumStandardEffectChains; ++i) {
+        pStandardRack->addEffectChainSlot();
+    }
+
+    // populate rack and restore state from effects.xml
+    m_pEffectChainManager->loadEffectChains(pStandardRack.data());
+
+    EffectChainPointer pChain(new EffectChain(
            this, "org.mixxx.effectchain.flanger"));
     pChain->setName(tr("Flanger"));
     EffectPointer pEffect = instantiateEffect(
@@ -272,18 +355,6 @@ void EffectsManager::setup() {
     pEffect = instantiateEffect("org.mixxx.effects.autopan");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
-
-    // These controls are used inside EQ Effects
-    m_pLoEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040);
-    m_pHiEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);
-
-    // Add an EqualizerRack.
-    EqualizerRackPointer pEqRack = addEqualizerRack();
-    // Add Master EQ here, because EngineMaster is already up
-    pEqRack->addEffectChainSlotForGroup("[Master]");
-
-    // Add a QuickEffectRack
-    addQuickEffectRack();
 }
 
 bool EffectsManager::writeRequest(EffectsRequest* request) {

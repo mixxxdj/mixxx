@@ -22,7 +22,6 @@ EffectManifest ReverbEffect::getManifest() {
             "(NRev, KipRev) all based on the Chowning/Moorer/Schroeder "
             "reverberators, which use networks of simple allpass and comb"
             "delay filters.");
-    manifest.setEffectRampsFromDry(true);
 
     EffectManifestParameter* decay = manifest.addParameter();
     decay->setId("decay");
@@ -96,7 +95,6 @@ void ReverbEffect::processChannel(const ChannelHandle& handle,
                                 const EffectProcessor::EnableState enableState,
                                 const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
-    Q_UNUSED(enableState);
     Q_UNUSED(groupFeatures);
 
     if (!pState || !m_pDecayParameter || !m_pBandWidthParameter || !m_pDampingParameter || !m_pSendParameter) {
@@ -109,8 +107,11 @@ void ReverbEffect::processChannel(const ChannelHandle& handle,
     const auto damping = m_pDampingParameter->value();
     const auto send = m_pSendParameter->value();
 
-    if (pState->sampleRate != sampleRate) {
-        // update the sample rate if it's changed
+    // Reinitialize the effect when turning it on to prevent replaying the old buffer
+    // from the last time the effect was enabled.
+    // Also, update the sample rate if it has changed.
+    if (enableState == EffectProcessor::ENABLING
+        || pState->sampleRate != sampleRate) {
         pState->reverb.init(sampleRate);
         pState->sampleRate = sampleRate;
     }

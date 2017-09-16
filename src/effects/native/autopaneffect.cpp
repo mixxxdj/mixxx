@@ -96,7 +96,7 @@ AutoPanEffect::AutoPanEffect(EngineEffect* pEffect, const EffectManifest& manife
 AutoPanEffect::~AutoPanEffect() {
 }
 
-void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* pGroupState,
+void AutoPanEffect::processChannel(const ChannelHandle& handle, AutoPanGroupState* pGroupState,
                               const CSAMPLE* pInput,
                               CSAMPLE* pOutput, const unsigned int numSamples,
                               const unsigned int sampleRate,
@@ -108,7 +108,7 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         return;
     }
 
-    PanGroupState& gs = *pGroupState;
+    AutoPanGroupState& gs = *pGroupState;
     double width = m_pWidthParameter->value();
     double period = m_pPeriodParameter->value();
     double periodUnit = m_pPeriodUnitParameter->value();
@@ -120,7 +120,7 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
     bool timePaused = period > m_pPeriodParameter->maximum() - 1
             && enableState != EffectProcessor::ENABLING;
 
-    if (periodUnit == 1 && groupFeatures.has_beat_length) {
+    if (periodUnit == 1 && groupFeatures.has_beat_length_sec) {
         // floor the param on one of these values :
         // 1/16, 1/8, 1/4, 1/2, 1, 2, 4, 8, 16, 32, 64, 128
 
@@ -136,7 +136,7 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
             i--;
         }
 
-        period = groupFeatures.beat_length * beats;
+        period = groupFeatures.beat_length_sec * beats * sampleRate;
     } else {
         // max period is 128 seconds
         period *= sampleRate;

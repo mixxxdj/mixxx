@@ -5,6 +5,7 @@
 #include <QGLShaderProgram>
 #include <QtOpenGL>
 
+#include "track/track.h"
 #include "waveformrenderersignalbase.h"
 
 class GLSLWaveformRendererSignal : public QObject, public WaveformRendererSignalBase {
@@ -35,6 +36,7 @@ class GLSLWaveformRendererSignal : public QObject, public WaveformRendererSignal
     GLint m_unitQuadListId;
     GLuint m_textureId;
 
+    TrackPointer m_loadedTrack;
     int m_loadedWaveform;
 
     //Frame buffer for two pass rendering

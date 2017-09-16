@@ -2,9 +2,11 @@
 #include <QtDebug>
 #include <QDir>
 
-#include "track/track.h"
-#include "analyzer/analyzerwaveform.h"
 #include "test/mixxxtest.h"
+
+#include "analyzer/analyzerwaveform.h"
+#include "library/dao/analysisdao.h"
+#include "track/track.h"
 
 #define BIGBUF_SIZE (1024 * 1024)  //Megabyte
 #define CANARY_SIZE (1024*4)
@@ -15,8 +17,14 @@ namespace {
 
 class AnalyzerWaveformTest: public MixxxTest {
   protected:
+    AnalyzerWaveformTest()
+      : analysisDao(config()),
+        aw(&analysisDao),
+        bigbuf(nullptr),
+        canaryBigBuf(nullptr) {
+    }
+
     void SetUp() override {
-        aw = new AnalyzerWaveform(config());
         tio = Track::newTemporary();
         tio->setSampleRate(44100);
 
@@ -37,12 +45,13 @@ class AnalyzerWaveformTest: public MixxxTest {
     }
 
     void TearDown() override {
-        delete aw;
         delete [] bigbuf;
         delete [] canaryBigBuf;
     }
 
-    AnalyzerWaveform* aw;
+  protected:
+    AnalysisDao analysisDao;
+    AnalyzerWaveform aw;
     TrackPointer tio;
     CSAMPLE* bigbuf;
     CSAMPLE* canaryBigBuf;
@@ -50,9 +59,9 @@ class AnalyzerWaveformTest: public MixxxTest {
 
 //Test to make sure we don't modify the source buffer.
 TEST_F(AnalyzerWaveformTest, simpleAnalyze) {
-    aw->initialize(tio, tio->getSampleRate(), BIGBUF_SIZE);
-    aw->process(bigbuf, BIGBUF_SIZE);
-    aw->finalize(tio);
+    aw.initialize(tio, tio->getSampleRate(), BIGBUF_SIZE);
+    aw.process(bigbuf, BIGBUF_SIZE);
+    aw.finalize(tio);
     for (int i = 0; i < BIGBUF_SIZE; i++) {
         EXPECT_FLOAT_EQ(bigbuf[i], MAGIC_FLOAT);
     }
@@ -60,9 +69,9 @@ TEST_F(AnalyzerWaveformTest, simpleAnalyze) {
 
 //Basic test to make sure we don't step out of bounds.
 TEST_F(AnalyzerWaveformTest, canary) {
-    aw->initialize(tio, tio->getSampleRate(), BIGBUF_SIZE);
-    aw->process(&canaryBigBuf[CANARY_SIZE], BIGBUF_SIZE);
-    aw->finalize(tio);
+    aw.initialize(tio, tio->getSampleRate(), BIGBUF_SIZE);
+    aw.process(&canaryBigBuf[CANARY_SIZE], BIGBUF_SIZE);
+    aw.finalize(tio);
     for (int i = 0; i < CANARY_SIZE; i++) {
         EXPECT_FLOAT_EQ(canaryBigBuf[i], CANARY_FLOAT);
     }
@@ -75,14 +84,14 @@ TEST_F(AnalyzerWaveformTest, canary) {
 //initialize(..) and process(..) is told to process more samples than that,
 //that we don't step out of bounds.
 TEST_F(AnalyzerWaveformTest, wrongTotalSamples) {
-    aw->initialize(tio, tio->getSampleRate(), BIGBUF_SIZE/2);
+    aw.initialize(tio, tio->getSampleRate(), BIGBUF_SIZE/2);
     // Deliver double the expected samples
     int wrongTotalSamples = BIGBUF_SIZE;
     int blockSize = 2*32768;
     for (int i = CANARY_SIZE; i < CANARY_SIZE+wrongTotalSamples; i += blockSize) {
-        aw->process(&canaryBigBuf[i], blockSize);
+        aw.process(&canaryBigBuf[i], blockSize);
     }
-    aw->finalize(tio);
+    aw.finalize(tio);
     //Ensure the source buffer is intact
     for (int i = CANARY_SIZE; i < BIGBUF_SIZE; i++) {
         EXPECT_FLOAT_EQ(canaryBigBuf[i], MAGIC_FLOAT);

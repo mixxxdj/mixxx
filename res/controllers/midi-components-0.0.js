@@ -57,7 +57,12 @@
         // default attributes
         // You should probably overwrite at least some of these.
         inValueScale: function (value) {
-            return value / this.max;
+            // Hack to get exact center of pots to return 0.5
+            if (value > (this.max / 2)) {
+                return (value - 1) / (this.max - 1);
+            } else {
+                return value / (this.max + 1);
+            }
         },
         // map input in the XML file, not inValueScale
         input: function (channel, control, value, status, group) {
@@ -158,7 +163,12 @@
         Component.call(this, options);
     };
     Button.prototype = new Component({
-        onlyOnPress: true,
+        types: {
+            push: 0,
+            toggle: 1,
+            powerWindow: 2,
+        },
+        type: 0,
         on: 127,
         off: 0,
         // Time in milliseconds to distinguish a short press from a long press.
@@ -169,31 +179,30 @@
         isPress: function (channel, control, value, status) {
             return value > 0;
         },
-        inValueScale: function () { return ! this.inGetValue(); },
         input: function (channel, control, value, status, group) {
-            if (this.powerWindow) {
+            if (this.type === undefined || this.type === this.types.push) {
+                this.inSetValue(this.isPress(channel, control, value, status));
+            } else if (this.type === this.types.toggle) {
                 if (this.isPress(channel, control, value, status)) {
-                    script.toggleControl(this.group, this.inKey);
+                    this.inToggle();
+                }
+            } else if (this.type === this.types.powerWindow) {
+                if (this.isPress(channel, control, value, status)) {
+                    this.inToggle();
+                    this.isLongPressed = false;
                     this.longPressTimer = engine.beginTimer(this.longPressTimeout, function () {
                         this.isLongPressed = true;
+                        this.longPressTimer = 0;
                     }, true);
                 } else {
                     if (this.isLongPressed) {
-                        script.toggleControl(this.group, this.inKey);
+                        this.inToggle();
                     }
-                    if (this.longPressTimer) {
+                    if (this.longPressTimer !== 0) {
                         engine.stopTimer(this.longPressTimer);
-                        this.isLongPressed = false;
                         this.longPressTimer = 0;
                     }
-                }
-            } else {
-                if (this.onlyOnPress) {
-                    if (this.isPress(channel, control, value, status)) {
-                        this.inSetValue(this.inValueScale(value));
-                    }
-                } else {
-                    this.inSetValue(this.inValueScale(value));
+                    this.isLongPressed = false;
                 }
             }
         },
@@ -212,6 +221,7 @@
         shift: function () {
             this.inKey = 'reverse';
         },
+        type: Button.prototype.types.toggle,
         outKey: 'play_indicator',
     });
 
@@ -223,10 +233,11 @@
             this.inKey = 'cue_default';
         },
         shift: function () {
-            this.inKey = 'start_stop';
-        },
-        input: function (channel, control, value, status, group) {
-            this.inSetValue(this.isPress(channel, control, value, status));
+            if (this.reverseRollOnShift) {
+                this.inKey = 'reverseroll';
+            } else {
+                this.inKey = 'start_stop';
+            }
         },
         outKey: 'cue_indicator',
     });
@@ -242,17 +253,22 @@
                         engine.setValue(this.group, 'beatsync', 1);
                         this.longPressTimer = engine.beginTimer(this.longPressTimeout, function () {
                             engine.setValue(this.group, 'sync_enabled', 1);
+                            this.longPressTimer = 0;
                         }, true);
                     } else {
                         engine.setValue(this.group, 'sync_enabled', 0);
                     }
                 } else {
-                    engine.stopTimer(this.longPressTimer);
+                    if (this.longPressTimer !== 0) {
+                        engine.stopTimer(this.longPressTimer);
+                        this.longPressTimer = 0;
+                    }
                 }
             };
         },
         shift: function () {
             this.inKey = 'quantize';
+            this.type = Button.prototype.types.toggle;
             this.input = Button.prototype.input;
         },
         outKey: 'sync_enabled',
@@ -285,7 +301,6 @@
         shift: function () {
             this.inKey = 'hotcue_' + this.number + '_clear';
         },
-        onlyOnPress: false,
     });
 
     var SamplerButton = function (options) {
@@ -349,7 +364,9 @@
         options.group = '[EffectRack1_EffectUnit' + options.effectUnit + ']';
         Button.call(this, options);
     };
-    EffectAssignmentButton.prototype = new Button();
+    EffectAssignmentButton.prototype = new Button({
+        type: Button.prototype.types.toggle,
+    });
 
     var Pot = function (options) {
         Component.call(this, options);
@@ -357,54 +374,18 @@
         this.firstValueReceived = false;
     };
     Pot.prototype = new Component({
-        relative: false,
-        inValueScale: function (value) { return value / this.max; },
-        shift: function () {
-            if (this.relative) {
-                this.input = function (channel, control, value, status, group) {
-                    // Do not manipulate inKey, just store the position of the
-                    // physical potentiometer for calculating how much it moves
-                    // when shift is released.
-                    if (this.MSB !== undefined) {
-                        value = (this.MSB << 7) + value;
-                    }
-                    this.previousValueReceived = value;
-                }
+        input: function (channel, control, value, status, group) {
+            if (this.MSB !== undefined) {
+                value = (this.MSB << 7) + value;
             }
-        },
-        unshift: function () {
-            this.input = function (channel, control, value, status, group) {
-                if (this.MSB !== undefined) {
-                    value = (this.MSB << 7) + value;
-                }
-                if (this.relative) {
-                    if (this.previousValueReceived !== undefined) {
-                        var delta = (value - this.previousValueReceived) / this.max;
-                        if (this.invert) {
-                            delta = -delta;
-                        }
-                        this.inSetParameter(this.inGetParameter() + delta);
-                    } else {
-                        var newValue = value / this.max;
-                        if (this.invert) {
-                            newValue = 1 - newValue;
-                        }
-                        if (this.loadStateOnStartup) {
-                            this.inSetParameter(newValue);
-                        }
-                    }
-                    this.previousValueReceived = value;
-                } else {
-                    var newValue = this.inValueScale(value);
-                    if (this.invert) {
-                        newValue = 1 - newValue;
-                    }
-                    this.inSetParameter(newValue);
-                    if (!this.firstValueReceived) {
-                        this.firstValueReceived = true;
-                        this.connect();
-                    }
-                }
+            var newValue = this.inValueScale(value);
+            if (this.invert) {
+                newValue = 1 - newValue;
+            }
+            this.inSetParameter(newValue);
+            if (!this.firstValueReceived) {
+                this.firstValueReceived = true;
+                this.connect();
             }
         },
         // Input handlers for 14 bit MIDI
@@ -492,6 +473,15 @@
         shift: function () {
             this.forEachComponent(function (component) {
                 if (typeof component.shift === 'function') {
+                    if (component instanceof Button
+                        && (component.type === Button.prototype.types.push
+                            || component.type === undefined)
+                        && component.inKey !== undefined
+                        && component.input === Button.prototype.input) {
+                        if (engine.getValue(component.group, component.inKey) !== 0) {
+                            engine.setValue(component.group, component.inKey, 0);
+                        }
+                    }
                     component.shift();
                 }
                 // Set isShifted for child ComponentContainers forEachComponent is iterating through recursively
@@ -501,6 +491,15 @@
         unshift: function () {
             this.forEachComponent(function (component) {
                 if (typeof component.unshift === 'function') {
+                    if (component instanceof Button
+                        && (component.type === Button.prototype.types.push
+                            || component.type === undefined)
+                        && component.inKey !== undefined
+                        && component.input === Button.prototype.input) {
+                        if (engine.getValue(component.group, component.inKey) !== 0) {
+                            engine.setValue(component.group, component.inKey, 0);
+                        }
+                    }
                     component.unshift();
                 }
                 // Set isShifted for child ComponentContainers forEachComponent is iterating through recursively
@@ -717,6 +716,7 @@
             this[channel] = new Button({
                 group: eu.group,
                 key: 'group_[' + channel + ']_enable',
+                type: Button.prototype.types.toggle,
                 outConnect: false,
             });
         };
@@ -746,6 +746,7 @@
                 };
             },
             shift: function () {
+                engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
                 this.valueAtLastEffectSwitch = this.previousValueReceived;
                 // Floor the threshold to ensure that every effect can be selected
                 this.changeThreshold = Math.floor(this.max /
@@ -803,7 +804,7 @@
         this.EffectEnableButton.prototype = new Button({
             stopEffectFocusChooseMode: function () {
                 this.inKey = 'enabled';
-                this.powerWindow = true;
+                this.type = Button.prototype.types.powerWindow;
                 this.input = Button.prototype.input;
 
                 this.outKey = 'enabled';
@@ -828,7 +829,7 @@
                                                                 this.output);
                 };
                 this.output = function (value, group, control) {
-                    this.send(value === this.number);
+                    this.send((value === this.number) ? this.on : this.off);
                 };
             },
         });

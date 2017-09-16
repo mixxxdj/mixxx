@@ -252,8 +252,7 @@ class SkinContext {
     }
 
   private:
-    PixmapSource getPixmapSourceInner(const QString& filename,
-                                      const SvgParser& svgParser) const;
+    PixmapSource getPixmapSourceInner(const QString& filename) const;
 
     QDomElement loadSvg(const QString& filename) const;
 

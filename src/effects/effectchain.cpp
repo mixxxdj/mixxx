@@ -19,7 +19,7 @@ EffectChain::EffectChain(EffectsManager* pEffectsManager, const QString& id,
           m_name(""),
           m_insertionType(EffectChain::INSERT),
           m_dMix(0),
-          m_pEngineEffectChain(NULL),
+          m_pEngineEffectChain(nullptr),
           m_bAddedToEngine(false) {
 }
 
@@ -51,6 +51,10 @@ void EffectChain::addToEngine(EngineEffectRack* pRack, int iIndex) {
 }
 
 void EffectChain::removeFromEngine(EngineEffectRack* pRack, int iIndex) {
+    if (!m_bAddedToEngine) {
+        return;
+    }
+
     // Order doesn't matter when removing.
     for (int i = 0; i < m_effects.size(); ++i) {
         EffectPointer pEffect = m_effects[i];
@@ -67,7 +71,7 @@ void EffectChain::removeFromEngine(EngineEffectRack* pRack, int iIndex) {
     m_pEffectsManager->writeRequest(pRequest);
     m_bAddedToEngine = false;
 
-    m_pEngineEffectChain = NULL;
+    m_pEngineEffectChain = nullptr;
 }
 
 void EffectChain::updateEngineState() {
@@ -147,6 +151,9 @@ void EffectChain::setEnabled(bool enabled) {
 }
 
 void EffectChain::enableForChannel(const ChannelHandleAndGroup& handle_group) {
+    if (!m_bAddedToEngine) {
+        return;
+    }
     if (!m_enabledChannels.contains(handle_group)) {
         m_enabledChannels.insert(handle_group);
 
@@ -169,6 +176,9 @@ const QSet<ChannelHandleAndGroup>& EffectChain::enabledChannels() const {
 }
 
 void EffectChain::disableForChannel(const ChannelHandleAndGroup& handle_group) {
+    if (!m_bAddedToEngine) {
+        return;
+    }
     if (m_enabledChannels.remove(handle_group)) {
         EffectsRequest* request = new EffectsRequest();
         request->type = EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_CHANNEL;
@@ -281,6 +291,11 @@ void EffectChain::sendParameterUpdate() {
 // static
 EffectChainPointer EffectChain::createFromXml(EffectsManager* pEffectsManager,
                                         const QDomElement& element) {
+    if (!element.hasChildNodes()) {
+        // An empty element <EffectChain/> is treated as an ejected Chain (null)
+        return EffectChainPointer();
+    }
+
     QString id = XmlParse::selectNodeQString(element,
                                              EffectXml::ChainId);
     QString name = XmlParse::selectNodeQString(element,
@@ -290,16 +305,13 @@ EffectChainPointer EffectChain::createFromXml(EffectsManager* pEffectsManager,
     QString insertionTypeStr = XmlParse::selectNodeQString(element,
                                                            EffectXml::ChainInsertionType);
 
-    EffectChain* pChain = new EffectChain(pEffectsManager, id);
+    EffectChainPointer pChain(new EffectChain(pEffectsManager, id));
     pChain->setName(name);
     pChain->setDescription(description);
     InsertionType insertionType = insertionTypeFromString(insertionTypeStr);
     if (insertionType != NUM_INSERTION_TYPES) {
         pChain->setInsertionType(insertionType);
     }
-
-    EffectChainPointer pChainWrapped(pChain);
-    pEffectsManager->getEffectChainManager()->addEffectChain(pChainWrapped);
 
     QDomElement effects = XmlParse::selectElement(element, EffectXml::EffectsRoot);
     QDomNodeList effectChildren = effects.childNodes();
@@ -313,5 +325,5 @@ EffectChainPointer EffectChain::createFromXml(EffectsManager* pEffectsManager,
         }
     }
 
-    return pChainWrapped;
+    return pChain;
 }

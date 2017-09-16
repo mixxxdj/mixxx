@@ -3,7 +3,7 @@ Description:
   Floating VUMeter next to big CoverArt/Spinny in decks.
 Variables:
   group   : [ChannelN]
-  channum : channel number
+  chanNum : channel number
 -->
 <Template>
   <WidgetGroup>

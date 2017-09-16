@@ -1,8 +1,7 @@
 <Template>
 		<WidgetGroup>
 			<Pos>0,0</Pos>
-            <MaximumSize>93,50</MaximumSize>
-			<Size>93,50</Size>
+			<Size>93f,54f</Size>
 			<Style>QGroupBox { border: 0px solid yellow; border-right: 1px solid #626f87; background: url(skin:/style/style_bg_microphone.png) no-repeat;} QWidget { margin: 0; padding: 0; }</Style>
 			<!--<Layout>horizontal</Layout>-->
 			<Children>

@@ -11,18 +11,6 @@
 #include "util/db/sqllikewildcardescaper.h"
 
 
-DirectoryDAO::DirectoryDAO(QSqlDatabase& database)
-            : m_database(database) {
-}
-
-DirectoryDAO::~DirectoryDAO() {
-}
-
-void DirectoryDAO::initialize() {
-    qDebug() << "DirectoryDAO::initialize" << QThread::currentThread()
-             << m_database.connectionName();
-}
-
 int DirectoryDAO::addDirectory(const QString& newDir) {
     // Do nothing if the dir to add is a child of a directory that is already in
     // the db.

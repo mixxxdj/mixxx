@@ -25,8 +25,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="4"
-     inkscape:cx="32.249029"
-     inkscape:cy="19.864855"
+     inkscape:cx="49.065902"
+     inkscape:cy="-1.8330486"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -61,32 +61,36 @@
        style="fill:#aaaaaa;fill-opacity:1;fill-rule:nonzero;stroke:none"
        id="rect3877-3"
        width="2"
-       height="20"
+       height="18"
        x="2"
-       y="1030.3622" />
+       y="1031.3622" />
     <rect
        style="fill:#aaaaaa;fill-opacity:1;fill-rule:nonzero;stroke:none"
        id="rect3877-3-6"
        width="2"
-       height="20"
+       height="18"
        x="20"
-       y="1030.3622" />
-    <path
-       sodipodi:type="star"
+       y="1031.3622" />
+    <rect
        style="fill:#aaaaaa;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       id="path3018-1-9-2"
-       sodipodi:sides="3"
-       sodipodi:cx="3"
-       sodipodi:cy="5"
-       sodipodi:r1="15.119611"
-       sodipodi:r2="7.5598059"
-       sodipodi:arg1="0"
-       sodipodi:arg2="1.0471976"
-       inkscape:flatsided="true"
-       inkscape:rounded="0"
-       inkscape:randomized="0"
-       d="m 18.119611,5 -22.6794164,13.093967 0,-26.187934 z"
-       transform="matrix(0.34366972,0,0,-0.34366972,13.772837,1042.0805)"
-       inkscape:transform-center-x="-1.2990561" />
+       id="rect3877-3-6-8-7"
+       width="1"
+       height="18"
+       x="18"
+       y="1031.3622" />
+    <rect
+       style="fill:#8c8c8c;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect3877-3-6-8-9-4"
+       width="1"
+       height="18"
+       x="16"
+       y="1031.3622" />
+    <rect
+       style="fill:#6e6e6e;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect3877-3-6-8-9-3-1"
+       width="1"
+       height="18"
+       x="14"
+       y="1031.3622" />
   </g>
 </svg>

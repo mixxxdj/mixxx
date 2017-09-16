@@ -11,49 +11,64 @@ Variables:
 <Template>
   <WidgetGroup>
     <ObjectName>WaveformContainer</ObjectName>
-    <Layout>vertical</Layout>
+    <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
 
-      <WidgetGroup>
+      <WidgetGroup><!-- Waveforms -->
         <Layout>vertical</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
-          <Template src="skin:waveform.xml"><!-- 1 -->
-            <SetVariable name="channum">1</SetVariable>
-            <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_1"/></SetVariable>
-            <SetVariable name="SignalColor"><Variable name="SignalColor_1"/></SetVariable>
-          </Template>
 
-          <Template src="skin:waveform.xml"><!-- 2 -->
-            <SetVariable name="channum">2</SetVariable>
-            <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_2"/></SetVariable>
-            <SetVariable name="SignalColor"><Variable name="SignalColor_2"/></SetVariable>
-          </Template>
+          <WidgetGroup><!-- 1 & 2 -->
+            <Layout>vertical</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+              <Template src="skin:waveform.xml">
+                <SetVariable name="chanNum">1</SetVariable>
+                <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_1"/></SetVariable>
+                <SetVariable name="SignalColor"><Variable name="SignalColor_1"/></SetVariable>
+              </Template>
+
+              <Template src="skin:waveform.xml">
+                <SetVariable name="chanNum">2</SetVariable>
+                <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_2"/></SetVariable>
+                <SetVariable name="SignalColor"><Variable name="SignalColor_2"/></SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- /1 & 2 -->
+
+          <WidgetGroup><!-- 3 & 4 -->
+            <Layout>vertical</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+              <Template src="skin:waveform.xml">
+                <SetVariable name="chanNum">3</SetVariable>
+                <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_3"/></SetVariable>
+                <SetVariable name="SignalColor"><Variable name="SignalColor_3"/></SetVariable>
+              </Template>
+
+              <Template src="skin:waveform.xml">
+                <SetVariable name="chanNum">4</SetVariable>
+                <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_4"/></SetVariable>
+                <SetVariable name="SignalColor"><Variable name="SignalColor_4"/></SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[Master],show_4decks</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /3 & 4 -->
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- /Waveforms -->
 
-      <WidgetGroup>
-        <Layout>vertical</Layout>
-        <SizePolicy>me,min</SizePolicy>
-        <Children>
-          <Template src="skin:waveform.xml"><!-- 3 -->
-            <SetVariable name="channum">3</SetVariable>
-            <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_3"/></SetVariable>
-            <SetVariable name="SignalColor"><Variable name="SignalColor_3"/></SetVariable>
-          </Template>
+      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1me</Size></WidgetGroup>
 
-          <Template src="skin:waveform.xml"><!-- 4 -->
-            <SetVariable name="channum">4</SetVariable>
-            <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_4"/></SetVariable>
-            <SetVariable name="SignalColor"><Variable name="SignalColor_4"/></SetVariable>
-          </Template>
-        </Children>
-        <Connection>
-          <ConfigKey>[Master],show_4decks</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
+      <Template src="skin:button_2state_persist.xml">
+        <SetVariable name="ObjectName">BeatgridButtonToggler</SetVariable>
+        <SetVariable name="Size">18f,22me</SetVariable>
+        <SetVariable name="ConfigKeyPerm">[Tango],beatgrid_buttons</SetVariable>
+      </Template>
     </Children>
   </WidgetGroup>
 </Template>
