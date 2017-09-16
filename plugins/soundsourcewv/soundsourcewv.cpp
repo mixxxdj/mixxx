@@ -108,19 +108,7 @@ ReadableSampleFrames SoundSourceWV::readSampleFramesClamped(
 
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
-    if (readMode == ReadMode::Store) {
-        if (m_curFrameIndex != firstFrameIndex) {
-            if (WavpackSeekSample(m_wpc, firstFrameIndex)) {
-                m_curFrameIndex = firstFrameIndex;
-            } else {
-                kLogger.warning()
-                        << "Could not seek to first frame index"
-                        << firstFrameIndex;
-                m_curFrameIndex = WavpackGetSampleIndex(m_wpc);
-                return ReadableSampleFrames(IndexRange::between(m_curFrameIndex, m_curFrameIndex));
-            }
-        }
-    } else {
+    if (readMode == ReadMode::Skip) {
         // NOTE(uklotzde): The WavPack API does not provide any
         // functions for skipping samples in the audio stream. Calling
         // API functions with a nullptr buffer does not return. Since
@@ -139,9 +127,21 @@ ReadableSampleFrames SoundSourceWV::readSampleFramesClamped(
                 return ReadableSampleFrames(IndexRange::between(m_curFrameIndex, m_curFrameIndex));
             }
         }
+    } else {
+        if (m_curFrameIndex != firstFrameIndex) {
+            if (WavpackSeekSample(m_wpc, firstFrameIndex)) {
+                m_curFrameIndex = firstFrameIndex;
+            } else {
+                kLogger.warning()
+                        << "Could not seek to first frame index"
+                        << firstFrameIndex;
+                m_curFrameIndex = WavpackGetSampleIndex(m_wpc);
+                return ReadableSampleFrames(IndexRange::between(m_curFrameIndex, m_curFrameIndex));
+            }
+        }
     }
     DEBUG_ASSERT(m_curFrameIndex == firstFrameIndex);
-    DEBUG_ASSERT(readMode == ReadMode::Store);
+    DEBUG_ASSERT(readMode != ReadMode::Skip);
 
     const SINT numberOfFramesTotal = writableSampleFrames.frameIndexRange().length();
 

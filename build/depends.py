@@ -816,7 +816,6 @@ class MixxxCore(Feature):
 
                    "sources/audiosource.cpp",
                    "sources/audiosourcestereoproxy.cpp",
-                   "sources/sampleframesource.cpp",
                    "sources/soundsource.cpp",
                    "sources/soundsourceplugin.cpp",
                    "sources/soundsourcepluginlibrary.cpp",

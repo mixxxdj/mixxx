@@ -90,19 +90,7 @@ ReadableSampleFrames SoundSourceSndFile::readSampleFramesClamped(
 
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
-    if (readMode == ReadMode::Store) {
-        if (m_curFrameIndex != firstFrameIndex) {
-            const sf_count_t seekResult = sf_seek(m_pSndFile, firstFrameIndex, SEEK_SET);
-            if (seekResult == firstFrameIndex) {
-                m_curFrameIndex = seekResult;
-            } else {
-                kLogger.warning() << "Failed to seek libsnd file:" << seekResult
-                        << sf_strerror(m_pSndFile);
-                m_curFrameIndex = sf_seek(m_pSndFile, 0, SEEK_CUR);
-                return ReadableSampleFrames(IndexRange::between(m_curFrameIndex, m_curFrameIndex));
-            }
-        }
-    } else {
+    if (readMode == ReadMode::Skip) {
         // NOTE(uklotzde): The libsndfile API does not provide any
         // functions for skipping samples in the audio stream. Calling
         // API functions with a nullptr buffer does not return. Since
@@ -126,9 +114,21 @@ ReadableSampleFrames SoundSourceSndFile::readSampleFramesClamped(
                                 m_curFrameIndex));
             }
         }
+    } else {
+        if (m_curFrameIndex != firstFrameIndex) {
+            const sf_count_t seekResult = sf_seek(m_pSndFile, firstFrameIndex, SEEK_SET);
+            if (seekResult == firstFrameIndex) {
+                m_curFrameIndex = seekResult;
+            } else {
+                kLogger.warning() << "Failed to seek libsnd file:" << seekResult
+                        << sf_strerror(m_pSndFile);
+                m_curFrameIndex = sf_seek(m_pSndFile, 0, SEEK_CUR);
+                return ReadableSampleFrames(IndexRange::between(m_curFrameIndex, m_curFrameIndex));
+            }
+        }
     }
     DEBUG_ASSERT(m_curFrameIndex == firstFrameIndex);
-    DEBUG_ASSERT(readMode == ReadMode::Store);
+    DEBUG_ASSERT(readMode != ReadMode::Skip);
 
     const SINT numberOfFramesTotal = writableSampleFrames.frameIndexRange().length();
 

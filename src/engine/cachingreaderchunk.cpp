@@ -68,7 +68,6 @@ mixxx::IndexRange CachingReaderChunk::bufferSampleFrames(
     DEBUG_ASSERT(audioSourceProxy.channelCount() == kChannels);
     m_bufferedSampleFrames =
             audioSourceProxy.readSampleFrames(
-                    mixxx::ISampleFrameSource::ReadMode::Store,
                     mixxx::WritableSampleFrames(
                             sourceFrameIndexRange,
                             SampleBuffer::WritableSlice(m_sampleBuffer)));

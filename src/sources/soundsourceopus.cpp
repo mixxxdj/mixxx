@@ -287,13 +287,13 @@ ReadableSampleFrames SoundSourceOpus::readSampleFramesClamped(
 
     const SINT numberOfFramesTotal = writableSampleFrames.frameIndexRange().length();
 
-    CSAMPLE* pSampleBuffer = (readMode == ReadMode::Store) ?
+    CSAMPLE* pSampleBuffer = (readMode != ReadMode::Skip) ?
             writableSampleFrames.sampleBuffer().data() : nullptr;
     SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
         SINT numberOfSamplesToRead =
                 frames2samples(numberOfFramesRemaining);
-        if (readMode != ReadMode::Store) {
+        if (readMode == ReadMode::Skip) {
             // NOTE(uklotzde): The opusfile API does not provide any
             // functions for skipping samples in the audio stream. Calling
             // API functions with a nullptr buffer does not return. Since

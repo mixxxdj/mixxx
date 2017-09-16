@@ -263,7 +263,7 @@ ReadableSampleFrames SoundSourceFLAC::readSampleFramesClamped(
         const SampleBuffer::ReadableSlice readableSlice(
                 m_sampleBuffer.readFromHead(numberOfSamplesRead));
         DEBUG_ASSERT(readableSlice.size() == numberOfSamplesRead);
-        if (readMode == ReadMode::Store) {
+        if (readMode != ReadMode::Skip) {
             SampleUtil::copy(
                     writableSampleFrames.sampleBuffer().data(outputSampleOffset),
                     readableSlice.data(),

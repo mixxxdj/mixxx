@@ -449,7 +449,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
             // Consume previously decoded sample data
             const SampleBuffer::ReadableSlice readableSlice(
                     m_sampleBuffer.readFromHead(numberOfSamplesRemaining));
-            if (readMode == ReadMode::Store) {
+            if (readMode != ReadMode::Skip) {
                 SampleUtil::copy(
                         writableSampleFrames.sampleBuffer().data(outputSampleOffset),
                         readableSlice.data(),
@@ -500,7 +500,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
         CSAMPLE* pDecodeBuffer; // in/out parameter
         SINT decodeBufferCapacity;
         const SINT decodeBufferCapacityMin = frames2samples(m_framesPerSampleBlock);
-        if ((readMode == ReadMode::Store) &&
+        if ((readMode != ReadMode::Skip) &&
                 (decodeBufferCapacityMin <= numberOfSamplesRemaining)) {
             // Decode samples directly into the output buffer
             pDecodeBuffer = writableSampleFrames.sampleBuffer().data(outputSampleOffset);
@@ -557,7 +557,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
         const SINT numberOfSamplesDecoded = decFrameInfo.samples;
         DEBUG_ASSERT(numberOfSamplesDecoded <= decodeBufferCapacity);
         SINT numberOfSamplesRead;
-        if ((readMode == ReadMode::Store) &&
+        if ((readMode != ReadMode::Skip) &&
                 (pDecodeBuffer == writableSampleFrames.sampleBuffer().data(outputSampleOffset))) {
             // Decoded in-place
             DEBUG_ASSERT(numberOfSamplesDecoded <= numberOfSamplesRemaining);
@@ -575,7 +575,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
             const SampleBuffer::ReadableSlice readableSlice(
                     m_sampleBuffer.readFromHead(numberOfSamplesRead));
             DEBUG_ASSERT(readableSlice.size() == numberOfSamplesRead);
-            if (readMode == ReadMode::Store) {
+            if (readMode != ReadMode::Skip) {
                 SampleUtil::copy(
                         writableSampleFrames.sampleBuffer().data(outputSampleOffset),
                         readableSlice.data(),

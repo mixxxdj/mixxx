@@ -4,7 +4,7 @@
 
 #include "sources/v1/legacyaudiosource.h"
 
-#include "sources/sampleframesource.h"
+#include "sources/audiosource.h"
 
 
 namespace mixxx {

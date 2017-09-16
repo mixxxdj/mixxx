@@ -259,7 +259,7 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
 
     const SINT numberOfFramesTotal = writableSampleFrames.frameIndexRange().length();
 
-    CSAMPLE* pSampleBuffer = (readMode == ReadMode::Store) ?
+    CSAMPLE* pSampleBuffer = (readMode != ReadMode::Skip) ?
             writableSampleFrames.sampleBuffer().data() : nullptr;
     SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (numberOfFramesRemaining > 0) {

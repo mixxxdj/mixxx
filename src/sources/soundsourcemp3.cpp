@@ -541,7 +541,7 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
 
     const SINT numberOfFramesTotal = writableSampleFrames.frameIndexRange().length();
 
-    CSAMPLE* pSampleBuffer = (readMode == ReadMode::Store) ?
+    CSAMPLE* pSampleBuffer = (readMode != ReadMode::Skip) ?
             writableSampleFrames.sampleBuffer().data() : nullptr;
     SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
@@ -649,7 +649,7 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
 
         const SINT synthReadCount = math_min(
                 m_madSynthCount, numberOfFramesRemaining);
-        if (readMode == ReadMode::Store) {
+        if (readMode != ReadMode::Skip) {
             DEBUG_ASSERT(m_madSynthCount <= m_madSynth.pcm.length);
             const SINT madSynthOffset =
                     m_madSynth.pcm.length - m_madSynthCount;
