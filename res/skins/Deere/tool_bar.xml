@@ -43,6 +43,10 @@
             <ObjectName>HeadphoneControls</ObjectName>
             <SizePolicy>me,min</SizePolicy>
             <Layout>horizontal</Layout>
+            <Connection>
+              <ConfigKey>[Master],headEnabled</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
             <Children>
 
               <Template src="skin:knob_toolbar.xml">
@@ -72,12 +76,12 @@
                 <SetVariable name="left_connection_control">[Master],headSplit</SetVariable>
               </Template>
 
+            <Template src="skin:spacer_hx.xml">
+              <SetVariable name="width">15</SetVariable>
+            </Template>
+
             </Children>
           </WidgetGroup>
-
-          <Template src="skin:spacer_hx.xml">
-            <SetVariable name="width">15</SetVariable>
-          </Template>
 
           <WidgetGroup>
             <ObjectName>MasterControls</ObjectName>
