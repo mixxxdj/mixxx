@@ -7,7 +7,11 @@ Variables:
   parameter : EQ parameter number
 -->
 <Template>
-  <SetVariable name="EqualizerEffectGroup">[EqualizerRack1_<Variable name="group"/>_Effect1]</SetVariable>
+  <SetVariable name="EqualizerNumber">1</SetVariable>
+  <SetVariable name="EffectNumber">1</SetVariable>
+  <SetVariable name="EqualizerRackGroup">[EqualizerRack<Variable name="EqualizerNumber"/>]</SetVariable>
+  <SetVariable name="EqualizerEffectUnitGroup">[EqualizerRack<Variable name="EqualizerNumber"/>_<Variable name="group"/>]</SetVariable>
+  <SetVariable name="EqualizerEffectGroup">[EqualizerRack<Variable name="EqualizerNumber"/>_<Variable name="group"/>_Effect<Variable name="EffectNumber"/>]</SetVariable>
   <WidgetGroup>
     <Layout>horizontal</Layout>
     <SizePolicy>min,min</SizePolicy>
@@ -37,12 +41,15 @@ Variables:
             <SizePolicy>min,min</SizePolicy>
             <Layout>stacked</Layout>
             <Children>
-              <Template src="skin:knob_textless.xml">
-                <SetVariable name="Size">30f,30f</SetVariable>
-                <SetVariable name="Color">white</SetVariable>
-                <SetVariable name="group"><Variable name="EqualizerEffectGroup"/></SetVariable>
-                <SetVariable name="ConfigKey">parameter<Variable name="parameter"/></SetVariable>
-              </Template>
+              <EffectParameterKnobComposed>
+                  <Size>30f,30f</Size>
+                  <Knob>skin:/knobs_sliders/knob_white.svg</Knob>
+                  <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+                  <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+                  <Connection>
+                      <ConfigKey><Variable name="EqualizerEffectGroup"/>,parameter<Variable name="parameter"/></ConfigKey>
+                  </Connection>
+              </EffectParameterKnobComposed>
               <Template src="skin:button_2state.xml">
                 <SetVariable name="ObjectName">EQKillButtonUnderlayRight</SetVariable>
                 <SetVariable name="Size">30f,30f</SetVariable>

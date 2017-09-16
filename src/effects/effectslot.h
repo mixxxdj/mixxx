@@ -37,6 +37,7 @@ class EffectSlot : public QObject {
     unsigned int numParameterSlots() const;
     EffectParameterSlotPointer addEffectParameterSlot();
     EffectParameterSlotPointer getEffectParameterSlot(unsigned int slotNumber);
+    EffectParameterSlotPointer getEffectParameterSlotForConfigKey(unsigned int slotNumber);
     inline const QList<EffectParameterSlotPointer>& getEffectParameterSlots() const {
         return m_parameters;
     };

@@ -34,10 +34,6 @@
             <TooltipId><Variable name="button_TooltipId"/></TooltipId>
             <Size>15f,15f</Size>
             <ObjectName>CircleButton</ObjectName>
-            <EffectRackGroup><Variable name="EqualizerRackGroup"/></EffectRackGroup>
-            <EffectUnitGroup><Variable name="EqualizerEffectUnitGroup"/></EffectUnitGroup>
-            <Effect><Variable name="EffectNumber"/></Effect>
-            <EffectButtonParameter><Variable name="parameter"/></EffectButtonParameter>
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
@@ -76,11 +72,17 @@
             <MaximumSize>40,41</MaximumSize>
             <Layout>vertical</Layout>
             <Children>
-              <Template src="skin:knob.xml">
-                <SetVariable name="group"><Variable name="EqualizerEffectGroup"/></SetVariable>
-                <SetVariable name="control">parameter<Variable name="parameter"/></SetVariable>
-                <SetVariable name="color"><Variable name="color"/></SetVariable>
-              </Template>
+              <EffectParameterKnobComposed>
+                <Size>40f,34f</Size>
+                <Knob>knob_<Variable name="color"/>.svg</Knob>
+                <BackPath>knob_bg.svg</BackPath>
+                <MinAngle>-135</MinAngle>
+                <MaxAngle>135</MaxAngle>
+                <KnobCenterYOffset>1.602</KnobCenterYOffset>
+                <Connection>
+                  <ConfigKey><Variable name="EqualizerEffectGroup"/>,parameter<Variable name="parameter"/></ConfigKey>
+                </Connection>
+              </EffectParameterKnobComposed>
             </Children>
           </WidgetGroup>
 
@@ -90,11 +92,17 @@
             <MaximumSize>40,45</MaximumSize>
             <Layout>vertical</Layout>
             <Children>
-              <Template src="skin:knob.xml">
-                <SetVariable name="group"><Variable name="EqualizerEffectGroup"/></SetVariable>
-                <SetVariable name="control">parameter<Variable name="parameter"/></SetVariable>
-                <SetVariable name="color"><Variable name="color"/></SetVariable>
-              </Template>
+              <EffectParameterKnobComposed>
+                <Size>40f,34f</Size>
+                <Knob>knob_<Variable name="color"/>.svg</Knob>
+                <BackPath>knob_bg.svg</BackPath>
+                <MinAngle>-135</MinAngle>
+                <MaxAngle>135</MaxAngle>
+                <KnobCenterYOffset>1.602</KnobCenterYOffset>
+                <Connection>
+                  <ConfigKey><Variable name="EqualizerEffectGroup"/>,parameter<Variable name="parameter"/></ConfigKey>
+                </Connection>
+              </EffectParameterKnobComposed>
               <EffectParameterName>
                 <Size>40f,10f</Size>
                 <ObjectName>KnobLabel</ObjectName>
