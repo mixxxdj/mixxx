@@ -62,7 +62,7 @@
                 <SetVariable name="group">[Master]</SetVariable>
                 <SetVariable name="control">headGain</SetVariable>
                 <SetVariable name="color">red</SetVariable>
-                <SetVariable name="label">Head Gain</SetVariable>
+                <SetVariable name="label">Head</SetVariable>
               </Template>
 
               <Template src="skin:left_2state_button.xml">
