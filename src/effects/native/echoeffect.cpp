@@ -121,7 +121,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     double pingpong_frac = m_pPingPongParameter->value();
 
     int delay_samples;
-    if (groupFeatures.has_beat_length) {
+    if (groupFeatures.has_beat_length_sec) {
         // period is a number of beats
         if (m_pTripletParameter->toBool()) {
            if (period < 0.16667) {
@@ -136,7 +136,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
                period = roundToFraction(period, 4);
            }
         }
-        delay_samples = period * groupFeatures.beat_length;
+        delay_samples = period * groupFeatures.beat_length_sec * sampleRate;
     } else {
         // period is a number of seconds
         period = std::max(period, 0.125);
