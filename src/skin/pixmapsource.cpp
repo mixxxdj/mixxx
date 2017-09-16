@@ -2,25 +2,12 @@
 
 #include "skin/pixmapsource.h"
 
-PixmapSource::PixmapSource():
-    m_eType(SVG) {
+PixmapSource::PixmapSource()
+     : m_eType(SVG) {
 }
 
-PixmapSource::PixmapSource(const QString& filepath) {
-    setPath(filepath);
-}
-
-QByteArray PixmapSource::getData() const {
-    return m_baData;
-}
-
-QString PixmapSource::getPath() const {
-    return m_path;
-}
-
-void PixmapSource::setPath(const QString& newPath) {
-    m_baData.truncate(0);
-    m_path = newPath;
+PixmapSource::PixmapSource(const QString& filepath)
+    : m_path(filepath) {
     if (m_path.endsWith(".svg", Qt::CaseInsensitive)) {
         m_eType = SVG;
     } else {
@@ -28,8 +15,16 @@ void PixmapSource::setPath(const QString& newPath) {
     }
 }
 
+QByteArray PixmapSource::getData() const {
+    return m_svgSourceData;
+}
+
+QString PixmapSource::getPath() const {
+    return m_path;
+}
+
 bool PixmapSource::isEmpty() const {
-    return m_path.isEmpty() && m_baData.isEmpty() ;
+    return m_path.isEmpty() && m_svgSourceData.isEmpty() ;
 }
 
 bool PixmapSource::isSVG() const {
@@ -41,16 +36,16 @@ bool PixmapSource::isBitmap() const {
 }
 
 void PixmapSource::setSVG(const QByteArray& content) {
-    m_baData = content;
+    m_svgSourceData = content;
     m_eType = SVG;
 }
 
 QString PixmapSource::getId() const {
     quint16 checksum;
-    if (m_baData.isEmpty()) {
+    if (m_svgSourceData.isEmpty()) {
         checksum = qChecksum(m_path.toAscii().constData(), m_path.length());
     } else {
-        checksum = qChecksum(m_baData.constData(), m_baData.length());
+        checksum = qChecksum(m_svgSourceData.constData(), m_svgSourceData.length());
     }
     return m_path + QString::number(checksum);
 }

@@ -3,10 +3,21 @@ Transifex doesn't handle wxl files.
 So we convert the english one to a pot file and convert back the translated po files to wxl using
 https://github.com/sblaisot/wxl-po-tools
 
-Updating source pot
-===================
+Adding strings and Updating source pot
+======================================
 
+* Add strings to mixxx_en-us.wxl
+* Update tranlation source .pot file
 `build/wix/Localization$ /path/to/wxl2pot.py -l Language mixxx_en-us.wxl po/mixxx.pot`
+* push new strings to transifex
+```
+$ tx push -s -r mixxxdj-windows-installer.mixxxpot
+Pushing translations for resource mixxxdj-windows-installer.mixxxpot:
+Pushing source file (build/wix/Localization/po/mixxx.pot)
+Done.
+```
+* Update all translations to include the new strings (see next paragraph)
+
 
 Updating translations from Transifex
 ======================================

@@ -7,13 +7,10 @@
 
 class SqlTransaction final {
   public:
-    explicit SqlTransaction(QSqlDatabase database);
+    explicit SqlTransaction(
+            const QSqlDatabase& database);
     SqlTransaction(SqlTransaction&& other);
     ~SqlTransaction();
-
-    QSqlDatabase& database() {
-        return m_database;
-    }
 
     operator bool() const {
         return m_active;

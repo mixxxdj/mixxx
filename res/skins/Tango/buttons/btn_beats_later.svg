@@ -24,9 +24,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="4"
-     inkscape:cx="63.124029"
-     inkscape:cy="19.864855"
+     inkscape:zoom="11.313708"
+     inkscape:cx="10.449851"
+     inkscape:cy="8.5243646"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -48,7 +48,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -59,44 +59,46 @@
      transform="translate(0,-1028.3622)">
     <rect
        style="fill:#aaaaaa;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       id="rect3877-3-2-7"
+       id="rect3877-3"
        width="2"
-       height="20"
-       x="-4"
-       y="-1050.3622"
-       transform="scale(-1,-1)" />
+       height="18"
+       x="-22"
+       y="1031.3622"
+       transform="scale(-1,1)" />
     <rect
        style="fill:#aaaaaa;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       id="rect3877-3-2-9-0"
+       id="rect3877-3-6"
        width="2"
-       height="20"
-       x="-8"
-       y="-1050.3622"
-       transform="scale(-1,-1)" />
-    <path
-       sodipodi:type="star"
-       style="fill:#aaaaaa;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       id="path3018-1-9"
-       sodipodi:sides="3"
-       sodipodi:cx="3"
-       sodipodi:cy="5"
-       sodipodi:r1="15.119611"
-       sodipodi:r2="7.5598059"
-       sodipodi:arg1="0"
-       sodipodi:arg2="1.0471976"
-       inkscape:flatsided="true"
-       inkscape:rounded="0"
-       inkscape:randomized="0"
-       d="m 18.119611,5 -22.6794164,13.093967 0,-26.187934 z"
-       transform="matrix(0.34366972,0,0,-0.34366972,15.567065,1042.0806)"
-       inkscape:transform-center-x="-1.2990561" />
+       height="18"
+       x="8"
+       y="1031.3622" />
     <rect
        style="fill:#aaaaaa;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       id="rect3877-3-2-9-2-3"
+       id="rect3877-3-6-85"
        width="2"
-       height="20"
-       x="-12"
-       y="-1050.3622"
-       transform="scale(-1,-1)" />
+       height="18"
+       x="14"
+       y="1031.3622" />
+    <rect
+       style="fill:#aaaaaa;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect3877-3-6-8-7-0"
+       width="1"
+       height="18"
+       x="6"
+       y="1031.3622" />
+    <rect
+       style="fill:#8c8c8c;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect3877-3-6-8-9-4"
+       width="1"
+       height="18"
+       x="4"
+       y="1031.3622" />
+    <rect
+       style="fill:#6e6e6e;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect3877-3-6-8-9-3-1"
+       width="1"
+       height="18"
+       x="2"
+       y="1031.3622" />
   </g>
 </svg>

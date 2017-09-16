@@ -15,6 +15,7 @@
 #include "library/parser.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "sources/soundsourceproxy.h"
+#include "util/db/dbconnection.h"
 #include "util/dnd.h"
 #include "util/duration.h"
 
@@ -140,7 +141,7 @@ void PlaylistFeature::buildPlaylistList() {
         "LEFT JOIN library ON PlaylistTracks.track_id = library.id "
         "WHERE Playlists.hidden = 0 "
         "GROUP BY Playlists.id");
-    queryString.append(DbConnection::collateLexicographically(
+    queryString.append(mixxx::DbConnection::collateLexicographically(
             " ORDER BY sort_name"));
     QSqlQuery query(m_pTrackCollection->database());
     if (!query.exec(queryString)) {

@@ -18,7 +18,7 @@ class ControllerEngineTest : public MixxxTest {
         mixxx::Time::setTestElapsedTime(mixxx::Duration::fromMillis(10));
         QThread::currentThread()->setObjectName("Main");
         cEngine = new ControllerEngine(nullptr);
-        ControllerDebug::setEnabled(true);
+        ControllerDebug::enable();
         cEngine->setPopups(false);
     }
 

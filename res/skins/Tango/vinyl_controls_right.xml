@@ -6,7 +6,7 @@ Description:
   scrolling waveforms and track comment is displayed.
 Variables:
   group   : [ChannelN]
-  channum : channel number
+  chanNum : channel number
 -->
 <Template>
   <WidgetGroup>
@@ -19,7 +19,8 @@ Variables:
         <Size>1min,1f</Size>
         <Children/>
         <Connection>
-          <ConfigKey persist="true">[Tango],stacked_overviews</ConfigKey>
+          <ConfigKey persist="true">[Tango],symmetric_overviews</ConfigKey>
+          <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
@@ -108,34 +109,14 @@ Variables:
         <Size>1min,1f</Size>
         <Children/>
         <Connection>
-          <ConfigKey persist="true">[Tango],stacked_overviews</ConfigKey>
-          <Transform><Not/></Transform>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
-
-      <WidgetGroup>
-        <SizePolicy>min,min</SizePolicy>
-        <Layout>vertical</Layout>
-        <Children>
-          <WidgetGroup>
-            <Size>1min,1f</Size>
-            <Children/>
-            <Connection>
-              <ConfigKey persist="true">[Tango],trackComment</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-        </Children>
-        <Connection>
-          <ConfigKey persist="true">[Tango],stacked_overviews</ConfigKey>
+          <ConfigKey persist="true">[Tango],symmetric_overviews</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
 
     </Children>
     <Connection>
-      <ConfigKey persist="true">[Tango],vinylControlsDeck<Variable name="channum"/></ConfigKey>
+      <ConfigKey persist="true">[Tango],vinylControlsDeck<Variable name="chanNum"/></ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

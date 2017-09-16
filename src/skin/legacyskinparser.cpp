@@ -58,8 +58,11 @@
 #include "widget/weffect.h"
 #include "widget/weffectselector.h"
 #include "widget/weffectparameter.h"
+#include "widget/weffectparameterknob.h"
+#include "widget/weffectparameterknobcomposed.h"
 #include "widget/weffectbuttonparameter.h"
 #include "widget/weffectparameterbase.h"
+#include "widget/wbeatspinbox.h"
 #include "widget/woverviewlmh.h"
 #include "widget/woverviewhsv.h"
 #include "widget/woverviewrgb.h"
@@ -517,6 +520,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseStandardWidget<WStatusLight>(node));
     } else if (nodeName == "Display") {
         result = wrapWidget(parseStandardWidget<WDisplay>(node));
+    } else if (nodeName == "BeatSpinBox") {
+        result = wrapWidget(parseBeatSpinBox(node));
     } else if (nodeName == "NumberRate") {
         result = wrapWidget(parseNumberRate(node));
     } else if (nodeName == "NumberPos") {
@@ -550,6 +555,10 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseEffectName(node));
     } else if (nodeName == "EffectSelector") {
         result = wrapWidget(parseEffectSelector(node));
+    } else if (nodeName == "EffectParameterKnob") {
+        result = wrapWidget(parseEffectParameterKnob(node));
+    } else if (nodeName == "EffectParameterKnobComposed") {
+        result = wrapWidget(parseEffectParameterKnobComposed(node));
     } else if (nodeName == "EffectParameterName") {
         result = wrapWidget(parseEffectParameterName(node));
     } else if (nodeName == "EffectButtonParameterName") {
@@ -1096,6 +1105,21 @@ QWidget* LegacySkinParser::parseEngineKey(const QDomElement& node) {
     return pEngineKey;
 }
 
+QWidget* LegacySkinParser::parseBeatSpinBox(const QDomElement& node) {
+    bool createdValueControl = false;
+    ControlObject* valueControl = controlFromConfigNode(node.toElement(), "Value", &createdValueControl);
+
+    WBeatSpinBox* pSpinbox = new WBeatSpinBox(m_pParent, valueControl);
+    commonWidgetSetup(node, pSpinbox);
+    pSpinbox->setup(node, *m_pContext);
+
+    if (createdValueControl && valueControl != nullptr) {
+        valueControl->setParent(pSpinbox);
+    }
+
+    return pSpinbox;
+}
+
 QWidget* LegacySkinParser::parseBattery(const QDomElement& node) {
     WBattery *p = new WBattery(m_pParent);
     setupBaseWidget(node, p);
@@ -1604,6 +1628,46 @@ QWidget* LegacySkinParser::parseEffectSelector(const QDomElement& node) {
     return pSelector;
 }
 
+QWidget* LegacySkinParser::parseEffectParameterKnob(const QDomElement& node) {
+    WEffectParameterKnob* pParameterKnob =
+            new WEffectParameterKnob(m_pParent, m_pEffectsManager);
+    commonWidgetSetup(node, pParameterKnob);
+    pParameterKnob->setup(node, *m_pContext);
+    pParameterKnob->installEventFilter(m_pKeyboard);
+    pParameterKnob->installEventFilter(
+        m_pControllerManager->getControllerLearningEventFilter());
+    pParameterKnob->Init();
+    const QList<ControlParameterWidgetConnection*> connections =
+            pParameterKnob->connections();
+    if (!connections.isEmpty()) {
+        pParameterKnob->setupEffectParameterSlot(connections.at(0)->getKey());
+    } else {
+        SKIN_WARNING(node, *m_pContext)
+                << "EffectParameterKnob node could not attach to effect parameter.";
+    }
+    return pParameterKnob;
+}
+
+QWidget* LegacySkinParser::parseEffectParameterKnobComposed(const QDomElement& node) {
+    WEffectParameterKnobComposed* pParameterKnob =
+            new WEffectParameterKnobComposed(m_pParent, m_pEffectsManager);
+    commonWidgetSetup(node, pParameterKnob);
+    pParameterKnob->setup(node, *m_pContext);
+    pParameterKnob->installEventFilter(m_pKeyboard);
+    pParameterKnob->installEventFilter(
+        m_pControllerManager->getControllerLearningEventFilter());
+    pParameterKnob->Init();
+    const QList<ControlParameterWidgetConnection*> connections =
+            pParameterKnob->connections();
+    if (!connections.isEmpty()) {
+        pParameterKnob->setupEffectParameterSlot(connections.at(0)->getKey());
+    } else {
+        SKIN_WARNING(node, *m_pContext)
+                << "EffectParameterKnobComposed node could not attach to effect parameter.";
+    }
+    return pParameterKnob;
+}
+
 QWidget* LegacySkinParser::parseEffectPushButton(const QDomElement& element) {
     WEffectPushButton* pWidget = new WEffectPushButton(m_pParent, m_pEffectsManager);
     commonWidgetSetup(element, pWidget);
@@ -1612,6 +1676,14 @@ QWidget* LegacySkinParser::parseEffectPushButton(const QDomElement& element) {
     pWidget->installEventFilter(
             m_pControllerManager->getControllerLearningEventFilter());
     pWidget->Init();
+    const QList<ControlParameterWidgetConnection*> connections =
+            pWidget->leftConnections();
+    if (!connections.isEmpty()) {
+        pWidget->setupEffectParameterSlot(connections.at(0)->getKey());
+    } else {
+        SKIN_WARNING(element, *m_pContext)
+                << "EffectPushButton node could not attach to effect parameter.";
+    }
     return pWidget;
 }
 

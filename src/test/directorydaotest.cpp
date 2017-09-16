@@ -28,7 +28,7 @@ class DirectoryDAOTest : public LibraryTest {
 
     void TearDown() override {
         // make sure we clean up the db
-        QSqlQuery query(collection()->database());
+        QSqlQuery query(dbConnection());
         query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE);
         query.exec();
         query.prepare("DELETE FROM library");
@@ -73,7 +73,7 @@ TEST_F(DirectoryDAOTest, addDirTest) {
     success = m_DirectoryDao.addDirectory(testParent);
     EXPECT_EQ(ALL_FINE, success);
 
-    QSqlQuery query(collection()->database());
+    QSqlQuery query(dbConnection());
     query.prepare("SELECT " % DIRECTORYDAO_DIR % " FROM " % DIRECTORYDAO_TABLE);
     success = query.exec();
 
@@ -99,7 +99,7 @@ TEST_F(DirectoryDAOTest, removeDirTest) {
     EXPECT_EQ(ALL_FINE, success);
 
     // we do not trust what directory dao thinks and better check up on it
-    QSqlQuery query(collection()->database());
+    QSqlQuery query(dbConnection());
     query.prepare("SELECT " % DIRECTORYDAO_DIR % " FROM " % DIRECTORYDAO_TABLE);
     success = query.exec();
     QStringList dirs;

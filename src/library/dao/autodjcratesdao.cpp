@@ -39,28 +39,21 @@ const int kLeastPreferredPercentMax = 50;
 } // anonymous namespace
 
 AutoDJCratesDAO::AutoDJCratesDAO(
+        int iAutoDjPlaylistId,
         TrackCollection* pTrackCollection,
-        UserSettingsPointer a_pConfig)
-        : m_pTrackCollection(pTrackCollection),
-          m_pConfig (a_pConfig),
+        UserSettingsPointer pConfig)
+        : m_iAutoDjPlaylistId(iAutoDjPlaylistId),
+          m_pTrackCollection(pTrackCollection),
+          m_database(pTrackCollection->database()),
+          m_pConfig(pConfig),
           // The database has not been created yet.
           m_bAutoDjCratesDbCreated(false),
-          m_iAutoDjPlaylistId(-1),
           // By default, active tracks are not tracks that haven't been played in
           // a while.
           m_bUseIgnoreTime(false) {
 }
 
 AutoDJCratesDAO::~AutoDJCratesDAO() {
-}
-
-void AutoDJCratesDAO::initialize() {
-    // Save the ID of the auto-DJ playlist.
-    m_iAutoDjPlaylistId =
-            m_pTrackCollection->getPlaylistDAO().getPlaylistIdFromName(AUTODJ_TABLE);
-    VERIFY_OR_DEBUG_ASSERT(m_iAutoDjPlaylistId >= 0) {
-        qWarning() << "Auto DJ playlist not found!";
-    }
 }
 
 // Create the temporary auto-DJ-crates table.

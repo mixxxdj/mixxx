@@ -18,9 +18,9 @@ Variables:
     <Children>
 
     <!-- No matter if VUMeter is visible, make sure there's 4px padding on the left -->
-      <WidgetGroup><Size>2f,1me</Size><Children/></WidgetGroup>
+      <WidgetGroup><Size>2f,1me</Size></WidgetGroup>
       <Template src="skin:vumeter_mixer.xml"/>
-      <WidgetGroup><Size>2f,1me</Size><Children/></WidgetGroup>
+      <WidgetGroup><Size>2f,1me</Size></WidgetGroup>
 
       <WidgetGroup><!--  Volume Slider + Gain knob -->
         <ObjectName>VolumeSliderGain</ObjectName>
@@ -38,7 +38,7 @@ Variables:
             </Connection>
           </SliderComposed><!-- /Volume slider -->
 
-          <WidgetGroup><Size>1min,1me</Size><Children/></WidgetGroup>
+          <WidgetGroup><Size>1min,1me</Size></WidgetGroup>
 
           <WidgetGroup><!--  Gain knob -->
             <Layout>horizontal</Layout>
@@ -166,7 +166,9 @@ Variables:
         </Connection>
       </WidgetGroup><!-- /EQs + Filter + Pfl -->
 
-      <WidgetGroup><Size>4f,1me</Size><Children/></WidgetGroup>
+      <WidgetGroup><Size>4f,1me</Size></WidgetGroup>
+
+      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1me</Size></WidgetGroup>
 
     </Children>
     <Connection>

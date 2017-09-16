@@ -24,9 +24,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1"
-     inkscape:cx="97.908261"
-     inkscape:cy="86.831991"
+     inkscape:zoom="1.4142136"
+     inkscape:cx="28.52431"
+     inkscape:cy="22.834161"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -55,9 +55,9 @@
      id="layer1"
      transform="translate(0,-852.36218)">
     <path
-       style="fill:#2f290a;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
+       style="fill:#001d33;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline;enable-background:new"
        d="m 0,852.36218 0,200.00002 200,0 0,-200.00002 -200,0 z"
-       id="path3336"
+       id="path3377"
        inkscape:connector-curvature="0" />
     <path
        sodipodi:type="arc"
