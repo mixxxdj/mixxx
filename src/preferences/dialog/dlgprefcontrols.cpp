@@ -358,11 +358,11 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
             this, SLOT(slotSetScaleFactorAuto(bool)));
 
     //: Entry of the HiDPI scale combo box. %1 is the scale factor in percent
-    comboBoxScaleFactor->addItem(QString(tr("%1 % (Experimental)")).arg(50), 0.5);
+    comboBoxScaleFactor->addItem(QString(tr("%1 %")).arg(50), 0.5);
     comboBoxScaleFactor->addItem(QString(tr("%1 %")).arg(100), 1);
-    comboBoxScaleFactor->addItem(QString(tr("%1 % (Experimental)")).arg(200), 2);
-    comboBoxScaleFactor->addItem(QString(tr("%1 % (Experimental)")).arg(300), 3);
-    comboBoxScaleFactor->addItem(QString(tr("%1 % (Experimental)")).arg(400), 4);
+    comboBoxScaleFactor->addItem(QString(tr("%1 %")).arg(200), 2);
+    comboBoxScaleFactor->addItem(QString(tr("%1 %")).arg(300), 3);
+    comboBoxScaleFactor->addItem(QString(tr("%1 %")).arg(400), 4);
     int i;
     for (i = 0; i < comboBoxScaleFactor->count(); ++i) {
         if (scaleFactor == comboBoxScaleFactor->itemData(i)) {
