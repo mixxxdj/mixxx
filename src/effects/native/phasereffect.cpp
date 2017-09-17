@@ -23,16 +23,18 @@ EffectManifest PhaserEffect::getManifest() {
                 " with a copy passed through a series of all-pass filters."));
     manifest.setEffectRampsFromDry(true);
 
-    EffectManifestParameter* frequency = manifest.addParameter();
-    frequency->setId("lfo_frequency");
-    frequency->setName(QObject::tr("Rate"));
-    frequency->setDescription(QObject::tr("Controls the speed of the low frequency oscilator."));
-    frequency->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
-    frequency->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    frequency->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    frequency->setMinimum(0.0);
-    frequency->setMaximum(5.0);
-    frequency->setDefault(2.5);
+    EffectManifestParameter* period = manifest.addParameter();
+    period->setId("lfo_period");
+    period->setName(QObject::tr("Period"));
+    period->setDescription(QObject::tr("Controls the period of the LFO (low frequency oscillator)\n"
+        "1/4 - 4 beats if sync parameter is enabled and tempo is detected (decks and samplers) \n"
+        "1/4 - 4 seconds if sync parameter is disabled or no tempo is detected (mic & aux inputs, master mix)"));
+    period->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    period->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
+    period->setMinimum(0.0);
+    period->setMaximum(4.0);
+    period->setDefault(0.5);
 
     EffectManifestParameter* range = manifest.addParameter();
     range->setId("range");
@@ -96,7 +98,7 @@ EffectManifest PhaserEffect::getManifest() {
 PhaserEffect::PhaserEffect(EngineEffect* pEffect,
                            const EffectManifest& manifest)
         : m_pStagesParameter(pEffect->getParameterById("stages")),
-          m_pLFOFrequencyParameter(pEffect->getParameterById("lfo_frequency")),
+          m_pLFOPeriodParameter(pEffect->getParameterById("lfo_period")),
           m_pDepthParameter(pEffect->getParameterById("depth")),
           m_pFeedbackParameter(pEffect->getParameterById("feedback")),
           m_pRangeParameter(pEffect->getParameterById("range")),
@@ -116,8 +118,9 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
                                   const EffectProcessor::EnableState enableState,
                                   const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
-    Q_UNUSED(groupFeatures);
-    Q_UNUSED(sampleRate);
+
+    // TODO: remove assumption of stereo signal
+    const int kChannels = 2;
 
     if (enableState == EffectProcessor::ENABLING) {
         pState->init();
@@ -128,7 +131,15 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
         depth = m_pDepthParameter->value();
     }
 
-    CSAMPLE frequency = m_pLFOFrequencyParameter->value();
+    CSAMPLE period = std::max(m_pLFOPeriodParameter->value(), 0.05);
+    if (groupFeatures.has_beat_length_sec) {
+        // Period is a number of beats
+        period = std::max(roundToFraction(period, 2.0), 0.25)
+                * groupFeatures.beat_length_sec * kChannels * sampleRate;
+    } else {
+        // Period is a number of seconds
+        period = std::max(period, 0.25f) * sampleRate * kChannels;
+    }
     CSAMPLE feedback = m_pFeedbackParameter->value();
     CSAMPLE range = m_pRangeParameter->value();
     int stages = 2 * m_pStagesParameter->value();
@@ -143,7 +154,7 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE filterCoefRight = 0;
 
     CSAMPLE left = 0, right = 0;
-    CSAMPLE freqSkip = frequency * 2.0 * M_PI / sampleRate;
+    CSAMPLE freqSkip = 1.0 / period * 2.0 * M_PI;
 
     CSAMPLE_GAIN oldDepth = pState->oldDepth;
     const CSAMPLE_GAIN depthDelta = (depth - oldDepth)
@@ -153,7 +164,6 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
     int stereoCheck = m_pStereoParameter->value();
     int counter = 0;
 
-    const int kChannels = 2;
     for (unsigned int i = 0; i < numSamples; i += kChannels) {
         left = pInput[i] + tanh(left * feedback);
         right = pInput[i + 1] + tanh(right * feedback);

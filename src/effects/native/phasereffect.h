@@ -61,7 +61,7 @@ class PhaserEffect : public PerChannelEffectProcessor<PhaserGroupState> {
     }
 
     EngineEffectParameter* m_pStagesParameter;
-    EngineEffectParameter* m_pLFOFrequencyParameter;
+    EngineEffectParameter* m_pLFOPeriodParameter;
     EngineEffectParameter* m_pDepthParameter;
     EngineEffectParameter* m_pFeedbackParameter;
     EngineEffectParameter* m_pRangeParameter;
