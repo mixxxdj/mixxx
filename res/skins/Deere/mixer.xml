@@ -25,13 +25,13 @@
                 <Layout>horizontal</Layout>
                 <Children>
 
-                  <Template src="skin:left_deck_mixer_controls.xml">
+                  <Template src="skin:mixer_controls_left.xml">
                     <SetVariable name="i">1</SetVariable>
                   </Template>
 
                   <Template src="skin:vumeter_master.xml"/>
 
-                  <Template src="skin:right_deck_mixer_controls.xml">
+                  <Template src="skin:mixer_controls_right.xml">
                     <SetVariable name="i">2</SetVariable>
                   </Template>
 
@@ -50,19 +50,19 @@
                 <Layout>horizontal</Layout>
                 <Children>
 
-                  <Template src="skin:left_deck_mixer_controls.xml">
+                  <Template src="skin:mixer_controls_left.xml">
                     <SetVariable name="i">3</SetVariable>
                   </Template>
-                  <Template src="skin:left_deck_mixer_controls.xml">
+                  <Template src="skin:mixer_controls_left.xml">
                     <SetVariable name="i">1</SetVariable>
                   </Template>
 
                   <Template src="skin:vumeter_master.xml"/>
 
-                  <Template src="skin:right_deck_mixer_controls.xml">
+                  <Template src="skin:mixer_controls_right.xml">
                     <SetVariable name="i">2</SetVariable>
                   </Template>
-                  <Template src="skin:right_deck_mixer_controls.xml">
+                  <Template src="skin:mixer_controls_right.xml">
                     <SetVariable name="i">4</SetVariable>
                   </Template>
 
@@ -91,13 +91,13 @@
                 <ObjectName>DeckControlsStackedWaveforms2Decks</ObjectName>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:left_deck_mixer_controls.xml">
+                  <Template src="skin:mixer_controls_left.xml">
                     <SetVariable name="i">1</SetVariable>
                   </Template>
 
                   <Template src="skin:vumeter_master.xml"/>
 
-                  <Template src="skin:right_deck_mixer_controls.xml">
+                  <Template src="skin:mixer_controls_right.xml">
                     <SetVariable name="i">2</SetVariable>
                   </Template>
                 </Children>
@@ -122,19 +122,19 @@
                         <ObjectName>DeckControlsStackedWaveforms4DecksNoEQs</ObjectName>
                         <Layout>horizontal</Layout>
                         <Children>
-                          <Template src="skin:left_deck_mixer_controls.xml">
+                          <Template src="skin:mixer_controls_left.xml">
                             <SetVariable name="i">3</SetVariable>
                           </Template>
-                          <Template src="skin:left_deck_mixer_controls.xml">
+                          <Template src="skin:mixer_controls_left.xml">
                             <SetVariable name="i">1</SetVariable>
                           </Template>
 
                           <Template src="skin:vumeter_master.xml"/>
 
-                          <Template src="skin:right_deck_mixer_controls.xml">
+                          <Template src="skin:mixer_controls_right.xml">
                             <SetVariable name="i">2</SetVariable>
                           </Template>
-                          <Template src="skin:right_deck_mixer_controls.xml">
+                          <Template src="skin:mixer_controls_right.xml">
                             <SetVariable name="i">4</SetVariable>
                           </Template>
                         </Children>
@@ -151,19 +151,19 @@
                         <ObjectName>DeckControlsStackedWaveforms4DecksWithEQs</ObjectName>
                         <Layout>horizontal</Layout>
                         <Children>
-                          <Template src="skin:deck_mixer_controls_condensed_left.xml">
+                          <Template src="skin:mixer_controls_condensed_left.xml">
                             <SetVariable name="i">3</SetVariable>
                           </Template>
-                          <Template src="skin:deck_mixer_controls_condensed_left.xml">
+                          <Template src="skin:mixer_controls_condensed_left.xml">
                             <SetVariable name="i">1</SetVariable>
                           </Template>
 
                           <Template src="skin:vumeter_master.xml"/>
 
-                          <Template src="skin:deck_mixer_controls_condensed_right.xml">
+                          <Template src="skin:mixer_controls_condensed_right.xml">
                             <SetVariable name="i">2</SetVariable>
                           </Template>
-                          <Template src="skin:deck_mixer_controls_condensed_right.xml">
+                          <Template src="skin:mixer_controls_condensed_right.xml">
                             <SetVariable name="i">4</SetVariable>
                           </Template>
                         </Children>

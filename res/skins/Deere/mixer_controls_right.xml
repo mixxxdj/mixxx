@@ -19,11 +19,11 @@
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:deck_mixer_controls_col3.xml"/>
-              <Template src="skin:deck_mixer_controls_col2.xml"/>
+              <Template src="skin:mixer_controls_col3.xml"/>
+              <Template src="skin:mixer_controls_col2.xml"/>
             </Children>
           </WidgetGroup>
-          <Template src="skin:deck_mixer_controls_col1_right.xml"/>
+          <Template src="skin:mixer_controls_col1_right.xml"/>
         </Children>
         <Connection>
           <ConfigKey>[Master],show_4decks</ConfigKey>
@@ -39,13 +39,13 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:deck_mixer_controls_col1_right.xml"/>
+          <Template src="skin:mixer_controls_col1_right.xml"/>
           <WidgetGroup>
             <Layout>vertical</Layout>
             <ObjectName>4DecksMixerCol2ContainerRight</ObjectName>
             <Children>
-              <Template src="skin:deck_mixer_controls_col3.xml"/>
-              <Template src="skin:deck_mixer_controls_col2.xml"/>
+              <Template src="skin:mixer_controls_col3.xml"/>
+              <Template src="skin:mixer_controls_col2.xml"/>
             </Children>
           </WidgetGroup>
         </Children>

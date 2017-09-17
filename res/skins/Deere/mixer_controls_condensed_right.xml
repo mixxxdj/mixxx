@@ -14,7 +14,7 @@
         <Layout>vertical</Layout>
         <Children>
 
-          <Template src="skin:deck_mixer_controls_col1_right.xml" />
+          <Template src="skin:mixer_controls_col1_right.xml" />
 
         </Children>
         <Connection>
