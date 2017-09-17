@@ -15,27 +15,11 @@
     <Layout>horizontal</Layout>
     <Children>
 
-      <WidgetGroup>
-        <ObjectName>EQKnobWithLabel</ObjectName>
-        <MinimumSize>40,42</MinimumSize>
-        <MaximumSize>40,45</MaximumSize>
-        <Layout>vertical</Layout>
-        <Children>
-          <Template src="skin:knob.xml">
-            <SetVariable name="group"><Variable name="QuickEffectUnitGroup"/></SetVariable>
-            <SetVariable name="control">super1</SetVariable>
-            <SetVariable name="color"><Variable name="color"/></SetVariable>
-          </Template>
-          <EffectName>
-            <Size>40f,10f</Size>
-            <ObjectName>KnobLabel</ObjectName>
-            <EffectRackGroup><Variable name="QuickEffectRackGroup"/></EffectRackGroup>
-            <EffectUnitGroup><Variable name="QuickEffectUnitGroup"/></EffectUnitGroup>
-            <Effect>1</Effect>
-            <Elide>middle</Elide>
-          </EffectName>
-        </Children>
-      </WidgetGroup>
+      <Template src="skin:knob.xml">
+        <SetVariable name="group"><Variable name="QuickEffectUnitGroup"/></SetVariable>
+        <SetVariable name="control">super1</SetVariable>
+        <SetVariable name="color"><Variable name="color"/></SetVariable>
+      </Template>
 
       <PushButton>
         <TooltipId><Variable name="button_TooltipId"/></TooltipId>
