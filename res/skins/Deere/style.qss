@@ -1051,7 +1051,8 @@ WNumberRate {
   qproperty-layoutAlignment: 'AlignHCenter';
 }
 
-#DeckMixer1_Column2, #DeckMixer2_Column2, #DeckMixer3_Column2, #DeckMixer4_Column2 {
+#DeckMixer1_Column2, #DeckMixer2_Column2,
+#DeckMixer3_Column2, #DeckMixer4_Column2 {
   qproperty-layoutSpacing: 5;
 }
 
