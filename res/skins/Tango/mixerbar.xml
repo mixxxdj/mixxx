@@ -13,12 +13,12 @@ Description:
 -->
 <Template>
   <WidgetGroup><!-- Mixer Bar -->
-    <ObjectName>MixerBar</ObjectName>
+    <ObjectName>Mixerbar</ObjectName>
     <Layout>horizontal</Layout>
-    <Size>1me,36f</Size>
+    <Size>-1min,36f</Size>
     <Children>
     <!-- Together with expanding spacer at the far right, this
-      centers MixerBar when Library is hidden -->
+      centers Mixerbar when Library is hidden -->
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
@@ -36,7 +36,7 @@ Description:
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
-            <SetVariable name="ObjectName">MixerBar_BelowLibrary</SetVariable>
+            <SetVariable name="ObjectName">Mixerbar_BelowLibrary</SetVariable>
             <SetVariable name="Size">12f,32f</SetVariable>
             <SetVariable name="ConfigKey">[Tango],mixerbar_below_library</SetVariable>
           </Template>
@@ -48,13 +48,13 @@ Description:
       </WidgetGroup><!-- /Toggler to shift Mixerbar below Library -->
 
       <WidgetGroup><!-- Master Mixer -->
-        <ObjectName>MixerBarSection</ObjectName>
+        <ObjectName>MixerbarSection</ObjectName>
         <Layout>horizontal</Layout>
         <Size>-1min,36f</Size>
         <Children>
 
           <WidgetGroup>
-            <ObjectName>MixerBar_MasterSectionLabel</ObjectName>
+            <ObjectName>Mixerbar_MasterSectionLabel</ObjectName>
             <Size>32f,32f</Size>
           </WidgetGroup>
 
@@ -64,7 +64,7 @@ Description:
             <Children>
               <SliderComposed><!-- Volume fader -->
                 <TooltipId></TooltipId>
-                <ObjectName>MixerBarSlider</ObjectName>
+                <ObjectName>MixerbarSlider</ObjectName>
                 <SizePolicy>max,max</SizePolicy>
                 <Handle>skin:/knobs_sliders/slider_volume_h_handle.svg</Handle>
                 <Slider>skin:/knobs_sliders/slider_volume_h_scale.svg</Slider>
@@ -102,7 +102,7 @@ Description:
             </Children>
           </WidgetGroup><!-- /Volume fader + VU Meter -->
 
-          <!-- All spacers left of MixerBarSliders are necessary
+          <!-- All spacers left of MixerbarSliders are necessary
           because margin/padding won't give a proper offset to neighbours,
           just a shift of border/background while maintaining hover area.
           This looks odd. -->
@@ -114,7 +114,7 @@ Description:
             <Children>
               <SliderComposed>
                 <TooltipId>balance</TooltipId>
-                <ObjectName>MixerBarSlider</ObjectName>
+                <ObjectName>MixerbarSlider</ObjectName>
                 <SizePolicy>min,min</SizePolicy>
                 <Handle>skin:/knobs_sliders/slider_balance_handle.svg</Handle>
                 <Slider>skin:/knobs_sliders/slider_balance_scale.svg</Slider>
@@ -137,20 +137,20 @@ Description:
         <!-- encapsuled in extra container since visibilty connection
             breaks css padding/margin -->
           <WidgetGroup>
-            <ObjectName>MixerBarSection</ObjectName>
+            <ObjectName>MixerbarSection</ObjectName>
             <Layout>horizontal</Layout>
             <Size>-1min,36f</Size>
             <Children>
 
               <WidgetGroup>
-                <ObjectName>MixerBar_HeadSectionLabel</ObjectName>
+                <ObjectName>Mixerbar_HeadSectionLabel</ObjectName>
                 <Size>32f,32f</Size>
               </WidgetGroup>
 
               <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
               <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
-                <SetVariable name="ObjectName">MixerBarToggler</SetVariable>
+                <SetVariable name="ObjectName">MixerbarToggler</SetVariable>
                 <SetVariable name="Size">11f,32f</SetVariable>
                 <SetVariable name="ConfigKey">[Tango],mixerbar_headphone</SetVariable>
               </Template>
@@ -166,7 +166,7 @@ Description:
                     <Children>
                       <SliderComposed><!-- Volume fader -->
                         <TooltipId></TooltipId>
-                        <ObjectName>MixerBarSlider</ObjectName>
+                        <ObjectName>MixerbarSlider</ObjectName>
                         <SizePolicy>min,min</SizePolicy>
                         <Handle>skin:/knobs_sliders/slider_volume_h_handle.svg</Handle>
                         <Slider>skin:/knobs_sliders/slider_volume_h_scale.svg</Slider>
@@ -187,7 +187,7 @@ Description:
                     <Children>
                       <SliderComposed>
                         <TooltipId>headMix</TooltipId>
-                        <ObjectName>MixerBarSlider</ObjectName>
+                        <ObjectName>MixerbarSlider</ObjectName>
                         <SizePolicy>min,min</SizePolicy>
                         <Handle>skin:/knobs_sliders/slider_headMix_handle.svg</Handle>
                         <Slider>skin:/knobs_sliders/slider_headMix_scale.svg</Slider>
@@ -208,7 +208,7 @@ Description:
                     <Children>
                       <Template src="skin:button_2state.xml">
                         <SetVariable name="TooltipId">headSplit</SetVariable>
-                        <SetVariable name="ObjectName">MixerBarButton</SetVariable>
+                        <SetVariable name="ObjectName">MixerbarButton</SetVariable>
                         <SetVariable name="Size">38f,24f</SetVariable>
                         <SetVariable name="state_0_unpressed">headSplit_off.svg</SetVariable>
                         <SetVariable name="state_0_pressed">headSplit_off.svg</SetVariable>
@@ -219,6 +219,8 @@ Description:
                       <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
                     </Children>
                   </WidgetGroup>
+
+                  <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
 
                 </Children>
                 <Connection>
@@ -237,23 +239,24 @@ Description:
       </WidgetGroup><!-- Headphone Mixer -->
 
       <WidgetGroup><!-- Microphone Mixer -->
-        <ObjectName>MixerBarSection</ObjectName>
+        <ObjectName>MixerbarSection</ObjectName>
         <Layout>horizontal</Layout>
         <Size>-1min,36f</Size>
         <Children>
 
           <WidgetGroup>
-            <ObjectName>MixerBar_MicSectionLabel</ObjectName>
+            <ObjectName>Mixerbar_MicSectionLabel</ObjectName>
             <Size>22f,32f</Size>
           </WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml">
-            <SetVariable name="ObjectName">MixerBarToggler</SetVariable>
+            <SetVariable name="ObjectName">MixerbarToggler</SetVariable>
             <SetVariable name="Size">11f,32f</SetVariable>
             <SetVariable name="ConfigKey">[Tango],mixerbar_mic</SetVariable>
           </Template>
 
           <WidgetGroup><!-- MICs expanded -->
+            <ObjectName>MicsExpanded</ObjectName>
             <SizePolicy>max,max</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
@@ -264,27 +267,28 @@ Description:
                 <Layout>vertical</Layout>
                 <Children>
                   <Template src="skin:button_3state_persist.xml">
-                    <SetVariable name="ObjectName">MixerBarButton</SetVariable>
+                    <SetVariable name="ObjectName">MixerbarButton</SetVariable>
                     <SetVariable name="Size">42f,24f</SetVariable>
                     <SetVariable name="state_0_text">DUCK</SetVariable>
                     <SetVariable name="state_1_text">AUTO</SetVariable>
                     <SetVariable name="state_2_text">MAN</SetVariable>
                     <SetVariable name="ConfigKey">[Master],talkoverDucking</SetVariable>
                   </Template>
-                  <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
                 </Children>
               </WidgetGroup>
 
               <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
               <WidgetGroup><!-- Duck strength, hidden when Auto-Duck is OFF -->
+                <ObjectName>AlignTop</ObjectName>
                 <Layout>stacked</Layout>
                 <Size>28f,28f</Size>
                 <Children>
                   <!-- index 0 due to bug -->
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
                   <WidgetGroup><!-- translucent cover when Spinny/Cover is hidden -->
-                    <ObjectName>MixerBarCover</ObjectName>
+                    <ObjectName>MixerbarCover</ObjectName>
                     <Layout>vertical</Layout>
                     <SizePolicy>me,me</SizePolicy>
                     <Connection>
@@ -296,7 +300,7 @@ Description:
 
                   <Template src="skin:knob_textless.xml">
                     <SetVariable name="TooltipId"></SetVariable>
-                    <SetVariable name="ObjectName">MixerBarKnob</SetVariable>
+                    <SetVariable name="ObjectName">MixerbarKnob</SetVariable>
                     <SetVariable name="Size">28f,28f</SetVariable>
                     <SetVariable name="group">[Master]</SetVariable>
                     <SetVariable name="ConfigKey">duckStrength</SetVariable>
@@ -335,18 +339,18 @@ Description:
       </WidgetGroup><!-- /Microphone Mixer -->
 
       <WidgetGroup><!-- Auxiliary Mixer -->
-        <ObjectName>MixerBarSection</ObjectName>
+        <ObjectName>MixerbarSection</ObjectName>
         <Layout>horizontal</Layout>
         <Size>-1min,36f</Size>
         <Children>
 
           <WidgetGroup>
-            <ObjectName>MixerBar_AuxSectionLabel</ObjectName>
+            <ObjectName>Mixerbar_AuxSectionLabel</ObjectName>
             <Size>18f,32f</Size>
           </WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml">
-            <SetVariable name="ObjectName">MixerBarToggler</SetVariable>
+            <SetVariable name="ObjectName">MixerbarToggler</SetVariable>
             <SetVariable name="Size">11f,32f</SetVariable>
             <SetVariable name="ConfigKey">[Tango],mixerbar_aux</SetVariable>
           </Template>

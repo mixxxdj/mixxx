@@ -62,7 +62,7 @@ Description:
                         <Children>
                           <SearchBox></SearchBox>
                           <Template src="skin:button_2state_persist.xml">
-                            <SetVariable name="ObjectName">LibCoverbutton</SetVariable>
+                            <SetVariable name="ObjectName">LibCoverArtButton</SetVariable>
                             <!-- Icon size is 48x48px (24x24px), margin: left 2px, bottom 4px -->
                             <SetVariable name="Size">26f,28f</SetVariable>
                             <SetVariable name="ConfigKey">[Library],show_coverart</SetVariable>

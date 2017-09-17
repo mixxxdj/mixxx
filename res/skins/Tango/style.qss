@@ -220,82 +220,89 @@ WWidgetGroup {
   qproperty-layoutSpacing: 0px;
 }
 
-#MixerBarSection {
-  qproperty-layoutAlignment: 'AlignTop';
-  margin: 2px 8px 1px 0px;
+#MixerbarSection {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  margin: 3px 5px 0px 0px; /*
   border: 1px solid #585858;
-  border-width: 1px 0px 0px 1px;
+  border-width: 1px 0px 0px 1px; */
+  background-color: #333333;
 }
 
 
-#MixerBar_BelowLibrary[displayValue="0"] {
+#Mixerbar_BelowLibrary[displayValue="0"] {
   background: transparent url(skin:/buttons/btn_arrow_downleft.svg) no-repeat center top;
   }
-  #MixerBar_BelowLibrary[displayValue="0"]:hover {
+  #Mixerbar_BelowLibrary[displayValue="0"]:hover {
     background: transparent url(skin:/buttons/btn_arrow_downleft_hover.svg) no-repeat center top;
   }
-  #MixerBar_BelowLibrary[displayValue="1"] {
+  #Mixerbar_BelowLibrary[displayValue="1"] {
     background: transparent url(skin:/buttons/btn_arrow_upright.svg) no-repeat center top;
   }
-  #MixerBar_BelowLibrary[displayValue="1"]:hover {
+  #Mixerbar_BelowLibrary[displayValue="1"]:hover {
     background: transparent url(skin:/buttons/btn_arrow_upright_hover.svg) no-repeat center top;
   }
 
-#MixerBarToggler[displayValue="0"] {
+#MixerbarToggler[displayValue="0"] {
   background: transparent url(skin:/buttons/btn_arrow_right.svg) no-repeat center top;
   }
-  #MixerBarToggler[displayValue="0"]:hover {
+  #MixerbarToggler[displayValue="0"]:hover {
     background: transparent url(skin:/buttons/btn_arrow_right_hover.svg) no-repeat center top;
   }
-  #MixerBarToggler[displayValue="1"] {
+  #MixerbarToggler[displayValue="1"] {
     background: transparent url(skin:/buttons/btn_arrow_left.svg) no-repeat center top;
   }
-  #MixerBarToggler[displayValue="1"]:hover {
+  #MixerbarToggler[displayValue="1"]:hover {
     background: transparent url(skin:/buttons/btn_arrow_left_hover.svg) no-repeat center top;
   }
   
-
-#MixerBar_MasterSectionLabel, #MixerBar_HeadSectionLabel,
-#MixerBar_MicSectionLabel, #MixerBar_AuxSectionLabel {
-  }
-  #MixerBar_MasterSectionLabel {
-    image: url(skin:/buttons/btn_master.svg) no-repeat center center;
-  }
-  #MixerBar_HeadSectionLabel {
-    image: url(skin:/buttons/btn_head.svg) no-repeat center center;
-  }
-  #MixerBar_MicSectionLabel {
-    image: url(skin:/buttons/btn_mic.svg) no-repeat center center;
-  }
-  #MixerBar_AuxSectionLabel {
-    image: url(skin:/buttons/btn_aux.svg) no-repeat center center;
-  }
-
-#MixerBar_MicAuxLabel { /*
-  border: 1px solid #585858;
-  border-width: 0px 0px 0px 1px; */
+#Mixerbar_MasterSectionLabel {
+  image: url(skin:/buttons/btn_master.svg) no-repeat center center;
+}
+#Mixerbar_HeadSectionLabel {
+  image: url(skin:/buttons/btn_head.svg) no-repeat center center;
+}
+#Mixerbar_MicSectionLabel {
+  image: url(skin:/buttons/btn_mic.svg) no-repeat center center;
+}
+#Mixerbar_AuxSectionLabel {
+  image: url(skin:/buttons/btn_aux.svg) no-repeat center center;
+}
+#Mixerbar_MicAuxLabel {
+  /* not apllied
+  border-left: 1px solid #453117; */
   font-size: 22px/22px;
   font-weight: bold;
   text-align: center;
 }
 
-#MixerBarButton {
+#MixerbarButton,
+#MixerbarPflButton,
+#MixerbarXfaderButton {
   font-weight: bold;
+  border: 1px solid #0f0f0f;
   }
-  #MixerBarButton[displayValue="0"] {
+  #MixerbarButton[displayValue="0"],
+  #MixerbarPflButton[displayValue="0"],
+  #MixerbarXfaderButton[displayValue="0"] {
     background-color: #333333;
     color: #888888;
     }
-    #MixerBarButton:hover[displayValue="0"] {
+    #MixerbarButton[displayValue="0"]:hover,
+    #MixerbarPflButton:hover,
+    #MixerbarXfaderButton:hover {
       border: 1px solid #888888;
     }
-  #MixerBarButton[displayValue="1"],
-  #MixerBarButton[displayValue="2"] {
+  #MixerbarButton[displayValue="1"],
+  #MixerbarButton[displayValue="2"] {
     background-color: #666666;
     color: #eeeeee;
     }
-    #MixerBarButton:hover[displayValue="1"]:hover,
-    #MixerBarButton:hover[displayValue="2"]:hover {
+  #MixerbarPflButton[displayValue="0"]:hover,
+  #MixerbarPflButton[displayValue="1"] {
+    background-color: #0f0f0f;
+  }
+    #MixerbarButton:hover[displayValue="1"]:hover,
+    #MixerbarButton:hover[displayValue="2"]:hover {
       border: 1px solid #eeeeee;
     }
 
@@ -303,8 +310,9 @@ WWidgetGroup {
   margin: 0px 3px 0px 1px;
 }
 
-#MixerBarCover {
-  background-color: rgba(30, 30, 30, 200);
+#MixerbarCover {
+  /* background is #333333, so this has to blend in */
+  background-color: rgba(51, 51, 51, 200);
 }
 
 /*################################################################
