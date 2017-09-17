@@ -7,11 +7,11 @@
   <WidgetGroup>
     <ObjectName>Mixer</ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>f,min</SizePolicy>
+    <SizePolicy>max,me</SizePolicy>
     <Children>
       <WidgetGroup>
         <ObjectName>DeckControls</ObjectName>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>max,me</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
 

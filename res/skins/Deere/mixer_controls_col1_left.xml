@@ -15,13 +15,39 @@
       <WidgetGroup>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:knob_with_button_left.xml">
-            <SetVariable name="TooltipId">pregain</SetVariable>
-            <SetVariable name="control">pregain</SetVariable>
-            <SetVariable name="color">red</SetVariable>
-            <SetVariable name="button_TooltipId">mute</SetVariable>
-            <SetVariable name="button_control">mute</SetVariable>
-          </Template>
+          <WidgetGroup>
+            <Connection>
+              <ConfigKey>[Master],show_killswitches</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+            <Layout>vertical</Layout>
+            <Children>
+              <Template src="skin:knob_with_button_left.xml">
+                <SetVariable name="TooltipId">pregain</SetVariable>
+                <SetVariable name="control">pregain</SetVariable>
+                <SetVariable name="color">red</SetVariable>
+                <SetVariable name="button_TooltipId">mute</SetVariable>
+                <SetVariable name="button_control">mute</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <Connection>
+              <ConfigKey>[Master],show_killswitches</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform><Not/></Transform>
+            </Connection>
+            <Layout>vertical</Layout>
+            <Children>
+              <Template src="skin:knob.xml">
+                <SetVariable name="TooltipId">pregain</SetVariable>
+                <SetVariable name="control">pregain</SetVariable>
+                <SetVariable name="color">red</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
         </Children>
         <Connection>
           <ConfigKey>[Master],show_4decks</ConfigKey>

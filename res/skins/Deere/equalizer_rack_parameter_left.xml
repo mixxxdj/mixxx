@@ -16,7 +16,7 @@
   <SetVariable name="EqualizerEffectGroup">[EqualizerRack<Variable name="EqualizerNumber"/>_<Variable name="group"/>_Effect<Variable name="EffectNumber"/>]</SetVariable>
   <WidgetGroup>
     <Layout>horizontal</Layout>
-    <Size>55f,-1me</Size>
+    <Size>-1max,-1me</Size>
     <Children>
 
       <EffectPushButton>
@@ -39,6 +39,10 @@
         <Connection>
           <ConfigKey><Variable name="EqualizerEffectGroup"/>,button_parameter<Variable name="parameter"/></ConfigKey>
           <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey>[Master],show_killswitches</ConfigKey>
+          <BindProperty>visible</BindProperty>
         </Connection>
       </EffectPushButton>
 

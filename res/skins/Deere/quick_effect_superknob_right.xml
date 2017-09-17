@@ -43,6 +43,10 @@
           <ConfigKey><Variable name="QuickEffectEffectGroup"/>,enabled</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
         </Connection>
+        <Connection>
+          <ConfigKey>[Master],show_killswitches</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
       </PushButton>
 
     </Children>
