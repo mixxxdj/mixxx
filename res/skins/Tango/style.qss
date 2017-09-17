@@ -16,7 +16,11 @@
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
 }
 
-WWidget, WLabel, WNumber, WTrackProperty, WBeatSpinBox {
+WWidget,
+WLabel,
+WNumber,
+WTrackProperty,
+WBeatSpinBox {
   font-family: Ubuntu;
   font-weight: normal;
   font-size: 12px/12px;
@@ -33,19 +37,12 @@ WWidgetGroup {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
-#Library_Samplers_0, #Library_Samplers_1, #Library_Samplers_2, #Library_Samplers_3 {
-  margin-top: 3px;
-}
-/* #Library_Samplers_1 is a WidgetStack, so exclude it here */
-#Library_Samplers_0, #Library_Samplers_2, #Library_Samplers_3 {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-}
-
 #WaveformSplitter::handle:vertical {
   height: 4px;
   image: url(skin:/graphics/splitterVert_handle.png);
   }
-  #WaveformSplitter::handle:vertical:hover, #WaveformSplitter::handle:vertical:pressed {
+  #WaveformSplitter::handle:vertical:hover,
+  #WaveformSplitter::handle:vertical:pressed {
     image: url(skin:/graphics/splitterVert_handle_pressed.png);
   }
 
@@ -63,20 +60,24 @@ WWidgetGroup {
   color: #d910f0;	/* SignalColor: #df4df0		> decks_right.xml */
 }
 
-#WaveformContainer1, #WaveformContainer2 {
+#WaveformContainer1,
+#WaveformContainer2 {
   background-color: #001D33;
 }
-#WaveformContainer3, #WaveformContainer4 {
+#WaveformContainer3,
+#WaveformContainer4 {
   background-color: #3A0440;
 }
 
 /*	Define background-color here to make VinylToggler match
   the waveforms background-color.
   spinnyMini_Xmask.svg must match as well. */
-#DeckOverview1, #DeckOverview2 {
+#DeckOverview1,
+#DeckOverview2 {
   background-color: #001D33;
 }
-#DeckOverview3, #DeckOverview4 {
+#DeckOverview3,
+#DeckOverview4 {
   background-color: #3A0440;
 }
 
@@ -166,7 +167,10 @@ WWidgetGroup {
 ##############################################################*/
 
 /* Also, see color definition above. */
-#WaveformContainer1, #WaveformContainer2, #WaveformContainer3, #WaveformContainer4 {
+#WaveformContainer1,
+#WaveformContainer2,
+#WaveformContainer3,
+#WaveformContainer4 {
 /* this will shift waveforms' center position to the left.
   Useful to 'look ahead' further (who cares about history, ha?)
   margin-left: -350px;	*/
@@ -212,7 +216,7 @@ WWidgetGroup {
  ######## Mixer Bar #############################################
 ##############################################################*/
 
-#MixerBar {
+#Mixerbar {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   margin: 0px;
   padding: 0px;
@@ -919,14 +923,16 @@ WBeatSpinBox {
     border: 1px solid #dddddd;
   }
 /* RecordingDuration underneath RecordingButton, as well as 'REC' text & Rec icon */
-#RecDurationLabel, #RecRec {
+#RecDurationLabel,
+#RecRec {
   /* RecordingButton is transparent so label needs bg-color */
   background-color: #333333;
   font-family: Ubuntu;
   font-weight: bold;
   font-size: 12px/12px;
   color: #d2d2d2;
-  text-align: center
+  text-align: center;
+  border-radius: 3px;
 }
   #RecDot {
     background: #333333 url(skin:/buttons/btn_rec_dot.svg) no-repeat center right;
@@ -935,13 +941,15 @@ WBeatSpinBox {
 #ClockBox {
   qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';	
   }		
-  #ClockBox WLabel, #Clock {
+  #ClockBox WLabel,
+  #Clock {
     font-size: 13px/13px;
     color: #999999;
     text-align: center;
   }
 
-#BroadcastButton, #SkinSettingsToggler {
+#BroadcastButton,
+#SkinSettingsToggler {
   background-color: transparent;
   }
   #BroadcastButton[displayValue="0"] {
@@ -1195,7 +1203,7 @@ WBeatSpinBox {
       background-color: #777777;
       }
     #FxToggleButtonUnderlay[displayValue="1"] {
-      background-color: #ff8f00;	/* yellow2 	*/
+      background-color: #ff8f00;
       }
     #FxNameContainer {
       padding: 1px;
@@ -1217,7 +1225,7 @@ WBeatSpinBox {
       /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
       margin: 0px;
       /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
-      * names start getting cut off. Adding explicit padding improves this. */
+         names start getting cut off. Adding explicit padding improves this. */
       padding: 0px;
       /* The 3D frame on the combo box becomes flat when you give it a border */
       border: 0px solid #666666;
@@ -1245,8 +1253,8 @@ WBeatSpinBox {
         background-color: #202020;
         padding-left: 6px;
         font-family: Ubuntu;
-        font-size: 13px/13px; /*
-        not applied, defined by WEffectSelector
+        font-size: 13px/13px;
+        /* not applied, defined by WEffectSelector
         color: #cccccc; */
         border: 0px;
         border-radius: 2px;
@@ -1311,8 +1319,7 @@ WBeatSpinBox {
   #FxSuperLinkInvertButton[displayValue="0"] {
     background-color: #4b4b4b;
   }
-  #FxSuperLinkButton[value="0"]:hover { /*
-    background-color: #888888; */
+  #FxSuperLinkButton[value="0"]:hover {
     border: 1px solid #888888;
   }
 
@@ -1433,8 +1440,7 @@ WBeatSpinBox {
 }
 
 #SamplerDeck {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop'; /*
-  margin-top: 3px;  */
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   margin-top: 5px;
 }
 
@@ -1451,7 +1457,8 @@ WBeatSpinBox {
     image: url(skin:/buttons/btn_arrow_up_hover.svg) no-repeat top center;
   }
 
-#SamplerPlayBox, #SamplerPlayBox_mini {
+#SamplerPlayBox,
+#SamplerPlayBox_mini {
   border-color: #0f0f0f;
   background-color: #333333;
 }
@@ -1461,7 +1468,8 @@ WBeatSpinBox {
 #SamplerPlayBox_mini {
   padding: 0px 1px 0px 0px;
 }
-  #SamplerPlayCue, #SamplerPlayCueUnderlay {
+  #SamplerPlayCue,
+  #SamplerPlayCueUnderlay {
     border-radius: 0px;
   }
   #SamplerPlayCue[displayValue="0"]:hover {
@@ -1496,25 +1504,24 @@ WTrackProperty#SamplerTitle_mini {
   padding: 0px 2px 0px 0px;
 }
 
-#SamplerOverviewRow, #PreviewOverview {
-  background-color: #1a1a1a;
-}
-
 #SamplerSyncGainPfl {
   padding: 1px;	
 }
 
-#SamplerButton, #SamplerButton_mini {
+#SamplerButton,
+#SamplerButton_mini {
   font-size: 14px/14px;
   font-weight: bold;
   text-align: center;
   color: #888888;
 }
-#SamplerButton_mini, #SamplerGainKnob {
+#SamplerButton_mini,
+#SamplerGainKnob {
   background-color: #333333;
   border-radius: 2px;
   }
-  #SamplerButton:hover, #SamplerButton_mini:hover {
+  #SamplerButton:hover,
+  #SamplerButton_mini:hover {
     background-color: #0f0f0f;
   }
 #SamplerKeylock {
@@ -1566,7 +1573,9 @@ WTrackProperty#SamplerTitle_mini {
   background-color: #0f0f0f;
   border-bottom: 5px solid #1e1e1e;
 }
-#PreviewTitle, #PreviewEject, #PreviewGainKnob {
+#PreviewTitle,
+#PreviewEject,
+#PreviewGainKnob {
   background-color: #333333;
 }
 #PreviewTitleEject {
@@ -1591,7 +1600,8 @@ WTrackProperty#SamplerTitle_mini {
   #PreviewEject:hover {
     border: 1px solid #eeeeee;
   }
-  #PreviewPlay, #PreviewOverview {
+  #PreviewPlay,
+  #PreviewOverview {
     margin-right: 1px;
   }
   #PreviewGainKnob {
@@ -1665,6 +1675,9 @@ qproperty-layoutAlignment: 'AlignRight | AlignBottom';
 #Spacer58 {
   background-color: #585858;
 }
+#SpacerFF {
+  background-color: #ffffff;
+}
 #Text33 {
   color: #333333;
   font-size: 1px/1px;
@@ -1698,21 +1711,24 @@ qproperty-layoutAlignment: 'AlignRight | AlignBottom';
       image: url(skin:/buttons/btn_lib_mini_hover.svg) no-repeat center top;
     }
 
-#LibCoverbutton {
+#LibCoverArtButton {
   margin: 0px 0px 4px 2px;
   }
-  #LibCoverbutton[displayValue="0"] {
+  #LibCoverArtButton[displayValue="0"] {
     image: url(skin:/buttons/btn_lib_cover_off.svg) no-repeat center center;
     }
-    #LibCoverbutton[displayValue="1"], #LibCoverbutton[displayValue="0"]:hover {
+    #LibCoverArtButton[displayValue="1"],
+    #LibCoverArtButton[displayValue="0"]:hover {
       image: url(skin:/buttons/btn_lib_cover_on.svg) no-repeat center center;
       background-color: #0f0f0f;
     }
-    #LibCoverbutton[displayValue="1"]:hover {
+    #LibCoverArtButton[displayValue="1"]:hover {
       border: 1px solid #d2d2d2;
     }
 
-QTableView, QTextBrowser, QTreeView {
+QTableView,
+QTextBrowser,
+QTreeView {
   border: 1px solid #585858;  /*
   font-family: Ubuntu;  */
   font-weight: normal;
@@ -1734,7 +1750,8 @@ QTreeView {
   Defined by SearchBox	*/ 
   margin: 0px;
 }
-QTreeView:focus, QTableView:focus { /*
+QTreeView:focus,
+QTableView:focus { /*
   New Library navigation COs only work if TreeView or TableView have focus.
   Clicking on buttons, sliders and visuals removes focus from Library.
   In conjuction with [Library],MoveFocusBackward/..Forward, this helps a lot. */
@@ -1813,7 +1830,8 @@ QScrollBar:horizontal {
     border-radius: 2px;
     }
   /* "add-page" and "sub-page" are the gutter of the scrollbar */
-  QScrollBar::add-page, QScrollBar::sub-page {
+  QScrollBar::add-page,
+  QScrollBar::sub-page {
     min-width: 15px;
     min-height: 15px;
     background-color: #1b1b1b;
@@ -1833,11 +1851,13 @@ QScrollBar:horizontal {
       background: #888888;
     }
   /* Turn off scroll buttons */
-  QScrollBar::add-line:horizontal, QScrollBar::add-line:vertical {
+  QScrollBar::add-line:horizontal,
+  QScrollBar::add-line:vertical {
     width: 0px;
     height: 0px;
   }
-  QScrollBar::sub-line:horizontal, QScrollBar::sub-line:vertical {
+  QScrollBar::sub-line:horizontal,
+  QScrollBar::sub-line:vertical {
     width: 0px;
     height: 0px;
   }
@@ -2034,7 +2054,8 @@ WSearchLineEdit {
     color: #eeeeee;	/* grey	*/
     }
 
-QLabel, QRadioButton {	/* 
+QLabel,
+QRadioButton {	/*
   background: transparent;
   Extra declaration for QRadioButton otherwise it shows up with
   wrong colors in Linux with Gnome 	*/
