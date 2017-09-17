@@ -332,28 +332,44 @@
                     } else {
                         engine.setValue(this.group, 'eject', 1);
                     }
+                } else {
+                    if (engine.getValue(this.group, 'play') === 0) {
+                        engine.setValue(this.group, 'eject', 0);
+                    }
                 }
             };
         },
         output: function (value, group, control) {
             if (engine.getValue(this.group, 'track_loaded') === 1) {
-                if (this.playing === undefined) {
+                if (this.loaded === undefined) {
                     this.send(this.on);
                 } else {
                     if (engine.getValue(this.group, 'play') === 1) {
-                        this.send(this.on);
+                        if (this.looping !== undefined &&
+                            engine.getValue(this.group, 'repeat') === 1) {
+                            this.send(this.looping);
+                        } else {
+                            this.send(this.playing);
+                        }
                     } else {
-                        this.send(this.playing);
+                        this.send(this.loaded);
                     }
                 }
             } else {
-                this.send(this.off);
+                if (this.empty === undefined) {
+                    this.send(this.off);
+                } else {
+                    this.send(this.empty);
+                }
             }
         },
         connect: function() {
             this.connections[0] = engine.connectControl(this.group, 'track_loaded', this.output);
             if (this.playing !== undefined) {
                 this.connections[1] = engine.connectControl(this.group, 'play', this.output);
+            }
+            if (this.looping !== undefined) {
+                this.connections[2] = engine.connectControl(this.group, 'repeat', this.output);
             }
         },
         outKey: null, // hack to get Component constructor to call connect()
@@ -472,12 +488,22 @@
         isShifted: false,
         shift: function () {
             this.forEachComponent(function (component) {
+                // Controls for push type Buttons depend on getting reset to 0 when the
+                // Button is released for correct behavior. If there is a skin button
+                // that lights up with the inKey, the skin button would stay lit if the
+                // inKey does not get reset to 0. So, if a push type Button is held down
+                // when shift is pressed, when the Button is released, the MIDI signal
+                // for the Button release will be processed when the Button is in the
+                // shifted state, and the unshifted inKey would not get reset to 0.
+                // To work around this, reset push Buttons' inKey to 0 when the shift
+                // button is pressed.
                 if (typeof component.shift === 'function') {
                     if (component instanceof Button
                         && (component.type === Button.prototype.types.push
                             || component.type === undefined)
-                        && component.inKey !== undefined
-                        && component.input === Button.prototype.input) {
+                        && component.input === Button.prototype.input
+                        && typeof component.inKey === 'string'
+                        && typeof component.group === 'string') {
                         if (engine.getValue(component.group, component.inKey) !== 0) {
                             engine.setValue(component.group, component.inKey, 0);
                         }
@@ -490,12 +516,14 @@
         },
         unshift: function () {
             this.forEachComponent(function (component) {
+                // Refer to comment in ComponentContainer.shift() above for explanation
                 if (typeof component.unshift === 'function') {
                     if (component instanceof Button
                         && (component.type === Button.prototype.types.push
                             || component.type === undefined)
-                        && component.inKey !== undefined
-                        && component.input === Button.prototype.input) {
+                        && component.input === Button.prototype.input
+                        && typeof component.inKey === 'string'
+                        && typeof component.group === 'string') {
                         if (engine.getValue(component.group, component.inKey) !== 0) {
                             engine.setValue(component.group, component.inKey, 0);
                         }
