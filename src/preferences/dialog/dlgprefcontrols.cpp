@@ -25,7 +25,6 @@
 
 #include "mixer/basetrackplayer.h"
 #include "preferences/dialog/dlgprefcontrols.h"
-#include "preferences/constants.h"
 #include "preferences/usersettings.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -53,7 +52,11 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
            m_pPlayerManager(pPlayerManager),
            m_iNumConfiguredDecks(0),
            m_iNumConfiguredSamplers(0),
-           m_autoScaleFactor(0) {
+           m_dScaleFactorAuto(1.0),
+           m_bUseAutoScaleFactor(false),
+           m_dScaleFactor(1.0),
+           m_bStartWithFullScreen(false),
+           m_bRebootMixxxView(false) {
     setupUi(this);
 
     m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
@@ -297,15 +300,15 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
 
     QList<QDir> skinSearchPaths = m_pSkinLoader->getSkinSearchPaths();
     QList<QFileInfo> skins;
-    foreach (QDir dir, skinSearchPaths) {
+    for (QDir dir : skinSearchPaths) {
         dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
         skins.append(dir.entryInfoList());
     }
 
-    QString configuredSkinPath = m_pSkinLoader->getSkinPath();
+    QString configuredSkinPath = m_pSkinLoader->getConfiguredSkinPath();
     QIcon sizeWarningIcon(":/images/preferences/ic_preferences_warning.png");
     int index = 0;
-    foreach (QFileInfo skinInfo, skins) {
+    for (QFileInfo skinInfo : skins) {
         bool size_ok = checkSkinResolution(skinInfo.absoluteFilePath());
         if (size_ok) {
             ComboBoxSkinconf->insertItem(index, skinInfo.fileName());
@@ -332,8 +335,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     AutoHiDpi autoHiDpi;
-    m_autoScaleFactor = autoHiDpi.getScaleFactor();
-    double scaleFactor = m_autoScaleFactor;
+    m_dScaleFactorAuto = autoHiDpi.getScaleFactor();
+    double scaleFactor = m_dScaleFactorAuto;
     if (scaleFactor > 0) {
         // we got a valid auto scale factor
         bool scaleFactorAuto = m_pConfig->getValue(
@@ -342,13 +345,11 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
         if (scaleFactorAuto) {
             comboBoxScaleFactor->setEnabled(false);
             m_pConfig->setValue(
-                    ConfigKey("[Config]", "ScaleFactor"), m_autoScaleFactor);
+                    ConfigKey("[Config]", "ScaleFactor"), m_dScaleFactorAuto);
         } else {
             scaleFactor = m_pConfig->getValue(
                         ConfigKey("[Config]", "ScaleFactor"), 1.0);
         }
-        connect(checkBoxScaleFactorAuto, SIGNAL(toggled(bool)),
-                this, SLOT(slotSetScaleFactorAuto(bool)));
     } else {
         checkBoxScaleFactorAuto->setEnabled(false);
         scaleFactor = m_pConfig->getValue(
@@ -390,8 +391,6 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     //
     checkBoxStartFullScreen->setChecked(m_pConfig->getValueString(
                     ConfigKey("[Config]", "StartInFullscreen")).toInt()==1);
-    connect(checkBoxStartFullScreen, SIGNAL(toggled(bool)),
-            this, SLOT(slotSetStartInFullScreen(bool)));
 
     //
     // Screensaver mode
@@ -486,7 +485,7 @@ DlgPrefControls::~DlgPrefControls() {
 void DlgPrefControls::slotUpdateSchemes() {
     // Since this involves opening a file we won't do this as part of regular slotUpdate
     QList<QString> schlist = LegacySkinParser::getSchemeList(
-                m_pSkinLoader->getSkinPath());
+                m_pSkinLoader->getSkinPath(m_skin));
 
     ComboBoxSchemeconf->clear();
 
@@ -540,6 +539,10 @@ void DlgPrefControls::slotUpdate() {
 }
 
 void DlgPrefControls::slotResetToDefaults() {
+    int index = ComboBoxSkinconf->findText(m_pSkinLoader->getDefaultSkinName());
+    ComboBoxSkinconf->setCurrentIndex(index);
+    slotSetSkin(index);
+
     // Track time display mode
     radioButtonRemaining->setChecked(true);
 
@@ -563,7 +566,9 @@ void DlgPrefControls::slotResetToDefaults() {
 
     // Default to normal size widgets
     comboBoxScaleFactor->setCurrentIndex(1); // 100 %
-    checkBoxScaleFactorAuto->setChecked(true);
+    if (m_dScaleFactorAuto > 0) {
+        checkBoxScaleFactorAuto->setChecked(true);
+    }
 
     // Don't start in full screen.
     checkBoxStartFullScreen->setChecked(false);
@@ -692,41 +697,34 @@ void DlgPrefControls::slotSetCueRecall(bool b)
 
 
 void DlgPrefControls::slotSetScaleFactor(int index) {
-    double scaleFactor = comboBoxScaleFactor->itemData(index).toDouble();
-    m_pConfig->setValue(ConfigKey("[Config]", "ScaleFactor"), scaleFactor);
-    // reload the skin when the button is toggled
-    repaint();
-    m_mixxx->rebootMixxxView();
-}
-
-void DlgPrefControls::slotSetScaleFactorAuto(bool checked) {
-    m_pConfig->setValue(
-            ConfigKey("[Config]", "ScaleFactorAuto"), checked);
-    comboBoxScaleFactor->setEnabled(!checked);
-    if (checked) {
-        m_pConfig->setValue(
-                ConfigKey("[Config]", "ScaleFactor"), m_autoScaleFactor);
-        // reload the skin when the button is toggled
-        repaint();
-        m_mixxx->rebootMixxxView();
-    } else {
-        slotSetScaleFactor(comboBoxScaleFactor->currentIndex());
+    double newScaleFactor = comboBoxScaleFactor->itemData(index).toDouble();
+    if (m_dScaleFactor != newScaleFactor) {
+        m_dScaleFactor = newScaleFactor;
+        m_bRebootMixxxView = true;
     }
 }
 
-void DlgPrefControls::slotSetStartInFullScreen(bool b) {
-    m_pConfig->set(ConfigKey("[Config]", "StartInFullscreen"), ConfigValue(b?1:0));
+void DlgPrefControls::slotSetScaleFactorAuto(bool newValue) {
+    if (newValue) {
+        if (!m_bUseAutoScaleFactor) {
+            m_bRebootMixxxView = true;
+        }
+    } else {
+        slotSetScaleFactor(comboBoxScaleFactor->currentIndex());
+    }
+
+    m_bUseAutoScaleFactor = newValue;
+    comboBoxScaleFactor->setEnabled(!newValue);
 }
 
 void DlgPrefControls::slotSetTooltips() {
     //0=OFF, 1=ON, 2=ON (only in Library)
-    mixxx::TooltipsPreference valueToSet = mixxx::TooltipsPreference::TOOLTIPS_ON;
+    m_tooltipMode = mixxx::TooltipsPreference::TOOLTIPS_ON;
     if (radioButtonTooltipsOff->isChecked()) {
-        valueToSet = mixxx::TooltipsPreference::TOOLTIPS_OFF;
+        m_tooltipMode = mixxx::TooltipsPreference::TOOLTIPS_OFF;
     } else if (radioButtonTooltipsLibrary->isChecked()) {
-        valueToSet = mixxx::TooltipsPreference::TOOLTIPS_ONLY_IN_LIBRARY;
+        m_tooltipMode = mixxx::TooltipsPreference::TOOLTIPS_ONLY_IN_LIBRARY;
     }
-    m_mixxx->setToolTipsCfg(valueToSet);
 }
 
 void DlgPrefControls::notifyRebootNecessary() {
@@ -737,20 +735,22 @@ void DlgPrefControls::notifyRebootNecessary() {
 }
 
 void DlgPrefControls::slotSetScheme(int) {
-    m_pConfig->set(ConfigKey("[Config]", "Scheme"), ComboBoxSchemeconf->currentText());
-    repaint();
-    m_mixxx->rebootMixxxView();
+    QString newScheme = ComboBoxSchemeconf->currentText();
+    if (m_colorScheme != newScheme) {
+        m_colorScheme = newScheme;
+        m_bRebootMixxxView = true;
+    }
 }
 
 void DlgPrefControls::slotSetSkin(int) {
-    ComboBoxSkinconf->repaint(); // without it the combobox sticks to the old value until
-                                 // the new Skin is fully loaded
-    m_pConfig->set(ConfigKey("[Config]", "ResizableSkin"), ComboBoxSkinconf->currentText());
-    repaint();
-    m_mixxx->rebootMixxxView();
-    checkSkinResolution(ComboBoxSkinconf->currentText())
+    QString newSkin = ComboBoxSkinconf->currentText();
+    if (newSkin != m_skin) {
+        m_skin = newSkin;
+        m_bRebootMixxxView = true;
+        checkSkinResolution(ComboBoxSkinconf->currentText())
             ? warningLabel->hide() : warningLabel->show();
-    slotUpdateSchemes();
+        slotUpdateSchemes();
+    }
 }
 
 void DlgPrefControls::slotSetTrackTimeDisplay(QAbstractButton* b) {
@@ -823,6 +823,24 @@ void DlgPrefControls::slotSetRateRamp(bool mode) {
 }
 
 void DlgPrefControls::slotApply() {
+    m_pConfig->set(ConfigKey("[Config]", "ResizableSkin"), m_skin);
+    m_pConfig->set(ConfigKey("[Config]", "Scheme"), m_colorScheme);
+
+    m_pConfig->setValue(
+            ConfigKey("[Config]", "ScaleFactorAuto"), m_bUseAutoScaleFactor);
+    if (m_bUseAutoScaleFactor) {
+        m_pConfig->setValue(
+                ConfigKey("[Config]", "ScaleFactor"), m_dScaleFactorAuto);
+    } else {
+        m_pConfig->setValue(ConfigKey("[Config]", "ScaleFactor"), m_dScaleFactor);
+    }
+
+    m_pConfig->set(ConfigKey("[Config]", "StartInFullscreen"),
+            ConfigValue(checkBoxStartFullScreen->isChecked()));
+
+    m_mixxx->setToolTipsCfg(m_tooltipMode);
+
+
     double deck1RateRange = m_rateRangeControls[0]->get();
     double deck1RateDir = m_rateDirControls[0]->get();
 
@@ -839,14 +857,14 @@ void DlgPrefControls::slotApply() {
     int configSPAutoReset = BaseTrackPlayer::RESET_NONE;
 
     // screensaver mode update
-    int inhibitcombo = comboBoxScreensaver->itemData(
+    int screensaverComboBoxState = comboBoxScreensaver->itemData(
             comboBoxScreensaver->currentIndex()).toInt();
-    int inhibitsettings = static_cast<int>(m_mixxx->getInhibitScreensaver());
-    if (inhibitcombo != inhibitsettings) {
-        m_mixxx->setInhibitScreensaver(static_cast<mixxx::ScreenSaverPreference>(inhibitcombo));
+    int screensaverConfiguredState = static_cast<int>(m_mixxx->getInhibitScreensaver());
+    if (screensaverComboBoxState != screensaverConfiguredState) {
+        m_mixxx->setInhibitScreensaver(
+                static_cast<mixxx::ScreenSaverPreference>(screensaverComboBoxState));
     }
 
-    
     if (m_speedAutoReset && m_pitchAutoReset) {
         configSPAutoReset = BaseTrackPlayer::RESET_PITCH_AND_SPEED;
     }
@@ -869,6 +887,11 @@ void DlgPrefControls::slotApply() {
     foreach (ControlProxy* pControl, m_keyunlockModeControls) {
         pControl->set(m_keyunlockMode);
     }
+
+    if (m_bRebootMixxxView) {
+        m_mixxx->rebootMixxxView();
+    }
+    m_bRebootMixxxView = false;
 }
 
 //Returns TRUE if skin fits to screen resolution, FALSE otherwise

@@ -20,6 +20,7 @@
 
 #include <QWidget>
 
+#include "preferences/constants.h"
 #include "preferences/dialog/ui_dlgprefcontrolsdlg.h"
 #include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
@@ -80,7 +81,6 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     void slotSetLocale(int);
     void slotSetScaleFactor(int index);
     void slotSetScaleFactorAuto(bool checked);
-    void slotSetStartInFullScreen(bool b);
 
     void slotNumDecksChanged(double);
     void slotNumSamplersChanged(double);
@@ -115,11 +115,21 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     int m_iNumConfiguredDecks;
     int m_iNumConfiguredSamplers;
 
+    QString m_skin;
+    QString m_colorScheme;
+    mixxx::TooltipsPreference m_tooltipMode;
+    double m_dScaleFactorAuto;
+    bool m_bUseAutoScaleFactor;
+    double m_dScaleFactor;
+    bool m_bStartWithFullScreen;
+    mixxx::ScreenSaverPreference m_screensaverMode;
+
+    bool m_bRebootMixxxView;
+
     bool m_speedAutoReset;
     bool m_pitchAutoReset;
     int m_keylockMode;
     int m_keyunlockMode;
-    double m_autoScaleFactor;
 };
 
 #endif
