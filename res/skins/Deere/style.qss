@@ -25,7 +25,7 @@
 #Mixer {
   border-color: #222;
   border-style: solid;
-  border-width: 3px 1.5px 3px 1.5px;
+  border-width: 0px 1.5px 3px 1.5px;
   background-color: #333;
 }
 
@@ -85,7 +85,7 @@
 #Deck1, #Deck3 {
   border-bottom-right-radius:5px;
   border-top-right-radius:5px;
-  border-width: 3px 1.5px 3px 3px;
+  border-width: 0px 1.5px 3px 3px;
   border-style: solid;
   border-color: #222;
 }
@@ -93,7 +93,7 @@
 #Deck2, #Deck4 {
   border-bottom-left-radius:5px;
   border-top-left-radius:5px;
-  border-width: 3px 3px 3px 1.5px;
+  border-width: 0px 3px 3px 1.5px;
   border-style: solid;
   border-color: #222;
 }
@@ -734,6 +734,9 @@ WBeatSpinBox {
   padding: 0px 4px 0px 4px;
   qproperty-layoutSpacing: 5;
   background-color: #111111;
+  border-width: 0px 0px 3px 0px;
+  border-style: solid;
+  border-color: #222;
 }
 
 #ToolBarLeft {
