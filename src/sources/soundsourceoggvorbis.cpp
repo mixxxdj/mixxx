@@ -44,7 +44,7 @@ SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /
         kLogger.warning()
                 << "Failed to open file for"
                 << getUrlString();
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
     const int initDecoderResult = ov_open_callbacks(m_pFile.get(), &m_vf, nullptr, 0, s_callbacks);
@@ -57,12 +57,12 @@ SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /
         kLogger.warning()
             << "Unsupported format in"
             << getUrlString();
-        return OpenResult::ABORTED;
+        return OpenResult::Aborted;
     default:
         kLogger.warning()
             << "Failed to initialize decoder for"
             << getUrlString();
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
     if (!ov_seekable(&m_vf)) {
@@ -70,7 +70,7 @@ SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /
                 << "Stream in"
                 << getUrlString()
                 << "is not seekable";
-        return OpenResult::ABORTED;
+        return OpenResult::Aborted;
     }
 
     // lookup the ogg's channels and sample rate
@@ -79,7 +79,7 @@ SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /
         kLogger.warning()
                 << "Failed to read stream info from"
                 << getUrlString();
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
     setChannelCount(vi->channels);
     setSamplingRate(vi->rate);
@@ -98,10 +98,10 @@ SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /
         kLogger.warning()
                 << "Failed to read read total length of"
                 << getUrlString();
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
-    return OpenResult::SUCCEEDED;
+    return OpenResult::Succeeded;
 }
 
 void SoundSourceOggVorbis::close() {

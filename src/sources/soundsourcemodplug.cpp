@@ -113,7 +113,7 @@ SoundSource::OpenResult SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*a
         // an error occurred
         t.cancel();
         kLogger.debug() << "Could not load module file: " << fileName;
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
     DEBUG_ASSERT(0 == (kChunkSizeInBytes % sizeof(m_sampleBuf[0])));
@@ -167,7 +167,7 @@ SoundSource::OpenResult SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*a
                     0,
                     samples2frames(m_sampleBuf.size())));
 
-    return OpenResult::SUCCEEDED;
+    return OpenResult::Succeeded;
 }
 
 void SoundSourceModPlug::close() {

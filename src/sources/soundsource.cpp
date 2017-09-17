@@ -29,12 +29,12 @@ SoundSource::OpenResult SoundSource::open(const AudioSourceConfig& audioSrcCfg) 
         result = tryOpen(audioSrcCfg);
     } catch (const std::exception& e) {
         qWarning() << "Caught unexpected exception from SoundSource::tryOpen():" << e.what();
-        result = OpenResult::FAILED;
+        result = OpenResult::Failed;
     } catch (...) {
         qWarning() << "Caught unknown exception from SoundSource::tryOpen()";
-        result = OpenResult::FAILED;
+        result = OpenResult::Failed;
     }
-    if (OpenResult::SUCCEEDED != result) {
+    if (OpenResult::Succeeded != result) {
         close(); // rollback
     }
     return result;

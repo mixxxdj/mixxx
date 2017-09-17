@@ -58,7 +58,7 @@ SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(const AudioSourceCon
         kLogger.warning()
                 << "Cannot reopen file"
                 << getUrlString();
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
     const QString fileName(getLocalFileName());
@@ -69,14 +69,14 @@ SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(const AudioSourceCon
     if (FAILED(m_hrCoInitialize)) {
         kLogger.warning()
                 << "failed to initialize COM";
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
     // Initialize the Media Foundation platform.
     m_hrMFStartup = MFStartup(MF_VERSION);
     if (FAILED(m_hrCoInitialize)) {
         kLogger.warning()
                 << "failed to initialize Media Foundation";
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
     // Create the source reader to read the input file.
@@ -93,13 +93,13 @@ SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(const AudioSourceCon
         kLogger.warning()
                 << "Error opening input file:"
                 << fileName;
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
     if (!configureAudioStream(audioSrcCfg)) {
         kLogger.warning()
                 << "Failed to configure audio stream";
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
     m_streamUnitConverter = StreamUnitConverter(this);
@@ -107,7 +107,7 @@ SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(const AudioSourceCon
     if (!readProperties()) {
         kLogger.warning()
                 << "Failed to read file properties";
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
     //Seek to first position, which forces us to skip over all the header frames.
@@ -115,7 +115,7 @@ SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(const AudioSourceCon
     //get the number of samples it expects (ie. no header frames).
     seekSampleFrame(frameIndexMin());
 
-    return OpenResult::SUCCEEDED;
+    return OpenResult::Succeeded;
 }
 
 void SoundSourceMediaFoundation::close() {

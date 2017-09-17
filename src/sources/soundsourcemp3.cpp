@@ -197,7 +197,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audio
     DEBUG_ASSERT(!m_file.isOpen());
     if (!m_file.open(QIODevice::ReadOnly)) {
         kLogger.warning() << "Failed to open file:" << m_file.fileName();
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
     // Get a pointer to the file using memory mapped IO
@@ -274,7 +274,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audio
                     << madSampleRate;
             // Abort
             mad_header_finish(&madHeader);
-            return OpenResult::FAILED;
+            return OpenResult::Failed;
         }
         // Count valid frames separated by its sampling rate
         headerPerSamplingRate[samplingRateIndex]++;
@@ -300,7 +300,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audio
             kLogger.warning() << "Unrecoverable MP3 header error:"
                     << mad_stream_errorstr(&m_madStream);
             // Abort
-            return OpenResult::FAILED;
+            return OpenResult::Failed;
         }
     }
 
@@ -309,7 +309,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audio
         kLogger.warning() << "SSMP3: This is not a working MP3 file:"
                 << m_file.fileName();
         // Abort
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
     DEBUG_ASSERT(m_seekFrameList.front().frameIndex == 0);
 
@@ -344,7 +344,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audio
     } else {
         kLogger.warning() << "No single valid sampling rate in header";
         // Abort
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
     // Initialize the AudioSource
@@ -366,10 +366,10 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audio
     if (m_curFrameIndex != frameIndexMin()) {
         kLogger.warning() << "Failed to start decoding:" << m_file.fileName();
         // Abort
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
-    return OpenResult::SUCCEEDED;
+    return OpenResult::Succeeded;
 }
 
 void SoundSourceMp3::close() {

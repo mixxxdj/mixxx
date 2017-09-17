@@ -576,7 +576,7 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
                 << getSoundSourceProvider()->getName();
         const mixxx::SoundSource::OpenResult openResult =
                 m_pSoundSource->open(audioSrcCfg);
-        if (openResult == mixxx::SoundSource::OpenResult::ABORTED) {
+        if (openResult == mixxx::SoundSource::OpenResult::Aborted) {
             kLogger.warning() << "Unable to open file"
                     << getUrl().toString()
                     << "with provider"
@@ -586,7 +586,7 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
             initSoundSource();
             continue; // try again
         }
-        if ((openResult == mixxx::SoundSource::OpenResult::SUCCEEDED) && m_pSoundSource->verifyReadable()) {
+        if ((openResult == mixxx::SoundSource::OpenResult::Succeeded) && m_pSoundSource->verifyReadable()) {
             m_pAudioSource = mixxx::AudioSourceTrackProxy::create(m_pSoundSource, m_pTrack);
             DEBUG_ASSERT(m_pAudioSource);
             if (m_pAudioSource->frameIndexRange().empty()) {
@@ -613,7 +613,7 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
                        << getUrl().toString()
                        << "with provider"
                        << getSoundSourceProvider()->getName();
-            if (openResult == mixxx::SoundSource::OpenResult::SUCCEEDED) {
+            if (openResult == mixxx::SoundSource::OpenResult::Succeeded) {
                 m_pSoundSource->close(); // cleanup
             }
             // Do NOT retry with the next SoundSource provider if the file
@@ -622,7 +622,7 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
         }
         return m_pAudioSource; // either success or failure
     }
-    // All available providers have returned OpenResult::ABORTED when
+    // All available providers have returned OpenResult::Aborted when
     // getting here. m_pSoundSource might already be invalid/null!
     kLogger.warning() << "Unable to decode file"
             << getUrl().toString();

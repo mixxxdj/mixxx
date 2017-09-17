@@ -170,7 +170,7 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(const AudioSourceConfig& audioS
     if (!m_pOggOpusFile) {
         kLogger.warning() << "Failed to open OggOpus file:" << getUrlString()
                 << "errorCode" << errorCode;
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
     if (!op_seekable(m_pOggOpusFile)) {
@@ -178,7 +178,7 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(const AudioSourceConfig& audioS
                 << "Stream in"
                 << getUrlString()
                 << "is not seekable";
-        return OpenResult::ABORTED;
+        return OpenResult::Aborted;
     }
 
     const int streamChannelCount = op_channel_count(m_pOggOpusFile, kCurrentStreamLink);
@@ -199,7 +199,7 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(const AudioSourceConfig& audioS
         kLogger.warning()
                 << "Failed to read channel configuration of OggOpus file:"
                 << getUrlString();
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
     // Reserve enough capacity for buffering a stereo signal!
@@ -213,7 +213,7 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(const AudioSourceConfig& audioS
         kLogger.warning()
                 << "Failed to read total length of OggOpus file:"
                 << getUrlString();
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
     const opus_int32 bitrate = op_bitrate(m_pOggOpusFile, kEntireStreamLink);
@@ -223,14 +223,14 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(const AudioSourceConfig& audioS
         kLogger.warning()
                 << "Failed to determine bitrate of OggOpus file:"
                 << getUrlString();
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
     setSamplingRate(kSamplingRate);
 
     m_curFrameIndex = frameIndexMin();
 
-    return OpenResult::SUCCEEDED;
+    return OpenResult::Succeeded;
 }
 
 void SoundSourceOpus::close() {

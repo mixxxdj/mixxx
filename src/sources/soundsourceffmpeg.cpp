@@ -244,9 +244,9 @@ SoundSource::OpenResult SoundSourceFFmpeg::openAudioStream(
         kLogger.warning()
                 << "avcodec_open2() failed and returned"
                 << avcodec_open2_result;
-        return SoundSource::OpenResult::FAILED;
+        return SoundSource::OpenResult::Failed;
     }
-    return SoundSource::OpenResult::SUCCEEDED;
+    return SoundSource::OpenResult::Succeeded;
 }
 
 void SoundSourceFFmpeg::ClosableAVStreamPtr::take(AVStream** ppClosableStream) {
@@ -317,7 +317,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
         kLogger.warning()
                 << "Failed to open input file"
                 << getLocalFileName();
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
     m_pInputFormatContext.take(&pInputFormatContext);
 
@@ -328,7 +328,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
         kLogger.warning()
                 << "avformat_find_stream_info() failed and returned"
                 << avformat_find_stream_info_result;
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
     //debug only (Enable if needed)
@@ -339,7 +339,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
     if (pAudioStream == nullptr) {
         kLogger.warning()
                 << "No audio stream found";
-        return OpenResult::ABORTED;
+        return OpenResult::Aborted;
     }
 
     // Find codec to decode stream or pass out
@@ -348,7 +348,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
         kLogger.warning()
                 << "Failed to find a decoder for stream"
                 << pAudioStream->index;
-        return SoundSource::OpenResult::ABORTED;
+        return SoundSource::OpenResult::Aborted;
     }
 
 #if AVSTREAM_FROM_API_VERSION_3_1
@@ -358,7 +358,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
         kLogger.warning()
                 << "Failed to allocate codec context"
                 << pAudioStream->index;
-        return SoundSource::OpenResult::ABORTED;
+        return SoundSource::OpenResult::Aborted;
     }
 
     // Add stream parameters to context
@@ -366,7 +366,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
         kLogger.warning()
                 << "Failed to find to set Code parameter for AVCodecContext"
                 << pAudioStream->index;
-        return SoundSource::OpenResult::ABORTED;
+        return SoundSource::OpenResult::Aborted;
     }
 
     // Se timebase correct
@@ -383,7 +383,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
 #endif
 
 
-    if (openAudioStreamResult != OpenResult::SUCCEEDED) {
+    if (openAudioStreamResult != OpenResult::Succeeded) {
         return openAudioStreamResult; // early exit on any error
     }
 
@@ -396,7 +396,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
         kLogger.warning()
                 << "Stream has invalid or unsupported number of channels:"
                 << channelCount;
-        return OpenResult::ABORTED;
+        return OpenResult::Aborted;
     }
 
     const auto samplingRate = getSamplingRateOfStream(m_pAudioStream);
@@ -404,14 +404,14 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
         kLogger.warning()
                 << "Stream has invalid or unsupported sampling rate:"
                 << samplingRate;
-        return OpenResult::ABORTED;
+        return OpenResult::Aborted;
     }
 
     mixxx::IndexRange frameIndexRange;
     if (!getFrameIndexRangeOfStream(m_pAudioStream, &frameIndexRange)) {
         kLogger.warning()
                 << "Failed to get frame index range for stream";
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
     setChannelCount(channelCount);
@@ -425,7 +425,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
 #endif
     m_pResample->openMixxx(getSampleFormatOfStream(m_pAudioStream), AV_SAMPLE_FMT_FLT);
 
-    return OpenResult::SUCCEEDED;
+    return OpenResult::Succeeded;
 }
 
 void SoundSourceFFmpeg::close() {

@@ -189,13 +189,13 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSr
 #endif
     if (MP4_INVALID_FILE_HANDLE == m_hFile) {
         kLogger.warning() << "Failed to open file for reading:" << getUrlString();
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
     m_trackId = findFirstAudioTrackId(m_hFile, getLocalFileName());
     if (MP4_INVALID_TRACK_ID == m_trackId) {
         kLogger.warning() << "No AAC track found:" << getUrlString();
-        return OpenResult::ABORTED;
+        return OpenResult::Aborted;
     }
 
     // Read fixed sample duration.  If the sample duration is not
@@ -216,7 +216,7 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSr
       // Give up and instead let FFmpeg (or any other AAC decoder with
       // lower priority) handle this file.
       // Fixes https://bugs.launchpad.net/mixxx/+bug/1504113
-      return OpenResult::ABORTED;
+      return OpenResult::Aborted;
 #else
       // Fallback: Use a default value if FFmpeg is not available (checked
       // at compile time).
@@ -230,7 +230,7 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSr
             MP4GetTrackNumberOfSamples(m_hFile, m_trackId);
     if (0 >= numberOfSamples) {
         kLogger.warning() << "Failed to read number of samples from file:" << getUrlString();
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
     m_maxSampleBlockId = kSampleBlockIdMin + (numberOfSamples - 1);
 
@@ -241,7 +241,7 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSr
     if (maxSampleBlockInputSize == 0) {
         kLogger.warning() << "Failed to read MP4 DecoderConfigDescriptor.bufferSizeDB:"
                 << getUrlString();
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
     if (maxSampleBlockInputSize > kMaxSampleBlockInputSizeLimit) {
         // Workaround for a possible bug in libmp4v2 2.0.0 (Ubuntu 16.04)
@@ -253,16 +253,16 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSr
                 << kMaxSampleBlockInputSizeLimit
                 << "exceeds limit:"
                 << getUrlString();
-        return OpenResult::ABORTED;
+        return OpenResult::Aborted;
     }
     m_inputBuffer.resize(maxSampleBlockInputSize, 0);
 
     m_audioSrcCfg = audioSrcCfg;
 
     if (openDecoder()) {
-        return OpenResult::SUCCEEDED;
+        return OpenResult::Succeeded;
     } else {
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 }
 

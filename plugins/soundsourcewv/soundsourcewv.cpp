@@ -61,7 +61,7 @@ SoundSource::OpenResult SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrc
             msg, openFlags, 0);
     if (!m_wpc) {
         kLogger.debug() << "failed to open file : " << msg;
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
     setChannelCount(WavpackGetReducedChannels(m_wpc));
@@ -82,7 +82,7 @@ SoundSource::OpenResult SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrc
 
     m_curFrameIndex = frameIndexMin();
 
-    return OpenResult::SUCCEEDED;
+    return OpenResult::Succeeded;
 }
 
 void SoundSourceWV::close() {

@@ -65,7 +65,7 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& a
 
     if (err != noErr) {
         kLogger.debug() << "Error opening file " << fileName;
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
     // get the input file format
@@ -75,7 +75,7 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& a
             &m_inputFormat);
     if (err != noErr) {
         kLogger.debug() << "Error getting file format (" << fileName << ")";
-        return OpenResult::ABORTED;
+        return OpenResult::Aborted;
     }
     m_bFileIsMp3 = m_inputFormat.mFormatID == kAudioFormatMPEGLayer3;
 
@@ -91,7 +91,7 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& a
             &m_outputFormat);
     if (err != noErr) {
         kLogger.debug() << "Error setting file property";
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
     //get the total length in frames of the audio file - copypasta: http://discussions.apple.com/thread.jspa?threadID=2364583&tstart=47
@@ -102,7 +102,7 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& a
             &totalFrameCount);
     if (err != noErr) {
         kLogger.debug() << "Error getting number of frames";
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
     //
@@ -140,7 +140,7 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& a
     //get the number of samples it expects (ie. no header frames).
     seekSampleFrame(frameIndexMin());
 
-    return OpenResult::SUCCEEDED;
+    return OpenResult::Succeeded;
 }
 
 void SoundSourceCoreAudio::close() {

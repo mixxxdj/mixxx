@@ -1,8 +1,12 @@
 #ifndef MIXXX_SOUNDSOURCE_H
 #define MIXXX_SOUNDSOURCE_H
 
+#include <QDebug>
+
 #include "sources/metadatasource.h"
 #include "sources/audiosource.h"
+
+#include "util/assert.h"
 
 namespace mixxx {
 
@@ -23,19 +27,22 @@ public:
             const TrackMetadata& trackMetadata) const override;
 
     enum class OpenResult {
-        SUCCEEDED,
-        FAILED,
+        Succeeded,
         // If a SoundSource is not able to open a file because of
         // internal errors of if the format of the content is not
-        // supported it should return the following error. This
-        // gives SoundSources with a lower priority the chance to
-        // open the same file.
+        // supported it should return Aborted. This gives SoundSources
+        // with a lower priority the chance to open the same file.
         // Example: A SoundSourceProvider has been registered for
         // files with a certain extension, but the corresponding
         // SoundSource does only support a subset of all possible
         // data formats that might be stored in files with this
         // extension.
-        ABORTED,
+        Aborted,
+        // If a SoundSource return Failed while opening a file
+        // the entire operation will fail immediately. No other
+        // sources with lower priority will be given the chance
+        // to open the same file.
+        Failed,
     };
 
     // Opens the AudioSource for reading audio data.
@@ -69,7 +76,7 @@ private:
     //   - Before: Always
     //   - After: Upon failure
     // If tryOpen() throws an exception or returns a result other than
-    // OpenResult::SUCCEEDED an invocation of close() will follow.
+    // OpenResult::Succeeded an invocation of close() will follow.
     // Implementations do not need to free internal resources twice in
     // both tryOpen() upon failure and close(). All internal resources
     // should be freed in close() instead.
@@ -86,6 +93,21 @@ typedef std::shared_ptr<SoundSource> SoundSourcePointer;
 template<typename T>
 SoundSourcePointer newSoundSourceFromUrl(const QUrl& url) {
     return std::make_shared<T>(url);
+}
+
+inline
+QDebug operator<<(QDebug dbg, SoundSource::OpenResult openResult) {
+    switch (openResult) {
+    case SoundSource::OpenResult::Succeeded:
+        return dbg << "Succeeded";
+    case SoundSource::OpenResult::Aborted:
+        return dbg << "Aborted";
+    case SoundSource::OpenResult::Failed:
+        return dbg << "Failed";
+    default:
+        DEBUG_ASSERT(!"Unknown OpenResult");
+        return dbg << "Unknown";
+    }
 }
 
 } //namespace mixxx
