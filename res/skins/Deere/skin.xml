@@ -26,7 +26,6 @@
       <attribute persist="true" config_key="[Deere],show_track_info">1</attribute>
       <attribute persist="true" config_key="[Deere],show_bpm_info">1</attribute>
       <attribute persist="true" config_key="[Deere],show_more_hotcues">0</attribute>
-      <attribute persist="true" config_key="[Deere],show_minimal_deck_controls">0</attribute>
 
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
       <attribute persist="true" config_key="[Deere],show_crossfader">1</attribute>
