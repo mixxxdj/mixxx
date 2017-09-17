@@ -89,10 +89,10 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
 
     // The parameter minimum is zero so the exact center of the knob is 2 beats.
     CSAMPLE lfoPeriod = m_pPeriodParameter->value();
-    if (m_pSyncParameter->toBool() && groupFeatures.has_beat_length) {
+    if (m_pSyncParameter->toBool() && groupFeatures.has_beat_length_sec) {
         // period is a number of beats
         lfoPeriod = std::max(roundToFraction(lfoPeriod, 2.0), 0.25) *
-            groupFeatures.beat_length;
+            groupFeatures.beat_length_sec * kChannels;
     } else {
         // period is a number of seconds
         lfoPeriod = std::max(lfoPeriod, 0.05f) * sampleRate * kChannels;
