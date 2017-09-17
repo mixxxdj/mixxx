@@ -1,6 +1,6 @@
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2017-8-9
+// description: 2017-9-1
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 // JSHint Configuration
@@ -104,7 +104,7 @@ VCI102.scratchEnable = function(ch, midino, value, status, group) {
     } else if (engine.isScratching(deck)) {
         VCI102.scratchTimer[ch] = engine.beginTimer(20, function() {
             var vel = Math.abs(engine.getValue(group, "scratch2"));
-            if (vel < 1 && (vel < 1e-9 || engine.getValue(group, "play"))) {
+            if (vel < 1 && (vel < 1 / 64 || engine.getValue(group, "play"))) {
                 if (VCI102.scratchTimer[ch]) {
                     engine.stopTimer(VCI102.scratchTimer[ch]);
                     VCI102.scratchTimer[ch] = 0;
