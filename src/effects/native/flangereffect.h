@@ -48,7 +48,6 @@ class FlangerEffect : public PerChannelEffectProcessor<FlangerGroupState> {
 
     EngineEffectParameter* m_pPeriodParameter;
     EngineEffectParameter* m_pDepthParameter;
-    EngineEffectParameter* m_pSyncParameter;
 
     DISALLOW_COPY_AND_ASSIGN(FlangerEffect);
 };

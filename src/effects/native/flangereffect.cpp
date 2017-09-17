@@ -49,25 +49,13 @@ EffectManifest FlangerEffect::getManifest() {
     depth->setMinimum(0.0);
     depth->setMaximum(1.0);
 
-    EffectManifestParameter* sync = manifest.addParameter();
-    sync->setId("sync");
-    sync->setName(QObject::tr("Sync"));
-    sync->setDescription(QObject::tr("Synchronizes the period with the tempo if it can be retrieved"));
-    sync->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
-    sync->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    sync->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    sync->setDefault(1);
-    sync->setMinimum(0);
-    sync->setMaximum(1);
-
     return manifest;
 }
 
 FlangerEffect::FlangerEffect(EngineEffect* pEffect,
                              const EffectManifest& manifest)
         : m_pPeriodParameter(pEffect->getParameterById("period")),
-          m_pDepthParameter(pEffect->getParameterById("depth")),
-          m_pSyncParameter(pEffect->getParameterById("sync")) {
+          m_pDepthParameter(pEffect->getParameterById("depth")) {
     Q_UNUSED(manifest);
 }
 
@@ -89,7 +77,7 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
 
     // The parameter minimum is zero so the exact center of the knob is 2 beats.
     CSAMPLE lfoPeriod = m_pPeriodParameter->value();
-    if (m_pSyncParameter->toBool() && groupFeatures.has_beat_length_sec) {
+    if (groupFeatures.has_beat_length_sec) {
         // period is a number of beats
         lfoPeriod = std::max(roundToFraction(lfoPeriod, 2.0), 0.25) *
             groupFeatures.beat_length_sec * kChannels;
