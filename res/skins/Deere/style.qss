@@ -1059,9 +1059,17 @@ WNumberRate {
   qproperty-layoutSpacing: 5;
 }
 
-#CircleButton {
+#CircleButton, #QuickEffectKillButton {
   border: 3px solid #333333;
   border-radius: 2px;
+}
+
+#QuickEffectKillButton[value="0"] {
+  background-color: #006596;
+}
+
+#QuickEffectKillButton[value="1"] {
+  background-color: #4B4B4B;
 }
 
 #SmallCircleButton {

@@ -21,22 +21,23 @@
         <SetVariable name="color"><Variable name="color"/></SetVariable>
       </Template>
 
+      <!-- Invert the on/off icons so they match the EQ kill switches. -->
       <PushButton>
         <TooltipId><Variable name="button_TooltipId"/></TooltipId>
         <Size>15f,15f</Size>
-        <ObjectName>CircleButton</ObjectName>
+        <ObjectName>QuickEffectKillButton</ObjectName>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
           <Text></Text>
-          <Pressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_off_48px.svg</Pressed>
-          <Unpressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_off_48px.svg</Unpressed>
+          <Pressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Unpressed>
         </State>
         <State>
           <Number>1</Number>
           <Text></Text>
-          <Pressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Pressed>
-          <Unpressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Unpressed>
+          <Pressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_off_48px.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_off_48px.svg</Unpressed>
         </State>
         <Connection>
           <ConfigKey><Variable name="QuickEffectEffectGroup"/>,enabled</ConfigKey>
