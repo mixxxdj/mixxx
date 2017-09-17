@@ -29,7 +29,9 @@ public:
             WritableSampleFrames sampleFrames) override;
 
 private:
-    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+    OpenResult tryOpen(
+            OpenMode mode,
+            const AudioSourceConfig& audioSrcCfg) override;
 
     QFile m_file;
     quint64 m_fileSize;

@@ -23,7 +23,9 @@ public:
             WritableSampleFrames sampleFrames) override;
 
 private:
-    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+    OpenResult tryOpen(
+            OpenMode mode,
+            const AudioSourceConfig& audioSrcCfg) override;
 
     static size_t ReadCallback(void *ptr, size_t size, size_t nmemb,
             void *datasource);

@@ -190,7 +190,9 @@ void SoundSourceMp3::finishDecoding() {
     mad_stream_finish(&m_madStream);
 }
 
-SoundSource::OpenResult SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
+SoundSource::OpenResult SoundSourceMp3::tryOpen(
+        OpenMode /*mode*/,
+        const AudioSourceConfig& /*audioSrcCfg*/) {
     DEBUG_ASSERT(!channelCount().valid());
     DEBUG_ASSERT(!samplingRate().valid());
 

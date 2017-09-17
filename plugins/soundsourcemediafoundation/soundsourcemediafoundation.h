@@ -62,7 +62,9 @@ public:
             WritableSampleFrames sampleFrames) override;
 
 private:
-    OpenResult tryOpen(const mixxx::AudioSourceConfig& audioSrcCfg) override;
+    OpenResult tryOpen(
+            OpenMode mode,
+            const mixxx::AudioSourceConfig& audioSrcCfg) override;
 
     bool configureAudioStream(const mixxx::AudioSourceConfig& audioSrcCfg);
     bool readProperties();

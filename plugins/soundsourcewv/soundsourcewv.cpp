@@ -37,7 +37,9 @@ SoundSourceWV::~SoundSourceWV() {
     close();
 }
 
-SoundSource::OpenResult SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrcCfg) {
+SoundSource::OpenResult SoundSourceWV::tryOpen(
+        OpenMode /*mode*/,
+        const AudioSourceConfig& audioSrcCfg) {
     DEBUG_ASSERT(!m_wpc);
     char msg[80]; // hold possible error message
     int openFlags = OPEN_WVC | OPEN_NORMALIZE;

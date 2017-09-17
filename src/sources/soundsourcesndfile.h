@@ -25,7 +25,9 @@ public:
             WritableSampleFrames sampleFrames) override;
 
 private:
-    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+    OpenResult tryOpen(
+            OpenMode mode,
+            const AudioSourceConfig& audioSrcCfg) override;
 
     SNDFILE* m_pSndFile;
 

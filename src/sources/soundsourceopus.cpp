@@ -151,7 +151,9 @@ Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
     return OK;
 }
 
-SoundSource::OpenResult SoundSourceOpus::tryOpen(const AudioSourceConfig& audioSrcCfg) {
+SoundSource::OpenResult SoundSourceOpus::tryOpen(
+        OpenMode /*mode*/,
+        const AudioSourceConfig& audioSrcCfg) {
     // From opus/opusfile.h
     // On Windows, this string must be UTF-8 (to allow access to
     // files whose names cannot be represented in the current

@@ -35,7 +35,9 @@ public:
             CSAMPLE* sampleBuffer) override;
 
 private:
-    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+    OpenResult tryOpen(
+            OpenMode mode,
+            const AudioSourceConfig& audioSrcCfg) override;
 
     bool m_bFileIsMp3;
     ExtAudioFileRef m_audioFile;

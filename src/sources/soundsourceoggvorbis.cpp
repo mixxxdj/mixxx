@@ -38,7 +38,9 @@ SoundSourceOggVorbis::~SoundSourceOggVorbis() {
     close();
 }
 
-SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
+SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(
+        OpenMode /*mode*/,
+        const AudioSourceConfig& /*audioSrcCfg*/) {
     m_pFile = std::make_unique<QFile>(getLocalFileName());
     if(!m_pFile->open(QFile::ReadOnly)) {
         kLogger.warning()

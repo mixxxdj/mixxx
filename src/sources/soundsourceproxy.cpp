@@ -569,20 +569,33 @@ QImage SoundSourceProxy::parseCoverImage() const {
 
 mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSourceConfig& audioSrcCfg) {
     DEBUG_ASSERT(m_pTrack);
+    auto openMode = mixxx::SoundSource::OpenMode::Strict;
     while (m_pSoundSource && !m_pAudioSource) {
         kLogger.debug() << "Opening file"
                 << getUrl().toString()
                 << "with provider"
-                << getSoundSourceProvider()->getName();
+                << getSoundSourceProvider()->getName()
+                << "using mode"
+                << openMode;
         const mixxx::SoundSource::OpenResult openResult =
-                m_pSoundSource->open(audioSrcCfg);
-        if (openResult == mixxx::SoundSource::OpenResult::Aborted) {
+                m_pSoundSource->open(openMode, audioSrcCfg);
+        if ((openResult == mixxx::SoundSource::OpenResult::Aborted) ||
+                ((openMode == mixxx::SoundSource::OpenMode::Strict) && (openResult == mixxx::SoundSource::OpenResult::Failed))) {
             kLogger.warning() << "Unable to open file"
                     << getUrl().toString()
                     << "with provider"
-                    << getSoundSourceProvider()->getName();
+                    << getSoundSourceProvider()->getName()
+                    << "using mode"
+                    << openMode;
             // Continue with the next SoundSource provider
             nextSoundSourceProvider();
+            if (!getSoundSourceProvider() && (openMode == mixxx::SoundSource::OpenMode::Strict)) {
+                // No provider was able to open the source in Strict mode.
+                // Retry to open the file in Permissive mode starting with
+                // the first provider...
+                m_soundSourceProviderRegistrationIndex = 0;
+                openMode = mixxx::SoundSource::OpenMode::Permissive;
+            }
             initSoundSource();
             continue; // try again
         }

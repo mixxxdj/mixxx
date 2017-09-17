@@ -22,7 +22,9 @@ SoundSourceSndFile::~SoundSourceSndFile() {
     close();
 }
 
-SoundSource::OpenResult SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
+SoundSource::OpenResult SoundSourceSndFile::tryOpen(
+        OpenMode /*mode*/,
+        const AudioSourceConfig& /*audioSrcCfg*/) {
     DEBUG_ASSERT(!m_pSndFile);
     SF_INFO sfInfo;
     memset(&sfInfo, 0, sizeof(sfInfo));

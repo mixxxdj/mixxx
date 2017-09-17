@@ -53,7 +53,9 @@ SoundSourceMediaFoundation::~SoundSourceMediaFoundation() {
     close();
 }
 
-SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(const AudioSourceConfig& audioSrcCfg) {
+SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(
+        OpenMode /*mode*/,
+        const AudioSourceConfig& audioSrcCfg) {
     VERIFY_OR_DEBUG_ASSERT(!SUCCEEDED(m_hrCoInitialize)) {
         kLogger.warning()
                 << "Cannot reopen file"

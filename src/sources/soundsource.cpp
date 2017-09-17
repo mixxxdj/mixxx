@@ -21,12 +21,14 @@ SoundSource::SoundSource(const QUrl& url, const QString& type)
     DEBUG_ASSERT(getUrl().isValid());
 }
 
-SoundSource::OpenResult SoundSource::open(const AudioSourceConfig& audioSrcCfg) {
+SoundSource::OpenResult SoundSource::open(
+        OpenMode mode,
+        const AudioSourceConfig& audioSrcCfg) {
     close(); // reopening is not supported
 
     OpenResult result;
     try {
-        result = tryOpen(audioSrcCfg);
+        result = tryOpen(mode, audioSrcCfg);
     } catch (const std::exception& e) {
         qWarning() << "Caught unexpected exception from SoundSource::tryOpen():" << e.what();
         result = OpenResult::Failed;

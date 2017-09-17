@@ -34,7 +34,9 @@ public:
     void flacError(FLAC__StreamDecoderErrorStatus status);
 
 private:
-    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+    OpenResult tryOpen(
+            OpenMode mode,
+            const AudioSourceConfig& audioSrcCfg) override;
 
     QFile m_file;
 

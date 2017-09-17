@@ -79,7 +79,9 @@ SoundSourceFLAC::~SoundSourceFLAC() {
     close();
 }
 
-SoundSource::OpenResult SoundSourceFLAC::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
+SoundSource::OpenResult SoundSourceFLAC::tryOpen(
+        OpenMode /*mode*/,
+        const AudioSourceConfig& /*audioSrcCfg*/) {
     DEBUG_ASSERT(!m_file.isOpen());
     if (!m_file.open(QIODevice::ReadOnly)) {
         kLogger.warning() << "Failed to open FLAC file:" << m_file.fileName();

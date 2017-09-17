@@ -26,6 +26,16 @@ public:
     Result writeTrackMetadata(
             const TrackMetadata& trackMetadata) const override;
 
+    enum class OpenMode {
+        // In Strict mode the opening operation should be aborted
+        // as soon as any inconsistencies are detected.
+        Strict,
+        // Opening in Permissive mode is used only after opening
+        // in Strict mode has been aborted by all available
+        // SoundSource implementations.
+        Permissive,
+    };
+
     enum class OpenResult {
         Succeeded,
         // If a SoundSource is not able to open a file because of
@@ -54,7 +64,9 @@ public:
     // of the decoded audio signal. Some decoders are able to reduce
     // the number of channels or do resampling on the fly while decoding
     // the input data.
-    OpenResult open(const AudioSourceConfig& audioSrcCfg = AudioSourceConfig());
+    OpenResult open(
+            OpenMode mode,
+            const AudioSourceConfig& audioSrcCfg = AudioSourceConfig());
 
     // Closes the AudioSource and frees all resources.
     //
@@ -83,7 +95,10 @@ private:
     //
     // Exceptions should be handled internally by implementations to
     // avoid warning messages about unexpected or unknown exceptions.
-    virtual OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) = 0;
+    virtual OpenResult tryOpen(
+            OpenMode mode,
+            const AudioSourceConfig& audioSrcCfg) = 0;
+
 
     const QString m_type;
 };
@@ -93,6 +108,19 @@ typedef std::shared_ptr<SoundSource> SoundSourcePointer;
 template<typename T>
 SoundSourcePointer newSoundSourceFromUrl(const QUrl& url) {
     return std::make_shared<T>(url);
+}
+
+inline
+QDebug operator<<(QDebug dbg, SoundSource::OpenMode openMode) {
+    switch (openMode) {
+    case SoundSource::OpenMode::Strict:
+        return dbg << "Strict";
+    case SoundSource::OpenMode::Permissive:
+        return dbg << "Permissive";
+    default:
+        DEBUG_ASSERT(!"Unknown OpenMode");
+        return dbg << "Unknown";
+    }
 }
 
 inline

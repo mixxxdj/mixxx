@@ -21,7 +21,9 @@ class SoundSourceWV: public SoundSourcePlugin {
             WritableSampleFrames sampleFrames) override;
 
   private:
-    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+    OpenResult tryOpen(
+            OpenMode mode,
+            const AudioSourceConfig& audioSrcCfg) override;
 
     static int32_t ReadBytesCallback(void* id, void* data, int bcount);
     static uint32_t GetPosCallback(void* id);

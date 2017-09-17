@@ -39,7 +39,9 @@ SoundSourceCoreAudio::~SoundSourceCoreAudio() {
 }
 
 // soundsource overrides
-SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& audioSrcCfg) {
+SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(
+        OpenMode /*mode*/,
+        const AudioSourceConfig& audioSrcCfg) {
     const QString fileName(getLocalFileName());
 
     //Open the audio file.

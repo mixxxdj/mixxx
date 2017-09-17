@@ -95,7 +95,9 @@ Result SoundSourceModPlug::parseTrackMetadataAndCoverArt(
     return OK;
 }
 
-SoundSource::OpenResult SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
+SoundSource::OpenResult SoundSourceModPlug::tryOpen(
+        OpenMode /*mode*/,
+        const AudioSourceConfig& /*audioSrcCfg*/) {
     ScopedTimer t("SoundSourceModPlug::open()");
 
     // read module file to byte array
