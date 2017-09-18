@@ -68,6 +68,7 @@ class EchoEffect : public PerChannelEffectProcessor<EchoGroupState> {
     EngineEffectParameter* m_pSendParameter;
     EngineEffectParameter* m_pFeedbackParameter;
     EngineEffectParameter* m_pPingPongParameter;
+    EngineEffectParameter* m_pQuantizeParameter;
     EngineEffectParameter* m_pTripletParameter;
 
     DISALLOW_COPY_AND_ASSIGN(EchoEffect);

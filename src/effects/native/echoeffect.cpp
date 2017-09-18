@@ -77,11 +77,23 @@ EffectManifest EchoEffect::getManifest() {
     send->setDefault(1.0);
     send->setMaximum(1.0);
 
+    EffectManifestParameter* quantize = manifest.addParameter();
+    quantize->setId("quantize");
+    quantize->setName("Quantize");
+    quantize->setShortName("Quantize");
+    quantize->setDescription("Round the Time parameter to the nearest 1/4 beat, or nearest 1/3 beat with Triplets parameter.");
+    quantize->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
+    quantize->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    quantize->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    quantize->setDefault(1);
+    quantize->setMinimum(0);
+    quantize->setMaximum(1);
+
     EffectManifestParameter* triplet = manifest.addParameter();
     triplet->setId("triplet");
     triplet->setName("Triplets");
     triplet->setDescription("When disabled, Time parameter is rounded to nearest 1/4 beat, or 1/8 beats at minimum.\n"
-    "When enabled, Time parameter is rounded to nearest 1/3 beat, or 1/6 beats at minimum.");
+    "When enabled, Time parameter is rounded to nearest 1/4 beat and divided by 3.");
     triplet->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -97,6 +109,7 @@ EchoEffect::EchoEffect(EngineEffect* pEffect, const EffectManifest& manifest)
           m_pSendParameter(pEffect->getParameterById("send_amount")),
           m_pFeedbackParameter(pEffect->getParameterById("feedback_amount")),
           m_pPingPongParameter(pEffect->getParameterById("pingpong_amount")),
+          m_pQuantizeParameter(pEffect->getParameterById("quantize")),
           m_pTripletParameter(pEffect->getParameterById("triplet")) {
     Q_UNUSED(manifest);
 }
@@ -124,15 +137,15 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     if (groupFeatures.has_beat_length_sec) {
         // period is a number of beats
         if (m_pTripletParameter->toBool()) {
-           if (period < 0.16667) {
-              period = 0.16667;
-           } else {
-              period = roundToFraction(period, 3);
+           if (period <= 0.125) {
+              period = 0.041666666666666664; // 1/8 / 3
+           } else if (m_pQuantizeParameter->toBool()) {
+              period = roundToFraction(period, 4) / 3.0;
            }
         } else {
            if (period < 0.125) {
                period = 0.125;
-           } else {
+           } else if (m_pQuantizeParameter->toBool()) {
                period = roundToFraction(period, 4);
            }
         }
