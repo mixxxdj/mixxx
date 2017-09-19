@@ -34,7 +34,7 @@ Variables:
       <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_1_unpressed"/></Unpressed>
     </State>
     <Connection>
-      <ConfigKey persist="true"><Variable name="ConfigKey"/></ConfigKey>
+      <ConfigKey><Variable name="ConfigKey"/></ConfigKey>
       <ButtonState>LeftButton</ButtonState>
     </Connection>
     <Connection>

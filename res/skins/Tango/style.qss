@@ -346,57 +346,71 @@ WWidgetGroup {
 #DeckOverview {
     background-color: #0f0f0f;
   }
-  #VinylTogglerLeft {
-    }
-  #VinylTogglerRight {
-    }
-  #VinylTogglerLeft[highlight="0"], #VinylTogglerRight[highlight="0"] {
-    }
-  #VinylTogglerLeft[displayValue="0"], #VinylTogglerRight[displayValue="1"] {
+  #VinylTogglerLeft[displayValue="0"],
+  #VinylTogglerRightPassthrough[displayValue="1"],
+  #VinylTogglerRight[displayValue="1"] {
     background: transparent url(skin:/buttons/btn_arrow_left.svg) no-repeat top center;
     }
-  #VinylTogglerLeft[displayValue="0"]:hover, #VinylTogglerRight[displayValue="1"]:hover {
-    background: transparent url(skin:/buttons/btn_arrow_left_hover.svg) no-repeat top center;
+    #VinylTogglerLeft[displayValue="0"]:hover,
+    #VinylTogglerRightPassthrough[displayValue="1"]:hover,
+    #VinylTogglerRight[displayValue="1"]:hover {
+      background: transparent url(skin:/buttons/btn_arrow_left_hover.svg) no-repeat top center;
     }
-  #VinylTogglerLeft[displayValue="1"], #VinylTogglerRight[displayValue="0"] {
+  #VinylTogglerLeft[displayValue="1"],
+  #VinylTogglerLeftPassthrough[displayValue="1"],
+  #VinylTogglerRight[displayValue="0"] {
     background: transparent url(skin:/buttons/btn_arrow_right.svg) no-repeat top center;
     }
-  #VinylTogglerLeft[displayValue="1"]:hover, #VinylTogglerRight[displayValue="0"]:hover {
-    background: transparent url(skin:/buttons/btn_arrow_right_hover.svg) no-repeat top center;
+    #VinylTogglerLeft[displayValue="1"]:hover,
+    #VinylTogglerLeftPassthrough[displayValue="1"]:hover,
+    #VinylTogglerRight[displayValue="0"]:hover {
+      background: transparent url(skin:/buttons/btn_arrow_right_hover.svg) no-repeat top center;
     }
   /* When passthrough is active but Vinyl Controls are hidden,
     yellow background and black arrow indicate passthrough */
-  #VinylTogglerLeft[displayValue="0"][highlight="1"] {
+  #VinylTogglerLeftPassthrough[displayValue="0"] {
     background: #ff8f00 url(skin:/buttons/btn_arrow_left_black.svg) no-repeat top center;
     }
-  #VinylTogglerRight[displayValue="0"][highlight="1"] {
+    #VinylTogglerLeftPassthrough[displayValue="0"]:hover {
+      background: #ff8f00 url(skin:/buttons/btn_arrow_left_black_hover.svg) no-repeat top center;
+    }
+  #VinylTogglerRightPassthrough[displayValue="0"] {
     background: #ff8f00 url(skin:/buttons/btn_arrow_right_black.svg) no-repeat top center;
     }
-  #VinylTogglerLeft[displayValue="0"][highlight="1"]:hover {
-    background: #ff8f00 url(skin:/buttons/btn_arrow_left_black_hover.svg) no-repeat top center;
+    #VinylTogglerRightPassthrough[displayValue="0"]:hover {
+      background: #ff8f00 url(skin:/buttons/btn_arrow_right_black_hover.svg) no-repeat top center;
     }
-  #VinylTogglerRight[displayValue="0"][highlight="1"]:hover {
-    background: #ff8f00 url(skin:/buttons/btn_arrow_right_black_hover.svg) no-repeat top center;
-    }
-  #VinylControls {
-    qproperty-layoutAlignment: 'AlignRight | AlignTop';
-    background-color: #0f0f0f;
-    }
-  #VinylButton, #VinylModeButton {
-    font-size: 11px/11px;
-    background-color: #333333;
+
+  #VinylButton,
+  #VinylModeButton,
+  #PassthroughButton {
     margin-right: 1px;
     }
-  #VinylButton:hover, #VinylModeButton:hover {
-    border: 1px solid #999999;
-    }
-  #VinylButton[displayValue="0"], #VinylModeButton {
+  #VinylButton[displayValue="0"],
+  #VinylModeButton,
+  #PassthroughButton {
+    font-size: 11px/11px;
     color: #888888;
+    background-color: #333333;
     }
-  #VinylButton[displayValue="1"], #VinylButton[displayValue="2"] {
-    background-color: #666666;
+    #VinylButton:hover,
+    #VinylModeButton:hover,
+    #PassthroughButton[displayValue="0"]:hover {
+      border: 1px solid #999999;
+    }
+  #VinylButton[displayValue="1"],
+  #VinylButton[displayValue="2"] {
     color: #eeeeee;
     font-weight: bold;
+    background-color: #666666;
+    }
+  #PassthroughButton[displayValue="1"] {
+    color: #0f0f0f;
+    font-weight: bold;
+    background-color: #ff8f00;
+    }
+    #PassthroughButton[displayValue="1"]:hover {
+      border: 1px solid #ffffff;
     }
 
   #TrackCommentContainer {

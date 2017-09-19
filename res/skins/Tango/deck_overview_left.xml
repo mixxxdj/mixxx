@@ -68,13 +68,38 @@ Variables:
 
           <Template src="skin:vinyl_controls_left.xml"/>
 
-          <!-- Toggle Vinyl Controls -->
-          <Template src="skin:button_2state_persist_highlight.xml">
-            <SetVariable name="ObjectName">VinylTogglerLeft</SetVariable>
-            <SetVariable name="Size">11f,50f</SetVariable>
-            <SetVariable name="ConfigKey">[Tango],vinylControlsDeck<Variable name="chanNum"/></SetVariable>
-            <SetVariable name="HighlightKey"><Variable name="group"/>,passthrough</SetVariable>
-          </Template>
+          <WidgetGroup><!-- Vinyl Controls toggle with passthrough -->
+            <Size>11f,50f</Size>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="ObjectName">VinylTogglerLeftPassthrough</SetVariable>
+                <SetVariable name="Size">11f,50f</SetVariable>
+                <SetVariable name="ConfigKey">[Tango],vinylControlsDeck<Variable name="chanNum"/></SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup><!-- Vinyl Controls toggle without passthrough -->
+            <Size>11f,50f</Size>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="ObjectName">VinylTogglerLeft</SetVariable>
+                <SetVariable name="Size">11f,50f</SetVariable>
+                <SetVariable name="ConfigKey">[Tango],vinylControlsDeck<Variable name="chanNum"/></SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
 
           <WidgetGroup><!-- [Spinny / Cover / none] -->
             <Layout>vertical</Layout>
