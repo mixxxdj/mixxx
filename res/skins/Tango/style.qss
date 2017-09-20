@@ -225,7 +225,7 @@ WWidgetGroup {
 }
 
 #MixerbarSection {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
   margin: 3px 5px 0px 0px; /*
   border: 1px solid #585858;
   border-width: 1px 0px 0px 1px; */
@@ -279,6 +279,10 @@ WWidgetGroup {
   text-align: center;
 }
 
+#MixerbarButton {
+  /* margin: 2px 0px 0px 0px; */
+}
+
 #MixerbarButton,
 #MixerbarPflButton,
 #MixerbarXfaderButton {
@@ -310,8 +314,16 @@ WWidgetGroup {
       border: 1px solid #eeeeee;
     }
 
-#VUMeterFloating_h {
-  margin: 0px 3px 0px 1px;
+#VUMeterMixerbar {
+  margin: 2px 0px 0px 0px;
+}
+
+#MixerbarKnob {
+  margin: 2px 0px 0px 0px;
+}
+
+#MixerbarSlider {
+  margin: 0px 0px 0px 0px;
 }
 
 #MixerbarCover {

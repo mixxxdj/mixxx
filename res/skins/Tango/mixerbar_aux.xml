@@ -36,23 +36,47 @@ Variables:
         <SetVariable name="ConfigKey"><Variable name="group"/>,talkover</SetVariable>
       </Template>
 
-      <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+      <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
       <WidgetGroup>
+        <ObjectName>VUMeterMixerbar</ObjectName>
         <SizePolicy>max,max</SizePolicy>
-        <Layout>vertical</Layout>
+        <Layout>stacked</Layout>
         <Children>
-          <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
-          <Template src="skin:knob_textless.xml">
-            <SetVariable name="TooltipId"></SetVariable>
-            <SetVariable name="ObjectName">MixerbarKnob</SetVariable>
-            <SetVariable name="Size">28f,28f</SetVariable>
-            <SetVariable name="group"><Variable name="group"/></SetVariable>
-            <SetVariable name="ConfigKey">pregain</SetVariable>
-            <SetVariable name="Color">yellow</SetVariable>
-          </Template>
+          <StatusLight>
+            <PathStatusLight>skin:/graphics/mixerbar_vumeter_clipping_over.png</PathStatusLight>
+            <PathBack>skin:/graphics/mixerbar_vumeter_clipping.png</PathBack>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
+            </Connection>
+          </StatusLight>
+          <VuMeter>
+            <PathVu>skin:/graphics/mixerbar_vumeter_over.png</PathVu>
+            <PathBack>skin:/graphics/mixerbar_vumeter.png</PathBack>
+            <Horizontal>false</Horizontal>
+            <PeakHoldSize>5</PeakHoldSize>
+            <PeakHoldTime>500</PeakHoldTime>
+            <PeakFallTime>50</PeakFallTime>
+            <PeakFallStep>2</PeakFallStep>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
+            </Connection>
+          </VuMeter>
         </Children>
       </WidgetGroup>
+
+      <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+      <Template src="skin:knob_textless.xml">
+        <SetVariable name="TooltipId"></SetVariable>
+        <SetVariable name="ObjectName">MixerbarKnob</SetVariable>
+        <SetVariable name="Size">28f,28f</SetVariable>
+        <SetVariable name="group"><Variable name="group"/></SetVariable>
+        <SetVariable name="ConfigKey">pregain</SetVariable>
+        <SetVariable name="Color">yellow</SetVariable>
+      </Template>
+
+      <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
 
       <WidgetGroup><!-- Pfl + xFader orientation -->
         <SizePolicy>max,max</SizePolicy>
@@ -85,51 +109,21 @@ Variables:
         </Children>
       </WidgetGroup><!-- /Pfl + xFader orientation -->
 
-      <WidgetGroup><!-- Volume fader + VU Meter -->
-        <SizePolicy>max,max</SizePolicy>
-        <Layout>vertical</Layout>
-        <Children>
+      <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
 
-          <SliderComposed>
-            <TooltipId></TooltipId>
-            <ObjectName>MixerbarSlider</ObjectName>
-            <SizePolicy>min,min</SizePolicy>
-            <Handle>skin:/knobs_sliders/slider_volume_h_handle.svg</Handle>
-            <Slider>skin:/knobs_sliders/slider_volume_h_scale.svg</Slider>
-            <Horizontal>true</Horizontal>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,volume</ConfigKey>
-            </Connection>
-          </SliderComposed>
+      <SliderComposed>
+        <TooltipId></TooltipId>
+        <ObjectName>MixerbarSlider</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <Handle>skin:/knobs_sliders/slider_volume_h_handle.svg</Handle>
+        <Slider>skin:/knobs_sliders/slider_volume_h_scale.svg</Slider>
+        <Horizontal>true</Horizontal>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,volume</ConfigKey>
+        </Connection>
+      </SliderComposed>
 
-          <WidgetGroup><!-- VU Meter -->
-            <ObjectName>VUMeterFloating_h</ObjectName>
-            <SizePolicy>max,max</SizePolicy>
-            <Layout>stacked</Layout>
-            <Children>
-              <StatusLight>
-                <PathStatusLight>skin:/graphics/vumeter_h_floating_clipping_over.png</PathStatusLight>
-                <PathBack>skin:/graphics/vumeter_h_floating_clipping.png</PathBack>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
-                </Connection>
-              </StatusLight>
-              <VuMeter>
-                <PathVu>skin:/graphics/vumeter_h_floating_over.png</PathVu>
-                <PathBack>skin:/graphics/vumeter_h_floating.png</PathBack>
-                <Horizontal>true</Horizontal>
-                <PeakHoldSize>5</PeakHoldSize>
-                <PeakHoldTime>500</PeakHoldTime>
-                <PeakFallTime>50</PeakFallTime>
-                <PeakFallStep>2</PeakFallStep>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
-                </Connection>
-              </VuMeter>
-            </Children>
-          </WidgetGroup><!-- /VU Meter -->
-        </Children>
-      </WidgetGroup><!-- /Volume fader + VU Meter -->
+      <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
       <WidgetGroup><!-- FX assignment buttons -->
         <ObjectName>Spacer0f</ObjectName>

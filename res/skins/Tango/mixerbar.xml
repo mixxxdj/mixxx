@@ -58,74 +58,57 @@ Description:
             <Size>32f,32f</Size>
           </WidgetGroup>
 
-          <WidgetGroup><!-- Volume fader + VU Meter -->
+          <WidgetGroup>
+            <ObjectName>VUMeterMixerbar</ObjectName>
             <SizePolicy>max,max</SizePolicy>
-            <Layout>vertical</Layout>
+            <Layout>stacked</Layout>
             <Children>
-              <SliderComposed><!-- Volume fader -->
-                <TooltipId></TooltipId>
-                <ObjectName>MixerbarSlider</ObjectName>
-                <SizePolicy>max,max</SizePolicy>
-                <Handle>skin:/knobs_sliders/slider_volume_h_handle.svg</Handle>
-                <Slider>skin:/knobs_sliders/slider_volume_h_scale.svg</Slider>
-                <Horizontal>true</Horizontal>
+              <StatusLight>
+                <PathStatusLight>skin:/graphics/mixerbar_vumeter_clipping_over.png</PathStatusLight>
+                <PathBack>skin:/graphics/mixerbar_vumeter_clipping.png</PathBack>
                 <Connection>
-                  <ConfigKey>[Master],volume</ConfigKey>
+                  <ConfigKey>[Master],PeakIndicator</ConfigKey>
                 </Connection>
-              </SliderComposed>
-              <WidgetGroup><!-- VU Meter -->
-                <ObjectName>VUMeterFloating_h</ObjectName>
-                <SizePolicy>max,max</SizePolicy>
-                <Layout>stacked</Layout>
-                <Children>
-                  <StatusLight>
-                    <PathStatusLight>skin:/graphics/vumeter_h_floating_clipping_over.png</PathStatusLight>
-                    <PathBack>skin:/graphics/vumeter_h_floating_clipping.png</PathBack>
-                    <Connection>
-                      <ConfigKey>[Master],PeakIndicator</ConfigKey>
-                    </Connection>
-                  </StatusLight>
-                  <VuMeter>
-                    <PathVu>skin:/graphics/vumeter_h_floating_over.png</PathVu>
-                    <PathBack>skin:/graphics/vumeter_h_floating.png</PathBack>
-                    <Horizontal>true</Horizontal>
-                    <PeakHoldSize>5</PeakHoldSize>
-                    <PeakHoldTime>500</PeakHoldTime>
-                    <PeakFallTime>50</PeakFallTime>
-                    <PeakFallStep>2</PeakFallStep>
-                    <Connection>
-                      <ConfigKey>[Master],VuMeter</ConfigKey>
-                    </Connection>
-                  </VuMeter>
-                </Children>
-              </WidgetGroup><!-- /VU Meter -->
-            </Children>
-          </WidgetGroup><!-- /Volume fader + VU Meter -->
-
-          <!-- All spacers left of MixerbarSliders are necessary
-          because margin/padding won't give a proper offset to neighbours,
-          just a shift of border/background while maintaining hover area.
-          This looks odd. -->
-          <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
-
-          <WidgetGroup><!-- Balance fader + V-Spacer -->
-            <SizePolicy>max,max</SizePolicy>
-            <Layout>vertical</Layout>
-            <Children>
-              <SliderComposed>
-                <TooltipId>balance</TooltipId>
-                <ObjectName>MixerbarSlider</ObjectName>
-                <SizePolicy>min,min</SizePolicy>
-                <Handle>skin:/knobs_sliders/slider_balance_handle.svg</Handle>
-                <Slider>skin:/knobs_sliders/slider_balance_scale.svg</Slider>
-                <Horizontal>true</Horizontal>
+              </StatusLight>
+              <VuMeter>
+                <PathVu>skin:/graphics/mixerbar_vumeter_over.png</PathVu>
+                <PathBack>skin:/graphics/mixerbar_vumeter.png</PathBack>
+                <Horizontal>false</Horizontal>
+                <PeakHoldSize>5</PeakHoldSize>
+                <PeakHoldTime>500</PeakHoldTime>
+                <PeakFallTime>50</PeakFallTime>
+                <PeakFallStep>2</PeakFallStep>
                 <Connection>
-                  <ConfigKey>[Master],balance</ConfigKey>
+                  <ConfigKey>[Master],VuMeter</ConfigKey>
                 </Connection>
-              </SliderComposed>
-              <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
+              </VuMeter>
             </Children>
           </WidgetGroup>
+
+          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+          <Template src="skin:knob_textless.xml">
+            <SetVariable name="TooltipId">master_gain</SetVariable>
+            <SetVariable name="ObjectName">MixerbarKnob</SetVariable>
+            <SetVariable name="Size">28f,28f</SetVariable>
+            <SetVariable name="group">[Master]</SetVariable>
+            <SetVariable name="ConfigKey">gain</SetVariable>
+            <SetVariable name="Color">yellow</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
+
+          <SliderComposed>
+            <TooltipId>balance</TooltipId>
+            <ObjectName>MixerbarSlider</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Handle>skin:/knobs_sliders/slider_balance_handle.svg</Handle>
+            <Slider>skin:/knobs_sliders/slider_balance_scale.svg</Slider>
+            <Horizontal>true</Horizontal>
+            <Connection>
+              <ConfigKey>[Master],balance</ConfigKey>
+            </Connection>
+          </SliderComposed>
 
         </Children>
       </WidgetGroup><!-- Master Mixer -->
@@ -156,56 +139,40 @@ Description:
               </Template>
 
               <WidgetGroup><!-- Headphone expanded -->
-                <SizePolicy>max,max</SizePolicy>
+                <SizePolicy>min,me</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
 
-                  <WidgetGroup><!-- Volume fader + V-Spacer -->
-                    <SizePolicy>max,max</SizePolicy>
-                    <Layout>vertical</Layout>
-                    <Children>
-                      <SliderComposed><!-- Volume fader -->
-                        <TooltipId></TooltipId>
-                        <ObjectName>MixerbarSlider</ObjectName>
-                        <SizePolicy>min,min</SizePolicy>
-                        <Handle>skin:/knobs_sliders/slider_volume_h_handle.svg</Handle>
-                        <Slider>skin:/knobs_sliders/slider_volume_h_scale.svg</Slider>
-                        <Horizontal>true</Horizontal>
-                        <Connection>
-                          <ConfigKey>[Master],headVolume</ConfigKey>
-                        </Connection>
-                      </SliderComposed>
-                      <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
-                    </Children>
-                  </WidgetGroup><!-- /Volume fader + V-Spacer -->
+                  <Template src="skin:knob_textless.xml">
+                    <SetVariable name="TooltipId">headGain</SetVariable>
+                    <SetVariable name="ObjectName">MixerbarKnob</SetVariable>
+                    <SetVariable name="Size">28f,28f</SetVariable>
+                    <SetVariable name="group">[Master]</SetVariable>
+                    <SetVariable name="ConfigKey">headGain</SetVariable>
+                    <SetVariable name="Color">yellow</SetVariable>
+                  </Template>
 
                   <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
 
-                  <WidgetGroup>
-                    <SizePolicy>max,max</SizePolicy>
-                    <Layout>vertical</Layout>
-                    <Children>
-                      <SliderComposed>
-                        <TooltipId>headMix</TooltipId>
-                        <ObjectName>MixerbarSlider</ObjectName>
-                        <SizePolicy>min,min</SizePolicy>
-                        <Handle>skin:/knobs_sliders/slider_headMix_handle.svg</Handle>
-                        <Slider>skin:/knobs_sliders/slider_headMix_scale.svg</Slider>
-                        <Horizontal>true</Horizontal>
-                        <Connection>
-                          <ConfigKey>[Master],headMix</ConfigKey>
-                        </Connection>
-                      </SliderComposed>
-                      <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
-                    </Children>
-                  </WidgetGroup>
+                  <SliderComposed>
+                    <TooltipId>headMix</TooltipId>
+                    <ObjectName>MixerbarSlider</ObjectName>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Handle>skin:/knobs_sliders/slider_headMix_handle.svg</Handle>
+                    <Slider>skin:/knobs_sliders/slider_headMix_scale.svg</Slider>
+                    <Horizontal>true</Horizontal>
+                    <Connection>
+                      <ConfigKey>[Master],headMix</ConfigKey>
+                    </Connection>
+                  </SliderComposed>
 
                   <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
                   <WidgetGroup>
-                    <SizePolicy>max,max</SizePolicy>
+                    <SizePolicy>min,min</SizePolicy>
                     <Layout>vertical</Layout>
                     <Children>
+                      <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
                       <Template src="skin:button_2state.xml">
                         <SetVariable name="TooltipId">headSplit</SetVariable>
                         <SetVariable name="ObjectName">MixerbarButton</SetVariable>
@@ -216,7 +183,6 @@ Description:
                         <SetVariable name="state_1_pressed">headSplit_on.svg</SetVariable>
                         <SetVariable name="ConfigKey">[Master],headSplit</SetVariable>
                       </Template>
-                      <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
                     </Children>
                   </WidgetGroup>
 
@@ -257,15 +223,17 @@ Description:
 
           <WidgetGroup><!-- MICs expanded -->
             <ObjectName>MicsExpanded</ObjectName>
-            <SizePolicy>max,max</SizePolicy>
+            <SizePolicy>min,me</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-            <!-- MIC Duck controls -->
+              <!-- MIC Duck controls -->
               <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
               <WidgetGroup>
-                <SizePolicy>max,max</SizePolicy>
+                <SizePolicy>min,min</SizePolicy>
                 <Layout>vertical</Layout>
                 <Children>
+                  <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
                   <Template src="skin:button_3state_persist.xml">
                     <SetVariable name="ObjectName">MixerbarButton</SetVariable>
                     <SetVariable name="Size">42f,24f</SetVariable>
@@ -280,14 +248,13 @@ Description:
               <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
               <WidgetGroup><!-- Duck strength, hidden when Auto-Duck is OFF -->
-                <ObjectName>AlignTop</ObjectName>
                 <Layout>stacked</Layout>
-                <Size>28f,28f</Size>
+                <SizePolicy>min,min</SizePolicy>
                 <Children>
                   <!-- index 0 due to bug -->
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-                  <WidgetGroup><!-- translucent cover when Spinny/Cover is hidden -->
+                  <WidgetGroup><!-- translucent cover when ducking is off -->
                     <ObjectName>MixerbarCover</ObjectName>
                     <Layout>vertical</Layout>
                     <SizePolicy>me,me</SizePolicy>
