@@ -89,11 +89,6 @@ PioneerDDJWeGO.init = function(id) {
     PioneerDDJWeGO.activeDeck = [ true, true, false, false ]; // [A,B,C,D]
     // ctrlA,B and FX button states, 0x00, 0x01, 0x7F
     PioneerDDJWeGO.ctrlA = [0x00, 0x00, 0x00, 0x00];
-    PioneerDDJWeGO.ctrlB = [0x00, 0x00, 0x00, 0x00];
-    PioneerDDJWeGO.fx1 = [0x00, 0x00, 0x00, 0x00];
-    PioneerDDJWeGO.fx2 = [0x00, 0x00, 0x00, 0x00];
-    PioneerDDJWeGO.fx3 = [0x00, 0x00, 0x00, 0x00];
-
     //make mixxx match
     engine.setValue( '[QuickEffectRack1_[Channel1]_Effect1]', 'enabled', false );
     engine.setValue( '[QuickEffectRack1_[Channel2]_Effect1]', 'enabled', false );
@@ -148,7 +143,7 @@ PioneerDDJWeGO.init = function(id) {
         'jogfx': 0x28
     };
 
-    PioneerDDJWeGO.jogfxLeds = {
+    PioneerDDJWeGO.jogfxButtonLeds = {
         'ctrlA': 0x42,
         'fx1': 0x43,
         'fx2': 0x44,
@@ -159,6 +154,19 @@ PioneerDDJWeGO.init = function(id) {
         'fx2_': 0x49,
         'fx3_': 0x4A,
         'ctrlB_': 0x4B,
+    };
+
+    PioneerDDJWeGO.jogfxWheelLeds = {
+        'ctrlA': 0x00,
+        'fx1': 0x02,
+        'fx2': 0x04,
+        'fx3': 0x06,
+        'ctrlB': 0x07,
+        'ctrlA_': 0x08,
+        'fx1_': 0x0A,
+        'fx2_': 0x0C,
+        'fx3_': 0x0E,
+        'ctrlB_': 0x0F,
     };
 
     PioneerDDJWeGO.channel7leds = {
@@ -183,21 +191,6 @@ PioneerDDJWeGO.init = function(id) {
         engine.connectControl( sampler, "play_indicator",
             "PioneerDDJWeGO.samplerLeds", false );
     }
-
-    //FX led control
-    if(! PioneerDDJWeGO.settings.fxExternal ){
-    for( var j = 0; j < 4; j++ ){
-    for( var i = 0; i < 3; i++ ){
-        engine.connectControl(
-            '[EffectRack1_EffectUnit' + (j+1) + '_Effect' + (i+1) + ']',
-            'enabled',
-            'PioneerDDJWeGO.fxLeds',
-            false );
-    }}} else {
-        for( i in PioneerDDJWeGO.message1 )
-            print( PioneerDDJWeGO.message1[ i ] );
-    }
-
 };
 
 PioneerDDJWeGO.shutdown = function(id) {
@@ -205,7 +198,7 @@ PioneerDDJWeGO.shutdown = function(id) {
 };
 
 PioneerDDJWeGO.bindDeckControlConnections = function( group, binding ){
-    var i,
+    var channel = PioneerDDJWeGO.channelGroups[ group ] + 1,
         controlsToFunctions = {
             'play_indicator': 'PioneerDDJWeGO.playLed',
             'play': 'PioneerDDJWeGO.rotateLed',
@@ -225,7 +218,7 @@ PioneerDDJWeGO.bindDeckControlConnections = function( group, binding ){
         controlsToFunctions.sync_enabled = 'PioneerDDJWeGO.syncLed';
     }
 
-    for( i = 1; i <= 4; i++ ){
+    for( var i = 1; i <= 4; i++ ){
         controlsToFunctions['hotcue_' + i + '_enabled'] = 'PioneerDDJWeGO.hotCueLeds';
     }
 
@@ -245,7 +238,25 @@ PioneerDDJWeGO.bindDeckControlConnections = function( group, binding ){
         'super1',
         'PioneerDDJWeGO.ctrlBWheelLeds',
         binding );
-        
+
+    // n = fx button number, m = channel  number
+    // FXn enables channelm on EffectRack1_EffectUnitn and turns on the
+    // wheel
+    // [shift] FX1 cycles through EffectRackn primary effects
+    // FXn wheel controls the super1 for EffectUnitn
+    // [shift] FXn wheel controls the mix for EffectUnitn
+    for( i = 0; i < 3; i++ ){
+        engine.connectControl(
+            '[EffectRack1_EffectUnit' + (i+1) + ']',
+            'group_' + group + '_enable',
+            'PioneerDDJWeGO.fxLeds'
+        );
+        engine.connectControl(
+            '[EffectRack1_EffectUnit' + (i+1) + ']',
+            'super1',
+            'PioneerDDJWeGO.fxTurnLeds'
+        );
+    }
 };
 
 
@@ -342,61 +353,6 @@ PioneerDDJWeGO.ctrlAButton = function( channel, control, value, status, group )
     );
 };
 
-PioneerDDJWeGO.ctrlBButton = function( channel, control, value, status, group )
-{
-    if(! value )return;
-    var deck = PioneerDDJWeGO.channelGroups[ group ];
-
-    PioneerDDJWeGO.ctrlB[ deck ] = !PioneerDDJWeGO.ctrlB[ deck ];
-    midi.sendShortMsg(
-        0x90 + channel,
-        control,
-        PioneerDDJWeGO.ctrlB[ deck ] ? PioneerDDJWeGO.settings.ctrlBmode : 0x00
-    );
-}
-
-PioneerDDJWeGO.fx1Button = function( channel, control, value, status, group )
-{
-    if(! value )return;
-    var deck = PioneerDDJWeGO.channelGroups[ group ];
-
-    PioneerDDJWeGO.fx1[ deck ] = !PioneerDDJWeGO.fx1[ deck ];
-    midi.sendShortMsg(
-        0x90 + channel,
-        control,
-        PioneerDDJWeGO.fx1[ deck ] ? PioneerDDJWeGO.settings.fxMode : 0x00
-    );
-// old functionality, ill see if i ca stick it in
-    // [EffectRack1_EffectUnit1_Effect1],enabled
-}
-
-PioneerDDJWeGO.fx2Button = function( channel, control, value, status, group )
-{
-    if(! value )return;
-    var deck = PioneerDDJWeGO.channelGroups[ group ];
-
-    PioneerDDJWeGO.fx2[ deck ] = !PioneerDDJWeGO.fx2[ deck ];
-    midi.sendShortMsg(
-        0x90 + channel,
-        control,
-        PioneerDDJWeGO.fx2[ deck ] ? PioneerDDJWeGO.settings.fxMode : 0x00
-    );
-}
-
-PioneerDDJWeGO.fx3Button = function( channel, control, value, status, group )
-{
-    if(! value )return;
-    var deck = PioneerDDJWeGO.channelGroups[ group ];
-
-    PioneerDDJWeGO.fx3[ deck ] = !PioneerDDJWeGO.fx3[ deck ];
-    midi.sendShortMsg(
-        0x90 + channel,
-        control,
-        PioneerDDJWeGO.fx3[ deck ] ? PioneerDDJWeGO.settings.fxMode : 0x00
-    );
-}
-
-
 PioneerDDJWeGO.autoLoopTurn = function( channel, control, value, status, group )
 {
     if( value > 0x40 ){
@@ -419,14 +375,6 @@ PioneerDDJWeGO.autoLoopButton = function( channel, control, value, status, group
         engine.setValue( group, 'beatloop_' + size + '_activate', true )
         engine.setValue( group, 'beatloop_' + size + '_activate', false )
     }
-}
-
-
-PioneerDDJWeGO.ctrlfxTurn = function( channel, control, value, status, group ){
-    midi.sendShortMsg(
-        status,
-        control,
-        value);
 }
 
 ///////////////////////////////////////////////////////////////
@@ -544,23 +492,50 @@ PioneerDDJWeGO.loadLeds = function (value, group, control ){
 };
 
 PioneerDDJWeGO.fxLeds = function( value, group, control ){
-
-    for( var unit = 0; unit < 4; unit++ ){
-    for( var effect = 0; effect < 3; effect++ ){
-        if( group === '[EffectRack1_EffectUnit' + (unit+1)
-                    + '_Effect' + (effect+1) + ']' )
-        {
-            var channel = 0x94 + (unit % 2);
-            var ledNumber = 0x43 + effect + 5 * ( unit > 1 ? 1 : 0 );
+    for( var channel = 0; channel < 4; channel++ ){
+    if( control === 'group_[Channel' + (channel+1) + ']_enable' ){
+        for( var fxb = 0; fxb < 3; fxb++ ){
+        if( group === '[EffectRack1_EffectUnit' + (fxb+1) + ']' ){
             midi.sendShortMsg(
-                channel,
-                ledNumber,
+                0x94 + (channel % 2),
+                0x43 + fxb + ( channel < 2 ? 0 : 5 ),
                 value ? PioneerDDJWeGO.settings.fxMode : 0x00
             );
-        }
+        }}
     }}
-
 };
+
+PioneerDDJWeGO.fxTurnLeds = function( value, group, control ){
+    var unit;
+
+    for( var i = 0; i < 3; i++ ){
+        if( group === '[EffectRack1_EffectUnit' + (i+1) + ']' ){
+            unit = i;
+        }
+    }
+
+    midi.sendShortMsg(
+        0xB4,
+        0x02 + unit * 2,
+        value * 127
+    );
+    midi.sendShortMsg(
+        0xB4,
+        0x0A + unit * 2,
+        value * 127
+    );
+    midi.sendShortMsg(
+        0xB5,
+        0x02 + unit * 2,
+        value * 127
+    );
+    midi.sendShortMsg(
+        0xB5,
+        0x0A + unit * 2,
+        value * 127
+    );
+
+}
 
 PioneerDDJWeGO.ctrlALed = function( value, group, control ){
     var channel = PioneerDDJWeGO.channelGroups[ group ];
@@ -607,14 +582,3 @@ PioneerDDJWeGO.ctrlBWheelLeds = function( value, group, control ){
         }
     }
 }
-// just a place to keep this for when I need it instead of re-writing it.
-//print("<function>Led( " + value + ", " + group + ", " + control + " )" );
-//
-/*print( "<control><action>("
-        + channel + ", "
-        + control + ", "
-        + value + ", "
-        + status + ", "
-        + group + " )"
-    );
-*/
