@@ -55,7 +55,7 @@ Description:
 
           <WidgetGroup>
             <ObjectName>Mixerbar_MasterSectionLabel</ObjectName>
-            <Size>32f,32f</Size>
+            <Size>24f,32f</Size>
           </WidgetGroup>
 
           <WidgetGroup>
@@ -111,7 +111,42 @@ Description:
           </SliderComposed>
 
         </Children>
-      </WidgetGroup><!-- Master Mixer -->
+      </WidgetGroup>
+
+      <WidgetGroup><!-- Booth Gain -->
+        <Layout>horizontal</Layout>
+        <Size>-1min,36f</Size>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>MixerbarSection</ObjectName>
+            <Layout>horizontal</Layout>
+            <Size>-1min,36f</Size>
+            <Children>
+
+              <WidgetGroup>
+                <ObjectName>Mixerbar_BoothSectionLabel</ObjectName>
+                <Size>36f,32f</Size>
+              </WidgetGroup>
+
+              <Template src="skin:knob_textless.xml">
+                <SetVariable name="TooltipId">master_gain</SetVariable>
+                <SetVariable name="ObjectName">MixerbarKnob</SetVariable>
+                <SetVariable name="Size">28f,28f</SetVariable>
+                <SetVariable name="group">[Master]</SetVariable>
+                <SetVariable name="ConfigKey">booth_gain</SetVariable>
+                <SetVariable name="Color">yellow</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+            </Children>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey>[Master],booth_enabled</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Booth Gain -->
 
       <WidgetGroup><!-- Headphone Mixer -->
         <ObjectName>MixerbarSection</ObjectName>

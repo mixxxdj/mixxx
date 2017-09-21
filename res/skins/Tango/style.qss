@@ -258,9 +258,12 @@ WWidgetGroup {
   #MixerbarToggler[displayValue="1"]:hover {
     background: transparent url(skin:/buttons/btn_arrow_left_hover.svg) no-repeat center top;
   }
-  
+
 #Mixerbar_MasterSectionLabel {
   image: url(skin:/buttons/btn_master.svg) no-repeat center center;
+}
+#Mixerbar_BoothSectionLabel {
+  image: url(skin:/buttons/btn_booth.svg) no-repeat center center;
 }
 #Mixerbar_HeadSectionLabel {
   image: url(skin:/buttons/btn_head.svg) no-repeat center center;

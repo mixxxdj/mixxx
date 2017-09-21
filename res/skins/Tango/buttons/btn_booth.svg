@@ -9,12 +9,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="24"
+   width="36"
    height="32"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="btn_master.svg">
+   sodipodi:docname="btn_booth.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -24,9 +24,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.6568542"
-     inkscape:cx="-44.301908"
-     inkscape:cy="17.646388"
+     inkscape:zoom="2.8284271"
+     inkscape:cx="11.320291"
+     inkscape:cy="4.858766"
      inkscape:document-units="px"
      inkscape:current-layer="g3923"
      showgrid="false"
@@ -42,12 +42,12 @@
      inkscape:object-paths="true"
      showguides="true"
      inkscape:guide-bbox="true"
-     inkscape:window-width="1366"
-     inkscape:window-height="746"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
-     inkscape:window-maximized="1"
-     inkscape:snap-global="true" />
+     inkscape:window-width="888"
+     inkscape:window-height="422"
+     inkscape:window-x="157"
+     inkscape:window-y="68"
+     inkscape:window-maximized="0"
+     inkscape:snap-global="false" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -96,6 +96,16 @@
          width="4.3036532"
          id="rect3783-5-6"
          style="fill:#d2d2d2;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline" />
+    </g>
+    <g
+       transform="matrix(1.1753643,0,0,1.1753643,-12.689204,1017.2919)"
+       style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#d2d2d2;fill-opacity:1;stroke:none;font-family:Alpha Beta BRK;-inkscape-font-specification:Alpha Beta BRK"
+       id="flowRoot3755">
+      <path
+         d="m 37.658,13.516653 c -9e-6,0.432009 -0.09001,0.858008 -0.27,1.278 -0.180008,0.408007 -0.414008,0.810007 -0.702,1.206 -0.276007,0.384006 -0.594007,0.762006 -0.954,1.134 -0.360006,0.360005 -0.720006,0.714005 -1.08,1.062 -0.192005,0.180004 -0.408005,0.396004 -0.648,0.648 -0.240005,0.252003 -0.468005,0.504003 -0.684,0.756 -0.216004,0.252003 -0.402004,0.498002 -0.558,0.738 -0.156004,0.228002 -0.240004,0.420002 -0.252,0.576 l 5.544,0 0,1.836 -7.938,0 c -0.012,-0.096 -0.018,-0.21 -0.018,-0.342 -10e-7,-0.144 -10e-7,-0.252 0,-0.324 -10e-7,-0.575999 0.09,-1.103998 0.27,-1.584 0.191998,-0.491998 0.437998,-0.947997 0.738,-1.368 0.299998,-0.419996 0.635997,-0.815996 1.008,-1.188 0.371997,-0.371995 0.743996,-0.737995 1.116,-1.098 0.287995,-0.275994 0.563995,-0.545994 0.828,-0.81 0.263995,-0.263993 0.491994,-0.521993 0.684,-0.774 0.203994,-0.263993 0.365994,-0.527992 0.486,-0.792 0.119994,-0.275992 0.179994,-0.557991 0.18,-0.846 -6e-6,-0.623991 -0.180006,-1.06799 -0.54,-1.332 -0.360006,-0.26399 -0.798005,-0.395989 -1.314,-0.396 -0.336004,1.1e-5 -0.648004,0.04801 -0.936,0.144 -0.288003,0.09601 -0.546003,0.21001 -0.774,0.342 -0.216003,0.13201 -0.408002,0.27001 -0.576,0.414 -0.168002,0.13201 -0.294002,0.240009 -0.378,0.324 l -1.08,-1.53 c 0.503999,-0.479989 1.091998,-0.863988 1.764,-1.152 0.683997,-0.299988 1.415996,-0.4499875 2.196,-0.4500003 1.331994,1.28e-5 2.309993,0.3180123 2.934,0.9540003 0.635992,0.624011 0.953991,1.48201 0.954,2.574"
+         style="font-size:18px;font-weight:500;fill:#d2d2d2;fill-opacity:1;font-family:Ubuntu;-inkscape-font-specification:Ubuntu Medium"
+         id="path3764"
+         inkscape:connector-curvature="0" />
     </g>
   </g>
 </svg>
