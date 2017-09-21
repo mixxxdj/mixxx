@@ -1758,14 +1758,13 @@ qproperty-layoutAlignment: 'AlignRight | AlignBottom';
 QTableView,
 QTextBrowser,
 QTreeView {
-  border: 1px solid #585858;  /*
-  font-family: Ubuntu;  */
+  border: 1px solid #585858;
   font-weight: normal;
   color: #9E9E9E;
   background-color: #0f0f0f;
   alternate-background-color: #1a1a1a;
   selection-color: #D9D9D9;
-  selection-background-color: #7A7A7A;
+  selection-background-color: #666666;
 }
 
 QTreeView {
@@ -1849,13 +1848,13 @@ QHeaderView {
 QScrollBar:horizontal {
   min-width: 12px;
   height: 8px;
-  background: #1a1a1a;
+  background: #000000;
   border-radius: 2px;
   }
   QScrollBar:vertical {
     min-height: 12px;
     width: 8px;
-    background: #1a1a1a;
+    background: #000000;
     border-radius: 2px;
     }
   /* "add-page" and "sub-page" are the gutter of the scrollbar */
@@ -1863,11 +1862,12 @@ QScrollBar:horizontal {
   QScrollBar::sub-page {
     min-width: 15px;
     min-height: 15px;
-    background-color: #1b1b1b;
+    background-color: #0f0f0f;
     }
   QScrollBar::handle:horizontal {
     min-width: 25px;
     background: #595959;
+    border-radius:2px;
     }
     QScrollBar::handle:horizontal:hover {
       background: #888888;
@@ -1875,6 +1875,7 @@ QScrollBar:horizontal {
   QScrollBar::handle:vertical {
     min-height: 25px;
     background: #595959;
+    border-radius:2px;
     }
     QScrollBar::handle:vertical:hover {
       background: #888888;
@@ -2003,7 +2004,7 @@ QPushButton {
       }
     #LibraryBPMButton::item:selected {
       color: #EDEDED;
-      background-color: #7A7A7A;
+      background-color: #666666;
       }
   #LibraryTimesPlayed::item {
     color: #cfcfcf;
@@ -2043,7 +2044,7 @@ QPushButton {
   /* selected table row */ 
   QTableView::item:selected {
     color: #FFFFFF;
-    background-color: #7A7A7A;
+    background-color: #666666;
   }
   
 /* SpinBox, currently only used for transition time in Auto DJ tab */
