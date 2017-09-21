@@ -179,16 +179,37 @@ Variables:
 
           <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
 
-          <Template src="skin:button_2state.xml">
-            <SetVariable name="TooltipId">pfl</SetVariable>
-            <SetVariable name="ObjectName">PflButton</SetVariable>
-            <SetVariable name="Size">16f,16f</SetVariable>
-            <SetVariable name="state_0_pressed">pfl_off.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">pfl_off.svg</SetVariable>
-            <SetVariable name="state_1_pressed">pfl_on.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">pfl_on.svg</SetVariable>
-            <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
-          </Template>
+          <WidgetGroup><!-- Pfl button -->
+            <Size>16f,16f</Size>
+            <Layout>stacked</Layout>
+            <Children>
+              <!-- index 0 due to bug -->
+              <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+              <!-- Greyed out if no headphone device is configured -->
+              <WidgetGroup>
+                <ObjectName>MixerbarCover</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <Connection>
+                  <ConfigKey>[Master],headEnabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                  <Transform><Not/></Transform>
+                </Connection>
+              </WidgetGroup>
+
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="TooltipId">pfl</SetVariable>
+                <SetVariable name="ObjectName">PflButton</SetVariable>
+                <SetVariable name="Size">16f,16f</SetVariable>
+                <SetVariable name="state_0_pressed">pfl_off.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">pfl_off.svg</SetVariable>
+                <SetVariable name="state_1_pressed">pfl_on.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">pfl_on.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- /Pfl button -->
 
           <Template src="skin:button_3state.xml">
             <SetVariable name="TooltipId">orientation</SetVariable>
