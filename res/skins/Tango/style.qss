@@ -129,14 +129,23 @@ WWidgetGroup {
   #SubmenuCover {
     background-color: rgba(51, 51, 51, 127);
   }
-  #SkinSettingsButton {
+  #SkinSettingsButton,
+  #SkinSettingsButtonX {
     padding-top: 1px;
     font-size: 12px/14px;
     color: #d2d2d2;
   }
+    #SkinSettingsButtonX[displayValue="0"] {
+      color: #d2d2d2;
+      font-weight: normal;
+    }
+    #SkinSettingsButtonX[displayValue="1"] {
+      color: #f8f8f8;
+      font-weight: bold;
+    }
   #CoverSpinnyHint {
-    padding-top: 1px;
-    font-size: 12px/14px;
+    font-size: 14px/14px;
+    font-weight: bold;
     color: #f56200;
   }
   #SkinSettingsButton:hover {

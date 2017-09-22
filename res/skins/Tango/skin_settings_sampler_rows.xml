@@ -7,6 +7,7 @@ Description:
 -->
 <Template>
   <WidgetStack currentpage="[Tango],sampler_rows" persist="true">
+    <Size>182me,15f</Size>
     <NextControl>[Tango],sampler_bank_next</NextControl>
     <PrevControl>[Tango],sampler_bank_prev</PrevControl>
     <Children>

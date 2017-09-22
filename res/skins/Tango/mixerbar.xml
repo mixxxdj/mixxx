@@ -193,7 +193,7 @@ Description:
                 <Layout>horizontal</Layout>
                 <Children>
                   <Template src="skin:knob_textless.xml">
-                    <SetVariable name="TooltipId">headGain</SetVariable>
+                    <SetVariable name="TooltipId">headphone_gain</SetVariable>
                     <SetVariable name="ObjectName">MixerbarKnob</SetVariable>
                     <SetVariable name="Size">28f,28f</SetVariable>
                     <SetVariable name="group">[Master]</SetVariable>
