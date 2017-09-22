@@ -136,24 +136,19 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     int delay_samples;
     if (groupFeatures.has_beat_length_sec) {
         // period is a number of beats
-        if (m_pTripletParameter->toBool()) {
-           if (period <= 0.125) {
-              period = 0.041666666666666664; // 1/8 / 3
-           } else if (m_pQuantizeParameter->toBool()) {
-              period = roundToFraction(period, 4) / 3.0;
-           }
-        } else {
-           if (period < 0.125) {
-               period = 0.125;
-           } else if (m_pQuantizeParameter->toBool()) {
-               period = roundToFraction(period, 4);
-           }
+        if (m_pQuantizeParameter->toBool()) {
+            period = std::max(roundToFraction(period, 4), 1/8.0);
+            if (m_pTripletParameter->toBool()) {
+                period /= 3.0;
+            }
+        } else if (period < 1/8.0) {
+            period = 1/8.0;
         }
         delay_samples = period * groupFeatures.beat_length_sec
                 * sampleRate * EchoGroupState::kChannelCount;
     } else {
         // period is a number of seconds
-        period = std::max(period, 0.125);
+        period = std::max(period, 1/8.0);
         delay_samples = period * sampleRate * EchoGroupState::kChannelCount;
     }
     VERIFY_OR_DEBUG_ASSERT(delay_samples > 0) {
