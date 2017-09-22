@@ -52,9 +52,9 @@ EffectManifest EchoEffect::getManifest() {
 
     EffectManifestParameter* pingpong = manifest.addParameter();
     pingpong->setId("pingpong_amount");
-    pingpong->setName(QObject::tr("PingPong"));
+    pingpong->setName(QObject::tr("Ping Pong"));
     pingpong->setDescription(
-            QObject::tr("As the ping-pong amount increases, increasing amounts "
+            QObject::tr("As the ping pong amount increases, increasing amounts "
                         "of the echoed signal is bounced between the left and "
                         "right speakers."));
     pingpong->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
@@ -81,7 +81,7 @@ EffectManifest EchoEffect::getManifest() {
     quantize->setId("quantize");
     quantize->setName("Quantize");
     quantize->setShortName("Quantize");
-    quantize->setDescription("Round the Time parameter to the nearest 1/4 beat, or nearest 1/3 beat with Triplets parameter.");
+    quantize->setDescription("Round the Time parameter to the nearest 1/4 beat.");
     quantize->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     quantize->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     quantize->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -92,8 +92,7 @@ EffectManifest EchoEffect::getManifest() {
     EffectManifestParameter* triplet = manifest.addParameter();
     triplet->setId("triplet");
     triplet->setName("Triplets");
-    triplet->setDescription("When disabled, Time parameter is rounded to nearest 1/4 beat, or 1/8 beats at minimum.\n"
-    "When enabled, Time parameter is rounded to nearest 1/4 beat and divided by 3.");
+    triplet->setDescription("When the Quantize parameter is enabled, divide rounded 1/4 beats of Time parameter by 3.");
     triplet->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
