@@ -41,7 +41,7 @@ https://www.pioneerelectronics.com/PUSA/DJ/Controllers/DDJ-WeGO#overview
     </info>
     <controller id="PIONEER">
         <scriptfiles>
-            <file functionprefix="PioneerDDJWeGO" filename="Pioneer_DDJ-WeGO.scripts.js"/>
+            <file functionprefix="PioneerDDJWeGO" filename="Pioneer-DDJ-WeGO.scripts.js"/>
         </scriptfiles>
         <controls>
             <control>

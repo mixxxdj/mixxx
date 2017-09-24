@@ -1,3 +1,17 @@
+//Pioneer_DDJWeGO
+//
+//This mapping for the Pioneer DDJ-WeGO was made by Samuel Nicholas (nicholas.samuel@gmail.com)
+//derived from the works of:
+//
+//
+//Joan Ardiaca Jové (joan.ardiaca@gmail.com, https://github.com/jardiacaj/mixxx) for the Pioneer DDJ-SB
+//wingcom (wwingcomm@gmail.com, https://github.com/wingcom/Mixxx-Pioneer-DDJ-SB).
+//
+//Hilton Rudham (https://github.com/hrudham/Mixxx-Pioneer-DDJ-SR).
+//
+//this mapping continues the tradition of being pusblished under the MIT license.
+
+
 //notes:
 //this video has been helpful in going over the basics of the deck:
 // https://www.youtube.com/watch?v=SmV1Yn3BGdU
@@ -212,7 +226,7 @@ PioneerDDJWeGO.bindDeckControlConnections = function( group, binding ){
             'pitch': 'PioneerDDJWeGO.ctrlAWheelLeds'
         };
 
-    if (PioneerDDJWeGO.blinkingSync) {
+    if (PioneerDDJWeGO.settings.blinkingSync) {
         controlsToFunctions.beat_active = 'PioneerDDJWeGO.syncLed';
     } else {
         controlsToFunctions.sync_enabled = 'PioneerDDJWeGO.syncLed';
