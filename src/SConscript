@@ -8,6 +8,7 @@ import subprocess
 import time
 import datetime
 import glob
+import uuid
 from xml.dom import minidom
 import SCons.Script as SCons
 
@@ -687,6 +688,16 @@ def BuildRelease(target, source, env):
         if not os.path.isfile(os.path.join(WinSDK_path, 'WiLangId.vbs')):
             raise Exception ('can not find ' + WinSDK_path + '\WiLangId.vbs')
 
+        # Generating random ProductID (should change on every run)
+        # and put it in mixxx.wxs using the template
+        ProductID = str(uuid.uuid1()).upper()
+        with open("build/wix/ProductID.wxi.in", "rt") as fin:
+            with open("build/wix/ProductID.wxi", "wt") as fout:
+                for line in fin:
+                    fout.write(line.replace('@PRODUCT_ID@', ProductID))
+        fin.close()
+        fout.close()
+
         # The default language
         defaultLanguage="en-us"
         # The langIds contained in the installer. starting with LangId of the default language
@@ -770,12 +781,6 @@ def BuildRelease(target, source, env):
             subprocess.check_call(command)
 
         # Compile main wix files
-        command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -arch %(arch)s -out build\wix\warningDlg.wixobj build\wix\warningDlg.wxs' % \
-            {'wix': wix_path,
-             'winlibpath': build.winlib_path,
-             'arch': winArch}
-        print "Using Command: " + command
-        subprocess.check_call(command)
         command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -dImageformats=%(isimageformats)s -dPDB=%(isPDB)s -arch %(arch)s -out build\wix\mixxx.wixobj build\wix\mixxx.wxs' % \
             {'wix': wix_path,
              'winlibpath': build.winlib_path,
@@ -794,12 +799,16 @@ def BuildRelease(target, source, env):
         print "Using Command: " + command
         subprocess.check_call(command)
 
+        bundlelocfile = open("build/wix/bundle/bundleloc.wxs", "w")
+        bundlelocfile.write("<?xml version='1.0' encoding='windows-1252'?>\n")
+        bundlelocfile.write("<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>\n")
+        bundlelocfile.write("    <Fragment Id='FragmentBundleLoc'>\n")
+        bundlelocfile.write("        <PayloadGroup Id='BundleLoc'>\n")
+
         for file in glob.glob('build\wix\Localization\mixxx_*.wxl'):
             doc = minidom.parse(file)
             wixloc = doc.getElementsByTagName("WixLocalization")[0]
             culture = wixloc.getAttribute("Culture")
-            if culture == defaultLanguage:
-                continue
             strings = doc.getElementsByTagName("String")
             LCID = None
             for string in strings:
@@ -809,6 +818,15 @@ def BuildRelease(target, source, env):
 
             if not LCID:
                 print "LCID not found, skipping file " + file
+                continue
+
+            bundlelocfile.write("            <Payload Id=\"thm-%(culture)s\" Compressed=\"yes\" Name=\"%(LCID)s\\thm.wxl\" SourceFile=\"..\\Localization\\mixxx_%(culture)s.wxl\" />\n" %\
+              {'culture': culture,
+               'LCID': LCID}
+            )
+
+            # Do not build localized MSI if it's default language
+            if culture == defaultLanguage:
                 continue
 
             print "*** Building package transform for locale %(culture)s LangID %(LCID)s" % \
@@ -850,10 +868,40 @@ def BuildRelease(target, source, env):
         print "Using Command: " + command
         subprocess.check_call(command)
 
+        bundlelocfile.write("        </PayloadGroup>\n")
+        bundlelocfile.write("    </Fragment>\n")
+        bundlelocfile.write("</Wix>\n")
+        bundlelocfile.close()
+
         # Everything is OK, now rename the msi to final name
         if os.path.isfile(exe_name):
             os.remove(exe_name)
         os.rename('part.' + exe_name, exe_name)
+
+        print "*** Compiling Bundle"
+        # Compile bundle wix file
+        command = '"%(wix)s\\candle.exe" -ext WixUtilExtension -ext WixBalExtension -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -dMSIPackage=%(package_name)s -arch %(arch)s -out build\\wix\\bundle\\bundle.wixobj build\\wix\\bundle\\bundle.wxs' % \
+            {'wix': wix_path,
+             'winlibpath': build.winlib_path,
+             'arch': winArch,
+             'package_name': exe_name}
+        print "Using Command: " + command
+        subprocess.check_call(command)
+        # bundle localisation references
+        command = '"%(wix)s\\candle.exe" -ext WixUtilExtension -ext WixBalExtension -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -dMSIPackage=%(package_name)s -arch %(arch)s -out build\\wix\\bundle\\bundleloc.wixobj build\\wix\\bundle\\bundleloc.wxs' % \
+            {'wix': wix_path,
+             'winlibpath': build.winlib_path,
+             'arch': winArch,
+             'package_name': exe_name}
+        print "Using Command: " + command
+        subprocess.check_call(command)
+        command = '"%(wix)s\\light.exe" -cc .\ -nologo -sw1076 -spdb -ext WixUtilExtension -ext WixBalExtension -dMSIPackage=%(msi_name)s -cultures:%(deflang)s -loc build\wix\Localization\mixxx_%(deflang)s.wxl -out %(package_name)s build\\wix\\bundle\\*.wixobj' % \
+            {'wix': wix_path,
+             'deflang': defaultLanguage,
+             'msi_name': exe_name,
+             'package_name': os.path.splitext(exe_name)[0] + '.exe'}
+        print "Using Command: " + command
+        subprocess.check_call(command)
 
         # Some cleaning before leaving
         for file in glob.glob('*.cab'):
@@ -864,6 +912,7 @@ def BuildRelease(target, source, env):
             os.remove(file)
         for file in glob.glob('build\wix\subdirs\*.wxs'):
             os.remove(file)
+        os.remove(exe_name)
 
     else:
         print "Aborted building installer"

@@ -61,24 +61,21 @@ class RampedSample {
 static const int panMaxDelay = 3300; // allows a 30 Hz filter at 97346;
 // static const int panMaxDelay = 50000; // high for debug;
 
-struct PanGroupState {
-    PanGroupState() {
+struct AutoPanGroupState {
+    AutoPanGroupState() {
         time = 0;
         delay = new EngineFilterPanSingle<panMaxDelay>();
-        m_pDelayBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
         m_dPreviousPeriod = -1.0;
     }
-    ~PanGroupState() {
-        SampleUtil::free(m_pDelayBuf);
+    ~AutoPanGroupState() {
     }
     unsigned int time;
     RampedSample frac;
     EngineFilterPanSingle<panMaxDelay>* delay;
-    CSAMPLE* m_pDelayBuf;
     double m_dPreviousPeriod;
 };
 
-class AutoPanEffect : public PerChannelEffectProcessor<PanGroupState> {
+class AutoPanEffect : public PerChannelEffectProcessor<AutoPanGroupState> {
   public:
     AutoPanEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~AutoPanEffect();
@@ -88,7 +85,7 @@ class AutoPanEffect : public PerChannelEffectProcessor<PanGroupState> {
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,
-                      PanGroupState* pState,
+                        AutoPanGroupState* pState,
                       const CSAMPLE* pInput, CSAMPLE* pOutput,
                       const unsigned int numSamples,
                       const unsigned int sampleRate,

@@ -17,27 +17,29 @@ void WEffectPushButton::setup(const QDomNode& node, const SkinContext& context) 
     m_pButtonMenu = new QMenu(this);
     connect(m_pButtonMenu, SIGNAL(triggered(QAction*)),
             this, SLOT(slotActionChosen(QAction*)));
-
-    // EffectWidgetUtils propagates NULLs so this is all safe.
-    EffectRackPointer pRack = EffectWidgetUtils::getEffectRackFromNode(
-            node, context, m_pEffectsManager);
-    EffectChainSlotPointer pChainSlot = EffectWidgetUtils::getEffectChainSlotFromNode(
-            node, context, pRack);
-    EffectSlotPointer pEffectSlot = EffectWidgetUtils::getEffectSlotFromNode(
-            node, context, pChainSlot);
-    EffectParameterSlotBasePointer pParameterSlot =
-            EffectWidgetUtils::getButtonParameterSlotFromNode(
-                    node, context, pEffectSlot);
-    if (pParameterSlot) {
-        m_pEffectParameterSlot = pParameterSlot;
-        connect(pParameterSlot.data(), SIGNAL(updated()),
-                this, SLOT(parameterUpdated()));
-        parameterUpdated();
-    } else {
-        SKIN_WARNING(node, context)
-                << "EffectPushButton node could not attach to effect parameter.";
-    }
 }
+
+void WEffectPushButton::setupEffectParameterSlot(const ConfigKey& configKey) {
+    EffectButtonParameterSlotPointer pParameterSlot =
+            m_pEffectsManager->getEffectButtonParameterSlot(configKey);
+    if (!pParameterSlot) {
+        qWarning() << "EffectPushButton" << configKey <<
+                "is not an effect button parameter.";
+        return;
+    }
+    setEffectParameterSlot(pParameterSlot);
+}
+
+void WEffectPushButton::setEffectParameterSlot(
+        EffectButtonParameterSlotPointer pParameterSlot) {
+    m_pEffectParameterSlot = pParameterSlot;
+    if (m_pEffectParameterSlot) {
+        connect(m_pEffectParameterSlot.data(), SIGNAL(updated()),
+                this, SLOT(parameterUpdated()));
+    }
+    parameterUpdated();
+}
+
 
 void WEffectPushButton::onConnectedControlChanged(double dParameter, double dValue) {
     for (const auto& action : m_pButtonMenu->actions()) {

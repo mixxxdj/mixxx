@@ -712,6 +712,7 @@ class MixxxCore(Feature):
 
                    "effects/native/nativebackend.cpp",
                    "effects/native/bitcrushereffect.cpp",
+                   "effects/native/balanceeffect.cpp",
                    "effects/native/linkwitzriley8eqeffect.cpp",
                    "effects/native/bessel4lvmixeqeffect.cpp",
                    "effects/native/bessel8lvmixeqeffect.cpp",
@@ -726,6 +727,7 @@ class MixxxCore(Feature):
                    "effects/native/echoeffect.cpp",
                    "effects/native/autopaneffect.cpp",
                    "effects/native/phasereffect.cpp",
+                   "effects/native/metronomeeffect.cpp",
 
                    "engine/effects/engineeffectsmanager.cpp",
                    "engine/effects/engineeffectrack.cpp",
@@ -748,6 +750,7 @@ class MixxxCore(Feature):
                    "engine/enginefilterbessel8.cpp",
                    "engine/enginefilterbutterworth4.cpp",
                    "engine/enginefilterbutterworth8.cpp",
+                   "engine/enginefilterlinkwitzriley2.cpp",
                    "engine/enginefilterlinkwitzriley4.cpp",
                    "engine/enginefilterlinkwitzriley8.cpp",
                    "engine/enginefilter.cpp",
@@ -865,6 +868,7 @@ class MixxxCore(Feature):
                    "widget/weffect.cpp",
                    "widget/weffectselector.cpp",
                    "widget/weffectparameter.cpp",
+                   "widget/weffectparameterknob.cpp",
                    "widget/weffectparameterknobcomposed.cpp",
                    "widget/weffectbuttonparameter.cpp",
                    "widget/weffectparameterbase.cpp",

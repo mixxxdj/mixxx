@@ -38,14 +38,6 @@
 			<Size>38,26</Size>
 			<Children>
 				<EffectPushButton>
-					<TooltipId></TooltipId>
-					<Style></Style>
-					
-					<EffectRack>1</EffectRack>
-					<EffectUnit><Variable name="effectunitnum"/></EffectUnit>
-					<Effect><Variable name="effectnum"/></Effect>
-					<EffectButtonParameter><Variable name="effectparameternum"/></EffectButtonParameter>
-	
 					<NumberStates>2</NumberStates>
 					<State>
 						<Number>0</Number>
