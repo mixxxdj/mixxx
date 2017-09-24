@@ -35,6 +35,8 @@ const SINT kBufferSizes[] = {
 
 const SINT kMaxReadFrameCount = kBufferSizes[sizeof(kBufferSizes) / sizeof(kBufferSizes[0]) - 1];
 
+const CSAMPLE kMaxDecodingError = 0.01f;
+
 } // anonymous namespace
 
 class SoundSourceProxyTest: public MixxxTest {
@@ -44,8 +46,13 @@ class SoundSourceProxyTest: public MixxxTest {
         availableFileNameSuffixes
                 << ".aiff"
                 << ".flac"
-                << ".m4a"
+                << "-itunes-12.3.0-aac.m4a"
+                << "-itunes-12.7.0-aac.m4a"
+#if defined(__FFMPEG31__) || defined(__COREAUDIO__)
+                << "-itunes-12.7.0-alac.m4a"
+#endif
                 << "-png.mp3"
+                << "-vbr.mp3"
                 << ".ogg"
                 << ".opus"
                 << ".wav"
@@ -110,23 +117,10 @@ class SoundSourceProxyTest: public MixxxTest {
             const CSAMPLE* actual,
             const char* errorMessage) {
         for (SINT i = 0; i < size; ++i) {
-            EXPECT_EQ(expected[i], actual[i]) << errorMessage;
-        }
-    }
-
-#ifdef __OPUS__
-    // Known issue: Decoding with libopus is not sample accurate
-    static void expectDecodedSamplesEqualOpus(
-            SINT size,
-            const CSAMPLE* expected,
-            const CSAMPLE* actual,
-            const char* errorMessage) {
-        for (SINT i = 0; i < size; ++i) {
             EXPECT_NEAR(expected[i], actual[i],
-                    mixxx::SoundSourceOpus::kMaxDecodingError) << errorMessage;
+                    kMaxDecodingError) << errorMessage;
         }
     }
-#endif // __OPUS__
 
     mixxx::IndexRange skipSampleFrames(
             mixxx::AudioSourcePointer pAudioSource,
@@ -283,23 +277,11 @@ TEST_F(SoundSourceProxyTest, seekForwardBackward) {
 
             // Both buffers should be equal
             ASSERT_EQ(contSampleFrames.frameIndexRange(), seekSampleFrames.frameIndexRange());
-#ifdef __OPUS__
-            if (filePath.endsWith(".opus")) {
-                expectDecodedSamplesEqualOpus(
-                        sampleCount,
-                        &contReadData[0],
-                        &seekReadData[0],
-                        "Decoding mismatch after seeking forward");
-            } else {
-#endif // __OPUS__
-                expectDecodedSamplesEqual(
-                        sampleCount,
-                        &contReadData[0],
-                        &seekReadData[0],
-                        "Decoding mismatch after seeking forward");
-#ifdef __OPUS__
-            }
-#endif // __OPUS__
+            expectDecodedSamplesEqual(
+                    sampleCount,
+                    &contReadData[0],
+                    &seekReadData[0],
+                    "Decoding mismatch after seeking forward");
 
             // Seek backwards to beginning of chunk and read again
             seekSampleFrames =
@@ -310,23 +292,11 @@ TEST_F(SoundSourceProxyTest, seekForwardBackward) {
 
             // Both buffers should again be equal
             ASSERT_EQ(contSampleFrames.frameIndexRange(), seekSampleFrames.frameIndexRange());
-#ifdef __OPUS__
-            if (filePath.endsWith(".opus")) {
-                expectDecodedSamplesEqualOpus(
-                        sampleCount,
-                        &contReadData[0],
-                        &seekReadData[0],
-                        "Decoding mismatch after seeking backward");
-            } else {
-#endif // __OPUS__
-                expectDecodedSamplesEqual(
-                        sampleCount,
-                        &contReadData[0],
-                        &seekReadData[0],
-                        "Decoding mismatch after seeking backward");
-#ifdef __OPUS__
-            }
-#endif // __OPUS__
+            expectDecodedSamplesEqual(
+                    sampleCount,
+                    &contReadData[0],
+                    &seekReadData[0],
+                    "Decoding mismatch after seeking backward");
         }
     }
 }
@@ -421,23 +391,11 @@ TEST_F(SoundSourceProxyTest, skipAndRead) {
 
                 // Both buffers should be equal
                 ASSERT_EQ(contSampleFrames.frameIndexRange(), skippedSampleFrames.frameIndexRange());
-    #ifdef __OPUS__
-                if (filePath.endsWith(".opus")) {
-                    expectDecodedSamplesEqualOpus(
-                            sampleCount,
-                            &contReadData[0],
-                            &skipReadData[0],
-                            "Decoding mismatch after skipping");
-                } else {
-    #endif // __OPUS__
-                    expectDecodedSamplesEqual(
-                            sampleCount,
-                            &contReadData[0],
-                            &skipReadData[0],
-                            "Decoding mismatch after skipping");
-    #ifdef __OPUS__
-                }
-    #endif // __OPUS__
+                expectDecodedSamplesEqual(
+                        sampleCount,
+                        &contReadData[0],
+                        &skipReadData[0],
+                        "Decoding mismatch after skipping");
 
                 minFrameIndex = contFrameIndex;
             }
@@ -546,23 +504,11 @@ TEST_F(SoundSourceProxyTest, seekBoundaries) {
 
             const SINT sampleCount =
                     pSeekReadSource->frames2samples(seekSampleFrames.frameLength());
-    #ifdef __OPUS__
-            if (filePath.endsWith(".opus")) {
-                expectDecodedSamplesEqualOpus(
-                        sampleCount,
-                        &contReadData[0],
-                        &seekReadData[0],
-                        "Decoding mismatch after seeking");
-            } else {
-    #endif // __OPUS__
-                expectDecodedSamplesEqual(
-                        sampleCount,
-                        &contReadData[0],
-                        &seekReadData[0],
-                        "Decoding mismatch after seeking");
-    #ifdef __OPUS__
-            }
-    #endif // __OPUS__
+            expectDecodedSamplesEqual(
+                    sampleCount,
+                    &contReadData[0],
+                    &seekReadData[0],
+                    "Decoding mismatch after seeking");
         }
     }
 }

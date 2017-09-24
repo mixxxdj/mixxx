@@ -918,6 +918,67 @@ class FFMPEG(Feature):
                 'src/encoder/encoderffmpegvorbis.cpp']
 
 
+class FFMPEG31(Feature):
+    def description(self):
+        return "FFmpeg 3.1 support"
+
+    def enabled(self, build):
+        build.flags['ffmpeg31'] = util.get_flags(build.env, 'ffmpeg31', 0)
+        if int(build.flags['ffmpeg31']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('ffmpeg31', 'Set to 1 to enable FFmpeg 3.1 support \
+                           (supported FFmpeg >= 3.1)', 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+
+        # FFmpeg is multimedia library that can be found http://ffmpeg.org/
+        if build.platform_is_linux or build.platform_is_osx \
+                or build.platform_is_bsd:
+            # Check for libavcodec, libavformat
+            if not conf.CheckForPKG('libavcodec', '57.48.0'):
+                raise Exception('Missing libavcodec or it\'s too old! It can'
+                                'be separated from main package so check your'
+                                'operating system packages.')
+            if not conf.CheckForPKG('libavformat', '53.21.0'):
+                raise Exception('Missing libavformat  or it\'s too old!'
+                                'It can be separated from main package so'
+                                'check your operating system packages.')
+            if not conf.CheckForPKG('libswresample'):
+                raise Exception('Missing libswresample!'
+                                'It can be separated from main package so'
+                                'check your operating system packages.')
+
+            # Needed to build new FFmpeg
+            build.env.Append(CCFLAGS='-D__STDC_CONSTANT_MACROS')
+            build.env.Append(CCFLAGS='-D__STDC_LIMIT_MACROS')
+            build.env.Append(CCFLAGS='-D__STDC_FORMAT_MACROS')
+
+            # Grabs the libs and cflags for FFmpeg
+            build.env.ParseConfig('pkg-config libswresample --silence-errors \
+                                   --cflags --libs')
+            build.env.ParseConfig('pkg-config libavcodec --silence-errors \
+                                  --cflags --libs')
+            build.env.ParseConfig('pkg-config libavformat --silence-errors \
+                                   --cflags --libs')
+            build.env.ParseConfig('pkg-config libavutil --silence-errors \
+                                   --cflags --libs')
+
+            build.env.Append(CPPDEFINES='__FFMPEG31__')
+            self.status = "Enabled"
+
+        else:
+            raise Exception('Building with FFmpeg 3.1 is not supported'
+                            'for your platform')
+
+    def sources(self, build):
+        return ['src/sources/soundsourceffmpeg31.cpp']
+
+
 class Optimize(Feature):
     LEVEL_OFF = 'off'
     LEVEL_PORTABLE = 'portable'

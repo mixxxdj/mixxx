@@ -21,6 +21,9 @@
 #ifdef __FFMPEGFILE__
 #include "sources/soundsourceffmpeg.h"
 #endif
+#ifdef __FFMPEG31__
+#include "sources/soundsourceffmpeg31.h"
+#endif
 #ifdef __MODPLUG__
 #include "sources/soundsourcemodplug.h"
 #endif
@@ -85,6 +88,10 @@ void SoundSourceProxy::registerSoundSourceProviders() {
     // Use FFmpeg as the last resort.
     s_soundSourceProviders.registerProvider(
             std::make_shared<mixxx::SoundSourceProviderFFmpeg>());
+#endif
+#ifdef __FFMPEG31__
+    s_soundSourceProviders.registerProvider(
+            std::make_shared<mixxx::SoundSourceProviderFFmpeg31>());
 #endif
 #ifdef __SNDFILE__
     // libsndfile is another fallback
