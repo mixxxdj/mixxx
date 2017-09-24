@@ -315,8 +315,8 @@ Description:
               </WidgetGroup><!-- /EQ knobs -->
 
               <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="state_0_text">      Permanent VU Meter</SetVariable>
-                <SetVariable name="state_1_text"> &#10004; Permanent VU Meter</SetVariable>
+                <SetVariable name="state_0_text">      Permanent Level Meter</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Permanent Level Meter</SetVariable>
                 <SetVariable name="Setting">[Tango],vumeter</SetVariable>
               </Template>
 
@@ -511,17 +511,18 @@ Description:
               </Template>
 
               <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="state_0_text">      Super Knob (for Meta Knobs)</SetVariable>
-                <SetVariable name="state_1_text"> &#10004; Super Knob (for Meta Knobs)</SetVariable>
+                <SetVariable name="state_0_text">      Super Knobs</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Super Knobs</SetVariable>
                 <SetVariable name="Setting">[Tango],fx_super_knob</SetVariable>
               </Template>
 
+              <!-- Buttons in samplers were removed
               <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="state_0_text">      Sampler FX buttons</SetVariable>
                 <SetVariable name="state_1_text"> &#10004; Sampler FX buttons</SetVariable>
                 <SetVariable name="Setting">[Tango],sampler_fx_buttons</SetVariable>
               </Template>
-
+              -->
               <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="state_0_text">      Mic/AUX FX buttons</SetVariable>
                 <SetVariable name="state_1_text"> &#10004; Mic/AUX FX buttons</SetVariable>

@@ -129,7 +129,7 @@ Description:
               </WidgetGroup>
 
               <Template src="skin:knob_textless.xml">
-                <SetVariable name="TooltipId">master_gain</SetVariable>
+                <SetVariable name="TooltipId">booth_gain</SetVariable>
                 <SetVariable name="ObjectName">MixerbarKnob</SetVariable>
                 <SetVariable name="Size">28f,28f</SetVariable>
                 <SetVariable name="group">[Master]</SetVariable>
