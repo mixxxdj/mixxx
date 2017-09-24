@@ -282,7 +282,10 @@ Variables:
 
       <Template src="skin:hotcues_sampler_preview.xml"/>
 
-      <WidgetGroup><!-- Sampler FX assign buttons -->
+      <!-- Sampler FX assign buttons
+      Removed on request due to enormous memory usage when routing
+      many samplers through effect units.
+      <WidgetGroup>
         <ObjectName>Spacer0f</ObjectName>
         <Size>-1me,17f</Size>
         <Layout>vertical</Layout>
@@ -320,7 +323,8 @@ Variables:
           <ConfigKey persist="true">[Tango],sampler_fx_buttons</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- /Sampler FX assign buttons -->
+      </WidgetGroup> -->
+      <!-- /Sampler FX assign buttons -->
 
     </Children>
   </WidgetGroup>
