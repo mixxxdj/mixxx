@@ -1,6 +1,6 @@
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2017-9-1
+// description: 2017-9-24
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 // JSHint Configuration
@@ -126,7 +126,12 @@ VCI102.jog = function(ch, midino, value, status, group) {
     value -= 64;
     if (engine.isScratching(deck)) {
         engine.scratchTick(deck, value);
-    } else if (!engine.getValue(group, "slip_enabled")) {
+        // even in scratch send value to jog on play for better recovery
+        if (!engine.getValue(group, "play")) {
+            return;
+        }
+    }
+    if (!engine.getValue(group, "slip_enabled")) {
         engine.setValue(group, "jog", value * value * value / 1024);
     }
 };
