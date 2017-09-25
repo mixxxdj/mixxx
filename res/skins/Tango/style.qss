@@ -607,6 +607,10 @@ WWidgetGroup {
     color: #d2d2d2;
   }
 
+#PassthroughPlayCover {
+  background: #333333 url(skin:/graphics/passthrough_play_cover.svg) no-repeat center center;
+}
+
 /*################################################################
  #######  Loop Controls  ########################################
 ##############################################################*/

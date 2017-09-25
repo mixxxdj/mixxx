@@ -31,7 +31,19 @@ Variables:
             <Layout>stacked</Layout>
             <Size>50f,24f</Size>
             <Children>
-              <Template src="skin:button_2state_right_display.xml"><!-- Play -->
+              <!-- Block Play button if passthrough is active,
+                  show speaker icon isntead -->
+              <WidgetGroup>
+                <ObjectName>PassthroughPlayCover</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+              <!-- Play -->
+              <Template src="skin:button_2state_right_display.xml">
                 <SetVariable name="ObjectName">PlayCue</SetVariable>
                 <SetVariable name="TooltipId">play_cue_set</SetVariable>
                 <SetVariable name="Size">50f,24f</SetVariable>
@@ -71,7 +83,19 @@ Variables:
                 <Layout>stacked</Layout>
                 <Size>50f,24f</Size>
                 <Children>
-                  <Template src="skin:button_2state_right_display.xml"><!-- Play -->
+                  <!-- Block Play button if passthrough is active,
+                      show speaker icon isntead -->
+                  <WidgetGroup>
+                    <ObjectName>PassthroughPlayCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                  <!-- Play -->
+                  <Template src="skin:button_2state_right_display.xml">
                     <SetVariable name="ObjectName">PlayCue</SetVariable>
                     <SetVariable name="TooltipId">play_cue_set</SetVariable>
                     <SetVariable name="Size">50f,24f</SetVariable>
