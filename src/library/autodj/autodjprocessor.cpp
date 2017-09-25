@@ -541,8 +541,9 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                         otherDeck.setPlayPosition(maxPlaypos);
                     }
                 }
+                // Store the initial speed of the target deck, to compute
+                // adjustments later.
                 ControlProxy* toRate = new ControlProxy(otherDeck.group, "rate");
-                qDebug() << "initialSyncRate" << otherDeck.group << "=" << toRate->get();
                 this->initialSyncRate = toRate->get();
                 delete toRate;
                 otherDeck.play();
@@ -572,7 +573,8 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             double percentage = (thisPlayPosition - thisDeck.posThreshold) /
                     (posFadeEnd - thisDeck.posThreshold);
 
-            //Adjust rate of target deck to approach 0% difference to what master sync has planned
+            // Adjust rate of target deck to approach 0% difference to target
+            // deck's speed
             if (m_pConfig->getValueString(ConfigKey(kConfigKey, "SyncBpm")).toInt() == 1) {
                 double newRate = (1.0 - percentage) * this->initialSyncRate;
                 ControlProxy* m_pCORate = new ControlProxy(otherDeck.group, "rate");
