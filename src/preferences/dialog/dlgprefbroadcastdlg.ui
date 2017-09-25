@@ -13,7 +13,17 @@
   <property name="windowTitle">
    <string>Live Broadcasting Preferences</string>
   </property>
-  <layout class="QGridLayout" rowstretch="0,0,0,0,0,0,0,0">
+  <layout class="QGridLayout" rowstretch="0,0,0,0,0,0,0">
+   <item row="0" column="0" colspan="2">
+    <widget class="QCheckBox" name="enableLiveBroadcasting">
+     <property name="text">
+      <string>Enable Live Broadcasting</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
    <item row="1" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBoxProfiles">
      <property name="title">
@@ -101,20 +111,10 @@
         </item>
        </layout>
       </item>
-      <item>
-       <widget class="QCheckBox" name="connectOnApply">
-        <property name="text">
-         <string>Turn on Live Broadcasting when applying these settings</string>
-        </property>
-        <property name="checked">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>
-   <item row="7" column="0">
+   <item row="6" column="0">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -130,7 +130,7 @@
      </property>
     </spacer>
    </item>
-   <item row="3" column="0" colspan="2">
+   <item row="2" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBoxProfileSettings">
      <property name="title">
       <string>Settings for %1</string>
