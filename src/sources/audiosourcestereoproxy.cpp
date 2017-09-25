@@ -91,7 +91,9 @@ ReadableSampleFrames AudioSourceStereoProxy::readSampleFramesClamped(
                     WritableSampleFrames(
                             sampleFrames.frameIndexRange(),
                             m_tempOutputBuffer));
-    DEBUG_ASSERT(!readableSampleFrames.frameIndexRange().empty());
+    if (readableSampleFrames.frameIndexRange().empty()) {
+        return readableSampleFrames;
+    }
     DEBUG_ASSERT(readableSampleFrames.frameIndexRange() <= sampleFrames.frameIndexRange());
     DEBUG_ASSERT(readableSampleFrames.frameIndexRange().start() >= sampleFrames.frameIndexRange().start());
     const SINT frameOffset =
