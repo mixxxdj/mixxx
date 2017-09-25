@@ -51,13 +51,13 @@ WWidgetGroup {
 ####### Colors ##################################################
 ###############################################################*/
     
-#Deck1 WLabel, #RateContainer1 WLabel,
+#Deck1 WLabel,#RateContainer1 WLabel,
 #Deck2 WLabel, #RateContainer2 WLabel {
-  color: #33a8ff;	/* SignalColor: #159bff		> decks_left.xml */
+  color: #33a8ff;
 }
 #Deck3 WLabel, #RateContainer3 WLabel,
 #Deck4 WLabel, #RateContainer4 WLabel {
-  color: #d910f0;	/* SignalColor: #df4df0		> decks_right.xml */
+  color: #d910f0;
 }
 
 #WaveformContainer1,
@@ -126,36 +126,20 @@ WWidgetGroup {
     background-color: none;
     border-top: none;
   }
-  #SubmenuCover {
-    background-color: rgba(51, 51, 51, 127);
-  }
-  #SkinSettingsButton,
-  #SkinSettingsButtonX {
-    padding-top: 1px;
-    font-size: 12px/14px;
-    color: #d2d2d2;
-  }
-    #SkinSettingsButtonX[displayValue="0"] {
-      color: #d2d2d2;
-      font-weight: normal;
-    }
-    #SkinSettingsButtonX[displayValue="1"] {
-      color: #f8f8f8;
-      font-weight: bold;
-    }
-  #CoverSpinnyHint {
-    font-size: 14px/14px;
-    font-weight: bold;
-    color: #f56200;
+
+#SkinSettingsButton {
+  padding-top: 1px;
+  font-size: 12px/14px;
+  color: #d2d2d2;
   }
   #SkinSettingsButton:hover {
     background: #151515;
   }
-  #DeckIndicatorSettings {
-    margin-left: 17px;
-  }
-  #DeckButtonVisibility {
-    margin-right: 1px;
+#DeckIndicatorSettings {
+  margin-left: 17px;
+}
+#DeckButtonVisibility {
+  margin-right: 1px;
   }
   #DeckButtonVisibility[displayValue="0"] {
     color: #888888;
@@ -168,6 +152,15 @@ WWidgetGroup {
   #DeckButtonVisibility[displayValue="1"]:hover {
     border: 1px solid #d2d2d2;
   }
+#SubmenuCover {
+  background-color: rgba(51, 51, 51, 127);
+}
+#CoverSpinnyHint {
+  font-family: "Times New Roman", serif;
+  font-size: 14px/14px;
+  font-weight: bold;
+  color: #f56200;
+}
 
 
 
@@ -184,9 +177,6 @@ WWidgetGroup {
   Useful to 'look ahead' further (who cares about history, ha?)
   margin-left: -350px;	*/
   qproperty-layoutAlignment: 'AlignVCenter';
-}
-
-#Waveform {
 }
 
 #BeatgridButtonToggler {
@@ -208,16 +198,13 @@ WWidgetGroup {
     image: url(skin:/buttons/btn_arrow_right_hover.svg) no-repeat center center;
   }
 
-#BeatgridButtonBox {
-  background-color: #0f0f0f;
+#BeatgridButton {
+  background-color: #333333;
   }
-  #BeatgridButton {
-    background-color: #333333;
-    }
-    #BeatgridButton:hover {
-      background-color: #1e1e1e;
-      border: 1px solid #666666;
-    }
+  #BeatgridButton:hover {
+    background-color: #1e1e1e;
+    border: 1px solid #666666;
+  }
 
 
 
@@ -235,12 +222,9 @@ WWidgetGroup {
 
 #MixerbarSection {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-  margin: 3px 5px 0px 0px; /*
-  border: 1px solid #585858;
-  border-width: 1px 0px 0px 1px; */
+  margin: 3px 5px 0px 0px;
   background-color: #333333;
 }
-
 
 #Mixerbar_BelowLibrary[displayValue="0"] {
   background: transparent url(skin:/buttons/btn_arrow_downleft.svg) no-repeat center top;
@@ -291,10 +275,6 @@ WWidgetGroup {
   text-align: center;
 }
 
-#MixerbarButton {
-  /* margin: 2px 0px 0px 0px; */
-}
-
 #MixerbarButton,
 #MixerbarPflButton,
 #MixerbarXfaderButton {
@@ -329,15 +309,12 @@ WWidgetGroup {
 #VUMeterMixerbar {
   margin: 2px 0px 0px 0px;
 }
-
 #MixerbarKnob {
   margin: 2px 0px 0px 0px;
 }
-
 #MixerbarSlider {
   margin: 0px 0px 0px 0px;
 }
-
 #MixerbarCover {
   /* background is #333333, so this has to blend in */
   background-color: rgba(51, 51, 51, 200);
@@ -347,25 +324,12 @@ WWidgetGroup {
  ######  Decks  #################################################
 ##############################################################*/
 
-#Decks12 {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-}
-#Decks34 {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-}
-
-#DeckContainer {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+#Deck1,
+#Deck3,
+#Deck2,
+#Deck4 {
+  background-color: #0f0f0f
   }
-  #Deck1, #Deck3, #Deck2, #Deck4 {
-    background-color: #0f0f0f
-    }
-  #Deck1, #Deck3 {
-    qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-    }
-  #Deck2, #Deck4 {
-    qproperty-layoutAlignment: 'AlignRight | AlignTop';
-    }
 
 #DeckOverview {
     background-color: #0f0f0f;
@@ -418,9 +382,11 @@ WWidgetGroup {
     background-color: #333333;
     }
     #VinylButton:hover,
-    #VinylModeButton:hover,
-    #PassthroughButton[displayValue="0"]:hover {
+    #VinylModeButton:hover {
       border: 1px solid #999999;
+    }
+    #PassthroughButton[displayValue="0"]:hover {
+      border: 1px solid #ff8f00;
     }
   #VinylButton[displayValue="1"],
   #VinylButton[displayValue="2"] {
@@ -453,7 +419,7 @@ WWidgetGroup {
     }
   WLabel#DeckFxIndicator {
     font-weight: bold;
-    color: #FF8F00;
+    color: #ff8f00;
     padding-top: 1px;
     background-color: #333333;
   }
@@ -473,14 +439,11 @@ WWidgetGroup {
   WLabel#TrackBy {
     color: #888888;
   }
-    
-  #LoopIndicator {
-    }
-    #LoopIndicator:hover {
-      border: 1px solid #ffffff;
+  #LoopIndicator:hover {
+    border: 1px solid #ffffff;
     }
     #LoopIndicator[displayValue="1"] {
-      background: #FF8F00 url(skin:/buttons/btn_reloop_on.svg) no-repeat center center;
+      background: #ff8f00 url(skin:/buttons/btn_reloop_on.svg) no-repeat center center;
     }
     
 #DeckButtonsPlay {
@@ -499,8 +462,9 @@ WWidgetGroup {
   }
 
 #DeckControlsExpanded,
-#Keylock[displayValue="0"]:hover, #Keylock[displayValue="1"],
-#DeckButton:hover {
+#DeckButton:hover,
+#Keylock[displayValue="0"]:hover,
+#Keylock[displayValue="1"] {
   background-color: #151515;
   }
   /* there's been trouble defining bg-color to several IDs at once,
@@ -554,7 +518,8 @@ WWidgetGroup {
   font-size: 13px/15px;
   font-weight: bold;
   }
-  #HotcueButton[displayValue="0"], #CueUnderlay {
+  #HotcueButton[displayValue="0"],
+  #CueUnderlay {
     color: #888888;
     background-color: #333333;
     }
@@ -562,7 +527,8 @@ WWidgetGroup {
     border: 1px solid #888888;
     }
   #HotcueButton[displayValue="1"],
-  #CueButton[displayValue="1"], #CueUnderlay[displayValue="1"] {
+  #CueButton[displayValue="1"],
+  #CueUnderlay[displayValue="1"] {
     color: #eeeeee;
     background-color: #666666;
     }
@@ -615,49 +581,28 @@ WWidgetGroup {
  #######  Loop Controls  ########################################
 ##############################################################*/
 
-#LoopBeatJumpContainer_Left, #LoopBeatJumpContainer_Right {
+#LoopControlsLeft,
+#LoopControlsRight {
   qproperty-layoutAlignment: 'AlignCenter';
   background-color: #1e1e1e;
-}
-  #LoopBeatJumpButton, #LoopSizeButton, #LoopRollButton {
+  }
+  #LoopBeatJumpButton,
+  #LoopSizeButton {
     font-weight: bold;
     color: #888888;
     background-color: #333333;
   }
-  #LoopBeatJumpButton:hover, #LoopSizeButton:hover, #LoopRollButton:hover {
+  #LoopBeatJumpButton:hover,
+  #LoopSizeButton:hover {
     border: 1px solid #888888;
   }
-  #LoopSizeButton, #LoopRollButton {
-  }
-  #LoopSizeButton[displayValue="1"],
-  #LoopRollButton[displayValue="1"] {
-    border: 1px solid #FF8F00;
+  #LoopSizeButton[displayValue="1"] {
+    border: 1px solid #ff8f00;
     color: #d2d2d2;
   }
-  #LoopSizeButton[displayValue="1"]:hover,
-  #LoopRollButton[displayValue="1"]:hover {
+  #LoopSizeButton[displayValue="1"]:hover {
     border: 1px solid #eeeeee;
   }
-  #LoopRollButton::WPushButton:pressed {
-    border: 1px solid #FF8F00;
-  }
-  #LoopRollButton::pressed {
-    border: 1px solid #FF8F00;
-  }
-  /* See also #LoopIndicator near DeckButtons */
-
-#BeatJumpBackwardButton, #LoopBeatForwardJumpButton {
-  background-color: #333333;
-  }
-  #BeatJumpBackwardButton:hover, #LoopBeatForwardJumpButton:hover {
-    border: 1px solid #888888;
-  }
-#BeatJumpBackwardButton {
-  image: url(skin:/buttons/btn_backward.svg) left center;
-}
-#BeatJumpForwardButton {
-  image: url(skin:/buttons/btn_forward.svg) left center;
-}
 
 #ReloopButton[displayValue="0"] {
   background-color: #333333;
@@ -666,7 +611,8 @@ WWidgetGroup {
     border: 1px solid #888888;
   }
   #ReloopButton[displayValue="1"] {
-    background-color: #FF8F00;
+  /* See also #LoopIndicator near DeckButtons */
+    background-color: #ff8f00;
     }
     #ReloopButton[displayValue="1"]:hover {
       border: 1px solid #eeeeee;
@@ -731,7 +677,11 @@ WBeatSpinBox {
  #######  Rate Container  #######################################
 ##############################################################*/
 
-#RateContainer1, #RateContainer2, #RateContainer3, #RateContainer4, #BpmContainer {
+#RateContainer1,
+#RateContainer2,
+#RateContainer3,
+#RateContainer4,
+#BpmContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
@@ -742,7 +692,8 @@ WBeatSpinBox {
   text-align: center;
   padding-top: 1px;
   }
-  #SyncButtonOverlay[displayValue="0"]:hover, #KeyReset:hover {
+  #SyncButtonOverlay[displayValue="0"]:hover,
+  #KeyReset:hover {
     border: 1px solid #ff4800;
   }
   #SyncButtonOverlay[displayValue="1"],
@@ -757,7 +708,9 @@ WBeatSpinBox {
   #KeyDisplay {
     font-size: 13px/13px;
   }
-  #KeyDown, #KeyUp, #KeyReset {
+  #KeyDown,
+  #KeyUp,
+  #KeyReset {
     border: 1px solid #666666;
     }
     #KeyUp {
@@ -780,9 +733,6 @@ WBeatSpinBox {
 #PitchSliderContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   }
-  #PitchSlider:hover, #Crossfader:hover {
-    /* background-color: #0f0f0f; */
-  }
 
 /*################################################################
  #######  Channel Mixer  ########################################
@@ -790,17 +740,17 @@ WBeatSpinBox {
 #MixerChannelLeft {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
   background-color: #333333;
+  border-bottom-right-radius: 3px;
 }
 #MixerChannelRight {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
   background-color: #333333;
+  border-bottom-left-radius: 3px;
 }
 
 #VolumeSliderGain {
   qproperty-layoutAlignment: 'AlignCenter';
   margin-top: 2px;
-}
-#GainKnobLeft {
 }
 
 #EQKnobContainerLeft {
@@ -869,7 +819,9 @@ WBeatSpinBox {
   if it is scaled up too much (>120). Source:
   https://forum.qt.io/topic/40151/solved-scaled-background-image-using-stylesheet/6
   border-image: url(skin:/buttons/btn_pfl_off.svg) 0 0 0 0 stretch stretch; */
-#PflBoxLeft, #PflBoxRight {
+#PflBoxLeft,
+#PflBoxRight {
+  background-color: #0f0f0f;
   border-color: #0f0f0f;
   border-style: solid;
   border-radius: 3px;
@@ -880,45 +832,40 @@ WBeatSpinBox {
   #PflBoxRight {
     border-width: 1px 1px 0px 0px;
   }
-  #PflBoxLeft, #PflButtonLeft {
+  #PflBoxLeft {
     border-top-right-radius: 0px;
     border-bottom-left-radius: 0px;
   }
-  #PflBoxRight, #PflButtonRight {
+  #PflBoxRight {
     border-bottom-right-radius: 0px;
     border-top-left-radius: 0px;
   }
-#PflButtonLeft[displayValue="0"]:hover, #PflButtonLeft[displayValue="1"]:hover,
-#PflButtonRight[displayValue="0"]:hover, #PflButtonRight[displayValue="1"]:hover {
-    background-color: #151515;
+#PflButtonLeft:hover,
+#PflButtonRight:hover {
+    border: 1px solid #888888;
+  }
+  #PflButtonLeft[displayValue="0"],
+  #PflButtonRight[displayValue="0"] {
+    background-color: #333333;
   }
   #PflButtonLeft[displayValue="1"],
   #PflButtonRight[displayValue="1"] {
     background-color: #000000;
   }
 
-#VUMeterFloating {
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';
-}
 #VUMeterMixer {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';	/*
-  margin not respected when <Connection> attached!	*/
-  margin-top: 4px;
-}
-#VUMeter {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-}
+  margin-top: 4px;
+  }
 
 /*################################################################
  ######  Skin Controls / Crossfader / Clock  ####################
 ##############################################################*/
 
-#SkinControls {
-  }
-  #SkinControlsRow {
-    qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-    background-color:  #0f0f0f;
-  }
+#SkinControlsRow {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  background-color:  #0f0f0f;
+}
 
 #SkinControlsBarLeft {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
@@ -927,24 +874,30 @@ WBeatSpinBox {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
 }
 
-#GuiToggleButton, #GuiToggleButton2, #RecordingButton {
+#GuiToggleButton,
+#GuiToggleButton2,
+#RecordingButton {
   text-align: center;
   font-weight: bold;
   }
-  #GuiToggleButton[displayValue="0"]:hover, #GuiToggleButton2:hover {
+  #GuiToggleButton[displayValue="0"]:hover,
+  #GuiToggleButton2:hover {
     border: 1px solid #888888;
     }
-  #GuiToggleButton[displayValue="1"]:hover, #GuiToggleButton[displayValue="2"]:hover {
+  #GuiToggleButton[displayValue="1"]:hover,
+  #GuiToggleButton[displayValue="2"]:hover {
     border: 1px solid #eeeeee;
     }
   #GuiToggleButton:hover {
     background-color: #666666;
     }
-  #GuiToggleButton[displayValue="0"], #GuiToggleButton2 {
+  #GuiToggleButton[displayValue="0"],
+  #GuiToggleButton2 {
     color: #888888;
     background-color: #333333;
     }
-  #GuiToggleButton[displayValue="1"], #GuiToggleButton[displayValue="2"] {
+  #GuiToggleButton[displayValue="1"],
+  #GuiToggleButton[displayValue="2"] {
     color: #eeeeee;
     background-color: #666666;
     }
@@ -954,7 +907,8 @@ WBeatSpinBox {
   background-color: #333333;
   color: #888888;
 }
-  #RecordingButton[displayValue="0"]:hover, #RecordingButton[displayValue="2"] {
+  #RecordingButton[displayValue="0"]:hover,
+  #RecordingButton[displayValue="2"] {
     border: 1px solid #a90000;
   }
   #RecordingButton[displayValue="1"] {
@@ -1076,12 +1030,10 @@ WBeatSpinBox {
 }
 
 #FxUnitMixerLeft {
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';
   padding-left:1px;
   background-color: #0f0f0f;
 }
 #FxUnitMixerRight {
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';
   padding-right:1px;
   background-color: #0f0f0f;
 }
@@ -1093,38 +1045,38 @@ WBeatSpinBox {
 
 /* minimal EffectSlots in horizontal layout */
 /* with focus */
-#FxUnderlay_mini_focus1[highlight="0"] {
+#FxFlowUnderlay_mini_focus1[highlight="0"] {
   border-image: url(skin:/graphics/fxChainFlow_hori_unfocused1.svg) 0px 10px 0px 0px ;
   border-width: 0px 10px 0px 0px;
   }
-#FxUnderlay_mini_focus2[highlight="0"] {
+#FxFlowUnderlay_mini_focus2[highlight="0"] {
   margin-left: 125px;
   border-image: url(skin:/graphics/fxChainFlow_hori_unfocused2.svg) 0px 10px 0px 10px;
   border-width: 0px 10px 0px 10px;
   }
-  #FxUnderlay_mini_focus2[highlight="1"] {
+  #FxFlowUnderlay_mini_focus2[highlight="1"] {
     margin-left: 125px;
   }
-#FxUnderlay_mini_focus3[highlight="0"] {
+#FxFlowUnderlay_mini_focus3[highlight="0"] {
   margin-left: 259px;
   border-image: url(skin:/graphics/fxChainFlow_hori_unfocused3.svg) 0px 0px 0px 10px;
   border-width: 0px 0px 0px 10px;
   }
-  #FxUnderlay_mini_focus3[highlight="1"] {
+  #FxFlowUnderlay_mini_focus3[highlight="1"] {
     margin-left: 259px;
   }
 
 /* no focus */
-#FxUnderlay_mini_noFocus1 {
+#FxFlowUnderlay_mini_noFocus1 {
   border-image: url(skin:/graphics/fxChainFlow_hori_unfocused1.svg) 0px 10px 0px 0px;
   border-width: 0px 10px 0px 0px;
 }
-#FxUnderlay_mini_noFocus2 {
+#FxFlowUnderlay_mini_noFocus2 {
   margin-left: 111px;
   border-image: url(skin:/graphics/fxChainFlow_hori_unfocused2.svg) 0px 10px 0px 10px;
   border-width: 0px 10px 0px 10px;
 }
-#FxUnderlay_mini_noFocus3 {
+#FxFlowUnderlay_mini_noFocus3 {
   margin-left: 231px;
   border-image: url(skin:/graphics/fxChainFlow_hori_unfocused3.svg) 0px 0px 0px 10px;
   border-width: 0px 0px 0px 10px;
@@ -1132,40 +1084,40 @@ WBeatSpinBox {
 
 /* maximized EffectSlots in vertical layout */
 /* right-hand FX units, with focus */
-#FxUnderlay_maxi_right_focus1[highlight="0"] {
+#FxFlowUnderlay_right_focus1[highlight="0"] {
   border-image: url(skin:/graphics/fxChainFlow_vert_right_unfocused1.svg) 0px 0px 0px 99px ;
   border-width: 0px 0px 0px 99px;
   }
 
-#FxUnderlay_maxi_right_focus2[highlight="0"] {
+#FxFlowUnderlay_right_focus2[highlight="0"] {
   margin-top: 46px;
   border-image: url(skin:/graphics/fxChainFlow_vert_right_unfocused2.svg) 0px 0px 0px 99px;
   border-width: 0px 0px 0px 99px;
   }
-  #FxUnderlay_maxi_right_focus2[highlight="1"] {
+  #FxFlowUnderlay_right_focus2[highlight="1"] {
     margin-top: 46px;
   }
 
-#FxUnderlay_maxi_right_focus3[highlight="0"] {
+#FxFlowUnderlay_right_focus3[highlight="0"] {
   margin-top: 92px;
   border-image: url(skin:/graphics/fxChainFlow_vert_right_unfocused3.svg) 0px 0px 0px 99px;
   border-width: 0px 0px 0px 99px;
   }
-  #FxUnderlay_maxi_right_focus3[highlight="1"] {
+  #FxFlowUnderlay_right_focus3[highlight="1"] {
     margin-top: 92px;
   }
 
 /* right-hand FX units, no focus */
-#FxUnderlay_maxi_right_noFocus1 {
+#FxFlowUnderlay_right_noFocus1 {
   border-image: url(skin:/graphics/fxChainFlow_vert_right_noFocus1.svg) 0px 0px 0px 85px;
   border-width: 0px 0px 0px 85px;
 }
-#FxUnderlay_maxi_right_noFocus2 {
+#FxFlowUnderlay_right_noFocus2 {
   margin-top: 46px;
   border-image: url(skin:/graphics/fxChainFlow_vert_right_noFocus2.svg) 0px 10px 0px 85px;
   border-width: 0px 0px 0px 85px;
 }
-#FxUnderlay_maxi_right_noFocus3 {
+#FxFlowUnderlay_right_noFocus3 {
   margin-top: 92px;
   border-image: url(skin:/graphics/fxChainFlow_vert_right_noFocus3.svg) 0px 0px 0px 85px;
   border-width: 0px 0px 0px 85px;
@@ -1173,40 +1125,40 @@ WBeatSpinBox {
 
 /* maximized EffectSlots in vertical layout */
 /* left-hand FX units, with focus */
-#FxUnderlay_maxi_left_focus1[highlight="0"] {
+#FxFlowUnderlay_left_focus1[highlight="0"] {
   border-image: url(skin:/graphics/fxChainFlow_vert_left_unfocused1.svg) 0px 109px 0px 0px;
   border-width: 0px 109px 0px 0px;
   }
 
-#FxUnderlay_maxi_left_focus2[highlight="0"] {
+#FxFlowUnderlay_left_focus2[highlight="0"] {
   margin-top: 46px;
   border-image: url(skin:/graphics/fxChainFlow_vert_left_unfocused2.svg) 0px 109px 0px 0px;
   border-width: 0px 109px 0px 0px;
   }
-  #FxUnderlay_maxi_left_focus2[highlight="1"] {
+  #FxFlowUnderlay_left_focus2[highlight="1"] {
     margin-top: 46px;
   }
 
-#FxUnderlay_maxi_left_focus3[highlight="0"] {
+#FxFlowUnderlay_left_focus3[highlight="0"] {
   margin-top: 92px;
   border-image: url(skin:/graphics/fxChainFlow_vert_left_unfocused3.svg) 0px 109px 0px 0px;
   border-width: 0px 109px 0px 0px;
   }
-  #FxUnderlay_maxi_left_focus3[highlight="1"] {
+  #FxFlowUnderlay_left_focus3[highlight="1"] {
     margin-top: 92px;
   }
 
 /* left-hand FX units, no focus */
-#FxUnderlay_maxi_left_noFocus1 {
+#FxFlowUnderlay_left_noFocus1 {
   border-image: url(skin:/graphics/fxChainFlow_vert_left_noFocus1.svg) 0px 95px 0px 0px;
   border-width: 0px 95px 0px 0px;
 }
-#FxUnderlay_maxi_left_noFocus2 {
+#FxFlowUnderlay_left_noFocus2 {
   margin-top: 46px;
   border-image: url(skin:/graphics/fxChainFlow_vert_left_noFocus2.svg) 0px 95px 0px 0px;
   border-width: 0px 95px 0px 0px;
 }
-#FxUnderlay_maxi_left_noFocus3 {
+#FxFlowUnderlay_left_noFocus3 {
   margin-top: 92px;
   border-image: url(skin:/graphics/fxChainFlow_vert_left_noFocus3.svg) 0px 95px 0px 0px;
   border-width: 0px 95px 0px 0px;
@@ -1231,204 +1183,198 @@ WBeatSpinBox {
 #FxToggleSelector {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
   border-radius: 3px;
-}
-
-  #FxToggleButton {
-    }
-    #FxToggleButton[displayValue="0"]:hover {
-      border: 1px solid #ff8f00;
-      }
-    #FxToggleButton[displayValue="1"]:hover {
-      border: 1px solid #FFFFFF;
-      }
-    #FxToggleButtonUnderlay[displayValue="0"] {
-      background-color: #777777;
-      }
-    #FxToggleButtonUnderlay[displayValue="1"] {
-      background-color: #ff8f00;
-      }
-    #FxNameContainer {
-      padding: 1px;
-      qproperty-layoutAlignment: 'AlignLeft';
-      }
-      #FxName {
-        qproperty-alignment: 'AlignLeft | AlignVCenter';
-        color: #000000;
-        text-align: left;
-        font-size: 13px/12px;
-      }
-
-    WEffectSelector {
-      font-family: Ubuntu;
-      font-weight: normal;
-      font-size: 13px/13px;
-      color: #cccccc;
-      background-color: transparent;
-      /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
-      margin: 0px;
-      /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
-         names start getting cut off. Adding explicit padding improves this. */
-      padding: 0px;
-      /* The 3D frame on the combo box becomes flat when you give it a border */
-      border: 0px solid #666666;
-      border-radius: 3px;
-      }
-      WEffectSelector::drop-down {
-        width: 10px;
-        height: 20px;
-        border: 0;
-      }
-      WEffectSelector::down-arrow {
-        width: 10px;
-        height: 20px;
-        image: url(skin:/buttons/btn_fx_selector_list.svg);
-        }
-        WEffectSelector::down-arrow:hover {
-          width: 10px;
-          height: 20px;
-          image: url(skin:/buttons/btn_fx_selector_list_hover.svg);
-        }
-
-      WEffectSelector QAbstractItemView {
-        min-width: 76px;
-        max-width: 82px;
-        background-color: #202020;
-        padding-left: 6px;
-        font-family: Ubuntu;
-        font-size: 13px/13px;
-        /* not applied, defined by WEffectSelector
-        color: #cccccc; */
-        border: 0px;
-        border-radius: 2px;
-      }
-      /* selected item */
-      WEffectSelector::checked {
-        /* not applied
-        padding-left: 5px;
-        font-weight: bold;	*/
-        color: #00B4FF;
-      }
-      /* hovered items */
-      WEffectSelector::item:selected {
-        background-color: #0f0f0f;
-      /* This moves the tick mark behind item text,
-        text sits at left border now */
-        border: 0;
-      }
-    /* This is sufficient to completely hide the tick mark, but
-      this alone would show an empty, shadowed box instead of tick mark */
-      WEffectSelector::indicator {
-        background-color: transparent;
-      }
-
-#FxParameters {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   }
-  #FxKnobParameter {
-    qproperty-layoutAlignment: 'AlignCenter';
-    margin-right: 1px;
+  #FxToggleButton[displayValue="0"]:hover {
+    border: 1px solid #ff8f00;
     }
-    #FxKnobParameterName {
-      qproperty-alignment: 'AlignLeft | AlignTop';
-      font-size: 10px/10px;
-      font-weight: bold;
-      color: #999999;
-      margin-top: 19px;
+  #FxToggleButton[displayValue="1"]:hover {
+    border: 1px solid #ffffff;
     }
-
-  #FxButtonParameter {
-    qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-    margin-right: 1px;
+  #FxToggleButtonUnderlay[displayValue="0"] {
+    background-color: #777777;
     }
-    #FxButtonParameterOverlay:hover {
-      border: 1px solid #eeeeee;
-      }
-    #FxButtonParameterUnderlay[displayValue="0"] {
-      background-color: #4b4b4b;
-      }
-    #FxButtonParameterUnderlay[displayValue="1"] {
-      background-color: #006596;
-      }
-    #FxButtonParameterName {
-      font-size: 10px/10px;
-      font-weight: bold;
-      color: #999999;
+  #FxToggleButtonUnderlay[displayValue="1"] {
+    background-color: #ff8f00;
+    }
+  #FxNameContainer {
+    padding: 1px;
+    qproperty-layoutAlignment: 'AlignLeft';
+    }
+    #FxName {
       qproperty-alignment: 'AlignLeft | AlignVCenter';
-      margin-left: 1px;
+      color: #000000;
+      text-align: left;
+      font-size: 13px/12px;
+    }
+
+  WEffectSelector {
+    font-family: Ubuntu;
+    font-weight: normal;
+    font-size: 13px/13px;
+    color: #cccccc;
+    background-color: transparent;
+    /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
+    margin: 0px;
+    /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
+        names start getting cut off. Adding explicit padding improves this. */
+    padding: 0px;
+    /* The 3D frame on the combo box becomes flat when you give it a border */
+    border: 0px solid #666666;
+    border-radius: 3px;
+    }
+    WEffectSelector::drop-down {
+      width: 10px;
+      height: 20px;
+      border: 0;
+    }
+    WEffectSelector::down-arrow {
+      width: 10px;
+      height: 20px;
+      image: url(skin:/buttons/btn_fx_selector_list.svg);
+      }
+      WEffectSelector::down-arrow:hover {
+        width: 10px;
+        height: 20px;
+        image: url(skin:/buttons/btn_fx_selector_list_hover.svg);
       }
 
-  #FxSuperLinkButton[value="0"],
-  #FxSuperLinkInvertButton[displayValue="0"] {
+    WEffectSelector QAbstractItemView {
+      min-width: 76px;
+      max-width: 82px;
+      background-color: #202020;
+      padding-left: 6px;
+      font-family: Ubuntu;
+      font-size: 13px/13px;
+      /* not applied, defined by WEffectSelector
+      color: #cccccc; */
+      border: 0px;
+      border-radius: 2px;
+    }
+    /* selected item */
+    WEffectSelector::checked {
+      /* not applied
+      padding-left: 5px;
+      font-weight: bold;	*/
+      color: #00b4ff;
+    }
+    /* hovered items */
+    WEffectSelector::item:selected {
+      background-color: #0f0f0f;
+    /* This moves the tick mark behind item text,
+      text sits at left border now */
+      border: 0;
+    }
+  /* This is sufficient to completely hide the tick mark, but
+    this alone would show an empty, shadowed box instead of tick mark */
+    WEffectSelector::indicator {
+      background-color: transparent;
+    }
+
+#FxKnobParameter {
+  qproperty-layoutAlignment: 'AlignCenter';
+  margin-right: 1px;
+  }
+  #FxKnobParameterName {
+    qproperty-alignment: 'AlignLeft | AlignTop';
+    font-size: 10px/10px;
+    font-weight: bold;
+    color: #999999;
+    margin-top: 19px;
+  }
+
+#FxButtonParameter {
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+  margin-right: 1px;
+  }
+  #FxButtonParameterOverlay:hover {
+    border: 1px solid #eeeeee;
+    }
+  #FxButtonParameterUnderlay[displayValue="0"] {
     background-color: #4b4b4b;
-  }
-  #FxSuperLinkButton[value="0"]:hover {
-    border: 1px solid #888888;
-  }
-
-  #FxSuperLinkInvertButton[displayValue="0"]:hover {
-    background-color: #888888;
-  }
-  #FxSuperLinkInvertButton[displayValue="1"] {
-    background-color: #a90000;
     }
-    #FxSuperLinkInvertButton[displayValue="1"]:hover {
-      background-color: #ff0000;
-    }
-
-  #FxSuperLinkButton[value="1"] {
+  #FxButtonParameterUnderlay[displayValue="1"] {
     background-color: #006596;
     }
-    #FxSuperLinkButton[value="1"]:hover {
-      background-color: #078DCD;
+  #FxButtonParameterName {
+    font-size: 10px/10px;
+    font-weight: bold;
+    color: #999999;
+    qproperty-alignment: 'AlignLeft | AlignVCenter';
+    margin-left: 1px;
     }
-  #FxSuperLinkButton[value="2"] {	/*
+
+#FxSuperLinkButton[value="0"],
+#FxSuperLinkInvertButton[displayValue="0"] {
+  background-color: #4b4b4b;
+}
+#FxSuperLinkButton[value="0"]:hover {
+  border: 1px solid #888888;
+}
+
+#FxSuperLinkInvertButton[displayValue="0"]:hover {
+  background-color: #888888;
+}
+#FxSuperLinkInvertButton[displayValue="1"] {
+  background-color: #a90000;
+  }
+  #FxSuperLinkInvertButton[displayValue="1"]:hover {
+    background-color: #ff0000;
+  }
+
+#FxSuperLinkButton[value="1"] {
+  background-color: #006596;
+  }
+  #FxSuperLinkButton[value="1"]:hover {
+    background-color: #078dcd;
+  }
+#FxSuperLinkButton[value="2"] {	/*
+  a simple way to achive a partitioning in thirds	*/
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 #006596,
+    stop: 0.33 #006596,
+    stop: 0.34 #4b4b4b,
+    stop: 1 #4b4b4b);
+  }
+  #FxSuperLinkButton[value="2"]:hover {	/*
     a simple way to achive a partitioning in thirds	*/
     background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
-      stop: 0 #006596,
-      stop: 0.33 #006596,
+      stop: 0 #078dcd,
+      stop: 0.33 #078dcd,
       stop: 0.34 #4b4b4b,
       stop: 1 #4b4b4b);
     }
-    #FxSuperLinkButton[value="2"]:hover {	/*
-      a simple way to achive a partitioning in thirds	*/
-      background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
-        stop: 0 #078dcd,
-        stop: 0.33 #078dcd,
-        stop: 0.34 #4b4b4b,
-        stop: 1 #4b4b4b);
-      }
-  #FxSuperLinkButton[value="3"] {
+#FxSuperLinkButton[value="3"] {
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 #4b4b4b,
+    stop: 0.66 #4b4b4b,
+    stop: 0.67 #006596,
+    stop: 1 #006596);
+  }
+  #FxSuperLinkButton[value="3"]:hover {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
       stop: 0 #4b4b4b,
       stop: 0.66 #4b4b4b,
-      stop: 0.67 #006596,
-      stop: 1 #006596);
+      stop: 0.67 #078dcd,
+      stop: 1 #078dcd);
     }
-    #FxSuperLinkButton[value="3"]:hover {
-      background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
-        stop: 0 #4b4b4b,
-        stop: 0.66 #4b4b4b,
-        stop: 0.67 #078dcd,
-        stop: 1 #078dcd);
-      }
-  #FxSuperLinkButton[value="4"] {
+#FxSuperLinkButton[value="4"] {
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 #006596,
+    stop: 0.330000 #006596,
+    stop: 0.340000 #4b4b4b,
+    stop: 0.660000 #4b4b4b,
+    stop: 0.670000 #006596,
+    stop: 1 #006596);
+  }
+  #FxSuperLinkButton[value="4"]:hover {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
-      stop: 0 #006596,
-      stop: 0.330000 #006596,
+      stop: 0 #078dcd,
+      stop: 0.330000 #078dcd,
       stop: 0.340000 #4b4b4b,
       stop: 0.660000 #4b4b4b,
-      stop: 0.670000 #006596,
-      stop: 1 #006596);
-    }
-    #FxSuperLinkButton[value="4"]:hover {
-      background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
-        stop: 0 #078dcd,
-        stop: 0.330000 #078dcd,
-        stop: 0.340000 #4b4b4b,
-        stop: 0.660000 #4b4b4b,
-        stop: 0.670000 #078dcd,
-        stop: 1 #078dcd);
-    }
+      stop: 0.670000 #078dcd,
+      stop: 1 #078dcd);
+  }
 
 #FxAssignButton {
   font-size: 13px/13px;
@@ -1447,7 +1393,7 @@ WBeatSpinBox {
     border: 1px solid #ff8f00;
     }
     #FxAssignButton[displayValue="1"]:hover {
-      border: 1px solid #FFFFFF;
+      border: 1px solid #ffffff;
     }
 
 #FxHeadMasterButton {
@@ -1503,31 +1449,30 @@ WBeatSpinBox {
 #SamplerPlayBox_mini {
   border-color: #0f0f0f;
   background-color: #333333;
-}
-#SamplerPlayBox {
-  border-width: 1px 1px 1px 0px;
-}
-#SamplerPlayBox_mini {
-  padding: 0px 1px 0px 0px;
-}
-  #SamplerPlayCue,
-  #SamplerPlayCueUnderlay {
-    border-radius: 0px;
   }
-  #SamplerPlayCue[displayValue="0"]:hover {
-    border: 1px solid #666666;
+  #SamplerPlayBox {
+    border-width: 1px 1px 1px 0px;
   }
-  #SamplerPlayCue[displayValue="1"] {
-    border: 1px solid #ca0000;
-    background-color: #a90000;
-  }
-  #SamplerPlayCue[displayValue="1"]:hover {
-    border: 1px solid #ff0000;
-  }
-
-  #SamplerPlayCueUnderlay[displayValue="1"] {
-    background: #a90000;
+  #SamplerPlayBox_mini {
+    padding: 0px 1px 0px 0px;
     }
+    #SamplerPlayCue,
+    #SamplerPlayCueUnderlay {
+      border-radius: 0px;
+    }
+    #SamplerPlayCue[displayValue="0"]:hover {
+      border: 1px solid #666666;
+    }
+    #SamplerPlayCue[displayValue="1"] {
+      border: 1px solid #ca0000;
+      background-color: #a90000;
+    }
+    #SamplerPlayCue[displayValue="1"]:hover {
+      border: 1px solid #ff0000;
+    }
+    #SamplerPlayCueUnderlay[displayValue="1"] {
+      background: #a90000;
+      }
 
 WTrackProperty#SamplerTitle {
   font-size: 14px/18px;
@@ -1570,7 +1515,8 @@ WTrackProperty#SamplerTitle_mini {
   margin-left: 3px;
 }
 
-#SamplerVU, #SamplerPitchSlider {
+#SamplerVU,
+#SamplerPitchSlider {
   background-color: #333333;
 }
 
@@ -1578,9 +1524,6 @@ WTrackProperty#SamplerTitle_mini {
   padding: 2px 2px 1px 2px;
 }
 
-#SamplerPlay {
-  margin: 1px 1px 1px 0px;
-}
 #SamplerPlay_mini {
   margin-right: 1px;
 }
@@ -1637,8 +1580,6 @@ WTrackProperty#SamplerTitle_mini {
     text-align: left;
     color: #bababa;
   }
-  #PreviewEject {
-  }
   #PreviewEject:hover {
     border: 1px solid #eeeeee;
   }
@@ -1647,7 +1588,7 @@ WTrackProperty#SamplerTitle_mini {
     margin-right: 1px;
   }
   #PreviewGainKnob {
-    padding-top: 2px;
+    padding-top: 6px;
   }
 
 
@@ -1657,7 +1598,7 @@ WTrackProperty#SamplerTitle_mini {
 
 QToolTip {
   background-color: #1e1e1e;
-  color: #CCCCCC;
+  color: #cccccc;
   border: 1px solid #333333;
 }
 
@@ -1734,9 +1675,6 @@ qproperty-layoutAlignment: 'AlignRight | AlignBottom';
  ################### most of it was LateNight & Deere ##########
 ############ added styling for AutoDJ & Recording etc ##### */
 
-#Library {
-}
-
 #LibMiniMaxiButton {
   margin-bottom: 12px;
   }
@@ -1773,10 +1711,10 @@ QTextBrowser,
 QTreeView {
   border: 1px solid #585858;
   font-weight: normal;
-  color: #9E9E9E;
+  color: #9e9e9e;
   background-color: #0f0f0f;
   alternate-background-color: #1a1a1a;
-  selection-color: #D9D9D9;
+  selection-color: #e6e6e6;
   selection-background-color: #666666;
 }
 
@@ -1786,7 +1724,7 @@ QTreeView {
   border-width: 1px 1px 0px 0px;
   border-style: solid;
   border-color: #585858;
-  show-decoration-selected: 1;	/*
+  show-decoration-selected: 0;	/*
   Don't define top margin here, it won't shift ScrollBar.
   Defined by SearchBox	*/ 
   margin: 0px;
@@ -1794,7 +1732,7 @@ QTreeView {
 QTreeView:focus,
 QTableView:focus { /*
   New Library navigation COs only work if TreeView or TableView have focus.
-  Clicking on buttons, sliders and visuals removes focus from Library.
+  Clicking on buttons, sliders and visuals elsewhere removes focus from Library.
   In conjuction with [Library],MoveFocusBackward/..Forward, this helps a lot. */
   border-color: #dddddd;
 }
@@ -1829,9 +1767,7 @@ QTreeView::item:selected {
   color: #cfcfcf;
   }
 
-QTableView {	/*
-  padding-top: 1px;
-  border-top: 0px;	*/
+QTableView {
 }
 
 QHeaderView {
@@ -1977,17 +1913,16 @@ QPushButton {
     }
   QPushButton:checked {
     color: #000000;
-    font-weight: bold;	/*
-    background-color: #666666;	*/
-    background-color: #FF7B00;
+    font-weight: bold;
+    background-color: #ff7b00;
     }
   QPushButton:checked:hover {
-    border: 1px solid #FF3F00;
+    border: 1px solid #ff3f00;
     }
   /* 'Enable AutoDJ' button	*/
   QPushButton#pushButtonAutoDJ:unchecked:hover {
     min-width: 112px;
-    background-color: #FF7B00;
+    background-color: #ff7b00;
   }
   /* 'Start/Stop Recording' button	*/
   QPushButton#pushButtonRecording {
@@ -2013,10 +1948,10 @@ QPushButton {
       image: url(skin:/graphics/bpm_unlocked.png);
       }
     #LibraryBPMButton::item {
-      color: #CFCFCF;
+      color: #cfcfcf;
       }
     #LibraryBPMButton::item:selected {
-      color: #EDEDED;
+      color: #ededed;
       background-color: #666666;
       }
   #LibraryTimesPlayed::item {
@@ -2044,19 +1979,19 @@ QPushButton {
     height: 12px;
     margin: 0px;
     padding: 0px;
-    color: #CFCFCF;
+    color: #cfcfcf;
     }
     QTableView::indicator:checked {
       background: transparent url(skin:/graphics/checkbox_checked.png) no-repeat center center;
-      color: #CFCFCF;
+      color: #cfcfcf;
       }
     QTableView::indicator:unchecked {
       background: transparent url(skin:/graphics/checkbox_unchecked.png) no-repeat center center;
-      color: #CFCFCF;
+      color: #cfcfcf;
       }
   /* selected table row */ 
   QTableView::item:selected {
-    color: #FFFFFF;
+    color: #ffffff;
     background-color: #666666;
   }
   
@@ -2069,12 +2004,12 @@ WLibrary QSpinBox {
   }
   WLibrary QSpinBox:editable {
     background: transparent;
-    color: #FFA600;
+    color: #ffa600;
     selection-background-color: #d2d2d2;
     selection-color: #0f0f0f;
   }
   WLibrary QSpinBox:editable:focus {
-    border: 1px solid #FF6600;
+    border: 1px solid #ff6600;
   }
 
 /* library search text box */
@@ -2084,18 +2019,22 @@ WSearchLineEdit {
   border-left: 0px;
   font-family: Ubuntu;
   font-weight: normal;
-  font-size: 12px/12px;
+  font-size: 14px/14px;
   background: #0f0f0f;
-  color: #CFCFCF;
+  color: #cfcfcf;
   selection-background-color: #d2d2d2;
   selection-color: #0f0f0f;
   margin-bottom: 5px;
   }
   WSearchLineEdit:focus {
+    border: 2px solid #ff6600;
+    color: #eeeeee;
     padding: 2px;
-    border: 2px solid #FF6600;
-    color: #eeeeee;	/* grey	*/
-    }
+  }
+  /* Clear button next to text field */
+  WSearchLineEdit QToolButton {
+    margin-bottom: 4px;
+  }
 
 QLabel,
 QRadioButton {	/*

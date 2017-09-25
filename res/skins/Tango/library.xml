@@ -36,6 +36,15 @@ Description:
             <Size>159min,74me</Size>
             <Children>
               <Template src="skin:preview_deck.xml"/>
+
+              <WidgetGroup>
+                <Size>1me,4f</Size>
+                <Connection>
+                  <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
               <Splitter><!-- Splitter to make CoverArt resizeable -->
                 <ObjectName>LibrarySplitter</ObjectName>
                 <SizePolicy>me,me</SizePolicy>
@@ -44,14 +53,6 @@ Description:
                 <Orientation>vertical</Orientation>
                 <Collapsible>0,0</Collapsible>
                 <Children>
-                  <CoverArt>
-                    <Size>30min,30min</Size>
-                    <Connection>
-                      <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </CoverArt>
-
                   <WidgetGroup><!-- Preview Deck, Search, Tree View -->
                     <Layout>vertical</Layout>
                     <SizePolicy>me,min</SizePolicy>
@@ -91,6 +92,15 @@ Description:
 
                     </Children>
                   </WidgetGroup><!-- /Preview Deck, Search, Tree View -->
+
+                  <CoverArt>
+                    <Size>30min,30min</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </CoverArt>
+
                 </Children>
               </Splitter><!-- /Splitter to make CoverArt resizeable -->
             </Children>

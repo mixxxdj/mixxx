@@ -17,7 +17,7 @@ Variables:
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>DeckOverview</ObjectName>
+    <ObjectName>Spacer0f</ObjectName>
     <Layout>stacked</Layout>
     <SizePolicy>me,f</SizePolicy>
     <Children>

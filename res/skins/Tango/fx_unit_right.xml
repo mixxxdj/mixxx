@@ -200,7 +200,7 @@ Variables:
             <SizePolicy>min,min</SizePolicy>
             <Children>
               <WidgetGroup><!-- EffectSlot 1 -->
-                <ObjectName>FxUnderlay_maxi_right_focus1</ObjectName>
+                <ObjectName>FxFlowUnderlay_right_focus1</ObjectName>
                 <Size>1me,53f</Size>
                 <Connection>
                   <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
@@ -210,7 +210,7 @@ Variables:
               </WidgetGroup>
 
               <WidgetGroup><!-- EffectSlot 2 -->
-                <ObjectName>FxUnderlay_maxi_right_focus2</ObjectName>
+                <ObjectName>FxFlowUnderlay_right_focus2</ObjectName>
                 <Size>1me,99f</Size>
                 <Connection>
                   <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
@@ -220,7 +220,7 @@ Variables:
               </WidgetGroup>
 
               <WidgetGroup><!-- EffectSlot 3 -->
-                <ObjectName>FxUnderlay_maxi_right_focus3</ObjectName>
+                <ObjectName>FxFlowUnderlay_right_focus3</ObjectName>
                 <Size>1me,137f</Size>
                 <Connection>
                   <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
@@ -295,17 +295,17 @@ Variables:
             <SizePolicy>min,min</SizePolicy>
             <Children>
               <WidgetGroup><!-- EffectSlot 1 -->
-                <ObjectName>FxUnderlay_maxi_right_noFocus1</ObjectName>
+                <ObjectName>FxFlowUnderlay_right_noFocus1</ObjectName>
                 <Size>1me,53f</Size>
               </WidgetGroup>
 
               <WidgetGroup><!-- EffectSlot 2 -->
-                <ObjectName>FxUnderlay_maxi_right_noFocus2</ObjectName>
+                <ObjectName>FxFlowUnderlay_right_noFocus2</ObjectName>
                 <Size>1me,99f</Size>
               </WidgetGroup>
 
               <WidgetGroup><!-- EffectSlot 3 -->
-                <ObjectName>FxUnderlay_maxi_right_noFocus3</ObjectName>
+                <ObjectName>FxFlowUnderlay_right_noFocus3</ObjectName>
                 <Size>1me,137f</Size>
               </WidgetGroup>
             </Children>

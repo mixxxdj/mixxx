@@ -7,7 +7,7 @@ Variables:
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>LoopBeatJumpContainer_Right</ObjectName>
+    <ObjectName>LoopControlsRight</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>

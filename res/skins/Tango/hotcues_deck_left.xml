@@ -30,19 +30,19 @@ Description:
             <MaximumSize>96,24</MaximumSize>
             <SizePolicy>me,f</SizePolicy>
             <Children>
-                <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
               <Template src="skin:button_hotcue_deck.xml">
                 <SetVariable name="HotCue">1</SetVariable>
               </Template>
-                <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
               <Template src="skin:button_hotcue_deck.xml">
                 <SetVariable name="HotCue">2</SetVariable>
               </Template>
-                <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
               <Template src="skin:button_hotcue_deck.xml">
                 <SetVariable name="HotCue">3</SetVariable>
               </Template>
-                <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
               <Template src="skin:button_hotcue_deck.xml">
                 <SetVariable name="HotCue">4</SetVariable>
               </Template>
@@ -61,35 +61,35 @@ Description:
             <MaximumSize>192,24</MaximumSize>
             <SizePolicy>me,f</SizePolicy>
             <Children>
-                <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
               <Template src="skin:button_hotcue_deck.xml">
                 <SetVariable name="HotCue">1</SetVariable>
               </Template>
-                <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
               <Template src="skin:button_hotcue_deck.xml">
                 <SetVariable name="HotCue">2</SetVariable>
               </Template>
-                <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
               <Template src="skin:button_hotcue_deck.xml">
                 <SetVariable name="HotCue">3</SetVariable>
               </Template>
-                <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
               <Template src="skin:button_hotcue_deck.xml">
                 <SetVariable name="HotCue">4</SetVariable>
               </Template>
-                <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
               <Template src="skin:button_hotcue_deck.xml">
                 <SetVariable name="HotCue">5</SetVariable>
               </Template>
-                <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
               <Template src="skin:button_hotcue_deck.xml">
                 <SetVariable name="HotCue">6</SetVariable>
               </Template>
-                <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
               <Template src="skin:button_hotcue_deck.xml">
                 <SetVariable name="HotCue">7</SetVariable>
               </Template>
-                <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
               <Template src="skin:button_hotcue_deck.xml">
                 <SetVariable name="HotCue">8</SetVariable>
               </Template>

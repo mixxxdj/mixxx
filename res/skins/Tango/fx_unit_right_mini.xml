@@ -167,17 +167,17 @@ Variables:
             <SizePolicy>min,min</SizePolicy>
             <Children>
               <WidgetGroup><!-- EffectSlot 1 -->
-                <ObjectName>FxUnderlay_mini_noFocus1</ObjectName>
+                <ObjectName>FxFlowUnderlay_mini_noFocus1</ObjectName>
                 <Size>120f,30f</Size>
               </WidgetGroup>
 
               <WidgetGroup><!-- EffectSlot 2 -->
-                <ObjectName>FxUnderlay_mini_noFocus2</ObjectName>
+                <ObjectName>FxFlowUnderlay_mini_noFocus2</ObjectName>
                 <Size>240f,30f</Size>
               </WidgetGroup>
 
               <WidgetGroup><!-- EffectSlot 3 -->
-                <ObjectName>FxUnderlay_mini_noFocus3</ObjectName>
+                <ObjectName>FxFlowUnderlay_mini_noFocus3</ObjectName>
                 <Size>360f,30f</Size>
               </WidgetGroup>
             </Children>
@@ -239,7 +239,7 @@ Variables:
             <SizePolicy>min,min</SizePolicy>
             <Children>
               <WidgetGroup><!-- EffectSlot 1 -->
-                <ObjectName>FxUnderlay_mini_focus1</ObjectName>
+                <ObjectName>FxFlowUnderlay_mini_focus1</ObjectName>
                 <Size>134f,30f</Size>
                 <Connection>
                   <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
@@ -249,7 +249,7 @@ Variables:
               </WidgetGroup>
 
               <WidgetGroup><!-- EffectSlot 2 -->
-                <ObjectName>FxUnderlay_mini_focus2</ObjectName>
+                <ObjectName>FxFlowUnderlay_mini_focus2</ObjectName>
                 <Size>268f,30f</Size>
                 <Connection>
                   <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
@@ -259,7 +259,7 @@ Variables:
               </WidgetGroup>
 
               <WidgetGroup><!-- EffectSlot 3 -->
-                <ObjectName>FxUnderlay_mini_focus3</ObjectName>
+                <ObjectName>FxFlowUnderlay_mini_focus3</ObjectName>
                 <Size>402f,30f</Size>
                 <Connection>
                   <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>

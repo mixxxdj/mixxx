@@ -430,7 +430,7 @@
                       </Connection>
                     </WidgetGroup><!-- /Decks + 4 FX Units -->
 
-                    <Template src="skin:sample_decks.xml"/>
+                    <!--Template src="skin:sample_decks.xml"/-->
 
                     <SingletonContainer>
                       <ObjectName>Library_Singleton</ObjectName>

@@ -7,13 +7,10 @@ Variables:
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>VUMeterFloating</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>min,me</SizePolicy>
     <Children>
-      
       <WidgetGroup><!-- Left VU -->
-        <ObjectName>VUMeter</ObjectName>
         <Layout>stacked</Layout>
         <Size>4f,1me</Size>
         <Children>
@@ -41,7 +38,6 @@ Variables:
       </WidgetGroup><!-- /Left VU -->
       
       <WidgetGroup><!-- Right VU -->
-        <ObjectName>VUMeter</ObjectName>
         <Layout>stacked</Layout>
         <Size>4f,1me</Size>
         <Children>
@@ -67,7 +63,6 @@ Variables:
           </VuMeter>
         </Children>
       </WidgetGroup><!-- /Right VU -->
-      
     </Children>
     <Connection>
       <ConfigKey persist="true">[Tango],vumeter</ConfigKey>

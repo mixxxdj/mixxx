@@ -81,13 +81,11 @@ Variables:
       </Visual>
 
       <WidgetGroup><!-- Container for beatgrid buttons -->
-        <ObjectName>BeatgridButtonBox</ObjectName>
+        <ObjectName>Spacer0f</ObjectName>
         <Layout>horizontal</Layout>
         <Size>75f,50me</Size>
         <Children>
-
             <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-
           <WidgetGroup>
             <Layout>vertical</Layout>
             <SizePolicy>f,f</SizePolicy>
@@ -103,10 +101,7 @@ Variables:
               </Template>
             </Children>
           </WidgetGroup>
-
-
             <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-
           <WidgetGroup>
             <Layout>vertical</Layout>
             <SizePolicy>f,f</SizePolicy>
@@ -131,9 +126,7 @@ Variables:
               </Template>
             </Children>
           </WidgetGroup>
-
             <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-
           <WidgetGroup><!-- beats slower & faster -->
             <Layout>vertical</Layout>
             <SizePolicy>f,f</SizePolicy>
@@ -158,14 +151,12 @@ Variables:
               </Template>
             </Children>
           </WidgetGroup>
-
         </Children>
         <Connection>
           <ConfigKey persist="true">[Tango],beatgrid_buttons</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /Container for beatgrid buttons -->
-
     </Children>
   </WidgetGroup>
 </Template>

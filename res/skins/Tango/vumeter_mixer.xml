@@ -12,19 +12,18 @@ Variables:
     <Size>12me,1me</Size>
     <Children>
       <WidgetGroup><!-- Left -->
-        <ObjectName>VUMeter</ObjectName>
         <Layout>stacked</Layout>
         <Size>4f,1me</Size>
         <Children>
-          <StatusLight><!-- Clipping -->
+          <StatusLight>
             <TooltiId>channel_VuMeter</TooltiId>
             <PathStatusLight>skin:/graphics/vumeter_mixer_clipping_over.png</PathStatusLight>
             <PathBack>skin:/graphics/vumeter_mixer_clipping.png</PathBack>
             <Connection>
               <ConfigKey><Variable name="group"/>,PeakIndicatorL</ConfigKey>
             </Connection>
-          </StatusLight><!-- /Clipping -->
-          <VuMeter><!-- Level -->
+          </StatusLight>
+          <VuMeter>
             <PathVu>skin:/graphics/vumeter_mixer_over.png</PathVu>
             <PathBack>skin:/graphics/vumeter_mixer.png</PathBack>
             <Horizontal>false</Horizontal>
@@ -35,23 +34,23 @@ Variables:
             <Connection>
               <ConfigKey><Variable name="group"/>,VuMeterL</ConfigKey>
             </Connection>
-          </VuMeter><!-- /Level -->
+          </VuMeter>
         </Children>
       </WidgetGroup><!-- /Left -->
+
       <WidgetGroup><!-- Right -->
-        <ObjectName>VUMeter</ObjectName>
         <Layout>stacked</Layout>
         <Size>4f,1me</Size>
         <Children>
-          <StatusLight><!-- Clipping -->
+          <StatusLight>
             <TooltiId>channel_VuMeter</TooltiId>
             <PathStatusLight>skin:/graphics/vumeter_mixer_clipping_over.png</PathStatusLight>
             <PathBack>skin:/graphics/vumeter_mixer_clipping.png</PathBack>
             <Connection>
               <ConfigKey><Variable name="group"/>,PeakIndicatorR</ConfigKey>
             </Connection>
-          </StatusLight><!-- /Clipping -->
-          <VuMeter><!-- Level -->
+          </StatusLight>
+          <VuMeter>
             <PathVu>skin:/graphics/vumeter_mixer_over.png</PathVu>
             <PathBack>skin:/graphics/vumeter_mixer.png</PathBack>
             <Horizontal>false</Horizontal>
@@ -62,7 +61,7 @@ Variables:
             <Connection>
               <ConfigKey><Variable name="group"/>,VuMeterR</ConfigKey>
             </Connection>
-          </VuMeter><!-- /Level -->
+          </VuMeter>
         </Children>
       </WidgetGroup><!-- /Right -->
     </Children>
