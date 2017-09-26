@@ -36,6 +36,17 @@ EffectManifest PhaserEffect::getManifest() {
     period->setMaximum(4.0);
     period->setDefault(0.5);
 
+    EffectManifestParameter* fb = manifest.addParameter();
+    fb->setId("feedback");
+    fb->setName(QObject::tr("Feedback"));
+    fb->setDescription(QObject::tr("Controls how much of the output signal is looped"));
+    fb->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    fb->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    fb->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    fb->setMinimum(-1.0);
+    fb->setMaximum(1.0);
+    fb->setDefault(0.0);
+
     EffectManifestParameter* range = manifest.addParameter();
     range->setId("range");
     range->setName(QObject::tr("Range"));
@@ -57,17 +68,6 @@ EffectManifest PhaserEffect::getManifest() {
     stages->setMinimum(1.0);
     stages->setMaximum(6.0);
     stages->setDefault(3.5);
-
-    EffectManifestParameter* fb = manifest.addParameter();
-    fb->setId("feedback");
-    fb->setName(QObject::tr("Feedback"));
-    fb->setDescription(QObject::tr("Controls how much of the output signal is looped"));
-    fb->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
-    fb->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    fb->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    fb->setMinimum(-0.95);
-    fb->setMaximum(0.95);
-    fb->setDefault(0.0);
 
     EffectManifestParameter* depth = manifest.addParameter();
     depth->setId("depth");
