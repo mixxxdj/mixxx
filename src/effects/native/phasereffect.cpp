@@ -84,7 +84,7 @@ EffectManifest PhaserEffect::getManifest() {
     EffectManifestParameter* triplet = manifest.addParameter();
     triplet->setId("triplet");
     triplet->setName("Triplets");
-    triplet->setDescription("When the Quantize parameter is enabled, divide rounded 1/4 beats of Period parameter by 3.");
+    triplet->setDescription("Divide rounded 1/2 beats of the Period parameter by 3.");
     triplet->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
