@@ -30,6 +30,10 @@ class EffectSlot : public QObject {
     // returns a null EffectPointer.
     EffectPointer getEffect() const;
 
+    inline bool getEnableState() const {
+        return m_pControlEnabled->toBool();
+    }
+
     inline int getEffectSlotNumber() const {
         return m_iEffectNumber;
     }
