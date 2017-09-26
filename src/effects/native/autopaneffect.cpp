@@ -71,24 +71,11 @@ EffectManifest AutoPanEffect::getManifest() {
     width->setMaximum(1.0);    // 0.02 * sampleRate => 20ms
     width->setDefault(0.5);
 
-    // Period unit
-    EffectManifestParameter* periodUnit = manifest.addParameter();
-    periodUnit->setId("periodUnit");
-    periodUnit->setName(QObject::tr("Sync"));
-    periodUnit->setDescription(QObject::tr("Synchronizes the period with the BPM if it can be retrieved"));
-    periodUnit->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
-    periodUnit->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    periodUnit->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    periodUnit->setDefault(1);
-    periodUnit->setMinimum(0);
-    periodUnit->setMaximum(1);
-
     return manifest;
 }
 
 AutoPanEffect::AutoPanEffect(EngineEffect* pEffect, const EffectManifest& manifest)
         : m_pSmoothingParameter(pEffect->getParameterById("smoothing")),
-          m_pSyncParameter(pEffect->getParameterById("periodUnit")),
           m_pPeriodParameter(pEffect->getParameterById("period")),
           m_pWidthParameter(pEffect->getParameterById("width")) {
     Q_UNUSED(manifest);
@@ -114,7 +101,7 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, AutoPanGroupStat
     double period = m_pPeriodParameter->value();
     double smoothing = 0.5-m_pSmoothingParameter->value();
 
-    if (m_pSyncParameter->toBool() && groupFeatures.has_beat_length_sec) {
+    if (groupFeatures.has_beat_length_sec) {
         // period is a number of beats
         double beats = std::max(roundToFraction(period, 2), 0.25);
         // NOTE: Assuming engine is working in stereo.
