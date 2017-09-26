@@ -65,6 +65,13 @@ inline int roundUpToPowerOf2(int v) {
     return power;
 }
 
+inline double roundToFraction(double value, int denominator) {
+    int wholePart = value;
+    double fractionPart = value - wholePart;
+    int numerator = std::lround(fractionPart * denominator);
+    return wholePart + (double) numerator / (double) denominator;
+}
+
 template <typename T>
 inline const T ratio2db(const T a) {
     return log10(a) * 20;

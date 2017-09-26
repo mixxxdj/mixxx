@@ -127,6 +127,25 @@ script.toggleControl = function (group, control) {
 }
 
 /* -------- ------------------------------------------------------
+     script.toggleControl
+   Purpose: Triggers an engine value and resets it back to 0 after a delay
+            This is helpful for mapping encoder turns to controls that are
+            represented by buttons in skins so the skin button lights up
+            briefly but does not stay lit.
+   Input:   Group and control names, delay in milliseconds (optional)
+   Output:  none
+   -------- ------------------------------------------------------ */
+script.triggerControl = function (group, control, delay) {
+    if (typeof delay !== 'number') {
+        delay = 200;
+    }
+    engine.setValue(group, control, 1);
+    engine.beginTimer(delay, function () {
+        engine.setValue(group, control, 0);
+    }, true);
+}
+
+/* -------- ------------------------------------------------------
      script.absoluteLin
    Purpose: Maps an absolute linear control value to a linear Mixxx control
             value (like Volume: 0..1)
