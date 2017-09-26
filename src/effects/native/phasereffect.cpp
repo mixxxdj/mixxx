@@ -27,8 +27,8 @@ EffectManifest PhaserEffect::getManifest() {
     period->setId("lfo_period");
     period->setName(QObject::tr("Period"));
     period->setDescription(QObject::tr("Controls the period of the LFO (low frequency oscillator)\n"
-        "1/4 - 4 beats if sync parameter is enabled and tempo is detected (decks and samplers) \n"
-        "1/4 - 4 seconds if sync parameter is disabled or no tempo is detected (mic & aux inputs, master mix)"));
+        "1/4 - 4 beats rounded to 1/2 beats if tempo is detected (decks and samplers) \n"
+        "1/4 - 4 seconds if no tempo is detected (mic & aux inputs, master mix)"));
     period->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
@@ -81,6 +81,17 @@ EffectManifest PhaserEffect::getManifest() {
     depth->setMaximum(1.0);
     depth->setDefault(0.5);
 
+    EffectManifestParameter* triplet = manifest.addParameter();
+    triplet->setId("triplet");
+    triplet->setName("Triplets");
+    triplet->setDescription("When the Quantize parameter is enabled, divide rounded 1/4 beats of Period parameter by 3.");
+    triplet->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
+    triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    triplet->setDefault(0);
+    triplet->setMinimum(0);
+    triplet->setMaximum(1);
+
     EffectManifestParameter* stereo = manifest.addParameter();
     stereo->setId("stereo");
     stereo->setName(QObject::tr("Stereo"));
@@ -102,6 +113,7 @@ PhaserEffect::PhaserEffect(EngineEffect* pEffect,
           m_pDepthParameter(pEffect->getParameterById("depth")),
           m_pFeedbackParameter(pEffect->getParameterById("feedback")),
           m_pRangeParameter(pEffect->getParameterById("range")),
+          m_pTripletParameter(pEffect->getParameterById("triplet")),
           m_pStereoParameter(pEffect->getParameterById("stereo")) {
     Q_UNUSED(manifest);
 }
@@ -131,15 +143,20 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
         depth = m_pDepthParameter->value();
     }
 
-    CSAMPLE period = std::max(m_pLFOPeriodParameter->value(), 0.05);
+    double period = m_pLFOPeriodParameter->value();
     if (groupFeatures.has_beat_length_sec) {
-        // Period is a number of beats
-        period = std::max(roundToFraction(period, 2.0), 0.25)
-                * groupFeatures.beat_length_sec * kChannels * sampleRate;
+        // period is a number of beats
+        period = std::max(roundToFraction(period, 2.0), 1/4.0);
+        if (m_pTripletParameter->toBool()) {
+            period /= 3.0;
+        }
+        period = period * groupFeatures.beat_length_sec
+                * sampleRate * kChannels;
     } else {
-        // Period is a number of seconds
-        period = std::max(period, 0.25f) * sampleRate * kChannels;
+        // period is a number of seconds
+        period = std::max(period, 1/4.0) * sampleRate * kChannels;
     }
+
     CSAMPLE feedback = m_pFeedbackParameter->value();
     CSAMPLE range = m_pRangeParameter->value();
     int stages = 2 * m_pStagesParameter->value();

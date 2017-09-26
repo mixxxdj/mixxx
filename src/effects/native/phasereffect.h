@@ -65,6 +65,7 @@ class PhaserEffect : public PerChannelEffectProcessor<PhaserGroupState> {
     EngineEffectParameter* m_pDepthParameter;
     EngineEffectParameter* m_pFeedbackParameter;
     EngineEffectParameter* m_pRangeParameter;
+    EngineEffectParameter* m_pTripletParameter;
     EngineEffectParameter* m_pStereoParameter;
 
     //Passing the sample through a series of allpass filters
