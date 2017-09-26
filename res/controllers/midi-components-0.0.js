@@ -123,7 +123,7 @@
                 undefined !== this.outKey &&
                 undefined !== this.output &&
                 typeof this.output === 'function') {
-                this.connections[0] = engine.connectControl(this.group, this.outKey, this.output);
+                this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output);
             }
         },
         disconnect: function () {
@@ -364,9 +364,9 @@
             }
         },
         connect: function() {
-            this.connections[0] = engine.connectControl(this.group, 'track_loaded', this.output);
+            this.connections[0] = engine.makeConnection(this.group, 'track_loaded', this.output);
             if (this.playing !== undefined) {
-                this.connections[1] = engine.connectControl(this.group, 'play', this.output);
+                this.connections[1] = engine.makeConnection(this.group, 'play', this.output);
             }
             if (this.looping !== undefined) {
                 this.connections[2] = engine.connectControl(this.group, 'repeat', this.output);
@@ -655,7 +655,7 @@
                 // setting show_focus when effectFocusButton is pressed so
                 // show_focus is always in the correct state, even if the user
                 // presses the skin button for show_parameters.
-                this.showParametersConnection = engine.connectControl(this.group,
+                this.showParametersConnection = engine.makeConnection(this.group,
                                                     'show_parameters',
                                                     this.onShowParametersChange);
                 this.showParametersConnection.trigger();
@@ -798,7 +798,7 @@
             },
             outKey: "focused_effect",
             connect: function () {
-                this.connections[0] = engine.connectControl(eu.group, "focused_effect",
+                this.connections[0] = engine.makeConnection(eu.group, "focused_effect",
                                                             this.onFocusChange);
             },
             disconnect: function () {
