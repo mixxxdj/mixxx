@@ -32,7 +32,7 @@ Variables:
             <Size>50f,24f</Size>
             <Children>
               <!-- Block Play button if passthrough is active,
-                  show speaker icon isntead -->
+                  show speaker icon instead -->
               <WidgetGroup>
                 <ObjectName>PassthroughPlayCover</ObjectName>
                 <Layout>vertical</Layout>
@@ -84,7 +84,7 @@ Variables:
                 <Size>50f,24f</Size>
                 <Children>
                   <!-- Block Play button if passthrough is active,
-                      show speaker icon isntead -->
+                      show speaker icon instead -->
                   <WidgetGroup>
                     <ObjectName>PassthroughPlayCover</ObjectName>
                     <Layout>vertical</Layout>

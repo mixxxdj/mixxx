@@ -29,7 +29,7 @@ Variables:
         <Size>80f,24f</Size>
         <Children>
 
-          <Template src="skin:button_2state_persist.xml">
+          <Template src="skin:button_2state.xml">
             <SetVariable name="TooltipId">vinylcontrol_enabled</SetVariable>
             <SetVariable name="ObjectName">VinylButton</SetVariable>
             <SetVariable name="Size">40f,24f</SetVariable>
@@ -38,7 +38,7 @@ Variables:
             <SetVariable name="ConfigKey"><Variable name="group"/>,vinylcontrol_enabled</SetVariable>
           </Template>
 
-          <Template src="skin:button_2state_persist.xml">
+          <Template src="skin:button_2state.xml">
             <SetVariable name="TooltipId">passthrough_enabled</SetVariable>
             <SetVariable name="ObjectName">PassthroughButton</SetVariable>
             <SetVariable name="Size">40f,24f</SetVariable>

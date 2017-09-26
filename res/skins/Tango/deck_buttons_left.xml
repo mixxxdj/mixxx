@@ -346,8 +346,11 @@ Variables:
         <Layout>stacked</Layout>
         <Size>50f,24f</Size>
         <Children>
+          <!-- index 0 due to bug -->
+          <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
           <!-- Block Play button if passthrough is active,
-              show speaker icon isntead -->
+              show speaker icon instead -->
           <WidgetGroup>
             <ObjectName>PassthroughPlayCover</ObjectName>
             <Layout>vertical</Layout>
@@ -410,8 +413,10 @@ Variables:
             <Layout>stacked</Layout>
             <Size>50f,24f</Size>
             <Children>
+              <!-- index 0 due to bug -->
+              <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
               <!-- Block Play button if passthrough is active,
-                  show speaker icon isntead -->
+                  show speaker icon instead -->
               <WidgetGroup>
                 <ObjectName>PassthroughPlayCover</ObjectName>
                 <Layout>vertical</Layout>

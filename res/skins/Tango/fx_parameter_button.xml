@@ -16,18 +16,18 @@ Variables:
   <SetVariable name="FxGroup_FxNum">[<Variable name="FxGroup"/>_Effect<Variable name="FxNum"/>]</SetVariable>
   <WidgetGroup>
     <Layout>stacked</Layout>
-    <ObjectName>FxButtonParameter</ObjectName>
+    <ObjectName>FxParameterButton</ObjectName>
   <!-- working around disrespected AlignVCenter when Connection is applied. -->
     <Size>52f,26f</Size>
     <Children>
       <!-- Actual button, invisible except hover border -->
       <Template src="skin:fx_button.xml">
-        <SetVariable name="ObjectName">FxButtonParameterOverlay</SetVariable>
+        <SetVariable name="ObjectName">FxParameterButtonOverlay</SetVariable>
         <SetVariable name="Size">51f,18f</SetVariable>
         <SetVariable name="parameter">button_parameter<Variable name="parameter"/></SetVariable>
       </Template>
 
-      <!-- Name of effect parameter -->
+      <!-- Name of effect parameter when inactive-->
       <WidgetGroup>
         <Size>51f,18f</Size>
         <Layout>horizontal</Layout>
@@ -35,7 +35,7 @@ Variables:
           <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
           <EffectButtonParameterName>
             <SizePolicy>min,me</SizePolicy>
-            <ObjectName>FxButtonParameterName</ObjectName>
+            <ObjectName>FxParameterButtonName_0</ObjectName>
             <EffectRack><Variable name="FxRackNum"/></EffectRack>
             <EffectUnit><Variable name="FxUnitNum"/></EffectUnit>
             <Effect><Variable name="FxNum"/></Effect>
@@ -44,11 +44,40 @@ Variables:
           </EffectButtonParameterName>
           <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
         </Children>
+        <Connection>
+          <ConfigKey><Variable name="FxGroup_FxNum"/>,button_parameter<Variable name="parameter"/></ConfigKey>
+          <Transform><IsEqual>0</IsEqual></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <!-- Name of effect parameter when active-->
+      <WidgetGroup>
+        <Size>51f,18f</Size>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+          <EffectButtonParameterName>
+            <SizePolicy>min,me</SizePolicy>
+            <ObjectName>FxParameterButtonName_1</ObjectName>
+            <EffectRack><Variable name="FxRackNum"/></EffectRack>
+            <EffectUnit><Variable name="FxUnitNum"/></EffectUnit>
+            <Effect><Variable name="FxNum"/></Effect>
+            <EffectButtonParameter><Variable name="parameter"/></EffectButtonParameter>
+            <Alignment>center</Alignment>
+          </EffectButtonParameterName>
+          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey><Variable name="FxGroup_FxNum"/>,button_parameter<Variable name="parameter"/></ConfigKey>
+          <Transform><IsEqual>1</IsEqual></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
       </WidgetGroup>
 
       <!-- Button to indicate parameter state -->
       <Template src="skin:fx_button.xml">
-        <SetVariable name="ObjectName">FxButtonParameterUnderlay</SetVariable>
+        <SetVariable name="ObjectName">FxParameterButtonUnderlay</SetVariable>
         <SetVariable name="Size">51f,18f</SetVariable>
         <SetVariable name="parameter">button_parameter<Variable name="parameter"/></SetVariable>
       </Template>

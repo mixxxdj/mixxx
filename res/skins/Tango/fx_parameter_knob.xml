@@ -20,7 +20,7 @@ Variables:
         <Children>
 
           <WidgetGroup><!-- Effect parameter knob -->
-            <ObjectName>FxKnobParameter</ObjectName>
+            <ObjectName>FxParameterknob</ObjectName>
             <Layout>vertical</Layout>
             <Size>51f,26f</Size>
             <Children>
@@ -43,7 +43,7 @@ Variables:
               <!-- To keep text centered it's in an container with spacer on the left/right -->
               <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
               <EffectParameterName>
-                <ObjectName>FxKnobParameterName</ObjectName>
+                <ObjectName>FxParameterKnobName</ObjectName>
                 <Size>-1min,34f</Size>
                 <EffectRack><Variable name="FxRackNum"/></EffectRack>
                 <EffectUnit><Variable name="FxUnitNum"/></EffectUnit>

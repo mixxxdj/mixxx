@@ -1270,11 +1270,11 @@ WBeatSpinBox {
       background-color: transparent;
     }
 
-#FxKnobParameter {
+#FxParameterKnob {
   qproperty-layoutAlignment: 'AlignCenter';
   margin-right: 1px;
   }
-  #FxKnobParameterName {
+  #FxParameterKnobName {
     qproperty-alignment: 'AlignLeft | AlignTop';
     font-size: 10px/10px;
     font-weight: bold;
@@ -1282,25 +1282,31 @@ WBeatSpinBox {
     margin-top: 19px;
   }
 
-#FxButtonParameter {
+#FxParameterButton {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
   margin-right: 1px;
   }
-  #FxButtonParameterOverlay:hover {
+  #FxParameterButtonOverlay:hover {
     border: 1px solid #eeeeee;
     }
-  #FxButtonParameterUnderlay[displayValue="0"] {
+  #FxParameterButtonUnderlay[displayValue="0"] {
     background-color: #4b4b4b;
     }
-  #FxButtonParameterUnderlay[displayValue="1"] {
+  #FxParameterButtonUnderlay[displayValue="1"] {
     background-color: #006596;
     }
-  #FxButtonParameterName {
+  #FxParameterButtonName_0,
+  #FxParameterButtonName_1 {
     font-size: 10px/10px;
     font-weight: bold;
-    color: #999999;
     qproperty-alignment: 'AlignLeft | AlignVCenter';
     margin-left: 1px;
+    }
+    #FxParameterButtonName_0 {
+      color: #aaaaaa;
+    }
+    #FxParameterButtonName_1 {
+      color: #eeeeee;
     }
 
 #FxSuperLinkButton[value="0"],
