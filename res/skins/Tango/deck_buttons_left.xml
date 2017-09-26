@@ -303,7 +303,9 @@ Variables:
             </Connection>
           </WidgetGroup><!-- /Expandable Deck controls -->
 
-          <WidgetGroup><!-- Stars -->
+          <!-- Stars -->
+          <!-- visibility controlled by SizeAwareStack in size_detector_stars.xml -->
+          <WidgetGroup>
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
@@ -311,14 +313,12 @@ Variables:
                 <Size>84f,22f</Size>
                 <Layout>horizontal</Layout>
                 <Children>
-
                   <StarRating>
                     <ObjectName>DeckStars</ObjectName>
                     <Size>83min,22f</Size>
                     <TooltipId>starrating</TooltipId>
                     <Channel><Variable name="chanNum"/></Channel>
                   </StarRating>
-
                   <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
                 </Children>
                 <Connection>
@@ -327,7 +327,6 @@ Variables:
                 </Connection>
               </WidgetGroup>
             </Children>
-            <!-- visibilty controlled by SizeAwareStack in size_detector_stars.xml -->
             <Connection>
               <ConfigKey>[Tango],stars_fit</ConfigKey>
               <BindProperty>visible</BindProperty>

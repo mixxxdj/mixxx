@@ -1286,15 +1286,19 @@ WBeatSpinBox {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
   margin-right: 1px;
   }
-  #FxParameterButtonOverlay:hover {
+  #FxParameterButtonOverlay[displayValue="0"]:hover {
+    border: 1px solid #888888;
+  }
+  #FxParameterButtonOverlay[displayValue="1"]:hover {
     border: 1px solid #eeeeee;
-    }
+  }
+
   #FxParameterButtonUnderlay[displayValue="0"] {
     background-color: #4b4b4b;
-    }
+  }
   #FxParameterButtonUnderlay[displayValue="1"] {
     background-color: #006596;
-    }
+  }
   #FxParameterButtonName_0,
   #FxParameterButtonName_1 {
     font-size: 10px/10px;
@@ -1646,7 +1650,7 @@ qproperty-layoutAlignment: 'AlignRight | AlignBottom';
   qproperty-layoutAlignment: 'AlignVCenter';
 }
 #AlignCenter {
-  qproperty-layoutAlignment: 'AlignCenter';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
 }
 
 #Spacer0f {
