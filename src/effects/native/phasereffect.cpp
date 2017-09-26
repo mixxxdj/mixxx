@@ -44,8 +44,8 @@ EffectManifest PhaserEffect::getManifest() {
     range->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     range->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     range->setMinimum(0.05);
-    range->setMaximum(0.95);
-    range->setDefault(0.05);
+    range->setMaximum(1.0);
+    range->setDefault(1.0);
 
     EffectManifestParameter* stages = manifest.addParameter();
     stages->setId("stages");
