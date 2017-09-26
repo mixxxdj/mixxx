@@ -1974,8 +1974,9 @@ QPushButton {
     height: 12px;
     background: transparent;
     border: 0px;
+    margin: 0px;
+    padding: 0px;
     }
-
     QPushButton#LibraryPreviewButton:!checked{
       image: url(skin:/graphics/library_preview_play.png);
       }
