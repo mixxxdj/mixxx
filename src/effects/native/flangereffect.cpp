@@ -28,8 +28,8 @@ EffectManifest FlangerEffect::getManifest() {
     period->setId("period");
     period->setName(QObject::tr("Period"));
     period->setDescription(QObject::tr("Controls the period of the LFO (low frequency oscillator)\n"
-        "1/4 - 4 beats rounded to 1/2 beat if sync parameter is enabled and tempo is detected (decks and samplers) \n"
-        "0.05 - 4 seconds if sync parameter is disabled or no tempo is detected (mic & aux inputs, master mix)"));
+        "1/4 - 4 beats rounded to 1/2 beat if tempo is detected (decks and samplers) \n"
+        "0.05 - 4 seconds if no tempo is detected (mic & aux inputs, master mix)"));
     period->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
@@ -49,13 +49,25 @@ EffectManifest FlangerEffect::getManifest() {
     depth->setMinimum(0.0);
     depth->setMaximum(1.0);
 
+    EffectManifestParameter* triplet = manifest.addParameter();
+    triplet->setId("triplet");
+    triplet->setName("Triplets");
+    triplet->setDescription("Divide rounded 1/2 beats of the Period parameter by 3.");
+    triplet->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
+    triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    triplet->setDefault(0);
+    triplet->setMinimum(0);
+    triplet->setMaximum(1);
+
     return manifest;
 }
 
 FlangerEffect::FlangerEffect(EngineEffect* pEffect,
                              const EffectManifest& manifest)
         : m_pPeriodParameter(pEffect->getParameterById("period")),
-          m_pDepthParameter(pEffect->getParameterById("depth")) {
+          m_pDepthParameter(pEffect->getParameterById("depth")),
+          m_pTripletParameter(pEffect->getParameterById("triplet")) {
     Q_UNUSED(manifest);
 }
 
@@ -76,14 +88,18 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
     const int kChannels = 2;
 
     // The parameter minimum is zero so the exact center of the knob is 2 beats.
-    CSAMPLE lfoPeriod = m_pPeriodParameter->value();
+    double lfoPeriod = m_pPeriodParameter->value();
     if (groupFeatures.has_beat_length_sec) {
-        // period is a number of beats
-        lfoPeriod = std::max(roundToFraction(lfoPeriod, 2.0), 0.25) *
-            groupFeatures.beat_length_sec * kChannels;
+        // lfoPeriod is a number of beats
+        lfoPeriod = std::max(roundToFraction(lfoPeriod, 2.0), 1/4.0);
+        if (m_pTripletParameter->toBool()) {
+            lfoPeriod /= 3.0;
+        }
+        lfoPeriod = lfoPeriod * groupFeatures.beat_length_sec
+                * sampleRate * kChannels;
     } else {
-        // period is a number of seconds
-        lfoPeriod = std::max(lfoPeriod, 0.05f) * sampleRate * kChannels;
+        // lfoPeriod is a number of seconds
+        lfoPeriod = std::max(lfoPeriod, 1/4.0) * sampleRate * kChannels;
     }
 
     CSAMPLE lfoDepth = m_pDepthParameter->value();
