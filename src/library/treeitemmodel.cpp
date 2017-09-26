@@ -78,7 +78,7 @@ QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
         case AbstractRole::RoleBreadCrumb:
             return getBreadCrumbString(item);
         case AbstractRole::RoleGroupingLetter:
-            return StringHelper::getFirstCharForGrouping(item->getData().toString());
+            return StringHelper::getFirstCharForGrouping(item->getLabel());
     }
 
     return QVariant();
