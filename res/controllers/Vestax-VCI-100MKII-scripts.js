@@ -1,6 +1,6 @@
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2017-9-24
+// description: 2017-9-27
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 // JSHint Configuration
@@ -81,7 +81,7 @@ VCI102.slip = function(value, group, key) {
     if (key == "play" ? value : !value && engine.getValue(group, "play")) {
         if (engine.getValue(group, "slip_enabled")) {
             engine.setValue(group, "slip_enabled", 0);
-            engine.beginTimer(40, function() {
+            engine.beginTimer(60, function() {
                 engine.setValue(group, "slip_enabled", 1);
             }, true);
         }
