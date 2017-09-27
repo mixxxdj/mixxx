@@ -241,7 +241,6 @@ Description:
         <ObjectName>SkinControlsBarRight</ObjectName>
         <SizePolicy>me,min</SizePolicy>
         <Children>
-
           <Template src="skin:button_2state_persist.xml">
             <SetVariable name="ObjectName">LogoMaxi</SetVariable>
             <SetVariable name="Size">81f,20f</SetVariable>
@@ -296,18 +295,37 @@ Description:
             <SetVariable name="ConfigKeyDisp">[Shoutcast],status</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
-          <Time>
-            <TooltipId>time</TooltipId>
-            <ObjectName>Clock</ObjectName>
-            <Size>30min,20f</Size>
-            <ShowSeconds>false</ShowSeconds>
-            <!-- This has no effect, neither has 'text-align' in qss.
-            <Align>center</Align>   -->
-          </Time>
+          <WidgetGroup><!-- Clock + latency display -->
+            <Size>31min,24min</Size>
+            <Layout>vertical</Layout>
+            <Children>
+              <Time>
+                <TooltipId>time</TooltipId>
+                <ObjectName>Clock</ObjectName>
+                <Size>30min,16f</Size>
+                <ShowSeconds>false</ShowSeconds>
+                <!-- This has no effect, neither has 'text-align' in qss.
+                <Align>center</Align>   -->
+              </Time>
+              <VuMeter><!-- latency usage -->
+                <Size>31f,3f</Size>
+                <PathVu>skin:/graphics/latency_usage_over.png</PathVu>
+                <PathBack>skin:/graphics/latency_usage.png</PathBack>
+                <Horizontal>true</Horizontal>
+                <PeakHoldSize>5</PeakHoldSize>
+                <PeakHoldTime>1000</PeakHoldTime>
+                <PeakFallTime>100</PeakFallTime>
+                <PeakFallStep>1</PeakFallStep>
+                <Connection>
+                  <ConfigKey>[Master],audio_latency_usage</ConfigKey>
+                </Connection>
+              </VuMeter><!-- /latency usage -->
+            </Children>
+          </WidgetGroup><!-- Clock + latency display -->
 
-          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state.xml">
             <SetVariable name="ObjectName">SkinSettingsToggler</SetVariable>
