@@ -157,8 +157,8 @@ Description:
                     <SizePolicy>me,me</SizePolicy>
                     <Connection>
                       <ConfigKey persist="true">[Tango],pitch_fader</ConfigKey>
-                      <BindProperty>visible</BindProperty>
                       <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
 
@@ -340,8 +340,8 @@ Description:
                     </Children>
                     <Connection>
                       <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
-                      <BindProperty>visible</BindProperty>
                       <Transform><IsEqual>2</IsEqual><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup><!-- /Show hint when Channel mixer is visible -->
                 </Children>
@@ -364,8 +364,8 @@ Description:
                     <SizePolicy>me,me</SizePolicy>
                     <Connection>
                       <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
-                      <BindProperty>visible</BindProperty>
                       <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
 
@@ -410,7 +410,7 @@ Description:
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
-              <WidgetGroup>
+              <WidgetGroup><!-- Spinny / Cover / Off -->
                 <MinimumSize>182,13</MinimumSize>
                 <MaximumSize>-1,17</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
@@ -424,102 +424,70 @@ Description:
                     <SetVariable name="Setting">[Tango],spinny_cover_none</SetVariable>
                   </Template>
                 </Children>
-              </WidgetGroup>
+              </WidgetGroup><!-- /Spinny / Cover / Off -->
 
-              <WidgetGroup><!-- Spinny/Cover small/BIG without ChannelMixer -->
+              <WidgetGroup><!-- BIG/small Spinny / Cover -->
                 <MinimumSize>182,13</MinimumSize>
                 <MaximumSize>-1,17</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
-                <Layout>horizontal</Layout>
+                <Layout>stacked</Layout>
                 <Children>
-                  <WidgetGroup><Size>14f,1min</Size></WidgetGroup>
-                  <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="state_0_text"> [ ° &#9664;  O ]</SetVariable>
-                    <SetVariable name="state_1_text"> [ °  &#9654; O ]</SetVariable>
-                    <SetVariable name="Setting">[Tango],spinnyCoverBIG</SetVariable>
-                  </Template>
-                </Children>
-                <Connection>
-                  <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
-                  <Transform><Not/></Transform>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup><!-- /Spinny/Cover small/BIG without ChannelMixer -->
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-              <WidgetGroup><!-- Spinny/Cover small/BIG-->
-                <MinimumSize>182,13</MinimumSize>
-                <MaximumSize>-1,17</MaximumSize>
-                <SizePolicy>me,me</SizePolicy>
-                <Layout>horizontal</Layout>
-                <Children>
-                  <WidgetGroup><Size>14f,1min</Size></WidgetGroup>
-                  <PushButton>
-                    <ObjectName>SkinSettingsButton</ObjectName>
-                    <MinimumSize>16,13</MinimumSize>
-                    <MaximumSize>16,17</MaximumSize>
-                    <SizePolicy>f,me</SizePolicy>
-                    <NumberStates>2</NumberStates>
-                    <RightClickIsPushButton>false</RightClickIsPushButton>
-                    <State>
-                      <Number>0</Number>
-                      <Text> [ ° </Text>
-                      <Alignment>left</Alignment>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Text> [ ° </Text>
-                      <Alignment>left</Alignment>
-                    </State>
+                  <WidgetGroup><!-- translucent cover when Spinny/Cover is hidden -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>me,me</SizePolicy>
                     <Connection>
-                      <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
+                      <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
+                      <Transform><IsEqual>2</IsEqual></Transform>
+                      <BindProperty>visible</BindProperty>
                     </Connection>
-                  </PushButton>
-                  <WidgetGroup><!-- disabled BIG cover/spinny with hint -->
-                    <Layout>stacked</Layout>
-                    <MinimumSize>70,13</MinimumSize>
+                  </WidgetGroup>
+
+                  <WidgetGroup><!-- BIG/small Spinny / Cover without ChannelMixer -->
+                    <MinimumSize>182,13</MinimumSize>
                     <MaximumSize>-1,17</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
+                    <Layout>horizontal</Layout>
                     <Children>
-                      <WidgetGroup>
-                        <SizePolicy>me,me</SizePolicy>
-                        <Layout>horizontal</Layout>
-                        <Children>
-                          <Label>
-                            <ObjectName>CoverSpinnyHint</ObjectName>
-                            <MinimumSize>70,13</MinimumSize>
-                            <MaximumSize>-1,13</MaximumSize>
-                            <SizePolicy>me,f</SizePolicy>
-                            <Text>     !</Text>
-                            <Connection>
-                              <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
-                              <BindProperty>visible</BindProperty>
-                            </Connection>
-                          </Label>
-                          <WidgetGroup><SizePolicy>me,me</SizePolicy></WidgetGroup>
-                        </Children>
-                      </WidgetGroup>
-                      <WidgetGroup>
-                        <ObjectName>SubmenuCover</ObjectName>
-                        <MinimumSize>70,13</MinimumSize>
-                        <MaximumSize>-1,17</MaximumSize>
-                        <SizePolicy>me,me</SizePolicy>
-                      </WidgetGroup>
+                      <WidgetGroup><Size>14f,1min</Size></WidgetGroup>
+                      <Template src="skin:skin_settings_button_2state.xml">
+                        <SetVariable name="state_0_text"> [ ° &#9664;  O ]</SetVariable>
+                        <SetVariable name="state_1_text"> [ °  &#9654; O ]</SetVariable>
+                        <SetVariable name="Setting">[Tango],spinnyCoverBIG</SetVariable>
+                      </Template>
+                    </Children>
+                    <Connection>
+                      <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup><!-- /BIG/small Spinny / Cover without ChannelMixer -->
+
+                  <WidgetGroup><!-- BIG/small Spinny / Cover-->
+                    <MinimumSize>182,13</MinimumSize>
+                    <MaximumSize>-1,17</MaximumSize>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <WidgetGroup><Size>14f,1min</Size></WidgetGroup>
                       <PushButton>
                         <ObjectName>SkinSettingsButton</ObjectName>
-                        <MinimumSize>70,13</MinimumSize>
-                        <MaximumSize>-1,17</MaximumSize>
-                        <SizePolicy>me,me</SizePolicy>
+                        <MinimumSize>16,13</MinimumSize>
+                        <MaximumSize>16,17</MaximumSize>
+                        <SizePolicy>f,me</SizePolicy>
                         <NumberStates>2</NumberStates>
                         <RightClickIsPushButton>false</RightClickIsPushButton>
                         <State>
                           <Number>0</Number>
-                          <Text>&#9664;  O ] (automatic)</Text>
+                          <Text> [ ° </Text>
                           <Alignment>left</Alignment>
                         </State>
                         <State>
                           <Number>1</Number>
-                          <Text>&#9664;      ] (automatic)</Text>
+                          <Text> [ ° </Text>
                           <Alignment>left</Alignment>
                         </State>
                         <Connection>
@@ -527,14 +495,68 @@ Description:
                           <ButtonState>LeftButton</ButtonState>
                         </Connection>
                       </PushButton>
+                      <WidgetGroup><!-- disabled BIG cover/spinny with hint -->
+                        <Layout>stacked</Layout>
+                        <MinimumSize>70,13</MinimumSize>
+                        <MaximumSize>-1,17</MaximumSize>
+                        <SizePolicy>me,me</SizePolicy>
+                        <Children>
+                          <WidgetGroup>
+                            <SizePolicy>me,me</SizePolicy>
+                            <Layout>horizontal</Layout>
+                            <Children>
+                              <Label>
+                                <ObjectName>CoverSpinnyHint</ObjectName>
+                                <MinimumSize>70,13</MinimumSize>
+                                <MaximumSize>-1,13</MaximumSize>
+                                <SizePolicy>me,f</SizePolicy>
+                                <Text>     !</Text>
+                                <Connection>
+                                  <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
+                                  <BindProperty>visible</BindProperty>
+                                </Connection>
+                              </Label>
+                              <WidgetGroup><SizePolicy>me,me</SizePolicy></WidgetGroup>
+                            </Children>
+                          </WidgetGroup>
+                          <WidgetGroup>
+                            <ObjectName>SubmenuCover</ObjectName>
+                            <MinimumSize>70,13</MinimumSize>
+                            <MaximumSize>-1,17</MaximumSize>
+                            <SizePolicy>me,me</SizePolicy>
+                          </WidgetGroup>
+                          <PushButton>
+                            <ObjectName>SkinSettingsButton</ObjectName>
+                            <MinimumSize>70,13</MinimumSize>
+                            <MaximumSize>-1,17</MaximumSize>
+                            <SizePolicy>me,me</SizePolicy>
+                            <NumberStates>2</NumberStates>
+                            <RightClickIsPushButton>false</RightClickIsPushButton>
+                            <State>
+                              <Number>0</Number>
+                              <Text>&#9664;  O ] (automatic)</Text>
+                              <Alignment>left</Alignment>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Text>&#9664;      ] (automatic)</Text>
+                              <Alignment>left</Alignment>
+                            </State>
+                            <Connection>
+                              <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
+                              <ButtonState>LeftButton</ButtonState>
+                            </Connection>
+                          </PushButton>
+                        </Children>
+                      </WidgetGroup><!-- /disabled BIG cover/spinny with hint -->
                     </Children>
-                  </WidgetGroup><!-- /disabled BIG cover/spinny with hint -->
+                    <Connection>
+                      <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup><!-- /BIG/small Spinny / Cover without ChannelMixer -->
                 </Children>
-                <Connection>
-                  <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup><!-- /Spinny/Cover small/BIG without ChannelMixer -->
+              </WidgetGroup><!-- /Spinny / Cover / Off -->
 
               <WidgetGroup><!-- Spinny/Cover Cover on Spinny-->
                 <Layout>stacked</Layout>
@@ -551,8 +573,8 @@ Description:
                     <SizePolicy>me,me</SizePolicy>
                     <Connection>
                       <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
-                      <BindProperty>visible</BindProperty>
                       <Transform><IsEqual>0</IsEqual><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
 
