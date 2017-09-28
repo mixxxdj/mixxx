@@ -158,7 +158,7 @@ Description:
             <Children>
 
               <WidgetGroup><!-- Spacer between decks -->
-                <Size>6f,0f</Size>
+                <Size>12f,0f</Size>
               </WidgetGroup>
 
               <WidgetGroup><!-- Pitch fader spacer -->
@@ -174,7 +174,7 @@ Description:
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
                   <WidgetGroup>
-                    <Size>22f,0f</Size>
+                    <Size>26f,0f</Size>
                     <Connection>
                       <ConfigKey>[Tango],vumeter</ConfigKey>
                       <BindProperty>visible</BindProperty>
@@ -298,13 +298,13 @@ Description:
           <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
           <WidgetGroup><!-- Clock + latency display -->
-            <Size>31min,24min</Size>
+            <Size>32f,24min</Size>
             <Layout>vertical</Layout>
             <Children>
               <Time>
                 <TooltipId>time</TooltipId>
                 <ObjectName>Clock</ObjectName>
-                <Size>30min,16f</Size>
+                <Size>32f,16f</Size>
                 <ShowSeconds>false</ShowSeconds>
                 <!-- This has no effect, neither has 'text-align' in qss.
                 <Align>center</Align>   -->
