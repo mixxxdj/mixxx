@@ -10,12 +10,10 @@ Description:
     <Layout>horizontal</Layout>
     <SizePolicy>me,me</SizePolicy>
     <Children>
-
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <SizePolicy>min,me</SizePolicy>
         <Children>
-
       <!-- Qt is fun to design with...not.
           This spacer is necessary to fill (expanding) container
           when 4 hotcues are enabled. -->
@@ -105,7 +103,6 @@ Description:
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
-
     </Children>
   </WidgetGroup>
 </Template>
