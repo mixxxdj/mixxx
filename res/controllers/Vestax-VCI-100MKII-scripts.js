@@ -406,7 +406,8 @@ VCI102.init = function(id, debug) {
         ["beatloop_size", "beatjump_size"].forEach(function(key) {
             engine.connectControl(deck, key, size);
         });
-        ["loop_enabled", "play", "reverse"].forEach(function(key) {
+        ["hotcue_1_activate", "hotcue_2_activate", "loop_enabled", "reverse",
+         "play"].forEach(function(key) {
             engine.connectControl(deck, key, VCI102.slip);
         });
         engine.connectControl(deck, "pfl", headMix);
