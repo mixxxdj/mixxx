@@ -137,7 +137,7 @@ parented_ptr<QWidget> AutoDJFeature::createInnerSidebarWidget(
 
     // Add drop target
     auto pSidebar = createLibrarySidebarWidget(pContainer.get());
-    pContainer->addTab(pSidebar.get(), tr("Track source"));
+    pContainer->addTab(pSidebar.get(), tr("Sources"));
 
     // Be informed when the user wants to add another random track.
     connect(m_pAutoDJProcessor,SIGNAL(randomTrackRequested(int)),
