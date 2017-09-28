@@ -8,9 +8,9 @@ Variables:
 <Template>
   <PushButton>
     <ObjectName>SkinSettingsButton</ObjectName>
-    <MinimumSize>182,13</MinimumSize>
-    <MaximumSize>182,15</MaximumSize>
-    <SizePolicy>f,me</SizePolicy>
+    <MinimumSize>20,13</MinimumSize>
+    <MaximumSize>182,17</MaximumSize>
+    <SizePolicy>me,me</SizePolicy>
     <NumberStates>3</NumberStates>
     <RightClickIsPushButton>false</RightClickIsPushButton>
     <State>

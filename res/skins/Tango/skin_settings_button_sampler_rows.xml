@@ -8,13 +8,13 @@ Description:
 <Template>
   <PushButton>
     <ObjectName>SkinSettingsButton</ObjectName>
-    <MinimumSize>182,13</MinimumSize>
-    <MaximumSize>182,15</MaximumSize>
-    <SizePolicy>f,me</SizePolicy>
+    <MinimumSize>160,13</MinimumSize>
+    <MaximumSize>182,17</MaximumSize>
+    <SizePolicy>min,me</SizePolicy>
     <NumberStates>1</NumberStates>
     <State>
       <Number>0</Number>
-      <Text>      [ <Variable name="current"/> ] Sampler Rows</Text>
+      <Text> [ <Variable name="current"/> ] Sampler Rows</Text>
       <Alignment>left</Alignment>
     </State>
     <Connection>
