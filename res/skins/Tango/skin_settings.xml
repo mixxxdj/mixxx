@@ -144,7 +144,9 @@ Description:
 
               <WidgetGroup><!-- Pitch/Key submenu -->
                 <Layout>stacked</Layout>
-                <Size>182f,17f</Size>
+                <MinimumSize>182,13</MinimumSize>
+                <MaximumSize>-1,17</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
                 <Children>
                   <!-- index 0 due to bug -->
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
@@ -179,22 +181,26 @@ Description:
               <WidgetGroup><!-- Permanent deck controls -->
                 <ObjectName>DeckIndicatorSettings</ObjectName>
                 <Layout>vertical</Layout>
-                <Size>50me,30f</Size>
+                <MinimumSize>182,28</MinimumSize>
+                <MaximumSize>-1,32</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
                 <Children>
                   <Label>
-                    <Size>50me,17f</Size>
+                    <MinimumSize>182,13</MinimumSize>
+                    <MaximumSize>-1,17</MaximumSize>
+                    <SizePolicy>me,me</SizePolicy>
                     <Text>Permanent Deck controls:</Text>
                     <Alignment>left</Alignment>
                   </Label>
                   <WidgetGroup><!-- Permanent deck control icons -->
                     <ObjectName>AlignTopLeft</ObjectName>
-                    <Size>50me,17f</Size>
+                    <Size>50me,15f</Size>
                     <Layout>horizontal</Layout>
                     <Children>
                       <!-- button graphics are 15x15px + 1px margin-right -->
                       <Template src="skin:button_2state_persist.xml"><!-- Keylock -->
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
-                        <SetVariable name="Size">16f,17f</SetVariable>
+                        <SetVariable name="Size">16f,15f</SetVariable>
                         <SetVariable name="state_0_pressed">keylock_off.svg</SetVariable>
                         <SetVariable name="state_0_unpressed">keylock_off.svg</SetVariable>
                         <SetVariable name="state_1_pressed">keylock_on.svg</SetVariable>
@@ -204,7 +210,7 @@ Description:
 
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
-                        <SetVariable name="Size">16f,17f</SetVariable>
+                        <SetVariable name="Size">16f,15f</SetVariable>
                         <SetVariable name="state_0_pressed">eject.svg</SetVariable>
                         <SetVariable name="state_0_unpressed">eject.svg</SetVariable>
                         <SetVariable name="state_1_pressed">eject_pressed.svg</SetVariable>
@@ -214,7 +220,7 @@ Description:
 
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
-                        <SetVariable name="Size">16f,17f</SetVariable>
+                        <SetVariable name="Size">16f,15f</SetVariable>
                         <SetVariable name="state_0_pressed">slipmode_hidden.svg</SetVariable>
                         <SetVariable name="state_0_unpressed">slipmode_hidden.svg</SetVariable>
                         <SetVariable name="state_1_pressed">slipmode_visible.svg</SetVariable>
@@ -224,7 +230,7 @@ Description:
 
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
-                        <SetVariable name="Size">16f,17f</SetVariable>
+                        <SetVariable name="Size">16f,15f</SetVariable>
                         <SetVariable name="state_0_pressed">repeat_hidden.svg</SetVariable>
                         <SetVariable name="state_0_unpressed">repeat_hidden.svg</SetVariable>
                         <SetVariable name="state_1_pressed">repeat_visible.svg</SetVariable>
@@ -234,7 +240,7 @@ Description:
 
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
-                        <SetVariable name="Size">16f,17f</SetVariable>
+                        <SetVariable name="Size">16f,15f</SetVariable>
                         <SetVariable name="state_0_pressed">xfader_center.svg</SetVariable>
                         <SetVariable name="state_0_unpressed">xfader_center.svg</SetVariable>
                         <SetVariable name="state_1_pressed">xfader_visible.svg</SetVariable>
@@ -244,7 +250,7 @@ Description:
 
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
-                        <SetVariable name="Size">16f,17f</SetVariable>
+                        <SetVariable name="Size">16f,15f</SetVariable>
                         <SetVariable name="state_0_pressed">quantize_hidden.svg</SetVariable>
                         <SetVariable name="state_0_unpressed">quantize_hidden.svg</SetVariable>
                         <SetVariable name="state_1_pressed">quantize_visible.svg</SetVariable>
@@ -254,21 +260,42 @@ Description:
 
                       <WidgetGroup><Size>4f,0f</Size></WidgetGroup>
 
-                      <Template src="skin:button_2state_persist.xml">
-                        <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
-                        <SetVariable name="Size">16f,17f</SetVariable>
-                        <SetVariable name="state_0_pressed">stars_hidden.svg</SetVariable>
-                        <SetVariable name="state_0_unpressed">stars_hidden.svg</SetVariable>
-                        <SetVariable name="state_1_pressed">stars_visible.svg</SetVariable>
-                        <SetVariable name="state_1_unpressed">stars_visible.svg</SetVariable>
-                        <SetVariable name="ConfigKey">[Tango],stars</SetVariable>
-                      </Template>
+                      <WidgetGroup><!-- Star rating -->
+                        <Layout>stacked</Layout>
+                        <Size>16f,15f</Size>
+                        <Children>
+                          <!-- index 0 due to bug -->
+                          <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                          <WidgetGroup><!-- translucent cover when Stars wouldn't fit -->
+                            <ObjectName>SubmenuCover</ObjectName>
+                            <Layout>vertical</Layout>
+                            <Size>16f,15f</Size>
+                            <Connection>
+                              <ConfigKey persist="true">[Tango],stars_fit</ConfigKey>
+                              <Transform><Not/></Transform>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </WidgetGroup>
+
+                          <Template src="skin:button_2state_persist.xml">
+                            <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
+                            <SetVariable name="Size">16f,15f</SetVariable>
+                            <SetVariable name="state_0_pressed">stars_hidden.svg</SetVariable>
+                            <SetVariable name="state_0_unpressed">stars_hidden.svg</SetVariable>
+                            <SetVariable name="state_1_pressed">stars_visible.svg</SetVariable>
+                            <SetVariable name="state_1_unpressed">stars_visible.svg</SetVariable>
+                            <SetVariable name="ConfigKey">[Tango],stars</SetVariable>
+                          </Template>
+                        </Children>
+                      </WidgetGroup><!-- /Star rating -->
+
 
                       <WidgetGroup><Size>4f,0f</Size></WidgetGroup>
 
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
-                        <SetVariable name="Size">28f,17f</SetVariable>
+                        <SetVariable name="Size">28f,15f</SetVariable>
                         <SetVariable name="state_0_text">CUE</SetVariable>
                         <SetVariable name="state_1_text">CUE</SetVariable>
                         <SetVariable name="ConfigKey">[Tango],separate_cue_button</SetVariable>
