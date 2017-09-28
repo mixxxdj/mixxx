@@ -76,19 +76,25 @@ VCI102.SelectNextTrack = function(ch, midino, value, status, group) {
     });
 };
 
+VCI102.slipReady = [true, true, true, true];  // false in slip reenabling wait
+
 VCI102.slip = function(value, group, key) {
+    var ch = VCI102.deck.indexOf(group);
     // resume after the effect when the track is [re]played
     if (key == "play" ? value : !value && engine.getValue(group, "play")) {
         if (engine.getValue(group, "slip_enabled")) {
+            VCI102.slipReady[ch] = false;
             engine.setValue(group, "slip_enabled", 0);
             engine.beginTimer(60, function() {
                 engine.setValue(group, "slip_enabled", 1);
+                VCI102.slipReady[ch] = true;
             }, true);
         }
     }
 };
 
 VCI102.scratchTimer = [0, 0, 0, 0];
+VCI102.isBraking = [false, false, false, false];
 
 VCI102.scratchEnable = function(ch, midino, value, status, group) {
     var deck = ch + 1;
@@ -96,10 +102,13 @@ VCI102.scratchEnable = function(ch, midino, value, status, group) {
         if (VCI102.scratchTimer[ch]) {
             engine.stopTimer(VCI102.scratchTimer[ch]);
             VCI102.scratchTimer[ch] = 0;
-        } else if (VCI102.shift[ch % 2]) {
-            engine.brake(deck, true);
-        } else {
-            engine.scratchEnable(deck, 2400, 100 / 3, 1 / 8, 1 / 256);
+        } else if (VCI102.slipReady[ch]) {
+            if (VCI102.shift[ch % 2]) {
+                engine.brake(deck, true);
+                VCI102.isBraking[ch] = true;
+            } else {
+                engine.scratchEnable(deck, 2400, 100 / 3, 1 / 8, 1 / 256);
+            }
         }
     } else if (engine.isScratching(deck)) {
         VCI102.scratchTimer[ch] = engine.beginTimer(20, function() {
@@ -114,9 +123,9 @@ VCI102.scratchEnable = function(ch, midino, value, status, group) {
                 }
             }
         });
-    } else {
-        // terminate brake even without shift if not scratching
+    } else if (VCI102.isBraking[ch]) {
         engine.brake(deck, false);
+        VCI102.isBraking[ch] = false;
         VCI102.slip(value, group);
     }
 };
@@ -131,7 +140,7 @@ VCI102.jog = function(ch, midino, value, status, group) {
             return;
         }
     }
-    if (!engine.getValue(group, "slip_enabled")) {
+    if (VCI102.slipReady[ch] && !engine.getValue(group, "slip_enabled")) {
         engine.setValue(group, "jog", value * value * value / 1024);
     }
 };
