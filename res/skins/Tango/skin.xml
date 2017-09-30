@@ -63,10 +63,10 @@
       <attribute persist="true" config_key="[Tango],deck_controls">1</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_keylock">1</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_eject">0</attribute>
-      <attribute persist="true" config_key="[Tango],always_visible_slipMode">0</attribute>
+      <attribute persist="true" config_key="[Tango],always_visible_slipMode">1</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_repeat">0</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_xfaderOrientation">0</attribute>
-      <attribute persist="true" config_key="[Tango],always_visible_quantize">0</attribute>
+      <attribute persist="true" config_key="[Tango],always_visible_quantize">1</attribute>
       <attribute persist="true" config_key="[Tango],eq_knobs">1</attribute>
       <attribute persist="true" config_key="[Tango],hotcues">1</attribute>
       <attribute persist="true" config_key="[Tango],8_hotcues">0</attribute>
