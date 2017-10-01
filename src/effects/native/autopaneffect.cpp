@@ -31,8 +31,8 @@ EffectManifest AutoPanEffect::getManifest() {
     period->setId("period");
     period->setName(QObject::tr("Period"));
     period->setDescription(QObject::tr("How fast the sound goes from a side to another\n"
-            "1/4 - 4 beats rounded to 1/2 beat if sync parameter is enabled and tempo is detected (decks and samplers)\n"
-            "1/4 - 4 seconds if sync parameter disabled or no tempo is detected (mic & aux inputs, master mix)"));
+            "1/4 - 4 beats rounded to 1/2 beat if tempo is detected (decks and samplers)\n"
+            "1/4 - 4 seconds if tempo is detected (mic & aux inputs, master mix)"));
     period->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -40,7 +40,7 @@ EffectManifest AutoPanEffect::getManifest() {
     period->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
     period->setMinimum(0.0);
     period->setMaximum(4.0);
-    period->setDefault(0.5);
+    period->setDefault(2.0);
 
     EffectManifestParameter* smoothing = manifest.addParameter();
     smoothing->setId("smoothing");
@@ -99,17 +99,19 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, AutoPanGroupStat
     AutoPanGroupState& gs = *pGroupState;
     double width = m_pWidthParameter->value();
     double period = m_pPeriodParameter->value();
-    double smoothing = 0.5-m_pSmoothingParameter->value();
+    double smoothing = 0.5 - m_pSmoothingParameter->value();
 
     if (groupFeatures.has_beat_length_sec) {
         // period is a number of beats
         double beats = std::max(roundToFraction(period, 2), 0.25);
-        // NOTE: Assuming engine is working in stereo.
-        period = beats * groupFeatures.beat_length_sec * sampleRate * 2;
+        period = beats * groupFeatures.beat_length_sec * sampleRate;
+
+        // TODO(xxx) sync phase
+        //if (groupFeatures.has_beat_fraction) {
+
     } else {
         // period is a number of seconds
-        // NOTE: Assuming engine is working in stereo.
-        period = std::max(period, 0.25) * sampleRate * 2;
+        period = std::max(period, 0.25) * sampleRate;
     }
 
     // When the period is changed, the position of the sound shouldn't
@@ -117,8 +119,9 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, AutoPanGroupStat
     if (gs.m_dPreviousPeriod != -1.0) {
         gs.time *= period / gs.m_dPreviousPeriod;
     }
-    gs.m_dPreviousPeriod = period;
 
+
+    gs.m_dPreviousPeriod = period;
 
     if (gs.time >= period || enableState == EffectProcessor::ENABLING) {
         gs.time = 0;
@@ -141,6 +144,7 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, AutoPanGroupStat
 
     double sinusoid = 0;
 
+    // NOTE: Assuming engine is working in stereo.
     for (unsigned int i = 0; i + 1 < numSamples; i += 2) {
 
         CSAMPLE periodFraction = CSAMPLE(gs.time) / period;
@@ -180,8 +184,13 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, AutoPanGroupStat
         pOutput[i+1] *= (1.0f - gs.frac) * lawCoef;
 
         gs.time++;
-        if (gs.time >= period) {
-            gs.time = 0;
+        while (gs.time >= period) {
+            // Click for debug
+            //pOutput[i] = 1.0f;
+            //pOutput[i+1] = 1.0f;
+
+            // The while loop is required in case period changes the value
+            gs.time -= period;
         }
     }
 }
