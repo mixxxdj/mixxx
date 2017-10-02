@@ -101,6 +101,15 @@
         </ExePackage>
       <?endif ?>
 
+      <ExePackage
+          Id="UninstallPreviousVersion"
+          SourceFile="UninstallPreviousVersion.bat"
+          Cache="no"
+          Compressed="no"
+          PerMachine="yes"
+          Permanent="yes"
+          Vital="yes"/>
+
       <RollbackBoundary />
 
       <MsiPackage
