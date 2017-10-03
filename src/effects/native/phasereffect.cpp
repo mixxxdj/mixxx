@@ -71,11 +71,11 @@ EffectManifest PhaserEffect::getManifest() {
     depth->setId("depth");
     depth->setName(QObject::tr("Depth"));
     depth->setDescription("Controls the intensity of the effect.");
-    depth->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    depth->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     depth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     depth->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
-    depth->setMinimum(0.5);
+    depth->setMinimum(0.0);
     depth->setMaximum(1.0);
     depth->setDefault(0.5);
 
@@ -185,9 +185,13 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
 
         const CSAMPLE_GAIN depth = depthStart + depthDelta * (i / kChannels);
 
-        // Computing output combining the original and processed sample
-        pOutput[i] = pInput[i] * (1.0 - 0.5 * depth) + left * depth * 0.5;
-        pOutput[i + 1] = pInput[i + 1] * (1.0 - 0.5 * depth) + right * depth * 0.5;
+        // The depth knob acts like a dry/wet knob. The wet signal is made by adding
+        // the dry and computed sample, so to avoid making the output louder, divide
+        // the wet signal by 2.
+        pOutput[i] = pInput[i] * (1.0f - depth)
+                   + (pInput[i] + left) / 2.0f * depth;
+        pOutput[i + 1] = (pInput[i + 1] * (1.0f - depth))
+                       + (pInput[i+1] + right) / 2.0f * depth;
     }
 
     pState->oldDepth = depth;
