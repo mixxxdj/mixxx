@@ -104,6 +104,7 @@
       <ExePackage
           Id="UninstallPreviousVersion"
           SourceFile="UninstallPreviousVersion.bat"
+          DisplayName="Previous Version uninstallation"
           Cache="no"
           Compressed="no"
           PerMachine="yes"
