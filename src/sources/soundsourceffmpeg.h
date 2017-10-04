@@ -118,6 +118,7 @@ class SoundSourceFFmpeg: public SoundSource {
 
     void close() override;
 
+  protected:
     ReadableSampleFrames readSampleFramesClamped(
             WritableSampleFrames sampleFrames) override;
 

@@ -12,14 +12,11 @@
 namespace mixxx {
 
 class SoundSourceFLAC: public SoundSource {
-public:
+  public:
     explicit SoundSourceFLAC(const QUrl& url);
     ~SoundSourceFLAC() override;
 
     void close() override;
-
-    ReadableSampleFrames readSampleFramesClamped(
-            WritableSampleFrames sampleFrames) override;
 
     // Internal callbacks
     FLAC__StreamDecoderReadStatus flacRead(FLAC__byte buffer[], size_t* bytes);
@@ -32,7 +29,11 @@ public:
     void flacMetadata(const FLAC__StreamMetadata* metadata);
     void flacError(FLAC__StreamDecoderErrorStatus status);
 
-private:
+  protected:
+    ReadableSampleFrames readSampleFramesClamped(
+            WritableSampleFrames sampleFrames) override;
+
+  private:
     OpenResult tryOpen(
             OpenMode mode,
             const AudioSourceConfig& audioSrcCfg) override;
@@ -60,7 +61,7 @@ private:
 };
 
 class SoundSourceProviderFLAC: public SoundSourceProvider {
-public:
+  public:
     QString getName() const override;
 
     QStringList getSupportedFileExtensions() const override;

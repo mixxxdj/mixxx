@@ -15,7 +15,7 @@ namespace mixxx {
 // The whole file is decoded at once and saved
 // in RAM to allow seeking and smooth operation in Mixxx.
 class SoundSourceModPlug: public SoundSource {
-public:
+  public:
      static constexpr SINT kChannelCount = 2;
      static constexpr SINT kSamplingRate = 44100;
      static constexpr SINT kBitsPerSample = 16;
@@ -33,10 +33,11 @@ public:
 
     void close() override;
 
+  protected:
     ReadableSampleFrames readSampleFramesClamped(
             WritableSampleFrames sampleFrames) override;
 
-private:
+  private:
     OpenResult tryOpen(
             OpenMode mode,
             const AudioSourceConfig& audioSrcCfg) override;

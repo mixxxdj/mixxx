@@ -16,6 +16,7 @@ class SoundSourceWV: public SoundSourcePlugin {
 
     void close() override;
 
+  protected:
     ReadableSampleFrames readSampleFramesClamped(
             WritableSampleFrames sampleFrames) override;
 

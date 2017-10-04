@@ -15,7 +15,7 @@ namespace mixxx {
 // corruption when writing metadata while the file
 // is still in use.
 class AudioSourceTrackProxy: public AudioSource {
-public:
+  public:
     static AudioSourcePointer create(
             AudioSourcePointer pAudioSource,
             TrackPointer pTrack) {
@@ -32,12 +32,13 @@ public:
           m_pTrack(std::move(pTrack)) {
     }
 
+  protected:
     ReadableSampleFrames readSampleFramesClamped(
             WritableSampleFrames sampleFrames) override {
-        return m_pAudioSource->readSampleFramesClamped(sampleFrames);
+        return readSampleFramesClampedOn(*m_pAudioSource, sampleFrames);
     }
 
-private:
+  private:
     AudioSourcePointer m_pAudioSource;
     TrackPointer m_pTrack;
 };

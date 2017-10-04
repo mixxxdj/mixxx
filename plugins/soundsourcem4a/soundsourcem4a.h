@@ -18,16 +18,17 @@
 namespace mixxx {
 
 class SoundSourceM4A: public SoundSourcePlugin {
-public:
+  public:
     explicit SoundSourceM4A(const QUrl& url);
     ~SoundSourceM4A() override;
 
     void close() override;
 
+  protected:
     ReadableSampleFrames readSampleFramesClamped(
             WritableSampleFrames sampleFrames) override;
 
-private:
+  private:
     OpenResult tryOpen(
             OpenMode mode,
             const AudioSourceConfig& audioSrcCfg) override;

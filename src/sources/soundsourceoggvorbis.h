@@ -12,16 +12,17 @@ class QFile;
 namespace mixxx {
 
 class SoundSourceOggVorbis: public SoundSource {
-public:
+  public:
     explicit SoundSourceOggVorbis(const QUrl& url);
     ~SoundSourceOggVorbis() override;
 
     void close() override;
 
+  protected:
     ReadableSampleFrames readSampleFramesClamped(
             WritableSampleFrames sampleFrames) override;
 
-private:
+  private:
     OpenResult tryOpen(
             OpenMode mode,
             const AudioSourceConfig& audioSrcCfg) override;
@@ -41,7 +42,7 @@ private:
 };
 
 class SoundSourceProviderOggVorbis: public SoundSourceProvider {
-public:
+  public:
     QString getName() const override;
 
     QStringList getSupportedFileExtensions() const override;

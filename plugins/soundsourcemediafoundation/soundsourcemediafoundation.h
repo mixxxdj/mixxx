@@ -51,16 +51,17 @@ class StreamUnitConverter final {
 };
 
 class SoundSourceMediaFoundation: public mixxx::SoundSourcePlugin {
-public:
+  public:
     explicit SoundSourceMediaFoundation(const QUrl& url);
     ~SoundSourceMediaFoundation() override;
 
     void close() override;
 
+  protected:
     ReadableSampleFrames readSampleFramesClamped(
             WritableSampleFrames sampleFrames) override;
 
-private:
+  private:
     OpenResult tryOpen(
             OpenMode mode,
             const mixxx::AudioSourceConfig& audioSrcCfg) override;
@@ -83,7 +84,7 @@ private:
 };
 
 class SoundSourceProviderMediaFoundation: public SoundSourceProvider {
-public:
+  public:
     QString getName() const override;
 
     QStringList getSupportedFileExtensions() const override;

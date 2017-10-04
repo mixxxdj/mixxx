@@ -13,12 +13,13 @@ namespace mixxx {
 class AudioSource;
 
 // Only required for SoundSourceCoreAudio.
-class LegacyAudioSourceAdapter: public virtual ISampleFrameSource {
+class LegacyAudioSourceAdapter: public virtual IAudioSourceImpl {
   public:
     LegacyAudioSourceAdapter(
             AudioSource* pOwner,
             LegacyAudioSource* pImpl);
 
+  protected:
     ReadableSampleFrames readSampleFramesClamped(
             WritableSampleFrames sampleFrames) override;
 

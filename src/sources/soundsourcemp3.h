@@ -18,16 +18,17 @@
 namespace mixxx {
 
 class SoundSourceMp3: public SoundSource {
-public:
+  public:
     explicit SoundSourceMp3(const QUrl& url);
     ~SoundSourceMp3() override;
 
     void close() override;
 
+  protected:
     ReadableSampleFrames readSampleFramesClamped(
             WritableSampleFrames sampleFrames) override;
 
-private:
+  private:
     OpenResult tryOpen(
             OpenMode mode,
             const AudioSourceConfig& audioSrcCfg) override;
@@ -75,7 +76,7 @@ private:
 };
 
 class SoundSourceProviderMp3: public SoundSourceProvider {
-public:
+  public:
     QString getName() const override;
 
     QStringList getSupportedFileExtensions() const override;

@@ -10,7 +10,7 @@
 namespace mixxx {
 
 class SoundSourceOpus: public SoundSource {
-public:
+  public:
     // According to the API documentation of op_pcm_seek():
     // "...decoding after seeking may not return exactly the same
     // values as would be obtained by decoding the stream straight
@@ -31,10 +31,11 @@ public:
 
     void close() override;
 
+  protected:
     ReadableSampleFrames readSampleFramesClamped(
             WritableSampleFrames sampleFrames) override;
 
-private:
+  private:
     OpenResult tryOpen(
             OpenMode mode,
             const AudioSourceConfig& audioSrcCfg) override;
@@ -47,7 +48,7 @@ private:
 };
 
 class SoundSourceProviderOpus: public SoundSourceProvider {
-public:
+  public:
     QString getName() const override;
 
     QStringList getSupportedFileExtensions() const override;

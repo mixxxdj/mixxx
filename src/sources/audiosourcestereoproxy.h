@@ -8,7 +8,7 @@
 namespace mixxx {
 
 class AudioSourceStereoProxy: public AudioSource {
-public:
+  public:
     static AudioSourcePointer create(
             AudioSourcePointer pAudioSource,
             SINT maxReadableFrames) {
@@ -24,10 +24,11 @@ public:
             AudioSourcePointer pAudioSource,
             SampleBuffer::WritableSlice tempSampleBufferSlice);
 
+  protected:
     ReadableSampleFrames readSampleFramesClamped(
             WritableSampleFrames writableSampleFrames) override;
 
-private:
+  private:
     AudioSourcePointer m_pAudioSource;
     SampleBuffer m_tempSampleBuffer;
     SampleBuffer::WritableSlice m_tempOutputBuffer;

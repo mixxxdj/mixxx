@@ -14,16 +14,17 @@
 namespace mixxx {
 
 class SoundSourceSndFile: public SoundSource {
-public:
+  public:
     explicit SoundSourceSndFile(const QUrl& url);
     ~SoundSourceSndFile() override;
 
     void close() override;
 
+  protected:
     ReadableSampleFrames readSampleFramesClamped(
             WritableSampleFrames sampleFrames) override;
 
-private:
+  private:
     OpenResult tryOpen(
             OpenMode mode,
             const AudioSourceConfig& audioSrcCfg) override;
@@ -34,7 +35,7 @@ private:
 };
 
 class SoundSourceProviderSndFile: public SoundSourceProvider {
-public:
+  public:
     QString getName() const override;
 
     SoundSourceProviderPriority getPriorityHint(
