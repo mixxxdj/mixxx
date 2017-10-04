@@ -105,6 +105,7 @@
           Id="UninstallPreviousVersion"
           SourceFile="UninstallPreviousVersion.bat"
           DisplayName="Previous Version uninstallation"
+          InstallCommand="[InstallFolder]"
           Cache="no"
           Compressed="no"
           PerMachine="yes"
