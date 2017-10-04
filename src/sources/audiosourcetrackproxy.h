@@ -33,16 +33,8 @@ public:
     }
 
     ReadableSampleFrames readSampleFramesClamped(
-            ReadMode readMode,
             WritableSampleFrames sampleFrames) override {
-        return m_pAudioSource->readSampleFramesClamped(
-                readMode,
-                sampleFrames);
-    }
-
-    IndexRange skipSampleFramesClamped(
-            IndexRange frameIndexRange) override {
-        return m_pAudioSource->skipSampleFramesClamped(frameIndexRange);
+        return m_pAudioSource->readSampleFramesClamped(sampleFrames);
     }
 
 private:

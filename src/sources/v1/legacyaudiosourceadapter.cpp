@@ -21,7 +21,6 @@ LegacyAudioSourceAdapter::LegacyAudioSourceAdapter(
 }
 
 ReadableSampleFrames LegacyAudioSourceAdapter::readSampleFramesClamped(
-        ReadMode readMode,
         WritableSampleFrames writableSampleFrames) {
 
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
@@ -51,7 +50,7 @@ ReadableSampleFrames LegacyAudioSourceAdapter::readSampleFramesClamped(
         if (writableSampleFrames.frameIndexRange().containsIndex(seekFrameIndex)) {
             const auto remainingFrameIndexRange =
                     IndexRange::between(seekFrameIndex, writableSampleFrames.frameIndexRange().end());
-            if (readMode != ReadMode::Skip) {
+            if (writableSampleFrames.sampleBuffer().data()) {
                 writableSampleFrames = WritableSampleFrames(
                         remainingFrameIndexRange,
                         SampleBuffer::WritableSlice(
@@ -68,18 +67,14 @@ ReadableSampleFrames LegacyAudioSourceAdapter::readSampleFramesClamped(
     const SINT numFramesRead =
             m_pImpl->readSampleFrames(
                     writableSampleFrames.frameIndexRange().length(),
-                    (readMode != ReadMode::Skip) ? writableSampleFrames.sampleBuffer().data() : nullptr);
+                    writableSampleFrames.sampleBuffer().data());
     const auto resultFrameIndexRange =
             IndexRange::forward(writableSampleFrames.frameIndexRange().start(), numFramesRead);
-    if (readMode == ReadMode::Skip) {
-        return ReadableSampleFrames(resultFrameIndexRange);
-    } else {
-        return ReadableSampleFrames(
-                resultFrameIndexRange,
-                SampleBuffer::ReadableSlice(
-                        writableSampleFrames.sampleBuffer().data(),
-                        m_pOwner->frames2samples(resultFrameIndexRange.length())));
-    }
+    return ReadableSampleFrames(
+            resultFrameIndexRange,
+            SampleBuffer::ReadableSlice(
+                    writableSampleFrames.sampleBuffer().data(),
+                    m_pOwner->frames2samples(resultFrameIndexRange.length())));
 }
 
 } // namespace mixxx

@@ -243,7 +243,6 @@ void SoundSourceOpus::close() {
 }
 
 ReadableSampleFrames SoundSourceOpus::readSampleFramesClamped(
-        ReadMode readMode,
         WritableSampleFrames writableSampleFrames) {
 
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
@@ -274,11 +273,13 @@ ReadableSampleFrames SoundSourceOpus::readSampleFramesClamped(
             }
         }
         // Decoding starts before the actual target position
+        // -> skip decoded samples until reaching the target position
         DEBUG_ASSERT(m_curFrameIndex <= firstFrameIndex);
         const auto precedingFrames =
                 IndexRange::between(m_curFrameIndex, firstFrameIndex);
         if (!precedingFrames.empty()
-                && (precedingFrames != skipSampleFrames(precedingFrames))) {
+                && (precedingFrames != readSampleFramesClamped(
+                        WritableSampleFrames(precedingFrames)).frameIndexRange())) {
             kLogger.warning()
                     << "Failed to skip preceding frames"
                     << precedingFrames;
@@ -289,18 +290,18 @@ ReadableSampleFrames SoundSourceOpus::readSampleFramesClamped(
 
     const SINT numberOfFramesTotal = writableSampleFrames.frameIndexRange().length();
 
-    CSAMPLE* pSampleBuffer = (readMode != ReadMode::Skip) ?
-            writableSampleFrames.sampleBuffer().data() : nullptr;
+    // pSampleBuffer might be null while skipping (see above)
+    CSAMPLE* pSampleBuffer = writableSampleFrames.sampleBuffer().data();
     SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
         SINT numberOfSamplesToRead =
                 frames2samples(numberOfFramesRemaining);
-        if (readMode == ReadMode::Skip) {
+        if (!writableSampleFrames.sampleBuffer().data()) {
             // NOTE(uklotzde): The opusfile API does not provide any
             // functions for skipping samples in the audio stream. Calling
             // API functions with a nullptr buffer does not return. Since
             // seeking in Opus files requires prefetching + skipping we
-            // need to skip sample frame by reading into a temporary
+            // need to skip sample frames by reading into a temporary
             // buffer
             pSampleBuffer = m_prefetchSampleBuffer.data();
             if (numberOfSamplesToRead > m_prefetchSampleBuffer.size()) {

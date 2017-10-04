@@ -124,7 +124,6 @@ void SoundSourceFLAC::close() {
 }
 
 ReadableSampleFrames SoundSourceFLAC::readSampleFramesClamped(
-        ReadMode readMode,
         WritableSampleFrames writableSampleFrames) {
 
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
@@ -192,7 +191,8 @@ ReadableSampleFrames SoundSourceFLAC::readSampleFramesClamped(
         const auto precedingFrames =
                 IndexRange::between(m_curFrameIndex, firstFrameIndex);
         if (!precedingFrames.empty()
-                && (precedingFrames != skipSampleFrames(precedingFrames))) {
+                && (precedingFrames != readSampleFramesClamped(
+                        WritableSampleFrames(precedingFrames)).frameIndexRange())) {
             kLogger.warning()
                     << "Failed to skip preceding frames"
                     << precedingFrames;
@@ -237,7 +237,8 @@ ReadableSampleFrames SoundSourceFLAC::readSampleFramesClamped(
                             << m_file.fileName();
                     const auto skipFrames =
                             IndexRange::between(m_curFrameIndex, curFrameIndexBeforeProcessing);
-                    if (skipFrames != skipSampleFrames(skipFrames)) {
+                    if (skipFrames != readSampleFramesClamped(
+                            WritableSampleFrames(skipFrames)).frameIndexRange()) {
                         kLogger.warning()
                                 << "Failed to skip sample frames"
                                 << skipFrames
@@ -265,7 +266,7 @@ ReadableSampleFrames SoundSourceFLAC::readSampleFramesClamped(
         const SampleBuffer::ReadableSlice readableSlice(
                 m_sampleBuffer.readFromHead(numberOfSamplesRead));
         DEBUG_ASSERT(readableSlice.size() == numberOfSamplesRead);
-        if (readMode != ReadMode::Skip) {
+        if (writableSampleFrames.sampleBuffer().data()) {
             SampleUtil::copy(
                     writableSampleFrames.sampleBuffer().data(outputSampleOffset),
                     readableSlice.data(),

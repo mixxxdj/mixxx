@@ -115,7 +115,6 @@ void SoundSourceOggVorbis::close() {
 }
 
 ReadableSampleFrames SoundSourceOggVorbis::readSampleFramesClamped(
-        ReadMode readMode,
         WritableSampleFrames writableSampleFrames) {
 
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
@@ -144,8 +143,7 @@ ReadableSampleFrames SoundSourceOggVorbis::readSampleFramesClamped(
 
     const SINT numberOfFramesTotal = writableSampleFrames.frameIndexRange().length();
 
-    CSAMPLE* pSampleBuffer = (readMode != ReadMode::Skip) ?
-            writableSampleFrames.sampleBuffer().data() : nullptr;
+    CSAMPLE* pSampleBuffer = writableSampleFrames.sampleBuffer().data();
     SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
         float** pcmChannels;

@@ -87,50 +87,22 @@ void SoundSourceSndFile::close() {
 }
 
 ReadableSampleFrames SoundSourceSndFile::readSampleFramesClamped(
-        ReadMode readMode,
         WritableSampleFrames writableSampleFrames) {
 
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
-    if (readMode == ReadMode::Skip) {
-        // NOTE(uklotzde): The libsndfile API does not provide any
-        // functions for skipping samples in the audio stream. Calling
-        // API functions with a nullptr buffer does not return. Since
-        // we don't want to read samples into a temporary buffer that
-        // has to be allocated we are seeking to the position after
-        // the skipped samples.
-        if (m_curFrameIndex != writableSampleFrames.frameIndexRange().end()) {
-            const sf_count_t seekResult = sf_seek(m_pSndFile, writableSampleFrames.frameIndexRange().end(), SEEK_SET);
-            if (seekResult >= 0) {
-                DEBUG_ASSERT(seekResult >= firstFrameIndex);
-                m_curFrameIndex = seekResult;
-                return ReadableSampleFrames(IndexRange::between(firstFrameIndex, seekResult));
-            } else {
-                kLogger.warning() << "Failed to seek libsnd file:" << seekResult
-                        << sf_strerror(m_pSndFile);
-                m_curFrameIndex = sf_seek(m_pSndFile, 0, SEEK_CUR);
-                // Abort
-                return ReadableSampleFrames(
-                        IndexRange::between(
-                                m_curFrameIndex,
-                                m_curFrameIndex));
-            }
-        }
-    } else {
-        if (m_curFrameIndex != firstFrameIndex) {
-            const sf_count_t seekResult = sf_seek(m_pSndFile, firstFrameIndex, SEEK_SET);
-            if (seekResult == firstFrameIndex) {
-                m_curFrameIndex = seekResult;
-            } else {
-                kLogger.warning() << "Failed to seek libsnd file:" << seekResult
-                        << sf_strerror(m_pSndFile);
-                m_curFrameIndex = sf_seek(m_pSndFile, 0, SEEK_CUR);
-                return ReadableSampleFrames(IndexRange::between(m_curFrameIndex, m_curFrameIndex));
-            }
+    if (m_curFrameIndex != firstFrameIndex) {
+        const sf_count_t seekResult = sf_seek(m_pSndFile, firstFrameIndex, SEEK_SET);
+        if (seekResult == firstFrameIndex) {
+            m_curFrameIndex = seekResult;
+        } else {
+            kLogger.warning() << "Failed to seek libsnd file:" << seekResult
+                    << sf_strerror(m_pSndFile);
+            m_curFrameIndex = sf_seek(m_pSndFile, 0, SEEK_CUR);
+            return ReadableSampleFrames(IndexRange::between(m_curFrameIndex, m_curFrameIndex));
         }
     }
     DEBUG_ASSERT(m_curFrameIndex == firstFrameIndex);
-    DEBUG_ASSERT(readMode != ReadMode::Skip);
 
     const SINT numberOfFramesTotal = writableSampleFrames.frameIndexRange().length();
 

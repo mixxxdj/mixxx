@@ -109,6 +109,47 @@ class SoundSourceProxyTest: public MixxxTest {
         }
     }
 #endif // __OPUS__
+
+    mixxx::IndexRange skipSampleFrames(
+            mixxx::AudioSourcePointer pAudioSource,
+            mixxx::IndexRange skipRange) {
+        mixxx::IndexRange skippedRange;
+        while (skippedRange.length() < skipRange.length()) {
+            // Seek in forward direction by decoding and discarding samples
+            const auto nextRange =
+                    mixxx::IndexRange::forward(
+                            skippedRange.empty() ? skipRange.start() : skippedRange.end(),
+                            math_min(
+                                    skipRange.length() - skippedRange.length(),
+                                    pAudioSource->samples2frames(m_skipSampleBuffer.size())));
+            EXPECT_FALSE(nextRange.empty());
+            EXPECT_TRUE(intersect(nextRange, skipRange) == nextRange);
+            const auto readRange = pAudioSource->readSampleFrames(
+                    mixxx::WritableSampleFrames(
+                            nextRange,
+                            SampleBuffer::WritableSlice(
+                                    m_skipSampleBuffer.data(),
+                                    m_skipSampleBuffer.size()))).frameIndexRange();
+            if (readRange.empty()) {
+                return skippedRange;
+            }
+            EXPECT_TRUE(readRange.start() == nextRange.start());
+            EXPECT_TRUE(intersect(readRange, skipRange) == readRange);
+            if (skippedRange.empty()) {
+                skippedRange = readRange;
+            } else {
+                skippedRange = span(skippedRange, nextRange);
+            }
+        }
+        return skippedRange;
+    }
+
+    SoundSourceProxyTest()
+        : m_skipSampleBuffer(kMaxReadFrameCount) {
+    }
+
+  private:
+    SampleBuffer m_skipSampleBuffer;
 };
 
 TEST_F(SoundSourceProxyTest, open) {
@@ -327,7 +368,7 @@ TEST_F(SoundSourceProxyTest, skipAndRead) {
             ASSERT_LE(skipFrameIndex, minFrameIndex);
             while (skipFrameIndex < minFrameIndex) {
                 auto const skippedFrameIndexRange =
-                        pSkipReadSource->skipSampleFrames(
+                        skipSampleFrames(pSkipReadSource,
                                 mixxx::IndexRange::between(skipFrameIndex, minFrameIndex));
                 ASSERT_FALSE(skippedFrameIndexRange.empty());
                 ASSERT_EQ(skippedFrameIndexRange.start(), skipFrameIndex);
@@ -417,7 +458,7 @@ TEST_F(SoundSourceProxyTest, seekBoundaries) {
             ASSERT_EQ(pSeekReadSource->channelCount(), pContReadSource->channelCount());
             ASSERT_EQ(pSeekReadSource->frameIndexRange(), pContReadSource->frameIndexRange());
             const auto skipFrameIndexRange =
-                    pContReadSource->skipSampleFrames(
+                    skipSampleFrames(pContReadSource,
                             mixxx::IndexRange::between(
                                     pContReadSource->frameIndexMin(),
                                     seekFrameIndex));

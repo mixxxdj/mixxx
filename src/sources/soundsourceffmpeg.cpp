@@ -890,15 +890,12 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
 }
 
 ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
-        ReadMode readMode,
         WritableSampleFrames writableSampleFrames) {
 
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
-    const SINT seekFrameIndex = (readMode != ReadMode::Skip) ?
-                firstFrameIndex : writableSampleFrames.frameIndexRange().end();
-    if ((m_currentMixxxFrameIndex != seekFrameIndex) ||
-            ((readMode != ReadMode::Skip) && (m_SCache.size() == 0))) {
+    const SINT seekFrameIndex = firstFrameIndex;
+    if ((m_currentMixxxFrameIndex != seekFrameIndex) || (m_SCache.size() == 0)) {
         int ret = 0;
         qint64 i = 0;
         struct ffmpegLocationObject *l_STestObj = nullptr;
@@ -982,17 +979,14 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
 
     const SINT numberOfFrames = writableSampleFrames.frameIndexRange().length();
 
-    if (readMode == ReadMode::Skip) {
-        DEBUG_ASSERT(m_currentMixxxFrameIndex == writableSampleFrames.frameIndexRange().end());
-    } else {
-        DEBUG_ASSERT(m_currentMixxxFrameIndex == firstFrameIndex);
-        DEBUG_ASSERT(m_SCache.size() > 0);
-        getBytesFromCache(
-                writableSampleFrames.sampleBuffer().data(),
-                m_currentMixxxFrameIndex, numberOfFrames);
-        m_currentMixxxFrameIndex += numberOfFrames;
-        m_bIsSeeked = false;
-    }
+    DEBUG_ASSERT(m_currentMixxxFrameIndex == firstFrameIndex);
+    DEBUG_ASSERT(m_SCache.size() > 0);
+    getBytesFromCache(
+            writableSampleFrames.sampleBuffer().data(),
+            m_currentMixxxFrameIndex, numberOfFrames);
+    m_currentMixxxFrameIndex += numberOfFrames;
+    m_bIsSeeked = false;
+
     return ReadableSampleFrames(
             IndexRange::forward(firstFrameIndex, numberOfFrames),
             SampleBuffer::ReadableSlice(

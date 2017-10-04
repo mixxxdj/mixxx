@@ -491,7 +491,6 @@ SINT SoundSourceMp3::findSeekFrameIndex(
 }
 
 ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
-        ReadMode readMode,
         WritableSampleFrames writableSampleFrames) {
 
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
@@ -528,7 +527,8 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
         const auto precedingFrames =
                 IndexRange::between(m_curFrameIndex, firstFrameIndex);
         if (!precedingFrames.empty()
-                && (precedingFrames != skipSampleFrames(precedingFrames))) {
+                && (precedingFrames != readSampleFramesClamped(
+                        WritableSampleFrames(precedingFrames)).frameIndexRange())) {
             kLogger.warning()
                     << "Failed to skip preceding frames"
                     << precedingFrames;
@@ -543,8 +543,7 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
 
     const SINT numberOfFramesTotal = writableSampleFrames.frameIndexRange().length();
 
-    CSAMPLE* pSampleBuffer = (readMode != ReadMode::Skip) ?
-            writableSampleFrames.sampleBuffer().data() : nullptr;
+    CSAMPLE* pSampleBuffer = writableSampleFrames.sampleBuffer().data();
     SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
         if (0 >= m_madSynthCount) {
@@ -605,7 +604,7 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
                 }
                 if (isRecoverableError(m_madStream)) {
                     if (pMadThisFrame != m_madStream.this_frame) {
-                        if ((readMode == ReadMode::Skip) ||
+                        if (!pSampleBuffer ||
                                 (m_madStream.error == MAD_ERROR_LOSTSYNC)) {
                             // Don't bother the user with warnings from recoverable
                             // errors while skipping decoded samples or that even
@@ -651,7 +650,7 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
 
         const SINT synthReadCount = math_min(
                 m_madSynthCount, numberOfFramesRemaining);
-        if (readMode != ReadMode::Skip) {
+        if (pSampleBuffer) {
             DEBUG_ASSERT(m_madSynthCount <= m_madSynth.pcm.length);
             const SINT madSynthOffset =
                     m_madSynth.pcm.length - m_madSynthCount;

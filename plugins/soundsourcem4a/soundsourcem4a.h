@@ -25,7 +25,6 @@ public:
     void close() override;
 
     ReadableSampleFrames readSampleFramesClamped(
-            ReadMode readMode,
             WritableSampleFrames sampleFrames) override;
 
 private:

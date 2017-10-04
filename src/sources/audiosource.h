@@ -84,43 +84,18 @@ class ISampleFrameSource {
   public:
     virtual ~ISampleFrameSource() = default;
 
-    enum class ReadMode {
-        Default, // write/copy decoded sample data into buffer
-        Skip,    // ignore/discard decoded sample data
-    };
-
-    // Reads as much of the the requested sample frames and usually
-    // (ReadMode::Default) writes them into the provided buffer. The
-    // capacity of the buffer and the requested range have already
-    // been checked and adjusted/clamped before if necessary.
+    // Reads as much of the the requested sample frames and writes
+    // them into the provided buffer. The capacity of the buffer
+    // and the requested range have already been checked and
+    // adjusted (= clamped) before if necessary.
     //
-    // Returns the number of and usually (ReadMode::Default) decoded
-    // sample frames in a readable buffer. The returned buffer is just
-    // a view/slice of the provided writable buffer. This buffer has to
-    // be considered invalid if the number of sample frames is 0, i.e.
-    // the internal memory pointer might be null.
+    // Returns the number of and decoded sample frames in a readable
+    // buffer. The returned buffer is just a view/slice of the provided
+    // writable buffer if the result is not empty. If the result is
+    // empty the internal memory pointer of the returned buffer might
+    // be null.
     virtual ReadableSampleFrames readSampleFramesClamped(
-            ReadMode readMode,
             WritableSampleFrames sampleFrames) = 0;
-
-    // Special case of readSampleFramesClamped() with readMode = ReadMode::Default.
-    virtual ReadableSampleFrames readSampleFramesClamped(
-            WritableSampleFrames sampleFrames) {
-        // Default implementation
-        return readSampleFramesClamped(ReadMode::Default, sampleFrames);
-    }
-
-    // Special case of readSampleFramesClamped() with readMode = ReadMode::Skip.
-    virtual IndexRange skipSampleFramesClamped(
-            IndexRange frameIndexRange) {
-        // Canonical default implementation
-        // Please note that the provided buffer is replaced with an empty buffer
-        // (in conformance with the above API spec) to prohibit any attempt of
-        // writing decoded sample data into this buffer!
-        return readSampleFramesClamped(
-                ReadMode::Skip,
-                WritableSampleFrames(frameIndexRange)).frameIndexRange();
-    }
 
 };
 
@@ -222,34 +197,17 @@ class AudioSource: public UrlResource, public AudioSignal, public virtual ISampl
 
 
     ReadableSampleFrames readSampleFrames(
-            ReadMode readMode,
             WritableSampleFrames sampleFrames) {
-        const auto sampleFramesClamped =
-                clampWritableSampleFrames(readMode, sampleFrames);
-        if (sampleFramesClamped.frameIndexRange().empty()) {
+        const auto sampleFramesFramesClamped =
+                clampWritableSampleFrames(sampleFrames);
+        if (sampleFramesFramesClamped.frameIndexRange().empty()) {
+            // result is empty
             return ReadableSampleFrames(
-                    sampleFramesClamped.frameIndexRange());
+                    sampleFramesFramesClamped.frameIndexRange());
         } else {
+            // forward clamped request
             return readSampleFramesClamped(
-                    readMode,
-                    sampleFramesClamped);
-        }
-    }
-
-    ReadableSampleFrames readSampleFrames(
-            WritableSampleFrames sampleFrames) {
-        return readSampleFrames(ReadMode::Default, sampleFrames);
-    }
-
-    IndexRange skipSampleFrames(
-            IndexRange frameIndexRange) {
-        const auto frameIndexRangeClamped =
-                clampFrameIndexRange(frameIndexRange);
-        if (frameIndexRangeClamped.empty()) {
-            return frameIndexRangeClamped;
-        } else {
-            return skipSampleFramesClamped(
-                    frameIndexRangeClamped);
+                    sampleFramesFramesClamped);
         }
     }
 
@@ -272,7 +230,6 @@ class AudioSource: public UrlResource, public AudioSignal, public virtual ISampl
 
     friend class LegacyAudioSourceAdapter;
     WritableSampleFrames clampWritableSampleFrames(
-            ReadMode readMode,
             WritableSampleFrames sampleFrames) const;
     IndexRange clampFrameIndexRange(
             IndexRange frameIndexRange) const {

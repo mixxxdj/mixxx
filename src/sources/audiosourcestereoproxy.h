@@ -25,13 +25,7 @@ public:
             SampleBuffer::WritableSlice tempSampleBufferSlice);
 
     ReadableSampleFrames readSampleFramesClamped(
-            ReadMode readMode,
-            WritableSampleFrames sampleFrames) override;
-
-    IndexRange skipSampleFramesClamped(
-            IndexRange frameIndexRange) override {
-        return m_pAudioSource->skipSampleFramesClamped(frameIndexRange);
-    }
+            WritableSampleFrames writableSampleFrames) override;
 
 private:
     AudioSourcePointer m_pAudioSource;

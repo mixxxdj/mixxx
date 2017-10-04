@@ -55,11 +55,9 @@ bool isDisjunct(
 }
 
 ReadableSampleFrames AudioSourceStereoProxy::readSampleFramesClamped(
-        ReadMode readMode,
         WritableSampleFrames sampleFrames) {
-    if ((readMode == ReadMode::Skip) ||
-            (m_pAudioSource->channelCount() == channelCount())) {
-        return m_pAudioSource->readSampleFramesClamped(readMode, sampleFrames);
+    if (m_pAudioSource->channelCount() == channelCount()) {
+        return m_pAudioSource->readSampleFramesClamped(sampleFrames);
     }
 
     // Check location and capacity of temporary buffer
@@ -87,7 +85,6 @@ ReadableSampleFrames AudioSourceStereoProxy::readSampleFramesClamped(
 
     const auto readableSampleFrames =
             m_pAudioSource->readSampleFramesClamped(
-                    readMode,
                     WritableSampleFrames(
                             sampleFrames.frameIndexRange(),
                             m_tempOutputBuffer));

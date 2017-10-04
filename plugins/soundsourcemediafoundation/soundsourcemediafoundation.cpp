@@ -150,7 +150,8 @@ void SoundSourceMediaFoundation::seekSampleFrame(SINT frameIndex) {
                 samples2frames(m_sampleBuffer.getSize()) +
                 2 * kNumberOfPrefetchFrames;
         if (skipFrames.length() <= skipFramesCountMax) {
-            if (skipFrames != skipSampleFrames(skipFrames)) {
+            if (skipFrames != readSampleFramesClamped(
+                    WritableSampleFrames(skipFrames)).frameIndexRange()) {
                 kLogger.warning()
                         << "Failed to skip frames before decoding"
                         << skipFrames;
@@ -196,10 +197,17 @@ void SoundSourceMediaFoundation::seekSampleFrame(SINT frameIndex) {
             //   "After seeking, the application should call IMFSourceReader::ReadSample
             //    and advance to the desired position.
             auto skipFrames = IndexRange::between(seekIndex, frameIndex);
-            if (!skipFrames.empty()) {
+            if (skipFrames.empty()) {
+                // We are at the beginning of the stream and don't need
+                // to skip any frames. Calling IMFSourceReader::ReadSample
+                // is not necessary in this special case.
+                DEBUG_ASSERT(frameIndex == frameIndexMin());
+                m_currentFrameIndex = frameIndex;
+            } else {
                 // We need to fetch at least 1 sample from the reader to obtain the
                 // current position!
-                if (skipFrames != skipSampleFrames(skipFrames)) {
+                if (skipFrames != readSampleFramesClamped(
+                        WritableSampleFrames(skipFrames)).frameIndexRange()) {
                     kLogger.warning()
                             << "Failed to skip frames while seeking"
                             << skipFrames;
@@ -209,7 +217,8 @@ void SoundSourceMediaFoundation::seekSampleFrame(SINT frameIndex) {
                 if (m_currentFrameIndex < frameIndex) {
                     skipFrames = IndexRange::between(m_currentFrameIndex, frameIndex);
                     // Skip more samples if frameIndex has not yet been reached
-                    if (skipFrames != skipSampleFrames(skipFrames)) {
+                    if (skipFrames != readSampleFramesClamped(
+                            WritableSampleFrames(skipFrames)).frameIndexRange()) {
                         kLogger.warning()
                                 << "Failed to skip frames while seeking"
                                 << skipFrames;
@@ -224,12 +233,6 @@ void SoundSourceMediaFoundation::seekSampleFrame(SINT frameIndex) {
                     // Jump to end of stream (= invalidate current position)
                     m_currentFrameIndex = frameIndexMax();
                 }
-            } else {
-                // We are at the beginning of the stream and don't need
-                // to skip any frames. Calling IMFSourceReader::ReadSample
-                // is not necessary in this special case.
-                DEBUG_ASSERT(frameIndex == frameIndexMin());
-                m_currentFrameIndex = frameIndex;
             }
         } else {
             kLogger.warning()
@@ -241,7 +244,6 @@ void SoundSourceMediaFoundation::seekSampleFrame(SINT frameIndex) {
 }
 
 ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
-        ReadMode readMode,
         WritableSampleFrames writableSampleFrames) {
 
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
@@ -261,8 +263,7 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
 
     const SINT numberOfFramesTotal = writableSampleFrames.frameIndexRange().length();
 
-    CSAMPLE* pSampleBuffer = (readMode != ReadMode::Skip) ?
-            writableSampleFrames.sampleBuffer().data() : nullptr;
+    CSAMPLE* pSampleBuffer = writableSampleFrames.sampleBuffer().data();
     SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (numberOfFramesRemaining > 0) {
         SampleBuffer::ReadableSlice readableSlice(

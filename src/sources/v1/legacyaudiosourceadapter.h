@@ -20,7 +20,6 @@ class LegacyAudioSourceAdapter: public virtual ISampleFrameSource {
             LegacyAudioSource* pImpl);
 
     ReadableSampleFrames readSampleFramesClamped(
-            ReadMode readMode,
             WritableSampleFrames sampleFrames) override;
 
   private:
