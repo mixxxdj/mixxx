@@ -10,21 +10,9 @@
 
 namespace mixxx {
 
-// Base class for sound sources.
-class SoundSource: public MetadataSource, public AudioSource {
-public:
-    static QString getFileExtensionFromUrl(const QUrl& url);
-
-    const QString& getType() const {
-        return m_type;
-    }
-
-    // Default implementations for reading/writing track metadata.
-    Result parseTrackMetadataAndCoverArt(
-            TrackMetadata* pTrackMetadata,
-            QImage* pCoverArt) const override;
-    Result writeTrackMetadata(
-            const TrackMetadata& trackMetadata) const override;
+class ISoundSource {
+  public:
+    virtual ~ISoundSource() {}
 
     enum class OpenMode {
         // In Strict mode the opening operation should be aborted
@@ -55,6 +43,42 @@ public:
         Failed,
     };
 
+  protected:
+      // Tries to open the AudioSource for reading audio data according
+      // to the "Template Method" design pattern.
+      //
+      // The invocation of tryOpen() is enclosed in invocations of close():
+      //   - Before: Always
+      //   - After: Upon failure
+      // If tryOpen() throws an exception or returns a result other than
+      // OpenResult::Succeeded an invocation of close() will follow.
+      // Implementations do not need to free internal resources twice in
+      // both tryOpen() upon failure and close(). All internal resources
+      // should be freed in close() instead.
+      //
+      // Exceptions should be handled internally by implementations to
+      // avoid warning messages about unexpected or unknown exceptions.
+      virtual OpenResult tryOpen(
+              OpenMode mode,
+              const AudioSourceConfig& audioSrcCfg) = 0;
+};
+
+// Base class for sound sources.
+class SoundSource: public AudioSource, public virtual ISoundSource, public virtual IMetadataSource {
+public:
+    static QString getFileExtensionFromUrl(const QUrl& url);
+
+    const QString& getType() const {
+        return m_type;
+    }
+
+    // Default implementations for reading/writing track metadata.
+    Result parseTrackMetadataAndCoverArt(
+            TrackMetadata* pTrackMetadata,
+            QImage* pCoverArt) const override;
+    Result writeTrackMetadata(
+            const TrackMetadata& trackMetadata) const override;
+
     // Opens the AudioSource for reading audio data.
     //
     // Since reopening is not supported close() will be called
@@ -79,26 +103,6 @@ protected:
     // by the URL will be used as the type of the SoundSource.
     explicit SoundSource(const QUrl& url);
     SoundSource(const QUrl& url, const QString& type);
-
-private:
-    // Tries to open the AudioSource for reading audio data according
-    // to the "Template Method" design pattern.
-    //
-    // The invocation of tryOpen() is enclosed in invocations of close():
-    //   - Before: Always
-    //   - After: Upon failure
-    // If tryOpen() throws an exception or returns a result other than
-    // OpenResult::Succeeded an invocation of close() will follow.
-    // Implementations do not need to free internal resources twice in
-    // both tryOpen() upon failure and close(). All internal resources
-    // should be freed in close() instead.
-    //
-    // Exceptions should be handled internally by implementations to
-    // avoid warning messages about unexpected or unknown exceptions.
-    virtual OpenResult tryOpen(
-            OpenMode mode,
-            const AudioSourceConfig& audioSrcCfg) = 0;
-
 
     const QString m_type;
 };

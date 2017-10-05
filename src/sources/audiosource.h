@@ -80,9 +80,9 @@ class WritableSampleFrames: public SampleFrames {
 // Interface for reading audio data in sample frames.
 //
 // Each new type of source must implement at least readSampleFramesClamped().
-class IAudioSourceImpl {
+class IAudioSource {
   public:
-    virtual ~IAudioSourceImpl() = default;
+    virtual ~IAudioSource() = default;
 
   protected:
     // Reads as much of the the requested sample frames and writes
@@ -102,7 +102,7 @@ class IAudioSourceImpl {
     // read function from siblings implementing this interface, e.g.
     // for proxies and adapters.
     static ReadableSampleFrames readSampleFramesClampedOn(
-            IAudioSourceImpl& that,
+            IAudioSource& that,
             WritableSampleFrames sampleFrames) {
         return that.readSampleFramesClamped(sampleFrames);
     }
@@ -120,7 +120,7 @@ class IAudioSourceImpl {
 //
 // Audio sources are implicitly opened upon creation and
 // closed upon destruction.
-class AudioSource: public UrlResource, public AudioSignal, public virtual IAudioSourceImpl {
+class AudioSource: public UrlResource, public AudioSignal, public virtual IAudioSource {
   public:
     virtual ~AudioSource() = default;
 
@@ -238,7 +238,6 @@ class AudioSource: public UrlResource, public AudioSignal, public virtual IAudio
     AudioSource& operator=(const AudioSource&) = delete;
     AudioSource& operator=(AudioSource&&) = delete;
 
-    friend class LegacyAudioSourceAdapter;
     WritableSampleFrames clampWritableSampleFrames(
             WritableSampleFrames sampleFrames) const;
     IndexRange clampFrameIndexRange(

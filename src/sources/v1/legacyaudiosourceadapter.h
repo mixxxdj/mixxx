@@ -13,7 +13,7 @@ namespace mixxx {
 class AudioSource;
 
 // Only required for SoundSourceCoreAudio.
-class LegacyAudioSourceAdapter: public virtual IAudioSourceImpl {
+class LegacyAudioSourceAdapter: public virtual IAudioSource {
   public:
     LegacyAudioSourceAdapter(
             AudioSource* pOwner,

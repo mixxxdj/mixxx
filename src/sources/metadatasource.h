@@ -9,8 +9,10 @@
 namespace mixxx {
 
 // Interface for parsing track metadata and cover art.
-class MetadataSource {
+class IMetadataSource {
 public:
+    virtual ~IMetadataSource() {}
+
     // Read both track metadata and cover art at once, because this
     // is should be the most common use case. Both parameters are
     // output parameters and might be nullptr if their result is not
@@ -22,9 +24,6 @@ public:
     // Update track metadata of the source.
     virtual Result writeTrackMetadata(
             const TrackMetadata& trackMetadata) const = 0;
-
-protected:
-    virtual ~MetadataSource() {}
 };
 
 } //namespace mixxx
