@@ -29,10 +29,10 @@ Variables:
         <SetVariable name="TooltipId">mute</SetVariable>
         <SetVariable name="ObjectName">MixerbarButton</SetVariable>
         <SetVariable name="Size">20f,28f</SetVariable>
-        <SetVariable name="state_0_unpressed">mic_off.svg</SetVariable>
-        <SetVariable name="state_0_pressed">mic_off.svg</SetVariable>
-        <SetVariable name="state_1_unpressed">mic_on.svg</SetVariable>
-        <SetVariable name="state_1_pressed">mic_on.svg</SetVariable>
+        <SetVariable name="state_0_unpressed">mic_on.svg</SetVariable>
+        <SetVariable name="state_0_pressed">mic_on.svg</SetVariable>
+        <SetVariable name="state_1_unpressed">mic_off.svg</SetVariable>
+        <SetVariable name="state_1_pressed">mic_off.svg</SetVariable>
         <SetVariable name="ConfigKey"><Variable name="group"/>,mute</SetVariable>
       </Template>
 
