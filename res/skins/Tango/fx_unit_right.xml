@@ -138,6 +138,7 @@ Variables:
       </WidgetGroup><!-- /EffectUnitMixer + Master, Headphone -->
 
       <WidgetGroup><!-- EffectSlots + Underlays, with focus button -->
+        <ObjectName>Spacer0f</ObjectName>
         <Layout>stacked</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
