@@ -916,7 +916,7 @@ WBeatSpinBox {
     border: 1px solid #ff8f00;
   }
   #RecordingButton[displayValue="2"]:hover {
-    border: 1px solid #dddddd;
+    border: 1px solid #ff8f00;
   }
 /* RecordingDuration underneath RecordingButton, as well as 'REC' text & Rec icon */
 #RecDurationLabel,
