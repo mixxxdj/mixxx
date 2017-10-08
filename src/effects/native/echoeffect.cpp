@@ -7,7 +7,6 @@
 
 constexpr int EchoGroupState::kMaxDelaySeconds;
 constexpr int EchoGroupState::kChannelCount;
-constexpr int EchoGroupState::kRampLength;
 
 namespace {
 
