@@ -34,7 +34,7 @@ EffectManifest PhaserEffect::getManifest() {
     period->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
     period->setMinimum(0.0);
     period->setMaximum(4.0);
-    period->setDefault(0.5);
+    period->setDefault(1.0);
 
     EffectManifestParameter* fb = manifest.addParameter();
     fb->setId("feedback");
@@ -143,19 +143,22 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
         depth = m_pDepthParameter->value();
     }
 
-    double period = m_pLFOPeriodParameter->value();
+    double periodParameter = m_pLFOPeriodParameter->value();
+    double periodSamples;
     if (groupFeatures.has_beat_length_sec) {
-        // period is a number of beats
-        period = std::max(roundToFraction(period, 2.0), 1/4.0);
+        // periodParameter is a number of beats
+        periodParameter = std::max(roundToFraction(periodParameter, 2.0), 1/4.0);
         if (m_pTripletParameter->toBool()) {
-            period /= 3.0;
+            periodParameter /= 3.0;
         }
-        period = period * groupFeatures.beat_length_sec
-                * sampleRate * kChannels;
+        periodSamples = periodParameter * groupFeatures.beat_length_sec * sampleRate;
     } else {
-        // period is a number of seconds
-        period = std::max(period, 1/4.0) * sampleRate * kChannels;
+        // periodParameter is a number of seconds
+        periodSamples = std::max(periodParameter, 1/4.0) * sampleRate;
     }
+    // freqSkip is used to calculate the phase independently for each channel,
+    // so do not multiply periodSamples by the number of channels.
+    CSAMPLE freqSkip = 1.0 / periodSamples * 2.0 * M_PI;
 
     CSAMPLE feedback = m_pFeedbackParameter->value();
     CSAMPLE range = m_pRangeParameter->value();
@@ -171,7 +174,6 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE filterCoefRight = 0;
 
     CSAMPLE left = 0, right = 0;
-    CSAMPLE freqSkip = 1.0 / period * 2.0 * M_PI;
 
     CSAMPLE_GAIN oldDepth = pState->oldDepth;
     const CSAMPLE_GAIN depthDelta = (depth - oldDepth)
