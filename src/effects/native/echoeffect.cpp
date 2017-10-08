@@ -48,7 +48,7 @@ EffectManifest EchoEffect::getManifest() {
     feedback->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     feedback->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     feedback->setMinimum(0.00);
-    feedback->setDefault(0.75);
+    feedback->setDefault(db2ratio(-3.0));
     feedback->setMaximum(1.00);
 
     EffectManifestParameter* pingpong = manifest.addParameter();
@@ -75,7 +75,7 @@ EffectManifest EchoEffect::getManifest() {
     send->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     send->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     send->setMinimum(0.0);
-    send->setDefault(1.0);
+    send->setDefault(db2ratio(-3.0));
     send->setMaximum(1.0);
 
     EffectManifestParameter* quantize = manifest.addParameter();
@@ -208,19 +208,19 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
             // by 1 + fraction.
             pOutput[i] = pInput[i] +
                     ((bufferedSample0 + bufferedSample1 * pingpong_frac) /
-                    (1 + pingpong_frac)) / 2.0;
+                    (1 + pingpong_frac));
             // Right sample reduced by (1 - fraction)
             pOutput[i + 1] = pInput[i + 1] +
-                    (bufferedSample1 * (1 - pingpong_frac)) / 2.0;
+                    (bufferedSample1 * (1 - pingpong_frac));
         } else {
             // Left sample reduced by (1 - fraction)
             pOutput[i] = pInput[i] +
-                    (bufferedSample0 * (1 - pingpong_frac)) / 2.0;
+                    (bufferedSample0 * (1 - pingpong_frac));
             // Right sample plus fraction of left sample, normalized by
             // 1 + fraction
             pOutput[i + 1] = pInput[i + 1] +
                     ((bufferedSample1 + bufferedSample0 * pingpong_frac) /
-                    (1 + pingpong_frac)) / 2.0;
+                    (1 + pingpong_frac));
         }
 
         INCREMENT_RING(gs.write_position, EchoGroupState::kChannelCount,

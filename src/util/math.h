@@ -18,6 +18,7 @@
 // after our fpclassify hack 
 
 #include <algorithm>
+#include <type_traits>
 
 #include "util/assert.h"
 #include "util/fpclassify.h"
@@ -74,11 +75,19 @@ inline double roundToFraction(double value, int denominator) {
 
 template <typename T>
 inline const T ratio2db(const T a) {
+    static_assert(std::is_same<float, T>::value ||
+                  std::is_same<double, T>::value ||
+                  std::is_same<long double, T>::value,
+                  "ratio2db works only for floating point types");
     return log10(a) * 20;
 }
 
 template <typename T>
 inline const T db2ratio(const T a) {
+    static_assert(std::is_same<float, T>::value ||
+                  std::is_same<double, T>::value ||
+                  std::is_same<long double, T>::value,
+                  "db2ratio works only for floating point types");
     return pow(10, a / 20);
 }
 
