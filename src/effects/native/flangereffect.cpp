@@ -35,7 +35,7 @@ EffectManifest FlangerEffect::getManifest() {
     period->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
     period->setMinimum(0.00);
     period->setMaximum(4.00);
-    period->setDefault(0.50);
+    period->setDefault(1.00);
 
     EffectManifestParameter* depth = manifest.addParameter();
     depth->setId("depth");
@@ -88,19 +88,22 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
     const int kChannels = 2;
 
     // The parameter minimum is zero so the exact center of the knob is 2 beats.
-    double lfoPeriod = m_pPeriodParameter->value();
+    double lfoPeriodParameter = m_pPeriodParameter->value();
+    double lfoPeriodSamples;
     if (groupFeatures.has_beat_length_sec) {
-        // lfoPeriod is a number of beats
-        lfoPeriod = std::max(roundToFraction(lfoPeriod, 2.0), 1/4.0);
+        // lfoPeriodParameter is a number of beats
+        lfoPeriodParameter = std::max(roundToFraction(lfoPeriodParameter, 2.0), 1/4.0);
         if (m_pTripletParameter->toBool()) {
-            lfoPeriod /= 3.0;
+            lfoPeriodParameter /= 3.0;
         }
-        lfoPeriod = lfoPeriod * groupFeatures.beat_length_sec
-                * sampleRate * kChannels;
+        lfoPeriodSamples = lfoPeriodParameter * groupFeatures.beat_length_sec * sampleRate;
     } else {
-        // lfoPeriod is a number of seconds
-        lfoPeriod = std::max(lfoPeriod, 1/4.0) * sampleRate * kChannels;
+        // lfoPeriodParameter is a number of seconds
+        lfoPeriodSamples = std::max(lfoPeriodParameter, 1/4.0) * sampleRate;
     }
+    // lfoPeriodSamples is used to calculate the delay for each channel
+    // independently in the loop below, so do not multiply lfoPeriodSamples by
+    // the number of channels.
 
     CSAMPLE lfoDepth = m_pDepthParameter->value();
 
@@ -114,11 +117,11 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
         pState->delayPos = (pState->delayPos + 1) % kMaxDelay;
 
         pState->time++;
-        if (pState->time > lfoPeriod) {
+        if (pState->time > lfoPeriodSamples) {
             pState->time = 0;
         }
 
-        CSAMPLE periodFraction = CSAMPLE(pState->time) / lfoPeriod;
+        CSAMPLE periodFraction = CSAMPLE(pState->time) / lfoPeriodSamples;
         CSAMPLE delay = kAverageDelayLength + kLfoAmplitude * sin(M_PI * 2.0f * periodFraction);
 
         int framePrev = (pState->delayPos - int(delay) + kMaxDelay - 1) % kMaxDelay;
