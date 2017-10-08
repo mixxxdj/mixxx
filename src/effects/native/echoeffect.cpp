@@ -162,7 +162,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         delay_frames = 1;
     }
 
-    int delay_samples = delay_frames * gs.kChannelCount;
+    int delay_samples = delay_frames * EchoGroupState::kChannelCount;
     VERIFY_OR_DEBUG_ASSERT(delay_samples <= gs.delay_buf.size()) {
         delay_samples = gs.delay_buf.size();
     }
@@ -187,14 +187,14 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         CSAMPLE_GAIN feedback_ramped = feedback_start
                 + feedback_delta * i / EchoGroupState::kChannelCount;
 
-        CSAMPLE bufferedSample0 = gs.delay_buf[read_position];
-        CSAMPLE bufferedSample1 = gs.delay_buf[read_position + 1];
+        CSAMPLE bufferedSampleLeft = gs.delay_buf[read_position];
+        CSAMPLE bufferedSampleRight = gs.delay_buf[read_position + 1];
         if (read_position != prev_read_position) {
             double frac = static_cast<double>(i) / numSamples;            
-            bufferedSample0 *= frac;
-            bufferedSample1 *= frac;
-            bufferedSample0 += gs.delay_buf[prev_read_position] * (1 -frac);
-            bufferedSample1 += gs.delay_buf[prev_read_position + 1] * (1 -frac);
+            bufferedSampleLeft *= frac;
+            bufferedSampleRight *= frac;
+            bufferedSampleLeft += gs.delay_buf[prev_read_position] * (1 - frac);
+            bufferedSampleRight += gs.delay_buf[prev_read_position + 1] * (1 - frac);
             incrementRing(&prev_read_position, EchoGroupState::kChannelCount,
                     gs.delay_buf.size());
         }
@@ -204,10 +204,10 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         // Actual delays distort and saturate, so clamp the buffer here.
         gs.delay_buf[gs.write_position] = SampleUtil::clampSample(
                 pInput[i] * send_ramped +
-                bufferedSample0 * feedback_ramped);
+                bufferedSampleLeft * feedback_ramped);
         gs.delay_buf[gs.write_position + 1] = SampleUtil::clampSample(
                 pInput[i + 1] * send_ramped +
-                bufferedSample0 * feedback_ramped);
+                bufferedSampleLeft * feedback_ramped);
 
         // Pingpong the output.  If the pingpong value is zero, all of the
         // math below should result in a simple copy of delay buf to pOutput.
@@ -215,26 +215,27 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
             // Left sample plus a fraction of the right sample, normalized
             // by 1 + fraction.
             pOutput[i] = pInput[i] +
-                    ((bufferedSample0 + bufferedSample1 * pingpong_frac) /
+                    ((bufferedSampleLeft + bufferedSampleRight * pingpong_frac) /
                     (1 + pingpong_frac));
             // Right sample reduced by (1 - fraction)
             pOutput[i + 1] = pInput[i + 1] +
-                    (bufferedSample1 * (1 - pingpong_frac));
+                    (bufferedSampleRight * (1 - pingpong_frac));
         } else {
             // Left sample reduced by (1 - fraction)
             pOutput[i] = pInput[i] +
-                    (bufferedSample0 * (1 - pingpong_frac));
+                    (bufferedSampleLeft * (1 - pingpong_frac));
             // Right sample plus fraction of left sample, normalized by
             // 1 + fraction
             pOutput[i + 1] = pInput[i + 1] +
-                    ((bufferedSample1 + bufferedSample0 * pingpong_frac) /
+                    ((bufferedSampleRight + bufferedSampleLeft * pingpong_frac) /
                     (1 + pingpong_frac));
         }
 
         incrementRing(&gs.write_position, EchoGroupState::kChannelCount,
                 gs.delay_buf.size());
 
-        if (++gs.ping_pong >= delay_samples) {
+        ++gs.ping_pong;
+        if (gs.ping_pong >= delay_samples) {
             gs.ping_pong = 0;
         }
     }
