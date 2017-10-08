@@ -5,12 +5,21 @@
 #include "util/sample.h"
 #include "util/math.h"
 
-#define INCREMENT_RING(index, increment, length) index = (index + increment) % length
-#define DECREMENT_RING(index, decrement, length) index = (index + length - decrement) % length
-
 constexpr int EchoGroupState::kMaxDelaySeconds;
 constexpr int EchoGroupState::kChannelCount;
 constexpr int EchoGroupState::kRampLength;
+
+namespace {
+
+void incrementRing(int* pIndex, int increment, int length) {
+    *pIndex = (*pIndex + increment) % length;
+}
+
+void decrementRing(int* pIndex, int decrement, int length) {
+    *pIndex = (*pIndex + length - decrement) % length;
+}
+
+} // anonymous namespace
 
 // static
 QString EchoEffect::getId() {
@@ -160,9 +169,9 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     }
 
     int prev_read_position = gs.write_position;
-    DECREMENT_RING(prev_read_position, gs.prev_delay_samples, gs.delay_buf.size());
+    decrementRing(&prev_read_position, gs.prev_delay_samples, gs.delay_buf.size());
     int read_position = gs.write_position;
-    DECREMENT_RING(read_position, delay_samples, gs.delay_buf.size());
+    decrementRing(&read_position, delay_samples, gs.delay_buf.size());
 
     // Feedback the delay buffer and then add the new input.
     const CSAMPLE_GAIN send_delta = (send_amount - gs.prev_send) /
@@ -187,10 +196,10 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
             bufferedSample1 *= frac;
             bufferedSample0 += gs.delay_buf[prev_read_position] * (1 -frac);
             bufferedSample1 += gs.delay_buf[prev_read_position + 1] * (1 -frac);
-            INCREMENT_RING(prev_read_position, EchoGroupState::kChannelCount,
+            incrementRing(&prev_read_position, EchoGroupState::kChannelCount,
                     gs.delay_buf.size());
         }
-        INCREMENT_RING(read_position, EchoGroupState::kChannelCount,
+        incrementRing(&read_position, EchoGroupState::kChannelCount,
                 gs.delay_buf.size());
 
         // Actual delays distort and saturate, so clamp the buffer here.
@@ -223,7 +232,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
                     (1 + pingpong_frac));
         }
 
-        INCREMENT_RING(gs.write_position, EchoGroupState::kChannelCount,
+        incrementRing(&gs.write_position, EchoGroupState::kChannelCount,
                 gs.delay_buf.size());
 
         if (++gs.ping_pong >= delay_samples) {
