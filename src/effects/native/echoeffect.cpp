@@ -159,17 +159,19 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         delay_samples = gs.delay_buf.size();
     }
 
+    int prev_read_position = gs.write_position;
+    DECREMENT_RING(prev_read_position, gs.prev_delay_samples, gs.delay_buf.size());
     int read_position = gs.write_position;
     DECREMENT_RING(read_position, delay_samples, gs.delay_buf.size());
 
     // Feedback the delay buffer and then add the new input.
     const CSAMPLE_GAIN send_delta = (send_amount - gs.prev_send) /
             (numSamples / EchoGroupState::kChannelCount);
-    const CSAMPLE_GAIN send_start = send_amount + send_delta;
+    const CSAMPLE_GAIN send_start = gs.prev_send + send_delta;
 
     const CSAMPLE_GAIN feedback_delta = (feedback_amount - gs.prev_feedback) /
             (numSamples / EchoGroupState::kChannelCount);
-    const CSAMPLE_GAIN feedback_start = feedback_amount + feedback_delta;
+    const CSAMPLE_GAIN feedback_start = gs.prev_feedback + feedback_delta;
 
     for (unsigned int i = 0; i < numSamples; i += EchoGroupState::kChannelCount) {
         CSAMPLE_GAIN send_ramped = send_start
@@ -177,13 +179,27 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         CSAMPLE_GAIN feedback_ramped = feedback_start
                 + feedback_delta * i / EchoGroupState::kChannelCount;
 
+        CSAMPLE bufferedSample0 = gs.delay_buf[read_position];
+        CSAMPLE bufferedSample1 = gs.delay_buf[read_position + 1];
+        if (read_position != prev_read_position) {
+            double frac = static_cast<double>(i) / numSamples;            
+            bufferedSample0 *= frac;
+            bufferedSample1 *= frac;
+            bufferedSample0 += gs.delay_buf[prev_read_position] * (1 -frac);
+            bufferedSample1 += gs.delay_buf[prev_read_position + 1] * (1 -frac);
+            INCREMENT_RING(prev_read_position, EchoGroupState::kChannelCount,
+                    gs.delay_buf.size());
+        }
+        INCREMENT_RING(read_position, EchoGroupState::kChannelCount,
+                gs.delay_buf.size());
+
         // Actual delays distort and saturate, so clamp the buffer here.
         gs.delay_buf[gs.write_position] = SampleUtil::clampSample(
                 pInput[i] * send_ramped +
-                gs.delay_buf[read_position] * feedback_ramped);
+                bufferedSample0 * feedback_ramped);
         gs.delay_buf[gs.write_position + 1] = SampleUtil::clampSample(
                 pInput[i + 1] * send_ramped +
-                gs.delay_buf[read_position + 1] * feedback_ramped);
+                bufferedSample0 * feedback_ramped);
 
         // Pingpong the output.  If the pingpong value is zero, all of the
         // math below should result in a simple copy of delay buf to pOutput.
@@ -191,27 +207,23 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
             // Left sample plus a fraction of the right sample, normalized
             // by 1 + fraction.
             pOutput[i] = pInput[i] +
-                    ((gs.delay_buf[read_position] +
-                            gs.delay_buf[read_position + 1] * pingpong_frac) /
+                    ((bufferedSample0 + bufferedSample1 * pingpong_frac) /
                     (1 + pingpong_frac)) / 2.0;
             // Right sample reduced by (1 - fraction)
             pOutput[i + 1] = pInput[i + 1] +
-                    (gs.delay_buf[read_position + 1] * (1 - pingpong_frac)) / 2.0;
+                    (bufferedSample1 * (1 - pingpong_frac)) / 2.0;
         } else {
             // Left sample reduced by (1 - fraction)
             pOutput[i] = pInput[i] +
-                    (gs.delay_buf[read_position] * (1 - pingpong_frac)) / 2.0;
+                    (bufferedSample0 * (1 - pingpong_frac)) / 2.0;
             // Right sample plus fraction of left sample, normalized by
             // 1 + fraction
             pOutput[i + 1] = pInput[i + 1] +
-                    ((gs.delay_buf[read_position + 1] +
-                            gs.delay_buf[read_position] * pingpong_frac) /
+                    ((bufferedSample1 + bufferedSample0 * pingpong_frac) /
                     (1 + pingpong_frac)) / 2.0;
         }
 
         INCREMENT_RING(gs.write_position, EchoGroupState::kChannelCount,
-                gs.delay_buf.size());
-        INCREMENT_RING(read_position, EchoGroupState::kChannelCount,
                 gs.delay_buf.size());
 
         if (++gs.ping_pong >= delay_samples) {
