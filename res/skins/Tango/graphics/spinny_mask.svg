@@ -14,7 +14,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="spinnyBig_mask.svg"
+   sodipodi:docname="spinny_mask.svg"
    enable-background="new">
   <defs
      id="defs4">
@@ -49,8 +49,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="11.313708"
-     inkscape:cx="61.45348"
-     inkscape:cy="3.1761761"
+     inkscape:cx="10.882384"
+     inkscape:cy="77.778679"
      inkscape:document-units="px"
      inkscape:current-layer="svg2"
      showgrid="false"
@@ -70,16 +70,31 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
+  <path
+     style="fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;display:inline;stroke-opacity:1;stroke-width:0.5;stroke-miterlimit:4;stroke-dasharray:none"
+     d="m 48,26.87228 c -11.668501,0 -21.127701,9.4592 -21.127701,21.12774 0,11.6685 9.4592,21.1277 21.127701,21.1277 11.668513,0 21.127701,-9.4592 21.127701,-21.1277 C 69.127701,36.33148 59.668513,26.87228 48,26.87228 z"
+     id="path4010"
+     inkscape:connector-curvature="0" />
   <path
      style="fill:#333333;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
      d="M 0 0 L 0 96 L 96 96 L 96 0 L 0 0 z M 48 1.875 C 73.474392 1.875 94.125 22.515393 94.125 48 C 94.125 73.484597 73.474392 94.125 48 94.125 C 22.525606 94.125 1.875 73.484597 1.875 48 C 1.875 22.515393 22.525606 1.875 48 1.875 z "
      id="path5294" />
   <path
-     style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#585858;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.227;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans"
+     style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.22700000000000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans"
      d="M 48 1.625 C 22.383419 1.625 1.625 22.43253 1.625 48.03125 C 1.625 73.63005 22.383419 94.375 48 94.375 C 73.61658 94.375 94.375 73.63005 94.375 48.03125 C 94.375 22.43253 73.61658 1.625 48 1.625 z M 48 1.875 C 73.468871 1.875 94.125 22.520917 94.125 48 C 94.125 73.479073 73.468871 94.125 48 94.125 C 22.531127 94.125 1.875 73.479073 1.875 48 C 1.875 22.520917 22.531127 1.875 48 1.875 z "
      id="path5348" />
+  <path
+     sodipodi:type="arc"
+     style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
+     id="path3830-7"
+     sodipodi:cx="48.739861"
+     sodipodi:cy="48.017754"
+     sodipodi:rx="4.2931485"
+     sodipodi:ry="4.2931485"
+     d="m 53.033009,48.017754 a 4.2931485,4.2931485 0 1 1 -8.586297,0 4.2931485,4.2931485 0 1 1 8.586297,0 z"
+     transform="matrix(0.27995619,0,0,0.27995619,34.354974,34.55713)" />
 </svg>
