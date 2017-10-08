@@ -1,6 +1,6 @@
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2017-9-27
+// description: 2017-10-1
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 // JSHint Configuration
@@ -76,20 +76,32 @@ VCI102.SelectNextTrack = function(ch, midino, value, status, group) {
     });
 };
 
+VCI102.slipSrc = [0, 0, 0, 0];  // number of enabled slip-source controls
 VCI102.slipReady = [true, true, true, true];  // false in slip reenabling wait
 
 VCI102.slip = function(value, group, key) {
     var ch = VCI102.deck.indexOf(group);
-    // resume after the effect when the track is [re]played
-    if (key == "play" ? value : !value && engine.getValue(group, "play")) {
-        if (engine.getValue(group, "slip_enabled")) {
-            VCI102.slipReady[ch] = false;
-            engine.setValue(group, "slip_enabled", 0);
-            engine.beginTimer(60, function() {
-                engine.setValue(group, "slip_enabled", 1);
-                VCI102.slipReady[ch] = true;
-            }, true);
+    if (key == "play") {
+        if (value) {
+            VCI102.slipSrc[ch] %= 64;  // reset 7th bit if start
+        } else {
+            VCI102.slipSrc[ch] += 64;  // set 7th bit if stop
+            return;
         }
+    } else if (value) {
+        VCI102.slipSrc[ch]++;
+        return;
+    } else {
+        VCI102.slipSrc[ch]--;
+    }
+    // resume slip after all slip-source controls are disabled
+    if (engine.getValue(group, "slip_enabled") && !VCI102.slipSrc[ch]) {
+        VCI102.slipReady[ch] = false;
+        engine.setValue(group, "slip_enabled", 0);
+        engine.beginTimer(60, function() {
+            engine.setValue(group, "slip_enabled", 1);
+            VCI102.slipReady[ch] = true;
+        }, true);
     }
 };
 
@@ -109,6 +121,7 @@ VCI102.scratchEnable = function(ch, midino, value, status, group) {
             } else {
                 engine.scratchEnable(deck, 2400, 100 / 3, 1 / 8, 1 / 256);
             }
+            VCI102.slip(value, group);
         }
     } else if (engine.isScratching(deck)) {
         VCI102.scratchTimer[ch] = engine.beginTimer(20, function() {
