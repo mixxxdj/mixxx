@@ -101,6 +101,17 @@
         </ExePackage>
       <?endif ?>
 
+      <ExePackage
+          Id="UninstallPreviousVersion"
+          SourceFile="UninstallPreviousVersion.bat"
+          DisplayName="Previous Version uninstallation"
+          InstallCommand="[InstallFolder]"
+          Cache="no"
+          Compressed="no"
+          PerMachine="yes"
+          Permanent="yes"
+          Vital="yes"/>
+
       <RollbackBoundary />
 
       <MsiPackage
