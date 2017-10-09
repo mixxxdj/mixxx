@@ -1,6 +1,6 @@
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2017-10-1
+// description: 2017-10-9
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 // JSHint Configuration
@@ -213,7 +213,15 @@ VCI102.slot = function(group, n) {
     return group.slice(0, -1) + "_Effect" + n + "]";
 };
 
-VCI102.parameter = function(ch, value, group, key) {
+VCI102.set = function(group, key, value) {
+    // for midi input of knob
+    if (value > 95) {
+        value++;
+    }
+    engine.setParameter(group, key, value / 128);
+};
+
+VCI102.parameter = function(ch, group, key, value) {
     if (VCI102.shift[ch % 2]) {
         // link to meta, inverse variants -> none -> direct variants
         if (engine.getValue(group, key + "_loaded")) {
@@ -222,47 +230,43 @@ VCI102.parameter = function(ch, value, group, key) {
             engine.setValue(group, key + "_link_inverse", value < 0);
         }
     } else {
-        engine.setParameter(group, key, value < 127 ? value / 128 : 1);
+        VCI102.set(group, key, value);
     }
-};
-
-VCI102.meta = function(value, group, key) {
-    engine.setValue(group, key, value < 127 ? value / 128 : 1);
 };
 
 VCI102.parameter1 = function(ch, midino, value, status, group) {
     var n = engine.getValue(group, "focused_effect");
     if (n) {
-        VCI102.parameter(ch, value, VCI102.slot(group, n), "parameter1");
+        VCI102.parameter(ch, VCI102.slot(group, n), "parameter1", value);
     } else {
-        VCI102.meta(value, VCI102.slot(group, 1), "meta");
+        VCI102.set(VCI102.slot(group, 1), "meta", value);
     }
 };
 
 VCI102.parameter2 = function(ch, midino, value, status, group) {
     var n = engine.getValue(group, "focused_effect");
     if (n) {
-        VCI102.parameter(ch, value, VCI102.slot(group, n), "parameter2");
+        VCI102.parameter(ch, VCI102.slot(group, n), "parameter2", value);
     } else {
-        VCI102.meta(value, VCI102.slot(group, 2), "meta");
+        VCI102.set(VCI102.slot(group, 2), "meta", value);
     }
 };
 
 VCI102.parameter3 = function(ch, midino, value, status, group) {
     var n = engine.getValue(group, "focused_effect");
     if (n) {
-        VCI102.parameter(ch, value, VCI102.slot(group, n), "parameter3");
+        VCI102.parameter(ch, VCI102.slot(group, n), "parameter3", value);
     } else {
-        VCI102.meta(value, VCI102.slot(group, 3), "meta");
+        VCI102.set(VCI102.slot(group, 3), "meta", value);
     }
 };
 
 VCI102.parameter4 = function(ch, midino, value, status, group) {
     var n = engine.getValue(group, "focused_effect");
     if (n) {
-        VCI102.parameter(ch, value, VCI102.slot(group, n), "parameter4");
+        VCI102.parameter(ch, VCI102.slot(group, n), "parameter4", value);
     } else {
-        VCI102.meta(value, group, "super1");
+        VCI102.set(group, "super1", value);
     }
 };
 
