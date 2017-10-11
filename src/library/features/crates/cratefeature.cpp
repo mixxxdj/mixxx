@@ -586,8 +586,6 @@ void CrateFeature::slotMoveSubtreeToCrate(int iCrateId) {
             return;
         }
 
-        m_pCrates->hierarchy().moveCrate(selectedCrate, destinationCrateId);
-
         Crate destinationCrate;
         m_pCrates->storage().readCrateById(destinationCrateId, &destinationCrate);
 
@@ -597,6 +595,9 @@ void CrateFeature::slotMoveSubtreeToCrate(int iCrateId) {
                  destinationCrate).contains(selectedCrate.getName())) {
             selectedCrate.setName(selectedCrate.getName() + "_");
         };
+
+        m_pCrates->hierarchy().moveCrate(selectedCrate, destinationCrateId);
+
         // rebuild the paths
         m_pCrates->updateCrate(selectedCrate);
         rebuildChildModel();
