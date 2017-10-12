@@ -276,8 +276,8 @@ void CrateHierarchy::deleteCrate(const CrateId& id) const {
     }
 }
 
-void CrateHierarchy::moveCrate(const Crate &crate,
-                               CrateId destinationCrateId) const {
+bool CrateHierarchy::moveCrate(Crate& crate,
+                               const Crate& destination) const {
     {
         QString subquery(
           QString(
@@ -298,35 +298,43 @@ void CrateHierarchy::moveCrate(const Crate &crate,
               CLOSURE_PARENTID));
 
         if (!query.isPrepared()) {
-            return;
+            return false;
         }
         if (!query.execPrepared()) {
-            return;
+            return false;
         }
     }
-    if (destinationCrateId.isValid()) {
+    if (destination.getId().isValid()) {
+        // Try and preserve naming conventionos
+        while (crate.getName() == destination.getName() ||
+               collectImmediateChildrenNames(destination).
+               contains(crate.getName())) {
+            crate.setName(crate.getName() + "_");
+        };
+
         FwdSqlQuery query(
           m_database, QString(
             "INSERT INTO %1 (%2, %3, %4) "
             "SELECT a.%2, b.%3, a.%4 + b.%4 + 1 "
             "FROM %1 AS a "
             "JOIN %1 AS b "
-            "WHERE a.%3 = :destinatnion "
+            "WHERE a.%3 = :destination "
             "AND b.%2 = :source").arg(
               CRATE_CLOSURE_TABLE,
               CLOSURE_PARENTID,
               CLOSURE_CHILDID,
               CLOSURE_DEPTH));
 
-        query.bindValue(":destination", destinationCrateId.toString());
+        query.bindValue(":destination", destination.getId().toString());
         query.bindValue(":source", crate.getId().toString());
 
         if (!query.isPrepared()) {
-            return;
+            return false;
         }
         if (!query.execPrepared()) {
-            return;
+            return false;
         }
+        return true;
     }
 }
 

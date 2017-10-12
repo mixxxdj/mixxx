@@ -586,19 +586,11 @@ void CrateFeature::slotMoveSubtreeToCrate(int iCrateId) {
             return;
         }
 
-        m_pCrates->hierarchy().moveCrate(selectedCrate, destinationCrateId);
-
         Crate destinationCrate;
         m_pCrates->storage().readCrateById(destinationCrateId, &destinationCrate);
 
-        // try to keep naming convention
-        while (selectedCrate.getName() == destinationCrate.getName() ||
-               m_pCrates->hierarchy().collectImmediateChildrenNames(
-                 destinationCrate).contains(selectedCrate.getName())) {
-            selectedCrate.setName(selectedCrate.getName() + "_");
-        };
-        // rebuild the paths
-        m_pCrates->updateCrate(selectedCrate);
+        m_pCrates->moveCrate(selectedCrate, destinationCrate);
+
         rebuildChildModel();
     }
 }

@@ -71,6 +71,7 @@ class CrateManager : public QObject, public virtual SqlStorage {
     // update crate information (name, locked status, AutoDJ use)
     // in the database with info from Crate object
     bool updateCrate(const Crate& crate);
+    bool moveCrate(Crate& crate, const Crate& destination);
     bool deleteCrate(const Crate& crate);
     bool addTracksToCrate(CrateId crateId, const QList<TrackId>& trackIds);
     bool removeTracksFromCrate(CrateId crateId, const QList<TrackId>& trackIds);

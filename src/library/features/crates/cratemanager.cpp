@@ -157,6 +157,25 @@ void CrateManager::checkClosure() {
     }
 }
 
+bool CrateManager::moveCrate(
+  Crate& crate,
+  const Crate& destination) {
+    // Transactional
+    SqlTransaction transaction(m_database);
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_crateHierarchy.moveCrate(crate, destination)) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
+        return false;
+    }
+
+    updateCrate(crate);
+    return true;
+}
+
 bool CrateManager::insertCrate(
   Crate& crate,
   CrateId* pCrateId,

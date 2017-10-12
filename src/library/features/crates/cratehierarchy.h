@@ -95,7 +95,7 @@ class CrateHierarchy : public virtual DAO {
     // selects all the crates that the selected crate can move to
     // (All crates other than itself and it's decendants)
     CrateSelectResult selectCratesToMove(const Crate& crate) const;
-    void moveCrate(const Crate& crate, CrateId destinationCrateId) const;
+    bool moveCrate(Crate& crate, const Crate& destination) const;
 
   private:
     // empties the closure table
