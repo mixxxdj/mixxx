@@ -629,23 +629,25 @@ QString BasePlaylistFeature::getValidPlaylistName() const {
 }
 
 QSet<int> BasePlaylistFeature::playlistIdsFromIndex(const QModelIndex& index) const {
-    bool ok = false;
-    int playlistId = index.data(AbstractRole::RoleData).toInt(&ok);
     QSet<int> set;
-    if (ok) {
+    int playlistId = playlistIdFromIndex(index);
+    if (playlistId >= 0) {
         set.insert(playlistId);
     }
     return set;
 }
 
-
 int BasePlaylistFeature::playlistIdFromIndex(const QModelIndex& index) const {
-    QSet<int> playlistIds = playlistIdsFromIndex(index);
-    if (playlistIds.empty() || playlistIds.size() > 1) {
+    TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+    if (item == nullptr) {
         return -1;
     }
-
-    return *playlistIds.begin();
+    bool ok = false;
+    int playlistId = item->getData().toInt(&ok);
+    if (ok) {
+        return playlistId;
+    }
+    return -1;
 }
 
 void BasePlaylistFeature::showTable(int paneId) {
@@ -760,7 +762,7 @@ void BasePlaylistFeature::updateChildModel(int selectedId) {
     if (pos < 0) {
         return;
     }
-    item->setData(m_playlistList[pos].name);
+    item->setLabel(m_playlistList[pos].name);
 
     decorateChild(item, selectedId);
 }
