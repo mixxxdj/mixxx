@@ -9,8 +9,11 @@
 #include "engine/effects/engineeffectchain.h"
 #include "util/assert.h"
 
-const char* kEqualizerRackName = "[EqualizerChain]";
-const char* kQuickEffectRackName = "[QuickEffectChain]";
+namespace {
+const QString kEffectGroupSeparator = "_";
+const QString kGroupClose = "]";
+} // anonymous namespace
+
 
 EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig)
         : QObject(pParent),
@@ -217,6 +220,74 @@ QuickEffectRackPointer EffectsManager::getQuickEffectRack(int rack) {
 EffectRackPointer EffectsManager::getEffectRack(const QString& group) {
     return m_pEffectChainManager->getEffectRack(group);
 }
+
+EffectSlotPointer EffectsManager::getEffectSlot(
+        const QString& group) {
+    QRegExp intRegEx(".*(\\d+).*");
+
+    QStringList parts = group.split(kEffectGroupSeparator);
+
+    EffectRackPointer pRack = getEffectRack(parts.at(0) + kGroupClose);
+    VERIFY_OR_DEBUG_ASSERT(pRack) {
+        return EffectSlotPointer();
+    }
+
+    EffectChainSlotPointer pChainSlot;
+    if (parts.at(0) == "[EffectRack1") {
+        intRegEx.indexIn(parts.at(1));
+        pChainSlot = pRack->getEffectChainSlot(intRegEx.cap(1).toInt() - 1);
+    } else {
+        // Assume a PerGroupRack
+        const QString chainGroup =
+                parts.at(0) + kEffectGroupSeparator + parts.at(1) + kGroupClose;
+        for (int i = 0; i < pRack->numEffectChainSlots(); ++i) {
+            EffectChainSlotPointer pSlot = pRack->getEffectChainSlot(i);
+            if (pSlot->getGroup() == chainGroup) {
+                pChainSlot = pSlot;
+                break;
+            }
+        }
+    }
+    VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
+        return EffectSlotPointer();
+    }
+
+    intRegEx.indexIn(parts.at(2));
+    EffectSlotPointer pEffectSlot =
+            pChainSlot->getEffectSlot(intRegEx.cap(1).toInt() - 1);
+    return pEffectSlot;
+}
+
+EffectParameterSlotPointer EffectsManager::getEffectParameterSlot(
+        const ConfigKey& configKey) {
+    EffectSlotPointer pEffectSlot =
+             getEffectSlot(configKey.group);
+    VERIFY_OR_DEBUG_ASSERT(pEffectSlot) {
+        return EffectParameterSlotPointer();
+    }
+
+    QRegExp intRegEx(".*(\\d+).*");
+    intRegEx.indexIn(configKey.item);
+    EffectParameterSlotPointer pParameterSlot =
+            pEffectSlot->getEffectParameterSlot(intRegEx.cap(1).toInt() - 1);
+    return pParameterSlot;
+}
+
+EffectButtonParameterSlotPointer EffectsManager::getEffectButtonParameterSlot(
+        const ConfigKey& configKey) {
+    EffectSlotPointer pEffectSlot =
+             getEffectSlot(configKey.group);
+    VERIFY_OR_DEBUG_ASSERT(pEffectSlot) {
+        return EffectButtonParameterSlotPointer();
+    }
+
+    QRegExp intRegEx(".*(\\d+).*");
+    intRegEx.indexIn(configKey.item);
+    EffectButtonParameterSlotPointer pParameterSlot =
+            pEffectSlot->getEffectButtonParameterSlot(intRegEx.cap(1).toInt() - 1);
+    return pParameterSlot;
+}
+
 
 void EffectsManager::setup() {
     // These controls are used inside EQ Effects

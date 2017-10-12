@@ -747,8 +747,9 @@ void BasePlaylistFeature::updateChildModel(int selectedId) {
         return;
     }
     QPointer<TreeItemModel> pChildModel = getChildModel();
-    VERIFY_OR_DEBUG_ASSERT (pChildModel.isNull())
+    VERIFY_OR_DEBUG_ASSERT (pChildModel) {
         return;
+    }
 
     TreeItem* item = pChildModel->getItem(index);
     VERIFY_OR_DEBUG_ASSERT(item) {

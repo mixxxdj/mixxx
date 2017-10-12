@@ -675,7 +675,8 @@ void CrateFeature::updateChildModel(const QSet<CrateId>& updatedCrateIds) {
             continue;
         }
         CrateSummary crateSummary;
-        VERIFY_OR_DEBUG_ASSERT(m_pCrates->storage().readCrateSummaryById(crateId, &crateSummary)) {
+        VERIFY_OR_DEBUG_ASSERT(
+                crateStorage.readCrateSummaryById(crateId, &crateSummary)) {
             continue;
         }
         updateTreeItemForCrateSummary(m_pChildModel->getItem(index), crateSummary);

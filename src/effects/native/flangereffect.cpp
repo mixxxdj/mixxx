@@ -24,27 +24,18 @@ EffectManifest FlangerEffect::getManifest() {
         "A simple modulation effect, created by taking the input signal "
         "and mixing it with a delayed, pitch modulated copy of itself."));
 
-    EffectManifestParameter* delay = manifest.addParameter();
-    delay->setId("delay");
-    delay->setName(QObject::tr("Delay"));
-    delay->setDescription(QObject::tr("Sets the value for the delay length."));
-    delay->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
-    delay->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    delay->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    delay->setDefault(3333.3);
-    delay->setMinimum(50.0);
-    delay->setMaximum(10000.0);
-
     EffectManifestParameter* period = manifest.addParameter();
     period->setId("period");
     period->setName(QObject::tr("Period"));
-    period->setDescription(QObject::tr("Controls the speed of the effect."));
+    period->setDescription(QObject::tr("Controls the period of the LFO (low frequency oscillator)\n"
+        "1/4 - 4 beats rounded to 1/2 beat if tempo is detected (decks and samplers) \n"
+        "0.05 - 4 seconds if no tempo is detected (mic & aux inputs, master mix)"));
     period->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    period->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    period->setDefault(666666.6);
-    period->setMinimum(50000.0);
-    period->setMaximum(2000000.0);
+    period->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
+    period->setMinimum(0.00);
+    period->setMaximum(4.00);
+    period->setDefault(1.00);
 
     EffectManifestParameter* depth = manifest.addParameter();
     depth->setId("depth");
@@ -54,10 +45,20 @@ EffectManifest FlangerEffect::getManifest() {
     depth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     depth->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
-    depth->setDefault(0.0);
+    depth->setDefault(1.0);
     depth->setMinimum(0.0);
     depth->setMaximum(1.0);
 
+    EffectManifestParameter* triplet = manifest.addParameter();
+    triplet->setId("triplet");
+    triplet->setName("Triplets");
+    triplet->setDescription("Divide rounded 1/2 beats of the Period parameter by 3.");
+    triplet->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
+    triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    triplet->setDefault(0);
+    triplet->setMinimum(0);
+    triplet->setMaximum(1);
 
     return manifest;
 }
@@ -66,7 +67,7 @@ FlangerEffect::FlangerEffect(EngineEffect* pEffect,
                              const EffectManifest& manifest)
         : m_pPeriodParameter(pEffect->getParameterById("period")),
           m_pDepthParameter(pEffect->getParameterById("depth")),
-          m_pDelayParameter(pEffect->getParameterById("delay")) {
+          m_pTripletParameter(pEffect->getParameterById("triplet")) {
     Q_UNUSED(manifest);
 }
 
@@ -82,24 +83,33 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
                                    const EffectProcessor::EnableState enableState,
                                    const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
-    Q_UNUSED(enableState);
-    Q_UNUSED(groupFeatures);
-    Q_UNUSED(sampleRate);
-    CSAMPLE lfoPeriod = m_pPeriodParameter->value();
-    CSAMPLE lfoDepth = m_pDepthParameter->value();
-    // Unused in EngineFlanger
-    // CSAMPLE lfoDelay = m_pDelayParameter ?
-    //         m_pDelayParameter->value().toDouble() : 0.0f;
 
-    // TODO(rryan) check ranges
-    // period needs to be >=0
-    // delay needs to be >=0
-    // depth is ???
+    // TODO: remove assumption of stereo signal
+    const int kChannels = 2;
+
+    // The parameter minimum is zero so the exact center of the knob is 2 beats.
+    double lfoPeriodParameter = m_pPeriodParameter->value();
+    double lfoPeriodSamples;
+    if (groupFeatures.has_beat_length_sec) {
+        // lfoPeriodParameter is a number of beats
+        lfoPeriodParameter = std::max(roundToFraction(lfoPeriodParameter, 2.0), 1/4.0);
+        if (m_pTripletParameter->toBool()) {
+            lfoPeriodParameter /= 3.0;
+        }
+        lfoPeriodSamples = lfoPeriodParameter * groupFeatures.beat_length_sec * sampleRate;
+    } else {
+        // lfoPeriodParameter is a number of seconds
+        lfoPeriodSamples = std::max(lfoPeriodParameter, 1/4.0) * sampleRate;
+    }
+    // lfoPeriodSamples is used to calculate the delay for each channel
+    // independently in the loop below, so do not multiply lfoPeriodSamples by
+    // the number of channels.
+
+    CSAMPLE lfoDepth = m_pDepthParameter->value();
 
     CSAMPLE* delayLeft = pState->delayLeft;
     CSAMPLE* delayRight = pState->delayRight;
 
-    const int kChannels = 2;
     for (unsigned int i = 0; i < numSamples; i += kChannels) {
         delayLeft[pState->delayPos] = pInput[i];
         delayRight[pState->delayPos] = pInput[i+1];
@@ -107,11 +117,11 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
         pState->delayPos = (pState->delayPos + 1) % kMaxDelay;
 
         pState->time++;
-        if (pState->time > lfoPeriod) {
+        if (pState->time > lfoPeriodSamples) {
             pState->time = 0;
         }
 
-        CSAMPLE periodFraction = CSAMPLE(pState->time) / lfoPeriod;
+        CSAMPLE periodFraction = CSAMPLE(pState->time) / lfoPeriodSamples;
         CSAMPLE delay = kAverageDelayLength + kLfoAmplitude * sin(M_PI * 2.0f * periodFraction);
 
         int framePrev = (pState->delayPos - int(delay) + kMaxDelay - 1) % kMaxDelay;
@@ -128,5 +138,10 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
 
         pOutput[i] = pInput[i] + lfoDepth * delayedSampleLeft;
         pOutput[i+1] = pInput[i+1] + lfoDepth * delayedSampleRight;
+    }
+
+    if (enableState == EffectProcessor::DISABLING) {
+        SampleUtil::clear(delayLeft, numSamples);
+        SampleUtil::clear(delayRight, numSamples);
     }
 }

@@ -631,16 +631,15 @@ SINT SoundSourceMp3::readSampleFrames(
                 }
                 if (isRecoverableError(m_madStream)) {
                     if (pMadThisFrame != m_madStream.this_frame) {
-                        // Ignore all recoverable errors (and especially
-                        // "lost synchronization" warnings) while skipping
-                        // over prefetched frames after seeking.
-                        if (pSampleBuffer) {
-                            kLogger.warning() << "Recoverable MP3 frame decoding error:"
+                        if (!pSampleBuffer || (m_madStream.error == MAD_ERROR_LOSTSYNC)) {
+                            // Don't bother the user with warnings from recoverable
+                            // errors while skipping decoded samples or that even
+                            // might occur for files that are perfectly ok.
+                            kLogger.debug() << "Recoverable MP3 frame decoding error:"
                                     << mad_stream_errorstr(&m_madStream);
                         } else {
-                            // Decoded samples will simply be discarded
-                            kLogger.debug() << "Recoverable MP3 frame decoding error while skipping:"
-                                << mad_stream_errorstr(&m_madStream);
+                            kLogger.warning() << "Recoverable MP3 frame decoding error:"
+                                    << mad_stream_errorstr(&m_madStream);
                         }
                     }
                     // Continue decoding
