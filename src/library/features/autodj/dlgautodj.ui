@@ -6,8 +6,6 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>507</width>
-    <height>399</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,24 +13,40 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <widget class="QPushButton" name="pushButtonAutoDJ">
+     <property name="toolTip">
+      <string>Turn Auto DJ on or off.</string>
+     </property>
+     <property name="text">
+      <string>Enable</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QLabel" name="labelTransitionAppendix">
        <property name="toolTip">
-        <string comment="&quot;sec.&quot; as in seconds">Seconds</string>
+        <string>Determines the duration of the transition.</string>
        </property>
        <property name="text">
-        <string>sec.</string>
+        <string>Transition</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QSpinBox" name="spinBoxTransition">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="suffix">
+        <string> s</string>
        </property>
        <property name="toolTip">
         <string>Determines the duration of the transition.</string>
@@ -48,40 +62,7 @@
        </property>
       </widget>
      </item>
-     <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
     </layout>
-   </item>
-   <item>
-    <widget class="QPushButton" name="pushButtonAutoDJ">
-     <property name="toolTip">
-      <string>Turn Auto DJ on or off.</string>
-     </property>
-     <property name="text">
-      <string>Enable Auto DJ</string>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="labelSelectionInfo">
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
    </item>
    <item>
     <widget class="QPushButton" name="pushButtonFadeNow">
@@ -89,7 +70,7 @@
       <string>Trigger the transition to the next track.</string>
      </property>
      <property name="text">
-      <string>Fade Now</string>
+      <string>Fade</string>
      </property>
     </widget>
    </item>
@@ -99,21 +80,7 @@
       <string>Skip the next track in the Auto DJ queue.</string>
      </property>
      <property name="text">
-      <string>Skip Track</string>
-     </property>
-     <property name="checkable">
-      <bool>false</bool>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="pushButtonAddRandom">
-     <property name="toolTip">
-     <string>Adds a random track from track sources (crates) to the Auto DJ queue.
-If no track sources are configured, the track is added from the library instead.</string>
-     </property>
-     <property name="text">
-      <string>Add Random</string>
+      <string>Skip</string>
      </property>
     </widget>
    </item>
@@ -125,23 +92,25 @@ If no track sources are configured, the track is added from the library instead.
      <property name="text">
       <string>Shuffle</string>
      </property>
-     <property name="checkable">
-      <bool>false</bool>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pushButtonAddRandom">
+     <property name="toolTip">
+     <string>Adds a random track from track sources (crates) to the Auto DJ queue.
+If no track sources are configured, the track is added from the library instead.</string>
+     </property>
+     <property name="text">
+      <string>Random</string>
      </property>
     </widget>
    </item>
    <item>
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
+    <widget class="QLabel" name="labelSelectionInfo">
+     <property name="text">
+      <string/>
      </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>172</height>
-      </size>
-     </property>
-    </spacer>
+    </widget>
    </item>
   </layout>
  </widget>

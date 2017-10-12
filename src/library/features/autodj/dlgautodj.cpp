@@ -105,14 +105,14 @@ void DlgAutoDJ::autoDJStateChanged(AutoDJProcessor::AutoDJState state) {
     if (state == AutoDJProcessor::ADJ_DISABLED) {
         pushButtonAutoDJ->setChecked(false);
         pushButtonAutoDJ->setToolTip(tr("Enable Auto DJ"));
-        pushButtonAutoDJ->setText(tr("Enable Auto DJ"));
+        pushButtonAutoDJ->setText(tr("Enable"));
         pushButtonFadeNow->setEnabled(false);
         pushButtonSkipNext->setEnabled(false);
     } else {
         // No matter the mode, you can always disable once it is enabled.
         pushButtonAutoDJ->setChecked(true);
         pushButtonAutoDJ->setToolTip(tr("Disable Auto DJ"));
-        pushButtonAutoDJ->setText(tr("Disable Auto DJ"));
+        pushButtonAutoDJ->setText(tr("Disable"));
 
         // If fading, you can't hit fade now.
         if (state == AutoDJProcessor::ADJ_P1FADING ||
