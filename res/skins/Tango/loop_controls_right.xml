@@ -42,7 +42,7 @@ Variables:
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+      <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
 
       <BeatSpinBox>
         <TooltipId>beatjump_size</TooltipId>
@@ -71,7 +71,7 @@ Variables:
         <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatlooproll_activate</SetVariable>
       </Template>
 
-      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+      <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
 
       <BeatSpinBox>
         <TooltipId>beatloop_size</TooltipId>

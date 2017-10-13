@@ -627,8 +627,8 @@ WBeatSpinBox {
   max-height: 20px;
   border: 1px solid #666666;  /* = 54x22px */ 
   border-radius: 2px;
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
+  border-top-right-radius: 11px;
+  border-bottom-right-radius: 11px;
   color: #aaaaaa;
   background-color: #0f0f0f;
   selection-color: #0f0f0f;
@@ -650,27 +650,29 @@ WBeatSpinBox {
     position: relative;
     /* as with spinbox: border is added to size.
       define it with same width as hover border, otherwise size jumps */
-    width: 18px;
-    height: 18px;
-    border: 0px solid #333333; /* = 18x18px */
-    border-radius: 8px;
+    width: 16px;
+    height: 20px;
+    border-style: solid;
+    border-color: #1e1e1e;
+    border-width: 1px 0p 1px 0px; /* = 16x22px */
+    border-radius: 3px;
     background-color: #333333;
     }
 
   WBeatSpinBox::up-button {
     subcontrol-position: center right;
-    image: url(skin:/buttons/btn_beatbox_up.svg);
+    image: url(skin:/buttons/btn_beatbox_up.svg) no-repeat;
     }
     WBeatSpinBox::up-button:hover {
-      image: url(skin:/buttons/btn_beatbox_up_hover.svg);
+      image: url(skin:/buttons/btn_beatbox_up_hover.svg) no-repeat;
     }
   WBeatSpinBox::down-button {
     subcontrol-position: center right;
-    left: -13px;
-    image: url(skin:/buttons/btn_beatbox_down.svg);
+    left: -16px;
+    image: url(skin:/buttons/btn_beatbox_down.svg) no-repeat;
     }
     WBeatSpinBox::down-button:hover {
-      image: url(skin:/buttons/btn_beatbox_down_hover.svg);
+      image: url(skin:/buttons/btn_beatbox_down_hover.svg) no-repeat;
     }
 
 /*################################################################
