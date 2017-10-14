@@ -14,6 +14,7 @@
 namespace {
 constexpr double kMaxDelayMs = 14.0;
 constexpr double kMinDelayMs = 3.0;
+constexpr double kCenterDelayMs = (kMaxDelayMs - kMinDelayMs) / 2 + kMinDelayMs;
 constexpr double kMaxLfoWidthMs = kMaxDelayMs - kMinDelayMs;
 constexpr SINT kBufferLenth = static_cast<SINT>(ceil(kMaxDelayMs)) * 96; // for 96 kHz
 } // anonymous namespace

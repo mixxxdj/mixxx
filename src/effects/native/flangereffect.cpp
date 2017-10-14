@@ -53,7 +53,7 @@ EffectManifest FlangerEffect::getManifest() {
     manual->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     manual->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     manual->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
-    manual->setDefault((kMaxDelayMs - kMinDelayMs) / 2 + kMinDelayMs);
+    manual->setDefault(kCenterDelayMs);
     manual->setMinimum(kMinDelayMs);
     manual->setMaximum(kMaxDelayMs);
 
@@ -138,7 +138,16 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
     // independently in the loop below, so do not multiply lfoPeriodSamples by
     // the number of channels.
 
-    CSAMPLE mix = m_pMixParameter->value();
+    CSAMPLE_GAIN mix = m_pMixParameter->value();
+    CSAMPLE_GAIN regen = m_pRegenParameter->value();
+
+    // With and Manual is limited by amount of amplitude that remains from width
+    // to kMaxDelaMS
+    double width = m_pWidthParameter->value();
+    double manual = m_pManualParameter->value();
+    double maxManual = kCenterDelayMs + (kMaxLfoWidthMs - width) / 2;
+    double minManual = kCenterDelayMs - (kMaxLfoWidthMs - width) / 2;
+    manual = math_clamp(manual, minManual, maxManual);
 
     CSAMPLE* delayLeft = pState->delayLeft;
     CSAMPLE* delayRight = pState->delayRight;
@@ -155,8 +164,7 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
         }
 
         float periodFraction = static_cast<float>(pState->lfoFrames) / lfoPeriodFrames;
-        double delayMs = ((kMaxDelayMs - kMinDelayMs) / 2 + kMinDelayMs)
-                + ((kMaxDelayMs - kMinDelayMs) / 2) * sin(M_PI * 2.0f * periodFraction);
+        double delayMs = manual + width / 2 * sin(M_PI * 2.0f * periodFraction);
         double delayFrames = delayMs * sampleRate / 1000;
 
         SINT framePrev = (pState->delayPos - static_cast<SINT>(floor(delayFrames))
