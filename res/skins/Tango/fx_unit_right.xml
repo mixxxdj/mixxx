@@ -239,6 +239,7 @@ Variables:
       </WidgetGroup><!-- /EffectSlots + Underlays, with focus button -->
 
       <WidgetGroup><!-- EffectSlots + Underlays, no focus -->
+        <ObjectName>Spacer0f</ObjectName>
         <Layout>stacked</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>

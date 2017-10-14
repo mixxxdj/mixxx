@@ -1046,12 +1046,12 @@ WBeatSpinBox {
 /* minimal EffectSlots in horizontal layout */
 /* with focus */
 #FxFlowUnderlay_mini_focus1[highlight="0"] {
-  border-image: url(skin:/graphics/fxChainFlow_hori_unfocused1.svg) 0px 10px 0px 0px ;
+  border-image: url(skin:/graphics/fxChainFlow_h_unfocused1.svg) 0px 10px 0px 0px ;
   border-width: 0px 10px 0px 0px;
   }
 #FxFlowUnderlay_mini_focus2[highlight="0"] {
   margin-left: 125px;
-  border-image: url(skin:/graphics/fxChainFlow_hori_unfocused2.svg) 0px 10px 0px 10px;
+  border-image: url(skin:/graphics/fxChainFlow_h_unfocused2.svg) 0px 10px 0px 10px;
   border-width: 0px 10px 0px 10px;
   }
   #FxFlowUnderlay_mini_focus2[highlight="1"] {
@@ -1059,7 +1059,7 @@ WBeatSpinBox {
   }
 #FxFlowUnderlay_mini_focus3[highlight="0"] {
   margin-left: 259px;
-  border-image: url(skin:/graphics/fxChainFlow_hori_unfocused3.svg) 0px 0px 0px 10px;
+  border-image: url(skin:/graphics/fxChainFlow_h_unfocused3.svg) 0px 0px 0px 10px;
   border-width: 0px 0px 0px 10px;
   }
   #FxFlowUnderlay_mini_focus3[highlight="1"] {
@@ -1068,31 +1068,31 @@ WBeatSpinBox {
 
 /* no focus */
 #FxFlowUnderlay_mini_noFocus1 {
-  border-image: url(skin:/graphics/fxChainFlow_hori_unfocused1.svg) 0px 10px 0px 0px;
+  border-image: url(skin:/graphics/fxChainFlow_h_unfocused1.svg) 0px 10px 0px 0px;
   border-width: 0px 10px 0px 0px;
 }
 #FxFlowUnderlay_mini_noFocus2 {
   margin-left: 111px;
-  border-image: url(skin:/graphics/fxChainFlow_hori_unfocused2.svg) 0px 10px 0px 10px;
+  border-image: url(skin:/graphics/fxChainFlow_h_unfocused2.svg) 0px 10px 0px 10px;
   border-width: 0px 10px 0px 10px;
 }
 #FxFlowUnderlay_mini_noFocus3 {
   margin-left: 231px;
-  border-image: url(skin:/graphics/fxChainFlow_hori_unfocused3.svg) 0px 0px 0px 10px;
+  border-image: url(skin:/graphics/fxChainFlow_h_unfocused3.svg) 0px 0px 0px 10px;
   border-width: 0px 0px 0px 10px;
 }
 
 /* maximized EffectSlots in vertical layout */
 /* right-hand FX units, with focus */
 #FxFlowUnderlay_right_focus1[highlight="0"] {
-  border-image: url(skin:/graphics/fxChainFlow_vert_right_unfocused1.svg) 0px 0px 0px 99px ;
-  border-width: 0px 0px 0px 99px;
+  border-image: url(skin:/graphics/fxChainFlow_v_unfocused1.svg) 0px 0px 0px 101px ;
+  border-width: 0px 0px 0px 101px;
   }
 
 #FxFlowUnderlay_right_focus2[highlight="0"] {
   margin-top: 46px;
-  border-image: url(skin:/graphics/fxChainFlow_vert_right_unfocused2.svg) 0px 0px 0px 99px;
-  border-width: 0px 0px 0px 99px;
+  border-image: url(skin:/graphics/fxChainFlow_v_unfocused2.svg) 0px 0px 0px 101px;
+  border-width: 0px 0px 0px 101px;
   }
   #FxFlowUnderlay_right_focus2[highlight="1"] {
     margin-top: 46px;
@@ -1100,8 +1100,8 @@ WBeatSpinBox {
 
 #FxFlowUnderlay_right_focus3[highlight="0"] {
   margin-top: 92px;
-  border-image: url(skin:/graphics/fxChainFlow_vert_right_unfocused3.svg) 0px 0px 0px 99px;
-  border-width: 0px 0px 0px 99px;
+  border-image: url(skin:/graphics/fxChainFlow_v_unfocused3.svg) 0px 0px 0px 101px;
+  border-width: 0px 0px 0px 101px;
   }
   #FxFlowUnderlay_right_focus3[highlight="1"] {
     margin-top: 92px;
@@ -1109,31 +1109,31 @@ WBeatSpinBox {
 
 /* right-hand FX units, no focus */
 #FxFlowUnderlay_right_noFocus1 {
-  border-image: url(skin:/graphics/fxChainFlow_vert_right_noFocus1.svg) 0px 0px 0px 85px;
+  border-image: url(skin:/graphics/fxChainFlow_v_noFocus1.svg) 0px 0px 0px 85px;
   border-width: 0px 0px 0px 85px;
 }
 #FxFlowUnderlay_right_noFocus2 {
   margin-top: 46px;
-  border-image: url(skin:/graphics/fxChainFlow_vert_right_noFocus2.svg) 0px 10px 0px 85px;
+  border-image: url(skin:/graphics/fxChainFlow_v_noFocus2.svg) 0px 10px 0px 85px;
   border-width: 0px 0px 0px 85px;
 }
 #FxFlowUnderlay_right_noFocus3 {
   margin-top: 92px;
-  border-image: url(skin:/graphics/fxChainFlow_vert_right_noFocus3.svg) 0px 0px 0px 85px;
+  border-image: url(skin:/graphics/fxChainFlow_v_noFocus3.svg) 0px 0px 0px 85px;
   border-width: 0px 0px 0px 85px;
 }
 
 /* maximized EffectSlots in vertical layout */
 /* left-hand FX units, with focus */
 #FxFlowUnderlay_left_focus1[highlight="0"] {
-  border-image: url(skin:/graphics/fxChainFlow_vert_left_unfocused1.svg) 0px 109px 0px 0px;
-  border-width: 0px 109px 0px 0px;
+  border-image: url(skin:/graphics/fxChainFlow_v_unfocused1.svg) 0px 111px 0px 0px;
+  border-width: 0px 111px 0px 0px;
   }
 
 #FxFlowUnderlay_left_focus2[highlight="0"] {
   margin-top: 46px;
-  border-image: url(skin:/graphics/fxChainFlow_vert_left_unfocused2.svg) 0px 109px 0px 0px;
-  border-width: 0px 109px 0px 0px;
+  border-image: url(skin:/graphics/fxChainFlow_v_unfocused2.svg) 0px 111px 0px 0px;
+  border-width: 0px 111px 0px 0px;
   }
   #FxFlowUnderlay_left_focus2[highlight="1"] {
     margin-top: 46px;
@@ -1141,8 +1141,8 @@ WBeatSpinBox {
 
 #FxFlowUnderlay_left_focus3[highlight="0"] {
   margin-top: 92px;
-  border-image: url(skin:/graphics/fxChainFlow_vert_left_unfocused3.svg) 0px 109px 0px 0px;
-  border-width: 0px 109px 0px 0px;
+  border-image: url(skin:/graphics/fxChainFlow_v_unfocused3.svg) 0px 111px 0px 0px;
+  border-width: 0px 111px 0px 0px;
   }
   #FxFlowUnderlay_left_focus3[highlight="1"] {
     margin-top: 92px;
@@ -1150,17 +1150,17 @@ WBeatSpinBox {
 
 /* left-hand FX units, no focus */
 #FxFlowUnderlay_left_noFocus1 {
-  border-image: url(skin:/graphics/fxChainFlow_vert_left_noFocus1.svg) 0px 95px 0px 0px;
+  border-image: url(skin:/graphics/fxChainFlow_v_noFocus1.svg) 0px 95px 0px 0px;
   border-width: 0px 95px 0px 0px;
 }
 #FxFlowUnderlay_left_noFocus2 {
   margin-top: 46px;
-  border-image: url(skin:/graphics/fxChainFlow_vert_left_noFocus2.svg) 0px 95px 0px 0px;
+  border-image: url(skin:/graphics/fxChainFlow_v_noFocus2.svg) 0px 95px 0px 0px;
   border-width: 0px 95px 0px 0px;
 }
 #FxFlowUnderlay_left_noFocus3 {
   margin-top: 92px;
-  border-image: url(skin:/graphics/fxChainFlow_vert_left_noFocus3.svg) 0px 95px 0px 0px;
+  border-image: url(skin:/graphics/fxChainFlow_v_noFocus3.svg) 0px 95px 0px 0px;
   border-width: 0px 95px 0px 0px;
 }
 

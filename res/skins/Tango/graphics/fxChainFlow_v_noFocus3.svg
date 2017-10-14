@@ -9,12 +9,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="126"
-   height="53"
+   width="150"
+   height="45"
    id="svg3769"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="fxChainFlow_vert_left_noFocus1.svg">
+   sodipodi:docname="fxChainFlow_v_noFocus3.svg">
   <defs
      id="defs3771" />
   <sodipodi:namedview
@@ -57,10 +57,10 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-999.3622)">
+     transform="translate(0,-1007.3622)">
     <path
        style="fill:#333333;fill-opacity:1;stroke:none"
-       d="m 126,999.3622 -126,10e-5 0,45.0001 31,-2e-4 15,8 15,-8 65,10e-5 z"
+       d="m 150,1007.3622 -65,0 -15,8 -15,-8 -55,0 0,45.0001 150,0 z"
        id="path5072"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cccccccc" />
