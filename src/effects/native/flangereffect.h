@@ -54,7 +54,7 @@ class FlangerEffect : public PerChannelEffectProcessor<FlangerGroupState> {
         return getId();
     }
 
-    EngineEffectParameter* m_pSpeedParameter;
+    EngineEffectParameter* m_pPeriodParameter;
     EngineEffectParameter* m_pWidthParameter;
     EngineEffectParameter* m_pManualParameter;
     EngineEffectParameter* m_pRegenParameter;

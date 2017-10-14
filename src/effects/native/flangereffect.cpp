@@ -27,18 +27,18 @@ EffectManifest FlangerEffect::getManifest() {
         "A simple modulation effect, created by taking the input signal "
         "and mixing it with a delayed, pitch modulated copy of itself."));
 
-    EffectManifestParameter* speed = manifest.addParameter();
-    speed->setId("speed");
-    speed->setName(QObject::tr("Speed"));
-    speed->setDescription(QObject::tr("Controls the speed of the LFO (low frequency oscillator)\n"
-        "1/4 - 4 beats rounded to 1/2 beat if tempo is detected (decks and samplers) \n"
-        "0.05 - 4 seconds if no tempo is detected (mic & aux inputs, master mix)"));
-    speed->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
-    speed->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    speed->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
-    speed->setMinimum(0.00);
-    speed->setMaximum(4.00);
-    speed->setDefault(1.00);
+    EffectManifestParameter* period = manifest.addParameter();
+    period->setId("period");
+    period->setName(QObject::tr("Period"));
+    period->setDescription(QObject::tr("Controls the period of the LFO (low frequency oscillator)\n"
+        "1/4 - 20 beats rounded to 1/2 beat if tempo is detected (decks and samplers) \n"
+        "0.05 - 20 seconds if no tempo is detected (mic & aux inputs, master mix)"));
+    period->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    period->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
+    period->setMinimum(0.00);
+    period->setMaximum(20.00);
+    period->setDefault(1.00);
 
     EffectManifestParameter* width = manifest.addParameter();
     width->setId("width");
@@ -102,7 +102,7 @@ EffectManifest FlangerEffect::getManifest() {
 
 FlangerEffect::FlangerEffect(EngineEffect* pEffect,
                              const EffectManifest& manifest)
-        : m_pSpeedParameter(pEffect->getParameterById("speed")),
+        : m_pPeriodParameter(pEffect->getParameterById("period")),
           m_pWidthParameter(pEffect->getParameterById("width")),
           m_pManualParameter(pEffect->getParameterById("manual")),
           m_pRegenParameter(pEffect->getParameterById("regen")),
@@ -128,18 +128,18 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
     const int kChannels = 2;
 
     // The parameter minimum is zero so the exact center of the knob is 2 beats.
-    double lfoSpeedParameter = m_pSpeedParameter->value();
+    double lfoPeriodParameter = m_pPeriodParameter->value();
     double lfoPeriodFrames;
     if (groupFeatures.has_beat_length_sec) {
         // lfoPeriodParameter is a number of beats
-        lfoSpeedParameter = std::max(roundToFraction(lfoSpeedParameter, 2.0), 1/4.0);
+        lfoPeriodParameter = std::max(roundToFraction(lfoPeriodParameter, 2.0), 1/4.0);
         if (m_pTripletParameter->toBool()) {
-            lfoSpeedParameter /= 3.0;
+            lfoPeriodParameter /= 3.0;
         }
-        lfoPeriodFrames = lfoSpeedParameter * groupFeatures.beat_length_sec * sampleRate;
+        lfoPeriodFrames = lfoPeriodParameter * groupFeatures.beat_length_sec * sampleRate;
     } else {
         // lfoPeriodParameter is a number of seconds
-        lfoPeriodFrames = std::max(lfoSpeedParameter, 1/4.0) * sampleRate;
+        lfoPeriodFrames = std::max(lfoPeriodParameter, 1/4.0) * sampleRate;
     }
     // lfoPeriodSamples is used to calculate the delay for each channel
     // independently in the loop below, so do not multiply lfoPeriodSamples by
