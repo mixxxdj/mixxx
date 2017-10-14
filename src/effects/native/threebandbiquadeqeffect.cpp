@@ -17,7 +17,7 @@ static const double kQBoost = 0.3;
 static const double kQKill = 0.9;
 static const double kQKillShelve = 0.4;
 static const double kBoostGain = 12;
-static const double kKillGain = -23;
+static const double kKillGain = -26;
 
 
 double getCenterFrequency(double low, double high) {
@@ -34,7 +34,7 @@ double knobValueToBiquadGainDb (double value, bool kill) {
     }
 
     double ret = value - 1;
-    if (value >= 0) {
+    if (ret >= 0) {
         ret *= kBoostGain;
     } else {
         ret *= -kKillGain;
