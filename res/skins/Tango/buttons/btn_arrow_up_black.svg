@@ -10,9 +10,9 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.1"
-   width="22"
+   width="16"
    height="13"
-   viewBox="0 0 22 13"
+   viewBox="0 0 16 13"
    id="svg2"
    inkscape:version="0.48.4 r9939"
    sodipodi:docname="btn_arrow_up_black.svg">
@@ -30,8 +30,8 @@
      id="namedview11"
      showgrid="false"
      inkscape:zoom="11.313708"
-     inkscape:cx="-0.19216341"
-     inkscape:cy="-8.1457674"
+     inkscape:cx="-11.108125"
+     inkscape:cy="-1.0746993"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -72,7 +72,7 @@
   </g>
   <path
      style="fill:#151515;fill-opacity:1;fill-rule:nonzero;stroke:none"
-     d="M 5.1413334,11 11.000001,5.1413326 16.858667,11 18.323334,9.535333 12.464668,3.676667 11.000001,2.212 9.5353326,3.676667 3.6766664,9.535333 5.1413334,11 z"
+     d="M 2.1413332,11 8.0000008,5.1413326 13.858667,11 15.323334,9.535333 9.4646678,3.676667 8.0000008,2.212 6.5353324,3.676667 0.6766662,9.535333 2.1413332,11 z"
      id="rect2987-7-3"
      inkscape:connector-curvature="0" />
 </svg>

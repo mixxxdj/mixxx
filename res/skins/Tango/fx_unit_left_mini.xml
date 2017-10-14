@@ -267,7 +267,7 @@ Variables:
             <Size>28f,14f</Size>
             <Children>
               <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ObjectName">FXSamplersMiniMaxi</SetVariable>
+                <SetVariable name="ObjectName">FxSamplersMiniMaxi</SetVariable>
                 <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
                 <SetVariable name="Size">28f,14f</SetVariable>
                 <SetVariable name="ConfigKey">[<Variable name="FxGroup"/>],show_parameters</SetVariable>
@@ -285,7 +285,7 @@ Variables:
             <Size>28f,14f</Size>
             <Children>
               <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ObjectName">FXSamplersMiniMaxi_Focus</SetVariable>
+                <SetVariable name="ObjectName">FxSamplersMiniMaxi_Focus</SetVariable>
                 <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
                 <SetVariable name="Size">28f,14f</SetVariable>
                 <SetVariable name="ConfigKey">[<Variable name="FxGroup"/>],show_parameters</SetVariable>

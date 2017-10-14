@@ -30,11 +30,11 @@
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="743"
-     inkscape:window-height="742"
-     inkscape:window-x="683"
+     inkscape:window-width="1366"
+     inkscape:window-height="746"
+     inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="0"
+     inkscape:window-maximized="1"
      showguides="false"
      inkscape:guide-bbox="true"
      inkscape:snap-bbox="true"
@@ -80,8 +80,8 @@
        inkscape:transform-center-y="-0.57041933" />
     <path
        inkscape:connector-curvature="0"
-       style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#666666;fill-opacity:1;stroke:none;stroke-width:0.99999994000000003;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans"
-       d="m 12.5,1032.3622 c 1.930351,0 3.5,1.5696 3.5,3.5 l 0,13 c 0,1.9304 -1.569649,3.5 -3.5,3.5 l -10,0 c -0.982508,0 -1.866923,-0.411 -2.5,-1.0625 l 0,-0.875 0.5625,0 c 0.455906,0.5701 1.140797,0.9375 1.9375,0.9375 l 10,0 c 1.393649,0 2.5,-1.1064 2.5,-2.5 l 0,-13 c 0,-1.3936 -1.106351,-2.5 -2.5,-2.5 l -10,0 c -0.792552,0 -1.481414,0.3725 -1.9375,0.9375 l -0.5625,0 0,-0.8437 c 0.630234,-0.6679 1.512936,-1.0938 2.5,-1.0938 l 10,0 z"
-       id="rect3081" />
+       style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#666666;fill-opacity:1;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans"
+       d="m 12.5,1032.3622 c 1.930351,0 3.5,1.5696 3.5,3.5 l 0,13 c 0,1.9304 -1.569649,3.5 -3.5,3.5 l -10,0 c -0.980598,0 -1.864042,-0.3796 -2.5,-1.0312 l 0,-2.4688 c 0,1.3936 1.106351,2.5 2.5,2.5 l 10,0 c 1.393649,0 2.5,-1.1064 2.5,-2.5 l 0,-13 c 0,-1.3936 -1.106351,-2.5 -2.5,-2.5 l -10,0 c -1.393649,0 -2.5,1.1064 -2.5,2.5 l 0,-2.4375 c 0.635958,-0.6516 1.519402,-1.0625 2.5,-1.0625 l 10,0 z"
+       id="rect2987" />
   </g>
 </svg>

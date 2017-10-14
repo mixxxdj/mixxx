@@ -10,12 +10,12 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.1"
-   width="22"
+   width="16"
    height="13"
-   viewBox="0 0 22 13"
+   viewBox="0 0 16 13"
    id="svg2"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="btn_up_thin_hover.svg">
+   sodipodi:docname="btn_arrow_up_hover.svg">
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -30,7 +30,7 @@
      id="namedview11"
      showgrid="false"
      inkscape:zoom="11.313708"
-     inkscape:cx="-0.19216341"
+     inkscape:cx="-11.108125"
      inkscape:cy="-8.1457674"
      inkscape:window-x="0"
      inkscape:window-y="0"
@@ -72,7 +72,7 @@
   </g>
   <path
      style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
-     d="M 5.1413334,10 11.000001,4.1413326 16.858667,10 18.323334,8.535333 12.464668,2.676667 11.000001,1.212 9.5353326,2.676667 3.6766664,8.535333 5.1413334,10 z"
+     d="M 2.1413332,10 8.0000008,4.1413326 13.858667,10 15.323334,8.535333 9.4646678,2.676667 8.0000008,1.212 6.5353324,2.676667 0.6766662,8.535333 2.1413332,10 z"
      id="rect2987-7-3"
      inkscape:connector-curvature="0" />
 </svg>

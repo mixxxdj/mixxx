@@ -581,16 +581,14 @@ WWidgetGroup {
  #######  Loop Controls  ########################################
 ##############################################################*/
 
-#LoopControlsLeft,
-#LoopControlsRight {
-  qproperty-layoutAlignment: 'AlignCenter';
-  background-color: #1e1e1e;
+#LoopBeatJumpButton,
+#LoopSizeButton {
+  font-weight: bold;
+  color: #888888;
+  background-color: #333333;
   }
-  #LoopBeatJumpButton,
   #LoopSizeButton {
-    font-weight: bold;
-    color: #888888;
-    background-color: #333333;
+    font-size: 14px/12px;
   }
   #LoopBeatJumpButton:hover,
   #LoopSizeButton:hover {
@@ -1444,24 +1442,24 @@ WBeatSpinBox {
   margin-top: 5px;
 }
 
-#FXSamplersMiniMaxi[displayValue="0"] {
+#FxSamplersMiniMaxi[displayValue="0"] {
   image: url(skin:/buttons/btn_arrow_down.svg) no-repeat top center;
   }
-  #FXSamplersMiniMaxi[displayValue="0"]:hover {
+  #FxSamplersMiniMaxi[displayValue="0"]:hover {
     image: url(skin:/buttons/btn_arrow_down_hover.svg) no-repeat top center;
   }
-#FXSamplersMiniMaxi[displayValue="1"] {
+#FxSamplersMiniMaxi[displayValue="1"] {
   image: url(skin:/buttons/btn_arrow_up.svg) no-repeat top center;
   }
-  #FXSamplersMiniMaxi[displayValue="1"]:hover {
+  #FxSamplersMiniMaxi[displayValue="1"]:hover {
     image: url(skin:/buttons/btn_arrow_up_hover.svg) no-repeat top center;
   }
 
-#FXSamplersMiniMaxi_Focus[displayValue="0"] {
+#FxSamplersMiniMaxi_Focus[displayValue="0"] {
   image: url(skin:/buttons/btn_arrow_down_black.svg) no-repeat top center;
   background-color: #ff8f00;
   }
-  #FXSamplersMiniMaxi_Focus[displayValue="0"]:hover {
+  #FxSamplersMiniMaxi_Focus[displayValue="0"]:hover {
     image: url(skin:/buttons/btn_arrow_down_black_hover.svg) no-repeat top center;
     background-color: #ff8f00;
   }

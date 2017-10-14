@@ -41,10 +41,10 @@ Variables:
 
           <WidgetGroup>
             <Layout>vertical</Layout>
-            <Size>1me,25f</Size>
+            <Size>1me,25me</Size>
             <Children>
               <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,3f</Size></WidgetGroup>
-              <WidgetGroup><ObjectName>RoundFiller25</ObjectName><Size>1me,22f</Size></WidgetGroup>
+              <WidgetGroup><ObjectName>RoundFiller25</ObjectName><Size>1me,22me</Size></WidgetGroup>
             </Children>
             <Connection>
               <ConfigKey>[Tango],loop_beatjump_controls</ConfigKey>
@@ -153,18 +153,7 @@ Variables:
 
           <Template src="skin:deck_buttons_right.xml" />
 
-          <WidgetGroup>
-            <Layout>vertical</Layout>
-            <Size>1me,25f</Size>
-            <Children>
-              <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,3f</Size></WidgetGroup>
-              <Template src="skin:loop_controls_right.xml"/>
-            </Children>
-            <Connection>
-              <ConfigKey>[Tango],loop_beatjump_controls</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
+          <Template src="skin:loop_jump_controls_right.xml"/>
 
         </Children>
       </WidgetGroup><!-- / [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->

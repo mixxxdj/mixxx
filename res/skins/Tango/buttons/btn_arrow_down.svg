@@ -10,12 +10,12 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.1"
-   width="22"
+   width="16"
    height="13"
-   viewBox="0 0 22 13"
+   viewBox="0 0 16 13"
    id="svg2"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="btn_up_thin.svg">
+   sodipodi:docname="btn_arrow_down.svg">
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -29,9 +29,9 @@
      inkscape:window-height="746"
      id="namedview11"
      showgrid="false"
-     inkscape:zoom="5.656854"
-     inkscape:cx="-3.783637"
-     inkscape:cy="-7.6448263"
+     inkscape:zoom="7.9999996"
+     inkscape:cx="1.1804044"
+     inkscape:cy="3.2308538"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -50,7 +50,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -72,7 +72,7 @@
   </g>
   <path
      style="fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none"
-     d="M 16.858667,2 10.999999,7.8586674 5.141333,2 3.676666,3.464667 9.535332,9.323333 10.999999,10.788 12.464667,9.323333 18.323334,3.464667 16.858667,2 z"
+     d="M 13.858667,2 7.999999,7.8586674 2.141333,2 0.676666,3.464667 6.535332,9.323333 7.999999,10.788 9.464667,9.323333 15.323334,3.464667 13.858667,2 z"
      id="rect2987-7-3"
      inkscape:connector-curvature="0" />
 </svg>

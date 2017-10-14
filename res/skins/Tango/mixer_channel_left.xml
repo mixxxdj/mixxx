@@ -119,7 +119,6 @@ Variables:
           </WidgetGroup><!-- /Pfl button, isolated with a 'gap' -->
         </Children>
       </WidgetGroup><!-- /VU Meter + Pfl button -->
-
     </Children>
     <Connection>
       <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
