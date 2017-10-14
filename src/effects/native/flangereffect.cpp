@@ -4,10 +4,6 @@
 
 #include "util/math.h"
 
-const unsigned int kMaxDelay = 5000;
-const unsigned int kLfoAmplitude = 240;
-const unsigned int kAverageDelayLength = 250;
-
 // static
 QString FlangerEffect::getId() {
     return "org.mixxx.effects.flanger";
@@ -44,9 +40,9 @@ EffectManifest FlangerEffect::getManifest() {
     width->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     width->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     width->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    width->setDefault(1.0);
+    width->setDefault(kMaxLfoWidthMs);
     width->setMinimum(0.0);
-    width->setMaximum(1.0);
+    width->setMaximum(kMaxLfoWidthMs);
 
     EffectManifestParameter* manual = manifest.addParameter();
     manual->setId("manual");
@@ -57,9 +53,9 @@ EffectManifest FlangerEffect::getManifest() {
     manual->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     manual->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     manual->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
-    manual->setDefault(1.0);
-    manual->setMinimum(0.0);
-    manual->setMaximum(1.0);
+    manual->setDefault((kMaxDelayMs - kMinDelayMs) / 2 + kMinDelayMs);
+    manual->setMinimum(kMinDelayMs);
+    manual->setMaximum(kMaxDelayMs);
 
     EffectManifestParameter* regen = manifest.addParameter();
     regen->setId("regen");
@@ -126,17 +122,17 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
 
     // The parameter minimum is zero so the exact center of the knob is 2 beats.
     double lfoSpeedParameter = m_pSpeedParameter->value();
-    double lfoPeriodSamples;
+    double lfoPeriodFrames;
     if (groupFeatures.has_beat_length_sec) {
         // lfoPeriodParameter is a number of beats
         lfoSpeedParameter = std::max(roundToFraction(lfoSpeedParameter, 2.0), 1/4.0);
         if (m_pTripletParameter->toBool()) {
             lfoSpeedParameter /= 3.0;
         }
-        lfoPeriodSamples = lfoSpeedParameter * groupFeatures.beat_length_sec * sampleRate;
+        lfoPeriodFrames = lfoSpeedParameter * groupFeatures.beat_length_sec * sampleRate;
     } else {
         // lfoPeriodParameter is a number of seconds
-        lfoPeriodSamples = std::max(lfoSpeedParameter, 1/4.0) * sampleRate;
+        lfoPeriodFrames = std::max(lfoSpeedParameter, 1/4.0) * sampleRate;
     }
     // lfoPeriodSamples is used to calculate the delay for each channel
     // independently in the loop below, so do not multiply lfoPeriodSamples by
@@ -151,25 +147,29 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
         delayLeft[pState->delayPos] = pInput[i];
         delayRight[pState->delayPos] = pInput[i+1];
 
-        pState->delayPos = (pState->delayPos + 1) % kMaxDelay;
+        pState->delayPos = (pState->delayPos + 1) % kBufferLenth;
 
-        pState->time++;
-        if (pState->time > lfoPeriodSamples) {
-            pState->time = 0;
+        pState->lfoFrames++;
+        if (pState->lfoFrames >= lfoPeriodFrames) {
+            pState->lfoFrames = 0;
         }
 
-        CSAMPLE periodFraction = CSAMPLE(pState->time) / lfoPeriodSamples;
-        CSAMPLE delay = kAverageDelayLength + kLfoAmplitude * sin(M_PI * 2.0f * periodFraction);
+        float periodFraction = static_cast<float>(pState->lfoFrames) / lfoPeriodFrames;
+        double delayMs = ((kMaxDelayMs - kMinDelayMs) / 2 + kMinDelayMs)
+                + ((kMaxDelayMs - kMinDelayMs) / 2) * sin(M_PI * 2.0f * periodFraction);
+        double delayFrames = delayMs * sampleRate / 1000;
 
-        int framePrev = (pState->delayPos - int(delay) + kMaxDelay - 1) % kMaxDelay;
-        int frameNext = (pState->delayPos - int(delay) + kMaxDelay    ) % kMaxDelay;
+        SINT framePrev = (pState->delayPos - static_cast<SINT>(floor(delayFrames))
+                + kBufferLenth) % kBufferLenth;
+        SINT frameNext = (pState->delayPos - static_cast<SINT>(ceil(delayFrames))
+                + kBufferLenth) % kBufferLenth;
         CSAMPLE prevLeft = delayLeft[framePrev];
         CSAMPLE nextLeft = delayLeft[frameNext];
 
         CSAMPLE prevRight = delayRight[framePrev];
         CSAMPLE nextRight = delayRight[frameNext];
 
-        CSAMPLE frac = delay - floorf(delay);
+        CSAMPLE frac = delayFrames - floorf(delayFrames);
         CSAMPLE delayedSampleLeft = prevLeft + frac * (nextLeft - prevLeft);
         CSAMPLE delayedSampleRight = prevRight + frac * (nextRight - prevRight);
 
