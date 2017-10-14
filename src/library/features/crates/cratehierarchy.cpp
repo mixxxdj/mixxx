@@ -278,7 +278,15 @@ void CrateHierarchy::deleteCrate(const CrateId& id) const {
 
 bool CrateHierarchy::moveCrate(Crate& crate,
                                const Crate& destination) const {
-    {
+    { // deletes from closure
+        // if destination is not valid (move to root) we check if there
+        // is a crate with the same name there before we delete
+        if (!destination.getId().isValid()) {
+            if (collectRootCrateNames().contains(crate.getName())) {
+                crate.setName(crate.getName() + "_");
+            }
+        }
+
         QString subquery(
           QString(
             "SELECT %1 FROM %2 "
@@ -304,6 +312,7 @@ bool CrateHierarchy::moveCrate(Crate& crate,
             return false;
         }
     }
+    // moves the subtree
     if (destination.getId().isValid()) {
         // Try and preserve naming conventionos
         while (crate.getName() == destination.getName() ||
@@ -311,6 +320,7 @@ bool CrateHierarchy::moveCrate(Crate& crate,
                contains(crate.getName())) {
             crate.setName(crate.getName() + "_");
         };
+
 
         FwdSqlQuery query(
           m_database, QString(

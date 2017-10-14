@@ -589,17 +589,8 @@ void CrateFeature::slotMoveSubtreeToCrate(int iCrateId) {
         Crate destinationCrate;
         m_pCrates->storage().readCrateById(destinationCrateId, &destinationCrate);
 
-        // try to keep naming convention
-        while (selectedCrate.getName() == destinationCrate.getName() ||
-               m_pCrates->hierarchy().collectImmediateChildrenNames(
-                 destinationCrate).contains(selectedCrate.getName())) {
-            selectedCrate.setName(selectedCrate.getName() + "_");
-        };
+        m_pCrates->moveCrate(selectedCrate, destinationCrate);
 
-        m_pCrates->hierarchy().moveCrate(selectedCrate, destinationCrateId);
-
-        // rebuild the paths
-        m_pCrates->updateCrate(selectedCrate);
         rebuildChildModel();
     }
 }
@@ -676,7 +667,7 @@ void CrateFeature::updateChildModel(const QSet<CrateId>& updatedCrateIds) {
         }
         CrateSummary crateSummary;
         VERIFY_OR_DEBUG_ASSERT(
-                crateStorage.readCrateSummaryById(crateId, &crateSummary)) {
+          m_pCrates->storage().readCrateSummaryById(crateId, &crateSummary)) {
             continue;
         }
         updateTreeItemForCrateSummary(m_pChildModel->getItem(index), crateSummary);
