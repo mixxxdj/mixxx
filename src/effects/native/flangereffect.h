@@ -24,8 +24,10 @@ struct FlangerGroupState {
             : delayPos(0),
               lfoFrames(0),
               previousPeriodFrames(-1),
-              prev_regen(-1),
-              prev_mix(-1) {
+              prev_regen(0),
+              prev_mix(0),
+              prev_width(0),
+              prev_manual(kCenterDelayMs) {
         SampleUtil::applyGain(delayLeft, 0, kBufferLenth);
         SampleUtil::applyGain(delayRight, 0, kBufferLenth);
     }
@@ -36,6 +38,8 @@ struct FlangerGroupState {
     double previousPeriodFrames;
     CSAMPLE_GAIN prev_regen;
     CSAMPLE_GAIN prev_mix;
+    CSAMPLE_GAIN prev_width;
+    CSAMPLE_GAIN prev_manual;
 };
 
 class FlangerEffect : public PerChannelEffectProcessor<FlangerGroupState> {

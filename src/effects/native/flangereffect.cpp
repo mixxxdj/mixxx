@@ -176,6 +176,16 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
     double minManual = kCenterDelayMs - (kMaxLfoWidthMs - width) / 2;
     manual = math_clamp(manual, minManual, maxManual);
 
+    const double width_delta = (width - pState->prev_width) /
+            (numSamples / kChannels);
+    const double width_start = pState->prev_width + width_delta;
+    pState->prev_width = width;
+
+    const double manual_delta = (manual - pState->prev_manual) /
+            (numSamples / kChannels);
+    const double manual_start = pState->prev_manual + manual_delta;
+    pState->prev_manual = manual;
+
     CSAMPLE* delayLeft = pState->delayLeft;
     CSAMPLE* delayRight = pState->delayRight;
 
@@ -185,6 +195,10 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
                 + mix_delta * i / kChannels;
         CSAMPLE_GAIN regen_ramped = regen_start
                 + regen_delta * i / kChannels;
+        CSAMPLE_GAIN width_ramped = width_start
+                + width_delta * i / kChannels;
+        CSAMPLE_GAIN manual_ramped = manual_start
+                + manual_delta * i / kChannels;
 
         pState->lfoFrames++;
         if (pState->lfoFrames >= lfoPeriodFrames) {
@@ -192,7 +206,7 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
         }
 
         float periodFraction = static_cast<float>(pState->lfoFrames) / lfoPeriodFrames;
-        double delayMs = manual + width / 2 * sin(M_PI * 2.0f * periodFraction);
+        double delayMs = manual_ramped + width_ramped / 2 * sin(M_PI * 2.0f * periodFraction);
         double delayFrames = delayMs * sampleRate / 1000;
 
         SINT framePrev = (pState->delayPos - static_cast<SINT>(floor(delayFrames))
