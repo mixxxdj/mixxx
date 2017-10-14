@@ -141,6 +141,15 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
         // lfoPeriodParameter is a number of seconds
         lfoPeriodFrames = std::max(lfoPeriodParameter, 1/4.0) * sampleRate;
     }
+
+    // When the period is changed, the position of the sound shouldn't
+    // so time need to be recalculated
+    if (pState->previousPeriodFrames != -1.0) {
+        pState->lfoFrames *= lfoPeriodFrames / pState->previousPeriodFrames;
+    }
+    pState->previousPeriodFrames = lfoPeriodFrames;
+
+
     // lfoPeriodSamples is used to calculate the delay for each channel
     // independently in the loop below, so do not multiply lfoPeriodSamples by
     // the number of channels.
@@ -196,5 +205,6 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
     if (enableState == EffectProcessor::DISABLING) {
         SampleUtil::clear(delayLeft, numSamples);
         SampleUtil::clear(delayRight, numSamples);
+        pState->previousPeriodFrames = -1;
     }
 }

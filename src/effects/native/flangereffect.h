@@ -22,7 +22,8 @@ constexpr SINT kBufferLenth = static_cast<SINT>(ceil(kMaxDelayMs)) * 96; // for 
 struct FlangerGroupState {
     FlangerGroupState()
             : delayPos(0),
-              lfoFrames(0) {
+              lfoFrames(0),
+              previousPeriodFrames(-1) {
         SampleUtil::applyGain(delayLeft, 0, kBufferLenth);
         SampleUtil::applyGain(delayRight, 0, kBufferLenth);
     }
@@ -30,6 +31,7 @@ struct FlangerGroupState {
     CSAMPLE delayLeft[kBufferLenth];
     unsigned int delayPos;
     unsigned int lfoFrames;
+    double previousPeriodFrames;
 };
 
 class FlangerEffect : public PerChannelEffectProcessor<FlangerGroupState> {
