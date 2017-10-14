@@ -154,8 +154,19 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
     // independently in the loop below, so do not multiply lfoPeriodSamples by
     // the number of channels.
 
+
     CSAMPLE_GAIN mix = m_pMixParameter->value();
+    const CSAMPLE_GAIN mix_delta = (mix - pState->prev_mix) /
+            (numSamples / kChannels);
+    const CSAMPLE_GAIN mix_start = pState->prev_mix + mix_delta;
+    pState->prev_mix = mix;
+
     CSAMPLE_GAIN regen = m_pRegenParameter->value();
+    const CSAMPLE_GAIN regen_delta = (regen - pState->prev_regen) /
+            (numSamples / kChannels);
+    const CSAMPLE_GAIN regen_start = pState->prev_regen + regen_delta;
+    pState->prev_regen = regen;
+
 
     // With and Manual is limited by amount of amplitude that remains from width
     // to kMaxDelaMS
@@ -169,6 +180,11 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE* delayRight = pState->delayRight;
 
     for (unsigned int i = 0; i < numSamples; i += kChannels) {
+
+        CSAMPLE_GAIN mix_ramped = mix_start
+                + mix_delta * i / kChannels;
+        CSAMPLE_GAIN regen_ramped = regen_start
+                + regen_delta * i / kChannels;
 
         pState->lfoFrames++;
         if (pState->lfoFrames >= lfoPeriodFrames) {
@@ -193,18 +209,20 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
         CSAMPLE delayedSampleLeft = prevLeft + frac * (nextLeft - prevLeft);
         CSAMPLE delayedSampleRight = prevRight + frac * (nextRight - prevRight);
 
-        delayLeft[pState->delayPos] = tanh_approx(pInput[i] + regen * delayedSampleLeft);
-        delayRight[pState->delayPos] = tanh_approx(pInput[i + 1] + regen * delayedSampleRight);
+        delayLeft[pState->delayPos] = tanh_approx(pInput[i] + regen_ramped * delayedSampleLeft);
+        delayRight[pState->delayPos] = tanh_approx(pInput[i + 1] + regen_ramped * delayedSampleRight);
 
         pState->delayPos = (pState->delayPos + 1) % kBufferLenth;
 
-        pOutput[i] = pInput[i] + mix * delayedSampleLeft;
-        pOutput[i+1] = pInput[i + 1] + mix * delayedSampleRight;
+        pOutput[i] = pInput[i] + mix_ramped * delayedSampleLeft;
+        pOutput[i+1] = pInput[i + 1] + mix_ramped * delayedSampleRight;
     }
 
     if (enableState == EffectProcessor::DISABLING) {
         SampleUtil::clear(delayLeft, numSamples);
         SampleUtil::clear(delayRight, numSamples);
         pState->previousPeriodFrames = -1;
+        pState->prev_regen  = -1;
+        pState->prev_mix  = -1;
     }
 }
