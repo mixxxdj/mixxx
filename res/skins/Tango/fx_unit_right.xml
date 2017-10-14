@@ -21,8 +21,8 @@ Variables:
         <Size>44f,1me</Size>
         <Children>
           <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="ObjectName">FXSamplersMiniMaxi</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
-            <SetVariable name="ObjectName">FXSamplersMiniMaxiButton</SetVariable>
             <SetVariable name="Size">22me,14f</SetVariable>
             <SetVariable name="ConfigKey">[<Variable name="FxGroup"/>],show_parameters</SetVariable>
           </Template>

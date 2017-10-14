@@ -9,6 +9,7 @@ Variables:
 -->
 <Template>
   <WidgetGroup>
+    <ObjectName>AlignVCenter</ObjectName>
     <Layout>horizontal</Layout>
     <Size>14f,30me</Size>
     <Children>
@@ -16,7 +17,7 @@ Variables:
       <PushButton>
         <TooltipId>EffectSlot_focus</TooltipId>
         <ObjectName>FxFocusButton</ObjectName>
-        <Size>14f,30me</Size>
+        <Size>14f,18f</Size>
         <NumberStates>2</NumberStates>
         <RightClickIsPushButton>true</RightClickIsPushButton>
         <Connection>
@@ -42,7 +43,7 @@ Variables:
       <PushButton>
         <TooltipId>EffectSlot_focus</TooltipId>
         <ObjectName>FxFocusButton</ObjectName>
-        <Size>14f,30me</Size>
+        <Size>14f,18f</Size>
         <NumberStates>2</NumberStates>
         <RightClickIsPushButton>true</RightClickIsPushButton>
         <Connection>

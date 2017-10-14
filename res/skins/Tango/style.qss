@@ -1444,17 +1444,26 @@ WBeatSpinBox {
   margin-top: 5px;
 }
 
-#FXSamplersMiniMaxiButton[displayValue="0"] {
+#FXSamplersMiniMaxi[displayValue="0"] {
   image: url(skin:/buttons/btn_arrow_down.svg) no-repeat top center;
   }
-  #FXSamplersMiniMaxiButton[displayValue="0"]:hover {
+  #FXSamplersMiniMaxi[displayValue="0"]:hover {
     image: url(skin:/buttons/btn_arrow_down_hover.svg) no-repeat top center;
   }
-#FXSamplersMiniMaxiButton[displayValue="1"] {
+#FXSamplersMiniMaxi[displayValue="1"] {
   image: url(skin:/buttons/btn_arrow_up.svg) no-repeat top center;
   }
-  #FXSamplersMiniMaxiButton[displayValue="1"]:hover {
+  #FXSamplersMiniMaxi[displayValue="1"]:hover {
     image: url(skin:/buttons/btn_arrow_up_hover.svg) no-repeat top center;
+  }
+
+#FXSamplersMiniMaxi_Focus[displayValue="0"] {
+  image: url(skin:/buttons/btn_arrow_down_black.svg) no-repeat top center;
+  background-color: #ff8f00;
+  }
+  #FXSamplersMiniMaxi_Focus[displayValue="0"]:hover {
+    image: url(skin:/buttons/btn_arrow_down_black_hover.svg) no-repeat top center;
+    background-color: #ff8f00;
   }
 
 #SamplerPlayBox,
