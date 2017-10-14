@@ -4,6 +4,13 @@
 
 #include "util/math.h"
 
+namespace{
+inline CSAMPLE tanh_approx(CSAMPLE input) {
+    // return tanhf(input); // 142ns for process;
+    return input / (1 + input * input / (3 + input * input / 5)); // 119ns for process
+}
+}
+
 // static
 QString FlangerEffect::getId() {
     return "org.mixxx.effects.flanger";
@@ -40,6 +47,7 @@ EffectManifest FlangerEffect::getManifest() {
     width->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     width->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     width->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    width->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     width->setDefault(kMaxLfoWidthMs);
     width->setMinimum(0.0);
     width->setMaximum(kMaxLfoWidthMs);
@@ -52,7 +60,6 @@ EffectManifest FlangerEffect::getManifest() {
     manual->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     manual->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     manual->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    manual->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     manual->setDefault(kCenterDelayMs);
     manual->setMinimum(kMinDelayMs);
     manual->setMaximum(kMaxDelayMs);
@@ -64,7 +71,7 @@ EffectManifest FlangerEffect::getManifest() {
     regen->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     regen->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     regen->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    regen->setDefault(1.0);
+    regen->setDefault(0.0);
     regen->setMinimum(0.0);
     regen->setMaximum(1.0);
 
@@ -153,10 +160,6 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE* delayRight = pState->delayRight;
 
     for (unsigned int i = 0; i < numSamples; i += kChannels) {
-        delayLeft[pState->delayPos] = pInput[i];
-        delayRight[pState->delayPos] = pInput[i+1];
-
-        pState->delayPos = (pState->delayPos + 1) % kBufferLenth;
 
         pState->lfoFrames++;
         if (pState->lfoFrames >= lfoPeriodFrames) {
@@ -181,8 +184,13 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
         CSAMPLE delayedSampleLeft = prevLeft + frac * (nextLeft - prevLeft);
         CSAMPLE delayedSampleRight = prevRight + frac * (nextRight - prevRight);
 
+        delayLeft[pState->delayPos] = tanh_approx(pInput[i] + regen * delayedSampleLeft);
+        delayRight[pState->delayPos] = tanh_approx(pInput[i + 1] + regen * delayedSampleRight);
+
+        pState->delayPos = (pState->delayPos + 1) % kBufferLenth;
+
         pOutput[i] = pInput[i] + mix * delayedSampleLeft;
-        pOutput[i+1] = pInput[i+1] + mix * delayedSampleRight;
+        pOutput[i+1] = pInput[i + 1] + mix * delayedSampleRight;
     }
 
     if (enableState == EffectProcessor::DISABLING) {
