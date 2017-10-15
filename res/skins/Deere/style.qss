@@ -1352,11 +1352,20 @@ WPushButton[value="2"]:hover {
 }
 
 /* Special case "orientation" controls
-  1 -- center / default (off)
-  2 -- right
   0 -- left
+  1 -- center / off
+  2 -- right
 */
-#OrientationButton[value="1"] {
+/* Default xfader positions:
+  left decks = left xfader
+  right decks = right xfader
+  auxiliary = center */
+#OrientationButtonDeck1[value="0"],
+#OrientationButtonDeck3[value="0"],
+#OrientationButtonDeck2[value="2"],
+#OrientationButtonDeck4[value="2"],
+#OrientationButtonAux[value="1"],
+#OrientationButtonSampler[value="1"] {
     color: #D2D2D2;
     background-color: #4B4B4B;
     border: 1px solid #4B4B4B;
@@ -1364,31 +1373,49 @@ WPushButton[value="2"]:hover {
     outline: none;
 }
 
-#OrientationButton:hover {
+#OrientationButtonDeck1[value="0"]:hover,
+#OrientationButtonDeck3[value="0"]:hover,
+#OrientationButtonDeck2[value="2"]:hover,
+#OrientationButtonDeck4[value="2"]:hover,
+#OrientationButtonAux[value="1"]:hover,
+#OrientationButtonSampler[value="1"]:hover {
     color: #D2D2D2;
     background-color: #5F5F5F;
     border: 0px solid #5F5F5F;
 }
 
-#OrientationButton[value="2"] {
+/* Highlight xfader special positions != default */
+#OrientationButtonDeck1[value="1"],
+#OrientationButtonDeck1[value="2"],
+#OrientationButtonDeck3[value="1"],
+#OrientationButtonDeck3[value="2"],
+#OrientationButtonDeck2[value="0"],
+#OrientationButtonDeck2[value="1"],
+#OrientationButtonDeck4[value="0"],
+#OrientationButtonDeck4[value="1"],
+#OrientationButtonAux[value="0"],
+#OrientationButtonAux[value="2"],
+#OrientationButtonSampler[value="0"],
+#OrientationButtonSampler[value="2"] {
     color: #FDFDFD;
     background-color: #006596;
     border: 0px solid #006596;
+    border-radius: 2px;
+    outline: none;
 }
 
-#OrientationButton[value="2"]:hover {
-    color: #FDFDFD;
-    background-color: #0080BE;
-    border: 0px solid #0080BE;
-}
-
-#OrientationButton[value="0"] {
-    color: #FDFDFD;
-    background-color: #006596;
-    border: 0px solid #006596;
-}
-
-#OrientationButton[value="0"]:hover {
+#OrientationButtonDeck1[value="1"]:hover,
+#OrientationButtonDeck1[value="2"]:hover,
+#OrientationButtonDeck3[value="1"]:hover,
+#OrientationButtonDeck3[value="2"]:hover,
+#OrientationButtonDeck2[value="0"]:hover,
+#OrientationButtonDeck2[value="1"]:hover,
+#OrientationButtonDeck4[value="0"]:hover,
+#OrientationButtonDeck4[value="1"]:hover,
+#OrientationButtonAux[value="0"]:hover,
+#OrientationButtonAux[value="2"]:hover,
+#OrientationButtonSampler[value="0"]:hover,
+#OrientationButtonSampler[value="2"]:hover {
     color: #FDFDFD;
     background-color: #0080BE;
     border: 0px solid #0080BE;

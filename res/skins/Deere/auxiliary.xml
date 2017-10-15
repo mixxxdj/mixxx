@@ -64,7 +64,9 @@
                     <SetVariable name="left_connection_control"><Variable name="group"/>,pfl</SetVariable>
                   </Template>
 
-                  <Template src="skin:crossfader_orientation_button.xml" />
+                  <Template src="skin:crossfader_orientation_button.xml">
+                    <SetVariable name="Unit">Aux</SetVariable>
+                  </Template>
 
                 </Children>
               </WidgetGroup>
