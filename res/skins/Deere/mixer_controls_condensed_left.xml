@@ -133,7 +133,7 @@
             <Children>
 
               <Template src="skin:spacer_vx.xml">
-                <SetVariable name="width">2</SetVariable>
+                <SetVariable name="height">2</SetVariable>
               </Template>
 
               <Template src="skin:crossfader_orientation_button.xml">

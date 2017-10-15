@@ -115,6 +115,10 @@
   border-width: 1px 0px;
 }
 
+#Spacer22 {
+  background-color: #222222;
+}
+
 #SamplerRow1,
 #SamplerRow2,
 #SamplerRow3,
