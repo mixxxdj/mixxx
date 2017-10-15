@@ -27,7 +27,7 @@ Variables:
 
       <Template src="skin:button_2state.xml">
         <SetVariable name="TooltipId">mute</SetVariable>
-        <SetVariable name="ObjectName">MixerbarButton</SetVariable>
+        <SetVariable name="ObjectName">MixerbarMute</SetVariable>
         <SetVariable name="Size">20f,28f</SetVariable>
         <SetVariable name="state_0_unpressed">mic_on.svg</SetVariable>
         <SetVariable name="state_0_pressed">mic_on.svg</SetVariable>

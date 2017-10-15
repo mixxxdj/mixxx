@@ -102,13 +102,16 @@ WWidgetGroup {
   padding-right: 2px;
   }
   #SkinSettingsClose {
-    font-size: 16px/16px;
-    margin-bottom: 7px;
-    color: #d2d2d2;
+    border-radius:2px;
+    margin-bottom: 4px;
+    background-color: transparent;
+    image: url(skin:/buttons/btn_skinsettings_close.svg) no-repeat center top;
     }
     #SkinSettingsClose:hover {
-      border: 1px solid #666666;
       border-radius:2px;
+      margin-bottom: 4px;
+      background-color: #0f0f0f;
+      image: url(skin:/buttons/btn_skinsettings_close_hover.svg) no-repeat center top;
     }
 
 #SkinSettingsCategory {
@@ -182,9 +185,6 @@ WWidgetGroup {
 #BeatgridButtonToggler {
   background-color: #333333;
   }
-  #BeatgridButtonToggler:hover {
-    background-color: #1e1e1e;
-  }
   #BeatgridButtonToggler[displayValue="0"] {
     image: url(skin:/buttons/btn_arrow_left.svg) no-repeat center center;
   }
@@ -198,12 +198,34 @@ WWidgetGroup {
     image: url(skin:/buttons/btn_arrow_right_hover.svg) no-repeat center center;
   }
 
-#BeatgridButton {
+#BeatgridCurpos,
+#BeatgridSlower,
+#BeatgridFaster,
+#BeatgridEarlier,
+#BeatgridLater {
   background-color: #333333;
   }
-  #BeatgridButton:hover {
-    background-color: #1e1e1e;
-    border: 1px solid #666666;
+  #BeatgridCurpos:hover,
+  #BeatgridSlower:hover,
+  #BeatgridFaster:hover,
+  #BeatgridEarlier:hover,
+  #BeatgridLater:hover {
+    background-color: #0f0f0f;
+  }
+  #BeatgridCurpos {
+    image: url(skin:/buttons/btn_beats_curpos.svg) no-repeat center center;
+  }
+  #BeatgridSlower {
+    image: url(skin:/buttons/btn_beats_slower.svg) no-repeat center center;
+  }
+  #BeatgridFaster {
+    image: url(skin:/buttons/btn_beats_faster.svg) no-repeat center center;
+  }
+  #BeatgridEarlier {
+    image: url(skin:/buttons/btn_beats_earlier.svg) no-repeat center center;
+  }
+  #BeatgridLater {
+    image: url(skin:/buttons/btn_beats_later.svg) no-repeat center center;
   }
 
 
@@ -305,6 +327,21 @@ WWidgetGroup {
     #MixerbarButton:hover[displayValue="2"]:hover {
       border: 1px solid #eeeeee;
     }
+
+#MixerbarTalkover[displayValue="0"],
+#MixerbarMute[displayValue="1"] {
+  background-color: #333333;
+  border: 1px solid #0f0f0f;
+}
+#MixerbarTalkover[displayValue="1"],
+#MixerbarMute[displayValue="0"] {
+  background-color: #ff8f00;
+  border: 1px solid #0f0f0f;
+}
+#MixerbarTalkover:hover,
+#MixerbarMute:hover {
+  border: 1px solid #eeeeee;
+}
 
 #VUMeterMixerbar {
   margin: 2px 0px 0px 0px;
@@ -965,32 +1002,30 @@ WBeatSpinBox {
     }
     #BroadcastButton[displayValue="2"]:hover,
     #BroadcastButton[displayValue="3"]:hover {
-      background-color: #0f0f0f;
-      border: 1px solid #666666;
+      background: #0f0f0f url(skin:/buttons/btn_broadcast_off.svg) no-repeat center center;
     }
 
 #BroadcastButtonNetbook {
   background-color: transparent;
   }
   #BroadcastButtonNetbook[displayValue="0"] {
-    background: transparent url(skin:/buttons/btn_broadcast_mini_off.svg) no-repeat center center;
+    background: transparent url(skin:/buttons/btn_broadcast_off_netbook.svg) no-repeat center center;
     }
     #BroadcastButtonNetbook[displayValue="0"]:hover {
-      background: #0f0f0f url(skin:/buttons/btn_broadcast_mini_off_hover.svg) no-repeat center center;
+      background: #0f0f0f url(skin:/buttons/btn_broadcast_off_hover_netbook.svg) no-repeat center center;
       }
   #BroadcastButtonNetbook[displayValue="1"] {
-    background: transparent url(skin:/buttons/btn_broadcast_mini_connecting.svg) no-repeat center center;
+    background: transparent url(skin:/buttons/btn_broadcast_connecting_netbook.svg) no-repeat center center;
     }
   #BroadcastButtonNetbook[displayValue="2"] {
-    background: transparent url(skin:/buttons/btn_broadcast_mini_connected.svg) no-repeat center center;
+    background: transparent url(skin:/buttons/btn_broadcast_connected_netbook.svg) no-repeat center center;
     }
   #BroadcastButtonNetbook[displayValue="3"] {
-    background: transparent url(skin:/buttons/btn_broadcast_mini_failure.svg) no-repeat center center;
+    background: transparent url(skin:/buttons/btn_broadcast_failure_netbook.svg) no-repeat center center;
     }
     #BroadcastButtonNetbook[displayValue="2"]:hover,
     #BroadcastButtonNetbook[displayValue="3"]:hover {
-      background-color: #0f0f0f;
-      border: 1px solid #666666;
+      background: #0f0f0f url(skin:/buttons/btn_broadcast_off_netbook.svg) no-repeat center center;
     }
 
 #SkinSettingsToggler[displayValue="0"] {
@@ -1003,7 +1038,7 @@ WBeatSpinBox {
   background: #0f0f0f url(skin:/buttons/btn_skinsettings_on.svg) no-repeat center center;
   }
   #SkinSettingsToggler[displayValue="1"]:hover {
-    border: 1px solid #666666;
+    background: #0f0f0f url(skin:/buttons/btn_skinsettings_off.svg) no-repeat center center;
   }
 
 /*################################################################
@@ -1740,7 +1775,7 @@ QTreeView {
 QTreeView {
   min-height: 90px;
   min-width: 90px;
-  border-width: 1px 1px 0px 0px;
+  border-width: 1px 1px 1px 0px;
   border-style: solid;
   border-color: #585858;
   show-decoration-selected: 0;	/*

@@ -32,9 +32,9 @@
      inkscape:object-paths="true"
      inkscape:snap-bbox="true"
      inkscape:snap-bbox-midpoints="true"
-     inkscape:zoom="8"
-     inkscape:cx="-3.4603482"
-     inkscape:cy="8.4579685"
+     inkscape:zoom="11.313708"
+     inkscape:cx="12.9009"
+     inkscape:cy="6.4920707"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -51,7 +51,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -63,21 +63,15 @@
      inkscape:label="ON"
      style="display:inline"
      transform="translate(0,-28)">
-    <rect
-       style="fill:#d2d2d2;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
-       id="rect2983"
-       width="14"
-       height="1.5"
-       x="-26.79899"
-       y="33.191124"
-       transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)" />
-    <rect
-       style="fill:#d2d2d2;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
-       id="rect2983-3"
-       width="14"
-       height="1.5"
-       x="26.941126"
-       y="19.04899"
-       transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)" />
+    <g
+       id="g3002"
+       transform="matrix(1.1411261,0,0,1.1411261,-1.4112602,-5.3628088)"
+       style="fill:#d2d2d2;fill-opacity:1">
+      <path
+         style="fill:#d2d2d2;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
+         d="m 6.0816448,33.419383 c -0.1758295,-0.0057 -0.3479132,0.05358 -0.4782968,0.18396 -0.2607671,0.260767 -0.2413596,0.696838 0.036792,0.97499 l 3.421662,3.421662 -3.421662,3.421662 c -0.2781517,0.278151 -0.2975592,0.714222 -0.036792,0.974989 0.2607671,0.260768 0.6968381,0.24136 0.9749897,-0.03679 l 3.421662,-3.421662 3.4216623,3.421662 c 0.278151,0.278152 0.714222,0.29756 0.974989,0.03679 0.260768,-0.260767 0.24136,-0.696838 -0.03679,-0.974989 l -3.421662,-3.421662 3.421662,-3.421662 c 0.278152,-0.278152 0.29756,-0.714223 0.03679,-0.97499 -0.260767,-0.260767 -0.696838,-0.24136 -0.974989,0.03679 L 9.9999997,37.061797 6.5783377,33.640135 C 6.4392619,33.501059 6.2574744,33.425055 6.0816448,33.419383 z"
+         id="rect2983-3"
+         inkscape:connector-curvature="0" />
+    </g>
   </g>
 </svg>

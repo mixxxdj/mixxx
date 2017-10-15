@@ -78,18 +78,6 @@ Description:
 
                       <!-- Tree View -->
                       <LibrarySidebar></LibrarySidebar>
-                      <!-- Draw a 1px line with Library border color if Mixerbar
-                          is displayed below Library -->
-
-                      <WidgetGroup>
-                        <ObjectName>Spacer58</ObjectName>
-                        <Size>1me,1f</Size>
-                        <Connection>
-                          <ConfigKey>[Tango],mixerbar_below_library</ConfigKey>
-                          <BindProperty>visible</BindProperty>
-                        </Connection>
-                      </WidgetGroup>
-
                     </Children>
                   </WidgetGroup><!-- /Preview Deck, Search, Tree View -->
 

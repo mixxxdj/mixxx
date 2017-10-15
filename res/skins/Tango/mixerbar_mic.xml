@@ -28,7 +28,7 @@ Variables:
 
       <Template src="skin:button_2state.xml">
         <SetVariable name="TooltipId">microphone_talkover</SetVariable>
-        <SetVariable name="ObjectName">MixerbarButton</SetVariable>
+        <SetVariable name="ObjectName">MixerbarTalkover</SetVariable>
         <SetVariable name="Size">20f,28f</SetVariable>
         <SetVariable name="state_0_unpressed">mic_off.svg</SetVariable>
         <SetVariable name="state_0_pressed">mic_off.svg</SetVariable>

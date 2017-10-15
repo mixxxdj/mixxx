@@ -31,13 +31,13 @@ Description:
                 <Text>Decks / General</Text>
                 <Size>190f,19f</Size>
               </Label>
-                <!-- push Close button to far right -->
-                <WidgetGroup><Size>1me,1me</Size></WidgetGroup>
+
+              <!-- push Close button to far right -->
+              <WidgetGroup><Size>1me,1me</Size></WidgetGroup>
+
               <Template src="skin:button_2state.xml">
                 <SetVariable name="ObjectName">SkinSettingsClose</SetVariable>
-                <SetVariable name="Size">17f,24f</SetVariable>
-                <SetVariable name="state_1_pressed">skinsettings_close.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">skinsettings_close.svg</SetVariable>
+                <SetVariable name="Size">20f,24f</SetVariable>
                 <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>
               </Template>
             </Children>
