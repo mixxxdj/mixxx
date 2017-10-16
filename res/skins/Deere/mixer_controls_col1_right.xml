@@ -22,7 +22,7 @@
             </Connection>
             <Layout>vertical</Layout>
             <Children>
-              <Template src="skin:knob_with_button_left.xml">
+              <Template src="skin:knob_with_button_right.xml">
                 <SetVariable name="TooltipId">pregain</SetVariable>
                 <SetVariable name="control">pregain</SetVariable>
                 <SetVariable name="color">red</SetVariable>
