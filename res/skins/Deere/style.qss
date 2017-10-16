@@ -682,7 +682,6 @@ WWidget, QLabel {
 WBeatSpinBox {
   color: #c1cabe;
   background-color: #1f1e1e;
-
   border: 1px solid #444342;
   border-radius: 3px;
 
@@ -1311,14 +1310,16 @@ WPushButton:hover {
 }
 
 /*"Pressed" state*/
-WPushButton[value="1"] {
+WPushButton[value="1"],
+WPushButton[value="2"] {
     /*color: #FDFDFD;*/
     color: #FDFDFD;
     background-color: #006596;
     border: 0px solid #006596;
 }
 
-WPushButton[value="1"]:hover {
+WPushButton[value="1"]:hover,
+WPushButton[value="2"]:hover {
     color: #FDFDFD;
     background-color: #0080BE;
     border: 0px solid #0080BE;
@@ -1328,7 +1329,6 @@ WPushButton[value="1"]:hover {
   0 -- disconnected / off
   1 -- connecting / enabling
   2 -- connected / enabled
-*/
 WPushButton[value="2"] {
     color: #FDFDFD;
     background-color: #4B4B4B;
@@ -1340,6 +1340,7 @@ WPushButton[value="2"]:hover {
     background-color: #4B4B4B;
     border: 0px solid #0080BE;
 }
+*/
 
 #ToolbarButton[value="1"] {
     color: #D2D2D2;
