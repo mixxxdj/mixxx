@@ -3,11 +3,11 @@
 #include <QtDebug>
 
 #include "test/mixxxtest.h"
-#include "util/circularsamplebuffer.h"
+#include "util/readaheadsamplebuffer.h"
 
-class CircularSampleBufferTest: public MixxxTest {
+class ReadAheadSampleBufferTest: public MixxxTest {
 public:
-    CircularSampleBufferTest()
+    ReadAheadSampleBufferTest()
         : m_writeValue(CSAMPLE_ZERO),
           m_readValue(CSAMPLE_ZERO) {
     }
@@ -15,7 +15,7 @@ public:
 protected:
     static const SINT kCapacity;
 
-    SINT writeTail(CircularSampleBuffer* pSampleBuffer, SINT size) {
+    SINT writeTail(ReadAheadSampleBuffer* pSampleBuffer, SINT size) {
         const SampleBuffer::WritableSlice writableSlice(
                 pSampleBuffer->writeToTail(size));
         for (SINT i = 0; i < writableSlice.size(); ++i) {
@@ -25,7 +25,7 @@ protected:
         return writableSlice.size();
     }
 
-    SINT readHeadAndVerify(CircularSampleBuffer* pSampleBuffer, SINT size) {
+    SINT readHeadAndVerify(ReadAheadSampleBuffer* pSampleBuffer, SINT size) {
         const SampleBuffer::ReadableSlice readableSlice(
                 pSampleBuffer->readFromHead(size));
         for (SINT i = 0; i < readableSlice.size(); ++i) {
@@ -35,7 +35,7 @@ protected:
         return readableSlice.size();
     }
 
-    SINT readTailAndVerify(CircularSampleBuffer* pSampleBuffer, SINT size) {
+    SINT readTailAndVerify(ReadAheadSampleBuffer* pSampleBuffer, SINT size) {
         const SampleBuffer::ReadableSlice readableSlice(
                 pSampleBuffer->readFromTail(size));
         for (SINT i = readableSlice.size(); i-- > 0; ) {
@@ -45,7 +45,7 @@ protected:
         return readableSlice.size();
     }
 
-    void reset(CircularSampleBuffer* pSampleBuffer) {
+    void reset(ReadAheadSampleBuffer* pSampleBuffer) {
         pSampleBuffer->reset();
         m_writeValue = CSAMPLE_ZERO;
         m_readValue = CSAMPLE_ZERO;
@@ -56,13 +56,10 @@ private:
     CSAMPLE m_readValue;
 };
 
-const SINT CircularSampleBufferTest::kCapacity = 100;
+const SINT ReadAheadSampleBufferTest::kCapacity = 100;
 
-TEST_F(CircularSampleBufferTest, emptyWithoutCapacity) {
-    CircularSampleBuffer sampleBuffer;
-    EXPECT_TRUE(sampleBuffer.isEmpty());
-
-    sampleBuffer.trim();
+TEST_F(ReadAheadSampleBufferTest, emptyWithoutCapacity) {
+    ReadAheadSampleBuffer sampleBuffer;
     EXPECT_TRUE(sampleBuffer.isEmpty());
 
     sampleBuffer.reset();
@@ -81,19 +78,16 @@ TEST_F(CircularSampleBufferTest, emptyWithoutCapacity) {
     EXPECT_TRUE(sampleBuffer.isEmpty());
 }
 
-TEST_F(CircularSampleBufferTest, emptyWithCapacity) {
-    CircularSampleBuffer sampleBuffer(kCapacity);
-    EXPECT_TRUE(sampleBuffer.isEmpty());
-
-    sampleBuffer.trim();
+TEST_F(ReadAheadSampleBufferTest, emptyWithCapacity) {
+    ReadAheadSampleBuffer sampleBuffer(kCapacity);
     EXPECT_TRUE(sampleBuffer.isEmpty());
 
     sampleBuffer.reset();
     EXPECT_TRUE(sampleBuffer.isEmpty());
 }
 
-TEST_F(CircularSampleBufferTest, readWriteTrim) {
-    CircularSampleBuffer sampleBuffer(kCapacity);
+TEST_F(ReadAheadSampleBufferTest, readWriteTrim) {
+    ReadAheadSampleBuffer sampleBuffer(kCapacity);
 
     SINT writeCount1 = writeTail(&sampleBuffer, kCapacity + 10);
     EXPECT_EQ(writeCount1, kCapacity); // buffer is full
@@ -109,8 +103,8 @@ TEST_F(CircularSampleBufferTest, readWriteTrim) {
     EXPECT_EQ(writeCount2, 0); // no tail capacity left
     EXPECT_FALSE(sampleBuffer.isEmpty());
 
-    sampleBuffer.trim();
-    EXPECT_EQ(sampleBuffer.getTailCapacity(), readCount1);
+    // Trim buffer contents by reallocation
+    ReadAheadSampleBuffer(sampleBuffer).swap(sampleBuffer);
 
     SINT writeCount3 = writeTail(&sampleBuffer, kCapacity);
     EXPECT_EQ(writeCount3, readCount1); // buffer has been refilled
@@ -121,9 +115,9 @@ TEST_F(CircularSampleBufferTest, readWriteTrim) {
     EXPECT_FALSE(sampleBuffer.isEmpty());
     EXPECT_EQ(sampleBuffer.getTailCapacity(), 0);
 
-    sampleBuffer.trim();
-    EXPECT_EQ(sampleBuffer.getTailCapacity(), readCount2);
-
+    // Trim buffer contents by reallocation
+    ReadAheadSampleBuffer(sampleBuffer).swap(sampleBuffer);
+    
     SINT writeCount4 = writeTail(&sampleBuffer, kCapacity);
     EXPECT_EQ(writeCount4, readCount2); // buffer has been refilled
     EXPECT_FALSE(sampleBuffer.isEmpty());
@@ -133,8 +127,8 @@ TEST_F(CircularSampleBufferTest, readWriteTrim) {
     EXPECT_TRUE(sampleBuffer.isEmpty());
 }
 
-TEST_F(CircularSampleBufferTest, shrink) {
-    CircularSampleBuffer sampleBuffer(kCapacity);
+TEST_F(ReadAheadSampleBufferTest, shrink) {
+    ReadAheadSampleBuffer sampleBuffer(kCapacity);
 
     SINT writeCount1 = writeTail(&sampleBuffer, kCapacity - 10);
     EXPECT_EQ(writeCount1, kCapacity - 10);
@@ -159,8 +153,8 @@ TEST_F(CircularSampleBufferTest, shrink) {
     EXPECT_TRUE(sampleBuffer.isEmpty());
 }
 
-TEST_F(CircularSampleBufferTest, reset) {
-    CircularSampleBuffer sampleBuffer(kCapacity);
+TEST_F(ReadAheadSampleBufferTest, reset) {
+    ReadAheadSampleBuffer sampleBuffer(kCapacity);
 
     SINT writeCount = writeTail(&sampleBuffer, 10);
     EXPECT_EQ(writeCount, 10);

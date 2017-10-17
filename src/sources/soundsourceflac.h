@@ -3,7 +3,7 @@
 
 #include "sources/soundsourceprovider.h"
 
-#include "util/circularsamplebuffer.h"
+#include "util/readaheadsamplebuffer.h"
 
 #include <FLAC/stream_decoder.h>
 
@@ -51,7 +51,7 @@ class SoundSourceFLAC: public SoundSource {
 
     CSAMPLE m_sampleScaleFactor;
 
-    SingularSampleBuffer m_sampleBuffer;
+    ReadAheadSampleBuffer m_sampleBuffer;
 
     void invalidateCurFrameIndex() {
         m_curFrameIndex = frameIndexMax();

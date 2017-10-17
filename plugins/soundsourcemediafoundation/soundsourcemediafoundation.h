@@ -6,7 +6,7 @@
 #include <mfreadwrite.h>
 
 #include "sources/soundsourceplugin.h"
-#include "util/singularsamplebuffer.h"
+#include "util/readaheadsamplebuffer.h"
 
 
 namespace mixxx {
@@ -80,7 +80,7 @@ class SoundSourceMediaFoundation: public mixxx::SoundSourcePlugin {
 
     SINT m_currentFrameIndex;
 
-    SingularSampleBuffer m_sampleBuffer;
+    ReadAheadSampleBuffer m_sampleBuffer;
 };
 
 class SoundSourceProviderMediaFoundation: public SoundSourceProvider {

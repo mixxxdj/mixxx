@@ -24,7 +24,7 @@ if int(build.flags['mediafoundation']):
          'sources/soundsource.cpp',
          'sources/audiosource.cpp',
          'util/audiosignal.cpp',
-         'util/singularsamplebuffer.cpp',
+         'util/readaheadsamplebuffer.cpp',
          'util/samplebuffer.cpp',
          'util/sample.cpp',
          'util/logger.cpp',

@@ -3,7 +3,7 @@
 
 #include "sources/soundsourceplugin.h"
 
-#include "util/singularsamplebuffer.h"
+#include "util/readaheadsamplebuffer.h"
 
 #ifdef __MP4V2__
 #include <mp4v2/mp4v2.h>
@@ -57,7 +57,7 @@ class SoundSourceM4A: public SoundSourcePlugin {
     SINT m_numberOfPrefetchSampleBlocks;
     MP4SampleId m_curSampleBlockId;
 
-    SingularSampleBuffer m_sampleBuffer;
+    ReadAheadSampleBuffer m_sampleBuffer;
 
     SINT m_curFrameIndex;
 };

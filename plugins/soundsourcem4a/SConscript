@@ -17,7 +17,7 @@ m4a_sources = [
     "sources/audiosource.cpp",
     "util/audiosignal.cpp",
     "util/samplebuffer.cpp",
-    "util/singularsamplebuffer.cpp",
+    "util/readaheadsamplebuffer.cpp",
     "util/sample.cpp",
     "util/logger.cpp",
     "util/indexrange.cpp",

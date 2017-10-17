@@ -11,16 +11,25 @@
 //
 // This class is not thread-safe and not intended to be used from multiple
 // threads!
-class SingularSampleBuffer {
+class ReadAheadSampleBuffer {
   public:
-    SingularSampleBuffer();
-    explicit SingularSampleBuffer(SINT capacity);
-    SingularSampleBuffer(const SingularSampleBuffer&) = delete;
-    virtual ~SingularSampleBuffer() {}
+    ReadAheadSampleBuffer();
+    explicit ReadAheadSampleBuffer(SINT capacity);
+    ReadAheadSampleBuffer(const ReadAheadSampleBuffer& that)
+        : ReadAheadSampleBuffer(that, that.getCapacity()) {
+    }
+    ReadAheadSampleBuffer(const ReadAheadSampleBuffer& that, SINT capacity);
+    ReadAheadSampleBuffer(ReadAheadSampleBuffer&&);
+    virtual ~ReadAheadSampleBuffer() {}
+
+    ReadAheadSampleBuffer& operator=(const ReadAheadSampleBuffer&) = delete;
+    ReadAheadSampleBuffer& operator=(ReadAheadSampleBuffer&&) = delete;
+    
+    void swap(ReadAheadSampleBuffer& that);
 
     // The initial/total capacity of the buffer.
     SINT getCapacity() const {
-        return m_primaryBuffer.size();
+        return m_sampleBuffer.size();
     }
 
     // The capacity at the tail that is immediately available
@@ -70,18 +79,13 @@ class SingularSampleBuffer {
     // valid for reading as long as no modifying member function is called!
     SampleBuffer::ReadableSlice readFromHead(SINT size);
 
-  protected:
-    void trim(SampleBuffer& secondaryBuffer);
-
   private:
-    void swapBuffers(SampleBuffer& secondaryBuffer);
-
     void resetOffsets() {
         m_headOffset = 0;
         m_tailOffset = 0;
     }
 
-    SampleBuffer m_primaryBuffer;
+    SampleBuffer m_sampleBuffer;
     SINT m_headOffset;
     SINT m_tailOffset;
 };
