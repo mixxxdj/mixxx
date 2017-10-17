@@ -20,9 +20,10 @@ if int(build.flags['mediafoundation']):
     results = ["ssmediafoundation_bin"]
     ssmediafoundation_bin = env.SharedLibrary('soundsourcemediafoundation',
         ['soundsourcemediafoundation.cpp',
-         'sources/soundsourceplugin.cpp',
-         'sources/soundsource.cpp',
          'sources/audiosource.cpp',
+         'sources/metadatasource.cpp',
+         'sources/soundsource.cpp',
+         'sources/soundsourceplugin.cpp',
          'util/audiosignal.cpp',
          'util/readaheadsamplebuffer.cpp',
          'util/samplebuffer.cpp',

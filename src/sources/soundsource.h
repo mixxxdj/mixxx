@@ -10,7 +10,7 @@
 
 namespace mixxx {
 
-class ISoundSource {
+class /*interface*/ ISoundSource {
   public:
     virtual ~ISoundSource() {}
 
@@ -64,20 +64,17 @@ class ISoundSource {
 };
 
 // Base class for sound sources.
-class SoundSource: public AudioSource, public virtual ISoundSource, public virtual IMetadataSource {
-public:
-    static QString getFileExtensionFromUrl(const QUrl& url);
+class SoundSource
+    : public AudioSource,
+      public TracklibMetadataSource,
+      public virtual /*interface*/ ISoundSource {
 
-    const QString& getType() const {
+  public:
+    static QString getFileExtensionFromUrl(QUrl url);
+
+    QString getType() const {
         return m_type;
     }
-
-    // Default implementations for reading/writing track metadata.
-    Result parseTrackMetadataAndCoverArt(
-            TrackMetadata* pTrackMetadata,
-            QImage* pCoverArt) const override;
-    Result writeTrackMetadata(
-            const TrackMetadata& trackMetadata) const override;
 
     // Opens the AudioSource for reading audio data.
     //
@@ -101,16 +98,19 @@ public:
 protected:
     // If no type is provided the file extension of the file referred
     // by the URL will be used as the type of the SoundSource.
-    explicit SoundSource(const QUrl& url);
-    SoundSource(const QUrl& url, const QString& type);
+    explicit SoundSource(QUrl url)
+        : SoundSource(url, getFileExtensionFromUrl(url)) {
+    }
+    SoundSource(QUrl url, QString type);
 
-    const QString m_type;
+private:
+    QString m_type;
 };
 
 typedef std::shared_ptr<SoundSource> SoundSourcePointer;
 
 template<typename T>
-SoundSourcePointer newSoundSourceFromUrl(const QUrl& url) {
+SoundSourcePointer newSoundSourceFromUrl(QUrl url) {
     return std::make_shared<T>(url);
 }
 

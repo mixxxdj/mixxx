@@ -80,7 +80,7 @@ class WritableSampleFrames: public SampleFrames {
 // Interface for reading audio data in sample frames.
 //
 // Each new type of source must implement at least readSampleFramesClamped().
-class IAudioSource {
+class /*interface*/ IAudioSource {
   public:
     virtual ~IAudioSource() = default;
 
@@ -120,7 +120,7 @@ class IAudioSource {
 //
 // Audio sources are implicitly opened upon creation and
 // closed upon destruction.
-class AudioSource: public UrlResource, public AudioSignal, public virtual IAudioSource {
+class AudioSource: public UrlResource, public AudioSignal, public virtual /*interface*/ IAudioSource {
   public:
     virtual ~AudioSource() = default;
 
@@ -222,7 +222,7 @@ class AudioSource: public UrlResource, public AudioSignal, public virtual IAudio
     }
 
   protected:
-    explicit AudioSource(const QUrl& url);
+    explicit AudioSource(QUrl url);
     AudioSource(const AudioSource&) = default;
 
     bool initFrameIndexRangeOnce(

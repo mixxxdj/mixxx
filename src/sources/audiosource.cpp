@@ -11,7 +11,7 @@ const Logger kLogger("AudioSource");
 
 } // anonymous namespace
 
-AudioSource::AudioSource(const QUrl& url)
+AudioSource::AudioSource(QUrl url)
         : UrlResource(url),
           AudioSignal(kSampleLayout) {
 }
