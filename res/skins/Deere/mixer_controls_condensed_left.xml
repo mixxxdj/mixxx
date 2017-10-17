@@ -6,7 +6,7 @@
 <Template>
   <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
   <WidgetGroup>
-    <ObjectName>DeckMixer<Variable name="i"/>_ColumnCondensed</ObjectName>
+    <ObjectName>DeckMixer_ColumnCondensed</ObjectName>
     <Layout>vertical</Layout>
     <Children>
 
@@ -87,26 +87,16 @@
           </WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>4DecksMixerCondensedStereoMeterLeft</ObjectName>
             <Layout>horizontal</Layout>
-            <MaximumSize>60,141</MaximumSize>
-            <Connection>
-              <ConfigKey>[Master],show_faders</ConfigKey>
-              <BindProperty>visible</BindProperty>
-              <Transform>
-                <Not/>
-              </Transform>
-            </Connection>
+            <SizePolicy>me,min</SizePolicy>
             <Children>
 
-              <Template src="skin:spacer_hx.xml">
-                <SetVariable name="width">15</SetVariable>
-              </Template>
+              <Template src="skin:spacer_h.xml"/>
 
               <WidgetGroup>
                 <ObjectName>channel_VuMeter_Group</ObjectName>
                 <Layout>horizontal</Layout>
-                <MaximumSize>22,141</MaximumSize>
+                <Size>22max,-1min</Size>
                 <Children>
                   <Template src="skin:vumeter_v.xml">
                     <SetVariable name="group"><Variable name="group"/></SetVariable>
@@ -123,17 +113,26 @@
                 </Children>
               </WidgetGroup>
 
+              <Template src="skin:spacer_hx.xml">
+                <SetVariable name="width">9</SetVariable>
+              </Template>
+
             </Children>
+            <Connection>
+              <ConfigKey>[Master],show_faders</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
 
           <WidgetGroup>
             <ObjectName>CondensedButtonContainerLeft</ObjectName>
-            <Size>-1me,25f</Size>
+            <SizePolicy>me,min</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
 
               <Template src="skin:spacer_vx.xml">
-                <SetVariable name="height">2</SetVariable>
+                <SetVariable name="height">4</SetVariable>
               </Template>
 
               <Template src="skin:crossfader_orientation_button.xml">

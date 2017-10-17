@@ -6,7 +6,7 @@
 <Template>
   <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
   <WidgetGroup>
-    <ObjectName>DeckMixer<Variable name="i"/>_Column2</ObjectName>
+    <ObjectName>DeckMixer_Column2</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>max,me</SizePolicy>
     <Connection>
@@ -78,7 +78,7 @@
         <Children>
 
           <WidgetGroup>
-            <ObjectName>Channel<Variable name="i"/>Volume</ObjectName>
+            <ObjectName>ChannelVolume</ObjectName>
             <Layout>vertical</Layout>
             <Children>
               <SliderComposed>
@@ -105,7 +105,7 @@
           </WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>Channel<Variable name="i"/>Volume</ObjectName>
+            <ObjectName>ChannelVolume</ObjectName>
             <Layout>vertical</Layout>
             <Children>
               <SliderComposed>

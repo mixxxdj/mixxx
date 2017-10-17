@@ -13,6 +13,7 @@
   <SetVariable name="QuickEffectEffectGroup">[QuickEffectRack<Variable name="QuickEffect"/>_<Variable name="group"/>_Effect1]</SetVariable>
   <WidgetGroup>
     <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
     <Children>
 
       <!-- Invert the on/off icons so they match the EQ kill switches. -->
@@ -42,6 +43,17 @@
           <BindProperty>visible</BindProperty>
         </Connection>
       </PushButton>
+
+      <WidgetGroup><!-- Expanding spacer to push EQ knob to opposite side -->
+        <ObjectName>TEST1</ObjectName>
+        <Size>0me,1min</Size>
+        <Children/>
+        <Connection>
+          <ConfigKey>[Master],show_killswitches</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
 
       <Template src="skin:knob.xml">
         <SetVariable name="group"><Variable name="QuickEffectUnitGroup"/></SetVariable>

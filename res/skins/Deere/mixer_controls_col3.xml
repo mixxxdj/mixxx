@@ -6,7 +6,7 @@
 <Template>
   <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
   <WidgetGroup>
-    <ObjectName>DeckMixer<Variable name="i"/>_Column3</ObjectName>
+    <ObjectName>DeckMixer_Column3</ObjectName>
     <Layout>vertical</Layout>
     <Size>40f,-1me</Size>
     <Children>
@@ -59,6 +59,10 @@
           </Transform>
         </Connection>
       </WidgetGroup>
+
+      <Template src="skin:spacer_vx.xml">
+        <SetVariable name="height">2</SetVariable>
+      </Template>
 
       <WidgetGroup>
         <Size>22me,110me</Size>

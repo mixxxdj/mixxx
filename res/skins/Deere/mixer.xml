@@ -16,12 +16,12 @@
         <Children>
 
           <WidgetGroup>
-            <ObjectName>DeckControlsSplitWaveforms</ObjectName>
+            <ObjectName>DeckControls_SplitWaveforms</ObjectName>
             <Layout>horizontal</Layout>
             <Children>
 
               <WidgetGroup>
-                <ObjectName>DeckControlsSplitWaveforms2Decks</ObjectName>
+                <ObjectName>DeckControls_SplitWaveforms_2Decks</ObjectName>
                 <Layout>horizontal</Layout>
                 <Children>
 
@@ -46,7 +46,7 @@
               </WidgetGroup> <!-- DeckControlsSplitWaveforms2Decks -->
 
               <WidgetGroup>
-                <ObjectName>DeckControlsSplitWaveforms4Decks</ObjectName>
+                <ObjectName>DeckControls_SplitWaveforms_4Decks</ObjectName>
                 <Layout>horizontal</Layout>
                 <Children>
 
@@ -81,14 +81,14 @@
                 <Not/>
               </Transform>
             </Connection>
-          </WidgetGroup>
+          </WidgetGroup><!-- DeckControlsSplitWaveforms -->
 
           <WidgetGroup>
-            <ObjectName>DeckControlsStackedWaveforms</ObjectName>
+            <ObjectName>DeckControls_StackedWaveforms</ObjectName>
             <Layout>horizontal</Layout>
             <Children>
               <WidgetGroup>
-                <ObjectName>DeckControlsStackedWaveforms2Decks</ObjectName>
+                <ObjectName>DeckControls_StackedWaveforms_2Decks</ObjectName>
                 <Layout>horizontal</Layout>
                 <Children>
                   <Template src="skin:mixer_controls_left.xml">
@@ -111,7 +111,7 @@
               </WidgetGroup> <!-- DeckControlsStackedWaveforms2Decks -->
 
               <WidgetGroup>
-                <ObjectName>DeckControlsStackedWaveforms4Decks</ObjectName>
+                <ObjectName>DeckControls_StackedWaveforms_4Decks</ObjectName>
                 <Layout>horizontal</Layout>
                 <Children>
                   <WidgetGroup>
@@ -119,7 +119,7 @@
                     <Children>
 
                       <WidgetGroup>
-                        <ObjectName>DeckControlsStackedWaveforms4DecksNoEQs</ObjectName>
+                        <ObjectName>DeckControls_StackedWaveforms_4DecksNoEQs</ObjectName>
                         <Layout>horizontal</Layout>
                         <Children>
                           <Template src="skin:mixer_controls_left.xml">
@@ -148,7 +148,7 @@
                       </WidgetGroup> <!-- DeckControlsStackedWaveforms4DecksNoEQs -->
 
                       <WidgetGroup>
-                        <ObjectName>DeckControlsStackedWaveforms4DecksWithEQs</ObjectName>
+                        <ObjectName>DeckControls_StackedWaveforms_4DecksWithEQs</ObjectName>
                         <Layout>horizontal</Layout>
                         <Children>
                           <Template src="skin:mixer_controls_condensed_left.xml">
@@ -191,7 +191,7 @@
           </WidgetGroup>
 
         </Children>
-      </WidgetGroup> <!-- DeckControlsStackedWaveforms -->
+      </WidgetGroup><!-- DeckControlsStackedWaveforms -->
 
       <WidgetGroup>
         <ObjectName>CrossfaderContainer</ObjectName>

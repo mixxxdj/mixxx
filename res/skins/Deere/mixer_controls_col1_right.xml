@@ -6,21 +6,19 @@
 <Template>
   <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
   <WidgetGroup>
-    <ObjectName>DeckMixer<Variable name="i"/>_Column1</ObjectName>
+    <ObjectName>DeckMixer_Column1</ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>max,min</SizePolicy>
+    <SizePolicy>min,min</SizePolicy>
     <Children>
 
       <!--In 4 deck mode, show the gain knob above the EQs rather than above the level meters.-->
       <WidgetGroup>
         <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
           <WidgetGroup>
-            <Connection>
-              <ConfigKey>[Master],show_killswitches</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
             <Layout>vertical</Layout>
+            <SizePolicy>me,min</SizePolicy>
             <Children>
               <Template src="skin:knob_with_button_right.xml">
                 <SetVariable name="TooltipId">pregain</SetVariable>
@@ -30,22 +28,32 @@
                 <SetVariable name="button_control">mute</SetVariable>
               </Template>
             </Children>
-          </WidgetGroup>
-
-          <WidgetGroup>
             <Connection>
               <ConfigKey>[Master],show_killswitches</ConfigKey>
               <BindProperty>visible</BindProperty>
-              <Transform><Not/></Transform>
             </Connection>
-            <Layout>vertical</Layout>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,min</SizePolicy>
             <Children>
               <Template src="skin:knob.xml">
                 <SetVariable name="TooltipId">pregain</SetVariable>
                 <SetVariable name="control">pregain</SetVariable>
                 <SetVariable name="color">red</SetVariable>
               </Template>
+
+              <WidgetGroup><!-- Expanding spacer to push EQ knob to opposite side -->
+                <Size>0me,1min</Size>
+                <Children/>
+              </WidgetGroup>
             </Children>
+            <Connection>
+              <ConfigKey>[Master],show_killswitches</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform><Not/></Transform>
+            </Connection>
           </WidgetGroup>
 
         </Children>
@@ -54,6 +62,8 @@
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
+
+      <Template src="skin:spacer_v.xml"/>
 
       <Template src="skin:equalizer_rack_parameter_right.xml">
         <SetVariable name="parameter">4</SetVariable>
