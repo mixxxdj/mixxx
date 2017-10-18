@@ -22,19 +22,12 @@
  *******************************************************************************/
 /* These definitions put a faint border around all the widgets. We have to be
    tricky with top/bottom-ness to get things right. */
-#Mixer {
-  border-color: #222;
-  border-style: solid;
-  border-width: 0px 1.5px 3px 1.5px;
-  background-color: #333;
-}
-
 #DeckControls {
   padding: 7.5px;
 }
 
 #CrossfaderContainer {
-  padding: 0px 7.5px 7.5px 7.5px;
+  padding: 0px 2px 2px 2px;
 }
 
 #DeckTextRow {
@@ -78,6 +71,10 @@
 #ControlsRow {
   border-top: 1px solid #222;
   padding: 4px;
+}
+
+#MixerBorder {
+  background-color: #222;
 }
 
 /* Rounded corners to split things up */
@@ -1014,10 +1011,6 @@ WEffectSelector {
   margin-top: 1px;
 }
 
-#Mixer {
-  qproperty-layoutAlignment: 'AlignTop';
-}
-
 #CrossfaderAutoDjActive {
   background-color: #001726;
 }
@@ -1078,10 +1071,8 @@ WNumberRate {
 
 #Mixer {
   qproperty-layoutAlignment: 'AlignTop';
-  border-color: #222;
-  border-style: solid;
-  border-width: 0px 1.5px 3px 1.5px;
   background-color: #333;
+  margin: 0px 1.5px 3px 1.5px;
 }
 
 #DeckControls {
