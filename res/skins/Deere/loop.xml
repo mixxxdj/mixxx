@@ -9,10 +9,7 @@
   <WidgetGroup>
     <ObjectName>LoopContainer</ObjectName>
     <Layout>horizontal</Layout>
-
-    <MinimumSize>-1,-1</MinimumSize>
     <SizePolicy>max,max</SizePolicy>
-
     <Children>
 
       <BeatSpinBox>
@@ -69,7 +66,7 @@
               </Template>
 
             </Children>
-          </WidgetGroup>
+          </WidgetGroup><!-- LoopButtonsTopRow -->
 
           <WidgetGroup>
             <ObjectName>LoopButtonsBottomRow</ObjectName>
@@ -103,11 +100,11 @@
               </Template>
 
             </Children>
-          </WidgetGroup>
+          </WidgetGroup><!-- LoopButtonsBottomRow -->
 
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- LoopButtons -->
 
     </Children>
-  </WidgetGroup>
+  </WidgetGroup><!-- LoopContainer -->
 </Template>

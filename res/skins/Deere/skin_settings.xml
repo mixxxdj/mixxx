@@ -293,7 +293,7 @@
           </PushButton>
 
           <PushButton>
-            <TooltipId>show_eqs</TooltipId>
+            <TooltipId>show_faders</TooltipId>
             <Size>80me,20f</Size>
             <NumberStates>2</NumberStates>
             <State>
