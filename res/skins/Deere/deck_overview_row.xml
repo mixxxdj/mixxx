@@ -194,7 +194,6 @@
       </WidgetGroup>
 
       <WidgetGroup>
-        <ObjectName>ButtonGrid</ObjectName>
         <Layout>vertical</Layout>
         <Connection>
           <ConfigKey>[Master],show_4effectunits</ConfigKey>

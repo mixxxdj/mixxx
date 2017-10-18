@@ -1,7 +1,6 @@
 <!DOCTYPE template>
 <Template>
   <WidgetGroup>
-    <ObjectName>VinylControlsContainer</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
