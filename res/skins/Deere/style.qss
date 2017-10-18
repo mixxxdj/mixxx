@@ -794,15 +794,22 @@ WBeatSpinBox {
 
 #BPMGutter, #PositionGutter {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
-  qproperty-layoutSpacing: 10;
+  qproperty-layoutSpacing: 4;
   padding: 2px;
 }
 
 /* Start editable widgets in decks */
-#BpmEditRow:hover, #KeyEditRow:hover, #PositionGutter:hover, #StarratingGutter:hover {
+#BpmEditRowCollapsed:hover, #KeyEditRowCollapsed:hover,
+#BpmEditRowExpanded:hover, #KeyEditRowExpanded:hover,
+#PositionGutter:hover, #StarratingGutter:hover {
   /* emphasize editable widgets on hover */
   border: 1px solid #FF6600;
   background-color: rgba(255, 102, 0, 128);
+}
+#BpmEditRowCollapsed, #KeyEditRowCollapsed {
+  qproperty-layoutAlignment: 'AlignCenter';
+  /* emphasize active widget */
+  border: 1px solid #4B4B4B;
 }
 
 #BpmEditRowExpanded, #KeyEditRowExpanded {
@@ -821,10 +828,14 @@ WBeatSpinBox {
 #BpmEditRowControls, #KeyEditRowControls {
   /* Make room between buttons */
   background-color: #333333;
-  padding-left: 2px;
-  padding-right: 2px;
-  margin-left: 2px;
+  padding-left: 1px;
+  padding-right: 1px;
+  margin-right: 2px;
   qproperty-layoutSpacing: 2;
+}
+
+#BpmEditTriggerLabel, #KeyEditTriggerLabel {
+  padding-right: 1px;
 }
 /* End editable widgets in decks */
 
