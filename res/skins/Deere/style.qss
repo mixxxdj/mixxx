@@ -1394,6 +1394,10 @@ WPushButton[value="2"]:hover {
     border-radius: 3px;
 }
 
+WRecordingDuration {
+  font-weight: bold;
+}
+
 /* Special case "orientation" controls
   0 -- left
   1 -- center / off
