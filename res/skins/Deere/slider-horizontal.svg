@@ -11,7 +11,7 @@
    width="180"
    height="40"
    id="svg2"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.48.4 r9939"
    sodipodi:docname="slider-horizontal.svg">
   <metadata
      id="metadata76">
@@ -36,16 +36,19 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:window-width="1366"
-     inkscape:window-height="702"
+     inkscape:window-height="746"
      id="namedview72"
      showgrid="false"
      inkscape:zoom="2.5388889"
-     inkscape:cx="13.588622"
-     inkscape:cy="20.787746"
+     inkscape:cx="88.665961"
+     inkscape:cy="52.335148"
      inkscape:window-x="0"
-     inkscape:window-y="27"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg2" />
+     inkscape:current-layer="svg2"
+     inkscape:snap-page="true"
+     inkscape:snap-bbox="true"
+     inkscape:bbox-paths="true" />
   <!-- marker lines every 5px -->
   <!-- end marker -->
   <!-- quarter marker -->
@@ -54,20 +57,20 @@
   <!-- end marker -->
   <g
      id="g4768"
-     transform="matrix(0,1,-1,0,55.164124,-15.054704)">
+     transform="matrix(0,1,-1.0808731,0,52.353048,-15.054704)">
     <rect
-       rx="1"
+       rx="0.92517799"
        ry="1"
        y="-114.58588"
        x="27.687683"
        height="159.5"
        width="14.734042"
        id="rect4167"
-       style="opacity:1;fill:none;fill-opacity:1;stroke:#222222;stroke-width:2.5;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+       style="fill:none;stroke:#222222;stroke-width:2.40465426;stroke-linecap:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     <path
-       d="m 18.064453,15.681641 0,148.636719 3.871094,0 0,-148.636719 -3.871094,0 z"
+       d="m 18.0625,15.6875 0,148.625 3.875,0 0,-148.625 -3.875,0 z"
        id="path4175"
-       style="opacity:1;fill:#222222;fill-opacity:1;stroke:#222222;stroke-width:2.5;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#222222;fill-opacity:1;stroke:#222222;stroke-width:2.40465426;stroke-linecap:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        inkscape:original="M 14.632812 10.25 C 13.524812 10.25 12.632812 11.142 12.632812 12.25 L 12.632812 167.75 C 12.632812 168.858 13.524812 169.75 14.632812 169.75 L 25.367188 169.75 C 26.475188 169.75 27.367188 168.858 27.367188 167.75 L 27.367188 12.25 C 27.367187 11.142 26.475188 10.25 25.367188 10.25 L 14.632812 10.25 z "
        inkscape:radius="-5.4322028"
        sodipodi:type="inkscape:offset"
