@@ -637,10 +637,6 @@ WWidget, QLabel {
   qproperty-layoutSpacing: 2;
 }
 
-#ButtonGrid {
-  qproperty-layoutSpacing: 2;
-}
-
 #OptionGridRow1, #OptionGridRow2 {
   qproperty-layoutSpacing: 2;
 }
