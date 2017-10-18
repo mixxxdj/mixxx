@@ -12,14 +12,19 @@ class ControlNumericBehavior {
   public:
     virtual ~ControlNumericBehavior() { };
 
-    // Returns true if the set should occur. Mutates dValue if the value should
-    // be changed.
+    // this may change the dValue in place before it is adopted
+    // Returns false to reject the new value entirely
     virtual bool setFilter(double* dValue);
 
+    // returns the normalized parameter range 0..1
     virtual double valueToParameter(double dValue);
+    // returns the normalized parameter range 0..1
     virtual double midiValueToParameter(double midiValue);
+    // returns the scaled user visible value
     virtual double parameterToValue(double dParam);
+    // returns the midi range parameter 0..127
     virtual double valueToMidiParameter(double dValue);
+
     virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
                                            ControlDoublePrivate* pControl);
 };
@@ -28,13 +33,13 @@ class ControlPotmeterBehavior : public ControlNumericBehavior {
   public:
     ControlPotmeterBehavior(double dMinValue, double dMaxValue,
                             bool allowOutOfBounds);
-    virtual ~ControlPotmeterBehavior();
+    ~ControlPotmeterBehavior() override;
 
-    virtual bool setFilter(double* dValue);
-    virtual double valueToParameter(double dValue);
-    virtual double midiValueToParameter(double midiValue);
-    virtual double parameterToValue(double dParam);
-    virtual double valueToMidiParameter(double dValue);
+    bool setFilter(double* dValue) override;
+    double valueToParameter(double dValue) override;
+    double midiValueToParameter(double midiValue) override;
+    double parameterToValue(double dParam) override;
+    double valueToMidiParameter(double dValue) override;
 
   protected:
     double m_dMinValue;
@@ -46,10 +51,10 @@ class ControlPotmeterBehavior : public ControlNumericBehavior {
 class ControlLogPotmeterBehavior : public ControlPotmeterBehavior {
   public:
     ControlLogPotmeterBehavior(double dMinValue, double dMaxValue, double minDB);
-    virtual ~ControlLogPotmeterBehavior();
+    ~ControlLogPotmeterBehavior() override;
 
-    virtual double valueToParameter(double dValue);
-    virtual double parameterToValue(double dParam);
+    double valueToParameter(double dValue) override;
+    double parameterToValue(double dParam) override;
 
   protected:
     double m_minDB;
@@ -60,21 +65,22 @@ class ControlLinPotmeterBehavior : public ControlPotmeterBehavior {
   public:
     ControlLinPotmeterBehavior(double dMinValue, double dMaxValue,
                                bool allowOutOfBounds);
-    virtual ~ControlLinPotmeterBehavior();
+    ~ControlLinPotmeterBehavior() override;
 };
 
 class ControlAudioTaperPotBehavior : public ControlPotmeterBehavior {
   public:
     ControlAudioTaperPotBehavior(double minDB, double maxDB,
                                  double neutralParameter);
-    virtual ~ControlAudioTaperPotBehavior();
+    ~ControlAudioTaperPotBehavior() override;
 
-    virtual double valueToParameter(double dValue);
-    virtual double parameterToValue(double dParam);
-    virtual double midiValueToParameter(double midiValue);
-    virtual double valueToMidiParameter(double dValue);
-    virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
-                                           ControlDoublePrivate* pControl);
+    double valueToParameter(double dValue);
+    double parameterToValue(double dParam);
+    double midiValueToParameter(double midiValue);
+    double valueToMidiParameter(double dValue);
+    void setValueFromMidiParameter(
+            MidiOpCode o, double dParam, ControlDoublePrivate* pControl)
+                    override;
 
   protected:
     // a knob position between 0 and 1 where the gain is 1 (0dB)
@@ -94,8 +100,8 @@ class ControlAudioTaperPotBehavior : public ControlPotmeterBehavior {
 
 class ControlTTRotaryBehavior : public ControlNumericBehavior {
   public:
-    virtual double valueToParameter(double dValue);
-    virtual double parameterToValue(double dParam);
+    double valueToParameter(double dValue) override;
+    double parameterToValue(double dParam) override;
 };
 
 class ControlPushButtonBehavior : public ControlNumericBehavior {
@@ -114,8 +120,9 @@ class ControlPushButtonBehavior : public ControlNumericBehavior {
     };
 
     ControlPushButtonBehavior(ButtonMode buttonMode, int iNumStates);
-    virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
-                                           ControlDoublePrivate* pControl);
+    void setValueFromMidiParameter(
+            MidiOpCode o, double dParam, ControlDoublePrivate* pControl)
+                override;
 
   private:
     // We create many hundreds of push buttons at Mixxx startup and most of them
