@@ -1,35 +1,39 @@
 <!--
-    Tango - a flat, super-minimizable, nightime-compatible skin for mixxx
+    Tango * a flat, super-minimizable, nightime-compatible skin for mixxx
 
-    This skin acts as an extension for your controller, meaning (almost) all duplicate
-    controls can be removed. See skin settings menu (next to clock) for all controls.
+    This skin is supposed to be an extension for your controller, in a way that
+    almost all duplicate controls can be removed from screen.
+    Toggle skin settings menu with the hamburger button to the right of the clock
+    to find all options.
 
     Main focus was to make every control easily and quickly recognizable,
     especially when your eyes are mostly on your controller and your hands.
     I started with LateNight and got much inspiration from Deere and how templates and
     variables can be used.
 
-    I suppose everything is self-explaining, just try out.
-    - Play buttons: RED when track is playing normally,
-                    ORANGE when 'previewing' from Cue/HotCue.
-    - right-clicking Play button when playing will stop/reset track to Cue point,
-      right-clicking when stopped will set Cue point to current position.
-    - how to use comments row: insert a blank line in track's comment with
-      <shift><space> and add your notes in front of that.
+    Special feature:
+    comment row below track overview shows first line of track's comment (read from
+    metadata tag, editable in tracks table or Properties window).
+    How to use:
+    - add your notes on cue points, moods, whatever to the beginning of track comment
+    - for a line break press <shift> + <enter>
+    - to push iTunes info etc. down, insert a blank line: <space> then <shift> + <enter>
+    - disable completely in skin settings menu
 
     Enjoy!
-    Big   U	  U   P P P
-          U	  U   P     P
-          U	  U   P P P
-            U	U	  P        to mixxx devs for their work over the past years!!
+
+    Big   U	    U   P P P
+          U	    U   P     P
+          U	    U   P P P
+            U	U	    P        to mixxx devs for their work over the past years!!
 
 -->
 
 <skin>
   <manifest>
     <title>Tango</title>
-    <author>Ronny Sandig</author>
-    <version>2.1.3</version>
+    <author>ronso0</author>
+    <version>2.1.4</version>
     <description>A flat, super-minimizable, nightime-compatible skin</description>
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
@@ -149,11 +153,13 @@
 <!--  ################################################################
       Variables #####################################################
      ###############################################################
-      Put these variable definitions at the beginning so SingletonDefinitions
-      have all Variables available. -->
+      Put these variable definitions at the beginning in order to have
+      have all variables available for SingletonDefinitions -->
         
-<!--  Initially I was trying to match 'active angle' on Reloop TerminalMix 2.
-      Values beyond -150/150 might interfere with some knob labels. -->
+<!--  Knob range in degrees, 0-360
+      Initially I was trying to match the responsive area on Reloop TerminalMix 2,
+      but tweak to your liking.
+      Values beyond -150/150 might interfere with some knob labels -->
     <SetVariable name="PotiMinAngle">-130</SetVariable>
     <SetVariable name="PotiMaxAngle">130</SetVariable>
 
@@ -226,7 +232,7 @@
                   <SetVariable name="SignalRGBLowColor"><Variable name="SignalRGBLowColor"/></SetVariable>
                 </Template>
 
-                <Template src="skin:crossfader12_skincontrols.xml"/>
+                <Template src="skin:centerbox_deck12.xml"/>
 
                 <Template src="skin:deck_right.xml">
                   <SetVariable name="chanNum">2</SetVariable>
@@ -267,7 +273,7 @@
                   <SetVariable name="SignalRGBLowColor"><Variable name="SignalRGBLowColor"/></SetVariable>
                 </Template>
 
-                <Template src="skin:crossfader34.xml"/>
+                <Template src="skin:centerbox_deck34.xml"/>
 
                 <Template src="skin:deck_right.xml">
                   <SetVariable name="chanNum">4</SetVariable>
@@ -299,7 +305,7 @@
       <SizePolicy>me,me</SizePolicy>
       <Children>
         <!-- Normal view, expandig library -->
-        <!-- Mximized library -->
+        <!-- Maximized library -->
         <!-- Netbook size detector -->
 
         <WidgetGroup><!-- Lib normal, stacked resizable waveforms, skin settings menu -->
@@ -333,7 +339,7 @@
                   <SizePolicy>me,min</SizePolicy>
                   <Children>
 
-                    <Template src="skin:crossfader_skincontrols_netbook.xml"/>
+                    <Template src="skin:topbar_netbook.xml"/>
 
                     <WidgetGroup><!-- Decks + 2 FX Units -->
                       <Layout>vertical</Layout>
@@ -367,7 +373,6 @@
                             <BindProperty>visible</BindProperty>
                           </Connection>
                         </WidgetGroup>
-
 
                         <Template src="skin:fx_units_12.xml"/>
 
@@ -485,6 +490,5 @@
 
       </Children>
     </WidgetGroup><!-- /SkinContainer -->
-
   </Children>
 </skin>
