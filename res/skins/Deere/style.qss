@@ -643,6 +643,10 @@ WWidget, QLabel {
 }
 /* End spacing for Deck overview row */
 
+#Waveforms {
+  background-color: #333;
+}
+
 #WaveformZoomContainer {
   background-color: #333333;
   padding: 1px;
