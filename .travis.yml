@@ -52,6 +52,8 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export DISPLAY=:99.0         ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sh -e /etc/init.d/xvfb start ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install scons portaudio libsndfile libogg libvorbis portmidi taglib libshout protobuf flac ffmpeg qt chromaprint rubberband libmodplug libid3tag libmad mp4v2 faad2 wavpack opusfile lilv lame sound-touch; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget https://github.com/ninja-build/ninja/releases/download/v1.7.2/ninja-linux.zip && unzip -q ninja-linux.zip -d build; fi
+  - pip3 install meson
 
 install:
   ####
@@ -65,17 +67,16 @@ install:
   #####
   # Ubuntu Trusty Build
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      sudo apt-get install libasound2-dev libusb-1.0-0-dev libjack-dev libsndfile-dev &&
-      git clone https://github.com/openAVproductions/openAV-ctlra ctlra &&
-      cd ctlra &&
-      export CTLRA_PATH=`pwd` &&
-      echo $CTLRA_PATH  &&
-      mkdir build &&
-      cd build  &&
-      cmake ..  &&
-      make -j3 &&
-      cd ..  &&
-      cd .. ;
+    - sudo apt-get install libasound2-dev libusb-1.0-0-dev libjack-dev libsndfile-dev
+    - git clone https://github.com/openAVproductions/openAV-ctlra ctlra
+    - cd ctlra
+    - export CTLRA_PATH=`pwd`
+    - echo $CTLRA_PATH
+    - meson build
+    - cd build
+    - ninja
+    - cd ..
+    - cd ..
    fi
 
   ####
