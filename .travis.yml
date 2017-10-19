@@ -47,6 +47,8 @@ addons:
       - scons
       - qtkeychain-dev
       - liblilv-dev
+      - python3
+
 before_install:
   # Virtual X, needed for analyzer waveform tests
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export DISPLAY=:99.0         ; fi
