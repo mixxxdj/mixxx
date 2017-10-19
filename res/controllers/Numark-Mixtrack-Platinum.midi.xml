@@ -285,56 +285,56 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>hotcue_4_clear</key>
+                <key>MixtrackPlatinum.deck1.hotcues[4].input</key>
                 <status>0x94</status>
                 <midino>0x23</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>hotcue_4_clear</key>
+                <key>MixtrackPlatinum.deck2.hotcues[4].input</key>
                 <status>0x95</status>
                 <midino>0x23</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>hotcue_3_clear</key>
+                <key>MixtrackPlatinum.deck1.hotcues[3].input</key>
                 <status>0x94</status>
                 <midino>0x22</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>hotcue_4_clear</key>
+                <key>MixtrackPlatinum.deck3.hotcues[4].input</key>
                 <status>0x96</status>
                 <midino>0x23</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>hotcue_3_clear</key>
+                <key>MixtrackPlatinum.deck2.hotcues[3].input</key>
                 <status>0x95</status>
                 <midino>0x22</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>hotcue_2_clear</key>
+                <key>MixtrackPlatinum.deck1.hotcues[2].input</key>
                 <status>0x94</status>
                 <midino>0x21</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -348,38 +348,38 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>hotcue_4_clear</key>
+                <key>MixtrackPlatinum.deck4.hotcues[4].input</key>
                 <status>0x97</status>
                 <midino>0x23</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>hotcue_3_clear</key>
+                <key>MixtrackPlatinum.deck3.hotcues[3].input</key>
                 <status>0x96</status>
                 <midino>0x22</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>hotcue_2_clear</key>
+                <key>MixtrackPlatinum.deck2.hotcues[2].input</key>
                 <status>0x95</status>
                 <midino>0x21</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>hotcue_1_clear</key>
+                <key>MixtrackPlatinum.deck1.hotcues[1].input</key>
                 <status>0x94</status>
                 <midino>0x20</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -393,29 +393,29 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>hotcue_3_clear</key>
+                <key>MixtrackPlatinum.deck4.hotcues[3].input</key>
                 <status>0x97</status>
                 <midino>0x22</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>hotcue_2_clear</key>
+                <key>MixtrackPlatinum.deck3.hotcues[2].input</key>
                 <status>0x96</status>
                 <midino>0x21</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>hotcue_1_clear</key>
+                <key>MixtrackPlatinum.deck2.hotcues[1].input</key>
                 <status>0x95</status>
                 <midino>0x20</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -447,20 +447,20 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>hotcue_2_clear</key>
+                <key>MixtrackPlatinum.deck4.hotcues[2].input</key>
                 <status>0x97</status>
                 <midino>0x21</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>hotcue_1_clear</key>
+                <key>MixtrackPlatinum.deck3.hotcues[1].input</key>
                 <status>0x96</status>
                 <midino>0x20</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -501,11 +501,11 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>hotcue_1_clear</key>
+                <key>MixtrackPlatinum.deck4.hotcues[1].input</key>
                 <status>0x97</status>
                 <midino>0x20</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -638,11 +638,11 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>hotcue_4_activate</key>
+                <key>MixtrackPlatinum.deck1.hotcues[4].input</key>
                 <status>0x94</status>
                 <midino>0x1B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -675,20 +675,20 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>hotcue_4_activate</key>
+                <key>MixtrackPlatinum.deck2.hotcues[4].input</key>
                 <status>0x95</status>
                 <midino>0x1B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>hotcue_3_activate</key>
+                <key>MixtrackPlatinum.deck1.hotcues[3].input</key>
                 <status>0x94</status>
                 <midino>0x1A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -721,38 +721,38 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>hotcue_4_activate</key>
+                <key>MixtrackPlatinum.deck3.hotcues[4].input</key>
                 <status>0x96</status>
                 <midino>0x1B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>hotcue_3_activate</key>
+                <key>MixtrackPlatinum.deck2.hotcues[3].input</key>
                 <status>0x95</status>
                 <midino>0x1A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>hotcue_2_activate</key>
+                <key>MixtrackPlatinum.deck1.hotcues[2].input</key>
                 <status>0x94</status>
                 <midino>0x19</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>hotcue_1_activate</key>
+                <key>MixtrackPlatinum.deck1.hotcues[1].input</key>
                 <status>0x94</status>
                 <midino>0x18</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -766,47 +766,47 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>hotcue_4_activate</key>
+                <key>MixtrackPlatinum.deck4.hotcues[4].input</key>
                 <status>0x97</status>
                 <midino>0x1B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>hotcue_3_activate</key>
+                <key>MixtrackPlatinum.deck3.hotcues[3].input</key>
                 <status>0x96</status>
                 <midino>0x1A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>hotcue_2_activate</key>
+                <key>MixtrackPlatinum.deck2.hotcues[2].input</key>
                 <status>0x95</status>
                 <midino>0x19</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>hotcue_2_activate</key>
+                <key>MixtrackPlatinum.deck3.hotcues[2].input</key>
                 <status>0x96</status>
                 <midino>0x19</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>hotcue_1_activate</key>
+                <key>MixtrackPlatinum.deck2.hotcues[1].input</key>
                 <status>0x95</status>
                 <midino>0x18</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -829,29 +829,29 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>hotcue_3_activate</key>
+                <key>MixtrackPlatinum.deck4.hotcues[3].input</key>
                 <status>0x97</status>
                 <midino>0x1A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>hotcue_2_activate</key>
+                <key>MixtrackPlatinum.deck4.hotcues[2].input</key>
                 <status>0x97</status>
                 <midino>0x19</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>hotcue_1_activate</key>
+                <key>MixtrackPlatinum.deck3.hotcues[1].input</key>
                 <status>0x96</status>
                 <midino>0x18</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -883,11 +883,11 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>hotcue_1_activate</key>
+                <key>MixtrackPlatinum.deck4.hotcues[1].input</key>
                 <status>0x97</status>
                 <midino>0x18</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -2028,34 +2028,6 @@
                 <maximum>2.14748e+09</maximum>
             </output>
             <output>
-                <group>[Channel3]</group>
-                <key>hotcue_2_enabled</key>
-                <status>0x96</status>
-                <midino>0x19</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>hotcue_2_enabled</key>
-                <status>0x96</status>
-                <midino>0x21</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>hotcue_2_enabled</key>
-                <status>0x86</status>
-                <midino>0x19</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>hotcue_2_enabled</key>
-                <status>0x86</status>
-                <midino>0x21</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
                 <group>[Channel2]</group>
                 <key>bpm_tap</key>
                 <status>0x99</status>
@@ -2358,34 +2330,6 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel2]</group>
-                <key>hotcue_1_enabled</key>
-                <status>0x95</status>
-                <midino>0x18</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>hotcue_1_enabled</key>
-                <status>0x95</status>
-                <midino>0x20</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>hotcue_1_enabled</key>
-                <status>0x85</status>
-                <midino>0x18</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>hotcue_1_enabled</key>
-                <status>0x85</status>
-                <midino>0x20</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
                 <group>[Channel1]</group>
                 <key>hotcue_3_enabled</key>
                 <status>0x94</status>
@@ -2411,34 +2355,6 @@
                 <key>hotcue_3_enabled</key>
                 <status>0x84</status>
                 <midino>0x22</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>hotcue_2_enabled</key>
-                <status>0x95</status>
-                <midino>0x19</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>hotcue_2_enabled</key>
-                <status>0x95</status>
-                <midino>0x21</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>hotcue_2_enabled</key>
-                <status>0x85</status>
-                <midino>0x19</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>hotcue_2_enabled</key>
-                <status>0x85</status>
-                <midino>0x21</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2500,34 +2416,6 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel1]</group>
-                <key>hotcue_1_enabled</key>
-                <status>0x94</status>
-                <midino>0x18</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>hotcue_1_enabled</key>
-                <status>0x94</status>
-                <midino>0x20</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>hotcue_1_enabled</key>
-                <status>0x84</status>
-                <midino>0x18</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>hotcue_1_enabled</key>
-                <status>0x84</status>
-                <midino>0x20</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
                 <group>[Channel2]</group>
                 <key>loop_start_position</key>
                 <status>0x85</status>
@@ -2542,34 +2430,6 @@
                 <midino>0x38</midino>
                 <on>0x01</on>
                 <maximum>2.14748e+09</maximum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>hotcue_2_enabled</key>
-                <status>0x94</status>
-                <midino>0x19</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>hotcue_2_enabled</key>
-                <status>0x94</status>
-                <midino>0x21</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>hotcue_2_enabled</key>
-                <status>0x84</status>
-                <midino>0x19</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>hotcue_2_enabled</key>
-                <status>0x84</status>
-                <midino>0x21</midino>
-                <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel4]</group>
@@ -3266,34 +3126,6 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel4]</group>
-                <key>hotcue_1_enabled</key>
-                <status>0x97</status>
-                <midino>0x18</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>hotcue_1_enabled</key>
-                <status>0x97</status>
-                <midino>0x20</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>hotcue_1_enabled</key>
-                <status>0x87</status>
-                <midino>0x18</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>hotcue_1_enabled</key>
-                <status>0x87</status>
-                <midino>0x20</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
                 <group>[Channel3]</group>
                 <key>beatloop_2_enabled</key>
                 <status>0x96</status>
@@ -3367,34 +3199,6 @@
                 <status>0x87</status>
                 <midino>0x17</midino>
                 <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>hotcue_2_enabled</key>
-                <status>0x97</status>
-                <midino>0x19</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>hotcue_2_enabled</key>
-                <status>0x97</status>
-                <midino>0x21</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>hotcue_2_enabled</key>
-                <status>0x87</status>
-                <midino>0x19</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>hotcue_2_enabled</key>
-                <status>0x87</status>
-                <midino>0x21</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -3477,34 +3281,6 @@
                 <status>0x97</status>
                 <midino>0x34</midino>
                 <on>0x01</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>hotcue_1_enabled</key>
-                <status>0x96</status>
-                <midino>0x18</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>hotcue_1_enabled</key>
-                <status>0x96</status>
-                <midino>0x20</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>hotcue_1_enabled</key>
-                <status>0x86</status>
-                <midino>0x18</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>hotcue_1_enabled</key>
-                <status>0x86</status>
-                <midino>0x20</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>

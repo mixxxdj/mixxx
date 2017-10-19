@@ -79,16 +79,6 @@ MixtrackPlatinum.init = function(id, debug) {
         loop_start_end_led(group, 'loop_start_position', i + 5, 0x38);
         loop_start_end_led(group, 'loop_end_position', i + 5, 0x39);
 
-        // hotcue leds
-        led(group, 'hotcue_1_enabled', i + 5, 0x18);
-        led(group, 'hotcue_2_enabled', i + 5, 0x19);
-        led(group, 'hotcue_3_enabled', i + 5, 0x1A);
-        led(group, 'hotcue_4_enabled', i + 5, 0x1B);
-        led(group, 'hotcue_1_enabled', i + 5, 0x20);
-        led(group, 'hotcue_2_enabled', i + 5, 0x21);
-        led(group, 'hotcue_3_enabled', i + 5, 0x22);
-        led(group, 'hotcue_4_enabled', i + 5, 0x23);
-
         // auto-loop leds
         auto_loop_led(group, 'beatloop_1_enabled',  i + 5, 0x14);
         auto_loop_led(group, 'beatloop_2_enabled',  i + 5, 0x15);
@@ -303,6 +293,17 @@ MixtrackPlatinum.Deck = function(deck_nums, midi_chan) {
         shiftControl: true,
         shiftOffset: 1,
     });
+
+    this.hotcues = [];
+    for (var i = 1; i <= 4; ++i) {
+        this.hotcues[i] = new components.HotcueButton({
+            midi: [0x94 + midi_chan, 0x18 + i - 1],
+            number: i,
+            sendShifted: true,
+            shiftControl: true,
+            shiftOffset: 8,
+        });
+    }
 
     this.reconnectComponents(function (c) {
         if (c.group === undefined) {
