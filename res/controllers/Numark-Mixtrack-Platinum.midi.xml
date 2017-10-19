@@ -1,13 +1,15 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxControllerPreset mixxxVersion="2.1.0+" schemaVersion="1">
     <info>
-        <name>Numark Mixtrack Platinum</name>
+        <name>Numark Mixtrack Platinum (local)</name>
         <author>Matthew Nicholson</author>
         <description>Numark Mixtrack Platinum mapping with support for LED screens and 4 deck playback.</description>
         <forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=8863</forums>
     </info>
     <controller id="MixTrack">
         <scriptfiles>
+            <file filename="lodash.mixxx.js"/>
+            <file filename="midi-components-0.0.js"/>
             <file functionprefix="MixtrackPlatinum" filename="Numark-Mixtrack-Platinum-scripts.js"/>
         </scriptfiles>
         <controls>
@@ -1248,11 +1250,11 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>start</key>
+                <key>MixtrackPlatinum.deck1.cue_button.input</key>
                 <status>0x90</status>
                 <midino>0x05</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1285,20 +1287,20 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>start</key>
+                <key>MixtrackPlatinum.deck2.cue_button.input</key>
                 <status>0x91</status>
                 <midino>0x05</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>play_stutter</key>
+                <key>MixtrackPlatinum.deck1.play_button.input</key>
                 <status>0x90</status>
                 <midino>0x04</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1330,20 +1332,20 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>start</key>
+                <key>MixtrackPlatinum.deck3.cue_button.input</key>
                 <status>0x92</status>
                 <midino>0x05</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>play_stutter</key>
+                <key>MixtrackPlatinum.deck2.play_button.input</key>
                 <status>0x91</status>
                 <midino>0x04</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1366,29 +1368,38 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>sync_enabled</key>
+                <key>MixtrackPlatinum.deck1.sync_button.input</key>
                 <status>0x90</status>
                 <midino>0x02</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>MixtrackPlatinum.deck1.sync_button.input</key>
+                <status>0x90</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>start</key>
+                <key>MixtrackPlatinum.deck4.cue_button.input</key>
                 <status>0x93</status>
                 <midino>0x05</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>play_stutter</key>
+                <key>MixtrackPlatinum.deck3.play_button.input</key>
                 <status>0x92</status>
                 <midino>0x04</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1402,110 +1413,137 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>sync_enabled</key>
+                <key>MixtrackPlatinum.deck2.sync_button.input</key>
                 <status>0x91</status>
                 <midino>0x02</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>MixtrackPlatinum.deck2.sync_button.input</key>
+                <status>0x91</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>cue_default</key>
+                <key>MixtrackPlatinum.deck1.cue_button.input</key>
                 <status>0x90</status>
                 <midino>0x01</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>play_stutter</key>
+                <key>MixtrackPlatinum.deck4.play_button.input</key>
                 <status>0x93</status>
                 <midino>0x04</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>sync_enabled</key>
+                <key>MixtrackPlatinum.deck3.sync_button.input</key>
                 <status>0x92</status>
                 <midino>0x02</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>MixtrackPlatinum.deck3.sync_button.input</key>
+                <status>0x92</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>cue_default</key>
+                <key>MixtrackPlatinum.deck2.cue_button.input</key>
                 <status>0x91</status>
                 <midino>0x01</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>play</key>
+                <key>MixtrackPlatinum.deck1.play_button.input</key>
                 <status>0x90</status>
                 <midino>0x00</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>sync_enabled</key>
+                <key>MixtrackPlatinum.deck4.sync_button.input</key>
                 <status>0x93</status>
                 <midino>0x02</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>MixtrackPlatinum.deck4.sync_button.input</key>
+                <status>0x93</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>cue_default</key>
+                <key>MixtrackPlatinum.deck3.cue_button.input</key>
                 <status>0x92</status>
                 <midino>0x01</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>play</key>
+                <key>MixtrackPlatinum.deck2.play_button.input</key>
                 <status>0x91</status>
                 <midino>0x00</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>cue_default</key>
+                <key>MixtrackPlatinum.deck4.cue_button.input</key>
                 <status>0x93</status>
                 <midino>0x01</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>play</key>
+                <key>MixtrackPlatinum.deck3.play_button.input</key>
                 <status>0x92</status>
                 <midino>0x00</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>play</key>
+                <key>MixtrackPlatinum.deck4.play_button.input</key>
                 <status>0x93</status>
                 <midino>0x00</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -2535,22 +2573,6 @@
             </output>
             <output>
                 <group>[Channel4]</group>
-                <key>sync_enabled</key>
-                <status>0x93</status>
-                <midino>0x03</midino>
-                <off>0x01</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>sync_enabled</key>
-                <status>0x93</status>
-                <midino>0x02</midino>
-                <off>0x01</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
                 <key>loop_end_position</key>
                 <status>0x87</status>
                 <midino>0x39</midino>
@@ -2596,22 +2618,6 @@
                 <midino>0x38</midino>
                 <on>0x01</on>
                 <maximum>2.14748e+09</maximum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>sync_enabled</key>
-                <status>0x92</status>
-                <midino>0x03</midino>
-                <off>0x01</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>sync_enabled</key>
-                <status>0x92</status>
-                <midino>0x02</midino>
-                <off>0x01</off>
-                <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel3]</group>
@@ -2990,73 +2996,6 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel1]</group>
-                <key>cue_indicator</key>
-                <description>cue indicator while shift is pressed</description>
-                <status>0x80</status>
-                <midino>0x05</midino>
-                <off>0x01</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>cue_indicator</key>
-                <status>0x80</status>
-                <midino>0x01</midino>
-                <off>0x01</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>play_indicator</key>
-                <status>0x92</status>
-                <midino>0x00</midino>
-                <off>0x01</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>play_indicator</key>
-                <description>play indicator while shift is pressed</description>
-                <status>0x92</status>
-                <midino>0x04</midino>
-                <off>0x01</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>cue_indicator</key>
-                <status>0x81</status>
-                <midino>0x01</midino>
-                <off>0x01</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>cue_indicator</key>
-                <description>cue indicator while shift is pressed</description>
-                <status>0x81</status>
-                <midino>0x05</midino>
-                <off>0x01</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>sync_enabled</key>
-                <status>0x91</status>
-                <midino>0x03</midino>
-                <off>0x01</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>sync_enabled</key>
-                <status>0x91</status>
-                <midino>0x02</midino>
-                <off>0x01</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
                 <group>[Channel4]</group>
                 <key>slip_enabled</key>
                 <status>0x83</status>
@@ -3087,40 +3026,6 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel4]</group>
-                <key>play_indicator</key>
-                <description>play indicator while shift is pressed</description>
-                <status>0x93</status>
-                <midino>0x04</midino>
-                <off>0x01</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>play_indicator</key>
-                <status>0x93</status>
-                <midino>0x00</midino>
-                <off>0x01</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>cue_indicator</key>
-                <description>cue indicator while shift is pressed</description>
-                <status>0x82</status>
-                <midino>0x05</midino>
-                <off>0x01</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>cue_indicator</key>
-                <status>0x82</status>
-                <midino>0x01</midino>
-                <off>0x01</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
                 <group>[Channel2]</group>
                 <key>keylock</key>
                 <status>0x81</status>
@@ -3132,22 +3037,6 @@
                 <key>keylock</key>
                 <status>0x91</status>
                 <midino>0x0D</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>sync_enabled</key>
-                <status>0x90</status>
-                <midino>0x03</midino>
-                <off>0x01</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>sync_enabled</key>
-                <status>0x90</status>
-                <midino>0x02</midino>
-                <off>0x01</off>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -3229,23 +3118,6 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel1]</group>
-                <key>play_indicator</key>
-                <description>play indicator while shift is pressed</description>
-                <status>0x90</status>
-                <midino>0x04</midino>
-                <off>0x01</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>play_indicator</key>
-                <status>0x90</status>
-                <midino>0x00</midino>
-                <off>0x01</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
                 <group>[Channel4]</group>
                 <key>hotcue_3_enabled</key>
                 <status>0x97</status>
@@ -3271,23 +3143,6 @@
                 <key>hotcue_3_enabled</key>
                 <status>0x87</status>
                 <midino>0x22</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>cue_indicator</key>
-                <status>0x83</status>
-                <midino>0x01</midino>
-                <off>0x01</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>cue_indicator</key>
-                <description>cue indicator while shift is pressed</description>
-                <status>0x83</status>
-                <midino>0x05</midino>
-                <off>0x01</off>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -3468,23 +3323,6 @@
                 <status>0x87</status>
                 <midino>0x1F</midino>
                 <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>play_indicator</key>
-                <description>play indicator while shift is pressed</description>
-                <status>0x91</status>
-                <midino>0x04</midino>
-                <off>0x01</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>play_indicator</key>
-                <status>0x91</status>
-                <midino>0x00</midino>
-                <off>0x01</off>
                 <minimum>0.5</minimum>
             </output>
             <output>

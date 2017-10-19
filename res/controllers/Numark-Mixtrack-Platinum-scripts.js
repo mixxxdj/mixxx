@@ -8,6 +8,17 @@ MixtrackPlatinum.init = function(id, debug) {
     var byteArray = [0xF0, 0x00, 0x01, 0x3F, 0x7F, 0x3A, 0x60, 0x00, 0x04, 0x04, 0x01, 0x00, 0x00, 0xF7];
     midi.sendSysexMsg(byteArray, byteArray.length);
 
+    MixtrackPlatinum.deck1 = new MixtrackPlatinum.Deck(1, 0x00);
+    MixtrackPlatinum.deck2 = new MixtrackPlatinum.Deck(2, 0x01);
+    MixtrackPlatinum.deck3 = new MixtrackPlatinum.Deck(3, 0x02);
+    MixtrackPlatinum.deck4 = new MixtrackPlatinum.Deck(4, 0x03);
+
+    MixtrackPlatinum.decks = [];
+    MixtrackPlatinum.decks[1] = MixtrackPlatinum.deck1;
+    MixtrackPlatinum.decks[2] = MixtrackPlatinum.deck2;
+    MixtrackPlatinum.decks[3] = MixtrackPlatinum.deck3;
+    MixtrackPlatinum.decks[4] = MixtrackPlatinum.deck4;
+
     // helper functions
     var loop_led = function(group, key, midi_channel, midino) {
         if (engine.getValue(group, key)) {
@@ -67,18 +78,6 @@ MixtrackPlatinum.init = function(id, debug) {
         loop_led(group, 'loop_double', i + 5, 0x35);
         loop_start_end_led(group, 'loop_start_position', i + 5, 0x38);
         loop_start_end_led(group, 'loop_end_position', i + 5, 0x39);
-
-        // play leds
-        led_dim(group, 'play_indicator', i, 0x00);
-        led_dim(group, 'play_indicator', i, 0x04);
-
-        // sync leds
-        led_dim(group, 'sync_enabled', i, 0x02);
-        led_dim(group, 'sync_enabled', i, 0x03);
-
-        // cue leds
-        led_dim(group, 'cue_indicator', i, 0x01);
-        led_dim(group, 'cue_indicator', i, 0x05);
 
         // hotcue leds
         led(group, 'hotcue_1_enabled', i + 5, 0x18);
@@ -267,6 +266,52 @@ MixtrackPlatinum.shutdown = function() {
     var byteArray = [0xF0, 0x00, 0x20, 0x7F, 0x02, 0xF7];
     midi.sendSysexMsg(byteArray, byteArray.length);
 };
+
+MixtrackPlatinum.Deck = function(deck_nums, midi_chan) {
+    components.Deck.call(this, deck_nums);
+    this.play_button = new components.PlayButton({
+        midi: [0x90 + midi_chan, 0x00],
+        off: 0x01,
+        sendShifted: true,
+        shiftControl: true,
+        shiftOffset: 4,
+        unshift: function() {
+            components.PlayButton.prototype.unshift.call(this);
+            this.type = components.Button.prototype.types.toggle;
+        },
+        shift: function() {
+            this.inKey = 'play_stutter';
+            this.type = components.Button.prototype.types.push;
+        },
+    });
+
+    this.cue_button = new components.CueButton({
+        midi: [0x90 + midi_chan, 0x01],
+        off: 0x01,
+        sendShifted: true,
+        shiftControl: true,
+        shiftOffset: 4,
+        shift: function() {
+            this.inKey = 'start';
+        },
+    });
+
+    this.sync_button = new components.SyncButton({
+        midi: [0x90 + midi_chan, 0x02],
+        off: 0x01,
+        sendShifted: true,
+        shiftControl: true,
+        shiftOffset: 1,
+    });
+
+    this.reconnectComponents(function (c) {
+        if (c.group === undefined) {
+            c.group = this.currentDeck;
+        }
+    });
+};
+
+MixtrackPlatinum.Deck.prototype = new components.Deck();
 
 MixtrackPlatinum.encodeNum = function(number) {
     var number_array = [
@@ -579,6 +624,11 @@ MixtrackPlatinum.shiftToggle = function (channel, control, value, status, group)
     MixtrackPlatinum.shift = value == 0x7F;
 
     for (var i = 1; i <= 4; ++i) {
+        if (MixtrackPlatinum.shift) MixtrackPlatinum.decks[i].shift();
+        else MixtrackPlatinum.decks[i].unshift();
+    }
+
+    for (i = 1; i <= 4; ++i) {
         if (MixtrackPlatinum.touching[i]) {
             // if shift is pressed while we are scratching, stop scratching
             if (MixtrackPlatinum.shift) MixtrackPlatinum.scratchDisable(i);
