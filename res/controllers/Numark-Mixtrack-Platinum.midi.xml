@@ -15,7 +15,7 @@
         <controls>
             <control>
                 <group>[Channel1]</group>
-                <key>MixtrackPlatinum.pitchLSB</key>
+                <key>MixtrackPlatinum.deck1.pitch.inputLSB</key>
                 <description>pitch fader lsb</description>
                 <status>0xB0</status>
                 <midino>0x77</midino>
@@ -25,7 +25,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>MixtrackPlatinum.pitchLSB</key>
+                <key>MixtrackPlatinum.deck2.pitch.inputLSB</key>
                 <description>pitch fader lsb</description>
                 <status>0xB1</status>
                 <midino>0x77</midino>
@@ -35,7 +35,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>MixtrackPlatinum.pitchLSB</key>
+                <key>MixtrackPlatinum.deck3.pitch.inputLSB</key>
                 <description>pitch fader lsb</description>
                 <status>0xB2</status>
                 <midino>0x77</midino>
@@ -45,7 +45,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>MixtrackPlatinum.pitchLSB</key>
+                <key>MixtrackPlatinum.deck4.pitch.inputLSB</key>
                 <description>pitch fader lsb</description>
                 <status>0xB3</status>
                 <midino>0x77</midino>
@@ -1836,7 +1836,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>MixtrackPlatinum.pitchMSB</key>
+                <key>MixtrackPlatinum.deck1.pitch.inputMSB</key>
                 <description>pitch fader msb</description>
                 <status>0xB0</status>
                 <midino>0x09</midino>
@@ -1846,7 +1846,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>MixtrackPlatinum.pitchMSB</key>
+                <key>MixtrackPlatinum.deck2.pitch.inputMSB</key>
                 <description>pitch fader msb</description>
                 <status>0xB1</status>
                 <midino>0x09</midino>
@@ -1856,7 +1856,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>MixtrackPlatinum.pitchMSB</key>
+                <key>MixtrackPlatinum.deck3.pitch.inputMSB</key>
                 <description>pitch fader msb</description>
                 <status>0xB2</status>
                 <midino>0x09</midino>
@@ -1875,7 +1875,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>MixtrackPlatinum.pitchMSB</key>
+                <key>MixtrackPlatinum.deck4.pitch.inputMSB</key>
                 <description>pitch fader msb</description>
                 <status>0xB3</status>
                 <midino>0x09</midino>

@@ -307,6 +307,12 @@ MixtrackPlatinum.Deck = function(deck_nums, midi_chan) {
         });
     }
 
+    this.pitch = new components.Pot({
+        inKey: 'rate',
+        relative: true,
+        invert: true,
+    });
+
     this.reconnectComponents(function (c) {
         if (c.group === undefined) {
             c.group = this.currentDeck;
@@ -605,21 +611,6 @@ MixtrackPlatinum.pitch = [
     [ 0, 0 ],
     [ 0, 0 ],
 ];
-
-// invert the pitch slider so it matches the interface
-MixtrackPlatinum.setPitch = function(index, group) {
-    engine.setValue(group, "rate", -script.midiPitch(MixtrackPlatinum.pitch[index][0], MixtrackPlatinum.pitch[index][1], 0xE0));
-};
-
-MixtrackPlatinum.pitchLSB = function (channel, control, value, status, group) {
-    MixtrackPlatinum.pitch[channel][0] = value;
-    MixtrackPlatinum.setPitch(channel, group);
-};
-
-MixtrackPlatinum.pitchMSB = function (channel, control, value, status, group) {
-    MixtrackPlatinum.pitch[channel][1] = value;
-    MixtrackPlatinum.setPitch(channel, group);
-};
 
 // track the state of the shift key
 MixtrackPlatinum.shift = false;
