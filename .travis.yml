@@ -56,7 +56,6 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install scons portaudio libsndfile libogg libvorbis portmidi taglib libshout protobuf flac ffmpeg qt chromaprint rubberband libmodplug libid3tag libmad mp4v2 faad2 wavpack opusfile lilv lame sound-touch; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget https://github.com/ninja-build/ninja/releases/download/v1.7.2/ninja-linux.zip && unzip -q ninja-linux.zip -d build; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install python3; fi
-  - pip3 install meson
 
 install:
   ####
@@ -70,7 +69,10 @@ install:
   #####
   # Ubuntu Trusty Build
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-    - sudo apt-get install libasound2-dev libusb-1.0-0-dev libjack-dev libsndfile-dev
+    - export PATH="`pwd`/ninja/:${PATH}"
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget https://github.com/ninja-build/ninja/releases/download/v1.7.2/ninja-linux.zip && unzip -q ninja-linux.zip -d ninja/; fi
+    - sudo apt-get install libasound2-dev libusb-1.0-0-dev libjack-dev libsndfile-dev python3 python3-pip
+    - sudo pip3 install meson
     - git clone https://github.com/openAVproductions/openAV-ctlra ctlra
     - cd ctlra
     - export CTLRA_PATH=`pwd`
