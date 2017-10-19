@@ -56,7 +56,7 @@ void ReadAheadSampleBuffer::clear() {
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 }
 
-SampleBuffer::WritableSlice ReadAheadSampleBuffer::writeToTail(SINT writeLength) {
+SampleBuffer::WritableSlice ReadAheadSampleBuffer::write(SINT writeLength) {
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 
     const SINT tailLength = math_min(writeLength, writableLength());
@@ -68,7 +68,7 @@ SampleBuffer::WritableSlice ReadAheadSampleBuffer::writeToTail(SINT writeLength)
     return tailSlice;
 }
 
-SampleBuffer::ReadableSlice ReadAheadSampleBuffer::readFromTail(SINT readLength) {
+SampleBuffer::ReadableSlice ReadAheadSampleBuffer::readFifo(SINT readLength) {
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 
     const SINT tailLength = math_min(readLength, readableLength());
@@ -81,7 +81,7 @@ SampleBuffer::ReadableSlice ReadAheadSampleBuffer::readFromTail(SINT readLength)
     return tailSlice;
 }
 
-SampleBuffer::ReadableSlice ReadAheadSampleBuffer::readFromHead(SINT readLength) {
+SampleBuffer::ReadableSlice ReadAheadSampleBuffer::readLifo(SINT readLength) {
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 
     const SINT headLength = math_min(readLength, readableLength());

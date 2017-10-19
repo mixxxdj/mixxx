@@ -48,48 +48,51 @@ class ReadAheadSampleBuffer {
         return m_sampleBuffer.size();
     }
 
-    // The number of samples that could be written instantly,
-    // i.e. the remaining capacity of the buffer.
+    // Discards all buffered samples.
+    void clear();
+
+    bool empty() const {
+        return m_readableRange.empty();
+    }
+
+    // The number of samples that could be written instantly without
+    // internal reorganization, i.e. the remaining capacity of the
+    // buffer.
     SINT writableLength() const {
         return capacity() - m_readableRange.end();
     }
+
+    // Reserves space at the buffer's back end for writing samples.
+    //
+    // Returns a pointer to the continuous memory region and the
+    // actual number of samples that have been reserved. The maximum
+    // length is limited by writableLength().
+    //
+    // The returned pointer is valid until the next write() operation.
+    SampleBuffer::WritableSlice write(SINT writeLength);
 
     // The number of readable samples.
     SINT readableLength() const {
         return m_readableRange.length();
     }
 
-    bool empty() const {
-        return m_readableRange.empty();
-    }
-
-    // Discards all buffered samples.
-    void clear();
-
-    // Reserves space at the buffer's tail for writing samples. The internal
-    // buffer is trimmed if necessary to provide a continuous memory region.
-    //
-    // Returns a pointer to the continuous memory region and the actual number
-    // of samples that have been reserved. The maximum growth is limited by
-    // getTailCapacity() and might be increased by calling trim().
-    SampleBuffer::WritableSlice writeToTail(
-            SINT writeLength);
-
-    // Shrinks the buffer from the tail for reading buffered samples.
+    // Consumes buffered samples in FIFO order.
     //
     // Returns a pointer to the continuous memory region and the actual
-    // number of buffered samples that have been dropped. The pointer is
-    // valid for reading as long as no modifying member function is called!
-    SampleBuffer::ReadableSlice readFromTail(
-            SINT readLength);
+    // number of readable samples. The maximum length is limited by
+    // readableLength().
+    //
+    // The returned pointer is valid until the next write() operation.
+    SampleBuffer::ReadableSlice readFifo(SINT readLength);
 
-    // Shrinks the buffer from the head for reading buffered samples.
+    // Consumes buffered samples in LIFO order.
     //
     // Returns a pointer to the continuous memory region and the actual
-    // number of buffered samples that have been dropped. The pointer is
-    // valid for reading as long as no modifying member function is called!
-    SampleBuffer::ReadableSlice readFromHead(
-            SINT readLength);
+    // number of readable samples. The maximum length is limited by
+    // readableLength().
+    //
+    // The returned pointer is valid until the next write() operation.
+    SampleBuffer::ReadableSlice readLifo(SINT readLength);
 
   private:
     void adjustReadableRange() {

@@ -447,7 +447,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
         if (!m_sampleBuffer.empty()) {
             // Consume previously decoded sample data
             const SampleBuffer::ReadableSlice readableSlice(
-                    m_sampleBuffer.readFromHead(numberOfSamplesRemaining));
+                    m_sampleBuffer.readLifo(numberOfSamplesRemaining));
             if (writableSampleFrames.sampleBuffer().data()) {
                 SampleUtil::copy(
                         writableSampleFrames.sampleBuffer().data(outputSampleOffset),
@@ -509,7 +509,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
             const SINT writeToTailCount = math_max(
                     numberOfSamplesRemaining, decodeBufferCapacityMin);
             const SampleBuffer::WritableSlice writableSlice(
-                    m_sampleBuffer.writeToTail(writeToTailCount));
+                    m_sampleBuffer.write(writeToTailCount));
             pDecodeBuffer = writableSlice.data();
             decodeBufferCapacity = writableSlice.size();
         }
@@ -567,12 +567,12 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
             DEBUG_ASSERT(numberOfSamplesDecoded <= decodeBufferCapacity);
             // Adjust the size of the buffer to the samples that
             // have actually been decoded
-            m_sampleBuffer.readFromTail(decodeBufferCapacity - numberOfSamplesDecoded);
+            m_sampleBuffer.readFifo(decodeBufferCapacity - numberOfSamplesDecoded);
             // Read from the buffer's head
             numberOfSamplesRead =
                     std::min(numberOfSamplesDecoded, numberOfSamplesRemaining);
             const SampleBuffer::ReadableSlice readableSlice(
-                    m_sampleBuffer.readFromHead(numberOfSamplesRead));
+                    m_sampleBuffer.readLifo(numberOfSamplesRead));
             DEBUG_ASSERT(readableSlice.size() == numberOfSamplesRead);
             if (writableSampleFrames.sampleBuffer().data()) {
                 SampleUtil::copy(

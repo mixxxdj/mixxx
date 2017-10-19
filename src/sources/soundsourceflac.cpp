@@ -264,7 +264,7 @@ ReadableSampleFrames SoundSourceFLAC::readSampleFramesClamped(
         const SINT numberOfSamplesRead =
                 std::min(m_sampleBuffer.readableLength(), numberOfSamplesRemaining);
         const SampleBuffer::ReadableSlice readableSlice(
-                m_sampleBuffer.readFromHead(numberOfSamplesRead));
+                m_sampleBuffer.readLifo(numberOfSamplesRead));
         DEBUG_ASSERT(readableSlice.size() == numberOfSamplesRead);
         if (writableSampleFrames.sampleBuffer().data()) {
             SampleUtil::copy(
@@ -376,7 +376,7 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
     // Decode buffer should be empty before decoding the next frame
     DEBUG_ASSERT(m_sampleBuffer.empty());
     const SampleBuffer::WritableSlice writableSlice(
-            m_sampleBuffer.writeToTail(frames2samples(numReadableFrames)));
+            m_sampleBuffer.write(frames2samples(numReadableFrames)));
 
     const SINT numWritableFrames = samples2frames(writableSlice.size());
     DEBUG_ASSERT(numWritableFrames <= numReadableFrames);
