@@ -4,6 +4,10 @@ MixtrackPlatinum.init = function(id, debug) {
     MixtrackPlatinum.id = id;
     MixtrackPlatinum.debug = debug;
 
+    // exit demo mode
+    var byteArray = [0xF0, 0x00, 0x01, 0x3F, 0x7F, 0x3A, 0x60, 0x00, 0x04, 0x04, 0x01, 0x00, 0x00, 0xF7];
+    midi.sendSysexMsg(byteArray, byteArray.length);
+
     // helper functions
     var loop_led = function(group, key, midi_channel, midino) {
         if (engine.getValue(group, key)) {
@@ -49,10 +53,6 @@ MixtrackPlatinum.init = function(id, debug) {
             midi.sendShortMsg(0x90 | midi_channel, midino, 0x01);
         }
     };
-
-    // exit demo mode
-    var byteArray = [0xF0, 0x00, 0x01, 0x3F, 0x7F, 0x3A, 0x60, 0x00, 0x04, 0x04, 0x01, 0x00, 0x00, 0xF7];
-    midi.sendSysexMsg(byteArray, byteArray.length);
 
     // init a bunch of channel specific leds
     for (var i = 0; i < 4; ++i) {
