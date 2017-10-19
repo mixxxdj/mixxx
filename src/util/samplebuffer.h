@@ -1,5 +1,5 @@
-#ifndef MIXXX_UTIL_SAMPLEBUFFER_H
-#define MIXXX_UTIL_SAMPLEBUFFER_H
+#pragma once
+
 
 #include <algorithm> // std::swap
 
@@ -190,5 +190,3 @@ inline void swap(::mixxx::SampleBuffer& lhs, ::mixxx::SampleBuffer& rhs) {
 }
 
 }  // namespace std
-
-#endif // MIXXX_UTIL_SAMPLEBUFFER_H

@@ -1,5 +1,5 @@
-#ifndef MIXXX_INDEXRANGE_H
-#define MIXXX_INDEXRANGE_H
+#pragma once
+
 
 #include <QtDebug>
 
@@ -174,6 +174,3 @@ QDebug operator<<(QDebug dbg, IndexRange arg);
 
 
 } // namespace mixxx
-
-
-#endif // MIXXX_INDEXRANGE_H

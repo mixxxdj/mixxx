@@ -1,5 +1,5 @@
-#ifndef MIXXX_UTIL_READAHEADSAMPLEBUFFER_H
-#define MIXXX_UTIL_READAHEADSAMPLEBUFFER_H
+#pragma once
+
 
 #include "util/indexrange.h"
 #include "util/samplebuffer.h"
@@ -113,5 +113,3 @@ inline void swap(::mixxx::ReadAheadSampleBuffer& lhs, ::mixxx::ReadAheadSampleBu
 }
 
 }  // namespace std
-
-#endif // MIXXX_UTIL_READAHEADSAMPLEBUFFER_H
