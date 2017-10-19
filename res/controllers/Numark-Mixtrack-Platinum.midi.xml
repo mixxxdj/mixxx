@@ -429,11 +429,11 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>pfl</key>
+                <key>MixtrackPlatinum.deck1.pfl_button.input</key>
                 <status>0x90</status>
                 <midino>0x1B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -483,11 +483,11 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>pfl</key>
+                <key>MixtrackPlatinum.deck2.pfl_button.input</key>
                 <status>0x91</status>
                 <midino>0x1B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -537,11 +537,11 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>pfl</key>
+                <key>MixtrackPlatinum.deck3.pfl_button.input</key>
                 <status>0x92</status>
                 <midino>0x1B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -592,11 +592,11 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>pfl</key>
+                <key>MixtrackPlatinum.deck4.pfl_button.input</key>
                 <status>0x93</status>
                 <midino>0x1B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -2552,14 +2552,6 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel1]</group>
-                <key>pfl</key>
-                <status>0x90</status>
-                <midino>0x1B</midino>
-                <off>0x01</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
                 <group>[Channel2]</group>
                 <key>beatloop_0.125_enabled</key>
                 <status>0x95</status>
@@ -2665,14 +2657,6 @@
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>pfl</key>
-                <status>0x91</status>
-                <midino>0x1B</midino>
-                <off>0x01</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
                 <key>beatloop_8_enabled</key>
                 <status>0x95</status>
                 <midino>0x17</midino>
@@ -2752,14 +2736,6 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel3]</group>
-                <key>pfl</key>
-                <status>0x92</status>
-                <midino>0x1B</midino>
-                <off>0x01</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
                 <group>[Channel1]</group>
                 <key>beatloop_8_enabled</key>
                 <status>0x94</status>
@@ -2821,14 +2797,6 @@
                 <status>0x96</status>
                 <midino>0x32</midino>
                 <on>0x01</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>pfl</key>
-                <status>0x93</status>
-                <midino>0x1B</midino>
-                <off>0x01</off>
                 <minimum>0.5</minimum>
             </output>
             <output>

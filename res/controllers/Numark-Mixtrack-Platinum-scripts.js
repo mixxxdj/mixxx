@@ -69,9 +69,6 @@ MixtrackPlatinum.init = function(id, debug) {
     for (var i = 0; i < 4; ++i) {
         var group = "[Channel"+(i+1)+"]";
 
-        // pfl/cue button leds
-        led_dim(group, 'pfl', 0x90 | i, 0x1B);
-
         // loop leds
         loop_led(group, 'loop_enabled', i + 5, 0x32);
         loop_led(group, 'loop_halve', i + 5, 0x34);
@@ -135,12 +132,6 @@ MixtrackPlatinum.init = function(id, debug) {
     // zero vu meters
     midi.sendShortMsg(0xBF, 0x44, 0);
     midi.sendShortMsg(0xBF, 0x45, 0);
-
-    // zero vu meters on pfl toggle
-    engine.connectControl("[Channel1]", "pfl", MixtrackPlatinum.pflToggle);
-    engine.connectControl("[Channel2]", "pfl", MixtrackPlatinum.pflToggle);
-    engine.connectControl("[Channel3]", "pfl", MixtrackPlatinum.pflToggle);
-    engine.connectControl("[Channel4]", "pfl", MixtrackPlatinum.pflToggle);
 
     // setup position tracking
     engine.connectControl("[Channel1]", "playposition", MixtrackPlatinum.positionCallback);
@@ -292,6 +283,17 @@ MixtrackPlatinum.Deck = function(deck_nums, midi_chan) {
         sendShifted: true,
         shiftControl: true,
         shiftOffset: 1,
+    });
+
+    this.pfl_button = new components.Button({
+        midi: [0x90 + midi_chan, 0x1B],
+        key: 'pfl',
+        off: 0x01,
+        type: components.Button.prototype.types.toggle,
+        connect: function() {
+            components.Button.prototype.connect.call(this);
+            this.connections[1] = engine.connectControl(this.group, this.outKey, MixtrackPlatinum.pflToggle);
+        },
     });
 
     this.hotcues = [];
