@@ -19,13 +19,13 @@ class ControlNumericBehavior {
     // returns the normalized parameter range 0..1
     virtual double valueToParameter(double dValue);
     // returns the normalized parameter range 0..1
-    virtual double midiValueToParameter(double midiValue);
+    virtual double midiToParameter(double midiValue);
     // returns the scaled user visible value
     virtual double parameterToValue(double dParam);
     // returns the midi range parameter 0..127
     virtual double valueToMidiParameter(double dValue);
 
-    virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
+    virtual void setValueFromMidi(MidiOpCode o, double dParam,
                                            ControlDoublePrivate* pControl);
 };
 
@@ -37,7 +37,7 @@ class ControlPotmeterBehavior : public ControlNumericBehavior {
 
     bool setFilter(double* dValue) override;
     double valueToParameter(double dValue) override;
-    double midiValueToParameter(double midiValue) override;
+    double midiToParameter(double midiValue) override;
     double parameterToValue(double dParam) override;
     double valueToMidiParameter(double dValue) override;
 
@@ -76,9 +76,9 @@ class ControlAudioTaperPotBehavior : public ControlPotmeterBehavior {
 
     double valueToParameter(double dValue);
     double parameterToValue(double dParam);
-    double midiValueToParameter(double midiValue);
+    double midiToParameter(double midiValue);
     double valueToMidiParameter(double dValue);
-    void setValueFromMidiParameter(
+    void setValueFromMidi(
             MidiOpCode o, double dParam, ControlDoublePrivate* pControl)
                     override;
 
@@ -120,7 +120,7 @@ class ControlPushButtonBehavior : public ControlNumericBehavior {
     };
 
     ControlPushButtonBehavior(ButtonMode buttonMode, int iNumStates);
-    void setValueFromMidiParameter(
+    void setValueFromMidi(
             MidiOpCode o, double dParam, ControlDoublePrivate* pControl)
                 override;
 

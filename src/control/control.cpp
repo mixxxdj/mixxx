@@ -239,7 +239,7 @@ double ControlDoublePrivate::getParameterForMidi(double midiParam) const {
         qWarning() << "Cannot set" << m_key << "by Midi";
         return 0;
     }
-    return pBehavior->midiValueToParameter(midiParam);
+    return pBehavior->midiToParameter(midiParam);
 }
 
 void ControlDoublePrivate::setValueFromMidi(MidiOpCode opcode, double midiParam) {
@@ -248,7 +248,7 @@ void ControlDoublePrivate::setValueFromMidi(MidiOpCode opcode, double midiParam)
         qWarning() << "Cannot set" << m_key << "by Midi";
         return;
     }
-    pBehavior->setValueFromMidiParameter(opcode, midiParam, this);
+    pBehavior->setValueFromMidi(opcode, midiParam, this);
 }
 
 double ControlDoublePrivate::getMidiParameter() const {

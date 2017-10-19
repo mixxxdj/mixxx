@@ -102,8 +102,8 @@ double ControlObject::getParameterForValue(double value) const {
     return m_pControl ? m_pControl->getParameterForValue(value) : 0.0;
 }
 
-double ControlObject::getParameterForMidiValue(double midiValue) const {
-    return m_pControl ? m_pControl->getParameterForMidi(midiValue) : 0.0;
+double ControlObject::getParameterForMidi(double midiParameter) const {
+    return m_pControl ? m_pControl->getParameterForMidi(midiParameter) : 0.0;
 }
 
 void ControlObject::setParameter(double v) {

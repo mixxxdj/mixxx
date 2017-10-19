@@ -11,7 +11,7 @@ double ControlNumericBehavior::valueToParameter(double dValue) {
     return dValue;
 }
 
-double ControlNumericBehavior::midiValueToParameter(double midiValue) {
+double ControlNumericBehavior::midiToParameter(double midiValue) {
     return midiValue;
 }
 
@@ -23,10 +23,10 @@ double ControlNumericBehavior::valueToMidiParameter(double dValue) {
     return dValue;
 }
 
-void ControlNumericBehavior::setValueFromMidiParameter(MidiOpCode o, double dParam,
-                                                       ControlDoublePrivate* pControl) {
+void ControlNumericBehavior::setValueFromMidi(
+        MidiOpCode o, double dParam, ControlDoublePrivate* pControl) {
     Q_UNUSED(o);
-    double dNorm = midiValueToParameter(dParam);
+    double dNorm = midiToParameter(dParam);
     pControl->set(parameterToValue(dNorm), NULL);
 }
 
@@ -64,7 +64,7 @@ double ControlPotmeterBehavior::valueToParameter(double dValue) {
     return (dValue - m_dMinValue) / m_dValueRange;
 }
 
-double ControlPotmeterBehavior::midiValueToParameter(double midiValue) {
+double ControlPotmeterBehavior::midiToParameter(double midiValue) {
     double parameter;
     if (midiValue > 64) {
         parameter = (midiValue - 1) / 126.0;
@@ -98,7 +98,8 @@ double ControlPotmeterBehavior::valueToMidiParameter(double dValue) {
 #define middlePosition ((maxPosition - minPosition) / 2.0)
 #define positionrange (maxPosition - minPosition)
 
-ControlLogPotmeterBehavior::ControlLogPotmeterBehavior(double dMinValue, double dMaxValue, double minDB)
+ControlLogPotmeterBehavior::ControlLogPotmeterBehavior(double dMinValue,
+        double dMaxValue, double minDB)
         : ControlPotmeterBehavior(dMinValue, dMaxValue, false) {
     if (minDB >= 0) {
         qWarning() << "ControlLogPotmeterBehavior::ControlLogPotmeterBehavior() minDB must be negative";
@@ -132,8 +133,8 @@ double ControlLogPotmeterBehavior::parameterToValue(double dParam) {
     return m_dMinValue + (linPrameter * m_dValueRange);
 }
 
-ControlLinPotmeterBehavior::ControlLinPotmeterBehavior(double dMinValue, double dMaxValue,
-                                                       bool allowOutOfBounds)
+ControlLinPotmeterBehavior::ControlLinPotmeterBehavior(
+        double dMinValue, double dMaxValue, bool allowOutOfBounds)
         : ControlPotmeterBehavior(dMinValue, dMaxValue, allowOutOfBounds) {
 }
 
@@ -206,7 +207,7 @@ double ControlAudioTaperPotBehavior::parameterToValue(double dParam) {
     return dValue;
 }
 
-double ControlAudioTaperPotBehavior::midiValueToParameter(double midiValue) {
+double ControlAudioTaperPotBehavior::midiToParameter(double midiValue) {
     double dParam;
     if (m_neutralParameter && m_neutralParameter != 1.0) {
         double neutralTest = (midiValue - m_midiCorrection) / 127.0;
@@ -241,13 +242,12 @@ double ControlAudioTaperPotBehavior::valueToMidiParameter(double dValue) {
     return dMidiParam;
 }
 
-void ControlAudioTaperPotBehavior::setValueFromMidiParameter(MidiOpCode o, double dMidiParam,
-                                                           ControlDoublePrivate* pControl) {
+void ControlAudioTaperPotBehavior::setValueFromMidi(
+        MidiOpCode o, double dMidiParam, ControlDoublePrivate* pControl) {
     Q_UNUSED(o);
-    double dParam = midiValueToParameter(dMidiParam);
+    double dParam = midiToParameter(dMidiParam);
     pControl->set(parameterToValue(dParam), NULL);
 }
-
 
 double ControlTTRotaryBehavior::valueToParameter(double dValue) {
     return (dValue * 200.0 + 64) / 127.0;
@@ -273,7 +273,7 @@ ControlPushButtonBehavior::ControlPushButtonBehavior(ButtonMode buttonMode,
           m_iNumStates(iNumStates) {
 }
 
-void ControlPushButtonBehavior::setValueFromMidiParameter(
+void ControlPushButtonBehavior::setValueFromMidi(
         MidiOpCode o, double dParam, ControlDoublePrivate* pControl) {
     // Calculate pressed State of the midi Button
     // Some controller like the RMX2 are sending always MIDI_NOTE_ON
