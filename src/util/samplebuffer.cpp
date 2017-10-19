@@ -2,6 +2,9 @@
 
 #include "util/sample.h"
 
+
+namespace mixxx {
+
 SampleBuffer::SampleBuffer(SINT size)
         : m_data((size > 0) ? SampleUtil::alloc(size) : nullptr),
           m_size((m_data != nullptr) ? size : 0) {
@@ -19,3 +22,5 @@ void SampleBuffer::clear() {
 void SampleBuffer::fill(CSAMPLE value) {
     SampleUtil::fill(data(), value, size());
 }
+
+} // namespace mixxx

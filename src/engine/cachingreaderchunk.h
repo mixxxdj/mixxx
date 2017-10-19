@@ -55,7 +55,7 @@ public:
     // range of frames that have been read.
     mixxx::IndexRange bufferSampleFrames(
             const mixxx::AudioSourcePointer& pAudioSource,
-            SampleBuffer::WritableSlice tempOutputBuffer);
+            mixxx::SampleBuffer::WritableSlice tempOutputBuffer);
 
     mixxx::IndexRange readBufferedSampleFrames(
             CSAMPLE* sampleBuffer,
@@ -66,7 +66,7 @@ public:
 
 protected:
     explicit CachingReaderChunk(
-            SampleBuffer::WritableSlice sampleBuffer);
+            mixxx::SampleBuffer::WritableSlice sampleBuffer);
     virtual ~CachingReaderChunk();
 
     void init(SINT index);
@@ -80,7 +80,7 @@ private:
 
     // The worker thread will fill the sample buffer and
     // set the corresponding frame index range.
-    SampleBuffer::WritableSlice m_sampleBuffer;
+    mixxx::SampleBuffer::WritableSlice m_sampleBuffer;
     mixxx::ReadableSampleFrames m_bufferedSampleFrames;
 };
 
@@ -90,7 +90,7 @@ private:
 class CachingReaderChunkForOwner: public CachingReaderChunk {
 public:
     explicit CachingReaderChunkForOwner(
-            SampleBuffer::WritableSlice sampleBuffer);
+            mixxx::SampleBuffer::WritableSlice sampleBuffer);
     ~CachingReaderChunkForOwner() override;
 
     void init(SINT index);

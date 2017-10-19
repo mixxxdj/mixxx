@@ -2,16 +2,20 @@
 
 #include "util/sample.h"
 
+
 #define DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer \
-    DEBUG_ASSERT(0 <= m_headOffset); \
-    DEBUG_ASSERT(m_headOffset <= m_tailOffset); \
-    DEBUG_ASSERT(m_tailOffset <= m_sampleBuffer.size()); \
-    DEBUG_ASSERT(!isEmpty() || (0 == m_headOffset)); \
-    DEBUG_ASSERT(!isEmpty() || (0 == m_tailOffset))
+    DEBUG_ASSERT(m_readableRange.orientation() != IndexRange::Orientation::Backward); \
+    DEBUG_ASSERT(0 <= m_readableRange.start()); \
+    DEBUG_ASSERT(m_readableRange.end() <= m_sampleBuffer.size()); \
+    DEBUG_ASSERT(!empty() || (0 == m_readableRange.start())); \
+    DEBUG_ASSERT(!empty() || (0 == m_readableRange.end()))
+
+
+namespace mixxx {
 
 ReadAheadSampleBuffer::ReadAheadSampleBuffer()
-    : m_headOffset(0),
-      m_tailOffset(0) {
+    : ReadAheadSampleBuffer(0),
+      m_readableRange(IndexRange::between(0, 0)) {
     
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 }
@@ -119,3 +123,5 @@ SampleBuffer::ReadableSlice ReadAheadSampleBuffer::readFromHead(SINT size) {
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
     return headSlice;
 }
+
+} // namespace mixxx

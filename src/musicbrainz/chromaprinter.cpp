@@ -50,7 +50,7 @@ QString calcFingerprint(const mixxx::AudioSourcePointer& pAudioSource) {
     // Allocate a sample buffer with maximum size to avoid the
     // implicit allocation of a temporary buffer when reducing
     // the audio signal to stereo.
-    SampleBuffer sampleBuffer(math_max(
+    mixxx::SampleBuffer sampleBuffer(math_max(
             inputFrameIndexRange.length() * kFingerprintChannels,
             pAudioSource->frames2samples(inputFrameIndexRange.length())));
 
@@ -58,7 +58,7 @@ QString calcFingerprint(const mixxx::AudioSourcePointer& pAudioSource) {
             audioSourceProxy.readSampleFrames(
                     mixxx::WritableSampleFrames(
                             inputFrameIndexRange,
-                            SampleBuffer::WritableSlice(sampleBuffer)));
+                            mixxx::SampleBuffer::WritableSlice(sampleBuffer)));
     if (inputFrameIndexRange != readableSampleFrames.frameIndexRange()) {
         qWarning() << "Failed to read sample data for fingerprint";
         return QString();

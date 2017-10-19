@@ -1,16 +1,17 @@
-#ifndef MIXXX_UTIL_SINGULARSAMPLEBUFFER_H
-#define MIXXX_UTIL_SINGULARSAMPLEBUFFER_H
+#ifndef MIXXX_UTIL_READAHEADSAMPLEBUFFER_H
+#define MIXXX_UTIL_READAHEADSAMPLEBUFFER_H
 
 #include "util/samplebuffer.h"
 
-// A singular FIFO/LIFO sample buffer with fixed capacity and range
-// checking.
+
+namespace mixxx {
+
+// A FIFO/LIFO sample buffer with fixed capacity and range checking.
+// It works best when consuming all buffered samples before writing
+// any new samples.
 //
-// Common use case: Consume all buffered samples before the capacity
-// is exhausted.
-//
-// This class is not thread-safe and not intended to be used from multiple
-// threads!
+// This class is not thread-safe and is not intended to be used from
+// multiple threads!
 class ReadAheadSampleBuffer {
   public:
     ReadAheadSampleBuffer();
@@ -90,4 +91,16 @@ class ReadAheadSampleBuffer {
     SINT m_tailOffset;
 };
 
-#endif // MIXXX_UTIL_SINGULARSAMPLEBUFFER_H
+} // namespace mixxx
+
+namespace std {
+    
+// Template specialization of std::swap() for ReadAheadSampleBuffer
+template<>
+inline void swap(::mixxx::ReadAheadSampleBuffer& lhs, ::mixxx::ReadAheadSampleBuffer& rhs) {
+    lhs.swap(rhs);
+}
+
+}  // namespace std
+
+#endif // MIXXX_UTIL_READAHEADSAMPLEBUFFER_H

@@ -49,7 +49,7 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
     // and adjust the max. readable frame index if decoding errors occur.
     const mixxx::IndexRange bufferedFrameIndexRange = pChunk->bufferSampleFrames(
             m_pAudioSource,
-            SampleBuffer::WritableSlice(m_tempReadBuffer));
+            mixxx::SampleBuffer::WritableSlice(m_tempReadBuffer));
     ReaderStatus status = bufferedFrameIndexRange.empty() ? CHUNK_READ_EOF : CHUNK_READ_SUCCESS;
     if (chunkFrameIndexRange != bufferedFrameIndexRange) {
         kLogger.warning()
@@ -171,7 +171,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
 
     const SINT tempReadBufferSize = m_pAudioSource->frames2samples(CachingReaderChunk::kFrames);
     if (m_tempReadBuffer.size() != tempReadBufferSize) {
-        SampleBuffer(tempReadBufferSize).swap(m_tempReadBuffer);
+        mixxx::SampleBuffer(tempReadBufferSize).swap(m_tempReadBuffer);
     }
 
     // Initially assume that the complete content offered by audio source

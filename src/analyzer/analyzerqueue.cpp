@@ -198,7 +198,7 @@ bool AnalyzerQueue::doAnalysis(
                 audioSourceProxy.readSampleFrames(
                         mixxx::WritableSampleFrames(
                                 inputFrameIndexRange,
-                                SampleBuffer::WritableSlice(m_sampleBuffer)));
+                                mixxx::SampleBuffer::WritableSlice(m_sampleBuffer)));
         // To compare apples to apples, let's only look at blocks that are
         // the full block size.
         if (readableSampleFrames.frameIndexRange().length() == kAnalysisFramesPerBlock) {

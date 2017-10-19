@@ -46,7 +46,7 @@ CachingReader::CachingReader(QString group,
     for (SINT i = 0; i < kNumberOfCachedChunksInMemory; ++i) {
         CachingReaderChunkForOwner* c =
                 new CachingReaderChunkForOwner(
-                        SampleBuffer::WritableSlice(
+                        mixxx::SampleBuffer::WritableSlice(
                                 m_sampleBuffer,
                                 CachingReaderChunk::kSamples * i,
                                 CachingReaderChunk::kSamples));

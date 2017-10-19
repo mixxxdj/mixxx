@@ -30,7 +30,7 @@ const SINT CachingReaderChunk::kSamples =
         CachingReaderChunk::frames2samples(CachingReaderChunk::kFrames);
 
 CachingReaderChunk::CachingReaderChunk(
-        SampleBuffer::WritableSlice sampleBuffer)
+        mixxx::SampleBuffer::WritableSlice sampleBuffer)
         : m_index(kInvalidChunkIndex),
           m_sampleBuffer(sampleBuffer) {
     DEBUG_ASSERT(sampleBuffer.size() == kSamples);
@@ -60,7 +60,7 @@ mixxx::IndexRange CachingReaderChunk::frameIndexRange(
 
 mixxx::IndexRange CachingReaderChunk::bufferSampleFrames(
         const mixxx::AudioSourcePointer& pAudioSource,
-        SampleBuffer::WritableSlice tempOutputBuffer) {
+        mixxx::SampleBuffer::WritableSlice tempOutputBuffer) {
     const auto sourceFrameIndexRange = frameIndexRange(pAudioSource);
     mixxx::AudioSourceStereoProxy audioSourceProxy(
             pAudioSource,
@@ -70,7 +70,7 @@ mixxx::IndexRange CachingReaderChunk::bufferSampleFrames(
             audioSourceProxy.readSampleFrames(
                     mixxx::WritableSampleFrames(
                             sourceFrameIndexRange,
-                            SampleBuffer::WritableSlice(m_sampleBuffer)));
+                            mixxx::SampleBuffer::WritableSlice(m_sampleBuffer)));
     DEBUG_ASSERT(m_bufferedSampleFrames.frameIndexRange() <= sourceFrameIndexRange);
     return m_bufferedSampleFrames.frameIndexRange();
 }
@@ -114,7 +114,7 @@ mixxx::IndexRange CachingReaderChunk::readBufferedSampleFramesReverse(
 }
 
 CachingReaderChunkForOwner::CachingReaderChunkForOwner(
-        SampleBuffer::WritableSlice sampleBuffer)
+        mixxx::SampleBuffer::WritableSlice sampleBuffer)
         : CachingReaderChunk(sampleBuffer),
           m_state(FREE),
           m_pPrev(nullptr),

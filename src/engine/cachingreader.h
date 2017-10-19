@@ -158,7 +158,7 @@ class CachingReader : public QObject {
     CachingReaderChunkForOwner* m_lruCachingReaderChunk;
 
     // The raw memory buffer which is divided up into chunks.
-    SampleBuffer m_sampleBuffer;
+    mixxx::SampleBuffer m_sampleBuffer;
 
     // The readable frame index range as reported by the worker.
     mixxx::IndexRange m_readableFrameIndexRange;

@@ -127,7 +127,7 @@ class SoundSourceProxyTest: public MixxxTest {
             const auto readRange = pAudioSource->readSampleFrames(
                     mixxx::WritableSampleFrames(
                             nextRange,
-                            SampleBuffer::WritableSlice(
+                            mixxx::SampleBuffer::WritableSlice(
                                     m_skipSampleBuffer.data(),
                                     m_skipSampleBuffer.size()))).frameIndexRange();
             if (readRange.empty()) {
@@ -149,7 +149,7 @@ class SoundSourceProxyTest: public MixxxTest {
     }
 
   private:
-    SampleBuffer m_skipSampleBuffer;
+    mixxx::SampleBuffer m_skipSampleBuffer;
 };
 
 TEST_F(SoundSourceProxyTest, open) {
@@ -207,9 +207,9 @@ TEST_F(SoundSourceProxyTest, seekForwardBackward) {
             // skip test file
             continue;
         }
-        SampleBuffer contReadData(
+        mixxx::SampleBuffer contReadData(
                 pContReadSource->frames2samples(kReadFrameCount));
-        SampleBuffer seekReadData(
+        mixxx::SampleBuffer seekReadData(
                 pContReadSource->frames2samples(kReadFrameCount));
 
         SINT contFrameIndex = pContReadSource->frameIndexMin();
@@ -223,7 +223,7 @@ TEST_F(SoundSourceProxyTest, seekForwardBackward) {
                     pContReadSource->readSampleFrames(
                             mixxx::WritableSampleFrames(
                                     readFrameIndexRange,
-                                    SampleBuffer::WritableSlice(contReadData)));
+                                    mixxx::SampleBuffer::WritableSlice(contReadData)));
             ASSERT_FALSE(contSampleFrames.frameIndexRange().empty());
             ASSERT_LE(contSampleFrames.frameIndexRange(), readFrameIndexRange);
             ASSERT_EQ(contSampleFrames.frameIndexRange().start(), readFrameIndexRange.start());
@@ -242,7 +242,7 @@ TEST_F(SoundSourceProxyTest, seekForwardBackward) {
                     pSeekReadSource->readSampleFrames(
                             mixxx::WritableSampleFrames(
                                     readFrameIndexRange,
-                                    SampleBuffer::WritableSlice(seekReadData)));
+                                    mixxx::SampleBuffer::WritableSlice(seekReadData)));
 
             // Both buffers should be equal
             ASSERT_EQ(contSampleFrames.frameIndexRange(), seekSampleFrames.frameIndexRange());
@@ -269,7 +269,7 @@ TEST_F(SoundSourceProxyTest, seekForwardBackward) {
                     pSeekReadSource->readSampleFrames(
                             mixxx::WritableSampleFrames(
                                     readFrameIndexRange,
-                                    SampleBuffer::WritableSlice(seekReadData)));
+                                    mixxx::SampleBuffer::WritableSlice(seekReadData)));
 
             // Both buffers should again be equal
             ASSERT_EQ(contSampleFrames.frameIndexRange(), seekSampleFrames.frameIndexRange());
@@ -318,9 +318,9 @@ TEST_F(SoundSourceProxyTest, skipAndRead) {
         ASSERT_EQ(pContReadSource->frameIndexRange(), pSkipReadSource->frameIndexRange());
         SINT skipFrameIndex = pSkipReadSource->frameIndexMin();
 
-        SampleBuffer contReadData(
+        mixxx::SampleBuffer contReadData(
                 pContReadSource->frames2samples(kReadFrameCount));
-        SampleBuffer skipReadData(
+        mixxx::SampleBuffer skipReadData(
                 pSkipReadSource->frames2samples(kReadFrameCount));
 
         SINT minFrameIndex = pContReadSource->frameIndexMin();
@@ -345,7 +345,7 @@ TEST_F(SoundSourceProxyTest, skipAndRead) {
                         pContReadSource->readSampleFrames(
                                 mixxx::WritableSampleFrames(
                                         skippingFrameIndexRange,
-                                        SampleBuffer::WritableSlice(contReadData)));
+                                        mixxx::SampleBuffer::WritableSlice(contReadData)));
                 ASSERT_FALSE(skippedSampleFrames.frameIndexRange().empty());
                 ASSERT_EQ(skippedSampleFrames.frameIndexRange().start(), contFrameIndex);
                 contFrameIndex += skippedSampleFrames.frameIndexRange().length();
@@ -355,7 +355,7 @@ TEST_F(SoundSourceProxyTest, skipAndRead) {
                     pContReadSource->readSampleFrames(
                             mixxx::WritableSampleFrames(
                                     readFrameIndexRange,
-                                    SampleBuffer::WritableSlice(contReadData)));
+                                    mixxx::SampleBuffer::WritableSlice(contReadData)));
             ASSERT_FALSE(contSampleFrames.frameIndexRange().empty());
             ASSERT_LE(contSampleFrames.frameIndexRange(), readFrameIndexRange);
             ASSERT_EQ(contSampleFrames.frameIndexRange().start(), readFrameIndexRange.start());
@@ -379,7 +379,7 @@ TEST_F(SoundSourceProxyTest, skipAndRead) {
                     pSkipReadSource->readSampleFrames(
                             mixxx::WritableSampleFrames(
                                     readFrameIndexRange,
-                                    SampleBuffer::WritableSlice(skipReadData)));
+                                    mixxx::SampleBuffer::WritableSlice(skipReadData)));
 
             skipFrameIndex += skippedSampleFrames.frameIndexRange().length();
 
@@ -424,7 +424,7 @@ TEST_F(SoundSourceProxyTest, seekBoundaries) {
             // skip test file
             continue;
         }
-        SampleBuffer seekReadData(
+        mixxx::SampleBuffer seekReadData(
                 pSeekReadSource->frames2samples(kReadFrameCount));
 
         std::vector<SINT> seekFrameIndices;
@@ -464,20 +464,20 @@ TEST_F(SoundSourceProxyTest, seekBoundaries) {
                                     seekFrameIndex));
             ASSERT_TRUE(skipFrameIndexRange.empty() ||
                     (skipFrameIndexRange.end() == seekFrameIndex));
-            SampleBuffer contReadData(
+            mixxx::SampleBuffer contReadData(
                     pContReadSource->frames2samples(kReadFrameCount));
             const auto contSampleFrames =
                     pContReadSource->readSampleFrames(
                             mixxx::WritableSampleFrames(
                                     readFrameIndexRange,
-                                    SampleBuffer::WritableSlice(contReadData)));
+                                    mixxx::SampleBuffer::WritableSlice(contReadData)));
                     ASSERT_EQ(expectedFrameIndexRange, contSampleFrames.frameIndexRange());
 
             const auto seekSampleFrames =
                     pSeekReadSource->readSampleFrames(
                             mixxx::WritableSampleFrames(
                                     readFrameIndexRange,
-                                    SampleBuffer::WritableSlice(seekReadData)));
+                                    mixxx::SampleBuffer::WritableSlice(seekReadData)));
             ASSERT_EQ(expectedFrameIndexRange, seekSampleFrames.frameIndexRange());
 
             if (seekSampleFrames.frameIndexRange().empty()) {
@@ -531,13 +531,13 @@ TEST_F(SoundSourceProxyTest, readBeyondEnd) {
         ASSERT_LT(remainingFrames, kReadFrameCount);
 
         // Read beyond the end
-        SampleBuffer readBuffer(
+        mixxx::SampleBuffer readBuffer(
                 pAudioSource->frames2samples(kReadFrameCount));
         EXPECT_EQ(
                 mixxx::IndexRange::forward(seekIndex, remainingFrames),
                 pAudioSource->readSampleFrames(
                         mixxx::WritableSampleFrames(
                                 mixxx::IndexRange::forward(seekIndex, kReadFrameCount),
-                                SampleBuffer::WritableSlice(readBuffer))).frameIndexRange());
+                                mixxx::SampleBuffer::WritableSlice(readBuffer))).frameIndexRange());
     }
 }

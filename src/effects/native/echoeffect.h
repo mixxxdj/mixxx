@@ -31,7 +31,7 @@ struct EchoGroupState {
         ping_pong = 0;
     }
 
-    SampleBuffer delay_buf;
+    mixxx::SampleBuffer delay_buf;
     CSAMPLE_GAIN prev_send;
     CSAMPLE_GAIN prev_feedback;
     int prev_delay_samples;

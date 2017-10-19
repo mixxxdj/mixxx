@@ -101,7 +101,7 @@ class CachingReaderWorker : public EngineWorker {
 
     // Temporary buffer for reading samples from all channels
     // before conversion to a stereo signal.
-    SampleBuffer m_tempReadBuffer;
+    mixxx::SampleBuffer m_tempReadBuffer;
 
     // The maximum readable frame index of the AudioSource. Might
     // be adjusted when decoding errors occur to prevent reading

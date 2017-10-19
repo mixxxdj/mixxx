@@ -5,9 +5,13 @@
 
 #include "util/types.h"
 
+
+namespace mixxx {
+
 // A sample buffer with properly aligned memory to enable SSE optimizations.
 // After construction the content of the buffer is uninitialized. No resize
-// operation is provided intentionally because malloc might block!
+// operation is provided intentionally because malloc might block! Copying
+// has intentionally been disabled, because it should not be needed.
 //
 // Hint: If the size of an existing sample buffer ever needs to be altered
 // after construction this can simply be achieved by swapping the contents
@@ -174,11 +178,13 @@ class SampleBuffer {
     SINT m_size;
 };
 
+} // namespace mixxx
+
 namespace std {
 
-// Template specialization of std::swap for SampleBuffer.
+// Template specialization of std::swap() for SampleBuffer
 template<>
-inline void swap(SampleBuffer& lhs, SampleBuffer& rhs) {
+inline void swap(::mixxx::SampleBuffer& lhs, ::mixxx::SampleBuffer& rhs) {
     lhs.swap(rhs);
 }
 
