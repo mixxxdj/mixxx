@@ -34,21 +34,22 @@ namespace mixxx {
 class SampleBuffer {
   public:
     SampleBuffer()
-            : m_data(nullptr),
-              m_size(0) {
+        : m_data(nullptr),
+          m_size(0) {
     }
     explicit SampleBuffer(SINT size);
-    SampleBuffer(SampleBuffer& other) = delete;
-    SampleBuffer(SampleBuffer&& other)
-        : m_data(other.m_data),
-          m_size(other.m_size) {
-        other.m_data = nullptr;
-        other.m_size = 0;
+    SampleBuffer(SampleBuffer&) = delete;
+    SampleBuffer(SampleBuffer&& that)
+        : m_data(that.m_data),
+          m_size(that.m_size) {
+        that.m_data = nullptr;
+        that.m_size = 0;
     }
     virtual ~SampleBuffer();
 
-    SampleBuffer& operator=(SampleBuffer&& other) {
-        swap(other);
+    SampleBuffer& operator=(SampleBuffer& that) = delete;
+    SampleBuffer& operator=(SampleBuffer&& that) {
+        swap(that);
         return *this;
     }
 
@@ -82,9 +83,9 @@ class SampleBuffer {
     // implementation of all STL containers. Required for exception
     // safe programming and as a workaround for the missing resize
     // operation.
-    void swap(SampleBuffer& other) {
-        std::swap(m_data, other.m_data);
-        std::swap(m_size, other.m_size);
+    void swap(SampleBuffer& that) {
+        std::swap(m_data, that.m_data);
+        std::swap(m_size, that.m_size);
     }
 
     // Fills the whole buffer with zeroes

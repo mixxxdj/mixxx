@@ -6,37 +6,55 @@
 
 namespace mixxx {
 
-IndexRange IndexRange::cutFrontRange(SINT startLength) {
-    DEBUG_ASSERT(startLength >= 0);
-    DEBUG_ASSERT(startLength <= length());
+void IndexRange::growFrontRange(SINT frontLength) {
+    DEBUG_ASSERT(frontLength >= 0);
+    if (first <= second) {
+        first -= frontLength;
+    } else {
+        first += frontLength;
+    }
+}
+
+void IndexRange::growBackRange(SINT backLength) {
+    DEBUG_ASSERT(backLength >= 0);
+    if (first <= second) {
+        second += backLength;
+    } else {
+        second -= backLength;
+    }
+}
+
+IndexRange IndexRange::cutFrontRange(SINT frontLength) {
+    DEBUG_ASSERT(frontLength >= 0);
+    DEBUG_ASSERT(frontLength <= length());
     if (start() <= end()) {
-        auto startRange = forward(first, startLength);
-        DEBUG_ASSERT(startRange.length() == startLength);
-        first += startLength;
+        auto startRange = forward(first, frontLength);
+        DEBUG_ASSERT(startRange.length() == frontLength);
+        first += frontLength;
         DEBUG_ASSERT(start() == startRange.end()); // adjacent
         return startRange;
     } else {
-        auto startRange = backward(first, startLength);
-        DEBUG_ASSERT(startRange.length() == startLength);
-        first -= startLength;
+        auto startRange = backward(first, frontLength);
+        DEBUG_ASSERT(startRange.length() == frontLength);
+        first -= frontLength;
         DEBUG_ASSERT(start() == startRange.end()); // adjacent
         return startRange;
     }
 }
 
-IndexRange IndexRange::cutBackRange(SINT endLength) {
-    DEBUG_ASSERT(endLength >= 0);
-    DEBUG_ASSERT(endLength <= length());
+IndexRange IndexRange::cutBackRange(SINT backLength) {
+    DEBUG_ASSERT(backLength >= 0);
+    DEBUG_ASSERT(backLength <= length());
     if (start() <= end()) {
-        auto endRange = between(end() - endLength, end());
-        DEBUG_ASSERT(endRange.length() == endLength);
-        second -= endLength;
+        auto endRange = between(end() - backLength, end());
+        DEBUG_ASSERT(endRange.length() == backLength);
+        second -= backLength;
         DEBUG_ASSERT(end() == endRange.start()); // adjacent
         return endRange;
     } else {
-        auto endRange = between(end() + endLength, end());
-        DEBUG_ASSERT(endRange.length() == endLength);
-        second += endLength;
+        auto endRange = between(end() + backLength, end());
+        DEBUG_ASSERT(endRange.length() == backLength);
+        second += backLength;
         DEBUG_ASSERT(end() == endRange.start()); // adjacent
         return endRange;
     }

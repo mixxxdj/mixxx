@@ -320,10 +320,14 @@ bool SoundSourceM4A::openDecoder() {
                     0,
                     ((m_maxSampleBlockId - kSampleBlockIdMin) + 1) * m_framesPerSampleBlock));
 
-    // Resize temporary buffer for decoded sample data
     const SINT sampleBufferCapacity =
             frames2samples(m_framesPerSampleBlock);
-    m_sampleBuffer.resetCapacity(sampleBufferCapacity);
+    if (m_sampleBuffer.capacity() < sampleBufferCapacity) {
+        // Adjust capacity of buffer for decoded sample data
+        ReadAheadSampleBuffer(
+                m_sampleBuffer,
+                sampleBufferCapacity).swap(m_sampleBuffer);
+    }
 
     // Discard all buffered samples
     m_inputBufferLength = 0;
@@ -349,7 +353,7 @@ bool SoundSourceM4A::reopenDecoder() {
 
 void SoundSourceM4A::close() {
     closeDecoder();
-    m_sampleBuffer.reset();
+    m_sampleBuffer.clear();
     m_inputBuffer.clear();
     if (MP4_INVALID_FILE_HANDLE != m_hFile) {
         MP4Close(m_hFile);
@@ -374,7 +378,7 @@ void SoundSourceM4A::restartDecoding(MP4SampleId sampleBlockId) {
     m_inputBufferLength = 0;
 
     // Discard previously decoded sample data
-    m_sampleBuffer.reset();
+    m_sampleBuffer.clear();
 }
 
 ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
@@ -440,7 +444,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
     SINT outputSampleOffset = 0;
     while (0 < numberOfSamplesRemaining) {
 
-        if (!m_sampleBuffer.isEmpty()) {
+        if (!m_sampleBuffer.empty()) {
             // Consume previously decoded sample data
             const SampleBuffer::ReadableSlice readableSlice(
                     m_sampleBuffer.readFromHead(numberOfSamplesRemaining));
@@ -460,7 +464,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
             }
         }
         // All previously decoded sample data has been consumed now
-        DEBUG_ASSERT(m_sampleBuffer.isEmpty());
+        DEBUG_ASSERT(m_sampleBuffer.empty());
 
         if (0 == m_inputBufferLength) {
             // Fill input buffer from file

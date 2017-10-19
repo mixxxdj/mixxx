@@ -1,6 +1,7 @@
 #ifndef MIXXX_UTIL_READAHEADSAMPLEBUFFER_H
 #define MIXXX_UTIL_READAHEADSAMPLEBUFFER_H
 
+#include "util/indexrange.h"
 #include "util/samplebuffer.h"
 
 
@@ -15,48 +16,55 @@ namespace mixxx {
 class ReadAheadSampleBuffer {
   public:
     ReadAheadSampleBuffer();
-    explicit ReadAheadSampleBuffer(SINT capacity);
-    ReadAheadSampleBuffer(const ReadAheadSampleBuffer& that)
-        : ReadAheadSampleBuffer(that, that.getCapacity()) {
+    explicit ReadAheadSampleBuffer(
+            SINT capacity);
+    ReadAheadSampleBuffer(
+            const ReadAheadSampleBuffer& that)
+        : ReadAheadSampleBuffer(that, that.capacity()) {
     }
-    ReadAheadSampleBuffer(const ReadAheadSampleBuffer& that, SINT capacity);
-    ReadAheadSampleBuffer(ReadAheadSampleBuffer&&);
+    ReadAheadSampleBuffer(
+            const ReadAheadSampleBuffer& that,
+            SINT capacity);
+    ReadAheadSampleBuffer(
+            ReadAheadSampleBuffer&&) = default;
     virtual ~ReadAheadSampleBuffer() {}
 
-    ReadAheadSampleBuffer& operator=(const ReadAheadSampleBuffer&) = delete;
-    ReadAheadSampleBuffer& operator=(ReadAheadSampleBuffer&&) = delete;
+    ReadAheadSampleBuffer& operator=(
+            const ReadAheadSampleBuffer& that) {
+        *this = ReadAheadSampleBuffer(that); // copy ctor + move assignment
+        return *this;
+    }
+    ReadAheadSampleBuffer& operator=(
+            ReadAheadSampleBuffer&& that) {
+        swap(that);
+        return *this;
+    }
     
-    void swap(ReadAheadSampleBuffer& that);
+    void swap(
+            ReadAheadSampleBuffer& that);
 
-    // The initial/total capacity of the buffer.
-    SINT getCapacity() const {
+    // The maximum capacity of the buffer.
+    SINT capacity() const {
         return m_sampleBuffer.size();
     }
 
-    // The capacity at the tail that is immediately available
-    // without trimming the buffer.
-    SINT getTailCapacity() const {
-        return getCapacity() - m_tailOffset;
+    // The number of samples that could be written instantly,
+    // i.e. the remaining capacity of the buffer.
+    SINT writableLength() const {
+        return capacity() - m_readableRange.end();
     }
 
-    bool isEmpty() const {
-        return m_tailOffset <= m_headOffset;
+    // The number of readable samples.
+    SINT readableLength() const {
+        return m_readableRange.length();
     }
 
-    // Returns the current size of the buffer, i.e. the number of
-    // buffered samples that have been written and are available
-    // for reading.
-    SINT getSize() const {
-        return m_tailOffset - m_headOffset;
+    bool empty() const {
+        return m_readableRange.empty();
     }
 
-    // Discards all buffered samples and resets the buffer to its
-    // initial state.
-    void reset();
-
-    // Discards all buffered samples and resets the buffer to its
-    // initial state with a new capacity
-    virtual void resetCapacity(SINT capacity);
+    // Discards all buffered samples.
+    void clear();
 
     // Reserves space at the buffer's tail for writing samples. The internal
     // buffer is trimmed if necessary to provide a continuous memory region.
@@ -64,31 +72,34 @@ class ReadAheadSampleBuffer {
     // Returns a pointer to the continuous memory region and the actual number
     // of samples that have been reserved. The maximum growth is limited by
     // getTailCapacity() and might be increased by calling trim().
-    SampleBuffer::WritableSlice writeToTail(SINT size);
+    SampleBuffer::WritableSlice writeToTail(
+            SINT writeLength);
 
     // Shrinks the buffer from the tail for reading buffered samples.
     //
     // Returns a pointer to the continuous memory region and the actual
     // number of buffered samples that have been dropped. The pointer is
     // valid for reading as long as no modifying member function is called!
-    SampleBuffer::ReadableSlice readFromTail(SINT size);
+    SampleBuffer::ReadableSlice readFromTail(
+            SINT readLength);
 
     // Shrinks the buffer from the head for reading buffered samples.
     //
     // Returns a pointer to the continuous memory region and the actual
     // number of buffered samples that have been dropped. The pointer is
     // valid for reading as long as no modifying member function is called!
-    SampleBuffer::ReadableSlice readFromHead(SINT size);
+    SampleBuffer::ReadableSlice readFromHead(
+            SINT readLength);
 
   private:
-    void resetOffsets() {
-        m_headOffset = 0;
-        m_tailOffset = 0;
+    void adjustReadableRange() {
+        if (m_readableRange.empty()) {
+            m_readableRange = IndexRange::between(0, 0);
+        }
     }
 
     SampleBuffer m_sampleBuffer;
-    SINT m_headOffset;
-    SINT m_tailOffset;
+    IndexRange m_readableRange;
 };
 
 } // namespace mixxx

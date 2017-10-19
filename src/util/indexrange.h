@@ -88,6 +88,10 @@ class IndexRange final: private std::pair<SINT, SINT> {
         }
     }
 
+    void growFrontRange(SINT frontLength);
+
+    void growBackRange(SINT backLength);
+
     // Splits this range into two adjacent parts by slicing off
     // and returning a range of given length and same direction
     // from the front side. The given front length must not exceed

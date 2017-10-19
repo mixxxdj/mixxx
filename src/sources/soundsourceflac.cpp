@@ -141,7 +141,7 @@ ReadableSampleFrames SoundSourceFLAC::readSampleFramesClamped(
         while ((seekFrameIndex != m_curFrameIndex) &&
                 (retryCount <= kSeekErrorMaxRetryCount)) {
             // Discard decoded sample data before seeking
-            m_sampleBuffer.reset();
+            m_sampleBuffer.clear();
             invalidateCurFrameIndex();
             if (FLAC__stream_decoder_seek_absolute(m_decoder, seekFrameIndex)) {
                 // Success: Set the new position
@@ -212,7 +212,7 @@ ReadableSampleFrames SoundSourceFLAC::readSampleFramesClamped(
     while (0 < numberOfSamplesRemaining) {
         // If our buffer from libflac is empty (either because we explicitly cleared
         // it or because we've simply used all the samples), ask for a new buffer
-        if (m_sampleBuffer.isEmpty()) {
+        if (m_sampleBuffer.empty()) {
             // Save the current frame index
             const SINT curFrameIndexBeforeProcessing = m_curFrameIndex;
             // Documentation of FLAC__stream_decoder_process_single():
@@ -257,12 +257,12 @@ ReadableSampleFrames SoundSourceFLAC::readSampleFramesClamped(
             }
             DEBUG_ASSERT(curFrameIndexBeforeProcessing == m_curFrameIndex);
         }
-        if (m_sampleBuffer.isEmpty()) {
+        if (m_sampleBuffer.empty()) {
             break; // EOF
         }
 
         const SINT numberOfSamplesRead =
-                std::min(m_sampleBuffer.getSize(), numberOfSamplesRemaining);
+                std::min(m_sampleBuffer.readableLength(), numberOfSamplesRemaining);
         const SampleBuffer::ReadableSlice readableSlice(
                 m_sampleBuffer.readFromHead(numberOfSamplesRead));
         DEBUG_ASSERT(readableSlice.size() == numberOfSamplesRead);
@@ -374,7 +374,7 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
     m_curFrameIndex = frame->header.number.sample_number;
 
     // Decode buffer should be empty before decoding the next frame
-    DEBUG_ASSERT(m_sampleBuffer.isEmpty());
+    DEBUG_ASSERT(m_sampleBuffer.empty());
     const SampleBuffer::WritableSlice writableSlice(
             m_sampleBuffer.writeToTail(frames2samples(numReadableFrames)));
 
@@ -451,7 +451,12 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
         }
         const SINT sampleBufferCapacity =
                 m_maxBlocksize * channelCount();
-        m_sampleBuffer.resetCapacity(sampleBufferCapacity);
+        if (m_sampleBuffer.capacity() < sampleBufferCapacity) {
+            // Adjust capacity of buffer for decoded sample data
+            ReadAheadSampleBuffer(
+                    m_sampleBuffer,
+                    sampleBufferCapacity).swap(m_sampleBuffer);
+        }
         break;
     }
     default:

@@ -161,7 +161,7 @@ void SoundSourceMediaFoundation::seekSampleFrame(SINT frameIndex) {
     }
     if (m_currentFrameIndex != frameIndex) {
         // Discard decoded samples
-        m_sampleBuffer.reset();
+        m_sampleBuffer.clear();
 
         // Invalidate current position (end of stream)
         m_currentFrameIndex = frameIndexMax();
@@ -288,7 +288,7 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
         }
 
         // No more decoded sample frames available
-        DEBUG_ASSERT(m_sampleBuffer.isEmpty());
+        DEBUG_ASSERT(m_sampleBuffer.empty());
 
         if (m_pSourceReader == nullptr) {
             break; // abort if reader is dead
@@ -367,18 +367,20 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
         DEBUG_ASSERT((dwSampleTotalLengthInBytes % kBytesPerSample) == 0);
         SINT numberOfSamplesToBuffer =
             dwSampleTotalLengthInBytes / kBytesPerSample;
-        SINT sampleBufferCapacity = m_sampleBuffer.getCapacity();
+        SINT sampleBufferCapacity = m_sampleBuffer.capacity();
         DEBUG_ASSERT(sampleBufferCapacity > 0);
         while (sampleBufferCapacity < numberOfSamplesToBuffer) {
             sampleBufferCapacity *= 2;
         }
-        if (m_sampleBuffer.getCapacity() < sampleBufferCapacity) {
+        if (m_sampleBuffer.capacity() < sampleBufferCapacity) {
             kLogger.debug()
                     << "Enlarging sample buffer capacity"
-                    << m_sampleBuffer.getCapacity()
+                    << m_sampleBuffer.capacity()
                     << "->"
                     << sampleBufferCapacity;
-            m_sampleBuffer.resetCapacity(sampleBufferCapacity);
+            ReadAheadSampleBuffer(
+                    m_sampleBuffer,
+                    sampleBufferCapacity).swap(m_sampleBuffer);
         }
 
         DWORD dwSampleBufferIndex = 0;
@@ -685,11 +687,17 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
         return false;
     }
     DEBUG_ASSERT((leftoverBufferSizeInBytes % kBytesPerSample) == 0);
-    m_sampleBuffer.resetCapacity(leftoverBufferSizeInBytes / kBytesPerSample);
-    DEBUG_ASSERT(m_sampleBuffer.getCapacity() > 0);
+    const SINT sampleBufferCapacity =
+            leftoverBufferSizeInBytes / kBytesPerSample;
+    if (m_sampleBuffer.capacity() < sampleBufferCapacity) {
+        ReadAheadSampleBuffer(
+                m_sampleBuffer,
+                sampleBufferCapacity).swap(m_sampleBuffer);
+    }
+    DEBUG_ASSERT(m_sampleBuffer.capacity() > 0);
     kLogger.debug()
             << "Sample buffer capacity"
-            << m_sampleBuffer.getCapacity();
+            << m_sampleBuffer.capacity();
 
             
     // Finally release the reference

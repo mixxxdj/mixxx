@@ -14,8 +14,7 @@
 namespace mixxx {
 
 ReadAheadSampleBuffer::ReadAheadSampleBuffer()
-    : ReadAheadSampleBuffer(0),
-      m_readableRange(IndexRange::between(0, 0)) {
+    : ReadAheadSampleBuffer(0) {
     
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 }
@@ -23,8 +22,7 @@ ReadAheadSampleBuffer::ReadAheadSampleBuffer()
 ReadAheadSampleBuffer::ReadAheadSampleBuffer(
         SINT capacity)
     : m_sampleBuffer(capacity),
-      m_headOffset(0),
-      m_tailOffset(0) {
+      m_readableRange(IndexRange::between(0, 0)) {
     
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 }
@@ -33,92 +31,64 @@ ReadAheadSampleBuffer::ReadAheadSampleBuffer(
         const ReadAheadSampleBuffer& that,
         SINT capacity) 
     : ReadAheadSampleBuffer(capacity) {
+    DEBUG_ASSERT(that.readableLength() <= capacity);
+    // Copy all readable contents to the beginning of the buffer
+    // for maximizing the writable capacity.
     SampleUtil::copy(
         m_sampleBuffer.data(),
-        that.m_sampleBuffer.data(that.m_headOffset),
-        that.getSize());
-    m_tailOffset += that.getSize();
-    
-    DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
-}
-
-ReadAheadSampleBuffer::ReadAheadSampleBuffer(ReadAheadSampleBuffer&& that)
-    : m_sampleBuffer(std::move(that.m_sampleBuffer)),
-      m_headOffset(that.m_headOffset),
-      m_tailOffset(that.m_tailOffset) {
-    that.m_headOffset = 0;
-    that.m_tailOffset = 0;
+        that.m_sampleBuffer.data(that.m_readableRange.start()),
+        that.readableLength());
+    m_readableRange.growBackRange(that.readableLength());
     
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 }
 
 void ReadAheadSampleBuffer::swap(ReadAheadSampleBuffer& that) {
     m_sampleBuffer.swap(that.m_sampleBuffer);
-    std::swap(m_headOffset, that.m_headOffset);
-    std::swap(m_tailOffset, that.m_tailOffset);
+    std::swap(m_readableRange, that.m_readableRange);
 }
 
-void ReadAheadSampleBuffer::reset() {
+void ReadAheadSampleBuffer::clear() {
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 
-    m_headOffset = 0;
-    m_tailOffset = 0;
-
-    DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
-}
-
-void ReadAheadSampleBuffer::resetCapacity(SINT capacity) {
-    DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
-
-    if (m_sampleBuffer.size() != capacity) {
-        SampleBuffer(capacity).swap(m_sampleBuffer);
-    }
-    resetOffsets();
+    m_readableRange = IndexRange::between(0, 0);
 
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 }
 
-SampleBuffer::WritableSlice ReadAheadSampleBuffer::writeToTail(SINT size) {
+SampleBuffer::WritableSlice ReadAheadSampleBuffer::writeToTail(SINT writeLength) {
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 
-    const SINT tailLength = math_min(size, getTailCapacity());
+    const SINT tailLength = math_min(writeLength, writableLength());
     const SampleBuffer::WritableSlice tailSlice(
-            m_sampleBuffer, m_tailOffset, tailLength);
-    m_tailOffset += tailLength;
+            m_sampleBuffer, m_readableRange.end(), tailLength);
+    m_readableRange.growBackRange(tailLength);
 
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
     return tailSlice;
 }
 
-SampleBuffer::ReadableSlice ReadAheadSampleBuffer::readFromTail(SINT size) {
+SampleBuffer::ReadableSlice ReadAheadSampleBuffer::readFromTail(SINT readLength) {
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 
-    const SINT tailLength = math_min(size, getSize());
-    m_tailOffset -= tailLength;
+    const SINT tailLength = math_min(readLength, readableLength());
+    m_readableRange.dropBackRange(tailLength);
     const SampleBuffer::ReadableSlice tailSlice(
-            m_sampleBuffer, m_tailOffset, tailLength);
-    if (isEmpty()) {
-        // Internal buffer becomes empty and can safely be reset
-        // to extend the tail capacity for future growth
-        resetOffsets();
-    }
+            m_sampleBuffer, m_readableRange.end(), tailLength);
+    adjustReadableRange();
 
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
     return tailSlice;
 }
 
-SampleBuffer::ReadableSlice ReadAheadSampleBuffer::readFromHead(SINT size) {
+SampleBuffer::ReadableSlice ReadAheadSampleBuffer::readFromHead(SINT readLength) {
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 
-    const SINT headLength = math_min(size, getSize());
+    const SINT headLength = math_min(readLength, readableLength());
     const SampleBuffer::ReadableSlice headSlice(
-            m_sampleBuffer, m_headOffset, headLength);
-    m_headOffset += headLength;
-    if (isEmpty()) {
-        // Internal buffer becomes empty and can safely be reset
-        // to extend the tail capacity for future growth
-        resetOffsets();
-    }
+            m_sampleBuffer, m_readableRange.start(), headLength);
+    m_readableRange.dropFrontRange(headLength);
+    adjustReadableRange();
 
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
     return headSlice;
