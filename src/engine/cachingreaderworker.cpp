@@ -59,16 +59,16 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
         if (bufferedFrameIndexRange.empty()) {
             // Adjust upper bound: Consider all audio data following
             // the read position until the end as unreadable
-            m_readableFrameIndexRange.dropBackRange(m_readableFrameIndexRange.end() - chunkFrameIndexRange.start());
+            m_readableFrameIndexRange.shrinkBack(m_readableFrameIndexRange.end() - chunkFrameIndexRange.start());
             status = CHUNK_READ_INVALID; // not EOF (see above)
         } else {
             // Adjust lower bound of readable audio data
             if (chunkFrameIndexRange.start() < bufferedFrameIndexRange.start()) {
-                m_readableFrameIndexRange.dropFrontRange(bufferedFrameIndexRange.start() - m_readableFrameIndexRange.start());
+                m_readableFrameIndexRange.shrinkFront(bufferedFrameIndexRange.start() - m_readableFrameIndexRange.start());
             }
             // Adjust upper bound of readable audio data
             if (chunkFrameIndexRange.end() > bufferedFrameIndexRange.end()) {
-                m_readableFrameIndexRange.dropBackRange(m_readableFrameIndexRange.end() - bufferedFrameIndexRange.end());
+                m_readableFrameIndexRange.shrinkBack(m_readableFrameIndexRange.end() - bufferedFrameIndexRange.end());
             }
         }
         kLogger.warning()

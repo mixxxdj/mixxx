@@ -6,25 +6,7 @@
 
 namespace mixxx {
 
-void IndexRange::growFrontRange(SINT frontLength) {
-    DEBUG_ASSERT(frontLength >= 0);
-    if (first <= second) {
-        first -= frontLength;
-    } else {
-        first += frontLength;
-    }
-}
-
-void IndexRange::growBackRange(SINT backLength) {
-    DEBUG_ASSERT(backLength >= 0);
-    if (first <= second) {
-        second += backLength;
-    } else {
-        second -= backLength;
-    }
-}
-
-IndexRange IndexRange::cutFrontRange(SINT frontLength) {
+IndexRange IndexRange::splitAndShrinkFront(SINT frontLength) {
     DEBUG_ASSERT(frontLength >= 0);
     DEBUG_ASSERT(frontLength <= length());
     if (start() <= end()) {
@@ -42,7 +24,7 @@ IndexRange IndexRange::cutFrontRange(SINT frontLength) {
     }
 }
 
-IndexRange IndexRange::cutBackRange(SINT backLength) {
+IndexRange IndexRange::splitAndShrinkBack(SINT backLength) {
     DEBUG_ASSERT(backLength >= 0);
     DEBUG_ASSERT(backLength <= length());
     if (start() <= end()) {

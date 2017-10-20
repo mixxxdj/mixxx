@@ -88,24 +88,28 @@ class IndexRange final: private std::pair<SINT, SINT> {
         }
     }
 
-    void growFrontRange(SINT frontLength);
+    // Grow the range by appending the given length at the front side.
+    void growFront(SINT frontLength) {
+        DEBUG_ASSERT(frontLength >= 0);
+        if (start() <= end()) {
+            first -= frontLength;
+        } else {
+            first += frontLength;
+        }
+    }
 
-    void growBackRange(SINT backLength);
+    // Grow the range by appending the given length at the back side.
+    void growBack(SINT backLength) {
+        DEBUG_ASSERT(backLength >= 0);
+        if (start() <= end()) {
+            second += backLength;
+        } else {
+            second -= backLength;
+        }
+    }
 
-    // Splits this range into two adjacent parts by slicing off
-    // and returning a range of given length and same direction
-    // from the front side. The given front length must not exceed
-    // the length of this range.
-    IndexRange cutFrontRange(SINT frontLength);
-
-    // Splits this range into two adjacent parts by slicing off
-    // and returning a range of given length and same direction
-    // from the back side. The given back length must not exceed
-    // the length of this range.
-    IndexRange cutBackRange(SINT backLength);
-
-    // Same as cutFrontRange(), but omitting the return value.
-    void dropFrontRange(SINT frontLength) {
+    // Shrink the range by cutting off the given length at the front side.
+    void shrinkFront(SINT frontLength) {
         DEBUG_ASSERT(frontLength >= 0);
         DEBUG_ASSERT(frontLength <= length());
         if (start() <= end()) {
@@ -115,8 +119,8 @@ class IndexRange final: private std::pair<SINT, SINT> {
         }
     }
 
-    // Same as cutBackRange(), but omitting the return value.
-    void dropBackRange(SINT backLength) {
+    // Shrink the range by cutting off the given length at the back side.
+    void shrinkBack(SINT backLength) {
         DEBUG_ASSERT(backLength >= 0);
         DEBUG_ASSERT(backLength <= length());
         if (start() <= end()) {
@@ -125,6 +129,18 @@ class IndexRange final: private std::pair<SINT, SINT> {
             second += backLength;
         }
     }
+
+    // Splits this range into two adjacent parts by slicing off
+    // and returning a range of given length and same direction
+    // from the front side. The given front length must not exceed
+    // the length of this range.
+    IndexRange splitAndShrinkFront(SINT frontLength);
+
+    // Splits this range into two adjacent parts by slicing off
+    // and returning a range of given length and same direction
+    // from the back side. The given back length must not exceed
+    // the length of this range.
+    IndexRange splitAndShrinkBack(SINT backLength);
 
     friend
     bool operator==(IndexRange lhs, IndexRange rhs) {

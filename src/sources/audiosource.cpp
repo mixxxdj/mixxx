@@ -97,7 +97,7 @@ WritableSampleFrames AudioSource::clampWritableSampleFrames(
                 << "into writable sample frames"
                 << writableFrameIndexRange;
         writableFrameIndexRange =
-                writableFrameIndexRange.cutFrontRange(
+                writableFrameIndexRange.splitAndShrinkFront(
                         samples2frames(sampleFrames.sampleBuffer().size()));
         kLogger.warning()
                 << "Reduced writable sample frames"
@@ -106,7 +106,7 @@ WritableSampleFrames AudioSource::clampWritableSampleFrames(
     DEBUG_ASSERT(readableFrameIndexRange.start() >= writableFrameIndexRange.start());
     const SINT writableFrameOffset =
             readableFrameIndexRange.start() - writableFrameIndexRange.start();
-    writableFrameIndexRange.dropFrontRange(writableFrameOffset);
+    writableFrameIndexRange.shrinkFront(writableFrameOffset);
     return WritableSampleFrames(
             writableFrameIndexRange,
             SampleBuffer::WritableSlice(
