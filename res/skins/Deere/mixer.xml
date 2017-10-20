@@ -17,7 +17,7 @@
           <WidgetGroup>
             <ObjectName>DeckControls</ObjectName>
             <SizePolicy>max,me</SizePolicy>
-            <Layout>horizontal</Layout>
+            <Layout>vertical</Layout>
             <Children>
 
               <WidgetGroup>
@@ -34,7 +34,7 @@
                         <SetVariable name="i">1</SetVariable>
                       </Template>
 
-                      <Template src="skin:vumeter_master.xml"/>
+                      <Template src="skin:mixer_column_master_vu.xml"/>
 
                       <Template src="skin:mixer_controls_right.xml">
                         <SetVariable name="i">2</SetVariable>
@@ -48,7 +48,7 @@
                         <Not/>
                       </Transform>
                     </Connection>
-                  </WidgetGroup> <!-- DeckControlsSplitWaveforms2Decks -->
+                  </WidgetGroup> <!-- DeckControls_SplitWaveforms_2Decks -->
 
                   <WidgetGroup>
                     <ObjectName>DeckControls_SplitWaveforms_4Decks</ObjectName>
@@ -62,7 +62,7 @@
                         <SetVariable name="i">1</SetVariable>
                       </Template>
 
-                      <Template src="skin:vumeter_master.xml"/>
+                      <Template src="skin:mixer_column_master_vu.xml"/>
 
                       <Template src="skin:mixer_controls_right.xml">
                         <SetVariable name="i">2</SetVariable>
@@ -76,7 +76,7 @@
                       <ConfigKey>[Master],show_4decks</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
-                  </WidgetGroup> <!-- DeckControlsSplitWaveforms4Decks -->
+                  </WidgetGroup> <!-- DeckControls_SplitWaveforms_4Decks -->
 
                 </Children>
                 <Connection>
@@ -86,7 +86,7 @@
                     <Not/>
                   </Transform>
                 </Connection>
-              </WidgetGroup><!-- DeckControlsSplitWaveforms -->
+              </WidgetGroup><!-- DeckControls_SplitWaveforms -->
 
               <WidgetGroup>
                 <ObjectName>DeckControls_StackedWaveforms</ObjectName>
@@ -100,7 +100,7 @@
                         <SetVariable name="i">1</SetVariable>
                       </Template>
 
-                      <Template src="skin:vumeter_master.xml"/>
+                      <Template src="skin:mixer_column_master_vu.xml"/>
 
                       <Template src="skin:mixer_controls_right.xml">
                         <SetVariable name="i">2</SetVariable>
@@ -113,7 +113,7 @@
                         <Not/>
                       </Transform>
                     </Connection>
-                  </WidgetGroup> <!-- DeckControlsStackedWaveforms2Decks -->
+                  </WidgetGroup> <!-- DeckControls_StackedWaveforms_2Decks -->
 
                   <WidgetGroup>
                     <ObjectName>DeckControls_StackedWaveforms_4Decks</ObjectName>
@@ -124,7 +124,7 @@
                         <Children>
 
                           <WidgetGroup>
-                            <ObjectName>DeckControls_StackedWaveforms_4DecksNoEQs</ObjectName>
+                            <ObjectName>DeckControls_StackedWaveforms_4Decks_NoEQs</ObjectName>
                             <Layout>horizontal</Layout>
                             <Children>
                               <Template src="skin:mixer_controls_left.xml">
@@ -134,7 +134,7 @@
                                 <SetVariable name="i">1</SetVariable>
                               </Template>
 
-                              <Template src="skin:vumeter_master.xml"/>
+                              <Template src="skin:mixer_column_master_vu.xml"/>
 
                               <Template src="skin:mixer_controls_right.xml">
                                 <SetVariable name="i">2</SetVariable>
@@ -150,10 +150,10 @@
                                 <Not/>
                               </Transform>
                             </Connection>
-                          </WidgetGroup> <!-- DeckControlsStackedWaveforms4DecksNoEQs -->
+                          </WidgetGroup> <!-- DeckControls_StackedWaveforms_4Decks_NoEQs -->
 
                           <WidgetGroup>
-                            <ObjectName>DeckControls_StackedWaveforms_4DecksWithEQs</ObjectName>
+                            <ObjectName>DeckControls_StackedWaveforms_4Decks_WithEQs</ObjectName>
                             <Layout>horizontal</Layout>
                             <Children>
                               <Template src="skin:mixer_controls_condensed_left.xml">
@@ -163,7 +163,7 @@
                                 <SetVariable name="i">1</SetVariable>
                               </Template>
 
-                              <Template src="skin:vumeter_master.xml"/>
+                              <Template src="skin:mixer_column_master_vu.xml"/>
 
                               <Template src="skin:mixer_controls_condensed_right.xml">
                                 <SetVariable name="i">2</SetVariable>
@@ -176,29 +176,40 @@
                               <ConfigKey>[Master],show_eqs</ConfigKey>
                               <BindProperty>visible</BindProperty>
                             </Connection>
-                          </WidgetGroup> <!-- DeckControlsStackedWaveforms4DecksWithEQs -->
+                          </WidgetGroup> <!-- DeckControls_StackedWaveforms_4Decks_WithEQs -->
 
                         </Children>
-                      </WidgetGroup> <!-- DeckControlsStackedWaveforms4Decks -->
+                      </WidgetGroup> <!-- DeckControls_StackedWaveforms_4Decks -->
 
                     </Children>
                     <Connection>
                       <ConfigKey>[Master],show_4decks</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
-                  </WidgetGroup>
+                  </WidgetGroup><!-- DeckControls_StackedWaveforms_4Decks -->
 
                 </Children>
                 <Connection>
                   <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
+              </WidgetGroup><!-- DeckControls_StackedWaveforms -->
+
+              <WidgetGroup><!-- Sapcer to simulate bottom padding with no crossfader -->
+                <Layout>horizontal</Layout>
+                <Size>0min,3f</Size>
+                <Children/>
+                <Connection>
+                  <ConfigKey>[Deere],show_crossfader</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
               </WidgetGroup>
 
             </Children>
-          </WidgetGroup><!-- DeckControlsStackedWaveforms -->
+          </WidgetGroup><!-- DeckControls -->
 
-          <WidgetGroup>
+          <WidgetGroup><!-- CrossfaderContainer -->
             <Layout>horizontal</Layout>
             <SizePolicy>me,min</SizePolicy>
             <Children>
@@ -266,11 +277,11 @@
           </WidgetGroup><!-- CrossfaderContainer -->
 
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- Mixer -->
     </Children>
     <Connection>
       <ConfigKey>[Master],show_mixer</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
-  </WidgetGroup>
+  </WidgetGroup><!-- MixerBorder -->
 </Template>

@@ -60,18 +60,15 @@
         </Connection>
       </WidgetGroup>
 
-      <Template src="skin:spacer_vx.xml">
-        <SetVariable name="height">2</SetVariable>
-      </Template>
-
       <WidgetGroup>
-        <Size>22me,110me</Size>
+        <ObjectName>Channel_VU_Container</ObjectName>
+        <Size>22me,90me</Size>
         <Layout>horizontal</Layout>
         <Children>
           <WidgetGroup>
             <ObjectName>channel_VuMeter_Group</ObjectName>
             <Layout>horizontal</Layout>
-            <MaximumSize>22,130</MaximumSize>
+            <MaximumSize>22,150</MaximumSize>
             <Children>
               <Template src="skin:vumeter_v.xml">
                 <SetVariable name="group"><Variable name="group"/></SetVariable>

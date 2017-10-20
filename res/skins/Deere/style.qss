@@ -23,11 +23,12 @@
 /* These definitions put a faint border around all the widgets. We have to be
    tricky with top/bottom-ness to get things right. */
 #DeckControls {
-  padding: 7.5px;
+  padding: 5px 7.5px 2px 7.5px;
+  /* background-color: #456789; */
 }
 
 #CrossfaderContainer {
-  padding: 0px 2px 2px 2px;
+  padding: 0px 3px 3px 3px;
 }
 
 #DeckTextRow {
@@ -1079,17 +1080,13 @@ WNumberRate {
   margin: 0px 1.5px 3px 1.5px;
 }
 
-#DeckControls {
-  padding: 7px;
-  qproperty-layoutSpacing: 0;
-}
-
 #DeckMixer {
   background-color: #333333;
 }
 
-#DeckMixer_Column2 {
-  qproperty-layoutSpacing: 5;
+#DeckMixer_Column2, #DeckMixer_Column3 {
+  /* qproperty-layoutSpacing: 5; */
+  /* background-color: #006596; */
 }
 
 #CircleButton, #QuickEffectKillButton {
@@ -1112,12 +1109,14 @@ WNumberRate {
 
 #DeckControls_SplitWaveforms_4Decks #channel_VuMeter_Group,
 #DeckControls_StackedWaveforms_4Decks #channel_VuMeter_Group {
-  padding-bottom: 5px;
+  /* padding-bottom: 5px; */
+  /* background-color: #116611; */
 }
 
 #DeckMixer_ColumnCondensed {
-  padding: 5px 5px 3px 5px;
+  padding: 0px 5px 0px 5px;
   qproperty-layoutAlignment: 'AlignHCenter';
+  /* background-color: #911661; */
 }
 
 /* pad 4 deck mixer colums left/right
@@ -1132,14 +1131,19 @@ to avoid EQ kill buttons from shifting center of rest of column */
   padding-left: 6px;
 }
 
+#ButtonContainer {
+  qproperty-layoutAlignment: 'AlignCenter';
+  padding: 3px 0px 3px 0px;
+}
+
 #CondensedButtonContainerRight {
   qproperty-layoutAlignment: 'AlignLeft';
-  padding-left: 9px;
+  padding: 3px 0px 3px 9px;
 }
 
 #CondensedButtonContainerLeft {
   qproperty-layoutAlignment: 'AlignRight';
-  padding-right: 9px;
+  padding: 3px 9px 3px 0px;
 }
 
 #4DecksMixerCondensedMonoMeterLeft {
@@ -1158,6 +1162,7 @@ to avoid EQ kill buttons from shifting center of rest of column */
 #channel_VuMeter_Group {
   qproperty-layoutSpacing: 2;
   qproperty-layoutAlignment: 'AlignHCenter';
+  /* background-color: #828315; */
 }
 
 #master_VuMeter_Group {
@@ -1165,13 +1170,12 @@ to avoid EQ kill buttons from shifting center of rest of column */
   qproperty-layoutAlignment: 'AlignHCenter';
   padding-left: 5px;
   padding-right: 5px;
+  /* background-color: #828315; */
 }
 
-#MasterVumeter {
-  qproperty-layoutSpacing: 2;
-  qproperty-layoutAlignment: 'AlignHCenter';
-  padding-left: 10px;
-  padding-right: 10px;
+#MasterVu {
+  qproperty-layoutAlignment: 'AlignCenter';
+  /* background-color: #582831; */
 }
 
 #vumeter_v, #vumeter_h {

@@ -9,15 +9,11 @@
     <ObjectName>DeckMixer_Column2</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>max,me</SizePolicy>
-    <Connection>
-      <ConfigKey>[Master],show_faders</ConfigKey>
-      <BindProperty>visible</BindProperty>
-    </Connection>
     <Children>
 
       <!-- PFL buttons need different spacing in 2 and 4 deck mixers. -->
-      <WidgetGroup>
-        <ObjectName>DeckPFLButton2Decks</ObjectName>
+      <WidgetGroup><!-- 2 decks -->
+        <ObjectName>ButtonContainer</ObjectName>
         <Layout>horizontal</Layout>
         <Size>40f,35f</Size>
         <Children>
@@ -43,11 +39,11 @@
             <Not/>
           </Transform>
         </Connection>
-      </WidgetGroup>
+      </WidgetGroup><!-- 2 decks -->
 
-      <WidgetGroup>
-        <ObjectName>DeckPFLButton4Decks</ObjectName>
-        <Size>40f,25f</Size>
+      <WidgetGroup><!-- 4 decks -->
+        <ObjectName>ButtonContainer</ObjectName>
+        <Size>-1me,28f</Size>
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:left_2state_button.xml">
@@ -70,7 +66,7 @@
           <ConfigKey>[Master],show_4decks</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup>
+      </WidgetGroup><!-- 4 decks -->
 
       <WidgetGroup>
         <ObjectName>VolumeSlider</ObjectName>
@@ -85,7 +81,7 @@
                 <TooltipId>channel_volume</TooltipId>
                 <SizePolicy>min,me</SizePolicy>
                 <MinimumSize>40,50</MinimumSize>
-                <MaximumSize>40,130</MaximumSize>
+                <MaximumSize>40,150</MaximumSize>
                 <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
                 <Handle scalemode="STRETCH_ASPECT">handle-vertical.svg</Handle>
                 <Horizontal>false</Horizontal>
@@ -107,11 +103,12 @@
           <WidgetGroup>
             <ObjectName>ChannelVolume</ObjectName>
             <Layout>vertical</Layout>
+            <Size>40min,80me</Size>
             <Children>
               <SliderComposed>
                 <TooltipId>channel_volume</TooltipId>
                 <SizePolicy>min,me</SizePolicy>
-                <MinimumSize>40,110</MinimumSize>
+                <MinimumSize>40,80</MinimumSize>
                 <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
                 <Handle scalemode="STRETCH_ASPECT">handle-vertical.svg</Handle>
                 <Horizontal>false</Horizontal>
@@ -128,10 +125,12 @@
           </WidgetGroup>
 
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- VolumeSlider -->
 
       <WidgetGroup>
+        <ObjectName>ButtonContainer</ObjectName>
         <Layout>horizontal</Layout>
+        <Size>-1me,28f</Size>
         <Children>
           <Template src="skin:crossfader_orientation_button.xml">
             <SetVariable name="Unit">Deck<Variable name="i"/></SetVariable>
@@ -143,5 +142,9 @@
         </Connection>
       </WidgetGroup>
     </Children>
+    <Connection>
+      <ConfigKey>[Master],show_faders</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
   </WidgetGroup>
 </Template>

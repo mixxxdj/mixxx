@@ -13,7 +13,7 @@
   <SetVariable name="QuickEffectEffectGroup">[QuickEffectRack<Variable name="QuickEffect"/>_<Variable name="group"/>_Effect1]</SetVariable>
   <WidgetGroup>
     <Layout>horizontal</Layout>
-    <SizePolicy>me,min</SizePolicy>
+    <SizePolicy>me,me</SizePolicy>
     <Children>
 
       <Template src="skin:knob.xml">

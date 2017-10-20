@@ -14,7 +14,9 @@
       <!--In 4 deck mode, show the gain knob above the EQs rather than above the level meters.-->
       <WidgetGroup>
         <Layout>vertical</Layout>
-        <SizePolicy>me,min</SizePolicy>
+        <MinimumSize>40,34</MinimumSize>
+        <MaximumSize>-1,40</MaximumSize>
+        <SizePolicy>me,me</SizePolicy>
         <Children>
           <WidgetGroup>
             <Layout>vertical</Layout>
@@ -38,7 +40,7 @@
             <Layout>horizontal</Layout>
             <SizePolicy>me,min</SizePolicy>
             <Children>
-              <WidgetGroup><!-- Expanding spacer to push EQ knob to opposite side -->
+              <WidgetGroup><!-- Expanding spacer to push EQ knob to right side -->
                 <Size>0me,1min</Size>
                 <Children/>
               </WidgetGroup>
@@ -63,7 +65,43 @@
         </Connection>
       </WidgetGroup>
 
-      <Template src="skin:spacer_v.xml"/>
+      <!-- Spacer to push EQ knobs down with
+          - 2decks and
+          - split waveforms and
+          - no QuickEffect loaded-->
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Size>0min,34f</Size>
+                <Children>
+                </Children>
+                <Connection>
+                  <ConfigKey>[QuickEffectRack1_[Channel1]_Effect1],loaded</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey>[Master],show_4decks</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- Spacer -->
 
       <Template src="skin:equalizer_rack_parameter_left.xml">
         <SetVariable name="parameter">4</SetVariable>

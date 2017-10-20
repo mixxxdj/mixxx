@@ -9,12 +9,12 @@
   <WidgetGroup>
     <ObjectName>ControlsRow</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>me,me</SizePolicy>
+    <SizePolicy>me,min</SizePolicy>
     <Children>
       <WidgetGroup>
         <ObjectName>FullControlsRow</ObjectName>
         <Layout>horizontal</Layout>
-        <Size>-1,-1me</Size>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
           <Template src="skin:hotcue.xml"/>
           <!-- Expanding spacers in between control contexts -->

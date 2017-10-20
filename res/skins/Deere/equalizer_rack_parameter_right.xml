@@ -16,7 +16,7 @@
   <SetVariable name="EqualizerEffectGroup">[EqualizerRack<Variable name="EqualizerNumber"/>_<Variable name="group"/>_Effect<Variable name="EffectNumber"/>]</SetVariable>
   <WidgetGroup>
     <Layout>horizontal</Layout>
-    <SizePolicy>me,min</SizePolicy>
+    <SizePolicy>me,me</SizePolicy>
     <Children>
 
       <WidgetGroup>

@@ -12,7 +12,7 @@
    id="svg2"
    height="34"
    width="40"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.48.4 r9939"
    sodipodi:docname="knob_yellow.svg">
   <sodipodi:namedview
      pagecolor="#ffffff"
@@ -24,14 +24,14 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:window-width="1366"
-     inkscape:window-height="702"
+     inkscape:window-height="746"
      id="namedview17"
      showgrid="false"
-     inkscape:zoom="13.882353"
-     inkscape:cx="0.76792018"
-     inkscape:cy="15.452775"
+     inkscape:zoom="9.8163059"
+     inkscape:cx="-1.4203399"
+     inkscape:cy="12.795823"
      inkscape:window-x="0"
-     inkscape:window-y="27"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg2" />
   <defs
@@ -93,13 +93,6 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
-  <ellipse
-     style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:0;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;marker:none;enable-background:accumulate"
-     id="path4202"
-     cx="-13.524048"
-     cy="0.45841381"
-     rx="2.5876327"
-     ry="2.4899862" />
   <path
      style="opacity:1;fill:#d2d2d2;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      d="M 16.15039,7.7363283 A 11.539,11.539 0 0 0 8.460938,18.601562 11.539,11.539 0 0 0 20.000001,30.140625 11.539,11.539 0 0 0 31.539063,18.601562 11.539,11.539 0 0 0 23.84961,7.7382814 l 0,10.8632806 c 0,2.091956 -1.757654,3.84961 -3.849609,3.84961 -2.091956,0 -3.849611,-1.757654 -3.849611,-3.84961 l 0,-10.8652337 z"
