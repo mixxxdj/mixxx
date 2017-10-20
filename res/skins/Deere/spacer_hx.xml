@@ -6,10 +6,7 @@ Description: Spacer.
   <WidgetGroup>
     <ObjectName>Spacer<Variable name="color"/></ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>min,min</SizePolicy>
     <Size><Variable name="width"/></Size>
-    <MinimumSize><Variable name="width"/>,-1</MinimumSize>
-    <MaximumSize><Variable name="width"/>,-1</MaximumSize>
     <Children>
     </Children>
   </WidgetGroup>

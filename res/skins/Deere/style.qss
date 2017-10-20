@@ -669,12 +669,11 @@ WWidget, QLabel {
 
 /* Start spacing for Deck controls row (transport, beatgrid, looping, hotcue, vinylcontrol) */
 
-#FullControlsRow, #MinimalControlsContainer {
+#FullControlsRow {
   qproperty-layoutSpacing: 3;
   qproperty-layoutAlignment: 'AlignBottom';
 }
 
-#BeatjumpContainer, #LoopContainer,
 #HotcueGrid, #HotcueGridExtended,
 #VinylControlsContainer {
   background-color: #333333;
@@ -682,8 +681,6 @@ WWidget, QLabel {
   qproperty-layoutSpacing: 2;
 }
 
-#BeatjumpContainer WWidgetGroup,
-#LoopContainer WWidgetGroup, #LoopButtons, #LoopButtons WWidgetGroup,
 #HotcueGrid WWidgetGroup, #HotcueGridExtended WWidgetGroup,
 #VinylControlsContainer WWidgetGroup {
   qproperty-layoutSpacing: 2;
@@ -694,9 +691,7 @@ WBeatSpinBox {
   background-color: #1f1e1e;
   border: 1px solid #444342;
   border-radius: 3px;
-
   padding: 2px;
-
   font: 15px;
 }
 
