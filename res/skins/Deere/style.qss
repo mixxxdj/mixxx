@@ -807,7 +807,7 @@ WBeatSpinBox {
 #BpmEditRowCollapsed, #KeyEditRowCollapsed {
   qproperty-layoutAlignment: 'AlignCenter';
   /* emphasize active widget */
-  border: 1px solid #4B4B4B;
+  border: 1px solid #666666;
 }
 
 #BpmEditRowExpanded, #KeyEditRowExpanded {
