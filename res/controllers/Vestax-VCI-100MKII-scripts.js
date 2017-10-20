@@ -1,6 +1,6 @@
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2017-10-9
+// description: 2017-11-1
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 // JSHint Configuration
@@ -221,6 +221,20 @@ VCI102.set = function(group, key, value) {
     engine.setParameter(group, key, value / 128);
 };
 
+VCI102.super1 = function(ch, midino, value, status, group) {
+    if (engine.getValue(VCI102.slot(group, 1), "parameter1_link_type") > 1) {
+        // loose center if Effect1 may be "Filter"
+        if (value > 77) {
+            value -= 27;
+        } else if (value > 50) {
+            value = 50;
+        }
+        engine.setValue(group, "super1", value / 100);
+    } else {
+        VCI102.set(group, "super1", value);
+    }
+};
+
 VCI102.parameter = function(ch, group, key, value) {
     if (VCI102.shift[ch % 2]) {
         // link to meta, inverse variants -> none -> direct variants
@@ -266,7 +280,7 @@ VCI102.parameter4 = function(ch, midino, value, status, group) {
     if (n) {
         VCI102.parameter(ch, VCI102.slot(group, n), "parameter4", value);
     } else {
-        VCI102.set(group, "super1", value);
+        VCI102.super1(ch, midino, value, status, group);
     }
 };
 
