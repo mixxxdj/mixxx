@@ -147,7 +147,7 @@ void SoundSourceMediaFoundation::seekSampleFrame(SINT frameIndex) {
         //    need to decode more than  2 * kNumberOfPrefetchFrames frames
         //    while skipping
         SINT skipFramesCountMax =
-                samples2frames(m_sampleBuffer.getSize()) +
+                samples2frames(m_sampleBuffer.readableLength()) +
                 2 * kNumberOfPrefetchFrames;
         if (skipFrames.length() <= skipFramesCountMax) {
             if (skipFrames != readSampleFramesClamped(
