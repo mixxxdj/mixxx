@@ -34,7 +34,6 @@ class ControlPotmeterBehavior : public ControlNumericBehavior {
   public:
     ControlPotmeterBehavior(double dMinValue, double dMaxValue,
                             bool allowOutOfBounds);
-    ~ControlPotmeterBehavior() override;
 
     bool setFilter(double* dValue) override;
     double valueToParameter(double dValue) override;
@@ -52,7 +51,6 @@ class ControlPotmeterBehavior : public ControlNumericBehavior {
 class ControlLogPotmeterBehavior : public ControlPotmeterBehavior {
   public:
     ControlLogPotmeterBehavior(double dMinValue, double dMaxValue, double minDB);
-    ~ControlLogPotmeterBehavior() override;
 
     double valueToParameter(double dValue) override;
     double parameterToValue(double dParam) override;
@@ -62,18 +60,32 @@ class ControlLogPotmeterBehavior : public ControlPotmeterBehavior {
     double m_minOffset;
 };
 
+class ControlLogInvPotmeterBehavior : public ControlLogPotmeterBehavior {
+  public:
+    ControlLogInvPotmeterBehavior(double dMinValue, double dMaxValue, double minDB);
+
+    double valueToParameter(double dValue) override;
+    double parameterToValue(double dParam) override;
+};
+
 class ControlLinPotmeterBehavior : public ControlPotmeterBehavior {
   public:
-    ControlLinPotmeterBehavior(double dMinValue, double dMaxValue,
-                               bool allowOutOfBounds);
-    ~ControlLinPotmeterBehavior() override;
+    ControlLinPotmeterBehavior(
+            double dMinValue, double dMaxValue, bool allowOutOfBounds);
+};
+
+class ControlLinInvPotmeterBehavior : public ControlPotmeterBehavior {
+  public:
+    ControlLinInvPotmeterBehavior(
+            double dMinValue, double dMaxValue, bool allowOutOfBounds);
+    double valueToParameter(double dValue) override;
+    double parameterToValue(double dParam) override;
 };
 
 class ControlAudioTaperPotBehavior : public ControlPotmeterBehavior {
   public:
     ControlAudioTaperPotBehavior(double minDB, double maxDB,
                                  double neutralParameter);
-    ~ControlAudioTaperPotBehavior() override;
 
     double valueToParameter(double dValue);
     double parameterToValue(double dParam);

@@ -44,9 +44,6 @@ ControlPotmeterBehavior::ControlPotmeterBehavior(double dMinValue, double dMaxVa
           m_bAllowOutOfBounds(allowOutOfBounds) {
 }
 
-ControlPotmeterBehavior::~ControlPotmeterBehavior() {
-}
-
 bool ControlPotmeterBehavior::setFilter(double* dValue) {
     if (!m_bAllowOutOfBounds) {
         if (*dValue > m_dMaxValue) {
@@ -116,9 +113,6 @@ ControlLogPotmeterBehavior::ControlLogPotmeterBehavior(double dMinValue,
     m_minOffset = db2ratio(m_minDB);
 }
 
-ControlLogPotmeterBehavior::~ControlLogPotmeterBehavior() {
-}
-
 double ControlLogPotmeterBehavior::valueToParameter(double dValue) {
     if (m_dValueRange == 0.0) {
         return 0;
@@ -139,12 +133,35 @@ double ControlLogPotmeterBehavior::parameterToValue(double dParam) {
     return m_dMinValue + (linPrameter * m_dValueRange);
 }
 
+ControlLogInvPotmeterBehavior::ControlLogInvPotmeterBehavior(
+        double dMinValue, double dMaxValue, double minDB)
+        : ControlLogPotmeterBehavior(dMinValue, dMaxValue, minDB) {
+}
+
+double ControlLogInvPotmeterBehavior::valueToParameter(double dValue) {
+    return 1 - ControlLogPotmeterBehavior::valueToParameter(dValue);
+}
+
+double ControlLogInvPotmeterBehavior::parameterToValue(double dParam) {
+    return ControlLogPotmeterBehavior::parameterToValue(1 - dParam);
+}
+
 ControlLinPotmeterBehavior::ControlLinPotmeterBehavior(
         double dMinValue, double dMaxValue, bool allowOutOfBounds)
         : ControlPotmeterBehavior(dMinValue, dMaxValue, allowOutOfBounds) {
 }
 
-ControlLinPotmeterBehavior::~ControlLinPotmeterBehavior() {
+ControlLinInvPotmeterBehavior::ControlLinInvPotmeterBehavior(
+        double dMinValue, double dMaxValue, bool allowOutOfBounds)
+        : ControlPotmeterBehavior(dMinValue, dMaxValue, allowOutOfBounds) {
+}
+
+double ControlLinInvPotmeterBehavior::valueToParameter(double dValue) {
+    return 1 - ControlPotmeterBehavior::valueToParameter(dValue);
+}
+
+double ControlLinInvPotmeterBehavior::parameterToValue(double dParam) {
+    return ControlPotmeterBehavior::parameterToValue(1 - dParam);
 }
 
 ControlAudioTaperPotBehavior::ControlAudioTaperPotBehavior(
@@ -156,9 +173,6 @@ ControlAudioTaperPotBehavior::ControlAudioTaperPotBehavior(
           m_maxDB(maxDB),
           m_offset(db2ratio(m_minDB)) {
     m_midiCorrection = ceil(m_neutralParameter * 127) - (m_neutralParameter * 127);
-}
-
-ControlAudioTaperPotBehavior::~ControlAudioTaperPotBehavior() {
 }
 
 double ControlAudioTaperPotBehavior::valueToParameter(double dValue) {
