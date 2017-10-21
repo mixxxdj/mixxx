@@ -1381,6 +1381,14 @@ WPushButton[value="2"]:hover {
 }
 */
 
+#PlayToggle[value="0"] {
+  image: url(skin:/icon/ic_play_48px.svg) no-repeat center center;
+}
+
+#PlayToggle[value="1"] {
+  image: url(skin:/icon/ic_pause_48px.svg) no-repeat center center;
+}
+
 #ToolbarButton[value="1"] {
     color: #D2D2D2;
     background-color: #5a5a5a;
