@@ -207,6 +207,7 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,min</SizePolicy>
                 <Children>
+                  <!-- Slider background is highlighted orange if AutoDJ is enabled -->
                   <WidgetGroup>
                     <ObjectName>Crossfader</ObjectName>
                     <SizePolicy>me,min</SizePolicy>
@@ -215,8 +216,8 @@
                       <SliderComposed>
                         <TooltipId>crossfader</TooltipId>
                         <Size>1me,40f</Size>
-                        <Slider scalemode="STRETCH">slider-horizontal.svg</Slider>
-                        <Handle scalemode="STRETCH_ASPECT">handle-horizontal.svg</Handle>
+                        <Slider scalemode="STRETCH">slider-crossfader.svg</Slider>
+                        <Handle scalemode="STRETCH_ASPECT">handle-crossfader.svg</Handle>
                         <Horizontal>true</Horizontal>
                         <Connection>
                           <ConfigKey>[Master],crossfader</ConfigKey>
@@ -226,35 +227,9 @@
                     </Children>
                     <Connection>
                       <ConfigKey>[AutoDJ],enabled</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                      <Transform><Not/></Transform>
+                      <BindProperty>highlight</BindProperty>
                     </Connection>
                   </WidgetGroup><!-- Crossfader -->
-
-                  <!-- Change crossfader background color if AutoDj is active,
-                      https://bugs.launchpad.net/mixxx/+bug/995955 -->
-                  <WidgetGroup>
-                    <ObjectName>CrossfaderAutoDjActive</ObjectName>
-                    <SizePolicy>me,min</SizePolicy>
-                    <Layout>horizontal</Layout>
-                    <Children>
-                      <SliderComposed>
-                        <TooltipId>crossfader</TooltipId>
-                        <Size>1me,40f</Size>
-                        <Slider scalemode="STRETCH">slider-horizontal.svg</Slider>
-                        <Handle scalemode="STRETCH_ASPECT">handle-horizontal.svg</Handle>
-                        <Horizontal>true</Horizontal>
-                        <Connection>
-                          <ConfigKey>[Master],crossfader</ConfigKey>
-                          <EmitOnDownPress>false</EmitOnDownPress>
-                        </Connection>
-                      </SliderComposed>
-                    </Children>
-                    <Connection>
-                      <ConfigKey>[AutoDJ],enabled</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup><!-- CrossfaderAutoDjActive -->
 
                 </Children>
               </WidgetGroup>

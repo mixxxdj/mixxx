@@ -1011,8 +1011,12 @@ WEffectSelector {
   margin-top: 1px;
 }
 
-#CrossfaderAutoDjActive {
-  background-color: #001726;
+#Crossfader[highlight="0"] {
+  border-image: none;
+}
+
+#Crossfader[highlight="1"] {
+  border-image: url(skin:slider-crossfader-AutoDJ.svg) 0 0 0 0 stretch stretch;
 }
 
 #MasterControls {
