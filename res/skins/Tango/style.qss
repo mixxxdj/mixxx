@@ -406,31 +406,51 @@ WWidgetGroup {
       background: #ff8f00 url(skin:/buttons/btn_arrow_right_black_hover.svg) no-repeat top center;
     }
 
-  #VinylButton,
+  #VinylControlButton,
+  #VinylControlStatus,
   #VinylModeButton,
+  #VinylCueModeButton,
   #PassthroughButton {
     margin-right: 1px;
     }
-  #VinylButton[displayValue="0"],
+  #VinylControlButton[displayValue="0"],
   #VinylModeButton,
+  #VinylCueModeButton,
   #PassthroughButton {
     font-size: 11px/11px;
     color: #888888;
     background-color: #333333;
     }
-    #VinylButton:hover,
+    #VinylControlButton:hover,
     #VinylModeButton:hover {
       border: 1px solid #999999;
     }
     #PassthroughButton[displayValue="0"]:hover {
       border: 1px solid #ff8f00;
     }
-  #VinylButton[displayValue="1"],
-  #VinylButton[displayValue="2"] {
+  #VinylModeButton[displayValue="1"],
+  #VinylModeButton[displayValue="2"],
+  #VinylControlButton[displayValue="1"] {
     color: #eeeeee;
     font-weight: bold;
+    }
+  #VinylModeButton[displayValue="1"],
+  #VinylModeButton[displayValue="2"],
+  #VinylControlStatus[displayValue="0"] {
     background-color: #666666;
     }
+  #VinylControlButton[displayValue="1"] {
+    background-color: transparent;
+    }
+  #VinylControlStatus[displayValue="1"] {
+    background-color: #468c00;
+  }
+  #VinylControlStatus[displayValue="2"] {
+    background-color: #ff6600;
+  }
+  #VinylControlStatus[displayValue="3"] {
+    background-color: #ff0000;
+  }
   #PassthroughButton[displayValue="1"] {
     color: #0f0f0f;
     font-weight: bold;
