@@ -195,17 +195,6 @@
                 </Connection>
               </WidgetGroup><!-- DeckControls_StackedWaveforms -->
 
-              <WidgetGroup><!-- Sapcer to simulate bottom padding with no crossfader -->
-                <Layout>horizontal</Layout>
-                <Size>0min,3f</Size>
-                <Children/>
-                <Connection>
-                  <ConfigKey>[Deere],show_crossfader</ConfigKey>
-                  <Transform><Not/></Transform>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-
             </Children>
           </WidgetGroup><!-- DeckControls -->
 
