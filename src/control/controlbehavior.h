@@ -8,6 +8,7 @@
 
 class ControlDoublePrivate;
 
+// A linear 0 .. 1 control without Midi representation
 class ControlNumericBehavior {
   public:
     virtual ~ControlNumericBehavior() { };
@@ -25,8 +26,8 @@ class ControlNumericBehavior {
     // returns the midi range parameter 0..127
     virtual double valueToMidiParameter(double dValue);
 
-    virtual void setValueFromMidi(MidiOpCode o, double dParam,
-                                           ControlDoublePrivate* pControl);
+    virtual void setValueFromMidi(
+            MidiOpCode o, double dParam, ControlDoublePrivate* pControl);
 };
 
 class ControlPotmeterBehavior : public ControlNumericBehavior {
