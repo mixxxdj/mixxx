@@ -235,7 +235,7 @@ double ControlDoublePrivate::getParameterForValue(double value) const {
 
 double ControlDoublePrivate::getParameterForMidi(double midiParam) const {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
-    VERIFY_OR_DEBUG_ASSERT(m_pBehavior) {
+    VERIFY_OR_DEBUG_ASSERT(pBehavior) {
         qWarning() << "Cannot set" << m_key << "by Midi";
         return 0;
     }
@@ -244,7 +244,7 @@ double ControlDoublePrivate::getParameterForMidi(double midiParam) const {
 
 void ControlDoublePrivate::setValueFromMidi(MidiOpCode opcode, double midiParam) {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
-    VERIFY_OR_DEBUG_ASSERT(m_pBehavior) {
+    VERIFY_OR_DEBUG_ASSERT(pBehavior) {
         qWarning() << "Cannot set" << m_key << "by Midi";
         return;
     }
@@ -253,7 +253,7 @@ void ControlDoublePrivate::setValueFromMidi(MidiOpCode opcode, double midiParam)
 
 double ControlDoublePrivate::getMidiParameter() const {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
-    VERIFY_OR_DEBUG_ASSERT(m_pBehavior) {
+    VERIFY_OR_DEBUG_ASSERT(pBehavior) {
         qWarning() << "Cannot get" << m_key << "by Midi";
         return 0;
     }
