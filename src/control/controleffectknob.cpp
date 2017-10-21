@@ -39,6 +39,6 @@ void ControlEffectKnob::setBehaviour(EffectManifestParameter::ControlHint type,
         }
     } else if (type == EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC_INVERSE) {
         m_pControl->setBehavior(
-                new ControlLogPotmeterBehavior(dMinValue, dMaxValue, -40));
+                new ControlLogInvPotmeterBehavior(dMinValue, dMaxValue, -40));
     }
 }

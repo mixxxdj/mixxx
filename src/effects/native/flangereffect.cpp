@@ -27,18 +27,17 @@ EffectManifest FlangerEffect::getManifest() {
         "A simple modulation effect, created by taking the input signal "
         "and mixing it with a delayed, pitch modulated copy of itself."));
 
-    EffectManifestParameter* period = manifest.addParameter();
-    period->setId("period");
-    period->setName(QObject::tr("Period"));
-    period->setDescription(QObject::tr("Controls the period of the LFO (low frequency oscillator)\n"
-        "1/4 - 20 beats rounded to 1/2 beat if tempo is detected (decks and samplers) \n"
-        "0.05 - 20 seconds if no tempo is detected (mic & aux inputs, master mix)"));
-    period->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
-    period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    period->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
-    period->setMinimum(0.00);
-    period->setMaximum(20.00);
-    period->setDefault(1.00);
+    EffectManifestParameter* speed = manifest.addParameter();
+    speed->setId("speed");
+    speed->setName(QObject::tr("Speed"));
+    speed->setDescription(QObject::tr("Controls the speed of the LFO (low frequency oscillator)\n"
+        "32 - 1/4 beats rounded to 1/2 beat per lfo cycle if tempo is detected (decks and samplers) \n"
+        "1/32 - 4 Hz if no tempo is detected (mic & aux inputs, master mix)"));
+    speed->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC_INVERSE);
+    speed->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    speed->setMinimum(kMinLfoBeats);
+    speed->setMaximum(kMaxLfoBeats);
+    speed->setDefault(0.5);
 
     EffectManifestParameter* width = manifest.addParameter();
     width->setId("width");
@@ -102,7 +101,7 @@ EffectManifest FlangerEffect::getManifest() {
 
 FlangerEffect::FlangerEffect(EngineEffect* pEffect,
                              const EffectManifest& manifest)
-        : m_pPeriodParameter(pEffect->getParameterById("period")),
+        : m_pSpeedParameter(pEffect->getParameterById("speed")),
           m_pWidthParameter(pEffect->getParameterById("width")),
           m_pManualParameter(pEffect->getParameterById("manual")),
           m_pRegenParameter(pEffect->getParameterById("regen")),
@@ -127,19 +126,18 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
     // TODO: remove assumption of stereo signal
     const int kChannels = 2;
 
-    // The parameter minimum is zero so the exact center of the knob is 2 beats.
-    double lfoPeriodParameter = m_pPeriodParameter->value();
+    double lfoPeriodParameter = m_pSpeedParameter->value();
     double lfoPeriodFrames;
     if (groupFeatures.has_beat_length_sec) {
         // lfoPeriodParameter is a number of beats
-        lfoPeriodParameter = std::max(roundToFraction(lfoPeriodParameter, 2.0), 1/4.0);
+        lfoPeriodParameter = std::max(roundToFraction(lfoPeriodParameter, 2.0), kMinLfoBeats);
         if (m_pTripletParameter->toBool()) {
             lfoPeriodParameter /= 3.0;
         }
         lfoPeriodFrames = lfoPeriodParameter * groupFeatures.beat_length_sec * sampleRate;
     } else {
         // lfoPeriodParameter is a number of seconds
-        lfoPeriodFrames = std::max(lfoPeriodParameter, 1/4.0) * sampleRate;
+        lfoPeriodFrames = std::max(lfoPeriodParameter, kMinLfoBeats) * sampleRate;
     }
 
     // When the period is changed, the position of the sound shouldn't
