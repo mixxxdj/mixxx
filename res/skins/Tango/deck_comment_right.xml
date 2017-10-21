@@ -23,7 +23,7 @@ Variables:
 
       <WidgetGroup><!-- Track comment + FX indicators -->
         <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>i,min</SizePolicy>
         <Children>
 
           <Template src="skin:fx_assign_button.xml">

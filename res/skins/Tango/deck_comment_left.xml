@@ -14,7 +14,7 @@ Variables:
     <Children>
       <WidgetGroup><!-- Track comment + FX indicators -->
         <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>i,min</SizePolicy>
         <Children>
           <!--	Additional line to display comments from file tag.
           Useful to explain hotcues, loop, Ins & Outs for live sets etc.
