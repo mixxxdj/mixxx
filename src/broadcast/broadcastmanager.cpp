@@ -225,7 +225,12 @@ void BroadcastManager::slotConnectionStatusChanged(int newState) {
     }
 
     // Changed global status indicator depending on global connections status
-    if (failedCount >= enabledCount || enabledCount < 1) {
+    if (enabledCount < 1) {
+        // Disable Live Broadcasting if all connections are disabled manually.
+        // Calling setEnabled will also update the status CO to UNCONNECTED
+        setEnabled(false);
+    }
+    else if (failedCount >= enabledCount) {
         m_pStatusCO->forceSet(STATUSCO_FAILURE);
     }
     else if (failedCount > 0 && failedCount < enabledCount) {
