@@ -219,7 +219,7 @@
             </WidgetGroup>
 
             <WidgetGroup><!-- LEFT decks + Skin Controls + RIGHT decks -->
-              <ObjectName>DecksMixer12</ObjectName>
+              <ObjectName>AlignTop</ObjectName>
               <Layout>horizontal</Layout>
               <Size>1008me,136min</Size>
               <Children>
@@ -231,6 +231,8 @@
                   <SetVariable name="SignalRGBMidColor"><Variable name="SignalRGBMidColor"/></SetVariable>
                   <SetVariable name="SignalRGBLowColor"><Variable name="SignalRGBLowColor"/></SetVariable>
                 </Template>
+
+                <Template src="skin:vumeter_master_container.xml"/>
 
                 <Template src="skin:centerbox_deck12.xml"/>
 
@@ -259,7 +261,7 @@
           <Children>
 
             <WidgetGroup><!-- LEFT decks + ToolbarTop + RIGHT decks -->
-              <ObjectName>DecksMixer34</ObjectName>
+              <ObjectName>AlignTop</ObjectName>
               <Layout>horizontal</Layout>
               <Size>1008me,136min</Size>
               <Children>

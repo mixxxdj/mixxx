@@ -915,6 +915,14 @@ WBeatSpinBox {
   margin-top: 4px;
   }
 
+#VUMeterMaster {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
+#VUMeterMasterLabel {
+  image: url(skin:/buttons/btn_master_vu.svg) no-repeat center center;
+}
+
 /*################################################################
  ######  Skin Controls / Crossfader / Clock  ####################
 ##############################################################*/
