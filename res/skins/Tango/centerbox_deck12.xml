@@ -200,6 +200,7 @@ Description:
                 <Children>
                   <VuMeter><!-- latency usage -->
                     <Size>31f,3f</Size>
+                    <TooltipId>audio_latency_usage</TooltipId>
                     <PathVu>skin:/graphics/latency_usage_over.png</PathVu>
                     <PathBack>skin:/graphics/latency_usage.png</PathBack>
                     <Horizontal>true</Horizontal>
