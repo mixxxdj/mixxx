@@ -6,8 +6,8 @@ Variables:
   ObjectName  : name of parent container, css for individual margin
   ToolTip     :
   Size        : actual knob size
-  PotiMinAngle: -135°, see skin.xml
-  PotiMaxAngle: 135°, see skin.xml
+  PotiMinAngle: -130°, see skin.xml
+  PotiMaxAngle: 130°, see skin.xml
   Color       : knob's notch colour
   group       : affected group
   ConfigKey   : control to connect to
@@ -22,6 +22,7 @@ Variables:
         <TooltipId><Variable name="TooltipId"/></TooltipId>
         <Size><Variable name="Size"/></Size>
         <Knob>skin:/knobs_sliders/knob_<Variable name="Color"/>.svg</Knob>
+        <BackPath>skin:/knobs_sliders/knob_bg.svg</BackPath>
         <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
         <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
         <Connection>
