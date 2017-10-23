@@ -16,6 +16,7 @@ Variables:
         <SizePolicy>min,max</SizePolicy>
         <Children>
           <WidgetGroup><!-- Left VU -->
+            <ObjectName>VUMeterFloating</ObjectName>
             <Layout>stacked</Layout>
             <Size>4f,1me</Size>
             <Children>
@@ -43,6 +44,7 @@ Variables:
           </WidgetGroup><!-- /Left VU -->
                   
           <WidgetGroup><!-- Right VU -->
+            <ObjectName>VUMeterFloating</ObjectName>
             <Layout>stacked</Layout>
             <Size>4f,1me</Size>
             <Children>

@@ -914,6 +914,9 @@ WBeatSpinBox {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   margin-top: 4px;
   }
+#VUMeterFloating {
+  margin-top: 3px;
+}
 
 #VUMeterMaster {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
