@@ -41,7 +41,7 @@ Description:
         </Connection>
       </WidgetGroup>
 
-      <Template src="skin:fx_units_spacer.xml"/>
+      <Template src="skin:spacer_fx_units.xml"/>
 
       <WidgetGroup><!-- EffectUnit 4 maxi -->
         <Layout>vertical</Layout>

@@ -1069,6 +1069,12 @@ WBeatSpinBox {
     background: #0f0f0f url(skin:/buttons/btn_skinsettings_off.svg) no-repeat center center;
   }
 
+#CrossfaderNetbook {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  margin: 2px 0px 2px 0px;
+}
+
+
 /*################################################################
 ######  Effects  ###############################################
 ##############################################################*/
