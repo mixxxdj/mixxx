@@ -154,15 +154,10 @@ Variables:
 
 <!-- 	Invisible Waveform, active when stacked Waveform are disabled.
       Appearently, they needs to be present in skin somewhere (visible or not)
-      to prevent visual glitches (or crashes). -->
+      to prevent visual glitches (or crashes).
       <WidgetGroup>
         <Size>50f,50f</Size>
         <Children>
-          <!-- Colors contain actually deck-specific Variable "chanNum" is already
-          but here this is already passed as variable and we can't set a variable name
-          containing another variable.
-          Here it doesn't matter since waveform is invisble.                           
-          -->
           <Template src="skin:waveform.xml">
             <SetVariable name="Size">0me,50me</SetVariable>
             <SetVariable name="chanNum"><Variable name="chanNum"/></SetVariable>
@@ -175,7 +170,7 @@ Variables:
           <BindProperty>visible</BindProperty>
           <Transform><Not/></Transform>
         </Connection>
-      </WidgetGroup><!-- Invisible waveform -->
+      </WidgetGroup> --><!-- Invisible waveform -->
 
     </Children>
   </WidgetGroup><!-- /Overview Row -->
