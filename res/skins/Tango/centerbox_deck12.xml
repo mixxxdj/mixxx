@@ -131,9 +131,12 @@ Description:
         <Children>
           <Template src="skin:button_3state_display.xml">
             <SetVariable name="ObjectName">RecordingButton</SetVariable>
+            <SetVariable name="TooltipId">toggle_recording</SetVariable>
             <SetVariable name="Size">104f,20f</SetVariable>
-            <SetVariable name="state_0_text">START REC</SetVariable>
+            <SetVariable name="state_0_text">REC START</SetVariable>
             <SetVariable name="state_1_text">. . .</SetVariable>
+            <!-- Empty to show the RecordingDuration underneath -->
+            <SetVariable name="state_2_text"></SetVariable>
             <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
             <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
           </Template>
@@ -185,7 +188,10 @@ Description:
                     <TooltipId>time</TooltipId>
                     <ObjectName>Clock</ObjectName>
                     <Size>30min,14f</Size>
-                    <ShowSeconds>false</ShowSeconds>
+                    <!-- Disabled. With this seconds would show up in Windows anyway.
+                    TODO: check if it works without this tag
+                    Clock also appears in topbar_netbook.xml.
+                    <ShowSeconds>false</ShowSeconds> -->
                     <!-- This has no effect, neither has 'text-align' in qss,
                     that's why clock needs an extra container...
                     <Align>center</Align>   -->

@@ -7,47 +7,12 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="32"
-   height="32"
-   id="svg2"
    version="1.1"
-   inkscape:version="0.48.4 r9939"
-   sodipodi:docname="btn_master_vu.svg">
+   width="22"
+   height="22"
+   id="svg2">
   <defs
      id="defs4" />
-  <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="2"
-     inkscape:cx="-112.31848"
-     inkscape:cy="31.898589"
-     inkscape:document-units="px"
-     inkscape:current-layer="svg2"
-     showgrid="false"
-     inkscape:snap-page="true"
-     inkscape:snap-bbox="true"
-     inkscape:snap-bbox-midpoints="true"
-     inkscape:snap-bbox-edge-midpoints="true"
-     inkscape:bbox-nodes="true"
-     inkscape:bbox-paths="true"
-     inkscape:snap-object-midpoints="true"
-     inkscape:object-nodes="true"
-     inkscape:snap-smooth-nodes="true"
-     inkscape:object-paths="true"
-     showguides="true"
-     inkscape:guide-bbox="true"
-     inkscape:window-width="1366"
-     inkscape:window-height="747"
-     inkscape:window-x="0"
-     inkscape:window-y="21"
-     inkscape:window-maximized="1"
-     inkscape:snap-global="true" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -56,26 +21,25 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <g
-     style="fill:#666666;fill-opacity:1;display:inline"
+     transform="matrix(0.6117951,0,0,0.6117951,1.7194996,-621.77656)"
      id="g3140"
-     transform="matrix(1.0602767,0,0,1.0602767,-0.0836502,-1080.6388)">
+     style="fill:#666666;fill-opacity:1;display:inline">
     <path
-       inkscape:connector-curvature="0"
-       id="path2991-3"
        d="m 21.177616,1022.034 -8.173954,8.1739 0,8.174 8.173954,8.174 1.021744,0 0,-24.5219 -1.021744,0 z"
+       id="path2991-3"
        style="fill:#666666;fill-opacity:1;stroke:none" />
     <rect
-       ry="0.94314992"
-       rx="0.94314992"
-       y="1030.2079"
-       x="7.624095"
-       height="8.1739349"
        width="4.3036532"
+       height="8.1739349"
+       rx="1.634534"
+       ry="1.634534"
+       x="7.624095"
+       y="1030.2079"
        id="rect3783-5-6"
        style="fill:#666666;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline" />
   </g>

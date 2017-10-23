@@ -16,7 +16,7 @@ Description:
         <Children>
 
           <WidgetGroup><!-- FX label offset, master VU -->
-            <Size>78f,1min</Size>
+            <Size>56f,1min</Size>
           </WidgetGroup>
 
           <WidgetGroup> <!-- Pitch fader spacer -->
@@ -47,6 +47,17 @@ Description:
               <ConfigKey>[Tango],channel_mixer</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform><Not/></Transform>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup><!-- Master VU Meter spacer when Channel Mixer is visible -->
+            <Layout>vertical</Layout>
+            <Size>22f,1min</Size>
+            <Children>
+            </Children>
+            <Connection>
+              <ConfigKey>[Tango],channel_mixer</ConfigKey>
+              <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
 

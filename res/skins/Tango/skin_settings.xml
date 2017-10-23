@@ -415,8 +415,8 @@ Description:
               </WidgetGroup><!-- /EQ knobs -->
 
               <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="state_0_text">      Permanent Level Meter</SetVariable>
-                <SetVariable name="state_1_text"> &#10004; Permanent Level Meter</SetVariable>
+                <SetVariable name="state_0_text">      Permanent Level Meters</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; Permanent Level Meters</SetVariable>
                 <SetVariable name="Setting">[Tango],vumeter</SetVariable>
               </Template>
 
