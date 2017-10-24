@@ -65,7 +65,8 @@ EffectManifest FlangerEffect::getManifest() {
 
     EffectManifestParameter* regen = manifest.addParameter();
     regen->setId("regen");
-    regen->setName(QObject::tr("Regen."));
+    regen->setName(QObject::tr("Regeneration"));
+    regen->setShortName(QObject::tr("Regen"));
     regen->setDescription(QObject::tr("Controls how much of the delay output is feed back into the input."));
     regen->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     regen->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
