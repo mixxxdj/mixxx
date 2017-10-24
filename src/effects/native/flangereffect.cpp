@@ -43,11 +43,10 @@ EffectManifest FlangerEffect::getManifest() {
     width->setId("width");
     width->setName(QObject::tr("Width"));
     width->setDescription(QObject::tr("Controls the delay amplitude of the LFO (low frequency oscillator)."));
-    width->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    width->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     width->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     width->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    width->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
-    width->setDefault(kMaxLfoWidthMs);
+    width->setDefault(kMaxLfoWidthMs / 2);
     width->setMinimum(0.0);
     width->setMaximum(kMaxLfoWidthMs);
 
@@ -82,6 +81,7 @@ EffectManifest FlangerEffect::getManifest() {
     mix->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     mix->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     mix->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    mix->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     mix->setDefault(1.0);
     mix->setMinimum(0.0);
     mix->setMaximum(1.0);
