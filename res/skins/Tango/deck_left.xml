@@ -72,37 +72,43 @@ Variables:
         </Connection>
       </WidgetGroup><!-- /Mixer -->
 
-      <WidgetGroup><!-- Spinny/Cover/none + VUMeter -->
+      <WidgetGroup><!-- Spinny/Cover + VUMeter -->
         <Layout>horizontal</Layout>
-        <SizePolicy>min,me</SizePolicy>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
 
-          <WidgetGroup><!-- Spinny/Cover/none -->
-            <Layout>horizontal</Layout>
-            <SizePolicy>min,min</SizePolicy>
+          <WidgetGroup><!-- Spinny/Cover -->
+            <Layout>vertical</Layout>
+            <SizePolicy>min,me</SizePolicy>
             <Children>
-              <WidgetGroup>
-                <Layout>horizontal</Layout>
-                <SizePolicy>min,min</SizePolicy>
+              <WidgetGroup><!-- if BIG spinny is enabled -->
+                <Layout>vertical</Layout>
+                <SizePolicy>min,me</SizePolicy>
                 <Children>
-
-                  <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
-
-                  <Template src="skin:spinnyCover.xml"/>
-
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <!-- margin to deck -->
+                      <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+                      <Template src="skin:spinnyCover.xml"/>
+                    </Children>
+                  </WidgetGroup>
+                  <!-- push spinny to the top -->
+                  <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup>
+              </WidgetGroup><!-- if BIG spinny is enabled -->
             </Children>
             <Connection>
               <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
               <Transform><IsEqual>2</IsEqual><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
-          </WidgetGroup><!-- /Spinny/Cover/none -->
+          </WidgetGroup><!-- /Spinny/Cover -->
 
           <WidgetGroup>
             <Size>5f,1me</Size>
@@ -120,7 +126,7 @@ Variables:
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- / Spinny/Cover/none + VUMeter -->
+      </WidgetGroup><!-- /Spinny + VUMeter -->
 
       <!-- Pitch slider & Key controls -->
       <WidgetGroup>

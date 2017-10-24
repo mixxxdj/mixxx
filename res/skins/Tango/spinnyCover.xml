@@ -14,6 +14,7 @@ Variables:
 
       <!-- spinny -->
       <WidgetGroup>
+        <ObjectName>SpinnyCover_Container</ObjectName>
         <Size>111f,111f</Size>
         <Layout>vertical</Layout>
         <Children>

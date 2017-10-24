@@ -50,7 +50,7 @@ WWidgetGroup {
 /* ################################################################
 ####### Colors ##################################################
 ###############################################################*/
-    
+
 #Deck1 WLabel,#RateContainer1 WLabel,
 #Deck2 WLabel, #RateContainer2 WLabel {
   color: #33a8ff;
@@ -360,17 +360,23 @@ WWidgetGroup {
 /*################################################################
  ######  Decks  #################################################
 ##############################################################*/
-/* 
+
 #DeckContainer {
-  background-color: #333333;
-} */
+  qproperty-layoutAlignment: 'AlignTop';/*
+  background-color: #333333; */
+}
 
 #Deck1,
 #Deck3,
 #Deck2,
 #Deck4 {
   background-color: #0f0f0f;
-  }
+}
+
+#DeckContainer {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  padding-bottom: 5px;
+}
 
 #DeckOverview {
     background-color: #0f0f0f;
@@ -506,7 +512,7 @@ WWidgetGroup {
     #LoopIndicator[displayValue="1"] {
       background: #ff8f00 url(skin:/buttons/btn_reloop_on.svg) no-repeat center center;
     }
-    
+
 #DeckButtonsPlay {
   margin-top: 1px;
   background-color: #0f0f0f;
@@ -684,7 +690,7 @@ WBeatSpinBox {
   max-width: 52px;
   min-height: 20px;
   max-height: 20px;
-  border: 1px solid #666666;  /* = 54x22px */ 
+  border: 1px solid #666666;  /* = 54x22px */
   border-radius: 2px;
   border-top-right-radius: 11px;
   border-bottom-right-radius: 11px;
@@ -864,7 +870,7 @@ WBeatSpinBox {
   #QuickFxEnableButton[displayValue="1"]:hover {
     border: 1px solid #ffffff;
   }
-    
+
   #QuickFxEnableUnderlay[displayValue="0"] {
     background-color: #585858;
     border-radius: 13px;
@@ -1007,8 +1013,8 @@ WBeatSpinBox {
   }
 
 #ClockBox {
-  qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';	
-  }		
+  qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
+  }
   #ClockBox WLabel,
   #Clock {
     font-size: 13px/13px;
@@ -1064,10 +1070,10 @@ WBeatSpinBox {
     }
 
 #SkinSettingsToggler[displayValue="0"] {
-  background: transparent url(skin:/buttons/btn_skinsettings_off.svg) no-repeat center center; 
+  background: transparent url(skin:/buttons/btn_skinsettings_off.svg) no-repeat center center;
   }
   #SkinSettingsToggler[displayValue="0"]:hover {
-    background: #0f0f0f url(skin:/buttons/btn_skinsettings_on.svg) no-repeat center center; 
+    background: #0f0f0f url(skin:/buttons/btn_skinsettings_on.svg) no-repeat center center;
   }
 #SkinSettingsToggler[displayValue="1"] {
   background: #0f0f0f url(skin:/buttons/btn_skinsettings_on.svg) no-repeat center center;
@@ -1515,7 +1521,7 @@ WBeatSpinBox {
 
 #SamplerDeck {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 #FxSamplersMiniMaxi[displayValue="0"] {
@@ -1587,7 +1593,7 @@ WTrackProperty#SamplerTitle_mini {
 }
 
 #SamplerSyncGainPfl {
-  padding: 1px;	
+  padding: 1px;
 }
 
 #SamplerButton,
@@ -1622,7 +1628,7 @@ WTrackProperty#SamplerTitle_mini {
 #SamplerPlay_mini {
   margin-right: 1px;
 }
-        
+
 #SamplerSyncButton {
   background-color: #0f0f0f;
   }
@@ -1821,7 +1827,7 @@ QTreeView {
   border-color: #585858;
   show-decoration-selected: 0;	/*
   Don't define top margin here, it won't shift ScrollBar.
-  Defined by SearchBox	*/ 
+  Defined by SearchBox	*/
   margin: 0px;
 }
 QTreeView:focus,
@@ -1878,7 +1884,7 @@ QHeaderView {
     padding-left: 4px;
     padding-top: 1px;
     /*	set right border so that first column header
-    on the left doesn't have double border on the left	*/ 
+    on the left doesn't have double border on the left	*/
     border-right: 1px solid #585858;
     background-color: #333333;
     border-radius: 0px;
@@ -1887,7 +1893,7 @@ QHeaderView {
     background-color: #585858;
     border-radius: 0px;
     }
-  
+
 /* Scroll bars */
 QScrollBar:horizontal {
   min-width: 12px;
@@ -1935,7 +1941,7 @@ QScrollBar:horizontal {
     width: 0px;
     height: 0px;
   }
-    
+
 /* splitters between treeview and library table */
 #LibrarySplitter::handle:horizontal {
   image: url(skin:/graphics/splitterHori_handle.png);
@@ -1983,7 +1989,7 @@ Library features and their buttons:
   DlgRecording
     QLabel#label > "Status: ..."
     QPushButton#pushButtonRecording > un/checked
-    
+
   	*/
 QPushButton {
   text-align: center;
@@ -2068,7 +2074,7 @@ QPushButton {
     QPushButton#LibraryPreviewButton:checked{
       image: url(skin:/graphics/library_preview_pause.png);
       }
-      
+
   /* checkbox in library "Played" column */
   QTableView::indicator {
     width: 12px;
@@ -2085,12 +2091,12 @@ QPushButton {
       background: transparent url(skin:/graphics/checkbox_unchecked.png) no-repeat center center;
       color: #cfcfcf;
       }
-  /* selected table row */ 
+  /* selected table row */
   QTableView::item:selected {
     color: #ffffff;
     background-color: #666666;
   }
-  
+
 /* SpinBox, currently only used for transition time in Auto DJ tab */
 WLibrary QSpinBox {
   min-height: 20px;

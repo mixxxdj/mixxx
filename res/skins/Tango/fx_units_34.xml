@@ -7,6 +7,7 @@ Description:
   <SetVariable name="FxRack">EffectRack1</SetVariable>
   <SetVariable name="FxRackNum">1</SetVariable>
   <WidgetGroup>
+    <ObjectName>FxUnits34</ObjectName>
     <SizePolicy>me,max</SizePolicy>
     <Layout>horizontal</Layout>
     <Children>
@@ -18,6 +19,7 @@ Description:
           <Template src="skin:fx_unit_left.xml">
             <SetVariable name="FxUnitNum">3</SetVariable>
           </Template>
+          <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
         </Children>
         <Connection>
           <ConfigKey persist="true">[EffectRack1_EffectUnit3],show_parameters</ConfigKey>
@@ -32,7 +34,7 @@ Description:
           <Template src="skin:fx_unit_left_mini.xml">
             <SetVariable name="FxUnitNum">3</SetVariable>
           </Template>
-          <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
+          <WidgetGroup><Size>1min,5me</Size></WidgetGroup>
         </Children>
         <Connection>
           <ConfigKey persist="true">[EffectRack1_EffectUnit3],show_parameters</ConfigKey>
@@ -50,6 +52,7 @@ Description:
           <Template src="skin:fx_unit_right.xml">
             <SetVariable name="FxUnitNum">4</SetVariable>
           </Template>
+          <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
         </Children>
         <Connection>
           <ConfigKey persist="true">[EffectRack1_EffectUnit4],show_parameters</ConfigKey>
@@ -64,7 +67,7 @@ Description:
           <Template src="skin:fx_unit_right_mini.xml">
             <SetVariable name="FxUnitNum">4</SetVariable>
           </Template>
-          <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
+          <WidgetGroup><Size>1min,5me</Size></WidgetGroup>
         </Children>
         <Connection>
           <ConfigKey persist="true">[EffectRack1_EffectUnit4],show_parameters</ConfigKey>

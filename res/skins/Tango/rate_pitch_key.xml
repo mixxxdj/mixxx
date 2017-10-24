@@ -151,6 +151,8 @@ Variables:
         </Connection>
       </WidgetGroup>
 
+      <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
+
     </Children>
     <Connection>
       <ConfigKey>[Tango],pitch_fader</ConfigKey>

@@ -58,7 +58,7 @@ Variables:
         </Connection>
       </WidgetGroup><!-- /Mixer -->
 
-      <WidgetGroup><!-- Spinny/Cover/none + VUMeter -->
+      <WidgetGroup><!-- Spinny/Cover + VUMeter -->
         <Layout>horizontal</Layout>
         <SizePolicy>min,me</SizePolicy>
         <Children>
@@ -73,29 +73,38 @@ Variables:
             </Connection>
           </WidgetGroup>
 
-          <WidgetGroup><!-- Spinny/Cover/none -->
-            <Layout>horizontal</Layout>
-            <SizePolicy>min,min</SizePolicy>
+          <WidgetGroup><!-- Spinny/Cover -->
+            <Layout>vertical</Layout>
+            <SizePolicy>min,me</SizePolicy>
             <Children>
-              <WidgetGroup>
-                <Layout>horizontal</Layout>
-                <SizePolicy>min,min</SizePolicy>
+              <WidgetGroup><!-- if BIG spinny is enabled -->
+                <Layout>vertical</Layout>
+                <SizePolicy>min,me</SizePolicy>
                 <Children>
-                  <Template src="skin:spinnyCover.xml"/>
-                  <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <Template src="skin:spinnyCover.xml"/>
+                      <!-- margin to deck -->
+                      <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+                  <!-- push spinny to the top -->
+                  <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup>
+              </WidgetGroup><!-- if BIG spinny is enabled -->
             </Children>
             <Connection>
               <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
               <Transform><IsEqual>2</IsEqual><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
-          </WidgetGroup><!-- /Spinny/Cover/none -->
+          </WidgetGroup><!-- /Spinny/Cover -->
 
         </Children>
         <Connection>
@@ -103,7 +112,7 @@ Variables:
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- /Spinny/Cover/none + VUMeter -->
+      </WidgetGroup><!-- /Spinny/Cover + VUMeter -->
 
       <WidgetGroup><!-- [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
         <ObjectName>Deck<Variable name="chanNum"/></ObjectName>
