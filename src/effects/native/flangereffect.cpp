@@ -37,7 +37,7 @@ EffectManifest FlangerEffect::getManifest() {
     speed->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     speed->setMinimum(kMinLfoBeats);
     speed->setMaximum(kMaxLfoBeats);
-    speed->setDefault(0.5);
+    speed->setDefault(8);
 
     EffectManifestParameter* width = manifest.addParameter();
     width->setId("width");
