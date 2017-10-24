@@ -461,10 +461,6 @@ void WaveformWidgetFactory::setDisplayBeatGrid(bool sync) {
 
 void WaveformWidgetFactory::setDisplayBeatGridAlpha(bool sync) {
     m_beatGridAlpha = sync;
-    if (m_config) {
-        m_config->set(ConfigKey("[Waveform]", "dimModeCheckBox"), ConfigValue(m_beatGridAlpha));
-    }
-
     if (m_waveformWidgetHolders.size() == 0) {
         return;
     }

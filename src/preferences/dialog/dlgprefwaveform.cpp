@@ -243,6 +243,10 @@ void DlgPrefWaveform::slotSetGridLines(bool displayGrid) {
 }
 
 void DlgPrefWaveform::slotSetGridLinesAlpha(bool alphaGrid) {
+    if (m_pConfig) {
+        m_pConfig->set(ConfigKey("[Waveform]", "dimModeCheckBox"), ConfigValue(alphaGrid));
+    }
+
     WaveformWidgetFactory::instance()->setDisplayBeatGridAlpha(alphaGrid);
 }
 
