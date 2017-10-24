@@ -10,6 +10,7 @@
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/types.h"
+#include "util/rampingvalue.h"
 
 namespace {
 constexpr double kMaxDelayMs = 13.0;

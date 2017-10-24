@@ -153,19 +153,15 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
     // independently in the loop below, so do not multiply lfoPeriodSamples by
     // the number of channels.
 
-
     CSAMPLE_GAIN mix = m_pMixParameter->value();
-    const CSAMPLE_GAIN mix_delta = (mix - pState->prev_mix) /
-            (numSamples / kChannels);
-    const CSAMPLE_GAIN mix_start = pState->prev_mix + mix_delta;
+    RampingValue<CSAMPLE_GAIN> mixRamped(
+            pState->prev_mix, mix, numSamples / kChannels);
     pState->prev_mix = mix;
 
     CSAMPLE_GAIN regen = m_pRegenParameter->value();
-    const CSAMPLE_GAIN regen_delta = (regen - pState->prev_regen) /
-            (numSamples / kChannels);
-    const CSAMPLE_GAIN regen_start = pState->prev_regen + regen_delta;
+    RampingValue<CSAMPLE_GAIN> regenRamped(
+            pState->prev_regen, regen, numSamples / kChannels);
     pState->prev_regen = regen;
-
 
     // With and Manual is limited by amount of amplitude that remains from width
     // to kMaxDelayMs
@@ -175,29 +171,25 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
     double minManual = kCenterDelayMs - (kMaxLfoWidthMs - width) / 2;
     manual = math_clamp(manual, minManual, maxManual);
 
-    const double width_delta = (width - pState->prev_width) /
-            (numSamples / kChannels);
-    const double width_start = pState->prev_width + width_delta;
+    RampingValue<double> widthRamped(
+            pState->prev_width, width, numSamples / kChannels);
     pState->prev_width = width;
 
-    const double manual_delta = (manual - pState->prev_manual) /
-            (numSamples / kChannels);
-    const double manual_start = pState->prev_manual + manual_delta;
+    RampingValue<double> manualRamped(
+            pState->prev_manual, manual, numSamples / kChannels);
     pState->prev_manual = manual;
 
     CSAMPLE* delayLeft = pState->delayLeft;
     CSAMPLE* delayRight = pState->delayRight;
 
+    QList<int>();
+
     for (unsigned int i = 0; i < numSamples; i += kChannels) {
 
-        CSAMPLE_GAIN mix_ramped = mix_start
-                + mix_delta * i / kChannels;
-        CSAMPLE_GAIN regen_ramped = regen_start
-                + regen_delta * i / kChannels;
-        CSAMPLE_GAIN width_ramped = width_start
-                + width_delta * i / kChannels;
-        CSAMPLE_GAIN manual_ramped = manual_start
-                + manual_delta * i / kChannels;
+        CSAMPLE_GAIN mix_ramped = mixRamped.getNext();
+        CSAMPLE_GAIN regen_ramped = regenRamped.getNext();
+        double width_ramped = widthRamped.getNext();
+        double manual_ramped = manualRamped.getNext();
 
         pState->lfoFrames++;
         if (pState->lfoFrames >= lfoPeriodFrames) {
