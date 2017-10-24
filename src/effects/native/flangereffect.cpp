@@ -168,7 +168,7 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
 
 
     // With and Manual is limited by amount of amplitude that remains from width
-    // to kMaxDelaMS
+    // to kMaxDelayMs
     double width = m_pWidthParameter->value();
     double manual = m_pManualParameter->value();
     double maxManual = kCenterDelayMs + (kMaxLfoWidthMs - width) / 2;
@@ -235,7 +235,7 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
         SampleUtil::clear(delayLeft, numSamples);
         SampleUtil::clear(delayRight, numSamples);
         pState->previousPeriodFrames = -1;
-        pState->prev_regen  = -1;
-        pState->prev_mix  = -1;
+        pState->prev_regen = -1;
+        pState->prev_mix = -1;
     }
 }
