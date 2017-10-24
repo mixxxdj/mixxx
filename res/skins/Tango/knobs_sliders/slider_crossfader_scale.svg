@@ -7,17 +7,10 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   id="svg3242"
    version="1.1"
-   inkscape:version="0.48.4 r9939"
    width="104"
    height="28"
-   sodipodi:docname="slider_crossfader_scale.svg"
-   inkscape:export-filename="/home/ronso/.mixxx/skins/FlatNite/crossfader_slider.png"
-   inkscape:export-xdpi="90"
-   inkscape:export-ydpi="90">
+   id="svg3242">
   <metadata
      id="metadata3248">
     <rdf:RDF>
@@ -26,60 +19,19 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <defs
      id="defs3246" />
-  <sodipodi:namedview
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="1366"
-     inkscape:window-height="747"
-     id="namedview3244"
-     showgrid="false"
-     inkscape:zoom="5.6568543"
-     inkscape:cx="30.818647"
-     inkscape:cy="17.517466"
-     inkscape:window-x="0"
-     inkscape:window-y="21"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="layer4"
-     inkscape:object-paths="true"
-     inkscape:object-nodes="true"
-     inkscape:snap-intersection-paths="true"
-     inkscape:snap-smooth-nodes="true"
-     showguides="true"
-     inkscape:guide-bbox="true"
-     inkscape:snap-object-midpoints="true"
-     inkscape:snap-bbox="true"
-     inkscape:bbox-nodes="true">
-    <inkscape:grid
-       type="xygrid"
-       id="grid2985"
-       empspacing="5"
-       visible="true"
-       enabled="true"
-       snapvisiblegridlinesonly="true" />
-  </sodipodi:namedview>
   <g
-     inkscape:groupmode="layer"
+     transform="translate(0,2)"
      id="layer4"
-     inkscape:label="vector"
-     style="display:inline"
-     transform="translate(0,2)">
+     style="display:inline">
     <path
-       style="fill:#828282;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       d="m 3,1 0,22 2,0 0,-7.5 C 5,14.16177 6.1187295,13 7.5,13 l 41,0 c 1.380713,0 2.5,1.119288 2.5,2.5 l 0,8.5 2,0 0,-8.5 C 53,14.119287 54.619288,13 56,13 l 40.5,0 c 1.38071,0 2.338676,1.128744 2.5,2.5 l 0,7.5 2,0 0,-22 -2,0 0,7.5 C 99,9.880712 97.88071,11 96.5,11 L 56,11 C 54.619287,11 53,9.880712 53,8.5 L 53,0 51,0 51,8.5 C 51,9.880713 49.880712,11 48.5,11 l -41,0 C 6.119288,11 5.1613241,9.871255 5,8.5 L 5,1 z m 49,10 c 0.552285,0 1,0.447715 1,1 0,0.552285 -0.447715,1 -1,1 -0.552285,0 -1,-0.447715 -1,-1 0,-0.552285 0.447715,-1 1,-1 z"
+       d="m 3,1 0,22 2,0 0,-7.5 C 5,14.16177 6.1187295,13 7.5,13 l 41,0 c 1.380713,0 2.5,1.119288 2.5,2.5 l 0,8.5 2,0 0,-8.5 C 53,14.119287 54.119288,13 55.5,13 l 41,0 c 1.38071,0 2.338676,1.128744 2.5,2.5 l 0,7.5 2,0 0,-22 -2,0 0,7.5 C 99,9.880712 97.88071,11 96.5,11 l -41,0 C 54.119287,11 53,9.880712 53,8.5 L 53,0 51,0 51,8.5 C 51,9.880713 49.880712,11 48.5,11 l -41,0 C 6.119288,11 5.1613241,9.871255 5,8.5 L 5,1 z"
        id="path3943"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cccsccsccsccsccccsccsccsccsccsssss" />
+       style="fill:#828282;fill-opacity:1;fill-rule:nonzero;stroke:none" />
   </g>
 </svg>
