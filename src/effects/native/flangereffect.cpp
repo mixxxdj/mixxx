@@ -71,7 +71,7 @@ EffectManifest FlangerEffect::getManifest() {
     regen->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     regen->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     regen->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    regen->setDefault(0.0);
+    regen->setDefault(0.25);
     regen->setMinimum(0.0);
     regen->setMaximum(1.0);
 
