@@ -21,7 +21,7 @@ Variables:
             <Size>4f,1me</Size>
             <Children>
               <StatusLight>
-                <TooltiId>master_VuMeter</TooltiId>
+                <TooltipId>master_VuMeterL</TooltipId>
                 <PathStatusLight>skin:/graphics/vumeter_floating_clipping_over.png</PathStatusLight>
                 <PathBack>skin:/graphics/vumeter_floating_clipping.png</PathBack>
                 <Connection>
@@ -49,7 +49,7 @@ Variables:
             <Size>4f,1me</Size>
             <Children>
               <StatusLight>
-                <TooltiId>master_VuMeter</TooltiId>
+                <TooltipId>master_VuMeterR</TooltipId>
                 <PathStatusLight>skin:/graphics/vumeter_floating_clipping_over.png</PathStatusLight>
                 <PathBack>skin:/graphics/vumeter_floating_clipping.png</PathBack>
                 <Connection>
