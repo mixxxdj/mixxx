@@ -16,7 +16,7 @@ Variables:
   <WidgetGroup>
     <ObjectName>DeckContainer</ObjectName>
     <Layout>horizontal</Layout>
-    <Size>504me,136min</Size>
+    <SizePolicy>me,min</SizePolicy>
     <Children>
 
       <WidgetGroup><!-- [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
