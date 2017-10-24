@@ -57,6 +57,7 @@ private:
     //direct access to let factory sync/set default zoom
     void setZoom(int zoom);
     void setDisplayBeatGrid(bool set);
+    void setDisplayBeatGridAlpha(bool set);
 
 private:
     const char* m_pGroup;

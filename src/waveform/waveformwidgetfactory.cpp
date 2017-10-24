@@ -68,6 +68,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_openGLAvailable(false),
         m_openGLShaderAvailable(false),
         m_beatGridEnabled(true),
+        m_beatGridAlpha(false),
         m_vsyncThread(NULL),
         m_frameCnt(0),
         m_actualFrameRate(0),
@@ -227,6 +228,9 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     bool showBeatGrid = m_config->getValue(ConfigKey("[Waveform]", "beatGridLinesCheckBox"), m_beatGridEnabled);
     setDisplayBeatGrid(showBeatGrid);
 
+    bool showBeatGridAlpha = m_config->getValue(ConfigKey("[Waveform]", "dimModeCheckBox"), m_beatGridAlpha);
+    setDisplayBeatGridAlpha(showBeatGridAlpha);
+
     WaveformWidgetType::Type type = static_cast<WaveformWidgetType::Type>(
             m_config->getValueString(ConfigKey("[Waveform]","WaveformType")).toInt(&ok));
     if (!ok || !setWidgetType(type)) {
@@ -301,6 +305,7 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
 
     viewer->setZoom(m_defaultZoom);
     viewer->setDisplayBeatGrid(m_beatGridEnabled);
+    viewer->setDisplayBeatGridAlpha(m_beatGridAlpha);
     viewer->update();
 
     qDebug() << "WaveformWidgetFactory::setWaveformWidget - waveform widget added in factory, index" << index;
@@ -449,6 +454,23 @@ void WaveformWidgetFactory::setDisplayBeatGrid(bool sync) {
 
     for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
         m_waveformWidgetHolders[i].m_waveformWidget->setDisplayBeatGrid(m_beatGridEnabled);
+    }
+
+}
+
+
+void WaveformWidgetFactory::setDisplayBeatGridAlpha(bool sync) {
+    m_beatGridAlpha = sync;
+    if (m_config) {
+        m_config->set(ConfigKey("[Waveform]", "dimModeCheckBox"), ConfigValue(m_beatGridAlpha));
+    }
+
+    if (m_waveformWidgetHolders.size() == 0) {
+        return;
+    }
+
+    for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
+        m_waveformWidgetHolders[i].m_waveformWidget->setDisplayBeatGridAlpha(m_beatGridAlpha);
     }
 
 }

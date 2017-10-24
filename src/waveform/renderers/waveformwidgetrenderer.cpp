@@ -28,6 +28,7 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
       m_visualSamplePerPixel(1.0),
       m_audioSamplePerPixel(1.0),
       m_enableBeatGrid(true),
+      m_alphaBeatGrid(false),
 
       // Really create some to manage those;
       m_visualPlayPosition(NULL),
@@ -277,6 +278,10 @@ void WaveformWidgetRenderer::setZoom(int zoom) {
 
 void WaveformWidgetRenderer::setDisplayBeatGrid(bool set) {
     m_enableBeatGrid = set;
+}
+
+void WaveformWidgetRenderer::setDisplayBeatGridAlpha(bool set) {
+    m_alphaBeatGrid = set;
 }
 
 void WaveformWidgetRenderer::setTrack(TrackPointer track) {

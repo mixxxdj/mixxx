@@ -69,6 +69,8 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
             this, SLOT(slotSetNormalizeOverview(bool)));
     connect(beatGridLinesCheckBox, SIGNAL(toggled(bool)),
             this, SLOT(slotSetGridLines(bool)));
+    connect(dimModeCheckBox, SIGNAL(toggled(bool)),
+            this, SLOT(slotSetGridLinesAlpha(bool)));
     connect(factory, SIGNAL(waveformMeasured(float,int)),
             this, SLOT(slotWaveformMeasured(float,int)));
     connect(waveformOverviewComboBox, SIGNAL(currentIndexChanged(int)),
@@ -107,6 +109,7 @@ void DlgPrefWaveform::slotUpdate() {
     normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
     defaultZoomComboBox->setCurrentIndex(factory->getDefaultZoom() - 1);
     beatGridLinesCheckBox->setChecked(factory->isBeatGridEnabled());
+    dimModeCheckBox->setChecked(factory->isBeatGridAlpha());
 
     // By default we set RGB woverview = "2"
     int overviewType = m_pConfig->getValue(
@@ -167,6 +170,9 @@ void DlgPrefWaveform::slotResetToDefaults() {
 
     // Beat grid lines on waveform is default
     beatGridLinesCheckBox->setChecked(true);
+
+    // Beat grid lines are not dimmed by default
+    dimModeCheckBox->setChecked(false);
 }
 
 void DlgPrefWaveform::slotSetFrameRate(int frameRate) {
@@ -234,6 +240,10 @@ void DlgPrefWaveform::slotClearCachedWaveforms() {
 
 void DlgPrefWaveform::slotSetGridLines(bool displayGrid) {
     WaveformWidgetFactory::instance()->setDisplayBeatGrid(displayGrid);
+}
+
+void DlgPrefWaveform::slotSetGridLinesAlpha(bool alphaGrid) {
+    WaveformWidgetFactory::instance()->setDisplayBeatGridAlpha(alphaGrid);
 }
 
 void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {

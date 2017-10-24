@@ -90,6 +90,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setDisplayBeatGrid(bool sync);
     bool isBeatGridEnabled() const { return m_beatGridEnabled; }
 
+    void setDisplayBeatGridAlpha(bool sync);
+    bool isBeatGridAlpha() const { return m_beatGridAlpha; }
+
     void setVisualGain(FilterIndex index, double gain);
     double getVisualGain(FilterIndex index) const;
 
@@ -152,6 +155,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     QString m_openGLVersion;
     bool m_openGLShaderAvailable;
     bool m_beatGridEnabled;
+    bool m_beatGridAlpha;
 
     VSyncThread* m_vsyncThread;
 
