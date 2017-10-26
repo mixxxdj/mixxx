@@ -62,7 +62,7 @@ Variables:
       <WidgetGroup><!--  Volume Slider + Gain knob -->
         <ObjectName>VolumeSliderGain</ObjectName>
         <Layout>vertical</Layout>
-        <Size>36f,1me</Size>
+        <SizePolicy>f,me</SizePolicy>
         <Children>
           <SliderComposed><!-- Volume slider -->
             <ObjectName>VolumeSlider</ObjectName>

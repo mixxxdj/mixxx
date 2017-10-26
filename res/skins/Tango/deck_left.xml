@@ -21,7 +21,7 @@ Variables:
 
       <WidgetGroup><!-- [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
         <ObjectName>Deck<Variable name="chanNum"/></ObjectName>
-        <Size>250me,136min</Size>
+        <SizePolicy>me,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>
 

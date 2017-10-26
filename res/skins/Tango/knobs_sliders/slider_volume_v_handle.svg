@@ -1,1 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="36" height="9"><defs><linearGradient id="b"><stop offset="0" stop-color="#b4b4b4"/><stop offset="1" stop-color="#6a6a6a"/></linearGradient><linearGradient id="a"><stop offset="0" stop-color="#dc0000"/><stop offset=".09" stop-color="#b50000"/><stop offset=".92000002" stop-color="#b50000"/><stop offset="1" stop-color="#920000"/></linearGradient><linearGradient id="c"><stop offset="0" stop-color="#b4b4b4"/><stop offset="1" stop-color="#7a7a7a"/></linearGradient></defs><rect width="5.0032978" height="35.503296" rx="2" ry="1.9999999" x="1.9983521" y="-35.751648" transform="rotate(90)" fill="#b50000" stroke="#ff0e0e" stroke-width=".4967024"/></svg>
+<svg xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="9" width="34" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
+ <metadata>
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs></defs>
+ <rect transform="matrix(0,1,-1,0,0,0)" rx="2" ry="1.7746688" height="31.503298" width="5.0032978" stroke="#ff0e0e" y="-32.751648" x="1.9983521" stroke-width="0.49670237" fill="#b50000"/>
+</svg>
