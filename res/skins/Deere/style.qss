@@ -631,7 +631,7 @@ WWidget, QLabel {
 /* Start spacing for Deck overview row (small waveform, option grid) */
 #OptionGrid, #ButtonGrid {
   background-color: #333333;
-  padding: 1px;
+  /*padding: 1px;*/
   qproperty-layoutSpacing: 2;
 }
 
@@ -1195,19 +1195,16 @@ WStarRating {
 }
 
 #SampleDecksContainer {
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                    stop: 0 #333333,
-                                    stop: 1.0 #333333);
+  background-color: #333333;
 }
 
 #MicrophonesContainer {
 }
 
-#MicrophoneRackExpanded {
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                    stop: 0 #333333,
-                                    stop: 1.0 #333333);
-  qproperty-layoutSpacing: 6;
+#MicAuxRack {
+  background-color: #333333;
+  qproperty-layoutSpacing: 3;
+  padding-left: 2px;
 }
 
 #MicLabelContainer,
@@ -1216,9 +1213,22 @@ WStarRating {
 }
 
 #MicrophoneContainer, #MicDuckingContainer, #AuxiliaryContainer {
-  padding: 2px 5px;
-  margin: 2px 0px;
+  padding: 4px 4px;
+  margin: 0px;
+}
+
+#MicrophoneContainer, #MicDuckingContainer {
   border: 3px solid #222222;
+  border-width: 0px 3px 0px 0px;
+}
+
+#MicDuckingContainer {
+  qproperty-layoutSpacing: 2;
+}
+
+#AuxiliaryContainer {
+  border: 3px solid #222222;
+  border-width: 0px 0px 0px 3px;
 }
 
 #MicrophoneContainer, #AuxiliaryContainer,
@@ -1229,6 +1239,10 @@ WStarRating {
 
 #MicrophoneControls, #AuxiliaryControls {
   qproperty-layoutSpacing: 4;
+}
+
+#AuxLabel, #MicLabel, #DuckingLabel {
+  font-weight: bold;
 }
 
 #MicrophoneButtonsAndMeter, #AuxiliaryButtonsAndMeter {
