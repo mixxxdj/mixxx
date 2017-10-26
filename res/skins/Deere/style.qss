@@ -110,7 +110,7 @@
   /* FIXME */
   border-style: solid;
   border-color: #222;
-  border-width: 1px 0px;
+  border-width: 0px 2px;
 }
 
 #Spacer22 {
@@ -129,6 +129,15 @@ TEST1 {
   qproperty-layoutAlignment: 'AlignRight';
 }
 
+#SampleDecksContainer {
+  border-color: #222;
+  border-style: solid;
+  border-width: 1px 0px 2px 0px;
+}
+
+#SamplerRows {
+}
+
 #SamplerRow1,
 #SamplerRow2,
 #SamplerRow3,
@@ -136,11 +145,15 @@ TEST1 {
 #SamplerRow6,
 #SamplerRow7,
 #SamplerRow8 {
-  border-top: 1px solid #222;
+  border-color: #222;
+  border-style: solid;
+  border-width: 0px 0px 1px 0px;
 }
 
 #SamplerRow5 {
-  border-top: 2px solid #222;
+  border-color: #222;
+  border-style: solid;
+  border-width: 1px 0px 1px 0px;
 }
 
 /*******************************************************************************
@@ -631,7 +644,7 @@ WWidget, QLabel {
 /* Start spacing for Deck overview row (small waveform, option grid) */
 #OptionGrid, #ButtonGrid {
   background-color: #333333;
-  padding: 1px;
+  /*padding: 1px;*/
   qproperty-layoutSpacing: 2;
 }
 
@@ -871,8 +884,11 @@ WBeatSpinBox {
 
 #EffectUnit1, #EffectUnit2, #EffectUnit3, #EffectUnit4 {
   qproperty-layoutAlignment: 'AlignTop';
+}
+
+#EffectUnitFiller {
   border: 1px solid #222;
-  border-left:none;
+  border-width: 1px 0px 0px 0px;
 }
 
 #EffectButtonControls {
@@ -893,10 +909,6 @@ WBeatSpinBox {
   font: 10px;
 }
 
-#EffectUnit1 {
-  border-left: 1px solid #222;
-}
-
 #EffectUnitNameContainer {
   padding: 2px;
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
@@ -904,6 +916,11 @@ WBeatSpinBox {
 
 #EffectMetaKnobControls > WPushButton {
   qproperty-alignment: 'AlignHCenter';
+}
+
+#EffectUnitGroupControls {
+  border: 1px solid #222222;
+  border-width: 0px 0px 1px 0px;
 }
 
 #EffectUnitGroupControlsLeft {
@@ -1195,19 +1212,17 @@ WStarRating {
 }
 
 #SampleDecksContainer {
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                    stop: 0 #333333,
-                                    stop: 1.0 #333333);
+  background-color: #333333;
 }
 
 #MicrophonesContainer {
 }
 
-#MicrophoneRackExpanded {
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                    stop: 0 #333333,
-                                    stop: 1.0 #333333);
-  qproperty-layoutSpacing: 6;
+#MicAuxRack {
+  background-color: #333333;
+  qproperty-layoutSpacing: 3;
+  padding-left: 2px;
+  border-bottom: 2px solid #222222;
 }
 
 #MicLabelContainer,
@@ -1216,9 +1231,22 @@ WStarRating {
 }
 
 #MicrophoneContainer, #MicDuckingContainer, #AuxiliaryContainer {
-  padding: 2px 5px;
-  margin: 2px 0px;
+  padding: 4px 4px;
+  margin: 0px;
+}
+
+#MicrophoneContainer, #MicDuckingContainer {
   border: 3px solid #222222;
+  border-width: 0px 3px 0px 0px;
+}
+
+#MicDuckingContainer {
+  qproperty-layoutSpacing: 2;
+}
+
+#AuxiliaryContainer {
+  border: 3px solid #222222;
+  border-width: 0px 0px 0px 3px;
 }
 
 #MicrophoneContainer, #AuxiliaryContainer,
@@ -1231,13 +1259,17 @@ WStarRating {
   qproperty-layoutSpacing: 4;
 }
 
+#AuxLabel, #MicLabel, #DuckingLabel {
+  font-weight: bold;
+}
+
 #MicrophoneButtonsAndMeter, #AuxiliaryButtonsAndMeter {
   qproperty-layoutSpacing: 3;
 }
 
 #LibraryContainer {
   background-color: #222;
-  padding-top: 4px;
+  padding-top: 2px;
 }
 
 #LibraryExpanded, #LibraryCollapsed {
@@ -1245,9 +1277,12 @@ WStarRating {
 }
 
 #EffectRackContainer {
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                    stop: 0 #333333,
-                                    stop: 1.0 #333333);
+  background-color: #333333;
+}
+
+#EffectUnitsRow {
+  border: 1px solid #222222;
+  border-width: 0px 0px 3px 0px;
 }
 
 #EffectUnitNoParameters {
@@ -1286,16 +1321,7 @@ WStarRating {
   font-size: 15px;
 }
 
-#EffectUnit1, #EffectUnit2 {
-  /*border-bottom: none;*/
-}
-
 #SampleDecksContainer {
-}
-
-#SamplerBankContainer {
-  padding: 4px;
-  qproperty-layoutSpacing: 2;
 }
 
 #SamplerTopRowOuter {
@@ -1303,10 +1329,6 @@ WStarRating {
 }
 
 #SamplerTopRowInner {
-  qproperty-layoutSpacing: 2;
-}
-
-#SamplerBankGrid {
   qproperty-layoutSpacing: 2;
 }
 
