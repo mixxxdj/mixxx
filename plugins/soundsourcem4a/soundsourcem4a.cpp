@@ -176,7 +176,7 @@ SoundSourceM4A::~SoundSourceM4A() {
 
 SoundSource::OpenResult SoundSourceM4A::tryOpen(
         OpenMode mode,
-        const AudioSourceConfig& audioSrcCfg) {
+        const OpenParams& params) {
     DEBUG_ASSERT(MP4_INVALID_FILE_HANDLE == m_hFile);
     // open MP4 file, check for >= ver 1.9.1
     // From mp4v2/file.h:
@@ -252,7 +252,7 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(
     }
     m_inputBuffer.resize(maxSampleBlockInputSize, 0);
 
-    m_audioSrcCfg = audioSrcCfg;
+    m_openParams = params;
 
     if (openDecoder()) {
         return OpenResult::Succeeded;
@@ -272,8 +272,8 @@ bool SoundSourceM4A::openDecoder() {
     NeAACDecConfigurationPtr pDecoderConfig = NeAACDecGetCurrentConfiguration(
             m_hDecoder);
     pDecoderConfig->outputFormat = FAAD_FMT_FLOAT;
-    if (m_audioSrcCfg.channelCount().isMono() ||
-            m_audioSrcCfg.channelCount().isStereo()) {
+    if (m_openParams.channelCount().isMono() ||
+            m_openParams.channelCount().isStereo()) {
         pDecoderConfig->downMatrix = 1;
     } else {
         pDecoderConfig->downMatrix = 0;

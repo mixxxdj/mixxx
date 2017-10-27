@@ -32,7 +32,17 @@ class AudioSourceTrackProxy: public AudioSource {
           m_pTrack(std::move(pTrack)) {
     }
 
+    void close() override {
+        m_pAudioSource->close();
+    }
+
   protected:
+    OpenResult tryOpen(
+            OpenMode mode,
+            const OpenParams& params) override {
+        return tryOpenOn(*m_pAudioSource, mode, params);
+    }
+
     ReadableSampleFrames readSampleFramesClamped(
             WritableSampleFrames sampleFrames) override {
         return readSampleFramesClampedOn(*m_pAudioSource, sampleFrames);

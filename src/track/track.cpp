@@ -8,7 +8,6 @@
 #include "track/beatfactory.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
-#include "track/trackmetadatataglib.h"
 #include "util/assert.h"
 #include "util/logger.h"
 #include "util/compatibility.h"

@@ -27,7 +27,7 @@ class SoundSourceModPlug: public SoundSource {
     explicit SoundSourceModPlug(const QUrl& url);
     ~SoundSourceModPlug() override;
 
-    Result parseTrackMetadataAndCoverArt(
+    ImportResult importTrackMetadataAndCoverImage(
             TrackMetadata* pTrackMetadata,
             QImage* pCoverArt) const override;
 
@@ -40,7 +40,7 @@ class SoundSourceModPlug: public SoundSource {
   private:
     OpenResult tryOpen(
             OpenMode mode,
-            const AudioSourceConfig& audioSrcCfg) override;
+            const OpenParams& params) override;
 
     static unsigned int s_bufferSizeLimit; // max track buffer length (bytes)
 

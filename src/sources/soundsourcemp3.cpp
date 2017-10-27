@@ -192,7 +192,7 @@ void SoundSourceMp3::finishDecoding() {
 
 SoundSource::OpenResult SoundSourceMp3::tryOpen(
         OpenMode /*mode*/,
-        const AudioSourceConfig& /*audioSrcCfg*/) {
+        const OpenParams& /*config*/) {
     DEBUG_ASSERT(!channelCount().valid());
     DEBUG_ASSERT(!samplingRate().valid());
 
@@ -351,7 +351,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
 
     // Initialize the AudioSource
     setChannelCount(maxChannelCount);
-    initFrameIndexRangeOnce(mixxx::IndexRange::forward(0, m_curFrameIndex));
+    initFrameIndexRangeOnce(IndexRange::forward(0, m_curFrameIndex));
 
     // Calculate average values
     m_avgSeekFrameCount = frameIndexRange().length() / m_seekFrameList.size();

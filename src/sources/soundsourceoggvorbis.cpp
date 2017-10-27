@@ -40,7 +40,7 @@ SoundSourceOggVorbis::~SoundSourceOggVorbis() {
 
 SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(
         OpenMode /*mode*/,
-        const AudioSourceConfig& /*audioSrcCfg*/) {
+        const OpenParams& /*config*/) {
     m_pFile = std::make_unique<QFile>(getLocalFileName());
     if(!m_pFile->open(QFile::ReadOnly)) {
         kLogger.warning()
@@ -95,7 +95,7 @@ SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(
 
     ogg_int64_t pcmTotal = ov_pcm_total(&m_vf, kEntireBitstreamLink);
     if (0 <= pcmTotal) {
-        initFrameIndexRangeOnce(mixxx::IndexRange::forward(0, pcmTotal));
+        initFrameIndexRangeOnce(IndexRange::forward(0, pcmTotal));
     } else {
         kLogger.warning()
                 << "Failed to read read total length of"
@@ -134,7 +134,7 @@ ReadableSampleFrames SoundSourceOggVorbis::readSampleFramesClamped(
             }
             // Abort
             return ReadableSampleFrames(
-                    mixxx::IndexRange::between(
+                    IndexRange::between(
                             m_curFrameIndex,
                             m_curFrameIndex));
         }

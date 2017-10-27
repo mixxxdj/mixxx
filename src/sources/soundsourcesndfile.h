@@ -27,7 +27,7 @@ class SoundSourceSndFile: public SoundSource {
   private:
     OpenResult tryOpen(
             OpenMode mode,
-            const AudioSourceConfig& audioSrcCfg) override;
+            const OpenParams& params) override;
 
     SNDFILE* m_pSndFile;
 

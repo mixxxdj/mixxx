@@ -48,7 +48,7 @@ class MetadataTest : public testing::Test {
         pFrame.release();
 
         mixxx::TrackMetadata trackMetadata;
-        mixxx::taglib::readTrackMetadataFromID3v2Tag(&trackMetadata, tag);        
+        mixxx::taglib::importTrackMetadataFromID3v2Tag(&trackMetadata, tag);        
 
         EXPECT_DOUBLE_EQ(expectedValue,trackMetadata.getBpm().getValue());
     }
@@ -127,10 +127,10 @@ TEST_F(MetadataTest, ID3v2Year) {
             {
                 mixxx::TrackMetadata trackMetadata;
                 trackMetadata.setYear(year);
-                mixxx::taglib::writeTrackMetadataIntoID3v2Tag(&tag, trackMetadata);
+                mixxx::taglib::exportTrackMetadataIntoID3v2Tag(&tag, trackMetadata);
             }
             mixxx::TrackMetadata trackMetadata;
-            mixxx::taglib::readTrackMetadataFromID3v2Tag(&trackMetadata, tag);
+            mixxx::taglib::importTrackMetadataFromID3v2Tag(&trackMetadata, tag);
             if (4 > majorVersion) {
                 // ID3v2.3.0: parsed + formatted
                 const QString actualYear(trackMetadata.getYear());

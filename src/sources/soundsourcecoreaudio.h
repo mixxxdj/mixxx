@@ -37,7 +37,7 @@ public:
 private:
     OpenResult tryOpen(
             OpenMode mode,
-            const AudioSourceConfig& audioSrcCfg) override;
+            const OpenParams& params) override;
 
     bool m_bFileIsMp3;
     ExtAudioFileRef m_audioFile;

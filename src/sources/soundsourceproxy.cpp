@@ -299,7 +299,7 @@ SoundSourceProxy::findSoundSourceProviderRegistrations(
 }
 
 //static
-SoundSourceProxy::SaveTrackMetadataResult SoundSourceProxy::saveTrackMetadata(
+SoundSourceProxy::SaveTrackMetadataResult SoundSourceProxy::exportTrackMetadata(
         const Track* pTrack,
         bool evenIfNeverParsedFromFileBefore) {
     DEBUG_ASSERT(nullptr != pTrack);
@@ -310,15 +310,10 @@ SoundSourceProxy::SaveTrackMetadataResult SoundSourceProxy::saveTrackMetadata(
         bool isDirty = false;
         pTrack->getTrackMetadata(&trackMetadata, &parsedFromFile, &isDirty);
         if (parsedFromFile || evenIfNeverParsedFromFileBefore) {
-            switch (proxy.m_pSoundSource->writeTrackMetadata(trackMetadata)) {
-            case OK:
+            if (proxy.m_pSoundSource->exportTrackMetadata(trackMetadata) == mixxx::MetadataSource::ExportResult::Succeeded) {
                 kLogger.debug() << "Track metadata has been written into file"
                         << pTrack->getLocation();
                 return SaveTrackMetadataResult::SUCCEEDED;
-            case ERR:
-                break;
-            default:
-                DEBUG_ASSERT(!"unreachable code");
             }
         } else {
             kLogger.debug() << "Skip writing of track metadata into file"
@@ -484,10 +479,10 @@ void SoundSourceProxy::updateTrack(
     }
 
     // Parse the tags stored in the audio file
-    const int parseResult =
-            m_pSoundSource->parseTrackMetadataAndCoverArt(
+    const mixxx::MetadataSource::ImportResult importResult =
+            m_pSoundSource->importTrackMetadataAndCoverImage(
                     &trackMetadata, pCoverImg);
-    if (parseResult != OK) {
+    if (importResult != mixxx::MetadataSource::ImportResult::Succeeded) {
         kLogger.warning() << "Failed to parse track metadata and/or cover art from file"
                    << getUrl().toString();
         return; // abort
@@ -551,23 +546,26 @@ void SoundSourceProxy::updateTrack(
     }
 }
 
-Result SoundSourceProxy::parseTrackMetadata(mixxx::TrackMetadata* pTrackMetadata) const {
+mixxx::MetadataSource::ImportResult SoundSourceProxy::importTrackMetadata(mixxx::TrackMetadata* pTrackMetadata) const {
     if (m_pSoundSource) {
-        return m_pSoundSource->parseTrackMetadataAndCoverArt(pTrackMetadata, nullptr);
+        return m_pSoundSource->importTrackMetadataAndCoverImage(pTrackMetadata, nullptr);
     } else {
-        return ERR;
+        return mixxx::MetadataSource::ImportResult::Unavailable;
     }
 }
 
-QImage SoundSourceProxy::parseCoverImage() const {
-    QImage coverImg;
+QImage SoundSourceProxy::importCoverImage() const {
     if (m_pSoundSource) {
-        m_pSoundSource->parseTrackMetadataAndCoverArt(nullptr, &coverImg);
+        QImage coverImg;
+        if (m_pSoundSource->importTrackMetadataAndCoverImage(nullptr, &coverImg) == mixxx::MetadataSource::ImportResult::Succeeded) {
+            return coverImg;
+        }
     }
-    return coverImg;
+    // Failed ore unavailable
+    return QImage();
 }
 
-mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSourceConfig& audioSrcCfg) {
+mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSource::OpenParams& params) {
     DEBUG_ASSERT(m_pTrack);
     auto openMode = mixxx::SoundSource::OpenMode::Strict;
     while (m_pSoundSource && !m_pAudioSource) {
@@ -578,7 +576,7 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
                 << "using mode"
                 << openMode;
         const mixxx::SoundSource::OpenResult openResult =
-                m_pSoundSource->open(openMode, audioSrcCfg);
+                m_pSoundSource->open(openMode, params);
         if ((openResult == mixxx::SoundSource::OpenResult::Aborted) ||
                 ((openMode == mixxx::SoundSource::OpenMode::Strict) && (openResult == mixxx::SoundSource::OpenResult::Failed))) {
             kLogger.warning() << "Unable to open file"

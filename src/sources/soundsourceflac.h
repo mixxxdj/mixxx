@@ -36,7 +36,7 @@ class SoundSourceFLAC: public SoundSource {
   private:
     OpenResult tryOpen(
             OpenMode mode,
-            const AudioSourceConfig& audioSrcCfg) override;
+            const OpenParams& params) override;
 
     QFile m_file;
 

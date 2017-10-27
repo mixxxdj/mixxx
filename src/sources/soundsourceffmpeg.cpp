@@ -312,7 +312,7 @@ SoundSourceFFmpeg::~SoundSourceFFmpeg() {
 
 SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
         OpenMode /*mode*/,
-        const AudioSourceConfig& /*audioSrcCfg*/) {
+        const OpenParams& /*config*/) {
     AVFormatContext *pInputFormatContext =
             openInputFile(getLocalFileName());
     if (pInputFormatContext == nullptr) {

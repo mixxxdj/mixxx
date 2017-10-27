@@ -21,8 +21,6 @@
 
 class Track;
 class TrackPointer;
-typedef std::weak_ptr<Track> TrackWeakPointer;
-
 class Track : public QObject {
     Q_OBJECT
 
@@ -414,10 +412,12 @@ class Track : public QObject {
     friend class TrackDAO;
 };
 
+typedef std::weak_ptr<Track> TrackWeakPointer;
+
 class TrackPointer: public std::shared_ptr<Track> {
   public:
-    TrackPointer() {}
-    explicit TrackPointer(const TrackWeakPointer& pTrack)
+    TrackPointer() = default;
+    explicit TrackPointer(TrackWeakPointer pTrack)
         : std::shared_ptr<Track>(pTrack.lock()) {
     }
     explicit TrackPointer(Track* pTrack)
@@ -429,7 +429,7 @@ class TrackPointer: public std::shared_ptr<Track> {
 
   private:
     static void deleteLater(Track* pTrack) {
-        if (pTrack != nullptr) {
+        if (pTrack) {
             pTrack->deleteLater();
         }
     }

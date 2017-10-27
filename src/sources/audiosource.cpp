@@ -16,9 +16,30 @@ AudioSource::AudioSource(QUrl url)
           AudioSignal(kSampleLayout) {
 }
 
+AudioSource::OpenResult AudioSource::open(
+        OpenMode mode,
+        const OpenParams& params) {
+    close(); // reopening is not supported
+
+    OpenResult result;
+    try {
+        result = tryOpen(mode, params);
+    } catch (const std::exception& e) {
+        qWarning() << "Caught unexpected exception from SoundSource::tryOpen():" << e.what();
+        result = OpenResult::Failed;
+    } catch (...) {
+        qWarning() << "Caught unknown exception from SoundSource::tryOpen()";
+        result = OpenResult::Failed;
+    }
+    if (OpenResult::Succeeded != result) {
+        close(); // rollback
+    }
+    return result;
+}
+
 bool AudioSource::initFrameIndexRangeOnce(
         IndexRange frameIndexRange) {
-    VERIFY_OR_DEBUG_ASSERT(frameIndexRange.orientation() != mixxx::IndexRange::Orientation::Backward) {
+    VERIFY_OR_DEBUG_ASSERT(frameIndexRange.orientation() != IndexRange::Orientation::Backward) {
         kLogger.warning()
                 << "Backward frame index range not supported"
                 << frameIndexRange;

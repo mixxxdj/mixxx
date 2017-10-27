@@ -72,8 +72,8 @@ class SoundSourceProxyTest: public MixxxTest {
 
         // All test files are mono, but we are requesting a stereo signal
         // to test the upscaling of channels
-        mixxx::AudioSourceConfig config;
-        config.setChannelCount(mixxx::AudioSignal::ChannelCount::stereo());
+        mixxx::AudioSource::OpenParams openParams;
+        openParams.setChannelCount(mixxx::AudioSignal::ChannelCount::stereo());
         auto pAudioSource = proxy.openAudioSource();
         EXPECT_FALSE(!pAudioSource);
         if (pAudioSource->channelCount() != mixxx::AudioSignal::ChannelCount::stereo()) {
@@ -176,7 +176,7 @@ TEST_F(SoundSourceProxyTest, readArtist) {
             kTestDir.absoluteFilePath("artist.mp3"));
     SoundSourceProxy proxy(pTrack);
     mixxx::TrackMetadata trackMetadata;
-    EXPECT_EQ(OK, proxy.parseTrackMetadata(&trackMetadata));
+    EXPECT_EQ(mixxx::MetadataSource::ImportResult::Succeeded, proxy.importTrackMetadata(&trackMetadata));
     EXPECT_EQ("Test Artist", trackMetadata.getArtist());
 }
 
@@ -185,7 +185,7 @@ TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
             kTestDir.absoluteFilePath("TOAL_TPE2.mp3"));
     SoundSourceProxy proxy(pTrack);
     mixxx::TrackMetadata trackMetadata;
-    EXPECT_EQ(OK, proxy.parseTrackMetadata(&trackMetadata));
+    EXPECT_EQ(mixxx::MetadataSource::ImportResult::Succeeded, proxy.importTrackMetadata(&trackMetadata));
     EXPECT_EQ("TITLE2", trackMetadata.getArtist());
     EXPECT_EQ("ARTIST", trackMetadata.getAlbum());
     EXPECT_EQ("TITLE", trackMetadata.getAlbumArtist());

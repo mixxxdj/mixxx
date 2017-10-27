@@ -25,7 +25,7 @@ class SoundSourceOggVorbis: public SoundSource {
   private:
     OpenResult tryOpen(
             OpenMode mode,
-            const AudioSourceConfig& audioSrcCfg) override;
+            const OpenParams& params) override;
 
     static size_t ReadCallback(void *ptr, size_t size, size_t nmemb,
             void *datasource);

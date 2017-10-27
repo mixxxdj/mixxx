@@ -81,7 +81,7 @@ SoundSourceFLAC::~SoundSourceFLAC() {
 
 SoundSource::OpenResult SoundSourceFLAC::tryOpen(
         OpenMode /*mode*/,
-        const AudioSourceConfig& /*audioSrcCfg*/) {
+        const OpenParams& /*config*/) {
     DEBUG_ASSERT(!m_file.isOpen());
     if (!m_file.open(QIODevice::ReadOnly)) {
         kLogger.warning() << "Failed to open FLAC file:" << m_file.fileName();
@@ -427,7 +427,7 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
         setChannelCount(metadata->data.stream_info.channels);
         setSamplingRate(metadata->data.stream_info.sample_rate);
         initFrameIndexRangeOnce(
-                mixxx::IndexRange::forward(
+                IndexRange::forward(
                         0,
                         metadata->data.stream_info.total_samples));
 

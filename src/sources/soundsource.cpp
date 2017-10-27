@@ -28,29 +28,8 @@ QUrl validateUrl(QUrl url) {
 
 SoundSource::SoundSource(QUrl url, QString type)
         : AudioSource(validateUrl(url)),
-          TracklibMetadataSource(getLocalFileName()),
+          MetadataSourceTagLib(getLocalFileName()),
           m_type(type) {
-}
-
-SoundSource::OpenResult SoundSource::open(
-        OpenMode mode,
-        const AudioSourceConfig& audioSrcCfg) {
-    close(); // reopening is not supported
-
-    OpenResult result;
-    try {
-        result = tryOpen(mode, audioSrcCfg);
-    } catch (const std::exception& e) {
-        qWarning() << "Caught unexpected exception from SoundSource::tryOpen():" << e.what();
-        result = OpenResult::Failed;
-    } catch (...) {
-        qWarning() << "Caught unknown exception from SoundSource::tryOpen()";
-        result = OpenResult::Failed;
-    }
-    if (OpenResult::Succeeded != result) {
-        close(); // rollback
-    }
-    return result;
 }
 
 } //namespace mixxx

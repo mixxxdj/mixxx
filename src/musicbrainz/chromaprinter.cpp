@@ -119,9 +119,9 @@ ChromaPrinter::ChromaPrinter(QObject* parent)
 }
 
 QString ChromaPrinter::getFingerprint(TrackPointer pTrack) {
-    mixxx::AudioSourceConfig audioSrcCfg;
-    audioSrcCfg.setChannelCount(kFingerprintChannels);
-    auto pAudioSource = SoundSourceProxy(pTrack).openAudioSource(audioSrcCfg);
+    mixxx::AudioSource::OpenParams config;
+    config.setChannelCount(kFingerprintChannels);
+    auto pAudioSource = SoundSourceProxy(pTrack).openAudioSource(config);
     if (!pAudioSource || (pAudioSource->channelCount() != kFingerprintChannels)) {
         qDebug()
                 << "Failed to open file for fingerprinting"

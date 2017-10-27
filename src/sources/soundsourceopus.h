@@ -25,7 +25,7 @@ class SoundSourceOpus: public SoundSource {
     explicit SoundSourceOpus(const QUrl& url);
     ~SoundSourceOpus() override;
 
-    Result parseTrackMetadataAndCoverArt(
+    ImportResult importTrackMetadataAndCoverImage(
             TrackMetadata* pTrackMetadata,
             QImage* pCoverArt) const override;
 
@@ -38,7 +38,7 @@ class SoundSourceOpus: public SoundSource {
   private:
     OpenResult tryOpen(
             OpenMode mode,
-            const AudioSourceConfig& audioSrcCfg) override;
+            const OpenParams& params) override;
 
     OggOpusFile *m_pOggOpusFile;
 

@@ -125,7 +125,7 @@ class SoundSourceFFmpeg: public SoundSource {
   private:
     OpenResult tryOpen(
             OpenMode mode,
-            const AudioSourceConfig& audioSrcCfg) override;
+            const OpenParams& params) override;
 
     bool readFramesToCache(unsigned int count, SINT offset);
     bool getBytesFromCache(CSAMPLE* buffer, SINT offset, SINT size);

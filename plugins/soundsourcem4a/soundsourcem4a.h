@@ -31,7 +31,7 @@ class SoundSourceM4A: public SoundSourcePlugin {
   private:
     OpenResult tryOpen(
             OpenMode mode,
-            const AudioSourceConfig& audioSrcCfg) override;
+            const OpenParams& params) override;
 
     bool openDecoder();
     void closeDecoder();
@@ -51,7 +51,7 @@ class SoundSourceM4A: public SoundSourcePlugin {
     SINT m_inputBufferLength;
     SINT m_inputBufferOffset;
 
-    AudioSourceConfig m_audioSrcCfg;
+    OpenParams m_openParams;
 
     NeAACDecHandle m_hDecoder;
     SINT m_numberOfPrefetchSampleBlocks;

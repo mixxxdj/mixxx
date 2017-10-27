@@ -1,49 +1,51 @@
-#ifndef MIXXX_METADATASOURCE_H
-#define MIXXX_METADATASOURCE_H
+#pragma once
 
 #include <QImage>
 
 #include "track/trackmetadata.h"
-#include "util/result.h"
+#include "util/memory.h"
+
 
 namespace mixxx {
 
-// Interface for parsing track metadata and cover art.
-class /*interface*/ IMetadataSource {
+// API and abstract base class for parsing track metadata and
+// cover art.
+class MetadataSource {
   public:
-    virtual ~IMetadataSource() {}
+    virtual ~MetadataSource() {}
+
+    enum class ImportResult {
+        Succeeded,
+        Failed,
+        Unavailable,
+    };
 
     // Read both track metadata and cover art at once, because this
-    // is usually the most common use case. Both parameters are
-    // output parameters and might be passed as nullptr if their
-    // result is not needed.
-    virtual Result parseTrackMetadataAndCoverArt(
-            TrackMetadata* pTrackMetadata,
-            QImage* pCoverArt) const = 0;
-
-    // Update track metadata of the source.
-    virtual Result writeTrackMetadata(
-            const TrackMetadata& trackMetadata) const = 0;
-};
-
-// Universal default implementation of IMetadataSource
-class TracklibMetadataSource: public virtual /*interface*/ IMetadataSource {
-  public:
-    explicit TracklibMetadataSource(QString fileName)
-        : m_fileName(fileName) {
+    // is the most common use case. Both pointers are output parameters
+    // and might be passed a nullptr if their result is not needed.
+    // If no metadata is available for a track then the source should
+    // return Unavailable as this default implementation does.
+    virtual ImportResult importTrackMetadataAndCoverImage(
+            TrackMetadata* /*pTrackMetadata*/,
+            QImage* /*pCoverImage*/) const {
+        return ImportResult::Unavailable;
     }
 
-    Result parseTrackMetadataAndCoverArt(
-            TrackMetadata* pTrackMetadata,
-            QImage* pCoverArt) const override;
+    enum class ExportResult {
+        Succeeded,
+        Failed,
+        Unsupported,
+    };
 
-    Result writeTrackMetadata(
-            const TrackMetadata& trackMetadata) const override;
-
-  private:
-    QString m_fileName;
+    // Update track metadata of the source.
+    // Sources that are read-only and don't support updating of metadata
+    // should return Unsupported as this default implementation does.
+    virtual ExportResult exportTrackMetadata(
+            const TrackMetadata& /*trackMetadata*/) const {
+        return ExportResult::Unsupported;
+    }
 };
 
-} //namespace mixxx
+typedef std::shared_ptr<MetadataSource> MetadataSourcePointer;
 
-#endif // MIXXX_METADATASOURCE_H
+} //namespace mixxx

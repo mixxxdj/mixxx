@@ -55,7 +55,7 @@ SoundSourceMediaFoundation::~SoundSourceMediaFoundation() {
 
 SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(
         OpenMode /*mode*/,
-        const AudioSourceConfig& audioSrcCfg) {
+        const OpenParams& params) {
     VERIFY_OR_DEBUG_ASSERT(!SUCCEEDED(m_hrCoInitialize)) {
         kLogger.warning()
                 << "Cannot reopen file"
@@ -98,7 +98,7 @@ SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(
         return OpenResult::Failed;
     }
 
-    if (!configureAudioStream(audioSrcCfg)) {
+    if (!configureAudioStream(config)) {
         kLogger.warning()
                 << "Failed to configure audio stream";
         return OpenResult::Failed;
@@ -485,7 +485,7 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
  If anything in here fails, just bail. I'm not going to decode HRESULTS.
  -- Bill
  */
-bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& audioSrcCfg) {
+bool SoundSourceMediaFoundation::configureAudioStream(const OpenParams& params) {
     HRESULT hr;
 
     // deselect all streams, we only want the first
@@ -591,8 +591,8 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     } else {
         qDebug() << "Number of channels in input stream" << numChannels;
     }
-    if (audioSrcCfg.channelCount().valid()) {
-        numChannels = audioSrcCfg.channelCount();
+    if (params.channelCount().valid()) {
+        numChannels = params.channelCount();
         hr = pAudioType->SetUINT32(
                 MF_MT_AUDIO_NUM_CHANNELS, numChannels);
         if (FAILED(hr)) {
@@ -615,8 +615,8 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     } else {
         qDebug() << "Samples per second in input stream" << samplesPerSecond;
     }
-    if (audioSrcCfg.samplingRate().valid()) {
-        samplesPerSecond = audioSrcCfg.samplingRate();
+    if (params.samplingRate().valid()) {
+        samplesPerSecond = params.samplingRate();
         hr = pAudioType->SetUINT32(
                 MF_MT_AUDIO_SAMPLES_PER_SECOND, samplesPerSecond);
         if (FAILED(hr)) {

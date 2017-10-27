@@ -39,12 +39,12 @@ SoundSourceWV::~SoundSourceWV() {
 
 SoundSource::OpenResult SoundSourceWV::tryOpen(
         OpenMode /*mode*/,
-        const AudioSourceConfig& audioSrcCfg) {
+        const OpenParams& params) {
     DEBUG_ASSERT(!m_wpc);
     char msg[80]; // hold possible error message
     int openFlags = OPEN_WVC | OPEN_NORMALIZE;
-    if (audioSrcCfg.channelCount().isMono() ||
-            audioSrcCfg.channelCount().isStereo()) {
+    if (params.channelCount().isMono() ||
+            params.channelCount().isStereo()) {
         openFlags |= OPEN_2CH_MAX;
     }
 

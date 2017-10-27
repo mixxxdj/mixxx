@@ -27,7 +27,7 @@ class CoverArtCacheTest : public MixxxTest, public CoverArtCache {
         SecurityTokenPointer securityToken = Sandbox::openSecurityToken(
             QDir(trackLocation), true);
         auto pTrack = Track::newTemporary(trackLocation, securityToken);
-        QImage img = SoundSourceProxy(pTrack).parseCoverImage();
+        QImage img = SoundSourceProxy(pTrack).importCoverImage();
         EXPECT_FALSE(img.isNull());
         EXPECT_EQ(img, res.cover.image);
     }

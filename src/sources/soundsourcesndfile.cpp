@@ -24,7 +24,7 @@ SoundSourceSndFile::~SoundSourceSndFile() {
 
 SoundSource::OpenResult SoundSourceSndFile::tryOpen(
         OpenMode /*mode*/,
-        const AudioSourceConfig& /*audioSrcCfg*/) {
+        const OpenParams& /*config*/) {
     DEBUG_ASSERT(!m_pSndFile);
     SF_INFO sfInfo;
     memset(&sfInfo, 0, sizeof(sfInfo));
@@ -65,7 +65,7 @@ SoundSource::OpenResult SoundSourceSndFile::tryOpen(
 
     setChannelCount(sfInfo.channels);
     setSamplingRate(sfInfo.samplerate);
-    initFrameIndexRangeOnce(mixxx::IndexRange::forward(0, sfInfo.frames));
+    initFrameIndexRangeOnce(IndexRange::forward(0, sfInfo.frames));
 
     m_curFrameIndex = frameIndexMin();
 

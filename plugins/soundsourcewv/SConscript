@@ -13,7 +13,7 @@ Import('build')
 wv_sources = [
     "soundsourcewv.cpp",
     "sources/audiosource.cpp",
-    "sources/metadatasource.cpp",
+    "sources/metadatasourcetaglib.cpp",
     "sources/soundsource.cpp",
     "sources/soundsourceplugin.cpp",
     "util/audiosignal.cpp",

@@ -281,7 +281,7 @@ void TrackDAO::saveTrack(Track* pTrack) {
         // could alternatively store a second copy of TrackMetadata
         // in Track.
         if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
-            SoundSourceProxy::saveTrackMetadata(pTrack);
+            SoundSourceProxy::exportTrackMetadata(pTrack);
         }
     }
 }
@@ -1404,7 +1404,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
                 " to replace the default value introduced with a previous"
                 " schema upgrade";
         mixxx::TrackMetadata trackMetadata;
-        if (SoundSourceProxy(pTrack).parseTrackMetadata(&trackMetadata) == OK) {
+        if (SoundSourceProxy(pTrack).importTrackMetadata(&trackMetadata) == mixxx::MetadataSource::ImportResult::Succeeded) {
             // Copy the track total from the temporary track object
             pTrack->setTrackTotal(trackMetadata.getTrackTotal());
             // Also set the track number if it is still empty due

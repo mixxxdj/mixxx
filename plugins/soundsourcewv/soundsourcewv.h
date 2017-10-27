@@ -23,7 +23,7 @@ class SoundSourceWV: public SoundSourcePlugin {
   private:
     OpenResult tryOpen(
             OpenMode mode,
-            const AudioSourceConfig& audioSrcCfg) override;
+            const OpenParams& params) override;
 
     static int32_t ReadBytesCallback(void* id, void* data, int bcount);
     static uint32_t GetPosCallback(void* id);

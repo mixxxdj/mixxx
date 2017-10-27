@@ -59,14 +59,14 @@ SoundSourceOpus::~SoundSourceOpus() {
     close();
 }
 
-Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
+MetadataSource::ImportResult SoundSourceOpus::importTrackMetadataAndCoverImage(
         TrackMetadata* pTrackMetadata,
         QImage* pCoverArt) const {
-    if (OK == SoundSource::parseTrackMetadataAndCoverArt(
+    if (ImportResult::Succeeded == SoundSource::importTrackMetadataAndCoverImage(
             pTrackMetadata, pCoverArt)) {
         // Done if the default implementation in the base class
         // supports Opus files.
-        return OK;
+        return ImportResult::Succeeded;
     }
 
     // Beginning with version 1.9.0 TagLib supports the Opus format.
@@ -95,7 +95,7 @@ Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
 
     // Bug #1541667.
     if (!l_ptrOpusFile) {
-        return ERR;
+        return ImportResult::Failed;
     }
 
     int i = 0;
@@ -148,12 +148,12 @@ Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
         }
     }
 
-    return OK;
+    return ImportResult::Succeeded;
 }
 
 SoundSource::OpenResult SoundSourceOpus::tryOpen(
         OpenMode /*mode*/,
-        const AudioSourceConfig& audioSrcCfg) {
+        const OpenParams& params) {
     // From opus/opusfile.h
     // On Windows, this string must be UTF-8 (to allow access to
     // files whose names cannot be represented in the current
@@ -187,10 +187,10 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(
     if (0 < streamChannelCount) {
         // opusfile supports to enforce stereo decoding
         bool enforceStereoDecoding =
-                audioSrcCfg.channelCount().valid() &&
-                (audioSrcCfg.channelCount() <= ChannelCount::stereo()) &&
+                params.channelCount().valid() &&
+                (params.channelCount() <= ChannelCount::stereo()) &&
                 // preserve mono signals if stereo signal is not requested explicitly
-                (audioSrcCfg.channelCount().isStereo() ||
+                (params.channelCount().isStereo() ||
                         (streamChannelCount > ChannelCount::stereo()));
         if (enforceStereoDecoding) {
             setChannelCount(ChannelCount::stereo());
@@ -210,7 +210,7 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(
 
     const ogg_int64_t pcmTotal = op_pcm_total(m_pOggOpusFile, kEntireStreamLink);
     if (0 <= pcmTotal) {
-        initFrameIndexRangeOnce(mixxx::IndexRange::forward(0, pcmTotal));
+        initFrameIndexRangeOnce(IndexRange::forward(0, pcmTotal));
     } else {
         kLogger.warning()
                 << "Failed to read total length of OggOpus file:"

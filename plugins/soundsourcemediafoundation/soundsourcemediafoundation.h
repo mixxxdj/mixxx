@@ -64,9 +64,9 @@ class SoundSourceMediaFoundation: public mixxx::SoundSourcePlugin {
   private:
     OpenResult tryOpen(
             OpenMode mode,
-            const mixxx::AudioSourceConfig& audioSrcCfg) override;
+            const mixxx::AudioSource::OpenParams& params) override;
 
-    bool configureAudioStream(const mixxx::AudioSourceConfig& audioSrcCfg);
+    bool configureAudioStream(const mixxx::AudioSource::OpenParams& params);
     bool readProperties();
 
     void seekSampleFrame(SINT frameIndex);

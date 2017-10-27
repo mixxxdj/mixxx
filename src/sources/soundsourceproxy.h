@@ -75,18 +75,18 @@ class SoundSourceProxy {
 
     // Parse only the metadata from the file without modifying
     // the referenced track.
-    Result parseTrackMetadata(mixxx::TrackMetadata* pTrackMetadata) const;
+    mixxx::MetadataSource::ImportResult importTrackMetadata(mixxx::TrackMetadata* pTrackMetadata) const;
 
     // Parse only the cover image from the file without modifying
     // the referenced track.
-    QImage parseCoverImage() const;
+    QImage importCoverImage() const;
 
     enum class SaveTrackMetadataResult {
         SUCCEEDED,
         FAILED,
         SKIPPED
     };
-    static SaveTrackMetadataResult saveTrackMetadata(
+    static SaveTrackMetadataResult exportTrackMetadata(
             const Track* pTrack,
             bool evenIfNeverParsedFromFileBefore = false);
 
@@ -94,7 +94,7 @@ class SoundSourceProxy {
     // update the some metadata of the track object.
     // Returns a null pointer on failure.
     mixxx::AudioSourcePointer openAudioSource(
-            const mixxx::AudioSourceConfig& audioSrcCfg = mixxx::AudioSourceConfig());
+            const mixxx::AudioSource::OpenParams& params = mixxx::AudioSource::OpenParams());
 
     void closeAudioSource();
 

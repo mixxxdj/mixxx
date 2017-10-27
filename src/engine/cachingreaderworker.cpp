@@ -118,8 +118,8 @@ void CachingReaderWorker::run() {
 
 namespace {
 
-mixxx::AudioSourcePointer openAudioSourceForReading(const TrackPointer& pTrack, const mixxx::AudioSourceConfig& audioSrcCfg) {
-    auto pAudioSource = SoundSourceProxy(pTrack).openAudioSource(audioSrcCfg);
+mixxx::AudioSourcePointer openAudioSourceForReading(const TrackPointer& pTrack, const mixxx::AudioSource::OpenParams& params) {
+    auto pAudioSource = SoundSourceProxy(pTrack).openAudioSource(params);
     if (!pAudioSource) {
         kLogger.warning() << "Failed to open file:" << pTrack->getLocation();
     }
@@ -155,9 +155,9 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
         return;
     }
 
-    mixxx::AudioSourceConfig audioSrcCfg;
-    audioSrcCfg.setChannelCount(CachingReaderChunk::kChannels);
-    m_pAudioSource = openAudioSourceForReading(pTrack, audioSrcCfg);
+    mixxx::AudioSource::OpenParams config;
+    config.setChannelCount(CachingReaderChunk::kChannels);
+    m_pAudioSource = openAudioSourceForReading(pTrack, config);
     if (!m_pAudioSource) {
         m_readableFrameIndexRange = mixxx::IndexRange();
         // Must unlock before emitting to avoid deadlock

@@ -24,7 +24,17 @@ class AudioSourceStereoProxy: public AudioSource {
             AudioSourcePointer pAudioSource,
             SampleBuffer::WritableSlice tempSampleBufferSlice);
 
+    void close() override {
+        m_pAudioSource->close();
+    }
+
   protected:
+    OpenResult tryOpen(
+            OpenMode mode,
+            const OpenParams& params) override {
+        return tryOpenOn(*m_pAudioSource, mode, params);
+    }
+
     ReadableSampleFrames readSampleFramesClamped(
             WritableSampleFrames writableSampleFrames) override;
 

@@ -64,7 +64,7 @@ SoundSourceModPlug::~SoundSourceModPlug() {
     close();
 }
 
-Result SoundSourceModPlug::parseTrackMetadataAndCoverArt(
+MetadataSource::ImportResult SoundSourceModPlug::importTrackMetadataAndCoverImage(
         TrackMetadata* pTrackMetadata,
         QImage* pCoverArt) const {
     if (pTrackMetadata != nullptr) {
@@ -76,7 +76,7 @@ Result SoundSourceModPlug::parseTrackMetadataAndCoverArt(
         ModPlug::ModPlugFile* pModFile = ModPlug::ModPlug_Load(fileBuf.constData(),
                 fileBuf.length());
         if (pModFile == nullptr) {
-            return ERR;
+            return ImportResult::Failed;
         }
 
         pTrackMetadata->setComment(QString(ModPlug::ModPlug_GetMessage(pModFile)));
@@ -92,12 +92,12 @@ Result SoundSourceModPlug::parseTrackMetadataAndCoverArt(
     // if pCoverArt != nullptr.
     Q_UNUSED(pCoverArt);
 
-    return OK;
+    return ImportResult::Succeeded;
 }
 
 SoundSource::OpenResult SoundSourceModPlug::tryOpen(
         OpenMode /*mode*/,
-        const AudioSourceConfig& /*audioSrcCfg*/) {
+        const OpenParams& /*config*/) {
     ScopedTimer t("SoundSourceModPlug::open()");
 
     // read module file to byte array
