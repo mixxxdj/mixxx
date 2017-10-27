@@ -355,6 +355,13 @@ void EffectsManager::setup() {
     pEffect = instantiateEffect("org.mixxx.effects.autopan");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
+
+    pChain = EffectChainPointer(new EffectChain(
+            this, "org.mixxx.effectchain.gater"));
+    pChain->setName(tr("Gater"));
+    pEffect = instantiateEffect("org.mixxx.effects.gater");
+    pChain->addEffect(pEffect);
+    m_pEffectChainManager->addEffectChain(pChain);
 }
 
 bool EffectsManager::writeRequest(EffectsRequest* request) {
