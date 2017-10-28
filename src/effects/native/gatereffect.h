@@ -11,6 +11,10 @@
 #include "util/sample.h"
 #include "util/types.h"
 
+#include <iostream>
+#include <cmath>
+#include <fstream>
+
 struct GaterGroupState {
     float sampleRate  = 0;
 };
@@ -38,6 +42,9 @@ class GaterEffect : public PerChannelEffectProcessor<GaterGroupState> {
     }
 
     EngineEffectParameter* m_pRateParameter;
+    EngineEffectParameter* m_pShapeParameter;
+    
+    std::ofstream file;
 
     DISALLOW_COPY_AND_ASSIGN(GaterEffect);
 };
