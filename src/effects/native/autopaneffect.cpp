@@ -27,33 +27,34 @@ EffectManifest AutoPanEffect::getManifest() {
             "spatial move and the period can be synced with the BPM."));
 
     // Period
-    // The maximum is at 128 + 1 allowing 128 as max value and
-    // enabling us to pause time when the parameter is above
     EffectManifestParameter* period = manifest.addParameter();
     period->setId("period");
     period->setName(QObject::tr("Period"));
-    period->setDescription(QObject::tr("How fast the sound goes from a side to another,"
-            " following a logarithmic scale"));
-    period->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+    period->setDescription(QObject::tr("How fast the sound goes from a side to another\n"
+            "1/4 - 4 beats rounded to 1/2 beat if tempo is detected (decks and samplers)\n"
+            "1/4 - 4 seconds if tempo is detected (mic & aux inputs, master mix)"));
+    period->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    period->setMinimum(0.0625);     // 1 / 16
-    period->setMaximum(129.0);      // 128 + 1
-    period->setDefault(3.0);
+    period->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
+    period->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
+    period->setMinimum(0.0);
+    period->setMaximum(4.0);
+    period->setDefault(2.0);
 
-    // This parameter controls the easing of the sound from a side to another.
     EffectManifestParameter* smoothing = manifest.addParameter();
     smoothing->setId("smoothing");
     smoothing->setName(QObject::tr("Smoothing"));
     smoothing->setShortName(QObject::tr("Smooth"));
     smoothing->setDescription(
-            QObject::tr("How fast the signal goes from a channel to another"));
+            QObject::tr("How smoothly the signal goes from one side to the other"));
     smoothing->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     smoothing->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     smoothing->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    smoothing->setMinimum(0.0);
-    smoothing->setMaximum(0.5);  // there are two steps per period so max is half
-    smoothing->setDefault(0.5);
+    smoothing->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
+    smoothing->setMinimum(0.25);
+    smoothing->setMaximum(0.50);  // there are two steps per period so max is half
+    smoothing->setDefault(0.50);
     // TODO(Ferran Pujol): when KnobComposedMaskedRing branch is merged to master,
     //                     make the scaleStartParameter for this be 1.
 
@@ -61,7 +62,7 @@ EffectManifest AutoPanEffect::getManifest() {
     EffectManifestParameter* width = manifest.addParameter();
     width->setId("width");
     width->setName(QObject::tr("Width"));
-    width->setDescription("How far the signal goes on the left or on the right");
+    width->setDescription("How far the signal goes to each side");
     width->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     width->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     width->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -70,24 +71,11 @@ EffectManifest AutoPanEffect::getManifest() {
     width->setMaximum(1.0);    // 0.02 * sampleRate => 20ms
     width->setDefault(0.5);
 
-    // Period unit
-    EffectManifestParameter* periodUnit = manifest.addParameter();
-    periodUnit->setId("periodUnit");
-    periodUnit->setName(QObject::tr("Sync"));
-    periodUnit->setDescription(QObject::tr("Synchronizes the period with the BPM if it can be retrieved"));
-    periodUnit->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
-    periodUnit->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    periodUnit->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    periodUnit->setDefault(1);
-    periodUnit->setMinimum(0);
-    periodUnit->setMaximum(1);
-
     return manifest;
 }
 
 AutoPanEffect::AutoPanEffect(EngineEffect* pEffect, const EffectManifest& manifest)
         : m_pSmoothingParameter(pEffect->getParameterById("smoothing")),
-          m_pPeriodUnitParameter(pEffect->getParameterById("periodUnit")),
           m_pPeriodParameter(pEffect->getParameterById("period")),
           m_pWidthParameter(pEffect->getParameterById("width")) {
     Q_UNUSED(manifest);
@@ -96,7 +84,7 @@ AutoPanEffect::AutoPanEffect(EngineEffect* pEffect, const EffectManifest& manife
 AutoPanEffect::~AutoPanEffect() {
 }
 
-void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* pGroupState,
+void AutoPanEffect::processChannel(const ChannelHandle& handle, AutoPanGroupState* pGroupState,
                               const CSAMPLE* pInput,
                               CSAMPLE* pOutput, const unsigned int numSamples,
                               const unsigned int sampleRate,
@@ -108,38 +96,22 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         return;
     }
 
-    PanGroupState& gs = *pGroupState;
+    AutoPanGroupState& gs = *pGroupState;
     double width = m_pWidthParameter->value();
     double period = m_pPeriodParameter->value();
-    double periodUnit = m_pPeriodUnitParameter->value();
-    double smoothing = 0.5-m_pSmoothingParameter->value();
+    double smoothing = 0.5 - m_pSmoothingParameter->value();
 
-    // When the period knob is between max and max-1, the time is paused.
-    // Time shouldn't be paused while enabling state as the sound
-    // will be stuck in the middle even if the smoothing is at max.
-    bool timePaused = period > m_pPeriodParameter->maximum() - 1
-            && enableState != EffectProcessor::ENABLING;
+    if (groupFeatures.has_beat_length_sec) {
+        // period is a number of beats
+        double beats = std::max(roundToFraction(period, 2), 0.25);
+        period = beats * groupFeatures.beat_length_sec * sampleRate;
 
-    if (periodUnit == 1 && groupFeatures.has_beat_length) {
-        // floor the param on one of these values :
-        // 1/16, 1/8, 1/4, 1/2, 1, 2, 4, 8, 16, 32, 64, 128
+        // TODO(xxx) sync phase
+        //if (groupFeatures.has_beat_fraction) {
 
-        int i = 0;
-        while (period > m_pPeriodParameter->minimum()) {
-            period /= 2;
-            i++;
-        }
-
-        double beats = m_pPeriodParameter->minimum();
-        while (i != 0.0) {
-            beats *= 2;
-            i--;
-        }
-
-        period = groupFeatures.beat_length * beats;
     } else {
-        // max period is 128 seconds
-        period *= sampleRate;
+        // period is a number of seconds
+        period = std::max(period, 0.25) * sampleRate;
     }
 
     // When the period is changed, the position of the sound shouldn't
@@ -147,13 +119,13 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
     if (gs.m_dPreviousPeriod != -1.0) {
         gs.time *= period / gs.m_dPreviousPeriod;
     }
+
+
     gs.m_dPreviousPeriod = period;
 
-
-    if (gs.time > period || enableState == EffectProcessor::ENABLING) {
+    if (gs.time >= period || enableState == EffectProcessor::ENABLING) {
         gs.time = 0;
     }
-
 
     // Normally, the position goes from 0 to 1 linearly. Here we make steps at
     // 0.25 and 0.75 to have the sound fully on the right or fully on the left.
@@ -172,6 +144,7 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
 
     double sinusoid = 0;
 
+    // NOTE: Assuming engine is working in stereo.
     for (unsigned int i = 0; i + 1 < numSamples; i += 2) {
 
         CSAMPLE periodFraction = CSAMPLE(gs.time) / period;
@@ -210,10 +183,14 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         pOutput[i] *= gs.frac * lawCoef;
         pOutput[i+1] *= (1.0f - gs.frac) * lawCoef;
 
-        // The time shouldn't be paused if the position has not its
-        // expected value due to ramping
-        if (!timePaused || gs.frac.ramped) {
-            gs.time++;
+        gs.time++;
+        while (gs.time >= period) {
+            // Click for debug
+            //pOutput[i] = 1.0f;
+            //pOutput[i+1] = 1.0f;
+
+            // The while loop is required in case period changes the value
+            gs.time -= period;
         }
     }
 }

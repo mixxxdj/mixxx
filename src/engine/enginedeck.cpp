@@ -82,8 +82,7 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
         SampleUtil::copy(pOut, sampleBuffer, iBufferSize);
         m_bPassthroughWasActive = true;
         m_sampleBuffer = NULL;
-        m_pPregain->setSpeed(1);
-        m_pPregain->setScratching(false);
+        m_pPregain->setSpeedAndScratching(1, false);
     } else {
         // If passthrough is no longer enabled, zero out the buffer
         if (m_bPassthroughWasActive) {
@@ -95,8 +94,7 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
         // Process the raw audio
         m_pBuffer->process(pOut, iBufferSize);
         m_pBuffer->collectFeatures(&features);
-        m_pPregain->setSpeed(m_pBuffer->getSpeed());
-        m_pPregain->setScratching(m_pBuffer->getScratching());
+        m_pPregain->setSpeedAndScratching(m_pBuffer->getSpeed(), m_pBuffer->getScratching());
         m_bPassthroughWasActive = false;
     }
 
@@ -106,7 +104,6 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
     if (m_pEngineEffectsManager != NULL) {
         // This is out of date by a callback but some effects will want the RMS
         // volume.
-        m_pVUMeter->collectFeatures(&features);
         m_pPregain->collectFeatures(&features);
         m_pEngineEffectsManager->process(
                 getHandle(), pOut, iBufferSize,

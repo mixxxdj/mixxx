@@ -239,11 +239,11 @@ void BrowseThread::populateModel() {
         row_data.insert(COLUMN_BITRATE, item);
 
         QString location = pTrack->getLocation();
-        QString locationNative = QDir::toNativeSeparators(location);
-        item = new QStandardItem(locationNative);
-        item->setToolTip(locationNative);
+        QString nativeLocation = QDir::toNativeSeparators(location);
+        item = new QStandardItem(nativeLocation);
+        item->setToolTip(nativeLocation);
         item->setData(location, Qt::UserRole);
-        row_data.insert(COLUMN_LOCATION, item);
+        row_data.insert(COLUMN_NATIVELOCATION, item);
 
         QDateTime modifiedTime = pTrack->getFileModifiedTime().toLocalTime();
         item = new QStandardItem(modifiedTime.toString(Qt::DefaultLocaleShortDate));
