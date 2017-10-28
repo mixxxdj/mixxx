@@ -14,7 +14,7 @@ class LegacyAudioSource {
 
     // Adjusts the current frame seek index:
     // - Precondition: isValidFrameIndex(frameIndex) == true
-    // - The seek position in seconds is frameIndex / samplingRate()
+    // - The seek position in seconds is frameIndex / sampleRate()
     // Returns the actual current frame index which may differ from the
     // requested index if the source does not support accurate seeking.
     virtual SINT seekSampleFrame(SINT frameIndex) = 0;

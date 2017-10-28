@@ -354,10 +354,10 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
                 << frame->header.channels << "<>" << channelCount();
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     }
-    if (samplingRate() != SINT(frame->header.sample_rate)) {
+    if (sampleRate() != SINT(frame->header.sample_rate)) {
         kLogger.warning() << "Corrupt or unsupported FLAC file:"
                 << "Invalid sample rate in FLAC frame header"
-                << frame->header.sample_rate << "<>" << samplingRate();
+                << frame->header.sample_rate << "<>" << sampleRate();
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     }
     const SINT numReadableFrames = frame->header.blocksize;
@@ -425,7 +425,7 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
     case FLAC__METADATA_TYPE_STREAMINFO:
     {
         setChannelCount(metadata->data.stream_info.channels);
-        setSamplingRate(metadata->data.stream_info.sample_rate);
+        setSampleRate(metadata->data.stream_info.sample_rate);
         initFrameIndexRangeOnce(
                 IndexRange::forward(
                         0,

@@ -64,7 +64,7 @@ SoundSource::OpenResult SoundSourceSndFile::tryOpen(
     }
 
     setChannelCount(sfInfo.channels);
-    setSamplingRate(sfInfo.samplerate);
+    setSampleRate(sfInfo.samplerate);
     initFrameIndexRangeOnce(IndexRange::forward(0, sfInfo.frames));
 
     m_curFrameIndex = frameIndexMin();

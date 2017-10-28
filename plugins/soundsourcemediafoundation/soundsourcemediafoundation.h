@@ -22,8 +22,8 @@ class StreamUnitConverter final {
     }
     explicit StreamUnitConverter(const AudioSource* pAudioSource)
         : m_pAudioSource(pAudioSource),
-          m_streamUnitsPerFrame(double(kStreamUnitsPerSecond) / double(pAudioSource->samplingRate())),
-          m_toFrameIndexBias(kStreamUnitsPerSecond / pAudioSource->samplingRate() / 2) {
+          m_streamUnitsPerFrame(double(kStreamUnitsPerSecond) / double(pAudioSource->sampleRate())),
+          m_toFrameIndexBias(kStreamUnitsPerSecond / pAudioSource->sampleRate() / 2) {
         // The stream units should actually be much shorter
         // than the frames to minimize jitter. Even a frame
         // at 192 kHz has a length of about 5000 ns >> 100 ns.

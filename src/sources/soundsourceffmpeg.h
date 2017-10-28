@@ -37,7 +37,7 @@ namespace {
         virtual AVMediaType getMediaTypeOfStream(AVStream* pStream) = 0;
         virtual AVCodec* findDecoderForStream(AVStream* pStream) = 0;
         virtual SINT getChannelCountOfStream(AVStream* pStream) = 0;
-        virtual SINT getSamplingRateOfStream(AVStream* pStream) = 0;
+        virtual SINT getSampleRateOfStream(AVStream* pStream) = 0;
         virtual AVSampleFormat getSampleFormatOfStream(AVStream* pStream) = 0;
   };
 
@@ -58,7 +58,7 @@ namespace {
             return pStream->codecpar->channels;
         }
 
-        SINT getSamplingRateOfStream(AVStream* pStream) {
+        SINT getSampleRateOfStream(AVStream* pStream) {
             return pStream->codecpar->sample_rate;
         }
 
@@ -81,7 +81,7 @@ namespace {
             return pStream->codec->channels;
         }
 
-        SINT getSamplingRateOfStream(AVStream* pStream) {
+        SINT getSampleRateOfStream(AVStream* pStream) {
             return pStream->codec->sample_rate;
         }
 

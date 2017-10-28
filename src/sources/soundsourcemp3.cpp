@@ -17,11 +17,11 @@ const SINT kChannelCountMax = AudioSignal::ChannelCount::stereo();
 
 const SINT kMaxBytesPerMp3Frame = 1441;
 
-// mp3 supports 9 different sampling rates
-const int kSamplingRateCount = 9;
+// mp3 supports 9 different sample rates
+const int kSampleRateCount = 9;
 
-int getIndexBySamplingRate(AudioSignal::SamplingRate samplingRate) {
-    switch (samplingRate) {
+int getIndexBySampleRate(AudioSignal::SampleRate sampleRate) {
+    switch (sampleRate) {
     case 8000:
         return 0;
     case 11025:
@@ -41,34 +41,34 @@ int getIndexBySamplingRate(AudioSignal::SamplingRate samplingRate) {
     case 48000:
         return 8;
     default:
-        // unsupported sampling rate
-        return kSamplingRateCount;
+        // unsupported sample rate
+        return kSampleRateCount;
     }
 }
 
-AudioSignal::SamplingRate getSamplingRateByIndex(int samplingRateIndex) {
-    switch (samplingRateIndex) {
+AudioSignal::SampleRate getSampleRateByIndex(int sampleRateIndex) {
+    switch (sampleRateIndex) {
     case 0:
-        return AudioSignal::SamplingRate(8000);
+        return AudioSignal::SampleRate(8000);
     case 1:
-        return AudioSignal::SamplingRate(11025);
+        return AudioSignal::SampleRate(11025);
     case 2:
-        return AudioSignal::SamplingRate(12000);
+        return AudioSignal::SampleRate(12000);
     case 3:
-        return AudioSignal::SamplingRate(16000);
+        return AudioSignal::SampleRate(16000);
     case 4:
-        return AudioSignal::SamplingRate(22050);
+        return AudioSignal::SampleRate(22050);
     case 5:
-        return AudioSignal::SamplingRate(24000);
+        return AudioSignal::SampleRate(24000);
     case 6:
-        return AudioSignal::SamplingRate(32000);
+        return AudioSignal::SampleRate(32000);
     case 7:
-        return AudioSignal::SamplingRate(44100);
+        return AudioSignal::SampleRate(44100);
     case 8:
-        return AudioSignal::SamplingRate(48000);
+        return AudioSignal::SampleRate(48000);
     default:
         // index out of range
-        return AudioSignal::SamplingRate();
+        return AudioSignal::SampleRate();
     }
 }
 
@@ -194,7 +194,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
         OpenMode /*mode*/,
         const OpenParams& /*config*/) {
     DEBUG_ASSERT(!channelCount().valid());
-    DEBUG_ASSERT(!samplingRate().valid());
+    DEBUG_ASSERT(!sampleRate().valid());
 
     DEBUG_ASSERT(!m_file.isOpen());
     if (!m_file.open(QIODevice::ReadOnly)) {
@@ -220,9 +220,9 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
     DEBUG_ASSERT(m_seekFrameList.empty());
     m_avgSeekFrameCount = 0;
     m_curFrameIndex = 0;
-    int headerPerSamplingRate[kSamplingRateCount];
-    for (int i = 0; i < kSamplingRateCount; ++i) {
-        headerPerSamplingRate[i] = 0;
+    int headerPerSampleRate[kSampleRateCount];
+    for (int i = 0; i < kSampleRateCount; ++i) {
+        headerPerSampleRate[i] = 0;
     }
 
     // Decode all the headers and calculate audio properties
@@ -270,16 +270,16 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
         }
         maxChannelCount = math_max(madChannelCount, maxChannelCount);
 
-        const int samplingRateIndex = getIndexBySamplingRate(SamplingRate(madSampleRate));
-        if (samplingRateIndex >= kSamplingRateCount) {
+        const int sampleRateIndex = getIndexBySampleRate(SampleRate(madSampleRate));
+        if (sampleRateIndex >= kSampleRateCount) {
             kLogger.warning() << "Invalid sample rate:" << m_file.fileName()
                     << madSampleRate;
             // Abort
             mad_header_finish(&madHeader);
             return OpenResult::Failed;
         }
-        // Count valid frames separated by its sampling rate
-        headerPerSamplingRate[samplingRateIndex]++;
+        // Count valid frames separated by its sample rate
+        headerPerSampleRate[sampleRateIndex]++;
 
         addSeekFrame(m_curFrameIndex, m_madStream.this_frame);
 
@@ -315,24 +315,24 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
     }
     DEBUG_ASSERT(m_seekFrameList.front().frameIndex == 0);
 
-    int mostCommonSamplingRateIndex = kSamplingRateCount; // invalid
-    int mostCommonSamplingRateCount = 0;
+    int mostCommonSampleRateIndex = kSampleRateCount; // invalid
+    int mostCommonSampleRateCount = 0;
     int differentRates = 0;
-    for (int i = 0; i < kSamplingRateCount; ++i) {
-        // Find most common sampling rate
-        if (mostCommonSamplingRateCount < headerPerSamplingRate[i]) {
-            mostCommonSamplingRateCount = headerPerSamplingRate[i];
-            mostCommonSamplingRateIndex = i;
+    for (int i = 0; i < kSampleRateCount; ++i) {
+        // Find most common sample rate
+        if (mostCommonSampleRateCount < headerPerSampleRate[i]) {
+            mostCommonSampleRateCount = headerPerSampleRate[i];
+            mostCommonSampleRateIndex = i;
             differentRates++;
         }
     }
 
     if (differentRates > 1) {
-        kLogger.warning() << "Differing sampling rate in some headers:"
+        kLogger.warning() << "Differing sample rate in some headers:"
                    << m_file.fileName();
-        for (int i = 0; i < kSamplingRateCount; ++i) {
-            if (0 < headerPerSamplingRate[i]) {
-                kLogger.warning() << headerPerSamplingRate[i] << "MP3 headers with sampling rate" << getSamplingRateByIndex(i);
+        for (int i = 0; i < kSampleRateCount; ++i) {
+            if (0 < headerPerSampleRate[i]) {
+                kLogger.warning() << headerPerSampleRate[i] << "MP3 headers with sample rate" << getSampleRateByIndex(i);
             }
         }
 
@@ -341,10 +341,10 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
         kLogger.warning() << "Mixxx tries to plays it with the most common sample rate for this file";
     }
 
-    if (mostCommonSamplingRateIndex < kSamplingRateCount) {
-        setSamplingRate(getSamplingRateByIndex(mostCommonSamplingRateIndex));
+    if (mostCommonSampleRateIndex < kSampleRateCount) {
+        setSampleRate(getSampleRateByIndex(mostCommonSampleRateIndex));
     } else {
-        kLogger.warning() << "No single valid sampling rate in header";
+        kLogger.warning() << "No single valid sample rate in header";
         // Abort
         return OpenResult::Failed;
     }
@@ -639,9 +639,9 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
             mad_synth_frame(&m_madSynth, &m_madFrame);
 #ifndef QT_NO_DEBUG_OUTPUT
             const SINT madSynthSampleRate =  m_madSynth.pcm.samplerate;
-            if (madSynthSampleRate != samplingRate()) {
-                kLogger.debug() << "Reading MP3 data with different sampling rate"
-                        << madSynthSampleRate << "<>" << samplingRate();
+            if (madSynthSampleRate != sampleRate()) {
+                kLogger.debug() << "Reading MP3 data with different sample rate"
+                        << madSynthSampleRate << "<>" << sampleRate();
             }
 #endif
             m_madSynthCount = m_madSynth.pcm.length;

@@ -130,7 +130,7 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(
     }
 
     setChannelCount(m_outputFormat.NumberChannels());
-    setSamplingRate(m_inputFormat.mSampleRate);
+    setSampleRate(m_inputFormat.mSampleRate);
     // NOTE(uklotzde): This is what I found when migrating
     // the code from SoundSource (sample-oriented) to the new
     // AudioSource (frame-oriented) API. It is not documented

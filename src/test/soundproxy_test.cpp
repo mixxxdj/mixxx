@@ -166,7 +166,7 @@ TEST_F(SoundSourceProxyTest, open) {
             continue;
         }
         EXPECT_LT(0, pAudioSource->channelCount());
-        EXPECT_LT(0, pAudioSource->samplingRate());
+        EXPECT_LT(0, pAudioSource->sampleRate());
         EXPECT_FALSE(pAudioSource->frameIndexRange().empty());
     }
 }

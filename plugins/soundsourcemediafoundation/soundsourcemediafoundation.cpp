@@ -615,8 +615,8 @@ bool SoundSourceMediaFoundation::configureAudioStream(const OpenParams& params) 
     } else {
         qDebug() << "Samples per second in input stream" << samplesPerSecond;
     }
-    if (params.samplingRate().valid()) {
-        samplesPerSecond = params.samplingRate();
+    if (params.sampleRate().valid()) {
+        samplesPerSecond = params.sampleRate();
         hr = pAudioType->SetUINT32(
                 MF_MT_AUDIO_SAMPLES_PER_SECOND, samplesPerSecond);
         if (FAILED(hr)) {
@@ -677,7 +677,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const OpenParams& params) 
                 << "failed to get the actual sample rate";
         return false;
     }
-    setSamplingRate(samplesPerSecond);
+    setSampleRate(samplesPerSecond);
 
     UINT32 leftoverBufferSizeInBytes = 0;
     hr = pAudioType->GetUINT32(MF_MT_SAMPLE_SIZE, &leftoverBufferSizeInBytes);

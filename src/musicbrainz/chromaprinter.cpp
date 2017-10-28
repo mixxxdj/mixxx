@@ -40,7 +40,7 @@ QString calcFingerprint(const mixxx::AudioSourcePointer& pAudioSource) {
             pAudioSource->frameIndexRange(),
             mixxx::IndexRange::forward(
                     pAudioSource->frameIndexMin(),
-                    kFingerprintDuration * pAudioSource->samplingRate()));
+                    kFingerprintDuration * pAudioSource->sampleRate()));
 
     mixxx::AudioSourceStereoProxy audioSourceProxy(
             pAudioSource,
@@ -75,7 +75,7 @@ QString calcFingerprint(const mixxx::AudioSourcePointer& pAudioSource) {
     qDebug() << "reading file took" << timerReadingFile.elapsed().debugMillisWithUnit();
 
     ChromaprintContext* ctx = chromaprint_new(CHROMAPRINT_ALGORITHM_DEFAULT);
-    chromaprint_start(ctx, pAudioSource->samplingRate(), kFingerprintChannels);
+    chromaprint_start(ctx, pAudioSource->sampleRate(), kFingerprintChannels);
 
     PerformanceTimer timerGeneratingFingerprint;
     timerGeneratingFingerprint.start();

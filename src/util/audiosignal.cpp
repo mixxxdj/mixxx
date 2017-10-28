@@ -23,14 +23,14 @@ bool AudioSignal::setChannelCount(ChannelCount channelCount) {
     }
 }
 
-bool AudioSignal::setSamplingRate(SamplingRate samplingRate) {
-    if (samplingRate < SamplingRate()) {
+bool AudioSignal::setSampleRate(SampleRate sampleRate) {
+    if (sampleRate < SampleRate()) {
         kLogger.warning()
-                << "Invalid sampling rate"
-                << samplingRate;
+                << "Invalid sample rate"
+                << sampleRate;
         return false; // abort
     } else {
-        m_samplingRate = samplingRate;
+        m_sampleRate = sampleRate;
         return true;
     }
 }
@@ -48,14 +48,14 @@ bool AudioSignal::verifyReadable() const {
                 << "]";
         result = false;
     }
-    if (!samplingRate().valid()) {
+    if (!sampleRate().valid()) {
         kLogger.warning()
-                << "Invalid sampling rate [Hz]:"
-                << samplingRate()
+                << "Invalid sample rate [Hz]:"
+                << sampleRate()
                 << "is out of range ["
-                << SamplingRate::min()
+                << SampleRate::min()
                 << ","
-                << SamplingRate::max()
+                << SampleRate::max()
                 << "]";
         result = false;
     }
@@ -77,7 +77,7 @@ QDebug operator<<(QDebug dbg, const AudioSignal& arg) {
     return dbg << "AudioSignal{"
             << "sampleLayout:" << arg.sampleLayout()
             << "channelCount:" << arg.channelCount()
-            << "samplingRate:" << arg.samplingRate()
+            << "sampleRate:" << arg.sampleRate()
             << "}";
 }
 

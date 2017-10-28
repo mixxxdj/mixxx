@@ -44,7 +44,7 @@ QString getModPlugTypeFromUrl(QUrl url) {
 
 /*static*/ constexpr SINT SoundSourceModPlug::kChannelCount;
 /*static*/ constexpr SINT SoundSourceModPlug::kBitsPerSample;
-/*static*/ constexpr SINT SoundSourceModPlug::kSamplingRate;
+/*static*/ constexpr SINT SoundSourceModPlug::kSampleRate;
 
 unsigned int SoundSourceModPlug::s_bufferSizeLimit = 0;
 
@@ -129,7 +129,7 @@ SoundSource::OpenResult SoundSourceModPlug::tryOpen(
     const ModSampleBuffer::size_type estimateMilliseconds =
             ModPlug::ModPlug_GetLength(m_pModFile);
     const ModSampleBuffer::size_type estimateSamples =
-            estimateMilliseconds * kChannelCount * kSamplingRate;
+            estimateMilliseconds * kChannelCount * kSampleRate;
     const ModSampleBuffer::size_type estimateChunks =
             (estimateSamples + (chunkSizeInSamples - 1)) / chunkSizeInSamples;
     const ModSampleBuffer::size_type sampleBufferCapacity = math_min(
@@ -163,7 +163,7 @@ SoundSource::OpenResult SoundSourceModPlug::tryOpen(
             << " samples unused capacity.";
 
     setChannelCount(kChannelCount);
-    setSamplingRate(kSamplingRate);
+    setSampleRate(kSampleRate);
     initFrameIndexRangeOnce(
             IndexRange::forward(
                     0,

@@ -295,10 +295,10 @@ bool SoundSourceM4A::openDecoder() {
                 << "Continuing with default values.";
     }
 
-    SAMPLERATE_TYPE samplingRate;
+    SAMPLERATE_TYPE sampleRate;
     unsigned char channelCount;
     if (0 > NeAACDecInit2(m_hDecoder, configBuffer, configBufferSize,
-                    &samplingRate, &channelCount)) {
+                    &sampleRate, &channelCount)) {
         free(configBuffer);
         kLogger.warning() << "Failed to initialize the AAC decoder!";
         return false;
@@ -314,7 +314,7 @@ bool SoundSourceM4A::openDecoder() {
             m_framesPerSampleBlock;
 
     setChannelCount(channelCount);
-    setSamplingRate(samplingRate);
+    setSampleRate(sampleRate);
     initFrameIndexRangeOnce(
             mixxx::IndexRange::forward(
                     0,
@@ -540,11 +540,11 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
                     << "<>" << channelCount();
             break; // abort
         }
-        VERIFY_OR_DEBUG_ASSERT(samplingRate() == SINT(decFrameInfo.samplerate)) {
+        VERIFY_OR_DEBUG_ASSERT(sampleRate() == SINT(decFrameInfo.samplerate)) {
             kLogger.critical()
                     << "Corrupt or unsupported AAC file:"
-                    << "Unexpected sampling rate" << decFrameInfo.samplerate
-                    << "<>" << samplingRate();
+                    << "Unexpected sample rate" << decFrameInfo.samplerate
+                    << "<>" << sampleRate();
             break; // abort
         }
 

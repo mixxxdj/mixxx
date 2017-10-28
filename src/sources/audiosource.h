@@ -79,7 +79,7 @@ class WritableSampleFrames: public SampleFrames {
 
 // Common base class for audio sources.
 //
-// Both the number of channels and the sampling rate must
+// Both the number of channels and the sample rate must
 // be constant and are not allowed to change over time.
 //
 // Samples in a sample buffer are stored as consecutive frames,
@@ -137,12 +137,12 @@ class AudioSource: public UrlResource, public AudioSignal {
         OpenParams()
             : AudioSignal(kSampleLayout) {
         }
-        OpenParams(ChannelCount channelCount, SamplingRate samplingRate)
-            : AudioSignal(kSampleLayout, channelCount, samplingRate) {
+        OpenParams(ChannelCount channelCount, SampleRate sampleRate)
+            : AudioSignal(kSampleLayout, channelCount, sampleRate) {
         }
 
         using AudioSignal::setChannelCount;
-        using AudioSignal::setSamplingRate;
+        using AudioSignal::setSampleRate;
     };
 
     // Opens the AudioSource for reading audio data.
@@ -194,11 +194,11 @@ class AudioSource: public UrlResource, public AudioSignal {
     // The actual duration in seconds.
     // Well defined only for valid files!
     inline bool hasDuration() const {
-        return samplingRate().valid();
+        return sampleRate().valid();
     }
     inline double getDuration() const {
         DEBUG_ASSERT(hasDuration()); // prevents division by zero
-        return double(frameIndexRange().length()) / double(samplingRate());
+        return double(frameIndexRange().length()) / double(sampleRate());
     }
 
 

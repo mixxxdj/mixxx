@@ -13,10 +13,10 @@ namespace {
 const Logger kLogger("SoundSourceOpus");
 
 // Decoded output of opusfile has a fixed sample rate of 48 kHz (fullband)
-constexpr SINT kSamplingRate = 48000;
+constexpr SINT kSampleRate = 48000;
 
 // http://opus-codec.org
-//  - Sampling rate 48 kHz (fullband)
+//  - Sample rate 48 kHz (fullband)
 //  - Frame sizes from 2.5 ms to 60 ms
 //   => Up to 48000 kHz * 0.06 s = 2880 sample frames per data frame
 // Prefetching 2 * 2880 sample frames while seeking limits the decoding
@@ -102,7 +102,7 @@ MetadataSource::ImportResult SoundSourceOpus::importTrackMetadataAndCoverImage(
     const OpusTags *l_ptrOpusTags = op_tags(l_ptrOpusFile, -1);
 
     pTrackMetadata->setChannels(op_channel_count(l_ptrOpusFile, -1));
-    pTrackMetadata->setSampleRate(kSamplingRate);
+    pTrackMetadata->setSampleRate(kSampleRate);
     pTrackMetadata->setBitrate(op_bitrate(l_ptrOpusFile, -1) / 1000);
     // Cast to double is required for duration with sub-second precision
     const double dTotalFrames = op_pcm_total(l_ptrOpusFile, -1);
@@ -228,7 +228,7 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(
         return OpenResult::Failed;
     }
 
-    setSamplingRate(kSamplingRate);
+    setSampleRate(kSampleRate);
 
     m_curFrameIndex = frameIndexMin();
 

@@ -359,7 +359,7 @@ void AnalyzerQueue::execThread() {
             // Make sure not to short-circuit initialize(...)
             if (pAnalyzer->initialize(
                     nextTrack,
-                    pAudioSource->samplingRate(),
+                    pAudioSource->sampleRate(),
                     pAudioSource->frameIndexRange().length() * kAnalysisChannels)) {
                 processTrack = true;
             }

@@ -65,9 +65,9 @@ mixxx::AudioSignal::ChannelCount getChannelCountOfStream(AVStream* pStream) {
 }
 
 inline
-mixxx::AudioSignal::SamplingRate getSamplingRateOfStream(AVStream* pStream) {
-    return mixxx::AudioSignal::SamplingRate(
-            m_pAVStreamWrapper.getSamplingRateOfStream(pStream));
+mixxx::AudioSignal::SampleRate getSampleRateOfStream(AVStream* pStream) {
+    return mixxx::AudioSignal::SampleRate(
+            m_pAVStreamWrapper.getSampleRateOfStream(pStream));
 }
 
 inline
@@ -82,8 +82,8 @@ bool getFrameIndexRangeOfStream(AVStream* pStream, mixxx::IndexRange* pFrameInde
         *pFrameIndexRange = mixxx::IndexRange();
         return true;
     }
-    DEBUG_ASSERT(getSamplingRateOfStream(pStream) > 0);
-    int64val *= getSamplingRateOfStream(pStream);
+    DEBUG_ASSERT(getSampleRateOfStream(pStream) > 0);
+    int64val *= getSampleRateOfStream(pStream);
     VERIFY_OR_DEBUG_ASSERT(int64val > 0) {
         // Integer overflow
         kLogger.warning()
@@ -401,11 +401,11 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
         return OpenResult::Aborted;
     }
 
-    const auto samplingRate = getSamplingRateOfStream(m_pAudioStream);
-    if (!samplingRate.valid()) {
+    const auto sampleRate = getSampleRateOfStream(m_pAudioStream);
+    if (!sampleRate.valid()) {
         kLogger.warning()
-                << "Stream has invalid or unsupported sampling rate:"
-                << samplingRate;
+                << "Stream has invalid or unsupported sample rate:"
+                << sampleRate;
         return OpenResult::Aborted;
     }
 
@@ -417,7 +417,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
     }
 
     setChannelCount(channelCount);
-    setSamplingRate(samplingRate);
+    setSampleRate(sampleRate);
     initFrameIndexRangeOnce(frameIndexRange);
 
 #if AVSTREAM_FROM_API_VERSION_3_1

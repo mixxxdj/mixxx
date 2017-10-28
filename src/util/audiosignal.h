@@ -74,20 +74,20 @@ public:
         SINT m_value;
     };
 
-    class SamplingRate {
+    class SampleRate {
       private:
         static constexpr SINT kValueDefault = 0;
 
       public:
-        static constexpr SINT kValueMin     = 8000;   // lower bound (inclusive, = minimum MP3 sampling rate)
+        static constexpr SINT kValueMin     = 8000;   // lower bound (inclusive, = minimum MP3 sample rate)
         static constexpr SINT kValueMax     = 192000; // upper bound (inclusive)
 
-        static constexpr SamplingRate min() { return SamplingRate(kValueMin); }
-        static constexpr SamplingRate max() { return SamplingRate(kValueMax); }
+        static constexpr SampleRate min() { return SampleRate(kValueMin); }
+        static constexpr SampleRate max() { return SampleRate(kValueMax); }
 
         static constexpr const char* unit() { return "Hz"; }
 
-        explicit constexpr SamplingRate(SINT value = kValueDefault)
+        explicit constexpr SampleRate(SINT value = kValueDefault)
             : m_value(value) {
         }
 
@@ -112,10 +112,10 @@ public:
     explicit AudioSignal(
             SampleLayout sampleLayout,
             ChannelCount channelCount,
-            SamplingRate samplingRate)
+            SampleRate sampleRate)
         : m_sampleLayout(sampleLayout) {
         setChannelCount(channelCount);
-        setSamplingRate(samplingRate);
+        setSampleRate(sampleRate);
     }
 
     virtual ~AudioSignal() = default;
@@ -130,15 +130,15 @@ public:
         return m_channelCount;
     }
 
-    // Returns the sampling rate in Hz. The sampling rate is defined as the
+    // Returns the sample rate in Hz. The sample rate is defined as the
     // number of samples per second for each channel. Please note that this
     // does not equal the total number of samples per second in the stream!
     //
     // NOTE(uklotzde): I consciously avoided the term "sample rate", because
     // that sounds like "number of samples per second" which is wrong for
     // signals with more than a single channel and might be misleading!
-    SamplingRate samplingRate() const {
-        return m_samplingRate;
+    SampleRate sampleRate() const {
+        return m_sampleRate;
     }
 
     // Verifies various properties to ensure that the audio data is
@@ -179,15 +179,15 @@ protected:
     bool setChannelCount(SINT channelCount) {
         return setChannelCount(ChannelCount(channelCount));
     }
-    bool setSamplingRate(SamplingRate samplingRate);
-    bool setSamplingRate(SINT samplingRate) {
-        return setSamplingRate(SamplingRate(samplingRate));
+    bool setSampleRate(SampleRate sampleRate);
+    bool setSampleRate(SINT sampleRate) {
+        return setSampleRate(SampleRate(sampleRate));
     }
 
 private:
     SampleLayout m_sampleLayout;
     ChannelCount m_channelCount;
-    SamplingRate m_samplingRate;
+    SampleRate m_sampleRate;
 };
 
 QDebug operator<<(QDebug dbg, AudioSignal::SampleLayout arg);

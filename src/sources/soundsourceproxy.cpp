@@ -608,8 +608,8 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
             if (m_pTrack) {
                 DEBUG_ASSERT(m_pAudioSource->channelCount().valid());
                 m_pTrack->setChannels(m_pAudioSource->channelCount());
-                DEBUG_ASSERT(m_pAudioSource->samplingRate().valid());
-                m_pTrack->setSampleRate(m_pAudioSource->samplingRate());
+                DEBUG_ASSERT(m_pAudioSource->sampleRate().valid());
+                m_pTrack->setSampleRate(m_pAudioSource->sampleRate());
                 if (m_pAudioSource->hasDuration()) {
                     // optional property
                     m_pTrack->setDuration(m_pAudioSource->getDuration());

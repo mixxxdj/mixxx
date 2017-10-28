@@ -84,7 +84,7 @@ SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(
         return OpenResult::Failed;
     }
     setChannelCount(vi->channels);
-    setSamplingRate(vi->rate);
+    setSampleRate(vi->rate);
     if (0 < vi->bitrate_nominal) {
         initBitrateOnce(vi->bitrate_nominal / 1000);
     } else {

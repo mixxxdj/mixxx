@@ -67,7 +67,7 @@ SoundSource::OpenResult SoundSourceWV::tryOpen(
     }
 
     setChannelCount(WavpackGetReducedChannels(m_wpc));
-    setSamplingRate(WavpackGetSampleRate(m_wpc));
+    setSampleRate(WavpackGetSampleRate(m_wpc));
     initFrameIndexRangeOnce(
             mixxx::IndexRange::forward(
                     0,

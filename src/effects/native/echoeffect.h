@@ -21,7 +21,7 @@ struct EchoGroupState {
     static constexpr mixxx::AudioSignal::ChannelCount kChannelCount = mixxx::AudioSignal::ChannelCount::stereo();
 
     EchoGroupState()
-            : delay_buf(mixxx::AudioSignal::SamplingRate::max() * kMaxDelaySeconds *
+            : delay_buf(mixxx::AudioSignal::SampleRate::max() * kMaxDelaySeconds *
                         kChannelCount) {
         delay_buf.clear();
         prev_send = 0.0f;
