@@ -66,8 +66,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                            tr("Stop playback and jump to start of track"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("end", tr("Jump To End"), tr("Jump to end of track"), transportMenu);
     addDeckAndSamplerControl("volume", tr("Volume"), tr("Volume Fader"), transportMenu, true);
-    addDeckAndSamplerControl("volume_set_one", tr("Full Volume"), tr("Sets volume to full"), transportMenu);
-    addDeckAndSamplerControl("volume_set_zero", tr("Zero Volume"), tr("Sets volume to zero"), transportMenu);
+    addDeckAndSamplerControl("volume_set_one", tr("Full Volume"), tr("Set to full volume"), transportMenu);
+    addDeckAndSamplerControl("volume_set_zero", tr("Zero Volume"), tr("Set to zero volume"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("pregain", tr("Track Gain"), tr("Track Gain knob"), transportMenu, true);
     addDeckAndSamplerControl("mute", tr("Mute"), tr("Mute button"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("eject", tr("Eject"), tr("Eject track"), transportMenu);
@@ -708,11 +708,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                tr("Volume Fader"), microphoneMenu,
                                true, true, true);
     addMicrophoneAndAuxControl("volume_set_one",
-                               tr("Volume Full"),
+                               tr("Full Volume"),
                                tr("Set to full volume"), microphoneMenu,
                                true, true);
     addMicrophoneAndAuxControl("volume_set_zero",
-                               tr("Volume Zero"),
+                               tr("Zero Volume"),
                                tr("Set to zero volume"), microphoneMenu,
                                true, true);
     addMicrophoneAndAuxControl("mute",
