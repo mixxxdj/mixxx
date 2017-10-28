@@ -3,7 +3,7 @@
   <info>
     <name>Vestax VCI-100MKII</name>
     <author>Takeshi Soejima</author>
-    <description>2017-11-1</description>
+    <description>2017-11-2</description>
     <wiki>http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii</wiki>
   </info>
   <controller id="VCI-100MKII">
@@ -1468,27 +1468,39 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>enabled</key>
+        <key>VCI102.mix_toggle</key>
         <status>0x90</status>
         <midino>0x28</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2]</group>
-        <key>enabled</key>
+        <key>VCI102.mix_toggle</key>
         <status>0x91</status>
         <midino>0x2C</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit3]</group>
-        <key>enabled</key>
+        <key>VCI102.mix_toggle</key>
         <status>0x92</status>
         <midino>0x28</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit4]</group>
-        <key>enabled</key>
+        <key>VCI102.mix_toggle</key>
         <status>0x93</status>
         <midino>0x2C</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
@@ -1994,34 +2006,6 @@
         <key>enabled</key>
         <status>0x93</status>
         <midino>0x27</midino>
-        <minimum>1</minimum>
-      </output>
-      <output>
-        <group>[EffectRack1_EffectUnit1]</group>
-        <key>enabled</key>
-        <status>0x90</status>
-        <midino>0x28</midino>
-        <minimum>1</minimum>
-      </output>
-      <output>
-        <group>[EffectRack1_EffectUnit2]</group>
-        <key>enabled</key>
-        <status>0x91</status>
-        <midino>0x2C</midino>
-        <minimum>1</minimum>
-      </output>
-      <output>
-        <group>[EffectRack1_EffectUnit3]</group>
-        <key>enabled</key>
-        <status>0x92</status>
-        <midino>0x28</midino>
-        <minimum>1</minimum>
-      </output>
-      <output>
-        <group>[EffectRack1_EffectUnit4]</group>
-        <key>enabled</key>
-        <status>0x93</status>
-        <midino>0x2C</midino>
         <minimum>1</minimum>
       </output>
       <output>

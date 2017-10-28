@@ -1,6 +1,6 @@
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2017-11-1
+// description: 2017-11-2
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 // JSHint Configuration
@@ -275,13 +275,30 @@ VCI102.parameter3 = function(ch, midino, value, status, group) {
     }
 };
 
+VCI102.mix_enabled = [0, 0, 0, 0];
+VCI102.value4 = [0, 0, 0, 0];  // recent value of parameter4 knob
+
+VCI102.mix_toggle = function(ch, midino, value, status, group) {
+    if (value) {
+        VCI102.mix_enabled[ch] ^= 127;
+        if (VCI102.mix_enabled[ch]) {
+            engine.softTakeoverIgnoreNextValue(group, "mix");
+            VCI102.set(group, "mix", VCI102.value4[ch]);  // prevent slip
+        }
+        midi.sendShortMsg(status, midino, VCI102.mix_enabled[ch]);
+    }
+};
+
 VCI102.parameter4 = function(ch, midino, value, status, group) {
     var n = engine.getValue(group, "focused_effect");
-    if (n) {
+    if (VCI102.mix_enabled[ch]) {
+        VCI102.set(group, "mix", value);
+    } else if (n) {
         VCI102.parameter(ch, VCI102.slot(group, n), "parameter4", value);
     } else {
         VCI102.super1(ch, midino, value, status, group);
     }
+    VCI102.value4[ch] = value;
 };
 
 VCI102.prev_effect = function(ch, midino, value, status, group) {
@@ -457,5 +474,6 @@ VCI102.init = function(id, debug) {
     });
     VCI102.fx12.concat(VCI102.fx34).forEach(function(fx) {
         engine.setValue(fx, "show_focus", 1);
+        engine.softTakeover(fx, "mix", true);
     });
 };
