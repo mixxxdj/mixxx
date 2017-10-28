@@ -101,12 +101,13 @@ MetadataSource::ImportResult SoundSourceOpus::importTrackMetadataAndCoverImage(
     int i = 0;
     const OpusTags *l_ptrOpusTags = op_tags(l_ptrOpusFile, -1);
 
-    pTrackMetadata->setChannels(ChannelCount(op_channel_count(l_ptrOpusFile, -1)));
-    pTrackMetadata->setSampleRate(kSampleRate);
-    pTrackMetadata->setBitrate(Bitrate(op_bitrate(l_ptrOpusFile, -1) / 1000));
+    pTrackMetadata->refTrackInfo().setChannels(ChannelCount(op_channel_count(l_ptrOpusFile, -1)));
+    pTrackMetadata->refTrackInfo().setSampleRate(kSampleRate);
+    pTrackMetadata->refTrackInfo().setBitrate(Bitrate(op_bitrate(l_ptrOpusFile, -1) / 1000));
     // Cast to double is required for duration with sub-second precision
     const double dTotalFrames = op_pcm_total(l_ptrOpusFile, -1);
-    pTrackMetadata->setDuration(Duration::fromMicros(1000000 * dTotalFrames / pTrackMetadata->getSampleRate()));
+    pTrackMetadata->refTrackInfo().setDuration(Duration::fromMicros(
+            1000000 * dTotalFrames / pTrackMetadata->getTrackInfo().getSampleRate()));
 
     bool hasDate = false;
     for (i = 0; i < l_ptrOpusTags->comments; ++i) {
@@ -115,35 +116,43 @@ MetadataSource::ImportResult SoundSourceOpus::importTrackMetadataAndCoverImage(
         QString l_SPayload = l_SWholeTag.right((l_SWholeTag.length() - l_SWholeTag.indexOf("=")) - 1);
 
         if (!l_STag.compare("ARTIST")) {
-            pTrackMetadata->setArtist(l_SPayload);
+            pTrackMetadata->refTrackInfo().setArtist(l_SPayload);
         } else if (!l_STag.compare("ALBUM")) {
-            pTrackMetadata->setAlbum(l_SPayload);
+            pTrackMetadata->refAlbumInfo().setTitle(l_SPayload);
         } else if (!l_STag.compare("BPM")) {
-            pTrackMetadata->setBpm(Bpm(l_SPayload.toDouble()));
+            pTrackMetadata->refTrackInfo().setBpm(Bpm(l_SPayload.toDouble()));
         } else if (!l_STag.compare("DATE")) {
             // Prefer "DATE" over "YEAR"
-            pTrackMetadata->setYear(l_SPayload.trimmed());
+            pTrackMetadata->refTrackInfo().setYear(l_SPayload.trimmed());
             // Avoid to overwrite "DATE" with "YEAR"
-            hasDate |= !pTrackMetadata->getYear().isEmpty();
+            hasDate |= !pTrackMetadata->getTrackInfo().getYear().isEmpty();
         } else if (!hasDate && !l_STag.compare("YEAR")) {
-            pTrackMetadata->setYear(l_SPayload.trimmed());
+            pTrackMetadata->refTrackInfo().setYear(l_SPayload.trimmed());
         } else if (!l_STag.compare("GENRE")) {
-            pTrackMetadata->setGenre(l_SPayload);
+            pTrackMetadata->refTrackInfo().setGenre(l_SPayload);
         } else if (!l_STag.compare("TRACKNUMBER")) {
-            pTrackMetadata->setTrackNumber(l_SPayload);
+            pTrackMetadata->refTrackInfo().setTrackNumber(l_SPayload);
         } else if (!l_STag.compare("COMPOSER")) {
-            pTrackMetadata->setComposer(l_SPayload);
+            pTrackMetadata->refTrackInfo().setComposer(l_SPayload);
         } else if (!l_STag.compare("ALBUMARTIST")) {
-            pTrackMetadata->setAlbumArtist(l_SPayload);
+            pTrackMetadata->refAlbumInfo().setArtist(l_SPayload);
         } else if (!l_STag.compare("TITLE")) {
-            pTrackMetadata->setTitle(l_SPayload);
+            pTrackMetadata->refTrackInfo().setTitle(l_SPayload);
         } else if (!l_STag.compare("REPLAYGAIN_TRACK_GAIN")) {
-            bool trackGainRatioValid = false;
-            double trackGainRatio = ReplayGain::ratioFromString(l_SPayload, &trackGainRatioValid);
-            if (trackGainRatioValid) {
-                ReplayGain trackGain(pTrackMetadata->getReplayGain());
-                trackGain.setRatio(trackGainRatio);
-                pTrackMetadata->setReplayGain(trackGain);
+            bool gainRatioValid = false;
+            double gainRatio = ReplayGain::ratioFromString(l_SPayload, &gainRatioValid);
+            if (gainRatioValid) {
+                ReplayGain trackGain(pTrackMetadata->getTrackInfo().getReplayGain());
+                trackGain.setRatio(gainRatio);
+                pTrackMetadata->refTrackInfo().setReplayGain(trackGain);
+            }
+        } else if (!l_STag.compare("REPLAYGAIN_ALBUM_GAIN")) {
+            bool gainRatioValid = false;
+            double gainRatio = ReplayGain::ratioFromString(l_SPayload, &gainRatioValid);
+            if (gainRatioValid) {
+                ReplayGain albumGain(pTrackMetadata->getAlbumInfo().getReplayGain());
+                albumGain.setRatio(gainRatio);
+                pTrackMetadata->refAlbumInfo().setReplayGain(albumGain);
             }
         }
     }

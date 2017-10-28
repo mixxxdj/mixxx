@@ -404,20 +404,20 @@ namespace {
         fileName.replace("_", " ");
         QString titleWithFileType;
         if (fileName.count('-') == 1) {
-            if (pTrackMetadata->getArtist().isEmpty()) {
+            if (pTrackMetadata->getTrackInfo().getArtist().isEmpty()) {
                 const QString artist(fileName.section('-', 0, 0).trimmed());
                 if (!artist.isEmpty()) {
-                    pTrackMetadata->setArtist(artist);
+                    pTrackMetadata->refTrackInfo().setArtist(artist);
                 }
             }
             titleWithFileType = fileName.section('-', 1, 1).trimmed();
         } else {
             titleWithFileType = fileName.trimmed();
         }
-        if (pTrackMetadata->getTitle().isEmpty()) {
+        if (pTrackMetadata->getTrackInfo().getTitle().isEmpty()) {
             const QString title(titleWithFileType.section('.', 0, -2).trimmed());
             if (!title.isEmpty()) {
-                pTrackMetadata->setTitle(title);
+                pTrackMetadata->refTrackInfo().setTitle(title);
             }
         }
     }
@@ -488,7 +488,9 @@ void SoundSourceProxy::updateTrack(
         return; // abort
     }
 
-    if (!parsedFromFile && (trackMetadata.getArtist().isEmpty() || trackMetadata.getTitle().isEmpty())) {
+    if (!parsedFromFile &&
+            (trackMetadata.getTrackInfo().getArtist().isEmpty() ||
+                    trackMetadata.getTrackInfo().getTitle().isEmpty())) {
         // Fallback: If Artist or title fields are blank initially try to parse
         // them from the file name.
         // TODO(rryan): Should we re-visit this decision?

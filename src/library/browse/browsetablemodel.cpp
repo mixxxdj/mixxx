@@ -273,44 +273,45 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
     mixxx::TrackMetadata trackMetadata;
 
     // set tagger information
-    trackMetadata.setArtist(this->index(row, COLUMN_ARTIST).data().toString());
-    trackMetadata.setTitle(this->index(row, COLUMN_TITLE).data().toString());
-    trackMetadata.setAlbum(this->index(row, COLUMN_ALBUM).data().toString());
-    trackMetadata.setKey(this->index(row, COLUMN_KEY).data().toString());
-    trackMetadata.setBpm(mixxx::Bpm(this->index(row, COLUMN_BPM).data().toDouble()));
-    trackMetadata.setComment(this->index(row, COLUMN_COMMENT).data().toString());
-    trackMetadata.setTrackNumber(this->index(row, COLUMN_TRACK_NUMBER).data().toString());
-    trackMetadata.setYear(this->index(row, COLUMN_YEAR).data().toString());
-    trackMetadata.setGenre(this->index(row, COLUMN_GENRE).data().toString());
-    trackMetadata.setComposer(this->index(row, COLUMN_COMPOSER).data().toString());
-    trackMetadata.setAlbumArtist(this->index(row, COLUMN_ALBUMARTIST).data().toString());
-    trackMetadata.setGrouping(this->index(row, COLUMN_GROUPING).data().toString());
+    trackMetadata.refAlbumInfo().setTitle(this->index(row, COLUMN_ALBUM).data().toString());
+    trackMetadata.refAlbumInfo().setArtist(this->index(row, COLUMN_ALBUMARTIST).data().toString());
+
+    trackMetadata.refTrackInfo().setArtist(this->index(row, COLUMN_ARTIST).data().toString());
+    trackMetadata.refTrackInfo().setTitle(this->index(row, COLUMN_TITLE).data().toString());
+    trackMetadata.refTrackInfo().setKey(this->index(row, COLUMN_KEY).data().toString());
+    trackMetadata.refTrackInfo().setBpm(mixxx::Bpm(this->index(row, COLUMN_BPM).data().toDouble()));
+    trackMetadata.refTrackInfo().setComment(this->index(row, COLUMN_COMMENT).data().toString());
+    trackMetadata.refTrackInfo().setTrackNumber(this->index(row, COLUMN_TRACK_NUMBER).data().toString());
+    trackMetadata.refTrackInfo().setYear(this->index(row, COLUMN_YEAR).data().toString());
+    trackMetadata.refTrackInfo().setGenre(this->index(row, COLUMN_GENRE).data().toString());
+    trackMetadata.refTrackInfo().setComposer(this->index(row, COLUMN_COMPOSER).data().toString());
+    trackMetadata.refTrackInfo().setGrouping(this->index(row, COLUMN_GROUPING).data().toString());
 
     // check if one the item were edited
     if (col == COLUMN_ARTIST) {
-        trackMetadata.setArtist(value.toString());
+        trackMetadata.refTrackInfo().setArtist(value.toString());
     } else if (col == COLUMN_TITLE) {
-        trackMetadata.setTitle(value.toString());
+        trackMetadata.refTrackInfo().setTitle(value.toString());
     } else if (col == COLUMN_ALBUM) {
-        trackMetadata.setAlbum(value.toString());
+        trackMetadata.refAlbumInfo().setTitle(value.toString());
     } else if (col == COLUMN_BPM) {
-        trackMetadata.setBpm(mixxx::Bpm(value.toDouble()));
+        trackMetadata.refTrackInfo().setBpm(mixxx::Bpm(value.toDouble()));
     } else if (col == COLUMN_KEY) {
-        trackMetadata.setKey(value.toString());
+        trackMetadata.refTrackInfo().setKey(value.toString());
     } else if (col == COLUMN_TRACK_NUMBER) {
-        trackMetadata.setTrackNumber(value.toString());
+        trackMetadata.refTrackInfo().setTrackNumber(value.toString());
     } else if (col == COLUMN_COMMENT) {
-        trackMetadata.setComment(value.toString());
+        trackMetadata.refTrackInfo().setComment(value.toString());
     } else if (col == COLUMN_GENRE) {
-        trackMetadata.setGenre(value.toString());
+        trackMetadata.refTrackInfo().setGenre(value.toString());
     } else if (col == COLUMN_COMPOSER) {
-        trackMetadata.setComposer(value.toString());
+        trackMetadata.refTrackInfo().setComposer(value.toString());
     } else if (col == COLUMN_YEAR) {
-        trackMetadata.setYear(value.toString());
+        trackMetadata.refTrackInfo().setYear(value.toString());
     } else if (col == COLUMN_ALBUMARTIST) {
-        trackMetadata.setAlbumArtist(value.toString());
+        trackMetadata.refAlbumInfo().setArtist(value.toString());
     } else if (col == COLUMN_GROUPING) {
-        trackMetadata.setGrouping(value.toString());
+        trackMetadata.refTrackInfo().setGrouping(value.toString());
     } else {
         qWarning() << "BrowseTableModel::setData(): no tagger column";
         return false;

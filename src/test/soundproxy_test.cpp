@@ -177,7 +177,7 @@ TEST_F(SoundSourceProxyTest, readArtist) {
     SoundSourceProxy proxy(pTrack);
     mixxx::TrackMetadata trackMetadata;
     EXPECT_EQ(mixxx::MetadataSource::ImportResult::Succeeded, proxy.importTrackMetadata(&trackMetadata));
-    EXPECT_EQ("Test Artist", trackMetadata.getArtist());
+    EXPECT_EQ("Test Artist", trackMetadata.getTrackInfo().getArtist());
 }
 
 TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
@@ -186,9 +186,9 @@ TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
     SoundSourceProxy proxy(pTrack);
     mixxx::TrackMetadata trackMetadata;
     EXPECT_EQ(mixxx::MetadataSource::ImportResult::Succeeded, proxy.importTrackMetadata(&trackMetadata));
-    EXPECT_EQ("TITLE2", trackMetadata.getArtist());
-    EXPECT_EQ("ARTIST", trackMetadata.getAlbum());
-    EXPECT_EQ("TITLE", trackMetadata.getAlbumArtist());
+    EXPECT_EQ("TITLE2", trackMetadata.getTrackInfo().getArtist());
+    EXPECT_EQ("ARTIST", trackMetadata.getAlbumInfo().getTitle());
+    EXPECT_EQ("TITLE", trackMetadata.getAlbumInfo().getArtist());
 }
 
 TEST_F(SoundSourceProxyTest, seekForwardBackward) {

@@ -21,6 +21,7 @@ public:
     AlbumInfo() = default;
     AlbumInfo(AlbumInfo&&) = default;
     AlbumInfo(const AlbumInfo&) = default;
+    /*non-virtual*/ ~AlbumInfo() = default;
 
     AlbumInfo& operator=(AlbumInfo&&) = default;
     AlbumInfo& operator=(const AlbumInfo&) = default;

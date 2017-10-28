@@ -39,13 +39,13 @@ class AiffFile: public TagLib::RIFF::AIFF::File {
         for(unsigned int i = 0; i < chunkCount(); ++i) {
             const TagLib::ByteVector chunkId(TagLib::RIFF::AIFF::File::chunkName(i));
             if (chunkId == "NAME") {
-                pTrackMetadata->setTitle(decodeChunkText(
+                pTrackMetadata->refTrackInfo().setTitle(decodeChunkText(
                         TagLib::RIFF::AIFF::File::chunkData(i)));
             } else if (chunkId == "AUTH") {
-                pTrackMetadata->setArtist(decodeChunkText(
+                pTrackMetadata->refTrackInfo().setArtist(decodeChunkText(
                         TagLib::RIFF::AIFF::File::chunkData(i)));
             } else if (chunkId == "ANNO") {
-                pTrackMetadata->setComment(decodeChunkText(
+                pTrackMetadata->refTrackInfo().setComment(decodeChunkText(
                         TagLib::RIFF::AIFF::File::chunkData(i)));
             }
         }

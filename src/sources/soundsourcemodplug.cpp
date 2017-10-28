@@ -79,10 +79,10 @@ MetadataSource::ImportResult SoundSourceModPlug::importTrackMetadataAndCoverImag
             return ImportResult::Failed;
         }
 
-        pTrackMetadata->setComment(QString(ModPlug::ModPlug_GetMessage(pModFile)));
-        pTrackMetadata->setTitle(QString(ModPlug::ModPlug_GetName(pModFile)));
-        pTrackMetadata->setDuration(Duration::fromMillis(ModPlug::ModPlug_GetLength(pModFile)));
-        pTrackMetadata->setBitrate(Bitrate(8)); // not really, but fill in something...
+        pTrackMetadata->refTrackInfo().setComment(QString(ModPlug::ModPlug_GetMessage(pModFile)));
+        pTrackMetadata->refTrackInfo().setTitle(QString(ModPlug::ModPlug_GetName(pModFile)));
+        pTrackMetadata->refTrackInfo().setDuration(Duration::fromMillis(ModPlug::ModPlug_GetLength(pModFile)));
+        pTrackMetadata->refTrackInfo().setBitrate(Bitrate(8)); // not really, but fill in something...
         ModPlug::ModPlug_Unload(pModFile);
     }
 

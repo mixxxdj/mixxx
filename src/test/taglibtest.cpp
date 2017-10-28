@@ -68,7 +68,7 @@ TEST_F(TagLibTest, WriteID3v2Tag) {
 
     // Write metadata -> only an ID3v2 tag should be added
     mixxx::TrackMetadata trackMetadata;
-    trackMetadata.setTitle("title");
+    trackMetadata.refTrackInfo().setTitle("title");
     ASSERT_EQ(mixxx::MetadataSource::ExportResult::Succeeded,
             mixxx::MetadataSourceTagLib(tmpFileName, mixxx::taglib::FileType::MP3).exportTrackMetadata(
                     trackMetadata));
@@ -83,7 +83,7 @@ TEST_F(TagLibTest, WriteID3v2Tag) {
     }
 
     // Write metadata again -> only the ID3v2 tag should be modified
-    trackMetadata.setTitle("title2");
+    trackMetadata.refTrackInfo().setTitle("title2");
     ASSERT_EQ(mixxx::MetadataSource::ExportResult::Succeeded,
             mixxx::MetadataSourceTagLib(tmpFileName, mixxx::taglib::FileType::MP3).exportTrackMetadata(
                     trackMetadata));

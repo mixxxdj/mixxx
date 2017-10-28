@@ -1406,12 +1406,12 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         mixxx::TrackMetadata trackMetadata;
         if (SoundSourceProxy(pTrack).importTrackMetadata(&trackMetadata) == mixxx::MetadataSource::ImportResult::Succeeded) {
             // Copy the track total from the temporary track object
-            pTrack->setTrackTotal(trackMetadata.getTrackTotal());
+            pTrack->setTrackTotal(trackMetadata.getTrackInfo().getTrackTotal());
             // Also set the track number if it is still empty due
             // to insufficient parsing capabilities of Mixxx in
             // previous versions.
-            if (!trackMetadata.getTrackNumber().isEmpty() && pTrack->getTrackNumber().isEmpty()) {
-                pTrack->setTrackNumber(trackMetadata.getTrackNumber());
+            if (!trackMetadata.getTrackInfo().getTrackNumber().isEmpty() && pTrack->getTrackNumber().isEmpty()) {
+                pTrack->setTrackNumber(trackMetadata.getTrackInfo().getTrackNumber());
             }
         } else {
             qWarning() << "Failed to reload value for 'tracktotal' from file tags:"

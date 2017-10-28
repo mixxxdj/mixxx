@@ -40,6 +40,7 @@ public:
     TrackInfo() = default;
     TrackInfo(TrackInfo&&) = default;
     TrackInfo(const TrackInfo&) = default;
+    /*non-virtual*/ ~TrackInfo() = default;
 
     TrackInfo& operator=(TrackInfo&&) = default;
     TrackInfo& operator=(const TrackInfo&) = default;

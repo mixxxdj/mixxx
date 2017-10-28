@@ -281,7 +281,7 @@ class Track : public QObject {
 
     // Set/get track metadata and cover art (optional) all at once.
     void setTrackMetadata(
-            const mixxx::TrackMetadata& trackMetadata,
+            mixxx::TrackMetadata trackMetadata,
             bool parsedFromFile);
     void getTrackMetadata(
             mixxx::TrackMetadata* pTrackMetadata,
@@ -371,7 +371,7 @@ class Track : public QObject {
     // File type
     QString m_sType;
 
-    // Track metadata
+    // Album/Track metadata
     mixxx::TrackMetadata m_metadata;
 
     // URL (used in promo track)
