@@ -745,11 +745,10 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     QMenu* autodjMenu = addSubmenu(tr("Auto DJ"));
     addControl("[AutoDJ]", "shuffle_playlist",
                tr("Auto DJ Shuffle"),
-               tr("Shuffle the content of the Auto DJ playlist"),
-               autodjMenu);
+               tr("Shuffle the content of the Auto DJ queue"), autodjMenu);
     addControl("[AutoDJ]", "skip_next",
                tr("Auto DJ Skip Next"),
-               tr("Skip the next track in the Auto DJ playlist"), autodjMenu);
+               tr("Skip the next track in the Auto DJ queue"), autodjMenu);
     addControl("[AutoDJ]", "fade_now",
                tr("Auto DJ Fade To Next"),
                tr("Trigger the transition to the next track"), autodjMenu);
