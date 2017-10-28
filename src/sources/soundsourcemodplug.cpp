@@ -82,7 +82,7 @@ MetadataSource::ImportResult SoundSourceModPlug::importTrackMetadataAndCoverImag
         pTrackMetadata->setComment(QString(ModPlug::ModPlug_GetMessage(pModFile)));
         pTrackMetadata->setTitle(QString(ModPlug::ModPlug_GetName(pModFile)));
         pTrackMetadata->setDuration(Duration::fromMillis(ModPlug::ModPlug_GetLength(pModFile)));
-        pTrackMetadata->setBitrate(8); // not really, but fill in something...
+        pTrackMetadata->setBitrate(Bitrate(8)); // not really, but fill in something...
         ModPlug::ModPlug_Unload(pModFile);
     }
 

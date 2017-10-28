@@ -606,7 +606,7 @@ void Track::setType(const QString& sType) {
 void Track::setSampleRate(int iSampleRate) {
     QMutexLocker lock(&m_qMutex);
     if (m_metadata.getSampleRate() != iSampleRate) {
-        m_metadata.setSampleRate(iSampleRate);
+        m_metadata.setSampleRate(mixxx::AudioSignal::SampleRate(iSampleRate));
         markDirtyAndUnlock(&lock);
     }
 }
@@ -619,7 +619,7 @@ int Track::getSampleRate() const {
 void Track::setChannels(int iChannels) {
     QMutexLocker lock(&m_qMutex);
     if (m_metadata.getChannels() != iChannels) {
-        m_metadata.setChannels(iChannels);
+        m_metadata.setChannels(mixxx::AudioSignal::ChannelCount(iChannels));
         markDirtyAndUnlock(&lock);
     }
 }
@@ -641,7 +641,7 @@ QString Track::getBitrateText() const {
 void Track::setBitrate(int iBitrate) {
     QMutexLocker lock(&m_qMutex);
     if (m_metadata.getBitrate() != iBitrate) {
-        m_metadata.setBitrate(iBitrate);
+        m_metadata.setBitrate(mixxx::AudioSource::Bitrate(iBitrate));
         markDirtyAndUnlock(&lock);
     }
 }

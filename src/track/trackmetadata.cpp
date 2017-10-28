@@ -66,12 +66,6 @@ QString TrackMetadata::reformatYear(QString year) {
     return year.simplified();
 }
 
-TrackMetadata::TrackMetadata()
-    : m_bitrate(0),
-      m_channels(0),
-      m_sampleRate(0) {
-}
-
 bool operator==(const TrackMetadata& lhs, const TrackMetadata& rhs) {
     // Compare the integer and double fields 1st for maximum efficiency
     return (lhs.getBitrate() == rhs.getBitrate()) &&

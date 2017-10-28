@@ -284,9 +284,9 @@ void readAudioProperties(
     // the audio data for this track. Often those properties
     // stored in tags don't match with the corresponding
     // audio data in the file.
-    pTrackMetadata->setChannels(audioProperties.channels());
-    pTrackMetadata->setSampleRate(audioProperties.sampleRate());
-    pTrackMetadata->setBitrate(audioProperties.bitrate());
+    pTrackMetadata->setChannels(AudioSignal::ChannelCount(audioProperties.channels()));
+    pTrackMetadata->setSampleRate(AudioSignal::SampleRate(audioProperties.sampleRate()));
+    pTrackMetadata->setBitrate(AudioSource::Bitrate(audioProperties.bitrate()));
 #if (TAGLIB_HAS_LENGTH_IN_MILLISECONDS)
     const auto duration = Duration::fromMillis(audioProperties.lengthInMilliseconds());
 #else

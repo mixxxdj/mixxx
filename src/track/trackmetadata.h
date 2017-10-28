@@ -5,6 +5,7 @@
 
 #include "track/bpm.h"
 #include "track/replaygain.h"
+#include "sources/audiosource.h"
 #include "util/duration.h"
 
 namespace mixxx {
@@ -12,8 +13,6 @@ namespace mixxx {
 // DTO for track metadata properties. Must not be subclassed (no virtual destructor)!
 class TrackMetadata final {
 public:
-    TrackMetadata();
-
     const QString& getArtist() const {
         return m_artist;
     }
@@ -98,27 +97,24 @@ public:
         m_key = key;
     }
 
-    // #channels
-    int getChannels() const {
+    AudioSignal::ChannelCount getChannels() const {
         return m_channels;
     }
-    void setChannels(int channels) {
+    void setChannels(AudioSignal::ChannelCount channels) {
         m_channels = channels;
     }
 
-    // Hz
-    int getSampleRate() const {
+    AudioSignal::SampleRate getSampleRate() const {
         return m_sampleRate;
     }
-    void setSampleRate(int sampleRate) {
+    void setSampleRate(AudioSignal::SampleRate sampleRate) {
         m_sampleRate = sampleRate;
     }
 
-    // kbit / s
-    int getBitrate() const {
+    AudioSource::Bitrate getBitrate() const {
         return m_bitrate;
     }
-    void setBitrate(int bitrate) {
+    void setBitrate(AudioSource::Bitrate bitrate) {
         m_bitrate = bitrate;
     }
 
@@ -130,7 +126,7 @@ public:
     }
 
     // beats / minute
-    const Bpm& getBpm() const {
+    Bpm getBpm() const {
         return m_bpm;
     }
     void setBpm(Bpm bpm) {
@@ -190,10 +186,9 @@ private:
     Bpm m_bpm;
     ReplayGain m_replayGain;
 
-    // Integer fields (in alphabetical order)
-    int m_bitrate; // kbit/s
-    int m_channels;
-    int m_sampleRate; // Hz
+    AudioSignal::ChannelCount m_channels;
+    AudioSignal::SampleRate m_sampleRate;
+    AudioSource::Bitrate m_bitrate;
 };
 
 bool operator==(const TrackMetadata& lhs, const TrackMetadata& rhs);
