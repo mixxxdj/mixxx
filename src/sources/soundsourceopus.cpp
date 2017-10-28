@@ -106,7 +106,7 @@ MetadataSource::ImportResult SoundSourceOpus::importTrackMetadataAndCoverImage(
     pTrackMetadata->setBitrate(op_bitrate(l_ptrOpusFile, -1) / 1000);
     // Cast to double is required for duration with sub-second precision
     const double dTotalFrames = op_pcm_total(l_ptrOpusFile, -1);
-    pTrackMetadata->setDuration(dTotalFrames / pTrackMetadata->getSampleRate());
+    pTrackMetadata->setDuration(Duration::fromMicros(1000000 * dTotalFrames / pTrackMetadata->getSampleRate()));
 
     bool hasDate = false;
     for (i = 0; i < l_ptrOpusTags->comments; ++i) {

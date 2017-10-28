@@ -381,7 +381,7 @@ void Track::setDateAdded(const QDateTime& dateAdded) {
     m_dateAdded = dateAdded;
 }
 
-void Track::setDuration(double duration) {
+void Track::setDuration(mixxx::Duration duration) {
     QMutexLocker lock(&m_qMutex);
     if (m_metadata.getDuration() != duration) {
         m_metadata.setDuration(duration);
@@ -389,17 +389,18 @@ void Track::setDuration(double duration) {
     }
 }
 
+void Track::setDuration(double duration) {
+    setDuration(mixxx::Duration::fromNanos(duration * 1000000000L));
+}
+
 double Track::getDuration(DurationRounding rounding) const {
     QMutexLocker lock(&m_qMutex);
     switch (rounding) {
     case DurationRounding::SECONDS:
-        return std::round(m_metadata.getDuration());
-    case DurationRounding::NONE:
-        return m_metadata.getDuration();
+        return std::round(m_metadata.getDuration().toDoubleSeconds());
+    default:
+        return m_metadata.getDuration().toDoubleSeconds();
     }
-    // unreachable code / avoid compiler warnings
-    DEBUG_ASSERT(!"unhandled enum value");
-    return m_metadata.getDuration();
 }
 
 QString Track::getDurationText(mixxx::Duration::Precision precision) const {

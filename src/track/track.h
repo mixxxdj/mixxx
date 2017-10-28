@@ -113,6 +113,7 @@ class Track : public QObject {
     // Returns the bitrate as a string
     QString getBitrateText() const;
 
+    void setDuration(mixxx::Duration duration);
     void setDuration(double duration);
     double getDuration() const {
         return getDuration(DurationRounding::NONE);

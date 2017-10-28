@@ -67,8 +67,7 @@ QString TrackMetadata::reformatYear(QString year) {
 }
 
 TrackMetadata::TrackMetadata()
-    : m_duration(0.0),
-      m_bitrate(0),
+    : m_bitrate(0),
       m_channels(0),
       m_sampleRate(0) {
 }

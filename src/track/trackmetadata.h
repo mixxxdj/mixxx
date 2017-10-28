@@ -5,6 +5,7 @@
 
 #include "track/bpm.h"
 #include "track/replaygain.h"
+#include "util/duration.h"
 
 namespace mixxx {
 
@@ -121,11 +122,10 @@ public:
         m_bitrate = bitrate;
     }
 
-    // #seconds
-    double getDuration() const {
+    Duration getDuration() const {
         return m_duration;
     }
-    void setDuration(double duration) {
+    void setDuration(Duration duration) {
         m_duration = duration;
     }
 
@@ -186,11 +186,9 @@ private:
     QString m_trackTotal;
     QString m_year;
 
+    Duration m_duration;
     Bpm m_bpm;
     ReplayGain m_replayGain;
-
-    // Floating-point fields (in alphabetical order)
-    double m_duration; // seconds
 
     // Integer fields (in alphabetical order)
     int m_bitrate; // kbit/s
