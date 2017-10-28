@@ -1074,6 +1074,8 @@ class MixxxCore(Feature):
                    "track/trackmetadata.cpp",
                    "track/trackmetadatataglib.cpp",
                    "track/tracknumbers.cpp",
+                   "track/albuminfo.cpp",
+                   "track/trackinfo.cpp",
 
                    "mixer/auxiliary.cpp",
                    "mixer/baseplayer.cpp",
