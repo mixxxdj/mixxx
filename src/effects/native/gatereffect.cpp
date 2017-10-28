@@ -36,9 +36,9 @@ EffectManifest GaterEffect::getManifest() {
     shape->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     shape->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     shape->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    shape->setMinimum(0.01);
-    shape->setDefault(0.01);
-    shape->setMaximum(1);
+    shape->setMinimum(0.1);
+    shape->setDefault(0.5);
+    shape->setMaximum(0.9);
     return manifest;
 }
 
@@ -82,7 +82,10 @@ void GaterEffect::processChannel(const ChannelHandle& handle,
 
 
 
-    int divider = pow(2, 4*rate);
+    int divider = pow(2, ((int)4*rate));
+    double slope = 0.001;
+    double cycle = 1.0/divider;
+    double upcycle = shape*cycle;
 
     if(groupFeatures.has_beat_fraction)
     {
@@ -91,28 +94,24 @@ void GaterEffect::processChannel(const ChannelHandle& handle,
         for(int i = 0; i < numSamples; i+=2)
         {
             double beat_frac_readjusted = beat_frac + i/(2.0*sampleRate)/groupFeatures.beat_length_sec;
-            //double gain = sin(2*M_PI*beat_frac_readjusted*divider/2);
-            //double gain = 1;
-            //gain *= gain;
-            
+/*
             double gain = 0.5+atan(sin(2*M_PI*beat_frac_readjusted*divider/2)/(divider*shape))/M_PI;
+
+*/  
+            double position = fmod(beat_frac_readjusted, cycle);
+            double gain;
+            if(position < upcycle)
+            {
+                gain = 1-exp((position-upcycle)/slope);
+            }
+            else
+            {
+                gain = exp((position-cycle)/slope);
+            }
+
             pOutput[i] = gain*pInput[i];
             pOutput[i+1] = gain*pInput[i+1];
-
-          //  file << gain << "\t" << pInput[i] << "\t" << pInput[i+1] << "\t" << pOutput[i] << "\t" << pOutput[i+1] << std::endl;
+          //  file << gain  << "\t" << position << "\t" << upcycle << "\t" << cycle << "\t" << pInput[i] << "\t" << pInput[i+1] << "\t" << pOutput[i] << "\t" << pOutput[i+1] << std::endl;
         }
     }
-
-    /*
-    if(groupFeatures.has_beat_fraction && groupFeatures.has_beat_length_sec
-        && fmod(groupFeatures.beat_fraction, 1.0/divider) < 1.0/(2*divider))
-    {
-        std::memset(pOutput, 0, numSamples*sizeof(CSAMPLE));
-    }
-    else
-    {
-        std::memcpy(pOutput, pInput, numSamples*sizeof(CSAMPLE));
-    }
-
-    */
 }
