@@ -85,7 +85,7 @@ bool hasID3v1Tag(TagLib::MPEG::File& file) {
 #if (TAGLIB_HAS_TAG_CHECK)
     return file.hasID3v1Tag();
 #else
-    return nullptr != file.ID3v1Tag();
+    return file.ID3v1Tag() != nullptr;
 #endif
 }
 
@@ -93,7 +93,7 @@ bool hasID3v2Tag(TagLib::MPEG::File& file) {
 #if (TAGLIB_HAS_TAG_CHECK)
     return file.hasID3v2Tag();
 #else
-    return nullptr != file.ID3v2Tag();
+    return file.ID3v2Tag() != nullptr;
 #endif
 }
 
@@ -101,7 +101,7 @@ bool hasAPETag(TagLib::MPEG::File& file) {
 #if (TAGLIB_HAS_TAG_CHECK)
     return file.hasAPETag();
 #else
-    return nullptr != file.APETag();
+    return file.APETag() != nullptr;
 #endif
 }
 
@@ -109,7 +109,7 @@ bool hasID3v2Tag(TagLib::FLAC::File& file) {
 #if (TAGLIB_HAS_TAG_CHECK)
     return file.hasID3v2Tag();
 #else
-    return nullptr != file.ID3v2Tag();
+    return file.ID3v2Tag() != nullptr;
 #endif
 }
 
@@ -117,7 +117,7 @@ bool hasXiphComment(TagLib::FLAC::File& file) {
 #if (TAGLIB_HAS_TAG_CHECK)
     return file.hasXiphComment();
 #else
-    return nullptr != file.xiphComment();
+    return file.xiphComment() != nullptr;
 #endif
 }
 
@@ -125,7 +125,7 @@ bool hasAPETag(TagLib::WavPack::File& file) {
 #if (TAGLIB_HAS_TAG_CHECK)
     return file.hasAPETag();
 #else
-    return nullptr != file.APETag();
+    return file.APETag() != nullptr;
 #endif
 }
 
@@ -157,10 +157,9 @@ const QString ID3V2_TYER_FORMAT("yyyy");
 // is always four characters long."
 const QString ID3V2_TDAT_FORMAT("ddMM");
 
-// Taglib strings can be nullptr and using it could cause some segfaults,
-// so in this case it will return a QString()
 inline QString toQString(const TagLib::String& tString) {
     if (tString.isNull()) {
+        // null -> null
         return QString();
     } else {
         return TStringToQString(tString);
@@ -186,7 +185,7 @@ inline QString toQString(const TagLib::ID3v2::Frame& frame) {
 QString toQStringFirstNotEmpty(
         const TagLib::ID3v2::FrameList& frameList) {
     for (const TagLib::ID3v2::Frame* pFrame: frameList) {
-        if (nullptr != pFrame) {
+        if (pFrame) {
             TagLib::String str(pFrame->toString());
             if (!str.isEmpty()) {
                 return toQString(str);
@@ -392,7 +391,7 @@ inline const TagLib::MP4::ItemListMap& getItemListMap(const TagLib::MP4::Tag& ta
 
 inline QImage loadImageFromByteVector(
         const TagLib::ByteVector& imageData,
-        const char* format = 0) {
+        const char* format = nullptr) {
     return QImage::fromData(
             // char -> uchar
             reinterpret_cast<const uchar *>(imageData.data()),
@@ -413,7 +412,7 @@ inline QImage loadImageFromVorbisCommentPicture(
 bool parseBase64EncodedVorbisCommentPicture(
         TagLib::FLAC::Picture* pPicture,
         const TagLib::String& base64Encoded) {
-    DEBUG_ASSERT(pPicture != nullptr);
+    DEBUG_ASSERT(pPicture);
     const QByteArray decodedData(QByteArray::fromBase64(base64Encoded.toCString()));
     const TagLib::ByteVector rawData(decodedData.data(), decodedData.size());
     TagLib::FLAC::Picture picture;
@@ -434,7 +433,7 @@ TagLib::String::Type getID3v2StringType(const TagLib::ID3v2::Tag& tag, bool isNu
     // http://en.wikipedia.org/wiki/ID3#ID3v2
     // http://id3.org/id3v2.3.0
     // http://id3.org/id3v2.4.0-structure
-    if (4 <= tag.header()->majorVersion()) {
+    if (tag.header()->majorVersion() >= 4) {
         // For ID3v2.4.0 or higher prefer UTF-8, because it is a
         // very compact representation for common cases and it is
         // independent of the byte order.
@@ -470,7 +469,7 @@ TagLib::ID3v2::CommentsFrame* findFirstCommentsFrame(
             it != commentsFrames.end(); ++it) {
         auto pFrame =
                 dynamic_cast<TagLib::ID3v2::CommentsFrame*>(*it);
-        if (nullptr != pFrame) {
+        if (pFrame) {
             const QString frameDescription(
                     toQString(pFrame->description()));
             if (0 == frameDescription.compare(
@@ -478,7 +477,7 @@ TagLib::ID3v2::CommentsFrame* findFirstCommentsFrame(
                 if (preferNotEmpty && pFrame->toString().isEmpty()) {
                     // we might need the first matching frame later
                     // even if it is empty
-                    if (pFirstFrame == nullptr) {
+                    if (!pFirstFrame) {
                         pFirstFrame = pFrame;
                     }
                 } else {
@@ -508,7 +507,7 @@ TagLib::ID3v2::UserTextIdentificationFrame* findFirstUserTextIdentificationFrame
             it != textFrames.end(); ++it) {
         auto pFrame =
                 dynamic_cast<TagLib::ID3v2::UserTextIdentificationFrame*>(*it);
-        if (nullptr != pFrame) {
+        if (pFrame) {
             const QString frameDescription(
                     toQString(pFrame->description()));
             if (0 == frameDescription.compare(
@@ -516,7 +515,7 @@ TagLib::ID3v2::UserTextIdentificationFrame* findFirstUserTextIdentificationFrame
                 if (preferNotEmpty && pFrame->toString().isEmpty()) {
                     // we might need the first matching frame later
                     // even if it is empty
-                    if (pFirstFrame == nullptr) {
+                    if (!pFirstFrame) {
                         pFirstFrame = pFrame;
                     }
                 } else {
@@ -549,7 +548,7 @@ QString readFirstUserTextIdentificationFrame(
 int removeUserTextIdentificationFrames(
         TagLib::ID3v2::Tag* pTag,
         const QString& description) {
-    DEBUG_ASSERT(pTag != nullptr);
+    DEBUG_ASSERT(pTag);
     DEBUG_ASSERT(!description.isEmpty());
     int count = 0;
     bool repeat;
@@ -562,7 +561,7 @@ int removeUserTextIdentificationFrames(
                 it != textFrames.end(); ++it) {
             auto pFrame =
                     dynamic_cast<TagLib::ID3v2::UserTextIdentificationFrame*>(*it);
-            if (pFrame != nullptr) {
+            if (pFrame) {
                 const QString frameDescription(
                         toQString(pFrame->description()));
                 if (0 == frameDescription.compare(
@@ -612,7 +611,7 @@ void writeID3v2CommentsFrame(
         bool isNumericOrURL = false) {
     TagLib::ID3v2::CommentsFrame* pFrame =
             findFirstCommentsFrame(*pTag, description);
-    if (nullptr != pFrame) {
+    if (pFrame) {
         // Modify existing frame
         if (text.isEmpty()) {
             // Purge empty frames
@@ -649,12 +648,12 @@ void writeID3v2CommentsFrame(
 
 void writeID3v2UserTextIdentificationFrame(
         TagLib::ID3v2::Tag* pTag,
-        const QString& text,
         const QString& description,
+        const QString& text,
         bool isNumericOrURL = false) {
     TagLib::ID3v2::UserTextIdentificationFrame* pFrame =
             findFirstUserTextIdentificationFrame(*pTag, description);
-    if (nullptr != pFrame) {
+    if (pFrame) {
         // Modify existing frame
         if (text.isEmpty()) {
             // Purge empty frames
@@ -687,7 +686,7 @@ bool readMP4Atom(
     const TagLib::MP4::ItemListMap::ConstIterator it(
             getItemListMap(tag).find(key));
     if (it != getItemListMap(tag).end()) {
-        if (nullptr != pValue) {
+        if (pValue) {
             *pValue = toQStringFirstNotEmpty((*it).second);
         }
         return true;
@@ -727,7 +726,7 @@ bool readAPEItem(
     const TagLib::APE::ItemListMap::ConstIterator it(
             tag.itemListMap().find(key));
     if (it != tag.itemListMap().end() && !(*it).second.values().isEmpty()) {
-        if (nullptr != pValue) {
+        if (pValue) {
             *pValue = toQStringFirstNotEmpty((*it).second.values());
         }
         return true;
@@ -756,7 +755,7 @@ bool readXiphCommentField(
     const TagLib::Ogg::FieldListMap::ConstIterator it(
             tag.fieldListMap().find(key));
     if (it != tag.fieldListMap().end() && !(*it).second.isEmpty()) {
-        if (nullptr != pValue) {
+        if (pValue) {
             *pValue = toQStringFirstNotEmpty((*it).second);
         }
         return true;
@@ -821,12 +820,12 @@ QImage importCoverImageFromVorbisCommentPictureList(
 
     for (const auto coverArtType: kPreferredVorbisCommentPictureTypes) {
         for (const auto pPicture: pictures) {
-            DEBUG_ASSERT(pPicture != nullptr); // trust TagLib
+            DEBUG_ASSERT(pPicture); // trust TagLib
             if (pPicture->type() == coverArtType) {
                 const QImage image(loadImageFromVorbisCommentPicture(*pPicture));
                 if (image.isNull()) {
                     kLogger.warning() << "Failed to load image from VorbisComment picture of type" << pPicture->type();
-                    // continue...
+                    continue;
                 } else {
                     return image; // success
                 }
@@ -836,28 +835,32 @@ QImage importCoverImageFromVorbisCommentPictureList(
 
     // Fallback: No best match -> Create image from first loadable picture of any type
     for (const auto pPicture: pictures) {
-        DEBUG_ASSERT(pPicture != nullptr); // trust TagLib
+        DEBUG_ASSERT(pPicture); // trust TagLib
         const QImage image(loadImageFromVorbisCommentPicture(*pPicture));
         if (image.isNull()) {
-            kLogger.warning() << "Failed to load image from VorbisComment picture of type" << pPicture->type();
-            // continue...
+            kLogger.warning()
+                    << "Failed to load image from VorbisComment picture of type"
+                    << pPicture->type();
+            continue;
         } else {
             return image; // success
         }
     }
 
-    kLogger.warning() << "Failed to load cover art image from VorbisComment pictures";
+    kLogger.warning()
+            << "Failed to load cover art image from VorbisComment pictures";
     return QImage();
 }
 
 void importCoverImageFromID3v2Tag(QImage* pCoverArt, const TagLib::ID3v2::Tag& tag) {
-    if (pCoverArt == nullptr) {
+    if (!pCoverArt) {
         return; // nothing to do
     }
 
     const auto iterAPIC = tag.frameListMap().find("APIC");
     if ((iterAPIC == tag.frameListMap().end()) || iterAPIC->second.isEmpty()) {
-        kLogger.debug() << "No cover art: None or empty list of ID3v2 APIC frames";
+        kLogger.debug()
+                << "No cover art: None or empty list of ID3v2 APIC frames";
         return; // abort
     }
 
@@ -866,12 +869,14 @@ void importCoverImageFromID3v2Tag(QImage* pCoverArt, const TagLib::ID3v2::Tag& t
         for (const auto pFrame: pFrames) {
             const TagLib::ID3v2::AttachedPictureFrame* pApicFrame =
                     static_cast<const TagLib::ID3v2::AttachedPictureFrame*>(pFrame);
-            DEBUG_ASSERT(pApicFrame != nullptr); // trust TagLib
+            DEBUG_ASSERT(pApicFrame); // trust TagLib
             if (pApicFrame->type() == coverArtType) {
                 QImage image(loadImageFromID3v2PictureFrame(*pApicFrame));
                 if (image.isNull()) {
-                    kLogger.warning() << "Failed to load image from ID3v2 APIC frame of type" << pApicFrame->type();
-                    // continue...
+                    kLogger.warning()
+                            << "Failed to load image from ID3v2 APIC frame of type"
+                            << pApicFrame->type();
+                    continue;
                 } else {
                     *pCoverArt = image;
                     return; // success
@@ -884,11 +889,13 @@ void importCoverImageFromID3v2Tag(QImage* pCoverArt, const TagLib::ID3v2::Tag& t
     for (const auto pFrame: pFrames) {
         const TagLib::ID3v2::AttachedPictureFrame* pApicFrame =
                 static_cast<const TagLib::ID3v2::AttachedPictureFrame*>(pFrame);
-        DEBUG_ASSERT(pApicFrame != nullptr); // trust TagLib
+        DEBUG_ASSERT(pApicFrame); // trust TagLib
         const QImage image(loadImageFromID3v2PictureFrame(*pApicFrame));
         if (image.isNull()) {
-            kLogger.warning() << "Failed to load image from ID3v2 APIC frame of type" << pApicFrame->type();
-            // continue...
+            kLogger.warning()
+                    << "Failed to load image from ID3v2 APIC frame of type"
+                    << pApicFrame->type();
+            continue;
         } else {
             *pCoverArt = image;
             return; // success
@@ -897,7 +904,7 @@ void importCoverImageFromID3v2Tag(QImage* pCoverArt, const TagLib::ID3v2::Tag& t
 }
 
 void importCoverImageFromAPETag(QImage* pCoverArt, const TagLib::APE::Tag& tag) {
-    if (pCoverArt == nullptr) {
+    if (!pCoverArt) {
         return; // nothing to do
     }
 
@@ -910,7 +917,8 @@ void importCoverImageFromAPETag(QImage* pCoverArt, const TagLib::APE::Tag& tag) 
             const TagLib::ByteVector data(item.mid(pos));
             const QImage image(loadImageFromByteVector(data));
             if (image.isNull()) {
-                kLogger.warning() << "Failed to load image from APE tag";
+                kLogger.warning()
+                        << "Failed to load image from APE tag";
             } else {
                 *pCoverArt = image; // success
             }
@@ -919,12 +927,13 @@ void importCoverImageFromAPETag(QImage* pCoverArt, const TagLib::APE::Tag& tag) 
 }
 
 void importCoverImageFromVorbisCommentTag(QImage* pCoverArt, TagLib::Ogg::XiphComment& tag) {
-    if (pCoverArt == nullptr) {
+    if (!pCoverArt) {
         return; // nothing to do
     }
 
 #if (TAGLIB_HAS_VORBIS_COMMENT_PICTURES)
-    const QImage image(importCoverImageFromVorbisCommentPictureList(tag.pictureList()));
+    const QImage image=
+            importCoverImageFromVorbisCommentPictureList(tag.pictureList());
     if (!image.isNull()) {
         *pCoverArt = image;
         return; // done
@@ -946,7 +955,8 @@ void importCoverImageFromVorbisCommentTag(QImage* pCoverArt, TagLib::Ogg::XiphCo
                 tag.fieldListMap()["METADATA_BLOCK_PICTURE"];
 #if (TAGLIB_HAS_VORBIS_COMMENT_PICTURES)
         if (!base64EncodedList.isEmpty()) {
-            kLogger.warning() << "Taking legacy code path for reading cover art from VorbisComment field METADATA_BLOCK_PICTURE";
+            kLogger.warning()
+                    << "Taking legacy code path for reading cover art from VorbisComment field METADATA_BLOCK_PICTURE";
         }
 #endif
         for (const auto& base64Encoded: base64EncodedList) {
@@ -954,15 +964,18 @@ void importCoverImageFromVorbisCommentTag(QImage* pCoverArt, TagLib::Ogg::XiphCo
             if (parseBase64EncodedVorbisCommentPicture(&picture, base64Encoded)) {
                 const QImage image(loadImageFromVorbisCommentPicture(picture));
                 if (image.isNull()) {
-                    kLogger.warning() << "Failed to load image from VorbisComment picture of type" << picture.type();
-                    // continue...
+                    kLogger.warning()
+                            << "Failed to load image from VorbisComment picture of type"
+                            << picture.type();
+                    continue;
                 } else {
                     *pCoverArt = image;
                     return; // done
                 }
             } else {
-                kLogger.warning() << "Failed to parse picture from VorbisComment metadata block";
-                // continue...
+                kLogger.warning()
+                        << "Failed to parse picture from VorbisComment metadata block";
+                continue;
             }
         }
     }
@@ -980,8 +993,9 @@ void importCoverImageFromVorbisCommentTag(QImage* pCoverArt, TagLib::Ogg::XiphCo
         for (const auto& base64Encoded: base64EncodedList) {
             const QImage image(parseBase64EncodedVorbisCommentImage(base64Encoded));
             if (image.isNull()) {
-                kLogger.warning() << "Failed to parse image from deprecated VorbisComment field COVERART";
-                // continue...
+                kLogger.warning()
+                        << "Failed to parse image from deprecated VorbisComment field COVERART";
+                continue;
             } else {
                 *pCoverArt = image;
                 return; // done
@@ -989,11 +1003,12 @@ void importCoverImageFromVorbisCommentTag(QImage* pCoverArt, TagLib::Ogg::XiphCo
         }
     }
 
-    kLogger.debug() << "No cover art found in VorbisComment tag";
+    kLogger.debug()
+            << "No cover art found in VorbisComment tag";
 }
 
 void importCoverImageFromMP4Tag(QImage* pCoverArt, const TagLib::MP4::Tag& tag) {
-    if (pCoverArt == nullptr) {
+    if (!pCoverArt) {
         return; // nothing to do
     }
 
@@ -1003,8 +1018,9 @@ void importCoverImageFromMP4Tag(QImage* pCoverArt, const TagLib::MP4::Tag& tag) 
         for (const auto& coverArt: coverArtList) {
             const QImage image(loadImageFromByteVector(coverArt.data()));
             if (image.isNull()) {
-                kLogger.warning() << "Failed to load image from MP4 atom covr";
-                // continue...
+                kLogger.warning()
+                        << "Failed to load image from MP4 atom covr";
+                continue;
             } else {
                 *pCoverArt = image;
                 return; // done
@@ -1045,7 +1061,7 @@ void importTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
 
     TagLib::ID3v2::CommentsFrame* pCommentsFrame =
             findFirstCommentsFrame(tag);
-    if (nullptr != pCommentsFrame) {
+    if (pCommentsFrame) {
         pTrackMetadata->refTrackInfo().setComment(toQString(*pCommentsFrame));
     } else {
         // Compatibility workaround: ffmpeg 3.1.x maps DESCRIPTION fields of
@@ -1087,7 +1103,7 @@ void importTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
     // ID3v2.4.0: TDRC replaces TYER + TDAT
     const QString recordingTime(
             toQStringFirstNotEmpty(tag.frameListMap()["TDRC"]));
-    if ((4 <= tag.header()->majorVersion()) && !recordingTime.isEmpty()) {
+    if ((tag.header()->majorVersion() >= 4) && !recordingTime.isEmpty()) {
             pTrackMetadata->refTrackInfo().setYear(recordingTime);
     } else {
         // Fallback to TYER + TDAT
@@ -1135,8 +1151,15 @@ void importTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
             bpmValue /= 10.0;
         }
         if (bpmValue != bpmValueOriginal) {
-            kLogger.warning() << " Changing BPM on " << pTrackMetadata->getTrackInfo().getArtist() << " - " <<
-                pTrackMetadata->getTrackInfo().getTitle() << " from " << bpmValueOriginal << " to " << bpmValue;
+            kLogger.warning()
+                    << " Changing BPM on"
+                    << pTrackMetadata->getTrackInfo().getArtist()
+                    << "-"
+                    << pTrackMetadata->getTrackInfo().getTitle()
+                    << "from"
+                    << bpmValueOriginal
+                    << "to"
+                    << bpmValue;
         }
         pTrackMetadata->refTrackInfo().setBpm(Bpm(bpmValue));
     }
@@ -1604,11 +1627,11 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
     // NOTE(uklotz): Need to overwrite the TDRC frame if it
     // already exists. TagLib (1.9.x) writes a TDRC frame
     // even for ID3v2.3.0 tags if the numeric year is set.
-    if ((4 <= pHeader->majorVersion()) || !pTag->frameList("TDRC").isEmpty()) {
+    if ((pHeader->majorVersion() >= 4) || !pTag->frameList("TDRC").isEmpty()) {
         writeID3v2TextIdentificationFrame(pTag, "TDRC",
                 trackMetadata.getTrackInfo().getYear());
     }
-    if (4 > pHeader->majorVersion()) {
+    if (pHeader->majorVersion() < 4) {
         // Fallback to TYER + TDAT
         const QDate date(TrackMetadata::parseDate(trackMetadata.getTrackInfo().getYear()));
         if (date.isValid()) {
@@ -1644,65 +1667,65 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
     if (hasTrackGain(trackMetadata)) {
         writeID3v2UserTextIdentificationFrame(
                 pTag,
-                formatTrackGain(trackMetadata),
                 "REPLAYGAIN_TRACK_GAIN",
+                formatTrackGain(trackMetadata),
                 true);
     }
     if (hasTrackPeak(trackMetadata)) {
         writeID3v2UserTextIdentificationFrame(
                 pTag,
-                formatTrackPeak(trackMetadata),
                 "REPLAYGAIN_TRACK_PEAK",
+                formatTrackPeak(trackMetadata),
                 true);
     }
     if (hasAlbumGain(trackMetadata)) {
         writeID3v2UserTextIdentificationFrame(
                 pTag,
-                formatAlbumGain(trackMetadata),
                 "REPLAYGAIN_ALBUM_GAIN",
+                formatAlbumGain(trackMetadata),
                 true);
     }
     if (hasAlbumPeak(trackMetadata)) {
         writeID3v2UserTextIdentificationFrame(
                 pTag,
-                formatAlbumPeak(trackMetadata),
                 "REPLAYGAIN_ALBUM_PEAK",
+                formatAlbumPeak(trackMetadata),
                 true);
     }
 
     if (!trackMetadata.getTrackInfo().getMusicBrainzArtistId().isNull()) {
         writeID3v2UserTextIdentificationFrame(
                 pTag,
-                trackMetadata.getTrackInfo().getMusicBrainzArtistId().toString(),
                 "MusicBrainz Artist Id",
+                trackMetadata.getTrackInfo().getMusicBrainzArtistId().toString(),
                 false);
     }
     if (!trackMetadata.getTrackInfo().getMusicBrainzReleaseId().isNull()) {
         writeID3v2UserTextIdentificationFrame(
                 pTag,
-                trackMetadata.getTrackInfo().getMusicBrainzReleaseId().toString(),
                 "MusicBrainz Release Track Id",
+                trackMetadata.getTrackInfo().getMusicBrainzReleaseId().toString(),
                 false);
     }
     if (!trackMetadata.getAlbumInfo().getMusicBrainzArtistId().isNull()) {
         writeID3v2UserTextIdentificationFrame(
                 pTag,
-                trackMetadata.getAlbumInfo().getMusicBrainzArtistId().toString(),
                 "MusicBrainz Album Artist Id",
+                trackMetadata.getAlbumInfo().getMusicBrainzArtistId().toString(),
                 false);
     }
     if (!trackMetadata.getAlbumInfo().getMusicBrainzReleaseId().isNull()) {
         writeID3v2UserTextIdentificationFrame(
                 pTag,
-                trackMetadata.getAlbumInfo().getMusicBrainzReleaseId().toString(),
                 "MusicBrainz Album Id",
+                trackMetadata.getAlbumInfo().getMusicBrainzReleaseId().toString(),
                 false);
     }
     if (!trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId().isNull()) {
         writeID3v2UserTextIdentificationFrame(
                 pTag,
-                trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId().toString(),
                 "MusicBrainz Release Group Id",
+                trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId().toString(),
                 false);
     }
 
@@ -1891,7 +1914,9 @@ bool exportTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& 
         break;
     default:
         kLogger.warning() << "Invalid track numbers:"
-            << TrackNumbers::joinStrings(trackMetadata.getTrackInfo().getTrackNumber(), trackMetadata.getTrackInfo().getTrackTotal());
+            << TrackNumbers::joinStrings(
+                    trackMetadata.getTrackInfo().getTrackNumber(),
+                    trackMetadata.getTrackInfo().getTrackTotal());
     }
 
     writeMP4Atom(pTag, "\251day", toTagLibString(trackMetadata.getTrackInfo().getYear()));
@@ -1950,7 +1975,8 @@ bool exportTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& 
                 toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId().toString()));
     }
 
-    const TagLib::String key(toTagLibString(trackMetadata.getTrackInfo().getKey()));
+    const TagLib::String key =
+            toTagLibString(trackMetadata.getTrackInfo().getKey());
     writeMP4Atom(pTag, "----:com.apple.iTunes:initialkey", key); // preferred
     updateMP4Atom(pTag, "----:com.apple.iTunes:KEY", key); // alternative
 
