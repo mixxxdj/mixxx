@@ -661,6 +661,11 @@
            </item>
            <item row="0" column="2">
             <widget class="QCheckBox" name="bpmConst">
+             <property name="toolTip">
+              <string>Converts beats detected by the analyzer into a fixed-tempo beatgrid. 
+Use this setting if your tracks have a constant tempo (e.g. most electronic music). 
+Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</string>
+             </property>
              <property name="text">
               <string>Assume constant tempo</string>
              </property>
