@@ -31,8 +31,8 @@ struct FlangerGroupState {
               prev_mix(0),
               prev_width(0),
               prev_manual(kCenterDelayMs) {
-        SampleUtil::applyGain(delayLeft, 0, kBufferLenth);
-        SampleUtil::applyGain(delayRight, 0, kBufferLenth);
+        SampleUtil::clear(delayLeft, kBufferLenth);
+        SampleUtil::clear(delayLeft, kBufferLenth);
     }
     CSAMPLE delayRight[kBufferLenth];
     CSAMPLE delayLeft[kBufferLenth];

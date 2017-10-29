@@ -224,8 +224,8 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
     }
 
     if (enableState == EffectProcessor::DISABLING) {
-        SampleUtil::clear(delayLeft, numSamples);
-        SampleUtil::clear(delayRight, numSamples);
+        SampleUtil::clear(delayLeft, kBufferLenth);
+        SampleUtil::clear(delayRight, kBufferLenth);
         pState->previousPeriodFrames = -1;
         pState->prev_regen = -1;
         pState->prev_mix = -1;
