@@ -77,6 +77,35 @@ class WritableSampleFrames: public SampleFrames {
 };
 
 
+class IAudioSourceReader {
+  public:
+    virtual ~IAudioSourceReader() = default;
+
+  protected:
+    // Reads as much of the the requested sample frames and writes
+    // them into the provided buffer. The capacity of the buffer
+    // and the requested range have already been checked and
+    // adjusted (= clamped) before if necessary.
+    //
+    // Returns the number of and decoded sample frames in a readable
+    // buffer. The returned buffer is just a view/slice of the provided
+    // writable buffer if the result is not empty. If the result is
+    // empty the internal memory pointer of the returned buffer might
+    // be null.
+    virtual ReadableSampleFrames readSampleFramesClamped(
+            WritableSampleFrames sampleFrames) = 0;
+
+    // The following function is required for accessing the protected
+    // read function from siblings implementing this interface, e.g.
+    // for proxies and adapters.
+    static ReadableSampleFrames readSampleFramesClampedOn(
+            IAudioSourceReader& that,
+            WritableSampleFrames sampleFrames) {
+        return that.readSampleFramesClamped(sampleFrames);
+    }
+};
+
+
 // Common base class for audio sources.
 //
 // Both the number of channels and the sample rate must
@@ -87,7 +116,7 @@ class WritableSampleFrames: public SampleFrames {
 //
 // Audio sources are implicitly opened upon creation and
 // closed upon destruction.
-class AudioSource: public UrlResource, public AudioSignal {
+class AudioSource: public UrlResource, public AudioSignal, public virtual /*implements*/ IAudioSourceReader {
   public:
     virtual ~AudioSource() = default;
 
@@ -287,28 +316,6 @@ class AudioSource: public UrlResource, public AudioSignal {
             OpenMode mode,
             const OpenParams& params) {
         return that.open(mode, params);
-    }
-
-    // Reads as much of the the requested sample frames and writes
-    // them into the provided buffer. The capacity of the buffer
-    // and the requested range have already been checked and
-    // adjusted (= clamped) before if necessary.
-    //
-    // Returns the number of and decoded sample frames in a readable
-    // buffer. The returned buffer is just a view/slice of the provided
-    // writable buffer if the result is not empty. If the result is
-    // empty the internal memory pointer of the returned buffer might
-    // be null.
-    virtual ReadableSampleFrames readSampleFramesClamped(
-            WritableSampleFrames sampleFrames) = 0;
-
-    // The following function is required for accessing the protected
-    // read function from siblings implementing this interface, e.g.
-    // for proxies and adapters.
-    static ReadableSampleFrames readSampleFramesClampedOn(
-            AudioSource& that,
-            WritableSampleFrames sampleFrames) {
-        return that.readSampleFramesClamped(sampleFrames);
     }
 
   private:
