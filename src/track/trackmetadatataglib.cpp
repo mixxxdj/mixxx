@@ -1162,19 +1162,33 @@ void importTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
                 toQString(pAlbumPeakFrame->fieldList()[1]));
     }
 
-    TagLib::ID3v2::UserTextIdentificationFrame* pMusicBrainzTrackIdFrame =
-            findFirstUserTextIdentificationFrame(tag, "MusicBrainz Release Track Id");
-    if (pMusicBrainzTrackIdFrame && (2 <= pMusicBrainzTrackIdFrame->fieldList().size())) {
+    TagLib::ID3v2::UserTextIdentificationFrame* pMusicBrainzTrackArtistIdFrame =
+            findFirstUserTextIdentificationFrame(tag, "MusicBrainz Artist Id");
+    if (pMusicBrainzTrackArtistIdFrame && (2 <= pMusicBrainzTrackArtistIdFrame->fieldList().size())) {
         // The value is stored in the 2nd field
-        pTrackMetadata->refTrackInfo().setMusicBrainzId(QUuid(
-                toQString(pMusicBrainzTrackIdFrame->fieldList()[1])));
+        pTrackMetadata->refTrackInfo().setMusicBrainzArtistId(QUuid(
+                toQString(pMusicBrainzTrackArtistIdFrame->fieldList()[1])));
     }
-    TagLib::ID3v2::UserTextIdentificationFrame* pMusicBrainzAlbumIdFrame =
-            findFirstUserTextIdentificationFrame(tag, "MusicBrainz Album Id");
-    if (pMusicBrainzAlbumIdFrame && (2 <= pMusicBrainzAlbumIdFrame->fieldList().size())) {
+    TagLib::ID3v2::UserTextIdentificationFrame* pMusicBrainzTrackReleaseIdFrame =
+            findFirstUserTextIdentificationFrame(tag, "MusicBrainz Release Track Id");
+    if (pMusicBrainzTrackReleaseIdFrame && (2 <= pMusicBrainzTrackReleaseIdFrame->fieldList().size())) {
         // The value is stored in the 2nd field
-        pTrackMetadata->refAlbumInfo().setMusicBrainzId(QUuid(
-                toQString(pMusicBrainzAlbumIdFrame->fieldList()[1])));
+        pTrackMetadata->refTrackInfo().setMusicBrainzReleaseId(QUuid(
+                toQString(pMusicBrainzTrackReleaseIdFrame->fieldList()[1])));
+    }
+    TagLib::ID3v2::UserTextIdentificationFrame* pMusicBrainzAlbumArtistIdFrame =
+            findFirstUserTextIdentificationFrame(tag, "MusicBrainz Album Artist Id");
+    if (pMusicBrainzAlbumArtistIdFrame && (2 <= pMusicBrainzAlbumArtistIdFrame->fieldList().size())) {
+        // The value is stored in the 2nd field
+        pTrackMetadata->refAlbumInfo().setMusicBrainzArtistId(QUuid(
+                toQString(pMusicBrainzAlbumArtistIdFrame->fieldList()[1])));
+    }
+    TagLib::ID3v2::UserTextIdentificationFrame* pMusicBrainzAlbumReleaseIdFrame =
+            findFirstUserTextIdentificationFrame(tag, "MusicBrainz Album Id");
+    if (pMusicBrainzAlbumReleaseIdFrame && (2 <= pMusicBrainzAlbumReleaseIdFrame->fieldList().size())) {
+        // The value is stored in the 2nd field
+        pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseId(QUuid(
+                toQString(pMusicBrainzAlbumReleaseIdFrame->fieldList()[1])));
     }
 }
 
@@ -1242,13 +1256,21 @@ void importTrackMetadataFromAPETag(TrackMetadata* pTrackMetadata, const TagLib::
         parseAlbumPeak(pTrackMetadata, albumPeak);
     }
 
-    QString trackId;
-    if (readAPEItem(tag, "MUSICBRAINZ_RELEASETRACKID", &trackId)) {
-        pTrackMetadata->refTrackInfo().setMusicBrainzId(QUuid(trackId));
+    QString trackArtistId;
+    if (readAPEItem(tag, "MUSICBRAINZ_ARTISTID", &trackArtistId)) {
+        pTrackMetadata->refTrackInfo().setMusicBrainzArtistId(QUuid(trackArtistId));
     }
-    QString albumId;
-    if (readAPEItem(tag, "MUSICBRAINZ_ALBUMID", &albumId)) {
-        pTrackMetadata->refAlbumInfo().setMusicBrainzId(QUuid(albumId));
+    QString trackReleaseId;
+    if (readAPEItem(tag, "MUSICBRAINZ_RELEASETRACKID", &trackReleaseId)) {
+        pTrackMetadata->refTrackInfo().setMusicBrainzReleaseId(QUuid(trackReleaseId));
+    }
+    QString albumArtistId;
+    if (readAPEItem(tag, "MUSICBRAINZ_ALBUMARTISTID", &albumArtistId)) {
+        pTrackMetadata->refAlbumInfo().setMusicBrainzArtistId(QUuid(albumArtistId));
+    }
+    QString albumReleaseId;
+    if (readAPEItem(tag, "MUSICBRAINZ_ALBUMID", &albumReleaseId)) {
+        pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseId(QUuid(albumReleaseId));
     }
 }
 
@@ -1336,13 +1358,21 @@ void importTrackMetadataFromVorbisCommentTag(TrackMetadata* pTrackMetadata,
         parseAlbumPeak(pTrackMetadata, albumPeak);
     }
 
-    QString trackId;
-    if (readXiphCommentField(tag, "MUSICBRAINZ_RELEASETRACKID", &trackId)) {
-        pTrackMetadata->refTrackInfo().setMusicBrainzId(trackId);
+    QString trackArtistId;
+    if (readXiphCommentField(tag, "MUSICBRAINZ_ARTISTID", &trackArtistId)) {
+        pTrackMetadata->refTrackInfo().setMusicBrainzArtistId(trackArtistId);
     }
-    QString albumId;
-    if (readXiphCommentField(tag, "MUSICBRAINZ_ALBUMID", &albumId)) {
-        pTrackMetadata->refAlbumInfo().setMusicBrainzId(QUuid(albumId));
+    QString trackReleaseId;
+    if (readXiphCommentField(tag, "MUSICBRAINZ_RELEASETRACKID", &trackReleaseId)) {
+        pTrackMetadata->refTrackInfo().setMusicBrainzReleaseId(trackReleaseId);
+    }
+    QString albumArtistId;
+    if (readXiphCommentField(tag, "MUSICBRAINZ_ALBUMARTISTID", &albumArtistId)) {
+        pTrackMetadata->refAlbumInfo().setMusicBrainzArtistId(QUuid(albumArtistId));
+    }
+    QString albumReleaseId;
+    if (readXiphCommentField(tag, "MUSICBRAINZ_ALBUMID", &albumReleaseId)) {
+        pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseId(QUuid(albumReleaseId));
     }
 
     // Reading key code information
@@ -1434,13 +1464,21 @@ void importTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::
         parseAlbumPeak(pTrackMetadata, albumPeak);
     }
 
-    QString trackId;
-    if (readMP4Atom(tag, "----:com.apple.iTunes:MusicBrainz Release Track Id", &trackId)) {
-        pTrackMetadata->refTrackInfo().setMusicBrainzId(trackId);
+    QString trackArtistId;
+    if (readMP4Atom(tag, "----:com.apple.iTunes:MusicBrainz Artist Id", &trackArtistId)) {
+        pTrackMetadata->refTrackInfo().setMusicBrainzArtistId(trackArtistId);
     }
-    QString albumId;
-    if (readMP4Atom(tag, "----:com.apple.iTunes:MusicBrainz Album Id", &albumId)) {
-        pTrackMetadata->refAlbumInfo().setMusicBrainzId(QUuid(albumId));
+    QString trackReleaseId;
+    if (readMP4Atom(tag, "----:com.apple.iTunes:MusicBrainz Release Track Id", &trackReleaseId)) {
+        pTrackMetadata->refTrackInfo().setMusicBrainzReleaseId(trackReleaseId);
+    }
+    QString albumArtistId;
+    if (readMP4Atom(tag, "----:com.apple.iTunes:MusicBrainz Album Artist Id", &albumArtistId)) {
+        pTrackMetadata->refAlbumInfo().setMusicBrainzArtistId(QUuid(albumArtistId));
+    }
+    QString albumReleaseId;
+    if (readMP4Atom(tag, "----:com.apple.iTunes:MusicBrainz Album Id", &albumReleaseId)) {
+        pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseId(QUuid(albumReleaseId));
     }
 
     QString key;
@@ -1618,17 +1656,31 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
                 true);
     }
 
-    if (!trackMetadata.getTrackInfo().getMusicBrainzId().isNull()) {
+    if (!trackMetadata.getTrackInfo().getMusicBrainzArtistId().isNull()) {
         writeID3v2UserTextIdentificationFrame(
                 pTag,
-                trackMetadata.getTrackInfo().getMusicBrainzId().toString(),
+                trackMetadata.getTrackInfo().getMusicBrainzArtistId().toString(),
+                "MusicBrainz Artist Id",
+                false);
+    }
+    if (!trackMetadata.getTrackInfo().getMusicBrainzReleaseId().isNull()) {
+        writeID3v2UserTextIdentificationFrame(
+                pTag,
+                trackMetadata.getTrackInfo().getMusicBrainzReleaseId().toString(),
                 "MusicBrainz Release Track Id",
                 false);
     }
-    if (!trackMetadata.getAlbumInfo().getMusicBrainzId().isNull()) {
+    if (!trackMetadata.getAlbumInfo().getMusicBrainzArtistId().isNull()) {
         writeID3v2UserTextIdentificationFrame(
                 pTag,
-                trackMetadata.getAlbumInfo().getMusicBrainzId().toString(),
+                trackMetadata.getAlbumInfo().getMusicBrainzArtistId().toString(),
+                "MusicBrainz Album Artist Id",
+                false);
+    }
+    if (!trackMetadata.getAlbumInfo().getMusicBrainzReleaseId().isNull()) {
+        writeID3v2UserTextIdentificationFrame(
+                pTag,
+                trackMetadata.getAlbumInfo().getMusicBrainzReleaseId().toString(),
                 "MusicBrainz Album Id",
                 false);
     }
@@ -1681,13 +1733,21 @@ bool exportTrackMetadataIntoAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& 
                 toTagLibString(formatAlbumPeak(trackMetadata)));
     }
 
-    if (!trackMetadata.getTrackInfo().getMusicBrainzId().isNull()) {
-        writeAPEItem(pTag, "MUSICBRAINZ_RELEASETRACKID",
-                toTagLibString(trackMetadata.getTrackInfo().getMusicBrainzId().toString()));
+    if (!trackMetadata.getTrackInfo().getMusicBrainzArtistId().isNull()) {
+        writeAPEItem(pTag, "MUSICBRAINZ_ARTISTID",
+                toTagLibString(trackMetadata.getTrackInfo().getMusicBrainzArtistId().toString()));
     }
-    if (!trackMetadata.getAlbumInfo().getMusicBrainzId().isNull()) {
+    if (!trackMetadata.getTrackInfo().getMusicBrainzReleaseId().isNull()) {
+        writeAPEItem(pTag, "MUSICBRAINZ_RELEASETRACKID",
+                toTagLibString(trackMetadata.getTrackInfo().getMusicBrainzReleaseId().toString()));
+    }
+    if (!trackMetadata.getAlbumInfo().getMusicBrainzArtistId().isNull()) {
+        writeAPEItem(pTag, "MUSICBRAINZ_ALBUMARTISTID",
+                toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzArtistId().toString()));
+    }
+    if (!trackMetadata.getAlbumInfo().getMusicBrainzReleaseId().isNull()) {
         writeAPEItem(pTag, "MUSICBRAINZ_ALBUMID",
-                toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzId().toString()));
+                toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseId().toString()));
     }
 
     return true;
@@ -1729,13 +1789,21 @@ bool exportTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
                 toTagLibString(formatAlbumPeak(trackMetadata)));
     }
 
-    if (!trackMetadata.getTrackInfo().getMusicBrainzId().isNull()) {
-        writeXiphCommentField(pTag, "MUSICBRAINZ_RELEASETRACKID",
-                toTagLibString(trackMetadata.getTrackInfo().getMusicBrainzId().toString()));
+    if (!trackMetadata.getTrackInfo().getMusicBrainzArtistId().isNull()) {
+        writeXiphCommentField(pTag, "MUSICBRAINZ_ARTISTID",
+                toTagLibString(trackMetadata.getTrackInfo().getMusicBrainzArtistId().toString()));
     }
-    if (!trackMetadata.getAlbumInfo().getMusicBrainzId().isNull()) {
+    if (!trackMetadata.getTrackInfo().getMusicBrainzReleaseId().isNull()) {
+        writeXiphCommentField(pTag, "MUSICBRAINZ_RELEASETRACKID",
+                toTagLibString(trackMetadata.getTrackInfo().getMusicBrainzReleaseId().toString()));
+    }
+    if (!trackMetadata.getAlbumInfo().getMusicBrainzArtistId().isNull()) {
+        writeXiphCommentField(pTag, "MUSICBRAINZ_ALBUMARTISTID",
+                toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzArtistId().toString()));
+    }
+    if (!trackMetadata.getAlbumInfo().getMusicBrainzReleaseId().isNull()) {
         writeXiphCommentField(pTag, "MUSICBRAINZ_ALBUMID",
-                toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzId().toString()));
+                toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseId().toString()));
     }
 
     // According to https://wiki.xiph.org/Field_names "TRACKTOTAL" is
@@ -1832,13 +1900,21 @@ bool exportTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& 
                 toTagLibString(formatAlbumPeak(trackMetadata)));
     }
 
-    if (!trackMetadata.getTrackInfo().getMusicBrainzId().isNull()) {
-        writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Release Track Id",
-                toTagLibString(trackMetadata.getTrackInfo().getMusicBrainzId().toString()));
+    if (!trackMetadata.getTrackInfo().getMusicBrainzArtistId().isNull()) {
+        writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Artist Id",
+                toTagLibString(trackMetadata.getTrackInfo().getMusicBrainzArtistId().toString()));
     }
-    if (!trackMetadata.getAlbumInfo().getMusicBrainzId().isNull()) {
+    if (!trackMetadata.getTrackInfo().getMusicBrainzReleaseId().isNull()) {
+        writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Release Track Id",
+                toTagLibString(trackMetadata.getTrackInfo().getMusicBrainzReleaseId().toString()));
+    }
+    if (!trackMetadata.getAlbumInfo().getMusicBrainzArtistId().isNull()) {
+        writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Album Artist Id",
+                toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzArtistId().toString()));
+    }
+    if (!trackMetadata.getAlbumInfo().getMusicBrainzReleaseId().isNull()) {
         writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Album Id",
-                toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzId().toString()));
+                toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseId().toString()));
     }
 
     const TagLib::String key(toTagLibString(trackMetadata.getTrackInfo().getKey()));

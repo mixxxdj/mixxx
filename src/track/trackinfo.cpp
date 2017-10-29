@@ -14,7 +14,8 @@ bool operator==(const TrackInfo& lhs, const TrackInfo& rhs) {
             (lhs.getGrouping() == rhs.getGrouping()) &&
             (lhs.getGenre() == rhs.getGenre()) &&
             (lhs.getKey() == rhs.getKey()) &&
-            (lhs.getMusicBrainzId() == rhs.getMusicBrainzId()) &&
+            (lhs.getMusicBrainzArtistId() == rhs.getMusicBrainzArtistId()) &&
+            (lhs.getMusicBrainzReleaseId() == rhs.getMusicBrainzReleaseId()) &&
             (lhs.getReplayGain() == rhs.getReplayGain()) &&
             (lhs.getSampleRate() == rhs.getSampleRate()) &&
             (lhs.getTitle() == rhs.getTitle()) &&
