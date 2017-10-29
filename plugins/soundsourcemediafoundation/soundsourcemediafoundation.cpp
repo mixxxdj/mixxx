@@ -98,7 +98,7 @@ SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(
         return OpenResult::Failed;
     }
 
-    if (!configureAudioStream(config)) {
+    if (!configureAudioStream(params)) {
         kLogger.warning()
                 << "Failed to configure audio stream";
         return OpenResult::Failed;
