@@ -31,7 +31,7 @@
       </control>
       <control>
         <group>[Master]</group>
-        <key>headVolume</key>
+        <key>headGain</key>
         <status>0xB4</status>
         <midino>0x12</midino>
         <options>
@@ -46,7 +46,7 @@
       </control>
       <control>
         <group>[Master]</group>
-        <key>volume</key>
+        <key>gain</key>
         <status>0xB4</status>
         <midino>0x14</midino>
         <options>
