@@ -530,6 +530,21 @@ TagLib::ID3v2::UserTextIdentificationFrame* findFirstUserTextIdentificationFrame
     return pFirstFrame;
 }
 
+inline
+QString readFirstUserTextIdentificationFrame(
+        const TagLib::ID3v2::Tag& tag,
+        const QString& description,
+        bool preferNotEmpty = true) {
+    const TagLib::ID3v2::UserTextIdentificationFrame* pTextFrame =
+            findFirstUserTextIdentificationFrame(tag, description, preferNotEmpty);
+    if (pTextFrame && (pTextFrame->fieldList().size() > 1)) {
+        // The actual value is stored in the 2nd field
+        return toQString(pTextFrame->fieldList()[1]);
+    } else {
+        return QString();
+    }
+}
+
 // Deletes all TXXX frame with the given description (case-insensitive).
 int removeUserTextIdentificationFrames(
         TagLib::ID3v2::Tag* pTag,
@@ -1005,9 +1020,9 @@ void importTrackMetadataFromTag(TrackMetadata* pTrackMetadata, const TagLib::Tag
 
     pTrackMetadata->refTrackInfo().setTitle(toQString(tag.title()));
     pTrackMetadata->refTrackInfo().setArtist(toQString(tag.artist()));
-    pTrackMetadata->refAlbumInfo().setTitle(toQString(tag.album()));
     pTrackMetadata->refTrackInfo().setComment(toQString(tag.comment()));
     pTrackMetadata->refTrackInfo().setGenre(toQString(tag.genre()));
+    pTrackMetadata->refAlbumInfo().setTitle(toQString(tag.album()));
 
     int iYear = tag.year();
     if (iYear > 0) {
@@ -1041,12 +1056,10 @@ void importTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
         // Note: The description string that identifies certain text frames
         // is case-insensitive. We do the lookup with an upper-case string
         // like for all other frames.
-        TagLib::ID3v2::UserTextIdentificationFrame* pCommentFrame =
-                findFirstUserTextIdentificationFrame(tag, "COMMENT");
-        if (pCommentFrame != nullptr) {
-            // The value is stored in the 2nd field
-            pTrackMetadata->refTrackInfo().setComment(
-                    toQString(pCommentFrame->fieldList()[1]));
+        QString comment =
+                readFirstUserTextIdentificationFrame(tag, "COMMENT");
+        if (!comment.isNull()) {
+            pTrackMetadata->refTrackInfo().setComment(comment);
         }
     }
 
@@ -1133,69 +1146,51 @@ void importTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
         pTrackMetadata->refTrackInfo().setKey(toQStringFirstNotEmpty(keyFrame));
     }
 
-    TagLib::ID3v2::UserTextIdentificationFrame* pTrackGainFrame =
-            findFirstUserTextIdentificationFrame(tag, "REPLAYGAIN_TRACK_GAIN");
-    if (pTrackGainFrame && (2 <= pTrackGainFrame->fieldList().size())) {
-        // The value is stored in the 2nd field
-        parseTrackGain(pTrackMetadata,
-                toQString(pTrackGainFrame->fieldList()[1]));
+    QString trackGain =
+            readFirstUserTextIdentificationFrame(tag, "REPLAYGAIN_TRACK_GAIN");
+    if (!trackGain.isEmpty()) {
+        parseTrackGain(pTrackMetadata, trackGain);
     }
-    TagLib::ID3v2::UserTextIdentificationFrame* pAlbumGainFrame =
-            findFirstUserTextIdentificationFrame(tag, "REPLAYGAIN_ALBUM_GAIN");
-    if (pAlbumGainFrame && (2 <= pAlbumGainFrame->fieldList().size())) {
-        // The value is stored in the 2nd field
-        parseAlbumGain(pTrackMetadata,
-                toQString(pAlbumGainFrame->fieldList()[1]));
+    QString trackPeak =
+            readFirstUserTextIdentificationFrame(tag, "REPLAYGAIN_TRACK_PEAK");
+    if (!trackPeak.isEmpty()) {
+        parseTrackPeak(pTrackMetadata, trackPeak);
     }
-    TagLib::ID3v2::UserTextIdentificationFrame* pTrackPeakFrame =
-            findFirstUserTextIdentificationFrame(tag, "REPLAYGAIN_TRACK_PEAK");
-    if (pTrackPeakFrame && (2 <= pTrackPeakFrame->fieldList().size())) {
-        // The value is stored in the 2nd field
-        parseTrackPeak(pTrackMetadata,
-                toQString(pTrackPeakFrame->fieldList()[1]));
+    QString albumGain =
+            readFirstUserTextIdentificationFrame(tag, "REPLAYGAIN_ALBUM_GAIN");
+    if (!albumGain.isEmpty()) {
+        parseAlbumGain(pTrackMetadata, albumGain);
     }
-    TagLib::ID3v2::UserTextIdentificationFrame* pAlbumPeakFrame =
-            findFirstUserTextIdentificationFrame(tag, "REPLAYGAIN_ALBUM_PEAK");
-    if (pAlbumPeakFrame && (2 <= pAlbumPeakFrame->fieldList().size())) {
-        // The value is stored in the 2nd field
-        parseAlbumPeak(pTrackMetadata,
-                toQString(pAlbumPeakFrame->fieldList()[1]));
+    QString albumPeak =
+            readFirstUserTextIdentificationFrame(tag, "REPLAYGAIN_ALBUM_PEAK");
+    if (!albumPeak.isEmpty()) {
+        parseAlbumPeak(pTrackMetadata, albumPeak);
     }
 
-    TagLib::ID3v2::UserTextIdentificationFrame* pMusicBrainzTrackArtistIdFrame =
-            findFirstUserTextIdentificationFrame(tag, "MusicBrainz Artist Id");
-    if (pMusicBrainzTrackArtistIdFrame && (2 <= pMusicBrainzTrackArtistIdFrame->fieldList().size())) {
-        // The value is stored in the 2nd field
-        pTrackMetadata->refTrackInfo().setMusicBrainzArtistId(QUuid(
-                toQString(pMusicBrainzTrackArtistIdFrame->fieldList()[1])));
+    QString trackArtistId =
+            readFirstUserTextIdentificationFrame(tag, "MusicBrainz Artist Id");
+    if (!trackArtistId.isNull()) {
+        pTrackMetadata->refTrackInfo().setMusicBrainzArtistId(QUuid(trackArtistId));
     }
-    TagLib::ID3v2::UserTextIdentificationFrame* pMusicBrainzTrackReleaseIdFrame =
-            findFirstUserTextIdentificationFrame(tag, "MusicBrainz Release Track Id");
-    if (pMusicBrainzTrackReleaseIdFrame && (2 <= pMusicBrainzTrackReleaseIdFrame->fieldList().size())) {
-        // The value is stored in the 2nd field
-        pTrackMetadata->refTrackInfo().setMusicBrainzReleaseId(QUuid(
-                toQString(pMusicBrainzTrackReleaseIdFrame->fieldList()[1])));
+    QString trackReleaseId =
+            readFirstUserTextIdentificationFrame(tag, "MusicBrainz Release Track Id");
+    if (!trackReleaseId.isNull()) {
+        pTrackMetadata->refTrackInfo().setMusicBrainzReleaseId(QUuid(trackReleaseId));
     }
-    TagLib::ID3v2::UserTextIdentificationFrame* pMusicBrainzAlbumArtistIdFrame =
-            findFirstUserTextIdentificationFrame(tag, "MusicBrainz Album Artist Id");
-    if (pMusicBrainzAlbumArtistIdFrame && (2 <= pMusicBrainzAlbumArtistIdFrame->fieldList().size())) {
-        // The value is stored in the 2nd field
-        pTrackMetadata->refAlbumInfo().setMusicBrainzArtistId(QUuid(
-                toQString(pMusicBrainzAlbumArtistIdFrame->fieldList()[1])));
+    QString albumArtistId =
+            readFirstUserTextIdentificationFrame(tag, "MusicBrainz Album Artist Id");
+    if (!albumArtistId.isNull()) {
+        pTrackMetadata->refAlbumInfo().setMusicBrainzArtistId(QUuid(albumArtistId));
     }
-    TagLib::ID3v2::UserTextIdentificationFrame* pMusicBrainzAlbumReleaseIdFrame =
-            findFirstUserTextIdentificationFrame(tag, "MusicBrainz Album Id");
-    if (pMusicBrainzAlbumReleaseIdFrame && (2 <= pMusicBrainzAlbumReleaseIdFrame->fieldList().size())) {
-        // The value is stored in the 2nd field
-        pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseId(QUuid(
-                toQString(pMusicBrainzAlbumReleaseIdFrame->fieldList()[1])));
+    QString albumReleaseId =
+            readFirstUserTextIdentificationFrame(tag, "MusicBrainz Album Id");
+    if (!albumReleaseId.isNull()) {
+        pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseId(QUuid(albumReleaseId));
     }
-    TagLib::ID3v2::UserTextIdentificationFrame* pMusicBrainzAlbumReleaseGroupIdFrame =
-            findFirstUserTextIdentificationFrame(tag, "MusicBrainz Release Group Id");
-    if (pMusicBrainzAlbumReleaseGroupIdFrame && (2 <= pMusicBrainzAlbumReleaseGroupIdFrame->fieldList().size())) {
-        // The value is stored in the 2nd field
-        pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseGroupId(QUuid(
-                toQString(pMusicBrainzAlbumReleaseGroupIdFrame->fieldList()[1])));
+    QString albumReleaseGroupId =
+            readFirstUserTextIdentificationFrame(tag, "MusicBrainz Release Group Id");
+    if (!albumReleaseGroupId.isNull()) {
+        pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseGroupId(QUuid(albumReleaseGroupId));
     }
 }
 
@@ -1250,13 +1245,13 @@ void importTrackMetadataFromAPETag(TrackMetadata* pTrackMetadata, const TagLib::
     if (readAPEItem(tag, "REPLAYGAIN_TRACK_GAIN", &trackGain)) {
         parseTrackGain(pTrackMetadata, trackGain);
     }
-    QString albumGain;
-    if (readAPEItem(tag, "REPLAYGAIN_ALBUM_GAIN", &albumGain)) {
-        parseTrackGain(pTrackMetadata, albumGain);
-    }
     QString trackPeak;
     if (readAPEItem(tag, "REPLAYGAIN_TRACK_PEAK", &trackPeak)) {
         parseTrackPeak(pTrackMetadata, trackPeak);
+    }
+    QString albumGain;
+    if (readAPEItem(tag, "REPLAYGAIN_ALBUM_GAIN", &albumGain)) {
+        parseTrackGain(pTrackMetadata, albumGain);
     }
     QString albumPeak;
     if (readAPEItem(tag, "REPLAYGAIN_ALBUM_PEAK", &albumPeak)) {
@@ -1356,13 +1351,13 @@ void importTrackMetadataFromVorbisCommentTag(TrackMetadata* pTrackMetadata,
     if (readXiphCommentField(tag, "REPLAYGAIN_TRACK_GAIN", &trackGain)) {
         parseTrackGain(pTrackMetadata, trackGain);
     }
-    QString albumGain;
-    if (readXiphCommentField(tag, "REPLAYGAIN_ALBUM_GAIN", &albumGain)) {
-        parseAlbumGain(pTrackMetadata, albumGain);
-    }
     QString trackPeak;
     if (readXiphCommentField(tag, "REPLAYGAIN_TRACK_PEAK", &trackPeak)) {
         parseTrackPeak(pTrackMetadata, trackPeak);
+    }
+    QString albumGain;
+    if (readXiphCommentField(tag, "REPLAYGAIN_ALBUM_GAIN", &albumGain)) {
+        parseAlbumGain(pTrackMetadata, albumGain);
     }
     QString albumPeak;
     if (readXiphCommentField(tag, "REPLAYGAIN_ALBUM_PEAK", &albumPeak)) {
@@ -1466,13 +1461,13 @@ void importTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::
     if (readMP4Atom(tag, "----:com.apple.iTunes:replaygain_track_gain", &trackGain)) {
         parseTrackGain(pTrackMetadata, trackGain);
     }
-    QString albumGain;
-    if (readMP4Atom(tag, "----:com.apple.iTunes:replaygain_album_gain", &albumGain)) {
-        parseAlbumGain(pTrackMetadata, albumGain);
-    }
     QString trackPeak;
     if (readMP4Atom(tag, "----:com.apple.iTunes:replaygain_track_peak", &trackPeak)) {
         parseTrackPeak(pTrackMetadata, trackPeak);
+    }
+    QString albumGain;
+    if (readMP4Atom(tag, "----:com.apple.iTunes:replaygain_album_gain", &albumGain)) {
+        parseAlbumGain(pTrackMetadata, albumGain);
     }
     QString albumPeak;
     if (readMP4Atom(tag, "----:com.apple.iTunes:replaygain_album_peak", &albumPeak)) {
