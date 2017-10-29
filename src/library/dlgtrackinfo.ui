@@ -1026,12 +1026,32 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
   <tabstop>btnNext</tabstop>
   <tabstop>btnCancel</tabstop>
   <tabstop>btnApply</tabstop>
+  <tabstop>btnOK</tabstop>
+  <tabstop>txtTrackName</tabstop>
+  <tabstop>txtArtist</tabstop>
+  <tabstop>txtAlbum</tabstop>
+  <tabstop>txtAlbumArtist</tabstop>
+  <tabstop>txtComposer</tabstop>
+  <tabstop>txtYear</tabstop>
+  <tabstop>txtGenre</tabstop>
+  <tabstop>txtKey</tabstop>
+  <tabstop>txtGrouping</tabstop>
+  <tabstop>txtTrackNumber</tabstop>
+  <tabstop>txtLocation</tabstop>
+  <tabstop>btnFetchTag</tabstop>
+  <tabstop>btnReloadFromFile</tabstop>
+  <tabstop>btnOpenFileBrowser</tabstop>
+  <tabstop>txtComment</tabstop>
   <tabstop>spinBpm</tabstop>
+  <tabstop>bpmConst</tabstop>
   <tabstop>bpmTap</tabstop>
   <tabstop>bpmDouble</tabstop>
   <tabstop>bpmHalve</tabstop>
+  <tabstop>bpmClear</tabstop>
   <tabstop>bpmTwoThirds</tabstop>
   <tabstop>bpmThreeFourth</tabstop>
+  <tabstop>bpmThreeHalves</tabstop>
+  <tabstop>bpmFourThirds</tabstop>
   <tabstop>cueTable</tabstop>
   <tabstop>btnCueDelete</tabstop>
   <tabstop>btnCueActivate</tabstop>
