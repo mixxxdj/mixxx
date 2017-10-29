@@ -335,8 +335,10 @@ SoundSourceProxy::SoundSourceProxy(
     initSoundSource();
 }
 
-SoundSourceProxy::SoundSourceProxy(const Track* pTrack)
-    : m_url(getCanonicalUrlForTrack(pTrack)),
+SoundSourceProxy::SoundSourceProxy(
+        const Track* pTrack)
+    : m_pTrack(TrackPointer()), // provided track object is about to be destroyed
+      m_url(getCanonicalUrlForTrack(pTrack)),
       m_soundSourceProviderRegistrations(findSoundSourceProviderRegistrations(m_url)),
       m_soundSourceProviderRegistrationIndex(0) {
     initSoundSource();
