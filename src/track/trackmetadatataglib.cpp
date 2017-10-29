@@ -1190,6 +1190,13 @@ void importTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
         pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseId(QUuid(
                 toQString(pMusicBrainzAlbumReleaseIdFrame->fieldList()[1])));
     }
+    TagLib::ID3v2::UserTextIdentificationFrame* pMusicBrainzAlbumReleaseGroupIdFrame =
+            findFirstUserTextIdentificationFrame(tag, "MusicBrainz Release Group Id");
+    if (pMusicBrainzAlbumReleaseGroupIdFrame && (2 <= pMusicBrainzAlbumReleaseGroupIdFrame->fieldList().size())) {
+        // The value is stored in the 2nd field
+        pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseGroupId(QUuid(
+                toQString(pMusicBrainzAlbumReleaseGroupIdFrame->fieldList()[1])));
+    }
 }
 
 void importTrackMetadataFromAPETag(TrackMetadata* pTrackMetadata, const TagLib::APE::Tag& tag) {
@@ -1271,6 +1278,10 @@ void importTrackMetadataFromAPETag(TrackMetadata* pTrackMetadata, const TagLib::
     QString albumReleaseId;
     if (readAPEItem(tag, "MUSICBRAINZ_ALBUMID", &albumReleaseId)) {
         pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseId(QUuid(albumReleaseId));
+    }
+    QString albumReleaseGroupId;
+    if (readAPEItem(tag, "MUSICBRAINZ_RELEASEGROUPID", &albumReleaseGroupId)) {
+        pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseGroupId(QUuid(albumReleaseGroupId));
     }
 }
 
@@ -1373,6 +1384,10 @@ void importTrackMetadataFromVorbisCommentTag(TrackMetadata* pTrackMetadata,
     QString albumReleaseId;
     if (readXiphCommentField(tag, "MUSICBRAINZ_ALBUMID", &albumReleaseId)) {
         pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseId(QUuid(albumReleaseId));
+    }
+    QString albumReleaseGroupId;
+    if (readXiphCommentField(tag, "MUSICBRAINZ_RELEASEGROUPID", &albumReleaseGroupId)) {
+        pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseGroupId(QUuid(albumReleaseGroupId));
     }
 
     // Reading key code information
@@ -1479,6 +1494,10 @@ void importTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::
     QString albumReleaseId;
     if (readMP4Atom(tag, "----:com.apple.iTunes:MusicBrainz Album Id", &albumReleaseId)) {
         pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseId(QUuid(albumReleaseId));
+    }
+    QString albumReleaseGroupId;
+    if (readMP4Atom(tag, "----:com.apple.iTunes:MusicBrainz Release Group Id", &albumReleaseGroupId)) {
+        pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseGroupId(QUuid(albumReleaseGroupId));
     }
 
     QString key;
@@ -1684,6 +1703,13 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
                 "MusicBrainz Album Id",
                 false);
     }
+    if (!trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId().isNull()) {
+        writeID3v2UserTextIdentificationFrame(
+                pTag,
+                trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId().toString(),
+                "MusicBrainz Release Group Id",
+                false);
+    }
 
     return true;
 }
@@ -1749,6 +1775,10 @@ bool exportTrackMetadataIntoAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& 
         writeAPEItem(pTag, "MUSICBRAINZ_ALBUMID",
                 toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseId().toString()));
     }
+    if (!trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId().isNull()) {
+        writeAPEItem(pTag, "MUSICBRAINZ_RELEASEGROUPID",
+                toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId().toString()));
+    }
 
     return true;
 }
@@ -1804,6 +1834,10 @@ bool exportTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
     if (!trackMetadata.getAlbumInfo().getMusicBrainzReleaseId().isNull()) {
         writeXiphCommentField(pTag, "MUSICBRAINZ_ALBUMID",
                 toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseId().toString()));
+    }
+    if (!trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId().isNull()) {
+        writeXiphCommentField(pTag, "MUSICBRAINZ_RELEASEGROUPID",
+                toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId().toString()));
     }
 
     // According to https://wiki.xiph.org/Field_names "TRACKTOTAL" is
@@ -1915,6 +1949,10 @@ bool exportTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& 
     if (!trackMetadata.getAlbumInfo().getMusicBrainzReleaseId().isNull()) {
         writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Album Id",
                 toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseId().toString()));
+    }
+    if (!trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId().isNull()) {
+        writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Release Group Id",
+                toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId().toString()));
     }
 
     const TagLib::String key(toTagLibString(trackMetadata.getTrackInfo().getKey()));

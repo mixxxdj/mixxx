@@ -12,11 +12,12 @@ namespace mixxx {
 
 class AlbumInfo final {
     // Album properties (in alphabetical order)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    artist,               Artist)
-    PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzArtistId,  MusicBrainzArtistId)
-    PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzReleaseId, MusicBrainzReleaseId)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    title,                Title)
-    PROPERTY_SET_BYVAL_GET_BYREF(ReplayGain, replayGain,           ReplayGain)
+    PROPERTY_SET_BYVAL_GET_BYREF(QString,    artist,                    Artist)
+    PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzArtistId,       MusicBrainzArtistId)
+    PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzReleaseId,      MusicBrainzReleaseId)
+    PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzReleaseGroupId, MusicBrainzReleaseGroupId)
+    PROPERTY_SET_BYVAL_GET_BYREF(QString,    title,                     Title)
+    PROPERTY_SET_BYVAL_GET_BYREF(ReplayGain, replayGain,                ReplayGain)
 
 public:
     AlbumInfo() = default;
