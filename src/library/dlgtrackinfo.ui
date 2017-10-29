@@ -411,7 +411,7 @@
             <string>Duration:</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -541,7 +541,7 @@
             <string>Location:</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+            <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
            </property>
           </widget>
          </item>
