@@ -1321,14 +1321,16 @@ WBeatSpinBox {
       }
 
     WEffectSelector QAbstractItemView {
-      min-width: 76px;
-      max-width: 82px;
+      min-width: 142px;
+      max-width: 142px;
       background-color: #202020;
       padding-left: 6px;
       font-family: Ubuntu;
       font-size: 13px/13px;
-      /* not applied, defined by WEffectSelector
-      color: #cccccc; */
+      /* On Linux, this is not applied but font color from WEffectSelector
+      is inherited.
+      On Windows, it must be defined here */
+      color: #cccccc;
       border: 0px;
       border-radius: 2px;
     }
