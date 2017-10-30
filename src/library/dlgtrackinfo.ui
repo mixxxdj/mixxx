@@ -576,14 +576,14 @@
          <item row="0" column="0">
           <widget class="QPushButton" name="btnFetchTag">
            <property name="text">
-            <string>Get track metadata from MusicBrainz</string>
+            <string>Get Metadata from MusicBrainz</string>
            </property>
           </widget>
          </item>
          <item row="0" column="1">
           <widget class="QPushButton" name="btnReloadFromFile">
            <property name="text">
-            <string>Reload track metadata from file</string>
+            <string>Reload Metadata from File</string>
            </property>
           </widget>
          </item>
@@ -751,7 +751,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
            <item row="1" column="2">
             <widget class="QPushButton" name="bpmClear">
              <property name="text">
-              <string>Clear Bpm and Beatgrid</string>
+              <string>Clear BPM and Beatgrid</string>
              </property>
             </widget>
            </item>
