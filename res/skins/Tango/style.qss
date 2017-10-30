@@ -1335,7 +1335,7 @@ WBeatSpinBox {
       min-width: 142px;
       max-width: 142px;
       background-color: #202020;
-      padding-left: 6px;
+      /* padding-left: 6px; */
       font-family: Ubuntu;
       font-size: 13px/13px;
       /* On Linux, this is not applied but font color from WEffectSelector
@@ -1356,13 +1356,15 @@ WBeatSpinBox {
     WEffectSelector::item:selected {
       background-color: #0f0f0f;
     /* This moves the tick mark behind item text,
-      text sits at left border now */
-      border: 0;
+      text sits at left border now
+      border: 0; */
     }
-  /* This is sufficient to completely hide the tick mark, but
-    this alone would show an empty, shadowed box instead of tick mark */
     WEffectSelector::indicator {
+    /* This is sufficient to completely hide the tick mark, but
+      this alone would show an empty, shadowed box instead of tick mark
       background-color: transparent;
+      This should decrease the tick mark's left & right margin but is not respected */
+      margin: 0px -4px 0px -4px;
     }
 
 #FxParameterKnob {
