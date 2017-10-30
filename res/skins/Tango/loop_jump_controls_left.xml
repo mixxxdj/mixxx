@@ -17,7 +17,7 @@ Variables:
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:responsive_spacer.xml">
+          <Template src="skin:spacer_responsive_filler.xml">
             <SetVariable name="Color">25</SetVariable>
             <SetVariable name="Size">0me,0me</SetVariable>
           </Template>
@@ -123,7 +123,7 @@ Variables:
           </WidgetGroup>
 
           <!-- Loopmove / beatjump controls -->
-          <Template src="skin:responsive_spacer.xml">
+          <Template src="skin:spacer_responsive_filler.xml">
             <SetVariable name="Color">25</SetVariable>
             <SetVariable name="Size">0me,0me</SetVariable>
           </Template>
@@ -184,7 +184,7 @@ Variables:
                 <Layout>vertical</Layout>
                 <Children>
                   <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
-                  <Template src="skin:responsive_spacer.xml">
+                  <Template src="skin:spacer_responsive_filler.xml">
                     <SetVariable name="Color">25</SetVariable>
                     <SetVariable name="Size">0me,0min</SetVariable>
                   </Template>

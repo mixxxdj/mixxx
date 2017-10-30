@@ -495,13 +495,22 @@ WWidgetGroup {
   qproperty-layoutAlignment: 'AlignVCenter';
   background-color: #333333;
   }
-  WLabel#TrackTime, WLabel#TrackTitle {
+  WLabel#PlayPosition, WLabel#TrackTitle {
     font-size: 18px/18px;
     font-weight: bold;
-  }
-  WLabel#TrackDuration, WLabel#TrackBy, WLabel#TrackArtist {
+    }
+    WLabel#PlayPosition:hover {
+      /* Emphasize that play position display can be changed
+      to show both elapsed and remaining time */
+      border: 1px solid #cccccc;
+    }
+  WLabel#Duration, WLabel#TrackBy, WLabel#TrackArtist {
     font-size: 16px/16px;
     font-weight: bold;
+  }
+  WLabel#PlayPosition, WLabel#Duration {
+    /* Instead of 1px, this adds 6px padding both left and right...wtf? */
+    padding: 0px 1px 0px 1px;
   }
   WLabel#TrackBy {
     color: #888888;
