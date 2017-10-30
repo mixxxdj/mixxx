@@ -924,16 +924,18 @@ WBeatSpinBox {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   margin-top: 4px;
   }
-#VUMeterFloating {
+#VUMeterFloating, #VUMeterMaster {
   margin-top: 3px;
 }
 
-#VUMeterMaster {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+#VUMeterMasterContainer {
+  background-color: #333333;
+  margin: 0px 5px 0px 1px;
+  border-radius: 2px;
 }
 
 #VUMeterMasterLabel {
-  image: url(skin:/buttons/btn_master_vu.svg) no-repeat center center;
+  image: url(skin:/buttons/btn_master_vu_label.svg) no-repeat center center;
 }
 
 /*################################################################

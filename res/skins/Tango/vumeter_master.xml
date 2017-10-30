@@ -8,8 +8,9 @@ Variables:
 -->
 <Template>
   <WidgetGroup>
+    <ObjectName>VUMeterMasterContainer</ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>min,me</SizePolicy>
+    <SizePolicy>min,max</SizePolicy>
     <Children>
       <WidgetGroup><!-- Left + Right VU -->
         <Layout>horizontal</Layout>
@@ -18,19 +19,19 @@ Variables:
           <WidgetGroup><!-- Left VU -->
             <ObjectName>VUMeterFloating</ObjectName>
             <Layout>stacked</Layout>
-            <Size>4f,1me</Size>
+            <Size>4f,-1min</Size>
             <Children>
               <StatusLight>
                 <TooltipId>master_VuMeterL</TooltipId>
-                <PathStatusLight>skin:/graphics/vumeter_floating_clipping_over.png</PathStatusLight>
-                <PathBack>skin:/graphics/vumeter_floating_clipping.png</PathBack>
+                <PathStatusLight>skin:/graphics/vumeter_master_clipping_over.png</PathStatusLight>
+                <PathBack>skin:/graphics/vumeter_master_clipping.png</PathBack>
                 <Connection>
                   <ConfigKey>[Master],PeakIndicatorL</ConfigKey>
                 </Connection>
               </StatusLight>
               <VuMeter>
-                <PathVu>skin:/graphics/vumeter_floating_over.png</PathVu>
-                <PathBack>skin:/graphics/vumeter_floating.png</PathBack>
+                <PathVu>skin:/graphics/vumeter_master_over.png</PathVu>
+                <PathBack>skin:/graphics/vumeter_master.png</PathBack>
                 <Horizontal>false</Horizontal>
                 <PeakHoldSize>5</PeakHoldSize>
                 <PeakHoldTime>500</PeakHoldTime>
@@ -46,19 +47,19 @@ Variables:
           <WidgetGroup><!-- Right VU -->
             <ObjectName>VUMeterFloating</ObjectName>
             <Layout>stacked</Layout>
-            <Size>4f,1me</Size>
+            <Size>4f,-1min</Size>
             <Children>
               <StatusLight>
                 <TooltipId>master_VuMeterR</TooltipId>
-                <PathStatusLight>skin:/graphics/vumeter_floating_clipping_over.png</PathStatusLight>
-                <PathBack>skin:/graphics/vumeter_floating_clipping.png</PathBack>
+                <PathStatusLight>skin:/graphics/vumeter_master_clipping_over.png</PathStatusLight>
+                <PathBack>skin:/graphics/vumeter_master_clipping.png</PathBack>
                 <Connection>
                   <ConfigKey>[Master],PeakIndicatorR</ConfigKey>
                 </Connection>
               </StatusLight>
               <VuMeter>
-                <PathVu>skin:/graphics/vumeter_floating_over.png</PathVu>
-                <PathBack>skin:/graphics/vumeter_floating.png</PathBack>
+                <PathVu>skin:/graphics/vumeter_master_over.png</PathVu>
+                <PathBack>skin:/graphics/vumeter_master.png</PathBack>
                 <Horizontal>false</Horizontal>
                 <PeakHoldSize>5</PeakHoldSize>
                 <PeakHoldTime>500</PeakHoldTime>
@@ -77,10 +78,10 @@ Variables:
 
       <WidgetGroup>
         <ObjectName>VUMeterMasterLabel</ObjectName>
-        <Size>22f,22f</Size>
+        <Size>16f,20f</Size>
       </WidgetGroup>
 
-      <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
+      <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
     </Children>
   </WidgetGroup>
 </Template>

@@ -190,8 +190,8 @@ Description:
                     <Size>30min,14f</Size>
                     <!-- Disabled. With this seconds would show up in Windows anyway.
                     TODO: check if it works without this tag
-                    Clock also appears in topbar_netbook.xml.
-                    <ShowSeconds>false</ShowSeconds> -->
+                    Clock also appears in topbar_netbook.xml. -->
+                    <ShowSeconds>false</ShowSeconds>
                     <!-- This has no effect, neither has 'text-align' in qss,
                     that's why clock needs an extra container...
                     <Align>center</Align>   -->

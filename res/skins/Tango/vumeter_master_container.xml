@@ -12,7 +12,6 @@ Variables:
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>VUMeterMaster</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>max,min</SizePolicy>
     <Children>
