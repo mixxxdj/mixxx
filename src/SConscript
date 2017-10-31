@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import os
 import SCons
 import shutil
@@ -18,8 +19,8 @@ mixxx_version = util.get_mixxx_version()
 branch_name = util.get_branch_name()
 vcs_revision = util.get_revision()
 vcs_name = util.get_current_vcs()
-print "WE ARE IN:", os.getcwd()
-print "Building ", branch_name, " - rev.", vcs_revision
+print("WE ARE IN:", os.getcwd())
+print("Building ", branch_name, " - rev.", vcs_revision)
 
 plugins = []
 
@@ -136,15 +137,15 @@ def build_tests():
 def run_tests():
         ret = Execute("./mixxx-test")
         if ret != 0:
-                print "WARNING: Not all tests pass. See mixxx-test output."
+                print("WARNING: Not all tests pass. See mixxx-test output.")
                 Exit(ret)
 
 if int(build.flags['test']):
-        print "Building tests."
+        print("Building tests.")
         build_tests()
 
 if 'test' in BUILD_TARGETS:
-        print "Running tests."
+        print("Running tests.")
         run_tests()
 
 def construct_version(build, mixxx_version, branch_name, vcs_revision):
@@ -233,7 +234,7 @@ def ubuntu_construct_version(build, mixxx_version, branch_name, vcs_revision,
 
 # flags['prefix'] = ARGUMENTS.get('prefix', '/usr/local')
 # if not os.path.exists(flags['prefix']):
-#         print "Error: Prefix path does not exist!"
+#         print("Error: Prefix path does not exist!")
 #         Exit(1)
 # else:
 #        unix_share_path = flags['prefix'] + "/share"
@@ -354,7 +355,7 @@ if int(flags.get('qt_sqlite_plugin', 0)):
 if build.platform_is_linux or build.platform_is_bsd:
         flags['prefix'] = ARGUMENTS.get('prefix', '/usr/local')
         if not os.path.exists(flags['prefix']):
-                print "Error: Prefix path does not exist!"
+                print("Error: Prefix path does not exist!")
                 Exit(1)
         else:
                 #install_root is used in Debian/Ubuntu packaging (check the debian/rules file in the Ubuntu package)
@@ -362,7 +363,7 @@ if build.platform_is_linux or build.platform_is_bsd:
                 #building a Debian package, pbuilder wants to install Mixxx to a temporary directory, but you still need
                 #the compiled-in strings using /usr as the prefix. That's why we have install_root and flags['prefix'].
                 install_root = ARGUMENTS.get('install_root', flags['prefix'])
-                print "Install root: " + install_root
+                print("Install root: " + install_root)
                 unix_share_path = os.path.join(install_root,
                     env.get('SHAREDIR', default='share'))
                 unix_bin_path = os.path.join(install_root,
@@ -414,7 +415,7 @@ if build.platform_is_linux or build.platform_is_bsd:
                 #if 'install' in COMMAND_LINE_TARGETS:
                         #os.system('scons -c install')
                         #Delete(unix_share_path + "/mixxx/skins")
-                        #print "Copying skins..."
+                        #print("Copying skins...")
                         #env.Command(unix_share_path + "/mixxx/skins", skin_files, Copy("$TARGET", "$SOURCE"), source_scanner = DirScanner)
                         #Copy(unix_share_path + "/.ixxx/skins", skin_files)
                         #Delete(unix_bin_path + "mixxx")
@@ -617,56 +618,48 @@ def win32_find_program_via_registry(program_name):
     return program_location
 
 def BuildRelease(target, source, env):
-    print
-    print "==== Mixxx Post-Build Checks ===="
-    print
-    print "You have built version %s" % mixxx_version
-    print
+    print("==== Mixxx Post-Build Checks ====")
+    print("You have built version %s" % mixxx_version)
     if build.build_is_debug:
-        print "YOU ARE ABOUT TO PACKAGE A DEBUG BUILD!!"
-        print
-    print "Binary has size ",
+        print("YOU ARE ABOUT TO PACKAGE A DEBUG BUILD!!")
+    print("Binary has size ", end='')
     if build.platform_is_windows:
         os.system('for %I in ('+dist_dir+'\mixxx.exe) do @echo %~zI')
     else:
         os.system('ls -lh '+dist_dir+'/mixxx.exe | cut -d \' \' -f 5')
-    print
-    print "Installer file ",
+    print("Installer file ", end='')
     package_name = 'mixxx'
 
     package_version = construct_version(build, mixxx_version, branch_name,
                                         vcs_revision)
     arch = "x64" if build.machine_is_64bit else "x86"
     exe_name = '%s-%s-%s.msi' % (package_name, package_version, arch)
-    print exe_name
-    print
-    print "Top line of README, check version:"
+    print(exe_name)
+    print("Top line of README, check version:")
     if build.platform_is_windows:
         os.system('for /l %l in (1,1,1) do @for /f "tokens=1,2* delims=:" %a in (\'findstr /n /r "^" README ^| findstr /r "^%l:"\') do @echo %b')
     else:
         os.system('head -n 1 README')
-    print
-    print "Top 2 lines of LICENSE, check version and copyright dates:"
+    print("Top 2 lines of LICENSE, check version and copyright dates:")
     if build.platform_is_windows:
         os.system('for /l %l in (1,1,2) do @for /f "tokens=1,2* delims=:" %a in (\'findstr /n /r "^" LICENSE ^| findstr /r "^%l:"\') do @echo %b')
     else:
         os.system('head -n 2 LICENSE')
-    print
     #if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
     if True:
         # TODO(XXX): Installing a runtime isn't specific to MSVS?
         if build.toolchain_is_msvs:
             redist_file = 'vc_redist.%s.exe' % arch
-            print "Searching for the Visual C++ DLL installer package", redist_file
+            print("Searching for the Visual C++ DLL installer package" + redist_file)
             # Check for the runtime installer in the winlib root.
             redist_path = '%s' % os.path.join(build.winlib_path, redist_file)
-            print "   ", redist_path,
+            print("   ", redist_path,)
             if not os.path.isfile(redist_path):
                 raise Exception('Could not find the MSVC++ runtime installer.')
 
-        print "Now building installation package..."
+        print("Now building installation package...")
 
-        print "Looking for WIX Toolset..."
+        print("Looking for WIX Toolset...")
         wix_path = None
         if not build.crosscompile and build.platform_is_windows:
             wix_directory = os.getenv('WIX')
@@ -678,7 +671,7 @@ def BuildRelease(target, source, env):
         if not wix_directory:
             raise Exception ('Cannot find WIX Toolkit. Do you have it installed?')
         else:
-            print "    Found Wix Toolset in " + wix_path
+            print("    Found Wix Toolset in " + wix_path)
 
         WinSDK_path = 'build\\wix'
 
@@ -706,9 +699,9 @@ def BuildRelease(target, source, env):
         winArch = "x64" if build.machine_is_64bit else "x86"
 
         # Auto-create wxs file for each subdir and compile them
-        print "*** Building intermediate files"
+        print("*** Building intermediate files")
         for subdir in next(os.walk(dist_dir))[1]:
-            print "    " + dist_dir + "\\" + subdir
+            print("    " + dist_dir + "\\" + subdir)
             # Exclude doc and imageformats helper DLLs, they are bundled elsewhere
             if subdir in ['doc', 'imageformats']:
                 continue
@@ -716,7 +709,7 @@ def BuildRelease(target, source, env):
                 {'wix': wix_path,
                  'distdir': dist_dir,
                  'sub': subdir}
-            print "Using Command: " + command
+            print("Using Command: " + command)
             subprocess.check_call(command)
             command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -d%(sub)sVar=%(distdir)s\%(sub)s -arch %(arch)s -out build\wix\subdirs\%(sub)s.wixobj build\wix\subdirs\%(sub)s.wxs' % \
                 {'wix': wix_path,
@@ -724,7 +717,7 @@ def BuildRelease(target, source, env):
                  'arch': winArch,
                  'distdir': dist_dir,
                  'sub': subdir}
-            print "Using Command: " + command
+            print("Using Command: " + command)
             subprocess.check_call(command)
 
         # Handle QT's imageformats helper DLLs if dynamic QT
@@ -735,7 +728,7 @@ def BuildRelease(target, source, env):
                 {'wix': wix_path,
                  'distdir': dist_dir,
                  'sub': "imageformats"}
-            print "Using Command: " + command
+            print("Using Command: " + command)
             subprocess.check_call(command)
 
             command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -d%(sub)sVar=%(distdir)s\%(sub)s -arch %(arch)s -out build\wix\subdirs\%(sub)s.wixobj build\wix\subdirs\%(sub)s.wxs' % \
@@ -744,14 +737,14 @@ def BuildRelease(target, source, env):
                  'arch': winArch,
                  'distdir': dist_dir,
                  'sub': "imageformats"}
-            print "Using Command: " + command
+            print("Using Command: " + command)
             subprocess.check_call(command)
 
         # Harvest main DLL from install dir
         command = '"%(wix)s\\heat.exe" dir %(distdir)s -nologo -sfrag -suid -ag -srd -cg mainDLLCompGroup -dr INSTALLDIR -out build\wix\subdirs\mainDLL.wxs -sw5150 -var var.SourceDir -t build\wix\only-dll.xslt' % \
             {'wix': wix_path,
              'distdir': dist_dir}
-        print "Using Command: " + command
+        print("Using Command: " + command)
         subprocess.check_call(command)
 
         command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -dSourceDir=%(distdir)s -arch %(arch)s -out build\wix\subdirs\mainDLL.wixobj build\wix\subdirs\mainDLL.wxs' % \
@@ -759,7 +752,7 @@ def BuildRelease(target, source, env):
              'winlibpath': build.winlib_path,
              'arch': winArch,
              'distdir': dist_dir}
-        print "Using Command: " + command
+        print("Using Command: " + command)
         subprocess.check_call(command)
 
         # Harvest main PDB from install dir if they exist
@@ -769,7 +762,7 @@ def BuildRelease(target, source, env):
             command = '"%(wix)s\\heat.exe" dir %(distdir)s -nologo -sfrag -suid -ag -srd -cg mainPDBCompGroup -dr INSTALLDIR -out build\wix\subdirs\mainPDB.wxs -sw5150 -var var.SourceDir -t build\wix\only-pdb.xslt' % \
             {'wix': wix_path,
              'distdir': dist_dir}
-            print "Using Command: " + command
+            print("Using Command: " + command)
             subprocess.check_call(command)
 
             command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -dSourceDir=%(distdir)s -arch %(arch)s -out build\wix\subdirs\mainPDB.wixobj build\wix\subdirs\mainPDB.wxs' % \
@@ -777,7 +770,7 @@ def BuildRelease(target, source, env):
              'winlibpath': build.winlib_path,
              'arch': winArch,
              'distdir': dist_dir}
-            print "Using Command: " + command
+            print("Using Command: " + command)
             subprocess.check_call(command)
 
         # Compile main wix files
@@ -787,16 +780,16 @@ def BuildRelease(target, source, env):
              'isimageformats': imageformats,
              'isPDB': isPdb,
              'arch': winArch}
-        print "Using Command: " + command
+        print("Using Command: " + command)
         subprocess.check_call(command)
 
         # Build package for default language
-        print "*** Building package for default language " + defaultLanguage
+        print("*** Building package for default language " + defaultLanguage)
         command = '"%(wix)s\\light.exe" -cc .\ -nologo -sw1076 -spdb -ext WixUIExtension -cultures:%(deflang)s -loc build\wix\Localization\mixxx_%(deflang)s.wxl -out %(package_name)s build\wix\*.wixobj build\wix\subdirs\*.wixobj' % \
             {'wix': wix_path,
              'deflang': defaultLanguage,
              'package_name': 'part.' + exe_name}
-        print "Using Command: " + command
+        print("Using Command: " + command)
         subprocess.check_call(command)
 
         bundlelocfile = open("build/wix/bundle/bundleloc.wxs", "w")
@@ -817,7 +810,7 @@ def BuildRelease(target, source, env):
                     break
 
             if not LCID:
-                print "LCID not found, skipping file " + file
+                print("LCID not found, skipping file " + file)
                 continue
 
             bundlelocfile.write("            <Payload Id=\"thm-%(culture)s\" Compressed=\"yes\" Name=\"%(LCID)s\\thm.wxl\" SourceFile=\"..\\Localization\\mixxx_%(culture)s.wxl\" />\n" %\
@@ -829,23 +822,23 @@ def BuildRelease(target, source, env):
             if culture == defaultLanguage:
                 continue
 
-            print "*** Building package transform for locale %(culture)s LangID %(LCID)s" % \
+            print("*** Building package transform for locale %(culture)s LangID %(LCID)s" % \
                 {'culture': culture,
-                 'LCID': LCID}
+                 'LCID': LCID})
 
             command = '"%(wix)s\\light.exe" -cc .\ -reusecab -nologo -sw1076 -spdb -ext WixUIExtension -cultures:%(lang)s,%(deflang)s -loc %(wxl_file)s -out %(lang)s.msi build\wix\*.wixobj build\wix\subdirs\*.wixobj' % \
                 {'wix': wix_path,
                  'lang': culture,
                  'deflang': defaultLanguage,
                  'wxl_file': file}
-            print "Using Command: " + command
+            print("Using Command: " + command)
             subprocess.check_call(command)
 
             command = '"%(wix)s\\torch.exe" -nologo -p -t language %(package_name)s %(lang)s.msi -o %(lang)s.mst' % \
                 {'wix': wix_path,
                  'lang': culture,
                  'package_name': 'part.' + exe_name}
-            print "Using Command: " + command
+            print("Using Command: " + command)
             subprocess.check_call(command)
 
             command = 'cscript "%(winsdk)s\wisubstg.vbs" %(package_name)s %(lang)s.mst %(langid)s' % \
@@ -853,19 +846,19 @@ def BuildRelease(target, source, env):
                  'lang': culture,
                  'package_name': 'part.' + exe_name,
                  'langid': LCID}
-            print "Using Command: " + command
+            print("Using Command: " + command)
             subprocess.check_call(command)
 
             langIds = langIds + "," + LCID
             os.remove(culture + ".msi")
             os.remove(culture + ".mst")
 
-        print "*** Add all supported languages to MSI Package attribute"
+        print("*** Add all supported languages to MSI Package attribute")
         command = 'cscript "%(winsdk)s\WiLangId.vbs" %(package_name)s Package %(langid)s' % \
             {'winsdk': WinSDK_path,
              'package_name': 'part.' + exe_name,
              'langid': langIds}
-        print "Using Command: " + command
+        print("Using Command: " + command)
         subprocess.check_call(command)
 
         bundlelocfile.write("        </PayloadGroup>\n")
@@ -878,14 +871,14 @@ def BuildRelease(target, source, env):
             os.remove(exe_name)
         os.rename('part.' + exe_name, exe_name)
 
-        print "*** Compiling Bundle"
+        print("*** Compiling Bundle")
         # Compile bundle wix file
         command = '"%(wix)s\\candle.exe" -ext WixUtilExtension -ext WixBalExtension -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -dMSIPackage=%(package_name)s -arch %(arch)s -out build\\wix\\bundle\\bundle.wixobj build\\wix\\bundle\\bundle.wxs' % \
             {'wix': wix_path,
              'winlibpath': build.winlib_path,
              'arch': winArch,
              'package_name': exe_name}
-        print "Using Command: " + command
+        print("Using Command: " + command)
         subprocess.check_call(command)
         # bundle localisation references
         command = '"%(wix)s\\candle.exe" -ext WixUtilExtension -ext WixBalExtension -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -dMSIPackage=%(package_name)s -arch %(arch)s -out build\\wix\\bundle\\bundleloc.wixobj build\\wix\\bundle\\bundleloc.wxs' % \
@@ -893,14 +886,14 @@ def BuildRelease(target, source, env):
              'winlibpath': build.winlib_path,
              'arch': winArch,
              'package_name': exe_name}
-        print "Using Command: " + command
+        print("Using Command: " + command)
         subprocess.check_call(command)
         command = '"%(wix)s\\light.exe" -cc .\ -nologo -sw1076 -spdb -ext WixUtilExtension -ext WixBalExtension -dMSIPackage=%(msi_name)s -cultures:%(deflang)s -loc build\wix\Localization\mixxx_%(deflang)s.wxl -out %(package_name)s build\\wix\\bundle\\*.wixobj' % \
             {'wix': wix_path,
              'deflang': defaultLanguage,
              'msi_name': exe_name,
              'package_name': os.path.splitext(exe_name)[0] + '.exe'}
-        print "Using Command: " + command
+        print("Using Command: " + command)
         subprocess.check_call(command)
 
         # Some cleaning before leaving
@@ -915,7 +908,7 @@ def BuildRelease(target, source, env):
         os.remove(exe_name)
 
     else:
-        print "Aborted building installer"
+        print("Aborted building installer")
 
 # Do release things
 versionbld = Builder(action = BuildRelease, suffix = '.foo', src_suffix = '.bar')
@@ -954,31 +947,29 @@ def ubuntu_cleanup():
 # Build the Ubuntu package
 def BuildUbuntuPackage(target, source, env):
         global mixxx_version
-        print
-        print "==== Mixxx Post-Build Checks ===="
-        print
-        print "You have built version ", mixxx_version
-        print
-        print
-        print "Top line of README, check version:"
-        os.system('head -n 1 README')
-        print
-        print "Top 2 lines of LICENSE, check version and copyright dates:"
-        os.system('head -n 2 LICENSE')
-        print
-        print "Top line of debian/ubuntu changelog, check version:"
-        os.system('head -n 1 build/debian/changelog')
-        print
+        print("==== Mixxx Post-Build Checks ====")
+        print("You have built version " + mixxx_version)
+        print("\n\n")
 
-        print "Now building DEB package..."
-        print
+        print("Top line of README, check version:")
+        os.system('head -n 1 README')
+        print()
+        print("Top 2 lines of LICENSE, check version and copyright dates:")
+        os.system('head -n 2 LICENSE')
+        print()
+        print("Top line of debian/ubuntu changelog, check version:")
+        os.system('head -n 1 build/debian/changelog')
+        print()
+
+        print("Now building DEB package...")
+        print()
 
         arch = 'amd64' if build.machine_is_64bit else 'i386'
 
         package_target = ARGUMENTS.get('package', None)
         ubuntu_distros = ARGUMENTS.get('ubuntu_dist', None)
         if ubuntu_distros is None:
-                print "You did not specify an Ubuntu distribution to target. Specify one with the ubuntu_dist flag."
+                print("You did not specify an Ubuntu distribution to target. Specify one with the ubuntu_dist flag.")
                 # TODO(XXX) default to their current distro? the .pbuilderrc does this
                 return
         ubuntu_version = ARGUMENTS.get('ubuntu_version', '0ubuntu1')
@@ -1011,23 +1002,23 @@ def BuildUbuntuPackage(target, source, env):
         build_dir = os.path.join('ubuntu', mixxx_dir)
 
         if os.path.exists(build_dir):
-                print "* Cleaning up %s (cwd: %s)" % (build_dir, os.getcwd())
-                print
-                os.system('rm -rf %s' % build_dir) # be careful.
+            print("* Cleaning up %s (cwd: %s)" % (build_dir, os.getcwd()))
+            print
+            os.system('rm -rf %s' % build_dir) # be careful.
 
         # TODO: make a get flags arg to accept a revision which can override this and checkout of a specific SVN rev for the package
 
         # Export the source folder
-        print "* Exporting source folder from current workspace (%s rev: %s)" % (vcs_name,
-                                                                                 vcs_revision)
-        print
+        print("* Exporting source folder from current workspace (%s rev: %s)" % (vcs_name,
+                                                                                 vcs_revision))
+        print()
         util.export_source('.', build_dir)
 
         # Copy a patch to be included in the exported build sources (this can also be something like src/SConscript, /build/debian/rules)
         if os.path.exists('post-export-patch'):
-                print "* Applying post export patch"
-                print
-                os.system('cp --dereference -r post-export-patch/* %s' % build_dir)
+            print("* Applying post export patch")
+            print()
+            os.system('cp --dereference -r post-export-patch/* %s' % build_dir)
 
         # Write a build.h to the exported directory. Later code looks for a
         # build.h in the mixxx/ directory and moves it to build.build_dir/
@@ -1037,15 +1028,15 @@ def BuildUbuntuPackage(target, source, env):
         os.chdir('ubuntu')
 
         # Tar the source code
-        print "* Tarring source directory to '%s' ... (this can take a couple minutes)" % os.path.join(os.getcwd(), mixxx_tarball)
-        print
+        print("* Tarring source directory to '%s' ... (this can take a couple minutes)" % os.path.join(os.getcwd(), mixxx_tarball))
+        print()
         os.system('rm -f "%s"' % mixxx_tarball) #Remove old tarball
         os.system('tar --exclude build/debian --exclude=debian --exclude=debian/* -czf "%s" %s' % (mixxx_tarball, mixxx_dir))
 
         os.chdir(mixxx_dir)
         # Copy the debian folder from /build/debian to exported source folder root
-        print "* Copying Debian build directory from build/debian to debian (cwd: %s)" % os.getcwd()
-        print
+        print("* Copying Debian build directory from build/debian to debian (cwd: %s)" % os.getcwd())
+        print()
         os.system('cp -r build/debian .')
         os.system('cp res/linux/mixxx.usb.rules ./debian/mixxx.mixxx-usb.udev')
 
@@ -1091,8 +1082,8 @@ def BuildUbuntuPackage(target, source, env):
                                                 author="RJ Ryan <rryan@mixxx.org>")
 
                 # Run pbuilder
-                print "* Starting pbuilder ...  (cwd: %s)" % os.getcwd()
-                print
+                print("* Starting pbuilder ...  (cwd: %s)" % os.getcwd())
+                print()
 
                 command = ['MIXXX_SCONS_FLAGS="%s"' % scons_flags,
                            'ARCH=%s' % arch,
@@ -1121,12 +1112,12 @@ def BuildUbuntuPackage(target, source, env):
                         '..', '%s_%s_source.changes' % (package_name, package_version))
                 if package_target == 'source':
                         if result == 0 and os.path.exists(source_changes_file):
-                                print "* Done! Signed source package is in ubuntu/"
-                                print
+                            print("* Done! Signed source package is in ubuntu/")
+                            print()
                         else:
-                                print "* Build failed."
-                                print
-                                raise Exception('Ubuntu source package build/signing failed.')
+                            print("* Build failed.")
+                            print()
+                            raise Exception('Ubuntu source package build/signing failed.')
                 else:
                         result_path = "/var/cache/pbuilder/%s-%s/result/" % (ubuntu_distro, arch)
                         result_filename = "%s_%s_%s.deb" % (package_name, package_version, arch)
@@ -1153,37 +1144,37 @@ def BuildUbuntuPackage(target, source, env):
 
                         source_tar_file = os.path.join('..', mixxx_tarball)
                         if os.path.exists(source_tar_file):
-                                shutil.move(source_tar_file, dest_tar_file)
+                            shutil.move(source_tar_file, dest_tar_file)
 
                         if result == 0 and os.path.exists(result_file):
-                                print "Done! Package and tarballs are in %s" % result_path
-                                print "* Found package at '%s'. Copying to ubuntu/" % result_file
-                                print
-                                shutil.copyfile(result_file, dest_deb_file)
+                            print("Done! Package and tarballs are in %s" % result_path)
+                            print("* Found package at '%s'. Copying to ubuntu/" % result_file)
+                            print()
+                            shutil.copyfile(result_file, dest_deb_file)
                         else:
-                                print "* Build failed."
-                                print
-                                raise Exception('Ubuntu package build failed.')
+                            print("* Build failed.")
+                            print()
+                            raise Exception('Ubuntu package build failed.')
 
-                # print "Signing the .deb changes file..."
+                # print("Signing the .deb changes file...")
                 # os.system('sudo debsign /var/cache/pbuilder/result/*.changes')
 
                 if ubuntu_ppa is not None:
-                        # dput this changes file to the PPA
-                        dput_command = 'dput %s %s' % (ubuntu_ppa, source_changes_file)
-                        print "* Uploading package for", ubuntu_distro, "to launchpad:", dput_command
-                        result = os.system(dput_command)
-                        if result == 0:
-                                print "* Package upload succeeded."
-                        else:
-                                print "* Package upload failed."
-                                print
-                                raise Exception('Ubuntu package upload failed.')
+                    # dput this changes file to the PPA
+                    dput_command = 'dput %s %s' % (ubuntu_ppa, source_changes_file)
+                    print("* Uploading package for", ubuntu_distro, "to launchpad:", dput_command)
+                    result = os.system(dput_command)
+                    if result == 0:
+                         print("* Package upload succeeded.")
+                    else:
+                        print("* Package upload failed.")
+                        print()
+                        raise Exception('Ubuntu package upload failed.')
 
         # Return back to the starting directory, otherwise you'll get a .sconsign.dblite error!
         os.chdir('../..')
-        print "* Returning to starting working directory ...  (cwd: " + os.getcwd() + ")"
-        print
+        print("* Returning to starting working directory ...  (cwd: " + os.getcwd() + ")")
+        print()
 
 #Build the Ubuntu package if "makeubuntu" was passed as an argument
 versiondebbld = Builder(action = BuildUbuntuPackage) #, suffix = '.foo', src_suffix = '.bar')
