@@ -30,17 +30,6 @@ double EngineControl::process(const double dRate,
     return kNoTrigger;
 }
 
-double EngineControl::nextTrigger(const double dRate,
-                                  const double currentSample,
-                                  const double totalSamples,
-                                  const int iBufferSize) {
-    Q_UNUSED(dRate);
-    Q_UNUSED(currentSample);
-    Q_UNUSED(totalSamples);
-    Q_UNUSED(iBufferSize);
-    return kNoTrigger;
-}
-
 void EngineControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     Q_UNUSED(pNewTrack);
     Q_UNUSED(pOldTrack);

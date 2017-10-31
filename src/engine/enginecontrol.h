@@ -49,11 +49,6 @@ class EngineControl : public QObject {
                            const double dTotalSamples,
                            const int iBufferSize);
 
-    virtual double nextTrigger(const double dRate,
-                               const double dCurrentSample,
-                               const double dTotalSamples,
-                               const int iBufferSize);
-
     // hintReader allows the EngineControl to provide hints to the reader to
     // indicate that the given portion of a song is a potential imminent seek
     // target.
