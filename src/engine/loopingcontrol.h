@@ -125,12 +125,12 @@ class LoopingControl : public EngineControl {
     ControlObject* m_pSlipEnabled;
     ControlObject* m_pPlayButton;
 
-    bool m_bLoopingEnabled = false;
-    bool m_bLoopRollActive = false;
-    bool m_bLoopManualTogglePressedToExitLoop = false;
-    bool m_bAdjustingLoopIn = false;
-    bool m_bAdjustingLoopOut = false;
-    bool m_bLoopOutPressedWhileLoopDisabled = false;
+    bool m_bLoopingEnabled;
+    bool m_bLoopRollActive;
+    bool m_bLoopManualTogglePressedToExitLoop;
+    bool m_bAdjustingLoopIn;
+    bool m_bAdjustingLoopOut;
+    bool m_bLoopOutPressedWhileLoopDisabled;
     // TODO(DSC) Make the following values double
     ControlValueAtomic<LoopSamples> m_loopSamples;
     QAtomicInt m_iCurrentSample;
