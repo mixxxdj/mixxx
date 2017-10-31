@@ -28,35 +28,28 @@ class LoopingControl : public EngineControl {
     static QList<double> getBeatSizes();
 
     LoopingControl(QString group, UserSettingsPointer pConfig);
-    virtual ~LoopingControl();
+    ~LoopingControl() override;
 
     // process() updates the internal state of the LoopingControl to reflect the
     // correct current sample. If a loop should be taken LoopingControl returns
     // the sample that should be seeked to. Otherwise it returns currentSample.
-    virtual double process(const double dRate,
+    double process(const double dRate,
                    const double currentSample,
                    const double totalSamples,
-                   const int iBufferSize);
+                   const int iBufferSize) override;
 
     // nextTrigger returns the sample at which the engine will be triggered to
     // take a loop, given the value of currentSample and dRate.
-    virtual double nextTrigger(const double dRate,
+    double nextTrigger(const double dRate,
                        const double currentSample,
                        const double totalSamples,
-                       const int iBufferSize);
-
-    // getTrigger returns the sample that the engine will next be triggered to
-    // loop to, given the value of currentSample and dRate.
-    virtual double getTrigger(const double dRate,
-                      const double currentSample,
-                      const double totalSamples,
-                      const int iBufferSize);
+                       const int iBufferSize) override;
 
     // hintReader will add to hintList hints both the loop in and loop out
     // sample, if set.
-    virtual void hintReader(HintVector* pHintList);
+    void hintReader(HintVector* pHintList) override;
 
-    virtual void notifySeek(double dNewPlaypos);
+    void notifySeek(double dNewPlaypos) override;
 
   public slots:
     void slotLoopIn(double pressed);

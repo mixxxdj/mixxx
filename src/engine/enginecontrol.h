@@ -36,7 +36,7 @@ class EngineControl : public QObject {
   public:
     EngineControl(QString group,
                   UserSettingsPointer pConfig);
-    virtual ~EngineControl();
+    ~EngineControl() override;
 
     // Called by EngineBuffer::process every latency period. See the above
     // comments for information about guarantees that hold during this call. An
@@ -53,11 +53,6 @@ class EngineControl : public QObject {
                                const double dCurrentSample,
                                const double dTotalSamples,
                                const int iBufferSize);
-
-    virtual double getTrigger(const double dRate,
-                              const double dCurrentSample,
-                              const double dTotalSamples,
-                              const int iBufferSize);
 
     // hintReader allows the EngineControl to provide hints to the reader to
     // indicate that the given portion of a song is a potential imminent seek

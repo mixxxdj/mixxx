@@ -365,27 +365,6 @@ double LoopingControl::nextTrigger(const double dRate,
     return kNoTrigger;
 }
 
-double LoopingControl::getTrigger(const double dRate,
-                                  const double currentSample,
-                                  const double totalSamples,
-                                  const int iBufferSize) {
-    Q_UNUSED(currentSample);
-    Q_UNUSED(totalSamples);
-    Q_UNUSED(iBufferSize);
-    bool bReverse = dRate < 0;
-    LoopSamples loopSamples = m_loopSamples.getValue();
-
-    if (m_bLoopingEnabled && !m_bReloopCatchUpcomingLoop &&
-            !m_bAdjustingLoopIn && !m_bAdjustingLoopOut) {
-        if (bReverse) {
-            return loopSamples.end;
-        } else {
-            return loopSamples.start;
-        }
-    }
-    return kNoTrigger;
-}
-
 void LoopingControl::hintReader(HintVector* pHintList) {
     LoopSamples loopSamples = m_loopSamples.getValue();
     Hint loop_hint;

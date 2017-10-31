@@ -20,7 +20,7 @@ class BpmControl : public EngineControl {
 
   public:
     BpmControl(QString group, UserSettingsPointer pConfig);
-    virtual ~BpmControl();
+    ~BpmControl() override;
 
     double getBpm() const;
     double getLocalBpm() const { return m_pLocalBpm ? m_pLocalBpm->get() : 0.0; }
@@ -38,11 +38,11 @@ class BpmControl : public EngineControl {
     double getBeatDistance(double dThisPosition) const;
     double getPreviousSample() const { return m_dPreviousSample; }
 
-    void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
+    void setCurrentSample(const double dCurrentSample, const double dTotalSamples) override;
     double process(const double dRate,
                    const double dCurrentSample,
                    const double dTotalSamples,
-                   const int iBufferSize);
+                   const int iBufferSize) override;
     void setTargetBeatDistance(double beatDistance);
     void setInstantaneousBpm(double instantaneousBpm);
     void resetSyncAdjustment();

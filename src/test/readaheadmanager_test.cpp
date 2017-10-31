@@ -63,25 +63,12 @@ class StubLoopControl : public LoopingControl {
         return m_processReturnValues.takeFirst();
     }
 
-    // getTrigger returns the sample that the engine will next be triggered to
-    // loop to, given the value of currentSample and dRate.
-    double getTrigger(const double dRate,
-                      const double currentSample,
-                      const double totalSamples,
-                      const int iBufferSize) override {
-        Q_UNUSED(dRate);
-        Q_UNUSED(currentSample);
-        Q_UNUSED(totalSamples);
-        Q_UNUSED(iBufferSize);
-        return kNoTrigger;
-    }
-
     // hintReader has no effect in this stubbed class
     void hintReader(HintVector* pHintList) override {
         Q_UNUSED(pHintList);
     }
 
-    void notifySeek(double dNewPlaypos) {
+    void notifySeek(double dNewPlaypos) override {
         Q_UNUSED(dNewPlaypos);
     }
 
