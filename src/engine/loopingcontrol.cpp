@@ -321,24 +321,23 @@ double LoopingControl::process(const double dRate,
 
     double retval = kNoTrigger;
     LoopSamples loopSamples = m_loopSamples.getValue();
-    if (m_bLoopingEnabled &&
-            loopSamples.start != kNoTrigger &&
-            loopSamples.end != kNoTrigger) {
-        bool outsideLoop = currentSample >= loopSamples.end ||
-                           currentSample <= loopSamples.start;
-        if (outsideLoop) {
-            if (!m_bReloopCatchUpcomingLoop && !m_bAdjustingLoopIn && !m_bAdjustingLoopOut) {
-                retval = reverse ? loopSamples.end : loopSamples.start;
-            }
-        } else {
-            m_bReloopCatchUpcomingLoop = false;
-        }
-    }
 
     if (m_bAdjustingLoopIn) {
         setLoopInToCurrentPosition();
     } else if (m_bAdjustingLoopOut) {
         setLoopOutToCurrentPosition();
+    } else if (m_bLoopingEnabled &&
+            loopSamples.start != kNoTrigger &&
+            loopSamples.end != kNoTrigger) {
+        if (reverse) {
+            if (currentSample <= loopSamples.start) {
+                retval = loopSamples.end;
+            }
+        } else {
+            if (currentSample >= loopSamples.end) {
+                retval = loopSamples.start;
+            }
+        }
     }
 
     return retval;
@@ -354,7 +353,7 @@ double LoopingControl::nextTrigger(const double dRate,
     bool bReverse = dRate < 0;
     LoopSamples loopSamples = m_loopSamples.getValue();
 
-    if (m_bLoopingEnabled && !m_bReloopCatchUpcomingLoop &&
+    if (m_bLoopingEnabled &&
             !m_bAdjustingLoopIn && !m_bAdjustingLoopOut) {
         if (bReverse) {
             return loopSamples.start;
@@ -629,13 +628,10 @@ void LoopingControl::slotReloopToggle(double val) {
         LoopSamples loopSamples = m_loopSamples.getValue();
         if (loopSamples.start != kNoTrigger && loopSamples.end != kNoTrigger &&
                 loopSamples.start <= loopSamples.end) {
-            if (getCurrentSample() < loopSamples.start) {
-                m_bReloopCatchUpcomingLoop = true;
-            }
             setLoopingEnabled(true);
             // If we're not playing, jump to the loop in point so the waveform
             // shows where it will play from when playback resumes.
-            if (!m_pPlayButton->toBool() && !m_bReloopCatchUpcomingLoop) {
+            if (!m_pPlayButton->toBool() && getCurrentSample() > loopSamples.start) {
                 slotLoopInGoto(1);
             }
         }

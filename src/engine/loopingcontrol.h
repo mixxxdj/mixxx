@@ -128,7 +128,6 @@ class LoopingControl : public EngineControl {
     bool m_bLoopingEnabled = false;
     bool m_bLoopRollActive = false;
     bool m_bLoopManualTogglePressedToExitLoop = false;
-    bool m_bReloopCatchUpcomingLoop = false;
     bool m_bAdjustingLoopIn = false;
     bool m_bAdjustingLoopOut = false;
     bool m_bLoopOutPressedWhileLoopDisabled = false;
