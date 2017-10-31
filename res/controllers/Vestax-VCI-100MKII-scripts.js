@@ -43,14 +43,6 @@ VCI102.setShift = function(ch, midino, value, status, group) {
     VCI102.refreshLED(ch + 2);
 };
 
-VCI102.MoveFocus = function(ch, midino, value, status, group) {
-    if (VCI102.shift[0] + VCI102.shift[1]) {
-        engine.setValue(group, "ChooseItem", value > 0);
-    } else {
-        engine.setValue(group, "MoveFocusForward", value > 0);
-    }
-};
-
 VCI102.selectTimer = 0;
 
 VCI102.selectIter = function(select) {
@@ -64,15 +56,17 @@ VCI102.selectIter = function(select) {
     }
 };
 
-VCI102.SelectPrevTrack = function(ch, midino, value, status, group) {
+VCI102.selectPrev = function(ch, midino, value, status, group) {
+    var key = VCI102.shift[0] + VCI102.shift[1] ? "MoveFocus" : "MoveVertical";
     VCI102.selectIter(value && function() {
-        engine.setValue(group, "MoveUp", 1);
+        engine.setValue(group, key, -1);
     });
 };
 
-VCI102.SelectNextTrack = function(ch, midino, value, status, group) {
+VCI102.selectNext = function(ch, midino, value, status, group) {
+    var key = VCI102.shift[0] + VCI102.shift[1] ? "MoveFocus" : "MoveVertical";
     VCI102.selectIter(value && function() {
-        engine.setValue(group, "MoveDown", 1);
+        engine.setValue(group, key, 1);
     });
 };
 

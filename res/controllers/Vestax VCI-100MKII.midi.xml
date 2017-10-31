@@ -73,16 +73,13 @@
       </control>
       <control>
         <group>[Library]</group>
-        <key>VCI102.MoveFocus</key>
+        <key>ChooseItem</key>
         <status>0x94</status>
         <midino>0x36</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
         <group>[Library]</group>
-        <key>VCI102.SelectPrevTrack</key>
+        <key>VCI102.selectPrev</key>
         <status>0x94</status>
         <midino>0x37</midino>
         <options>
@@ -91,7 +88,7 @@
       </control>
       <control>
         <group>[Library]</group>
-        <key>VCI102.SelectNextTrack</key>
+        <key>VCI102.selectNext</key>
         <status>0x94</status>
         <midino>0x38</midino>
         <options>
