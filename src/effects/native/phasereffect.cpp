@@ -27,7 +27,7 @@ EffectManifest PhaserEffect::getManifest() {
     period->setId("lfo_period");
     period->setName(QObject::tr("Period"));
     period->setDescription(QObject::tr("Controls the period of the LFO (low frequency oscillator)\n"
-        "1/4 - 4 beats rounded to 1/2 beats if tempo is detected (decks and samplers) \n"
+        "1/4 - 4 beats rounded to 1/2 beat if tempo is detected (decks and samplers) \n"
         "1/4 - 4 seconds if no tempo is detected (mic & aux inputs, master mix)"));
     period->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
