@@ -8,16 +8,12 @@ MixtrackPlatinum.init = function(id, debug) {
     var byteArray = [0xF0, 0x00, 0x01, 0x3F, 0x7F, 0x3A, 0x60, 0x00, 0x04, 0x04, 0x01, 0x00, 0x00, 0xF7];
     midi.sendSysexMsg(byteArray, byteArray.length);
 
-    MixtrackPlatinum.deck1 = new MixtrackPlatinum.Deck(1, 0x00);
-    MixtrackPlatinum.deck2 = new MixtrackPlatinum.Deck(2, 0x01);
-    MixtrackPlatinum.deck3 = new MixtrackPlatinum.Deck(3, 0x02);
-    MixtrackPlatinum.deck4 = new MixtrackPlatinum.Deck(4, 0x03);
 
-    MixtrackPlatinum.decks = [];
-    MixtrackPlatinum.decks[1] = MixtrackPlatinum.deck1;
-    MixtrackPlatinum.decks[2] = MixtrackPlatinum.deck2;
-    MixtrackPlatinum.decks[3] = MixtrackPlatinum.deck3;
-    MixtrackPlatinum.decks[4] = MixtrackPlatinum.deck4;
+    MixtrackPlatinum.decks = new components.ComponentContainer();
+    MixtrackPlatinum.decks[1] = new MixtrackPlatinum.Deck(1, 0x00);
+    MixtrackPlatinum.decks[2] = new MixtrackPlatinum.Deck(2, 0x01);
+    MixtrackPlatinum.decks[3] = new MixtrackPlatinum.Deck(3, 0x02);
+    MixtrackPlatinum.decks[4] = new MixtrackPlatinum.Deck(4, 0x03);
 
     // helper functions
     var loop_led = function(group, key, midi_channel, midino) {
@@ -617,10 +613,8 @@ MixtrackPlatinum.shift = false;
 MixtrackPlatinum.shiftToggle = function (channel, control, value, status, group) {
     MixtrackPlatinum.shift = value == 0x7F;
 
-    for (var i = 1; i <= 4; ++i) {
-        if (MixtrackPlatinum.shift) MixtrackPlatinum.decks[i].shift();
-        else MixtrackPlatinum.decks[i].unshift();
-    }
+    if (MixtrackPlatinum.shift) MixtrackPlatinum.decks.shift();
+    else MixtrackPlatinum.decks.unshift();
 
     for (i = 1; i <= 4; ++i) {
         if (MixtrackPlatinum.touching[i]) {
