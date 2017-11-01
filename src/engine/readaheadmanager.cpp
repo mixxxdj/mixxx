@@ -216,8 +216,9 @@ void ReadAheadManager::addReadLogEntry(double virtualPlaypositionStart,
 }
 
 // Not thread-save, call from engine thread only
-double ReadAheadManager::getFilePlaypositionFromLog(double currentFilePlayposition,
-                                                             double numConsumedSamples) {
+double ReadAheadManager::getFilePlaypositionFromLog(
+        double currentFilePlayposition, double numConsumedSamples) {
+
     if (numConsumedSamples == 0) {
         return currentFilePlayposition;
     }

@@ -728,7 +728,9 @@ void LoopingControl::notifySeek(double dNewPlaypos) {
     if (m_bLoopingEnabled) {
         // Disable loop when we jump after it, using hot cues or waveform overview
         // If we jump before, the loop it is kept enabled as catching loop
-        if (dNewPlaypos > loopSamples.end) {
+        // + 2 because the new playposition can be rounded to loop end because of
+        // playing not at rate 1.
+        if (dNewPlaypos > loopSamples.end + 2) {
             setLoopingEnabled(false);
         }
     }
