@@ -339,11 +339,11 @@
             </control>
             <control>
                 <group>[Sampler4]</group>
-                <key>start_stop</key>
+                <key>MixtrackPlatinum.sampler[4].input</key>
                 <status>0x9F</status>
                 <midino>0x2B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -384,11 +384,11 @@
             </control>
             <control>
                 <group>[Sampler3]</group>
-                <key>start_stop</key>
+                <key>MixtrackPlatinum.sampler[3].input</key>
                 <status>0x9F</status>
                 <midino>0x2A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -438,11 +438,11 @@
             </control>
             <control>
                 <group>[Sampler2]</group>
-                <key>start_stop</key>
+                <key>MixtrackPlatinum.sampler[2].input</key>
                 <status>0x9F</status>
                 <midino>0x29</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -492,11 +492,11 @@
             </control>
             <control>
                 <group>[Sampler1]</group>
-                <key>start_stop</key>
+                <key>MixtrackPlatinum.sampler[1].input</key>
                 <status>0x9F</status>
                 <midino>0x28</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -693,11 +693,11 @@
             </control>
             <control>
                 <group>[Sampler4]</group>
-                <key>cue_gotoandplay</key>
+                <key>MixtrackPlatinum.sampler[4].input</key>
                 <status>0x9F</status>
                 <midino>0x24</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -757,11 +757,11 @@
             </control>
             <control>
                 <group>[Sampler3]</group>
-                <key>cue_gotoandplay</key>
+                <key>MixtrackPlatinum.sampler[3].input</key>
                 <status>0x9F</status>
                 <midino>0x23</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -820,11 +820,11 @@
             </control>
             <control>
                 <group>[Sampler2]</group>
-                <key>cue_gotoandplay</key>
+                <key>MixtrackPlatinum.sampler[2].input</key>
                 <status>0x9F</status>
                 <midino>0x22</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -874,11 +874,11 @@
             </control>
             <control>
                 <group>[Sampler1]</group>
-                <key>cue_gotoandplay</key>
+                <key>MixtrackPlatinum.sampler[1].input</key>
                 <status>0x9F</status>
                 <midino>0x21</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -2256,20 +2256,6 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Sampler3]</group>
-                <key>play_indicator</key>
-                <status>0x9F</status>
-                <midino>0x23</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Sampler3]</group>
-                <key>play_indicator</key>
-                <status>0x8F</status>
-                <midino>0x23</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
                 <group>[Channel2]</group>
                 <key>hotcue_4_enabled</key>
                 <status>0x95</status>
@@ -2355,20 +2341,6 @@
                 <key>hotcue_3_enabled</key>
                 <status>0x84</status>
                 <midino>0x22</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Sampler4]</group>
-                <key>play_indicator</key>
-                <status>0x9F</status>
-                <midino>0x24</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Sampler4]</group>
-                <key>play_indicator</key>
-                <status>0x8F</status>
-                <midino>0x24</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -3032,20 +3004,6 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Sampler1]</group>
-                <key>play_indicator</key>
-                <status>0x9F</status>
-                <midino>0x21</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Sampler1]</group>
-                <key>play_indicator</key>
-                <status>0x8F</status>
-                <midino>0x21</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
                 <group>[Channel3]</group>
                 <key>loop_halve</key>
                 <status>0x86</status>
@@ -3219,20 +3177,6 @@
                 <key>hotcue_4_enabled</key>
                 <status>0x86</status>
                 <midino>0x23</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Sampler2]</group>
-                <key>play_indicator</key>
-                <status>0x9F</status>
-                <midino>0x22</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Sampler2]</group>
-                <key>play_indicator</key>
-                <status>0x8F</status>
-                <midino>0x22</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>

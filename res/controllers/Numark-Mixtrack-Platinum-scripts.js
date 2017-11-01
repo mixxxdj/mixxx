@@ -15,6 +15,8 @@ MixtrackPlatinum.init = function(id, debug) {
     MixtrackPlatinum.decks[3] = new MixtrackPlatinum.Deck(3, 0x02);
     MixtrackPlatinum.decks[4] = new MixtrackPlatinum.Deck(4, 0x03);
 
+    MixtrackPlatinum.sampler = new MixtrackPlatinum.Sampler();
+
     // helper functions
     var loop_led = function(group, key, midi_channel, midino) {
         if (engine.getValue(group, key)) {
@@ -118,12 +120,6 @@ MixtrackPlatinum.init = function(id, debug) {
     midi.sendShortMsg(0x99, 0x00, engine.getValue('[EffectRack1_EffectUnit1]', 'group_[Channel2]_enable') ? 0x7F : 0x01);
     midi.sendShortMsg(0x99, 0x01, engine.getValue('[EffectRack1_EffectUnit2]', 'group_[Channel2]_enable') ? 0x7F : 0x01);
     midi.sendShortMsg(0x99, 0x02, engine.getValue('[EffectRack1_EffectUnit3]', 'group_[Channel2]_enable') ? 0x7F : 0x01);
-
-    // init sampler leds
-    led('[Sampler1]', 'play_indicator', 0x0F, 0x21);
-    led('[Sampler2]', 'play_indicator', 0x0F, 0x22);
-    led('[Sampler3]', 'play_indicator', 0x0F, 0x23);
-    led('[Sampler4]', 'play_indicator', 0x0F, 0x24);
 
     // zero vu meters
     midi.sendShortMsg(0xBF, 0x44, 0);
@@ -317,6 +313,19 @@ MixtrackPlatinum.Deck = function(deck_nums, midi_chan) {
 };
 
 MixtrackPlatinum.Deck.prototype = new components.Deck();
+
+MixtrackPlatinum.Sampler = function() {
+    for (var i = 1; i <= 4; ++i) {
+        this[i] = new components.SamplerButton({
+            midi: [0x9F, 0x20 + i],
+            number: i,
+            loaded: 0x00,
+            playing: 0x7F,
+        });
+    }
+};
+
+MixtrackPlatinum.Sampler.prototype = new components.ComponentContainer();
 
 MixtrackPlatinum.encodeNum = function(number) {
     var number_array = [
@@ -613,8 +622,14 @@ MixtrackPlatinum.shift = false;
 MixtrackPlatinum.shiftToggle = function (channel, control, value, status, group) {
     MixtrackPlatinum.shift = value == 0x7F;
 
-    if (MixtrackPlatinum.shift) MixtrackPlatinum.decks.shift();
-    else MixtrackPlatinum.decks.unshift();
+    if (MixtrackPlatinum.shift) {
+        MixtrackPlatinum.decks.shift();
+        MixtrackPlatinum.sampler.shift();
+    }
+    else {
+        MixtrackPlatinum.decks.unshift();
+        MixtrackPlatinum.sampler.unshift();
+    }
 
     for (i = 1; i <= 4; ++i) {
         if (MixtrackPlatinum.touching[i]) {
