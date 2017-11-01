@@ -42,7 +42,12 @@ class GaterEffect : public PerChannelEffectProcessor<GaterGroupState> {
     }
 
     EngineEffectParameter* m_pRateParameter;
-    EngineEffectParameter* m_pShapeParameter;
+    EngineEffectParameter* m_pAttackParameter;
+    EngineEffectParameter* m_pAttackCurveParameter;
+    EngineEffectParameter* m_pDecayParameter;
+    EngineEffectParameter* m_pSustainParameter;
+    EngineEffectParameter* m_pSustainLevelParameter;
+    EngineEffectParameter* m_pReleaseParameter;
     
     std::ofstream file;
 
