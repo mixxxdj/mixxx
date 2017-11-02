@@ -315,6 +315,7 @@ double LoopingControl::process(const double dRate,
                                const int iBufferSize) {
     Q_UNUSED(totalSamples);
     Q_UNUSED(iBufferSize);
+    Q_UNUSED(dRate);
 
     int currentSampleEven = static_cast<int>(currentSample);
     if (!even(currentSampleEven)) {
@@ -322,16 +323,25 @@ double LoopingControl::process(const double dRate,
     }
     m_iCurrentSample = currentSampleEven;
 
+    if (m_bAdjustingLoopIn) {
+        setLoopInToCurrentPosition();
+    } else if (m_bAdjustingLoopOut) {
+        setLoopOutToCurrentPosition();
+    }
+
+    return kNoTrigger;
+}
+
+double LoopingControl::getLoopTarget(
+        const double dRate, const double currentSample) {
     bool reverse = dRate < 0;
 
     double retval = kNoTrigger;
     LoopSamples loopSamples = m_loopSamples.getValue();
 
-    if (m_bAdjustingLoopIn) {
-        setLoopInToCurrentPosition();
-    } else if (m_bAdjustingLoopOut) {
-        setLoopOutToCurrentPosition();
-    } else if (m_bLoopingEnabled &&
+    if (!m_bAdjustingLoopIn &&
+            !m_bAdjustingLoopOut &&
+            m_bLoopingEnabled &&
             loopSamples.start != kNoTrigger &&
             loopSamples.end != kNoTrigger) {
         if (reverse) {

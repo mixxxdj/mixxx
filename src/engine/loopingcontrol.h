@@ -38,6 +38,9 @@ class LoopingControl : public EngineControl {
                    const double totalSamples,
                    const int iBufferSize) override;
 
+    double getLoopTarget(
+            const double dRate, const double currentSample);
+
     // nextTrigger returns the sample at which the engine will be triggered to
     // take a loop, given the value of currentSample and dRate.
     virtual double nextTrigger(const double dRate,
@@ -126,6 +129,7 @@ class LoopingControl : public EngineControl {
     ControlObject* m_pPlayButton;
 
     bool m_bLoopingEnabled;
+    bool m_bLoopSamplesChanged;
     bool m_bLoopRollActive;
     bool m_bAdjustingLoopIn;
     bool m_bAdjustingLoopOut;

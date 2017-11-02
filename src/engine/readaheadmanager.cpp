@@ -105,8 +105,8 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
     if (loop_active) {
         // LoopingControl makes the decision about whether we should jump to
         // the other end of the loop or not
-        const double loop_target = m_pLoopingControl->process(
-                dRate, m_currentPosition, 0, 0);
+        const double loop_target = m_pLoopingControl->getLoopTarget(
+                dRate, m_currentPosition);
 
         if (loop_target != kNoTrigger) {
             // Jump to other end of loop.
