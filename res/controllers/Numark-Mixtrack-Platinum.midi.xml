@@ -167,65 +167,65 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>loop_double</key>
+                <key>MixtrackPlatinum.decks[1].loop_double.input</key>
                 <status>0x94</status>
                 <midino>0x35</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>loop_double</key>
+                <key>MixtrackPlatinum.decks[2].loop_double.input</key>
                 <status>0x95</status>
                 <midino>0x35</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>loop_halve</key>
+                <key>MixtrackPlatinum.decks[1].loop_halve.input</key>
                 <status>0x94</status>
                 <midino>0x34</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>loop_double</key>
+                <key>MixtrackPlatinum.decks[3].loop_double.input</key>
                 <status>0x96</status>
                 <midino>0x35</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>loop_halve</key>
+                <key>MixtrackPlatinum.decks[2].loop_halve.input</key>
                 <status>0x95</status>
                 <midino>0x34</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>loop_double</key>
+                <key>MixtrackPlatinum.decks[4].loop_double.input</key>
                 <status>0x97</status>
                 <midino>0x35</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>loop_halve</key>
+                <key>MixtrackPlatinum.decks[3].loop_halve.input</key>
                 <status>0x96</status>
                 <midino>0x34</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -239,11 +239,11 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>loop_halve</key>
+                <key>MixtrackPlatinum.decks[4].loop_halve.input</key>
                 <status>0x97</status>
                 <midino>0x34</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -2044,22 +2044,6 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel1]</group>
-                <key>loop_double</key>
-                <status>0x84</status>
-                <midino>0x35</midino>
-                <on>0x01</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>loop_double</key>
-                <status>0x94</status>
-                <midino>0x35</midino>
-                <on>0x01</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
                 <group>[Channel3]</group>
                 <key>beatloop_0.25_enabled</key>
                 <status>0x96</status>
@@ -2089,22 +2073,6 @@
                 <status>0x98</status>
                 <midino>0x01</midino>
                 <off>0x01</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>loop_double</key>
-                <status>0x85</status>
-                <midino>0x35</midino>
-                <on>0x01</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>loop_double</key>
-                <status>0x95</status>
-                <midino>0x35</midino>
-                <on>0x01</on>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2253,22 +2221,6 @@
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>loop_halve</key>
-                <status>0x84</status>
-                <midino>0x34</midino>
-                <on>0x01</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>loop_halve</key>
-                <status>0x94</status>
-                <midino>0x34</midino>
-                <on>0x01</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
                 <key>hotcue_3_enabled</key>
                 <status>0x94</status>
                 <midino>0x1A</midino>
@@ -2321,38 +2273,6 @@
                 <key>hotcue_4_enabled</key>
                 <status>0x84</status>
                 <midino>0x23</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>loop_halve</key>
-                <status>0x85</status>
-                <midino>0x34</midino>
-                <on>0x01</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>loop_halve</key>
-                <status>0x95</status>
-                <midino>0x34</midino>
-                <on>0x01</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>loop_double</key>
-                <status>0x86</status>
-                <midino>0x35</midino>
-                <on>0x01</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>loop_double</key>
-                <status>0x96</status>
-                <midino>0x35</midino>
-                <on>0x01</on>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2428,22 +2348,6 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel4]</group>
-                <key>loop_double</key>
-                <status>0x87</status>
-                <midino>0x35</midino>
-                <on>0x01</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>loop_double</key>
-                <status>0x97</status>
-                <midino>0x35</midino>
-                <on>0x01</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
                 <group>[Channel1]</group>
                 <key>beatloop_1_enabled</key>
                 <status>0x94</status>
@@ -2857,22 +2761,6 @@
                 <key>hotcue_4_enabled</key>
                 <status>0x87</status>
                 <midino>0x23</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>loop_halve</key>
-                <status>0x86</status>
-                <midino>0x34</midino>
-                <on>0x01</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>loop_halve</key>
-                <status>0x96</status>
-                <midino>0x34</midino>
-                <on>0x01</on>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -3033,22 +2921,6 @@
                 <key>hotcue_4_enabled</key>
                 <status>0x86</status>
                 <midino>0x23</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>loop_halve</key>
-                <status>0x87</status>
-                <midino>0x34</midino>
-                <on>0x01</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>loop_halve</key>
-                <status>0x97</status>
-                <midino>0x34</midino>
-                <on>0x01</on>
                 <minimum>0.5</minimum>
             </output>
             <output>

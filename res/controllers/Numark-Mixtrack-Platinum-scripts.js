@@ -67,10 +67,6 @@ MixtrackPlatinum.init = function(id, debug) {
     for (var i = 0; i < 4; ++i) {
         var group = "[Channel"+(i+1)+"]";
 
-        // loop leds
-        loop_led(group, 'loop_halve', i + 5, 0x34);
-        loop_led(group, 'loop_double', i + 5, 0x35);
-
         // auto-loop leds
         auto_loop_led(group, 'beatloop_1_enabled',  i + 5, 0x14);
         auto_loop_led(group, 'beatloop_2_enabled',  i + 5, 0x15);
@@ -328,6 +324,24 @@ MixtrackPlatinum.Deck = function(deck_nums, midi_chan) {
 
     this.loop_toggle = new components.LoopToggleButton({
         midi: [0x94 + midi_chan, 0x32],
+        on: 0x01,
+        sendShifted: true,
+        shiftChannel: true,
+        shiftOffset: -0x10,
+    });
+
+    this.loop_halve = new components.Button({
+        midi: [0x94 + midi_chan, 0x34],
+        key: 'loop_halve',
+        on: 0x01,
+        sendShifted: true,
+        shiftChannel: true,
+        shiftOffset: -0x10,
+    });
+
+    this.loop_double = new components.Button({
+        midi: [0x94 + midi_chan, 0x35],
+        key: 'loop_double',
         on: 0x01,
         sendShifted: true,
         shiftChannel: true,
