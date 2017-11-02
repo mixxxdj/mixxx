@@ -151,8 +151,6 @@ MixtrackPlatinum.shutdown = function() {
 
     // turn off a bunch of channel specific leds
     for (var i = 0; i < 4; ++i) {
-        var group = "[Channel"+(i+1)+"]";
-
         // pfl/cue button leds
         midi.sendShortMsg(0x90 | i, 0x1B, 0x01);
 
