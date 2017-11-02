@@ -66,8 +66,8 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         } else {
             // We can only read whole frames from the reader.
             // Use ceil here, to be sure to reach the loop trigger.
-            preloop_samples = SampleUtil::ceilPlayPosToFrameStart(samplesToLoopTrigger,
-                    kNumChannels);
+            preloop_samples = SampleUtil::ceilPlayPosToFrameStart(
+                    samplesToLoopTrigger, kNumChannels);
             // clamp requested samples from the caller to the loop trigger point
             samples_from_reader = math_clamp(requested_samples,
                     static_cast<SINT>(0), preloop_samples);
@@ -103,12 +103,13 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
 
     // Activate on this trigger if necessary
     if (loop_active) {
-        // LoopingControl makes the decision about whether we should loop or
-        // not.
+        // LoopingControl makes the decision about whether we should jump to
+        // the other end of the loop or not
         const double loop_target = m_pLoopingControl->process(
                 dRate, m_currentPosition, 0, 0);
 
         if (loop_target != kNoTrigger) {
+            // Jump to other end of loop.
             m_currentPosition = loop_target;
             if (preloop_samples > 0) {
                 // we are up to one frame ahead of the loop trigger

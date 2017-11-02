@@ -42,7 +42,6 @@ LoopingControl::LoopingControl(QString group,
         : EngineControl(group, pConfig),
           m_bLoopingEnabled(false),
           m_bLoopRollActive(false),
-          m_bLoopManualTogglePressedToExitLoop(false),
           m_bAdjustingLoopIn(false),
           m_bAdjustingLoopOut(false),
           m_bLoopOutPressedWhileLoopDisabled(false) {
