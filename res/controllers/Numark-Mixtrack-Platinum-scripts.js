@@ -68,11 +68,8 @@ MixtrackPlatinum.init = function(id, debug) {
         var group = "[Channel"+(i+1)+"]";
 
         // loop leds
-        loop_led(group, 'loop_enabled', i + 5, 0x32);
         loop_led(group, 'loop_halve', i + 5, 0x34);
         loop_led(group, 'loop_double', i + 5, 0x35);
-        loop_start_end_led(group, 'loop_start_position', i + 5, 0x38);
-        loop_start_end_led(group, 'loop_end_position', i + 5, 0x39);
 
         // auto-loop leds
         auto_loop_led(group, 'beatloop_1_enabled',  i + 5, 0x14);
@@ -303,6 +300,40 @@ MixtrackPlatinum.Deck = function(deck_nums, midi_chan) {
         inKey: 'rate',
         relative: true,
         invert: true,
+    });
+
+    this.loop_in = new components.Button({
+        midi: [0x94 + midi_chan, 0x38],
+        inKey: 'loop_in',
+        outKey: 'loop_start_position',
+        on: 0x01,
+        sendShifted: true,
+        shiftChannel: true,
+        shiftOffset: -0x10,
+        outValueScale: function (value) {
+            return (value != -1) ? this.on : this.off;
+        },
+    });
+
+    this.loop_out = new components.Button({
+        midi: [0x94 + midi_chan, 0x39],
+        inKey: 'loop_out',
+        outKey: 'loop_end_position',
+        on: 0x01,
+        sendShifted: true,
+        shiftChannel: true,
+        shiftOffset: -0x10,
+        outValueScale: function (value) {
+            return (value != -1) ? this.on : this.off;
+        },
+    });
+
+    this.loop_toggle = new components.LoopToggleButton({
+        midi: [0x94 + midi_chan, 0x32],
+        on: 0x01,
+        sendShifted: true,
+        shiftChannel: true,
+        shiftOffset: -0x10,
     });
 
     this.reconnectComponents(function (c) {

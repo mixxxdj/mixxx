@@ -95,11 +95,11 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>loop_out</key>
+                <key>MixtrackPlatinum.decks[1].loop_out.input</key>
                 <status>0x94</status>
                 <midino>0x39</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -113,11 +113,11 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>loop_in</key>
+                <key>MixtrackPlatinum.decks[1].loop_in.input</key>
                 <status>0x94</status>
                 <midino>0x38</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -230,11 +230,11 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>reloop_exit</key>
+                <key>MixtrackPlatinum.decks[1].loop_toggle.input</key>
                 <status>0x94</status>
                 <midino>0x32</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -248,29 +248,29 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>reloop_exit</key>
+                <key>MixtrackPlatinum.decks[2].loop_toggle.input</key>
                 <status>0x95</status>
                 <midino>0x32</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>reloop_exit</key>
+                <key>MixtrackPlatinum.decks[3].loop_toggle.input</key>
                 <status>0x96</status>
                 <midino>0x32</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>reloop_exit</key>
+                <key>MixtrackPlatinum.decks[4].loop_toggle.input</key>
                 <status>0x97</status>
                 <midino>0x32</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -2012,22 +2012,6 @@
         </controls>
         <outputs>
             <output>
-                <group>[Channel4]</group>
-                <key>loop_start_position</key>
-                <status>0x87</status>
-                <midino>0x38</midino>
-                <on>0x01</on>
-                <maximum>2.14748e+09</maximum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>loop_start_position</key>
-                <status>0x97</status>
-                <midino>0x38</midino>
-                <on>0x01</on>
-                <maximum>2.14748e+09</maximum>
-            </output>
-            <output>
                 <group>[Channel2]</group>
                 <key>bpm_tap</key>
                 <status>0x99</status>
@@ -2052,44 +2036,12 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel1]</group>
-                <key>loop_enabled</key>
-                <status>0x84</status>
-                <midino>0x32</midino>
-                <on>0x01</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>loop_enabled</key>
-                <status>0x94</status>
-                <midino>0x32</midino>
-                <on>0x01</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>group_[Channel1]_enable</key>
                 <status>0x98</status>
                 <midino>0x00</midino>
                 <off>0x01</off>
                 <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>loop_start_position</key>
-                <status>0x86</status>
-                <midino>0x38</midino>
-                <on>0x01</on>
-                <maximum>2.14748e+09</maximum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>loop_start_position</key>
-                <status>0x96</status>
-                <midino>0x38</midino>
-                <on>0x01</on>
-                <maximum>2.14748e+09</maximum>
             </output>
             <output>
                 <group>[Channel1]</group>
@@ -2388,38 +2340,6 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel2]</group>
-                <key>loop_start_position</key>
-                <status>0x85</status>
-                <midino>0x38</midino>
-                <on>0x01</on>
-                <maximum>2.14748e+09</maximum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>loop_start_position</key>
-                <status>0x95</status>
-                <midino>0x38</midino>
-                <on>0x01</on>
-                <maximum>2.14748e+09</maximum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>loop_end_position</key>
-                <status>0x87</status>
-                <midino>0x39</midino>
-                <on>0x01</on>
-                <maximum>2.14748e+09</maximum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>loop_end_position</key>
-                <status>0x97</status>
-                <midino>0x39</midino>
-                <on>0x01</on>
-                <maximum>2.14748e+09</maximum>
-            </output>
-            <output>
                 <group>[Channel3]</group>
                 <key>loop_double</key>
                 <status>0x86</status>
@@ -2434,38 +2354,6 @@
                 <midino>0x35</midino>
                 <on>0x01</on>
                 <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>loop_start_position</key>
-                <status>0x84</status>
-                <midino>0x38</midino>
-                <on>0x01</on>
-                <maximum>2.14748e+09</maximum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>loop_start_position</key>
-                <status>0x94</status>
-                <midino>0x38</midino>
-                <on>0x01</on>
-                <maximum>2.14748e+09</maximum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>loop_end_position</key>
-                <status>0x86</status>
-                <midino>0x39</midino>
-                <on>0x01</on>
-                <maximum>2.14748e+09</maximum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>loop_end_position</key>
-                <status>0x96</status>
-                <midino>0x39</midino>
-                <on>0x01</on>
-                <maximum>2.14748e+09</maximum>
             </output>
             <output>
                 <group>[Channel2]</group>
@@ -2556,22 +2444,6 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel2]</group>
-                <key>loop_end_position</key>
-                <status>0x85</status>
-                <midino>0x39</midino>
-                <on>0x01</on>
-                <maximum>2.14748e+09</maximum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>loop_end_position</key>
-                <status>0x95</status>
-                <midino>0x39</midino>
-                <on>0x01</on>
-                <maximum>2.14748e+09</maximum>
-            </output>
-            <output>
                 <group>[Channel1]</group>
                 <key>beatloop_1_enabled</key>
                 <status>0x94</status>
@@ -2658,22 +2530,6 @@
                 <midino>0x1D</midino>
                 <on>0x40</on>
                 <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>loop_end_position</key>
-                <status>0x84</status>
-                <midino>0x39</midino>
-                <on>0x01</on>
-                <maximum>2.14748e+09</maximum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>loop_end_position</key>
-                <status>0x94</status>
-                <midino>0x39</midino>
-                <on>0x01</on>
-                <maximum>2.14748e+09</maximum>
             </output>
             <output>
                 <group>[Channel4]</group>
