@@ -18,90 +18,66 @@ EffectManifest GaterEffect::getManifest() {
     manifest.setVersion("1.0");
     manifest.setDescription("");
 
-
-
     EffectManifestParameter* rate = manifest.addParameter();
     rate->setId("rate");
     rate->setName(QObject::tr("Rate"));
     rate->setDescription(QObject::tr(""));
-    rate->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    rate->setControlHint(EffectManifestParameter::ControlHint::KNOB_STEPPING);
     rate->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     rate->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    rate->setMinimum(0);
-    rate->setDefault(0);
-    rate->setMaximum(1);
+    rate->appendStep(QPair<QString, double>("1", 0));
+    rate->appendStep(QPair<QString, double>("1/2", 0.34));
+    rate->appendStep(QPair<QString, double>("1/4", 0.67));
+    rate->appendStep(QPair<QString, double>("1/8", 1));
 
-    EffectManifestParameter* attack = manifest.addParameter();
-    attack->setId("attack");
-    attack->setName(QObject::tr("Attack"));
-    attack->setDescription(QObject::tr(""));
-    attack->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
-    attack->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    attack->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    attack->setMinimum(0.1);
-    attack->setDefault(0.2);
-    attack->setMaximum(0.4);
+    EffectManifestParameter* shape = manifest.addParameter();
+    shape->setId("shape");
+    shape->setName(QObject::tr("Shape"));
+    shape->setDescription(QObject::tr(""));
+    shape->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    shape->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    shape->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    shape->setMinimum(0.1);
+    shape->setDefault(0.5);
+    shape->setMaximum(0.9);
 
-    EffectManifestParameter* decay = manifest.addParameter();
-    decay->setId("decay");
-    decay->setName(QObject::tr("Decay"));
-    decay->setDescription(QObject::tr(""));
-    decay->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
-    decay->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    decay->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    decay->setMinimum(0.1);
-    decay->setDefault(0.5);
-    decay->setMaximum(0.9);
+    EffectManifestParameter *quantize = manifest.addParameter();
+    quantize->setId("quantize");
+    quantize->setName("Quantize");
+    quantize->setShortName("Quantize");
+    quantize->setDescription(
+        "Round the Time parameter to the nearest 1/4 beat.");
+    quantize->setControlHint(
+        EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
+    quantize->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    quantize->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    quantize->setDefault(1);
+    quantize->setMinimum(0);
+    quantize->setMaximum(1);
 
-    EffectManifestParameter* sustain = manifest.addParameter();
-    sustain->setId("sustain");
-    sustain->setName(QObject::tr("Sustain"));
-    sustain->setDescription(QObject::tr(""));
-    sustain->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
-    sustain->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    sustain->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    sustain->setMinimum(0.1);
-    sustain->setDefault(0.5);
-    sustain->setMaximum(0.9);
+    EffectManifestParameter *triplet = manifest.addParameter();
+    triplet->setId("triplet");
+    triplet->setName("Triplets");
+    triplet->setDescription("When the Quantize parameter is enabled, divide "
+                            "rounded 1/4 beats of Time parameter by 3.");
+    triplet->setControlHint(
+        EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
+    triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    triplet->setDefault(0);
+    triplet->setMinimum(0);
+    triplet->setMaximum(1);
 
-    EffectManifestParameter* release = manifest.addParameter();
-    release->setId("release");
-    release->setName(QObject::tr("Release"));
-    release->setDescription(QObject::tr(""));
-    release->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
-    release->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    release->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    release->setMinimum(0.1);
-    release->setDefault(0.5);
-    release->setMaximum(0.9);
-
-
-
-    EffectManifestParameter* attackCurve = manifest.addParameter();
-    attackCurve->setId("attackCurve");
-    attackCurve->setName(QObject::tr("Attack Curve"));
-    attackCurve->setDescription(QObject::tr(""));
-    attackCurve->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
-    attackCurve->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    attackCurve->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    attackCurve->setMinimum(0.1);
-    attackCurve->setDefault(0.5);
-    attackCurve->setMaximum(0.9);
-
-
-
-    EffectManifestParameter* sustainLevel = manifest.addParameter();
-    sustainLevel->setId("sustainLevel");
-    sustainLevel->setName(QObject::tr("Sustain Level"));
-    sustainLevel->setDescription(QObject::tr(""));
-    sustainLevel->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
-    sustainLevel->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    sustainLevel->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    sustainLevel->setMinimum(0.1);
-    sustainLevel->setDefault(0.5);
-    sustainLevel->setMaximum(0.9);
-
-
+    EffectManifestParameter *invert = manifest.addParameter();
+    invert->setId("invert");
+    invert->setName("Invert");
+    invert->setDescription("");
+    invert->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
+    invert->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    invert->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    invert->setDefault(0);
+    invert->setMinimum(0);
+    invert->setMaximum(1);
 
     return manifest;
 }
@@ -109,14 +85,11 @@ EffectManifest GaterEffect::getManifest() {
 GaterEffect::GaterEffect(EngineEffect* pEffect,
                              const EffectManifest& manifest)
         : m_pRateParameter(pEffect->getParameterById("rate")),
-          m_pAttackParameter(pEffect->getParameterById("attack")),
-          m_pAttackCurveParameter(pEffect->getParameterById("attackCurve")),
-          m_pDecayParameter(pEffect->getParameterById("decay")),
-          m_pSustainParameter(pEffect->getParameterById("sustain")),
-          m_pSustainLevelParameter(pEffect->getParameterById("sustainLevel")),
-          m_pReleaseParameter(pEffect->getParameterById("release")) {
-
-            file.open("test.dat");
+          m_pShapeParameter(pEffect->getParameterById("shape")),
+          m_pQuantizeParameter(pEffect->getParameterById("quantize")),
+          m_pTripletParameter(pEffect->getParameterById("triplet")),
+          m_pInvertParameter(pEffect->getParameterById("invert")) 
+{
     Q_UNUSED(manifest);
 }
 
@@ -129,146 +102,119 @@ void GaterEffect::processChannel(const ChannelHandle& handle,
                                 const unsigned int numSamples,
                                 const unsigned int sampleRate,
                                 const EffectProcessor::EnableState enableState,
-                                const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(handle);
-    Q_UNUSED(groupFeatures);
+                                const GroupFeatureState& groupFeatures) {    
+
 
     const auto rate  = m_pRateParameter->value();
+    const auto shape  = m_pShapeParameter->value();
 
-    int divider = pow(2, ((int)(4*rate)));
+    // Used to divide a beat by a power of 2
+    int divider = pow(2, ((int)(3*rate)));
 
+    // Attack & Release increase with the divider factor
+    double attackInc = baseAttackInc*divider;
+    double releaseInc = baseReleaseInc*divider;
 
-    //const auto shape = m_pShapeParameter->value();
+    // Get channel specific state variable
+    unsigned int timePosition    = pState->timePosition[handle];
+    unsigned int holdCounter     = pState->holdCounter[handle];
+    double       gain            = pState->gain[handle];
+    GaterGroupState::State state = pState->state[handle];
 
-    /*
-    // Number of samples to reach gain 1.0
-    const unsigned int attack = 1000;
-    const unsigned int attack_curve = 500;
-    // Number of samples to reach gain sustainLevel
-    const unsigned int decay = 500;
-    // Sustain level
-    const double sustainLevel = 0.5;
-    // Number of samples at sustainLevem
-    const unsigned int sustain = 1000;
-    // Number of samples to reach gain 0
-    const unsigned int release = 1000;
-
-    */
-    
+    // Use to keep track of the beginning of beats when playing with the rate
+    unsigned int beatPeriod = 1;
     // Initialization
-    if(enableState == EffectProcessor::ENABLING)
-    {
-        /*
-        std::cout << groupFeatures.has_beat_length_sec << std::endl;
-        std::cout << groupFeatures.beat_length_sec << std::endl;
-        std::cout << groupFeatures.has_beat_fraction << std::endl;
-        std::cout << groupFeatures.beat_fraction << std::endl;
-        
-        std::cout << numSamples << std::endl;
-        std::cout << sampleRate << std::endl;
-        std::cout << fmod(groupFeatures.beat_fraction, 1.0/4) << std::endl << std::endl;
+    if(enableState == EffectProcessor::ENABLING) {
+        // Start with the gate closed
+        state = GaterGroupState::IDLE;
+        gain = 0;
 
-        */
-
-        if(groupFeatures.has_beat_fraction)
-        {
-            double beat_length = groupFeatures.beat_length_sec;
-            double beat_frac   = groupFeatures.beat_fraction;
-            double period = beat_length*sampleRate/divider;
-            
-            //const double period = std::max(roundToFraction(1-rate, 4), 1/8.0)*beat_length*sampleRate;
-            
-            
-            const auto attack_curve = m_pAttackParameter->value()*period;
-            int decay = m_pAttackParameter->value()*period;
-            int release = m_pAttackParameter->value()*period;
-    
-            const auto sustain_level = m_pSustainParameter->value();
-    
-            int sustain = (period-decay-release)/(1+m_pDecayParameter->value());
-            int attack = m_pDecayParameter->value()*sustain;            
-            
-            std::cout << rate << std::endl;
-            //std::cout << period << " (" << std::max(roundToFraction(1-rate, 4), 1/8.0) << ")" << std::endl;
-            std::cout << period << " (" << divider << ")" << std::endl;
-            std::cout << attack << " + " << decay << " + " << sustain << " + " << release << " = " << attack+decay+sustain+release << std::endl;
-            std::cout << "Shape : " << 1.0*attack/sustain << std::endl;
-            
-
-            std::cout << "Attack : " << m_pAttackParameter->value() << std::endl;
-            std::cout << "Decay : " << m_pDecayParameter->value() << std::endl;
-            std::cout << "Sustain : " << m_pSustainParameter->value() << std::endl;
-            
-            /*
-            std::cout << "Attack : " << m_pAttackParameter->value()*period << std::endl;
-            std::cout << "Attack curve : " << m_pAttackCurveParameter->value()*period << std::endl;
-            std::cout << "Decay : " << m_pDecayParameter->value()*period << std::endl;
-            std::cout << "Sustain : " << m_pSustainParameter->value()*period << std::endl;
-            std::cout << "Sustain level : " << m_pSustainLevelParameter->value() << std::endl;
-            std::cout << "Release : " << m_pReleaseParameter->value()*period << std::endl;
-            */
-            std::cout << std::endl;
-        }        
-    }
-
-    if(groupFeatures.has_beat_fraction)
-    {
-
-
-        double beat_length = groupFeatures.beat_length_sec;
-        double beat_frac   = groupFeatures.beat_fraction;
-        double period = beat_length*sampleRate/divider;
-        
-        //const double period = std::max(roundToFraction(1-rate, 4), 1/8.0)*beat_length*sampleRate;
-
-
-        int attack_curve = m_pAttackParameter->value()*period;
-        int decay = m_pAttackParameter->value()*period;
-        int release = m_pAttackParameter->value()*period;
-
-        const auto sustain_level = m_pSustainParameter->value();
-
-        int sustain = (period-decay-release)/(1+m_pDecayParameter->value());
-        int attack = m_pDecayParameter->value()*sustain;
-        
-
-        /*
-        const auto attack = m_pAttackParameter->value()*period;
-        const auto decay = m_pDecayParameter->value()*period;
-        const auto sustain = m_pSustainParameter->value()*period;
-        const auto sustain_level = m_pSustainLevelParameter->value();
-        const auto release = m_pReleaseParameter->value()*period;
-*/
-
-        double attackCoef  = 1-exp(-1.0*attack/attack_curve);
-
-        for(unsigned int i = 0; i < numSamples; i+=2)
-        {
-            unsigned int numSamples_readjusted = i/2 + beat_frac * groupFeatures.beat_length_sec * sampleRate;
-
-            numSamples_readjusted = numSamples_readjusted %((int)(groupFeatures.beat_length_sec * sampleRate/divider));
-
-            double gain = 0;
-            if(numSamples_readjusted < attack)
-            {
-                gain = (1-exp(-1.0*numSamples_readjusted/attack_curve))/attackCoef;
-            }
-            else if(numSamples_readjusted < attack + decay)
-            {
-                gain = exp((1.0*numSamples_readjusted-attack)/decay*log(sustain_level));
-            }
-            else if(numSamples_readjusted < attack + decay + sustain)
-            {
-                gain = sustain_level;
-            }
-            else if(numSamples_readjusted < attack + decay + sustain + release)
-            {
-                gain = exp(1.0*(numSamples_readjusted-attack-decay-sustain)/release*log(1-sustain_level))+sustain_level-1;
-            }
-
-            pOutput[i] = gain*pInput[i];
-            pOutput[i+1] = gain*pInput[i+1];
-            file << numSamples_readjusted  << "\t" << gain << "\t" <<  pInput[i] << "\t" << pOutput[i] << std::endl;
+        // Set initial time from current beat position, or 0 if no beat grid
+        if(groupFeatures.has_beat_length_sec && groupFeatures.has_beat_fraction) {
+            timePosition = groupFeatures.beat_fraction*groupFeatures.beat_length_sec*sampleRate;
+            beatPeriod   = groupFeatures.beat_length_sec*sampleRate;
+        } else {
+            timePosition = 0;   
+            beatPeriod   = sampleRate; // 1 second
         }
     }
+
+    // Adjust trigger period
+    unsigned int triggerPeriod;
+    double period = 1-rate;
+    if (groupFeatures.has_beat_length_sec) {
+        // triggerPeriod is a number of beats
+        if (m_pQuantizeParameter->toBool()) {
+            // Divide a beat by the divider factor
+            period = 1.0/divider;
+            
+            if (m_pTripletParameter->toBool()) {
+                period /= 3.0;
+            }
+        } else if (period < 1 / 8.0) {
+            period = 1 / 8.0;
+        }
+        triggerPeriod = period * groupFeatures.beat_length_sec * sampleRate;
+    } else {
+        // triggerPeriod is a number of seconds
+        period = std::max(period, 1 / 8.0);
+        triggerPeriod = period * sampleRate;
+    }
+
+    // triggerTime : offset for the gate trigger
+    unsigned int triggerTime = m_pInvertParameter->toBool() ? triggerPeriod/2 : 0;
+    // holdTime : number of samples spent in the Hold state
+    unsigned int holdTime = std::max(0, (int)(triggerPeriod*shape - maxGain/attackInc - maxGain/releaseInc));
+    
+
+    for(unsigned int i = 0; i < numSamples; i+=2) {
+         if (timePosition % triggerPeriod == triggerTime) {
+            state = GaterGroupState::ATTACK;
+            if(timePosition % beatPeriod == 1)
+                timePosition = 0;
+        }
+        timePosition++;
+
+        // Gate state machine : Idle->Attack->Hold->Release->Idle
+        switch(state) {
+            // Idle : Gain = 0
+            case GaterGroupState::IDLE:
+                gain = 0;
+                break;
+
+            // Attack : Increase gain up to maxGain, then Hold
+            case GaterGroupState::ATTACK:
+                gain += attackInc;
+                if(gain >= maxGain) {
+                    state = GaterGroupState::HOLD;
+                    holdCounter = holdTime;
+                }
+                break;
+
+            // Hold : Hold maxGain for holdCounter samples
+            case GaterGroupState::HOLD:
+                gain = maxGain;
+                if(holdCounter == 0)
+                    state = GaterGroupState::RELEASE;  
+
+                holdCounter--;
+                break;
+
+            // Release : Decrease gain to 0, then Idle
+            case GaterGroupState::RELEASE:
+                gain -= releaseInc;
+                if(gain <= 0)
+                    state = GaterGroupState::IDLE;
+                break;
+        }
+
+        pOutput[i]   = gain*pInput[i];
+        pOutput[i+1] = gain*pInput[i+1];
+    }
+
+    // Write back channel state
+    pState->timePosition[handle] = timePosition;
+    pState->holdCounter[handle]  = holdCounter;
+    pState->gain[handle]         = gain;
+    pState->state[handle]        = state;
 }

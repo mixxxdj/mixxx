@@ -16,7 +16,11 @@
 #include <fstream>
 
 struct GaterGroupState {
-    float sampleRate  = 0;
+    enum State {IDLE, ATTACK, HOLD, RELEASE};
+    ChannelHandleMap<State> state;
+    ChannelHandleMap<double> gain;
+    ChannelHandleMap<unsigned int> timePosition;
+    ChannelHandleMap<unsigned int> holdCounter;
 };
 
 class GaterEffect : public PerChannelEffectProcessor<GaterGroupState> {
@@ -41,16 +45,22 @@ class GaterEffect : public PerChannelEffectProcessor<GaterGroupState> {
         return getId();
     }
 
-    EngineEffectParameter* m_pRateParameter;
-    EngineEffectParameter* m_pAttackParameter;
-    EngineEffectParameter* m_pAttackCurveParameter;
-    EngineEffectParameter* m_pDecayParameter;
-    EngineEffectParameter* m_pSustainParameter;
-    EngineEffectParameter* m_pSustainLevelParameter;
-    EngineEffectParameter* m_pReleaseParameter;
-    
-    std::ofstream file;
+    EngineEffectParameter *m_pRateParameter;
+    EngineEffectParameter *m_pShapeParameter;
 
+    // TODO : Not accessible from the UI, thus not tested yet
+    EngineEffectParameter *m_pQuantizeParameter;
+    EngineEffectParameter *m_pTripletParameter;
+    EngineEffectParameter *m_pInvertParameter;
+
+    // Fixed parameters
+    // Gain when the gate is open, higher than 1 to still have a decent level
+    double maxGain    = 1.5; 
+    // Attack slope
+    double baseAttackInc  = 0.001;
+    // Release slope
+    double baseReleaseInc = 0.0005;
+    
     DISALLOW_COPY_AND_ASSIGN(GaterEffect);
 };
 
