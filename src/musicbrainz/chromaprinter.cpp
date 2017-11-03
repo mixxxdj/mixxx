@@ -28,44 +28,29 @@ namespace
 // on their server so we need only a fingerprint of the first two minutes
 // --kain88 July 2012
 const SINT kFingerprintDuration = 120; // in seconds
-const mixxx::AudioSignal::ChannelCount kFingerprintChannels = mixxx::AudioSignal::ChannelCount::stereo();
 
-QString calcFingerprint(const mixxx::AudioSourcePointer& pAudioSource) {
-    DEBUG_ASSERT(pAudioSource->channelCount() == kFingerprintChannels);
-
+QString calcFingerprint(
+        mixxx::AudioSourceStereoProxy& audioSourceProxy,
+        mixxx::IndexRange fingerprintRange) {
     PerformanceTimer timerReadingFile;
     timerReadingFile.start();
 
-    const auto inputFrameIndexRange = intersect(
-            pAudioSource->frameIndexRange(),
-            mixxx::IndexRange::forward(
-                    pAudioSource->frameIndexMin(),
-                    kFingerprintDuration * pAudioSource->sampleRate()));
-
-    mixxx::AudioSourceStereoProxy audioSourceProxy(
-            pAudioSource,
-            inputFrameIndexRange.length());
-    DEBUG_ASSERT(audioSourceProxy.channelCount() == kFingerprintChannels);
-
-    // Allocate a sample buffer with maximum size to avoid the
-    // implicit allocation of a temporary buffer when reducing
-    // the audio signal to stereo.
     mixxx::SampleBuffer sampleBuffer(math_max(
-            inputFrameIndexRange.length() * kFingerprintChannels,
-            pAudioSource->frames2samples(inputFrameIndexRange.length())));
-
+            fingerprintRange.length(),
+            audioSourceProxy.frames2samples(fingerprintRange.length())));
     const auto readableSampleFrames =
             audioSourceProxy.readSampleFrames(
                     mixxx::WritableSampleFrames(
-                            inputFrameIndexRange,
+                            fingerprintRange,
                             mixxx::SampleBuffer::WritableSlice(sampleBuffer)));
-    if (inputFrameIndexRange != readableSampleFrames.frameIndexRange()) {
+    if (fingerprintRange != readableSampleFrames.frameIndexRange()) {
         qWarning() << "Failed to read sample data for fingerprint";
         return QString();
     }
 
     std::vector<SAMPLE> fingerprintSamples(
-            readableSampleFrames.frameIndexRange().length() * kFingerprintChannels);
+            audioSourceProxy.frames2samples(
+                    readableSampleFrames.frameIndexRange().length()));
     // Convert floating-point to integer
     SampleUtil::convertFloat32ToS16(
             &fingerprintSamples[0],
@@ -75,7 +60,7 @@ QString calcFingerprint(const mixxx::AudioSourcePointer& pAudioSource) {
     qDebug() << "reading file took" << timerReadingFile.elapsed().debugMillisWithUnit();
 
     ChromaprintContext* ctx = chromaprint_new(CHROMAPRINT_ALGORITHM_DEFAULT);
-    chromaprint_start(ctx, pAudioSource->sampleRate(), kFingerprintChannels);
+    chromaprint_start(ctx, audioSourceProxy.sampleRate(), audioSourceProxy.channelCount());
 
     PerformanceTimer timerGeneratingFingerprint;
     timerGeneratingFingerprint.start();
@@ -120,14 +105,24 @@ ChromaPrinter::ChromaPrinter(QObject* parent)
 
 QString ChromaPrinter::getFingerprint(TrackPointer pTrack) {
     mixxx::AudioSource::OpenParams config;
-    config.setChannelCount(kFingerprintChannels);
+    config.setChannelCount(2); // always stereo / 2 channels (see below)
     auto pAudioSource = SoundSourceProxy(pTrack).openAudioSource(config);
-    if (!pAudioSource || (pAudioSource->channelCount() != kFingerprintChannels)) {
+    if (!pAudioSource) {
         qDebug()
                 << "Failed to open file for fingerprinting"
                 << pTrack->getLocation()
                 << *pAudioSource;
         return QString();
     }
-    return calcFingerprint(pAudioSource);
+
+    const auto fingerprintRange = intersect(
+            pAudioSource->frameIndexRange(),
+            mixxx::IndexRange::forward(
+                    pAudioSource->frameIndexMin(),
+                    kFingerprintDuration * pAudioSource->sampleRate()));
+    mixxx::AudioSourceStereoProxy audioSourceProxy(
+            pAudioSource,
+            fingerprintRange.length());
+
+    return calcFingerprint(audioSourceProxy, fingerprintRange);
 }
