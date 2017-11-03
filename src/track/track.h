@@ -7,9 +7,7 @@
 #include <QObject>
 
 #include "library/dao/cue.h"
-#include "proto/keys.pb.h"
 #include "track/beats.h"
-#include "track/keys.h"
 #include "track/trackrecord.h"
 #include "util/memory.h"
 #include "util/sandbox.h"
@@ -255,9 +253,7 @@ class Track : public QObject {
     // Set the track's Beats
     void setBeats(BeatsPointer beats);
 
-    void resetKeys() {
-        setKeys(Keys());
-    }
+    void resetKeys();
     void setKeys(const Keys& keys);
     Keys getKeys() const;
     void setKey(mixxx::track::io::key::ChromaticKey key,
@@ -281,7 +277,11 @@ class Track : public QObject {
             bool parsedFromFile);
     void getTrackMetadata(
             mixxx::TrackMetadata* pTrackMetadata,
-            bool* pHeaderParsed = nullptr,
+            bool* pMetadataParsed = nullptr,
+            bool* pDirty = nullptr) const;
+
+    void getTrackRecord(
+            mixxx::TrackRecord* pTrackRecord,
             bool* pDirty = nullptr) const;
 
     // Mark the track dirty if it isn't already.
@@ -336,7 +336,8 @@ class Track : public QObject {
     void setDirtyAndUnlock(QMutexLocker* pLock, bool bDirty);
 
     void setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats);
-    void setKeysAndUnlock(QMutexLocker* pLock, const Keys& keys);
+
+    void afterKeysUpdated(QMutexLocker* pLock);
 
     enum class DurationRounding {
         SECONDS, // rounded to full seconds
@@ -361,8 +362,6 @@ class Track : public QObject {
     // Flag that indicates whether or not the TIO has changed. This is used by
     // TrackDAO to determine whether or not to write the Track back.
     bool m_bDirty;
-
-    Keys m_keys;
 
     // The list of cue points for the track
     QList<CuePointer> m_cuePoints;
