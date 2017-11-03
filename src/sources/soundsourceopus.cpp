@@ -197,12 +197,11 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(
         // opusfile supports to enforce stereo decoding
         bool enforceStereoDecoding =
                 params.channelCount().valid() &&
-                (params.channelCount() <= ChannelCount::stereo()) &&
+                (params.channelCount() <= 2) &&
                 // preserve mono signals if stereo signal is not requested explicitly
-                (params.channelCount().isStereo() ||
-                        (streamChannelCount > ChannelCount::stereo()));
+                ((params.channelCount() == 2) || (streamChannelCount > 2));
         if (enforceStereoDecoding) {
-            setChannelCount(ChannelCount::stereo());
+            setChannelCount(2);
         } else {
             setChannelCount(streamChannelCount);
         }
@@ -214,7 +213,7 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(
     }
 
     // Reserve enough capacity for buffering a stereo signal!
-    const auto prefetchChannelCount = std::min(channelCount(), ChannelCount::stereo());
+    const auto prefetchChannelCount = std::min(channelCount(), ChannelCount(2));
     SampleBuffer(prefetchChannelCount * kNumberOfPrefetchFrames).swap(m_prefetchSampleBuffer);
 
     const ogg_int64_t pcmTotal = op_pcm_total(m_pOggOpusFile, kEntireStreamLink);
@@ -318,7 +317,7 @@ ReadableSampleFrames SoundSourceOpus::readSampleFramesClamped(
             }
         }
         int readResult;
-        if (channelCount().isStereo()) {
+        if (channelCount() == 2) {
             readResult = op_read_float_stereo(
                     m_pOggOpusFile,
                     pSampleBuffer,

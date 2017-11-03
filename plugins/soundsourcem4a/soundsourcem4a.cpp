@@ -272,8 +272,8 @@ bool SoundSourceM4A::openDecoder() {
     NeAACDecConfigurationPtr pDecoderConfig = NeAACDecGetCurrentConfiguration(
             m_hDecoder);
     pDecoderConfig->outputFormat = FAAD_FMT_FLOAT;
-    if (m_openParams.channelCount().isMono() ||
-            m_openParams.channelCount().isStereo()) {
+    if ((m_openParams.channelCount() == 1) ||
+            (m_openParams.channelCount() == 2)) {
         pDecoderConfig->downMatrix = 1;
     } else {
         pDecoderConfig->downMatrix = 0;

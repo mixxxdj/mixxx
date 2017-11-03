@@ -73,16 +73,16 @@ class SoundSourceProxyTest: public MixxxTest {
         // All test files are mono, but we are requesting a stereo signal
         // to test the upscaling of channels
         mixxx::AudioSource::OpenParams openParams;
-        openParams.setChannelCount(mixxx::AudioSignal::ChannelCount::stereo());
+        openParams.setChannelCount(2);
         auto pAudioSource = proxy.openAudioSource();
         EXPECT_FALSE(!pAudioSource);
-        if (pAudioSource->channelCount() != mixxx::AudioSignal::ChannelCount::stereo()) {
+        if (pAudioSource->channelCount() != 2) {
             // Wrap into proxy object
             pAudioSource = mixxx::AudioSourceStereoProxy::create(
                     pAudioSource,
                     kMaxReadFrameCount);
         }
-        EXPECT_EQ(pAudioSource->channelCount(), mixxx::AudioSignal::ChannelCount::stereo());
+        EXPECT_EQ(pAudioSource->channelCount(), 2);
         return pAudioSource;
     }
 

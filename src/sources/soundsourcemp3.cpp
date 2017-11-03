@@ -13,7 +13,7 @@ namespace {
 const Logger kLogger("SoundSourceMP3");
 
 // MP3 does only support 1 or 2 channels
-const SINT kChannelCountMax = AudioSignal::ChannelCount::stereo();
+const SINT kChannelCountMax = 2;
 
 const SINT kMaxBytesPerMp3Frame = 1441;
 
@@ -662,9 +662,9 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
                 kLogger.warning() << "Reading MP3 data with different number of channels"
                         << madSynthChannelCount << "<>" << channelCount();
             }
-            if (madSynthChannelCount == ChannelCount::mono()) {
+            if (madSynthChannelCount == 1) {
                 // MP3 frame contains a mono signal
-                if (channelCount().isStereo()) {
+                if (channelCount() == 2) {
                     // The reader explicitly requested a stereo signal
                     // or the AudioSource itself provides a stereo signal.
                     // Mono -> Stereo: Copy 1st channel twice
@@ -684,11 +684,11 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
                 }
             } else {
                 // MP3 frame contains a stereo signal
-                DEBUG_ASSERT(madSynthChannelCount == ChannelCount::stereo());
+                DEBUG_ASSERT(madSynthChannelCount == 2);
                 // If the MP3 frame contains a stereo signal then the whole
                 // AudioSource must also provide 2 channels, because the
                 // maximum channel count of all MP3 frames is used.
-                DEBUG_ASSERT(channelCount().isStereo());
+                DEBUG_ASSERT(channelCount() == 2);
                 // Stereo -> Stereo: Copy 1st + 2nd channel
                 for (SINT i = 0; i < synthReadCount; ++i) {
                     *pSampleBuffer++ = madScaleSampleValue(

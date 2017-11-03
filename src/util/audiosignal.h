@@ -1,10 +1,8 @@
-#ifndef MIXXX_AUDIOSIGNAL_H
-#define MIXXX_AUDIOSIGNAL_H
-
-#include <QtDebug>
+#pragma once
 
 #include "util/assert.h"
 #include "util/types.h"
+
 
 namespace mixxx {
 
@@ -18,19 +16,12 @@ namespace mixxx {
 // are declared as "protected" and are only available from derived classes.
 class AudioSignal {
 public:
-    // Defines the ordering of how samples from multiple channels are
-    // stored in contiguous buffers:
-    //    - Planar: Channel by channel
-    //    - Interleaved: Frame by frame
-    // The samples from all channels that are coincident in time are
-    // called a "frame" (or more specific "sample frame").
-    //
-    // Example: 10 stereo samples from left (L) and right (R) channel
-    // Planar layout:      LLLLLLLLLLRRRRRRRRRR
-    // Interleaved layout: LRLRLRLRLRLRLRLRLRLR
-    enum class SampleLayout {
-        Planar,
-        Interleaved
+    enum class ChannelLayout {
+        Unknown,
+        Mono,     // 1 channel
+        DualMono, // 2 channels with identical signals
+        Stereo,   // 2 independent channels left/right
+        // ...
     };
 
     class ChannelCount {
@@ -41,24 +32,29 @@ public:
         static constexpr SINT kValueMin     = 1;   // lower bound (inclusive)
         static constexpr SINT kValueMax     = 255; // upper bound (inclusive, 8-bit unsigned integer)
 
-        static constexpr SINT kValueMono    = 1;
-        static constexpr SINT kValueStereo  = 2;
-
         static constexpr ChannelCount min() { return ChannelCount(kValueMin); }
         static constexpr ChannelCount max() { return ChannelCount(kValueMax); }
 
-        static constexpr ChannelCount mono() { return ChannelCount(kValueMono); }
-        static constexpr ChannelCount stereo() { return ChannelCount(kValueStereo); }
-
-        bool isMono() const {
-            return m_value == kValueMono;
-        }
-        bool isStereo() const {
-            return m_value == kValueStereo;
+        static ChannelCount from(ChannelLayout channelLayout) {
+            switch (channelLayout) {
+            case ChannelLayout::Unknown:
+                return ChannelCount();
+            case ChannelLayout::Mono:
+                return ChannelCount(1);
+            case ChannelLayout::DualMono:
+                return ChannelCount(1);
+            case ChannelLayout::Stereo:
+                return ChannelCount(2);
+            }
+            DEBUG_ASSERT(!"unreachable code");
+            return ChannelCount();
         }
 
         explicit constexpr ChannelCount(SINT value = kValueDefault)
             : m_value(value) {
+        }
+        explicit ChannelCount(ChannelLayout channelLayout)
+            : m_value(from(channelLayout).m_value) {
         }
 
         bool valid() const {
@@ -72,6 +68,21 @@ public:
 
       private:
         SINT m_value;
+    };
+
+    // Defines the ordering of how samples from multiple channels are
+    // stored in contiguous buffers:
+    //    - Planar: Channel by channel
+    //    - Interleaved: Frame by frame
+    // The samples from all channels that are coincident in time are
+    // called a "frame" (or more specific "sample frame").
+    //
+    // Example: 10 stereo samples from left (L) and right (R) channel
+    // Planar layout:      LLLLLLLLLLRRRRRRRRRR
+    // Interleaved layout: LRLRLRLRLRLRLRLRLRLR
+    enum class SampleLayout {
+        Planar,
+        Interleaved
     };
 
     class SampleRate {
@@ -185,8 +196,8 @@ protected:
     }
 
 private:
-    SampleLayout m_sampleLayout;
     ChannelCount m_channelCount;
+    SampleLayout m_sampleLayout;
     SampleRate m_sampleRate;
 };
 
@@ -195,5 +206,3 @@ QDebug operator<<(QDebug dbg, AudioSignal::SampleLayout arg);
 QDebug operator<<(QDebug dbg, const AudioSignal& arg);
 
 }
-
-#endif // MIXXX_AUDIOSIGNAL_H

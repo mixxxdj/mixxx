@@ -43,8 +43,8 @@ SoundSource::OpenResult SoundSourceWV::tryOpen(
     DEBUG_ASSERT(!m_wpc);
     char msg[80]; // hold possible error message
     int openFlags = OPEN_WVC | OPEN_NORMALIZE;
-    if (params.channelCount().isMono() ||
-            params.channelCount().isStereo()) {
+    if ((params.channelCount() == 1) ||
+            (params.channelCount() == 2)) {
         openFlags |= OPEN_2CH_MAX;
     }
 

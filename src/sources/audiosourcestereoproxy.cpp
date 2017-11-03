@@ -18,10 +18,10 @@ AudioSourceStereoProxy::AudioSourceStereoProxy(
     : AudioSource(*pAudioSource),
       m_pAudioSource(std::move(pAudioSource)),
       m_tempSampleBuffer(
-              (m_pAudioSource->channelCount() != ChannelCount::stereo()) ?
+              (m_pAudioSource->channelCount() != 2) ?
                       m_pAudioSource->frames2samples(maxReadableFrames) : 0),
       m_tempOutputBuffer(m_tempSampleBuffer) {
-    setChannelCount(ChannelCount::stereo());
+    setChannelCount(2);
 }
 
 AudioSourceStereoProxy::AudioSourceStereoProxy(
@@ -30,7 +30,7 @@ AudioSourceStereoProxy::AudioSourceStereoProxy(
     : AudioSource(*pAudioSource),
       m_pAudioSource(std::move(pAudioSource)),
       m_tempOutputBuffer(m_tempOutputBuffer) {
-    setChannelCount(ChannelCount::stereo());
+    setChannelCount(2);
 }
 
 namespace {
@@ -56,7 +56,7 @@ bool isDisjunct(
 
 ReadableSampleFrames AudioSourceStereoProxy::readSampleFramesClamped(
         WritableSampleFrames sampleFrames) {
-    if (m_pAudioSource->channelCount() == channelCount()) {
+    if (m_pAudioSource->channelCount() == 2) {
         return readSampleFramesClampedOn(*m_pAudioSource, sampleFrames);
     }
 
@@ -99,7 +99,7 @@ ReadableSampleFrames AudioSourceStereoProxy::readSampleFramesClamped(
     SampleBuffer::WritableSlice writableSlice(
             sampleFrames.sampleBuffer().data(frames2samples(frameOffset)),
             frames2samples(readableSampleFrames.frameIndexRange().length()));
-    if (m_pAudioSource->channelCount().isMono()) {
+    if (m_pAudioSource->channelCount() == 1) {
         SampleUtil::copyMonoToDualMono(
                 writableSlice.data(),
                 readableSampleFrames.sampleBuffer().data(),
