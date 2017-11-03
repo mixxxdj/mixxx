@@ -1017,6 +1017,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
   <tabstop>txtTrackNumber</tabstop>
   <tabstop>btnFetchTag</tabstop>
   <tabstop>btnReloadFromFile</tabstop>
+  <tabstop>btnOpenFileBrowser</tabstop>
   <tabstop>txtComment</tabstop>
   <tabstop>spinBpm</tabstop>
   <tabstop>bpmConst</tabstop>
