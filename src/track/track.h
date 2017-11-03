@@ -7,16 +7,12 @@
 #include <QObject>
 
 #include "library/dao/cue.h"
-#include "library/coverart.h"
 #include "proto/keys.pb.h"
 #include "track/beats.h"
 #include "track/keys.h"
-#include "track/trackid.h"
-#include "track/playcounter.h"
-#include "track/trackmetadata.h"
+#include "track/trackrecord.h"
 #include "util/memory.h"
 #include "util/sandbox.h"
-#include "util/duration.h"
 #include "waveform/waveform.h"
 
 class Track;
@@ -360,41 +356,13 @@ class Track : public QObject {
     // Mutex protecting access to object
     mutable QMutex m_qMutex;
 
-    // The unique ID of track. This value is only set once after the track
-    // has been inserted or is loaded from the library DB.
-    TrackId m_id;
+    mixxx::TrackRecord m_record;
 
     // Flag that indicates whether or not the TIO has changed. This is used by
     // TrackDAO to determine whether or not to write the Track back.
     bool m_bDirty;
 
-    // File type
-    QString m_sType;
-
-    // Album/Track metadata
-    mixxx::TrackMetadata m_metadata;
-
-    // URL (used in promo track)
-    QString m_sURL;
-
-    // Track rating
-    int m_iRating;
-
-    // Cue point in samples
-    double m_cuePoint;
-
-    // Date the track was added to the library
-    QDateTime m_dateAdded;
-
-    PlayCounter m_playCounter;
-
     Keys m_keys;
-
-    // Various boolean flags. Please refer to the corresponding
-    // setter/getter functions for detailed information about
-    // their usage.
-    bool m_bHeaderParsed;
-    bool m_bBpmLocked;
 
     // The list of cue points for the track
     QList<CuePointer> m_cuePoints;
@@ -407,8 +375,6 @@ class Track : public QObject {
     ConstWaveformPointer m_waveformSummary;
 
     QAtomicInt m_analyzerProgress; // in 0.1%
-
-    CoverInfoRelative m_coverInfoRelative;
 
     friend class TrackDAO;
 };
