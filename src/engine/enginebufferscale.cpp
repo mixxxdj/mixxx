@@ -1,12 +1,13 @@
 #include "engine/enginebufferscale.h"
 
+#include "engine/engine.h"
 #include "util/defs.h"
 #include "util/sample.h"
 
 EngineBufferScale::EngineBufferScale()
         : m_audioSignal(
                 mixxx::AudioSignal::SampleLayout::Interleaved,
-                mixxx::AudioSignal::ChannelCount::stereo(),
+                mixxx::AudioSignal::ChannelCount(mixxx::kEngineChannelCount),
                 mixxx::AudioSignal::SampleRate(44100)),
           m_dBaseRate(1.0),
           m_bSpeedAffectsPitch(false),

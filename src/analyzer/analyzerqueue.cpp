@@ -8,6 +8,7 @@
 #include "analyzer/analyzerebur128.h"
 #include "analyzer/analyzerwaveform.h"
 #include "library/dao/analysisdao.h"
+#include "engine/engine.h"
 #include "mixer/playerinfo.h"
 #include "sources/soundsourceproxy.h"
 #include "sources/audiosourcestereoproxy.h"
@@ -34,7 +35,7 @@ mixxx::Logger kLogger("AnalyzerQueue");
 // We need to use a smaller block size, because on Linux the AnalyzerQueue
 // can starve the CPU of its resources, resulting in xruns. A block size
 // of 4096 frames per block seems to do fine.
-const mixxx::AudioSignal::ChannelCount kAnalysisChannels = mixxx::AudioSignal::ChannelCount::stereo();
+const mixxx::AudioSignal::ChannelCount kAnalysisChannels(mixxx::kEngineChannelCount);
 const SINT kAnalysisFramesPerBlock = 4096;
 const SINT kAnalysisSamplesPerBlock =
         kAnalysisFramesPerBlock * kAnalysisChannels;
