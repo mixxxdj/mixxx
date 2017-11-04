@@ -90,7 +90,7 @@ var traxMode = 2;
 // 1 for single effect mode (1 effect controlled in each EffectUnit)
 // 2 for multi-effect mode (3 effects controlled in each EffectUnit)
 // SHIFT + long press on pitchbend +/- to change mode
-var FxMode = 1; // Single effect mode by default
+var FxMode = 2; // Single effect mode by default
 
 // Jog Led variables
 // set JogFlashWarningTime and JogFlashCriticalTime to -1 to disable jog wheel flash
