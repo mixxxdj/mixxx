@@ -108,7 +108,9 @@ void GaterEffect::processChannel(const ChannelHandle& handle,
                                 const unsigned int numSamples,
                                 const unsigned int sampleRate,
                                 const EffectProcessor::EnableState enableState,
-                                const GroupFeatureState& groupFeatures) {    
+                                const GroupFeatureState& groupFeatures) { 
+                                    
+    Q_UNUSED(handle);
                                     
     const double rate  = m_pRateParameter->value();
     const double shape  = m_pShapeParameter->value();
@@ -121,10 +123,10 @@ void GaterEffect::processChannel(const ChannelHandle& handle,
     double releaseInc = kBaseReleaseInc*divider;
 
     // Get channel specific state variable
-    unsigned int timePosition    = pState->timePosition[handle];
-    unsigned int holdCounter     = pState->holdCounter[handle];
-    double       gain            = pState->gain[handle];
-    GaterGroupState::State state = pState->state[handle];
+    unsigned int timePosition    = pState->timePosition;
+    unsigned int holdCounter     = pState->holdCounter;
+    double       gain            = pState->gain;
+    GaterGroupState::State state = pState->state;
 
     // Use to keep track of the beginning of beats when playing with the rate
     unsigned int beatPeriod = 1;
@@ -227,8 +229,8 @@ void GaterEffect::processChannel(const ChannelHandle& handle,
     }
 
     // Write back channel state
-    pState->timePosition[handle] = timePosition;
-    pState->holdCounter[handle]  = holdCounter;
-    pState->gain[handle]         = gain;
-    pState->state[handle]        = state;
+    pState->timePosition = timePosition;
+    pState->holdCounter  = holdCounter;
+    pState->gain         = gain;
+    pState->state        = state;
 }

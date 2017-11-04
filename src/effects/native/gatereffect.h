@@ -1,8 +1,6 @@
 #ifndef GATEREFFECT_H
 #define GATEREFFECT_H
 
-#include <cmath>
-
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
@@ -13,11 +11,10 @@
 
 
 struct GaterGroupState {
-    enum State {IDLE, ATTACK, HOLD, RELEASE};
-    ChannelHandleMap<State> state;
-    ChannelHandleMap<double> gain;
-    ChannelHandleMap<unsigned int> timePosition;
-    ChannelHandleMap<unsigned int> holdCounter;
+    enum State {IDLE, ATTACK, HOLD, RELEASE} state;
+    double gain;
+    unsigned int timePosition;
+    unsigned int holdCounter;
 };
 
 class GaterEffect : public PerChannelEffectProcessor<GaterGroupState> {
