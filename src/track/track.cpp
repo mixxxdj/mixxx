@@ -951,18 +951,26 @@ Track::ExportMetadataResult Track::exportMetadata(
     // be called after all references to the object have been dropped.
     // But it doesn't hurt much, so let's play it safe ;)
     QMutexLocker lock(&m_qMutex);
-    if (!m_record.getMetadataSynchronized() && !m_bExportMetadata) {
-        kLogger.debug()
-                << "Skip exporting of unsynchronized track metadata:"
-                << getLocation();
-        return ExportMetadataResult::Skipped;
-    }
-    m_bExportMetadata = false; // reset flag
-    if (m_record.getMetadataSynchronized()) {
+    if (!m_bExportMetadata) {
+        // Perform some consistency checks if metadata is exported
+        // implicitly after a track has been modified and has NOT
+        // been explicitly requested by a user as indicated by this
+        // flag.
+        if (!m_record.getMetadataSynchronized()) {
+            kLogger.debug()
+                    << "Skip exporting of unsynchronized track metadata:"
+                    << getLocation();
+            return ExportMetadataResult::Skipped;
+        }
         // Check if the metadata has actually been modified. Otherwise
         // we don't need to write it back. Exporting unmodified metadata
         // would needlessly update the file's time stamp and should be
         // avoided.
+        // TODO(XXX): How to we handle the case that importTrackMetadataAndCoverImage()
+        // returns a newer time stamp than m_record.getMetadataSynchronized(), i.e.
+        // if the file has been modified by another program since we have imported
+        // the metadata? But this is expected to happen if files have been copied
+        // or after upgrading the column 'header_parsed' from bool to QDateTime.
         mixxx::TrackMetadata trackMetadata;
         if ((pMetadataSource->importTrackMetadataAndCoverImage(&trackMetadata, nullptr).first ==
                 mixxx::MetadataSource::ImportResult::Succeeded) &&
@@ -973,6 +981,7 @@ Track::ExportMetadataResult Track::exportMetadata(
             return ExportMetadataResult::Skipped;
         }
     }
+    m_bExportMetadata = false; // reset flag
     const auto trackMetadataExported =
             pMetadataSource->exportTrackMetadata(m_record.getMetadata());
     if (trackMetadataExported.first == mixxx::MetadataSource::ExportResult::Succeeded) {
