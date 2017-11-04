@@ -676,9 +676,7 @@ void LoopingControl::slotReloopAndStop(double pressed) {
 }
 
 void LoopingControl::slotLoopStartPos(double pos) {
-    if (!m_pTrack) {
-        return;
-    }
+    // This slot is called before trackLoaded() for a new Track
 
     int newpos = pos;
     if (newpos != kNoTrigger && !even(newpos)) {
@@ -711,9 +709,7 @@ void LoopingControl::slotLoopStartPos(double pos) {
 }
 
 void LoopingControl::slotLoopEndPos(double pos) {
-    if (!m_pTrack) {
-        return;
-    }
+    // This slot is called before trackLoaded() for a new Track
 
     int newpos = pos;
     if (newpos != -1 && !even(newpos)) {
