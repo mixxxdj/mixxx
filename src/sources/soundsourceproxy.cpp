@@ -299,13 +299,12 @@ SoundSourceProxy::findSoundSourceProviderRegistrations(
 }
 
 //static
-Track::ExportMetadataResult SoundSourceProxy::exportTrackMetadataBeforeSaving(
-        Track* pTrack,
-        bool evenIfNotSynchronized) {
+Track::ExportMetadataResult
+SoundSourceProxy::exportTrackMetadataBeforeSaving(Track* pTrack) {
     DEBUG_ASSERT(pTrack);
     mixxx::MetadataSourcePointer pMetadataSource =
             SoundSourceProxy(pTrack).m_pSoundSource;
-    return pTrack->exportMetadata(pMetadataSource, evenIfNotSynchronized);
+    return pTrack->exportMetadata(pMetadataSource);
 }
 
 SoundSourceProxy::SoundSourceProxy(

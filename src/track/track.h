@@ -293,6 +293,11 @@ class Track : public QObject {
     // Mark the track clean if it isn't already.
     void markClean();
 
+    // Explicitly request to export the track's metadata. The actual
+    // export is deferred to prevent race conditions when writing into
+    // files that are still opened for reading.
+    void markForMetadataExport();
+
     // Called when the shared pointer reference count for a library TrackPointer
     // drops to zero.
     static void onTrackReferenceExpired(Track* pTrack);
@@ -355,8 +360,7 @@ class Track : public QObject {
         Skipped,
     };
     ExportMetadataResult exportMetadata(
-            mixxx::MetadataSourcePointer pMetadataSource,
-            bool evenIfNotSynchronized = false);
+            mixxx::MetadataSourcePointer pMetadataSource);
 
     // The file
     const QFileInfo m_fileInfo;
@@ -375,6 +379,10 @@ class Track : public QObject {
     // Flag that indicates whether or not the TIO has changed. This is used by
     // TrackDAO to determine whether or not to write the Track back.
     bool m_bDirty;
+
+    // Flag indicating that the user has explicitly requested to save
+    // the metadata.
+    bool m_bExportMetadata;
 
     // The list of cue points for the track
     QList<CuePointer> m_cuePoints;

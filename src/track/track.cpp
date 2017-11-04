@@ -48,6 +48,7 @@ Track::Track(
           m_qMutex(QMutex::Recursive),
           m_record(trackId),
           m_bDirty(false),
+          m_bExportMetadata(false),
           m_analyzerProgress(-1) {
 }
 
@@ -241,8 +242,7 @@ mixxx::ReplayGain Track::getReplayGain() const {
 
 void Track::setReplayGain(const mixxx::ReplayGain& replayGain) {
     QMutexLocker lock(&m_qMutex);
-    if (m_record.getMetadata().getTrackInfo().getReplayGain() != replayGain) {
-        m_record.refMetadata().refTrackInfo().setReplayGain(replayGain);
+    if (compareAndSet(&m_record.refMetadata().refTrackInfo().refReplayGain(), replayGain)) {
         markDirtyAndUnlock(&lock);
         emit(ReplayGainUpdated(replayGain));
     }
@@ -824,6 +824,14 @@ bool Track::isDirty() {
     return m_bDirty;
 }
 
+
+void Track::markForMetadataExport() {
+    QMutexLocker lock(&m_qMutex);
+    if (compareAndSet(&m_bExportMetadata, true)) {
+        markDirtyAndUnlock(&lock);
+    }
+}
+
 int Track::getRating() const {
     QMutexLocker lock(&m_qMutex);
     return m_record.getRating();
@@ -932,8 +940,7 @@ quint16 Track::getCoverHash() const {
 }
 
 Track::ExportMetadataResult Track::exportMetadata(
-        mixxx::MetadataSourcePointer pMetadataSource,
-        bool evenIfNotSynchronized) {
+        mixxx::MetadataSourcePointer pMetadataSource) {
     VERIFY_OR_DEBUG_ASSERT(pMetadataSource) {
         kLogger.warning()
                 << "Cannot export track metadata:"
@@ -944,12 +951,13 @@ Track::ExportMetadataResult Track::exportMetadata(
     // be called after all references to the object have been dropped.
     // But it doesn't hurt much, so let's play it safe ;)
     QMutexLocker lock(&m_qMutex);
-    if (!m_record.getMetadataSynchronized() && !evenIfNotSynchronized) {
+    if (!m_record.getMetadataSynchronized() && !m_bExportMetadata) {
         kLogger.debug()
                 << "Skip exporting of unsynchronized track metadata:"
                 << getLocation();
         return ExportMetadataResult::Skipped;
     }
+    m_bExportMetadata = false; // reset flag
     if (m_record.getMetadataSynchronized()) {
         // Check if the metadata has actually been modified. Otherwise
         // we don't need to write it back. Exporting unmodified metadata

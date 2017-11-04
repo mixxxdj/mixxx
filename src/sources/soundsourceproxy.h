@@ -81,9 +81,7 @@ class SoundSourceProxy {
     // the referenced track.
     QImage importCoverImage() const;
 
-    static Track::ExportMetadataResult exportTrackMetadataBeforeSaving(
-            Track* pTrack,
-            bool evenIfNotSynchronized = false);
+    static Track::ExportMetadataResult exportTrackMetadataBeforeSaving(Track* pTrack);
 
     // Opening the audio source through the proxy will update the
     // audio properties of the corresponding track object. Returns
