@@ -751,7 +751,9 @@ void LoopingControl::notifySeek(double dNewPlaypos) {
         // Disable loop when we jumping out, using hot cues or waveform overview.
         // + 2 because the new playposition can be rounded to loop end because of
         // playing not at rate 1.
-        if (dNewPlaypos < loopSamples.start - 2 || dNewPlaypos > loopSamples.end + 2) {
+        if (m_iCurrentSample >= loopSamples.start - 2 &&
+                m_iCurrentSample <= loopSamples.end + 2 &&
+                (dNewPlaypos < loopSamples.start - 2 || dNewPlaypos > loopSamples.end + 2)) {
             setLoopingEnabled(false);
         }
     }
