@@ -1,7 +1,7 @@
 #ifndef GATEREFFECT_H
 #define GATEREFFECT_H
 
-
+#include <cmath>
 
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
@@ -11,9 +11,6 @@
 #include "util/sample.h"
 #include "util/types.h"
 
-#include <iostream>
-#include <cmath>
-#include <fstream>
 
 struct GaterGroupState {
     enum State {IDLE, ATTACK, HOLD, RELEASE};
@@ -45,22 +42,12 @@ class GaterEffect : public PerChannelEffectProcessor<GaterGroupState> {
         return getId();
     }
 
-    EngineEffectParameter *m_pRateParameter;
-    EngineEffectParameter *m_pShapeParameter;
+    EngineEffectParameter* m_pRateParameter;
+    EngineEffectParameter* m_pShapeParameter;
+    EngineEffectParameter* m_pQuantizeParameter;
+    EngineEffectParameter* m_pTripletParameter;
+    EngineEffectParameter* m_pInvertParameter;
 
-    // TODO : Not accessible from the UI, thus not tested yet
-    EngineEffectParameter *m_pQuantizeParameter;
-    EngineEffectParameter *m_pTripletParameter;
-    EngineEffectParameter *m_pInvertParameter;
-
-    // Fixed parameters
-    // Gain when the gate is open, higher than 1 to still have a decent level
-    double maxGain    = 1.5; 
-    // Attack slope
-    double baseAttackInc  = 0.001;
-    // Release slope
-    double baseReleaseInc = 0.0005;
-    
     DISALLOW_COPY_AND_ASSIGN(GaterEffect);
 };
 
