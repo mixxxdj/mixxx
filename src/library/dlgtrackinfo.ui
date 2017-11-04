@@ -1001,10 +1001,10 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
   <tabstop>txtAlbum</tabstop>
   <tabstop>txtAlbumArtist</tabstop>
   <tabstop>txtComposer</tabstop>
-  <tabstop>txtYear</tabstop>
   <tabstop>txtGenre</tabstop>
-  <tabstop>txtKey</tabstop>
   <tabstop>txtGrouping</tabstop>
+  <tabstop>txtYear</tabstop>
+  <tabstop>txtKey</tabstop>
   <tabstop>txtTrackNumber</tabstop>
   <tabstop>btnFetchTag</tabstop>
   <tabstop>btnReloadFromFile</tabstop>
