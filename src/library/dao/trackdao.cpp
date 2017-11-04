@@ -258,6 +258,16 @@ void TrackDAO::saveTrack(Track* pTrack) {
     DEBUG_ASSERT(nullptr != pTrack);
 
     if (pTrack->isDirty()) {
+        // Write audio meta data, if enabled in the preferences.
+        //
+        // TODO(XXX): This must be done before updating the database,
+        // because in the future a timestamp will keep track of when
+        // metadata has been synchronized. Exporting metadata needs
+        // to update this time stamp!
+        if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
+            SoundSourceProxy::exportTrackMetadata(pTrack);
+        }
+
         // Only update the database if the track has already been added!
         const TrackId trackId(pTrack->getId());
         if (trackId.isValid() && updateTrack(pTrack)) {
@@ -267,21 +277,6 @@ void TrackDAO::saveTrack(Track* pTrack) {
             // BaseTrackCache.
             DEBUG_ASSERT(!pTrack->isDirty());
             emit(trackClean(trackId));
-        }
-
-        // Write audio meta data, if enabled in the preferences.
-        //
-        // TODO(XXX): Only write tag if file metadata is dirty.
-        // Currently metadata will also be saved if for example
-        // cue points have been modified, even if this information
-        // is only stored in the database.
-        // TODO(uklotzde): We need to introduce separate flag for
-        // tracking changes of track metadata regarding file tags.
-        // Instead of another flag that needs to be managed we
-        // could alternatively store a second copy of TrackMetadata
-        // in Track.
-        if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
-            SoundSourceProxy::exportTrackMetadata(pTrack);
         }
     }
 }

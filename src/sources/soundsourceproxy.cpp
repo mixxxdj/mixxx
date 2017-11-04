@@ -299,31 +299,55 @@ SoundSourceProxy::findSoundSourceProviderRegistrations(
 }
 
 //static
-SoundSourceProxy::SaveTrackMetadataResult SoundSourceProxy::exportTrackMetadata(
+SoundSourceProxy::ExportTrackMetadataResult SoundSourceProxy::exportTrackMetadata(
         const Track* pTrack,
         bool evenIfNeverParsedFromFileBefore) {
-    DEBUG_ASSERT(nullptr != pTrack);
-    SoundSourceProxy proxy(pTrack);
-    if (proxy.m_pSoundSource) {
-        mixxx::TrackMetadata trackMetadata;
-        bool parsedFromFile = false;
-        bool isDirty = false;
-        pTrack->getTrackMetadata(&trackMetadata, &parsedFromFile, &isDirty);
-        if (parsedFromFile || evenIfNeverParsedFromFileBefore) {
-            if (proxy.m_pSoundSource->exportTrackMetadata(trackMetadata) == mixxx::MetadataSource::ExportResult::Succeeded) {
-                kLogger.debug() << "Track metadata has been written into file"
-                        << pTrack->getLocation();
-                return SaveTrackMetadataResult::SUCCEEDED;
-            }
-        } else {
-            kLogger.debug() << "Skip writing of track metadata into file"
+    DEBUG_ASSERT(pTrack);
+    mixxx::MetadataSourcePointer pMetadataSource =
+            SoundSourceProxy(pTrack).m_pSoundSource;
+    if (!pMetadataSource) {
+        kLogger.warning()
+                << "Cannot export track metadata into file"
+                << pTrack->getLocation();
+        return ExportTrackMetadataResult::Failed;
+    }
+    mixxx::TrackMetadata trackMetadata;
+    bool parsedFromFile = false;
+    bool isDirty = false;
+    pTrack->getTrackMetadata(&trackMetadata, &parsedFromFile, &isDirty);
+    if (!parsedFromFile && !evenIfNeverParsedFromFileBefore) {
+        kLogger.debug()
+                << "Skip exporting of track metadata into file"
+                << pTrack->getLocation();
+        return ExportTrackMetadataResult::Skipped;
+    }
+    if (parsedFromFile) {
+        // Check if the metadata has actually been modified. Otherwise
+        // we don't need to write it back. Exporting unmodified metadata
+        // would needlessly update the file's time stamp and should be
+        // avoided.
+        mixxx::TrackMetadata fileMetadata;
+        if ((pMetadataSource->importTrackMetadataAndCoverImage(&fileMetadata, nullptr) ==
+                mixxx::MetadataSource::ImportResult::Succeeded) &&
+                (fileMetadata == trackMetadata))  {
+            kLogger.debug()
+                    << "Skip exporting of unmodified track metadata into file"
                     << pTrack->getLocation();
-            return SaveTrackMetadataResult::SKIPPED;
+            return ExportTrackMetadataResult::Skipped;
         }
     }
-    kLogger.debug() << "Failed to write track metadata into file"
-            << pTrack->getLocation();
-    return SaveTrackMetadataResult::FAILED;
+    if (pMetadataSource->exportTrackMetadata(trackMetadata) ==
+            mixxx::MetadataSource::ExportResult::Succeeded) {
+        kLogger.debug()
+                << "Exported track metadata into file"
+                << pTrack->getLocation();
+        return ExportTrackMetadataResult::Succeeded;
+    } else {
+        kLogger.warning()
+                << "Failed to export track metadata into file"
+                << pTrack->getLocation();
+        return ExportTrackMetadataResult::Failed;
+    }
 }
 
 SoundSourceProxy::SoundSourceProxy(

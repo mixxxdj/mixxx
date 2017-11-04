@@ -81,18 +81,18 @@ class SoundSourceProxy {
     // the referenced track.
     QImage importCoverImage() const;
 
-    enum class SaveTrackMetadataResult {
-        SUCCEEDED,
-        FAILED,
-        SKIPPED
+    enum class ExportTrackMetadataResult {
+        Succeeded,
+        Failed,
+        Skipped
     };
-    static SaveTrackMetadataResult exportTrackMetadata(
+    static ExportTrackMetadataResult exportTrackMetadata(
             const Track* pTrack,
             bool evenIfNeverParsedFromFileBefore = false);
 
-    // Opening the audio data through the proxy will
-    // update the some metadata of the track object.
-    // Returns a null pointer on failure.
+    // Opening the audio source through the proxy will update the
+    // audio properties of the corresponding track object. Returns
+    // a null pointer on failure.
     mixxx::AudioSourcePointer openAudioSource(
             const mixxx::AudioSource::OpenParams& params = mixxx::AudioSource::OpenParams());
 
