@@ -129,13 +129,13 @@ class LoopingControl : public EngineControl {
     ControlObject* m_pPlayButton;
 
     bool m_bLoopingEnabled;
-    bool m_bLoopSamplesChanged;
     bool m_bLoopRollActive;
     bool m_bAdjustingLoopIn;
     bool m_bAdjustingLoopOut;
     bool m_bLoopOutPressedWhileLoopDisabled;
     // TODO(DSC) Make the following values double
     ControlValueAtomic<LoopSamples> m_loopSamples;
+    LoopSamples m_oldLoopSamples;
     QAtomicInt m_iCurrentSample;
     ControlObject* m_pQuantizeEnabled;
     ControlObject* m_pNextBeat;

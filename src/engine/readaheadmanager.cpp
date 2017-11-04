@@ -60,10 +60,7 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         samplesToLoopTrigger = in_reverse ?
                 m_currentPosition - loop_trigger :
                 loop_trigger - m_currentPosition;
-        if (samplesToLoopTrigger < 0) {
-            // We have already passed the loop trigger
-            samples_from_reader = 0;
-        } else {
+        if (samplesToLoopTrigger > 0) {
             // We can only read whole frames from the reader.
             // Use ceil here, to be sure to reach the loop trigger.
             preloop_samples = SampleUtil::ceilPlayPosToFrameStart(
@@ -238,8 +235,8 @@ double ReadAheadManager::getFilePlaypositionFromLog(
 
         // Notify EngineControls that we have taken a seek.
         // Every new entry start with a seek
+        // (Not looping control)
         if (shouldNotifySeek) {
-            m_pLoopingControl->notifySeek(entry.virtualPlaypositionStart);
             if (m_pRateControl) {
                 m_pRateControl->notifySeek(entry.virtualPlaypositionStart);
             }

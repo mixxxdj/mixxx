@@ -45,8 +45,8 @@ LoopingControl::LoopingControl(QString group,
           m_bAdjustingLoopIn(false),
           m_bAdjustingLoopOut(false),
           m_bLoopOutPressedWhileLoopDisabled(false) {
-    LoopSamples loopSamples = { kNoTrigger, kNoTrigger };
-    m_loopSamples.setValue(loopSamples);
+    m_oldLoopSamples = { kNoTrigger, kNoTrigger };
+    m_loopSamples.setValue(m_oldLoopSamples);
     m_iCurrentSample = 0;
     m_pActiveBeatLoop = NULL;
 
@@ -332,24 +332,36 @@ double LoopingControl::process(const double dRate,
     return kNoTrigger;
 }
 
+// This must be called only once from the engine thread
 double LoopingControl::getLoopTarget(
         const double dRate, const double currentSample) {
     bool reverse = dRate < 0;
 
     double retval = kNoTrigger;
+    bool loopMoved = false;
     LoopSamples loopSamples = m_loopSamples.getValue();
+    if (loopSamples.start != m_oldLoopSamples.start ||
+            loopSamples.end != m_oldLoopSamples.end) {
+        loopMoved = true;
+        m_oldLoopSamples = loopSamples;
+    }
 
     if (!m_bAdjustingLoopIn &&
             !m_bAdjustingLoopOut &&
             m_bLoopingEnabled &&
             loopSamples.start != kNoTrigger &&
             loopSamples.end != kNoTrigger) {
+        // We jump the loop, if we are passing the end, or if the loop was moved
+        // out of play position
+        // The 2 is for rounding.
         if (reverse) {
-            if (currentSample <= loopSamples.start) {
+            if (currentSample <= loopSamples.start &&
+                    (loopMoved || currentSample >= loopSamples.start - 2)) {
                 retval = loopSamples.end;
             }
         } else {
-            if (currentSample >= loopSamples.end) {
+            if (currentSample >= loopSamples.end &&
+                    (loopMoved || currentSample <= loopSamples.end + 2)) {
                 retval = loopSamples.start;
             }
         }
