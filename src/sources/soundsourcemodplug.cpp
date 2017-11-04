@@ -64,7 +64,8 @@ SoundSourceModPlug::~SoundSourceModPlug() {
     close();
 }
 
-MetadataSource::ImportResult SoundSourceModPlug::importTrackMetadataAndCoverImage(
+std::pair<MetadataSource::ImportResult, QDateTime>
+SoundSourceModPlug::importTrackMetadataAndCoverImage(
         TrackMetadata* pTrackMetadata,
         QImage* pCoverArt) const {
     if (pTrackMetadata != nullptr) {
@@ -76,7 +77,7 @@ MetadataSource::ImportResult SoundSourceModPlug::importTrackMetadataAndCoverImag
         ModPlug::ModPlugFile* pModFile = ModPlug::ModPlug_Load(fileBuf.constData(),
                 fileBuf.length());
         if (pModFile == nullptr) {
-            return ImportResult::Failed;
+            return std::make_pair(ImportResult::Failed, QDateTime());
         }
 
         pTrackMetadata->refTrackInfo().setComment(QString(ModPlug::ModPlug_GetMessage(pModFile)));
@@ -84,15 +85,13 @@ MetadataSource::ImportResult SoundSourceModPlug::importTrackMetadataAndCoverImag
         pTrackMetadata->refTrackInfo().setDuration(Duration::fromMillis(ModPlug::ModPlug_GetLength(pModFile)));
         pTrackMetadata->refTrackInfo().setBitrate(Bitrate(8)); // not really, but fill in something...
         ModPlug::ModPlug_Unload(pModFile);
+
+        return std::make_pair(ImportResult::Succeeded, QFileInfo(modFile).lastModified());
     }
 
     // The modplug library currently does not support reading cover-art from
     // modplug files -- kain88 (Oct 2014)
-    // NOTE(uklotzde, 2016-11-02): Leave the QImage passed by the caller untouched
-    // if pCoverArt != nullptr.
-    Q_UNUSED(pCoverArt);
-
-    return ImportResult::Succeeded;
+    return MetadataSource::importTrackMetadataAndCoverImage(nullptr, pCoverArt);
 }
 
 SoundSource::OpenResult SoundSourceModPlug::tryOpen(

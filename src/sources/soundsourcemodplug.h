@@ -27,7 +27,7 @@ class SoundSourceModPlug: public SoundSource {
     explicit SoundSourceModPlug(const QUrl& url);
     ~SoundSourceModPlug() override;
 
-    ImportResult importTrackMetadataAndCoverImage(
+    std::pair<ImportResult, QDateTime> importTrackMetadataAndCoverImage(
             TrackMetadata* pTrackMetadata,
             QImage* pCoverArt) const override;
 

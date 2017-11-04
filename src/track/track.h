@@ -148,9 +148,9 @@ class Track : public QObject {
     mixxx::ReplayGain getReplayGain() const;
 
     // Indicates if the metadata has been parsed from file tags.
-    bool isHeaderParsed() const;
+    bool isMetadataSynchronized() const;
     // Only used by a free function in TrackDAO!
-    void setHeaderParsed(bool headerParsed);
+    void setMetadataSynchronized(bool metadataSynchronized);
 
     void setDateAdded(const QDateTime& dateAdded);
     QDateTime getDateAdded() const;
@@ -274,10 +274,10 @@ class Track : public QObject {
     // Set/get track metadata and cover art (optional) all at once.
     void setTrackMetadata(
             mixxx::TrackMetadata trackMetadata,
-            bool parsedFromFile);
+            QDateTime metadataSynchronized);
     void getTrackMetadata(
             mixxx::TrackMetadata* pTrackMetadata,
-            bool* pMetadataParsed = nullptr,
+            bool* pMetadataSynchronized = nullptr,
             bool* pDirty = nullptr) const;
 
     void getTrackRecord(

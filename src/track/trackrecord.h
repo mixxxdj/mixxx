@@ -15,23 +15,37 @@ namespace mixxx {
 
 // Properties of tracks that are stored in the database.
 class TrackRecord final {
+    // Properties that parsed from and (optionally) written back to their
+    // source, i.e. the corresponding file
+    PROPERTY_SET_BYVAL_GET_BYREF(TrackMetadata,      metadata,             Metadata)
+
+    // TODO(uklotz): Change data type from bool to QDateTime
+    //
+    // Both import and export of metadata can be tracked by a single time
+    // stamp, the direction doesn't matter. The value should be set to the
+    // modification time stamp provided by the metadata source. This would
+    // enable us to update the metadata of all tracks in the database after
+    // the external metadata has been modified, i.e. if the corresponding
+    // files have been modified.
+    //
+    // Requires a database update! We could reuse the 'header_parsed' column.
+    // During migration the boolean value will be substituted with either a
+    // default time stamp 1970-01-01 00:00:00.000 or NULL respectively.
+    PROPERTY_SET_BYVAL_GET_BYREF(bool /*QDateTime*/, metadataSynchronized, MetadataSynchronized)
+
+    PROPERTY_SET_BYVAL_GET_BYREF(CoverInfoRelative,  coverInfo,            CoverInfo)
+
     // The unique ID of track. This value is only set once after the track
     // has been inserted or is loaded from the library DB.
-    PROPERTY_SET_BYVAL_GET_BYREF(TrackId,           id,             Id)
+    PROPERTY_SET_BYVAL_GET_BYREF(TrackId,     id,             Id)
 
-    // Properties that are parsed from and (optionally) written back into files
-    PROPERTY_SET_BYVAL_GET_BYREF(TrackMetadata,     metadata,       Metadata)
-
-    PROPERTY_SET_BYVAL_GET_BYREF(QDateTime,         dateAdded,      DateAdded)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,           fileType,       FileType)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,           url,            Url)
-    PROPERTY_SET_BYVAL_GET_BYREF(PlayCounter,       playCounter,    PlayCounter)
-    PROPERTY_SET_BYVAL_GET_BYREF(double,            cuePoint,       CuePoint)
-    PROPERTY_SET_BYVAL_GET_BYREF(int,               rating,         Rating)
-    PROPERTY_SET_BYVAL_GET_BYREF(bool,              metadataParsed, MetadataParsed)
-    PROPERTY_SET_BYVAL_GET_BYREF(bool,              bpmLocked,      BpmLocked)
-
-    PROPERTY_SET_BYVAL_GET_BYREF(CoverInfoRelative, coverInfo,      CoverInfo)
+    PROPERTY_SET_BYVAL_GET_BYREF(QDateTime,   dateAdded,      DateAdded)
+    PROPERTY_SET_BYVAL_GET_BYREF(QString,     fileType,       FileType)
+    PROPERTY_SET_BYVAL_GET_BYREF(QString,     url,            Url)
+    PROPERTY_SET_BYVAL_GET_BYREF(PlayCounter, playCounter,    PlayCounter)
+    PROPERTY_SET_BYVAL_GET_BYREF(double,      cuePoint,       CuePoint)
+    PROPERTY_SET_BYVAL_GET_BYREF(int,         rating,         Rating)
+    PROPERTY_SET_BYVAL_GET_BYREF(bool,        bpmLocked,      BpmLocked)
 
 public:
     explicit TrackRecord(TrackId id = TrackId());

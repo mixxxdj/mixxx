@@ -87,7 +87,7 @@ class SoundSourceProxy {
         Skipped
     };
     static ExportTrackMetadataResult exportTrackMetadata(
-            const Track* pTrack,
+            Track* pTrack,
             bool evenIfNeverParsedFromFileBefore = false);
 
     // Opening the audio source through the proxy will update the

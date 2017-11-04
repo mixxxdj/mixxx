@@ -95,7 +95,7 @@ void Track::setDeleteOnReferenceExpiration(bool deleteOnReferenceExpiration) {
 
 void Track::setTrackMetadata(
         mixxx::TrackMetadata trackMetadata,
-        bool parsedFromFile) {
+        QDateTime metadataSynchronized) {
     // Safe some values that are needed after move assignment and unlocking(see below)
     const auto newBpm = trackMetadata.getTrackInfo().getBpm();
     const auto newKey = trackMetadata.getTrackInfo().getKey();
@@ -105,7 +105,9 @@ void Track::setTrackMetadata(
         // enter locking scope
         QMutexLocker lock(&m_qMutex);
 
-        bool modified = compareAndSet(&m_record.refMetadataParsed(), parsedFromFile);
+        bool modified = compareAndSet(
+                &m_record.refMetadataSynchronized(),
+                !metadataSynchronized.isNull());
         bool modifiedReplayGain = false;
         if (m_record.getMetadata() != trackMetadata) {
             modifiedReplayGain =
@@ -141,13 +143,13 @@ void Track::setTrackMetadata(
 
 void Track::getTrackMetadata(
         mixxx::TrackMetadata* pTrackMetadata,
-        bool* pMetadataParsed,
+        bool* pMetadataSynchronized,
         bool* pDirty) const {
     DEBUG_ASSERT(pTrackMetadata);
     QMutexLocker lock(&m_qMutex);
     *pTrackMetadata = m_record.getMetadata();
-    if (pMetadataParsed != nullptr) {
-        *pMetadataParsed = m_record.getMetadataParsed();
+    if (pMetadataSynchronized != nullptr) {
+        *pMetadataSynchronized = m_record.getMetadataSynchronized();
     }
     if (pDirty != nullptr) {
         *pDirty = m_bDirty;
@@ -360,16 +362,16 @@ void Track::slotBeatsUpdated() {
     emit(beatsUpdated());
 }
 
-void Track::setHeaderParsed(bool headerParsed) {
+void Track::setMetadataSynchronized(bool metadataSynchronized) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_record.refMetadataParsed(), headerParsed)) {
+    if (compareAndSet(&m_record.refMetadataSynchronized(), metadataSynchronized)) {
         markDirtyAndUnlock(&lock);
     }
 }
 
-bool Track::isHeaderParsed() const {
+bool Track::isMetadataSynchronized() const {
     QMutexLocker lock(&m_qMutex);
-    return m_record.getMetadataParsed();
+    return m_record.getMetadataSynchronized();
 }
 
 QString Track::getInfo() const {

@@ -64,7 +64,18 @@ class AiffFile: public TagLib::RIFF::AIFF::File {
 } // anonymous namespace
 
 
-MetadataSource::ImportResult MetadataSourceTagLib::importTrackMetadataAndCoverImage(
+std::pair<MetadataSourceTagLib::ImportResult, QDateTime>
+MetadataSourceTagLib::afterImportSucceeded() const {
+    return std::make_pair(ImportResult::Succeeded, QFileInfo(m_fileName).lastModified());
+}
+
+std::pair<MetadataSourceTagLib::ExportResult, QDateTime>
+MetadataSourceTagLib::afterExportSucceeded() const {
+    return std::make_pair(ExportResult::Succeeded, QFileInfo(m_fileName).lastModified());
+}
+
+std::pair<MetadataSource::ImportResult, QDateTime>
+MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         TrackMetadata* pTrackMetadata,
         QImage* pCoverImage) const {
     VERIFY_OR_DEBUG_ASSERT(pTrackMetadata || pCoverImage) {
@@ -72,8 +83,7 @@ MetadataSource::ImportResult MetadataSourceTagLib::importTrackMetadataAndCoverIm
                 << "Nothing to import"
                 << "from file" << m_fileName
                 << "with type" << m_fileType;
-        // Importing nothing always succeeds although it might not be intended
-        return MetadataSource::ImportResult::Succeeded;
+        return std::make_pair(MetadataSource::ImportResult::Unavailable, QDateTime());
     }
     kLogger.trace() << "Importing"
             << ((pTrackMetadata && pCoverImage) ? "track metadata and cover art" : (pTrackMetadata ? "track metadata" : "cover art"))
@@ -96,20 +106,20 @@ MetadataSource::ImportResult MetadataSourceTagLib::importTrackMetadataAndCoverIm
             if (pID3v2Tag) {
                 taglib::importTrackMetadataFromID3v2Tag(pTrackMetadata, *pID3v2Tag);
                 taglib::importCoverImageFromID3v2Tag(pCoverImage, *pID3v2Tag);
-                return ImportResult::Succeeded;
+                return afterImportSucceeded();
             } else {
                 const TagLib::APE::Tag* pAPETag =
                         taglib::hasAPETag(file) ? file.APETag() : nullptr;
                 if (pAPETag) {
                     taglib::importTrackMetadataFromAPETag(pTrackMetadata, *pAPETag);
                     taglib::importCoverImageFromAPETag(pCoverImage, *pAPETag);
-                    return ImportResult::Succeeded;
+                    return afterImportSucceeded();
                 } else {
                     // fallback
                     const TagLib::Tag* pTag(file.tag());
                     if (pTag) {
                         taglib::importTrackMetadataFromTag(pTrackMetadata, *pTag);
-                        return ImportResult::Succeeded;
+                        return afterImportSucceeded();
                     }
                 }
             }
@@ -124,13 +134,13 @@ MetadataSource::ImportResult MetadataSourceTagLib::importTrackMetadataAndCoverIm
             if (pMP4Tag) {
                 taglib::importTrackMetadataFromMP4Tag(pTrackMetadata, *pMP4Tag);
                 taglib::importCoverImageFromMP4Tag(pCoverImage, *pMP4Tag);
-                return ImportResult::Succeeded;
+                return afterImportSucceeded();
             } else {
                 // fallback
                 const TagLib::Tag* pTag(file.tag());
                 if (pTag) {
                     taglib::importTrackMetadataFromTag(pTrackMetadata, *pTag);
-                    return ImportResult::Succeeded;
+                    return afterImportSucceeded();
                 }
             }
         }
@@ -151,20 +161,20 @@ MetadataSource::ImportResult MetadataSourceTagLib::importTrackMetadataAndCoverIm
             if (pXiphComment) {
                 taglib::importTrackMetadataFromVorbisCommentTag(pTrackMetadata, *pXiphComment);
                 taglib::importCoverImageFromVorbisCommentTag(pCoverImage, *pXiphComment);
-                return ImportResult::Succeeded;
+                return afterImportSucceeded();
             } else {
                 const TagLib::ID3v2::Tag* pID3v2Tag =
                         taglib::hasID3v2Tag(file) ? file.ID3v2Tag() : nullptr;
                 if (pID3v2Tag) {
                     taglib::importTrackMetadataFromID3v2Tag(pTrackMetadata, *pID3v2Tag);
                     taglib::importCoverImageFromID3v2Tag(pCoverImage, *pID3v2Tag);
-                    return ImportResult::Succeeded;
+                    return afterImportSucceeded();
                 } else {
                     // fallback
                     const TagLib::Tag* pTag(file.tag());
                     if (pTag) {
                         taglib::importTrackMetadataFromTag(pTrackMetadata, *pTag);
-                        return ImportResult::Succeeded;
+                        return afterImportSucceeded();
                     }
                 }
             }
@@ -179,13 +189,13 @@ MetadataSource::ImportResult MetadataSourceTagLib::importTrackMetadataAndCoverIm
             if (pXiphComment) {
                 taglib::importTrackMetadataFromVorbisCommentTag(pTrackMetadata, *pXiphComment);
                 taglib::importCoverImageFromVorbisCommentTag(pCoverImage, *pXiphComment);
-                return ImportResult::Succeeded;
+                return afterImportSucceeded();
             } else {
                 // fallback
                 const TagLib::Tag* pTag(file.tag());
                 if (pTag) {
                     taglib::importTrackMetadataFromTag(pTrackMetadata, *pTag);
-                    return ImportResult::Succeeded;
+                    return afterImportSucceeded();
                 }
             }
         }
@@ -200,13 +210,13 @@ MetadataSource::ImportResult MetadataSourceTagLib::importTrackMetadataAndCoverIm
             if (pXiphComment) {
                 taglib::importTrackMetadataFromVorbisCommentTag(pTrackMetadata, *pXiphComment);
                 taglib::importCoverImageFromVorbisCommentTag(pCoverImage, *pXiphComment);
-                 return ImportResult::Succeeded;
+                 return afterImportSucceeded();
             } else {
                 // fallback
                 const TagLib::Tag* pTag(file.tag());
                 if (pTag) {
                     taglib::importTrackMetadataFromTag(pTrackMetadata, *pTag);
-                    return ImportResult::Succeeded;
+                    return afterImportSucceeded();
                 }
             }
         }
@@ -222,13 +232,13 @@ MetadataSource::ImportResult MetadataSourceTagLib::importTrackMetadataAndCoverIm
             if (pAPETag) {
                 taglib::importTrackMetadataFromAPETag(pTrackMetadata, *pAPETag);
                 taglib::importCoverImageFromAPETag(pCoverImage, *pAPETag);
-                return ImportResult::Succeeded;
+                return afterImportSucceeded();
             } else {
                 // fallback
                 const TagLib::Tag* pTag(file.tag());
                 if (pTag) {
                     taglib::importTrackMetadataFromTag(pTrackMetadata, *pTag);
-                    return ImportResult::Succeeded;
+                    return afterImportSucceeded();
                 }
             }
         }
@@ -247,13 +257,13 @@ MetadataSource::ImportResult MetadataSourceTagLib::importTrackMetadataAndCoverIm
             if (pID3v2Tag) {
                 taglib::importTrackMetadataFromID3v2Tag(pTrackMetadata, *pID3v2Tag);
                 taglib::importCoverImageFromID3v2Tag(pCoverImage, *pID3v2Tag);
-                return ImportResult::Succeeded;
+                return afterImportSucceeded();
             } else {
                 // fallback
                 const TagLib::RIFF::Info::Tag* pTag = file.InfoTag();
                 if (pTag) {
                     taglib::importTrackMetadataFromRIFFTag(pTrackMetadata, *pTag);
-                    return ImportResult::Succeeded;
+                    return afterImportSucceeded();
                 }
             }
         }
@@ -275,7 +285,7 @@ MetadataSource::ImportResult MetadataSourceTagLib::importTrackMetadataAndCoverIm
                 // fallback
                 file.importTrackMetadataFromTextChunks(pTrackMetadata);
             }
-            return ImportResult::Succeeded;
+            return afterImportSucceeded();
         }
         break;
     }
@@ -284,13 +294,14 @@ MetadataSource::ImportResult MetadataSourceTagLib::importTrackMetadataAndCoverIm
             << "Cannot import track metadata"
             << "from file" << m_fileName
             << "with unknown or unsupported type" << m_fileType;
-        return ImportResult::Unavailable;
+        return MetadataSource::importTrackMetadataAndCoverImage(pTrackMetadata, pCoverImage);
     }
 
-    kLogger.warning() << "No track metadata or cover art found"
+    kLogger.warning()
+            << "No track metadata or cover art found"
             << "in file" << m_fileName
             << "with type" << m_fileType;
-    return ImportResult::Unavailable;
+    return MetadataSource::importTrackMetadataAndCoverImage(pTrackMetadata, pCoverImage);
 }
 
 namespace {
@@ -569,7 +580,8 @@ private:
 
 } // anonymous namespace
 
-MetadataSource::ExportResult MetadataSourceTagLib::exportTrackMetadata(
+std::pair<MetadataSource::ExportResult, QDateTime>
+MetadataSourceTagLib::exportTrackMetadata(
         const TrackMetadata& trackMetadata) const {
     kLogger.debug() << "Exporting track metadata"
             << "into file" << m_fileName
@@ -625,19 +637,19 @@ MetadataSource::ExportResult MetadataSourceTagLib::exportTrackMetadata(
             << "into file" << m_fileName
             << "with unknown or unsupported type"
             << m_fileType;
-        return ExportResult::Unsupported;
+        return MetadataSource::exportTrackMetadata(trackMetadata);
     }
 
     if (pTagSaver->hasModifiedTags()) {
         if (pTagSaver->saveModifiedTags()) {
-            return ExportResult::Succeeded;
+            return afterExportSucceeded();
         } else {
             kLogger.warning() << "Failed to save tags of file" << m_fileName;
-            return ExportResult::Failed;
+            return std::make_pair(ExportResult::Failed, QDateTime());
         }
     } else {
         kLogger.warning() << "Failed to modify tags of file" << m_fileName;
-        return ExportResult::Failed;
+        return std::make_pair(ExportResult::Failed, QDateTime());
     }
 }
 

@@ -22,14 +22,17 @@ class MetadataSourceTagLib: public MetadataSource {
           m_fileType(fileType) {
     }
 
-    ImportResult importTrackMetadataAndCoverImage(
+    std::pair<ImportResult, QDateTime> importTrackMetadataAndCoverImage(
             TrackMetadata* pTrackMetadata,
             QImage* pCoverArt) const override;
 
-    ExportResult exportTrackMetadata(
+    std::pair<ExportResult, QDateTime> exportTrackMetadata(
             const TrackMetadata& trackMetadata) const override;
 
   private:
+    std::pair<ImportResult, QDateTime> afterImportSucceeded() const;
+    std::pair<ExportResult, QDateTime> afterExportSucceeded() const;
+
     QString m_fileName;
     taglib::FileType m_fileType;
 };

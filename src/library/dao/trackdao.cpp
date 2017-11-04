@@ -470,7 +470,7 @@ namespace {
         pTrackLibraryQuery->bindValue(":replaygain_peak", track.getReplayGain().getPeak());
         pTrackLibraryQuery->bindValue(":channels", track.getChannels());
 
-        pTrackLibraryQuery->bindValue(":header_parsed", track.isHeaderParsed() ? 1 : 0);
+        pTrackLibraryQuery->bindValue(":header_parsed", track.isMetadataSynchronized() ? 1 : 0);
 
         const PlayCounter playCounter(track.getPlayCounter());
         pTrackLibraryQuery->bindValue(":timesplayed", playCounter.getTimesPlayed());
@@ -698,7 +698,7 @@ TrackPointer TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove
     // the track is already in the library. A refactoring is
     // needed to detect this before calling addTracksAddTrack().
     SoundSourceProxy(pTrack).updateTrack();
-    if (!pTrack->isHeaderParsed()) {
+    if (!pTrack->isMetadataSynchronized()) {
         qWarning() << "TrackDAO::addTracksAddFile:"
                 << "Failed to parse track metadata from file"
                 << pTrack->getLocation();
@@ -1158,9 +1158,9 @@ bool setTrackFiletype(const QSqlRecord& record, const int column,
     return false;
 }
 
-bool setTrackHeaderParsed(const QSqlRecord& record, const int column,
+bool setTrackMetadataSynchronized(const QSqlRecord& record, const int column,
                           TrackPointer pTrack) {
-    pTrack->setHeaderParsed(record.value(column).toBool());
+    pTrack->setMetadataSynchronized(record.value(column).toBool());
     return false;
 }
 
@@ -1281,7 +1281,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         { "timesplayed", setTrackTimesPlayed },
         { "played", setTrackPlayed },
         { "datetime_added", setTrackDateAdded },
-        { "header_parsed", setTrackHeaderParsed },
+        { "header_parsed", setTrackMetadataSynchronized },
 
         // Beat detection columns are handled by setTrackBeats. Do not change
         // the ordering of these columns or put other columns in between them!
@@ -1378,7 +1378,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         // We could (re-)load the metadata here, but this would risk to
         // overwrite the metadata that is currently stored in the library.
         // Instead prefer to log an informational warning for the user.
-        if (!pTrack->isHeaderParsed()) {
+        if (!pTrack->isMetadataSynchronized()) {
             qWarning() << "Metadata of the track" << pTrack->getLocation()
                     << "has never been loaded from this file."
                     << "Please consider reloading it manually if you prefer"
@@ -1456,7 +1456,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     // We could (re-)load the metadata here, but this would risk to
     // overwrite the metadata that is currently stored in the library.
     // Instead prefer to log an informational warning for the user.
-    if (!pTrack->isHeaderParsed()) {
+    if (!pTrack->isMetadataSynchronized()) {
         qWarning() << "Metadata of the track" << pTrack->getLocation()
                 << "has never been loaded from this file."
                 << "Please consider reloading it manually if you prefer"

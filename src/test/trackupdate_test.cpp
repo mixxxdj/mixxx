@@ -31,7 +31,7 @@ class TrackUpdateTest: public MixxxTest {
     static TrackPointer newTestTrackParsed() {
         auto pTrack = newTestTrack();
         SoundSourceProxy(pTrack).updateTrack();
-        EXPECT_TRUE(pTrack->isHeaderParsed());
+        EXPECT_TRUE(pTrack->isMetadataSynchronized());
         EXPECT_TRUE(hasTrackMetadata(pTrack));
         EXPECT_TRUE(hasCoverArt(pTrack));
         pTrack->markClean();
@@ -68,7 +68,7 @@ TEST_F(TrackUpdateTest, parseModifiedCleanOnce) {
     auto coverInfoAfter = pTrack->getCoverInfo();
 
     // Not updated
-    EXPECT_TRUE(pTrack->isHeaderParsed());
+    EXPECT_TRUE(pTrack->isMetadataSynchronized());
     EXPECT_FALSE(pTrack->isDirty());
     EXPECT_EQ(trackMetadataBefore, trackMetadataAfter);
     EXPECT_EQ(coverInfoBefore, coverInfoAfter);
@@ -90,7 +90,7 @@ TEST_F(TrackUpdateTest, parseModifiedCleanAgainSkipCover) {
     auto coverInfoAfter = pTrack->getCoverInfo();
 
     // Updated
-    EXPECT_TRUE(pTrack->isHeaderParsed());
+    EXPECT_TRUE(pTrack->isMetadataSynchronized());
     EXPECT_TRUE(pTrack->isDirty());
     EXPECT_NE(trackMetadataBefore, trackMetadataAfter);
     EXPECT_EQ(coverInfoBefore, coverInfoAfter);
@@ -116,7 +116,7 @@ TEST_F(TrackUpdateTest, parseModifiedCleanAgainUpdateCover) {
     auto coverInfoAfter = pTrack->getCoverInfo();
 
     // Updated
-    EXPECT_TRUE(pTrack->isHeaderParsed());
+    EXPECT_TRUE(pTrack->isMetadataSynchronized());
     EXPECT_TRUE(pTrack->isDirty());
     EXPECT_NE(trackMetadataBefore, trackMetadataAfter);
     EXPECT_NE(coverInfoBefore, coverInfoAfter);
@@ -137,7 +137,7 @@ TEST_F(TrackUpdateTest, parseModifiedDirtyAgain) {
     auto coverInfoAfter = pTrack->getCoverInfo();
 
     // Not updated
-    EXPECT_TRUE(pTrack->isHeaderParsed());
+    EXPECT_TRUE(pTrack->isMetadataSynchronized());
     EXPECT_TRUE(pTrack->isDirty());
     EXPECT_EQ(trackMetadataBefore, trackMetadataAfter);
     EXPECT_EQ(coverInfoBefore, coverInfoAfter);

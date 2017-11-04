@@ -320,7 +320,7 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
     QStandardItem* item = itemFromIndex(index);
     QString track_location(getTrackLocation(index));
     if (mixxx::MetadataSource::ExportResult::Succeeded ==
-            mixxx::MetadataSourceTagLib(track_location).exportTrackMetadata(trackMetadata)) {
+            mixxx::MetadataSourceTagLib(track_location).exportTrackMetadata(trackMetadata).first) {
         // Modify underlying interalPointer object
         item->setText(value.toString());
         item->setToolTip(item->text());

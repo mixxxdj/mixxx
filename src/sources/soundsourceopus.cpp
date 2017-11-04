@@ -33,18 +33,26 @@ constexpr int kEntireStreamLink  = -1; // get ... of the whole/entire stream
 
 class OggOpusFileOwner {
 public:
-    explicit OggOpusFileOwner(OggOpusFile* pFile) :
-            m_pFile(pFile) {
+    explicit OggOpusFileOwner(OggOpusFile* pFile)
+            : m_pFile(pFile) {
     }
+    OggOpusFileOwner(OggOpusFileOwner&&) = delete;
+    OggOpusFileOwner(const OggOpusFileOwner&) = delete;
     ~OggOpusFileOwner() {
-        op_free(m_pFile);
+        if (m_pFile) {
+            op_free(m_pFile);
+        }
     }
     operator OggOpusFile*() const {
         return m_pFile;
     }
+    OggOpusFile* release() {
+        OggOpusFile* pFile = m_pFile;
+        m_pFile = nullptr;
+        return pFile;
+    }
 private:
-    OggOpusFileOwner(const OggOpusFileOwner&); // disable copy constructor
-    OggOpusFile* const m_pFile;
+    OggOpusFile* m_pFile;
 };
 
 } // anonymous namespace
@@ -59,14 +67,17 @@ SoundSourceOpus::~SoundSourceOpus() {
     close();
 }
 
-MetadataSource::ImportResult SoundSourceOpus::importTrackMetadataAndCoverImage(
+std::pair<MetadataSource::ImportResult, QDateTime>
+SoundSourceOpus::importTrackMetadataAndCoverImage(
         TrackMetadata* pTrackMetadata,
         QImage* pCoverArt) const {
-    if (ImportResult::Succeeded == SoundSource::importTrackMetadataAndCoverImage(
-            pTrackMetadata, pCoverArt)) {
+    auto const imported =
+            SoundSource::importTrackMetadataAndCoverImage(
+                    pTrackMetadata, pCoverArt);
+    if (imported.first == ImportResult::Succeeded) {
         // Done if the default implementation in the base class
         // supports Opus files.
-        return ImportResult::Succeeded;
+        return imported;
     }
 
     // Beginning with version 1.9.0 TagLib supports the Opus format.
@@ -89,23 +100,28 @@ MetadataSource::ImportResult SoundSourceOpus::importTrackMetadataAndCoverImage(
     QByteArray qBAFilename = getLocalFileName().toLocal8Bit();
 #endif
 
-    int error = 0;
-    OggOpusFileOwner l_ptrOpusFile(
-            op_open_file(qBAFilename.constData(), &error));
-
-    // Bug #1541667.
-    if (!l_ptrOpusFile) {
-        return ImportResult::Failed;
+    int errorCode = 0;
+    OggOpusFileOwner pOggOpusFile(
+            op_open_file(qBAFilename.constData(), &errorCode));
+    if (!pOggOpusFile || (errorCode != 0)) {
+        kLogger.warning()
+                << "Opening of OggOpusFile failed with error"
+                << errorCode
+                << ":"
+                << getLocalFileName();
+        // We couldn't do any better , so just return the (unsuccessful)
+        // result from the base class.
+        return imported;
     }
 
     int i = 0;
-    const OpusTags *l_ptrOpusTags = op_tags(l_ptrOpusFile, -1);
+    const OpusTags *l_ptrOpusTags = op_tags(pOggOpusFile, -1);
 
-    pTrackMetadata->refTrackInfo().setChannels(ChannelCount(op_channel_count(l_ptrOpusFile, -1)));
+    pTrackMetadata->refTrackInfo().setChannels(ChannelCount(op_channel_count(pOggOpusFile, -1)));
     pTrackMetadata->refTrackInfo().setSampleRate(kSampleRate);
-    pTrackMetadata->refTrackInfo().setBitrate(Bitrate(op_bitrate(l_ptrOpusFile, -1) / 1000));
+    pTrackMetadata->refTrackInfo().setBitrate(Bitrate(op_bitrate(pOggOpusFile, -1) / 1000));
     // Cast to double is required for duration with sub-second precision
-    const double dTotalFrames = op_pcm_total(l_ptrOpusFile, -1);
+    const double dTotalFrames = op_pcm_total(pOggOpusFile, -1);
     pTrackMetadata->refTrackInfo().setDuration(Duration::fromMicros(
             1000000 * dTotalFrames / pTrackMetadata->getTrackInfo().getSampleRate()));
 
@@ -157,7 +173,9 @@ MetadataSource::ImportResult SoundSourceOpus::importTrackMetadataAndCoverImage(
         }
     }
 
-    return ImportResult::Succeeded;
+    return std::make_pair(
+            ImportResult::Succeeded,
+            QFileInfo(getLocalFileName()).lastModified());
 }
 
 SoundSource::OpenResult SoundSourceOpus::tryOpen(
@@ -175,22 +193,25 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(
 #endif
 
     int errorCode = 0;
-
-    DEBUG_ASSERT(!m_pOggOpusFile);
-    m_pOggOpusFile = op_open_file(qBAFilename.constData(), &errorCode);
-    if (!m_pOggOpusFile) {
-        kLogger.warning() << "Failed to open OggOpus file:" << getUrlString()
-                << "errorCode" << errorCode;
+    OggOpusFileOwner pOggOpusFile(
+            op_open_file(qBAFilename.constData(), &errorCode));
+    if (!pOggOpusFile || (errorCode != 0)) {
+        kLogger.warning()
+                << "Opening of OggOpusFile failed with error"
+                << errorCode
+                << ":"
+                << getLocalFileName();
         return OpenResult::Failed;
     }
-
-    if (!op_seekable(m_pOggOpusFile)) {
-        kLogger.warning() << "SoundSourceOpus:"
+    if (!op_seekable(pOggOpusFile)) {
+        kLogger.warning()
                 << "Stream in"
                 << getUrlString()
                 << "is not seekable";
         return OpenResult::Aborted;
     }
+    DEBUG_ASSERT(!m_pOggOpusFile);
+    m_pOggOpusFile = pOggOpusFile.release();
 
     const int streamChannelCount = op_channel_count(m_pOggOpusFile, kCurrentStreamLink);
     if (0 < streamChannelCount) {

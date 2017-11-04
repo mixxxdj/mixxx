@@ -300,7 +300,7 @@ SoundSourceProxy::findSoundSourceProviderRegistrations(
 
 //static
 SoundSourceProxy::ExportTrackMetadataResult SoundSourceProxy::exportTrackMetadata(
-        const Track* pTrack,
+        Track* pTrack,
         bool evenIfNeverParsedFromFileBefore) {
     DEBUG_ASSERT(pTrack);
     mixxx::MetadataSourcePointer pMetadataSource =
@@ -312,22 +312,22 @@ SoundSourceProxy::ExportTrackMetadataResult SoundSourceProxy::exportTrackMetadat
         return ExportTrackMetadataResult::Failed;
     }
     mixxx::TrackMetadata trackMetadata;
-    bool parsedFromFile = false;
+    bool metadataSynchronized = false;
     bool isDirty = false;
-    pTrack->getTrackMetadata(&trackMetadata, &parsedFromFile, &isDirty);
-    if (!parsedFromFile && !evenIfNeverParsedFromFileBefore) {
+    pTrack->getTrackMetadata(&trackMetadata, &metadataSynchronized, &isDirty);
+    if (!metadataSynchronized && !evenIfNeverParsedFromFileBefore) {
         kLogger.debug()
                 << "Skip exporting of track metadata into file"
                 << pTrack->getLocation();
         return ExportTrackMetadataResult::Skipped;
     }
-    if (parsedFromFile) {
+    if (metadataSynchronized) {
         // Check if the metadata has actually been modified. Otherwise
         // we don't need to write it back. Exporting unmodified metadata
         // would needlessly update the file's time stamp and should be
         // avoided.
         mixxx::TrackMetadata fileMetadata;
-        if ((pMetadataSource->importTrackMetadataAndCoverImage(&fileMetadata, nullptr) ==
+        if ((pMetadataSource->importTrackMetadataAndCoverImage(&fileMetadata, nullptr).first ==
                 mixxx::MetadataSource::ImportResult::Succeeded) &&
                 (fileMetadata == trackMetadata))  {
             kLogger.debug()
@@ -336,8 +336,13 @@ SoundSourceProxy::ExportTrackMetadataResult SoundSourceProxy::exportTrackMetadat
             return ExportTrackMetadataResult::Skipped;
         }
     }
-    if (pMetadataSource->exportTrackMetadata(trackMetadata) ==
-            mixxx::MetadataSource::ExportResult::Succeeded) {
+    const auto exported =
+            pMetadataSource->exportTrackMetadata(trackMetadata);
+    if (exported.first == mixxx::MetadataSource::ExportResult::Succeeded) {
+        // TODO(XXX): Replace bool with QDateTime
+        DEBUG_ASSERT(!exported.second.isNull());
+        //pTrack->setMetadataSynchronized(exported.second);
+        pTrack->setMetadataSynchronized(!exported.second.isNull());
         kLogger.debug()
                 << "Exported track metadata into file"
                 << pTrack->getLocation();
@@ -469,9 +474,9 @@ void SoundSourceProxy::updateTrack(
     // Depending on the file type some kind of tags might even
     // not be supported at all and those would get lost!
     mixxx::TrackMetadata trackMetadata;
-    bool parsedFromFile = false;
+    bool metadataSynchronized = false;
     bool isDirty = false;
-    m_pTrack->getTrackMetadata(&trackMetadata, &parsedFromFile, &isDirty);
+    m_pTrack->getTrackMetadata(&trackMetadata, &metadataSynchronized, &isDirty);
     // Cast away the enriched track location by explicitly slicing the
     // returned CoverInfo to CoverInfoRelative
     const CoverInfoRelative coverInfo(m_pTrack->getCoverInfo());
@@ -480,7 +485,7 @@ void SoundSourceProxy::updateTrack(
     QImage* pCoverImg;
     // If the file tags have already been parsed once, both track metadata
     // and cover art should not be updated implicitly.
-    if (parsedFromFile) {
+    if (metadataSynchronized) {
         if (isDirty || (parseFileTagsMode == ParseFileTagsMode::Once)) {
             kLogger.info() << "Skip parsing of track metadata and cover art from file"
                      << getUrl().toString();
@@ -505,16 +510,16 @@ void SoundSourceProxy::updateTrack(
     }
 
     // Parse the tags stored in the audio file
-    const mixxx::MetadataSource::ImportResult importResult =
+    const auto metadataImported =
             m_pSoundSource->importTrackMetadataAndCoverImage(
                     &trackMetadata, pCoverImg);
-    if (importResult != mixxx::MetadataSource::ImportResult::Succeeded) {
+    if (metadataImported.first != mixxx::MetadataSource::ImportResult::Succeeded) {
         kLogger.warning() << "Failed to parse track metadata and/or cover art from file"
                    << getUrl().toString();
         return; // abort
     }
 
-    if (!parsedFromFile &&
+    if (!metadataSynchronized &&
             (trackMetadata.getTrackInfo().getArtist().isEmpty() ||
                     trackMetadata.getTrackInfo().getTitle().isEmpty())) {
         // Fallback: If Artist or title fields are blank initially try to parse
@@ -530,14 +535,15 @@ void SoundSourceProxy::updateTrack(
     // responsible SoundSource
     m_pTrack->setType(m_pSoundSource->getType());
 
-    if (parsedFromFile) {
+    if (metadataSynchronized) {
         kLogger.info() << "Updating track metadata from file"
                  << getUrl().toString();
     } else {
         kLogger.info() << "Initializing track metadata from file"
                  << getUrl().toString();
     }
-    m_pTrack->setTrackMetadata(trackMetadata, true);
+    DEBUG_ASSERT(!metadataImported.second.isNull());
+    m_pTrack->setTrackMetadata(trackMetadata, metadataImported.second);
 
     if (pCoverImg) {
         CoverInfoRelative coverInfoRelative;
@@ -576,7 +582,7 @@ void SoundSourceProxy::updateTrack(
 
 mixxx::MetadataSource::ImportResult SoundSourceProxy::importTrackMetadata(mixxx::TrackMetadata* pTrackMetadata) const {
     if (m_pSoundSource) {
-        return m_pSoundSource->importTrackMetadataAndCoverImage(pTrackMetadata, nullptr);
+        return m_pSoundSource->importTrackMetadataAndCoverImage(pTrackMetadata, nullptr).first;
     } else {
         return mixxx::MetadataSource::ImportResult::Unavailable;
     }
@@ -585,7 +591,8 @@ mixxx::MetadataSource::ImportResult SoundSourceProxy::importTrackMetadata(mixxx:
 QImage SoundSourceProxy::importCoverImage() const {
     if (m_pSoundSource) {
         QImage coverImg;
-        if (m_pSoundSource->importTrackMetadataAndCoverImage(nullptr, &coverImg) == mixxx::MetadataSource::ImportResult::Succeeded) {
+        if (m_pSoundSource->importTrackMetadataAndCoverImage(nullptr, &coverImg).first ==
+                mixxx::MetadataSource::ImportResult::Succeeded) {
             return coverImg;
         }
     }
