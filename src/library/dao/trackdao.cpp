@@ -260,12 +260,12 @@ void TrackDAO::saveTrack(Track* pTrack) {
     if (pTrack->isDirty()) {
         // Write audio meta data, if enabled in the preferences.
         //
-        // TODO(XXX): This must be done before updating the database,
-        // because in the future a timestamp will keep track of when
-        // metadata has been synchronized. Exporting metadata needs
-        // to update this time stamp!
+        // This must be done before updating the database, because
+        // a timestamp is used to keep track of when metadata has been
+        // last synchronized. Exporting metadata will update this time
+        // stamp on the track object!
         if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
-            SoundSourceProxy::exportTrackMetadata(pTrack);
+            SoundSourceProxy::exportTrackMetadataBeforeSaving(pTrack);
         }
 
         // Only update the database if the track has already been added!

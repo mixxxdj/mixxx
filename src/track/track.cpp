@@ -930,3 +930,56 @@ quint16 Track::getCoverHash() const {
     QMutexLocker lock(&m_qMutex);
     return m_record.getCoverInfo().hash;
 }
+
+Track::ExportMetadataResult Track::exportMetadata(
+        mixxx::MetadataSourcePointer pMetadataSource,
+        bool evenIfNotSynchronized) {
+    VERIFY_OR_DEBUG_ASSERT(pMetadataSource) {
+        kLogger.warning()
+                << "Cannot export track metadata:"
+                << getLocation();
+        return ExportMetadataResult::Failed;
+    }
+    // Locking shouldn't be necessary here, because this function will
+    // be called after all references to the object have been dropped.
+    // But it doesn't hurt much, so let's play it safe ;)
+    QMutexLocker lock(&m_qMutex);
+    if (!m_record.getMetadataSynchronized() && !evenIfNotSynchronized) {
+        kLogger.debug()
+                << "Skip exporting of unsynchronized track metadata:"
+                << getLocation();
+        return ExportMetadataResult::Skipped;
+    }
+    if (m_record.getMetadataSynchronized()) {
+        // Check if the metadata has actually been modified. Otherwise
+        // we don't need to write it back. Exporting unmodified metadata
+        // would needlessly update the file's time stamp and should be
+        // avoided.
+        mixxx::TrackMetadata trackMetadata;
+        if ((pMetadataSource->importTrackMetadataAndCoverImage(&trackMetadata, nullptr).first ==
+                mixxx::MetadataSource::ImportResult::Succeeded) &&
+                (m_record.getMetadata() == trackMetadata))  {
+            kLogger.debug()
+                    << "Skip exporting of unmodified track metadata:"
+                    << getLocation();
+            return ExportMetadataResult::Skipped;
+        }
+    }
+    const auto trackMetadataExported =
+            pMetadataSource->exportTrackMetadata(m_record.getMetadata());
+    if (trackMetadataExported.first == mixxx::MetadataSource::ExportResult::Succeeded) {
+        // TODO(XXX): Replace bool with QDateTime
+        DEBUG_ASSERT(!trackMetadataExported.second.isNull());
+        //pTrack->setMetadataSynchronized(trackMetadataExported.second);
+        m_record.setMetadataSynchronized(!trackMetadataExported.second.isNull());
+        kLogger.debug()
+                << "Exported track metadata:"
+                << getLocation();
+        return ExportMetadataResult::Succeeded;
+    } else {
+        kLogger.warning()
+                << "Failed to export track metadata:"
+                << getLocation();
+        return ExportMetadataResult::Failed;
+    }
+}

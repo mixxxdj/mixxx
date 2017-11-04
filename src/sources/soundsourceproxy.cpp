@@ -299,60 +299,13 @@ SoundSourceProxy::findSoundSourceProviderRegistrations(
 }
 
 //static
-SoundSourceProxy::ExportTrackMetadataResult SoundSourceProxy::exportTrackMetadata(
+Track::ExportMetadataResult SoundSourceProxy::exportTrackMetadataBeforeSaving(
         Track* pTrack,
-        bool evenIfNeverParsedFromFileBefore) {
+        bool evenIfNotSynchronized) {
     DEBUG_ASSERT(pTrack);
     mixxx::MetadataSourcePointer pMetadataSource =
             SoundSourceProxy(pTrack).m_pSoundSource;
-    if (!pMetadataSource) {
-        kLogger.warning()
-                << "Cannot export track metadata into file"
-                << pTrack->getLocation();
-        return ExportTrackMetadataResult::Failed;
-    }
-    mixxx::TrackMetadata trackMetadata;
-    bool metadataSynchronized = false;
-    bool isDirty = false;
-    pTrack->getTrackMetadata(&trackMetadata, &metadataSynchronized, &isDirty);
-    if (!metadataSynchronized && !evenIfNeverParsedFromFileBefore) {
-        kLogger.debug()
-                << "Skip exporting of track metadata into file"
-                << pTrack->getLocation();
-        return ExportTrackMetadataResult::Skipped;
-    }
-    if (metadataSynchronized) {
-        // Check if the metadata has actually been modified. Otherwise
-        // we don't need to write it back. Exporting unmodified metadata
-        // would needlessly update the file's time stamp and should be
-        // avoided.
-        mixxx::TrackMetadata fileMetadata;
-        if ((pMetadataSource->importTrackMetadataAndCoverImage(&fileMetadata, nullptr).first ==
-                mixxx::MetadataSource::ImportResult::Succeeded) &&
-                (fileMetadata == trackMetadata))  {
-            kLogger.debug()
-                    << "Skip exporting of unmodified track metadata into file"
-                    << pTrack->getLocation();
-            return ExportTrackMetadataResult::Skipped;
-        }
-    }
-    const auto exported =
-            pMetadataSource->exportTrackMetadata(trackMetadata);
-    if (exported.first == mixxx::MetadataSource::ExportResult::Succeeded) {
-        // TODO(XXX): Replace bool with QDateTime
-        DEBUG_ASSERT(!exported.second.isNull());
-        //pTrack->setMetadataSynchronized(exported.second);
-        pTrack->setMetadataSynchronized(!exported.second.isNull());
-        kLogger.debug()
-                << "Exported track metadata into file"
-                << pTrack->getLocation();
-        return ExportTrackMetadataResult::Succeeded;
-    } else {
-        kLogger.warning()
-                << "Failed to export track metadata into file"
-                << pTrack->getLocation();
-        return ExportTrackMetadataResult::Failed;
-    }
+    return pTrack->exportMetadata(pMetadataSource, evenIfNotSynchronized);
 }
 
 SoundSourceProxy::SoundSourceProxy(

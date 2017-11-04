@@ -1,5 +1,5 @@
-#ifndef MIXXX_TRACK_H
-#define MIXXX_TRACK_H
+#pragma once
+
 #include <QAtomicInt>
 #include <QFileInfo>
 #include <QList>
@@ -13,8 +13,12 @@
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
 
-class Track;
+#include "sources/metadatasource.h"
+
+
+// forward declaration(s)
 class TrackPointer;
+
 class Track : public QObject {
     Q_OBJECT
 
@@ -345,6 +349,15 @@ class Track : public QObject {
     };
     double getDuration(DurationRounding rounding) const;
 
+    enum class ExportMetadataResult {
+        Succeeded,
+        Failed,
+        Skipped,
+    };
+    ExportMetadataResult exportMetadata(
+            mixxx::MetadataSourcePointer pMetadataSource,
+            bool evenIfNotSynchronized = false);
+
     // The file
     const QFileInfo m_fileInfo;
 
@@ -376,6 +389,7 @@ class Track : public QObject {
     QAtomicInt m_analyzerProgress; // in 0.1%
 
     friend class TrackDAO;
+    friend class SoundSourceProxy;
 };
 
 typedef std::weak_ptr<Track> TrackWeakPointer;
@@ -400,5 +414,3 @@ class TrackPointer: public std::shared_ptr<Track> {
         }
     }
 };
-
-#endif // MIXXX_TRACK_H
