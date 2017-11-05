@@ -13,7 +13,7 @@
 struct GaterGroupState {
     enum State {IDLE, ATTACK, HOLD, RELEASE} state;
     double gain;
-    unsigned int timePosition;
+    unsigned int currentFrame;
     unsigned int holdCounter;
 };
 

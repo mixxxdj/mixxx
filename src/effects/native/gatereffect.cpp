@@ -7,6 +7,8 @@ constexpr double kMaxGain        = 1.5;
 constexpr double kBaseAttackInc  = 0.001;
 // Release slope
 constexpr double kBaseReleaseInc = 0.0005;
+
+constexpr int kNumberOfChannels  = 2;
 }
 
 // static
@@ -120,7 +122,7 @@ void GaterEffect::processChannel(const ChannelHandle& handle,
     double releaseInc = kBaseReleaseInc*divider;
 
     // Get channel specific state variable
-    unsigned int timePosition    = pState->timePosition;
+    unsigned int currentFrame    = pState->currentFrame;
     unsigned int holdCounter     = pState->holdCounter;
     double       gain            = pState->gain;
     GaterGroupState::State state = pState->state;
@@ -170,20 +172,20 @@ void GaterEffect::processChannel(const ChannelHandle& handle,
         triggerTime = 0;
     }
 
-    // holdTime : number of samples spent in the Hold state
+    // holdTime : number of frames spent in the Hold state
     unsigned int holdTime;
     double attackTime  = kMaxGain/attackInc;
     double releaseTime = kMaxGain/releaseInc;
     holdTime = std::max(0.0, floor(triggerPeriod*shape-attackTime-releaseTime));
     
-    for (unsigned int i = 0; i < numSamples; i+=2) {
-         if (timePosition % triggerPeriod == triggerTime) {
+    for (unsigned int i = 0; i < numSamples; i+=kNumberOfChannels) {
+         if (currentFrame % triggerPeriod == triggerTime) {
             state = GaterGroupState::ATTACK;
-            if (timePosition % beatPeriod == 1) {
-                timePosition = 0;
+            if (currentFrame % beatPeriod == 1) {
+                currentFrame = 0;
             }
         }
-        timePosition++;
+        currentFrame++;
 
         // Gate state machine : Idle->Attack->Hold->Release->Idle
         switch (state) {
@@ -220,12 +222,14 @@ void GaterEffect::processChannel(const ChannelHandle& handle,
                 break;
         }
 
-        pOutput[i]   = gain*pInput[i];
-        pOutput[i+1] = gain*pInput[i+1];
+        for(int channel = 0; channel < kNumberOfChannels; channel++)
+        {
+            pOutput[i+channel]   = gain*pInput[i+channel];
+        }
     }
 
     // Write back channel state
-    pState->timePosition = timePosition;
+    pState->currentFrame = currentFrame;
     pState->holdCounter  = holdCounter;
     pState->gain         = gain;
     pState->state        = state;
