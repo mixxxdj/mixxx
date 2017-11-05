@@ -31,29 +31,57 @@ Variables:
               </Template>
             </Children>
             <Connection>
-              <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
-              <Transform><IsEqual>0</IsEqual></Transform>
+              <ConfigKey>[<Variable name="FxGroup"/>],show_focus</ConfigKey>
+              <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /normal FX expand button -->
 
-          <WidgetGroup><!-- FX expand button when any effect is focused -->
+          <WidgetGroup><!-- FX expand button when focus is shown -->
             <Layout>vertical</Layout>
             <Size>28f,14f</Size>
             <Children>
-              <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ObjectName">FxSamplersMiniMaxi_Focus</SetVariable>
-                <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
-                <SetVariable name="Size">28f,14f</SetVariable>
-                <SetVariable name="ConfigKey">[<Variable name="FxGroup"/>],show_parameters</SetVariable>
-              </Template>
+              <WidgetGroup><!-- when no effect is focused -->
+                <Layout>vertical</Layout>
+                <Size>28f,14f</Size>
+                <Children>
+                  <Template src="skin:button_2state_persist.xml">
+                    <SetVariable name="ObjectName">FxSamplersMiniMaxi</SetVariable>
+                    <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
+                    <SetVariable name="Size">28f,14f</SetVariable>
+                    <SetVariable name="ConfigKey">[<Variable name="FxGroup"/>],show_parameters</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
+                  <Transform><IsEqual>0</IsEqual></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup><!-- when any effect is focused -->
+                <Layout>vertical</Layout>
+                <Size>28f,14f</Size>
+                <Children>
+                  <Template src="skin:button_2state_persist.xml">
+                    <SetVariable name="ObjectName">FxSamplersMiniMaxi_Focus</SetVariable>
+                    <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
+                    <SetVariable name="Size">28f,14f</SetVariable>
+                    <SetVariable name="ConfigKey">[<Variable name="FxGroup"/>],show_parameters</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
+                  <Transform><IsEqual>0</IsEqual><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
             </Children>
             <Connection>
-              <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
-              <Transform><IsEqual>0</IsEqual><Not/></Transform>
+              <ConfigKey>[<Variable name="FxGroup"/>],show_focus</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
-          </WidgetGroup><!-- /FX expand button when any effect is focused -->
+          </WidgetGroup><!-- /FX expand button when focus is shown -->
 
           <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
 
