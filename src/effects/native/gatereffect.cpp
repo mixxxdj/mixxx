@@ -1,13 +1,13 @@
 #include "effects/native/gatereffect.h"
 
 namespace {
-    // Gain when the gate is open, higher than 1 to still have a decent level
-    constexpr double kMaxGain        = 1.5; 
-    // Attack slope
-    constexpr double kBaseAttackInc  = 0.001;
-    // Release slope
-    constexpr double kBaseReleaseInc = 0.0005;
-    }
+// Gain when the gate is open, higher than 1 to still have a decent level
+constexpr double kMaxGain        = 1.5;
+// Attack slope
+constexpr double kBaseAttackInc  = 0.001;
+// Release slope
+constexpr double kBaseReleaseInc = 0.0005;
+}
 
 // static
 QString GaterEffect::getId() {
