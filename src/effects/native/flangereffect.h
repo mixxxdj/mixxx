@@ -17,7 +17,8 @@ constexpr double kMaxDelayMs = 13.0;
 constexpr double kMinDelayMs = 0.22;
 constexpr double kCenterDelayMs = (kMaxDelayMs - kMinDelayMs) / 2 + kMinDelayMs;
 constexpr double kMaxLfoWidthMs = kMaxDelayMs - kMinDelayMs;
-const SINT kBufferLenth = static_cast<SINT>(ceil(kMaxDelayMs)) * 96; // for 96 kHz
+// using + 1.0 instead of ceil() for Mac OS
+constexpr SINT kBufferLenth = static_cast<SINT>(kMaxDelayMs + 1.0)  * 96; // for 96 kHz
 constexpr double kMinLfoBeats = 1/4.0;
 constexpr double kMaxLfoBeats = 32.0;
 } // anonymous namespace
