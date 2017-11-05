@@ -115,8 +115,8 @@ WTrackTableView::~WTrackTableView() {
         pHeader->saveHeaderState();
     }
 
-    delete m_pReloadMetadataAct;
-    delete m_pReloadMetadataFromMusicBrainzAct;
+    delete m_pImportMetadataFromFileAct;
+    delete m_pImportMetadataFromMusicBrainzAct;
     delete m_pAddToPreviewDeck;
     delete m_pAutoDJBottomAct;
     delete m_pAutoDJTopAct;
@@ -400,12 +400,12 @@ void WTrackTableView::createActions() {
     connect(m_pAutoDJReplaceAct, SIGNAL(triggered()),
             this, SLOT(slotSendToAutoDJReplace()));
 
-    m_pReloadMetadataAct = new QAction(tr("Reload Metadata from File"), this);
-    connect(m_pReloadMetadataAct, SIGNAL(triggered()),
-            this, SLOT(slotReloadTrackMetadata()));
+    m_pImportMetadataFromFileAct = new QAction(tr("Import Metadata from File"), this);
+    connect(m_pImportMetadataFromFileAct, SIGNAL(triggered()),
+            this, SLOT(slotImportTrackMetadata()));
 
-    m_pReloadMetadataFromMusicBrainzAct = new QAction(tr("Get Metadata from MusicBrainz"),this);
-    connect(m_pReloadMetadataFromMusicBrainzAct, SIGNAL(triggered()),
+    m_pImportMetadataFromMusicBrainzAct = new QAction(tr("Import Metadata from MusicBrainz"),this);
+    connect(m_pImportMetadataFromMusicBrainzAct, SIGNAL(triggered()),
             this, SLOT(slotShowDlgTagFetcher()));
 
     m_pAddToPreviewDeck = new QAction(tr("Load to Preview Deck"), this);
@@ -941,10 +941,10 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     m_pMenu->addAction(m_pReplayGainResetAction);
 
     m_pMenu->addSeparator();
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_RELOADMETADATA)) {
-        m_pMenu->addAction(m_pReloadMetadataAct);
-        m_pReloadMetadataFromMusicBrainzAct->setEnabled(oneSongSelected);
-        m_pMenu->addAction(m_pReloadMetadataFromMusicBrainzAct);
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_IMPORTMETADATA)) {
+        m_pMenu->addAction(m_pImportMetadataFromFileAct);
+        m_pImportMetadataFromMusicBrainzAct->setEnabled(oneSongSelected);
+        m_pMenu->addAction(m_pImportMetadataFromMusicBrainzAct);
     }
 
     // Cover art menu only applies if at least one track is selected.
@@ -1373,8 +1373,8 @@ void WTrackTableView::sendToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     playlistDao.sendToAutoDJ(trackIds, loc);
 }
 
-void WTrackTableView::slotReloadTrackMetadata() {
-    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_RELOADMETADATA)) {
+void WTrackTableView::slotImportTrackMetadata() {
+    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_IMPORTMETADATA)) {
         return;
     }
 

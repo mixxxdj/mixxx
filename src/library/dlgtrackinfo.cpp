@@ -48,9 +48,6 @@ void DlgTrackInfo::init() {
     connect(btnCancel, SIGNAL(clicked()),
             this, SLOT(cancel()));
 
-    connect(btnFetchTag, SIGNAL(clicked()),
-            this, SLOT(fetchTag()));
-
     connect(bpmDouble, SIGNAL(clicked()),
             this, SLOT(slotBpmDouble()));
     connect(bpmHalve, SIGNAL(clicked()),
@@ -83,8 +80,11 @@ void DlgTrackInfo::init() {
             m_pTapFilter.data(), SLOT(tap()));
     connect(m_pTapFilter.data(), SIGNAL(tapped(double, int)),
             this, SLOT(slotBpmTap(double, int)));
-    connect(btnReloadFromFile, SIGNAL(clicked()),
-            this, SLOT(reloadTrackMetadata()));
+
+    connect(btnImportMetadataFromFile, SIGNAL(clicked()),
+            this, SLOT(slotImportMetadataFromFile()));
+    connect(btnImportMetadataFromMusicBrainz, SIGNAL(clicked()),
+            this, SLOT(slotImportMetadataFromMusicBrainz()));
     connect(btnOpenFileBrowser, SIGNAL(clicked()),
             this, SLOT(slotOpenInFileBrowser()));
 
@@ -612,7 +612,7 @@ void DlgTrackInfo::slotKeyTextChanged() {
     m_keysClone = newKeys;
 }
 
-void DlgTrackInfo::reloadTrackMetadata() {
+void DlgTrackInfo::slotImportMetadataFromFile() {
     if (m_pLoadedTrack) {
         // Allocate a temporary track object for reading the metadata.
         // We cannot reuse m_pLoadedTrack, because it might already been
@@ -634,6 +634,6 @@ void DlgTrackInfo::updateTrackMetadata() {
     }
 }
 
-void DlgTrackInfo::fetchTag() {
+void DlgTrackInfo::slotImportMetadataFromMusicBrainz() {
     emit(showTagFetcher(m_pLoadedTrack));
 }
