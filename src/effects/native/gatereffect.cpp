@@ -27,13 +27,10 @@ EffectManifest GaterEffect::getManifest() {
     rate->setId("rate");
     rate->setName(QObject::tr("Rate"));
     rate->setDescription(QObject::tr(""));
-    rate->setControlHint(EffectManifestParameter::ControlHint::KNOB_STEPPING);
-    rate->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    rate->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    rate->appendStep(QPair<QString, double>("1", 0));
-    rate->appendStep(QPair<QString, double>("1/2", 0.34));
-    rate->appendStep(QPair<QString, double>("1/4", 0.67));
-    rate->appendStep(QPair<QString, double>("1/8", 1));
+    rate->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    rate->setDefault(0.5);
+    rate->setMinimum(0);
+    rate->setMaximum(1);
 
     EffectManifestParameter* shape = manifest.addParameter();
     shape->setId("shape");
