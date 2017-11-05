@@ -406,8 +406,8 @@ namespace {
     }
 } // anonymous namespace
 
-void SoundSourceProxy::updateTrack(
-        ParseFileTagsMode parseFileTagsMode) const {
+void SoundSourceProxy::importTrackMetadataAndCoverImage(
+        ImportTrackMetadataMode importTrackMetadataMode) const {
     DEBUG_ASSERT(m_pTrack);
 
     if (getUrl().isEmpty()) {
@@ -438,7 +438,7 @@ void SoundSourceProxy::updateTrack(
     // If the file tags have already been parsed once, both track metadata
     // and cover art should not be updated implicitly.
     if (metadataSynchronized) {
-        if (isDirty || (parseFileTagsMode == ParseFileTagsMode::Once)) {
+        if (isDirty || (importTrackMetadataMode == ImportTrackMetadataMode::Once)) {
             kLogger.info() << "Skip parsing of track metadata and cover art from file"
                      << getUrl().toString();
             return; // abort

@@ -1392,8 +1392,8 @@ void WTrackTableView::slotImportTrackMetadata() {
             // The user has explicitly requested to reload metadata from the file
             // to override the information within Mixxx! Cover art is reloaded
             // separately.
-            SoundSourceProxy(pTrack).updateTrack(
-                    SoundSourceProxy::ParseFileTagsMode::Again);
+            SoundSourceProxy(pTrack).importTrackMetadataAndCoverImage(
+                    SoundSourceProxy::ImportTrackMetadataMode::Again);
         }
     }
 }

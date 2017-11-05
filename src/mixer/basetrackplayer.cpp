@@ -295,7 +295,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
     } else if (pNewTrack && pNewTrack == m_pLoadedTrack) {
         // Initialize track from file tags (just in case it has not
         // been done already)
-        SoundSourceProxy(m_pLoadedTrack).updateTrack();
+        SoundSourceProxy(m_pLoadedTrack).importTrackMetadataAndCoverImage();
 
         // Update the BPM and duration values that are stored in ControlObjects
         m_pDuration->set(m_pLoadedTrack->getDuration());

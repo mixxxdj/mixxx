@@ -697,7 +697,7 @@ TrackPointer TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove
     // TODO(uklotzde): Loading of metadata can be skipped if
     // the track is already in the library. A refactoring is
     // needed to detect this before calling addTracksAddTrack().
-    SoundSourceProxy(pTrack).updateTrack();
+    SoundSourceProxy(pTrack).importTrackMetadataAndCoverImage();
     if (!pTrack->isMetadataSynchronized()) {
         qWarning() << "TrackDAO::addTracksAddFile:"
                 << "Failed to parse track metadata from file"
@@ -1372,7 +1372,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         // Update both metadata and cover art from file.
         // This must be done before inserting the track into the recent
         // tracks cache!
-        SoundSourceProxy(pTrack).updateTrack();
+        SoundSourceProxy(pTrack).importTrackMetadataAndCoverImage();
         // NOTE(uklotz): Loading of metadata from the corresponding file
         // might have failed when the track has been added to the library.
         // We could (re-)load the metadata here, but this would risk to
