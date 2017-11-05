@@ -150,7 +150,7 @@ void GaterEffect::processChannel(const ChannelHandle& handle,
             period = 1.0/divider;
             
             if (m_pTripletParameter->toBool()) {
-                period /= 3.0/4;
+                period /= 3.0;
             }
         } else if (period < 1 / 8.0) {
             period = 1 / 8.0;
