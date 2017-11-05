@@ -43,7 +43,7 @@ class GaterEffect : public PerChannelEffectProcessor<GaterGroupState> {
     EngineEffectParameter* m_pShapeParameter;
     EngineEffectParameter* m_pQuantizeParameter;
     EngineEffectParameter* m_pTripletParameter;
-    EngineEffectParameter* m_pInvertParameter;
+    EngineEffectParameter* m_pPhaseParameter;
 
     DISALLOW_COPY_AND_ASSIGN(GaterEffect);
 };

@@ -72,17 +72,17 @@ EffectManifest GaterEffect::getManifest() {
     triplet->setMinimum(0);
     triplet->setMaximum(1);
 
-    EffectManifestParameter *invert = manifest.addParameter();
-    invert->setId("invert");
-    invert->setName("Invert");
-    invert->setDescription("");
-    invert->setControlHint(
-        EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
-    invert->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    invert->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    invert->setDefault(0);
-    invert->setMinimum(0);
-    invert->setMaximum(1);
+    EffectManifestParameter *phase = manifest.addParameter();
+    phase->setId("phase");
+    phase->setName("Phase");
+    phase->setDescription("");
+    phase->setControlHint(
+        EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    phase->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    phase->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    phase->setDefault(0);
+    phase->setMinimum(0);
+    phase->setMaximum(1);
 
     return manifest;
 }
@@ -93,7 +93,7 @@ GaterEffect::GaterEffect(EngineEffect* pEffect,
           m_pShapeParameter(pEffect->getParameterById("shape")),
           m_pQuantizeParameter(pEffect->getParameterById("quantize")),
           m_pTripletParameter(pEffect->getParameterById("triplet")),
-          m_pInvertParameter(pEffect->getParameterById("invert")) 
+          m_pPhaseParameter(pEffect->getParameterById("phase")) 
 {
     Q_UNUSED(manifest);
 }
@@ -166,7 +166,7 @@ void GaterEffect::processChannel(const ChannelHandle& handle,
 
     // triggerTime : offset for the gate trigger
     unsigned int triggerTime;
-    if (m_pInvertParameter->toBool()) {
+    if (m_pPhaseParameter->toBool()) {
         triggerTime = triggerPeriod/2;
     } else {
         triggerTime = 0;
