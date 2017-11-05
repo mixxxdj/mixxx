@@ -131,15 +131,14 @@ void GaterEffect::processChannel(const ChannelHandle& handle,
         // Start with the gate closed
         state = GaterGroupState::IDLE;
         gain = 0;
+        currentFrame = 0;   
+        beatPeriod   = sampleRate; // 1 second
+    }
 
-        // Set initial time from current beat position, or 0 if no beat grid
-        if (groupFeatures.has_beat_length_sec && groupFeatures.has_beat_fraction) {
-            beatPeriod   = groupFeatures.beat_length_sec*sampleRate;
-            timePosition = groupFeatures.beat_fraction*beatPeriod;
-        } else {
-            timePosition = 0;   
-            beatPeriod   = sampleRate; // 1 second
-        }
+    // Set period and current frame from beatgrid, 
+    if (groupFeatures.has_beat_length_sec && groupFeatures.has_beat_fraction) {
+        beatPeriod   = groupFeatures.beat_length_sec*sampleRate;
+        currentFrame = groupFeatures.beat_fraction*beatPeriod;
     }
 
     // Adjust trigger period
