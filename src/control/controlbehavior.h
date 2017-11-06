@@ -87,10 +87,10 @@ class ControlAudioTaperPotBehavior : public ControlPotmeterBehavior {
     ControlAudioTaperPotBehavior(double minDB, double maxDB,
                                  double neutralParameter);
 
-    double valueToParameter(double dValue);
-    double parameterToValue(double dParam);
-    double midiToParameter(double midiValue);
-    double valueToMidiParameter(double dValue);
+    double valueToParameter(double dValue) override;
+    double parameterToValue(double dParam) override;
+    double midiToParameter(double midiValue) override;
+    double valueToMidiParameter(double dValue) override;
     void setValueFromMidi(
             MidiOpCode o, double dParam, ControlDoublePrivate* pControl)
                     override;

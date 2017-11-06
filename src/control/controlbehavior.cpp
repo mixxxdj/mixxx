@@ -12,10 +12,7 @@ double ControlNumericBehavior::valueToParameter(double dValue) {
 }
 
 double ControlNumericBehavior::midiToParameter(double midiValue) {
-    Q_UNUSED(midiValue);
-    DEBUG_ASSERT(false);
-    qWarning() << "midiToParameter not implemented";
-    return 0;
+    return midiValue / 127.0;
 }
 
 double ControlNumericBehavior::parameterToValue(double dParam) {
@@ -23,10 +20,8 @@ double ControlNumericBehavior::parameterToValue(double dParam) {
 }
 
 double ControlNumericBehavior::valueToMidiParameter(double dValue) {
-    Q_UNUSED(dValue);
-    DEBUG_ASSERT(false);
-    qWarning() << "valueToMidiParameter not implemented";
-    return 0;
+    double dParam = valueToParameter(dValue);
+    return dParam * 127.0;
 }
 
 void ControlNumericBehavior::setValueFromMidi(
