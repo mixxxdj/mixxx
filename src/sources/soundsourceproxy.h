@@ -41,6 +41,10 @@ class SoundSourceProxy {
 
     mixxx::SoundSourceProviderPointer getSoundSourceProvider() const;
 
+    const QUrl& getUrl() const {
+        return m_url;
+    }
+
     // Controls which (metadata/coverart) and how tags are (re-)imported from
     // audio files when creating a SoundSourceProxy.
     enum class ImportTrackMetadataMode {
@@ -80,10 +84,6 @@ class SoundSourceProxy {
     void updateTrackFromSource(
             ImportTrackMetadataMode importTrackMetadataMode = ImportTrackMetadataMode::Default) const;
 
-    const QUrl& getUrl() const {
-        return m_url;
-    }
-
     // Parse only the metadata from the file without modifying
     // the referenced track.
     mixxx::MetadataSource::ImportResult importTrackMetadata(mixxx::TrackMetadata* pTrackMetadata) const;
@@ -91,8 +91,6 @@ class SoundSourceProxy {
     // Parse only the cover image from the file without modifying
     // the referenced track.
     QImage importCoverImage() const;
-
-    static Track::ExportMetadataResult exportTrackMetadataBeforeSaving(Track* pTrack);
 
     // Opening the audio source through the proxy will update the
     // audio properties of the corresponding track object. Returns
@@ -106,6 +104,9 @@ class SoundSourceProxy {
     static mixxx::SoundSourceProviderRegistry s_soundSourceProviders;
     static QStringList s_supportedFileNamePatterns;
     static QRegExp s_supportedFileNamesRegex;
+
+    friend class TrackDAO;
+    static Track::ExportMetadataResult exportTrackMetadataBeforeSaving(Track* pTrack);
 
     // Special case: Construction from a plain TIO pointer is needed
     // for writing metadata immediately before the TIO is destroyed.
