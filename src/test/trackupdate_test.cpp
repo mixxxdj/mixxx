@@ -30,7 +30,7 @@ class TrackUpdateTest: public MixxxTest {
 
     static TrackPointer newTestTrackParsed() {
         auto pTrack = newTestTrack();
-        SoundSourceProxy(pTrack).importTrackMetadataAndCoverImage();
+        SoundSourceProxy(pTrack).updateTrackFromSource();
         EXPECT_TRUE(pTrack->isMetadataSynchronized());
         EXPECT_TRUE(hasTrackMetadata(pTrack));
         EXPECT_TRUE(hasCoverArt(pTrack));
@@ -60,7 +60,7 @@ TEST_F(TrackUpdateTest, parseModifiedCleanOnce) {
     pTrack->getTrackMetadata(&trackMetadataBefore);
     auto coverInfoBefore = pTrack->getCoverInfo();
 
-    SoundSourceProxy(pTrack).importTrackMetadataAndCoverImage(
+    SoundSourceProxy(pTrack).updateTrackFromSource(
             SoundSourceProxy::ImportTrackMetadataMode::Once);
 
     mixxx::TrackMetadata trackMetadataAfter;
@@ -82,7 +82,7 @@ TEST_F(TrackUpdateTest, parseModifiedCleanAgainSkipCover) {
     pTrack->getTrackMetadata(&trackMetadataBefore);
     auto coverInfoBefore = pTrack->getCoverInfo();
 
-    SoundSourceProxy(pTrack).importTrackMetadataAndCoverImage(
+    SoundSourceProxy(pTrack).updateTrackFromSource(
             SoundSourceProxy::ImportTrackMetadataMode::Again);
 
     mixxx::TrackMetadata trackMetadataAfter;
@@ -108,7 +108,7 @@ TEST_F(TrackUpdateTest, parseModifiedCleanAgainUpdateCover) {
     pTrack->getTrackMetadata(&trackMetadataBefore);
     auto coverInfoBefore = pTrack->getCoverInfo();
 
-    SoundSourceProxy(pTrack).importTrackMetadataAndCoverImage(
+    SoundSourceProxy(pTrack).updateTrackFromSource(
             SoundSourceProxy::ImportTrackMetadataMode::Again);
 
     mixxx::TrackMetadata trackMetadataAfter;
@@ -129,7 +129,7 @@ TEST_F(TrackUpdateTest, parseModifiedDirtyAgain) {
     pTrack->getTrackMetadata(&trackMetadataBefore);
     auto coverInfoBefore = pTrack->getCoverInfo();
 
-    SoundSourceProxy(pTrack).importTrackMetadataAndCoverImage(
+    SoundSourceProxy(pTrack).updateTrackFromSource(
             SoundSourceProxy::ImportTrackMetadataMode::Again);
 
     mixxx::TrackMetadata trackMetadataAfter;

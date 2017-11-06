@@ -622,7 +622,7 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
                 m_pLoadedTrack->getFileInfo(),
                 m_pLoadedTrack->getSecurityToken());
         if (pTrack) {
-            SoundSourceProxy(pTrack).importTrackMetadataAndCoverImage();
+            SoundSourceProxy(pTrack).updateTrackFromSource();
             populateFields(*pTrack);
         }
     }

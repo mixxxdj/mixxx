@@ -697,7 +697,7 @@ TrackPointer TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove
     // TODO(uklotzde): Loading of metadata can be skipped if
     // the track is already in the library. A refactoring is
     // needed to detect this before calling addTracksAddTrack().
-    SoundSourceProxy(pTrack).importTrackMetadataAndCoverImage();
+    SoundSourceProxy(pTrack).updateTrackFromSource();
     if (!pTrack->isMetadataSynchronized()) {
         qWarning() << "TrackDAO::addTracksAddFile:"
                 << "Failed to parse track metadata from file"
@@ -1369,22 +1369,11 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         pTrack->markDirty();
     } else {
         pTrack->markClean();
-        // Update both metadata and cover art from file.
-        // This must be done before inserting the track into the recent
-        // tracks cache!
-        SoundSourceProxy(pTrack).importTrackMetadataAndCoverImage();
-        // NOTE(uklotz): Loading of metadata from the corresponding file
-        // might have failed when the track has been added to the library.
-        // We could (re-)load the metadata here, but this would risk to
-        // overwrite the metadata that is currently stored in the library.
-        // Instead prefer to log an informational warning for the user.
-        if (!pTrack->isMetadataSynchronized()) {
-            qWarning() << "Metadata of the track" << pTrack->getLocation()
-                    << "has never been loaded from this file."
-                    << "Please consider reloading it manually if you prefer"
-                    << "to overwrite the metadata that is currently stored"
-                    << "in the library.";
-        }
+        // Synchronize the track's metadata with the corresponding source
+        // file. This import might have never been completed successfully
+        // before, so just check and try for every track that has been
+        // freshly loaded from the database.
+        SoundSourceProxy(pTrack).updateTrackFromSource();
     }
 
     // Data migration: Reload track total from file tags if not initialized

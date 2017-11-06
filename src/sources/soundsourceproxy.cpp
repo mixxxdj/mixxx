@@ -406,7 +406,7 @@ namespace {
     }
 } // anonymous namespace
 
-void SoundSourceProxy::importTrackMetadataAndCoverImage(
+void SoundSourceProxy::updateTrackFromSource(
         ImportTrackMetadataMode importTrackMetadataMode) const {
     DEBUG_ASSERT(m_pTrack);
 
@@ -488,7 +488,7 @@ void SoundSourceProxy::importTrackMetadataAndCoverImage(
     m_pTrack->setType(m_pSoundSource->getType());
 
     if (metadataSynchronized) {
-        kLogger.info() << "Updating track metadata from file"
+        kLogger.info() << "Importing track metadata from file"
                  << getUrl().toString();
     } else {
         kLogger.info() << "Initializing track metadata from file"

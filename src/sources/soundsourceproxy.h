@@ -51,21 +51,33 @@ class SoundSourceProxy {
         // only updated if it has been guessed from metadata to prevent
         // overwriting a custom choice.
         Again,
-        // If omitted both metadata and cover art will be imported once for each
-        // track object.
+        // If omitted both metadata and cover image will be imported at most
+        // once for each track object to avoid overwriting modified data in
+        // the library.
         Default = Once,
     };
 
-    // Updates file type, metadata, and cover art of the track object as
-    // requested by parsing the file's tags.
+    // Updates file type, metadata, and cover image of the track object
+    // from the source file according to the given mode.
     //
-    // The track's type will always be (re-)initialized as recognized by
-    // the prioritized sound source implementation.
+    // The track's type will always be set as recognized by the corresponding
+    // SoundSource.
     //
-    // File tags are parsed as specified and the track's metadata and
-    // cover art is initialized or updated. But only if the track object
-    // is not marked as dirty! Otherwise parsing of file tags is skipped.
-    void importTrackMetadataAndCoverImage(
+    // Importing of metadata and cover image is skipped if the track object
+    // is marked as dirty or if mode=Once and the import has already been
+    // performed once. Otherwise track metadata is set according to the metadata
+    // imported from the file.
+    //
+    // An existing cover image is only replaced if it also has been imported
+    // from the file. Custom cover images that have been selected by the user
+    // are preserved.
+    //
+    // This function works in a best effort manner without returning a value.
+    // Only the track object will be modified as a side effect. There are simply
+    // too many possible reasons for failure to consider that cannot be handled
+    // properly. The application log will contain warning messages for a detailed
+    // analysis in case unexpected behavior has been reported.
+    void updateTrackFromSource(
             ImportTrackMetadataMode importTrackMetadataMode = ImportTrackMetadataMode::Default) const;
 
     const QUrl& getUrl() const {
