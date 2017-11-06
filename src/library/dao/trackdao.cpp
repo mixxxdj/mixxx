@@ -694,9 +694,6 @@ TrackPointer TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove
 
     // Initially load the metadata for the newly created track
     // from the file.
-    // TODO(uklotzde): Loading of metadata can be skipped if
-    // the track is already in the library. A refactoring is
-    // needed to detect this before calling addTracksAddTrack().
     SoundSourceProxy(pTrack).updateTrackFromSource();
     if (!pTrack->isMetadataSynchronized()) {
         qWarning() << "TrackDAO::addTracksAddFile:"
@@ -1438,19 +1435,6 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         emit(trackDirty(trackId));
     } else {
         emit(trackClean(trackId));
-    }
-
-    // NOTE(uklotz): Loading of metadata from the corresponding file
-    // might have failed when the track has been added to the library.
-    // We could (re-)load the metadata here, but this would risk to
-    // overwrite the metadata that is currently stored in the library.
-    // Instead prefer to log an informational warning for the user.
-    if (!pTrack->isMetadataSynchronized()) {
-        qWarning() << "Metadata of the track" << pTrack->getLocation()
-                << "has never been loaded from this file."
-                << "Please consider reloading it manually if you prefer"
-                << "to overwrite the metadata that is currently stored"
-                << "in the library.";
     }
 
     return pTrack;
