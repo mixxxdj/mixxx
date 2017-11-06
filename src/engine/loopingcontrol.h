@@ -38,7 +38,7 @@ class LoopingControl : public EngineControl {
                    const double totalSamples,
                    const int iBufferSize) override;
 
-    double getLoopTarget(
+    virtual double getLoopTarget(
             const double dRate, const double currentSample);
 
     // nextTrigger returns the sample at which the engine will be triggered to

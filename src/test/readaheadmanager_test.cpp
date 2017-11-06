@@ -63,6 +63,13 @@ class StubLoopControl : public LoopingControl {
         return m_processReturnValues.takeFirst();
     }
 
+    double getLoopTarget(const double dRate,
+                   const double dCurrentSample) override {
+        Q_UNUSED(dRate);
+        RELEASE_ASSERT(!m_processReturnValues.isEmpty());
+        return m_processReturnValues.takeFirst();
+    }
+
     // hintReader has no effect in this stubbed class
     void hintReader(HintVector* pHintList) override {
         Q_UNUSED(pHintList);
@@ -100,30 +107,6 @@ class ReadAheadManagerTest : public MixxxTest {
     QScopedPointer<ReadAheadManager> m_pReadAheadManager;
     CSAMPLE* m_pBuffer;
 };
-
-TEST_F(ReadAheadManagerTest, LoopEnableSeekBackward) {
-    // If a loop is enabled and the current playposition is ahead of the loop,
-    // we should seek to the beginning of the loop.
-    m_pReadAheadManager->notifySeek(110);
-    // Trigger value means, the sample that triggers the loop (loop out)
-    m_pLoopControl->pushTriggerReturnValue(100);
-    // Process value is the sample we should seek to
-    m_pLoopControl->pushProcessReturnValue(10);
-    EXPECT_EQ(0, m_pReadAheadManager->getNextSamples(1.0, m_pBuffer, 100));
-    EXPECT_EQ(10, m_pReadAheadManager->getPlaypos());
-}
-
-TEST_F(ReadAheadManagerTest, InReverseLoopEnableSeekForward) {
-    // If we are in reverse, a loop is enabled, and the current playposition
-    // is before of the loop, we should seek to the out point of the loop.
-    m_pReadAheadManager->notifySeek(1);
-    // Trigger value means, the sample that triggers the loop (loop in)
-    m_pLoopControl->pushTriggerReturnValue(10);
-    // Process value is the sample we should seek to.
-    m_pLoopControl->pushProcessReturnValue(100);
-    EXPECT_EQ(0, m_pReadAheadManager->getNextSamples(-1.0, m_pBuffer, 100));
-    EXPECT_EQ(100, m_pReadAheadManager->getPlaypos());
-}
 
 TEST_F(ReadAheadManagerTest, FractionalFrameLoop) {
     // If we are in reverse, a loop is enabled, and the current playposition
