@@ -745,12 +745,19 @@ void LoopingControl::slotLoopEndPos(double pos) {
 void LoopingControl::notifySeek(double dNewPlaypos) {
     LoopSamples loopSamples = m_loopSamples.getValue();
     if (m_bLoopingEnabled) {
-        // Disable loop when we jumping out, using hot cues or waveform overview.
+        // Disable loop when we jumping out, or over a catching loop,
+        // using hot cues or waveform overview.
         // + 2 because the new playposition can be rounded to loop end because of
         // playing not at rate 1.
         if (m_iCurrentSample >= loopSamples.start - 2 &&
                 m_iCurrentSample <= loopSamples.end + 2 &&
-                (dNewPlaypos < loopSamples.start - 2 || dNewPlaypos > loopSamples.end + 2)) {
+                dNewPlaypos < loopSamples.start - 2) {
+            // jumping out of loop in backwards
+            setLoopingEnabled(false);
+        }
+        if (m_iCurrentSample <= loopSamples.end + 2 &&
+                dNewPlaypos > loopSamples.end + 2) {
+            // jumping out a loop or over a catching loop forward
             setLoopingEnabled(false);
         }
     }
