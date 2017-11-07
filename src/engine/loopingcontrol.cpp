@@ -338,11 +338,14 @@ double LoopingControl::getLoopTarget(
     bool reverse = dRate < 0;
 
     double retval = kNoTrigger;
-    bool loopMoved = false;
+    bool loopMovedOut = false;
     LoopSamples loopSamples = m_loopSamples.getValue();
     if (loopSamples.start != m_oldLoopSamples.start ||
             loopSamples.end != m_oldLoopSamples.end) {
-        loopMoved = true;
+        if (currentSample >= loopSamples.start - 2 &&
+                (currentSample <= loopSamples.end + 2)) {
+            loopMovedOut = true;
+        }
         m_oldLoopSamples = loopSamples;
     }
 
@@ -356,12 +359,12 @@ double LoopingControl::getLoopTarget(
         // The 2 is for rounding.
         if (reverse) {
             if (currentSample <= loopSamples.start &&
-                    (loopMoved || currentSample >= loopSamples.start - 2)) {
+                    (loopMovedOut || currentSample >= loopSamples.start - 2)) {
                 retval = loopSamples.end;
             }
         } else {
             if (currentSample >= loopSamples.end &&
-                    (loopMoved || currentSample <= loopSamples.end + 2)) {
+                    (loopMovedOut || currentSample <= loopSamples.end + 2)) {
                 retval = loopSamples.start;
             }
         }
@@ -1123,17 +1126,18 @@ void LoopingControl::seekInsideAdjustedLoop(int old_loop_in, int old_loop_out,
     // Copy on stack since m_iCurrentSample sample can change under us.
     int currentSample = m_iCurrentSample;
     if (currentSample >= new_loop_in && currentSample <= new_loop_out) {
+        // playposition already is inside the loop
+        return;
+    }
+    if (currentSample < old_loop_in - 2 && currentSample <= new_loop_out) {
+        // Playposition was before a catching loop and is still a catching loop
+        // nothing to do
         return;
     }
 
     int new_loop_size = new_loop_out - new_loop_in;
     if (!even(new_loop_size)) {
         --new_loop_size;
-    }
-    if (new_loop_size > old_loop_out - old_loop_in) {
-        // Could this happen if the user grows a loop and then also shifts it?
-        qWarning() << "seekInsideAdjustedLoop called for loop that got larger -- ignoring";
-        return;
     }
 
     int adjusted_position = currentSample;
