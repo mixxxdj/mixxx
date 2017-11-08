@@ -334,9 +334,7 @@ double LoopingControl::process(const double dRate,
 
 // This must be called only once from the engine thread
 double LoopingControl::getLoopTarget(
-        const double dRate, const double currentSample) {
-    bool reverse = dRate < 0;
-
+        bool reverse, const double currentSample) {
     double retval = kNoTrigger;
     bool loopMovedOut = false;
     LoopSamples loopSamples = m_loopSamples.getValue();
@@ -373,19 +371,15 @@ double LoopingControl::getLoopTarget(
     return retval;
 }
 
-double LoopingControl::nextTrigger(const double dRate,
-                                   const double currentSample,
-                                   const double totalSamples,
-                                   const int iBufferSize) {
+double LoopingControl::nextTrigger(bool reverse,
+                                   const double currentSample) {
     Q_UNUSED(currentSample);
-    Q_UNUSED(totalSamples);
-    Q_UNUSED(iBufferSize);
-    bool bReverse = dRate < 0;
+
     LoopSamples loopSamples = m_loopSamples.getValue();
 
     if (m_bLoopingEnabled &&
             !m_bAdjustingLoopIn && !m_bAdjustingLoopOut) {
-        if (bReverse) {
+        if (reverse) {
             return loopSamples.start;
         } else {
             return loopSamples.end;

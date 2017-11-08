@@ -39,14 +39,10 @@ class StubLoopControl : public LoopingControl {
         m_processReturnValues.push_back(value);
     }
 
-    double nextTrigger(const double dRate,
-                       const double currentSample,
-                       const double totalSamples,
-                       const int iBufferSize) override {
-        Q_UNUSED(dRate);
+    double nextTrigger(bool reverse,
+                       const double currentSample) override {
+        Q_UNUSED(reverse);
         Q_UNUSED(currentSample);
-        Q_UNUSED(totalSamples);
-        Q_UNUSED(iBufferSize);
         RELEASE_ASSERT(!m_triggerReturnValues.isEmpty());
         return m_triggerReturnValues.takeFirst();
     }
@@ -63,9 +59,10 @@ class StubLoopControl : public LoopingControl {
         return m_processReturnValues.takeFirst();
     }
 
-    double getLoopTarget(const double dRate,
+    double getLoopTarget(bool reverse,
                    const double dCurrentSample) override {
-        Q_UNUSED(dRate);
+        Q_UNUSED(reverse);
+        Q_UNUSED(dCurrentSample);
         RELEASE_ASSERT(!m_processReturnValues.isEmpty());
         return m_processReturnValues.takeFirst();
     }

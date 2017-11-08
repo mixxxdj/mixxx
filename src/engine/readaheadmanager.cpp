@@ -50,7 +50,7 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
 
     // A loop will only limit the amount we can read in one shot.
     const double loop_trigger = m_pLoopingControl->nextTrigger(
-            dRate, m_currentPosition, 0, 0);
+            in_reverse, m_currentPosition);
     bool loop_active = loop_trigger != kNoTrigger;
     SINT preloop_samples = 0;
     double samplesToLoopTrigger = 0.0;
@@ -103,7 +103,7 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         // LoopingControl makes the decision about whether we should jump to
         // the other end of the loop or not
         const double loop_target = m_pLoopingControl->getLoopTarget(
-                dRate, m_currentPosition);
+                in_reverse, m_currentPosition);
 
         if (loop_target != kNoTrigger) {
             // Jump to other end of loop.

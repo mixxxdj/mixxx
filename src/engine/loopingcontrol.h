@@ -39,14 +39,12 @@ class LoopingControl : public EngineControl {
                    const int iBufferSize) override;
 
     virtual double getLoopTarget(
-            const double dRate, const double currentSample);
+            bool reverse, const double currentSample);
 
     // nextTrigger returns the sample at which the engine will be triggered to
     // take a loop, given the value of currentSample and dRate.
-    virtual double nextTrigger(const double dRate,
-                       const double currentSample,
-                       const double totalSamples,
-                       const int iBufferSize);
+    virtual double nextTrigger(bool reverse,
+                       const double currentSample);
 
     // hintReader will add to hintList hints both the loop in and loop out
     // sample, if set.
