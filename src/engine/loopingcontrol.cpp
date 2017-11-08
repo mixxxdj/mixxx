@@ -1013,6 +1013,10 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         return;
     }
 
+    m_loopSamples.setValue(newloopSamples);
+    m_pCOLoopStartPosition->set(newloopSamples.start);
+    m_pCOLoopEndPosition->set(newloopSamples.end);
+
     // If resizing an inactive loop by changing beatloop_size,
     // do not seek to the adjusted loop.
     if (keepStartPoint && (enable || m_bLoopingEnabled)) {
@@ -1020,9 +1024,6 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
                 newloopSamples.start, newloopSamples.end);
     }
 
-    m_loopSamples.setValue(newloopSamples);
-    m_pCOLoopStartPosition->set(newloopSamples.start);
-    m_pCOLoopEndPosition->set(newloopSamples.end);
     if (enable) {
         setLoopingEnabled(true);
     }
@@ -1114,10 +1115,10 @@ void LoopingControl::slotLoopMove(double beats) {
         }
 
         loopSamples.start = new_loop_in;
-        m_pCOLoopStartPosition->set(new_loop_in);
         loopSamples.end = new_loop_out;
-        m_pCOLoopEndPosition->set(new_loop_out);
         m_loopSamples.setValue(loopSamples);
+        m_pCOLoopStartPosition->set(new_loop_in);
+        m_pCOLoopEndPosition->set(new_loop_out);
 
         // If we are looping make sure that the play head does not leave the
         // loop as a result of our adjustment.
