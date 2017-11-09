@@ -134,6 +134,7 @@ class LoopingControl : public EngineControl {
     // TODO(DSC) Make the following values double
     ControlValueAtomic<LoopSamples> m_loopSamples;
     LoopSamples m_oldLoopSamples;
+    LoopSamples m_engineLoopSamples;
     QAtomicInt m_iCurrentSample;
     ControlObject* m_pQuantizeEnabled;
     ControlObject* m_pNextBeat;

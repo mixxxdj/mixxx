@@ -337,7 +337,7 @@ double LoopingControl::getLoopTarget(
         bool reverse, const double currentSample) {
     double retval = kNoTrigger;
     bool loopMovedOut = false;
-    LoopSamples loopSamples = m_loopSamples.getValue();
+    LoopSamples loopSamples = m_engineLoopSamples;
     if (loopSamples.start != m_oldLoopSamples.start ||
             loopSamples.end != m_oldLoopSamples.end) {
         if (currentSample >= loopSamples.start - 2 &&
@@ -376,6 +376,8 @@ double LoopingControl::nextTrigger(bool reverse,
     Q_UNUSED(currentSample);
 
     LoopSamples loopSamples = m_loopSamples.getValue();
+    // Store loop samples for later getLoopTarget()
+    m_engineLoopSamples = loopSamples;
 
     if (m_bLoopingEnabled &&
             !m_bAdjustingLoopIn && !m_bAdjustingLoopOut) {
