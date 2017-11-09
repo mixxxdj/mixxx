@@ -1,6 +1,6 @@
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2017-11-2
+// description: 2017-11-3
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 // JSHint Configuration
@@ -57,17 +57,23 @@ VCI102.selectIter = function(select) {
 };
 
 VCI102.selectPrev = function(ch, midino, value, status, group) {
-    var key = VCI102.shift[0] + VCI102.shift[1] ? "MoveFocus" : "MoveVertical";
     VCI102.selectIter(value && function() {
-        engine.setValue(group, key, -1);
+        engine.setValue(group, "MoveVertical", -1);
     });
 };
 
 VCI102.selectNext = function(ch, midino, value, status, group) {
-    var key = VCI102.shift[0] + VCI102.shift[1] ? "MoveFocus" : "MoveVertical";
     VCI102.selectIter(value && function() {
-        engine.setValue(group, key, 1);
+        engine.setValue(group, "MoveVertical", 1);
     });
+};
+
+VCI102.LoadSelectedTrack = function(ch, midino, value, status, group) {
+    if (VCI102.shift[ch % 2]) {
+        engine.setValue(group, "LoadSelectedTrack", value > 0);
+    } else if (value) {
+        engine.setValue("[Library]", "MoveFocus", ch % 2 || -1);
+    }
 };
 
 VCI102.slipSrc = [0, 0, 0, 0];  // number of enabled slip-source controls
