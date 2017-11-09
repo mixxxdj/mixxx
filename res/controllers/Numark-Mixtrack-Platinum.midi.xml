@@ -1258,12 +1258,13 @@
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit3]</group>
-                <key>next_chain</key>
+                <group>[EffectRack1_EffectUnit1_Effect3]</group>
+                <key>MixtrackPlatinum.effects[1].enableButtons[3].input</key>
+                <description>shift fx3</description>
                 <status>0x98</status>
                 <midino>0x0D</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1304,21 +1305,23 @@
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>next_chain</key>
+                <group>[EffectRack1_EffectUnit1_Effect2]</group>
+                <key>MixtrackPlatinum.effects[1].enableButtons[2].input</key>
+                <description>shift fx2</description>
                 <status>0x98</status>
                 <midino>0x0C</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit3]</group>
-                <key>next_chain</key>
+                <group>[EffectRack1_EffectUnit2_Effect3]</group>
+                <key>MixtrackPlatinum.effects[2].enableButtons[3].input</key>
+                <description>shift fx3</description>
                 <status>0x99</status>
                 <midino>0x0D</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1349,21 +1352,23 @@
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>next_chain</key>
+                <group>[EffectRack1_EffectUnit1_Effect1]</group>
+                <key>MixtrackPlatinum.effects[1].enableButtons[1].input</key>
+                <description>shift fx1</description>
                 <status>0x98</status>
                 <midino>0x0B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>next_chain</key>
+                <group>[EffectRack1_EffectUnit2_Effect2]</group>
+                <key>MixtrackPlatinum.effects[2].enableButtons[2].input</key>
+                <description>shift fx2</description>
                 <status>0x99</status>
                 <midino>0x0C</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1403,8 +1408,9 @@
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>next_chain</key>
+                <group>[EffectRack1_EffectUnit2_Effect1]</group>
+                <key>MixtrackPlatinum.effects[2].enableButtons[1].input</key>
+                <description>shift fx1</description>
                 <status>0x99</status>
                 <midino>0x0B</midino>
                 <options>
@@ -1601,12 +1607,12 @@
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit3]</group>
-                <key>group_[Channel1]_enable</key>
+                <group>[EffectRack1_EffectUnit1_Effect3]</group>
+                <key>MixtrackPlatinum.effects[1].enableButtons[3].input</key>
                 <status>0x98</status>
                 <midino>0x02</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1637,21 +1643,21 @@
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>group_[Channel1]_enable</key>
+                <group>[EffectRack1_EffectUnit1_Effect2]</group>
+                <key>MixtrackPlatinum.effects[1].enableButtons[2].input</key>
                 <status>0x98</status>
                 <midino>0x01</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit3]</group>
-                <key>group_[Channel2]_enable</key>
+                <group>[EffectRack1_EffectUnit2_Effect3]</group>
+                <key>MixtrackPlatinum.effects[2].enableButtons[3].input</key>
                 <status>0x99</status>
                 <midino>0x02</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1682,21 +1688,21 @@
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>group_[Channel1]_enable</key>
+                <group>[EffectRack1_EffectUnit1_Effect1]</group>
+                <key>MixtrackPlatinum.effects[1].enableButtons[1].input</key>
                 <status>0x98</status>
                 <midino>0x00</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>group_[Channel2]_enable</key>
+                <group>[EffectRack1_EffectUnit2_Effect2]</group>
+                <key>MixtrackPlatinum.effects[2].enableButtons[2].input</key>
                 <status>0x99</status>
                 <midino>0x01</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1736,12 +1742,12 @@
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>group_[Channel2]_enable</key>
+                <group>[EffectRack1_EffectUnit2_Effect1]</group>
+                <key>MixtrackPlatinum.effects[2].enableButtons[1].input</key>
                 <status>0x99</status>
                 <midino>0x00</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1938,12 +1944,12 @@
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit3]</group>
-                <key>mix</key>
+                <group>[EffectRack1_EffectUnit1_Effect3]</group>
+                <key>MixtrackPlatinum.effects[1].knobs[3].input</key>
                 <status>0xB8</status>
                 <midino>0x02</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1956,48 +1962,49 @@
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>mix</key>
+                <group>[EffectRack1_EffectUnit1_Effect2]</group>
+                <key>MixtrackPlatinum.effects[1].knobs[2].input</key>
                 <status>0xB8</status>
                 <midino>0x01</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit3]</group>
-                <key>mix</key>
+                <group>[EffectRack1_EffectUnit2_Effect3]</group>
+                <key>MixtrackPlatinum.effects[2].knobs[3].input</key>
                 <status>0xB9</status>
                 <midino>0x02</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>mix</key>
+                <group>[EffectRack1_EffectUnit1_Effect1]</group>
+                <key>MixtrackPlatinum.effects[1].knobs[1].input</key>
                 <status>0xB8</status>
                 <midino>0x00</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit2]</group>
+                <group>[EffectRack1_EffectUnit2_Effect2]</group>
+                <key>MixtrackPlatinum.effects[2].knobs[2].input</key>
                 <key>mix</key>
                 <status>0xB9</status>
                 <midino>0x01</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>mix</key>
+                <group>[EffectRack1_EffectUnit2_Effect1]</group>
+                <key>MixtrackPlatinum.effects[2].knobs[1].input</key>
                 <status>0xB9</status>
                 <midino>0x00</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -2036,14 +2043,6 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>group_[Channel1]_enable</key>
-                <status>0x98</status>
-                <midino>0x00</midino>
-                <off>0x01</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
                 <group>[Channel3]</group>
                 <key>beatloop_0.25_enabled</key>
                 <status>0x96</status>
@@ -2057,22 +2056,6 @@
                 <status>0x86</status>
                 <midino>0x1E</midino>
                 <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit3]</group>
-                <key>group_[Channel2]_enable</key>
-                <status>0x99</status>
-                <midino>0x02</midino>
-                <off>0x01</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>group_[Channel1]_enable</key>
-                <status>0x98</status>
-                <midino>0x01</midino>
-                <off>0x01</off>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2212,14 +2195,6 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>group_[Channel2]_enable</key>
-                <status>0x99</status>
-                <midino>0x00</midino>
-                <off>0x01</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
                 <group>[Channel2]</group>
                 <key>beatloop_0.125_enabled</key>
                 <status>0x95</status>
@@ -2281,14 +2256,6 @@
                 <status>0x84</status>
                 <midino>0x15</midino>
                 <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>group_[Channel2]_enable</key>
-                <status>0x99</status>
-                <midino>0x01</midino>
-                <off>0x01</off>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2417,14 +2384,6 @@
                 <status>0x96</status>
                 <midino>0x32</midino>
                 <on>0x01</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit3]</group>
-                <key>group_[Channel1]_enable</key>
-                <status>0x98</status>
-                <midino>0x02</midino>
-                <off>0x01</off>
                 <minimum>0.5</minimum>
             </output>
             <output>

@@ -106,13 +106,36 @@ MixtrackPlatinum.init = function(id, debug) {
     midi.sendShortMsg(0x98, 0x04, engine.getValue('[Channel1]', 'bpm_tap') ? 0x7F : 0x01);
     midi.sendShortMsg(0x99, 0x04, engine.getValue('[Channel2]', 'bpm_tap') ? 0x7F : 0x01);
 
-    // init FX leds
-    midi.sendShortMsg(0x98, 0x00, engine.getValue('[EffectRack1_EffectUnit1]', 'group_[Channel1]_enable') ? 0x7F : 0x01);
-    midi.sendShortMsg(0x98, 0x01, engine.getValue('[EffectRack1_EffectUnit2]', 'group_[Channel1]_enable') ? 0x7F : 0x01);
-    midi.sendShortMsg(0x98, 0x02, engine.getValue('[EffectRack1_EffectUnit3]', 'group_[Channel1]_enable') ? 0x7F : 0x01);
-    midi.sendShortMsg(0x99, 0x00, engine.getValue('[EffectRack1_EffectUnit1]', 'group_[Channel2]_enable') ? 0x7F : 0x01);
-    midi.sendShortMsg(0x99, 0x01, engine.getValue('[EffectRack1_EffectUnit2]', 'group_[Channel2]_enable') ? 0x7F : 0x01);
-    midi.sendShortMsg(0x99, 0x02, engine.getValue('[EffectRack1_EffectUnit3]', 'group_[Channel2]_enable') ? 0x7F : 0x01);
+    // effects
+    MixtrackPlatinum.effects = new components.ComponentContainer();
+    for (i = 1; i <= 2; ++i) {
+        MixtrackPlatinum.effects[i] = new components.EffectUnit([i, i+2]);
+        for (var j = 1; j <= 3; ++j) {
+            MixtrackPlatinum.effects[i].enableButtons[j].midi = [0x97 + i, j - 1];
+            MixtrackPlatinum.effects[i].enableButtons[j].off = 0x01;
+
+            // cycle effects on shift
+            MixtrackPlatinum.effects[i].enableButtons[j].shift = function() {
+                this.inKey = 'next_effect';
+                this.type = components.Button.prototype.types.push;
+            };
+            MixtrackPlatinum.effects[i].enableButtons[j].unshift = function() {
+                this.inKey = 'enabled';
+                this.type = components.Button.prototype.types.powerWindow;
+            };
+
+            var effect = '[EffectRack1_EffectUnit' + i + '_Effect' + j + ']';
+            MixtrackPlatinum.effects[i].knobs[j].disconnect();
+            MixtrackPlatinum.effects[i].knobs[j] = new components.Pot({
+                group: effect,
+                relative: true,
+                inKey: 'meta',
+            });
+        }
+        MixtrackPlatinum.effects[i].init();
+        // this stops soft takover
+        MixtrackPlatinum.effects[i].hasInitialized = false;
+    }
 
     // zero vu meters
     midi.sendShortMsg(0xBF, 0x44, 0);
@@ -494,6 +517,14 @@ MixtrackPlatinum.deck_active = [
 MixtrackPlatinum.deckSwitch = function (channel, control, value, status, group) {
     MixtrackPlatinum.deck_active[channel] = value == 0x7F;
 
+    // change effects racks
+    if (MixtrackPlatinum.deck_active[channel] && (channel == 0x00 || channel == 0x02)) {
+        MixtrackPlatinum.effects[1].setCurrentUnit(channel + 1);
+    }
+    else if (MixtrackPlatinum.deck_active[channel] && (channel == 0x01 || channel == 0x03)) {
+        MixtrackPlatinum.effects[2].setCurrentUnit(channel + 1);
+    }
+
     // also zero vu meters
     if (value != 0x7F) return;
     midi.sendShortMsg(0xBF, 0x44, 0);
@@ -668,10 +699,12 @@ MixtrackPlatinum.shiftToggle = function (channel, control, value, status, group)
     if (MixtrackPlatinum.shift) {
         MixtrackPlatinum.decks.shift();
         MixtrackPlatinum.sampler.shift();
+        MixtrackPlatinum.effects.shift();
     }
     else {
         MixtrackPlatinum.decks.unshift();
         MixtrackPlatinum.sampler.unshift();
+        MixtrackPlatinum.effects.unshift();
     }
 
     for (i = 1; i <= 4; ++i) {
