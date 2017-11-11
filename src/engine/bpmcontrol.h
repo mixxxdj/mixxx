@@ -39,10 +39,6 @@ class BpmControl : public EngineControl {
     double getPreviousSample() const { return m_dPreviousSample; }
 
     void setCurrentSample(const double dCurrentSample, const double dTotalSamples) override;
-    double process(const double dRate,
-                   const double dCurrentSample,
-                   const double dTotalSamples,
-                   const int iBufferSize) override;
     void setTargetBeatDistance(double beatDistance);
     void setInstantaneousBpm(double instantaneousBpm);
     void resetSyncAdjustment();

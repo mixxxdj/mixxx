@@ -304,7 +304,7 @@ void LoopingControl::slotLoopDouble(double pressed) {
     slotBeatLoop(m_pCOBeatLoopSize->get() * 2.0, true, false);
 }
 
-double LoopingControl::process(const double dRate,
+void LoopingControl::process(const double dRate,
                                const double currentSample,
                                const double totalSamples,
                                const int iBufferSize) {
@@ -323,8 +323,6 @@ double LoopingControl::process(const double dRate,
     } else if (m_bAdjustingLoopOut) {
         setLoopOutToCurrentPosition();
     }
-
-    return kNoTrigger;
 }
 
 double LoopingControl::nextTrigger(bool reverse,

@@ -37,7 +37,7 @@ public:
     void setBpmControl(BpmControl* bpmcontrol);
     // Must be called during each callback of the audio thread so that
     // RateControl has a chance to update itself.
-    double process(const double dRate,
+    void process(const double dRate,
                    const double currentSample,
                    const double totalSamples,
                    const int bufferSamples) override;

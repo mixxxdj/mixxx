@@ -33,7 +33,7 @@ class LoopingControl : public EngineControl {
     // process() updates the internal state of the LoopingControl to reflect the
     // correct current sample. If a loop should be taken LoopingControl returns
     // the sample that should be seeked to. Otherwise it returns currentSample.
-    double process(const double dRate,
+    void process(const double dRate,
                    const double currentSample,
                    const double totalSamples,
                    const int iBufferSize) override;

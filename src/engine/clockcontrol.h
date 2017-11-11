@@ -18,7 +18,7 @@ class ClockControl: public EngineControl {
 
     ~ClockControl() override;
 
-    double process(const double dRate, const double currentSample,
+    void process(const double dRate, const double currentSample,
                    const double totalSamples, const int iBufferSize) override;
 
   public slots:
