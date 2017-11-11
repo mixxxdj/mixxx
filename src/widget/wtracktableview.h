@@ -63,7 +63,8 @@ class WTrackTableView : public WLibraryTableView {
     void slotReloadTrackMetadata();
     void slotResetPlayed();
     void addSelectionToPlaylist(int iPlaylistId);
-    void addSelectionToCrate(int iCrateId);
+    void addRemoveSelectionInCrate(QWidget* qc);
+    void addSelectionToNewCrate();
     void loadSelectionToGroup(QString group, bool play = false);
     void doSortByColumn(int headerSection);
     void slotLockBpm();
