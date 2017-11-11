@@ -35,36 +35,20 @@ class StubLoopControl : public LoopingControl {
         m_triggerReturnValues.push_back(value);
     }
 
-    void pushProcessReturnValue(double value) {
-        m_processReturnValues.push_back(value);
+    void pushTargetReturnValue(double value) {
+        m_targetReturnValues.push_back(value);
     }
 
     double nextTrigger(bool reverse,
-                       const double currentSample) override {
+                       const double currentSample,
+                       double* pTarget) override {
         Q_UNUSED(reverse);
         Q_UNUSED(currentSample);
+        Q_UNUSED(pTarget);
+        RELEASE_ASSERT(!m_targetReturnValues.isEmpty());
+        *pTarget = m_targetReturnValues.takeFirst();
         RELEASE_ASSERT(!m_triggerReturnValues.isEmpty());
         return m_triggerReturnValues.takeFirst();
-    }
-
-    double process(const double dRate,
-                   const double dCurrentSample,
-                   const double dTotalSamples,
-                   const int iBufferSize) override {
-        Q_UNUSED(dRate);
-        Q_UNUSED(dCurrentSample);
-        Q_UNUSED(dTotalSamples);
-        Q_UNUSED(iBufferSize);
-        RELEASE_ASSERT(!m_processReturnValues.isEmpty());
-        return m_processReturnValues.takeFirst();
-    }
-
-    double getLoopTarget(bool reverse,
-                   const double dCurrentSample) override {
-        Q_UNUSED(reverse);
-        Q_UNUSED(dCurrentSample);
-        RELEASE_ASSERT(!m_processReturnValues.isEmpty());
-        return m_processReturnValues.takeFirst();
     }
 
     // hintReader has no effect in this stubbed class
@@ -84,7 +68,7 @@ class StubLoopControl : public LoopingControl {
 
   protected:
     QList<double> m_triggerReturnValues;
-    QList<double> m_processReturnValues;
+    QList<double> m_targetReturnValues;
 };
 
 class ReadAheadManagerTest : public MixxxTest {
@@ -117,12 +101,12 @@ TEST_F(ReadAheadManagerTest, FractionalFrameLoop) {
     m_pLoopControl->pushTriggerReturnValue(20.2);
     m_pLoopControl->pushTriggerReturnValue(20.2);
     // Process value is the sample we should seek to.
-    m_pLoopControl->pushProcessReturnValue(3.3);
-    m_pLoopControl->pushProcessReturnValue(3.3);
-    m_pLoopControl->pushProcessReturnValue(3.3);
-    m_pLoopControl->pushProcessReturnValue(3.3);
-    m_pLoopControl->pushProcessReturnValue(3.3);
-    m_pLoopControl->pushProcessReturnValue(kNoTrigger);
+    m_pLoopControl->pushTargetReturnValue(3.3);
+    m_pLoopControl->pushTargetReturnValue(3.3);
+    m_pLoopControl->pushTargetReturnValue(3.3);
+    m_pLoopControl->pushTargetReturnValue(3.3);
+    m_pLoopControl->pushTargetReturnValue(3.3);
+    m_pLoopControl->pushTargetReturnValue(kNoTrigger);
     // read from start to loop trigger, overshoot 0.3
     EXPECT_EQ(20, m_pReadAheadManager->getNextSamples(1.0, m_pBuffer, 100));
     // read loop

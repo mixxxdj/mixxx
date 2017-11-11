@@ -38,13 +38,11 @@ class LoopingControl : public EngineControl {
                    const double totalSamples,
                    const int iBufferSize) override;
 
-    virtual double getLoopTarget(
-            bool reverse, const double currentSample);
-
     // nextTrigger returns the sample at which the engine will be triggered to
     // take a loop, given the value of currentSample and dRate.
     virtual double nextTrigger(bool reverse,
-                       const double currentSample);
+                       const double currentSample,
+                       double *pTarget);
 
     // hintReader will add to hintList hints both the loop in and loop out
     // sample, if set.
@@ -93,6 +91,7 @@ class LoopingControl : public EngineControl {
     struct LoopSamples {
         int start;
         int end;
+        bool seek;
     };
 
     void setLoopingEnabled(bool enabled);
@@ -105,8 +104,8 @@ class LoopingControl : public EngineControl {
     // When a loop changes size such that the playposition is outside of the loop,
     // we can figure out the best place in the new loop to seek to maintain
     // the beat.  It will even keep multi-bar phrasing correct with 4/4 tracks.
-    void seekInsideAdjustedLoop(int old_loop_in, int old_loop_out,
-                                int new_loop_in, int new_loop_out);
+    int seekInsideAdjustedLoop(int currentSample,
+            int old_loop_in, int new_loop_in, int new_loop_out);
 
     ControlPushButton* m_pCOBeatLoopActivate;
     ControlPushButton* m_pCOBeatLoopRollActivate;

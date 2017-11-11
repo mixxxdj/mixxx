@@ -390,7 +390,11 @@ TEST_F(LoopingControlTest, LoopScale_HalvesLoop) {
     EXPECT_EQ(500, m_pLoopEndPoint->get());
     // Since the current sample was out of range of the new loop,
     // the current sample should reseek based on the new loop size.
-    EXPECT_EQ(300, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    double target;
+    double trigger = m_pChannel1->getEngineBuffer()->m_pLoopingControl->nextTrigger(
+            false, 1800, &target);
+    EXPECT_EQ(300, target);
+    EXPECT_EQ(1800, trigger);
 }
 
 TEST_F(LoopingControlTest, LoopDoubleButton_IgnoresPastTrackEnd) {
@@ -513,7 +517,11 @@ TEST_F(LoopingControlTest, LoopMoveTest) {
     EXPECT_EQ(44100, m_pLoopStartPoint->get());
     EXPECT_EQ(44400, m_pLoopEndPoint->get());
     // Should seek to the corresponding offset within the moved loop
-    EXPECT_EQ(44110, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    double target;
+    double trigger = m_pChannel1->getEngineBuffer()->m_pLoopingControl->nextTrigger(
+            false, 10, &target);
+    EXPECT_EQ(44110, target);
+    EXPECT_EQ(10, trigger);
 
     // Move backward so that the current position is outside the new location of the loop
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(44300, EngineBuffer::SEEK_STANDARD);
@@ -523,9 +531,12 @@ TEST_F(LoopingControlTest, LoopMoveTest) {
     ProcessBuffer();
     EXPECT_EQ(0, m_pLoopStartPoint->get());
     EXPECT_EQ(300, m_pLoopEndPoint->get());
-    EXPECT_EQ(200, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    trigger = m_pChannel1->getEngineBuffer()->m_pLoopingControl->nextTrigger(
+            false, 44300, &target);
+    EXPECT_EQ(200, target);
+    EXPECT_EQ(44300, trigger);
 
-    // Now repeat the test with looping disabled (should not affect the
+     // Now repeat the test with looping disabled (should not affect the
     // playhead).
     m_pButtonReloopToggle->slotSet(1);
     EXPECT_FALSE(isLoopEnabled());
@@ -537,7 +548,10 @@ TEST_F(LoopingControlTest, LoopMoveTest) {
     EXPECT_EQ(44100, m_pLoopStartPoint->get());
     EXPECT_EQ(44400, m_pLoopEndPoint->get());
     // Should not seek inside the moved loop when the loop is disabled
-    EXPECT_EQ(200, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    trigger = m_pChannel1->getEngineBuffer()->m_pLoopingControl->nextTrigger(
+            false, 200, &target);
+    EXPECT_EQ(-1, target);
+    EXPECT_EQ(-1, trigger);
 
     // Move backward so that the current position is outside the new location of the loop
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(500, EngineBuffer::SEEK_STANDARD);
@@ -577,7 +591,11 @@ TEST_F(LoopingControlTest, LoopResizeSeek) {
     // loop.
     EXPECT_EQ(0, m_pLoopStartPoint->get());
     EXPECT_EQ(450, m_pLoopEndPoint->get());
-    EXPECT_EQ(50, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    double target;
+    double trigger = m_pChannel1->getEngineBuffer()->m_pLoopingControl->nextTrigger(
+            false, 500, &target);
+    EXPECT_EQ(50, target);
+    EXPECT_EQ(500, trigger);
 
     // But if looping is not enabled, no warping occurs.
     m_pLoopStartPoint->slotSet(0);
