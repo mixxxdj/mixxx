@@ -1919,12 +1919,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="748"/>
         <source>Shuffle the content of the Auto DJ queue</source>
-        <translation type="unfinished"/>
+        <translation>Barreja el contingut de la cua de DJ automàtic</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="751"/>
         <source>Skip the next track in the Auto DJ queue</source>
-        <translation type="unfinished"/>
+        <translation>Salta la següent pista de la cua de DJ automàtic</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="756"/>
@@ -2107,92 +2107,92 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="271"/>
         <source>Loop Selected Beats</source>
-        <translation type="unfinished"/>
+        <translation>Bucle de tocs seleccionats</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="272"/>
         <source>Create a beat loop of selected beat size</source>
-        <translation type="unfinished"/>
+        <translation>Crea un bucle de tocs de la mida seleccionada</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="273"/>
         <source>Loop Roll Selected Beats</source>
-        <translation type="unfinished"/>
+        <translation>Bucle &quot;roll&quot; de tocs seleccionats</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="274"/>
         <source>Create a rolling beat loop of selected beat size</source>
-        <translation type="unfinished"/>
+        <translation>Crea un bucle &quot;roll&quot; de tocs de la mida seleccionada</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="279"/>
         <source>Toggle loop on/off and jump to Loop In point if loop is behind play position</source>
-        <translation type="unfinished"/>
+        <translation>Activa o desactiva el bucle, i salta a l&apos;inici del bucle si aquest es anterior a la posició de reproducció actual</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="280"/>
         <source>Reloop And Stop</source>
-        <translation type="unfinished"/>
+        <translation>Repeteix i para</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="280"/>
         <source>Enable loop, jump to Loop In point, and stop</source>
-        <translation type="unfinished"/>
+        <translation>Activa el bucle, es mou a l&apos;inici d&apos;aquest i es para</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="281"/>
         <source>Halve the loop length</source>
-        <translation type="unfinished"/>
+        <translation>Redueix el bucle a la meitat</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="282"/>
         <source>Double the loop length</source>
-        <translation type="unfinished"/>
+        <translation>Duplica la mida del bucle</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="346"/>
         <source>Beat Jump / Loop Move</source>
-        <translation type="unfinished"/>
+        <translation>Salt en tocs / Mou el bucle</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="347"/>
         <source>Jump / Move Loop Forward %1 Beats</source>
-        <translation type="unfinished"/>
+        <translation>Salta / Mou el bucle endavant en %1 tocs</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="348"/>
         <source>Jump / Move Loop Backward %1 Beats</source>
-        <translation type="unfinished"/>
+        <translation>Salta / Mou el bucle enrera en %1 tocs</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="349"/>
         <source>Jump forward by %1 beats, or if a loop is enabled, move the loop forward %1 beats</source>
-        <translation type="unfinished"/>
+        <translation>Salta endavant %1 tocs, o si el bucle està activat, mou el bucle endavant en %1 tocs</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="350"/>
         <source>Jump backward by %1 beats, or if a loop is enabled, move the loop backward %1 beats</source>
-        <translation type="unfinished"/>
+        <translation>Salta enrera %1 tocs, o si el bucle està activat, mou el bucle enrera en %1 tocs</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="351"/>
         <source>Beat Jump / Loop Move Forward Selected Beats</source>
-        <translation type="unfinished"/>
+        <translation>Salt en tocs / Mou el bucle endavant els tocs seleccionats</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="351"/>
         <source>Jump forward by the selected number of beats, or if a loop is enabled, move the loop forward by the selected number of beats</source>
-        <translation type="unfinished"/>
+        <translation>Salta endavant en la quantitat de tocs seleccionada, o si el bucle està activat, mou el bucle endavant el nombre de tocs seleccionat.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="352"/>
         <source>Beat Jump / Loop Move Backward Selected Beats</source>
-        <translation type="unfinished"/>
+        <translation>Salt en tocs / Mou el bucle enrera els tocs seleccionats</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="352"/>
         <source>Jump backward by the selected number of beats, or if a loop is enabled, move the loop backward by the selected number of beats</source>
-        <translation type="unfinished"/>
+        <translation>Salta enrera en la quantitat de tocs seleccionada, o si el bucle està activat, mou el bucle enrera el nombre de tocs seleccionat.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="371"/>
@@ -2317,12 +2317,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="427"/>
         <source>Add to Auto DJ Queue (replace)</source>
-        <translation type="unfinished"/>
+        <translation>Afegeix a la cua del DJ automàtic (reemplaça)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="428"/>
         <source>Replace Auto DJ Queue with selected tracks</source>
-        <translation type="unfinished"/>
+        <translation>Reemplaça la cua de DJ automàtic amb les pistes seleccionades</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="488"/>
@@ -2332,7 +2332,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="496"/>
         <source>Super Knob (control effects&apos; Meta Knobs)</source>
-        <translation type="unfinished"/>
+        <translation>Control Super (controla els controls &apos;Meta&apos; dels efectes)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="506"/>
@@ -2373,27 +2373,27 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="618"/>
         <source>Effect Meta Knob (control linked effect parameters)</source>
-        <translation type="unfinished"/>
+        <translation>Control Meta de l&apos;efecte (controla els paràmetres de l&apos;efecte enllaçats)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="667"/>
         <source>Meta Knob Mode</source>
-        <translation type="unfinished"/>
+        <translation>Mode de Control Meta</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="668"/>
         <source>Set how linked effect parameters change when turning the Meta Knob.</source>
-        <translation type="unfinished"/>
+        <translation>Defineix la manera com canvien els paràmetres de l&apos;efecte enllaçats al girar el control Meta.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="672"/>
         <source>Meta Knob Mode Invert</source>
-        <translation type="unfinished"/>
+        <translation>Mode d&apos;inversió del control Meta</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="673"/>
         <source>Invert how linked effect parameters change when turning the Meta Knob.</source>
-        <translation type="unfinished"/>
+        <translation>Inverteix el sentit en que canvien els paràmetres de l&apos;efecte enllaçats al girar el control Meta.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="683"/>
@@ -2930,7 +2930,7 @@
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="219"/>
         <source>Displays the duration and number of selected tracks.</source>
-        <translation type="unfinished"/>
+        <translation>Mostra la durada i la quantitat de pistes seleccionades.</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="14"/>
@@ -2952,13 +2952,14 @@
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="52"/>
         <source>Shuffle the content of the Auto DJ queue.</source>
-        <translation type="unfinished"/>
+        <translation>Barreja el contingut de la cua de DJ automàtic.</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="65"/>
         <source>Adds a random track from track sources (crates) to the Auto DJ queue.
 If no track sources are configured, the track is added from the library instead.</source>
-        <translation type="unfinished"/>
+        <translation>Afegeix una pista aleatòria de les fonts de pistes (caixes) a la cua de DJ automàtic
+Si no hi ha cap font configurada, s&apos;afegeix una pista de la biblioteca.</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="76"/>
@@ -3429,7 +3430,7 @@ Heu intentat aprendre: %1,%2</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="32"/>
         <source>Add a track to the end of the Auto DJ queue once it is played, instead of removing it.</source>
-        <translation type="unfinished"/>
+        <translation>Torna a encuar la pista al final de la llista de DJ automàtic un cop reproduïda, en comptes d&apos;eliminar-la.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="46"/>
@@ -5556,12 +5557,12 @@ El valor desitjat és aproximat i assumeix que els pre-guanys i el volum de sort
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="107"/>
         <source>Master and booth outputs</source>
-        <translation type="unfinished"/>
+        <translation>Sortida de master i monitor</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="109"/>
         <source>Direct monitor (recording and broadcasting only)</source>
-        <translation type="unfinished"/>
+        <translation>Monitor directe (només gravació i emissió)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="155"/>
@@ -5586,28 +5587,28 @@ El valor desitjat és aproximat i assumeix que els pre-guanys i el volum de sort
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="676"/>
         <source>Microphone inputs are out of time in the record &amp; broadcast signal compared to what you hear.</source>
-        <translation type="unfinished"/>
+        <translation>L&apos;entrada de micròfon queda desincronitzada al gravar o emetre comparat amb el que es sent.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="677"/>
         <source>Measure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
-        <translation type="unfinished"/>
+        <translation>Mesureu la latència total i introduiu-la en la Compensació de la latència del micròfon per tal de sincronitzar el micròfon.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="678"/>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="685"/>
         <source>Refer to the Mixxx User Manual for details.</source>
-        <translation type="unfinished"/>
+        <translation>Consulteu el Manual d&apos;usuari del Mixxx per a més informació.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="683"/>
         <source>Configured latency has changed.</source>
-        <translation type="unfinished"/>
+        <translation>La latència configurada ha canviat</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="684"/>
         <source>Remeasure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
-        <translation type="unfinished"/>
+        <translation>Torneu a mesurar la latència total i introduiu-la en la Compensació de la matència del micròfon per tal de sincronitzar el micròfon.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="178"/>
@@ -5640,7 +5641,7 @@ El valor desitjat és aproximat i assumeix que els pre-guanys i el volum de sort
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="35"/>
         <source>Sample Rate</source>
-        <translation type="unfinished"/>
+        <translation>Freqüència de mostreig</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="48"/>
@@ -5650,12 +5651,12 @@ El valor desitjat és aproximat i assumeix que els pre-guanys i el volum de sort
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="107"/>
         <source>Microphone Monitor Mode</source>
-        <translation type="unfinished"/>
+        <translation>Mode de monitorització del micròfon</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="114"/>
         <source>Microphone Latency Compensation</source>
-        <translation type="unfinished"/>
+        <translation>Compensació de la latència del micròfon</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="160"/>
@@ -5678,7 +5679,7 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="183"/>
         <source>Booth Delay</source>
-        <translation type="unfinished"/>
+        <translation>Latència de la sortida de monitor</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="331"/>
@@ -5693,7 +5694,7 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="381"/>
         <source>Buffer Underflow Count</source>
-        <translation type="unfinished"/>
+        <translation>Comptador de buidat del búfer</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="391"/>
@@ -5708,7 +5709,7 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="71"/>
         <source>Keylock/Pitch-Bending Engine</source>
-        <translation type="unfinished"/>
+        <translation>Motor de bloqueig de clau/Pitch Bend</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="61"/>
@@ -5743,7 +5744,7 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="364"/>
         <source>System Reported Latency</source>
-        <translation type="unfinished"/>
+        <translation>Latència reportada pel sistema</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="311"/>
@@ -5940,26 +5941,9 @@ milliseconds</extracomment>
         <translation>Velocitat de fotogrames</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="157"/>
-        <source>Summary type</source>
-        <translation>Gràfic de reproducció</translation>
-    </message>
-    <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="70"/>
         <source>Displays which OpenGL version is supported by the current platform.</source>
         <translation>Mostra quina versió de OpenGL suporta la plataforma actual.</translation>
-    </message>
-    <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="319"/>
-        <source>Overview type</source>
-        <translation>Gràfic de la pista completa</translation>
-    </message>
-    <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="302"/>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="309"/>
-        <source>Select from different types of displays for the waveform, which differ primarily in the level of detail shown in the waveform.</source>
-        <extracomment>The main waveforms</extracomment>
-        <translation>Seleccioneu entre els diferents tipus de representacions del gràfic d&apos;ona, que es diferencien principalment en el nivell de detall.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="63"/>
@@ -5977,13 +5961,13 @@ milliseconds</extracomment>
         <translation>Guany visual</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="393"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="395"/>
         <source>Default zoom level</source>
         <extracomment>Waveform zoom</extracomment>
         <translation>Nivell de zoom per defecte</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="326"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="328"/>
         <source>Displays the actual frame rate.</source>
         <translation>Mostra la velocitat de fotogrames actual</translation>
     </message>
@@ -5993,7 +5977,7 @@ milliseconds</extracomment>
         <translation>Guany visual de les freqüències de mitjos</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="336"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="338"/>
         <source>End of track warning</source>
         <translation>Avís de final de pista</translation>
     </message>
@@ -6043,53 +6027,75 @@ milliseconds</extracomment>
         <translation>Aguts</translation>
     </message>
     <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="157"/>
+        <source>Waveform type</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="281"/>
         <source>Global visual gain</source>
         <translation>Guany visual global</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="406"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="302"/>
+        <source>The waveform overview shows the waveform envelope of the entire track.
+Select from different types of displays for the waveform overview, which differ primarily in the level of detail shown in the waveform.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="310"/>
+        <source>The waveform shows the waveform envelope of the track near the current playback position.
+Select from different types of displays for the waveform, which differ primarily in the level of detail shown in the waveform.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="321"/>
+        <source>Waveform overview type</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="408"/>
         <source>Synchronize zoom level across all waveform displays.</source>
         <translation>Sincronitza el nivell de zoom a tots els gràfics d&apos;ona.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="409"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="411"/>
         <source>Synchronize zoom level across all waveforms</source>
         <translation>Sincronitza el nivell de zoom a tots els gràfics d&apos;ona</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="416"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="418"/>
         <source>Caching</source>
         <translation>Memoria cau</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="435"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="437"/>
         <source>Mixxx caches the waveforms of your tracks on disk the first time you load a track. This reduces CPU usage when you are playing live but requires extra disk space.</source>
         <translation>El Mixxx emmagatzema a la memòria cau els gràfics d&apos;ona de les vostres pistes a disc el primer cop que carregueu la pista en un plat. Això redueix el consum de CPU les posteriors vegades, però requereix espai addicional de disc.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="455"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="457"/>
         <source>Enable waveform caching</source>
         <translation>Habliita la memòria cau per a gràfics d&apos;ona</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="462"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="464"/>
         <source>Generate waveforms when analyzing library</source>
         <translation>Genera els gràfics d&apos;ona a l&apos;analitzar la llibreria</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="474"/>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="484"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="476"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="486"/>
         <source>Beat Grid</source>
         <translation>Graella de ritme</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="487"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="489"/>
         <source>Show Beat Markers</source>
         <translation>Mostra els marcadors de ritme</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="428"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="430"/>
         <source>Clear Cached Waveforms</source>
         <translation>Esborra la memòria cau dels gràfics d&apos;ona</translation>
     </message>
@@ -6365,592 +6371,326 @@ milliseconds</extracomment>
 <context>
     <name>DlgTrackInfo</name>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="26"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="26"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="26"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="26"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="26"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="20"/>
         <source>Track Editor</source>
         <translation>Editor de la pista</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="29"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="29"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="29"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="29"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="29"/>
-        <source>Sets the BPM to 50% of the detected BPM.</source>
-        <translation>Posa el BPM al 50% del valor detectat.</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="54"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="54"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="54"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="54"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="54"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="48"/>
         <source>Summary</source>
         <translation>Resum</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="153"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="68"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="68"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="68"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="153"/>
-        <source>Title:</source>
-        <translation>Títol:</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="234"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="106"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="106"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="199"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="234"/>
-        <source>Artist:</source>
-        <translation>Artista:</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="121"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="144"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="144"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="215"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="121"/>
-        <source>Album:</source>
-        <translation>Àlbum:</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="362"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="182"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="182"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="329"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="362"/>
-        <source>Album Artist:</source>
-        <translation>Artista de l&apos;Àlbum</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="105"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="278"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="278"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="247"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="105"/>
-        <source>Grouping:</source>
-        <translation>Agrupació:</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="205"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="310"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="310"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="383"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="205"/>
-        <source>Year:</source>
-        <translation>Any:</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="98"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="368"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="368"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="186"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="98"/>
-        <source>Track #:</source>
-        <translation>Núm. de pista:</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="372"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="246"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="246"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="122"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="372"/>
-        <source>Genre:</source>
-        <translation>Gènere:</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="179"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="214"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="214"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="154"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="179"/>
-        <source>Composer:</source>
-        <translation>Compositor:</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="438"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="581"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="581"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="581"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="438"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="525"/>
         <source>Filetype:</source>
         <translation>Tipus de fitxer:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="412"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="503"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="503"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="503"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="412"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="434"/>
         <source>BPM:</source>
         <translation>BPM:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="532"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="607"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="607"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="607"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="532"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="468"/>
         <source>Location:</source>
         <translation>Ubicació:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="244"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="339"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="339"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="390"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="244"/>
-        <source>Key:</source>
-        <translation>Clau:</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="454"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="555"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="555"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="555"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="454"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="488"/>
         <source>Bitrate:</source>
         <translation>Taxa de bits:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="611"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="669"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="669"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="669"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="605"/>
-        <source>Reload track metadata from file</source>
-        <translation>Recarrega les metadades del fitxer</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="598"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="662"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="662"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="662"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="592"/>
-        <source>Get track metadata from MusicBrainz</source>
-        <translation>Obté les metadades des de MusicBrainz</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="634"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="686"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="686"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="686"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="628"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="578"/>
         <source>Comments</source>
         <translation>Comentaris</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="644"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="696"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="696"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="696"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="638"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="588"/>
         <source>BPM</source>
         <translation>BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="722"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="774"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="774"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="774"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="716"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="671"/>
         <source>Sets the BPM to 75% of the current value.</source>
         <translation>Posa el BPM al 75% del valor actual.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="725"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="777"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="777"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="777"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="719"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="674"/>
         <source>3/4 BPM</source>
         <translation>3/4 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="738"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="790"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="790"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="790"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="732"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="687"/>
         <source>Sets the BPM to 50% of the current value.</source>
         <translation>Posa el BPM al 50% del valor actual.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="654"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="706"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="706"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="706"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="648"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="598"/>
         <source>Displays the BPM of the selected track.</source>
         <translation>Mostra el BPM de la pista seleccionada.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="496"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="529"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="529"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="529"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="496"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="54"/>
+        <source>Details</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="88"/>
+        <source>Track #</source>
+        <translation>Núm. de pista</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="117"/>
+        <source>Album Artist</source>
+        <translation>Artista de l&apos;àlbum</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="127"/>
+        <source>Composer</source>
+        <translation>Compositor</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="164"/>
+        <source>Title</source>
+        <translation>Tí­tol</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="174"/>
+        <source>Grouping</source>
+        <translation>Grup</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="216"/>
+        <source>Key</source>
+        <translation>Clau musical</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="239"/>
+        <source>Year</source>
+        <translation>Any</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="268"/>
+        <source>Artist</source>
+        <translation>Artista</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="284"/>
+        <source>Album</source>
+        <translation>Àlbum</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="326"/>
+        <source>Genre</source>
+        <translation>Gènere</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="351"/>
+        <source>Get Metadata from MusicBrainz</source>
+        <translation>Recupera metadades amb el MusicBrainz</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="358"/>
+        <source>Reload Metadata from File</source>
+        <translation>Recarrega les metadades del fitxer</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="406"/>
+        <source>File</source>
+        <translation>Fitxer</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="441"/>
         <source>ReplayGain:</source>
         <translation>ReplayGain:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="706"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="758"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="758"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="758"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="700"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="621"/>
+        <source>Converts beats detected by the analyzer into a fixed-tempo beatgrid. 
+Use this setting if your tracks have a constant tempo (e.g. most electronic music). 
+Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
+        <translation>Converteix els tocs detectats per l&apos;analitzador en una graella de tempo constant
+Utilitzeu aquesta opció si les vostres pistes tenen un tempo constant (p.ex. la majoria de música electrònica).
+Habitualment dóna graelles de ritme més precises, però anirà pitjor en les pistes que tinguin canvis en el tempo.</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="655"/>
         <source>Sets the BPM to 200% of the current value.</source>
         <translation>Posa el BPM al 200% del valor actual.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="709"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="761"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="761"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="761"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="703"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="658"/>
         <source>Double BPM</source>
         <translation>Augmenta el tempo al doble</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="741"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="793"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="793"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="793"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="735"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="690"/>
         <source>Halve BPM</source>
         <translation>Redueix el tempo a la meitat</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="854"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="906"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="906"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="906"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="848"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="729"/>
+        <source>Clear BPM and Beatgrid</source>
+        <translation>Suprimeix els BPM i la graella de ritme</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="803"/>
         <source>Cuepoints</source>
         <translation>Marques, punts Cue</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="945"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="997"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="997"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="997"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="939"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="894"/>
         <source>Move to the previous item.</source>
-        <extracomment>&quot;Previous&quot; button
-----------
-&quot;Previous&quot; button
-----------
-&quot;Previous&quot; button
-----------
-&quot;Previous&quot; button
-----------
-&quot;Previous&quot; button</extracomment>
+        <extracomment>&quot;Previous&quot; button</extracomment>
         <translation>Ves al ítem anterior.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="948"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1000"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="1000"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="1000"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="942"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="897"/>
         <source>&amp;Previous</source>
         <translation>A&amp;nterior</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="961"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1013"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="1013"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="1013"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="955"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="910"/>
         <source>Move to the next item.</source>
-        <extracomment>&quot;Next&quot; button
-----------
-&quot;Next&quot; button
-----------
-&quot;Next&quot; button
-----------
-&quot;Next&quot; button
-----------
-&quot;Next&quot; button</extracomment>
+        <extracomment>&quot;Next&quot; button</extracomment>
         <translation>Ves al ítem següent</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="964"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1016"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="1016"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="1016"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="958"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="913"/>
         <source>&amp;Next</source>
         <translation>&amp;Següent</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="470"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="477"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="477"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="477"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="470"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="461"/>
         <source>Duration:</source>
         <translation>Durada:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="624"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="676"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="676"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="676"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="618"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="547"/>
         <source>Open in File Browser</source>
         <translation>Obre en l&apos;explorador de fitxers</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="670"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="722"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="722"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="722"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="664"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="614"/>
         <source>Track BPM: </source>
         <translation>BPM de la pista: </translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="677"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="729"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="729"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="729"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="671"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="626"/>
         <source>Assume constant tempo</source>
         <translation>Assumeix un tempo constant</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="690"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="742"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="742"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="742"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="684"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="639"/>
         <source>Sets the BPM to 66% of the current value.</source>
         <translation>Posa el BPM al 66% del valor actual.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="693"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="745"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="745"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="745"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="687"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="642"/>
         <source>2/3 BPM</source>
         <translation>2/3 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="754"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="806"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="806"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="806"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="748"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="703"/>
         <source>Sets the BPM to 150% of the current value.</source>
         <translation>Posa el BPM al 150% del valor actual.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="757"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="809"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="809"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="809"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="751"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="706"/>
         <source>3/2 BPM</source>
         <translation>3/2 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="770"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="822"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="822"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="822"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="764"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="719"/>
         <source>Sets the BPM to 133% of the current value.</source>
         <translation>Posa el BPM al 133% del valor actual.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="773"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="825"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="825"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="825"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="767"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="722"/>
         <source>4/3 BPM</source>
         <translation>4/3 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="780"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="832"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="832"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="832"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="774"/>
-        <source>Clear Bpm and Beatgrid</source>
-        <translation>Neteja els BPM i la graella</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="801"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="853"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="853"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="853"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="795"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="750"/>
         <source>Tap with the beat to set the BPM to the speed you are tapping.</source>
         <translation>Toqueu/premeu repetidament al ritme al qual voleu establir els BPM.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="804"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="856"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="856"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="856"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="798"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="753"/>
         <source>Tap to Beat</source>
         <translation>Prem al ritme</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="833"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="885"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="885"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="885"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="827"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="782"/>
         <source>Hint: Use the Library Analyze view to run BPM detection.</source>
         <translation>Suggerència: Utilitzeu la opció d&apos;analitzador a la vista de la biblioteca per executar la detecció de BPM.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="861"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="913"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="913"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="913"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="855"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="810"/>
         <source>Cue Id</source>
         <translation>Identificació de Cue</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="866"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="918"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="918"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="918"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="860"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="815"/>
         <source>Position</source>
         <translation>El temps transcorregut</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="871"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="923"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="923"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="923"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="865"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="820"/>
         <source>Hotcue</source>
         <translation>Hotcue</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="876"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="928"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="928"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="928"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="870"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="825"/>
         <source>Label</source>
         <translation>Etiqueta</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="918"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="970"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="970"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="970"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="912"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="867"/>
         <source>Activate Cue</source>
         <translation>Activa punt Cue</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="1028"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1080"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="1080"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="1080"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="1022"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="977"/>
         <source>Save changes and close the window.</source>
-        <extracomment>&quot;OK&quot; button
-----------
-&quot;OK&quot; button
-----------
-&quot;OK&quot; button
-----------
-&quot;OK&quot; button
-----------
-&quot;OK&quot; button</extracomment>
+        <extracomment>&quot;OK&quot; button</extracomment>
         <translation>Desa els canvis i tanca la finestra.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="1031"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1083"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="1083"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="1083"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="1025"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="980"/>
         <source>&amp;OK</source>
         <translation>D&apos;&amp;acord</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="892"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="944"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="944"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="944"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="886"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="841"/>
         <source>Delete Cue</source>
         <translation>Esborra punt Cue</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="990"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1042"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="1042"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="1042"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="984"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="939"/>
         <source>Discard changes and close the window.</source>
-        <extracomment>&quot;Cancel&quot; button
-----------
-&quot;Cancel&quot; button
-----------
-&quot;Cancel&quot; button
-----------
-&quot;Cancel&quot; button
-----------
-&quot;Cancel&quot; button</extracomment>
+        <extracomment>&quot;Cancel&quot; button</extracomment>
         <translation>Descarta els canvis i tanca la finestra.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="1009"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1061"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="1061"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="1061"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="1003"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="958"/>
         <source>Save changes and keep the window open.</source>
-        <extracomment>&quot;Apply&quot; button
-----------
-&quot;Apply&quot; button
-----------
-&quot;Apply&quot; button
-----------
-&quot;Apply&quot; button
-----------
-&quot;Apply&quot; button</extracomment>
+        <extracomment>&quot;Apply&quot; button</extracomment>
         <translation>Descarta els canvis i no tanquis la finestra</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="1012"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1064"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="1064"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="1064"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="1006"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="961"/>
         <source>&amp;Apply</source>
         <translation>&amp;Aplica</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="993"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1045"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="1045"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="1045"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="987"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="942"/>
         <source>&amp;Cancel</source>
         <translation>&amp;Cancel·la</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.cpp" line="175"/>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="171"/>
         <source>kbps</source>
         <translation>kbps</translation>
     </message>
@@ -8078,7 +7818,7 @@ Voleu escanejar ara la llibreria cercant les caràtules?</translation>
     <message>
         <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
         <source>Booth</source>
-        <translation type="unfinished"/>
+        <translation>Sortida de Monitor</translation>
     </message>
     <message>
         <location filename="../../src/soundio/soundmanagerutil.cpp" line="193"/>
@@ -8226,24 +7966,26 @@ Per descartar aquesta acció, premeu Cancel·la.</translation>
     <message>
         <location filename="../../src/effects/native/echoeffect.cpp" line="39"/>
         <source>Time</source>
-        <translation type="unfinished"/>
+        <translation>Retard</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/echoeffect.cpp" line="40"/>
         <source>Delay time
 1/8 - 2 beats if tempo is detected (decks and samplers) 
 1/8 - 2 seconds if no tempo is detected (mic &amp; aux inputs, master mix)</source>
-        <translation type="unfinished"/>
+        <translation>Retard
+1/8 - 2 tocs si es detecta el tempo (plats i reproductors de mostres)
+1/8 - 2 segons si no es detecta tempo (micròfon i entrades auxiliars, mescla mestra)</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/echoeffect.cpp" line="64"/>
         <source>Ping Pong</source>
-        <translation type="unfinished"/>
+        <translation>Ping Pong</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/echoeffect.cpp" line="66"/>
         <source>As the ping pong amount increases, increasing amounts of the echoed signal is bounced between the left and right speakers.</source>
-        <translation type="unfinished"/>
+        <translation>En incrementar el ping pong, una major quantitat de senyal d&apos;eco rebotarà entre els altaveus esquerra i dret.</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/echoeffect.cpp" line="78"/>
@@ -8332,7 +8074,9 @@ Per descartar aquesta acció, premeu Cancel·la.</translation>
         <source>Controls the period of the LFO (low frequency oscillator)
 1/4 - 4 beats rounded to 1/2 beat if tempo is detected (decks and samplers) 
 0.05 - 4 seconds if no tempo is detected (mic &amp; aux inputs, master mix)</source>
-        <translation type="unfinished"/>
+        <translation>Controla el període del LFO (oscil·lador de baixa freqüència)
+1/4 - 4 tocs arrodonit a 1/2 toc si es detecta el tempo ( plats i reproductors de mostres)
+0.05 - 4 segons si no es detecta tempo (micròfon i entrades auxiliars, mescla mestra)</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/flangereffect.cpp" line="43"/>
@@ -8345,6 +8089,13 @@ Per descartar aquesta acció, premeu Cancel·la.</translation>
         <translation>Balanç automàtic</translation>
     </message>
     <message>
+        <location filename="../../src/effects/native/autopaneffect.cpp" line="33"/>
+        <source>How fast the sound goes from a side to another
+1/4 - 4 beats rounded to 1/2 beat if tempo is detected (decks and samplers)
+1/4 - 4 seconds if no tempo is detected (mic &amp; aux inputs, master mix)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <location filename="../../src/effects/native/autopaneffect.cpp" line="64"/>
         <source>Width</source>
         <translation>Ample</translation>
@@ -8352,12 +8103,12 @@ Per descartar aquesta acció, premeu Cancel·la.</translation>
     <message>
         <location filename="../../src/effects/native/metronomeeffect.cpp" line="20"/>
         <source>Metronome</source>
-        <translation type="unfinished"/>
+        <translation>Metrònom</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/metronomeeffect.cpp" line="23"/>
         <source>Adds a metronome click sound to the stream</source>
-        <translation type="unfinished"/>
+        <translation>Afegeix uns clics a la sortida, amb la freqüència del metrònom.</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/metronomeeffect.cpp" line="30"/>
@@ -8367,7 +8118,7 @@ Per descartar aquesta acció, premeu Cancel·la.</translation>
     <message>
         <location filename="../../src/effects/native/metronomeeffect.cpp" line="31"/>
         <source>Set the beats per minute value of the click sound</source>
-        <translation type="unfinished"/>
+        <translation>Defineix la freqüència en BPM dels clics</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/metronomeeffect.cpp" line="43"/>
@@ -8377,7 +8128,7 @@ Per descartar aquesta acció, premeu Cancel·la.</translation>
     <message>
         <location filename="../../src/effects/native/metronomeeffect.cpp" line="44"/>
         <source>Synchronizes the BPM with the track if it can be retrieved</source>
-        <translation type="unfinished"/>
+        <translation>Sincronitza el BPM amb el de la pista, si es pot obtenir</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/autopaneffect.cpp" line="32"/>
@@ -8390,14 +8141,8 @@ Per descartar aquesta acció, premeu Cancel·la.</translation>
         <location filename="../../src/effects/native/autopaneffect.cpp" line="24"/>
         <source>Bounce the sound from a channel to another, roughly or softly, fully or partially, fastly or slowly.
 A delay, inversed on each side, is added to increase the spatial move and the period can be synced with the BPM.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/effects/native/autopaneffect.cpp" line="33"/>
-        <source>How fast the sound goes from a side to another
-1/4 - 4 beats rounded to 1/2 beat if tempo is detected (decks and samplers)
-1/4 - 4 seconds if tempo is detected (mic &amp; aux inputs, master mix)</source>
-        <translation type="unfinished"/>
+        <translation>Fa rebotar el so d&apos;un canal a l&apos;altre, de cop o suaument, completament o parcialment, ràpidament o lentament
+Un retard, invertit a cada costat, s&apos;afegeix per a incrementar el moviment espaial i el període pot sincronitzar-se amb el BPM.</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/autopaneffect.cpp" line="47"/>
@@ -8412,7 +8157,7 @@ A delay, inversed on each side, is added to increase the spatial move and the pe
     <message>
         <location filename="../../src/effects/native/autopaneffect.cpp" line="50"/>
         <source>How smoothly the signal goes from one side to the other</source>
-        <translation type="unfinished"/>
+        <translation>La granularitat (suavitat) amb la que la senyal va d&apos;un costat a l&apos;altre.</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/reverbeffect.cpp" line="16"/>
@@ -8636,7 +8381,9 @@ A delay, inversed on each side, is added to increase the spatial move and the pe
         <source>Controls the period of the LFO (low frequency oscillator)
 1/4 - 4 beats rounded to 1/2 beat if tempo is detected (decks and samplers) 
 1/4 - 4 seconds if no tempo is detected (mic &amp; aux inputs, master mix)</source>
-        <translation type="unfinished"/>
+        <translation>Controla el període del LFO ( oscil·lador de baixa freqüència)
+1/4 - 4 tocs arrodonit a 1/2 tocs si es detecta el tempo (plats i reproductors de mostres)
+1/4 - 4 segons si no es detecta el tempo (micròfon i entrades auxiliars, mescla mestra)</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/phasereffect.cpp" line="97"/>
@@ -8876,38 +8623,39 @@ A delay, inversed on each side, is added to increase the spatial move and the pe
     <message>
         <location filename="../../src/effects/native/balanceeffect.cpp" line="23"/>
         <source>Adjust the left/right balance and stereo width</source>
-        <translation type="unfinished"/>
+        <translation>Ajusta el balanç esquerra/dreta i la separació d&apos;estèreo</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/balanceeffect.cpp" line="29"/>
         <source>Adjust balance between left and right channels</source>
-        <translation type="unfinished"/>
+        <translation>Ajusta el balanç entre els canals esquerra i dret</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/balanceeffect.cpp" line="40"/>
         <source>Mid/Side</source>
-        <translation type="unfinished"/>
+        <translation>Mid/Side</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/balanceeffect.cpp" line="41"/>
         <source>Adjust stereo width by changing balance between middle and side of the signal.
 Fully left is mono, fully right is only side ambiance, and centered does not change the original signal.</source>
-        <translation type="unfinished"/>
+        <translation>Ajusta l&apos;amplitu de l&apos;estèreo en canviar el balanç entre la senyal central i lateral de la senyal.
+Tot a l&apos;esquerra sona mono, tot a la dreta sona només la senyal de diferència i centrat no canvia la senyal original.</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/balanceeffect.cpp" line="53"/>
         <source>Bypass Fr.</source>
-        <translation type="unfinished"/>
+        <translation>Freq. de tall</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/balanceeffect.cpp" line="54"/>
         <source>Bypass Frequency</source>
-        <translation type="unfinished"/>
+        <translation>Frequència de tall</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/balanceeffect.cpp" line="55"/>
         <source>Frequencies below this cutoff are not adjusted in the stereo field</source>
-        <translation type="unfinished"/>
+        <translation>Les frequències per sota d&apos;aquest tall no es veuen afectades pels canvis d&apos;estèreo</translation>
     </message>
 </context>
 <context>
@@ -10226,27 +9974,27 @@ Fully left is mono, fully right is only side ambiance, and centered does not cha
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="813"/>
         <source>Inactive: parameter not linked</source>
-        <translation type="unfinished"/>
+        <translation>Inactiu: paràmetre no enllaçat</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="814"/>
         <source>Active: parameter moves with Meta Knob</source>
-        <translation type="unfinished"/>
+        <translation>Actiu: el paràmetre es mou amb el control Meta</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="815"/>
         <source>Left side active: parameter moves with left half of Meta Knob turn</source>
-        <translation type="unfinished"/>
+        <translation>Part esquerra actiu: el paràmetre es mou només durant la primera meitat del control Meta</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="816"/>
         <source>Right side active: parameter moves with right half of Meta Knob turn </source>
-        <translation type="unfinished"/>
+        <translation>Part dreta activa: el paràmetre es mou només durant la segona meitat del control Meta</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="817"/>
         <source>Left and right side active: parameter moves across range with half of Meta Knob turn and back with the other half</source>
-        <translation type="unfinished"/>
+        <translation>Esquerra i dreta actiu: el paràmetre es mou en rang sencer durant la primera meitat del control Meta, i torna enrera en la segona meitat.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="824"/>
@@ -12095,7 +11843,7 @@ Fully left is mono, fully right is only side ambiance, and centered does not cha
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="391"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation type="unfinished"/>
+        <translation>Afegeix a la cua del DJ automàtic (al final)</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="395"/>
@@ -12105,7 +11853,7 @@ Fully left is mono, fully right is only side ambiance, and centered does not cha
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="399"/>
         <source>Add to Auto DJ Queue (replace)</source>
-        <translation type="unfinished"/>
+        <translation>Afegeix a la cua del DJ automàtic (reemplaça)</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="418"/>

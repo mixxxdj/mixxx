@@ -5917,26 +5917,9 @@ milliseconds</extracomment>
         <translation>畫面播放速率</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="157"/>
-        <source>Summary type</source>
-        <translation>摘要類型</translation>
-    </message>
-    <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="70"/>
         <source>Displays which OpenGL version is supported by the current platform.</source>
         <translation>顯示由當前平臺支援的 OpenGL 版本。</translation>
-    </message>
-    <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="319"/>
-        <source>Overview type</source>
-        <translation>概述類型</translation>
-    </message>
-    <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="302"/>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="309"/>
-        <source>Select from different types of displays for the waveform, which differ primarily in the level of detail shown in the waveform.</source>
-        <extracomment>The main waveforms</extracomment>
-        <translation>從不同類型的主要在波形顯示的詳細程度不同的波形，顯示選擇。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="63"/>
@@ -5954,13 +5937,13 @@ milliseconds</extracomment>
         <translation>視覺的增益</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="393"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="395"/>
         <source>Default zoom level</source>
         <extracomment>Waveform zoom</extracomment>
         <translation>預設縮放級別</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="326"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="328"/>
         <source>Displays the actual frame rate.</source>
         <translation>顯示實際的畫面播放速率。</translation>
     </message>
@@ -5970,7 +5953,7 @@ milliseconds</extracomment>
         <translation>視覺的中間頻率增益</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="336"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="338"/>
         <source>End of track warning</source>
         <translation>結束了跟蹤警告</translation>
     </message>
@@ -6020,53 +6003,75 @@ milliseconds</extracomment>
         <translation>高</translation>
     </message>
     <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="157"/>
+        <source>Waveform type</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="281"/>
         <source>Global visual gain</source>
         <translation>全球視覺增益</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="406"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="302"/>
+        <source>The waveform overview shows the waveform envelope of the entire track.
+Select from different types of displays for the waveform overview, which differ primarily in the level of detail shown in the waveform.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="310"/>
+        <source>The waveform shows the waveform envelope of the track near the current playback position.
+Select from different types of displays for the waveform, which differ primarily in the level of detail shown in the waveform.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="321"/>
+        <source>Waveform overview type</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="408"/>
         <source>Synchronize zoom level across all waveform displays.</source>
         <translation>跨所有波形顯示同步縮放級別。</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="409"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="411"/>
         <source>Synchronize zoom level across all waveforms</source>
         <translation>跨所有波形同步縮放級別</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="416"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="418"/>
         <source>Caching</source>
         <translation>緩存</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="435"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="437"/>
         <source>Mixxx caches the waveforms of your tracks on disk the first time you load a track. This reduces CPU usage when you are playing live but requires extra disk space.</source>
         <translation>Mixxx 緩存您軌道在磁片第一次你載入追蹤記錄的波形。這降低了 CPU 使用率，當你玩活的時候，但需要額外的磁碟空間。</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="455"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="457"/>
         <source>Enable waveform caching</source>
         <translation>啟用緩存波形</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="462"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="464"/>
         <source>Generate waveforms when analyzing library</source>
         <translation>在分析圖書館時產生波形</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="474"/>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="484"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="476"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="486"/>
         <source>Beat Grid</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="487"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="489"/>
         <source>Show Beat Markers</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="428"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="430"/>
         <source>Clear Cached Waveforms</source>
         <translation>清除緩存的波形</translation>
     </message>
@@ -6342,592 +6347,326 @@ milliseconds</extracomment>
 <context>
     <name>DlgTrackInfo</name>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="26"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="26"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="26"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="26"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="26"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="20"/>
         <source>Track Editor</source>
         <translation>軌道編輯器</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="29"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="29"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="29"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="29"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="29"/>
-        <source>Sets the BPM to 50% of the detected BPM.</source>
-        <translation>將 BPM 設置為 50%的檢測到 BPM。</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="54"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="54"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="54"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="54"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="54"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="48"/>
         <source>Summary</source>
         <translation>摘要</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="153"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="68"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="68"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="68"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="153"/>
-        <source>Title:</source>
-        <translation>標題︰</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="234"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="106"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="106"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="199"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="234"/>
-        <source>Artist:</source>
-        <translation>演出者︰</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="121"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="144"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="144"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="215"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="121"/>
-        <source>Album:</source>
-        <translation>專輯︰</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="362"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="182"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="182"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="329"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="362"/>
-        <source>Album Artist:</source>
-        <translation>唱片集演出者︰</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="105"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="278"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="278"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="247"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="105"/>
-        <source>Grouping:</source>
-        <translation>分組︰</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="205"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="310"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="310"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="383"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="205"/>
-        <source>Year:</source>
-        <translation>年份︰</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="98"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="368"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="368"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="186"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="98"/>
-        <source>Track #:</source>
-        <translation>追蹤 #:</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="372"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="246"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="246"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="122"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="372"/>
-        <source>Genre:</source>
-        <translation>類型︰</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="179"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="214"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="214"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="154"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="179"/>
-        <source>Composer:</source>
-        <translation>作曲︰</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="438"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="581"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="581"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="581"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="438"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="525"/>
         <source>Filetype:</source>
         <translation>檔案類型︰</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="412"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="503"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="503"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="503"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="412"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="434"/>
         <source>BPM:</source>
         <translation>BPM:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="532"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="607"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="607"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="607"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="532"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="468"/>
         <source>Location:</source>
         <translation>位置︰</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="244"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="339"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="339"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="390"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="244"/>
-        <source>Key:</source>
-        <translation>金鑰︰</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="454"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="555"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="555"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="555"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="454"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="488"/>
         <source>Bitrate:</source>
         <translation>位元速率︰</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="611"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="669"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="669"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="669"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="605"/>
-        <source>Reload track metadata from file</source>
-        <translation>檔重新載入跟蹤元的資料</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="598"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="662"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="662"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="662"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="592"/>
-        <source>Get track metadata from MusicBrainz</source>
-        <translation>獲取跟蹤中繼資料從音軌</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="634"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="686"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="686"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="686"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="628"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="578"/>
         <source>Comments</source>
         <translation>評論</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="644"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="696"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="696"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="696"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="638"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="588"/>
         <source>BPM</source>
         <translation>BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="722"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="774"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="774"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="774"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="716"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="671"/>
         <source>Sets the BPM to 75% of the current value.</source>
         <translation>將 BPM 設置為當前值的 75%。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="725"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="777"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="777"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="777"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="719"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="674"/>
         <source>3/4 BPM</source>
         <translation>3/4 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="738"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="790"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="790"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="790"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="732"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="687"/>
         <source>Sets the BPM to 50% of the current value.</source>
         <translation>將 BPM 設置為當前值的 50%。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="654"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="706"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="706"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="706"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="648"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="598"/>
         <source>Displays the BPM of the selected track.</source>
         <translation>顯示選定的軌道的 BPM。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="496"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="529"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="529"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="529"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="496"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="54"/>
+        <source>Details</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="88"/>
+        <source>Track #</source>
+        <translation>跟蹤 #</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="117"/>
+        <source>Album Artist</source>
+        <translation>唱片集演出者</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="127"/>
+        <source>Composer</source>
+        <translation>作曲家</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="164"/>
+        <source>Title</source>
+        <translation>標題</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="174"/>
+        <source>Grouping</source>
+        <translation>分組</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="216"/>
+        <source>Key</source>
+        <translation>關鍵</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="239"/>
+        <source>Year</source>
+        <translation>一年</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="268"/>
+        <source>Artist</source>
+        <translation>演出者</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="284"/>
+        <source>Album</source>
+        <translation>專輯</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="326"/>
+        <source>Genre</source>
+        <translation>體裁</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="351"/>
+        <source>Get Metadata from MusicBrainz</source>
+        <translation>從音軌獲取中繼資料</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="358"/>
+        <source>Reload Metadata from File</source>
+        <translation>檔重新載入元的資料</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="406"/>
+        <source>File</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="441"/>
         <source>ReplayGain:</source>
         <translation>重播增益︰</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="706"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="758"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="758"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="758"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="700"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="621"/>
+        <source>Converts beats detected by the analyzer into a fixed-tempo beatgrid. 
+Use this setting if your tracks have a constant tempo (e.g. most electronic music). 
+Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
+        <translation>將轉換成固定節奏 beatgrid 分析器檢測到的節拍。
+使用此設置，如果你的曲目有恆定的節奏 （例如大多數電子音樂）。
+結果往往高品質 beatgrids，但意志不做很好在有節奏的軌道上轉移。</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="655"/>
         <source>Sets the BPM to 200% of the current value.</source>
         <translation>將 BPM 設置為 200%的當前值。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="709"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="761"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="761"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="761"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="703"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="658"/>
         <source>Double BPM</source>
         <translation>雙 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="741"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="793"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="793"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="793"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="735"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="690"/>
         <source>Halve BPM</source>
         <translation>減半 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="854"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="906"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="906"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="906"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="848"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="729"/>
+        <source>Clear BPM and Beatgrid</source>
+        <translation>明確的 BPM 和 Beatgrid</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="803"/>
         <source>Cuepoints</source>
         <translation>Cuepoints</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="945"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="997"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="997"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="997"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="939"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="894"/>
         <source>Move to the previous item.</source>
-        <extracomment>&quot;Previous&quot; button
-----------
-&quot;Previous&quot; button
-----------
-&quot;Previous&quot; button
-----------
-&quot;Previous&quot; button
-----------
-&quot;Previous&quot; button</extracomment>
+        <extracomment>&quot;Previous&quot; button</extracomment>
         <translation>移動到前一項。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="948"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1000"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="1000"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="1000"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="942"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="897"/>
         <source>&amp;Previous</source>
         <translation>&amp; 上一頁</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="961"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1013"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="1013"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="1013"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="955"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="910"/>
         <source>Move to the next item.</source>
-        <extracomment>&quot;Next&quot; button
-----------
-&quot;Next&quot; button
-----------
-&quot;Next&quot; button
-----------
-&quot;Next&quot; button
-----------
-&quot;Next&quot; button</extracomment>
+        <extracomment>&quot;Next&quot; button</extracomment>
         <translation>移動到下一個專案。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="964"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1016"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="1016"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="1016"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="958"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="913"/>
         <source>&amp;Next</source>
         <translation>與下一步</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="470"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="477"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="477"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="477"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="470"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="461"/>
         <source>Duration:</source>
         <translation>持續時間︰</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="624"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="676"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="676"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="676"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="618"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="547"/>
         <source>Open in File Browser</source>
         <translation>在檔瀏覽器中打開</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="670"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="722"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="722"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="722"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="664"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="614"/>
         <source>Track BPM: </source>
         <translation>BPM 的軌道︰</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="677"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="729"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="729"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="729"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="671"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="626"/>
         <source>Assume constant tempo</source>
         <translation>假設恒定的節奏</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="690"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="742"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="742"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="742"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="684"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="639"/>
         <source>Sets the BPM to 66% of the current value.</source>
         <translation>將 BPM 設置為當前值的 66%。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="693"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="745"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="745"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="745"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="687"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="642"/>
         <source>2/3 BPM</source>
         <translation>2/3 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="754"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="806"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="806"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="806"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="748"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="703"/>
         <source>Sets the BPM to 150% of the current value.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="757"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="809"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="809"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="809"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="751"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="706"/>
         <source>3/2 BPM</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="770"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="822"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="822"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="822"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="764"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="719"/>
         <source>Sets the BPM to 133% of the current value.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="773"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="825"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="825"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="825"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="767"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="722"/>
         <source>4/3 BPM</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="780"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="832"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="832"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="832"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="774"/>
-        <source>Clear Bpm and Beatgrid</source>
-        <translation>明確的 Bpm 和 Beatgrid</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="801"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="853"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="853"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="853"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="795"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="750"/>
         <source>Tap with the beat to set the BPM to the speed you are tapping.</source>
         <translation>點擊擊敗，設置 BPM 為您正在開發的速度。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="804"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="856"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="856"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="856"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="798"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="753"/>
         <source>Tap to Beat</source>
         <translation>點擊節拍</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="833"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="885"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="885"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="885"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="827"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="782"/>
         <source>Hint: Use the Library Analyze view to run BPM detection.</source>
         <translation>提示︰ 使用庫分析視圖運行 BPM 檢測。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="861"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="913"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="913"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="913"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="855"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="810"/>
         <source>Cue Id</source>
         <translation>提示 Id</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="866"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="918"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="918"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="918"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="860"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="815"/>
         <source>Position</source>
         <translation>位置</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="871"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="923"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="923"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="923"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="865"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="820"/>
         <source>Hotcue</source>
         <translation>Hotcue</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="876"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="928"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="928"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="928"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="870"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="825"/>
         <source>Label</source>
         <translation>標籤</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="918"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="970"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="970"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="970"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="912"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="867"/>
         <source>Activate Cue</source>
         <translation>啟動提示</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="1028"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1080"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="1080"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="1080"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="1022"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="977"/>
         <source>Save changes and close the window.</source>
-        <extracomment>&quot;OK&quot; button
-----------
-&quot;OK&quot; button
-----------
-&quot;OK&quot; button
-----------
-&quot;OK&quot; button
-----------
-&quot;OK&quot; button</extracomment>
+        <extracomment>&quot;OK&quot; button</extracomment>
         <translation>保存更改並關閉視窗。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="1031"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1083"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="1083"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="1083"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="1025"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="980"/>
         <source>&amp;OK</source>
         <translation>與確定</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="892"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="944"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="944"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="944"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="886"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="841"/>
         <source>Delete Cue</source>
         <translation>刪除提示</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="990"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1042"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="1042"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="1042"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="984"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="939"/>
         <source>Discard changes and close the window.</source>
-        <extracomment>&quot;Cancel&quot; button
-----------
-&quot;Cancel&quot; button
-----------
-&quot;Cancel&quot; button
-----------
-&quot;Cancel&quot; button
-----------
-&quot;Cancel&quot; button</extracomment>
+        <extracomment>&quot;Cancel&quot; button</extracomment>
         <translation>捨棄變更並關閉視窗。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="1009"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1061"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="1061"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="1061"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="1003"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="958"/>
         <source>Save changes and keep the window open.</source>
-        <extracomment>&quot;Apply&quot; button
-----------
-&quot;Apply&quot; button
-----------
-&quot;Apply&quot; button
-----------
-&quot;Apply&quot; button
-----------
-&quot;Apply&quot; button</extracomment>
+        <extracomment>&quot;Apply&quot; button</extracomment>
         <translation>保存更改並保持視窗打開。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="1012"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1064"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="1064"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="1064"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="1006"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="961"/>
         <source>&amp;Apply</source>
         <translation>與應用</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="993"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1045"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="1045"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="1045"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="987"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="942"/>
         <source>&amp;Cancel</source>
         <translation>與取消</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.cpp" line="175"/>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="171"/>
         <source>kbps</source>
         <translation>kbps</translation>
     </message>
@@ -8314,6 +8053,13 @@ To abort this action, press Cancel on the file dialog.</source>
         <translation>AutoPan</translation>
     </message>
     <message>
+        <location filename="../../src/effects/native/autopaneffect.cpp" line="33"/>
+        <source>How fast the sound goes from a side to another
+1/4 - 4 beats rounded to 1/2 beat if tempo is detected (decks and samplers)
+1/4 - 4 seconds if no tempo is detected (mic &amp; aux inputs, master mix)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <location filename="../../src/effects/native/autopaneffect.cpp" line="64"/>
         <source>Width</source>
         <translation>寬度</translation>
@@ -8359,13 +8105,6 @@ To abort this action, press Cancel on the file dialog.</source>
         <location filename="../../src/effects/native/autopaneffect.cpp" line="24"/>
         <source>Bounce the sound from a channel to another, roughly or softly, fully or partially, fastly or slowly.
 A delay, inversed on each side, is added to increase the spatial move and the period can be synced with the BPM.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/effects/native/autopaneffect.cpp" line="33"/>
-        <source>How fast the sound goes from a side to another
-1/4 - 4 beats rounded to 1/2 beat if tempo is detected (decks and samplers)
-1/4 - 4 seconds if tempo is detected (mic &amp; aux inputs, master mix)</source>
         <translation type="unfinished"/>
     </message>
     <message>
