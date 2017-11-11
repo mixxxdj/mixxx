@@ -472,6 +472,42 @@ CrateTrackSelectResult CrateStorage::selectTrackCratesSorted(TrackId trackId) co
     }
 }
 
+CrateSummarySelectResult CrateStorage::selectCratesWithTrackCount(const QList<TrackId>& trackIds) const {
+
+    // unfortunatelly we can't bind a QList to a SqlQuery therefor we have to construct a String first
+    // see: https://stackoverflow.com/questions/3220357/qt-how-to-bind-a-qlist-to-a-qsqlquery-with-a-where-in-clause
+    // Using bindValue did not work, only constructing the SQL string befor.
+    // As TrackId is a int, we are safe here
+    QStringList idstrings;
+    foreach(TrackId id, trackIds) {
+        idstrings << id.toString();
+    }
+    QString numberlist = idstrings.join(",");
+    QString ids = QString("%1").arg(numberlist);
+
+    FwdSqlQuery query(m_database, QString(
+        "SELECT *, ("
+        "    SELECT COUNT(*) FROM %1 WHERE %2.%3 = %1.%4 and %1.%5 in (%9)"
+        " ) AS %6, 0 as %7 FROM %2 ORDER BY %8").arg(
+                CRATE_TRACKS_TABLE,
+                CRATE_TABLE,
+                CRATETABLE_ID,
+                CRATETRACKSTABLE_CRATEID,
+                CRATETRACKSTABLE_TRACKID,
+                CRATESUMMARY_TRACK_COUNT,
+                CRATESUMMARY_TRACK_DURATION,
+                CRATETABLE_NAME,
+                ids));
+
+    if (query.execPrepared()) {
+        return CrateSummarySelectResult(std::move(query));
+    } else {
+        return CrateSummarySelectResult();
+    }
+
+}
+
+
 
 CrateTrackSelectResult CrateStorage::selectTracksSortedByCrateNameLike(const QString& crateNameLike) const {
     FwdSqlQuery query(m_database, QString(
