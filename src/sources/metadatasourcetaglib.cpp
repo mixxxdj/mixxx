@@ -5,6 +5,7 @@
 #include "util/logger.h"
 #include "util/memory.h"
 
+#include <QFile>
 #include <QFileInfo>
 
 #include <taglib/mp4file.h>
@@ -21,6 +22,8 @@ namespace mixxx {
 namespace {
 
 Logger kLogger("MetadataSourceTagLib");
+
+const QString kSafelyWritableFileSuffix = "_writable";
 
 // Workaround for missing functionality in TagLib 1.11.x that
 // doesn't support to read text chunks from AIFF files.
@@ -581,6 +584,72 @@ private:
     bool m_modifiedTags;
 };
 
+class SafelyWritableFile final {
+  public:
+    explicit SafelyWritableFile(QString origFileName)
+        : m_origFileName(std::move(origFileName)) {
+        DEBUG_ASSERT(m_tempFileName.isNull());
+        QString tempFileName = m_origFileName + kSafelyWritableFileSuffix;
+        if (QFile::copy(m_origFileName, tempFileName)) {
+            m_tempFileName = std::move(tempFileName);
+        } else {
+            kLogger.warning()
+                    << "Failed to copy original into temporary file before writing:"
+                    << m_origFileName
+                    << "->"
+                    << tempFileName;
+        }
+    }
+    ~SafelyWritableFile() {
+        cancel();
+    }
+
+    const QString& fileName() const {
+        return m_tempFileName;
+    }
+
+    bool commit() {
+        if (m_tempFileName.isNull() ||
+                !QFile::exists(m_tempFileName)) {
+            return false; // nothing to do
+        }
+        if (!QFile::remove(m_origFileName)) {
+            kLogger.warning()
+                << "Failed to remove original file after writing:"
+                << m_origFileName;
+            return false;
+        }
+        if (!QFile::rename(m_tempFileName, m_origFileName)) {
+            kLogger.critical()
+                << "Failed to rename temporary file after writing:"
+                << m_tempFileName
+                << "->"
+                << m_origFileName;
+            return false;
+        }
+        m_tempFileName = QString();
+        return true;
+    }
+
+    void cancel() {
+        if (m_tempFileName.isNull() ||
+                !QFile::exists(m_tempFileName)) {
+            return; // nothing to do
+        }
+        if (!QFile::remove(m_tempFileName)) {
+            kLogger.warning()
+                    << "Failed to remove temporary file:"
+                    << m_tempFileName;
+        }
+        // Only try once to remove the temporary file
+        m_tempFileName = QString();
+    }
+
+  private:
+    QString m_origFileName;
+    QString m_tempFileName;
+};
+
 } // anonymous namespace
 
 std::pair<MetadataSource::ExportResult, QDateTime>
@@ -590,48 +659,50 @@ MetadataSourceTagLib::exportTrackMetadata(
             << "into file" << m_fileName
             << "with type" << m_fileType;
 
+    SafelyWritableFile safelyWritableFile(m_fileName);
+
     std::unique_ptr<TagSaver> pTagSaver;
     switch (m_fileType) {
     case taglib::FileType::MP3:
     {
-        pTagSaver = std::make_unique<MpegTagSaver>(m_fileName, trackMetadata);
+        pTagSaver = std::make_unique<MpegTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
     case taglib::FileType::MP4:
     {
-        pTagSaver = std::make_unique<Mp4TagSaver>(m_fileName, trackMetadata);
+        pTagSaver = std::make_unique<Mp4TagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
     case taglib::FileType::FLAC:
     {
-        pTagSaver = std::make_unique<FlacTagSaver>(m_fileName, trackMetadata);
+        pTagSaver = std::make_unique<FlacTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
     case taglib::FileType::OGG:
     {
-        pTagSaver = std::make_unique<OggTagSaver>(m_fileName, trackMetadata);
+        pTagSaver = std::make_unique<OggTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
 #if (TAGLIB_HAS_OPUSFILE)
     case taglib::FileType::OPUS:
     {
-        pTagSaver = std::make_unique<OpusTagSaver>(m_fileName, trackMetadata);
+        pTagSaver = std::make_unique<OpusTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
 #endif // TAGLIB_HAS_OPUSFILE
     case taglib::FileType::WV:
     {
-        pTagSaver = std::make_unique<WavPackTagSaver>(m_fileName, trackMetadata);
+        pTagSaver = std::make_unique<WavPackTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
     case taglib::FileType::WAV:
     {
-        pTagSaver = std::make_unique<WavTagSaver>(m_fileName, trackMetadata);
+        pTagSaver = std::make_unique<WavTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
     case taglib::FileType::AIFF:
     {
-        pTagSaver = std::make_unique<AiffTagSaver>(m_fileName, trackMetadata);
+        pTagSaver = std::make_unique<AiffTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
     default:
@@ -644,7 +715,7 @@ MetadataSourceTagLib::exportTrackMetadata(
     }
 
     if (pTagSaver->hasModifiedTags()) {
-        if (pTagSaver->saveModifiedTags()) {
+        if (pTagSaver->saveModifiedTags() && safelyWritableFile.commit()) {
             return afterExportSucceeded();
         } else {
             kLogger.warning() << "Failed to save tags of file" << m_fileName;
