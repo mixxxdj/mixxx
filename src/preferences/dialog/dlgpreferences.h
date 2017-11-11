@@ -34,7 +34,8 @@ class DlgPrefSound;
 class DlgPrefController;
 class DlgPrefControllers;
 class DlgPrefLibrary;
-class DlgPrefControls;
+class DlgPrefInterface;
+class DlgPrefDeck;
 class DlgPrefWaveform;
 class DlgPrefAutoDJ;
 class DlgPrefEQ;
@@ -103,7 +104,8 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     DlgPrefSound* m_wsound;
     DlgPrefLibrary* m_wlibrary;
     DlgPrefControllers *m_wcontrollers;
-    DlgPrefControls* m_wcontrols;
+    DlgPrefInterface* m_wcontrols;
+    DlgPrefDeck* m_wdeck;
     DlgPrefWaveform* m_wwaveform;
     DlgPrefAutoDJ* m_wautodj;
     DlgPrefEQ* m_weq;
@@ -124,6 +126,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     QTreeWidgetItem* m_pSoundButton;
     QTreeWidgetItem* m_pLibraryButton;
     QTreeWidgetItem* m_pControlsButton;
+    QTreeWidgetItem* m_pDecksButton;
     QTreeWidgetItem* m_pWaveformButton;
     QTreeWidgetItem* m_pAutoDJButton;
     QTreeWidgetItem* m_pEqButton;

@@ -1,27 +1,10 @@
-/***************************************************************************
-                          dlgprefcontrols.h  -  description
-                             -------------------
-    begin                : Sat Jul 5 2003
-    copyright            : (C) 2003 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef DLGPREFCONTROLS_H
-#define DLGPREFCONTROLS_H
+#ifndef DLGPREFDECK_H
+#define DLGPREFDECK_H
 
 #include <QWidget>
 
 #include "preferences/constants.h"
-#include "preferences/dialog/ui_dlgprefcontrolsdlg.h"
+#include "preferences/dialog/ui_dlgprefdeckdlg.h"
 #include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
 
@@ -44,13 +27,13 @@ namespace TrackTime {
   *@author Tue & Ken Haste Andersen
   */
 
-class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg  {
+class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     Q_OBJECT
   public:
-    DlgPrefControls(QWidget *parent, MixxxMainWindow *mixxx,
-                    SkinLoader* pSkinLoader, PlayerManager* pPlayerManager,
+    DlgPrefDeck(QWidget *parent, MixxxMainWindow *mixxx,
+                    PlayerManager* pPlayerManager,
                     UserSettingsPointer pConfig);
-    virtual ~DlgPrefControls();
+    virtual ~DlgPrefDeck();
 
   public slots:
     void slotUpdate();
@@ -67,10 +50,6 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     void slotSetRateTempRight(double);
     void slotSetRatePermLeft(double);
     void slotSetRatePermRight(double);
-    void slotSetTooltips();
-    void slotSetSkin(int);
-    void slotSetScheme(int);
-    void slotUpdateSchemes();
     void slotSetTrackTimeDisplay(QAbstractButton*);
     void slotSetTrackTimeDisplay(double);
     void slotSetAllowTrackLoadToPlayingDeck(bool);
@@ -78,9 +57,6 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     void slotSetCueRecall(bool);
     void slotSetRateRamp(bool);
     void slotSetRateRampSensitivity(int);
-    void slotSetLocale(int);
-    void slotSetScaleFactor(int index);
-    void slotSetScaleFactorAuto(bool checked);
 
     void slotNumDecksChanged(double);
     void slotNumSamplersChanged(double);
@@ -89,9 +65,6 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     void slotUpdatePitchAutoReset(bool);
 
   private:
-    void notifyRebootNecessary();
-    bool checkSkinResolution(QString skin);
-
     // Because the CueDefault list is out of order, we have to set the combo
     // box using the user data, not the index.  Returns the index of the item
     // that has the corresponding userData. If the userdata is not in the list,
@@ -109,22 +82,10 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     QList<ControlProxy*> m_keylockModeControls;
     QList<ControlProxy*> m_keyunlockModeControls;
     MixxxMainWindow *m_mixxx;
-    SkinLoader* m_pSkinLoader;
     PlayerManager* m_pPlayerManager;
 
     int m_iNumConfiguredDecks;
     int m_iNumConfiguredSamplers;
-
-    QString m_skin;
-    QString m_colorScheme;
-    mixxx::TooltipsPreference m_tooltipMode;
-    double m_dScaleFactorAuto;
-    bool m_bUseAutoScaleFactor;
-    double m_dScaleFactor;
-    bool m_bStartWithFullScreen;
-    mixxx::ScreenSaverPreference m_screensaverMode;
-
-    bool m_bRebootMixxxView;
 
     bool m_speedAutoReset;
     bool m_pitchAutoReset;

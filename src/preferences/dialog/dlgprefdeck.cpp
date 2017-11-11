@@ -24,39 +24,28 @@
 #include <QDesktopWidget>
 
 #include "mixer/basetrackplayer.h"
-#include "preferences/dialog/dlgprefcontrols.h"
+#include "preferences/dialog/dlgprefdeck.h"
 #include "preferences/usersettings.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "widget/wnumberpos.h"
 #include "engine/enginebuffer.h"
 #include "engine/ratecontrol.h"
-#include "skin/skinloader.h"
-#include "skin/legacyskinparser.h"
 #include "mixer/playermanager.h"
 #include "mixer/playerinfo.h"
 #include "control/controlobject.h"
 #include "mixxx.h"
-#include "util/screensaver.h"
 #include "defs_urls.h"
-#include "util/autohidpi.h"
 
-DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
-                                 SkinLoader* pSkinLoader,
-                                 PlayerManager* pPlayerManager,
-                                 UserSettingsPointer  pConfig)
+DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
+                         PlayerManager* pPlayerManager,
+                         UserSettingsPointer  pConfig)
         :  DlgPreferencePage(parent),
            m_pConfig(pConfig),
            m_mixxx(mixxx),
-           m_pSkinLoader(pSkinLoader),
            m_pPlayerManager(pPlayerManager),
            m_iNumConfiguredDecks(0),
-           m_iNumConfiguredSamplers(0),
-           m_dScaleFactorAuto(1.0),
-           m_bUseAutoScaleFactor(false),
-           m_dScaleFactor(1.0),
-           m_bStartWithFullScreen(false),
-           m_bRebootMixxxView(false) {
+           m_iNumConfiguredSamplers(0) {
     setupUi(this);
 
     m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
@@ -197,10 +186,6 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     spinBoxPermRateRight->setValue(m_pConfig->getValueString(
             ConfigKey("[Controls]", "RatePermRight")).toDouble());
 
-//     labelSpeedRampSensitivity->setEnabled(true);
-//     SliderRateRampSensitivity->setEnabled(true);
-//     SpinBoxRateRampSensitivity->setEnabled(true);
-
     //
     // Override Playing Track on Track Load
     //
@@ -209,48 +194,6 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
         m_pConfig->getValueString(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck")).toInt()==0);
     connect(checkBoxDisallowLoadToPlayingDeck, SIGNAL(toggled(bool)),
             this, SLOT(slotSetAllowTrackLoadToPlayingDeck(bool)));
-
-    //
-    // Locale setting
-    //
-
-    // Iterate through the available locales and add them to the combobox
-    // Borrowed following snippet from http://qt-project.org/wiki/How_to_create_a_multi_language_application
-    QString translationsFolder = m_pConfig->getResourcePath() + "translations/";
-    QString currentLocale = pConfig->getValueString(ConfigKey("[Config]", "Locale"));
-
-    QDir translationsDir(translationsFolder);
-    QStringList fileNames = translationsDir.entryList(QStringList("mixxx_*.qm"));
-    fileNames.push_back("mixxx_en_US.qm"); // add source language as a fake value
-
-    bool indexFlag = false; // it'll indicate if the selected index changed.
-    for (int i = 0; i < fileNames.size(); ++i) {
-        // Extract locale from filename
-        QString locale = fileNames[i];
-        locale.truncate(locale.lastIndexOf('.'));
-        locale.remove(0, locale.indexOf('_') + 1);
-        QLocale qlocale = QLocale(locale);
-
-        QString lang = QLocale::languageToString(qlocale.language());
-        QString country = QLocale::countryToString(qlocale.country());
-        if (lang == "C") { // Ugly hack to remove the non-resolving locales
-            continue;
-        }
-        lang = QString("%1 (%2)").arg(lang).arg(country);
-        ComboBoxLocale->addItem(lang, locale); // locale as userdata (for storing to config)
-        if (locale == currentLocale) { // Set the currently selected locale
-            ComboBoxLocale->setCurrentIndex(ComboBoxLocale->count() - 1);
-            indexFlag = true;
-        }
-    }
-    ComboBoxLocale->model()->sort(0); // Sort languages list
-
-    ComboBoxLocale->insertItem(0, "System", ""); // System default locale - insert at the top
-    if (!indexFlag) { // if selectedIndex didn't change - select system default
-        ComboBoxLocale->setCurrentIndex(0);
-    }
-    connect(ComboBoxLocale, SIGNAL(activated(int)),
-            this, SLOT(slotSetLocale(int)));
 
     //
     // Cue Mode
@@ -288,145 +231,6 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     //NOTE: for CueRecall, 0 means ON...
     connect(checkBoxSeekToCue, SIGNAL(toggled(bool)),
             this, SLOT(slotSetCueRecall(bool)));
-
-    //
-    // Skin configurations
-    //
-    QString warningString = "<img src=\":/images/preferences/ic_preferences_warning.png\") width=16 height=16 />"
-        + tr("The minimum size of the selected skin is bigger than your screen resolution.");
-    warningLabel->setText(warningString);
-
-    ComboBoxSkinconf->clear();
-
-    QList<QDir> skinSearchPaths = m_pSkinLoader->getSkinSearchPaths();
-    QList<QFileInfo> skins;
-    for (QDir dir : skinSearchPaths) {
-        dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
-        skins.append(dir.entryInfoList());
-    }
-
-    QString configuredSkinPath = m_pSkinLoader->getConfiguredSkinPath();
-    QIcon sizeWarningIcon(":/images/preferences/ic_preferences_warning.png");
-    int index = 0;
-    for (QFileInfo skinInfo : skins) {
-        bool size_ok = checkSkinResolution(skinInfo.absoluteFilePath());
-        if (size_ok) {
-            ComboBoxSkinconf->insertItem(index, skinInfo.fileName());
-        } else {
-            ComboBoxSkinconf->insertItem(index, sizeWarningIcon, skinInfo.fileName());
-        }
-
-        if (skinInfo.absoluteFilePath() == configuredSkinPath) {
-            ComboBoxSkinconf->setCurrentIndex(index);
-            if (size_ok) {
-                warningLabel->hide();
-            } else {
-                warningLabel->show();
-            }
-        }
-        index++;
-    }
-
-    connect(ComboBoxSkinconf, SIGNAL(activated(int)), this, SLOT(slotSetSkin(int)));
-    connect(ComboBoxSchemeconf, SIGNAL(activated(int)), this, SLOT(slotSetScheme(int)));
-
-    slotUpdateSchemes();
-
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    AutoHiDpi autoHiDpi;
-    m_dScaleFactorAuto = autoHiDpi.getScaleFactor();
-    double scaleFactor = m_dScaleFactorAuto;
-    if (scaleFactor > 0) {
-        // we got a valid auto scale factor
-        bool scaleFactorAuto = m_pConfig->getValue(
-                ConfigKey("[Config]", "ScaleFactorAuto"), true);
-        checkBoxScaleFactorAuto->setChecked(scaleFactorAuto);
-        if (scaleFactorAuto) {
-            comboBoxScaleFactor->setEnabled(false);
-            m_pConfig->setValue(
-                    ConfigKey("[Config]", "ScaleFactor"), m_dScaleFactorAuto);
-        } else {
-            scaleFactor = m_pConfig->getValue(
-                        ConfigKey("[Config]", "ScaleFactor"), 1.0);
-        }
-    } else {
-        checkBoxScaleFactorAuto->setEnabled(false);
-        scaleFactor = m_pConfig->getValue(
-                    ConfigKey("[Config]", "ScaleFactor"), 1.0);
-    }
-    connect(checkBoxScaleFactorAuto, SIGNAL(toggled(bool)),
-            this, SLOT(slotSetScaleFactorAuto(bool)));
-
-    //: Entry of the HiDPI scale combo box. %1 is the scale factor in percent
-    comboBoxScaleFactor->addItem(QString(tr("%1 %")).arg(50), 0.5);
-    comboBoxScaleFactor->addItem(QString(tr("%1 %")).arg(100), 1);
-    comboBoxScaleFactor->addItem(QString(tr("%1 %")).arg(200), 2);
-    comboBoxScaleFactor->addItem(QString(tr("%1 %")).arg(300), 3);
-    comboBoxScaleFactor->addItem(QString(tr("%1 %")).arg(400), 4);
-    int i;
-    for (i = 0; i < comboBoxScaleFactor->count(); ++i) {
-        if (scaleFactor == comboBoxScaleFactor->itemData(i)) {
-            comboBoxScaleFactor->setCurrentIndex(i);
-            break;
-        }
-    }
-    if (i == comboBoxScaleFactor->count()) {
-        // no default scale, add custom scale
-        comboBoxScaleFactor->addItem(
-                QString(tr("%1 % (Experimental)")).arg(scaleFactor * 100), scaleFactor);
-        comboBoxScaleFactor->setCurrentIndex(i);
-    }
-    connect(comboBoxScaleFactor, SIGNAL(activated(int)),
-            this, SLOT(slotSetScaleFactor(int)));
-#else
-    checkBoxScaleFactorAuto->hide();
-    comboBoxScaleFactor->hide();
-    labelScaleFactor->hide();
-#endif
-
-
-    //
-    // Start in fullscreen mode
-    //
-    checkBoxStartFullScreen->setChecked(m_pConfig->getValueString(
-                    ConfigKey("[Config]", "StartInFullscreen")).toInt()==1);
-
-    //
-    // Screensaver mode
-    //
-    comboBoxScreensaver->clear();
-    comboBoxScreensaver->addItem(tr("Allow screensaver to run"), 
-        static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_OFF));
-    comboBoxScreensaver->addItem(tr("Prevent screensaver from running"), 
-        static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON));
-    comboBoxScreensaver->addItem(tr("Prevent screensaver while playing"), 
-        static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON_PLAY));
-
-    int inhibitsettings = static_cast<int>(mixxx->getInhibitScreensaver());
-    comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(inhibitsettings));
-
-    //
-    // Tooltip configuration
-    //
-
-    // Initialize checkboxes to match config
-    mixxx::TooltipsPreference configTooltips = m_mixxx->getToolTipsCfg();
-    switch (configTooltips) {
-        case mixxx::TooltipsPreference::TOOLTIPS_OFF:
-            radioButtonTooltipsOff->setChecked(true);
-            break;
-        case mixxx::TooltipsPreference::TOOLTIPS_ON:
-            radioButtonTooltipsLibraryAndSkin->setChecked(true);
-            break;
-        case mixxx::TooltipsPreference::TOOLTIPS_ONLY_IN_LIBRARY:
-            radioButtonTooltipsLibrary->setChecked(true);
-            break;
-    }
-
-    slotSetTooltips();  // Update disabled status of "only library" checkbox
-    connect(buttonGroupTooltips, SIGNAL(buttonClicked(QAbstractButton*)),
-            this, SLOT(slotSetTooltips()));
 
     //
     // Ramping Temporary Rate Change configuration
@@ -472,7 +276,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     slotUpdate();
 }
 
-DlgPrefControls::~DlgPrefControls() {
+DlgPrefDeck::~DlgPrefDeck() {
     delete m_pControlTrackTimeDisplay;
     qDeleteAll(m_rateControls);
     qDeleteAll(m_rateDirControls);
@@ -482,31 +286,7 @@ DlgPrefControls::~DlgPrefControls() {
     qDeleteAll(m_keyunlockModeControls);
 }
 
-void DlgPrefControls::slotUpdateSchemes() {
-    // Since this involves opening a file we won't do this as part of regular slotUpdate
-    QList<QString> schlist = LegacySkinParser::getSchemeList(
-                m_pSkinLoader->getSkinPath(m_skin));
-
-    ComboBoxSchemeconf->clear();
-
-    if (schlist.size() == 0) {
-        ComboBoxSchemeconf->setEnabled(false);
-        ComboBoxSchemeconf->addItem(tr("This skin does not support color schemes", 0));
-        ComboBoxSchemeconf->setCurrentIndex(0);
-    } else {
-        ComboBoxSchemeconf->setEnabled(true);
-        QString selectedScheme = m_pConfig->getValueString(ConfigKey("[Config]", "Scheme"));
-        for (int i = 0; i < schlist.size(); i++) {
-            ComboBoxSchemeconf->addItem(schlist[i]);
-
-            if (schlist[i] == selectedScheme) {
-                ComboBoxSchemeconf->setCurrentIndex(i);
-            }
-        }
-    }
-}
-
-void DlgPrefControls::slotUpdate() {
+void DlgPrefDeck::slotUpdate() {
     double deck1RateRange = m_rateRangeControls[0]->get();
     double deck1RateDir = m_rateDirControls[0]->get();
 
@@ -538,11 +318,7 @@ void DlgPrefControls::slotUpdate() {
     checkBoxResetPitch->setChecked(m_pitchAutoReset);
 }
 
-void DlgPrefControls::slotResetToDefaults() {
-    int index = ComboBoxSkinconf->findText(m_pSkinLoader->getDefaultSkinName());
-    ComboBoxSkinconf->setCurrentIndex(index);
-    slotSetSkin(index);
-
+void DlgPrefDeck::slotResetToDefaults() {
     // Track time display mode
     radioButtonRemaining->setChecked(true);
 
@@ -555,30 +331,11 @@ void DlgPrefControls::slotResetToDefaults() {
     // Don't load tracks into playing decks.
     checkBoxDisallowLoadToPlayingDeck->setChecked(true);
 
-    // Use System locale
-    ComboBoxLocale->setCurrentIndex(0);
-
     // Mixxx cue mode
     ComboBoxCueDefault->setCurrentIndex(0);
 
     // Cue recall on.
     checkBoxSeekToCue->setChecked(true);
-
-    // Default to normal size widgets
-    comboBoxScaleFactor->setCurrentIndex(1); // 100 %
-    if (m_dScaleFactorAuto > 0) {
-        checkBoxScaleFactorAuto->setChecked(true);
-    }
-
-    // Don't start in full screen.
-    checkBoxStartFullScreen->setChecked(false);
-
-    // Inhibit the screensaver
-    comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(
-        static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON)));
-
-    // Tooltips on everywhere.
-    radioButtonTooltipsLibraryAndSkin->setChecked(true);
 
     // Rate-ramping default off.
     radioButtonSpeedBendStatic->setChecked(true);
@@ -608,17 +365,11 @@ void DlgPrefControls::slotResetToDefaults() {
     radioButtonResetUnlockedKey->setChecked(true);
 }
 
-void DlgPrefControls::slotSetLocale(int pos) {
-    QString newLocale = ComboBoxLocale->itemData(pos).toString();
-    m_pConfig->set(ConfigKey("[Config]", "Locale"), ConfigValue(newLocale));
-    notifyRebootNecessary();
-}
-
-void DlgPrefControls::slotSetRateRange(int pos) {
+void DlgPrefDeck::slotSetRateRange(int pos) {
     slotSetRateRangePercent(ComboBoxRateRange->itemData(pos).toInt());
 }
 
-void DlgPrefControls::slotSetRateRangePercent (int rateRangePercent) {
+void DlgPrefDeck::slotSetRateRangePercent (int rateRangePercent) {
     double rateRange = rateRangePercent / 100.;
 
     // Set rate range for every group
@@ -632,13 +383,13 @@ void DlgPrefControls::slotSetRateRangePercent (int rateRangePercent) {
     }
 }
 
-void DlgPrefControls::slotSetRateDir(bool invert) {
+void DlgPrefDeck::slotSetRateDir(bool invert) {
     int index = 0;
     if (invert) index = 1;
     slotSetRateDir(index);
 }
 
-void DlgPrefControls::slotSetRateDir(int index) {
+void DlgPrefDeck::slotSetRateDir(int index) {
     float dir = 1.;
     if (index == 1)
         dir = -1.;
@@ -659,27 +410,27 @@ void DlgPrefControls::slotSetRateDir(int index) {
 
 }
 
-void DlgPrefControls::slotKeyLockMode(QAbstractButton* b) {
+void DlgPrefDeck::slotKeyLockMode(QAbstractButton* b) {
     if (b == radioButtonCurrentKey) {
         m_keylockMode = 1;
     }
     else { m_keylockMode = 0; }
 }
 
-void DlgPrefControls::slotKeyUnlockMode(QAbstractButton* b) {
+void DlgPrefDeck::slotKeyUnlockMode(QAbstractButton* b) {
     if (b == radioButtonResetUnlockedKey) {
         m_keyunlockMode = 0;
     }
     else { m_keyunlockMode = 1; }
 }
 
-void DlgPrefControls::slotSetAllowTrackLoadToPlayingDeck(bool b) {
+void DlgPrefDeck::slotSetAllowTrackLoadToPlayingDeck(bool b) {
     // If b is true, it means NOT to allow track loading
     m_pConfig->set(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"),
                    ConfigValue(b?0:1));
 }
 
-void DlgPrefControls::slotSetCueDefault(int index)
+void DlgPrefDeck::slotSetCueDefault(int index)
 {
     int cueMode = ComboBoxCueDefault->itemData(index).toInt();
     m_pConfig->set(ConfigKey("[Controls]", "CueDefault"), ConfigValue(cueMode));
@@ -690,70 +441,12 @@ void DlgPrefControls::slotSetCueDefault(int index)
     }
 }
 
-void DlgPrefControls::slotSetCueRecall(bool b)
+void DlgPrefDeck::slotSetCueRecall(bool b)
 {
     m_pConfig->set(ConfigKey("[Controls]", "CueRecall"), ConfigValue(b?0:1));
 }
 
-
-void DlgPrefControls::slotSetScaleFactor(int index) {
-    double newScaleFactor = comboBoxScaleFactor->itemData(index).toDouble();
-    if (m_dScaleFactor != newScaleFactor) {
-        m_dScaleFactor = newScaleFactor;
-        m_bRebootMixxxView = true;
-    }
-}
-
-void DlgPrefControls::slotSetScaleFactorAuto(bool newValue) {
-    if (newValue) {
-        if (!m_bUseAutoScaleFactor) {
-            m_bRebootMixxxView = true;
-        }
-    } else {
-        slotSetScaleFactor(comboBoxScaleFactor->currentIndex());
-    }
-
-    m_bUseAutoScaleFactor = newValue;
-    comboBoxScaleFactor->setEnabled(!newValue);
-}
-
-void DlgPrefControls::slotSetTooltips() {
-    //0=OFF, 1=ON, 2=ON (only in Library)
-    m_tooltipMode = mixxx::TooltipsPreference::TOOLTIPS_ON;
-    if (radioButtonTooltipsOff->isChecked()) {
-        m_tooltipMode = mixxx::TooltipsPreference::TOOLTIPS_OFF;
-    } else if (radioButtonTooltipsLibrary->isChecked()) {
-        m_tooltipMode = mixxx::TooltipsPreference::TOOLTIPS_ONLY_IN_LIBRARY;
-    }
-}
-
-void DlgPrefControls::notifyRebootNecessary() {
-    // make the fact that you have to restart mixxx more obvious
-    QMessageBox::information(
-        this, tr("Information"),
-        tr("Mixxx must be restarted before the changes will take effect."));
-}
-
-void DlgPrefControls::slotSetScheme(int) {
-    QString newScheme = ComboBoxSchemeconf->currentText();
-    if (m_colorScheme != newScheme) {
-        m_colorScheme = newScheme;
-        m_bRebootMixxxView = true;
-    }
-}
-
-void DlgPrefControls::slotSetSkin(int) {
-    QString newSkin = ComboBoxSkinconf->currentText();
-    if (newSkin != m_skin) {
-        m_skin = newSkin;
-        m_bRebootMixxxView = true;
-        checkSkinResolution(ComboBoxSkinconf->currentText())
-            ? warningLabel->hide() : warningLabel->show();
-        slotUpdateSchemes();
-    }
-}
-
-void DlgPrefControls::slotSetTrackTimeDisplay(QAbstractButton* b) {
+void DlgPrefDeck::slotSetTrackTimeDisplay(QAbstractButton* b) {
     double timeDisplay;
     if (b == radioButtonRemaining) {
         timeDisplay = static_cast<double>(TrackTime::DisplayMode::Remaining);
@@ -766,7 +459,7 @@ void DlgPrefControls::slotSetTrackTimeDisplay(QAbstractButton* b) {
     m_pControlTrackTimeDisplay->set(timeDisplay);
 }
 
-void DlgPrefControls::slotSetTrackTimeDisplay(double v) {
+void DlgPrefDeck::slotSetTrackTimeDisplay(double v) {
     if (v == 1.0) {
         // Remaining
         radioButtonRemaining->setChecked(true);
@@ -782,65 +475,47 @@ void DlgPrefControls::slotSetTrackTimeDisplay(double v) {
     }
 }
 
-void DlgPrefControls::slotSetRateTempLeft(double v) {
+void DlgPrefDeck::slotSetRateTempLeft(double v) {
     QString str;
     str = str.setNum(v, 'f');
     m_pConfig->set(ConfigKey("[Controls]", "RateTempLeft"),ConfigValue(str));
     RateControl::setTemp(v);
 }
 
-void DlgPrefControls::slotSetRateTempRight(double v) {
+void DlgPrefDeck::slotSetRateTempRight(double v) {
     QString str;
     str = str.setNum(v, 'f');
     m_pConfig->set(ConfigKey("[Controls]", "RateTempRight"),ConfigValue(str));
     RateControl::setTempSmall(v);
 }
 
-void DlgPrefControls::slotSetRatePermLeft(double v) {
+void DlgPrefDeck::slotSetRatePermLeft(double v) {
     QString str;
     str = str.setNum(v, 'f');
     m_pConfig->set(ConfigKey("[Controls]", "RatePermLeft"),ConfigValue(str));
     RateControl::setPerm(v);
 }
 
-void DlgPrefControls::slotSetRatePermRight(double v) {
+void DlgPrefDeck::slotSetRatePermRight(double v) {
     QString str;
     str = str.setNum(v, 'f');
     m_pConfig->set(ConfigKey("[Controls]", "RatePermRight"),ConfigValue(str));
     RateControl::setPermSmall(v);
 }
 
-void DlgPrefControls::slotSetRateRampSensitivity(int sense) {
+void DlgPrefDeck::slotSetRateRampSensitivity(int sense) {
     m_pConfig->set(ConfigKey("[Controls]", "RateRampSensitivity"),
                    ConfigValue(SliderRateRampSensitivity->value()));
     RateControl::setRateRampSensitivity(sense);
 }
 
-void DlgPrefControls::slotSetRateRamp(bool mode) {
+void DlgPrefDeck::slotSetRateRamp(bool mode) {
     m_pConfig->set(ConfigKey("[Controls]", "RateRamp"),
                    ConfigValue(radioButtonSpeedBendRamping->isChecked()));
     RateControl::setRateRamp(mode);
 }
 
-void DlgPrefControls::slotApply() {
-    m_pConfig->set(ConfigKey("[Config]", "ResizableSkin"), m_skin);
-    m_pConfig->set(ConfigKey("[Config]", "Scheme"), m_colorScheme);
-
-    m_pConfig->setValue(
-            ConfigKey("[Config]", "ScaleFactorAuto"), m_bUseAutoScaleFactor);
-    if (m_bUseAutoScaleFactor) {
-        m_pConfig->setValue(
-                ConfigKey("[Config]", "ScaleFactor"), m_dScaleFactorAuto);
-    } else {
-        m_pConfig->setValue(ConfigKey("[Config]", "ScaleFactor"), m_dScaleFactor);
-    }
-
-    m_pConfig->set(ConfigKey("[Config]", "StartInFullscreen"),
-            ConfigValue(checkBoxStartFullScreen->isChecked()));
-
-    m_mixxx->setToolTipsCfg(m_tooltipMode);
-
-
+void DlgPrefDeck::slotApply() {
     double deck1RateRange = m_rateRangeControls[0]->get();
     double deck1RateDir = m_rateDirControls[0]->get();
 
@@ -855,15 +530,6 @@ void DlgPrefControls::slotApply() {
     }
 
     int configSPAutoReset = BaseTrackPlayer::RESET_NONE;
-
-    // screensaver mode update
-    int screensaverComboBoxState = comboBoxScreensaver->itemData(
-            comboBoxScreensaver->currentIndex()).toInt();
-    int screensaverConfiguredState = static_cast<int>(m_mixxx->getInhibitScreensaver());
-    if (screensaverComboBoxState != screensaverConfiguredState) {
-        m_mixxx->setInhibitScreensaver(
-                static_cast<mixxx::ScreenSaverPreference>(screensaverComboBoxState));
-    }
 
     if (m_speedAutoReset && m_pitchAutoReset) {
         configSPAutoReset = BaseTrackPlayer::RESET_PITCH_AND_SPEED;
@@ -887,46 +553,9 @@ void DlgPrefControls::slotApply() {
     foreach (ControlProxy* pControl, m_keyunlockModeControls) {
         pControl->set(m_keyunlockMode);
     }
-
-    if (m_bRebootMixxxView) {
-        m_mixxx->rebootMixxxView();
-    }
-    m_bRebootMixxxView = false;
 }
 
-//Returns TRUE if skin fits to screen resolution, FALSE otherwise
-bool DlgPrefControls::checkSkinResolution(QString skin)
-{
-    int screenWidth = QApplication::desktop()->width();
-    int screenHeight = QApplication::desktop()->height();
-
-    const QRegExp min_size_regex("<MinimumSize>(\\d+), *(\\d+)<");
-    QFile skinfile(skin + "/skin.xml");
-    if (skinfile.open(QFile::ReadOnly | QFile::Text)) {
-        QTextStream in(&skinfile);
-        bool found_size = false;
-        while (!in.atEnd()) {
-            if (min_size_regex.indexIn(in.readLine()) != -1) {
-                found_size = true;
-                break;
-            }
-        }
-        if (found_size) {
-            return !(min_size_regex.cap(1).toInt() > screenWidth ||
-                     min_size_regex.cap(2).toInt() > screenHeight);
-        }
-    }
-
-    // If regex failed, fall back to skin name parsing.
-    QString skinName = skin.left(skin.indexOf(QRegExp("\\d")));
-    QString resName = skin.right(skin.count()-skinName.count());
-    QString res = resName.left(resName.lastIndexOf(QRegExp("\\d"))+1);
-    QString skinWidth = res.left(res.indexOf("x"));
-    QString skinHeight = res.right(res.count()-skinWidth.count()-1);
-    return !(skinWidth.toInt() > screenWidth || skinHeight.toInt() > screenHeight);
-}
-
-void DlgPrefControls::slotNumDecksChanged(double new_count) {
+void DlgPrefDeck::slotNumDecksChanged(double new_count) {
     int numdecks = static_cast<int>(new_count);
     if (numdecks <= m_iNumConfiguredDecks) {
         // TODO(owilliams): If we implement deck deletion, shrink the size of configured decks.
@@ -956,7 +585,7 @@ void DlgPrefControls::slotNumDecksChanged(double new_count) {
     slotSetRateRangePercent(m_pConfig->getValueString(ConfigKey("[Controls]", "RateRangePercent")).toInt());
 }
 
-void DlgPrefControls::slotNumSamplersChanged(double new_count) {
+void DlgPrefDeck::slotNumSamplersChanged(double new_count) {
     int numsamplers = static_cast<int>(new_count);
     if (numsamplers <= m_iNumConfiguredSamplers) {
         return;
@@ -985,15 +614,15 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
     slotSetRateRangePercent(m_pConfig->getValueString(ConfigKey("[Controls]", "RateRangePercent")).toInt());
 }
 
-void DlgPrefControls::slotUpdateSpeedAutoReset(bool b) {
+void DlgPrefDeck::slotUpdateSpeedAutoReset(bool b) {
     m_speedAutoReset = b;
 }
 
-void DlgPrefControls::slotUpdatePitchAutoReset(bool b) {
+void DlgPrefDeck::slotUpdatePitchAutoReset(bool b) {
     m_pitchAutoReset = b;
 }
 
-int DlgPrefControls::cueDefaultIndexByData(int userData) const {
+int DlgPrefDeck::cueDefaultIndexByData(int userData) const {
     for (int i = 0; i < ComboBoxCueDefault->count(); ++i) {
         if (ComboBoxCueDefault->itemData(i).toInt() == userData) {
             return i;

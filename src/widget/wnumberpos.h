@@ -6,7 +6,7 @@
 #include <QMouseEvent>
 
 #include "wnumber.h"
-#include "preferences/dialog/dlgprefcontrols.h"
+#include "preferences/dialog/dlgprefdeck.h"
 
 class ControlProxy;
 

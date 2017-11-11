@@ -45,7 +45,8 @@
 #include "preferences/dialog/dlgprefsound.h"
 #include "controllers/dlgprefcontrollers.h"
 #include "preferences/dialog/dlgpreflibrary.h"
-#include "preferences/dialog/dlgprefcontrols.h"
+#include "preferences/dialog/dlgprefinterface.h"
+#include "preferences/dialog/dlgprefdeck.h"
 #include "preferences/dialog/dlgprefwaveform.h"
 #include "preferences/dialog/dlgprefautodj.h"
 #include "preferences/dialog/dlgprefeq.h"
@@ -98,8 +99,10 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_wlibrary);
     connect(m_wlibrary, SIGNAL(scanLibrary()),
             pLibrary, SLOT(scan()));
-    m_wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager, m_pConfig);
+    m_wcontrols = new DlgPrefInterface(this, mixxx, pSkinLoader, m_pConfig);
     addPageWidget(m_wcontrols);
+    m_wdeck = new DlgPrefDeck(this, mixxx, pPlayerManager, m_pConfig);
+    addPageWidget(m_wdeck);
     m_wwaveform = new DlgPrefWaveform(this, mixxx, m_pConfig, pLibrary);
     addPageWidget(m_wwaveform);
     m_wautodj = new DlgPrefAutoDJ(this, m_pConfig);
@@ -169,6 +172,12 @@ void DlgPreferences::createIcons() {
     m_pControlsButton->setText(0, tr("Interface"));
     m_pControlsButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pControlsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+    m_pDecksButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pDecksButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_decks.png"));
+    m_pDecksButton->setText(0, tr("Decks"));
+    m_pDecksButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pDecksButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     m_pWaveformButton = new QTreeWidgetItem(m_pControlsButton, QTreeWidgetItem::Type);
     m_pWaveformButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_waveforms.png"));
@@ -288,6 +297,8 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
         switchToPage(m_wlibrary);
     } else if (current == m_pControlsButton) {
         switchToPage(m_wcontrols);
+    } else if (current == m_pDecksButton) {
+        switchToPage(m_wdeck);
     } else if (current == m_pWaveformButton) {
         switchToPage(m_wwaveform);
     } else if (current == m_pAutoDJButton) {
