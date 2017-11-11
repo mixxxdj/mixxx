@@ -82,6 +82,26 @@ class CrateQueryBinder {
     FwdSqlQuery& m_query;
 };
 
+const QChar kSqlListSeparator(',');
+
+// It is not possible to bind multiple values as a list to a query.
+// The list of track ids has to be transformed into a single list
+// string before it can be used in an SQL query.
+QString joinSqlStringList(const QList<TrackId>& trackIds) {
+    QString joinedTrackIds;
+    // Reserve memory up front to prevent reallocation. Here we
+    // assume that all track ids fit into 6 decimal digits and
+    // add 1 character for the list separator.
+    joinedTrackIds.reserve((6 + 1) * trackIds.size());
+    for (const auto trackId: trackIds) {
+        if (!joinedTrackIds.isEmpty()) {
+            joinedTrackIds += kSqlListSeparator;
+        }
+        joinedTrackIds += trackId.toString();
+    }
+    return joinedTrackIds;
+}
+
 } // anonymous namespace
 
 
@@ -473,18 +493,6 @@ CrateTrackSelectResult CrateStorage::selectTrackCratesSorted(TrackId trackId) co
 }
 
 CrateSummarySelectResult CrateStorage::selectCratesWithTrackCount(const QList<TrackId>& trackIds) const {
-
-    // unfortunatelly we can't bind a QList to a SqlQuery therefor we have to construct a String first
-    // see: https://stackoverflow.com/questions/3220357/qt-how-to-bind-a-qlist-to-a-qsqlquery-with-a-where-in-clause
-    // Using bindValue did not work, only constructing the SQL string befor.
-    // As TrackId is a int, we are safe here
-    QStringList idstrings;
-    foreach(TrackId id, trackIds) {
-        idstrings << id.toString();
-    }
-    QString numberlist = idstrings.join(",");
-    QString ids = QString("%1").arg(numberlist);
-
     FwdSqlQuery query(m_database, QString(
         "SELECT *, ("
         "    SELECT COUNT(*) FROM %1 WHERE %2.%3 = %1.%4 and %1.%5 in (%9)"
@@ -497,14 +505,13 @@ CrateSummarySelectResult CrateStorage::selectCratesWithTrackCount(const QList<Tr
                 CRATESUMMARY_TRACK_COUNT,
                 CRATESUMMARY_TRACK_DURATION,
                 CRATETABLE_NAME,
-                ids));
+                joinSqlStringList(trackIds)));
 
     if (query.execPrepared()) {
         return CrateSummarySelectResult(std::move(query));
     } else {
         return CrateSummarySelectResult();
     }
-
 }
 
 
