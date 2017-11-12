@@ -222,6 +222,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     // Update combo box
     // The itemData values are out of order to avoid breaking configurations
     // when Mixxx mode (no blinking) was introduced.
+    // TODO: replace magic numbers with an enum class
     ComboBoxCueDefault->addItem(tr("Mixxx mode"), 0);
     ComboBoxCueDefault->addItem(tr("Mixxx mode (no blinking)"), 4);
     ComboBoxCueDefault->addItem(tr("Pioneer mode"), 1);
@@ -230,8 +231,8 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     ComboBoxCueDefault->addItem(tr("CUP mode"), 5);
     const int cueDefaultIndex = cueDefaultIndexByData(cueDefaultValue);
     ComboBoxCueDefault->setCurrentIndex(cueDefaultIndex);
-    slotSetCueDefault(cueDefaultIndex);
-    connect(ComboBoxCueDefault, SIGNAL(activated(int)), this, SLOT(slotSetCueDefault(int)));
+    slotCueModeCombobox(cueDefaultIndex);
+    connect(ComboBoxCueDefault, SIGNAL(activated(int)), this, SLOT(slotCueModeCombobox(int)));
 
     //
     // Ramping Temporary Rate Change configuration
@@ -413,15 +414,8 @@ void DlgPrefDeck::slotDisallowTrackLoadToPlayingDeckCheckbox(bool checked) {
     m_bDisallowTrackLoadToPlayingDeck = checked;
 }
 
-void DlgPrefDeck::slotSetCueDefault(int index)
-{
-    int cueMode = ComboBoxCueDefault->itemData(index).toInt();
-    m_pConfig->set(ConfigKey("[Controls]", "CueDefault"), ConfigValue(cueMode));
-
-    // Set cue behavior for every group
-    foreach (ControlProxy* pControl, m_cueControls) {
-        pControl->set(cueMode);
-    }
+void DlgPrefDeck::slotCueModeCombobox(int index) {
+    m_iCueMode = ComboBoxCueDefault->itemData(index).toInt();
 }
 
 void DlgPrefDeck::slotJumpToCueOnTrackLoadCheckbox(bool checked) {
@@ -498,6 +492,12 @@ void DlgPrefDeck::slotSetRateRamp(bool mode) {
 }
 
 void DlgPrefDeck::slotApply() {
+    // Set cue mode for every deck
+    for (ControlProxy* pControl : m_cueControls) {
+        pControl->set(m_iCueMode);
+    }
+    m_pConfig->setValue(ConfigKey("[Controls]", "CueDefault"), m_iCueMode);
+
     m_pConfig->setValue(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"),
                         !m_bDisallowTrackLoadToPlayingDeck);
 
