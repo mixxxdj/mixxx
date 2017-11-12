@@ -180,7 +180,10 @@ QTableView {
 /* Colors aren't applied to selected items, define them manually */
 QTableView::item:selected,
 QTreeView::item:selected,
-#LibraryBPMButton::item:selected {
+#LibraryBPMButton::item:selected,
+QTreeView::branch:selected,
+/* This won't style the Preview button */
+#LibraryPreviewButton::item:selected {
   color: #D6D6D6;
   background-color: #006596;
 }
@@ -212,16 +215,17 @@ QTableView::indicator:unchecked {
 QPushButton#LibraryPreviewButton {
   width: 23px;
   height: 12px;
-  background: transparent;
   border: none;
 }
 
 QPushButton#LibraryPreviewButton:!checked {
   image: url(skin:/image/style_library_preview_play.png);
+  background-color: #1A1A1A;
 }
 
 QPushButton#LibraryPreviewButton:checked {
   image: url(skin:/image/style_library_preview_pause.png);
+  background-color: #006596;
 }
 
 /* library header row */
