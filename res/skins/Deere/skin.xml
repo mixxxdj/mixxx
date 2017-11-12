@@ -45,7 +45,7 @@
   <ObjectName>Mixxx</ObjectName>
   <Style src="skin:style.qss"/>
 
-  <Size>1024me,550me</Size>
+  <MinimumSize>1008,550</MinimumSize>
   <Layout>horizontal</Layout>
 
   <Children>
