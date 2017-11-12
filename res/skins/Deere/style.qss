@@ -66,12 +66,13 @@
   border-top: 1px solid #222;
   background-color: transparent;
   margin: 0;
-  padding: 0 4px 0 0;
+  padding: 0 3px 0 0;
 }
 
 #ControlsRow {
   border-top: 1px solid #222;
-  padding: 4px;
+  padding: 3px;
+  qproperty-layoutAlignment: 'AlignBottom';
 }
 
 #MixerBorder {
@@ -681,11 +682,6 @@ WWidget, QLabel {
 
 
 /* Start spacing for Deck controls row (transport, beatgrid, looping, hotcue, vinylcontrol) */
-
-#FullControlsRow {
-  qproperty-layoutSpacing: 3;
-  qproperty-layoutAlignment: 'AlignBottom';
-}
 
 #HotcueGrid, #HotcueGridExtended,
 #VinylControlsContainer {
