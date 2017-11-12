@@ -241,7 +241,7 @@ void BaseSqlTableModel::select() {
 
     // Prepare query for id and all columns not in m_trackSource
     QString queryString = QString("SELECT %1 FROM %2 %3")
-            .arg(m_tableColumnsJoined, m_tableName, m_tableOrderBy);
+            .arg(m_tableColumns.join(","), m_tableName, m_tableOrderBy);
 
     if (sDebug) {
         qDebug() << this << "select() executing:" << queryString;
@@ -355,7 +355,6 @@ void BaseSqlTableModel::setTable(const QString& tableName,
     m_tableName = tableName;
     m_idColumn = idColumn;
     m_tableColumns = tableColumns;
-    m_tableColumnsJoined = tableColumns.join(",");
 
     if (m_trackSource) {
         disconnect(m_trackSource.data(), SIGNAL(tracksChanged(QSet<TrackId>)),
@@ -826,15 +825,6 @@ Qt::ItemFlags BaseSqlTableModel::readOnlyFlags(const QModelIndex &index) const {
     defaultFlags |= Qt::ItemIsDragEnabled;
 
     return defaultFlags;
-}
-
-const QLinkedList<int> BaseSqlTableModel::getTrackRows(TrackId trackId) const {
-    QHash<TrackId, QLinkedList<int> >::const_iterator it =
-            m_trackIdToRows.constFind(trackId);
-    if (it != m_trackIdToRows.constEnd()) {
-        return it.value();
-    }
-    return QLinkedList<int>();
 }
 
 TrackId BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
