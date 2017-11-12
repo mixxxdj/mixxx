@@ -37,6 +37,8 @@
 #include "mixxx.h"
 #include "defs_urls.h"
 
+const int kDefaultRateRangePercent = 8;
+
 DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
                          PlayerManager* pPlayerManager,
                          UserSettingsPointer  pConfig)
@@ -50,11 +52,11 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
 
     m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
     m_pNumDecks->connectValueChanged(SLOT(slotNumDecksChanged(double)));
-    slotNumDecksChanged(m_pNumDecks->get());
+    slotNumDecksChanged(m_pNumDecks->get(), true);
 
     m_pNumSamplers = new ControlProxy("[Master]", "num_samplers", this);
     m_pNumSamplers->connectValueChanged(SLOT(slotNumSamplersChanged(double)));
-    slotNumSamplersChanged(m_pNumSamplers->get());
+    slotNumSamplersChanged(m_pNumSamplers->get(), true);
 
     // Track time display configuration
     m_pControlTrackTimeDisplay = new ControlObject(
@@ -106,27 +108,27 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     ComboBoxRateRange->addItem(tr("50%"), 50);
     ComboBoxRateRange->addItem(tr("90%"), 90);
     connect(ComboBoxRateRange, SIGNAL(activated(int)),
-            this, SLOT(slotSetRateRange(int)));
+            this, SLOT(slotRateRangeComboBox(int)));
 
-    // Set default range as stored in config file
-    if (m_pConfig->getValueString(ConfigKey("[Controls]", "RateRangePercent")).length() == 0) {
-        // Fall back to old [Controls]RateRange
-        if (m_pConfig->getValueString(ConfigKey("[Controls]", "RateRange")).length() == 0) {
-            m_pConfig->set(ConfigKey("[Controls]", "RateRangePercent"), ConfigValue(8));
+    // RateRange is the legacy ConfigKey. RateRangePercent is used now.
+    if (m_pConfig->exists(ConfigKey("[Controls]", "RateRange")) &&
+        !m_pConfig->exists(ConfigKey("[Controls]", "RateRangePercent"))) {
+        int legacyIndex = m_pConfig->getValueString(ConfigKey("[Controls]", "RateRange")).toInt();
+        if (legacyIndex == 0) {
+            m_iRateRangePercent = 6;
+        } else if (legacyIndex == 1) {
+            m_iRateRangePercent = 8;
         } else {
-            int oldIdx = m_pConfig->getValueString(ConfigKey("[Controls]", "RateRange")).toInt();
-            double oldRange = static_cast<double>(oldIdx-1) / 10.0;
-            if (oldIdx == 0) {
-                oldRange = 0.06;
-            }
-            if (oldIdx == 1) {
-                oldRange = 0.08;
-            }
-            m_pConfig->set(ConfigKey("[Controls]", "RateRangePercent"),
-                           ConfigValue(static_cast<int>(oldRange * 100.)));
-            slotSetRateRangePercent(oldRange * 100.);
+            m_iRateRangePercent = (legacyIndex-1) * 10;
         }
+    } else {
+        m_iRateRangePercent = m_pConfig->getValue(ConfigKey("[Controls]", "RateRangePercent"),
+                                                  kDefaultRateRangePercent);
     }
+    if (!(m_iRateRangePercent > 0 && m_iRateRangePercent <= 90)) {
+        m_iRateRangePercent = kDefaultRateRangePercent;
+    }
+    setRateRangeForAllDecks(m_iRateRangePercent);
 
     //
     // Key lock mode
@@ -365,21 +367,13 @@ void DlgPrefDeck::slotResetToDefaults() {
     radioButtonResetUnlockedKey->setChecked(true);
 }
 
-void DlgPrefDeck::slotSetRateRange(int pos) {
-    slotSetRateRangePercent(ComboBoxRateRange->itemData(pos).toInt());
+void DlgPrefDeck::slotRateRangeComboBox(int index) {
+    m_iRateRangePercent = ComboBoxRateRange->itemData(index).toInt();
 }
 
-void DlgPrefDeck::slotSetRateRangePercent (int rateRangePercent) {
-    double rateRange = rateRangePercent / 100.;
-
-    // Set rate range for every group
-    foreach (ControlProxy* pControl, m_rateRangeControls) {
-        pControl->set(rateRange);
-    }
-
-    // Reset rate for every group
-    foreach (ControlProxy* pControl, m_rateControls) {
-        pControl->set(0);
+void DlgPrefDeck::setRateRangeForAllDecks(int rangePercent) {
+    for (ControlProxy* pControl : m_rateRangeControls) {
+        pControl->set(rangePercent / 100.0);
     }
 }
 
@@ -516,11 +510,12 @@ void DlgPrefDeck::slotSetRateRamp(bool mode) {
 }
 
 void DlgPrefDeck::slotApply() {
-    double deck1RateRange = m_rateRangeControls[0]->get();
-    double deck1RateDir = m_rateDirControls[0]->get();
+    // Set rate range
+    setRateRangeForAllDecks(m_iRateRangePercent);
+    m_pConfig->setValue(ConfigKey("[Controls]", "RateRangePercent"),
+                        m_iRateRangePercent);
 
-    m_pConfig->set(ConfigKey("[Controls]", "RateRangePercent"),
-                   ConfigValue(static_cast<int>(deck1RateRange * 100)));
+    double deck1RateDir = m_rateDirControls[0]->get();
 
     // Write rate direction to config file
     if (deck1RateDir == 1) {
@@ -533,9 +528,11 @@ void DlgPrefDeck::slotApply() {
 
     if (m_speedAutoReset && m_pitchAutoReset) {
         configSPAutoReset = BaseTrackPlayer::RESET_PITCH_AND_SPEED;
+    } else if (m_speedAutoReset) {
+        configSPAutoReset = BaseTrackPlayer::RESET_SPEED;
+    } else if (m_pitchAutoReset) {
+        configSPAutoReset = BaseTrackPlayer::RESET_PITCH;
     }
-    else if (m_speedAutoReset) configSPAutoReset = BaseTrackPlayer::RESET_SPEED;
-    else if (m_pitchAutoReset) configSPAutoReset = BaseTrackPlayer::RESET_PITCH;
 
     m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
                    ConfigValue(configSPAutoReset));
@@ -555,7 +552,7 @@ void DlgPrefDeck::slotApply() {
     }
 }
 
-void DlgPrefDeck::slotNumDecksChanged(double new_count) {
+void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
     int numdecks = static_cast<int>(new_count);
     if (numdecks <= m_iNumConfiguredDecks) {
         // TODO(owilliams): If we implement deck deletion, shrink the size of configured decks.
@@ -580,12 +577,15 @@ void DlgPrefDeck::slotNumDecksChanged(double new_count) {
         m_keyunlockModeControls.last()->set(m_keyunlockMode);
     }
 
-    m_iNumConfiguredDecks = numdecks;
-    slotSetRateDir(m_pConfig->getValueString(ConfigKey("[Controls]", "RateDir")).toInt());
-    slotSetRateRangePercent(m_pConfig->getValueString(ConfigKey("[Controls]", "RateRangePercent")).toInt());
+    // The rate range hasn't been read from the config file when this is first called.
+    if (!initializing) {
+        m_iNumConfiguredDecks = numdecks;
+        slotSetRateDir(m_pConfig->getValueString(ConfigKey("[Controls]", "RateDir")).toInt());
+        setRateRangeForAllDecks(m_rateRangeControls[0]->get() * 100);
+    }
 }
 
-void DlgPrefDeck::slotNumSamplersChanged(double new_count) {
+void DlgPrefDeck::slotNumSamplersChanged(double new_count, bool initializing) {
     int numsamplers = static_cast<int>(new_count);
     if (numsamplers <= m_iNumConfiguredSamplers) {
         return;
@@ -609,9 +609,12 @@ void DlgPrefDeck::slotNumSamplersChanged(double new_count) {
         m_keyunlockModeControls.last()->set(m_keyunlockMode);
     }
 
-    m_iNumConfiguredSamplers = numsamplers;
-    slotSetRateDir(m_pConfig->getValueString(ConfigKey("[Controls]", "RateDir")).toInt());
-    slotSetRateRangePercent(m_pConfig->getValueString(ConfigKey("[Controls]", "RateRangePercent")).toInt());
+    // The rate range hasn't been read from the config file when this is first called.
+    if (!initializing) {
+        m_iNumConfiguredSamplers = numsamplers;
+        slotSetRateDir(m_pConfig->getValueString(ConfigKey("[Controls]", "RateDir")).toInt());
+        setRateRangeForAllDecks(m_rateRangeControls[0]->get() * 100);
+    }
 }
 
 void DlgPrefDeck::slotUpdateSpeedAutoReset(bool b) {

@@ -40,12 +40,11 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     void slotApply();
     void slotResetToDefaults();
 
-    void slotSetRateRange(int pos);
-    void slotSetRateRangePercent(int rateRangePercent);
     void slotSetRateDir(bool invert);
     void slotSetRateDir(int pos);
     void slotKeyLockMode(QAbstractButton*);
     void slotKeyUnlockMode(QAbstractButton*);
+    void slotRateRangeComboBox(int index);
     void slotSetRateTempLeft(double);
     void slotSetRateTempRight(double);
     void slotSetRatePermLeft(double);
@@ -58,8 +57,8 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     void slotSetRateRamp(bool);
     void slotSetRateRampSensitivity(int);
 
-    void slotNumDecksChanged(double);
-    void slotNumSamplersChanged(double);
+    void slotNumDecksChanged(double, bool initializing=false);
+    void slotNumSamplersChanged(double, bool initializing=false);
 
     void slotUpdateSpeedAutoReset(bool);
     void slotUpdatePitchAutoReset(bool);
@@ -70,6 +69,8 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     // that has the corresponding userData. If the userdata is not in the list,
     // returns zero.
     int cueDefaultIndexByData(int userData) const;
+
+    void setRateRangeForAllDecks(int rangePercent);
 
     UserSettingsPointer m_pConfig;
     ControlObject* m_pControlTrackTimeDisplay;
@@ -86,6 +87,8 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
 
     int m_iNumConfiguredDecks;
     int m_iNumConfiguredSamplers;
+
+    int m_iRateRangePercent;
 
     bool m_speedAutoReset;
     bool m_pitchAutoReset;
