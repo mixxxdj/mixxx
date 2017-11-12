@@ -848,3 +848,23 @@ TEST_F(LoopingControlTest, Beatjump_MovesLoopBoundaries) {
     EXPECT_EQ(beatLength, m_pLoopStartPoint->get());
     EXPECT_EQ(beatLength * 2, m_pLoopEndPoint->get());
 }
+
+TEST_F(LoopingControlTest, LoopEscape) {
+    m_pLoopStartPoint->slotSet(100);
+    m_pLoopEndPoint->slotSet(200);
+    m_pButtonReloopToggle->set(1.0);
+    m_pButtonReloopToggle->set(0.0);
+    ProcessBuffer();
+    EXPECT_TRUE(isLoopEnabled());
+    // seek outside a loop schould disable it
+    seekToSampleAndProcess(300);
+    EXPECT_FALSE(isLoopEnabled());
+
+    m_pButtonReloopToggle->set(1.0);
+    m_pButtonReloopToggle->set(0.0);
+    ProcessBuffer();
+    EXPECT_TRUE(isLoopEnabled());
+    // seek outside a loop schould disable it
+    seekToSampleAndProcess(50);
+    EXPECT_FALSE(isLoopEnabled());
+}
