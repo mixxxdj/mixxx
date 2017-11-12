@@ -62,7 +62,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     void slotSetTrackTimeDisplay(double);
     void slotDisallowTrackLoadToPlayingDeckCheckbox(bool);
     void slotSetCueDefault(int);
-    void slotSetCueRecall(bool);
+    void slotJumpToCueOnTrackLoadCheckbox(bool);
     void slotSetRateRamp(bool);
     void slotSetRateRampSensitivity(int);
 
@@ -99,6 +99,8 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     int m_iNumConfiguredSamplers;
 
     bool m_bDisallowTrackLoadToPlayingDeck;
+    bool m_bJumpToCueOnTrackLoad;
+
     int m_iRateRangePercent;
     bool m_bRateInverted;
 
