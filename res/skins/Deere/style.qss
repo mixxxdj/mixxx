@@ -177,6 +177,14 @@ QTableView {
   gridline-color: red;
 }
 
+/* Colors aren't applied to selected items, define them manually */
+QTableView::item:selected,
+QTreeView::item:selected,
+#LibraryBPMButton::item:selected {
+  color: #D6D6D6;
+  background-color: #006596;
+}
+
 /* checkbox in library "Played" column */
 QTableView::indicator {
   width: 12px;
