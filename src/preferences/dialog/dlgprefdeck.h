@@ -98,6 +98,8 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     int m_iNumConfiguredDecks;
     int m_iNumConfiguredSamplers;
 
+    TrackTime::DisplayMode m_timeDisplayMode;
+
     int m_iCueMode;
 
     bool m_bDisallowTrackLoadToPlayingDeck;

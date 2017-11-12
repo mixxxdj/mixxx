@@ -422,16 +422,13 @@ void DlgPrefDeck::slotJumpToCueOnTrackLoadCheckbox(bool checked) {
 }
 
 void DlgPrefDeck::slotSetTrackTimeDisplay(QAbstractButton* b) {
-    double timeDisplay;
     if (b == radioButtonRemaining) {
-        timeDisplay = static_cast<double>(TrackTime::DisplayMode::Remaining);
+        m_timeDisplayMode = TrackTime::DisplayMode::Remaining;
     } else if (b == radioButtonElapsedAndRemaining) {
-        timeDisplay = static_cast<double>(TrackTime::DisplayMode::ElapsedAndRemaining);
+        m_timeDisplayMode = TrackTime::DisplayMode::ElapsedAndRemaining;
     } else {
-        timeDisplay = static_cast<double>(TrackTime::DisplayMode::Elapsed);
+        m_timeDisplayMode = TrackTime::DisplayMode::Elapsed;
     }
-    m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(timeDisplay));
-    m_pControlTrackTimeDisplay->set(timeDisplay);
 }
 
 void DlgPrefDeck::slotSetTrackTimeDisplay(double v) {
@@ -475,6 +472,10 @@ void DlgPrefDeck::slotRateRampingButton(bool checked) {
 }
 
 void DlgPrefDeck::slotApply() {
+    double timeDisplay = static_cast<double>(m_timeDisplayMode);
+    m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(timeDisplay));
+    m_pControlTrackTimeDisplay->set(timeDisplay);
+
     // Set cue mode for every deck
     for (ControlProxy* pControl : m_cueControls) {
         pControl->set(m_iCueMode);
