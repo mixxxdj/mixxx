@@ -316,7 +316,18 @@ void LoopingControl::process(const double dRate,
     if (!even(currentSampleEven)) {
         currentSampleEven--;
     }
-    m_iCurrentSample = currentSampleEven;
+
+    if (m_iCurrentSample != currentSampleEven) {
+        m_iCurrentSample = currentSampleEven;
+    } else {
+        // no transport, so we have to do scheduled seeks here
+        double target;
+        const double loop_trigger = nextTrigger(
+                false, m_iCurrentSample, &target);
+       if (loop_trigger == m_iCurrentSample) {
+            seekAbs(target);
+        }
+    }
 
     if (m_bAdjustingLoopIn) {
         setLoopInToCurrentPosition();
@@ -347,12 +358,12 @@ double LoopingControl::nextTrigger(bool reverse,
                 // should be moved with it
                 *pTarget = seekInsideAdjustedLoop(currentSample,
                         m_oldLoopSamples.start, loopSamples.start, loopSamples.end);
-                if (*pTarget != kNoTrigger) {
-                    // jump immediately
-                    return currentSample;
-                }
             }
             m_oldLoopSamples = loopSamples;
+            if (*pTarget != kNoTrigger) {
+                // jump immediately
+                return currentSample;
+            }
         }
 
         if (reverse) {
@@ -1052,7 +1063,8 @@ void LoopingControl::slotBeatJump(double beats) {
     int currentSample = m_iCurrentSample;
 
     if (m_bLoopingEnabled && !m_bAdjustingLoopIn && !m_bAdjustingLoopOut &&
-            loopSamples.start < currentSample && loopSamples.end > currentSample) {
+            loopSamples.start <= currentSample + 2 &&
+            loopSamples.end >= currentSample - 2) {
         // If inside an active loop, move loop
         slotLoopMove(beats);
     } else {
@@ -1148,7 +1160,6 @@ int LoopingControl::seekInsideAdjustedLoop(
         }
     }
     if (adjusted_position != currentSample) {
-        m_iCurrentSample = adjusted_position;
         return adjusted_position;
     } else {
         return kNoTrigger;
