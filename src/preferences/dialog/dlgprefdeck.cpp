@@ -134,26 +134,26 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     // Key lock mode
     //
     connect(buttonGroupKeyLockMode, SIGNAL(buttonClicked(QAbstractButton*)),
-            this, SLOT(slotKeyLockMode(QAbstractButton *)));
+            this, SLOT(slotKeyLockModeSelected(QAbstractButton *)));
 
-    // 0 Lock original key, 1 Lock current key
-    m_keylockMode = m_pConfig->getValue(
-        ConfigKey("[Controls]", "keylockMode"), 0);
-    foreach (ControlProxy* pControl, m_keylockModeControls) {
-        pControl->set(m_keylockMode);
+    m_keylockMode = static_cast<KeylockMode>(
+        m_pConfig->getValue(ConfigKey("[Controls]", "keylockMode"),
+                            static_cast<int>(KeylockMode::LockOriginalKey)));
+    for (ControlProxy* pControl : m_keylockModeControls) {
+        pControl->set(static_cast<double>(m_keylockMode));
     }
 
     //
     // Key unlock mode
     //
     connect(buttonGroupKeyUnlockMode, SIGNAL(buttonClicked(QAbstractButton*)),
-            this, SLOT(slotKeyUnlockMode(QAbstractButton *)));
+            this, SLOT(slotKeyUnlockModeSelected(QAbstractButton *)));
 
-    // 0 Reset locked key (default), 1 Keep locked key
-    m_keyunlockMode = m_pConfig->getValue(
-        ConfigKey("[Controls]", "keyunlockMode"), 0);
-    foreach (ControlProxy* pControl, m_keyunlockModeControls) {
-        pControl->set(m_keyunlockMode);
+    m_keyunlockMode = static_cast<KeyunlockMode>(
+        m_pConfig->getValue(ConfigKey("[Controls]", "keyunlockMode"),
+        static_cast<int>(KeyunlockMode::ResetLockedKey)));
+    for (ControlProxy* pControl : m_keyunlockModeControls) {
+        pControl->set(static_cast<int>(m_keyunlockMode));
     }
 
     //
@@ -300,15 +300,17 @@ void DlgPrefDeck::slotUpdate() {
     double deck1RateDirection = m_rateDirectionControls[0]->get();
     checkBoxInvertSpeedSlider->setChecked(deck1RateDirection == kRateDirectionInverted);
 
-    if (m_keylockMode == 1)
+    if (m_keylockMode == KeylockMode::LockCurrentKey) {
         radioButtonCurrentKey->setChecked(true);
-    else
+    } else {
         radioButtonOriginalKey->setChecked(true);
+    }
 
-    if (m_keyunlockMode == 1)
+    if (m_keyunlockMode == KeyunlockMode::KeepLockedKey) {
         radioButtonKeepUnlockedKey->setChecked(true);
-    else
+    } else {
         radioButtonResetUnlockedKey->setChecked(true);
+    }
 
     checkBoxResetSpeed->setChecked(m_speedAutoReset);
     checkBoxResetPitch->setChecked(m_pitchAutoReset);
@@ -352,12 +354,10 @@ void DlgPrefDeck::slotResetToDefaults() {
     checkBoxResetSpeed->setChecked(m_speedAutoReset);
     checkBoxResetPitch->setChecked(m_pitchAutoReset);
 
-    // Lock to original key
-    m_keylockMode = 0;
+    m_keylockMode = KeylockMode::LockOriginalKey;
     radioButtonOriginalKey->setChecked(true);
 
-    // Reset key on unlock
-    m_keyunlockMode = 0;
+    m_keyunlockMode = KeyunlockMode::ResetLockedKey;
     radioButtonResetUnlockedKey->setChecked(true);
 }
 
@@ -394,18 +394,20 @@ void DlgPrefDeck::setRateDirectionForAllDecks(bool inverted) {
     }
 }
 
-void DlgPrefDeck::slotKeyLockMode(QAbstractButton* b) {
-    if (b == radioButtonCurrentKey) {
-        m_keylockMode = 1;
+void DlgPrefDeck::slotKeyLockModeSelected(QAbstractButton* pressedButton) {
+    if (pressedButton == radioButtonCurrentKey) {
+        m_keylockMode = KeylockMode::LockCurrentKey;
+    } else {
+        m_keylockMode = KeylockMode::LockOriginalKey;
     }
-    else { m_keylockMode = 0; }
 }
 
-void DlgPrefDeck::slotKeyUnlockMode(QAbstractButton* b) {
-    if (b == radioButtonResetUnlockedKey) {
-        m_keyunlockMode = 0;
+void DlgPrefDeck::slotKeyUnlockModeSelected(QAbstractButton* pressedButton) {
+    if (pressedButton == radioButtonResetUnlockedKey) {
+        m_keyunlockMode = KeyunlockMode::ResetLockedKey;
+    } else {
+        m_keyunlockMode = KeyunlockMode::KeepLockedKey;
     }
-    else { m_keyunlockMode = 1; }
 }
 
 void DlgPrefDeck::slotSetAllowTrackLoadToPlayingDeck(bool b) {
@@ -522,18 +524,18 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
                    ConfigValue(configSPAutoReset));
 
-    m_pConfig->set(ConfigKey("[Controls]", "keylockMode"),
-                   ConfigValue(m_keylockMode));
+    m_pConfig->setValue(ConfigKey("[Controls]", "keylockMode"),
+                        static_cast<int>(m_keylockMode));
     // Set key lock behavior for every group
-    foreach (ControlProxy* pControl, m_keylockModeControls) {
-        pControl->set(m_keylockMode);
+    for (ControlProxy* pControl : m_keylockModeControls) {
+        pControl->set(static_cast<double>(m_keylockMode));
     }
 
-    m_pConfig->set(ConfigKey("[Controls]", "keyunlockMode"),
-                   ConfigValue(m_keyunlockMode));
+    m_pConfig->setValue(ConfigKey("[Controls]", "keyunlockMode"),
+                        static_cast<int>(m_keyunlockMode));
     // Set key un-lock behavior for every group
-    foreach (ControlProxy* pControl, m_keyunlockModeControls) {
-        pControl->set(m_keyunlockMode);
+    for (ControlProxy* pControl : m_keyunlockModeControls) {
+        pControl->set(static_cast<double>(m_keyunlockMode));
     }
 }
 
@@ -556,10 +558,10 @@ void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
                 group, "cue_mode"));
         m_keylockModeControls.push_back(new ControlProxy(
                 group, "keylockMode"));
-        m_keylockModeControls.last()->set(m_keylockMode);
+        m_keylockModeControls.last()->set(static_cast<double>(m_keylockMode));
         m_keyunlockModeControls.push_back(new ControlProxy(
                 group, "keyunlockMode"));
-        m_keyunlockModeControls.last()->set(m_keyunlockMode);
+        m_keyunlockModeControls.last()->set(static_cast<double>(m_keyunlockMode));
     }
 
     // The rate range hasn't been read from the config file when this is first called.
@@ -587,10 +589,10 @@ void DlgPrefDeck::slotNumSamplersChanged(double new_count, bool initializing) {
                 group, "cue_mode"));
         m_keylockModeControls.push_back(new ControlProxy(
                 group, "keylockMode"));
-        m_keylockModeControls.last()->set(m_keylockMode);
+        m_keylockModeControls.last()->set(static_cast<double>(m_keylockMode));
         m_keyunlockModeControls.push_back(new ControlProxy(
                 group, "keyunlockMode"));
-        m_keyunlockModeControls.last()->set(m_keyunlockMode);
+        m_keyunlockModeControls.last()->set(static_cast<double>(m_keyunlockMode));
     }
 
     // The rate range hasn't been read from the config file when this is first called.

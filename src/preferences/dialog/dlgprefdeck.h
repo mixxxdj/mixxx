@@ -23,6 +23,16 @@ namespace TrackTime {
     };
 }
 
+enum class KeylockMode {
+    LockOriginalKey,
+    LockCurrentKey
+};
+
+enum class KeyunlockMode {
+    ResetLockedKey,
+    KeepLockedKey
+};
+
 /**
   *@author Tue & Ken Haste Andersen
   */
@@ -40,10 +50,10 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     void slotApply();
     void slotResetToDefaults();
 
-    void slotKeyLockMode(QAbstractButton*);
-    void slotKeyUnlockMode(QAbstractButton*);
     void slotRateRangeComboBox(int index);
     void slotRateInversionCheckbox(bool invert);
+    void slotKeyLockModeSelected(QAbstractButton*);
+    void slotKeyUnlockModeSelected(QAbstractButton*);
     void slotSetRateTempLeft(double);
     void slotSetRateTempRight(double);
     void slotSetRatePermLeft(double);
@@ -93,8 +103,8 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
 
     bool m_speedAutoReset;
     bool m_pitchAutoReset;
-    int m_keylockMode;
-    int m_keyunlockMode;
+    KeylockMode m_keylockMode;
+    KeyunlockMode m_keyunlockMode;
 };
 
 #endif
