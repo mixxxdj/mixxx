@@ -40,7 +40,9 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
             << "Ilkka Tuohela"
             << "Max Linke"
             << "Marcos Cardinot"
-            << "Nicu Badescu";
+            << "Nicu Badescu"
+            << "Uwe Klotz"
+            << "Be";
 
     QStringList thisReleaseContributors;
     thisReleaseContributors
@@ -61,7 +63,6 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
             << "Florian Kiekh&auml;fer"
             << "Michael Sawyer"
             << "Tuukka Pasanen"
-            << "Uwe Klotz"
             << "Quentin Faidide"
             << "Peter G. Marczis"
             << "Khyrul Bashar"
@@ -94,7 +95,6 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
             << "Vladim&iacute;r Dudr"
             << "Thorsten Munsch"
             << "Emile Vrijdags"
-            << "Be"
             << "Neale Pickett"
             << "St&eacute;phane Guillou"
             << "Russ Mannex"
