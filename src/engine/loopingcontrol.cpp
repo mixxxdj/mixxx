@@ -333,24 +333,28 @@ double LoopingControl::nextTrigger(bool reverse,
     *pTarget = kNoTrigger;
 
     LoopSamples loopSamples = m_loopSamples.getValue();
-    // Store loop samples for subsequent getLoopTarget() call
-    m_engineLoopSamples = loopSamples;
-
-    if (loopSamples.seek) {
-        // here the loop has changed and the play position
-        // should be moved with it
-        *pTarget = seekInsideAdjustedLoop(currentSample,
-                m_oldLoopSamples.start, loopSamples.start, loopSamples.end);
-        if (*pTarget != kNoTrigger) {
-            // jump immediately
-            return currentSample;
-        }
-    }
 
     if (m_bLoopingEnabled &&
             !m_bAdjustingLoopIn && !m_bAdjustingLoopOut &&
             loopSamples.start != kNoTrigger &&
             loopSamples.end != kNoTrigger) {
+
+        if (loopSamples.start != m_oldLoopSamples.start ||
+                loopSamples.end != m_oldLoopSamples.end) {
+            // bool seek is only valid after the loop has changed
+            if (loopSamples.seek) {
+                // here the loop has changed and the play position
+                // should be moved with it
+                *pTarget = seekInsideAdjustedLoop(currentSample,
+                        m_oldLoopSamples.start, loopSamples.start, loopSamples.end);
+                if (*pTarget != kNoTrigger) {
+                    // jump immediately
+                    return currentSample;
+                }
+            }
+            m_oldLoopSamples = loopSamples;
+        }
+
         if (reverse) {
             *pTarget = loopSamples.end;
             return loopSamples.start;
@@ -1044,7 +1048,12 @@ void LoopingControl::slotBeatJump(double beats) {
         return;
     }
 
-    if (m_bLoopingEnabled && !m_bAdjustingLoopIn && !m_bAdjustingLoopOut) {
+    LoopSamples loopSamples = m_loopSamples.getValue();
+    int currentSample = m_iCurrentSample;
+
+    if (m_bLoopingEnabled && !m_bAdjustingLoopIn && !m_bAdjustingLoopOut &&
+            loopSamples.start < currentSample && loopSamples.end > currentSample) {
+        // If inside an active loop, move loop
         slotLoopMove(beats);
     } else {
         seekAbs(m_pBeats->findNBeatsFromSample(getCurrentSample(), beats));
