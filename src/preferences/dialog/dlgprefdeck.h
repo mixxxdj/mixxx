@@ -54,17 +54,17 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     void slotRateInversionCheckbox(bool invert);
     void slotKeyLockModeSelected(QAbstractButton*);
     void slotKeyUnlockModeSelected(QAbstractButton*);
-    void slotSetRateTempLeft(double);
-    void slotSetRateTempRight(double);
-    void slotSetRatePermLeft(double);
-    void slotSetRatePermRight(double);
+    void slotRateTempCoarseSpinbox(double);
+    void slotRateTempFineSpinbox(double);
+    void slotRatePermCoarseSpinbox(double);
+    void slotRatePermFineSpinbox(double);
     void slotSetTrackTimeDisplay(QAbstractButton*);
     void slotSetTrackTimeDisplay(double);
     void slotDisallowTrackLoadToPlayingDeckCheckbox(bool);
     void slotCueModeCombobox(int);
     void slotJumpToCueOnTrackLoadCheckbox(bool);
-    void slotSetRateRamp(bool);
-    void slotSetRateRampSensitivity(int);
+    void slotRateRampingButton(bool);
+    void slotRateRampSensitivitySlider(int);
 
     void slotNumDecksChanged(double, bool initializing=false);
     void slotNumSamplersChanged(double, bool initializing=false);
@@ -110,6 +110,13 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     bool m_pitchAutoReset;
     KeylockMode m_keylockMode;
     KeyunlockMode m_keyunlockMode;
+
+    bool m_bRateRamping;
+    int m_iRateRampSensitivity;
+    double m_dRateTempCoarse;
+    double m_dRateTempFine;
+    double m_dRatePermCoarse;
+    double m_dRatePermFine;
 };
 
 #endif

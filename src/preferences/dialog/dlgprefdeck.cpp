@@ -175,33 +175,33 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     // Rate buttons configuration
     //
     //NOTE: THESE DEFAULTS ARE A LIE! You'll need to hack the same values into the static variables
-    //      at the top of enginebuffer.cpp
-    if (m_pConfig->getValueString(ConfigKey("[Controls]", "RateTempLeft")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]", "RateTempLeft"), ConfigValue(QString("4.0")));
-    if (m_pConfig->getValueString(ConfigKey("[Controls]", "RateTempRight")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]", "RateTempRight"), ConfigValue(QString("2.0")));
-    if (m_pConfig->getValueString(ConfigKey("[Controls]", "RatePermLeft")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]", "RatePermLeft"), ConfigValue(QString("0.50")));
-    if (m_pConfig->getValueString(ConfigKey("[Controls]", "RatePermRight")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]", "RatePermRight"), ConfigValue(QString("0.05")));
+    //      at the top of ratecontrol.cpp
+    //
+    // "Left" and "Right" in the ConfigKeys refer to left versus right clicking
+    // on the skin buttons
+    m_dRateTempCoarse = m_pConfig->getValue(ConfigKey("[Controls]", "RateTempLeft"), 4.0);
+    m_dRateTempFine = m_pConfig->getValue(ConfigKey("[Controls]", "RateTempRight"), 2.0);
+    m_dRatePermCoarse = m_pConfig->getValue(ConfigKey("[Controls]", "RatePermLeft"), 0.5);
+    m_dRatePermFine = m_pConfig->getValue(ConfigKey("[Controls]", "RatePermRight"), 0.05);
+
+    RateControl::setTemp(m_dRateTempCoarse);
+    RateControl::setTempSmall(m_dRateTempFine);
+    RateControl::setPerm(m_dRatePermCoarse);
+    RateControl::setPermSmall(m_dRatePermFine);
+
+    spinBoxTempRateLeft->setValue(m_dRateTempCoarse);
+    spinBoxTempRateRight->setValue(m_dRateTempFine);
+    spinBoxPermRateLeft->setValue(m_dRatePermCoarse);
+    spinBoxPermRateRight->setValue(m_dRatePermFine);
 
     connect(spinBoxTempRateLeft, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSetRateTempLeft(double)));
+            this, SLOT(slotRateTempCoarseSpinbox(double)));
     connect(spinBoxTempRateRight, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSetRateTempRight(double)));
+            this, SLOT(slotRateTempFineSpinbox(double)));
     connect(spinBoxPermRateLeft, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSetRatePermLeft(double)));
+            this, SLOT(slotRatePermCoarseSpinbox(double)));
     connect(spinBoxPermRateRight, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSetRatePermRight(double)));
-
-    spinBoxTempRateLeft->setValue(m_pConfig->getValueString(
-            ConfigKey("[Controls]", "RateTempLeft")).toDouble());
-    spinBoxTempRateRight->setValue(m_pConfig->getValueString(
-            ConfigKey("[Controls]", "RateTempRight")).toDouble());
-    spinBoxPermRateLeft->setValue(m_pConfig->getValueString(
-            ConfigKey("[Controls]", "RatePermLeft")).toDouble());
-    spinBoxPermRateRight->setValue(m_pConfig->getValueString(
-            ConfigKey("[Controls]", "RatePermRight")).toDouble());
+            this, SLOT(slotRatePermFineSpinbox(double)));
 
     //
     // Cue Mode
@@ -239,21 +239,20 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     //
 
     // Set Ramp Rate On or Off
-    connect(radioButtonSpeedBendRamping, SIGNAL(toggled(bool)),
-            this, SLOT(slotSetRateRamp(bool)));
-    if ((bool)
-        m_pConfig->getValueString(ConfigKey("[Controls]", "RateRamp")).toInt()) {
+    m_bRateRamping = m_pConfig->getValue(ConfigKey("[Controls]", "RateRamp"), false);
+    if (m_bRateRamping) {
         radioButtonSpeedBendRamping->setChecked(true);
     } else {
         radioButtonSpeedBendStatic->setChecked(true);
     }
+    connect(radioButtonSpeedBendRamping, SIGNAL(toggled(bool)),
+            this, SLOT(slotRateRampingButton(bool)));
 
     // Update Ramp Rate Sensitivity
+    m_iRateRampSensitivity = m_pConfig->getValue(ConfigKey("[Controls]", "RateRampSensitivity"), 0);
+    SliderRateRampSensitivity->setValue(m_iRateRampSensitivity);
     connect(SliderRateRampSensitivity, SIGNAL(valueChanged(int)),
-            this, SLOT(slotSetRateRampSensitivity(int)));
-    SliderRateRampSensitivity->setValue(m_pConfig->getValueString(
-            ConfigKey("[Controls]", "RateRampSensitivity")).toInt());
-
+            this, SLOT(slotRateRampSensitivitySlider(int)));
 
     // Update "reset speed" and "reset pitch" check boxes
     // TODO: All defaults should only be set in slotResetToDefaults.
@@ -451,44 +450,28 @@ void DlgPrefDeck::slotSetTrackTimeDisplay(double v) {
     }
 }
 
-void DlgPrefDeck::slotSetRateTempLeft(double v) {
-    QString str;
-    str = str.setNum(v, 'f');
-    m_pConfig->set(ConfigKey("[Controls]", "RateTempLeft"),ConfigValue(str));
-    RateControl::setTemp(v);
+void DlgPrefDeck::slotRateTempCoarseSpinbox(double value) {
+    m_dRateTempCoarse = value;
 }
 
-void DlgPrefDeck::slotSetRateTempRight(double v) {
-    QString str;
-    str = str.setNum(v, 'f');
-    m_pConfig->set(ConfigKey("[Controls]", "RateTempRight"),ConfigValue(str));
-    RateControl::setTempSmall(v);
+void DlgPrefDeck::slotRateTempFineSpinbox(double value) {
+    m_dRateTempFine = value;
 }
 
-void DlgPrefDeck::slotSetRatePermLeft(double v) {
-    QString str;
-    str = str.setNum(v, 'f');
-    m_pConfig->set(ConfigKey("[Controls]", "RatePermLeft"),ConfigValue(str));
-    RateControl::setPerm(v);
+void DlgPrefDeck::slotRatePermCoarseSpinbox(double value) {
+    m_dRatePermCoarse = value;
 }
 
-void DlgPrefDeck::slotSetRatePermRight(double v) {
-    QString str;
-    str = str.setNum(v, 'f');
-    m_pConfig->set(ConfigKey("[Controls]", "RatePermRight"),ConfigValue(str));
-    RateControl::setPermSmall(v);
+void DlgPrefDeck::slotRatePermFineSpinbox(double value) {
+    m_dRatePermFine = value;
 }
 
-void DlgPrefDeck::slotSetRateRampSensitivity(int sense) {
-    m_pConfig->set(ConfigKey("[Controls]", "RateRampSensitivity"),
-                   ConfigValue(SliderRateRampSensitivity->value()));
-    RateControl::setRateRampSensitivity(sense);
+void DlgPrefDeck::slotRateRampSensitivitySlider(int value) {
+    m_iRateRampSensitivity = value;
 }
 
-void DlgPrefDeck::slotSetRateRamp(bool mode) {
-    m_pConfig->set(ConfigKey("[Controls]", "RateRamp"),
-                   ConfigValue(radioButtonSpeedBendRamping->isChecked()));
-    RateControl::setRateRamp(mode);
+void DlgPrefDeck::slotRateRampingButton(bool checked) {
+    m_bRateRamping = checked;
 }
 
 void DlgPrefDeck::slotApply() {
@@ -538,6 +521,22 @@ void DlgPrefDeck::slotApply() {
     for (ControlProxy* pControl : m_keyunlockModeControls) {
         pControl->set(static_cast<double>(m_keyunlockMode));
     }
+
+    RateControl::setRateRamp(m_bRateRamping);
+    m_pConfig->setValue(ConfigKey("[Controls]", "RateRamp"), m_bRateRamping);
+
+    RateControl::setRateRampSensitivity(m_iRateRampSensitivity);
+    m_pConfig->setValue(ConfigKey("[Controls]", "RateRampSensitivity"), m_iRateRampSensitivity);
+
+    RateControl::setTemp(m_dRateTempCoarse);
+    RateControl::setTempSmall(m_dRateTempFine);
+    RateControl::setPerm(m_dRatePermCoarse);
+    RateControl::setPermSmall(m_dRatePermFine);
+
+    m_pConfig->setValue(ConfigKey("[Controls]", "RateTempLeft"), m_dRateTempCoarse);
+    m_pConfig->setValue(ConfigKey("[Controls]", "RateTempRight"), m_dRateTempFine);
+    m_pConfig->setValue(ConfigKey("[Controls]", "RatePermLeft"), m_dRatePermCoarse);
+    m_pConfig->setValue(ConfigKey("[Controls]", "RatePermRight"), m_dRatePermFine);
 }
 
 void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
