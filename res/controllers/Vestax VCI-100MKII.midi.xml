@@ -3,7 +3,7 @@
   <info>
     <name>Vestax VCI-100MKII</name>
     <author>Takeshi Soejima</author>
-    <description>2017-11-3</description>
+    <description>2017-11-4</description>
     <wiki>http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii</wiki>
   </info>
   <controller id="VCI-100MKII">
@@ -745,7 +745,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>VCI102.prev_effect</key>
+        <key>VCI102.prev_slot</key>
         <status>0x90</status>
         <midino>0x20</midino>
         <options>
@@ -754,7 +754,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2]</group>
-        <key>VCI102.prev_effect</key>
+        <key>VCI102.prev_slot</key>
         <status>0x91</status>
         <midino>0x20</midino>
         <options>
@@ -763,7 +763,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit3]</group>
-        <key>VCI102.prev_effect</key>
+        <key>VCI102.prev_slot</key>
         <status>0x92</status>
         <midino>0x20</midino>
         <options>
@@ -772,7 +772,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit4]</group>
-        <key>VCI102.prev_effect</key>
+        <key>VCI102.prev_slot</key>
         <status>0x93</status>
         <midino>0x20</midino>
         <options>
@@ -781,7 +781,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>VCI102.next_effect</key>
+        <key>VCI102.next_slot</key>
         <status>0x90</status>
         <midino>0x21</midino>
         <options>
@@ -790,7 +790,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2]</group>
-        <key>VCI102.next_effect</key>
+        <key>VCI102.next_slot</key>
         <status>0x91</status>
         <midino>0x21</midino>
         <options>
@@ -799,7 +799,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit3]</group>
-        <key>VCI102.next_effect</key>
+        <key>VCI102.next_slot</key>
         <status>0x92</status>
         <midino>0x21</midino>
         <options>
@@ -808,7 +808,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit4]</group>
-        <key>VCI102.next_effect</key>
+        <key>VCI102.next_slot</key>
         <status>0x93</status>
         <midino>0x21</midino>
         <options>
@@ -1320,40 +1320,28 @@
         <midino>0x28</midino>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit1]</group>
-        <key>VCI102.focusEffect1</key>
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>next_effect</key>
         <status>0x90</status>
         <midino>0x4C</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit2]</group>
-        <key>VCI102.focusEffect1</key>
+        <group>[EffectRack1_EffectUnit2_Effect1]</group>
+        <key>next_effect</key>
         <status>0x91</status>
         <midino>0x48</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit3]</group>
-        <key>VCI102.focusEffect1</key>
+        <group>[EffectRack1_EffectUnit3_Effect1]</group>
+        <key>next_effect</key>
         <status>0x92</status>
         <midino>0x4C</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit4]</group>
-        <key>VCI102.focusEffect1</key>
+        <group>[EffectRack1_EffectUnit4_Effect1]</group>
+        <key>next_effect</key>
         <status>0x93</status>
         <midino>0x48</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect2]</group>
@@ -1380,40 +1368,28 @@
         <midino>0x25</midino>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit1]</group>
-        <key>VCI102.focusEffect2</key>
+        <group>[EffectRack1_EffectUnit1_Effect2]</group>
+        <key>next_effect</key>
         <status>0x90</status>
         <midino>0x45</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit2]</group>
-        <key>VCI102.focusEffect2</key>
+        <group>[EffectRack1_EffectUnit2_Effect2]</group>
+        <key>next_effect</key>
         <status>0x91</status>
         <midino>0x45</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit3]</group>
-        <key>VCI102.focusEffect2</key>
+        <group>[EffectRack1_EffectUnit3_Effect2]</group>
+        <key>next_effect</key>
         <status>0x92</status>
         <midino>0x45</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit4]</group>
-        <key>VCI102.focusEffect2</key>
+        <group>[EffectRack1_EffectUnit4_Effect2]</group>
+        <key>next_effect</key>
         <status>0x93</status>
         <midino>0x45</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect3]</group>
@@ -1440,40 +1416,28 @@
         <midino>0x27</midino>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit1]</group>
-        <key>VCI102.focusEffect3</key>
+        <group>[EffectRack1_EffectUnit1_Effect3]</group>
+        <key>next_effect</key>
         <status>0x90</status>
         <midino>0x47</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit2]</group>
-        <key>VCI102.focusEffect3</key>
+        <group>[EffectRack1_EffectUnit2_Effect3]</group>
+        <key>next_effect</key>
         <status>0x91</status>
         <midino>0x47</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit3]</group>
-        <key>VCI102.focusEffect3</key>
+        <group>[EffectRack1_EffectUnit3_Effect3]</group>
+        <key>next_effect</key>
         <status>0x92</status>
         <midino>0x47</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit4]</group>
-        <key>VCI102.focusEffect3</key>
+        <group>[EffectRack1_EffectUnit4_Effect3]</group>
+        <key>next_effect</key>
         <status>0x93</status>
         <midino>0x47</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
@@ -1513,39 +1477,27 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>VCI102.focusEffect0</key>
+        <key>next_chain</key>
         <status>0x90</status>
         <midino>0x48</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2]</group>
-        <key>VCI102.focusEffect0</key>
+        <key>next_chain</key>
         <status>0x91</status>
         <midino>0x4C</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit3]</group>
-        <key>VCI102.focusEffect0</key>
+        <key>next_chain</key>
         <status>0x92</status>
         <midino>0x48</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit4]</group>
-        <key>VCI102.focusEffect0</key>
+        <key>next_chain</key>
         <status>0x93</status>
         <midino>0x4C</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
         <group>[Channel1]</group>

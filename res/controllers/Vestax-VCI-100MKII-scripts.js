@@ -1,6 +1,6 @@
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2017-11-3
+// description: 2017-11-4
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 // JSHint Configuration
@@ -301,31 +301,19 @@ VCI102.parameter4 = function(ch, midino, value, status, group) {
     VCI102.value4[ch] = value;
 };
 
-VCI102.prev_effect = function(ch, midino, value, status, group) {
-    var n = engine.getValue(group, "focused_effect");
-    if (n) {
-        engine.setValue(VCI102.slot(group, n), "prev_effect", value > 0);
-    } else {
-        engine.setValue(group, "prev_chain", value > 0);
+VCI102.prev_slot = function(ch, midino, value, status, group) {
+    if (value) {
+        engine.setValue(group, "focused_effect",
+                        (engine.getValue(group, "focused_effect") + 3) % 4);
     }
 };
 
-VCI102.next_effect = function(ch, midino, value, status, group) {
-    var n = engine.getValue(group, "focused_effect");
-    if (n) {
-        engine.setValue(VCI102.slot(group, n), "next_effect", value > 0);
-    } else {
-        engine.setValue(group, "next_chain", value > 0);
+VCI102.next_slot = function(ch, midino, value, status, group) {
+    if (value) {
+        engine.setValue(group, "focused_effect",
+                        (engine.getValue(group, "focused_effect") + 1) % 4);
     }
 };
-
-[0, 1, 2, 3].forEach(function(n) {
-    VCI102["focusEffect" + n] = function(ch, midino, value, status, group) {
-        if (value) {
-            engine.setValue(group, "focused_effect", n);
-        }
-    };
-});
 
 VCI102.loop = function(ch, midino, value, status, group) {
     if (value) {
