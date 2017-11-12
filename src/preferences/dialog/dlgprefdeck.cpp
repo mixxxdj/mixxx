@@ -192,10 +192,11 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     // Override Playing Track on Track Load
     //
     // The check box reflects the opposite of the config value
-    checkBoxDisallowLoadToPlayingDeck->setChecked(
-        m_pConfig->getValueString(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck")).toInt()==0);
+    m_bDisallowTrackLoadToPlayingDeck = !m_pConfig->getValue(
+            ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"), false);
+    checkBoxDisallowLoadToPlayingDeck->setChecked(m_bDisallowTrackLoadToPlayingDeck);
     connect(checkBoxDisallowLoadToPlayingDeck, SIGNAL(toggled(bool)),
-            this, SLOT(slotSetAllowTrackLoadToPlayingDeck(bool)));
+            this, SLOT(slotDisallowTrackLoadToPlayingDeckCheckbox(bool)));
 
     //
     // Cue Mode
@@ -410,10 +411,8 @@ void DlgPrefDeck::slotKeyUnlockModeSelected(QAbstractButton* pressedButton) {
     }
 }
 
-void DlgPrefDeck::slotSetAllowTrackLoadToPlayingDeck(bool b) {
-    // If b is true, it means NOT to allow track loading
-    m_pConfig->set(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"),
-                   ConfigValue(b?0:1));
+void DlgPrefDeck::slotDisallowTrackLoadToPlayingDeckCheckbox(bool checked) {
+    m_bDisallowTrackLoadToPlayingDeck = checked;
 }
 
 void DlgPrefDeck::slotSetCueDefault(int index)
@@ -502,6 +501,9 @@ void DlgPrefDeck::slotSetRateRamp(bool mode) {
 }
 
 void DlgPrefDeck::slotApply() {
+    m_pConfig->setValue(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"),
+                        !m_bDisallowTrackLoadToPlayingDeck);
+
     // Set rate range
     setRateRangeForAllDecks(m_iRateRangePercent);
     m_pConfig->setValue(ConfigKey("[Controls]", "RateRangePercent"),

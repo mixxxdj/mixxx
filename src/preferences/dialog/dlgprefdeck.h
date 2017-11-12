@@ -60,7 +60,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     void slotSetRatePermRight(double);
     void slotSetTrackTimeDisplay(QAbstractButton*);
     void slotSetTrackTimeDisplay(double);
-    void slotSetAllowTrackLoadToPlayingDeck(bool);
+    void slotDisallowTrackLoadToPlayingDeckCheckbox(bool);
     void slotSetCueDefault(int);
     void slotSetCueRecall(bool);
     void slotSetRateRamp(bool);
@@ -98,6 +98,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     int m_iNumConfiguredDecks;
     int m_iNumConfiguredSamplers;
 
+    bool m_bDisallowTrackLoadToPlayingDeck;
     int m_iRateRangePercent;
     bool m_bRateInverted;
 
