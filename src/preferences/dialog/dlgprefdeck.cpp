@@ -38,6 +38,7 @@
 #include "defs_urls.h"
 
 const int kDefaultRateRangePercent = 8;
+const double kRateDirectionInverted = -1;
 
 DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
                          PlayerManager* pPlayerManager,
@@ -91,12 +92,11 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     connect(buttonGroupTrackTime, SIGNAL(buttonClicked(QAbstractButton*)),
             this, SLOT(slotSetTrackTimeDisplay(QAbstractButton *)));
 
-    // Set default direction as stored in config file
-    if (m_pConfig->getValueString(ConfigKey("[Controls]", "RateDir")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]", "RateDir"),ConfigValue(0));
-
+    m_bRateInverted = m_pConfig->getValue(ConfigKey("[Controls]", "RateDir"), false);
+    setRateDirectionForAllDecks(m_bRateInverted);
+    checkBoxInvertSpeedSlider->setChecked(m_bRateInverted);
     connect(checkBoxInvertSpeedSlider, SIGNAL(toggled(bool)),
-            this, SLOT(slotSetRateDir(bool)));
+            this, SLOT(slotRateInversionCheckbox(bool)));
 
     ComboBoxRateRange->clear();
     ComboBoxRateRange->addItem(tr("4%"), 4);
@@ -281,7 +281,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
 DlgPrefDeck::~DlgPrefDeck() {
     delete m_pControlTrackTimeDisplay;
     qDeleteAll(m_rateControls);
-    qDeleteAll(m_rateDirControls);
+    qDeleteAll(m_rateDirectionControls);
     qDeleteAll(m_cueControls);
     qDeleteAll(m_rateRangeControls);
     qDeleteAll(m_keylockModeControls);
@@ -290,21 +290,15 @@ DlgPrefDeck::~DlgPrefDeck() {
 
 void DlgPrefDeck::slotUpdate() {
     double deck1RateRange = m_rateRangeControls[0]->get();
-    double deck1RateDir = m_rateDirControls[0]->get();
-
     int idx = ComboBoxRateRange->findData(static_cast<int>(deck1RateRange * 100));
     if (idx == -1) {
         ComboBoxRateRange->addItem(QString::number(deck1RateRange * 100.).append("%"),
                                    deck1RateRange * 100.);
     }
-
     ComboBoxRateRange->setCurrentIndex(idx);
 
-    if (deck1RateDir == 1) {
-        checkBoxInvertSpeedSlider->setChecked(false);
-    } else {
-        checkBoxInvertSpeedSlider->setChecked(true);
-    }
+    double deck1RateDirection = m_rateDirectionControls[0]->get();
+    checkBoxInvertSpeedSlider->setChecked(deck1RateDirection == kRateDirectionInverted);
 
     if (m_keylockMode == 1)
         radioButtonCurrentKey->setChecked(true);
@@ -377,31 +371,27 @@ void DlgPrefDeck::setRateRangeForAllDecks(int rangePercent) {
     }
 }
 
-void DlgPrefDeck::slotSetRateDir(bool invert) {
-    int index = 0;
-    if (invert) index = 1;
-    slotSetRateDir(index);
+void DlgPrefDeck::slotRateInversionCheckbox(bool inverted) {
+    m_bRateInverted = inverted;
 }
 
-void DlgPrefDeck::slotSetRateDir(int index) {
-    float dir = 1.;
-    if (index == 1)
-        dir = -1.;
-    float oldDir = m_rateDirControls[0]->get();
-
-    // Set rate direction for every group
-    foreach (ControlProxy* pControl, m_rateDirControls) {
-        pControl->set(dir);
+void DlgPrefDeck::setRateDirectionForAllDecks(bool inverted) {
+    double oldRateDirectionMultiplier = m_rateDirectionControls[0]->get();
+    double rateDirectionMultiplier = 1.0;
+    if (inverted) {
+        rateDirectionMultiplier = kRateDirectionInverted;
+    }
+    for (ControlProxy* pControl : m_rateDirectionControls) {
+        pControl->set(rateDirectionMultiplier);
     }
 
-    // If the setting was changed, ie the old direction is not equal to the new one,
+    // If the rate slider direction setting has changed,
     // multiply the rate by -1 so the current sound does not change.
-    if(fabs(dir - oldDir) > 0.1) {
-        foreach (ControlProxy* pControl, m_rateControls) {
+    if (rateDirectionMultiplier != oldRateDirectionMultiplier) {
+        for (ControlProxy* pControl : m_rateControls) {
             pControl->set(-1 * pControl->get());
         }
     }
-
 }
 
 void DlgPrefDeck::slotKeyLockMode(QAbstractButton* b) {
@@ -515,14 +505,9 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(ConfigKey("[Controls]", "RateRangePercent"),
                         m_iRateRangePercent);
 
-    double deck1RateDir = m_rateDirControls[0]->get();
-
-    // Write rate direction to config file
-    if (deck1RateDir == 1) {
-        m_pConfig->set(ConfigKey("[Controls]", "RateDir"), ConfigValue(0));
-    } else {
-        m_pConfig->set(ConfigKey("[Controls]", "RateDir"), ConfigValue(1));
-    }
+    setRateDirectionForAllDecks(m_bRateInverted);
+    m_pConfig->setValue(ConfigKey("[Controls]", "RateDir"),
+                        static_cast<int>(m_bRateInverted));
 
     int configSPAutoReset = BaseTrackPlayer::RESET_NONE;
 
@@ -565,7 +550,7 @@ void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
                 group, "rate"));
         m_rateRangeControls.push_back(new ControlProxy(
                 group, "rateRange"));
-        m_rateDirControls.push_back(new ControlProxy(
+        m_rateDirectionControls.push_back(new ControlProxy(
                 group, "rate_dir"));
         m_cueControls.push_back(new ControlProxy(
                 group, "cue_mode"));
@@ -579,8 +564,7 @@ void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
 
     // The rate range hasn't been read from the config file when this is first called.
     if (!initializing) {
-        m_iNumConfiguredDecks = numdecks;
-        slotSetRateDir(m_pConfig->getValueString(ConfigKey("[Controls]", "RateDir")).toInt());
+        setRateDirectionForAllDecks(m_rateDirectionControls[0]->get() == kRateDirectionInverted);
         setRateRangeForAllDecks(m_rateRangeControls[0]->get() * 100);
     }
 }
@@ -597,7 +581,7 @@ void DlgPrefDeck::slotNumSamplersChanged(double new_count, bool initializing) {
                 group, "rate"));
         m_rateRangeControls.push_back(new ControlProxy(
                 group, "rateRange"));
-        m_rateDirControls.push_back(new ControlProxy(
+        m_rateDirectionControls.push_back(new ControlProxy(
                 group, "rate_dir"));
         m_cueControls.push_back(new ControlProxy(
                 group, "cue_mode"));
@@ -611,8 +595,7 @@ void DlgPrefDeck::slotNumSamplersChanged(double new_count, bool initializing) {
 
     // The rate range hasn't been read from the config file when this is first called.
     if (!initializing) {
-        m_iNumConfiguredSamplers = numsamplers;
-        slotSetRateDir(m_pConfig->getValueString(ConfigKey("[Controls]", "RateDir")).toInt());
+        setRateDirectionForAllDecks(m_rateDirectionControls[0]->get() == kRateDirectionInverted);
         setRateRangeForAllDecks(m_rateRangeControls[0]->get() * 100);
     }
 }
