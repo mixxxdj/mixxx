@@ -424,9 +424,7 @@ WLibrary QRadioButton::indicator:unchecked {
   margin: 9px 3px 6px 3px;
   padding: 4px;
   color: #D2D2D2;
-  background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                    stop: 0 #4B4B4B,
-                                    stop: 1 #4B4B4B);
+  background-color: #4B4B4B;
   border: 1px solid #4B4B4B;
   border-radius: 2px;
   outline: none;
@@ -441,10 +439,7 @@ WLibrary QRadioButton::indicator:unchecked {
   margin: 9px 3px 6px 3px;
   padding: 4px;
   color: #808080; /* Default #A3A3A3 -90L HSL*/
-  background-color: qlineargradient(spread:pad,
-                                    x1:0, y1:0, x2:1, y2:0,
-                                    stop:0 rgba(95, 95, 95, 127),
-                                    stop:1 rgba(95, 95, 95, 127));
+  background-color: rgba(95, 95, 95, 127);
                                     /* 50% #5F5F5F = RGBA#5F5F5F7F */
   border: 0px solid #5F5F5F;
   border-radius: 2px;
@@ -459,9 +454,7 @@ WLibrary QRadioButton::indicator:unchecked {
   margin: 9px 3px 6px 3px;
   padding: 4px;
   color: #D2D2D2;
-  background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                    stop: 0 #5F5F5F,
-                                    stop: 1 #5F5F5F);
+  background-color: #5F5F5F;
   border: 0px solid #5F5F5F;
   border-radius: 2px;
   outline: none;
@@ -474,9 +467,7 @@ WLibrary QRadioButton::indicator:unchecked {
   margin: 9px 3px 6px 3px;
   padding: 4px;
   color: #FDFDFD;
-  background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                    stop: 0 #006596,
-                                    stop: 1 #006596);
+  background-color: #006596;
   border: 0px solid #006596;
   border-radius: 2px;
   outline: none;
@@ -489,9 +480,7 @@ WLibrary QRadioButton::indicator:unchecked {
   margin: 9px 3px 6px 3px;
   padding: 4px;
   color: #FDFDFD;
-  background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                    stop: 0 #0080BE,
-                                    stop: 1 #0080BE);
+  background-color: #0080BE;
   border: 0px solid #0080BE;
   border-radius: 2px;
   outline: none;
@@ -505,9 +494,7 @@ WLibrary QRadioButton::indicator:unchecked {
   margin: 9px 3px 6px 3px;
   padding: 4px;
   color: #FDFDFD;
-  background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                    stop: 0 #006596,
-                                    stop: 1 #006596);
+  background-color: #006596;
   border: 0px solid #006596;
   border-radius: 2px;
   outline: none;
@@ -1041,27 +1028,15 @@ WEffectSelector {
 }
 
 #MainDecks, #MainDeckContainer {
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                    stop: 0 #333333,
-                                    stop: 1.0 #333333);
+  background-color: #333333;
 }
 
 #LeftGutter, #RightGutter {
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                    stop: 0 #222222,
-                                    stop: 1.0 #222222);
+  background-color: #222222;
 }
 
-#Deck1, #Deck2 {
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                    stop: 0 #333333,
-                                    stop: 1.0 #333333);
-}
-
-#Deck3, #Deck4 {
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                    stop: 0 #333333,
-                                    stop: 1.0 #333333);
+#Deck1, #Deck2, #Deck3, #Deck4 {
+  background-color: #333333;
 }
 
 WWidget, WLabel {
@@ -1634,9 +1609,7 @@ WRecordingDuration {
 
 #SampleDeckToggle[value="1"], #LibraryToggle[value="1"], #EffectRackToggle[value="1"] {
     color: #D2D2D2;
-    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                      stop: 0 #4B4B4B,
-                                      stop: 1 #4B4B4B);
+    background-color: #4B4B4B;
     border: 1px solid #4B4B4B;
     border-radius: 2px;
     outline: none;
@@ -1644,9 +1617,7 @@ WRecordingDuration {
 
 #SampleDeckToggle[value="1"]:hover, #LibraryToggle[value="1"]:hover, #EffectRackToggle[value="1"]:hover {
     color: #D2D2D2;
-    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                      stop: 0 #5F5F5F,
-                                      stop: 1 #5F5F5F);
+    background-color: #5F5F5F;
     border: 0px solid #5F5F5F;
 }
 
