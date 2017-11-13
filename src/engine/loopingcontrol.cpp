@@ -847,13 +847,11 @@ bool LoopingControl::currentLoopMatchesBeatloopSize() {
     LoopSamples loopSamples = m_loopSamples.getValue();
 
     // Calculate where the loop out point would be if it is a beatloop
-    int beatLoopOutPoint =
+    double beatLoopOutPoint =
         m_pBeats->findNBeatsFromSample(loopSamples.start, m_pCOBeatLoopSize->get());
-    if (!even(beatLoopOutPoint)) {
-        beatLoopOutPoint--;
-    }
 
-    return loopSamples.end == beatLoopOutPoint;
+    return loopSamples.end > beatLoopOutPoint - 2 &&
+            loopSamples.end < beatLoopOutPoint + 2;
 }
 
 void LoopingControl::updateBeatLoopingControls() {
