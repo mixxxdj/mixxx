@@ -246,21 +246,17 @@ void LoopingControl::slotLoopScale(double scaleFactor) {
     if (loopSamples.start == kNoTrigger || loopSamples.end == kNoTrigger) {
         return;
     }
-    int loop_length = loopSamples.end - loopSamples.start;
-    int samples = m_pTrackSamples->get();
+    double loop_length = loopSamples.end - loopSamples.start;
+    int trackSamples = m_pTrackSamples->get();
     loop_length *= scaleFactor;
 
     // Abandon loops that are too short of extend beyond the end of the file.
     if (loop_length < MINIMUM_AUDIBLE_LOOP_SIZE ||
-            loopSamples.start + loop_length > samples) {
+            loopSamples.start + loop_length > trackSamples) {
         return;
     }
 
     loopSamples.end = loopSamples.start + loop_length;
-
-    if (!even(loopSamples.end)) {
-        loopSamples.end--;
-    }
 
     // TODO(XXX) we could be smarter about taking the active beatloop, scaling
     // it by the desired amount and trying to find another beatloop that matches
@@ -269,14 +265,14 @@ void LoopingControl::slotLoopScale(double scaleFactor) {
 
     // Don't allow 0 samples loop, so one can still manipulate it
     if (loopSamples.end == loopSamples.start) {
-        if ((loopSamples.end + 2) >= samples)
+        if ((loopSamples.end + 2) >= trackSamples)
             loopSamples.start -= 2;
         else
             loopSamples.end += 2;
     }
     // Do not allow loops to go past the end of the song
-    else if (loopSamples.end > samples) {
-        loopSamples.end = samples;
+    else if (loopSamples.end > trackSamples) {
+        loopSamples.end = trackSamples;
     }
 
     // Reseek if the loop shrank out from under the playposition.
@@ -414,7 +410,7 @@ void LoopingControl::setLoopInToCurrentPosition() {
     // set loop-in position
     LoopSamples loopSamples = m_loopSamples.getValue();
     double quantizedBeat = -1;
-    int pos = m_iCurrentSample;
+    double pos = m_iCurrentSample;
     if (m_pQuantizeEnabled->toBool() && m_pBeats != nullptr) {
         if (m_bAdjustingLoopIn) {
             double closestBeat = m_pClosestBeat->get();
@@ -427,12 +423,8 @@ void LoopingControl::setLoopInToCurrentPosition() {
             quantizedBeat = m_pClosestBeat->get();
         }
         if (quantizedBeat != -1) {
-            pos = static_cast<int>(floor(quantizedBeat));
+            pos = quantizedBeat;
         }
-    }
-
-    if (pos != -1 && !even(pos)) {
-        pos--;
     }
 
     // Reset the loop out position if it is before the loop in so that loops
@@ -449,7 +441,7 @@ void LoopingControl::setLoopInToCurrentPosition() {
     if (loopSamples.end != kNoTrigger &&
             (loopSamples.end - pos) < MINIMUM_AUDIBLE_LOOP_SIZE) {
         if (quantizedBeat != -1 && m_pBeats) {
-            pos = static_cast<int>(floor(m_pBeats->findNthBeat(quantizedBeat, -2)));
+            pos = m_pBeats->findNthBeat(quantizedBeat, -2);
             if (pos == -1 || (loopSamples.end - pos) < MINIMUM_AUDIBLE_LOOP_SIZE) {
                 pos = loopSamples.end - MINIMUM_AUDIBLE_LOOP_SIZE;
             }
@@ -524,12 +516,8 @@ void LoopingControl::setLoopOutToCurrentPosition() {
             quantizedBeat = m_pClosestBeat->get();
         }
         if (quantizedBeat != -1) {
-            pos = static_cast<int>(floor(quantizedBeat));
+            pos = quantizedBeat;
         }
-    }
-
-    if (pos != -1 && !even(pos)) {
-        pos++;  // Increment to avoid shortening too-short loops
     }
 
     // If the user is trying to set a loop-out before the loop in or without
@@ -665,15 +653,9 @@ void LoopingControl::slotReloopAndStop(double pressed) {
 
 void LoopingControl::slotLoopStartPos(double pos) {
     // This slot is called before trackLoaded() for a new Track
-
-    int newpos = pos;
-    if (newpos != kNoTrigger && !even(newpos)) {
-        newpos--;
-    }
-
     LoopSamples loopSamples = m_loopSamples.getValue();
 
-    if (loopSamples.start == newpos) {
+    if (loopSamples.start == pos) {
         //nothing to do
         return;
     }
@@ -685,8 +667,8 @@ void LoopingControl::slotLoopStartPos(double pos) {
     }
 
     loopSamples.seek = false;
-    loopSamples.start = newpos;
-    m_pCOLoopStartPosition->set(newpos);
+    loopSamples.start = pos;
+    m_pCOLoopStartPosition->set(pos);
 
     if (loopSamples.end != kNoTrigger &&
             loopSamples.end <= loopSamples.start) {
@@ -700,13 +682,8 @@ void LoopingControl::slotLoopStartPos(double pos) {
 void LoopingControl::slotLoopEndPos(double pos) {
     // This slot is called before trackLoaded() for a new Track
 
-    int newpos = pos;
-    if (newpos != -1 && !even(newpos)) {
-        newpos--;
-    }
-
     LoopSamples loopSamples = m_loopSamples.getValue();
-    if (loopSamples.end == newpos) {
+    if (loopSamples.end == pos) {
         //nothing to do
         return;
     }
@@ -714,7 +691,7 @@ void LoopingControl::slotLoopEndPos(double pos) {
     // Reject if the loop-in is not set, or if the new position is before the
     // start point (but not -1).
     if (loopSamples.start == kNoTrigger ||
-            (newpos != kNoTrigger && newpos <= loopSamples.start)) {
+            (pos != kNoTrigger && pos <= loopSamples.start)) {
         m_pCOLoopEndPosition->set(loopSamples.end);
         return;
     }
@@ -724,9 +701,9 @@ void LoopingControl::slotLoopEndPos(double pos) {
     if (pos == -1.0) {
         setLoopingEnabled(false);
     }
-    loopSamples.end = newpos;
+    loopSamples.end = pos;
     loopSamples.seek = false;
-    m_pCOLoopEndPosition->set(newpos);
+    m_pCOLoopEndPosition->set(pos);
     m_loopSamples.setValue(loopSamples);
 }
 
@@ -940,18 +917,11 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
             }
 
         } else {
-            newloopSamples.start = floor(cur_pos);
+            newloopSamples.start = cur_pos;
         }
     }
 
-    if (!even(newloopSamples.start)) {
-        newloopSamples.start--;
-    }
-
     newloopSamples.end = m_pBeats->findNBeatsFromSample(newloopSamples.start, beats);
-    if (!even(newloopSamples.end)) {
-        newloopSamples.end--;
-    }
 
     if (newloopSamples.start == newloopSamples.end) {
         if ((newloopSamples.end + 2) > samples) {
@@ -1093,16 +1063,10 @@ void LoopingControl::slotLoopMove(double beats) {
 
     if (BpmControl::getBeatContext(m_pBeats, getCurrentSample(),
                                    nullptr, nullptr, nullptr, nullptr)) {
-        int old_loop_in = loopSamples.start;
-        int old_loop_out = loopSamples.end;
-        int new_loop_in = m_pBeats->findNBeatsFromSample(old_loop_in, beats);
-        int new_loop_out = m_pBeats->findNBeatsFromSample(old_loop_out, beats);
-        if (!even(new_loop_in)) {
-            --new_loop_in;
-        }
-        if (!even(new_loop_out)) {
-            --new_loop_out;
-        }
+        double old_loop_in = loopSamples.start;
+        double old_loop_out = loopSamples.end;
+        double new_loop_in = m_pBeats->findNBeatsFromSample(old_loop_in, beats);
+        double new_loop_out = m_pBeats->findNBeatsFromSample(old_loop_out, beats);
 
         // If we are looping make sure that the play head does not leave the
         // loop as a result of our adjustment.
@@ -1118,8 +1082,8 @@ void LoopingControl::slotLoopMove(double beats) {
 
 // Must be called from the engine thread only
 int LoopingControl::seekInsideAdjustedLoop(
-        int currentSample, int old_loop_in,
-        int new_loop_in, int new_loop_out) {
+        double currentSample, double old_loop_in,
+        double new_loop_in, double new_loop_out) {
     // Copy on stack since m_iCurrentSample sample can change under us.
     if (currentSample >= new_loop_in && currentSample <= new_loop_out) {
         // playposition already is inside the loop
@@ -1131,12 +1095,8 @@ int LoopingControl::seekInsideAdjustedLoop(
         return kNoTrigger;
     }
 
-    int new_loop_size = new_loop_out - new_loop_in;
-    if (!even(new_loop_size)) {
-        --new_loop_size;
-    }
-
-    int adjusted_position = currentSample;
+    double new_loop_size = new_loop_out - new_loop_in;
+    double adjusted_position = currentSample;
     while (adjusted_position > new_loop_out) {
         adjusted_position -= new_loop_size;
         VERIFY_OR_DEBUG_ASSERT(adjusted_position > new_loop_in) {

@@ -89,8 +89,8 @@ class LoopingControl : public EngineControl {
   private:
 
     struct LoopSamples {
-        int start;
-        int end;
+        double start;
+        double end;
         bool seek;
     };
 
@@ -104,8 +104,8 @@ class LoopingControl : public EngineControl {
     // When a loop changes size such that the playposition is outside of the loop,
     // we can figure out the best place in the new loop to seek to maintain
     // the beat.  It will even keep multi-bar phrasing correct with 4/4 tracks.
-    int seekInsideAdjustedLoop(int currentSample,
-            int old_loop_in, int new_loop_in, int new_loop_out);
+    int seekInsideAdjustedLoop(double currentSample,
+            double old_loop_in, double new_loop_in, double new_loop_out);
 
     ControlPushButton* m_pCOBeatLoopActivate;
     ControlPushButton* m_pCOBeatLoopRollActivate;

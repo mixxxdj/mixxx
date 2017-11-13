@@ -110,10 +110,10 @@ TEST_F(LoopingControlTest, LoopSet) {
 
 TEST_F(LoopingControlTest, LoopSetOddSamples) {
     m_pLoopStartPoint->slotSet(1);
-    m_pLoopEndPoint->slotSet(101);
+    m_pLoopEndPoint->slotSet(101.5);
     seekToSampleAndProcess(50);
-    EXPECT_EQ(0, m_pLoopStartPoint->get());
-    EXPECT_EQ(100, m_pLoopEndPoint->get());
+    EXPECT_EQ(1, m_pLoopStartPoint->get());
+    EXPECT_EQ(101.5, m_pLoopEndPoint->get());
 }
 
 TEST_F(LoopingControlTest, LoopInSetInsideLoopContinues) {
