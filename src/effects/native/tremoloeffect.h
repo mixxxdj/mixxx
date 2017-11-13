@@ -1,5 +1,5 @@
-#ifndef GATEREFFECT_H
-#define GATEREFFECT_H
+#ifndef TREMOLOEFFECT_H
+#define TREMOLOEFFECT_H
 
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
@@ -10,24 +10,24 @@
 #include "util/types.h"
 
 
-struct GaterGroupState {
+struct TremoloGroupState {
     enum State {IDLE, ATTACK, HOLD, RELEASE} state;
     double gain;
     unsigned int currentFrame;
     unsigned int holdCounter;
 };
 
-class GaterEffect : public PerChannelEffectProcessor<GaterGroupState> {
+class TremoloEffect : public PerChannelEffectProcessor<TremoloGroupState> {
   public:
-    GaterEffect(EngineEffect* pEffect, const EffectManifest& manifest);
-    virtual ~GaterEffect();
+    TremoloEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    virtual ~TremoloEffect();
 
     static QString getId();
     static EffectManifest getManifest();
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,
-                        GaterGroupState* pState,
+                        TremoloGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE* pOutput,
                         const unsigned int numSamples,
                         const unsigned int sampleRate,
@@ -45,7 +45,7 @@ class GaterEffect : public PerChannelEffectProcessor<GaterGroupState> {
     EngineEffectParameter* m_pTripletParameter;
     EngineEffectParameter* m_pPhaseParameter;
 
-    DISALLOW_COPY_AND_ASSIGN(GaterEffect);
+    DISALLOW_COPY_AND_ASSIGN(TremoloEffect);
 };
 
-#endif /* GATEREFFECT_H */
+#endif /* TREMOLOEFFECT_H */

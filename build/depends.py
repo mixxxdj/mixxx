@@ -720,7 +720,7 @@ class MixxxCore(Feature):
                    "effects/native/autopaneffect.cpp",
                    "effects/native/phasereffect.cpp",
                    "effects/native/metronomeeffect.cpp",
-                   "effects/native/gatereffect.cpp",
+                   "effects/native/tremoloeffect.cpp",
 
                    "engine/effects/engineeffectsmanager.cpp",
                    "engine/effects/engineeffectrack.cpp",

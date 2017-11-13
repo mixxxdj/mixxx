@@ -357,9 +357,9 @@ void EffectsManager::setup() {
     m_pEffectChainManager->addEffectChain(pChain);
 
     pChain = EffectChainPointer(new EffectChain(
-            this, "org.mixxx.effectchain.gater"));
-    pChain->setName(tr("Gater"));
-    pEffect = instantiateEffect("org.mixxx.effects.gater");
+            this, "org.mixxx.effectchain.tremolo"));
+    pChain->setName(tr("Tremolo"));
+    pEffect = instantiateEffect("org.mixxx.effects.tremolo");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
 }

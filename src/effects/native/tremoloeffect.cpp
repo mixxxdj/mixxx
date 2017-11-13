@@ -1,4 +1,4 @@
-#include "effects/native/gatereffect.h"
+#include "effects/native/tremoloeffect.h"
 
 namespace {
 // Gain when the gate is open, higher than 1 to still have a decent level
@@ -12,15 +12,15 @@ constexpr int kNumberOfChannels  = 2;
 }
 
 // static
-QString GaterEffect::getId() {
-    return "org.mixxx.effects.gater";
+QString TremoloEffect::getId() {
+    return "org.mixxx.effects.tremolo";
 }
 
 // static
-EffectManifest GaterEffect::getManifest() {
+EffectManifest TremoloEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
-    manifest.setName(QObject::tr("Gater"));
+    manifest.setName(QObject::tr("Tremolo"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription("");
@@ -87,7 +87,7 @@ EffectManifest GaterEffect::getManifest() {
     return manifest;
 }
 
-GaterEffect::GaterEffect(EngineEffect* pEffect,
+TremoloEffect::TremoloEffect(EngineEffect* pEffect,
                              const EffectManifest& manifest)
         : m_pRateParameter(pEffect->getParameterById("rate")),
           m_pShapeParameter(pEffect->getParameterById("shape")),
@@ -98,11 +98,11 @@ GaterEffect::GaterEffect(EngineEffect* pEffect,
     Q_UNUSED(manifest);
 }
 
-GaterEffect::~GaterEffect() {
+TremoloEffect::~TremoloEffect() {
 }
 
-void GaterEffect::processChannel(const ChannelHandle& handle,
-                                GaterGroupState* pState,
+void TremoloEffect::processChannel(const ChannelHandle& handle,
+                                TremoloGroupState* pState,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
                                 const unsigned int numSamples,
                                 const unsigned int sampleRate,
@@ -125,13 +125,13 @@ void GaterEffect::processChannel(const ChannelHandle& handle,
     unsigned int currentFrame    = pState->currentFrame;
     unsigned int holdCounter     = pState->holdCounter;
     double       gain            = pState->gain;
-    GaterGroupState::State state = pState->state;
+    TremoloGroupState::State state = pState->state;
 
     // Use to keep track of the beginning of beats when playing with the rate
     unsigned int beatPeriod = 1;
     if (enableState == EffectProcessor::ENABLING) {        
         // Start with the gate closed
-        state = GaterGroupState::IDLE;
+        state = TremoloGroupState::IDLE;
         gain = 0;
         currentFrame = 0;   
         beatPeriod   = sampleRate; // 1 second
@@ -180,7 +180,7 @@ void GaterEffect::processChannel(const ChannelHandle& handle,
     
     for (unsigned int i = 0; i < numSamples; i+=kNumberOfChannels) {
          if (currentFrame % triggerPeriod == triggerTime) {
-            state = GaterGroupState::ATTACK;
+            state = TremoloGroupState::ATTACK;
             if (currentFrame % beatPeriod == 1) {
                 currentFrame = 0;
             }
@@ -190,34 +190,34 @@ void GaterEffect::processChannel(const ChannelHandle& handle,
         // Gate state machine : Idle->Attack->Hold->Release->Idle
         switch (state) {
             // Idle : Gain = 0
-            case GaterGroupState::IDLE:
+            case TremoloGroupState::IDLE:
                 gain = 0;
                 break;
 
             // Attack : Increase gain up to maxGain, then Hold
-            case GaterGroupState::ATTACK:
+            case TremoloGroupState::ATTACK:
                 gain += attackInc;
                 if(gain >= kMaxGain) {
-                    state = GaterGroupState::HOLD;
+                    state = TremoloGroupState::HOLD;
                     holdCounter = holdTime;
                 }
                 break;
 
             // Hold : Hold maxGain for holdCounter samples
-            case GaterGroupState::HOLD:
+            case TremoloGroupState::HOLD:
                 gain = kMaxGain;
                 if(holdCounter == 0) {
-                    state = GaterGroupState::RELEASE;  
+                    state = TremoloGroupState::RELEASE;  
                 }
 
                 holdCounter--;
                 break;
 
             // Release : Decrease gain to 0, then Idle
-            case GaterGroupState::RELEASE:
+            case TremoloGroupState::RELEASE:
                 gain -= releaseInc;
                 if(gain <= 0) {
-                    state = GaterGroupState::IDLE;
+                    state = TremoloGroupState::IDLE;
                 }
                 break;
         }
