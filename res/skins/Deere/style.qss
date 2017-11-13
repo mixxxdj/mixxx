@@ -1251,12 +1251,13 @@ WStarRating {
 }
 
 #LibraryContainer {
-  background-color: #222;
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+  background-color: #222222;
   padding-top: 2px;
 }
 
-#LibraryExpanded, #LibraryCollapsed {
-  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+#LibrarySplitter {
+  background-color: #222222;
 }
 
 #EffectRackContainer {
