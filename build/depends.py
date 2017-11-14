@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import os
-import util
-from mixxx import Dependence, Feature
+from . import util
+from .mixxx import Dependence, Feature
 import SCons.Script as SCons
 
 

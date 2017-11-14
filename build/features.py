@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import os
-import util
-from mixxx import Feature
+from . import util
+from .mixxx import Feature
 import SCons.Script as SCons
-import depends
+from . import depends
 
 class OpenGLES(Feature):
     def description(self):

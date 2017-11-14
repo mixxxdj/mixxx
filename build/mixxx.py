@@ -12,7 +12,7 @@ import shutil
 import SCons
 from SCons import Script
 
-import util
+from . import util
 
 
 class MixxxBuild(object):
@@ -145,7 +145,7 @@ class MixxxBuild(object):
         tools = ['default']
         toolpath = ['#build/']
         extra_arguments = {}
-        import depends
+        from . import depends
         if int(Script.ARGUMENTS.get('qt5', 0)):
             tools.append('qt5')
             if self.machine_is_64bit:
