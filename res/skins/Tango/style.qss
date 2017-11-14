@@ -950,11 +950,13 @@ WBeatSpinBox {
  ######  Skin Controls / Crossfader / Clock  ####################
 ##############################################################*/
 
+/*Normal mode */
 #SkinControlsRow {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   background-color:  #0f0f0f;
 }
 
+/* Netbook/compact mode */
 #SkinControlsBarLeft {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
 }
@@ -1091,11 +1093,6 @@ WBeatSpinBox {
   #SkinSettingsToggler[displayValue="1"]:hover {
     background: #0f0f0f url(skin:/buttons/btn_skinsettings_off.svg) no-repeat center center;
   }
-
-#CrossfaderNetbook {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  margin: 2px 0px 2px 0px;
-}
 
 
 /*################################################################

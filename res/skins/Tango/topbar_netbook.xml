@@ -128,20 +128,34 @@ Description:
         <Children>
 
           <WidgetGroup><!-- Crossfader -->
-            <ObjectName>CrossfaderNetbook</ObjectName>
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
+              <!-- Margin is not respected if any <Connection> is attached
+                  to container. Put those spacers here to ensure the Crossfader
+                  stays centered. -->
               <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
-              <SliderComposed>
-                <TooltipId>crossfader</TooltipId>
-                <Handle>skin:/knobs_sliders/slider_crossfader_handle.svg</Handle>
-                <Slider>skin:/knobs_sliders/slider_crossfader_scale.svg</Slider>
-                <Horizontal>true</Horizontal>
+              <WidgetGroup>
+                <SizePolicy>min,min</SizePolicy>
+                <Layout>vertical</Layout>
+                <Children>
+                  <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
+                  <SliderComposed>
+                    <TooltipId>crossfader</TooltipId>
+                    <Handle>skin:/knobs_sliders/slider_crossfader_handle.svg</Handle>
+                    <Slider>skin:/knobs_sliders/slider_crossfader_scale.svg</Slider>
+                    <Horizontal>true</Horizontal>
+                    <Connection>
+                      <ConfigKey>[Master],crossfader</ConfigKey>
+                    </Connection>
+                  </SliderComposed>
+                  <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
+                </Children>
                 <Connection>
-                  <ConfigKey>[Master],crossfader</ConfigKey>
+                  <ConfigKey persist="true">[Tango],crossfader</ConfigKey>
+                  <BindProperty>visible</BindProperty>
                 </Connection>
-              </SliderComposed>
+              </WidgetGroup>
               <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
             </Children>
             <Connection>
@@ -150,7 +164,8 @@ Description:
             </Connection>
           </WidgetGroup><!-- /Crossfader -->
 
-          <!-- zero-height spacers below Crossfader -->
+          <!-- Zero-height spacers below Crossfader ensures left and right toolbars
+              are aligned with deck edges. -->
           <Template src="skin:spacer_topbar_netbook.xml"/>
 
         </Children>

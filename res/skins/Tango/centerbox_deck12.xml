@@ -164,7 +164,9 @@ Description:
       <WidgetGroup><!-- Broadcast + Clock/Logo + Skin Settings -->
         <ObjectName>ClockBox</ObjectName>
         <Layout>horizontal</Layout>
-        <Size>104f,30me</Size>
+        <MinimumSize>104,30</MinimumSize>
+        <MaximumSize>104,73</MaximumSize>
+        <SizePolicy>f,me</SizePolicy>
         <Children>
           <Template src="skin:button_4state_display.xml"><!-- Broadcast -->
             <SetVariable name="TooltipId">broadcast_enabled</SetVariable>
@@ -316,22 +318,31 @@ Description:
             </Connection>
           </WidgetGroup>
 
-          <SliderComposed>
-            <ObjectName>Crossfader</ObjectName>
-            <TooltipId>crossfader</TooltipId>
-            <Handle>skin:/knobs_sliders/slider_crossfader_handle.svg</Handle>
-            <Slider>skin:/knobs_sliders/slider_crossfader_scale.svg</Slider>
-            <Horizontal>true</Horizontal>
-            <Connection>
-              <ConfigKey>[Master],crossfader</ConfigKey>
-            </Connection>
+          <WidgetGroup><!-- show only without crossfader -->
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <SliderComposed>
+                <TooltipId>crossfader</TooltipId>
+                <Handle>skin:/knobs_sliders/slider_crossfader_handle.svg</Handle>
+                <Slider>skin:/knobs_sliders/slider_crossfader_scale.svg</Slider>
+                <Horizontal>true</Horizontal>
+                <Connection>
+                  <ConfigKey>[Master],crossfader</ConfigKey>
+                </Connection>
+              </SliderComposed>
+              <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
+            </Children>
             <Connection>
               <ConfigKey persist="true">[Tango],crossfader</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
-          </SliderComposed>
+          </WidgetGroup>
+
         </Children>
       </WidgetGroup><!-- /Logo + Crossfader 2 Decks-->
+
+      <WidgetGroup><Size>1min,0min</Size></WidgetGroup>
     </Children>
     <Connection>
       <ConfigKey>[Tango],normal_mode</ConfigKey>
