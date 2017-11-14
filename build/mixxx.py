@@ -261,11 +261,11 @@ class MixxxBuild(object):
         if os.name == 'nt' or sys.platform == 'win32':
             return 'windows'
         # Should cover {Net,Open,Free,DragonFly}BSD, but only tested on OpenBSD
-        if 'bsd' in sys.platform:
+        if sys.platform.startswith('bsd'):
             return 'bsd'
-        if sys.platform in ['linux2', 'linux3']:
+        if sys.platform.startswith('linux'):
             return 'linux'
-        if sys.platform == 'darwin':
+        if sys.platform.startswith('darwin'):
             return 'osx'
         logging.error("Couldn't determine platform. os.name: %s sys.platform: %s"
                       % (os.name, sys.platform))
