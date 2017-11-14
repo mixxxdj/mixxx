@@ -74,14 +74,14 @@ Variables:
         </Children>
       </WidgetGroup><!-- /Left + Right VU -->
 
-      <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
+      <WidgetGroup><Size>0min,4f</Size></WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>VUMeterMasterLabel</ObjectName>
         <Size>16f,20f</Size>
       </WidgetGroup>
 
-      <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
+      <WidgetGroup><Size>0min,4f</Size></WidgetGroup>
     </Children>
   </WidgetGroup>
 </Template>
