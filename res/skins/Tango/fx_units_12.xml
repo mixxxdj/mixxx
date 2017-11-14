@@ -12,69 +12,88 @@ Description:
     <Layout>horizontal</Layout>
     <Children>
 
-      <WidgetGroup><!-- EffectUnit 1 maxi -->
+      <!-- Each EffectUnit's collapsed and expanded version were previously placed
+          side by side. This resulted in a noticeable flickering when swapping
+          visibility of both versions, typically when switching from the one that's
+          later in xml (collapsed) to the earlier (expanded), since none of both versions
+          was visible at that moment and opposing EffectUnit tries to expand horizontally.
+          Putting both versions into a vertical layout fixes this issue.
+      -->
+      <WidgetGroup><!-- EffectUnit 1 -->
         <Layout>vertical</Layout>
-        <SizePolicy>min,max</SizePolicy>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
-          <Template src="skin:fx_unit_left.xml">
-            <SetVariable name="FxUnitNum">1</SetVariable>
-          </Template>
-          <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
-        </Children>
-        <Connection>
-          <ConfigKey persist="true">[EffectRack1_EffectUnit1],show_parameters</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
+          <WidgetGroup><!-- EffectUnit 1 maxi -->
+            <Layout>vertical</Layout>
+            <SizePolicy>min,max</SizePolicy>
+            <Children>
+              <Template src="skin:fx_unit_left.xml">
+                <SetVariable name="FxUnitNum">1</SetVariable>
+              </Template>
+              <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[EffectRack1_EffectUnit1],show_parameters</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
 
-      <WidgetGroup><!-- EffectUnit 1 mini -->
-        <Layout>vertical</Layout>
-        <SizePolicy>min,me</SizePolicy>
-        <Children>
-          <Template src="skin:fx_unit_left_mini.xml">
-            <SetVariable name="FxUnitNum">1</SetVariable>
-          </Template>
-          <WidgetGroup><Size>1min,5me</Size></WidgetGroup>
+          <WidgetGroup><!-- EffectUnit 1 mini -->
+            <Layout>vertical</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <Template src="skin:fx_unit_left_mini.xml">
+                <SetVariable name="FxUnitNum">1</SetVariable>
+              </Template>
+              <WidgetGroup><Size>1min,5me</Size></WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[EffectRack1_EffectUnit1],show_parameters</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
         </Children>
-        <Connection>
-          <ConfigKey persist="true">[EffectRack1_EffectUnit1],show_parameters</ConfigKey>
-          <Transform><Not/></Transform>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
+      </WidgetGroup><!-- /EffectUnit 1 -->
 
       <Template src="skin:spacer_fx_units.xml"/>
 
-      <WidgetGroup><!-- EffectUnit 2 maxi -->
+      <WidgetGroup><!-- EffectUnit 2 -->
         <Layout>vertical</Layout>
-        <SizePolicy>min,max</SizePolicy>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
-          <Template src="skin:fx_unit_right.xml">
-            <SetVariable name="FxUnitNum">2</SetVariable>
-          </Template>
-          <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
-        </Children>
-        <Connection>
-          <ConfigKey persist="true">[EffectRack1_EffectUnit2],show_parameters</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
+          <WidgetGroup><!-- EffectUnit 2 maxi -->
+            <Layout>vertical</Layout>
+            <SizePolicy>min,max</SizePolicy>
+            <Children>
+              <Template src="skin:fx_unit_right.xml">
+                <SetVariable name="FxUnitNum">2</SetVariable>
+              </Template>
+              <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[EffectRack1_EffectUnit2],show_parameters</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
 
-      <WidgetGroup><!-- EffectUnit 2 mini -->
-        <Layout>vertical</Layout>
-        <SizePolicy>min,me</SizePolicy>
-        <Children>
-          <Template src="skin:fx_unit_right_mini.xml">
-            <SetVariable name="FxUnitNum">2</SetVariable>
-          </Template>
-          <WidgetGroup><Size>1min,5me</Size></WidgetGroup>
+          <WidgetGroup><!-- EffectUnit 2 mini -->
+            <Layout>vertical</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <Template src="skin:fx_unit_right_mini.xml">
+                <SetVariable name="FxUnitNum">2</SetVariable>
+              </Template>
+              <WidgetGroup><Size>1min,5me</Size></WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[EffectRack1_EffectUnit2],show_parameters</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
         </Children>
-        <Connection>
-          <ConfigKey persist="true">[EffectRack1_EffectUnit2],show_parameters</ConfigKey>
-          <Transform><Not/></Transform>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
+      </WidgetGroup><!-- /EffectUnit 2 -->
 
     </Children>
     <Connection>
