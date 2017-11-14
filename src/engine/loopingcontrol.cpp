@@ -335,8 +335,6 @@ void LoopingControl::process(const double dRate,
 double LoopingControl::nextTrigger(bool reverse,
         const double currentSample,
         double *pTarget) {
-    Q_UNUSED(currentSample);
-
     *pTarget = kNoTrigger;
 
     LoopSamples loopSamples = m_loopSamples.getValue();
@@ -938,8 +936,8 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         // the end of the track, let beatloop_size be set to
         // a smaller size, but not get larger.
         double previousBeatloopSize = m_pCOBeatLoopSize->get();
-        double previousBeatloopOutPoint =
-            m_pBeats->findNBeatsFromSample(newloopSamples.start, previousBeatloopSize);
+        double previousBeatloopOutPoint = m_pBeats->findNBeatsFromSample(
+                newloopSamples.start, previousBeatloopSize);
         if (previousBeatloopOutPoint < newloopSamples.start
                 && beats < previousBeatloopSize) {
             m_pCOBeatLoopSize->setAndConfirm(beats);
@@ -951,9 +949,9 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     // do not resize the existing loop until beatloop_size matches
     // the size of the existing loop.
     // Do not return immediately so beatloop_size can be updated.
-    bool avoidResize = false;
+    bool omitResize = false;
     if (!currentLoopMatchesBeatloopSize() && !enable) {
-        avoidResize = true;
+        omitResize = true;
     }
 
     if (m_pCOBeatLoopSize->get() != beats) {
@@ -966,7 +964,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         return;
     }
 
-    if (avoidResize) {
+    if (omitResize) {
         return;
     }
 
