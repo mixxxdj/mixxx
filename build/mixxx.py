@@ -395,11 +395,11 @@ class MixxxBuild(object):
 
         # Allow installation directories to be specified.
         prefix = Script.ARGUMENTS.get('prefix', '/usr/local')
-        if os.environ.has_key('LIBDIR'):
+        if 'LIBDIR' in os.environ:
             self.env['LIBDIR'] = os.path.relpath(os.environ['LIBDIR'], prefix)
-        if os.environ.has_key('BINDIR'):
+        if 'BINDIR' in os.environ:
             self.env['BINDIR'] = os.path.relpath(os.environ['BINDIR'], prefix)
-        if os.environ.has_key('SHAREDIR'):
+        if 'SHAREDIR' in os.environ:
             self.env['SHAREDIR'] = \
                 os.path.relpath(os.environ['SHAREDIR'], prefix)
 

@@ -334,7 +334,7 @@ class VinylControl(Feature):
                                                      'vinylcontrol', 0)
         # Existence of the macappstore option forces vinylcontrol off due to
         # licensing issues.
-        if build.flags.has_key('macappstore') and int(build.flags['macappstore']):
+        if 'macappstore' in build.flags and int(build.flags['macappstore']):
             return False
         if int(build.flags['vinylcontrol']):
             return True
