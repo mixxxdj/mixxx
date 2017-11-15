@@ -203,7 +203,7 @@ Description:
 
               <WidgetGroup><!-- audio latency usage & overload display -->
                 <ObjectName>AlignCenter</ObjectName>
-                <Size>31me,3f</Size>
+                <Size>31me,7f</Size>
                 <Layout>horizontal</Layout>
                 <Children>
                   <VuMeter><!-- latency usage -->
