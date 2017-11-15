@@ -224,7 +224,7 @@ Description:
             </Children>
           </WidgetGroup><!-- /Recording button & recording duration label -->
 
-          <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
+          <WidgetGroup><Size>5me,1min</Size></WidgetGroup>
 
           <Template src="skin:button_4state_display.xml">
             <SetVariable name="TooltipId">broadcast_enabled</SetVariable>
