@@ -501,7 +501,7 @@ void LoopingControl::slotLoopInGoto(double pressed) {
 void LoopingControl::setLoopOutToCurrentPosition() {
     LoopSamples loopSamples = m_loopSamples.getValue();
     double quantizedBeat = -1;
-    int pos = m_iCurrentSample;
+    int pos = m_iCurrentSample + 2;
     if (m_pQuantizeEnabled->toBool() && m_pBeats != nullptr) {
         if (m_bAdjustingLoopOut) {
             double closestBeat = m_pClosestBeat->get();

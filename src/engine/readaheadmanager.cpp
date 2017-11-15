@@ -62,7 +62,7 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         samplesToLoopTrigger = in_reverse ?
                 m_currentPosition - loop_trigger :
                 loop_trigger - m_currentPosition;
-        if (samplesToLoopTrigger >= 0.0) {
+        if (samplesToLoopTrigger > 0.0) {
             // We can only read whole frames from the reader.
             // Use ceil here, to be sure to reach the loop trigger.
             preloop_samples = SampleUtil::ceilPlayPosToFrameStart(
@@ -72,6 +72,9 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
                 reachedTrigger = true;
                 samples_from_reader = preloop_samples;
             }
+        } else {
+            reachedTrigger = true;
+            samples_from_reader = 0;
         }
     }
 
