@@ -47,7 +47,7 @@ Controls:
         </Connection>
       </WidgetGroup>
       <WidgetGroup><!-- deck controls toggle -->
-        <Size>11f,1f</Size>
+        <Size>15f,1f</Size>
         <Connection>
           <ConfigKey>[Tango],deck_controls_toggle</ConfigKey>
           <BindProperty>visible</BindProperty>

@@ -548,29 +548,40 @@ WWidgetGroup {
   #DeckButtonExpanded:hover {
     background-color: #000000;
   }
-  #DeckButtonTogglerLeft[displayValue="0"] {
+  #DeckControlsToggler_Left[displayValue="0"] {
     background: transparent url(skin:/buttons/btn_arrow_right.svg) no-repeat center center;
     }
-    #DeckButtonTogglerLeft[displayValue="0"]:hover {
+    #DeckControlsToggler_Left[displayValue="0"]:hover {
       background: #151515 url(skin:/buttons/btn_arrow_right_hover.svg) no-repeat center center;
     }
-    #DeckButtonTogglerLeft[displayValue="1"] {
-      background: #151515 url(skin:/buttons/btn_arrow_left.svg) no-repeat center center;
+    #DeckControlsToggler_Left[displayValue="1"] {
+      background: transparent url(skin:/buttons/btn_arrow_left.svg) no-repeat center center;
+      border-color: #0f0f0f;
+      border-style: solid;
+      border-top-right-radius: 0px;
+      border-bottom-right-radius: 0px;
+      border-width: 1px 0px 1px 1px;
     }
-    #DeckButtonTogglerLeft[displayValue="1"]:hover {
+    #DeckControlsToggler_Left[displayValue="1"]:hover {
       background: #000000 url(skin:/buttons/btn_arrow_left_hover.svg) no-repeat center center;
     }
 
-  #DeckButtonTogglerRight[displayValue="0"] {
+  #DeckControlsToggler_Right[displayValue="0"] {
     background: transparent url(skin:/buttons/btn_arrow_left.svg) no-repeat center center;
     }
-    #DeckButtonTogglerRight[displayValue="0"]:hover {
+    #DeckControlsToggler_Right[displayValue="0"]:hover {
       background: #151515 url(skin:/buttons/btn_arrow_left_hover.svg) no-repeat center center;
     }
-    #DeckButtonTogglerRight[displayValue="1"] {
-      background: #151515 url(skin:/buttons/btn_arrow_right.svg) no-repeat center center;
+    #DeckControlsToggler_Right[displayValue="1"] {
+      background: transparent url(skin:/buttons/btn_arrow_right.svg) no-repeat center center;
+      border-color: #0f0f0f;
+      border-style: solid;
+      border-top-left-radius: 0px;
+      border-bottom-left-radius: 0px;
+      border-width: 1px 1px 1px 0px;
+
     }
-    #DeckButtonTogglerRight[displayValue="1"]:hover {
+    #DeckControlsToggler_Right[displayValue="1"]:hover {
       background: #000000 url(skin:/buttons/btn_arrow_right_hover.svg) no-repeat center center;
     }
 
@@ -599,8 +610,10 @@ WWidgetGroup {
     color: #888888;
     background-color: #333333;
     }
-  #HotcueButton[displayValue="0"]:hover {
-    border: 1px solid #888888;
+  #HotcueButton[displayValue="0"]:hover,
+  #CueButton[displayValue="0"]:hover,
+  #PlayCue[displayValue="0"]:hover {
+    border: 1px solid #aaaaaa;
     }
   #HotcueButton[displayValue="1"],
   #CueButton[displayValue="1"],
@@ -617,25 +630,25 @@ WWidgetGroup {
   when playing regularly, not from Cue or HotCue */
 #PlayCue[displayValue="0"],
 #SamplerPlayCue[displayValue="0"] {
-    background: none url(skin:/buttons/btn_paused.svg) no-repeat center center;
-    }
+  background: none url(skin:/buttons/btn_paused.svg) no-repeat center center;
+  }
   #PlayCue[displayValue="0"]:hover {
     background: none url(skin:/buttons/btn_paused_hover.svg) no-repeat center center;
-    border: 1px solid #888888;
-    }
+  }
   #PlayCue[displayValue="1"] {
     background: #a90000 url(skin:/buttons/btn_playing.svg) no-repeat center center;
     border: 1px solid #ca0000;
     }
-  #PlayCue[displayValue="1"]:hover {
-    background: #a90000 url(skin:/buttons/btn_playing_hover.svg) no-repeat center center;
-    border: 1px solid #ff0000;
+    #PlayCue[displayValue="1"]:hover {
+      background: #a90000 url(skin:/buttons/btn_playing_hover.svg) no-repeat center center;
+      border: 1px solid #ff0000;
     }
   /* The button which signals alternate play status when
     playing from Cue/HotCue */
-  #PlayUnderlay[displayValue="1"] { /*
-    background-color: #ffa601;  */
-    background-color: #ff8f00;
+  #PlayUnderlay[displayValue="0"] {
+    }
+    #PlayUnderlay[displayValue="1"] {
+      background-color: #ff8f00;
     }
   #CueUnderlay {
   /* is styled like #HotcueButton */
@@ -844,13 +857,13 @@ WBeatSpinBox {
     background-color: #585858;
     }
   #EQKillButton[displayValue="0"]:hover {
-    background-color: #989898;
+    border: 1px solid #ff0000;
     }
   #EQKillButton[displayValue="1"] {
     background-color: #a90000;
     }
   #EQKillButton[displayValue="1"]:hover {
-    background-color: #ca0000;
+    border: 1px solid #aaaaaa;
   }
 
 #EQKillUnderlayLeft[displayValue="1"] {

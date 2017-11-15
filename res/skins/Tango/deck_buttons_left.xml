@@ -153,13 +153,14 @@ Variables:
 
           <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
-          <WidgetGroup>
+          <WidgetGroup><!-- Toggle Deck controls -->
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
-                <SetVariable name="ObjectName">DeckButtonTogglerLeft</SetVariable>
-                <SetVariable name="Size">11f,22f</SetVariable>
+              <Template src="skin:button_2state_persist.xml">
+                <SetVariable name="ObjectName">DeckControlsToggler_Left</SetVariable>
+                <!-- Size needs to be changed in size_detector_stars.xml, too -->
+                <SetVariable name="Size">15f,22f</SetVariable>
                 <SetVariable name="ConfigKey">[Tango],deck_controls</SetVariable>
               </Template>
             </Children>
