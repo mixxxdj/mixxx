@@ -54,6 +54,16 @@ Variables:
       </WidgetGroup>
       <!-- /Master VU when mixer is hidden but permament level meters are shown -->
 
+      <!-- Spacer to create margin to skin controls. Disabled in netbook mode
+          so Master level meter is centered (important when Crossfader is visible). -->
+      <WidgetGroup>
+        <Size>4f,1min</Size>
+        <Connection>
+          <ConfigKey>[Tango],normal_mode</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
     </Children>
   </WidgetGroup>
 </Template>

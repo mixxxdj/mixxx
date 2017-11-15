@@ -939,7 +939,7 @@ WBeatSpinBox {
 
 #VUMeterMasterContainer {
   background-color: #333333;
-  margin: 0px 5px 0px 1px;
+  margin: 0px 1px 0px 1px;
 }
 
 #VUMeterMasterLabel {
