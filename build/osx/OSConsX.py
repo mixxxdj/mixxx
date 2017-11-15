@@ -438,7 +438,7 @@ def emit_app(target, source, env):
             target = Dir(os.path.join(str(target), path))
         if isinstance(i, SCons.Node.FS.Dir):
             InstallDir(target, i, env)
-        elif isinstance(i, SCons.Node.FS.File) or isinstance(i, basestring):
+        elif isinstance(i, SCons.Node.FS.File) or isinstance(i, str):
             env.Install(target, i)
 
     plugins = env['PLUGINS']

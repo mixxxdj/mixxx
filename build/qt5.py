@@ -327,7 +327,7 @@ class _Automoc:
         for obj in source:
             if not moc_options['auto_scan']:
                 break
-            if isinstance(obj,basestring):  # big kludge!
+            if isinstance(obj,str):  # big kludge!
                 print("scons: qt5: '%s' MAYBE USING AN OLD SCONS VERSION AND NOT CONVERTED TO 'File'. Discarded." % str(obj))
                 continue
             if not obj.has_builder():
