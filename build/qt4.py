@@ -53,31 +53,6 @@ class QtdirNotFound(ToolQt4Warning):
 
 SCons.Warnings.enableWarningClass(ToolQt4Warning)
 
-try:
-    sorted
-except NameError:
-    # Pre-2.4 Python has no sorted() function.
-    #
-    # The pre-2.4 Python list.sort() method does not support
-    # list.sort(key=) nor list.sort(reverse=) keyword arguments, so
-    # we must implement the functionality of those keyword arguments
-    # by hand instead of passing them to list.sort().
-    def sorted(iterable, cmp=None, key=None, reverse=0):
-        if key is not None:
-            result = [(key(x), x) for x in iterable]
-        else:
-            result = iterable[:]
-        if cmp is None:
-            # Pre-2.3 Python does not support list.sort(None).
-            result.sort()
-        else:
-            result.sort(cmp)
-        if key is not None:
-            result = [t1 for t0,t1 in result]
-        if reverse:
-            result.reverse()
-        return result
-
 qrcinclude_re = re.compile(r'<file[^>]*>([^<]*)</file>', re.M)
 
 def transformToWinePath(path) :
