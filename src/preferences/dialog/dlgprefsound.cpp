@@ -23,6 +23,7 @@
 #include "soundio/soundmanager.h"
 #include "soundio/sounddevice.h"
 #include "util/rlimit.h"
+#include "util/realtimehelper.h"
 #include "util/scopedoverridecursor.h"
 #include "control/controlproxy.h"
 
@@ -171,11 +172,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             new ControlProxy("[Master]", "keylock_engine", this);
 
 #ifdef __LINUX__
-    qDebug() << "RLimit Cur " << RLimit::getCurRtPrio();
-    qDebug() << "RLimit Max " << RLimit::getMaxRtPrio();
-
-    if (RLimit::isRtPrioAllowed()) {
-        limitsHint->setText(tr("Realtime scheduling is enabled."));
+    if (mixxx::RealtimeHelper::realtimeAvailable()) {
+        limitsHint->setText(mixxx::RealtimeHelper::getRealtimeStatus());
     }
 #else
     // the limits warning is a Linux only thing

@@ -31,6 +31,7 @@
 #include "util/console.h"
 #include "util/logging.h"
 #include "util/version.h"
+#include "util/realtimehelper.h"
 
 #ifdef Q_OS_LINUX
 #include <X11/Xlib.h>
@@ -60,6 +61,8 @@ int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
 int main(int argc, char * argv[]) {
     Console console;
 
+    // we may need to set some parameters before we start to create threads
+    mixxx::RealtimeHelper::prepare();
 #ifdef Q_OS_LINUX
     XInitThreads();
 #endif
@@ -91,6 +94,11 @@ int main(int argc, char * argv[]) {
                                args.getLogLevel(), args.getDebugAssertBreak());
 
     MixxxApplication app(argc, argv);
+
+    //RealtimeHelper *rth = new RealtimeHelper(nullptr);
+    mixxx::RealtimeHelper::checkRealtime();
+    // we give mixxx main thead a priority of -5
+    mixxx::RealtimeHelper::requestHighPriority(0, -5);
 
     // Support utf-8 for all translation strings. Not supported in Qt 5.
     // TODO(rryan): Is this needed when we switch to qt5? Some sources claim it
