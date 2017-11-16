@@ -165,7 +165,7 @@ class _Automoc:
             if h:
                 if moc_options['debug']:
                     print("scons: qt4: Scanning '%s' (header of '%s')" % (str(h), str(cpp)))
-                h_contents = h.get_contents()
+                h_contents = h.get_text_contents()
                 if moc_options['gobble_comments']:
                     h_contents = self.ccomment.sub('', h_contents)
                     h_contents = self.cxxcomment.sub('', h_contents)
@@ -233,7 +233,7 @@ class _Automoc:
                     if h:
                         if moc_options['debug']:
                             print("scons: qt4: Scanning '%s' (header of '%s')" % (str(h), str(cpp)))
-                        h_contents = h.get_contents()
+                        h_contents = h.get_text_contents()
                         if moc_options['gobble_comments']:
                             h_contents = self.ccomment.sub('', h_contents)
                             h_contents = self.cxxcomment.sub('', h_contents)
@@ -316,7 +316,7 @@ class _Automoc:
                 # c or fortran source
                 continue
             try:
-                cpp_contents = cpp.get_contents()
+                cpp_contents = cpp.get_text_contents()
                 if moc_options['gobble_comments']:
                     cpp_contents = self.ccomment.sub('', cpp_contents)
                     cpp_contents = self.cxxcomment.sub('', cpp_contents)
@@ -389,7 +389,7 @@ def __scanResources(node, env, path, arg):
             else:
                 result.append(itemPath)
         return result
-    contents = node.get_contents()
+    contents = node.get_text_contents()
     includes = qrcinclude_re.findall(contents)
     qrcpath = os.path.dirname(node.path)
     dirs = [included for included in includes if os.path.isdir(os.path.join(qrcpath,included))]
