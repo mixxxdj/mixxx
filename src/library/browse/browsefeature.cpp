@@ -19,6 +19,7 @@
 #include "widget/wlibrary.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "util/sandbox.h"
+#include "util/memory.h"
 
 const QString kQuickLinksSeparator = "-+-";
 
@@ -135,9 +136,10 @@ void BrowseFeature::slotAddQuickLink() {
     QString name = extractNameFromPath(spath);
 
     QModelIndex parent = m_childModel.index(m_pQuickLinkItem->parentRow(), 0);
-    auto pNewChild = new TreeItem(this, name, vpath);
+    auto pNewChild = std::make_unique<TreeItem>(this, name, vpath);
     QList<TreeItem*> rows;
-    rows.append(pNewChild);
+    rows.append(pNewChild.get());
+    pNewChild.release();
     m_childModel.insertTreeItemRows(rows, m_pQuickLinkItem->childRows(), parent);
 
     m_quickLinkList.append(spath);
