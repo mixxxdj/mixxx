@@ -129,6 +129,8 @@ class LoopingControl : public EngineControl {
     bool m_bLoopRollActive;
     bool m_bAdjustingLoopIn;
     bool m_bAdjustingLoopOut;
+    bool m_bAdjustingLoopInOld;
+    bool m_bAdjustingLoopOutOld;
     bool m_bLoopOutPressedWhileLoopDisabled;
     // TODO(DSC) Make the following values double
     ControlValueAtomic<LoopSamples> m_loopSamples;

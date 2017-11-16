@@ -44,6 +44,8 @@ LoopingControl::LoopingControl(QString group,
           m_bLoopRollActive(false),
           m_bAdjustingLoopIn(false),
           m_bAdjustingLoopOut(false),
+          m_bAdjustingLoopInOld(false),
+          m_bAdjustingLoopOutOld(false),
           m_bLoopOutPressedWhileLoopDisabled(false) {
     m_oldLoopSamples = { kNoTrigger, kNoTrigger, false };
     m_loopSamples.setValue(m_oldLoopSamples);
@@ -338,6 +340,24 @@ double LoopingControl::nextTrigger(bool reverse,
     *pTarget = kNoTrigger;
 
     LoopSamples loopSamples = m_loopSamples.getValue();
+
+    if (m_bAdjustingLoopInOld != m_bAdjustingLoopIn) {
+        m_bAdjustingLoopInOld = m_bAdjustingLoopIn;
+        if (reverse && !m_bAdjustingLoopIn) {
+            m_oldLoopSamples = loopSamples;
+            *pTarget = loopSamples.end;
+            return currentSample;
+        }
+    }
+
+    if (m_bAdjustingLoopOutOld != m_bAdjustingLoopOut) {
+        m_bAdjustingLoopOutOld = m_bAdjustingLoopOut;
+        if (!reverse && !m_bAdjustingLoopOut) {
+            m_oldLoopSamples = loopSamples;
+            *pTarget = loopSamples.start;
+            return currentSample;
+        }
+    }
 
     if (m_bLoopingEnabled &&
             !m_bAdjustingLoopIn && !m_bAdjustingLoopOut &&
