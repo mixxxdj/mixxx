@@ -55,7 +55,7 @@ EffectManifest FlangerEffect::getManifest() {
     manual->setName(QObject::tr("Manual"));
     manual->setDescription(QObject::tr("Controls the delay offset of the LFO (low frequency oscillator).\n"
             "With width at zero, it allows to manual sweep over the entire delay range."));
-    manual->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    manual->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     manual->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     manual->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     manual->setDefault(kCenterDelayMs);
