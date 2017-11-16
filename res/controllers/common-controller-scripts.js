@@ -306,12 +306,19 @@ script.midiPitch = function (LSB, MSB, status) {
    Output:  none
    -------- ------------------------------------------------------ */
 script.spinback = function(channel, control, value, status, group, factor, rate) {
-    // set default factor
-    if (factor === undefined) {
+    // if brake is called from xml mapping without defined factor and rate,
+    // reset to defaults
+    if (factor === undefined && rate === undefined) {
         factor = 1;
+        rate = -10;
+    }
+    // if brake is called from xml mapping without defined rate,
+    // reset to default
+    if (rate === undefined) {
+        rate = -10;
     }
     // disable on note-off or zero value note/cc
-    engine.spinback(parseInt(group.substring(8,9)), ((status & 0xF0) !== 0x80 && value > 0));
+    engine.spinback(parseInt(group.substring(8,9)), ((status & 0xF0) !== 0x80 && value > 0), factor, rate);
 }
 
 /* -------- ------------------------------------------------------
@@ -323,7 +330,8 @@ script.spinback = function(channel, control, value, status, group, factor, rate)
    Output:  none
    -------- ------------------------------------------------------ */
 script.brake = function(channel, control, value, status, group, factor) {
-    // set default factor
+    // if brake is called from xml mapping without factor defined,
+    // reset to default
     if (factor === undefined) {
         factor = 1;
     }
