@@ -1081,10 +1081,10 @@ void LoopingControl::slotLoopMove(double beats) {
 
     if (BpmControl::getBeatContext(m_pBeats, getCurrentSample(),
                                    nullptr, nullptr, nullptr, nullptr)) {
-        double old_loop_in = loopSamples.start;
-        double old_loop_out = loopSamples.end;
-        double new_loop_in = m_pBeats->findNBeatsFromSample(old_loop_in, beats);
-        double new_loop_out = m_pBeats->findNBeatsFromSample(old_loop_out, beats);
+        double new_loop_in = m_pBeats->findNBeatsFromSample(loopSamples.start, beats);
+        double new_loop_out = currentLoopMatchesBeatloopSize() ?
+                m_pBeats->findNBeatsFromSample(new_loop_in, m_pCOBeatLoopSize->get()) :
+                m_pBeats->findNBeatsFromSample(loopSamples.start, beats);
 
         // If we are looping make sure that the play head does not leave the
         // loop as a result of our adjustment.
