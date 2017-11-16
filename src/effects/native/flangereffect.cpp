@@ -5,6 +5,10 @@
 #include "util/math.h"
 
 namespace{
+
+// Gain correction was verified with replay gain and default parameters
+const double kGainCorrection = 1.4125375446227544; // 3 dB
+
 inline CSAMPLE tanh_approx(CSAMPLE input) {
     // return tanhf(input); // 142ns for process;
     return input / (1 + input * input / (3 + input * input / 5)); // 119ns for process
@@ -182,9 +186,7 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE* delayLeft = pState->delayLeft;
     CSAMPLE* delayRight = pState->delayRight;
 
-    QList<int>();
-
-    for (unsigned int i = 0; i < numSamples; i += kChannels) {
+   for (unsigned int i = 0; i < numSamples; i += kChannels) {
 
         CSAMPLE_GAIN mix_ramped = mixRamped.getNext();
         CSAMPLE_GAIN regen_ramped = regenRamped.getNext();
@@ -219,8 +221,9 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
 
         pState->delayPos = (pState->delayPos + 1) % kBufferLenth;
 
-        pOutput[i] = pInput[i] + mix_ramped * delayedSampleLeft;
-        pOutput[i+1] = pInput[i + 1] + mix_ramped * delayedSampleRight;
+        double gain = (1 - mix_ramped + kGainCorrection * mix_ramped);
+        pOutput[i] = (pInput[i] + mix_ramped * delayedSampleLeft) / gain;
+        pOutput[i + 1] = (pInput[i + 1] + mix_ramped * delayedSampleRight) / gain;
     }
 
     if (enableState == EffectProcessor::DISABLING) {
