@@ -384,11 +384,11 @@ void SidebarModel::slotRowsRemoved(const QModelIndex& parent, int start, int end
 }
 
 void SidebarModel::slotModelAboutToBeReset() {
-    void beginResetModel();
+    beginResetModel();
 }
 
 void SidebarModel::slotModelReset() {
-    void endResetModel();
+    endResetModel();
 }
 
 /*
