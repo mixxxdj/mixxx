@@ -1256,11 +1256,12 @@ void ControllerEngine::scratchProcess(int timerId) {
 
     // End scratching if we're ramping and the current rate is really close to the rampTo value
     if ((m_ramp[deck] && fabs(m_rampTo[deck] - newRate) <= 0.00001) ||
-        // or if we're in brake or softStart mode and have crossed over the desired value,
+        // or if we brake or softStart and have crossed over the desired value,
         ((m_brakeActive[deck] || m_softStartActive[deck]) && (
             (oldRate > m_rampTo[deck] && newRate < m_rampTo[deck]) ||
-            // TODO ronso0: brake and softStart should be interrupted when stopping the deck
-            (oldRate < m_rampTo[deck] && newRate > m_rampTo[deck])))) {
+            (oldRate < m_rampTo[deck] && newRate > m_rampTo[deck]))) ||
+        // or if the deck was stopped manually during brake or softStart
+        ((m_brakeActive[deck] || m_softStartActive[deck]) && (!isDeckPlaying(group)))) {
         // Not ramping no mo'
         m_ramp[deck] = false;
 
