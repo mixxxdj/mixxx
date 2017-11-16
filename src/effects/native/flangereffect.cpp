@@ -230,7 +230,7 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
         SampleUtil::clear(delayLeft, kBufferLenth);
         SampleUtil::clear(delayRight, kBufferLenth);
         pState->previousPeriodFrames = -1;
-        pState->prev_regen = -1;
-        pState->prev_mix = -1;
+        pState->prev_regen = 0;
+        pState->prev_mix = 0;
     }
 }
