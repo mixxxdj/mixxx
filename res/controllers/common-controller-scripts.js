@@ -306,14 +306,12 @@ script.midiPitch = function (LSB, MSB, status) {
    Output:  none
    -------- ------------------------------------------------------ */
 script.spinback = function(channel, control, value, status, group, factor, rate) {
-    // if brake is called from xml mapping without defined factor and rate,
-    // reset to defaults
+    // if brake is called without defined factor and rate, reset to defaults
     if (factor === undefined && rate === undefined) {
         factor = 1;
         rate = -10;
     }
-    // if brake is called from xml mapping without defined rate,
-    // reset to default
+    // if brake is called without defined rate, reset to default
     if (rate === undefined) {
         rate = -10;
     }
@@ -330,8 +328,7 @@ script.spinback = function(channel, control, value, status, group, factor, rate)
    Output:  none
    -------- ------------------------------------------------------ */
 script.brake = function(channel, control, value, status, group, factor) {
-    // if brake is called from xml mapping without factor defined,
-    // reset to default
+    // if brake is called without factor defined, reset to default
     if (factor === undefined) {
         factor = 1;
     }
@@ -349,6 +346,7 @@ script.brake = function(channel, control, value, status, group, factor) {
    Output:  none
    -------- ------------------------------------------------------ */
 script.softStart = function(channel, control, value, status, group, factor) {
+    // if softStart is called without factor defined, reset to default
     if (factor === undefined) {
         factor = 1;
     }
