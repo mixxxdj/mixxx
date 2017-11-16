@@ -819,10 +819,6 @@ WBeatSpinBox {
       border-right: none;
       }
 
-#PitchSliderContainer {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  }
-
 /*################################################################
  #######  Channel Mixer  ########################################
 ##############################################################*/
@@ -946,13 +942,14 @@ WBeatSpinBox {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   margin-top: 4px;
   }
-#VUMeterFloating, #VUMeterMaster {
-  margin-top: 3px;
-}
+  #VUMeterFloating {
+    margin-top: 3px;
+  }
 
 #VUMeterMasterContainer {
-  background-color: #333333;
   margin: 0px 1px 0px 1px;
+  background-color: #252525;
+  border-radius: 3px;
 }
 
 #VUMeterMasterLabel {
@@ -1791,6 +1788,7 @@ qproperty-layoutAlignment: 'AlignRight | AlignBottom';
   font-size: 1px/1px;
 }
 #RoundFiller25 {
+  qproperty-layoutAlignment: 'AlignCenter';
   background-color: #252525;
   border-radius: 3px;
 }

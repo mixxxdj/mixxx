@@ -41,7 +41,7 @@ Variables:
           <Template src="skin:vumeter_floating.xml"/>
 
           <WidgetGroup>
-            <Size>5f,1me</Size>
+            <Size>3f,1me</Size>
             <Connection>
               <ConfigKey>[Tango],vumeter</ConfigKey>
               <BindProperty>visible</BindProperty>
@@ -53,20 +53,12 @@ Variables:
             <SizePolicy>min,me</SizePolicy>
             <Children>
               <WidgetGroup><!-- if BIG spinny is enabled -->
-                <Layout>vertical</Layout>
+                <Layout>horizontal</Layout>
                 <SizePolicy>min,me</SizePolicy>
                 <Children>
-                  <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>min,min</SizePolicy>
-                    <Children>
-                      <Template src="skin:spinnyCover.xml"/>
-                      <!-- margin to deck -->
-                      <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
-                    </Children>
-                  </WidgetGroup>
-                  <!-- push spinny to the top -->
-                  <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
+                  <Template src="skin:spinnyCover.xml"/>
+                  <!-- margin to deck -->
+                  <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>

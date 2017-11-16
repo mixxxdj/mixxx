@@ -27,14 +27,14 @@ Description:
             </Connection>
           </WidgetGroup>
 
-          <WidgetGroup><!-- VU Meter spacer when Channel Mixer is hidden -->
+          <WidgetGroup><!-- Master VU Meter spacer when Channel Mixer is hidden -->
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <!-- floating channel + master level meters -->
+              <!-- master level meters -->
               <WidgetGroup>
                 <Layout>vertical</Layout>
-                <Size>48f,1min</Size>
+                <Size>56f,1min</Size>
                 <Children>
                 </Children>
                 <Connection>
@@ -69,7 +69,7 @@ Description:
       </WidgetGroup><!-- /Spacers for normal width -->
 
       <WidgetGroup><!-- Spacer for netbook mode -->
-        <Size>10f,1min</Size>
+        <Size>14f,1min</Size>
         <Connection>
           <ConfigKey>[Tango],netbook_mode</ConfigKey>
           <BindProperty>visible</BindProperty>

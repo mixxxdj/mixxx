@@ -8,7 +8,7 @@ Variables:
 <Template>
   <WidgetGroup>
     <ObjectName>SpinnyCover</ObjectName>
-    <SizePolicy>min,min</SizePolicy>
+    <SizePolicy>max,me</SizePolicy>
     <Layout>vertical</Layout>
     <Children>
 
@@ -69,12 +69,26 @@ Variables:
         </Connection>
       </CoverArt>
 
-      <!-- none -->
       <WidgetGroup>
-        <Size>0f,0f</Size>
+        <MinimumSize>0,0</MinimumSize>
+        <MaximumSize>-1,3</MaximumSize>
+        <SizePolicy>me,me</SizePolicy>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>RoundFiller25</ObjectName>
+        <Size>0me,22f</Size>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <Size>1me,25me</Size>
+        <Children>
+          <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,3f</Size></WidgetGroup>
+          <WidgetGroup><ObjectName>RoundFiller25</ObjectName><Size>1me,22me</Size></WidgetGroup>
+        </Children>
         <Connection>
-          <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
-          <Transform><IsEqual>2</IsEqual></Transform>
+          <ConfigKey>[Tango],loop_beatjump_controls</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
