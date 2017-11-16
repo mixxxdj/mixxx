@@ -1254,12 +1254,12 @@ void ControllerEngine::scratchProcess(int timerId) {
     // Reset accumulator
     m_intervalAccumulator[deck] = 0;
 
-    // If we're ramping and the current rate is really close to the rampTo value
-    // or we're in brake or softStart mode and have crossed over the desired value,
-    // end scratching
+    // End scratching if we're ramping and the current rate is really close to the rampTo value
     if ((m_ramp[deck] && fabs(m_rampTo[deck] - newRate) <= 0.00001) ||
+        // or if we're in brake or softStart mode and have crossed over the desired value,
         ((m_brakeActive[deck] || m_softStartActive[deck]) && (
             (oldRate > m_rampTo[deck] && newRate < m_rampTo[deck]) ||
+            // TODO ronso0: brake and softStart should be interrupted when stopping the deck
             (oldRate < m_rampTo[deck] && newRate > m_rampTo[deck])))) {
         // Not ramping no mo'
         m_ramp[deck] = false;
@@ -1407,12 +1407,14 @@ void ControllerEngine::brake(int deck, bool activate, double factor, double rate
 
     if (activate) {
         // store the new values for this spinback/brake effect
-        m_rampTo[deck] = 0.0;
         if (initRate == 1.0) {// then rate is really 1.0 or was set to default
-            // so check for real value taking pitch into account
+            // in /res/common-controller-scripts.js so check for real value,
+            // taking pitch into account
             initRate = getDeckRate(group);
         }
-        // if softStart()ing, stop it
+        // stop ramping at a rate which doesn't produce any audible output anymore
+        m_rampTo[deck] = 0.01;
+        // if we are currently softStart()ing, stop it
         if (m_softStartActive[deck]) {
             m_softStartActive[deck] = false;
             AlphaBetaFilter* filter = m_scratchFilters[deck];
