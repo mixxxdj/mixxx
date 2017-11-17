@@ -38,6 +38,9 @@ class WTrackTableView : public WLibraryTableView {
     void loadSelectedTrack() override;
     void loadSelectedTrackToGroup(QString group, bool play) override;
 
+    QList<TrackId> getSelectedTrackIds() const;
+    void setSelectedTracks(QList<TrackId> tracks);
+
   public slots:
     void loadTrackModel(QAbstractItemModel* model);
     void slotMouseDoubleClicked(const QModelIndex &);
@@ -104,8 +107,6 @@ class WTrackTableView : public WLibraryTableView {
     // Returns the current TrackModel, or returns NULL if none is set.
     TrackModel* getTrackModel() const;
     bool modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) const;
-
-    QList<TrackId> getSelectedTrackIds() const;
 
     UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;
