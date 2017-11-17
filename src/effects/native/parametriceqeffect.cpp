@@ -21,14 +21,14 @@ EffectManifest ParametricEQEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-        "An 2-band parametric equalizer based on biquad filters"));
+        "An gentle 2-band parametric equalizer based on biquad filters"));
     manifest.setEffectRampsFromDry(true);
     manifest.setIsMasterEQ(true);
 
     EffectManifestParameter* lfmGain = manifest.addParameter();
     lfmGain->setId("gain1");
     lfmGain->setName(QObject::tr("Gain 1"));
-    lfmGain->setDescription(QObject::tr("Gain for Mid Filter 1"));
+    lfmGain->setDescription(QObject::tr("Gain for Filter 1"));
     lfmGain->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     lfmGain->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     lfmGain->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -40,7 +40,8 @@ EffectManifest ParametricEQEffect::getManifest() {
     EffectManifestParameter* lfmQ = manifest.addParameter();
     lfmQ->setId("q1");
     lfmQ->setName(QObject::tr("Q 1"));
-    lfmQ->setDescription(QObject::tr("Q for Mid Filter 1"));
+    lfmQ->setDescription(QObject::tr(
+            "Controls the bandwidth of the filter. A lower Q affects a wider band of frequencies, a higher Q affects a narrower band of frequencies."));
     lfmQ->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     lfmQ->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     lfmQ->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -52,7 +53,7 @@ EffectManifest ParametricEQEffect::getManifest() {
     EffectManifestParameter* lfmCenter = manifest.addParameter();
     lfmCenter->setId("center1");
     lfmCenter->setName(QObject::tr("Center 1"));
-    lfmCenter->setDescription(QObject::tr("Center frequency for Mid Filter 1 in Hz"));
+    lfmCenter->setDescription(QObject::tr("Center frequency for Filter 1 in Hz"));
     lfmCenter->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     lfmCenter->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     lfmCenter->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -64,7 +65,7 @@ EffectManifest ParametricEQEffect::getManifest() {
     EffectManifestParameter* hfmGain = manifest.addParameter();
     hfmGain->setId("gain2");
     hfmGain->setName(QObject::tr("Gain 2"));
-    hfmGain->setDescription(QObject::tr("Gain for Mid Filter 2"));
+    hfmGain->setDescription(QObject::tr("Gain for Filter 2"));
     hfmGain->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     hfmGain->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     hfmGain->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -76,7 +77,8 @@ EffectManifest ParametricEQEffect::getManifest() {
     EffectManifestParameter* hfmQ = manifest.addParameter();
     hfmQ->setId("q2");
     hfmQ->setName(QObject::tr("Q 2"));
-    hfmQ->setDescription(QObject::tr("Q for Mid Filter 2"));
+    hfmQ->setDescription(QObject::tr(
+            "Controls the bandwidth of the filter. A lower Q affects a wider band of frequencies, a higher Q affects a narrower band of frequencies."));
     hfmQ->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     hfmQ->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     hfmQ->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -88,7 +90,7 @@ EffectManifest ParametricEQEffect::getManifest() {
     EffectManifestParameter* hfmCenter = manifest.addParameter();
     hfmCenter->setId("center2");
     hfmCenter->setName(QObject::tr("Center 2"));
-    hfmCenter->setDescription(QObject::tr("Center frequency for Mid Filter 2 in Hz"));
+    hfmCenter->setDescription(QObject::tr("Center frequency for Filter 2 in Hz"));
     hfmCenter->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     hfmCenter->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     hfmCenter->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
