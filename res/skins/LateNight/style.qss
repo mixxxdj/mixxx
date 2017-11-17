@@ -853,6 +853,46 @@
   padding: 3px;
 }
 
+#RateContainerSmall3 {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  background-color: #1e1e1e;
+  border: 2px solid #585858;
+  border-right: 0px;
+  border-top: 0px;
+  border-left: 0px;
+  padding: 3px;
+  padding-top: 20px;
+}
+
+#RateContainerSmall4 {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  background-color: #1e1e1e;
+  border: 2px solid #585858;
+  border-right: 0px;
+  border-top: 0px;
+  padding: 3px;
+  padding-top: 20px;
+}
+
+#RateContainerSmall1 {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  background-color: #1e1e1e;
+  border: 2px solid #585858;
+  border-right: 0px;
+  border-left: 0px;
+  padding: 3px;
+  padding-top: 20px;
+}
+
+#RateContainerSmall2 {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  background-color: #1e1e1e;
+  border: 2px solid #585858;
+  border-right: 0px;
+  padding: 3px;
+  padding-top: 20px;
+}
+
 #RateAdjust {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }

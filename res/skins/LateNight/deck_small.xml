@@ -1,0 +1,94 @@
+<Template>
+    <WidgetGroup>
+        <ObjectName>Deck</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me, min</SizePolicy>
+        <MinimumSize>-1, 90</MinimumSize>
+        <Children>
+            <WidgetGroup>
+                <ObjectName>RateContainerSmall<Variable name="channum" /></ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <MinimumSize>75,-1</MinimumSize>
+                <Children>
+                   <WidgetGroup>
+                       <ObjectName>RateAdjust</ObjectName>
+                       <Layout>vertical</Layout>
+                       <SizePolicy>min,min</SizePolicy>
+	                   <Children>
+							<Key>
+                              <ObjectName>TextColor<Variable name="channum" /></ObjectName>
+                              <Style>QLabel { qproperty-alignment: 'AlignCenter';
+                                  font: bold 13px/16px Lucida Grande, Lucida Sans
+                                  Unicode, Arial, Verdana, sans-serif;
+                                  background-color: transparent; padding: 0px; margin: 0px;}
+                              </Style>
+                              <Group>[Channel<Variable name="channum"/>]</Group>
+                              <SizePolicy>min,f</SizePolicy>
+                              <Size>-1,17</Size>
+                              <Connection>
+                                <ConfigKey>[Channel<Variable name="channum"/>],visual_key</ConfigKey>
+                              </Connection>
+                           </Key>
+							<WidgetGroup>
+                               <ObjectName>BpmContainer</ObjectName>
+                               <Size>60,22</Size>
+                               <Children>
+                                   <NumberBpm>
+                                      <ObjectName>BpmTextColor<Variable name="channum" /></ObjectName>
+                                      <TooltipId>visual_bpm</TooltipId>
+                                      <Pos>0,0</Pos>
+                                      <Size>60,22</Size>
+                                      <Channel>
+                                          <Variable name="channum" />
+                                      </Channel>
+                                      <NumberOfDigits>2</NumberOfDigits>
+                                      <Connection>
+                                          <ConfigKey>[Channel<Variable name="channum" />],visual_bpm</ConfigKey>
+                                      </Connection>
+                                  </NumberBpm>
+                                  <PushButton>
+                                      <TooltipId>bpm_tap_visual_bpm</TooltipId>
+                                      <NumberStates>1</NumberStates>
+                                      <State>
+                                        <Number>0</Number>
+                                        <Text></Text>
+                                      </State>
+                                      <State>
+                                        <Number>1</Number>
+                                        <Text></Text>
+                                      </State>
+                                      <Pos>0,0</Pos>
+                                      <Size>60,22</Size>
+                                      <Connection>
+                                          <ConfigKey>[Channel<Variable name="channum" />],bpm_tap</ConfigKey>
+                                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                      </Connection>
+                                  </PushButton>
+                              </Children>
+                          </WidgetGroup>
+                          <NumberRate>
+                              <TooltipId>rate_display</TooltipId>
+                              <ObjectName>RateTextColor<Variable name="channum" /></ObjectName>
+                              <Channel>
+                                  <Variable name="channum" />
+                              </Channel>
+                              <NumberOfDigits>2</NumberOfDigits>
+                          </NumberRate>
+			            </Children>
+		            </WidgetGroup>
+				</Children>
+            </WidgetGroup>
+			<WidgetGroup>
+				<ObjectName>Deck<Variable name="channum" /></ObjectName>
+				<SizePolicy>me,min</SizePolicy>
+				<MinimumSize>340,-1</MinimumSize>
+				<Layout>vertical</Layout>
+				<Children>
+					<Template src="skin:deck_row_2_3_4.xml" />
+					<Template src="skin:deck_row_5.xml" />
+				</Children>
+			</WidgetGroup>
+		</Children>
+	</WidgetGroup>
+</Template>
