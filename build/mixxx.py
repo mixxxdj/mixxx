@@ -261,7 +261,7 @@ class MixxxBuild(object):
         if os.name == 'nt' or sys.platform == 'win32':
             return 'windows'
         # Should cover {Net,Open,Free,DragonFly}BSD, but only tested on OpenBSD
-        if sys.platform.startswith('bsd'):
+        if 'bsd' in sys.platform:
             return 'bsd'
         if sys.platform.startswith('linux'):
             return 'linux'
