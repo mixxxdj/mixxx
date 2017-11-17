@@ -53,14 +53,14 @@ EffectManifest ParametricEQEffect::getManifest() {
     EffectManifestParameter* lfmCenter = manifest.addParameter();
     lfmCenter->setId("center1");
     lfmCenter->setName(QObject::tr("Center 1"));
-    lfmCenter->setDescription(QObject::tr("Center frequency for Filter 1 in Hz"));
+    lfmCenter->setDescription(QObject::tr("Center frequency for Filter 1, from 100 Hz to 14 kHz"));
     lfmCenter->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     lfmCenter->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     lfmCenter->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     lfmCenter->setNeutralPointOnScale(0.5);
     lfmCenter->setDefault(kDefaultCenter1);
-    lfmCenter->setMinimum(100); // 1kHz
-    lfmCenter->setMaximum(14000); // 1kHz
+    lfmCenter->setMinimum(100); // 100 Hz
+    lfmCenter->setMaximum(14000); // 14 kHz
 
     EffectManifestParameter* hfmGain = manifest.addParameter();
     hfmGain->setId("gain2");
@@ -90,7 +90,7 @@ EffectManifest ParametricEQEffect::getManifest() {
     EffectManifestParameter* hfmCenter = manifest.addParameter();
     hfmCenter->setId("center2");
     hfmCenter->setName(QObject::tr("Center 2"));
-    hfmCenter->setDescription(QObject::tr("Center frequency for Filter 2 in Hz"));
+    hfmCenter->setDescription(QObject::tr("Center frequency for Filter 2, from 100 Hz to 14 kHz"));
     hfmCenter->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     hfmCenter->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     hfmCenter->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
