@@ -75,6 +75,7 @@
       <attribute persist="true" config_key="[Tango],hotcues">1</attribute>
       <attribute persist="true" config_key="[Tango],8_hotcues">0</attribute>
       <attribute persist="true" config_key="[Tango],key_controls">1</attribute>
+      <attribute persist="true" config_key="[Tango],rate_key_buttons">0</attribute>
       <attribute persist="true" config_key="[Tango],loop_beatjump_controls">1</attribute>
       <attribute persist="true" config_key="[Tango],loop_sizes">0</attribute>
       <attribute persist="true" config_key="[Tango],mixerbar">1</attribute>

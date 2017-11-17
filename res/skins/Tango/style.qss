@@ -51,12 +51,12 @@ WWidgetGroup {
 ####### Colors ##################################################
 ###############################################################*/
 
-#Deck1 WLabel,#RateContainer1 WLabel,
-#Deck2 WLabel, #RateContainer2 WLabel {
+#Deck1 WLabel,#RateContainer1 WLabel, #RateContainer1 WPushButton,
+#Deck2 WLabel, #RateContainer2 WLabel, #RateContainer2 WPushButton {
   color: #33a8ff;
 }
-#Deck3 WLabel, #RateContainer3 WLabel,
-#Deck4 WLabel, #RateContainer4 WLabel {
+#Deck3 WLabel, #RateContainer3 WLabel, #RateContainer3 WPushButton,
+#Deck4 WLabel, #RateContainer4 WLabel, #RateContainer4 WPushButton {
   color: #d910f0;
 }
 
@@ -95,7 +95,7 @@ WWidgetGroup {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   padding: 2px 0px 0px 10px;
   text-align: left;
-  background-color: #333333;
+  background-color: #333;
 }
 #SkinSettingsHeader {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
@@ -117,8 +117,8 @@ WWidgetGroup {
 #SkinSettingsCategory {
   padding: 2px 2px 5px 2px;
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  border-top: 1px solid #000000;
-  border-left: 1px solid #000000;
+  border-top: 1px solid #000;
+  border-left: 1px solid #000;
 }
   #CategoryLabel {
     font-size: 16px/16px;
@@ -145,7 +145,7 @@ WWidgetGroup {
   margin-right: 1px;
   }
   #DeckButtonVisibility[displayValue="0"] {
-    color: #888888;
+    color: #888;
   }
   #DeckButtonVisibility[displayValue="0"]:hover,
   #DeckButtonVisibility[displayValue="1"] {
@@ -183,7 +183,7 @@ WWidgetGroup {
 }
 
 #BeatgridButtonToggler {
-  background-color: #333333;
+  background-color: #333;
   }
   #BeatgridButtonToggler[displayValue="0"] {
     image: url(skin:/buttons/btn_arrow_left.svg) no-repeat center center;
@@ -203,7 +203,7 @@ WWidgetGroup {
 #BeatgridFaster,
 #BeatgridEarlier,
 #BeatgridLater {
-  background-color: #333333;
+  background-color: #333;
   }
   #BeatgridCurpos:hover,
   #BeatgridSlower:hover,
@@ -245,7 +245,7 @@ WWidgetGroup {
 #MixerbarSection {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
   margin: 3px 5px 0px 0px;
-  background-color: #333333;
+  background-color: #333;
 }
 
 #Mixerbar_BelowLibrary[displayValue="0"] {
@@ -306,17 +306,17 @@ WWidgetGroup {
   #MixerbarButton[displayValue="0"],
   #MixerbarPflButton[displayValue="0"],
   #MixerbarXfaderButton[displayValue="0"] {
-    background-color: #333333;
-    color: #888888;
+    background-color: #333;
+    color: #888;
     }
     #MixerbarButton[displayValue="0"]:hover,
     #MixerbarPflButton:hover,
     #MixerbarXfaderButton:hover {
-      border: 1px solid #888888;
+      border: 1px solid #888;
     }
   #MixerbarButton[displayValue="1"],
   #MixerbarButton[displayValue="2"] {
-    background-color: #666666;
+    background-color: #666;
     color: #eeeeee;
     }
   #MixerbarPflButton[displayValue="0"]:hover,
@@ -330,7 +330,7 @@ WWidgetGroup {
 
 #MixerbarTalkover[displayValue="0"],
 #MixerbarMute[displayValue="1"] {
-  background-color: #333333;
+  background-color: #333;
   border: 1px solid #0f0f0f;
 }
 #MixerbarTalkover[displayValue="1"],
@@ -353,7 +353,7 @@ WWidgetGroup {
   margin: 0px 0px 0px 0px;
 }
 #MixerbarCover {
-  /* background is #333333, so this has to blend in */
+  /* background is #333, so this has to blend in */
   background-color: rgba(51, 51, 51, 200);
 }
 
@@ -363,7 +363,7 @@ WWidgetGroup {
 
 #DeckContainer {
   qproperty-layoutAlignment: 'AlignTop';/*
-  background-color: #333333; */
+  background-color: #333; */
 }
 
 #Deck1,
@@ -428,8 +428,8 @@ WWidgetGroup {
   #VinylCueModeButton,
   #PassthroughButton {
     font-size: 11px/11px;
-    color: #888888;
-    background-color: #333333;
+    color: #888;
+    background-color: #333;
     }
     #VinylControlButton:hover,
     #VinylModeButton:hover {
@@ -447,7 +447,7 @@ WWidgetGroup {
   #VinylModeButton[displayValue="1"],
   #VinylModeButton[displayValue="2"],
   #VinylControlStatus[displayValue="0"] {
-    background-color: #666666;
+    background-color: #666;
     }
   #VinylControlButton[displayValue="1"] {
     background-color: transparent;
@@ -467,7 +467,7 @@ WWidgetGroup {
     background-color: #ff8f00;
     }
     #PassthroughButton[displayValue="1"]:hover {
-      border: 1px solid #ffffff;
+      border: 1px solid #fff;
     }
 
   #TrackCommentContainer {
@@ -480,20 +480,20 @@ WWidgetGroup {
   /* this is necessary to display multi-line comments correctly.
     Without it, first line would be cut off at the top. */
     padding-top: 1px;
-    color: #888888;
+    color: #888;
     text-align: left;
-    background-color: #333333;
+    background-color: #333;
     }
   WLabel#DeckFxIndicator {
     font-weight: bold;
     color: #ff8f00;
     padding-top: 1px;
-    background-color: #333333;
+    background-color: #333;
   }
 
 #ArtistTitleTime {
   qproperty-layoutAlignment: 'AlignVCenter';
-  background-color: #333333;
+  background-color: #333;
   }
   WLabel#PlayPosition, WLabel#TrackTitle {
     font-size: 18px/18px;
@@ -513,10 +513,10 @@ WWidgetGroup {
     padding: 0px 1px 0px 1px;
   }
   WLabel#TrackBy {
-    color: #888888;
+    color: #888;
   }
   #LoopIndicator:hover {
-    border: 1px solid #ffffff;
+    border: 1px solid #fff;
     }
     #LoopIndicator[displayValue="1"] {
       background: #ff8f00 url(skin:/buttons/btn_reloop_on.svg) no-repeat center center;
@@ -529,12 +529,12 @@ WWidgetGroup {
   #DeckControlsLeft {
     qproperty-layoutAlignment: 'Alignleft | AlignVCenter';
     padding: 1px 0px 1px 1px;
-    background-color: #333333;
+    background-color: #333;
   }
   #DeckControlsRight {
     qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
     padding: 1px 1px 1px 0px;
-    background-color: #333333;
+    background-color: #333;
   }
 
 #DeckControlsExpanded,
@@ -546,7 +546,7 @@ WWidgetGroup {
   /* there's been trouble defining bg-color to several IDs at once,
   so we do it pre ID...yaaawn */
   #DeckButtonExpanded:hover {
-    background-color: #000000;
+    background-color: #000;
   }
   #DeckControlsToggler_Left[displayValue="0"] {
     background: transparent url(skin:/buttons/btn_arrow_right.svg) no-repeat center center;
@@ -563,7 +563,7 @@ WWidgetGroup {
       border-width: 1px 0px 1px 1px;
     }
     #DeckControlsToggler_Left[displayValue="1"]:hover {
-      background: #000000 url(skin:/buttons/btn_arrow_left_hover.svg) no-repeat center center;
+      background: #000 url(skin:/buttons/btn_arrow_left_hover.svg) no-repeat center center;
     }
 
   #DeckControlsToggler_Right[displayValue="0"] {
@@ -582,7 +582,7 @@ WWidgetGroup {
 
     }
     #DeckControlsToggler_Right[displayValue="1"]:hover {
-      background: #000000 url(skin:/buttons/btn_arrow_right_hover.svg) no-repeat center center;
+      background: #000 url(skin:/buttons/btn_arrow_right_hover.svg) no-repeat center center;
     }
 
   #Keylock[displayValue="1"]:hover {
@@ -597,7 +597,7 @@ WWidgetGroup {
   WStarRating {
     margin: 0px;
     padding: 4px;
-    color: #888888;
+    color: #888;
     background-color: none;
     }
 
@@ -607,8 +607,8 @@ WWidgetGroup {
   }
   #HotcueButton[displayValue="0"],
   #CueUnderlay {
-    color: #888888;
-    background-color: #333333;
+    color: #888;
+    background-color: #333;
     }
   #HotcueButton[displayValue="0"]:hover,
   #CueButton[displayValue="0"]:hover,
@@ -619,7 +619,7 @@ WWidgetGroup {
   #CueButton[displayValue="1"],
   #CueUnderlay[displayValue="1"] {
     color: #eeeeee;
-    background-color: #666666;
+    background-color: #666;
     }
   #HotcueButton[displayValue="1"]:hover,
   #CueButton[displayValue="1"]:hover {
@@ -656,14 +656,14 @@ WWidgetGroup {
   #CueButton {
   /* is styled like #HotcueButton, lights up if play position
     is at main Cue point	*/
-    background-color: #333333;
+    background-color: #333;
     font-weight: bold;
     font-size: 14px/16px;
     color: #d2d2d2;
   }
 
 #PassthroughPlayCover {
-  background: #333333 url(skin:/graphics/passthrough_play_cover.svg) no-repeat center center;
+  background: #333 url(skin:/graphics/passthrough_play_cover.svg) no-repeat center center;
 }
 
 /*################################################################
@@ -673,15 +673,15 @@ WWidgetGroup {
 #LoopBeatJumpButton,
 #LoopSizeButton {
   font-weight: bold;
-  color: #888888;
-  background-color: #333333;
+  color: #888;
+  background-color: #333;
   }
   #LoopSizeButton {
     font-size: 14px/12px;
   }
   #LoopBeatJumpButton:hover,
   #LoopSizeButton:hover {
-    border: 1px solid #888888;
+    border: 1px solid #888;
   }
   #LoopSizeButton[displayValue="1"] {
     border: 1px solid #ff8f00;
@@ -692,10 +692,10 @@ WWidgetGroup {
   }
 
 #ReloopButton[displayValue="0"] {
-  background-color: #333333;
+  background-color: #333;
   }
   #ReloopButton[displayValue="0"]:hover {
-    border: 1px solid #888888;
+    border: 1px solid #888;
   }
   #ReloopButton[displayValue="1"] {
   /* See also #LoopIndicator near DeckButtons */
@@ -712,7 +712,7 @@ WBeatSpinBox {
   max-width: 52px;
   min-height: 20px;
   max-height: 20px;
-  border: 1px solid #666666;  /* = 54x22px */
+  border: 1px solid #666;  /* = 54x22px */
   border-radius: 2px;
   border-top-right-radius: 11px;
   border-bottom-right-radius: 11px;
@@ -725,7 +725,7 @@ WBeatSpinBox {
   margin: 0 13px 0 0;
 }
   WBeatSpinBox:hover {
-    border-color: #888888;
+    border-color: #888;
   }
   WBeatSpinBox:focus {
     border-color: #d2d2d2;
@@ -743,7 +743,7 @@ WBeatSpinBox {
     border-color: #1e1e1e;
     border-width: 1px 0p 1px 0px; /* = 16x22px */
     border-radius: 3px;
-    background-color: #333333;
+    background-color: #333;
     }
 
   WBeatSpinBox::up-button {
@@ -770,20 +770,35 @@ WBeatSpinBox {
 #RateContainer2,
 #RateContainer3,
 #RateContainer4,
-#BpmContainer {
+#BPM {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
-#Bpm {
+#RateControls {
+  background-color: #0f0f0f;
+  border-radius: 3px;
+}
+
+#BPM, #RateButtons, #KeyDisplayMatch, #KeyControls {
+  margin-bottom: 1px;
+}
+
+#BpmLabel {
   qproperty-alignment: 'AlignHCenter | AlignVCenter';
   font-size: 16px/16px;
   font-weight: bold;
   text-align: center;
   padding-top: 1px;
   }
-  #SyncButtonOverlay[displayValue="0"]:hover,
-  #KeyReset:hover {
+  #SyncButtonOverlay[displayValue="0"]:hover {
     border: 1px solid #ff4800;
+  }
+  #SyncButtonOverlay[displayValue="0"]:hover,
+  #KeyMatch:hover {
+    background-color: #333;
+  }
+  #SyncButtonOverlay[displayValue="0"]:hover {
+    image: url(skin:/buttons/btn_sync.svg) no-repeat center center;
   }
   #SyncButtonOverlay[displayValue="1"],
   #SamplerSyncButton[displayValue="1"] {
@@ -794,42 +809,55 @@ WBeatSpinBox {
   #SamplerSyncButton[displayValue="1"]:hover {
     border: 1px solid #eeeeee;
   }
-  #KeyDisplay {
-    font-size: 13px/13px;
-  }
-  #KeyDown,
-  #KeyUp,
-  #KeyReset {
-    border: 1px solid #666666;
+  #RateUp {
+    image: url(skin:/buttons/btn_rate_up.svg) no-repeat center center;
     }
+    #RateUp:hover {
+      image: url(skin:/buttons/btn_rate_up_hover.svg) no-repeat center center;
+    }
+  #RateDown {
+    image: url(skin:/buttons/btn_rate_down.svg) no-repeat center center;
+    }
+    #RateDown:hover {
+      image: url(skin:/buttons/btn_rate_down_hover.svg) no-repeat center center;
+    }
+
+    #KeyDisplay {
+      font-size: 13px/13px;
+      font-weight: bold;
+      padding: 0px;
+    }
+    #KeyMatch {
+      }
+      #KeyMatch:hover {
+        image: url(skin:/buttons/btn_key_match_hover.svg) no-repeat center center;
+      }
     #KeyUp {
-      border-left: none;
+      image: url(skin:/buttons/btn_key_up.svg) no-repeat center center;
       }
       #KeyUp:hover {
-        background: transparent url(skin:/buttons/btn_key_up.svg) no-repeat center center;
-        }
+        image: url(skin:/buttons/btn_key_up_hover.svg) no-repeat center center;
+      }
     #KeyDown {
-      border-right: none;
+      image: url(skin:/buttons/btn_key_down.svg) no-repeat center center;
       }
       #KeyDown:hover {
-        background: transparent url(skin:/buttons/btn_key_down.svg) no-repeat center center;
-        }
-    #KeyReset {
-      border-left: none;
-      border-right: none;
+        image: url(skin:/buttons/btn_key_down_hover.svg) no-repeat center center;
       }
+/* */
+
 
 /*################################################################
  #######  Channel Mixer  ########################################
 ##############################################################*/
 #MixerChannelLeft {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
-  background-color: #333333;
+  background-color: #333;
   border-bottom-right-radius: 3px;
 }
 #MixerChannelRight {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
-  background-color: #333333;
+  background-color: #333;
   border-bottom-left-radius: 3px;
 }
 
@@ -886,7 +914,7 @@ WBeatSpinBox {
     background-color: #ff8f00;
     }
   #QuickFxEnableButton[displayValue="1"]:hover {
-    border: 1px solid #ffffff;
+    border: 1px solid #fff;
   }
 
   #QuickFxEnableUnderlay[displayValue="0"] {
@@ -927,15 +955,15 @@ WBeatSpinBox {
   }
 #PflButtonLeft:hover,
 #PflButtonRight:hover {
-    border: 1px solid #888888;
+    border: 1px solid #888;
   }
   #PflButtonLeft[displayValue="0"],
   #PflButtonRight[displayValue="0"] {
-    background-color: #333333;
+    background-color: #333;
   }
   #PflButtonLeft[displayValue="1"],
   #PflButtonRight[displayValue="1"] {
-    background-color: #000000;
+    background-color: #000;
   }
 
 #VUMeterMixer {
@@ -982,30 +1010,30 @@ WBeatSpinBox {
   }
   #GuiToggleButton[displayValue="0"]:hover,
   #GuiToggleButton2:hover {
-    border: 1px solid #888888;
+    border: 1px solid #888;
     }
   #GuiToggleButton[displayValue="1"]:hover,
   #GuiToggleButton[displayValue="2"]:hover {
     border: 1px solid #eeeeee;
     }
   #GuiToggleButton:hover {
-    background-color: #666666;
+    background-color: #666;
     }
   #GuiToggleButton[displayValue="0"],
   #GuiToggleButton2 {
-    color: #888888;
-    background-color: #333333;
+    color: #888;
+    background-color: #333;
     }
   #GuiToggleButton[displayValue="1"],
   #GuiToggleButton[displayValue="2"] {
     color: #eeeeee;
-    background-color: #666666;
+    background-color: #666;
     }
 
 #RecordingButton[displayValue="0"] { /*
   define bg-color because RecDurationLabel shows "--:--" when inactive */
-  background-color: #333333;
-  color: #888888;
+  background-color: #333;
+  color: #888;
 }
   #RecordingButton[displayValue="0"]:hover,
   #RecordingButton[displayValue="2"] {
@@ -1022,7 +1050,7 @@ WBeatSpinBox {
 #RecDurationLabel,
 #RecRec {
   /* RecordingButton is transparent so label needs bg-color */
-  background-color: #333333;
+  background-color: #333;
   font-family: Ubuntu;
   font-weight: bold;
   font-size: 12px/12px;
@@ -1031,7 +1059,7 @@ WBeatSpinBox {
   border-radius: 3px;
 }
   #RecDot {
-    background: #333333 url(skin:/buttons/btn_rec_dot.svg) no-repeat center right;
+    background: #333 url(skin:/buttons/btn_rec_dot.svg) no-repeat center right;
   }
 
 #ClockBox {
@@ -1112,7 +1140,7 @@ WBeatSpinBox {
 #FxUnitLabel {
   font-size: 14px/14px;
   font-weight: bold;
-  color: #888888;
+  color: #888;
 }
 
 #FxUnitControlsLeft {
@@ -1139,7 +1167,7 @@ WBeatSpinBox {
 
 #SuperWetDryContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  background-color: #333333;
+  background-color: #333;
   }
 
 /* minimal EffectSlots in horizontal layout */
@@ -1287,7 +1315,7 @@ WBeatSpinBox {
     border: 1px solid #ff8f00;
     }
   #FxToggleButton[displayValue="1"]:hover {
-    border: 1px solid #ffffff;
+    border: 1px solid #fff;
     }
   #FxToggleButtonUnderlay[displayValue="0"] {
     background-color: #777777;
@@ -1301,7 +1329,7 @@ WBeatSpinBox {
     }
     #FxName {
       qproperty-alignment: 'AlignLeft | AlignVCenter';
-      color: #000000;
+      color: #000;
       text-align: left;
       font-size: 13px/12px;
     }
@@ -1318,7 +1346,7 @@ WBeatSpinBox {
         names start getting cut off. Adding explicit padding improves this. */
     padding: 0px;
     /* The 3D frame on the combo box becomes flat when you give it a border */
-    border: 0px solid #666666;
+    border: 0px solid #666;
     border-radius: 3px;
     }
     WEffectSelector::drop-down {
@@ -1390,7 +1418,7 @@ WBeatSpinBox {
   margin-right: 1px;
   }
   #FxParameterButtonOverlay[displayValue="0"]:hover {
-    border: 1px solid #888888;
+    border: 1px solid #888;
   }
   #FxParameterButtonOverlay[displayValue="1"]:hover {
     border: 1px solid #eeeeee;
@@ -1421,11 +1449,11 @@ WBeatSpinBox {
   background-color: #4b4b4b;
 }
 #FxSuperLinkButton[value="0"]:hover {
-  border: 1px solid #888888;
+  border: 1px solid #888;
 }
 
 #FxSuperLinkInvertButton[displayValue="0"]:hover {
-  background-color: #888888;
+  background-color: #888;
 }
 #FxSuperLinkInvertButton[displayValue="1"] {
   background-color: #a90000;
@@ -1493,10 +1521,10 @@ WBeatSpinBox {
   font-size: 13px/13px;
   font-weight: bold;
   text-align: center;
-  background-color: #333333;
+  background-color: #333;
   }
   #FxAssignButton[displayValue="0"] {
-    color: #888888;
+    color: #888;
     }
     #FxAssignButton[displayValue="0"]:hover {
       border: 1px solid #ff8f00;
@@ -1506,17 +1534,17 @@ WBeatSpinBox {
     border: 1px solid #ff8f00;
     }
     #FxAssignButton[displayValue="1"]:hover {
-      border: 1px solid #ffffff;
+      border: 1px solid #fff;
     }
 
 #FxHeadMasterButton {
   font-size: 13px/13px;
   font-weight: bold;
   text-align: center;
-  background-color: #333333;
+  background-color: #333;
   }
   #FxHeadMasterButton[displayValue="0"] {
-    color: #888888;
+    color: #888;
     }
     #FxHeadMasterButton[displayValue="0"]:hover {
       border: 1px solid #ff8f00;
@@ -1525,7 +1553,7 @@ WBeatSpinBox {
     background-color: #ff8f00;
     }
     #FxHeadMasterButton[displayValue="1"]:hover {
-      border: 1px solid #ffffff;
+      border: 1px solid #fff;
     }
 
 /*################################################################
@@ -1570,7 +1598,7 @@ WBeatSpinBox {
 #SamplerPlayBox,
 #SamplerPlayBox_mini {
   border-color: #0f0f0f;
-  background-color: #333333;
+  background-color: #333;
   }
   #SamplerPlayBox {
     border-width: 1px 1px 1px 0px;
@@ -1583,7 +1611,7 @@ WBeatSpinBox {
       border-radius: 0px;
     }
     #SamplerPlayCue[displayValue="0"]:hover {
-      border: 1px solid #666666;
+      border: 1px solid #666;
     }
     #SamplerPlayCue[displayValue="1"] {
       border: 1px solid #ca0000;
@@ -1601,14 +1629,14 @@ WTrackProperty#SamplerTitle {
   font-weight: bold;
   color: #999999;
   text-align: left;
-  background-color: #333333;
+  background-color: #333;
   padding: 0 0 0 1px;
 }
 
 WTrackProperty#SamplerTitle_mini {
   font-size: 14px/14px;
   font-weight: bold;
-  color: #888888;
+  color: #888;
   text-align: left;
   padding: 0px 2px 0px 0px;
 }
@@ -1622,11 +1650,11 @@ WTrackProperty#SamplerTitle_mini {
   font-size: 14px/14px;
   font-weight: bold;
   text-align: center;
-  color: #888888;
+  color: #888;
 }
 #SamplerButton_mini,
 #SamplerGainKnob {
-  background-color: #333333;
+  background-color: #333;
   border-radius: 2px;
   }
   #SamplerButton:hover,
@@ -1639,7 +1667,7 @@ WTrackProperty#SamplerTitle_mini {
 
 #SamplerVU,
 #SamplerPitchSlider {
-  background-color: #333333;
+  background-color: #333;
 }
 
 #SamplerVU {
@@ -1655,7 +1683,7 @@ WTrackProperty#SamplerTitle_mini {
   }
   #SamplerSyncButton:hover {
     background-color: #0f0f0f;
-    border: 1px solid #888888;
+    border: 1px solid #888;
   }
 
 /*################################################################
@@ -1683,7 +1711,7 @@ WTrackProperty#SamplerTitle_mini {
 #PreviewTitle,
 #PreviewEject,
 #PreviewGainKnob {
-  background-color: #333333;
+  background-color: #333;
 }
 #PreviewTitleEject {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
@@ -1721,7 +1749,7 @@ WTrackProperty#SamplerTitle_mini {
 QToolTip {
   background-color: #1e1e1e;
   color: #cccccc;
-  border: 1px solid #333333;
+  border: 1px solid #333;
 }
 
 #TEST {
@@ -1775,19 +1803,23 @@ qproperty-layoutAlignment: 'AlignRight | AlignBottom';
   background-color: #252525;
 }
 #Spacer33 {
-  background-color: #333333;
+  background-color: #333;
 }
 #Spacer58 {
   background-color: #585858;
 }
 #SpacerFF {
-  background-color: #ffffff;
+  background-color: #fff;
 }
 #Text33 {
-  color: #333333;
+  color: #333;
   font-size: 1px/1px;
 }
-#RoundFiller25 {
+#RoundFiller25,
+#BPM, #KeyDisplayMatch,
+#RateUp, #RateDown,
+#KeyUp, #KeyDown,
+#PitchSlider {
   qproperty-layoutAlignment: 'AlignCenter';
   background-color: #252525;
   border-radius: 3px;
@@ -1838,7 +1870,7 @@ QTreeView {
   background-color: #0f0f0f;
   alternate-background-color: #1a1a1a;
   selection-color: #e6e6e6;
-  selection-background-color: #666666;
+  selection-background-color: #666;
 }
 
 QTreeView {
@@ -1868,7 +1900,7 @@ QTreeView::branch:closed:has-children:has-siblings {
   QTreeView::branch:has-children:!has-siblings:closed:selected,
   QTreeView::branch:closed:has-children:has-siblings:selected {
     image: url(skin:/graphics/branch_closed.png);
-    background-color: #333333;
+    background-color: #333;
   }
 
 /*  Open branch of tree 	*/
@@ -1880,13 +1912,13 @@ QTreeView::branch:open:has-children:has-siblings {
   QTreeView::branch:open:has-children:has-siblings:selected {
     border-image: none;
     image: url(skin:/graphics/branch_open.png);
-    background-color: #333333;
+    background-color: #333;
   }
 
 QTreeView::item:selected {
   border-image: none;
   background-image: none;
-  background-color: #333333;
+  background-color: #333;
   color: #cfcfcf;
   }
 
@@ -1908,7 +1940,7 @@ QHeaderView {
     /*	set right border so that first column header
     on the left doesn't have double border on the left	*/
     border-right: 1px solid #585858;
-    background-color: #333333;
+    background-color: #333;
     border-radius: 0px;
     }
   QHeaderView::section:hover {
@@ -1920,13 +1952,13 @@ QHeaderView {
 QScrollBar:horizontal {
   min-width: 12px;
   height: 8px;
-  background: #000000;
+  background: #000;
   border-radius: 2px;
   }
   QScrollBar:vertical {
     min-height: 12px;
     width: 8px;
-    background: #000000;
+    background: #000;
     border-radius: 2px;
     }
   /* "add-page" and "sub-page" are the gutter of the scrollbar */
@@ -1942,7 +1974,7 @@ QScrollBar:horizontal {
     border-radius:2px;
     }
     QScrollBar::handle:horizontal:hover {
-      background: #888888;
+      background: #888;
     }
   QScrollBar::handle:vertical {
     min-height: 25px;
@@ -1950,7 +1982,7 @@ QScrollBar:horizontal {
     border-radius:2px;
     }
     QScrollBar::handle:vertical:hover {
-      background: #888888;
+      background: #888;
     }
   /* Turn off scroll buttons */
   QScrollBar::add-line:horizontal,
@@ -2024,18 +2056,18 @@ QPushButton {
   max-height: 22px;
   margin: 3px 2px 5px 1px;
   padding: 1px 6px -1px 6px;
-  background-color: #333333;
+  background-color: #333;
   background-position: center;
   }
   QPushButton:hover {
-    background-color: #666666;
+    background-color: #666;
     }
   QPushButton:unchecked {
-    color: #888888;
-    background-color: #444444;
+    color: #888;
+    background-color: #444;
     }
   QPushButton:checked {
-    color: #000000;
+    color: #000;
     font-weight: bold;
     background-color: #ff7b00;
     }
@@ -2052,8 +2084,8 @@ QPushButton {
     min-width: 126px;
   }
   QPushButton#pushButtonRecording:unchecked {
-    color: #888888;
-    background-color: #444444;
+    color: #888;
+    background-color: #444;
   }
   QPushButton#pushButtonRecording:unchecked:hover,
   QPushButton#pushButtonRecording:checked {
@@ -2075,7 +2107,7 @@ QPushButton {
       }
     #LibraryBPMButton::item:selected {
       color: #ededed;
-      background-color: #666666;
+      background-color: #666;
       }
   #LibraryTimesPlayed::item {
     color: #cfcfcf;
@@ -2115,8 +2147,8 @@ QPushButton {
       }
   /* selected table row */
   QTableView::item:selected {
-    color: #ffffff;
-    background-color: #666666;
+    color: #fff;
+    background-color: #666;
   }
 
 /* SpinBox, currently only used for transition time in Auto DJ tab */
