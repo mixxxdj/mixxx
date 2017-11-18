@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QDesktopServices>
+#include <QQueue>
 
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
@@ -146,10 +147,24 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     }
 }
 
+bool BasePlaylistFeature::checkPlaylistId(int playlistId) {
+    int row = 0;
+    if (!m_pPlaylistTableModel) {
+        return false;
+    }
+    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
+         it != m_playlistList.end(); ++it, ++row) {
+        int playlist_id = it->first;
+        if (playlistId == playlist_id) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void BasePlaylistFeature::activatePlaylist(int playlistId) {
     //qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId;
-    QModelIndex index = indexFromPlaylistId(playlistId);
-    if (playlistId != -1 && index.isValid() && m_pPlaylistTableModel) {
+    if (playlistId != -1 && checkPlaylistId(playlistId) && m_pPlaylistTableModel) {
         m_pPlaylistTableModel->setTableModel(playlistId);
         emit(showTrackModel(m_pPlaylistTableModel));
         emit(enableCoverArtDisplay(true));
@@ -653,19 +668,44 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
 void BasePlaylistFeature::updateChildModel(int selected_id) {
     buildPlaylistList();
 
+    QQueue<TreeItem*> pTodoList;
+
+
+    TreeItem* rootItem = m_childModel.getRootItem();
+    if (rootItem == nullptr) {
+        return;
+    }
+
+    // Set all playlists the track is in bold (or if there is no track selected,
+    // clear all the bolding).
     int row = 0;
     for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
          it != m_playlistList.end(); ++it, ++row) {
-        int playlist_id = it->first;
+        if (it->first != selected_id) {
+            continue;
+        };
         QString playlist_name = it->second;
 
-        if (selected_id == playlist_id) {
-            TreeItem* item = m_childModel.getItem(indexFromPlaylistId(playlist_id));
-            item->setLabel(playlist_name);
-            item->setData(playlist_id);
-            decorateChild(item, playlist_id);
-        }
 
+        pTodoList.enqueue(rootItem);
+
+        while (!pTodoList.isEmpty()) {
+            TreeItem* it = pTodoList.dequeue();
+            QVariant data = it->getData();
+
+            // we do not assume that the childmodel is unique, so we walk the tree
+            // once completely
+            if (data.canConvert<int>() && data.toInt() == selected_id) {
+                it->setLabel(playlist_name);
+            }
+
+            for(int i = 0; i < it->childRows(); i++) {
+                TreeItem* child = it->child(i);
+                pTodoList.append(child);
+            }
+        }
+        // we can return here as playlist id's are unique. we walked the tree already
+        return;
     }
 }
 
@@ -675,10 +715,42 @@ void BasePlaylistFeature::updateChildModel(int selected_id) {
   * Clears the child model dynamically, but the invisible root item remains
   */
 void BasePlaylistFeature::clearChildModel() {
-    m_childModel.removeRows(0, m_playlistList.size());
+    m_childModel.removeRows(0, m_childModel.rowCount());
 }
 
+#if 0
 QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
+    QQueue<TreeItem*> pTodoList;
+
+    TreeItem* rootItem = m_childModel.getRootItem();
+
+    DEBUG_ASSERT(rootItem != nullptr);
+
+    pTodoList.enqueue(rootItem);
+
+    TreeItem* cur = rootItem;
+    while(cur) {
+        for(i = 0; i < cur->childRows(); i++) {
+
+        }
+
+    }
+    while (!pTodoList.isEmpty()) {
+        TreeItem* it = pTodoList.dequeue();
+        QVariant data = it->data();
+
+        // we do not assume that the childmodel is unique, so we walk the tree
+        // once completely
+        if (data.canConvert<int>() && data.toInt() == playlistId) {
+
+            it->setLabel(playlist_name);
+        }
+
+        for(int i = 0; i < it->childRows(); i++) {
+            TreeItem* child = it->child(i);
+            pTodoList.append(child);
+        }
+    }
     int row = 0;
     for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
          it != m_playlistList.end(); ++it, ++row) {
@@ -691,10 +763,12 @@ QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
     }
     return QModelIndex();
 }
+#endif
 
 void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
     m_pSelectedTrack = pTrack;
     TrackId trackId;
+    QQueue<TreeItem*> pTodoList;
     if (pTrack) {
         trackId = pTrack->getId();
     }
@@ -707,17 +781,22 @@ void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
 
     // Set all playlists the track is in bold (or if there is no track selected,
     // clear all the bolding).
-    int row = 0;
-    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
-         it != m_playlistList.end(); ++it, ++row) {
-        TreeItem* playlist = rootItem->child(row);
-        if (playlist == nullptr) {
-            continue;
+
+    pTodoList.enqueue(rootItem);
+
+    while (!pTodoList.isEmpty()) {
+        TreeItem* it = pTodoList.dequeue();
+
+        if (it->getData().canConvert<int>()) {
+            int pid = it->getData().toInt();
+            bool shouldBold = m_playlistsSelectedTrackIsIn.contains(pid);
+            it->setBold(shouldBold);
         }
 
-        int playlistId = it->first;
-        bool shouldBold = m_playlistsSelectedTrackIsIn.contains(playlistId);
-        playlist->setBold(shouldBold);
+        for(int i = 0; i < it->childRows(); i++) {
+            TreeItem* child = it->child(i);
+            pTodoList.append(child);
+        }
     }
 
     m_childModel.triggerRepaint();

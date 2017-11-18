@@ -77,7 +77,7 @@ class BasePlaylistFeature : public LibraryFeature {
     int playlistIdFromIndex(QModelIndex index);
     // Get the QModelIndex of a playlist based on its id.  Returns QModelIndex()
     // on failure.
-    QModelIndex indexFromPlaylistId(int playlistId);
+    bool checkPlaylistId(int playlistId);
 
     TrackCollection* m_pTrackCollection;
     PlaylistDAO &m_playlistDao;
@@ -99,6 +99,7 @@ class BasePlaylistFeature : public LibraryFeature {
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;
     TrackPointer m_pSelectedTrack;
+    QSet<int> m_playlistsSelectedTrackIsIn;
 
   private slots:
     void slotTrackSelected(TrackPointer pTrack);
@@ -107,7 +108,6 @@ class BasePlaylistFeature : public LibraryFeature {
   private:
     virtual QString getRootViewHtml() const = 0;
 
-    QSet<int> m_playlistsSelectedTrackIsIn;
     QString m_rootViewName;
 };
 
