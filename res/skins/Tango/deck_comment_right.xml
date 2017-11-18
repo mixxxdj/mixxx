@@ -1,3 +1,10 @@
+<!--
+Description:
+  An extra line below/above waveform overview that contains FX asssign buttons and
+  track commment (optional)
+Variables:
+  chanNum : the channel number
+-->
 <Template>
   <SetVariable name="sourceType">deck</SetVariable>
   <WidgetGroup>
@@ -16,31 +23,27 @@
 
       <WidgetGroup><!-- Track comment + FX indicators -->
         <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>i,min</SizePolicy>
         <Children>
 
           <Template src="skin:fx_assign_button.xml">
             <SetVariable name="Size">32f,16f</SetVariable>
-            <SetVariable name="labelText">FX1</SetVariable>
-            <SetVariable name="fxUnit">1</SetVariable>
+            <SetVariable name="FxUnitNum">1</SetVariable>
           </Template>
             <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
           <Template src="skin:fx_assign_button.xml">
             <SetVariable name="Size">32f,16f</SetVariable>
-            <SetVariable name="labelText">FX2</SetVariable>
-            <SetVariable name="fxUnit">2</SetVariable>
+            <SetVariable name="FxUnitNum">2</SetVariable>
           </Template>
             <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
           <Template src="skin:fx_assign_button.xml">
             <SetVariable name="Size">32f,16f</SetVariable>
-            <SetVariable name="labelText">FX3</SetVariable>
-            <SetVariable name="fxUnit">3</SetVariable>
+            <SetVariable name="FxUnitNum">3</SetVariable>
           </Template>
             <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
           <Template src="skin:fx_assign_button.xml">
             <SetVariable name="Size">32f,16f</SetVariable>
-            <SetVariable name="labelText">FX4</SetVariable>
-            <SetVariable name="fxUnit">4</SetVariable>
+            <SetVariable name="FxUnitNum">4</SetVariable>
           </Template>
             <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
@@ -71,7 +74,6 @@
 
         </Children>
       </WidgetGroup><!-- /Track comment + FX indicators -->
-
 
       <WidgetGroup>
         <Size>1me,1f</Size>

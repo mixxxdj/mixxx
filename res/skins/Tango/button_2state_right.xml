@@ -3,7 +3,7 @@ Description:
   A button that has click or display controls.
 Variables:
   ObjectName        : object name
-  TooolTipID        : standard Tooltip from mixxx db
+  ToolTipID         : standard Tooltip from mixxx db
     see: https://github.com/mixxxdj/mixxx/blob/master/src/skin/tooltips.cpp
   Size              : button size
   state_X_text      : label text for state X
@@ -11,7 +11,7 @@ Variables:
   state_X_unpressed : background graphic for unpressed state X
   Align             : alignment of text
   ConfigKey         : left-click control
-  ConfigKeyRight    : left-click control
+  ConfigKeyRight    : right-click control
 -->
 <Template>
   <PushButton>

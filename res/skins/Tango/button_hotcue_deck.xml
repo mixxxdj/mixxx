@@ -1,7 +1,8 @@
 <!--
 Description:
   A HotCue button for regular decks only.
-  Left-click activates/recalls HotCue, right-click deletes it
+  Left-click activates/recalls HotCue, right-click deletes it.
+  Can be squeezed to make room for more deck controls, or star rating widget.
 Variables:
   group : [ChannelN]
   HotCue: hotcue number

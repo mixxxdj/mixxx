@@ -22,7 +22,7 @@ EffectManifest AutoPanEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr("Bounce the sound from a channel "
-            "to another, roughly or softly, fully or partially, fastly or slowly. "
+            "to another, roughly or softly, fully or partially, fastly or slowly.\n"
             "A delay, inversed on each side, is added to increase the "
             "spatial move and the period can be synced with the BPM."));
 
@@ -32,7 +32,7 @@ EffectManifest AutoPanEffect::getManifest() {
     period->setName(QObject::tr("Period"));
     period->setDescription(QObject::tr("How fast the sound goes from a side to another\n"
             "1/4 - 4 beats rounded to 1/2 beat if tempo is detected (decks and samplers)\n"
-            "1/4 - 4 seconds if tempo is detected (mic & aux inputs, master mix)"));
+            "1/4 - 4 seconds if no tempo is detected (mic & aux inputs, master mix)"));
     period->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);

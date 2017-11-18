@@ -50,7 +50,6 @@ QPointer<TreeItemModel> RecordingFeature::getChildModel() {
 parented_ptr<QWidget> RecordingFeature::createPaneWidget(KeyboardEventFilter*,
             int paneId, QWidget* parent) {
     auto pTable = LibraryFeature::createTableWidget(paneId, parent);
-    pTable->setSorting(false);
     return pTable;
 }
 

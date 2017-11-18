@@ -1,27 +1,25 @@
 <!--
 Description:
   Container for EffectUnits 1 & 2.
-  In netbook mode they are pushed apart by several spacers which also
-  aligns them to decks (resp. channel mixer or cover art).
-  For each EffectUnit there's a minimized and a full mode.
+  Units are pushed apart by spacers, see fx_units_spacer.xml.
 -->
 <Template>
-  <WidgetGroup><!-- EffectUnits 1 & 2 -->
-    <ObjectName>EffectUnits12</ObjectName>
+  <SetVariable name="FxRack">EffectRack1</SetVariable>
+  <SetVariable name="FxRackNum">1</SetVariable>
+  <WidgetGroup>
+    <ObjectName>FxUnits12</ObjectName>
     <SizePolicy>me,max</SizePolicy>
     <Layout>horizontal</Layout>
     <Children>
 
-      <WidgetGroup><!-- EffectUnit 1 -->
-        <ObjectName>EffectUnit1_maxi</ObjectName>
+      <WidgetGroup><!-- EffectUnit 1 maxi -->
         <Layout>vertical</Layout>
-        <SizePolicy>me,max</SizePolicy>
+        <SizePolicy>min,max</SizePolicy>
         <Children>
           <Template src="skin:fx_unit_left.xml">
-            <SetVariable name="fxRack">1</SetVariable>
-            <SetVariable name="fxUnit">1</SetVariable>
-            <SetVariable name="fxGroup">EffectRack1_EffectUnit1</SetVariable>
+            <SetVariable name="FxUnitNum">1</SetVariable>
           </Template>
+          <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
         </Children>
         <Connection>
           <ConfigKey persist="true">[EffectRack1_EffectUnit1],show_parameters</ConfigKey>
@@ -29,91 +27,32 @@ Description:
         </Connection>
       </WidgetGroup>
 
-      <WidgetGroup>
-        <ObjectName>EffectUnit1_mini</ObjectName>
+      <WidgetGroup><!-- EffectUnit 1 mini -->
         <Layout>vertical</Layout>
-        <SizePolicy>me,me</SizePolicy>
+        <SizePolicy>min,me</SizePolicy>
         <Children>
           <Template src="skin:fx_unit_left_mini.xml">
-            <SetVariable name="fxRack">1</SetVariable>
-            <SetVariable name="fxUnit">1</SetVariable>
-            <SetVariable name="fxGroup">EffectRack1_EffectUnit1</SetVariable>
+            <SetVariable name="FxUnitNum">1</SetVariable>
           </Template>
-          <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
+          <WidgetGroup><Size>1min,5me</Size></WidgetGroup>
         </Children>
         <Connection>
           <ConfigKey persist="true">[EffectRack1_EffectUnit1],show_parameters</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- /EffectUnit 1 -->
+      </WidgetGroup>
 
-      <WidgetGroup><!-- Spacers for normal width -->
-        <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
+      <Template src="skin:spacer_fx_units.xml"/>
 
-          <WidgetGroup><!-- Skin Controls spacer -->
-            <Size>110f,1min</Size>
-          </WidgetGroup>
-
-          <WidgetGroup> <!-- Pitch fader spacer -->
-            <Size>106f,1min</Size>
-            <Children/>
-            <Connection>
-              <ConfigKey>[Tango],pitch_fader</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-
-          <WidgetGroup><!-- VU Meter spacer when Channel Mixer is hidden -->
-            <Layout>vertical</Layout>
-            <SizePolicy>min,min</SizePolicy>
-            <Children>
-              <WidgetGroup>
-                <Layout>vertical</Layout>
-                <Size>22f,1min</Size>
-                <Children>
-                </Children>
-                <Connection>
-                  <ConfigKey>[Tango],vumeter</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-            </Children>
-            <Connection>
-              <ConfigKey>[Tango],channel_mixer</ConfigKey>
-              <BindProperty>visible</BindProperty>
-              <Transform><Not/></Transform>
-            </Connection>
-          </WidgetGroup>
-
-        </Children>
-        <Connection>
-          <ConfigKey>[Tango],normal_mode</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup><!-- /Spacers for normal width -->
-
-      <WidgetGroup><!-- Spacer for netbook mode -->
-        <Size>10f,1min</Size>
-        <Children/>
-        <Connection>
-          <ConfigKey>[Tango],netbook_mode</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup><!-- /Spacer for netbook mode -->
-
-      <WidgetGroup><!-- EffectUnit 2 -->
-        <ObjectName>EffectUnit2_maxi</ObjectName>
+      <WidgetGroup><!-- EffectUnit 2 maxi -->
         <Layout>vertical</Layout>
-        <SizePolicy>me,max</SizePolicy>
+        <SizePolicy>min,max</SizePolicy>
         <Children>
           <Template src="skin:fx_unit_right.xml">
-            <SetVariable name="fxRack">1</SetVariable>
-            <SetVariable name="fxUnit">2</SetVariable>
-            <SetVariable name="fxGroup">EffectRack1_EffectUnit2</SetVariable>
+            <SetVariable name="FxUnitNum">2</SetVariable>
           </Template>
+          <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
         </Children>
         <Connection>
           <ConfigKey persist="true">[EffectRack1_EffectUnit2],show_parameters</ConfigKey>
@@ -121,24 +60,21 @@ Description:
         </Connection>
       </WidgetGroup>
 
-      <WidgetGroup>
-        <ObjectName>EffectUnit2_mini</ObjectName>
+      <WidgetGroup><!-- EffectUnit 2 mini -->
         <Layout>vertical</Layout>
-        <SizePolicy>me,me</SizePolicy>
+        <SizePolicy>min,me</SizePolicy>
         <Children>
           <Template src="skin:fx_unit_right_mini.xml">
-            <SetVariable name="fxRack">1</SetVariable>
-            <SetVariable name="fxUnit">2</SetVariable>
-            <SetVariable name="fxGroup">EffectRack1_EffectUnit2</SetVariable>
+            <SetVariable name="FxUnitNum">2</SetVariable>
           </Template>
-          <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
+          <WidgetGroup><Size>1min,5me</Size></WidgetGroup>
         </Children>
         <Connection>
           <ConfigKey persist="true">[EffectRack1_EffectUnit2],show_parameters</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- /EffectUnit 2 -->
+      </WidgetGroup>
 
     </Children>
     <Connection>
