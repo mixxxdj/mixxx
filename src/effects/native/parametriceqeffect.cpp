@@ -41,7 +41,9 @@ EffectManifest ParametricEQEffect::getManifest() {
     lfmQ->setId("q1");
     lfmQ->setName(QObject::tr("Q 1"));
     lfmQ->setDescription(QObject::tr(
-            "Controls the bandwidth of the filter. A lower Q affects a wider band of frequencies, a higher Q affects a narrower band of frequencies."));
+            "Controls the bandwidth of the filter.\n"
+            "A lower Q affects a wider band of frequencies,\n"
+            "a higher Q affects a narrower band of frequencies."));
     lfmQ->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     lfmQ->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     lfmQ->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -78,7 +80,9 @@ EffectManifest ParametricEQEffect::getManifest() {
     hfmQ->setId("q2");
     hfmQ->setName(QObject::tr("Q 2"));
     hfmQ->setDescription(QObject::tr(
-            "Controls the bandwidth of the filter. A lower Q affects a wider band of frequencies, a higher Q affects a narrower band of frequencies."));
+            "Controls the bandwidth of the filter.\n"
+            "A lower Q affects a wider band of frequencies,\n"
+            "a higher Q affects a narrower band of frequencies."));
     hfmQ->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     hfmQ->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     hfmQ->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
