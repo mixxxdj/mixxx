@@ -13,8 +13,8 @@
   <property name="windowTitle">
    <string>Live Broadcasting Preferences</string>
   </property>
-  <layout class="QGridLayout" rowstretch="0,0,0,0,0,0,0,0">
-   <item row="1" column="0" colspan="2">
+  <layout class="QGridLayout" rowstretch="0,0,0,0,0,0,0">
+   <item row="0" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBoxProfiles">
      <property name="title">
       <string>Live Broadcasting source connections</string>
@@ -59,14 +59,14 @@
       </item>
       <item>
        <layout class="QGridLayout" name="gridLayout_4">
-        <item row="0" column="0">
+        <item row="1" column="0">
          <widget class="QPushButton" name="btnRemoveConnection">
           <property name="text">
            <string>Delete selected</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="2">
+        <item row="1" column="2">
          <spacer name="horizontalSpacer">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -82,7 +82,7 @@
           </property>
          </spacer>
         </item>
-        <item row="0" column="6">
+        <item row="1" column="6">
          <widget class="QPushButton" name="btnCreateConnection">
           <property name="styleSheet">
            <string notr="true">padding: 4px 7px 4px 7px;</string>
@@ -92,12 +92,32 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="1">
+        <item row="1" column="1">
          <widget class="QPushButton" name="btnRenameConnection">
           <property name="text">
            <string>Rename selected</string>
           </property>
          </widget>
+        </item>
+        <item row="1" column="3">
+         <widget class="QPushButton" name="btnDisconnectAll">
+          <property name="text">
+           <string>Disconnect all</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="4">
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </item>
@@ -114,7 +134,7 @@
      </layout>
     </widget>
    </item>
-   <item row="7" column="0">
+   <item row="6" column="0">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -130,7 +150,7 @@
      </property>
     </spacer>
    </item>
-   <item row="3" column="0" colspan="2">
+   <item row="2" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBoxProfileSettings">
      <property name="title">
       <string>Settings for %1</string>

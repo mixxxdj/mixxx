@@ -40,6 +40,7 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     void btnCreateConnectionClicked();
     void btnRenameConnectionClicked();
     void btnRemoveConnectionClicked();
+    void btnDisconnectAllClicked();
     void onSectionResized();
 
   private:

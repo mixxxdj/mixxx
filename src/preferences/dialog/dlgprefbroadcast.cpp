@@ -56,6 +56,9 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
     connect(btnCreateConnection, SIGNAL(clicked(bool)),
             this, SLOT(btnCreateConnectionClicked()));
 
+    connect(btnDisconnectAll, SIGNAL(clicked(bool)),
+            this, SLOT(btnDisconnectAllClicked()));
+
     // Highlight first row
     connectionList->selectRow(0);
 
@@ -137,6 +140,8 @@ void DlgPrefBroadcast::slotUpdate() {
     btnRemoveConnection->setEnabled(!enabled);
     btnRenameConnection->setEnabled(!enabled);
     connectOnApply->setEnabled(!enabled);
+
+    btnDisconnectAll->setEnabled(enabled);
 }
 
 void DlgPrefBroadcast::applyModel() {
@@ -185,6 +190,9 @@ void DlgPrefBroadcast::slotApply() {
     bool broadcastingEnabled = m_pBroadcastEnabled->toBool();
     if(!broadcastingEnabled && connectOnApply->isChecked()) {
         m_pBroadcastEnabled->set(true);
+
+        // Reset state of "Connect on Apply" checkbox
+        connectOnApply->setChecked(false);
     }
 
     // Don't let user modify information if
@@ -195,6 +203,8 @@ void DlgPrefBroadcast::slotApply() {
     btnRemoveConnection->setEnabled(!enabled);
     btnRenameConnection->setEnabled(!enabled);
     connectOnApply->setEnabled(!enabled);
+
+    btnDisconnectAll->setEnabled(enabled);
 }
 
 void DlgPrefBroadcast::broadcastEnabledChanged(double value) {
@@ -206,6 +216,8 @@ void DlgPrefBroadcast::broadcastEnabledChanged(double value) {
     btnRemoveConnection->setEnabled(!enabled);
     btnRenameConnection->setEnabled(!enabled);
     connectOnApply->setEnabled(!enabled);
+
+    btnDisconnectAll->setEnabled(enabled);
 }
 
 void DlgPrefBroadcast::checkBoxEnableReconnectChanged(int value) {
@@ -515,6 +527,19 @@ void DlgPrefBroadcast::btnRenameConnectionClicked() {
                         tr("Can't rename '%1' to '%2': name already in use")
                         .arg(profileName).arg(newName));
             }
+        }
+    }
+}
+
+void DlgPrefBroadcast::btnDisconnectAllClicked() {
+    auto response = QMessageBox::question(this,
+            tr("Confirmation required"),
+            tr("Are you sure you want to disconnect every active Live Broadcasting source connection?"),
+            QMessageBox::Yes, QMessageBox::No);
+
+    if(response == QMessageBox::Yes) {
+        for(BroadcastProfilePtr profile : m_pBroadcastSettings->profiles()) {
+            profile->setEnabled(false);
         }
     }
 }
