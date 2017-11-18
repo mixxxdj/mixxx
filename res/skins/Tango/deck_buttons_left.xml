@@ -36,7 +36,7 @@ Variables:
                 <SetVariable name="state_0_unpressed">keylock_off.svg</SetVariable>
                 <SetVariable name="state_1_pressed">keylock_on.svg</SetVariable>
                 <SetVariable name="state_1_unpressed">keylock_on.svg</SetVariable>
-                <SetVariable name="ConfigKeyPerm"><Variable name="group"/>,keylock</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,keylock</SetVariable>
               </Template>
             </Children>
             <Connection>
@@ -114,17 +114,17 @@ Variables:
                 <SetVariable name="ObjectName">DeckButton</SetVariable>
                 <SetVariable name="Size">20f,22f</SetVariable>
                 <SetVariable name="TooltipId">orientation</SetVariable>
-                <SetVariable name="state_0_pressed">cf_left.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">cf_left.svg</SetVariable>
-                <SetVariable name="state_1_pressed">cf_center_attention.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">cf_center_attention.svg</SetVariable>
-                <SetVariable name="state_2_pressed">cf_right_attention.svg</SetVariable>
-                <SetVariable name="state_2_unpressed">cf_right_attention.svg</SetVariable>
+                <SetVariable name="state_0_pressed">xfader_left.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">xfader_left.svg</SetVariable>
+                <SetVariable name="state_1_pressed">xfader_center_attention.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">xfader_center_attention.svg</SetVariable>
+                <SetVariable name="state_2_pressed">xfader_right_attention.svg</SetVariable>
+                <SetVariable name="state_2_unpressed">xfader_right_attention.svg</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
               </Template>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],always_visible_cfOrientation</ConfigKey>
+              <ConfigKey persist="true">[Tango],always_visible_xfaderOrientation</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
@@ -141,7 +141,7 @@ Variables:
                 <SetVariable name="state_0_unpressed">quantize_off.svg</SetVariable>
                 <SetVariable name="state_1_pressed">quantize_on.svg</SetVariable>
                 <SetVariable name="state_1_unpressed">quantize_on.svg</SetVariable>
-                <SetVariable name="ConfigKeyPerm"><Variable name="group"/>,quantize</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,quantize</SetVariable>
               </Template>
             </Children>
             <Connection>
@@ -153,11 +153,21 @@ Variables:
 
           <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
-          <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
-            <SetVariable name="ObjectName">DeckButtonTogglerLeft</SetVariable>
-            <SetVariable name="Size">11f,22f</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[Tango],deck_controls</SetVariable>
-          </Template>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
+                <SetVariable name="ObjectName">DeckButtonTogglerLeft</SetVariable>
+                <SetVariable name="Size">11f,22f</SetVariable>
+                <SetVariable name="ConfigKey">[Tango],deck_controls</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[Tango],deck_controls_toggle</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
 
           <WidgetGroup><!-- Expandable Deck controls -->
             <ObjectName>DeckControlsExpanded</ObjectName>
@@ -176,7 +186,7 @@ Variables:
                     <SetVariable name="state_0_unpressed">keylock_off.svg</SetVariable>
                     <SetVariable name="state_1_pressed">keylock_on.svg</SetVariable>
                     <SetVariable name="state_1_unpressed">keylock_on.svg</SetVariable>
-                    <SetVariable name="ConfigKeyPerm"><Variable name="group"/>,keylock</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,keylock</SetVariable>
                   </Template>
                 </Children>
                 <Connection>
@@ -258,17 +268,17 @@ Variables:
                     <SetVariable name="ObjectName">DeckButtonExpanded</SetVariable>
                     <SetVariable name="Size">20f,22f</SetVariable>
                     <SetVariable name="TooltipId">orientation</SetVariable>
-                    <SetVariable name="state_0_pressed">cf_left.svg</SetVariable>
-                    <SetVariable name="state_0_unpressed">cf_left.svg</SetVariable>
-                    <SetVariable name="state_1_pressed">cf_center_attention.svg</SetVariable>
-                    <SetVariable name="state_1_unpressed">cf_center_attention.svg</SetVariable>
-                    <SetVariable name="state_2_pressed">cf_right_attention.svg</SetVariable>
-                    <SetVariable name="state_2_unpressed">cf_right_attention.svg</SetVariable>
+                    <SetVariable name="state_0_pressed">xfader_left.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">xfader_left.svg</SetVariable>
+                    <SetVariable name="state_1_pressed">xfader_center_attention.svg</SetVariable>
+                    <SetVariable name="state_1_unpressed">xfader_center_attention.svg</SetVariable>
+                    <SetVariable name="state_2_pressed">xfader_right_attention.svg</SetVariable>
+                    <SetVariable name="state_2_unpressed">xfader_right_attention.svg</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
                   </Template>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Tango],always_visible_cfOrientation</ConfigKey>
+                  <ConfigKey persist="true">[Tango],always_visible_xfaderOrientation</ConfigKey>
                   <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
@@ -286,7 +296,7 @@ Variables:
                     <SetVariable name="state_0_unpressed">quantize_off.svg</SetVariable>
                     <SetVariable name="state_1_pressed">quantize_on.svg</SetVariable>
                     <SetVariable name="state_1_unpressed">quantize_on.svg</SetVariable>
-                    <SetVariable name="ConfigKeyPerm"><Variable name="group"/>,quantize</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,quantize</SetVariable>
                   </Template>
                 </Children>
                 <Connection>
@@ -295,7 +305,7 @@ Variables:
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
-                <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+                <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
             </Children>
             <Connection>
               <ConfigKey persist="true">[Tango],deck_controls</ConfigKey>
@@ -303,7 +313,9 @@ Variables:
             </Connection>
           </WidgetGroup><!-- /Expandable Deck controls -->
 
-          <WidgetGroup><!-- Stars -->
+          <!-- Stars -->
+          <!-- visibility controlled by SizeAwareStack in size_detector_stars.xml -->
+          <WidgetGroup>
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
@@ -311,14 +323,12 @@ Variables:
                 <Size>84f,22f</Size>
                 <Layout>horizontal</Layout>
                 <Children>
-
                   <StarRating>
                     <ObjectName>DeckStars</ObjectName>
                     <Size>83min,22f</Size>
                     <TooltipId>starrating</TooltipId>
                     <Channel><Variable name="chanNum"/></Channel>
                   </StarRating>
-
                   <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
                 </Children>
                 <Connection>
@@ -327,13 +337,11 @@ Variables:
                 </Connection>
               </WidgetGroup>
             </Children>
-            <!-- visibilty controlled by SizeAwareStack in size_detector_stars.xml -->
             <Connection>
               <ConfigKey>[Tango],stars_fit</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /Stars -->
-
         </Children>
       </WidgetGroup><!-- /Deck Controls + Star rating -->
 
@@ -346,7 +354,22 @@ Variables:
         <Layout>stacked</Layout>
         <Size>50f,24f</Size>
         <Children>
-          <Template src="skin:button_2state_right_display.xml"><!-- Play -->
+          <!-- index 0 due to bug -->
+          <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+          <!-- Block Play button if passthrough is active,
+              show speaker icon instead -->
+          <WidgetGroup>
+            <ObjectName>PassthroughPlayCover</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>me,me</SizePolicy>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <!-- Play -->
+          <Template src="skin:button_2state_right_display.xml">
             <SetVariable name="ObjectName">PlayCue</SetVariable>
             <SetVariable name="TooltipId">play_cue_set</SetVariable>
             <SetVariable name="Size">50f,24f</SetVariable>
@@ -398,7 +421,21 @@ Variables:
             <Layout>stacked</Layout>
             <Size>50f,24f</Size>
             <Children>
-              <Template src="skin:button_2state_right_display.xml"><!-- Play -->
+              <!-- index 0 due to bug -->
+              <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+              <!-- Block Play button if passthrough is active,
+                  show speaker icon instead -->
+              <WidgetGroup>
+                <ObjectName>PassthroughPlayCover</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+              <!-- Play -->
+              <Template src="skin:button_2state_right_display.xml">
                 <SetVariable name="ObjectName">PlayCue</SetVariable>
                 <SetVariable name="TooltipId">play_cue_set</SetVariable>
                 <SetVariable name="Size">50f,24f</SetVariable>

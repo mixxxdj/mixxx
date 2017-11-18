@@ -17,7 +17,7 @@ Variables:
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>DeckOverview</ObjectName>
+    <ObjectName>Spacer0f</ObjectName>
     <Layout>stacked</Layout>
     <SizePolicy>me,f</SizePolicy>
     <Children>
@@ -77,13 +77,40 @@ Variables:
             </Connection>
           </WidgetGroup><!-- /[Spinny / Cover / none] -->
 
-          <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
-            <SetVariable name="ObjectName">VinylTogglerRight</SetVariable>
-            <SetVariable name="Size">11f,50f</SetVariable>
-            <SetVariable name="ConfigKeyPerm">[Tango],vinylControlsDeck<Variable name="chanNum"/></SetVariable>
-          </Template>
+          <WidgetGroup><!-- Vinyl Controls toggle with passthrough -->
+            <Size>11f,50f</Size>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="ObjectName">VinylTogglerRightPassthrough</SetVariable>
+                <SetVariable name="Size">11f,50f</SetVariable>
+                <SetVariable name="ConfigKey">[Tango],vinylControlsDeck<Variable name="chanNum"/></SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
 
-          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><!-- Vinyl Controls toggle without passthrough -->
+            <Size>11f,50f</Size>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="ObjectName">VinylTogglerRight</SetVariable>
+                <SetVariable name="Size">11f,50f</SetVariable>
+                <SetVariable name="ConfigKey">[Tango],vinylControlsDeck<Variable name="chanNum"/></SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
           <Template src="skin:vinyl_controls_right.xml"/>
 
@@ -101,27 +128,27 @@ Variables:
             <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
             <EndOfTrackColor>#EA0085</EndOfTrackColor>
             <DefaultMark>
-                <Align>bottom|right</Align>
-                <Color>#00FF00</Color>
-                <TextColor>#FFFFFF</TextColor>
-                <Text> %1 </Text>
+              <Align>bottom|right</Align>
+              <Color>#00FF00</Color>
+              <TextColor>#FFFFFF</TextColor>
+              <Text> %1 </Text>
             </DefaultMark>
             <MarkRange>
-                <StartControl>loop_start_position</StartControl>
-                <EndControl>loop_end_position</EndControl>
-                <EnabledControl>loop_enabled</EnabledControl>
-                <Color>#00FF00</Color>
-                <DisabledColor>#FFFFFF</DisabledColor>
+              <StartControl>loop_start_position</StartControl>
+              <EndControl>loop_end_position</EndControl>
+              <EnabledControl>loop_enabled</EnabledControl>
+              <Color>#00FF00</Color>
+              <DisabledColor>#FFFFFF</DisabledColor>
             </MarkRange>
             <Mark>
-                <Control>cue_point</Control>
-                <Text>C</Text>
-                <Align>top|right</Align>
-                <Color>#FF0080</Color>
-                <TextColor>#FFFFFF</TextColor>
+              <Control>cue_point</Control>
+              <Text>C</Text>
+              <Align>top|right</Align>
+              <Color>#FF0080</Color>
+              <TextColor>#FFFFFF</TextColor>
             </Mark>
             <Connection>
-                <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+              <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
             </Connection>
           </Overview>
 
@@ -130,15 +157,10 @@ Variables:
 
 <!-- 	Invisible Waveform, active when stacked Waveform are disabled.
       Appearently, they needs to be present in skin somewhere (visible or not)
-      to prevent visual glitches (or crashes). -->
+      to prevent visual glitches (or crashes).
       <WidgetGroup>
         <Size>50f,50f</Size>
         <Children>
-          <!-- Colors contain actually deck-specific Variable "chanNum" is already
-          but here this is already passed as variable and we can't set a variable name
-          containing another variable.
-          Here it doesn't matter since waveform is invisble.                           
-          -->
           <Template src="skin:waveform.xml">
             <SetVariable name="Size">0me,50me</SetVariable>
             <SetVariable name="chanNum"><Variable name="chanNum"/></SetVariable>
@@ -151,7 +173,7 @@ Variables:
           <BindProperty>visible</BindProperty>
           <Transform><Not/></Transform>
         </Connection>
-      </WidgetGroup><!-- /Invisible waveform -->
+      </WidgetGroup> --><!-- /Invisible waveform -->
     </Children>
   </WidgetGroup>
 </Template>
