@@ -3,14 +3,14 @@ Description:
   A button that has click or display controls.
 Variables:
   ObjectName        : object name
-  TooolTipID        : standard Tooltip from mixxx db
+  ToolTipID         : standard Tooltip from mixxx db
     see: https://github.com/mixxxdj/mixxx/blob/master/src/skin/tooltips.cpp
   Size              : button size
   state_X_text      : label text for state X
   state_X_pressed   : background graphic for pressed state X
   state_X_unpressed : background graphic for unpressed state X
   Align             : alignment of text
-  ConfigKeyPerm     : persistent left-click control
+  ConfigKey         : persistent left-click control
 -->
 <Template>
   <PushButton>
@@ -33,7 +33,7 @@ Variables:
       <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_1_unpressed"/></Unpressed>
     </State>
     <Connection>
-      <ConfigKey persist="true"><Variable name="ConfigKeyPerm"/></ConfigKey>
+      <ConfigKey persist="true"><Variable name="ConfigKey"/></ConfigKey>
       <ButtonState>LeftButton</ButtonState>
     </Connection>
   </PushButton>

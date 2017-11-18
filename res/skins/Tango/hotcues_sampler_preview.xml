@@ -1,8 +1,8 @@
 <!--
 Description:
   A widget containing hotcue buttons whose number can be set to 4 or 8.
-Variables:
-  HotCue: The hotcue nummber (1-8).
+  They're layed out in a way that they either expand or get squeezed,
+  depending on available space.
 -->
 <Template>
   <WidgetGroup>
@@ -20,15 +20,15 @@ Variables:
           <Template src="skin:button_hotcue_sam_pre.xml">
             <SetVariable name="HotCue">1</SetVariable>
           </Template>
-            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+            <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
           <Template src="skin:button_hotcue_sam_pre.xml">
             <SetVariable name="HotCue">2</SetVariable>
           </Template>
-            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+            <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
           <Template src="skin:button_hotcue_sam_pre.xml">
             <SetVariable name="HotCue">3</SetVariable>
           </Template>
-            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+            <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
           <Template src="skin:button_hotcue_sam_pre.xml">
             <SetVariable name="HotCue">4</SetVariable>
           </Template>
@@ -50,31 +50,31 @@ Variables:
           <Template src="skin:button_hotcue_sam_pre.xml">
             <SetVariable name="HotCue">1</SetVariable>
           </Template>
-            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+            <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
           <Template src="skin:button_hotcue_sam_pre.xml">
             <SetVariable name="HotCue">2</SetVariable>
           </Template>
-            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+            <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
           <Template src="skin:button_hotcue_sam_pre.xml">
             <SetVariable name="HotCue">3</SetVariable>
           </Template>
-            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+            <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
           <Template src="skin:button_hotcue_sam_pre.xml">
             <SetVariable name="HotCue">4</SetVariable>
           </Template>
-            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+            <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
           <Template src="skin:button_hotcue_sam_pre.xml">
             <SetVariable name="HotCue">5</SetVariable>
           </Template>
-            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+            <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
           <Template src="skin:button_hotcue_sam_pre.xml">
             <SetVariable name="HotCue">6</SetVariable>
           </Template>
-            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+            <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
           <Template src="skin:button_hotcue_sam_pre.xml">
             <SetVariable name="HotCue">7</SetVariable>
           </Template>
-            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+            <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
           <Template src="skin:button_hotcue_sam_pre.xml">
             <SetVariable name="HotCue">8</SetVariable>
           </Template>

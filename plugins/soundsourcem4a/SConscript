@@ -57,7 +57,7 @@ if int(build.flags['faad']):
 
     if have_faad_26:
         env.Append(CPPDEFINES = '__M4AHACK__')
-        print "libfaad 2.6 compatibility mode... enabled"
+        print("libfaad 2.6 compatibility mode... enabled")
     if have_mp4v2_h:
         env.Append(CPPDEFINES = '__MP4V2__')
 

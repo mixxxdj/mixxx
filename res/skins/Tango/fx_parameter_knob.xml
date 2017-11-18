@@ -3,11 +3,11 @@ Description:
   An effect parameter knob with a 5 state button below
   that controls SuperKnob linking type.
 Variables:
-  fxRack          : rack number
-  fxUnit          : unit number
-  fxGroup_fxNum   : EffectRack1_EffectUnitX_EffectY
-  fxNum           : effect number
-  fxKnobParameter : the parameter
+  FxRack        : rack number
+  FxUnitNum     : unit number
+  FxGroup_FxNum : EffectRack1_EffectUnitX_EffectY
+  FxNum         : effect number
+  parameter     : the parameter
 -->
 <Template>
   <WidgetGroup>
@@ -20,18 +20,19 @@ Variables:
         <Children>
 
           <WidgetGroup><!-- Effect parameter knob -->
-            <ObjectName>EffectKnobParameter</ObjectName>
+            <ObjectName>FxParameterknob</ObjectName>
             <Layout>vertical</Layout>
             <Size>51f,26f</Size>
             <Children>
               <EffectParameterKnobComposed>
-                  <Size>26f,26f</Size>
-                  <Knob>skin:/knobs_sliders/knob_fx_yellow.svg</Knob>
-                  <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
-                  <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
-                  <Connection>
-                      <ConfigKey><Variable name="fxGroup_fxNum"/>,parameter<Variable name="fxKnobParameter"/></ConfigKey>
-                  </Connection>
+                <Size>26f,26f</Size>
+                <Knob>skin:/knobs_sliders/knob_fx_yellow.svg</Knob>
+                <BackPath>skin:/knobs_sliders/knob_bg_fx_parameter.svg</BackPath>
+                <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+                <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+                <Connection>
+                  <ConfigKey><Variable name="FxGroup_FxNum"/>,parameter<Variable name="parameter"/></ConfigKey>
+                </Connection>
               </EffectParameterKnobComposed>
             </Children>
           </WidgetGroup>
@@ -40,14 +41,15 @@ Variables:
             <Size>51f,34f</Size>
             <Layout>horizontal</Layout>
             <Children>
+              <!-- To keep text centered it's in an container with spacer on the left/right -->
               <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
               <EffectParameterName>
-                <ObjectName>EffectKnobParameterName</ObjectName>
+                <ObjectName>FxParameterKnobName</ObjectName>
                 <Size>-1min,34f</Size>
-                <EffectRack><Variable name="fxRack"/></EffectRack>
-                <EffectUnit><Variable name="fxUnit"/></EffectUnit>
-                <Effect><Variable name="fxNum"/></Effect>
-                <EffectParameter><Variable name="fxKnobParameter"/></EffectParameter>
+                <EffectRack><Variable name="FxRackNum"/></EffectRack>
+                <EffectUnit><Variable name="FxUnitNum"/></EffectUnit>
+                <Effect><Variable name="FxNum"/></Effect>
+                <EffectParameter><Variable name="parameter"/></EffectParameter>
                 <Alignment>left</Alignment>
               </EffectParameterName>
               <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
@@ -60,26 +62,26 @@ Variables:
 
       <!-- Meta knob link button -->
       <Template src="skin:button_5state.xml">
-        <SetVariable name="ObjectName">EffectLinkTypeButton</SetVariable>
         <SetVariable name="TooltipId">EffectSlot_parameter_link_type</SetVariable>
+        <SetVariable name="ObjectName">FxSuperLinkButton</SetVariable>
         <SetVariable name="Size">51f,5f</SetVariable>
-        <SetVariable name="ConfigKey"><Variable name="fxGroup_fxNum"/>,parameter<Variable name="fxKnobParameter"/>_link_type</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="FxGroup_FxNum"/>,parameter<Variable name="parameter"/>_link_type</SetVariable>
       </Template>
 
       <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
 
       <!-- Meta knob link invert button -->
       <Template src="skin:button_2state.xml">
-        <SetVariable name="ObjectName">EffectLinkInvertButton</SetVariable>
         <SetVariable name="TooltipId">EffectSlot_parameter_inversion</SetVariable>
+        <SetVariable name="ObjectName">FxSuperLinkInvertButton</SetVariable>
         <SetVariable name="Size">51f,5f</SetVariable>
-        <SetVariable name="ConfigKey"><Variable name="fxGroup_fxNum"/>,parameter<Variable name="fxKnobParameter"/>_link_inverse</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="FxGroup_FxNum"/>,parameter<Variable name="parameter"/>_link_inverse</SetVariable>
       </Template>
 
     </Children>
     <!-- show only if parameter is loaded -->
     <Connection>
-      <ConfigKey><Variable name="fxGroup_fxNum"/>,parameter<Variable name="fxKnobParameter"/>_loaded</ConfigKey>
+      <ConfigKey><Variable name="FxGroup_FxNum"/>,parameter<Variable name="parameter"/>_loaded</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

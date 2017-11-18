@@ -53,7 +53,9 @@ class TrackModel {
     // set.
     virtual TrackPointer getTrack(const QModelIndex& index) const = 0;
 
-    // Gets the on-disk location of the track at the given location.
+    // Gets the on-disk location of the track at the given location
+    // with Qt separator "/".
+    // Use QDir::toNativeSeparators() before displaying this to a user.
     virtual QString getTrackLocation(const QModelIndex& index) const = 0;
 
     // Gets the track ID of the track at the given QModelIndex
