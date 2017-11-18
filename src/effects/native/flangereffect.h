@@ -33,10 +33,10 @@ struct FlangerGroupState {
               prev_width(0),
               prev_manual(kCenterDelayMs) {
         SampleUtil::clear(delayLeft, kBufferLenth);
-        SampleUtil::clear(delayLeft, kBufferLenth);
+        SampleUtil::clear(delayRight, kBufferLenth);
     }
-    CSAMPLE delayRight[kBufferLenth];
     CSAMPLE delayLeft[kBufferLenth];
+    CSAMPLE delayRight[kBufferLenth];
     unsigned int delayPos;
     unsigned int lfoFrames;
     double previousPeriodFrames;
