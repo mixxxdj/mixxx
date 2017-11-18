@@ -6,6 +6,7 @@
 #include <QLinkedList>
 #include <QSqlTableModel>
 #include <QAction>
+#include <QModelIndex>
 
 #include "library/baseplaylistfeature.h"
 #include "preferences/usersettings.h"
@@ -35,6 +36,7 @@ public:
   protected:
     void buildPlaylistList();
     void decorateChild(TreeItem *pChild, int playlist_id);
+    virtual QModelIndex constructChildModel(int selected_id);
 
   private slots:
     void slotPlayingTrackChanged(TrackPointer currentPlayingTrack);

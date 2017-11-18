@@ -718,52 +718,6 @@ void BasePlaylistFeature::clearChildModel() {
     m_childModel.removeRows(0, m_childModel.rowCount());
 }
 
-#if 0
-QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
-    QQueue<TreeItem*> pTodoList;
-
-    TreeItem* rootItem = m_childModel.getRootItem();
-
-    DEBUG_ASSERT(rootItem != nullptr);
-
-    pTodoList.enqueue(rootItem);
-
-    TreeItem* cur = rootItem;
-    while(cur) {
-        for(i = 0; i < cur->childRows(); i++) {
-
-        }
-
-    }
-    while (!pTodoList.isEmpty()) {
-        TreeItem* it = pTodoList.dequeue();
-        QVariant data = it->data();
-
-        // we do not assume that the childmodel is unique, so we walk the tree
-        // once completely
-        if (data.canConvert<int>() && data.toInt() == playlistId) {
-
-            it->setLabel(playlist_name);
-        }
-
-        for(int i = 0; i < it->childRows(); i++) {
-            TreeItem* child = it->child(i);
-            pTodoList.append(child);
-        }
-    }
-    int row = 0;
-    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
-         it != m_playlistList.end(); ++it, ++row) {
-        int current_id = it->first;
-        QString playlist_name = it->second;
-
-        if (playlistId == current_id) {
-            return m_childModel.index(row, 0);
-        }
-    }
-    return QModelIndex();
-}
-#endif
 
 void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
     m_pSelectedTrack = pTrack;
