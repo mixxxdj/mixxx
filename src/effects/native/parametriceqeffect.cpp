@@ -22,88 +22,87 @@ EffectManifest ParametricEQEffect::getManifest() {
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
         "An gentle 2-band parametric equalizer based on biquad filters.\n"
-        "It is designed as a complement to the steep mixing EQs in the Effect rack\n"
-        "to improve the sound of the track."));
+        "It is designed as a complement to the steep mixing equalizers."));
     manifest.setEffectRampsFromDry(true);
     manifest.setIsMasterEQ(true);
 
-    EffectManifestParameter* lfmGain = manifest.addParameter();
-    lfmGain->setId("gain1");
-    lfmGain->setName(QObject::tr("Gain 1"));
-    lfmGain->setDescription(QObject::tr("Gain for Filter 1"));
-    lfmGain->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
-    lfmGain->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    lfmGain->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    lfmGain->setNeutralPointOnScale(0.5);
-    lfmGain->setDefault(0);
-    lfmGain->setMinimum(-18);
-    lfmGain->setMaximum(18); // dB
+    EffectManifestParameter* gain1 = manifest.addParameter();
+    gain1->setId("gain1");
+    gain1->setName(QObject::tr("Gain 1"));
+    gain1->setDescription(QObject::tr("Gain for Filter 1"));
+    gain1->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    gain1->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    gain1->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    gain1->setNeutralPointOnScale(0.5);
+    gain1->setDefault(0);
+    gain1->setMinimum(-18);
+    gain1->setMaximum(18); // dB
 
-    EffectManifestParameter* lfmQ = manifest.addParameter();
-    lfmQ->setId("q1");
-    lfmQ->setName(QObject::tr("Q 1"));
-    lfmQ->setDescription(QObject::tr(
-            "Controls the bandwidth of the filter.\n"
+    EffectManifestParameter* q1 = manifest.addParameter();
+    q1->setId("q1");
+    q1->setName(QObject::tr("Q 1"));
+    q1->setDescription(QObject::tr(
+            "Controls the bandwidth of Filter 1.\n"
             "A lower Q affects a wider band of frequencies,\n"
             "a higher Q affects a narrower band of frequencies."));
-    lfmQ->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
-    lfmQ->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    lfmQ->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    lfmQ->setNeutralPointOnScale(0.5);
-    lfmQ->setDefault(1.75);
-    lfmQ->setMinimum(0.5);
-    lfmQ->setMaximum(3.0);
+    q1->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    q1->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    q1->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    q1->setNeutralPointOnScale(0.5);
+    q1->setDefault(1.75);
+    q1->setMinimum(0.5);
+    q1->setMaximum(3.0);
 
-    EffectManifestParameter* lfmCenter = manifest.addParameter();
-    lfmCenter->setId("center1");
-    lfmCenter->setName(QObject::tr("Center 1"));
-    lfmCenter->setDescription(QObject::tr("Center frequency for Filter 1, from 100 Hz to 14 kHz"));
-    lfmCenter->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
-    lfmCenter->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    lfmCenter->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    lfmCenter->setNeutralPointOnScale(0.5);
-    lfmCenter->setDefault(kDefaultCenter1);
-    lfmCenter->setMinimum(100); // 100 Hz
-    lfmCenter->setMaximum(14000); // 14 kHz
+    EffectManifestParameter* center1 = manifest.addParameter();
+    center1->setId("center1");
+    center1->setName(QObject::tr("Center 1"));
+    center1->setDescription(QObject::tr("Center frequency for Filter 1, from 100 Hz to 14 kHz"));
+    center1->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+    center1->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    center1->setUnitsHint(EffectManifestParameter::UnitsHint::HERTZ);
+    center1->setNeutralPointOnScale(0.5);
+    center1->setDefault(kDefaultCenter1);
+    center1->setMinimum(100);
+    center1->setMaximum(14000);
 
-    EffectManifestParameter* hfmGain = manifest.addParameter();
-    hfmGain->setId("gain2");
-    hfmGain->setName(QObject::tr("Gain 2"));
-    hfmGain->setDescription(QObject::tr("Gain for Filter 2"));
-    hfmGain->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
-    hfmGain->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    hfmGain->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    hfmGain->setNeutralPointOnScale(0.5);
-    hfmGain->setDefault(0);
-    hfmGain->setMinimum(-18);
-    hfmGain->setMaximum(18); // dB
+    EffectManifestParameter* gain2 = manifest.addParameter();
+    gain2->setId("gain2");
+    gain2->setName(QObject::tr("Gain 2"));
+    gain2->setDescription(QObject::tr("Gain for Filter 2"));
+    gain2->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    gain2->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    gain2->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    gain2->setNeutralPointOnScale(0.5);
+    gain2->setDefault(0);
+    gain2->setMinimum(-18);
+    gain2->setMaximum(18); // dB
 
-    EffectManifestParameter* hfmQ = manifest.addParameter();
-    hfmQ->setId("q2");
-    hfmQ->setName(QObject::tr("Q 2"));
-    hfmQ->setDescription(QObject::tr(
-            "Controls the bandwidth of the filter.\n"
+    EffectManifestParameter* q2 = manifest.addParameter();
+    q2->setId("q2");
+    q2->setName(QObject::tr("Q 2"));
+    q2->setDescription(QObject::tr(
+            "Controls the bandwidth of Filter 2.\n"
             "A lower Q affects a wider band of frequencies,\n"
             "a higher Q affects a narrower band of frequencies."));
-    hfmQ->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
-    hfmQ->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    hfmQ->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    hfmQ->setNeutralPointOnScale(0.5);
-    hfmQ->setDefault(1.75);
-    hfmQ->setMinimum(0.5);
-    hfmQ->setMaximum(3.0);
+    q2->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    q2->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    q2->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    q2->setNeutralPointOnScale(0.5);
+    q2->setDefault(1.75);
+    q2->setMinimum(0.5);
+    q2->setMaximum(3.0);
 
-    EffectManifestParameter* hfmCenter = manifest.addParameter();
-    hfmCenter->setId("center2");
-    hfmCenter->setName(QObject::tr("Center 2"));
-    hfmCenter->setDescription(QObject::tr("Center frequency for Filter 2, from 100 Hz to 14 kHz"));
-    hfmCenter->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
-    hfmCenter->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    hfmCenter->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    hfmCenter->setNeutralPointOnScale(0.5);
-    hfmCenter->setDefault(kDefaultCenter2);
-    hfmCenter->setMinimum(100); // 1kHz
-    hfmCenter->setMaximum(14000); // 1kHz
+    EffectManifestParameter* center2 = manifest.addParameter();
+    center2->setId("center2");
+    center2->setName(QObject::tr("Center 2"));
+    center2->setDescription(QObject::tr("Center frequency for Filter 2, from 100 Hz to 14 kHz"));
+    center2->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+    center2->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    center2->setUnitsHint(EffectManifestParameter::UnitsHint::HERTZ);
+    center2->setNeutralPointOnScale(0.5);
+    center2->setDefault(kDefaultCenter2);
+    center2->setMinimum(100);
+    center2->setMaximum(14000);
 
     return manifest;
 }

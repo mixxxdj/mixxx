@@ -16,7 +16,7 @@
 #include "util/types.h"
 #include "util/memory.h"
 
-// The ParamtricEQEffect models the mid bands from a SSL Black EQ (242)
+// The ParametricEQEffect models the mid bands from a SSL Black EQ (242)
 // with a gentle parameter range, as requested here:
 // https://www.mixxx.org/forums/viewtopic.php?f=3&t=9239&p=33312&hilit=SSL#p33312
 // The main use case is to tweak the room or recording sound, which is hard to achieve
