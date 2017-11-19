@@ -1,4 +1,4 @@
-#ifndef PANEFFECT_H
+#ifndef BALANCEEFFECT_H
 #define BALANCEEFFECT_H
 
 #include "effects/effectprocessor.h"
