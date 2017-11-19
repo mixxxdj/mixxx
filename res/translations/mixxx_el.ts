@@ -31,12 +31,12 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="97"/>
         <source>Auto DJ</source>
-        <translation>Αυτόματου DJ</translation>
+        <translation>Αυτόματος DJ</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="276"/>
         <source>Add Crate as Track Source</source>
-        <translation>Πρόσθεση κιβωτίου ως πηγή μουσικού κομματιού</translation>
+        <translation>Προσθήκη κιβωτίου ως πηγή μουσικού κομματιού</translation>
     </message>
 </context>
 <context>
@@ -73,12 +73,12 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="11"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation>Προσθήκη στην Λίστα του Αυτόματου DJ (στο τέλος)</translation>
+        <translation>Προσθήκη στη λίστα του Αυτόματου DJ (στο τέλος)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="15"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation>Προσθήκη στην Λίστα του Αυτόματου DJ (στην αρχή)</translation>
+        <translation>Προσθήκη στη λίστα του Αυτόματου DJ (στην αρχή)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="19"/>
@@ -88,12 +88,12 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="92"/>
         <source>Playlist Creation Failed</source>
-        <translation>Η Δημιουργία Λίστας Απέτυχε</translation>
+        <translation>Η δημιουργία λίστας απέτυχε</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="93"/>
         <source>An unknown error occurred while creating playlist: </source>
-        <translation>Προκλήθηκε άγνωστο σφάλμα κατά την δημιουργία λίστας: </translation>
+        <translation>Προέκυψε άγνωστο σφάλμα κατά τη δημιουργία λίστας: </translation>
     </message>
 </context>
 <context>
@@ -101,23 +101,23 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="281"/>
         <source>New Playlist</source>
-        <translation>Νέα Λίστα Αναπαραγωγής</translation>
+        <translation>Νέα λίστα αναπαραγωγής</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="36"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation>Προσθήκη στην Λίστα του Αυτόματου DJ (στο τέλος)</translation>
+        <translation>Προσθήκη στη λίστα του Αυτόματου DJ (στο τέλος)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="32"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="278"/>
         <source>Create New Playlist</source>
-        <translation>Δημιουργία Νέας Λίστας Αναπαραγωγής</translation>
+        <translation>Δημιουργία νέας λίστας αναπαραγωγής</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="40"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation>Προσθήκη στην Λίστα του Αυτόματου DJ (στην αρχή)</translation>
+        <translation>Προσθήκη στη λίστα του Αυτόματου DJ (στην αρχή)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="44"/>
@@ -137,56 +137,56 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="56"/>
         <source>Duplicate</source>
-        <translation>Δημιουργία διπλότυπου</translation>
+        <translation>Κλωνοποίηση</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="60"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="64"/>
         <source>Import Playlist</source>
-        <translation>Εισαγωγή Λίστας Αναπαραγωγής</translation>
+        <translation>Εισαγωγή λίστας αναπαραγωγής</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="72"/>
         <source>Export Track Files</source>
-        <translation type="unfinished"/>
+        <translation>Εξαγωγή αρχείων ήχου</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="76"/>
         <source>Analyze entire Playlist</source>
-        <translation>Ανάλυση ολόκληρης της Λίστας Αναπαραγωγής</translation>
+        <translation>Ανάλυση ολόκληρης της λίστας αναπαραγωγής</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="182"/>
         <source>Enter new name for playlist:</source>
-        <translation>Εισάγετε νέο όνομα για την λίστα αναπαραγωγής:</translation>
+        <translation>Εισάγετε νέο όνομα για τη λίστα αναπαραγωγής:</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="222"/>
         <source>Duplicate Playlist</source>
-        <translation>Διπλότυπο Λίστας Αναπαραγωγής</translation>
+        <translation>Κλωνοποίηση λίστας αναπαραγωγής</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="223"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="279"/>
         <source>Enter name for new playlist:</source>
-        <translation>Προσθήκη ονόματος για νέα λίστα αναπαραγωγής:</translation>
+        <translation>Εισάγετε όνομα για τη νέα λίστα αναπαραγωγής:</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="68"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="464"/>
         <source>Export Playlist</source>
-        <translation>Εξαγωγή Λίστας Αναπαραγωγής</translation>
+        <translation>Εξαγωγή λίστας αναπαραγωγής</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="181"/>
         <source>Rename Playlist</source>
-        <translation>Μετονομασία Λίστας Αναπαραγωγής</translation>
+        <translation>Μετονομασία λίστας αναπαραγωγής</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="194"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="198"/>
         <source>Renaming Playlist Failed</source>
-        <translation>Η Μετονομασία της Λίστας Αναπαραγωγής Απέτυχε</translation>
+        <translation>Η μετονομασία της λίστας αναπαραγωγής απέτυχε</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="195"/>
@@ -207,7 +207,7 @@
         <source>_copy</source>
         <comment>[noun]</comment>
         <extracomment>Appendix to default name when duplicating a playlist</extracomment>
-        <translation>_αντιγραφή</translation>
+        <translation>_αντίγραφο</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="236"/>
@@ -217,7 +217,7 @@
         <location filename="../../src/library/baseplaylistfeature.cpp" line="307"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="432"/>
         <source>Playlist Creation Failed</source>
-        <translation>Η Δημιουργία Λίστας Αναπαραγωγής Απέτυχε</translation>
+        <translation>Η δημιουργία λίστας αναπαραγωγής απέτυχε</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="308"/>
@@ -228,12 +228,12 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="461"/>
         <source>M3U Playlist (*.m3u)</source>
-        <translation>M3U Λίστα Αναπαραγωγής (*.m3u)</translation>
+        <translation>Λίστα Αναπαραγωγής M3U (*.m3u)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="466"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-        <translation>Λίστα M3U (*.m3u);;Λίστα M3U8 (*.m3u8);;Λίστα PLS (*.pls);;Κείμενο CSV (*.csv);;Απλό Κείμενο (*.txt)</translation>
+        <translation>Λίστα M3U (*.m3u);;Λίστα M3U8 (*.m3u8);;Λίστα PLS (*.pls);;Κείμενο CSV (*.csv);;Απλό κείμενο (*.txt)</translation>
     </message>
 </context>
 <context>
@@ -241,7 +241,7 @@
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="63"/>
         <source>Played</source>
-        <translation>Αναπαρήχθει</translation>
+        <translation>Αναπαρήχθη</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="65"/>
@@ -261,7 +261,7 @@
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="71"/>
         <source>Album Artist</source>
-        <translation>Καλλιτέχνης Δίσκου</translation>
+        <translation>Καλλιτέχνης δίσκου</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="73"/>
@@ -321,12 +321,12 @@
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="95"/>
         <source>Track #</source>
-        <translation>Κομμάτι #</translation>
+        <translation>Αρ. κομματιού</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="97"/>
         <source>Date Added</source>
-        <translation>Ημερομηνία Προσθήκης</translation>
+        <translation>Ημερομηνία προσθήκης</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="99"/>
@@ -336,7 +336,7 @@
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="101"/>
         <source>Timestamp</source>
-        <translation>Χρονική Σήμανση</translation>
+        <translation>Χρονική σήμανση</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="103"/>
@@ -361,7 +361,7 @@
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="111"/>
         <source>ReplayGain</source>
-        <translation type="unfinished"/>
+        <translation>ReplayGain</translation>
     </message>
 </context>
 <context>
@@ -369,7 +369,7 @@
     <message>
         <location filename="../../src/mixer/basetrackplayer.cpp" line="266"/>
         <source>Couldn&apos;t load track.</source>
-        <translation>Αδυναμία φόρτωσης κομματιού.</translation>
+        <translation>H φόρτωση του κομματιού απέτυχε.</translation>
     </message>
 </context>
 <context>
@@ -409,7 +409,7 @@
         <location filename="../../src/library/browse/browsefeature.cpp" line="125"/>
         <location filename="../../src/library/browse/browsefeature.cpp" line="357"/>
         <source>Computer</source>
-        <translation type="unfinished"/>
+        <translation>Υπολογιστής</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="151"/>
@@ -419,7 +419,7 @@
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="152"/>
         <source>You added one or more music directories. The tracks in these directories won&apos;t be available until you rescan your library. Would you like to rescan now?</source>
-        <translation>Προσέθεσες έναν ή περισσότερους Μουσικούς Καταλόγους. Τα κομμάτια σε αυτούς τους καταλόγους δεν θα είναι διαθέσιμα μέχρι να ξανασαρώσεις την συλλογή σου. Θες να ξανασαρώσεις τώρα;  </translation>
+        <translation>Προσθέσατε έναν ή περισσότερους μουσικούς καταλόγους. Τα κομμάτια σε αυτούς τους καταλόγους δεν θα είναι διαθέσιμα μέχρι να ανανεωθεί η συλλογή σας. Θέλετε να γίνει τώρα η ανανέωση;  </translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="156"/>
@@ -429,7 +429,7 @@
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="358"/>
         <source>&quot;Computer&quot; lets you navigate, view, and load tracks from folders on your hard disk and external devices.</source>
-        <translation type="unfinished"/>
+        <translation>Ο &quot;Υπολογιστής&quot; σας επιτρέπει την πλοήγηση σε, προβολή και φόρτωση κομματιών από φακέλους στο σκληρό σας δίσκο και τις εξωτερικές σας συσκευές.</translation>
     </message>
 </context>
 <context>
@@ -442,7 +442,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="28"/>
         <source>Filename</source>
-        <translation>Όνομα Αρχείου</translation>
+        <translation>Όνομα αρχείου</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="29"/>
@@ -457,12 +457,12 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="31"/>
         <source>Album</source>
-        <translation>Συλλογή</translation>
+        <translation>Άλμπουμ</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="32"/>
         <source>Track #</source>
-        <translation>Κομμάτι #</translation>
+        <translation>Αρ. κομματιού</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="33"/>
@@ -512,7 +512,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="42"/>
         <source>ReplayGain</source>
-        <translation type="unfinished"/>
+        <translation>ReplayGain</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="43"/>
@@ -522,7 +522,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="44"/>
         <source>Album Artist</source>
-        <translation>Καλλιτέχνης Δίσκου</translation>
+        <translation>Καλλιτέχνης δίσκου</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="45"/>
@@ -532,12 +532,12 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="46"/>
         <source>File Modified</source>
-        <translation>Τροποποίηση Αρχείου</translation>
+        <translation>Τροποποίηση αρχείου</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="47"/>
         <source>File Created</source>
-        <translation>Δημιουργία Αρχείου</translation>
+        <translation>Δημιουργία αρχείου</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="106"/>
@@ -574,7 +574,7 @@
     <message>
         <location filename="../../src/controllers/delegates/controldelegate.cpp" line="51"/>
         <source>Script: %1(%2)</source>
-        <translation>Script: %1(%2)</translation>
+        <translation>Σενάριο εντολών: %1(%2)</translation>
     </message>
 </context>
 <context>
@@ -652,7 +652,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="24"/>
         <source>Reset to default</source>
-        <translation>Επαναφορά προεπιλογής</translation>
+        <translation>Επαναφορά προεπιλογών</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="25"/>
@@ -677,12 +677,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="35"/>
         <source>Master balance</source>
-        <translation>Ισορροπία κύριας</translation>
+        <translation>Κύρια ισορροπία</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="36"/>
         <source>Master delay</source>
-        <translation>Κύρια Καθυστέρηση </translation>
+        <translation>Κύρια καθυστέρηση </translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="38"/>
@@ -712,29 +712,29 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="52"/>
         <source>Play button</source>
-        <translation>Κουμπί Αναπαραγωγής</translation>
+        <translation>Κουμπί αναπαραγωγής</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="69"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="712"/>
         <source>Set to full volume</source>
-        <translation type="unfinished"/>
+        <translation>Ρύθμιση σε πλήρη ένταση</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="70"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="716"/>
         <source>Set to zero volume</source>
-        <translation type="unfinished"/>
+        <translation>Ρύθμιση σε μηδενική ένταση</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="64"/>
         <source>Stop button</source>
-        <translation type="unfinished"/>
+        <translation>Κουμπί στοπ</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="63"/>
         <source>Jump to start of track and play</source>
-        <translation type="unfinished"/>
+        <translation>Μετάβαση στην αρχή του κομματιού και αναπαραγωγή</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="67"/>
@@ -744,28 +744,28 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="60"/>
         <source>Reverse roll (Censor) button</source>
-        <translation type="unfinished"/>
+        <translation>Κουμπί αντίστροφης κύλισης (Λογοκρισία)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="741"/>
         <source>Headphone listen button</source>
-        <translation>Κουμπί για Ακρόαση ακουστικών</translation>
+        <translation>Κουμπί για ακρόαση ακουστικών</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="72"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="720"/>
         <source>Mute button</source>
-        <translation>κουμπί σίγασης</translation>
+        <translation>Κουμπί σίγασης</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="75"/>
         <source>Toggle repeat mode</source>
-        <translation>Εναλλαγή τρόπου επανάληψης</translation>
+        <translation>Εναλλαγή λειτουργίας επανάληψης</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="73"/>
         <source>Eject track</source>
-        <translation>Αποφόρτωση κομματιού</translation>
+        <translation>Εξαγωγή κομματιού</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="42"/>
@@ -777,24 +777,24 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="44"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="728"/>
         <source>Set mix orientation to left</source>
-        <translation>ρυθμίσετε προσανατολισμό μείξης προς τα αριστερά</translation>
+        <translation>Ρύθμιση προσανατολισμού μείξης προς τα αριστερά</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="46"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="733"/>
         <source>Set mix orientation to center</source>
-        <translation>ρυθμίσετε προσανατολισμό μείξης προς το κέντρο</translation>
+        <translation>Ρύθμιση προσανατολισμού μείξης προς το κέντρο</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="48"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="737"/>
         <source>Set mix orientation to right</source>
-        <translation>ρυθμίσετε προσανατολισμό μείξης προς τα δεξιά</translation>
+        <translation>Ρύθμιση προσανατολισμού μείξης προς τα δεξιά</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="76"/>
         <source>Toggle slip mode</source>
-        <translation type="unfinished"/>
+        <translation>Ενεργ./Απενεργ. λειτουργίας ολίσθησης</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="79"/>
@@ -830,7 +830,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="94"/>
         <source>Toggle quantize mode</source>
-        <translation type="unfinished"/>
+        <translation>Ενεργ./Απενεργ. λειτουργίας κβαντισμού</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="104"/>
@@ -855,32 +855,33 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="113"/>
         <source>Toggle sync master</source>
-        <translation type="unfinished"/>
+        <translation>Ενεργ./Απενεργ. κύριου συγχρονισμού</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="115"/>
         <source>Sync mode 3-state toggle (OFF, FOLLOWER, MASTER)</source>
-        <translation type="unfinished"/>
+        <translation>Μεταβολή λειτουργίας συγχρονισμού 3 καταστάσεων (ΑΝΕΝΕΡΓΟ, ΒΟΗΘΗΤΙΚΟ, ΚΥΡΙΟ)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="117"/>
         <source>One-time beat sync (tempo and phase)</source>
-        <translation type="unfinished"/>
+        <translation>Άμεσος συγχρον. ρυθμού (βήμα και φάση)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="119"/>
         <source>One-time beat sync (tempo only)</source>
-        <translation type="unfinished"/>
+        <translation>Άμεσος συγχρον. ρυθμού (μόνο βήμα)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="121"/>
         <source>One-time beat sync (phase only)</source>
-        <translation type="unfinished"/>
+        <translation>Άμεσος συγχρον. ρυθμού (μόνο φάση)
+</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="126"/>
         <source>Toggle keylock mode</source>
-        <translation type="unfinished"/>
+        <translation>Ενεργ./Απενεργ. λειτουργίας κλειδώματος ύψους</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="153"/>
@@ -890,17 +891,17 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="189"/>
         <source>Vinyl Control</source>
-        <translation>Έλεγχος Βινιλίου</translation>
+        <translation>Έλεγχος βινυλίου</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="195"/>
         <source>Toggle vinyl-control cueing mode (OFF/ONE/HOT)</source>
-        <translation type="unfinished"/>
+        <translation>Ενεργ./Απενεργ. λειτουργίας cueing ελέγχου-βινυλίου (ΑΝΕΝΕΡΓΟ/ΕΝΑ/HOT)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="193"/>
         <source>Toggle vinyl-control mode (ABS/REL/CONST)</source>
-        <translation>Τρόπος ελέγχου-βινυλίου (ABS/REL/CONST)</translation>
+        <translation>Τρόπος ελέγχου-βινυλίου (ΑΠΟΛ/ΣΧΕΤ/ΣΤΑΘ)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="197"/>
@@ -2677,7 +2678,7 @@
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="93"/>
         <source>Export Track Files</source>
-        <translation type="unfinished"/>
+        <translation>Εξαγωγή αρχείων ήχου</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="97"/>
@@ -5911,25 +5912,8 @@ milliseconds</extracomment>
         <translation>Ρυθμός καρέ</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="157"/>
-        <source>Summary type</source>
-        <translation>Τύπος σύνοψης</translation>
-    </message>
-    <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="70"/>
         <source>Displays which OpenGL version is supported by the current platform.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="319"/>
-        <source>Overview type</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="302"/>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="309"/>
-        <source>Select from different types of displays for the waveform, which differ primarily in the level of detail shown in the waveform.</source>
-        <extracomment>The main waveforms</extracomment>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -5948,13 +5932,13 @@ milliseconds</extracomment>
         <translation>Οπτικό κέρδος</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="393"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="395"/>
         <source>Default zoom level</source>
         <extracomment>Waveform zoom</extracomment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="326"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="328"/>
         <source>Displays the actual frame rate.</source>
         <translation>Εμφανίζει πραγματικό ρυθμό ανανέωσης εικόνας (frame rate)</translation>
     </message>
@@ -5964,7 +5948,7 @@ milliseconds</extracomment>
         <translation>Οπτική ενίσχυση των μεσαίων συχνοτήτων</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="336"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="338"/>
         <source>End of track warning</source>
         <translation type="unfinished"/>
     </message>
@@ -6014,53 +5998,75 @@ milliseconds</extracomment>
         <translation>Υψηλή</translation>
     </message>
     <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="157"/>
+        <source>Waveform type</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="281"/>
         <source>Global visual gain</source>
         <translation>Καθολική οπτική ενίσχυση</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="406"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="302"/>
+        <source>The waveform overview shows the waveform envelope of the entire track.
+Select from different types of displays for the waveform overview, which differ primarily in the level of detail shown in the waveform.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="310"/>
+        <source>The waveform shows the waveform envelope of the track near the current playback position.
+Select from different types of displays for the waveform, which differ primarily in the level of detail shown in the waveform.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="321"/>
+        <source>Waveform overview type</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="408"/>
         <source>Synchronize zoom level across all waveform displays.</source>
         <translation>Συγχρονισμός επιπέδου μεγέθυνσης για όλες τις μορφές εμφάνισης κυματομορφής.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="409"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="411"/>
         <source>Synchronize zoom level across all waveforms</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="416"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="418"/>
         <source>Caching</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="435"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="437"/>
         <source>Mixxx caches the waveforms of your tracks on disk the first time you load a track. This reduces CPU usage when you are playing live but requires extra disk space.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="455"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="457"/>
         <source>Enable waveform caching</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="462"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="464"/>
         <source>Generate waveforms when analyzing library</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="474"/>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="484"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="476"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="486"/>
         <source>Beat Grid</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="487"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="489"/>
         <source>Show Beat Markers</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="428"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="430"/>
         <source>Clear Cached Waveforms</source>
         <translation type="unfinished"/>
     </message>
@@ -6336,592 +6342,324 @@ milliseconds</extracomment>
 <context>
     <name>DlgTrackInfo</name>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="26"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="26"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="26"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="26"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="26"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="20"/>
         <source>Track Editor</source>
         <translation>Επεξεργασία Κομματιών</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="29"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="29"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="29"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="29"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="29"/>
-        <source>Sets the BPM to 50% of the detected BPM.</source>
-        <translation>Θέτει το BPM στο 50% του ανιχνευμένου BPM.</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="54"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="54"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="54"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="54"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="54"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="48"/>
         <source>Summary</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="153"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="68"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="68"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="68"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="153"/>
-        <source>Title:</source>
-        <translation>Τίτλος:</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="234"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="106"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="106"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="199"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="234"/>
-        <source>Artist:</source>
-        <translation>Καλλιτέχνης:</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="121"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="144"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="144"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="215"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="121"/>
-        <source>Album:</source>
-        <translation>Άλμπουμ:</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="362"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="182"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="182"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="329"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="362"/>
-        <source>Album Artist:</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="105"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="278"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="278"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="247"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="105"/>
-        <source>Grouping:</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="205"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="310"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="310"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="383"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="205"/>
-        <source>Year:</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="98"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="368"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="368"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="186"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="98"/>
-        <source>Track #:</source>
-        <translation>Κομμάτι #</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="372"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="246"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="246"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="122"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="372"/>
-        <source>Genre:</source>
-        <translation>Είδος:</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="179"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="214"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="214"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="154"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="179"/>
-        <source>Composer:</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="438"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="581"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="581"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="581"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="438"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="525"/>
         <source>Filetype:</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="412"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="503"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="503"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="503"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="412"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="434"/>
         <source>BPM:</source>
         <translation>BPM:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="532"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="607"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="607"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="607"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="532"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="468"/>
         <source>Location:</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="244"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="339"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="339"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="390"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="244"/>
-        <source>Key:</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="454"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="555"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="555"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="555"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="454"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="488"/>
         <source>Bitrate:</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="611"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="669"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="669"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="669"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="605"/>
-        <source>Reload track metadata from file</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="598"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="662"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="662"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="662"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="592"/>
-        <source>Get track metadata from MusicBrainz</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="634"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="686"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="686"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="686"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="628"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="578"/>
         <source>Comments</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="644"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="696"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="696"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="696"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="638"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="588"/>
         <source>BPM</source>
         <translation>BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="722"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="774"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="774"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="774"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="716"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="671"/>
         <source>Sets the BPM to 75% of the current value.</source>
         <translation>Θέτει το BPM στο 75% της τρέχουσας τιμής.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="725"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="777"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="777"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="777"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="719"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="674"/>
         <source>3/4 BPM</source>
         <translation>3/4 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="738"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="790"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="790"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="790"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="732"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="687"/>
         <source>Sets the BPM to 50% of the current value.</source>
         <translation>Θέτει το BPM στο 50% της τρέχουσας τιμής.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="654"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="706"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="706"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="706"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="648"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="598"/>
         <source>Displays the BPM of the selected track.</source>
         <translation>Απεικονίζει το BPM του επιλεγμένου κομματιού.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="496"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="529"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="529"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="529"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="496"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="54"/>
+        <source>Details</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="88"/>
+        <source>Track #</source>
+        <translation>Αρ. κομματιού</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="117"/>
+        <source>Album Artist</source>
+        <translation>Καλλιτέχνης δίσκου</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="127"/>
+        <source>Composer</source>
+        <translation>Συνθέτης</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="164"/>
+        <source>Title</source>
+        <translation>Τίτλος</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="174"/>
+        <source>Grouping</source>
+        <translation>Ομαδοποίηση </translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="216"/>
+        <source>Key</source>
+        <translation>Κλειδί</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="239"/>
+        <source>Year</source>
+        <translation>Έτος</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="268"/>
+        <source>Artist</source>
+        <translation>Καλλιτέχνης</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="284"/>
+        <source>Album</source>
+        <translation>Άλμπουμ</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="326"/>
+        <source>Genre</source>
+        <translation>Είδος</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="351"/>
+        <source>Get Metadata from MusicBrainz</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="358"/>
+        <source>Reload Metadata from File</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="406"/>
+        <source>File</source>
+        <translation>Αρχείο</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="441"/>
         <source>ReplayGain:</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="706"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="758"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="758"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="758"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="700"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="621"/>
+        <source>Converts beats detected by the analyzer into a fixed-tempo beatgrid. 
+Use this setting if your tracks have a constant tempo (e.g. most electronic music). 
+Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="655"/>
         <source>Sets the BPM to 200% of the current value.</source>
         <translation>Θέτει το BPM στο 200% της τρέχουσας τιμής.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="709"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="761"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="761"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="761"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="703"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="658"/>
         <source>Double BPM</source>
         <translation>Διπλασιασμός BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="741"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="793"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="793"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="793"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="735"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="690"/>
         <source>Halve BPM</source>
         <translation>Υποδιπλασιασμός BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="854"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="906"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="906"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="906"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="848"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="729"/>
+        <source>Clear BPM and Beatgrid</source>
+        <translation>Καθαρισμός BPM και πλέγματος χτύπων</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="803"/>
         <source>Cuepoints</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="945"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="997"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="997"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="997"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="939"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="894"/>
         <source>Move to the previous item.</source>
-        <extracomment>&quot;Previous&quot; button
-----------
-&quot;Previous&quot; button
-----------
-&quot;Previous&quot; button
-----------
-&quot;Previous&quot; button
-----------
-&quot;Previous&quot; button</extracomment>
+        <extracomment>&quot;Previous&quot; button</extracomment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="948"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1000"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="1000"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="1000"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="942"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="897"/>
         <source>&amp;Previous</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="961"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1013"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="1013"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="1013"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="955"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="910"/>
         <source>Move to the next item.</source>
-        <extracomment>&quot;Next&quot; button
-----------
-&quot;Next&quot; button
-----------
-&quot;Next&quot; button
-----------
-&quot;Next&quot; button
-----------
-&quot;Next&quot; button</extracomment>
+        <extracomment>&quot;Next&quot; button</extracomment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="964"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1016"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="1016"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="1016"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="958"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="913"/>
         <source>&amp;Next</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="470"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="477"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="477"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="477"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="470"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="461"/>
         <source>Duration:</source>
         <translation>Διάρκεια:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="624"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="676"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="676"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="676"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="618"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="547"/>
         <source>Open in File Browser</source>
         <translation>Άνοιξε το στο πρόγραμμα περιήγησης αρχείων</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="670"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="722"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="722"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="722"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="664"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="614"/>
         <source>Track BPM: </source>
         <translation>BPM Κομματιού: </translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="677"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="729"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="729"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="729"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="671"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="626"/>
         <source>Assume constant tempo</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="690"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="742"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="742"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="742"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="684"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="639"/>
         <source>Sets the BPM to 66% of the current value.</source>
         <translation>Θέτει το BPM στο 66% της τρέχουσας τιμής.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="693"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="745"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="745"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="745"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="687"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="642"/>
         <source>2/3 BPM</source>
         <translation>2/3 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="754"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="806"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="806"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="806"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="748"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="703"/>
         <source>Sets the BPM to 150% of the current value.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="757"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="809"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="809"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="809"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="751"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="706"/>
         <source>3/2 BPM</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="770"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="822"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="822"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="822"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="764"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="719"/>
         <source>Sets the BPM to 133% of the current value.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="773"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="825"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="825"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="825"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="767"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="722"/>
         <source>4/3 BPM</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="780"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="832"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="832"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="832"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="774"/>
-        <source>Clear Bpm and Beatgrid</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="801"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="853"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="853"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="853"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="795"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="750"/>
         <source>Tap with the beat to set the BPM to the speed you are tapping.</source>
         <translation>Χτυπήστε για να θέσετε το BPM στον ρυθμό που επιθυμείτε.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="804"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="856"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="856"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="856"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="798"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="753"/>
         <source>Tap to Beat</source>
         <translation>Πατήστε για Ρυθμό</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="833"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="885"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="885"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="885"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="827"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="782"/>
         <source>Hint: Use the Library Analyze view to run BPM detection.</source>
         <translation>Συμβουλή: Χρησιμοποιήστε την προβολή Ανάλυσης Βιβλιοθήκης για να τρέξετε τον εντοπισμό BPM.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="861"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="913"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="913"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="913"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="855"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="810"/>
         <source>Cue Id</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="866"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="918"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="918"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="918"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="860"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="815"/>
         <source>Position</source>
         <translation>Θέση</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="871"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="923"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="923"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="923"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="865"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="820"/>
         <source>Hotcue</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="876"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="928"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="928"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="928"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="870"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="825"/>
         <source>Label</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="918"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="970"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="970"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="970"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="912"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="867"/>
         <source>Activate Cue</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="1028"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1080"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="1080"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="1080"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="1022"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="977"/>
         <source>Save changes and close the window.</source>
-        <extracomment>&quot;OK&quot; button
-----------
-&quot;OK&quot; button
-----------
-&quot;OK&quot; button
-----------
-&quot;OK&quot; button
-----------
-&quot;OK&quot; button</extracomment>
+        <extracomment>&quot;OK&quot; button</extracomment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="1031"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1083"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="1083"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="1083"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="1025"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="980"/>
         <source>&amp;OK</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="892"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="944"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="944"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="944"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="886"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="841"/>
         <source>Delete Cue</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="990"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1042"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="1042"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="1042"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="984"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="939"/>
         <source>Discard changes and close the window.</source>
-        <extracomment>&quot;Cancel&quot; button
-----------
-&quot;Cancel&quot; button
-----------
-&quot;Cancel&quot; button
-----------
-&quot;Cancel&quot; button
-----------
-&quot;Cancel&quot; button</extracomment>
+        <extracomment>&quot;Cancel&quot; button</extracomment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="1009"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1061"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="1061"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="1061"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="1003"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="958"/>
         <source>Save changes and keep the window open.</source>
-        <extracomment>&quot;Apply&quot; button
-----------
-&quot;Apply&quot; button
-----------
-&quot;Apply&quot; button
-----------
-&quot;Apply&quot; button
-----------
-&quot;Apply&quot; button</extracomment>
+        <extracomment>&quot;Apply&quot; button</extracomment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="1012"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1064"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="1064"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="1064"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="1006"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="961"/>
         <source>&amp;Apply</source>
         <translation>&amp;Εφαρμογή</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo copy.ui" line="993"/>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1045"/>
-        <location filename="../../src/library/dlgtrackinfo.ui.bak.ui" line="1045"/>
-        <location filename="../../src/library/dlgtrackinfo2.ui" line="1045"/>
-        <location filename="../../src/library/dlgtrackinfo2a.ui" line="987"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="942"/>
         <source>&amp;Cancel</source>
         <translation>Ακύ&amp;ρωση</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.cpp" line="175"/>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="171"/>
         <source>kbps</source>
         <translation>kbps</translation>
     </message>
@@ -8302,6 +8040,13 @@ To abort this action, press Cancel on the file dialog.</source>
         <translation type="unfinished"/>
     </message>
     <message>
+        <location filename="../../src/effects/native/autopaneffect.cpp" line="33"/>
+        <source>How fast the sound goes from a side to another
+1/4 - 4 beats rounded to 1/2 beat if tempo is detected (decks and samplers)
+1/4 - 4 seconds if no tempo is detected (mic &amp; aux inputs, master mix)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <location filename="../../src/effects/native/autopaneffect.cpp" line="64"/>
         <source>Width</source>
         <translation type="unfinished"/>
@@ -8347,13 +8092,6 @@ To abort this action, press Cancel on the file dialog.</source>
         <location filename="../../src/effects/native/autopaneffect.cpp" line="24"/>
         <source>Bounce the sound from a channel to another, roughly or softly, fully or partially, fastly or slowly.
 A delay, inversed on each side, is added to increase the spatial move and the period can be synced with the BPM.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/effects/native/autopaneffect.cpp" line="33"/>
-        <source>How fast the sound goes from a side to another
-1/4 - 4 beats rounded to 1/2 beat if tempo is detected (decks and samplers)
-1/4 - 4 seconds if tempo is detected (mic &amp; aux inputs, master mix)</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -12052,7 +11790,7 @@ Fully left is mono, fully right is only side ambiance, and centered does not cha
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="391"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation type="unfinished"/>
+        <translation>Προσθήκη στη λίστα του Αυτόματου DJ (στο τέλος)</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="395"/>

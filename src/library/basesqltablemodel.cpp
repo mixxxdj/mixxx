@@ -241,7 +241,7 @@ void BaseSqlTableModel::select() {
 
     // Prepare query for id and all columns not in m_trackSource
     QString queryString = QString("SELECT %1 FROM %2 %3")
-            .arg(m_tableColumnsJoined, m_tableName, m_tableOrderBy);
+            .arg(m_tableColumns.join(","), m_tableName, m_tableOrderBy);
 
     if (sDebug) {
         qDebug() << this << "select() executing:" << queryString;
@@ -268,49 +268,62 @@ void BaseSqlTableModel::select() {
     // The size of the result set is not known in advance for a
     // forward-only query, so we cannot reserve memory for rows
     // in advance.
-    QVector<RowInfo> rowInfo;
+    QVector<RowInfo> rowInfos;
     QSet<TrackId> trackIds;
+    int idColumn = -1;
     while (query.next()) {
-        TrackId trackId(query.value(kIdColumn));
+        QSqlRecord sqlRecord = query.record();
+
+        if (idColumn < 0) {
+            idColumn = sqlRecord.indexOf(m_idColumn);
+        }
+        VERIFY_OR_DEBUG_ASSERT(idColumn >= 0) {
+            qCritical()
+                    << "ID column not available in database query results:"
+                    << m_idColumn;
+            return;
+        }
+        // TODO(XXX): Can we get rid of the hard-coded assumption that
+        // the the first column always contains the id?
+        DEBUG_ASSERT(idColumn == kIdColumn);
+
+        TrackId trackId(sqlRecord.value(idColumn));
         trackIds.insert(trackId);
 
-        RowInfo thisRowInfo;
-        thisRowInfo.trackId = trackId;
-        // save rows where this currently track id is located
-        thisRowInfo.order = rowInfo.size();
-        // Get all the table columns and store them in the hash for this
-        // row-info section.
-
-        thisRowInfo.metadata.reserve(m_tableColumns.size());
+        RowInfo rowInfo;
+        rowInfo.trackId = trackId;
+        // current position defines the ordering
+        rowInfo.order = rowInfos.size();
+        rowInfo.metadata.reserve(sqlRecord.count());
         for (int i = 0;  i < m_tableColumns.size(); ++i) {
-            thisRowInfo.metadata << query.value(i);
+            rowInfo.metadata.push_back(sqlRecord.value(i));
         }
-        rowInfo.push_back(thisRowInfo);
+        rowInfos.push_back(rowInfo);
     }
 
     if (sDebug) {
-        qDebug() << "Rows actually received:" << rowInfo.size();
+        qDebug() << "Rows actually received:" << rowInfos.size();
     }
 
     if (m_trackSource) {
-        m_trackSource->filterAndSort(trackIds, m_currentSearch,
+        m_trackSource->filterAndSort(trackIds,
+                                     m_currentSearch,
                                      m_currentSearchFilter,
                                      m_trackSourceOrderBy,
                                      m_sortColumns,
-                                     m_tableColumns.size() - 1,
+                                     m_tableColumns.size() - 1, // exclude the 1st column with the id
                                      &m_trackSortOrder);
 
         // Re-sort the track IDs since filterAndSort can change their order or mark
         // them for removal (by setting their row to -1).
-        for (QVector<RowInfo>::iterator it = rowInfo.begin();
-                it != rowInfo.end(); ++it) {
+        for (auto& rowInfo: rowInfos) {
             // If the sort is not a track column then we will sort only to
             // separate removed tracks (order == -1) from present tracks (order ==
             // 0). Otherwise we sort by the order that filterAndSort returned to us.
             if (m_trackSourceOrderBy.isEmpty()) {
-                it->order = m_trackSortOrder.contains(it->trackId) ? 0 : -1;
+                rowInfo.order = m_trackSortOrder.contains(rowInfo.trackId) ? 0 : -1;
             } else {
-                it->order = m_trackSortOrder.value(it->trackId, -1);
+                rowInfo.order = m_trackSortOrder.value(rowInfo.trackId, -1);
             }
         }
     }
@@ -319,24 +332,27 @@ void BaseSqlTableModel::select() {
     // end so we can easily slice off rows that are no longer present. Stable
     // sort is necessary because the tracks may be in pre-sorted order so we
     // should not disturb that if we are only removing tracks.
-    qStableSort(rowInfo.begin(), rowInfo.end());
+    qStableSort(rowInfos.begin(), rowInfos.end());
 
     TrackId2Rows trackIdToRows;
-    for (int i = 0; i < rowInfo.size(); ++i) {
-        const RowInfo& row = rowInfo[i];
+    // We expect almost all rows to be valid
+    trackIdToRows.reserve(rowInfos.size());
+    for (int i = 0; i < rowInfos.size(); ++i) {
+        const RowInfo& rowInfo = rowInfos[i];
 
-        if (row.order == -1) {
+        if (rowInfo.order == -1) {
             // We've reached the end of valid rows. Resize rowInfo to cut off
             // this and all further elements.
-            rowInfo.resize(i);
+            rowInfos.resize(i);
             break;
         }
-        trackIdToRows[row.trackId].push_back(i);
+        trackIdToRows[rowInfo.trackId].push_back(i);
     }
+    DEBUG_ASSERT(trackIdToRows.size() == rowInfos.size());
 
     // We're done! Issue the update signals and replace the master maps.
     replaceRows(
-            std::move(rowInfo),
+            std::move(rowInfos),
             std::move(trackIdToRows));
     // Both rowInfo and trackIdToRows (might) have been moved and
     // must not be used afterwards!
@@ -355,7 +371,6 @@ void BaseSqlTableModel::setTable(const QString& tableName,
     m_tableName = tableName;
     m_idColumn = idColumn;
     m_tableColumns = tableColumns;
-    m_tableColumnsJoined = tableColumns.join(",");
 
     if (m_trackSource) {
         disconnect(m_trackSource.data(), SIGNAL(tracksChanged(QSet<TrackId>)),
@@ -826,15 +841,6 @@ Qt::ItemFlags BaseSqlTableModel::readOnlyFlags(const QModelIndex &index) const {
     defaultFlags |= Qt::ItemIsDragEnabled;
 
     return defaultFlags;
-}
-
-const QLinkedList<int> BaseSqlTableModel::getTrackRows(TrackId trackId) const {
-    QHash<TrackId, QLinkedList<int> >::const_iterator it =
-            m_trackIdToRows.constFind(trackId);
-    if (it != m_trackIdToRows.constEnd()) {
-        return it.value();
-    }
-    return QLinkedList<int>();
 }
 
 TrackId BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
