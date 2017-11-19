@@ -7,11 +7,13 @@ Description:
 -->
 <Template>
   <WidgetStack currentpage="[Tango],sampler_rows" persist="true">
+    <Size>160me,13min</Size>
     <NextControl>[Tango],sampler_bank_next</NextControl>
     <PrevControl>[Tango],sampler_bank_prev</PrevControl>
     <Children>
 
       <WidgetGroup>
+        <ObjectName>AlignLeft</ObjectName>
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:skin_settings_button_sampler_rows.xml">
@@ -23,6 +25,7 @@ Description:
       </WidgetGroup>
 
       <WidgetGroup>
+        <ObjectName>AlignLeft</ObjectName>
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:skin_settings_button_sampler_rows.xml">
@@ -34,6 +37,7 @@ Description:
       </WidgetGroup>
 
       <WidgetGroup>
+        <ObjectName>AlignLeft</ObjectName>
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:skin_settings_button_sampler_rows.xml">
@@ -45,6 +49,7 @@ Description:
       </WidgetGroup>
 
       <WidgetGroup>
+        <ObjectName>AlignLeft</ObjectName>
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:skin_settings_button_sampler_rows.xml">
@@ -56,6 +61,7 @@ Description:
       </WidgetGroup>
 
       <WidgetGroup>
+        <ObjectName>AlignLeft</ObjectName>
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:skin_settings_button_sampler_rows.xml">
@@ -67,6 +73,7 @@ Description:
       </WidgetGroup>
 
       <WidgetGroup>
+        <ObjectName>AlignLeft</ObjectName>
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:skin_settings_button_sampler_rows.xml">
@@ -78,6 +85,7 @@ Description:
       </WidgetGroup>
 
       <WidgetGroup>
+        <ObjectName>AlignLeft</ObjectName>
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:skin_settings_button_sampler_rows.xml">
@@ -89,6 +97,7 @@ Description:
       </WidgetGroup>
 
       <WidgetGroup>
+        <ObjectName>AlignLeft</ObjectName>
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:skin_settings_button_sampler_rows.xml">

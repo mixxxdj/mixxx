@@ -1,0 +1,270 @@
+<!--
+Description:
+  Top bar only displayed in netbook mode (auto or enforced) with
+  * GUI toggle buttons (FX, Sampler, Lib, Wave ...)
+  * Crossfader (if enabled)
+  * Logo
+  * recording button with duration display
+  * broadcast button
+  * clock
+  * skin settings toggler
+-->
+<Template>
+  <WidgetGroup><!-- Skin Controls -->
+    <ObjectName>AlignCenter</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup><!-- Skin Controls -->
+        <Layout>horizontal</Layout>
+        <ObjectName>SkinControlsBarLeft</ObjectName>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <Template src="skin:button_2state_persist.xml"><!-- FX -->
+            <SetVariable name="TooltipId">show_effects</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">34f,20f</SetVariable>
+            <SetVariable name="state_0_text">FX</SetVariable>
+            <SetVariable name="state_1_text">FX</SetVariable>
+            <SetVariable name="ConfigKey">[EffectRack1],show</SetVariable>
+          </Template>
+
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+
+          <Template src="skin:button_2state_persist.xml"><!-- Samplers -->
+            <SetVariable name="TooltipId">show_samplers</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">34f,20f</SetVariable>
+            <SetVariable name="state_0_text">SAM</SetVariable>
+            <SetVariable name="state_1_text">SAM</SetVariable>
+            <SetVariable name="ConfigKey">[Samplers],show_samplers</SetVariable>
+          </Template>
+
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+
+          <Template src="skin:button_2state_persist.xml"><!-- Library -->
+            <SetVariable name="TooltipId">show_library</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">34f,20f</SetVariable>
+            <SetVariable name="state_0_text">LIB</SetVariable>
+            <SetVariable name="state_1_text">LIB</SetVariable>
+            <SetVariable name="ConfigKey">[Library],show_library</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
+
+          <Template src="skin:button_2state_persist.xml"><!-- 4 Decks -->
+            <SetVariable name="ObjectName">GuiToggleButton2</SetVariable>
+            <SetVariable name="Size">20f,20f</SetVariable>
+            <SetVariable name="TooltipId">toggle_4decks</SetVariable>
+            <SetVariable name="state_0_pressed">2decks.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">2decks.svg</SetVariable>
+            <SetVariable name="state_1_pressed">4decks.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">4decks.svg</SetVariable>
+            <SetVariable name="ConfigKey">[Master],show_4decks</SetVariable>
+          </Template>
+
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+
+          <Template src="skin:button_2state_persist.xml"><!-- Waveforms -->
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">20f,20f</SetVariable>
+            <SetVariable name="state_0_pressed">wave_off.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">wave_off.svg</SetVariable>
+            <SetVariable name="state_1_pressed">wave_on.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">wave_on.svg</SetVariable>
+            <SetVariable name="ConfigKey">[Tango],stacked_waveforms</SetVariable>
+          </Template>
+
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+
+          <Template src="skin:button_2state_persist.xml"><!-- Spinny -->
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">20f,20f</SetVariable>
+            <SetVariable name="state_0_pressed">mixerbar_off.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">mixerbar_off.svg</SetVariable>
+            <SetVariable name="state_1_pressed">mixerbar_on.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">mixerbar_on.svg</SetVariable>
+            <SetVariable name="ConfigKey">[Tango],mixerbar</SetVariable>
+          </Template>
+
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">20f,20f</SetVariable>
+            <SetVariable name="state_0_unpressed">hotcues_off.svg</SetVariable>
+            <SetVariable name="state_0_pressed">hotcues_off.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">hotcues_on.svg</SetVariable>
+            <SetVariable name="state_1_pressed">hotcues_on.svg</SetVariable>
+            <SetVariable name="ConfigKey">[Tango],hotcues</SetVariable>
+          </Template>
+
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+
+          <Template src="skin:button_2state_persist.xml"><!-- Mixer -->
+            <SetVariable name="TooltipId">show_mixer</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">20f,20f</SetVariable>
+            <SetVariable name="state_0_pressed">mixer_off.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">mixer_off.svg</SetVariable>
+            <SetVariable name="state_1_pressed">mixer_on.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">mixer_on.svg</SetVariable>
+            <SetVariable name="ConfigKey">[Tango],channel_mixer</SetVariable>
+          </Template>
+
+        </Children>
+      </WidgetGroup><!-- /Skin controls -->
+
+      <!-- Vertical layout:
+          Top row (0px tall): spacers for PitchSlider, VUMeter etc.
+          Bootom row: Crossfader lies on top if enabled -->
+      <WidgetGroup>
+        <ObjectName>AlignHCenter</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+
+          <WidgetGroup><!-- Crossfader -->
+            <ObjectName>CrossfaderNetbook</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
+              <SliderComposed>
+                <TooltipId>crossfader</TooltipId>
+                <Handle>skin:/knobs_sliders/slider_crossfader_handle.svg</Handle>
+                <Slider>skin:/knobs_sliders/slider_crossfader_scale.svg</Slider>
+                <Horizontal>true</Horizontal>
+                <Connection>
+                  <ConfigKey>[Master],crossfader</ConfigKey>
+                </Connection>
+              </SliderComposed>
+              <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Tango],crossfader</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /Crossfader -->
+
+          <!-- zero-height spacers below Crossfader -->
+          <Template src="skin:spacer_topbar_netbook.xml"/>
+
+        </Children>
+      </WidgetGroup><!-- Stack of spacers for PitchSlider, VUMeter etc.
+                      Crossfader lies on top if enabled -->
+
+      <WidgetGroup><!-- Logo, Rec, Broadcast, Clock, Skinsettings -->
+        <Layout>horizontal</Layout>
+        <ObjectName>SkinControlsBarRight</ObjectName>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="ObjectName">LogoMaxi</SetVariable>
+            <SetVariable name="Size">81f,20f</SetVariable>
+            <SetVariable name="state_0_pressed">logo_104x26_grey.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">logo_104x26_grey.svg</SetVariable>
+            <SetVariable name="state_1_pressed">logo_104x26.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">logo_104x26.svg</SetVariable>
+            <SetVariable name="ConfigKey">[Tango],colorLogo</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
+
+          <WidgetGroup><!-- Recording button & recording duration label -->
+            <Layout>stacked</Layout>
+            <Size>60f,20f</Size>
+            <Children>
+              <Template src="skin:button_3state_display.xml">
+                <SetVariable name="ObjectName">RecordingButton</SetVariable>
+                <SetVariable name="TooltipId">toggle_recording</SetVariable>
+                <SetVariable name="Size">60f,20f</SetVariable>
+                <SetVariable name="state_0_text">REC</SetVariable>
+                <SetVariable name="state_1_text">. . .</SetVariable>
+                <!-- Empty to show the RecordingDuration underneath -->
+                <SetVariable name="state_2_text"></SetVariable>
+                <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
+                <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
+              </Template>
+
+              <WidgetGroup><!-- Rec dot + RecDuration -->
+                <Layout>horizontal</Layout>
+                <Size>60f,20f</Size>
+                <Children>
+                  <WidgetGroup>
+                    <ObjectName>RecDot</ObjectName>
+                    <Size>15f,20f</Size>
+                  </WidgetGroup>
+
+                  <RecordingDuration>
+                    <ObjectName>RecDurationLabel</ObjectName>
+                    <Size>45f,20f</Size>
+                    <Alignment>center</Alignment>
+                  </RecordingDuration>
+                </Children>
+              </WidgetGroup><!-- /Rec dot + RecDuration -->
+            </Children>
+          </WidgetGroup><!-- /Recording button & recording duration label -->
+
+          <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
+
+          <Template src="skin:button_4state_display.xml">
+            <SetVariable name="TooltipId">broadcast_enabled</SetVariable>
+            <SetVariable name="ObjectName">BroadcastButtonNetbook</SetVariable>
+            <SetVariable name="Size">24f,24f</SetVariable>
+            <SetVariable name="ConfigKey">[Shoutcast],enabled</SetVariable>
+            <SetVariable name="ConfigKeyDisp">[Shoutcast],status</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+          <WidgetGroup><!-- Clock + latency display -->
+            <Size>32f,24min</Size>
+            <Layout>vertical</Layout>
+            <Children>
+              <Time>
+                <TooltipId>time</TooltipId>
+                <ObjectName>Clock</ObjectName>
+                <Size>32f,16f</Size>
+                <ShowSeconds>false</ShowSeconds>
+                <!-- This has no effect, neither has 'text-align' in qss.
+                <Align>center</Align>   -->
+              </Time>
+              <VuMeter><!-- latency usage -->
+                <Size>31f,3f</Size>
+                <TooltipId>audio_latency_usage</TooltipId>
+                <PathVu>skin:/graphics/latency_usage_over.png</PathVu>
+                <PathBack>skin:/graphics/latency_usage.png</PathBack>
+                <Horizontal>true</Horizontal>
+                <PeakHoldSize>5</PeakHoldSize>
+                <PeakHoldTime>1000</PeakHoldTime>
+                <PeakFallTime>100</PeakFallTime>
+                <PeakFallStep>1</PeakFallStep>
+                <Connection>
+                  <ConfigKey>[Master],audio_latency_usage</ConfigKey>
+                </Connection>
+              </VuMeter><!-- /latency usage -->
+            </Children>
+          </WidgetGroup><!-- Clock + latency display -->
+
+          <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="ObjectName">SkinSettingsToggler</SetVariable>
+            <SetVariable name="Size">24f,24f</SetVariable>
+            <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>
+          </Template>
+
+        </Children>
+      </WidgetGroup><!-- /Logo, Rec, Broadcast, Clock, Skinsettings -->
+
+    </Children>
+    <Connection>
+      <ConfigKey>[Tango],netbook_mode</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

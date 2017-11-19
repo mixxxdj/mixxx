@@ -74,7 +74,6 @@ Variables:
       <!-- none -->
       <WidgetGroup>
         <Size>0f,0f</Size>
-        <Children/>
         <Connection>
           <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
           <Transform><IsEqual>2</IsEqual></Transform>
