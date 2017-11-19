@@ -13,21 +13,16 @@ namespace mixxx {
 //
 // This class is not thread-safe and is not intended to be used from
 // multiple threads!
-class ReadAheadSampleBuffer {
+class ReadAheadSampleBuffer final {
   public:
-    ReadAheadSampleBuffer();
     explicit ReadAheadSampleBuffer(
-            SINT capacity);
+            SINT capacity = 0);
     ReadAheadSampleBuffer(
             const ReadAheadSampleBuffer& that)
         : ReadAheadSampleBuffer(that, that.capacity()) {
     }
     ReadAheadSampleBuffer(
-            const ReadAheadSampleBuffer& that,
-            SINT capacity);
-    ReadAheadSampleBuffer(
             ReadAheadSampleBuffer&&) = default;
-    virtual ~ReadAheadSampleBuffer() {}
 
     ReadAheadSampleBuffer& operator=(
             const ReadAheadSampleBuffer& that) {
@@ -47,6 +42,12 @@ class ReadAheadSampleBuffer {
     SINT capacity() const {
         return m_sampleBuffer.size();
     }
+
+    // Tries to adjust the capacity taking into account the
+    // current contents of the buffer. The resulting capacity
+    // may therefore be higher than requested when shrinking
+    // the buffer.
+    void adjustCapacity(SINT capacity);
 
     // Discards all buffered samples.
     void clear();
@@ -95,6 +96,10 @@ class ReadAheadSampleBuffer {
     SampleBuffer::ReadableSlice readLifo(SINT readLength);
 
   private:
+    ReadAheadSampleBuffer(
+            const ReadAheadSampleBuffer& that,
+            SINT capacity);
+
     void adjustReadableRange() {
         if (m_readableRange.empty()) {
             m_readableRange = IndexRange::between(0, 0);

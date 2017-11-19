@@ -378,9 +378,7 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
                     << m_sampleBuffer.capacity()
                     << "->"
                     << sampleBufferCapacity;
-            ReadAheadSampleBuffer(
-                    m_sampleBuffer,
-                    sampleBufferCapacity).swap(m_sampleBuffer);
+            m_sampleBuffer.adjustCapacity(sampleBufferCapacity);
         }
 
         DWORD dwSampleBufferIndex = 0;
@@ -690,9 +688,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const OpenParams& params) 
     const SINT sampleBufferCapacity =
             leftoverBufferSizeInBytes / kBytesPerSample;
     if (m_sampleBuffer.capacity() < sampleBufferCapacity) {
-        ReadAheadSampleBuffer(
-                m_sampleBuffer,
-                sampleBufferCapacity).swap(m_sampleBuffer);
+        m_sampleBuffer.adjustCapacity(sampleBufferCapacity);
     }
     DEBUG_ASSERT(m_sampleBuffer.capacity() > 0);
     kLogger.debug()

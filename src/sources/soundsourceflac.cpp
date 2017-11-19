@@ -452,10 +452,7 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
         const SINT sampleBufferCapacity =
                 m_maxBlocksize * channelCount();
         if (m_sampleBuffer.capacity() < sampleBufferCapacity) {
-            // Adjust capacity of buffer for decoded sample data
-            ReadAheadSampleBuffer(
-                    m_sampleBuffer,
-                    sampleBufferCapacity).swap(m_sampleBuffer);
+            m_sampleBuffer.adjustCapacity(sampleBufferCapacity);
         }
         break;
     }

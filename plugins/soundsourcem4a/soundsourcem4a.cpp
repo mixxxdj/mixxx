@@ -323,10 +323,7 @@ bool SoundSourceM4A::openDecoder() {
     const SINT sampleBufferCapacity =
             frames2samples(m_framesPerSampleBlock);
     if (m_sampleBuffer.capacity() < sampleBufferCapacity) {
-        // Adjust capacity of buffer for decoded sample data
-        ReadAheadSampleBuffer(
-                m_sampleBuffer,
-                sampleBufferCapacity).swap(m_sampleBuffer);
+        m_sampleBuffer.adjustCapacity(sampleBufferCapacity);
     }
 
     // Discard all buffered samples

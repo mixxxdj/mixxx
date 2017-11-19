@@ -27,7 +27,7 @@ protected:
 
     SINT readFifoAndVerify(mixxx::ReadAheadSampleBuffer* pSampleBuffer, SINT size) {
         const mixxx::SampleBuffer::ReadableSlice readableSlice(
-                pSampleBuffer->readLifo(size));
+                pSampleBuffer->readFifo(size));
         for (SINT i = 0; i < readableSlice.size(); ++i) {
             EXPECT_EQ(readableSlice[i], m_readValue);
             m_readValue += CSAMPLE_ONE;
@@ -37,7 +37,7 @@ protected:
 
     SINT readLifoAndVerify(mixxx::ReadAheadSampleBuffer* pSampleBuffer, SINT size) {
         const mixxx::SampleBuffer::ReadableSlice readableSlice(
-                pSampleBuffer->readFifo(size));
+                pSampleBuffer->readLifo(size));
         for (SINT i = readableSlice.size(); i-- > 0; ) {
             m_writeValue -= CSAMPLE_ONE;
             EXPECT_EQ(readableSlice[i], m_writeValue);

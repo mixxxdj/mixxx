@@ -13,12 +13,6 @@
 
 namespace mixxx {
 
-ReadAheadSampleBuffer::ReadAheadSampleBuffer()
-    : ReadAheadSampleBuffer(0) {
-    
-    DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
-}
-
 ReadAheadSampleBuffer::ReadAheadSampleBuffer(
         SINT capacity)
     : m_sampleBuffer(capacity),
@@ -29,7 +23,7 @@ ReadAheadSampleBuffer::ReadAheadSampleBuffer(
 
 ReadAheadSampleBuffer::ReadAheadSampleBuffer(
         const ReadAheadSampleBuffer& that,
-        SINT capacity) 
+        SINT capacity)
     : ReadAheadSampleBuffer(capacity) {
     DEBUG_ASSERT(that.readableLength() <= capacity);
     // Copy all readable contents to the beginning of the buffer
@@ -56,6 +50,18 @@ void ReadAheadSampleBuffer::clear() {
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 }
 
+void ReadAheadSampleBuffer::adjustCapacity(SINT capacity) {
+    DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
+
+    SINT newCapacity = std::min(readableLength(), capacity);
+    if (newCapacity != capacity) {
+        ReadAheadSampleBuffer tmp(*this, newCapacity);
+        swap(tmp);
+    }
+
+    DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
+}
+
 SampleBuffer::WritableSlice ReadAheadSampleBuffer::write(SINT writeLength) {
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 
@@ -75,7 +81,11 @@ SampleBuffer::ReadableSlice ReadAheadSampleBuffer::readFifo(SINT readLength) {
     m_readableRange.shrinkBack(tailLength);
     const SampleBuffer::ReadableSlice tailSlice(
             m_sampleBuffer, m_readableRange.end(), tailLength);
-    adjustReadableRange();
+    // If the buffer has become empty reset the write head back to the start
+    // of the available memory
+    if (m_readableRange.empty()) {
+        m_readableRange = IndexRange::between(0, 0);
+    }
 
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
     return tailSlice;
@@ -88,7 +98,11 @@ SampleBuffer::ReadableSlice ReadAheadSampleBuffer::readLifo(SINT readLength) {
     const SampleBuffer::ReadableSlice headSlice(
             m_sampleBuffer, m_readableRange.start(), headLength);
     m_readableRange.shrinkFront(headLength);
-    adjustReadableRange();
+    // If the buffer has become empty reset the write head back to the start
+    // of the available memory
+    if (m_readableRange.empty()) {
+        m_readableRange = IndexRange::between(0, 0);
+    }
 
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
     return headSlice;
