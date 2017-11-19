@@ -58,7 +58,7 @@ SoundDeviceError SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) 
     qDebug() << "Requested sample rate: " << m_dSampleRate << "Hz, latency:"
              << m_audioBufferTime;
 
-    // Feet the network device buffer directly from the
+    // Feed the network device buffer directly from the
     // clock reference device callback
     // This is what should work best.
     if (m_iNumOutputChannels) {
@@ -254,7 +254,7 @@ void SoundDeviceNetwork::writeProcess() {
         if (writeAvailable - copyCount > outChunkSize) {
             // Underflow
             //qDebug() << "SoundDeviceNetwork::writeProcess() Buffer empty";
-            // catch up by filling buffer until we are a halve buffer behind
+            // catch up by filling buffer until we are a half buffer behind
             m_pNetworkStream->writeSilence(writeAvailable - copyCount - outChunkSize / 2);
             m_pSoundManager->underflowHappened(24);
         } else if (writeAvailable - copyCount > outChunkSize / 2) {
