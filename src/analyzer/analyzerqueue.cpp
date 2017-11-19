@@ -450,51 +450,6 @@ void AnalyzerQueue::slotAnalyseTrack(TrackPointer pTrack) {
 }
 
 // This is called from the GUI and from the AnalyzerQueue thread
-<<<<<<< HEAD
-void AnalyzerQueue::queueAnalyseTrack(TrackPointer tio) {
-    m_qm.lock();
-    if (!m_tioq.contains(tio)) {
-        m_tioq.enqueue(tio);
-        m_qwait.wakeAll();
-    }
-    m_qm.unlock();
-}
-
-// static
-AnalyzerQueue* AnalyzerQueue::createDefaultAnalyzerQueue(
-        UserSettingsPointer pConfig, TrackCollection* pTrackCollection) {
-    AnalyzerQueue* ret = new AnalyzerQueue(pTrackCollection);
-
-    ret->addAnalyzer(new AnalyzerWaveform(pConfig, false));
-    ret->addAnalyzer(new AnalyzerGain(pConfig));
-    ret->addAnalyzer(new AnalyzerEbur128(pConfig));
-#ifdef __VAMP__
-    VampAnalyzer::initializePluginPaths();
-    ret->addAnalyzer(new AnalyzerBeats(pConfig, false));
-    ret->addAnalyzer(new AnalyzerKey(pConfig));
-#endif
-
-    ret->start(QThread::LowPriority);
-    return ret;
-}
-
-// static
-AnalyzerQueue* AnalyzerQueue::createAnalysisFeatureAnalyzerQueue(
-        UserSettingsPointer pConfig, TrackCollection* pTrackCollection) {
-    AnalyzerQueue* ret = new AnalyzerQueue(pTrackCollection);
-
-    ret->addAnalyzer(new AnalyzerWaveform(pConfig, true));
-    ret->addAnalyzer(new AnalyzerGain(pConfig));
-    ret->addAnalyzer(new AnalyzerEbur128(pConfig));
-#ifdef __VAMP__
-    VampAnalyzer::initializePluginPaths();
-    ret->addAnalyzer(new AnalyzerBeats(pConfig, true));
-    ret->addAnalyzer(new AnalyzerKey(pConfig));
-#endif
-
-    ret->start(QThread::LowPriority);
-    return ret;
-=======
 void AnalyzerQueue::queueAnalyseTrack(TrackPointer pTrack) {
     if (pTrack) {
         QMutexLocker locked(&m_qm);
@@ -503,5 +458,4 @@ void AnalyzerQueue::queueAnalyseTrack(TrackPointer pTrack) {
             m_qwait.wakeAll();
         }
     }
->>>>>>> origin/master
 }

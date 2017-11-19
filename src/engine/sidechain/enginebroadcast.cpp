@@ -311,7 +311,7 @@ void EngineBroadcast::updateFromPreferences() {
     }
 
     if (shout_set_format(m_pShout, format) != SHOUTERR_SUCCESS) {
-        errorDialog("Error setting streaming format!", shout_get_error(m_pShout));
+        errorDialog(tr("Error setting streaming format!"), shout_get_error(m_pShout));
         return;
     }
 

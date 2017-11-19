@@ -90,7 +90,7 @@ private:
     std::unique_ptr<AnalysisDao> m_pAnalysisDao;
 
     typedef std::unique_ptr<Analyzer> AnalyzerPtr;
-    std::vector<AnalyzerPtr> m_analyzelist;
+    std::vector<AnalyzerPtr> m_pAnalyzers;
     bool m_priorizedJob;
     int m_workerIdx;
     SampleBuffer m_sampleBuffer;

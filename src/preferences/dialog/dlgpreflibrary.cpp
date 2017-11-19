@@ -79,9 +79,6 @@ DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
     connect(this, SIGNAL(setTrackTableRowHeight(int)),
             m_pLibrary, SLOT(slotSetTrackTableRowHeight(int)));
 
-    connect(cmbMaxThreads, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(slotMaxThreadsChanged(int)));
-
     AnalyzerManager* analyzerManager = m_pLibrary->getAnalyzerManager();
     connect(this, SIGNAL(setMaxThreads(int)),
             analyzerManager, SLOT(slotMaxThreadsChanged(int)));
@@ -187,7 +184,7 @@ void DlgPrefLibrary::slotResetToDefaults() {
     radioButton_dbclick_deck->setChecked(true);
     spinBoxRowHeight->setValue(Library::kDefaultRowHeightPx);
     int cpuMax = QThread::idealThreadCount();
-    if (cpuMax < 1) { cpuMax = 8; }
+    if (cpuMax < 1) { cpuMax = 1; }
     //setCurrentIndex is zero based. threads is one based.
     cmbMaxThreads->setCurrentIndex(cpuMax-1);
 
@@ -250,7 +247,6 @@ void DlgPrefLibrary::slotCancel() {
     // Undo any changes in the library font or row height.
     emit(setTrackTableRowHeight(m_iOriginalTrackTableRowHeight));
     emit(setTrackTableFont(m_originalTrackTableFont));
-    emit(setMaxThreads(m_iOriginalMaxThreads));
 }
 
 void DlgPrefLibrary::slotAddDir() {
@@ -385,9 +381,10 @@ void DlgPrefLibrary::slotApply() {
 
     //setCurrentIndex is zero based. threads is one based.
     int threads = cmbMaxThreads->currentIndex()+1;
-    if (m_iOriginalMaxThreads != threads) {
+    if (m_iOriginalMaxThreads != threads && threads > 0) {
         m_pconfig->setValue<int>(ConfigKey("[Library]", "MaxAnalysisThreads"),
                       threads);
+        emit(setMaxThreads(threads));
     }
 
 
@@ -397,14 +394,6 @@ void DlgPrefLibrary::slotApply() {
 
 void DlgPrefLibrary::slotRowHeightValueChanged(int height) {
     emit(setTrackTableRowHeight(height));
-}
-
-void DlgPrefLibrary::slotMaxThreadsChanged(int cmbindex) {
-    //I'm not sure if it's the best to emit it when changing the value, instead of only on onApply
-    //setCurrentIndex is zero based. threads is one based.
-    if (cmbindex >=0) {
-        emit(setMaxThreads(cmbindex+1));
-    }
 }
 
 void DlgPrefLibrary::setLibraryFont(const QFont& font) {

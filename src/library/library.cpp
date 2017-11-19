@@ -79,7 +79,7 @@ Library::Library(
 
     QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
 
-    m_pAnalyzerManager = new AnalyzerManager(pConfig,pDbConnectionPool);
+    m_pAnalyzerManager = new AnalyzerManager(pConfig,m_pDbConnectionPool);
     
     // TODO(XXX): Add a checkbox in the library preferences for checking
     // and repairing the database on the next restart of the application.

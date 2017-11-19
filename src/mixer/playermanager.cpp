@@ -32,9 +32,9 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         m_pSoundManager(pSoundManager),
         m_pEffectsManager(pEffectsManager),
         m_pEngine(pEngine),
+        m_pAnalyzerManager(nullptr),
         // NOTE(XXX) LegacySkinParser relies on these controls being Controls
         // and not ControlProxies.
-        m_pAnalyzerManager(nullptr),
         m_pCONumDecks(new ControlObject(
             ConfigKey("[Master]", "num_decks"), true, true)),
         m_pCONumSamplers(new ControlObject(
@@ -348,7 +348,7 @@ void PlayerManager::addDeckInner() {
 
     if (m_pAnalyzerManager) {
         connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-            m_pAnalyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
+                m_pAnalyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
     m_players[group] = pDeck;

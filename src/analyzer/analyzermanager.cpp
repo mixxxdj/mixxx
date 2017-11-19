@@ -120,7 +120,7 @@ void AnalyzerManager::analyseTrackNow(TrackPointer tio) {
 }
 // This is called from the GUI for the analysis feature of the library.
 void AnalyzerManager::queueAnalyseTrack(TrackPointer tio) {
-    //See notes on analyseTrackNow of why we reduce the number of threads in this case.
+    //See notes on analyseTrackNow of why we reduce the number of threads if there are priority workers.
     int maxDefThreads = (m_priorityWorkers.isEmpty()) ? m_MaxThreads : m_MaxThreads-1;
     if (!m_defaultTrackQueue.contains(tio)) {
         m_defaultTrackQueue.append(tio);
@@ -231,7 +231,7 @@ void AnalyzerManager::slotErrorString(QString errMsg) {
 
 
 void AnalyzerManager::slotMaxThreadsChanged(int threads) {
-    //See notes on analyseTrackNow of why we reduce the number of threads in this case.
+    //See notes on analyseTrackNow of why we reduce the number of threads if there are priority workers.
     int maxDefThreads = (m_priorityWorkers.isEmpty()) ? threads : threads-1;
     // If it is Active, adapt the amount of workers. If it is not active, it will just update the variable.
     if (threads < m_MaxThreads) {

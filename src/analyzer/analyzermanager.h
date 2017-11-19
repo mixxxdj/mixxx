@@ -13,7 +13,7 @@
 class TrackCollection;
 
 /* AnalyzerManager class
-* Manages the task of analying multiple tracks. Setups a maximum amount of workers
+* Manages the task of analysing multiple tracks. Setups a maximum amount of workers
 * and provides the tracks to analyze. It also sends the signals to other parts of Mixxx.
 */
 class AnalyzerManager : public QObject {
