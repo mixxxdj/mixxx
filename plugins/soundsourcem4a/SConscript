@@ -54,6 +54,12 @@ if int(build.flags['faad']):
                 'libfaad', 'neaacdec.h', 'c++',
                 call = 'NeAACDecInit2(0, 0, 0, (unsigned long*)0, (unsigned char*)0);',
                 autoadd=False)
+        # Only the second check succeeds!! BUT WHY??
+        # See also: https://stackoverflow.com/questions/26245218/how-to-clear-scons-cache-checklibwithheader-returns-no-first-time-called-ye
+        have_faad_27_or_newer = conf.CheckLibWithHeader(
+                'libfaad', 'neaacdec.h', 'c++',
+                call = 'NeAACDecInit2(0, 0, 0, (unsigned long*)0, (unsigned char*)0);',
+                autoadd=False)
         if not have_faad_27_or_newer:
             env.Append(CPPDEFINES = '__M4AHACK__')
             print("libfaad 2.6 compatibility mode... enabled")
