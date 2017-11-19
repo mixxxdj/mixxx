@@ -66,12 +66,13 @@
   border-top: 1px solid #222;
   background-color: transparent;
   margin: 0;
-  padding: 0 4px 0 0;
+  padding: 0 3px 0 0;
 }
 
 #ControlsRow {
   border-top: 1px solid #222;
-  padding: 4px;
+  padding: 3px;
+  qproperty-layoutAlignment: 'AlignBottom';
 }
 
 #MixerBorder {
@@ -176,6 +177,17 @@ QTableView {
   gridline-color: red;
 }
 
+/* Colors aren't applied to selected items, define them manually */
+QTableView::item:selected,
+QTreeView::item:selected,
+#LibraryBPMButton::item:selected,
+QTreeView::branch:selected,
+/* This won't style the Preview button */
+#LibraryPreviewButton::item:selected {
+  color: #D6D6D6;
+  background-color: #006596;
+}
+
 /* checkbox in library "Played" column */
 QTableView::indicator {
   width: 12px;
@@ -203,16 +215,17 @@ QTableView::indicator:unchecked {
 QPushButton#LibraryPreviewButton {
   width: 23px;
   height: 12px;
-  background: transparent;
   border: none;
 }
 
 QPushButton#LibraryPreviewButton:!checked {
   image: url(skin:/image/style_library_preview_play.png);
+  background-color: #1A1A1A;
 }
 
 QPushButton#LibraryPreviewButton:checked {
   image: url(skin:/image/style_library_preview_pause.png);
+  background-color: #006596;
 }
 
 /* library header row */
@@ -423,9 +436,7 @@ WLibrary QRadioButton::indicator:unchecked {
   margin: 9px 3px 6px 3px;
   padding: 4px;
   color: #D2D2D2;
-  background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                    stop: 0 #4B4B4B,
-                                    stop: 1 #4B4B4B);
+  background-color: #4B4B4B;
   border: 1px solid #4B4B4B;
   border-radius: 2px;
   outline: none;
@@ -440,10 +451,7 @@ WLibrary QRadioButton::indicator:unchecked {
   margin: 9px 3px 6px 3px;
   padding: 4px;
   color: #808080; /* Default #A3A3A3 -90L HSL*/
-  background-color: qlineargradient(spread:pad,
-                                    x1:0, y1:0, x2:1, y2:0,
-                                    stop:0 rgba(95, 95, 95, 127),
-                                    stop:1 rgba(95, 95, 95, 127));
+  background-color: rgba(95, 95, 95, 127);
                                     /* 50% #5F5F5F = RGBA#5F5F5F7F */
   border: 0px solid #5F5F5F;
   border-radius: 2px;
@@ -458,9 +466,7 @@ WLibrary QRadioButton::indicator:unchecked {
   margin: 9px 3px 6px 3px;
   padding: 4px;
   color: #D2D2D2;
-  background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                    stop: 0 #5F5F5F,
-                                    stop: 1 #5F5F5F);
+  background-color: #5F5F5F;
   border: 0px solid #5F5F5F;
   border-radius: 2px;
   outline: none;
@@ -473,9 +479,7 @@ WLibrary QRadioButton::indicator:unchecked {
   margin: 9px 3px 6px 3px;
   padding: 4px;
   color: #FDFDFD;
-  background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                    stop: 0 #006596,
-                                    stop: 1 #006596);
+  background-color: #006596;
   border: 0px solid #006596;
   border-radius: 2px;
   outline: none;
@@ -488,9 +492,7 @@ WLibrary QRadioButton::indicator:unchecked {
   margin: 9px 3px 6px 3px;
   padding: 4px;
   color: #FDFDFD;
-  background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                    stop: 0 #0080BE,
-                                    stop: 1 #0080BE);
+  background-color: #0080BE;
   border: 0px solid #0080BE;
   border-radius: 2px;
   outline: none;
@@ -504,9 +506,7 @@ WLibrary QRadioButton::indicator:unchecked {
   margin: 9px 3px 6px 3px;
   padding: 4px;
   color: #FDFDFD;
-  background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                    stop: 0 #006596,
-                                    stop: 1 #006596);
+  background-color: #006596;
   border: 0px solid #006596;
   border-radius: 2px;
   outline: none;
@@ -681,11 +681,6 @@ WWidget, QLabel {
 
 
 /* Start spacing for Deck controls row (transport, beatgrid, looping, hotcue, vinylcontrol) */
-
-#FullControlsRow {
-  qproperty-layoutSpacing: 3;
-  qproperty-layoutAlignment: 'AlignBottom';
-}
 
 #HotcueGrid, #HotcueGridExtended,
 #VinylControlsContainer {
@@ -1045,27 +1040,15 @@ WEffectSelector {
 }
 
 #MainDecks, #MainDeckContainer {
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                    stop: 0 #333333,
-                                    stop: 1.0 #333333);
+  background-color: #333333;
 }
 
 #LeftGutter, #RightGutter {
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                    stop: 0 #222222,
-                                    stop: 1.0 #222222);
+  background-color: #222222;
 }
 
-#Deck1, #Deck2 {
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                    stop: 0 #333333,
-                                    stop: 1.0 #333333);
-}
-
-#Deck3, #Deck4 {
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                    stop: 0 #333333,
-                                    stop: 1.0 #333333);
+#Deck1, #Deck2, #Deck3, #Deck4 {
+  background-color: #333333;
 }
 
 WWidget, WLabel {
@@ -1268,12 +1251,13 @@ WStarRating {
 }
 
 #LibraryContainer {
-  background-color: #222;
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+  background-color: #222222;
   padding-top: 2px;
 }
 
-#LibraryExpanded, #LibraryCollapsed {
-  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+#LibrarySplitter {
+  background-color: #222222;
 }
 
 #EffectRackContainer {
@@ -1638,9 +1622,7 @@ WRecordingDuration {
 
 #SampleDeckToggle[value="1"], #LibraryToggle[value="1"], #EffectRackToggle[value="1"] {
     color: #D2D2D2;
-    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                      stop: 0 #4B4B4B,
-                                      stop: 1 #4B4B4B);
+    background-color: #4B4B4B;
     border: 1px solid #4B4B4B;
     border-radius: 2px;
     outline: none;
@@ -1648,9 +1630,7 @@ WRecordingDuration {
 
 #SampleDeckToggle[value="1"]:hover, #LibraryToggle[value="1"]:hover, #EffectRackToggle[value="1"]:hover {
     color: #D2D2D2;
-    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                      stop: 0 #5F5F5F,
-                                      stop: 1 #5F5F5F);
+    background-color: #5F5F5F;
     border: 0px solid #5F5F5F;
 }
 

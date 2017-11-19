@@ -9,6 +9,7 @@
   <WidgetGroup>
     <ObjectName>LoopContainer</ObjectName>
     <Layout>vertical</Layout>
+    <SizePolicy>f,min</SizePolicy>
     <Children>
 
       <WidgetGroup><!-- SpinBox + loop_activate -->
@@ -92,7 +93,7 @@
 
           <!-- Workaround for layout spacing -->
           <Template src="skin:spacer_hx.xml">
-            <SetVariable name="width">9f,</SetVariable>
+            <SetVariable name="width">8f,</SetVariable>
           </Template>
 
           <Template src="skin:left_right_display_2state_button.xml">
