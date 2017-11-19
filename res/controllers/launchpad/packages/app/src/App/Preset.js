@@ -3,7 +3,7 @@
 // This monstrous dynamic giant needs some serious refactor
 import Component from '../Component'
 import { Buttons, Colors } from '../Launchpad'
-import assign from 'lodash.assign'
+import { assign } from 'lodash-es'
 
 import type { Modifier } from './ModifierSidebar'
 import type { ControlComponentBuilder } from '../Controls/ControlComponent'

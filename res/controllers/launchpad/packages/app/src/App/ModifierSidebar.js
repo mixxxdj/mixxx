@@ -3,6 +3,8 @@ import { Buttons, Colors } from '../Launchpad'
 
 import type { MidiMessage } from '../Launchpad'
 
+import Component from '../Component'
+
 import type MidiComponent, { MidiComponentBuilder } from '../Controls/MidiComponent'
 
 export type ModifierState = {
@@ -13,8 +15,6 @@ export type ModifierState = {
 export interface Modifier {
   getState (): ModifierState
 }
-
-const Component = require('../Component').default // TODO: I don't even ...
 
 export default class ModifierSidebar extends Component implements Modifier {
   shift: MidiComponent

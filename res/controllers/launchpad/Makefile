@@ -19,7 +19,7 @@ targets := $(shell jq -r '.controllers | join (" ")' package.json)
 
 define targetScriptRules
 $(call script,$(1)) : $(shell ls packages/**/*.js)
-	BABEL_ENV=$(BABEL_ENV) ./scripts/compile-scripts.js $(1) "$$@"
+	./scripts/compile-scripts.js $(1) "$$@"
 endef
 
 define targetMappingRules

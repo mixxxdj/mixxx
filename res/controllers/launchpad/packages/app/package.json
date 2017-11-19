@@ -6,16 +6,9 @@
   "author": "Midiparse",
   "license": "MIT",
   "dependencies": {
-    "eventemitter3": "^2.0.2",
-    "json-stringify-safe": "^5.0.1",
-    "lodash.assign": "^4.2.0",
-    "lodash.findindex": "^4.6.0",
-    "lodash.flatmap": "^4.5.0",
-    "lodash.isequal": "^4.5.0",
-    "lodash.mapkeys": "^4.6.0",
-    "lodash.pick": "^4.4.0",
-    "lodash.range": "^3.2.0",
-    "lodash.startswith": "^4.2.1"
+    "eventemitter3": "~2.0.2",
+    "json-stringify-safe": "~5.0.1",
+    "lodash-es": "~4.17.4"
   },
   "peerDependencies": {
     "@mixxx-launchpad/mk-specs": "*"

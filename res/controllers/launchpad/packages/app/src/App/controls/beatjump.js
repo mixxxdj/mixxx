@@ -1,5 +1,5 @@
 /* @flow */
-import flatMap from 'lodash.flatmap'
+import { flatMap } from 'lodash-es'
 
 import { Colors } from '../../Launchpad'
 

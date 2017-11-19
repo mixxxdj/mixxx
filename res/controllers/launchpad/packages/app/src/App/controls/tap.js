@@ -1,7 +1,7 @@
 /* @flow */
 import { Colors } from '../../Launchpad'
 
-import type { ControlMessage, ChannelControl } from '../../Mixxx'
+import type { ChannelControl, ControlMessage } from '../../Mixxx'
 import Bpm from '../../App/Bpm'
 
 import { modes } from '../ModifierSidebar'

@@ -1,9 +1,5 @@
 /* @flow */
-import flatMap from 'lodash.flatmap'
-import assign from 'lodash.assign'
-import isEqual from 'lodash.isequal'
-import pick from 'lodash.pick'
-import findIndex from 'lodash.findindex'
+import { assign, isEqual, findIndex, flatMap, pick } from 'lodash-es'
 
 import Grande from './presets/Grande'
 import Juggler from './presets/Juggler'
@@ -15,7 +11,7 @@ import Component from '../Component'
 import type { MidiMessage } from '../Launchpad'
 import { Buttons, Colors } from '../Launchpad'
 
-import { retainAttackMode, modes } from './ModifierSidebar'
+import { modes, retainAttackMode } from './ModifierSidebar'
 import type { Preset } from './Preset'
 import type { Modifier } from './ModifierSidebar'
 import type { ControlComponentBuilder } from '../Controls/ControlComponent'
@@ -217,9 +213,9 @@ const presets = {
 }
 
 const cycled = {
-  'grande': flatMap(pick(presets, ['grande', 'tall', 'short']), (x) => x),
-  'tall': flatMap(pick(presets, ['tall', 'short']), (x) => x),
-  'short': flatMap(pick(presets, ['short']), (x) => x)
+  'grande': [...presets.grande, ...presets.tall, ...presets.short],
+  'tall': [...presets.tall, ...presets.short],
+  'short': presets.short
 }
 
 const reorganize = (current: Block[], selectedChannels: number[]): Diff => {
@@ -289,12 +285,14 @@ const reorganize = (current: Block[], selectedChannels: number[]): Diff => {
   }, [[], next])
 }
 
+const posMod = (x, n) => ((x % n) + n) % n
+
 const cycle = (channel: number, current: Block[], dir: 1 | -1): Diff => {
   const matched = findIndex(current, (block) => block.channel === channel)
   if (matched === -1) {
     return [[], []]
   }
-  const nextIndex = (current[matched].index + dir) % cycled[current[matched].size].length
+  const nextIndex = posMod((current[matched].index + dir), cycled[current[matched].size].length)
   if (nextIndex === current[matched].index) {
     return [[], []]
   }

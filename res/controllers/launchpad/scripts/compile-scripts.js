@@ -2,9 +2,13 @@
 
 var prify = require('es6-promisify')
 var path = require('path')
-var browserify = require('browserify')
-var createWriteStream = require('fs').createWriteStream
 var mkdirp = prify(require('mkdirp'))
+
+var rollup = require('rollup')
+var nodeResolve = require('rollup-plugin-node-resolve')
+var babel = require('rollup-plugin-babel')
+var commonjs = require('rollup-plugin-commonjs')
+var json = require('rollup-plugin-json')
 
 if (process.argv.length !== 4) {
   throw Error('Usage: target outFile')
@@ -17,12 +21,34 @@ var global = tgtPkg.controller.global
 
 mkdirp(path.dirname(path.resolve(process.argv[3])))
   .then(function () {
-    var output = createWriteStream(path.resolve(process.argv[3]))
-
-    browserify(entry, {
-      standalone: global,
-      paths: [ path.resolve('packages', tgt, 'node_modules') ]
+    return rollup.rollup({
+      entry,
+      plugins: [
+        nodeResolve({
+          extensions: ['.js', '.json'],
+          main: true,
+          modulesOnly: false, // required for rollup-plugin-commonjs
+          // for valid values see https://github.com/substack/node-resolve
+          customResolveOptions: {
+            paths: [ path.resolve('packages', tgt, 'node_modules') ]
+          }
+        }),
+        json(),
+        babel({
+          exclude: 'node_modules/**'
+        }),
+        commonjs()
+      ]
     })
-      .transform('babelify', { global: true })
-      .bundle().pipe(output)
+  })
+  .then(function (bundle) {
+    return bundle.write({
+      format: 'iife',
+      moduleName: global,
+      dest: path.resolve(process.argv[3])
+    })
+  })
+  .catch(function (err) {
+    console.error(err)
+    process.exit(1)
   })

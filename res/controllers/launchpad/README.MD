@@ -406,7 +406,7 @@ copied the Mixxx's controller folder.
 ```
 make install
 ```
-does this for you on macOS.
+does this for you on macOS and Linux.
 
 ### Known Issues
 

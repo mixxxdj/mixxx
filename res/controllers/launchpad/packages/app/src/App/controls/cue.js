@@ -1,6 +1,6 @@
 /* @flow */
 
-import type { ControlMessage, ChannelControl } from '../../Mixxx'
+import type { ChannelControl, ControlMessage } from '../../Mixxx'
 import { Colors } from '../../Launchpad'
 
 import { modes, retainAttackMode } from '../ModifierSidebar'

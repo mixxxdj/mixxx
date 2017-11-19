@@ -1,7 +1,7 @@
 /* @flow */
 import { midi } from '../Mixxx/globals'
 
-import assign from 'lodash.assign'
+import { assign } from 'lodash-es'
 
 import type { LaunchpadMidiButtonDef } from '@mixxx-launchpad/mk-specs/buttons'
 import type { LaunchpadMidiButtonColor } from '@mixxx-launchpad/mk-specs/colors'

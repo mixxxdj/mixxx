@@ -1,6 +1,6 @@
 /* @flow */
 import { Colors } from '../../Launchpad'
-import flatMap from 'lodash.flatmap'
+import { flatMap } from 'lodash-es'
 
 import { modes, retainAttackMode } from '../ModifierSidebar'
 import type { Modifier } from '../ModifierSidebar'

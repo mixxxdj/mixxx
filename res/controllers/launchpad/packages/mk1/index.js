@@ -1,3 +1,4 @@
-'use strict'
-module.exports = require('@mixxx-launchpad/app')
-  .create(require('./package.json').controller.global, {})
+import { create } from '@mixxx-launchpad/app'
+import pkg from './package.json'
+
+export default create(pkg.controller.global, {})

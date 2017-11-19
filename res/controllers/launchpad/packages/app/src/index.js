@@ -2,7 +2,7 @@
 import './Mixxx/console-polyfill'
 
 import { MidiBus } from './Launchpad'
-import { makeTimer, ControlBus } from './Mixxx'
+import { ControlBus, makeTimer } from './Mixxx'
 import type Screen from './App/Screen'
 import { makeScreen } from './App/Screen'
 import Component from './Component'

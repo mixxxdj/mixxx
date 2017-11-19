@@ -2,7 +2,7 @@
 import { Colors } from '../../Launchpad'
 import type { MidiMessage } from '../../Launchpad'
 
-import type { ControlMessage, ChannelControl } from '../../Mixxx'
+import type { ChannelControl, ControlMessage } from '../../Mixxx'
 
 import { modes } from '../ModifierSidebar'
 import type { Modifier } from '../ModifierSidebar'

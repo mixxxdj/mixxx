@@ -8,6 +8,7 @@ plugins:
   - import
   - flowtype
 rules:
+  # sort-imports: error
   import/no-duplicates: error
   no-duplicate-imports: off # see https://github.com/babel/eslint-plugin-babel/issues/59
   flowtype/boolean-style:

@@ -1,5 +1,5 @@
 /* @flow */
-import range from 'lodash.range'
+import { range } from 'lodash-es'
 
 import { Colors } from '../../Launchpad'
 
@@ -12,17 +12,17 @@ export default (n: number, d: number, s: number = 0) => (gridPosition: [number, 
     modes(modifier.getState(),
       () => {
         if (value) {
-          deck.hotcues[i + s].activate.setValue(1)
+          deck.hotcues[1 + i + s].activate.setValue(1)
         } else {
-          deck.hotcues[i + s].activate.setValue(0)
+          deck.hotcues[1 + i + s].activate.setValue(0)
         }
       },
       () => {
         if (value) {
           if (bindings[`${i}.enabled`].getValue()) {
-            deck.hotcues[i + s].clear.setValue(1)
+            deck.hotcues[1 + i + s].clear.setValue(1)
           } else {
-            deck.hotcues[i + s].set.setValue(1)
+            deck.hotcues[1 + i + s].set.setValue(1)
           }
         }
       })
