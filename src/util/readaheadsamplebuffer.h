@@ -75,7 +75,7 @@ class ReadAheadSampleBuffer final {
     // length is limited by writableLength().
     //
     // The returned pointer is valid until the next writeToTail() operation.
-    SampleBuffer::WritableSlice writeToTail(SINT writeLength);
+    SampleBuffer::WritableSlice writeToTail(SINT maxWriteLength);
 
     // The number of readable samples.
     SINT readableLength() const {
@@ -89,7 +89,7 @@ class ReadAheadSampleBuffer final {
     // readableLength().
     //
     // The returned pointer is valid until the next writeToTail() operation.
-    SampleBuffer::ReadableSlice readFromHead(SINT readLength);
+    SampleBuffer::ReadableSlice readFromHead(SINT maxReadLength);
 
     // Consumes buffered samples from the tail of the buffer
     //
@@ -98,7 +98,7 @@ class ReadAheadSampleBuffer final {
     // readableLength().
     //
     // The returned pointer is valid until the next writeToTail() operation.
-    SampleBuffer::ReadableSlice readFromTail(SINT readLength);
+    SampleBuffer::ReadableSlice readFromTail(SINT maxReadLength);
 
   private:
     ReadAheadSampleBuffer(
