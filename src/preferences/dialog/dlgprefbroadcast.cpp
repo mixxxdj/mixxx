@@ -538,9 +538,8 @@ void DlgPrefBroadcast::btnDisconnectAllClicked() {
             QMessageBox::Yes, QMessageBox::No);
 
     if(response == QMessageBox::Yes) {
-        for(BroadcastProfilePtr profile : m_pBroadcastSettings->profiles()) {
-            profile->setEnabled(false);
-        }
+        m_pBroadcastEnabled->set(false);
+        broadcastEnabledChanged(0.0);
     }
 }
 
