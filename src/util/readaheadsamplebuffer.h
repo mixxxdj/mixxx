@@ -61,6 +61,9 @@ class ReadAheadSampleBuffer final {
     // The number of samples that could be written instantly without
     // internal reorganization, i.e. the remaining capacity of the
     // buffer.
+    // Only the space between the end of the slice occupied by
+    // written (= readable) samples and the end of the allocated
+    // buffer is available for writing!
     SINT writableLength() const {
         return capacity() - m_readableRange.end();
     }
