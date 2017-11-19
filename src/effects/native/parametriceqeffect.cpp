@@ -21,7 +21,9 @@ EffectManifest ParametricEQEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-        "An gentle 2-band parametric equalizer based on biquad filters"));
+        "An gentle 2-band parametric equalizer based on biquad filters.\n"
+        "It is designed as a complement to the steep mixing EQs in the Effect rack\n"
+        "to improve the sound of the track."));
     manifest.setEffectRampsFromDry(true);
     manifest.setIsMasterEQ(true);
 
