@@ -107,10 +107,10 @@ WritableSampleFrames AudioSource::clampWritableSampleFrames(
             IndexRange::between(sampleFrames.frameIndexRange().start(), readableFrameIndexRange.end());
     const SINT minSampleBufferCapacity =
             frames2samples(writableFrameIndexRange.length());
-    VERIFY_OR_DEBUG_ASSERT(sampleFrames.sampleBuffer().size() >= minSampleBufferCapacity) {
+    VERIFY_OR_DEBUG_ASSERT(sampleFrames.writableSize() >= minSampleBufferCapacity) {
         kLogger.critical()
                 << "Capacity of output buffer is too small"
-                << sampleFrames.sampleBuffer().size()
+                << sampleFrames.writableSize()
                 << "<"
                 << minSampleBufferCapacity
                 << "to store all readable sample frames"
@@ -119,7 +119,7 @@ WritableSampleFrames AudioSource::clampWritableSampleFrames(
                 << writableFrameIndexRange;
         writableFrameIndexRange =
                 writableFrameIndexRange.splitAndShrinkFront(
-                        samples2frames(sampleFrames.sampleBuffer().size()));
+                        samples2frames(sampleFrames.writableSize()));
         kLogger.warning()
                 << "Reduced writable sample frames"
                 << writableFrameIndexRange;
@@ -131,7 +131,7 @@ WritableSampleFrames AudioSource::clampWritableSampleFrames(
     return WritableSampleFrames(
             writableFrameIndexRange,
             SampleBuffer::WritableSlice(
-                    sampleFrames.sampleBuffer().data(frames2samples(writableFrameOffset)),
+                    sampleFrames.writableData(frames2samples(writableFrameOffset)),
                     frames2samples(writableFrameIndexRange.length())));
 }
 

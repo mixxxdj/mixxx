@@ -126,7 +126,7 @@ ReadableSampleFrames SoundSourceWV::readSampleFramesClamped(
 
     static_assert(sizeof(CSAMPLE) == sizeof(int32_t),
             "CSAMPLE and int32_t must have the same size");
-    CSAMPLE* pOutputBuffer = writableSampleFrames.sampleBuffer().data();
+    CSAMPLE* pOutputBuffer = writableSampleFrames.writableData();
     SINT unpackCount = WavpackUnpackSamples(m_wpc,
             reinterpret_cast<int32_t*>(pOutputBuffer), numberOfFramesTotal);
     DEBUG_ASSERT(unpackCount >= 0);
@@ -145,7 +145,7 @@ ReadableSampleFrames SoundSourceWV::readSampleFramesClamped(
     return ReadableSampleFrames(
             resultRange,
             SampleBuffer::ReadableSlice(
-                    writableSampleFrames.sampleBuffer().data(),
+                    writableSampleFrames.writableData(),
                     frames2samples(unpackCount)));
 }
 

@@ -143,7 +143,7 @@ ReadableSampleFrames SoundSourceOggVorbis::readSampleFramesClamped(
 
     const SINT numberOfFramesTotal = writableSampleFrames.frameIndexRange().length();
 
-    CSAMPLE* pSampleBuffer = writableSampleFrames.sampleBuffer().data();
+    CSAMPLE* pSampleBuffer = writableSampleFrames.writableData();
     SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
         float** pcmChannels;
@@ -190,8 +190,8 @@ ReadableSampleFrames SoundSourceOggVorbis::readSampleFramesClamped(
     return ReadableSampleFrames(
             IndexRange::forward(firstFrameIndex, numberOfFrames),
             SampleBuffer::ReadableSlice(
-                    writableSampleFrames.sampleBuffer().data(),
-                    std::min(writableSampleFrames.sampleBuffer().size(), frames2samples(numberOfFrames))));
+                    writableSampleFrames.writableData(),
+                    std::min(writableSampleFrames.writableSize(), frames2samples(numberOfFrames))));
 }
 
 

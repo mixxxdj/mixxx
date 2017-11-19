@@ -266,9 +266,9 @@ ReadableSampleFrames SoundSourceFLAC::readSampleFramesClamped(
         const SampleBuffer::ReadableSlice readableSlice(
                 m_sampleBuffer.readLifo(numberOfSamplesRead));
         DEBUG_ASSERT(readableSlice.size() == numberOfSamplesRead);
-        if (writableSampleFrames.sampleBuffer().data()) {
+        if (writableSampleFrames.writableData()) {
             SampleUtil::copy(
-                    writableSampleFrames.sampleBuffer().data(outputSampleOffset),
+                    writableSampleFrames.writableData(outputSampleOffset),
                     readableSlice.data(),
                     readableSlice.size());
             outputSampleOffset += numberOfSamplesRead;
@@ -283,8 +283,8 @@ ReadableSampleFrames SoundSourceFLAC::readSampleFramesClamped(
     return ReadableSampleFrames(
             IndexRange::forward(firstFrameIndex, samples2frames(numberOfSamples)),
             SampleBuffer::ReadableSlice(
-                    writableSampleFrames.sampleBuffer().data(),
-                    std::min(writableSampleFrames.sampleBuffer().size(), numberOfSamples)));
+                    writableSampleFrames.writableData(),
+                    std::min(writableSampleFrames.writableSize(), numberOfSamples)));
 }
 
 // flac callback methods

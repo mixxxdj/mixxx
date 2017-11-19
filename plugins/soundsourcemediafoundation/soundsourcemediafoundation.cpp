@@ -263,7 +263,7 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
 
     const SINT numberOfFramesTotal = writableSampleFrames.frameIndexRange().length();
 
-    CSAMPLE* pSampleBuffer = writableSampleFrames.sampleBuffer().data();
+    CSAMPLE* pSampleBuffer = writableSampleFrames.writableData();
     SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (numberOfFramesRemaining > 0) {
         SampleBuffer::ReadableSlice readableSlice(
@@ -465,8 +465,8 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
     return ReadableSampleFrames(
             IndexRange::forward(firstFrameIndex, numberOfFrames),
             SampleBuffer::ReadableSlice(
-                    writableSampleFrames.sampleBuffer().data(),
-                    std::min(writableSampleFrames.sampleBuffer().size(), frames2samples(numberOfFrames))));
+                    writableSampleFrames.writableData(),
+                    std::min(writableSampleFrames.writableSize(), frames2samples(numberOfFrames))));
 }
 
 //-------------------------------------------------------------------

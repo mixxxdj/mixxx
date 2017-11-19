@@ -89,7 +89,7 @@ mixxx::IndexRange CachingReaderChunk::readBufferedSampleFrames(
         const SINT sampleCount = frames2samples(copyableFrameIndexRange.length());
         SampleUtil::copy(
                 sampleBuffer + dstSampleOffset,
-                m_bufferedSampleFrames.sampleBuffer().data(srcSampleOffset),
+                m_bufferedSampleFrames.readableData(srcSampleOffset),
                 sampleCount);
     }
     return copyableFrameIndexRange;
@@ -108,7 +108,7 @@ mixxx::IndexRange CachingReaderChunk::readBufferedSampleFramesReverse(
         const SINT sampleCount = frames2samples(copyableFrameIndexRange.length());
         SampleUtil::copyReverse(
                 reverseSampleBuffer - dstSampleOffset - sampleCount,
-                m_bufferedSampleFrames.sampleBuffer().data(srcSampleOffset),
+                m_bufferedSampleFrames.readableData(srcSampleOffset),
                 sampleCount);
     }
     return copyableFrameIndexRange;

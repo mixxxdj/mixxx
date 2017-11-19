@@ -982,7 +982,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
     DEBUG_ASSERT(m_currentMixxxFrameIndex == firstFrameIndex);
     DEBUG_ASSERT(m_SCache.size() > 0);
     getBytesFromCache(
-            writableSampleFrames.sampleBuffer().data(),
+            writableSampleFrames.writableData(),
             m_currentMixxxFrameIndex, numberOfFrames);
     m_currentMixxxFrameIndex += numberOfFrames;
     m_bIsSeeked = false;
@@ -990,8 +990,8 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
     return ReadableSampleFrames(
             IndexRange::forward(firstFrameIndex, numberOfFrames),
             SampleBuffer::ReadableSlice(
-                    writableSampleFrames.sampleBuffer().data(),
-                    std::min(writableSampleFrames.sampleBuffer().size(), frames2samples(numberOfFrames))));
+                    writableSampleFrames.writableData(),
+                    std::min(writableSampleFrames.writableSize(), frames2samples(numberOfFrames))));
 }
 
 } // namespace mixxx

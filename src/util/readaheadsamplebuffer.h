@@ -100,12 +100,6 @@ class ReadAheadSampleBuffer final {
             const ReadAheadSampleBuffer& that,
             SINT capacity);
 
-    void adjustReadableRange() {
-        if (m_readableRange.empty()) {
-            m_readableRange = IndexRange::between(0, 0);
-        }
-    }
-
     SampleBuffer m_sampleBuffer;
     IndexRange m_readableRange;
 };

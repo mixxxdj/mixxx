@@ -50,11 +50,11 @@ ReadableSampleFrames LegacyAudioSourceAdapter::readSampleFramesClamped(
         if (writableSampleFrames.frameIndexRange().containsIndex(seekFrameIndex)) {
             const auto remainingFrameIndexRange =
                     IndexRange::between(seekFrameIndex, writableSampleFrames.frameIndexRange().end());
-            if (writableSampleFrames.sampleBuffer().data()) {
+            if (writableSampleFrames.writableData()) {
                 writableSampleFrames = WritableSampleFrames(
                         remainingFrameIndexRange,
                         SampleBuffer::WritableSlice(
-                                writableSampleFrames.sampleBuffer().data(m_pOwner->frames2samples(unreadableFrameOffset)),
+                                writableSampleFrames.writableData(m_pOwner->frames2samples(unreadableFrameOffset)),
                                 m_pOwner->frames2samples(remainingFrameIndexRange.length())));
             } else {
                 writableSampleFrames = WritableSampleFrames(remainingFrameIndexRange);
@@ -67,13 +67,13 @@ ReadableSampleFrames LegacyAudioSourceAdapter::readSampleFramesClamped(
     const SINT numFramesRead =
             m_pImpl->readSampleFrames(
                     writableSampleFrames.frameIndexRange().length(),
-                    writableSampleFrames.sampleBuffer().data());
+                    writableSampleFrames.writableData());
     const auto resultFrameIndexRange =
             IndexRange::forward(writableSampleFrames.frameIndexRange().start(), numFramesRead);
     return ReadableSampleFrames(
             resultFrameIndexRange,
             SampleBuffer::ReadableSlice(
-                    writableSampleFrames.sampleBuffer().data(),
+                    writableSampleFrames.writableData(),
                     m_pOwner->frames2samples(resultFrameIndexRange.length())));
 }
 

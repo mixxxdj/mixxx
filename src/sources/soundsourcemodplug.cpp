@@ -183,15 +183,15 @@ ReadableSampleFrames SoundSourceModPlug::readSampleFramesClamped(
     const SINT readOffset = frames2samples(writableSampleFrames.frameIndexRange().start());
     const SINT readSamples = frames2samples(writableSampleFrames.frameIndexRange().length());
     SampleUtil::convertS16ToFloat32(
-            writableSampleFrames.sampleBuffer().data(),
+            writableSampleFrames.writableData(),
             &m_sampleBuf[readOffset],
             readSamples);
 
     return ReadableSampleFrames(
             writableSampleFrames.frameIndexRange(),
             SampleBuffer::ReadableSlice(
-                    writableSampleFrames.sampleBuffer().data(),
-                    writableSampleFrames.sampleBuffer().size()));
+                    writableSampleFrames.writableData(),
+                    writableSampleFrames.writableSize()));
 }
 
 QString SoundSourceProviderModPlug::getName() const {

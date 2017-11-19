@@ -445,9 +445,9 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
             // Consume previously decoded sample data
             const SampleBuffer::ReadableSlice readableSlice(
                     m_sampleBuffer.readLifo(numberOfSamplesRemaining));
-            if (writableSampleFrames.sampleBuffer().data()) {
+            if (writableSampleFrames.writableData()) {
                 SampleUtil::copy(
-                        writableSampleFrames.sampleBuffer().data(outputSampleOffset),
+                        writableSampleFrames.writableData(outputSampleOffset),
                         readableSlice.data(),
                         readableSlice.size());
                 outputSampleOffset += readableSlice.size();
@@ -496,10 +496,10 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
         CSAMPLE* pDecodeBuffer; // in/out parameter
         SINT decodeBufferCapacity;
         const SINT decodeBufferCapacityMin = frames2samples(m_framesPerSampleBlock);
-        if (writableSampleFrames.sampleBuffer().data() &&
+        if (writableSampleFrames.writableData() &&
                 (decodeBufferCapacityMin <= numberOfSamplesRemaining)) {
             // Decode samples directly into the output buffer
-            pDecodeBuffer = writableSampleFrames.sampleBuffer().data(outputSampleOffset);
+            pDecodeBuffer = writableSampleFrames.writableData(outputSampleOffset);
             decodeBufferCapacity = numberOfSamplesRemaining;
         } else {
             // Decode next sample block into temporary buffer
@@ -553,8 +553,8 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
         const SINT numberOfSamplesDecoded = decFrameInfo.samples;
         DEBUG_ASSERT(numberOfSamplesDecoded <= decodeBufferCapacity);
         SINT numberOfSamplesRead;
-        if (writableSampleFrames.sampleBuffer().data() &&
-                (pDecodeBuffer == writableSampleFrames.sampleBuffer().data(outputSampleOffset))) {
+        if (writableSampleFrames.writableData() &&
+                (pDecodeBuffer == writableSampleFrames.writableData(outputSampleOffset))) {
             // Decoded in-place
             DEBUG_ASSERT(numberOfSamplesDecoded <= numberOfSamplesRemaining);
             numberOfSamplesRead = numberOfSamplesDecoded;
@@ -571,9 +571,9 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
             const SampleBuffer::ReadableSlice readableSlice(
                     m_sampleBuffer.readLifo(numberOfSamplesRead));
             DEBUG_ASSERT(readableSlice.size() == numberOfSamplesRead);
-            if (writableSampleFrames.sampleBuffer().data()) {
+            if (writableSampleFrames.writableData()) {
                 SampleUtil::copy(
-                        writableSampleFrames.sampleBuffer().data(outputSampleOffset),
+                        writableSampleFrames.writableData(outputSampleOffset),
                         readableSlice.data(),
                         readableSlice.size());
                 outputSampleOffset += numberOfSamplesRead;
@@ -593,8 +593,8 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
     return ReadableSampleFrames(
             IndexRange::forward(firstFrameIndex, samples2frames(numberOfSamples)),
             SampleBuffer::ReadableSlice(
-                    writableSampleFrames.sampleBuffer().data(),
-                    std::min(writableSampleFrames.sampleBuffer().size(), numberOfSamples)));
+                    writableSampleFrames.writableData(),
+                    std::min(writableSampleFrames.writableSize(), numberOfSamples)));
 }
 
 QString SoundSourceProviderM4A::getName() const {

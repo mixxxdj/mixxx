@@ -107,7 +107,7 @@ ReadableSampleFrames SoundSourceSndFile::readSampleFramesClamped(
     const SINT numberOfFramesTotal = writableSampleFrames.frameIndexRange().length();
 
     const sf_count_t readCount =
-            sf_readf_float(m_pSndFile, writableSampleFrames.sampleBuffer().data(), numberOfFramesTotal);
+            sf_readf_float(m_pSndFile, writableSampleFrames.writableData(), numberOfFramesTotal);
     if (readCount >= 0) {
         DEBUG_ASSERT(readCount <= numberOfFramesTotal);
         const auto resultRange = IndexRange::forward(m_curFrameIndex, readCount);
@@ -115,7 +115,7 @@ ReadableSampleFrames SoundSourceSndFile::readSampleFramesClamped(
         return ReadableSampleFrames(
                 resultRange,
                 SampleBuffer::ReadableSlice(
-                        writableSampleFrames.sampleBuffer().data(),
+                        writableSampleFrames.writableData(),
                         frames2samples(readCount)));
     } else {
         kLogger.warning() << "Failed to read from libsnd file:"

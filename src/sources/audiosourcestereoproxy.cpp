@@ -63,7 +63,7 @@ ReadableSampleFrames AudioSourceStereoProxy::readSampleFramesClamped(
     // Check location and capacity of temporary buffer
     VERIFY_OR_DEBUG_ASSERT(isDisjunct(
             m_tempOutputBuffer,
-            SampleBuffer::WritableSlice(sampleFrames.sampleBuffer()))) {
+            SampleBuffer::WritableSlice(sampleFrames.writableSlice()))) {
         kLogger.warning()
                 << "Overlap between output and temporary sample buffer detected";
         return ReadableSampleFrames();
@@ -97,17 +97,17 @@ ReadableSampleFrames AudioSourceStereoProxy::readSampleFramesClamped(
     const SINT frameOffset =
             readableSampleFrames.frameIndexRange().start() - sampleFrames.frameIndexRange().start();
     SampleBuffer::WritableSlice writableSlice(
-            sampleFrames.sampleBuffer().data(frames2samples(frameOffset)),
+            sampleFrames.writableData(frames2samples(frameOffset)),
             frames2samples(readableSampleFrames.frameIndexRange().length()));
     if (m_pAudioSource->channelCount() == 1) {
         SampleUtil::copyMonoToDualMono(
                 writableSlice.data(),
-                readableSampleFrames.sampleBuffer().data(),
+                readableSampleFrames.readableData(),
                 readableSampleFrames.frameIndexRange().length());
     } else {
         SampleUtil::copyMultiToStereo(
                 writableSlice.data(),
-                readableSampleFrames.sampleBuffer().data(),
+                readableSampleFrames.readableData(),
                 readableSampleFrames.frameIndexRange().length(),
                 m_pAudioSource->channelCount());
     }

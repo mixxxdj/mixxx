@@ -1,5 +1,4 @@
-#ifndef MIXXX_SOUNDSOURCE_H
-#define MIXXX_SOUNDSOURCE_H
+#pragma once
 
 #include <QDebug>
 
@@ -7,6 +6,7 @@
 #include "sources/metadatasourcetaglib.h"
 
 #include "util/assert.h"
+
 
 namespace mixxx {
 
@@ -43,5 +43,3 @@ SoundSourcePointer newSoundSourceFromUrl(QUrl url) {
 }
 
 } //namespace mixxx
-
-#endif // MIXXX_SOUNDSOURCE_H

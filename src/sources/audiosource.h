@@ -1,5 +1,4 @@
-#ifndef MIXXX_AUDIOSOURCE_H
-#define MIXXX_AUDIOSOURCE_H
+#pragma once
 
 #include "sources/urlresource.h"
 
@@ -29,14 +28,18 @@ class SampleFrames {
 };
 
 
-class ReadableSampleFrames: public SampleFrames {
+// Associates a range of frame indices with the corresponding
+// readable sample data as a slice in some sample buffer. The
+// memory is owned by the external sample buffer that must not
+// be modified or destroyed while reading sample data!
+class ReadableSampleFrames final: public SampleFrames {
   public:
     ReadableSampleFrames() = default;
     explicit ReadableSampleFrames(
             IndexRange frameIndexRange,
-            SampleBuffer::ReadableSlice sampleBuffer = SampleBuffer::ReadableSlice())
+            SampleBuffer::ReadableSlice readableSlice = SampleBuffer::ReadableSlice())
           : SampleFrames(frameIndexRange),
-            m_sampleBuffer(sampleBuffer) {
+            m_readableSlice(readableSlice) {
     }
     /*non-virtual*/ ~ReadableSampleFrames() = default;
 
@@ -44,23 +47,35 @@ class ReadableSampleFrames: public SampleFrames {
     // frame indices and starts with the first frame. An
     // empty slice indicates that no sample data is available
     // for reading.
-    SampleBuffer::ReadableSlice sampleBuffer() const {
-        return m_sampleBuffer;
+    SampleBuffer::ReadableSlice readableSlice() const {
+        return m_readableSlice;
+    }
+
+    SINT readableSize() const {
+        return m_readableSlice.size();
+    }
+
+    const CSAMPLE* readableData(SINT offset = 0) const {
+        return m_readableSlice.data(offset);
     }
 
   private:
-    SampleBuffer::ReadableSlice m_sampleBuffer;
+    SampleBuffer::ReadableSlice m_readableSlice;
 };
 
 
-class WritableSampleFrames: public SampleFrames {
+// Associates a range of frame indices with the corresponding
+// writable sample data as a slice in some sample buffer. The
+// memory is owned by the external sample buffer that must not
+// be modified or destroyed while writing sample data!
+class WritableSampleFrames final: public SampleFrames {
   public:
     WritableSampleFrames() = default;
     explicit WritableSampleFrames(
             IndexRange frameIndexRange,
-            SampleBuffer::WritableSlice sampleBuffer = SampleBuffer::WritableSlice())
+            SampleBuffer::WritableSlice writableSlice = SampleBuffer::WritableSlice())
           : SampleFrames(frameIndexRange),
-            m_sampleBuffer(sampleBuffer) {
+            m_writableSlice(writableSlice) {
     }
     /*non-virtual*/ ~WritableSampleFrames() = default;
 
@@ -68,12 +83,20 @@ class WritableSampleFrames: public SampleFrames {
     // frame indices and starts with the first frame. An
     // empty slice indicates that no sample data must
     // be written.
-    SampleBuffer::WritableSlice sampleBuffer() const {
-        return m_sampleBuffer;
+    SampleBuffer::WritableSlice writableSlice() const {
+        return m_writableSlice;
+    }
+
+    SINT writableSize() const {
+        return m_writableSlice.size();
+    }
+
+    CSAMPLE* writableData(SINT offset = 0) const {
+        return m_writableSlice.data(offset);
     }
 
   private:
-    SampleBuffer::WritableSlice m_sampleBuffer;
+    SampleBuffer::WritableSlice m_writableSlice;
 };
 
 
@@ -366,6 +389,3 @@ QDebug operator<<(QDebug dbg, AudioSource::OpenResult openResult) {
 }
 
 } // namespace mixxx
-
-
-#endif // MIXXX_AUDIOSOURCE_H
