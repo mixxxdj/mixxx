@@ -109,6 +109,7 @@ class SoundDevicePortAudio : public SoundDevice {
     int m_invalidTimeInfoCount;
     PerformanceTimer m_clkRefTimer;
     PaTime m_lastCallbackEntrytoDacSecs;
+    UserSettingsPointer m_config;
 
 };
 

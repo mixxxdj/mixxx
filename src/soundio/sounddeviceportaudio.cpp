@@ -37,8 +37,10 @@
 #include "util/timer.h"
 #include "util/trace.h"
 #include "util/math.h"
+#include "util/realtimehelper.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "waveform/visualplayposition.h"
+
 
 // static
 volatile int SoundDevicePortAudio::m_underflowHappened = 0;
@@ -106,7 +108,8 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
           m_framesSinceAudioLatencyUsageUpdate(0),
           m_syncBuffers(2),
           m_invalidTimeInfoCount(0),
-          m_lastCallbackEntrytoDacSecs(0) {
+          m_lastCallbackEntrytoDacSecs(0),
+          m_config(config) {
     // Setting parent class members:
     m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name;
     m_dSampleRate = deviceInfo->defaultSampleRate;
@@ -858,6 +861,26 @@ int SoundDevicePortAudio::callbackProcessClkRef(
     // in Linux userland, for example, this will have no effect.
     if (!m_bSetThreadPriority) {
         QThread::currentThread()->setPriority(QThread::TimeCriticalPriority);
+        // let's try to increase the thread priority
+        // the system might deny the realtime request, so we first give us some higher nice priority
+        // first, which is better then nothing
+        //m_config->get(ConfigKey("[Master]", "windowSize"), currentLatencyMSec);
+        const QString s_0("0");
+        const QString s_15("15");
+        const QString s_m10("-10");
+        quint64 rrmax = m_config->getValue(ConfigKey("[Master]","realtime_window"), s_0).toULongLong();
+        quint32 rrprio = m_config->getValue(ConfigKey("[Master]","realtime_prio"), s_15).toUInt();
+        qint32 prio = m_config->getValue(ConfigKey("[Master]","priority"), s_m10).toInt();
+        bool rrenable = m_config->getValue<bool>(ConfigKey("[Master]","realtime_enabled"), false);
+        if (mixxx::RealtimeHelper::requestHighPriority(0, prio)) {
+            qDebug() << "Engine: successfully requested high priority " << prio;
+        }
+        // we only try to get realtime if enabled
+        if (rrenable) {
+            if (mixxx::RealtimeHelper::requestRealtime(0, rrprio, rrmax)) {
+                qDebug() << "Engine: successfully requested realtime priority prio: " << rrprio << " rrmax: " << rrmax;
+            }
+        }
         m_bSetThreadPriority = true;
 
 
