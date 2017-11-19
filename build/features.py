@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import os
-import util
-from mixxx import Feature
+from . import util
+from .mixxx import Feature
 import SCons.Script as SCons
-import depends
+from . import depends
 
 class OpenGLES(Feature):
     def description(self):
@@ -335,7 +335,7 @@ class VinylControl(Feature):
                                                      'vinylcontrol', 0)
         # Existence of the macappstore option forces vinylcontrol off due to
         # licensing issues.
-        if build.flags.has_key('macappstore') and int(build.flags['macappstore']):
+        if 'macappstore' in build.flags and int(build.flags['macappstore']):
             return False
         if int(build.flags['vinylcontrol']):
             return True
