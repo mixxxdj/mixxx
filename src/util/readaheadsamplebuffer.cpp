@@ -53,8 +53,8 @@ void ReadAheadSampleBuffer::clear() {
 void ReadAheadSampleBuffer::adjustCapacity(SINT capacity) {
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 
-    SINT newCapacity = std::min(readableLength(), capacity);
-    if (newCapacity != capacity) {
+    SINT newCapacity = math_max(readableLength(), capacity);
+    if (newCapacity != this->capacity()) {
         ReadAheadSampleBuffer tmp(*this, newCapacity);
         swap(tmp);
     }
@@ -62,7 +62,7 @@ void ReadAheadSampleBuffer::adjustCapacity(SINT capacity) {
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 }
 
-SampleBuffer::WritableSlice ReadAheadSampleBuffer::write(SINT writeLength) {
+SampleBuffer::WritableSlice ReadAheadSampleBuffer::writeToTail(SINT writeLength) {
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 
     const SINT tailLength = math_min(writeLength, writableLength());
@@ -74,7 +74,7 @@ SampleBuffer::WritableSlice ReadAheadSampleBuffer::write(SINT writeLength) {
     return tailSlice;
 }
 
-SampleBuffer::ReadableSlice ReadAheadSampleBuffer::readFifo(SINT readLength) {
+SampleBuffer::ReadableSlice ReadAheadSampleBuffer::readFromTail(SINT readLength) {
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 
     const SINT tailLength = math_min(readLength, readableLength());
@@ -91,7 +91,7 @@ SampleBuffer::ReadableSlice ReadAheadSampleBuffer::readFifo(SINT readLength) {
     return tailSlice;
 }
 
-SampleBuffer::ReadableSlice ReadAheadSampleBuffer::readLifo(SINT readLength) {
+SampleBuffer::ReadableSlice ReadAheadSampleBuffer::readFromHead(SINT readLength) {
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 
     const SINT headLength = math_min(readLength, readableLength());

@@ -444,7 +444,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
         if (!m_sampleBuffer.empty()) {
             // Consume previously decoded sample data
             const SampleBuffer::ReadableSlice readableSlice(
-                    m_sampleBuffer.readLifo(numberOfSamplesRemaining));
+                    m_sampleBuffer.readFromHead(numberOfSamplesRemaining));
             if (writableSampleFrames.writableData()) {
                 SampleUtil::copy(
                         writableSampleFrames.writableData(outputSampleOffset),
@@ -506,7 +506,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
             const SINT writeToTailCount = math_max(
                     numberOfSamplesRemaining, decodeBufferCapacityMin);
             const SampleBuffer::WritableSlice writableSlice(
-                    m_sampleBuffer.write(writeToTailCount));
+                    m_sampleBuffer.writeToTail(writeToTailCount));
             pDecodeBuffer = writableSlice.data();
             decodeBufferCapacity = writableSlice.size();
         }
@@ -562,14 +562,14 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
         } else {
             // Decoded into temporary buffer
             DEBUG_ASSERT(numberOfSamplesDecoded <= decodeBufferCapacity);
-            // Adjust the size of the buffer to the samples that
+            // Shrink the size of the buffer to the samples that
             // have actually been decoded
-            m_sampleBuffer.readFifo(decodeBufferCapacity - numberOfSamplesDecoded);
+            m_sampleBuffer.readFromTail(decodeBufferCapacity - numberOfSamplesDecoded);
             // Read from the buffer's head
             numberOfSamplesRead =
                     std::min(numberOfSamplesDecoded, numberOfSamplesRemaining);
             const SampleBuffer::ReadableSlice readableSlice(
-                    m_sampleBuffer.readLifo(numberOfSamplesRead));
+                    m_sampleBuffer.readFromHead(numberOfSamplesRead));
             DEBUG_ASSERT(readableSlice.size() == numberOfSamplesRead);
             if (writableSampleFrames.writableData()) {
                 SampleUtil::copy(

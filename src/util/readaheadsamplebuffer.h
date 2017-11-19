@@ -8,8 +8,10 @@
 namespace mixxx {
 
 // A FIFO/LIFO sample buffer with fixed capacity and range checking.
-// It works best when consuming all buffered samples before writing
-// any new samples.
+//
+// Samples are written at the tail and read from the head (FIFO) or
+// from the tail (LIFO). It is intended to consume all buffered samples
+// before writing any new samples.
 //
 // This class is not thread-safe and is not intended to be used from
 // multiple threads!
@@ -63,37 +65,37 @@ class ReadAheadSampleBuffer final {
         return capacity() - m_readableRange.end();
     }
 
-    // Reserves space at the buffer's back end for writing samples.
+    // Reserves space at the buffer's tail for writing samples.
     //
     // Returns a pointer to the continuous memory region and the
     // actual number of samples that have been reserved. The maximum
     // length is limited by writableLength().
     //
-    // The returned pointer is valid until the next write() operation.
-    SampleBuffer::WritableSlice write(SINT writeLength);
+    // The returned pointer is valid until the next writeToTail() operation.
+    SampleBuffer::WritableSlice writeToTail(SINT writeLength);
 
     // The number of readable samples.
     SINT readableLength() const {
         return m_readableRange.length();
     }
 
-    // Consumes buffered samples in FIFO order.
+    // Consumes buffered samples from the head of the buffer.
     //
     // Returns a pointer to the continuous memory region and the actual
     // number of readable samples. The maximum length is limited by
     // readableLength().
     //
-    // The returned pointer is valid until the next write() operation.
-    SampleBuffer::ReadableSlice readFifo(SINT readLength);
+    // The returned pointer is valid until the next writeToTail() operation.
+    SampleBuffer::ReadableSlice readFromHead(SINT readLength);
 
-    // Consumes buffered samples in LIFO order.
+    // Consumes buffered samples from the tail of the buffer
     //
     // Returns a pointer to the continuous memory region and the actual
     // number of readable samples. The maximum length is limited by
     // readableLength().
     //
-    // The returned pointer is valid until the next write() operation.
-    SampleBuffer::ReadableSlice readLifo(SINT readLength);
+    // The returned pointer is valid until the next writeToTail() operation.
+    SampleBuffer::ReadableSlice readFromTail(SINT readLength);
 
   private:
     ReadAheadSampleBuffer(

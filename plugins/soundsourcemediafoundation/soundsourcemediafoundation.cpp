@@ -267,7 +267,7 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
     SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (numberOfFramesRemaining > 0) {
         SampleBuffer::ReadableSlice readableSlice(
-                m_sampleBuffer.readLifo(
+                m_sampleBuffer.readFromHead(
                         frames2samples(numberOfFramesRemaining)));
         DEBUG_ASSERT(readableSlice.size()
                 <= frames2samples(numberOfFramesRemaining));
@@ -431,7 +431,7 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
             }
             // Buffer the remaining samples
             SampleBuffer::WritableSlice writableSlice(
-                    m_sampleBuffer.write(lockedSampleBufferCount));
+                    m_sampleBuffer.writeToTail(lockedSampleBufferCount));
             // The required capacity has been calculated in advance (see above)
             DEBUG_ASSERT(writableSlice.size() == lockedSampleBufferCount);
             SampleUtil::copy(
