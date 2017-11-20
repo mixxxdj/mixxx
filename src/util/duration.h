@@ -128,7 +128,8 @@ class DurationDebug : public DurationBase {
 class Duration : public DurationBase {
   public:
     // Returns a Duration object representing a duration of 'seconds'.
-    static Duration fromSeconds(qint64 seconds) {
+    template<typename T>
+    static Duration fromSeconds(T seconds) {
         return Duration(seconds * kNanosPerSecond);
     }
 
@@ -149,6 +150,10 @@ class Duration : public DurationBase {
 
     Duration()
         : DurationBase(0) {
+    }
+
+    void reset() {
+        m_durationNanos = 0;
     }
 
     const Duration operator+(const Duration& other) const {

@@ -712,6 +712,7 @@ class MixxxCore(Feature):
                    "effects/native/biquadfullkilleqeffect.cpp",
                    "effects/native/loudnesscontoureffect.cpp",
                    "effects/native/graphiceqeffect.cpp",
+                   "effects/native/parametriceqeffect.cpp",
                    "effects/native/flangereffect.cpp",
                    "effects/native/filtereffect.cpp",
                    "effects/native/moogladder4filtereffect.cpp",

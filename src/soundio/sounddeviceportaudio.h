@@ -26,9 +26,7 @@
 #include "soundio/sounddevice.h"
 #include "util/duration.h"
 
-
 #define CPU_USAGE_UPDATE_RATE 30 // in 1/s, fits to display frame rate
-#define CPU_OVERLOAD_DURATION 500 // in ms
 
 class SoundManager;
 class ControlProxy;
@@ -54,17 +52,17 @@ class SoundDevicePortAudio : public SoundDevice {
 
     // This callback function gets called everytime the sound device runs out of
     // samples (ie. when it needs more sound to play)
-    int callbackProcess(const unsigned int framesPerBuffer,
+    int callbackProcess(const SINT framesPerBuffer,
                         CSAMPLE *output, const CSAMPLE* in,
                         const PaStreamCallbackTimeInfo *timeInfo,
                         PaStreamCallbackFlags statusFlags);
     // Same as above but with drift correction
-    int callbackProcessDrift(const unsigned int framesPerBuffer,
+    int callbackProcessDrift(const SINT framesPerBuffer,
                         CSAMPLE *output, const CSAMPLE* in,
                         const PaStreamCallbackTimeInfo *timeInfo,
                         PaStreamCallbackFlags statusFlags);
     // The same as above but drives the MixxEngine
-    int callbackProcessClkRef(const unsigned int framesPerBuffer,
+    int callbackProcessClkRef(const SINT framesPerBuffer,
                         CSAMPLE *output, const CSAMPLE* in,
                         const PaStreamCallbackTimeInfo *timeInfo,
                         PaStreamCallbackFlags statusFlags);
@@ -76,7 +74,7 @@ class SoundDevicePortAudio : public SoundDevice {
 
   private:
     void updateCallbackEntryToDacTime(const PaStreamCallbackTimeInfo* timeInfo);
-    void updateAudioLatencyUsage(const unsigned int framesPerBuffer);
+    void updateAudioLatencyUsage(const SINT framesPerBuffer);
 
     // PortAudio stream for this device.
     PaStream* volatile m_pStream;
@@ -98,11 +96,7 @@ class SoundDevicePortAudio : public SoundDevice {
     QString m_lastError;
     // Whether we have set the thread priority to realtime or not.
     bool m_bSetThreadPriority;
-    ControlProxy* m_pMasterAudioLatencyOverloadCount;
     ControlProxy* m_pMasterAudioLatencyUsage;
-    ControlProxy* m_pMasterAudioLatencyOverload;
-    int m_underflowUpdateCount;
-    static volatile int m_underflowHappened;
     mixxx::Duration m_timeInAudioCallback;
     int m_framesSinceAudioLatencyUsageUpdate;
     int m_syncBuffers;
