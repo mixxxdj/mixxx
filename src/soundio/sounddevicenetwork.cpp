@@ -466,7 +466,7 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
 
 void SoundDeviceNetwork::updateCallbackEntryToDacTime() {
     m_clkRefTimer.start();
-    qint64 currentTime = m_pNetworkStream->getStreamTimeUs();
+    qint64 currentTime = m_pNetworkStream->getInputStreamTimeUs();
     m_targetTime += m_audioBufferTime.toIntegerMicros();
     double callbackEntrytoDacSecs = (m_targetTime - currentTime) / 1000000.0;
     callbackEntrytoDacSecs = math_max(callbackEntrytoDacSecs, 0.0001);
@@ -486,7 +486,7 @@ void SoundDeviceNetwork::updateAudioLatencyUsage() {
         //qDebug() << m_pMasterAudioLatencyUsage->get();
     }
 
-    qint64 currentTime = m_pNetworkStream->getStreamTimeUs();
+    qint64 currentTime = m_pNetworkStream->getInputStreamTimeUs();
     unsigned long sleepUs = 0;
     if (currentTime > m_targetTime) {
         m_pSoundManager->underflowHappened(22);
