@@ -30,6 +30,7 @@
 #include "soundio/sounddevice.h"
 #include "soundio/sounddeviceerror.h"
 #include "util/types.h"
+#include "util/cmdlineargs.h"
 
 class EngineMaster;
 class AudioOutput;
@@ -37,6 +38,7 @@ class AudioInput;
 class AudioSource;
 class AudioDestination;
 class ControlObject;
+class ControlProxy;
 class SoundDeviceNotFound;
 
 #define MIXXX_PORTAUDIO_JACK_STRING "JACK Audio Connection Kit"
@@ -91,12 +93,12 @@ class SoundManager : public QObject {
     SoundDeviceError setConfig(SoundManagerConfig config);
     void checkConfig();
 
-    void onDeviceOutputCallback(const unsigned int iFramesPerBuffer);
+    void onDeviceOutputCallback(const SINT iFramesPerBuffer);
 
     // Used by SoundDevices to "push" any audio from their inputs that they have
     // into the mixing engine.
     void pushInputBuffers(const QList<AudioInputBuffer>& inputs,
-                          const unsigned int iFramesPerBuffer);
+                          const SINT iFramesPerBuffer);
 
 
     void writeProcess();
@@ -110,6 +112,17 @@ class SoundManager : public QObject {
     QSharedPointer<EngineNetworkStream> getNetworkStream() const {
         return m_pNetworkStream;
     }
+
+    void underflowHappened(int code) {
+        m_underflowHappened = 1;
+        // Disable the engine warnings by default, because printing a warning is a
+        // locking function that will make the problem worse
+        if (CmdlineArgs::Instance().getDeveloper()) {
+            qWarning() << "underflowHappened code:" << code;
+        }
+    }
+
+    void processUnderflowHappened();
 
   signals:
     void devicesUpdated(); // emitted when pointers to SoundDevices go stale
@@ -147,6 +160,11 @@ class SoundManager : public QObject {
     ControlObject* m_pControlObjectVinylControlGainCO;
 
     QSharedPointer<EngineNetworkStream> m_pNetworkStream;
+
+    QAtomicInt m_underflowHappened;
+    int m_underflowUpdateCount;
+    ControlProxy* m_pMasterAudioLatencyOverloadCount;
+    ControlProxy* m_pMasterAudioLatencyOverload;
 
     std::unique_ptr<SoundDeviceNotFound> m_soundDeviceNotFound;
 };

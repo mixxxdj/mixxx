@@ -73,17 +73,17 @@ class SoundDevice {
 
   protected:
     void composeOutputBuffer(CSAMPLE* outputBuffer,
-                             const unsigned int iFramesPerBuffer,
-                             const unsigned int readOffset,
-                             const unsigned int iFrameSize);
+                             const SINT iFramesPerBuffer,
+                             const SINT readOffset,
+                             const int iFrameSize);
 
     void composeInputBuffer(const CSAMPLE* inputBuffer,
-                            const unsigned int framesToPush,
-                            const unsigned int framesWriteOffset,
-                            const unsigned int iFrameSize);
+                            const SINT framesToPush,
+                            const SINT framesWriteOffset,
+                            const int iFrameSize);
 
-    void clearInputBuffer(const unsigned int framesToPush,
-                          const unsigned int framesWriteOffset);
+    void clearInputBuffer(const SINT framesToPush,
+                          const SINT framesWriteOffset);
 
     UserSettingsPointer m_pConfig;
     // Pointer to the SoundManager object which we'll request audio from.
@@ -100,7 +100,7 @@ class SoundDevice {
     double m_dSampleRate;
     // The name of the audio API used by this device.
     QString m_hostAPI;
-    unsigned int m_framesPerBuffer;
+    SINT m_framesPerBuffer;
     QList<AudioOutputBuffer> m_audioOutputs;
     QList<AudioInputBuffer> m_audioInputs;
 };
