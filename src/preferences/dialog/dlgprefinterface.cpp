@@ -119,6 +119,7 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
         }
 
         if (skinInfo.absoluteFilePath() == configuredSkinPath) {
+            m_skin = skinInfo.fileName();
             ComboBoxSkinconf->setCurrentIndex(index);
             if (size_ok) {
                 warningLabel->hide();

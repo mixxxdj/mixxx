@@ -71,8 +71,6 @@ QString SkinLoader::getConfiguredSkinPath() const {
         if (configSkin.isEmpty()) {
             configSkin = getDefaultSkinName();
         }
-        m_pConfig->set(ConfigKey("[Config]", "ResizableSkin"),
-                       ConfigValue(configSkin));
     }
 
     QString skinPath = getSkinPath(configSkin);
