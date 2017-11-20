@@ -101,31 +101,31 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
 
     QStringList m_geometry;
     UserSettingsPointer m_pConfig;
-    DlgPrefSound* m_wsound;
-    DlgPrefLibrary* m_wlibrary;
-    DlgPrefControllers *m_wcontrollers;
-    DlgPrefInterface* m_wcontrols;
-    DlgPrefDeck* m_wdeck;
-    DlgPrefWaveform* m_wwaveform;
-    DlgPrefAutoDJ* m_wautodj;
-    DlgPrefEQ* m_weq;
+    DlgPrefSound* m_soundPage;
+    DlgPrefLibrary* m_libraryPage;
+    DlgPrefControllers *m_controllersPage;
+    DlgPrefInterface* m_interfacePage;
+    DlgPrefDeck* m_deckPage;
+    DlgPrefWaveform* m_waveformPage;
+    DlgPrefAutoDJ* m_autoDjPage;
+    DlgPrefEQ* m_equalizerPage;
     //TODO: Re-enable the effects pane when it does something useful.
-    //DlgPrefEffects* m_weffects;
-    DlgPrefCrossfader* m_wcrossfader;
-    DlgPrefRecord* m_wrecord;
-    DlgPrefKey* m_wkey;
-    DlgPrefBeats* m_wbeats;
-    DlgPrefVinyl* m_wvinylcontrol;
-    DlgPrefNoVinyl* m_wnovinylcontrol;
-    DlgPrefBroadcast* m_wbroadcast;
-    DlgPrefReplayGain* m_wreplaygain;
+    //DlgPrefEffects* m_effectsPage;
+    DlgPrefCrossfader* m_crossfaderPage;
+    DlgPrefRecord* m_recordingPage;
+    DlgPrefKey* m_musicalKeyPage;
+    DlgPrefBeats* m_beatgridPage;
+    DlgPrefVinyl* m_vinylControlPage;
+    DlgPrefNoVinyl* m_noVinylControlPage;
+    DlgPrefBroadcast* m_broadcastingPage;
+    DlgPrefReplayGain* m_replayGainPage;
 #ifdef __MODPLUG__
-    DlgPrefModplug* m_wmodplug;
+    DlgPrefModplug* m_modplugPage;
 #endif
 
     QTreeWidgetItem* m_pSoundButton;
     QTreeWidgetItem* m_pLibraryButton;
-    QTreeWidgetItem* m_pControlsButton;
+    QTreeWidgetItem* m_pInterfaceButton;
     QTreeWidgetItem* m_pDecksButton;
     QTreeWidgetItem* m_pWaveformButton;
     QTreeWidgetItem* m_pAutoDJButton;

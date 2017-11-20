@@ -87,56 +87,56 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
 #ifdef __VINYLCONTROL__
     // It's important for this to be before the connect for wsound.
     // TODO(rryan) determine why/if this is still true
-    m_wvinylcontrol = new DlgPrefVinyl(this, pVCManager, m_pConfig);
-    addPageWidget(m_wvinylcontrol);
+    m_vinylControlPage = new DlgPrefVinyl(this, pVCManager, m_pConfig);
+    addPageWidget(m_vinylControlPage);
 #else
     m_wnovinylcontrol = new DlgPrefNoVinyl(this, soundman, m_pConfig);
     addPageWidget(m_wnovinylcontrol);
 #endif
-    m_wsound = new DlgPrefSound(this, soundman, pPlayerManager, m_pConfig);
-    addPageWidget(m_wsound);
-    m_wlibrary = new DlgPrefLibrary(this, m_pConfig, pLibrary);
-    addPageWidget(m_wlibrary);
-    connect(m_wlibrary, SIGNAL(scanLibrary()),
+    m_soundPage = new DlgPrefSound(this, soundman, pPlayerManager, m_pConfig);
+    addPageWidget(m_soundPage);
+    m_libraryPage = new DlgPrefLibrary(this, m_pConfig, pLibrary);
+    addPageWidget(m_libraryPage);
+    connect(m_libraryPage, SIGNAL(scanLibrary()),
             pLibrary, SLOT(scan()));
-    m_wcontrols = new DlgPrefInterface(this, mixxx, pSkinLoader, m_pConfig);
-    addPageWidget(m_wcontrols);
-    m_wdeck = new DlgPrefDeck(this, mixxx, pPlayerManager, m_pConfig);
-    addPageWidget(m_wdeck);
-    m_wwaveform = new DlgPrefWaveform(this, mixxx, m_pConfig, pLibrary);
-    addPageWidget(m_wwaveform);
-    m_wautodj = new DlgPrefAutoDJ(this, m_pConfig);
-    addPageWidget(m_wautodj);
-    m_weq = new DlgPrefEQ(this, pEffectsManager, m_pConfig);
-    addPageWidget(m_weq);
+    m_interfacePage = new DlgPrefInterface(this, mixxx, pSkinLoader, m_pConfig);
+    addPageWidget(m_interfacePage);
+    m_deckPage = new DlgPrefDeck(this, mixxx, pPlayerManager, m_pConfig);
+    addPageWidget(m_deckPage);
+    m_waveformPage = new DlgPrefWaveform(this, mixxx, m_pConfig, pLibrary);
+    addPageWidget(m_waveformPage);
+    m_autoDjPage = new DlgPrefAutoDJ(this, m_pConfig);
+    addPageWidget(m_autoDjPage);
+    m_equalizerPage = new DlgPrefEQ(this, pEffectsManager, m_pConfig);
+    addPageWidget(m_equalizerPage);
     // TODO: Re-enable the effects preferences pane when it does something useful.
-    //m_weffects = new DlgPrefEffects(this, m_pConfig, pEffectsManager);
-    //addPageWidget(m_weffects);
-    m_wcrossfader = new DlgPrefCrossfader(this, m_pConfig);
-    addPageWidget(m_wcrossfader);
+    //m_effectsPage = new DlgPrefEffects(this, m_pConfig, pEffectsManager);
+    //addPageWidget(m_effectsPage);
+    m_crossfaderPage = new DlgPrefCrossfader(this, m_pConfig);
+    addPageWidget(m_crossfaderPage);
 
 #ifdef __VAMP__
-    m_wbeats = new DlgPrefBeats(this, m_pConfig);
-    addPageWidget (m_wbeats);
-    m_wkey = new DlgPrefKey(this, m_pConfig);
-    addPageWidget(m_wkey);
+    m_beatgridPage = new DlgPrefBeats(this, m_pConfig);
+    addPageWidget (m_beatgridPage);
+    m_musicalKeyPage = new DlgPrefKey(this, m_pConfig);
+    addPageWidget(m_musicalKeyPage);
 #endif
 
-    m_wreplaygain = new DlgPrefReplayGain(this, m_pConfig);
-    addPageWidget(m_wreplaygain);
-    m_wrecord = new DlgPrefRecord(this, m_pConfig);
-    addPageWidget(m_wrecord);
+    m_replayGainPage = new DlgPrefReplayGain(this, m_pConfig);
+    addPageWidget(m_replayGainPage);
+    m_recordingPage = new DlgPrefRecord(this, m_pConfig);
+    addPageWidget(m_recordingPage);
 #ifdef __BROADCAST__
-    m_wbroadcast = new DlgPrefBroadcast(this, m_pConfig);
-    addPageWidget(m_wbroadcast);
+    m_broadcastingPage = new DlgPrefBroadcast(this, m_pConfig);
+    addPageWidget(m_broadcastingPage);
 #endif
 #ifdef __MODPLUG__
-    m_wmodplug = new DlgPrefModplug(this, m_pConfig);
-    addPageWidget(m_wmodplug);
+    m_modplugPage = new DlgPrefModplug(this, m_pConfig);
+    addPageWidget(m_modplugPage);
 #endif
-    m_wcontrollers = new DlgPrefControllers(this, m_pConfig, controllers,
+    m_controllersPage = new DlgPrefControllers(this, m_pConfig, controllers,
                                             m_pControllerTreeItem);
-    addPageWidget(m_wcontrollers);
+    addPageWidget(m_controllersPage);
 
     // Install event handler to generate closeDlg signal
     installEventFilter(this);
@@ -157,7 +157,7 @@ DlgPreferences::~DlgPreferences() {
     // because otherwise the QStackedWidget will delete the controller
     // preference pages (and DlgPrefControllers dynamically generates and
     // deletes them).
-    delete m_wcontrollers;
+    delete m_controllersPage;
 }
 
 void DlgPreferences::createIcons() {
@@ -167,11 +167,11 @@ void DlgPreferences::createIcons() {
     m_pSoundButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pSoundButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    m_pControlsButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pControlsButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_interface.png"));
-    m_pControlsButton->setText(0, tr("Interface"));
-    m_pControlsButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
-    m_pControlsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    m_pInterfaceButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pInterfaceButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_interface.png"));
+    m_pInterfaceButton->setText(0, tr("Interface"));
+    m_pInterfaceButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pInterfaceButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     m_pDecksButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pDecksButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_decks.png"));
@@ -292,54 +292,54 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
         current = previous;
 
     if (current == m_pSoundButton) {
-        switchToPage(m_wsound);
+        switchToPage(m_soundPage);
     } else if (current == m_pLibraryButton) {
-        switchToPage(m_wlibrary);
-    } else if (current == m_pControlsButton) {
-        switchToPage(m_wcontrols);
+        switchToPage(m_libraryPage);
+    } else if (current == m_pInterfaceButton) {
+        switchToPage(m_interfacePage);
     } else if (current == m_pDecksButton) {
-        switchToPage(m_wdeck);
+        switchToPage(m_deckPage);
     } else if (current == m_pWaveformButton) {
-        switchToPage(m_wwaveform);
+        switchToPage(m_waveformPage);
     } else if (current == m_pAutoDJButton) {
-        switchToPage(m_wautodj);
+        switchToPage(m_autoDjPage);
     } else if (current == m_pEqButton) {
-        switchToPage(m_weq);
+        switchToPage(m_equalizerPage);
     // TODO: Re-enable the effects preferences pane when it does something useful.
     //} else if (current == m_pEffectsButton) {
-    //    switchToPage(m_weffects);
+    //    switchToPage(m_effectsPage);
     } else if (current == m_pCrossfaderButton) {
-        switchToPage(m_wcrossfader);
+        switchToPage(m_crossfaderPage);
     } else if (current == m_pRecordingButton) {
-        switchToPage(m_wrecord);
+        switchToPage(m_recordingPage);
     } else if (current == m_pBeatDetectionButton) {
-        switchToPage(m_wbeats);
+        switchToPage(m_beatgridPage);
     } else if (current == m_pKeyDetectionButton) {
-        switchToPage(m_wkey);
+        switchToPage(m_musicalKeyPage);
     } else if (current == m_pReplayGainButton) {
-        switchToPage(m_wreplaygain);
+        switchToPage(m_replayGainPage);
 #ifdef __VINYLCONTROL__
     } else if (current == m_pVinylControlButton) {
-        switchToPage(m_wvinylcontrol);
+        switchToPage(m_vinylControlPage);
 #else
     } else if (current == m_pVinylControlButton) {
         switchToPage(m_wnovinylcontrol);
 #endif
 #ifdef __BROADCAST__
     } else if (current == m_pBroadcastButton) {
-        switchToPage(m_wbroadcast);
+        switchToPage(m_broadcastingPage);
 #endif
 #ifdef __MODPLUG__
     } else if (current == m_pModplugButton) {
-        switchToPage(m_wmodplug);
+        switchToPage(m_modplugPage);
 #endif
-    } else if (m_wcontrollers->handleTreeItemClick(current)) {
+    } else if (m_controllersPage->handleTreeItemClick(current)) {
         // Do nothing. m_wcontrollers handled this click.
     }
 }
 
 void DlgPreferences::showSoundHardwarePage() {
-    switchToPage(m_wsound);
+    switchToPage(m_soundPage);
     contentsTreeWidget->setCurrentItem(m_pSoundButton);
 }
 
