@@ -31,22 +31,22 @@
 class MixxxMainWindow;
 class SoundManager;
 class DlgPrefSound;
+class DlgPrefLibrary;
 class DlgPrefController;
 class DlgPrefControllers;
-class DlgPrefLibrary;
+class DlgPrefVinyl;
+class DlgPrefNoVinyl;
 class DlgPrefInterface;
-class DlgPrefDeck;
 class DlgPrefWaveform;
-class DlgPrefAutoDJ;
+class DlgPrefDeck;
 class DlgPrefEQ;
 class DlgPrefEffects;
 class DlgPrefCrossfader;
-class DlgPrefRecord;
-class DlgPrefKey;
-class DlgPrefBeats;
-class DlgPrefVinyl;
-class DlgPrefNoVinyl;
+class DlgPrefAutoDJ;
 class DlgPrefBroadcast;
+class DlgPrefRecord;
+class DlgPrefBeats;
+class DlgPrefKey;
 class DlgPrefReplayGain;
 class ControllerManager;
 class EffectsManager;
@@ -104,20 +104,20 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     DlgPrefSound* m_soundPage;
     DlgPrefLibrary* m_libraryPage;
     DlgPrefControllers *m_controllersPage;
-    DlgPrefInterface* m_interfacePage;
-    DlgPrefDeck* m_deckPage;
-    DlgPrefWaveform* m_waveformPage;
-    DlgPrefAutoDJ* m_autoDjPage;
-    DlgPrefEQ* m_equalizerPage;
-    //TODO: Re-enable the effects pane when it does something useful.
-    //DlgPrefEffects* m_effectsPage;
-    DlgPrefCrossfader* m_crossfaderPage;
-    DlgPrefRecord* m_recordingPage;
-    DlgPrefKey* m_musicalKeyPage;
-    DlgPrefBeats* m_beatgridPage;
     DlgPrefVinyl* m_vinylControlPage;
     DlgPrefNoVinyl* m_noVinylControlPage;
+    DlgPrefInterface* m_interfacePage;
+    DlgPrefWaveform* m_waveformPage;
+    DlgPrefDeck* m_deckPage;
+    DlgPrefEQ* m_equalizerPage;
+    DlgPrefCrossfader* m_crossfaderPage;
+    //TODO: Re-enable the effects pane when it does something useful.
+    //DlgPrefEffects* m_effectsPage;
+    DlgPrefAutoDJ* m_autoDjPage;
     DlgPrefBroadcast* m_broadcastingPage;
+    DlgPrefRecord* m_recordingPage;
+    DlgPrefBeats* m_beatgridPage;
+    DlgPrefKey* m_musicalKeyPage;
     DlgPrefReplayGain* m_replayGainPage;
 #ifdef __MODPLUG__
     DlgPrefModplug* m_modplugPage;
@@ -125,23 +125,23 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
 
     QTreeWidgetItem* m_pSoundButton;
     QTreeWidgetItem* m_pLibraryButton;
+    QTreeWidgetItem* m_pControllerTreeItem;
+    QTreeWidgetItem* m_pVinylControlButton;
     QTreeWidgetItem* m_pInterfaceButton;
-    QTreeWidgetItem* m_pDecksButton;
     QTreeWidgetItem* m_pWaveformButton;
-    QTreeWidgetItem* m_pAutoDJButton;
+    QTreeWidgetItem* m_pDecksButton;
     QTreeWidgetItem* m_pEqButton;
-    //QTreeWidgetItem* m_pEffectsButton;
     QTreeWidgetItem* m_pCrossfaderButton;
+    //QTreeWidgetItem* m_pEffectsButton;
+    QTreeWidgetItem* m_pAutoDJButton;
+    QTreeWidgetItem* m_pBroadcastButton;
     QTreeWidgetItem* m_pRecordingButton;
     QTreeWidgetItem* m_pBeatDetectionButton;
     QTreeWidgetItem* m_pKeyDetectionButton;
-    QTreeWidgetItem* m_pVinylControlButton;
-    QTreeWidgetItem* m_pBroadcastButton;
     QTreeWidgetItem* m_pReplayGainButton;
 #ifdef __MODPLUG__
     QTreeWidgetItem* m_pModplugButton;
 #endif
-    QTreeWidgetItem* m_pControllerTreeItem;
 
     QSize m_pageSizeHint;
 
