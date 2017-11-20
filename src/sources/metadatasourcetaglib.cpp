@@ -1,5 +1,11 @@
 #include "sources/metadatasourcetaglib.h"
+
 #include "track/trackmetadatataglib.h"
+
+#include "util/logger.h"
+#include "util/memory.h"
+
+#include <QFileInfo>
 
 #include <taglib/mp4file.h>
 #include <taglib/vorbisfile.h>
@@ -8,9 +14,6 @@
 #endif
 #include <taglib/wavfile.h>
 #include <taglib/aifffile.h>
-
-#include "util/logger.h"
-#include "util/memory.h"
 
 
 namespace mixxx {

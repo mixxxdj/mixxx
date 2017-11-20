@@ -1,11 +1,10 @@
-#include <array>
-
 #include "track/trackmetadatataglib.h"
 
 #include "track/tracknumbers.h"
 
 #include "util/assert.h"
 #include "util/duration.h"
+#include "util/logger.h"
 #include "util/memory.h"
 
 // TagLib has full support for MP4 atom types since version 1.8
@@ -32,8 +31,6 @@
 #include <taglib/textidentificationframe.h>
 #include <taglib/attachedpictureframe.h>
 #include <taglib/flacpicture.h>
-
-#include "util/logger.h"
 
 
 namespace mixxx {
