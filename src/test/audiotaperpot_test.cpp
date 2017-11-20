@@ -25,10 +25,10 @@ TEST_F(AudioTaperPotTest, ScaleTest) {
         double neutralMidi = catpb.valueToMidiParameter(1);
         ASSERT_EQ(0.0, fmod(neutralMidi, 1));
         // Midi value 64 should result in 0,5
-        ASSERT_EQ(neutralParameter, catpb.midiValueToParameter(neutralMidi));
+        ASSERT_EQ(neutralParameter, catpb.midiToParameter(neutralMidi));
         // roundtrip check
-        ASSERT_DOUBLE_EQ(0.25, catpb.parameterToValue(catpb.midiValueToParameter(catpb.valueToMidiParameter(0.25))));
-        ASSERT_DOUBLE_EQ(0.75, catpb.parameterToValue(catpb.midiValueToParameter(catpb.valueToMidiParameter(0.75))));
+        ASSERT_DOUBLE_EQ(0.25, catpb.parameterToValue(catpb.midiToParameter(catpb.valueToMidiParameter(0.25))));
+        ASSERT_DOUBLE_EQ(0.75, catpb.parameterToValue(catpb.midiToParameter(catpb.valueToMidiParameter(0.75))));
     }
 
     {
@@ -46,10 +46,10 @@ TEST_F(AudioTaperPotTest, ScaleTest) {
         double neutralMidi = catpb.valueToMidiParameter(1);
         ASSERT_EQ(0.0, fmod(neutralMidi, 1));
         // Midi value 64 should result in 0,5
-        ASSERT_EQ(neutralParameter, catpb.midiValueToParameter(neutralMidi));
+        ASSERT_EQ(neutralParameter, catpb.midiToParameter(neutralMidi));
         // roundtrip check
-        ASSERT_DOUBLE_EQ(0.25, catpb.parameterToValue(catpb.midiValueToParameter(catpb.valueToMidiParameter(0.25))));
-        ASSERT_DOUBLE_EQ(0.75, catpb.parameterToValue(catpb.midiValueToParameter(catpb.valueToMidiParameter(0.75))));
+        ASSERT_DOUBLE_EQ(0.25, catpb.parameterToValue(catpb.midiToParameter(catpb.valueToMidiParameter(0.25))));
+        ASSERT_DOUBLE_EQ(0.75, catpb.parameterToValue(catpb.midiToParameter(catpb.valueToMidiParameter(0.75))));
     }
 
     {
@@ -67,9 +67,9 @@ TEST_F(AudioTaperPotTest, ScaleTest) {
         double neutralMidi = catpb.valueToMidiParameter(1);
         ASSERT_EQ(0.0, fmod(neutralMidi, 1));
         // Midi value 64 should result in 0,5
-        ASSERT_EQ(neutralParameter, catpb.midiValueToParameter(neutralMidi));
+        ASSERT_EQ(neutralParameter, catpb.midiToParameter(neutralMidi));
         // roundtrip checkx
-        ASSERT_DOUBLE_EQ(0.25, catpb.parameterToValue(catpb.midiValueToParameter(catpb.valueToMidiParameter(0.25))));
-        ASSERT_DOUBLE_EQ(0.75, catpb.parameterToValue(catpb.midiValueToParameter(catpb.valueToMidiParameter(0.75))));
+        ASSERT_DOUBLE_EQ(0.25, catpb.parameterToValue(catpb.midiToParameter(catpb.valueToMidiParameter(0.25))));
+        ASSERT_DOUBLE_EQ(0.75, catpb.parameterToValue(catpb.midiToParameter(catpb.valueToMidiParameter(0.75))));
     }
 }

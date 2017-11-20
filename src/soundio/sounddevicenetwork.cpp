@@ -2,7 +2,14 @@
 
 #include <QtDebug>
 
+#include "waveform/visualplayposition.h"
+#include "util/timer.h"
+#include "util/trace.h"
+#include "control/controlproxy.h"
+#include "control/controlobject.h"
+#include "util/denormalsarezero.h"
 #include "engine/sidechain/enginenetworkstream.h"
+#include "float.h"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
@@ -26,17 +33,17 @@ const int kBufferFrames = kNetworkLatencyFrames * 4; // 743 ms @ 44100 Hz
 const mixxx::Logger kLogger("SoundDeviceNetwork");
 }
 
-// static
-volatile int SoundDeviceNetwork::m_underflowHappened = 0;
-
 SoundDeviceNetwork::SoundDeviceNetwork(UserSettingsPointer config,
                                        SoundManager *sm,
                                        QSharedPointer<EngineNetworkStream> pNetworkStream)
         : SoundDevice(config, sm),
           m_pNetworkStream(pNetworkStream),
-          m_outputFifo(NULL),
-          m_inputFifo(NULL),
-          m_inputDrift(false) {
+          m_outputDrift(false),
+          m_inputDrift(false),
+          m_framesSinceAudioLatencyUsageUpdate(0),
+          m_denormals(false),
+          m_targetTime(0),
+          m_lastCallbackEntrytoDacSecs(0) {
     // Setting parent class members:
     m_hostAPI = "Network stream";
     m_dSampleRate = 44100.0;
@@ -44,6 +51,9 @@ SoundDeviceNetwork::SoundDeviceNetwork(UserSettingsPointer config,
     m_strDisplayName = QObject::tr("Network stream");
     m_iNumInputChannels = pNetworkStream->getNumInputChannels();
     m_iNumOutputChannels = pNetworkStream->getNumOutputChannels();
+
+    m_pMasterAudioLatencyUsage = std::make_unique<ControlProxy>("[Master]",
+            "audio_latency_usage");
 }
 
 SoundDeviceNetwork::~SoundDeviceNetwork() {
@@ -58,32 +68,45 @@ SoundDeviceError SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) 
         m_dSampleRate = 44100.0;
     }
 
-    // Get latency in milleseconds
-    kLogger.debug() << "framesPerBuffer:" << m_framesPerBuffer;
-    double bufferMSec = m_framesPerBuffer / m_dSampleRate * 1000;
-    kLogger.debug() << "Requested sample rate: " << m_dSampleRate << "Hz, latency:"
-                    << bufferMSec << "ms";
+    qDebug() << "framesPerBuffer:" << m_framesPerBuffer;
 
-    // Create the callback function pointer.
-    if (isClkRefDevice) {
-        // Network device as clock Reference is not yet supported
-        DEBUG_ASSERT(false);
-    } else {
-        // Feet the network device buffer directly from the
-        // clock reference device callback
-        // This is what should work best.
+    m_audioBufferTime = mixxx::Duration::fromSeconds(
+            m_framesPerBuffer / m_dSampleRate);
+    qDebug() << "Requested sample rate: " << m_dSampleRate << "Hz, latency:"
+             << m_audioBufferTime;
 
-        if (m_iNumOutputChannels) {
-            m_outputFifo = new FIFO<CSAMPLE>(
-                    m_iNumOutputChannels * m_framesPerBuffer * 2);
-        }
-        if (m_iNumInputChannels) {
-            m_inputFifo = new FIFO<CSAMPLE>(
-                    m_iNumInputChannels * m_framesPerBuffer * 2);
-        }
+    // Feed the network device buffer directly from the
+    // clock reference device callback
+    // This is what should work best.
+    if (m_iNumOutputChannels) {
+        m_outputFifo = std::make_unique<FIFO<CSAMPLE> >(
+                m_iNumOutputChannels * m_framesPerBuffer * 2);
+    }
+    if (m_iNumInputChannels) {
+        m_inputFifo = std::make_unique<FIFO<CSAMPLE> >(
+                m_iNumInputChannels * m_framesPerBuffer * 2);
     }
 
     m_pNetworkStream->startStream(m_dSampleRate);
+
+    // Create the callback Thread if requested
+    if (isClkRefDevice) {
+        // Update the samplerate and latency ControlObjects, which allow the
+        // waveform view to properly correct for the latency.
+        ControlObject::set(ConfigKey("[Master]", "latency"),
+                m_audioBufferTime.toDoubleMillis());
+        ControlObject::set(ConfigKey("[Master]", "samplerate"), m_dSampleRate);
+        ControlObject::set(ConfigKey("[Master]", "audio_buffer_size"),
+                m_audioBufferTime.toDoubleMillis());
+
+        // Network stream was just started above so we have to wait until
+        // we can pass one chunk.
+        // The first callback runs early to do the one time setups
+        m_targetTime = m_audioBufferTime.toIntegerMicros();
+
+        m_pThread = std::make_unique<SoundDeviceNetworkThread>(this);
+        m_pThread->start(QThread::TimeCriticalPriority);
+    }
 
     return SOUNDDEVICE_ERROR_OK;
 }
@@ -95,14 +118,15 @@ bool SoundDeviceNetwork::isOpen() const {
 SoundDeviceError SoundDeviceNetwork::close() {
     //kLogger.debug() << "close:" << getInternalName();
     m_pNetworkStream->stopStream();
-    if (m_outputFifo) {
-        delete m_outputFifo;
-        m_outputFifo = NULL;
+    if (m_pThread) {
+        m_pThread->stop();
+        m_pThread->wait();
+        m_pThread.reset();
     }
-    if (m_inputFifo) {
-        delete m_inputFifo;
-        m_inputFifo = NULL;
-    }
+
+    m_outputFifo.reset();
+    m_inputFifo.reset();
+
     return SOUNDDEVICE_ERROR_OK;
 }
 
@@ -171,8 +195,8 @@ void SoundDeviceNetwork::readProcess() {
     int readCount = inChunkSize;
     if (inChunkSize > readAvailable) {
         readCount = readAvailable;
-        m_underflowHappened = 1;
-        //kLogger.debug() << "readProcess()" << (float)readAvailable / inChunkSize << "underflow";
+        m_pSoundManager->underflowHappened(21);
+        //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "underflow";
     }
     if (readCount) {
         CSAMPLE* dataPtr1;
@@ -210,11 +234,11 @@ void SoundDeviceNetwork::writeProcess() {
     int writeCount = outChunkSize;
     if (outChunkSize > writeAvailable) {
         writeCount = writeAvailable;
-        m_underflowHappened = 1;
-        //kLogger.debug() << "writeProcess():" << (float) writeAvailable / outChunkSize << "Overflow";
+        m_pSoundManager->underflowHappened(23);
+        //qDebug() << "writeProcess():" << (float) writeAvailable / outChunkSize << "Overflow";
     }
-    //kLogger.debug() << "writeProcess():" << (float) writeAvailable / outChunkSize;
-    if (writeCount) {
+    //qDebug() << "writeProcess():" << (float) writeAvailable / outChunkSize;
+    if (writeCount > 0) {
         CSAMPLE* dataPtr1;
         ring_buffer_size_t size1;
         CSAMPLE* dataPtr2;
@@ -223,13 +247,12 @@ void SoundDeviceNetwork::writeProcess() {
         (void)m_outputFifo->aquireWriteRegions(writeCount, &dataPtr1,
                 &size1, &dataPtr2, &size2);
         // Fetch fresh samples and write to the the output buffer
-        composeOutputBuffer(dataPtr1, size1 / m_iNumOutputChannels, 0,
-                static_cast<unsigned int>(m_iNumOutputChannels));
+        composeOutputBuffer(dataPtr1, size1 / m_iNumOutputChannels, 0, m_iNumOutputChannels);
         if (size2 > 0) {
             composeOutputBuffer(dataPtr2,
                     size2 / m_iNumOutputChannels,
                     size1 / m_iNumOutputChannels,
-                    static_cast<unsigned int>(m_iNumOutputChannels));
+                    m_iNumOutputChannels);
         }
         m_outputFifo->releaseWriteRegions(writeCount);
     }
@@ -272,13 +295,13 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
     int copyCount = qMin(readAvailable, writeAvailable);
 
     if (copyCount > 0) {
-
-        if (writeAvailable >= outChunkSize * 2) {
+        if (writeAvailable - copyCount > outChunkSize) {
             // Underflow
             //kLogger.debug() << "workerWriteProcess: buffer empty";
             // catch up by filling buffer until we are synced
             workerWriteSilence(pWorker, writeAvailable - copyCount);
-        } else if (writeAvailable > readAvailable + outChunkSize / 2) {
+            m_pSoundManager->underflowHappened(24);
+        } else if (writeAvailable - copyCount > outChunkSize / 2) {
             // try to keep PAs buffer filled up to 0.5 chunks
             if (pWorker->outputDrift()) {
                 // duplicate one frame
@@ -288,12 +311,15 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
             } else {
                 pWorker->setOutputDrift(true);
             }
-        } else if (writeAvailable < outChunkSize / 2) {
-            // We are not able to store all new frames
+        } else if (writeAvailable < outChunkSize / 2 ||
+                readAvailable > outChunkSize * 1.5
+           ) {
+            // We are not able to store at least the half of the new frames
+            // or we have a risk of an m_outputFifo overflow
             if (pWorker->outputDrift()) {
-                //kLogger.debug() << "workerWriteProcess() skip one frame"
+                //kLogger.debug() << "SoundDeviceNetwork::workerWriteProcess() skip one frame"
                 //                << (float)writeAvailable / outChunkSize << (float)readAvailable / outChunkSize;
-                ++copyCount;
+                copyCount = qMin(readAvailable, copyCount + m_iNumOutputChannels);
             } else {
                 pWorker->setOutputDrift(true);
             }
@@ -383,3 +409,100 @@ void SoundDeviceNetwork::workerWriteSilence(NetworkOutputStreamWorkerPtr pWorker
     }
 }
 
+void SoundDeviceNetwork::callbackProcessClkRef() {
+    // This must be the very first call, to measure an exact value
+    updateCallbackEntryToDacTime();
+
+    Trace trace("SoundDeviceNetwork::callbackProcessClkRef %1",
+                getInternalName());
+
+
+    if (!m_denormals) {
+        m_denormals = true;
+        // This disables the denormals calculations, to avoid a
+        // performance penalty of ~20
+        // https://bugs.launchpad.net/mixxx/+bug/1404401
+#ifdef __SSE__
+        if (!_MM_GET_DENORMALS_ZERO_MODE()) {
+            qDebug() << "SSE: Enabling denormals to zero mode";
+            _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
+        } else {
+             qDebug() << "SSE: Denormals to zero mode already enabled";
+        }
+
+        if (!_MM_GET_FLUSH_ZERO_MODE()) {
+            qDebug() << "SSE: Enabling flush to zero mode";
+            _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+        } else {
+             qDebug() << "SSE: Flush to zero mode already enabled";
+        }
+        // verify if flush to zero or denormals to zero works
+        // test passes if one of the two flag is set.
+        volatile double doubleMin = DBL_MIN; // the smallest normalized double
+        VERIFY_OR_DEBUG_ASSERT(doubleMin / 2 == 0.0) {
+            qWarning() << "SSE: Denormals to zero mode is not working. EQs and effects may suffer high CPU load";
+        } else {
+            qDebug() << "SSE: Denormals to zero mode is working";
+        }
+#else
+        qWarning() << "No SSE: No denormals to zero mode available. EQs and effects may suffer high CPU load";
+#endif
+    }
+
+    m_pSoundManager->readProcess();
+
+    {
+        ScopedTimer t("SoundDevicePortAudio::callbackProcess prepare %1",
+                getInternalName());
+        m_pSoundManager->onDeviceOutputCallback(m_framesPerBuffer);
+    }
+
+    m_pSoundManager->writeProcess();
+
+    m_pSoundManager->processUnderflowHappened();
+
+    updateAudioLatencyUsage();
+}
+
+void SoundDeviceNetwork::updateCallbackEntryToDacTime() {
+    m_clkRefTimer.start();
+    qint64 currentTime = m_pNetworkStream->getStreamTimeUs();
+    m_targetTime += m_audioBufferTime.toIntegerMicros();
+    double callbackEntrytoDacSecs = (m_targetTime - currentTime) / 1000000.0;
+    callbackEntrytoDacSecs = math_max(callbackEntrytoDacSecs, 0.0001);
+    VisualPlayPosition::setCallbackEntryToDacSecs(callbackEntrytoDacSecs, m_clkRefTimer);
+    //qDebug() << callbackEntrytoDacSecs << timeSinceLastCbSecs;
+}
+
+void SoundDeviceNetwork::updateAudioLatencyUsage() {
+    m_framesSinceAudioLatencyUsageUpdate += m_framesPerBuffer;
+    if (m_framesSinceAudioLatencyUsageUpdate
+            > (m_dSampleRate / CPU_USAGE_UPDATE_RATE)) {
+        double secInAudioCb = m_timeInAudioCallback.toDoubleSeconds();
+        m_pMasterAudioLatencyUsage->set(secInAudioCb /
+                (m_framesSinceAudioLatencyUsageUpdate / m_dSampleRate));
+        m_timeInAudioCallback.reset();
+        m_framesSinceAudioLatencyUsageUpdate = 0;
+        //qDebug() << m_pMasterAudioLatencyUsage->get();
+    }
+
+    qint64 currentTime = m_pNetworkStream->getStreamTimeUs();
+    unsigned long sleepUs = 0;
+    if (currentTime > m_targetTime) {
+        m_pSoundManager->underflowHappened(22);
+        //qDebug() << "underflow" << currentTime << m_targetTime;
+        m_targetTime = currentTime;
+    } else {
+        sleepUs = m_targetTime - currentTime;
+    }
+
+    //qDebug() << "sleep" << sleepUs;
+
+    // measure time in Audio callback at the very last
+    m_timeInAudioCallback += m_clkRefTimer.elapsed();
+
+    // now go to sleep until the next callback
+    if (sleepUs > 0) {
+        m_pThread->usleep_(sleepUs);
+    }
+}
