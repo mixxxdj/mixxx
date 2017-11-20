@@ -179,7 +179,7 @@ void DlgPreferences::createIcons() {
     m_pDecksButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pDecksButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    m_pWaveformButton = new QTreeWidgetItem(m_pControlsButton, QTreeWidgetItem::Type);
+    m_pWaveformButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pWaveformButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_waveforms.png"));
     m_pWaveformButton->setText(0, tr("Waveforms"));
     m_pWaveformButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
