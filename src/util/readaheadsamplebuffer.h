@@ -7,11 +7,12 @@
 
 namespace mixxx {
 
-// A FIFO/LIFO sample buffer with fixed capacity and range checking.
+// A FIFO sample buffer with fixed capacity and range checking.
 //
-// Samples are written at the tail and read from the head (FIFO) or
-// from the tail (LIFO). It is intended to consume all buffered samples
-// before writing any new samples.
+// Samples are written at the tail and read from the head (FIFO).
+// It is intended to consume all buffered samples before writing
+// any new samples. A full featured ring buffer is not needed for
+// this purpose.
 //
 // This class is not thread-safe and is not intended to be used from
 // multiple threads!
@@ -91,14 +92,12 @@ class ReadAheadSampleBuffer final {
     // The returned pointer is valid until the next writeToTail() operation.
     SampleBuffer::ReadableSlice readFromHead(SINT maxReadLength);
 
-    // Consumes buffered samples from the tail of the buffer
+    // Discards the last samples that have been written at the tail of
+    // the buffer
     //
-    // Returns a pointer to the continuous memory region and the actual
-    // number of readable samples. The maximum length is limited by
-    // readableLength().
-    //
-    // The returned pointer is valid until the next writeToTail() operation.
-    SampleBuffer::ReadableSlice readFromTail(SINT maxReadLength);
+    // Returns the number of samples that have actually been dropped. The
+    // number of samples that can be dropped is limited by readableLength().
+    SINT dropFromTail(SINT maxDropLength);
 
   private:
     ReadAheadSampleBuffer(

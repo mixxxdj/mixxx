@@ -562,9 +562,11 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
         } else {
             // Decoded into temporary buffer
             DEBUG_ASSERT(numberOfSamplesDecoded <= decodeBufferCapacity);
-            // Shrink the size of the buffer to the samples that
-            // have actually been decoded
-            m_sampleBuffer.readFromTail(decodeBufferCapacity - numberOfSamplesDecoded);
+            // Shrink the size of the buffer to the samples that have
+            // actually been decoded, i.e. dropping unneeded samples
+            // from the back of the buffer.
+            m_sampleBuffer.dropFromTail(decodeBufferCapacity - numberOfSamplesDecoded);
+            DEBUG_ASSERT(m_sampleBuffer.readableLength() == numberOfSamplesDecoded);
             // Read from the buffer's head
             numberOfSamplesRead =
                     std::min(numberOfSamplesDecoded, numberOfSamplesRemaining);

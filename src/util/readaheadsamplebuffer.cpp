@@ -74,13 +74,11 @@ SampleBuffer::WritableSlice ReadAheadSampleBuffer::writeToTail(SINT maxWriteLeng
     return tailSlice;
 }
 
-SampleBuffer::ReadableSlice ReadAheadSampleBuffer::readFromTail(SINT maxReadLength) {
+SINT ReadAheadSampleBuffer::dropFromTail(SINT maxDropLength) {
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 
-    const SINT tailLength = math_min(maxReadLength, readableLength());
+    const SINT tailLength = math_min(maxDropLength, readableLength());
     m_readableRange.shrinkBack(tailLength);
-    const SampleBuffer::ReadableSlice tailSlice(
-            m_sampleBuffer, m_readableRange.end(), tailLength);
     // If the buffer has become empty reset the write head back to the start
     // of the available memory
     if (m_readableRange.empty()) {
@@ -88,7 +86,7 @@ SampleBuffer::ReadableSlice ReadAheadSampleBuffer::readFromTail(SINT maxReadLeng
     }
 
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
-    return tailSlice;
+    return tailLength;
 }
 
 SampleBuffer::ReadableSlice ReadAheadSampleBuffer::readFromHead(SINT maxReadLength) {
