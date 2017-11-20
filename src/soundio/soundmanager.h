@@ -23,6 +23,7 @@
 #include <QString>
 #include <QList>
 #include <QHash>
+#include <QSharedPointer>
 
 #include "preferences/usersettings.h"
 #include "engine/sidechain/enginenetworkstream.h"
