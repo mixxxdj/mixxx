@@ -207,7 +207,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         return;
     }
 
-    unsigned long newModelAddr = 0;
+    TrackModel* newModel = 0;
 
     /* If the model has not changed
      * there's no need to exchange the headers
@@ -219,8 +219,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         doSortByColumn(horizontalHeader()->sortIndicatorSection());
         return;
     }else{
-        newModelAddr = reinterpret_cast<unsigned long>(trackModel);
-        saveVScrollBarPos(QString::number(reinterpret_cast<unsigned long>(getTrackModel())));
+        newModel = trackModel;
+        saveVScrollBarPos(getTrackModel());
         //saving current vertical bar position
         //using adress of track model as key
     }
@@ -363,9 +363,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // target though, so my hax above may not be completely unjustified.
 
     setVisible(true);
-    //restoreVScrollBarPos();
 
-    restoreVScrollBarPos(QString::number(newModelAddr));
+    restoreVScrollBarPos(newModel);
     // restoring scrollBar position using model pointer as key
     // scrollbar positions with respect  to different models are backed by map
 }
@@ -1709,14 +1708,10 @@ bool WTrackTableView::hasFocus() const {
 
 void WTrackTableView::saveCurrentVScrollBarPos()
 {
-    long value = getTrackModel() == nullptr?
-                0:reinterpret_cast<unsigned long>(getTrackModel());
-    saveVScrollBarPos(QString::number(value));
+    saveVScrollBarPos(getTrackModel());
 }
 
 void WTrackTableView::restoreCurrentVScrollBarPos()
 {
-    long value = getTrackModel() == nullptr?
-                0:reinterpret_cast<unsigned long>(getTrackModel());
-    restoreVScrollBarPos(QString::number(value));
+    restoreVScrollBarPos(getTrackModel());
 }

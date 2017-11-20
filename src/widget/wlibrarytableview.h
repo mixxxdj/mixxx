@@ -12,6 +12,7 @@
 #include "library/libraryview.h"
 #include "track/track.h"
 #include "library/coverartcache.h"
+#include "library/trackmodel.h"
 
 
 class WLibraryTableView : public QTableView, public virtual LibraryView {
@@ -29,13 +30,13 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
      * using string key - can be any value but should invariant for model
      * @param key unique for trackmodel
      */
-    void saveVScrollBarPos(const QString key);
+    void saveVScrollBarPos(TrackModel* key);
     /**
      * @brief restoreVScrollBarPos function finds scrollbar value associated with model
      * by given key and restores it
      * @param key unique for trackmodel
      */
-    void restoreVScrollBarPos(const QString key);
+    void restoreVScrollBarPos(TrackModel* key);
 
   signals:
     void loadTrack(TrackPointer pTrack);
@@ -55,7 +56,7 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     void loadVScrollBarPosState();
     void saveVScrollBarPosState();
 
-    QMap<QString, int> m_vScrollBarPosValues;
+    QMap<TrackModel*, int> m_vScrollBarPosValues;
 
     UserSettingsPointer m_pConfig;
     ConfigKey m_vScrollBarPosKey;

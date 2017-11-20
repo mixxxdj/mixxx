@@ -42,8 +42,6 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     setAlternatingRowColors(true);
 
-    //loadVScrollBarPosState();
-
     connect(verticalScrollBar(), SIGNAL(valueChanged(int)),
             this, SIGNAL(scrollValueChanged(int)));
 
@@ -111,11 +109,11 @@ void WLibraryTableView::moveSelection(int delta) {
     }
 }
 
-void WLibraryTableView::saveVScrollBarPos(const QString key){
+void WLibraryTableView::saveVScrollBarPos(TrackModel* key){
     m_vScrollBarPosValues[key] = verticalScrollBar()->value();
 }
 
-void WLibraryTableView::restoreVScrollBarPos(const QString key){
+void WLibraryTableView::restoreVScrollBarPos(TrackModel* key){
     updateGeometries();
 
     if (m_vScrollBarPosValues.contains(key)){
@@ -135,5 +133,5 @@ void WLibraryTableView::setTrackTableRowHeight(int rowHeight) {
     QFontMetrics metrics(font());
     int fontHeightPx = metrics.height();
     verticalHeader()->setDefaultSectionSize(math_max(
-            rowHeight, fontHeightPx));
+                                                rowHeight, fontHeightPx));
 }
