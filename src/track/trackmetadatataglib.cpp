@@ -32,6 +32,8 @@
 #include <taglib/attachedpictureframe.h>
 #include <taglib/flacpicture.h>
 
+#include <array>
+
 
 namespace mixxx {
 
