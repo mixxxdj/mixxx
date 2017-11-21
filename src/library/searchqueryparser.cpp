@@ -177,8 +177,17 @@ void SearchQueryParser::parseTokens(QStringList tokens,
             }
             // Don't trigger on a lone minus sign.
             if (!token.isEmpty()) {
-                pNode = std::make_unique<TextFilterNode>(
-                                m_pTrackCollection->database(), searchColumns, token);
+                // For untagged strings we search the track fields as well
+                // as the crate names the track is in. This allows the user
+                // to use crates like tags
+                std::unique_ptr<OrNode> gNode = std::make_unique<OrNode>();
+
+                gNode->addNode(std::make_unique<CrateFilterNode>(
+                               &m_pTrackCollection->crates(), token));
+                gNode->addNode(std::make_unique<TextFilterNode>(
+                                m_pTrackCollection->database(), searchColumns, token));
+
+                pNode = std::move(gNode);
             }
         }
         if (pNode) {
