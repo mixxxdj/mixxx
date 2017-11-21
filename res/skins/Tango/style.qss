@@ -1066,8 +1066,12 @@ WBeatSpinBox {
   #BroadcastButton[displayValue="3"] {
     background: transparent url(skin:/buttons/btn_broadcast_failure.svg) no-repeat center center;
     }
+  #BroadcastButton[displayValue="4"] {
+    background: transparent url(skin:/buttons/btn_broadcast_warning.svg) no-repeat center center;
+    }
     #BroadcastButton[displayValue="2"]:hover,
-    #BroadcastButton[displayValue="3"]:hover {
+    #BroadcastButton[displayValue="3"]:hover,
+    #BroadcastButton[displayValue="4"]:hover {
       background: #0f0f0f url(skin:/buttons/btn_broadcast_off.svg) no-repeat center center;
     }
 
@@ -1089,8 +1093,12 @@ WBeatSpinBox {
   #BroadcastButtonNetbook[displayValue="3"] {
     background: transparent url(skin:/buttons/btn_broadcast_failure_netbook.svg) no-repeat center center;
     }
+  #BroadcastButtonNetbook[displayValue="4"] {
+    background: transparent url(skin:/buttons/btn_broadcast_warning_netbook.svg) no-repeat center center;
+    }
     #BroadcastButtonNetbook[displayValue="2"]:hover,
-    #BroadcastButtonNetbook[displayValue="3"]:hover {
+    #BroadcastButtonNetbook[displayValue="3"]:hover,
+    #BroadcastButtonNetbook[displayValue="4"]:hover {
       background: #0f0f0f url(skin:/buttons/btn_broadcast_off_netbook.svg) no-repeat center center;
     }
 

@@ -168,7 +168,7 @@ Description:
         <MaximumSize>104,73</MaximumSize>
         <SizePolicy>f,me</SizePolicy>
         <Children>
-          <Template src="skin:button_4state_display.xml"><!-- Broadcast -->
+          <Template src="skin:button_5state_display.xml"><!-- Broadcast -->
             <SetVariable name="TooltipId">broadcast_enabled</SetVariable>
             <SetVariable name="ObjectName">BroadcastButton</SetVariable>
             <SetVariable name="Size">24f,34f</SetVariable>
