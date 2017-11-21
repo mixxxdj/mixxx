@@ -27,7 +27,7 @@ class WNumberPos : public WNumber {
 
     TrackTime::DisplayMode m_displayMode;
 
-    double m_dOldTime;
+    double m_dOldTimeElapsed;
     ControlProxy* m_pTimeElapsed;
     ControlProxy* m_pTimeRemaining;
     ControlProxy* m_pShowTrackTimeRemaining;

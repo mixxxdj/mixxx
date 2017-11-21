@@ -10,7 +10,7 @@
 
 WNumberPos::WNumberPos(const char* group, QWidget* parent)
         : WNumber(parent),
-          m_dOldTime(0.0) {
+          m_dOldTimeElapsed(0.0) {
     m_pTimeElapsed = new ControlProxy(group, "time_elapsed", this);
     m_pTimeElapsed->connectValueChanged(SLOT(slotSetTimeElapsed(double)));
     m_pTimeRemaining = new ControlProxy(group, "time_remaining", this);
@@ -36,7 +36,7 @@ void WNumberPos::mousePressEvent(QMouseEvent* pEvent) {
         }
 
         m_pShowTrackTimeRemaining->set(static_cast<double>(m_displayMode));
-        slotSetTimeElapsed(m_dOldTime);
+        slotSetTimeElapsed(m_dOldTimeElapsed);
     }
 }
 
@@ -45,7 +45,7 @@ void WNumberPos::setValue(double dValue) {
     // Ignore midi-scaled signals from the skin connection.
     Q_UNUSED(dValue);
     // Update our value with the old value.
-    slotSetTimeElapsed(m_dOldTime);
+    slotSetTimeElapsed(m_dOldTimeElapsed);
 }
 
 void WNumberPos::slotSetTimeElapsed(double dTimeElapsed) {
@@ -77,7 +77,7 @@ void WNumberPos::slotSetTimeElapsed(double dTimeElapsed) {
                         dTimeRemaining, mixxx::Duration::Precision::CENTISECONDS));
         }
     }
-    m_dOldTime = dTimeElapsed;
+    m_dOldTimeElapsed = dTimeElapsed;
 }
 
 void WNumberPos::slotSetDisplayMode(double remain) {
@@ -89,5 +89,5 @@ void WNumberPos::slotSetDisplayMode(double remain) {
         m_displayMode = TrackTime::DisplayMode::Elapsed;
     }
 
-    slotSetTimeElapsed(m_dOldTime);
+    slotSetTimeElapsed(m_dOldTimeElapsed);
 }
