@@ -3,7 +3,7 @@
   <info>
     <name>Vestax VCI-100MKII</name>
     <author>Takeshi Soejima</author>
-    <description>2017-11-4</description>
+    <description>2017-11-5</description>
     <wiki>http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii</wiki>
   </info>
   <controller id="VCI-100MKII">
@@ -745,7 +745,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>VCI102.prev_slot</key>
+        <key>VCI102.no_slot</key>
         <status>0x90</status>
         <midino>0x20</midino>
         <options>
@@ -754,7 +754,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2]</group>
-        <key>VCI102.prev_slot</key>
+        <key>VCI102.no_slot</key>
         <status>0x91</status>
         <midino>0x20</midino>
         <options>
@@ -763,7 +763,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit3]</group>
-        <key>VCI102.prev_slot</key>
+        <key>VCI102.no_slot</key>
         <status>0x92</status>
         <midino>0x20</midino>
         <options>
@@ -772,7 +772,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit4]</group>
-        <key>VCI102.prev_slot</key>
+        <key>VCI102.no_slot</key>
         <status>0x93</status>
         <midino>0x20</midino>
         <options>
