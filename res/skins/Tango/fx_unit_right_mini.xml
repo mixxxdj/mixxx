@@ -180,7 +180,7 @@ Variables:
 
       <WidgetGroup><!-- EffectSlots + Underlays, no focus -->
         <Layout>stacked</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>max,min</SizePolicy>
         <Children>
           <WidgetGroup><!-- EffectSlots, no focus -->
             <Layout>horizontal</Layout>
@@ -249,7 +249,7 @@ Variables:
 
       <WidgetGroup><!-- EffectSlots + Underlays, with focus -->
         <Layout>stacked</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>max,min</SizePolicy>
         <Children>
           <WidgetGroup><!-- EffectSlots with focus button -->
             <Layout>horizontal</Layout>
