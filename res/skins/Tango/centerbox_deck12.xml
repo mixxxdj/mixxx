@@ -187,13 +187,20 @@ Description:
                 <Layout>vertical</Layout>
                 <Children>
                   <Time>
+                    <!-- ! Clock also appears in topbar_netbook.xml ! -->
                     <TooltipId>time</TooltipId>
                     <ObjectName>Clock</ObjectName>
-                    <Size>30min,14f</Size>
-                    <!-- Disabled. With this seconds would show up in Windows anyway.
-                    TODO: check if it works without this tag
-                    Clock also appears in topbar_netbook.xml. -->
+                    <MinimumSize>30,14</MinimumSize>
+                    <MaximumSize>56,14</MaximumSize>
+                    <SizePolicy>min,f</SizePolicy>
+                    <!-- <ClockFormat>12AP</ClockFormat>
                     <ShowSeconds>false</ShowSeconds>
+                    Disabled. As of v2.00 the time is displayed with a format
+                    appropriate to the chosen locale. With this seconds would show up in Windows anyway.
+                    TODO ronso0: remove when bug is fixed
+                    As a workaround the clock's size is limited so AM/PM is cut off in case
+                    a user has seconds shown AND AM/PM indicators enabled on his system.
+                    Without seconds, AM/PM is displayed correctly. -->
                     <!-- This has no effect, neither has 'text-align' in qss,
                     that's why clock needs an extra container...
                     <Align>center</Align>   -->

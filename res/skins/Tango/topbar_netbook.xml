@@ -237,15 +237,19 @@ Description:
           <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
           <WidgetGroup><!-- Clock + latency display -->
-            <Size>32f,24min</Size>
+            <MinimumSize>32,24</MinimumSize>
+            <MaximumSize>62,-1</MaximumSize>
+            <SizePolicy>min,min</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
               <Time>
                 <TooltipId>time</TooltipId>
                 <ObjectName>Clock</ObjectName>
-                <Size>32f,16f</Size>
-                <ShowSeconds>false</ShowSeconds>
-                <!-- This has no effect, neither has 'text-align' in qss.
+                <MinimumSize>30,24</MinimumSize>
+                <MaximumSize>62,-1</MaximumSize>
+                <SizePolicy>min,min</SizePolicy>
+                <!-- <ShowSeconds>false</ShowSeconds>
+                This has no effect, neither has 'text-align' in qss.
                 <Align>center</Align>   -->
               </Time>
               <VuMeter><!-- latency usage -->
