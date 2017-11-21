@@ -1,6 +1,6 @@
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2017-11-4
+// description: 2017-11-5
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 // JSHint Configuration
@@ -301,17 +301,16 @@ VCI102.parameter4 = function(ch, midino, value, status, group) {
     VCI102.value4[ch] = value;
 };
 
-VCI102.prev_slot = function(ch, midino, value, status, group) {
+VCI102.no_slot = function(ch, midino, value, status, group) {
     if (value) {
-        engine.setValue(group, "focused_effect",
-                        (engine.getValue(group, "focused_effect") + 3) % 4);
+        engine.setValue(group, "focused_effect", 0);
     }
 };
 
 VCI102.next_slot = function(ch, midino, value, status, group) {
     if (value) {
         engine.setValue(group, "focused_effect",
-                        (engine.getValue(group, "focused_effect") + 1) % 4);
+                        engine.getValue(group, "focused_effect") % 3 + 1);
     }
 };
 
