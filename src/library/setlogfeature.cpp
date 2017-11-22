@@ -17,11 +17,11 @@ SetlogFeature::SetlogFeature(QObject* parent,
                              TrackCollection* pTrackCollection)
         : BasePlaylistFeature(parent, pConfig, pTrackCollection, "SETLOGHOME"),
           m_playlistId(-1) {
+    // we cleanup old history playlists that don't have any tracks
+    m_playlistDao.removeEmptyPlaylists(PlaylistDAO::HiddenType::PLHT_SET_LOG);
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.setlog",
                                                    true); //show all tracks
-    // we cleanup old history playlists that don't have any tracks
-    m_playlistDao.removeEmptyPlaylists(PlaylistDAO::HiddenType::PLHT_SET_LOG);
 
     //construct child model
     auto pRootItem = std::make_unique<TreeItem>(this);
