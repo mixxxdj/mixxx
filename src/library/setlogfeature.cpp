@@ -18,6 +18,8 @@ SetlogFeature::SetlogFeature(QObject* parent,
         : BasePlaylistFeature(parent, pConfig, pTrackCollection, "SETLOGHOME"),
           m_playlistId(-1) {
     // we cleanup old history playlists that don't have any tracks
+    // it's important that we do this before we bind the new model, otherwise
+    // it will have reference to soon deleted playlists
     m_playlistDao.removeEmptyPlaylists(PlaylistDAO::HiddenType::PLHT_SET_LOG);
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.setlog",
