@@ -66,8 +66,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                            tr("Stop playback and jump to start of track"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("end", tr("Jump To End"), tr("Jump to end of track"), transportMenu);
     addDeckAndSamplerControl("volume", tr("Volume"), tr("Volume Fader"), transportMenu, true);
-    addDeckAndSamplerControl("volume_set_one", tr("Full Volume"), tr("Sets volume to full"), transportMenu);
-    addDeckAndSamplerControl("volume_set_zero", tr("Zero Volume"), tr("Sets volume to zero"), transportMenu);
+    addDeckAndSamplerControl("volume_set_one", tr("Full Volume"), tr("Set to full volume"), transportMenu);
+    addDeckAndSamplerControl("volume_set_zero", tr("Zero Volume"), tr("Set to zero volume"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("pregain", tr("Track Gain"), tr("Track Gain knob"), transportMenu, true);
     addDeckAndSamplerControl("mute", tr("Mute"), tr("Mute button"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("eject", tr("Eject"), tr("Eject track"), transportMenu);
@@ -423,7 +423,12 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                        tr("Add to Auto DJ Queue (top)"),
                        tr("Prepend selected track to the Auto DJ Queue"),
                        m_libraryStr, libraryMenu);
+    addPrefixedControl("[Library]", "AutoDjAddReplace",
+                       tr("Add to Auto DJ Queue (replace)"),
+                       tr("Replace Auto DJ Queue with selected tracks"),
+                       m_libraryStr, libraryMenu);
 
+            
     // Load track (these can be loaded into any channel)
     addDeckAndSamplerControl("LoadSelectedTrack",
                              tr("Load Track"),
@@ -610,7 +615,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                    slotDescriptionPrefix,
                                    effectSlotMenu);
                 addPrefixedControl(effectSlotGroup, "meta",
-                                   tr("Meta Knob"), tr("Effect Meta Knob (control linked effect parameters"),
+                                   tr("Meta Knob"), tr("Effect Meta Knob (control linked effect parameters)"),
                                    slotDescriptionPrefix,
                                    effectSlotMenu);
                 addPrefixedControl(effectSlotGroup, "enabled",
@@ -703,11 +708,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                tr("Volume Fader"), microphoneMenu,
                                true, true, true);
     addMicrophoneAndAuxControl("volume_set_one",
-                               tr("Volume Full"),
+                               tr("Full Volume"),
                                tr("Set to full volume"), microphoneMenu,
                                true, true);
     addMicrophoneAndAuxControl("volume_set_zero",
-                               tr("Volume Zero"),
+                               tr("Zero Volume"),
                                tr("Set to zero volume"), microphoneMenu,
                                true, true);
     addMicrophoneAndAuxControl("mute",
@@ -740,11 +745,10 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     QMenu* autodjMenu = addSubmenu(tr("Auto DJ"));
     addControl("[AutoDJ]", "shuffle_playlist",
                tr("Auto DJ Shuffle"),
-               tr("Shuffle the content of the Auto DJ playlist"),
-               autodjMenu);
+               tr("Shuffle the content of the Auto DJ queue"), autodjMenu);
     addControl("[AutoDJ]", "skip_next",
                tr("Auto DJ Skip Next"),
-               tr("Skip the next track in the Auto DJ playlist"), autodjMenu);
+               tr("Skip the next track in the Auto DJ queue"), autodjMenu);
     addControl("[AutoDJ]", "fade_now",
                tr("Auto DJ Fade To Next"),
                tr("Trigger the transition to the next track"), autodjMenu);
@@ -766,15 +770,15 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addControl("[PreviewDeck]", "show_previewdeck",
                tr("Preview Deck Show/Hide"),
                tr("Show/hide the preview deck"), guiMenu);
-    addControl("[Master]", "maximize_library",
-               tr("Library Maximize/Restore"),
-               tr("Maximize the track library to take up all the available screen space."), guiMenu);
     addControl("[EffectRack1]", "show",
                tr("Effect Rack Show/Hide"),
                tr("Show/hide the effect rack"), guiMenu);
     addControl("[Library]", "show_coverart",
                tr("Cover Art Show/Hide"),
                tr("Show/hide cover art"), guiMenu);
+    addControl("[Master]", "maximize_library",
+               tr("Library Maximize/Restore"),
+               tr("Maximize the track library to take up all the available screen space."), guiMenu);
 
     QString spinnyTitle = tr("Vinyl Spinner Show/Hide");
     QString spinnyDescription = tr("Show/hide spinning vinyl widget");

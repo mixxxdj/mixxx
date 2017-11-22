@@ -17,11 +17,10 @@ EffectManifest ReverbEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team, CAPS Plugins");
     manifest.setVersion("1.0");
     manifest.setDescription("This is a port of the GPL'ed CAPS Reverb plugin, "
-            "which has the following description:"
+            "which has the following description:\n"
             "This is based on some of the famous Stanford CCRMA reverbs "
-            "(NRev, KipRev) all based on the Chowning/Moorer/Schroeder "
-            "reverberators, which use networks of simple allpass and comb"
-            "delay filters.");
+            "(NRev, KipRev) all based on the Chowning/Moorer/Schroeder reverberators, \n"
+            "which use networks of simple allpass and comb delay filters.");
 
     EffectManifestParameter* decay = manifest.addParameter();
     decay->setId("decay");

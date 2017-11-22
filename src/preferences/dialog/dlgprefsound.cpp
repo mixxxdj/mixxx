@@ -74,6 +74,13 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     connect(deviceSyncComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(syncBuffersChanged(int)));
 
+    engineClockComboBox->clear();
+    engineClockComboBox->addItem(tr("Soundcard Clock"));
+    engineClockComboBox->addItem(tr("Network Clock"));
+    engineClockComboBox->setCurrentIndex(0);
+    connect(engineClockComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(engineClockChanged(int)));
+
     keylockComboBox->clear();
     for (int i = 0; i < EngineBuffer::KEYLOCK_ENGINE_COUNT; ++i) {
         keylockComboBox->addItem(
@@ -125,6 +132,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     connect(audioBufferComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(settingChanged()));
     connect(deviceSyncComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(settingChanged()));
+    connect(engineClockComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(settingChanged()));
     connect(keylockComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(settingChanged()));
@@ -398,6 +407,12 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
         deviceSyncComboBox->setCurrentIndex(0);
     }
 
+    if (m_config.getForceNetworkClock()) {
+        engineClockComboBox->setCurrentIndex(1);
+    } else {
+        engineClockComboBox->setCurrentIndex(0);
+    }
+
     // Default keylock is Rubberband.
     int keylock_engine = m_pConfig->getValue(
             ConfigKey("[Master]", "keylock_engine"), 1);
@@ -483,6 +498,16 @@ void DlgPrefSound::syncBuffersChanged(int index) {
     } else {
         // "Disabled (short delay)")) = 1 buffer
         m_config.setSyncBuffers(1);
+    }
+}
+
+void DlgPrefSound::engineClockChanged(int index) {
+    if (index == 0) {
+        // "Soundcard Clock"
+        m_config.setForceNetworkClock(false);
+    } else {
+        // "Network Clock"
+        m_config.setForceNetworkClock(true);
     }
 }
 
