@@ -58,7 +58,7 @@ Variables:
                     <Channel><Variable name="chanNum"/></Channel>
                     <Size>50f,13f</Size>
                     <Alignment>center</Alignment>
-                    <!--Elide>right</Elide-->
+                    <Elide>right</Elide>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
                     </Connection>
@@ -105,8 +105,8 @@ Variables:
             <ObjectName>BPM</ObjectName>
             <Layout>stacked</Layout>
             <MinimumSize>50,18</MinimumSize>
-            <MaximumSize>50,30</MaximumSize>
-            <SizePolicy>f,p</SizePolicy>
+            <MaximumSize>50,25</MaximumSize>
+            <SizePolicy>f,min</SizePolicy>
             <Children>
               <Template src="skin:button_2state_right.xml">
                 <SetVariable name="TooltipId">sync_enabled</SetVariable>
@@ -160,7 +160,7 @@ Variables:
           <SliderComposed>
             <ObjectName>PitchSlider</ObjectName>
             <MinimumSize>50,75</MinimumSize>
-            <MaximumSize>50,106</MaximumSize>
+            <MaximumSize>50,136</MaximumSize>
             <SizePolicy>f,me</SizePolicy>
             <TooltipId>rate</TooltipId>
             <Handle>skin:/knobs_sliders/slider_pitch_handle.svg</Handle>

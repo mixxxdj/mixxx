@@ -802,15 +802,15 @@ WBeatSpinBox {
   text-align: center;
   padding-top: 1px;
   }
-  #SyncButtonOverlay[displayValue="0"]:hover {
+  #SyncButtonOverlay[displayValue="0"]:hover {/*
+    image: url(skin:/buttons/btn_sync.svg) no-repeat center center;*/
+    image: url(skin:/buttons/btn_key_match_hover.svg) no-repeat center center;
     border: 1px solid #ff4800;
   }
   #SyncButtonOverlay[displayValue="0"]:hover,
-  #KeyMatch:hover {
-    background-color: #333;
-  }
-  #SyncButtonOverlay[displayValue="0"]:hover {
-    image: url(skin:/buttons/btn_sync.svg) no-repeat center center;
+  #KeyMatch:hover {/*
+    background-color: #333;*/
+    background-color: rgba(70,70,70,180);
   }
   #SyncButtonOverlay[displayValue="1"],
   #SamplerSyncButton[displayValue="1"] {
@@ -826,35 +826,40 @@ WBeatSpinBox {
     }
     #RateUp:hover {
       image: url(skin:/buttons/btn_rate_up_hover.svg) no-repeat center center;
+      border: 1px solid #666;
     }
   #RateDown {
     image: url(skin:/buttons/btn_rate_down.svg) no-repeat center center;
     }
     #RateDown:hover {
       image: url(skin:/buttons/btn_rate_down_hover.svg) no-repeat center center;
+      border: 1px solid #666;
     }
 
     #KeyDisplay {
-      font-size: 13px/13px;
-      font-weight: bold;
+      font-size: 14px/14px;/*
+      font-weight: bold;*/
       padding: 0px;
     }
     #KeyMatch {
       }
       #KeyMatch:hover {
         image: url(skin:/buttons/btn_key_match_hover.svg) no-repeat center center;
+        border: 1px solid #666;
       }
     #KeyUp {
       image: url(skin:/buttons/btn_key_up.svg) no-repeat center center;
       }
       #KeyUp:hover {
         image: url(skin:/buttons/btn_key_up_hover.svg) no-repeat center center;
+        border: 1px solid #666;
       }
     #KeyDown {
       image: url(skin:/buttons/btn_key_down.svg) no-repeat center center;
       }
       #KeyDown:hover {
         image: url(skin:/buttons/btn_key_down_hover.svg) no-repeat center center;
+        border: 1px solid #666;
       }
 /* */
 

@@ -245,13 +245,15 @@ Description:
               <Time>
                 <TooltipId>time</TooltipId>
                 <ObjectName>Clock</ObjectName>
-                <MinimumSize>30,24</MinimumSize>
+                <MinimumSize>32,24</MinimumSize>
                 <MaximumSize>62,-1</MaximumSize>
                 <SizePolicy>min,min</SizePolicy>
                 <!-- <ShowSeconds>false</ShowSeconds>
+                <ClockFormat>12AP</ClockFormat>
                 This has no effect, neither has 'text-align' in qss.
                 <Align>center</Align>   -->
               </Time>
+
               <VuMeter><!-- latency usage -->
                 <Size>31f,3f</Size>
                 <TooltipId>audio_latency_usage</TooltipId>
