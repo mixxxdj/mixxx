@@ -193,14 +193,15 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
     if (effectiveChainEnableState != EffectProcessor::DISABLED) {
         // Ramping code inside the effects need to access the original samples
         // after writing to the output buffer. This requires not to use the same buffer
-        // for in and output: Also, ChannelMixer::applyEffectsAndMixChannels(Ramping)
+        // for in and output: Also, ChannelMixer::applyEffectsAndMixChannels
         // requires that the input buffer does not get modified.
         bool processingOccured = false;
         CSAMPLE* pIntermediateInput = pIn;
-        CSAMPLE* pIntermediateOutput = m_buffer1.data();
+        CSAMPLE* pIntermediateOutput;
 
         for (EngineEffect* pEffect: m_effects) {
             if (pEffect != nullptr) {
+                // Select an unused intermediate buffer for the next output
                 if (pIntermediateInput == m_buffer1.data()) {
                     pIntermediateOutput = m_buffer2.data();
                 } else {
@@ -212,6 +213,7 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
                                      numSamples, sampleRate,
                                      effectiveChainEnableState, groupFeatures)) {
                     processingOccured = true;
+                    // Output of this effect becomes the input of the next effect
                     pIntermediateInput = pIntermediateOutput;
                 }
             }

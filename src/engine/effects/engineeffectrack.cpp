@@ -65,10 +65,11 @@ bool EngineEffectRack::process(const ChannelHandle& inputHandle,
     } else {
         // Do not modify the input buffer; only fill the output buffer.
         CSAMPLE* pIntermediateInput = pIn;
-        CSAMPLE* pIntermediateOutput = m_buffer2.data();
+        CSAMPLE* pIntermediateOutput;
 
         for (EngineEffectChain* pChain : m_chains) {
             if (pChain != nullptr) {
+                // Select an unused intermediate buffer for the next output
                 if (pIntermediateInput == m_buffer1.data()) {
                     pIntermediateOutput = m_buffer2.data();
                 } else {
@@ -79,12 +80,15 @@ bool EngineEffectRack::process(const ChannelHandle& inputHandle,
                                     pIntermediateInput, pIntermediateOutput,
                                     numSamples, sampleRate, groupFeatures)) {
                     processingOccured = true;
+                    // Output of this chain becomes the input of the next chain.
                     pIntermediateInput = pIntermediateOutput;
                 }
             }
         }
+        // pIntermediateInput is the output of the last processed chain. It would be the
+        // intermediate input of the next chain if there was one.
         if (processingOccured) {
-            SampleUtil::copy(pOut, pIntermediateOutput, numSamples);
+            SampleUtil::copy(pOut, pIntermediateInput, numSamples);
         }
     }
     return processingOccured;

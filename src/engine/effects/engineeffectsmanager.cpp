@@ -215,7 +215,6 @@ void EngineEffectsManager::processInner(
         // 3. Mix the temporary buffer into pOut
         //    ChannelMixer::applyEffectsAndMixChannels use
         //    this to mix channels into pOut regardless of whether any effects were processsed.
-        bool processingOccured = false;
         CSAMPLE* pIntermediateInput = m_buffer1.data();
         if (oldGain == CSAMPLE_GAIN_ONE && newGain == CSAMPLE_GAIN_ONE) {
             // Avoid an unnecessary copy. EngineEffectRack::process does not modify the
@@ -226,9 +225,10 @@ void EngineEffectsManager::processInner(
                                             oldGain, newGain, numSamples);
         }
 
-        CSAMPLE* pIntermediateOutput = m_buffer2.data();
+        CSAMPLE* pIntermediateOutput;
         for (EngineEffectRack* pRack : racks) {
             if (pRack != nullptr) {
+                // Select an unused intermediate buffer for the next output
                 if (pIntermediateInput == m_buffer1.data()) {
                     pIntermediateOutput = m_buffer2.data();
                 } else {
@@ -238,17 +238,14 @@ void EngineEffectsManager::processInner(
                 if (pRack->process(inputHandle, outputHandle,
                                    pIntermediateInput, pIntermediateOutput,
                                    numSamples, sampleRate, groupFeatures)) {
-                    processingOccured = true;
+                    // Output of this rack becomes the input of the next rack.
                     pIntermediateInput = pIntermediateOutput;
                 }
             }
         }
-
-        if (processingOccured) {
-            SampleUtil::add(pOut, pIntermediateOutput, numSamples);
-        } else {
-            SampleUtil::add(pOut, pIntermediateInput, numSamples);
-        }
+        // pIntermediateInput is the output of the last processed rack. It would be the
+        // intermediate input of the next rack if there was one.
+        SampleUtil::add(pOut, pIntermediateInput, numSamples);
     }
 }
 
