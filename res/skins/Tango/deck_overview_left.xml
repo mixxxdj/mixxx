@@ -143,8 +143,7 @@ Variables:
 
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
-              <Transform><IsEqual>2</IsEqual><Not/></Transform>
+              <ConfigKey persist="true">[Tango],show_spinny_cover</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /[Spinny / Cover / none] -->

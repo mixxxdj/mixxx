@@ -21,12 +21,12 @@ Description:
         </Connection>
       </WidgetGroup>
 
-      <WidgetGroup><!-- VU Meter + Cover/Spinny when Channel Mixer is hidden -->
+      <WidgetGroup><!-- VU Meters + Cover/Spinny when Channel Mixer is hidden -->
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
           <WidgetGroup>
-            <Size>44f,0f</Size>
+            <Size>52f,0f</Size>
             <Connection>
               <ConfigKey>[Tango],vumeter</ConfigKey>
               <BindProperty>visible</BindProperty>
@@ -40,8 +40,7 @@ Description:
                 <Layout>horizontal</Layout>
                 <Size>228f,0f</Size>
                 <Connection>
-                  <ConfigKey>[Tango],spinny_cover_none</ConfigKey>
-                  <Transform><IsEqual>2</IsEqual><Not/></Transform>
+                  <ConfigKey>[Tango],show_spinny_cover</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
@@ -59,7 +58,7 @@ Description:
         </Connection>
       </WidgetGroup><!-- /VU Meter + Cover/Spinny when Channel Mixer is hidden -->
 
-      <WidgetGroup><!-- Channel Mixer, optional VU meter, EQs and Filter knobs -->
+      <WidgetGroup><!-- Channel Mixer, EQs and Filter knobs -->
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>

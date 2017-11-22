@@ -49,7 +49,7 @@ Variables:
 
       <WidgetGroup><!-- Spinny/Cover + VUMeter -->
         <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>min,me</SizePolicy>
         <Children>
 
           <WidgetGroup><!-- Spinny/Cover -->
@@ -57,20 +57,12 @@ Variables:
             <SizePolicy>min,me</SizePolicy>
             <Children>
               <WidgetGroup><!-- if BIG spinny is enabled -->
-                <Layout>vertical</Layout>
+                <Layout>horizontal</Layout>
                 <SizePolicy>min,me</SizePolicy>
                 <Children>
-                  <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>min,min</SizePolicy>
-                    <Children>
-                      <!-- margin to deck -->
-                      <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
-                      <Template src="skin:spinnyCover.xml"/>
-                    </Children>
-                  </WidgetGroup>
-                  <!-- push spinny to the top -->
-                  <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
+                  <!-- margin to deck -->
+                  <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+                  <Template src="skin:spinnyCover.xml"/>
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
@@ -79,14 +71,13 @@ Variables:
               </WidgetGroup><!-- if BIG spinny is enabled -->
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
-              <Transform><IsEqual>2</IsEqual><Not/></Transform>
+              <ConfigKey persist="true">[Tango],show_spinny_cover</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /Spinny/Cover -->
 
           <WidgetGroup>
-            <Size>5f,1me</Size>
+            <Size>3f,1me</Size>
             <Connection>
               <ConfigKey>[Tango],vumeter</ConfigKey>
               <BindProperty>visible</BindProperty>

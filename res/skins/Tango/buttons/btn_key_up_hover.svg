@@ -9,23 +9,24 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="12"
    height="13"
-   id="svg3043"
+   id="svg3286"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="btn_key_down.svg">
+   sodipodi:docname="btn_key_up_hover.svg">
   <metadata
-     id="metadata3051">
+     id="metadata3294">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <defs
-     id="defs3049" />
+     id="defs3292" />
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -35,20 +36,20 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1366"
-     inkscape:window-height="746"
-     id="namedview3047"
+     inkscape:window-width="640"
+     inkscape:window-height="480"
+     id="namedview3290"
      showgrid="false"
-     inkscape:snap-page="true"
      inkscape:zoom="18.153846"
      inkscape:cx="6"
      inkscape:cy="6.5"
      inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="svg3043" />
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg3286" />
   <path
-     d="M5.99999995 10.6602685883l5.0000000423-8.6602542193H.9999999077z"
-     id="path3045"
-     fill="#888888" />
+     d="M 6,1.3397458 1,10 h 10 z"
+     id="path3288"
+     inkscape:connector-curvature="0"
+     style="fill:#d2d2d2" />
 </svg>

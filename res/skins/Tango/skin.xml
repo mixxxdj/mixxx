@@ -75,6 +75,7 @@
       <attribute persist="true" config_key="[Tango],hotcues">1</attribute>
       <attribute persist="true" config_key="[Tango],8_hotcues">0</attribute>
       <attribute persist="true" config_key="[Tango],key_controls">1</attribute>
+      <attribute persist="true" config_key="[Tango],rate_key_buttons">0</attribute>
       <attribute persist="true" config_key="[Tango],loop_beatjump_controls">1</attribute>
       <attribute persist="true" config_key="[Tango],loop_sizes">0</attribute>
       <attribute persist="true" config_key="[Tango],mixerbar">1</attribute>
@@ -99,7 +100,8 @@
       <attribute persist="true" config_key="[Tango],stacked_waveforms">1</attribute>
       <attribute persist="true" config_key="[Tango],stars">1</attribute>
       <attribute persist="true" config_key="[Tango],trackComment">1</attribute>
-      <attribute persist="true" config_key="[Tango],spinny_cover_none">1</attribute>
+      <attribute persist="true" config_key="[Tango],show_spinny_cover">1</attribute>
+      <attribute persist="true" config_key="[Tango],spinny_or_cover">1</attribute>
       <attribute persist="true" config_key="[Tango],spinnyCoverBIG">1</attribute>
       <attribute persist="true" config_key="[Tango],spinnyWithCoverArt">1</attribute>
       <attribute persist="true" config_key="[Tango],vinylControlsDeck1">0</attribute>
