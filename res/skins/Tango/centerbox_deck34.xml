@@ -5,32 +5,107 @@ Description:
 <Template>
   <WidgetGroup>
     <ObjectName>AlignHCenter</ObjectName>
-    <Layout>horizontal</Layout>
+    <Layout>vertical</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
 
-      <WidgetGroup><!-- Mixxx logo, hidden in netboook mode -->
+      <WidgetGroup><!-- normal mode -->
         <Layout>vertical</Layout>
-        <Size>104f,31me</Size>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
-          <WidgetGroup><Size>1min,1me</Size></WidgetGroup>
+          <WidgetGroup><!-- center logo with with mixer (and Master VU) -->
+            <Layout>vertical</Layout>
+            <Size>122f,0f</Size>
+            <Connection>
+              <ConfigKey>[Tango],channel_mixer</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
 
-          <Template src="skin:button_2state_persist.xml">
-            <SetVariable name="Size">104f,26f</SetVariable>
-            <SetVariable name="state_0_pressed">logo_104x26_grey.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">logo_104x26_grey.svg</SetVariable>
-            <SetVariable name="state_1_pressed">logo_104x26.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">logo_104x26.svg</SetVariable>
-            <SetVariable name="ConfigKey">[Tango],colorLogo</SetVariable>
-          </Template>
+          <WidgetGroup><!-- center logo with without mixer and levels visible -->
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Size>126f,0f</Size>
+                <Connection>
+                  <ConfigKey>[Tango],vumeter</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey>[Tango],channel_mixer</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /center logo with without mixer and levels visible -->
 
-          <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
+          <WidgetGroup><!-- Logo -->
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <WidgetGroup><Size>1min,1me</Size></WidgetGroup>
+
+              <Template src="skin:button_2state_persist.xml">
+                <SetVariable name="Size">104f,26f</SetVariable>
+                <SetVariable name="state_0_pressed">logo_104x26_grey.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">logo_104x26_grey.svg</SetVariable>
+                <SetVariable name="state_1_pressed">logo_104x26.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">logo_104x26.svg</SetVariable>
+                <SetVariable name="ConfigKey">[Tango],colorLogo</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
+            </Children>
+          </WidgetGroup><!-- /Logo -->
         </Children>
         <Connection>
           <ConfigKey>[Tango],normal_mode</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- Mixxx logo, hidden in netboook mode -->
+      </WidgetGroup><!-- /normal mode -->
+
+      <WidgetGroup><!-- netboook mode -->
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <WidgetGroup><!-- spacer in between decks with mixer (and Master VU) -->
+            <Layout>vertical</Layout>
+            <Size>18f,0f</Size>
+            <Connection>
+              <ConfigKey>[Tango],channel_mixer</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup><!-- spacer in between decks without mixer and levels visible -->
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Size>18f,0f</Size>
+                <Connection>
+                  <ConfigKey>[Tango],vumeter</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey>[Tango],channel_mixer</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /spacer in between decks without mixer and levels visible -->
+
+        </Children>
+        <Connection>
+          <ConfigKey>[Tango],netbook_mode</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /netboook mode -->
     </Children>
   </WidgetGroup>
 </Template>
