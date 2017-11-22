@@ -4,33 +4,93 @@ Description:
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>AlignHCenter</ObjectName>
-    <Layout>horizontal</Layout>
+    <Layout>vertical</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
-
-      <WidgetGroup><!-- Mixxx logo, hidden in netboook mode -->
+      <WidgetGroup><!-- normal view -->
         <Layout>vertical</Layout>
-        <Size>104f,31me</Size>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
-          <WidgetGroup><Size>1min,1me</Size></WidgetGroup>
+          <WidgetGroup>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <Size>122f,0f</Size>
+                <Connection>
+                  <ConfigKey>[Tango],vumeter</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey>[Tango],channel_mixer</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
 
-          <Template src="skin:button_2state_persist.xml">
-            <SetVariable name="Size">104f,26f</SetVariable>
-            <SetVariable name="state_0_pressed">logo_104x26_grey.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">logo_104x26_grey.svg</SetVariable>
-            <SetVariable name="state_1_pressed">logo_104x26.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">logo_104x26.svg</SetVariable>
-            <SetVariable name="ConfigKey">[Tango],colorLogo</SetVariable>
-          </Template>
+          <WidgetGroup><!-- Mixxx logo, hidden in netboook mode -->
+            <ObjectName>AlignHCenter</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <WidgetGroup><Size>1min,1me</Size></WidgetGroup>
 
-          <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
+              <Template src="skin:button_2state_persist.xml">
+                <SetVariable name="Size">104f,26f</SetVariable>
+                <SetVariable name="state_0_pressed">logo_104x26_grey.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">logo_104x26_grey.svg</SetVariable>
+                <SetVariable name="state_1_pressed">logo_104x26.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">logo_104x26.svg</SetVariable>
+                <SetVariable name="ConfigKey">[Tango],colorLogo</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
+            </Children>
+          </WidgetGroup>
         </Children>
         <Connection>
           <ConfigKey>[Tango],normal_mode</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- Mixxx logo, hidden in netboook mode -->
+      </WidgetGroup><!-- /normal view -->
+
+      <WidgetGroup><!-- netbook mode -->
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <WidgetGroup><!-- Master level with mixer -->
+            <Size>18f,0f</Size>
+            <Connection>
+              <ConfigKey>[Tango],channel_mixer</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup><!-- Master level without mixer -->
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>vertical</Layout>
+            <Children>
+              <WidgetGroup>
+                <Size>22f,0f</Size>
+                <Connection>
+                  <ConfigKey>[Tango],vumeter</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey>[Tango],channel_mixer</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey>[Tango],netbook_mode</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /netbook mode -->
     </Children>
   </WidgetGroup>
 </Template>

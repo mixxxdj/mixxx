@@ -31,12 +31,10 @@ Description:
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <!-- master level meters -->
+              <!-- VU Meters -->
               <WidgetGroup>
                 <Layout>vertical</Layout>
                 <Size>56f,1min</Size>
-                <Children>
-                </Children>
                 <Connection>
                   <ConfigKey>[Tango],vumeter</ConfigKey>
                   <BindProperty>visible</BindProperty>
@@ -45,16 +43,14 @@ Description:
             </Children>
             <Connection>
               <ConfigKey>[Tango],channel_mixer</ConfigKey>
-              <BindProperty>visible</BindProperty>
               <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
 
           <WidgetGroup><!-- Master VU Meter spacer when Channel Mixer is visible -->
             <Layout>vertical</Layout>
-            <Size>22f,1min</Size>
-            <Children>
-            </Children>
+            <Size>18f,1min</Size>
             <Connection>
               <ConfigKey>[Tango],channel_mixer</ConfigKey>
               <BindProperty>visible</BindProperty>

@@ -136,12 +136,14 @@ WWidgetGroup {
   #SkinSettingsButton[displayValue="0"] {
     background-color: none;
   }
-  #SkinSettingsButton:hover {
-    background-color: #0f0f0f;
-  }
   #SkinSettingsButton[displayValue="1"],
   #SkinSettingsButton[displayValue="2"] {
     background-color: #202020;
+  }
+  #SkinSettingsButton[displayValue="0"]:hover,
+  #SkinSettingsButton[displayValue="1"]:hover,
+  #SkinSettingsButton[displayValue="2"]:hover {
+    background-color: #0f0f0f;
   }
 #DeckIndicatorSettings {
   margin-left: 17px;
@@ -1829,7 +1831,6 @@ qproperty-layoutAlignment: 'AlignRight | AlignBottom';
 #RateUp, #RateDown,
 #KeyUp, #KeyDown,
 #PitchSlider {
-  qproperty-layoutAlignment: 'AlignCenter';
   background-color: #252525;
   border-radius: 3px;
 }
