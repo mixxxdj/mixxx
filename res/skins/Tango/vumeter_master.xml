@@ -2,9 +2,7 @@
 Description:
   The master level meter.
   This template is embedded in vumeter_master_container.xml
-  whic controls visibility for various configurations.
-Variables:
-  group : [ChannelXY]
+  which controls visibility for various configurations.
 -->
 <Template>
   <WidgetGroup>

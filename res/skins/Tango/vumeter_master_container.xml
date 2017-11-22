@@ -1,14 +1,6 @@
 <!--
 Description:
-  The channel mixer containing
-  * EQ knobs incl. Kill buttons ] if enabled
-  * QuickEffect knob            ]
-  * Headphone cue button
-  * Volume slider
-  * Gain knob
-  * VUMeter
-Variables:
-  group : [ChannelXY]
+  Container for the master level meter, suiting various configurations.
 -->
 <Template>
   <WidgetGroup>
@@ -38,6 +30,7 @@ Variables:
             <Size>min,min</Size>
             <Layout>horizontal</Layout>
             <Children>
+              <Template src="skin:vumeter_master.xml"/>
               <!-- spacer for normal mode when Channel Mixer is hidden -->
               <WidgetGroup>
                 <Layout>vertical</Layout>
@@ -47,7 +40,6 @@ Variables:
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
-              <Template src="skin:vumeter_master.xml"/>
             </Children>
             <Connection>
               <ConfigKey persist="true">[Tango],vumeter</ConfigKey>
