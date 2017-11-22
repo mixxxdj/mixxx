@@ -195,33 +195,29 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
         // after writing to the output buffer. This requires not to use the same buffer
         // for in and output: Also, ChannelMixer::applyEffectsAndMixChannels(Ramping)
         // requires that the input buffer does not get modified.
-        int enabledEffectCount = 0;
+        bool processingOccured = false;
         CSAMPLE* pIntermediateInput = pIn;
         CSAMPLE* pIntermediateOutput = m_buffer1.data();
 
         for (EngineEffect* pEffect: m_effects) {
             if (pEffect != nullptr) {
-                if (pEffect->process(
-                        inputHandle, outputHandle,
-                        pIntermediateInput, pIntermediateOutput,
-                        numSamples, sampleRate,
-                            effectiveChainEnableState, groupFeatures)) {
+                if (pIntermediateInput == m_buffer1.data()) {
+                    pIntermediateOutput = m_buffer2.data();
+                } else {
+                    pIntermediateOutput = m_buffer1.data();
+                }
 
-                        ++enabledEffectCount;
-                        if (enabledEffectCount % 2) {
-                            pIntermediateInput = m_buffer1.data();
-                            pIntermediateOutput = m_buffer2.data();
-                        } else {
-                            pIntermediateInput = m_buffer2.data();
-                            pIntermediateOutput = m_buffer1.data();
-                        }
+                if (pEffect->process(inputHandle, outputHandle,
+                                     pIntermediateInput, pIntermediateOutput,
+                                     numSamples, sampleRate,
+                                     effectiveChainEnableState, groupFeatures)) {
+                    processingOccured = true;
+                    pIntermediateInput = pIntermediateOutput;
                 }
             }
         }
 
-        if (enabledEffectCount > 0) {
-            processingOccured = true;
-
+        if (processingOccured) {
             // pIntermediateInput is the output of the last processed effect. It would be the
             // intermediate input of the next effect if there was one.
             if (m_insertionType == EffectChain::INSERT) {

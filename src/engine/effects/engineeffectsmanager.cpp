@@ -213,9 +213,9 @@ void EngineEffectsManager::processInner(
         // 2. Apply gain to temporary buffer
         // 2. Process temporary buffer with each effect rack in series
         // 3. Mix the temporary buffer into pOut
-        //    ChannelMixer::applyEffectsAndMixChannels(Ramping) use
+        //    ChannelMixer::applyEffectsAndMixChannels use
         //    this to mix channels into pOut regardless of whether any effects were processsed.
-        int racksProcessed = 0;
+        bool processingOccured = false;
         CSAMPLE* pIntermediateInput = m_buffer1.data();
         if (oldGain == CSAMPLE_GAIN_ONE && newGain == CSAMPLE_GAIN_ONE) {
             // Avoid an unnecessary copy. EngineEffectRack::process does not modify the
@@ -229,24 +229,26 @@ void EngineEffectsManager::processInner(
         CSAMPLE* pIntermediateOutput = m_buffer2.data();
         for (EngineEffectRack* pRack : racks) {
             if (pRack != nullptr) {
+                if (pIntermediateInput == m_buffer1.data()) {
+                    pIntermediateOutput = m_buffer2.data();
+                } else {
+                    pIntermediateOutput = m_buffer1.data();
+                }
+
                 if (pRack->process(inputHandle, outputHandle,
                                    pIntermediateInput, pIntermediateOutput,
                                    numSamples, sampleRate, groupFeatures)) {
-                    ++racksProcessed;
-                    if (racksProcessed % 2) {
-                        pIntermediateInput = m_buffer2.data();
-                        pIntermediateOutput = m_buffer1.data();
-                    } else {
-                        pIntermediateInput = m_buffer1.data();
-                        pIntermediateOutput = m_buffer2.data();
-                    }
+                    processingOccured = true;
+                    pIntermediateInput = pIntermediateOutput;
                 }
             }
         }
 
-        // pIntermediateInput is the output of the last processed rack. It would be the
-        // intermediate input of the next rack if there was one.
-        SampleUtil::add(pOut, pIntermediateInput, numSamples);
+        if (processingOccured) {
+            SampleUtil::add(pOut, pIntermediateOutput, numSamples);
+        } else {
+            SampleUtil::add(pOut, pIntermediateInput, numSamples);
+        }
     }
 }
 

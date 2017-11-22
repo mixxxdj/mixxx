@@ -50,7 +50,7 @@ bool EngineEffectRack::process(const ChannelHandle& inputHandle,
                                const unsigned int numSamples,
                                const unsigned int sampleRate,
                                const GroupFeatureState& groupFeatures) {
-    int chainsProcessed = 0;
+    bool processingOccured = false;
     if (pIn == pOut) {
         // Effects are applied to the buffer in place
         for (EngineEffectChain* pChain : m_chains) {
@@ -58,38 +58,36 @@ bool EngineEffectRack::process(const ChannelHandle& inputHandle,
                 if (pChain->process(inputHandle, outputHandle,
                                     pIn, pOut,
                                     numSamples, sampleRate, groupFeatures)) {
-                    ++chainsProcessed;
+                    processingOccured = true;
                 }
             }
         }
     } else {
         // Do not modify the input buffer; only fill the output buffer.
         CSAMPLE* pIntermediateInput = pIn;
-        CSAMPLE* pIntermediateOutput = m_buffer1.data();
+        CSAMPLE* pIntermediateOutput = m_buffer2.data();
 
         for (EngineEffectChain* pChain : m_chains) {
             if (pChain != nullptr) {
+                if (pIntermediateInput == m_buffer1.data()) {
+                    pIntermediateOutput = m_buffer2.data();
+                } else {
+                    pIntermediateOutput = m_buffer1.data();
+                }
+
                 if (pChain->process(inputHandle, outputHandle,
                                     pIntermediateInput, pIntermediateOutput,
                                     numSamples, sampleRate, groupFeatures)) {
-                    ++chainsProcessed;
-                    if (chainsProcessed % 2) {
-                        pIntermediateInput = m_buffer1.data();
-                        pIntermediateOutput = m_buffer2.data();
-                    } else {
-                        pIntermediateInput = m_buffer2.data();
-                        pIntermediateOutput = m_buffer1.data();
-                    }
+                    processingOccured = true;
+                    pIntermediateInput = pIntermediateOutput;
                 }
             }
         }
-        // pIntermediateInput is the output of the last processed chain. It would be the
-        // intermediate input of the next chain if there was one.
-        if (chainsProcessed > 0) {
-            SampleUtil::copy(pOut, pIntermediateInput, numSamples);
+        if (processingOccured) {
+            SampleUtil::copy(pOut, pIntermediateOutput, numSamples);
         }
     }
-    return chainsProcessed;
+    return processingOccured;
 }
 
 bool EngineEffectRack::addEffectChain(EngineEffectChain* pChain, int iIndex) {
