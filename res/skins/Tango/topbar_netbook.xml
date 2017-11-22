@@ -92,14 +92,14 @@ Description:
 
           <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
-          <Template src="skin:button_2state_persist.xml">
+          <Template src="skin:button_2state_persist.xml"><!-- Loop/Beatjump -->
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">20f,20f</SetVariable>
-            <SetVariable name="state_0_unpressed">hotcues_off.svg</SetVariable>
-            <SetVariable name="state_0_pressed">hotcues_off.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">hotcues_on.svg</SetVariable>
-            <SetVariable name="state_1_pressed">hotcues_on.svg</SetVariable>
-            <SetVariable name="ConfigKey">[Tango],hotcues</SetVariable>
+            <SetVariable name="state_0_unpressed">loop_beatjump_off.svg</SetVariable>
+            <SetVariable name="state_0_pressed">loop_beatjump_off.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">loop_beatjump_on.svg</SetVariable>
+            <SetVariable name="state_1_pressed">loop_beatjump_on.svg</SetVariable>
+            <SetVariable name="ConfigKey">[Tango],loop_beatjump_controls</SetVariable>
           </Template>
 
           <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
