@@ -93,7 +93,7 @@ WWidgetGroup {
 
 #SkinSettings {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding: 2px 0px 0px 10px;
+  padding: 2px 0px 0px 0px;
   text-align: left;
   background-color: #333;
 }
@@ -115,19 +115,17 @@ WWidgetGroup {
     }
 
 #SkinSettingsCategory {
-  padding: 2px 2px 5px 2px;
+  padding: 2px 8px 1px 10px;
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  border-top: 1px solid #000;
-  border-left: 1px solid #000;
+    border: 1px solid #1e1e1e;
+    border-width: 0px 0px 3px 0px;
 }
   #CategoryLabel {
     font-size: 16px/16px;
     text-align: left;
-    margin-top: 3px;
-    padding-left: 13px;
+    padding: 5px 0px 0px 3px;
     color: #eeeeee;
     background-color: none;
-    border-top: none;
   }
 
 #SkinSettingsButton {
@@ -135,8 +133,15 @@ WWidgetGroup {
   font-size: 12px/14px;
   color: #d2d2d2;
   }
+  #SkinSettingsButton[displayValue="0"] {
+    background-color: none;
+  }
   #SkinSettingsButton:hover {
-    background: #151515;
+    background-color: #0f0f0f;
+  }
+  #SkinSettingsButton[displayValue="1"],
+  #SkinSettingsButton[displayValue="2"] {
+    background-color: #202020;
   }
 #DeckIndicatorSettings {
   margin-left: 17px;
@@ -158,11 +163,15 @@ WWidgetGroup {
 #SubmenuCover {
   background-color: rgba(51, 51, 51, 127);
 }
+#SubmenuLabel {
+  color: #666666;
+}
 #CoverSpinnyHint {
   font-family: "Times New Roman", serif;
-  font-size: 14px/14px;
+  font-size: 16px/14px;
   font-weight: bold;
   color: #f56200;
+  background-color: #333;
 }
 
 
