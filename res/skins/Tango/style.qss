@@ -139,6 +139,7 @@ WWidgetGroup {
   #SkinSettingsButton[displayValue="1"],
   #SkinSettingsButton[displayValue="2"] {
     background-color: #202020;
+    color: #eeeeee;
   }
   #SkinSettingsButton[displayValue="0"]:hover,
   #SkinSettingsButton[displayValue="1"]:hover,

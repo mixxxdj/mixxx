@@ -2,6 +2,7 @@
 Description:
   3-state button for skin settings menu.
 Variables:
+  width         :
   state_X_text  : label text for state X
   Setting       : persistent left-click control
 -->
