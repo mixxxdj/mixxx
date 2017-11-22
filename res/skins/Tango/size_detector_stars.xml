@@ -19,8 +19,10 @@ Controls:
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
+
       <!-- Play button -->
       <WidgetGroup><Size>63f,1f</Size></WidgetGroup>
+
       <!-- Separate Cue button -->
       <WidgetGroup>
         <Size>25f,1f</Size>
@@ -30,29 +32,38 @@ Controls:
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
-      <WidgetGroup><!-- HotCues 1-4 at minimum size -->
-        <Size>64f,1f</Size>
+
+      <!-- HotCues -->
+      <WidgetGroup>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetGroup><!-- HotCues 1-4 at minimum size -->
+            <Size>64f,1f</Size>
+          </WidgetGroup>
+          <WidgetGroup><!-- HotCues 5-8 at minimum size -->
+            <Size>64f,1f</Size>
+            <Connection>
+              <ConfigKey persist="true">[Tango],8_hotcues</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
         <Connection>
           <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
-          <Transform><IsEqual>1</IsEqual></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
-      <WidgetGroup><!-- HotCues 1-8 at minimum size -->
-        <Size>128f,1f</Size>
-        <Connection>
-          <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
-          <Transform><IsEqual>2</IsEqual></Transform>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
-      <WidgetGroup><!-- deck controls toggle -->
+
+      <!-- deck controls toggle -->
+      <WidgetGroup>
         <Size>15f,1f</Size>
         <Connection>
           <ConfigKey>[Tango],deck_controls_toggle</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /deck controls toggle -->
+
       <!-- spacers for deck controls that are set to be always visible -->
       <WidgetGroup><!-- keylock -->
         <Size>20f,1f</Size>
@@ -61,6 +72,7 @@ Controls:
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
+
       <WidgetGroup><!-- repeat -->
         <Size>22f,1f</Size>
         <Connection>
@@ -68,6 +80,7 @@ Controls:
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
+
       <WidgetGroup><!-- eject -->
         <Size>20f,1f</Size>
         <Connection>
@@ -82,6 +95,7 @@ Controls:
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
+
       <WidgetGroup><!-- xfader orientation -->
         <Size>20f,1f</Size>
         <Connection>
@@ -89,6 +103,7 @@ Controls:
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
+
       <WidgetGroup><!-- quantize -->
         <Size>22f,1f</Size>
         <Connection>
@@ -159,7 +174,7 @@ Controls:
       <SizeAwareStack><!-- Size detector -->
         <Children>
           <WidgetStack><!-- Not enough space for stars -->
-            <SizePolicy>me,me</SizePolicy>
+            <SizePolicy>me,f</SizePolicy>
             <MinimumSize>0,1</MinimumSize>
             <MaximumSize>82,1</MaximumSize>
             <Children>
@@ -169,7 +184,7 @@ Controls:
           </WidgetStack>
 
           <WidgetStack><!-- when there is enough space for stars (min 83px) show them. -->
-            <SizePolicy>me,me</SizePolicy>
+            <SizePolicy>me,f</SizePolicy>
             <MinimumSize>83,1</MinimumSize>
             <MaximumSize>-1,1</MaximumSize>
             <Children>

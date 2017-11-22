@@ -683,8 +683,8 @@ Description:
                   </WidgetGroup>
 
                   <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="state_0_text">      Cover on Spinny</SetVariable>
-                    <SetVariable name="state_1_text"> &#10004; Cover on Spinny</SetVariable>
+                    <SetVariable name="state_0_text">      Spinny with Cover</SetVariable>
+                    <SetVariable name="state_1_text"> &#10004; Spinny with Cover</SetVariable>
                     <SetVariable name="Setting">[Tango],spinnyWithCoverArt</SetVariable>
                   </Template>
                 </Children>
