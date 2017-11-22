@@ -51,8 +51,8 @@ Variables:
           </Spinny>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
-          <Transform><IsEqual>0</IsEqual></Transform>
+          <ConfigKey persist="true">[Tango],spinny_or_cover</ConfigKey>
+          <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
@@ -63,8 +63,7 @@ Variables:
         <Group><Variable name="group"/></Group>
         <DefaultCover>skin:/graphics/cover_default.svg</DefaultCover>
         <Connection>
-          <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
-          <Transform><IsEqual>1</IsEqual></Transform>
+          <ConfigKey persist="true">[Tango],spinny_or_cover</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </CoverArt>
@@ -82,10 +81,10 @@ Variables:
 
       <WidgetGroup>
         <Layout>vertical</Layout>
-        <Size>1me,25me</Size>
+        <Size>0me,25me</Size>
         <Children>
-          <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,3f</Size></WidgetGroup>
-          <WidgetGroup><ObjectName>RoundFiller25</ObjectName><Size>1me,22me</Size></WidgetGroup>
+          <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0me,3f</Size></WidgetGroup>
+          <WidgetGroup><ObjectName>RoundFiller25</ObjectName><Size>0me,22me</Size></WidgetGroup>
         </Children>
         <Connection>
           <ConfigKey>[Tango],loop_beatjump_controls</ConfigKey>
