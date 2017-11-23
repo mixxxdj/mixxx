@@ -17,6 +17,7 @@
 
 AnalyzerManager::AnalyzerManager(UserSettingsPointer pConfig,
         mixxx::DbConnectionPoolPtr pDbConnectionPool) :
+        m_pDbConnectionPool(std::move(pDbConnectionPool)),
         m_pConfig(pConfig),
         m_nextWorkerId(0),
         m_defaultTrackQueue(),
@@ -24,24 +25,25 @@ AnalyzerManager::AnalyzerManager(UserSettingsPointer pConfig,
         m_defaultWorkers(),
         m_priorityWorkers(),
         m_pausedWorkers(),
-        m_pDbConnectionPool(std::move(pDbConnectionPool)) {
+        m_endingWorkers() {
 
     int ideal = QThread::idealThreadCount();
     int maxThreads = m_pConfig->getValue<int>(ConfigKey("[Library]", "MaxAnalysisThreads"), ideal);
     if (ideal < 1) {
         if (maxThreads > 0 && maxThreads <= 32) {
             qDebug() << "Cannot detect idealThreadCount. maxThreads is: " << maxThreads;
-            ideal = maxThreads;
         }
         else {
             qWarning() << "Cannot detect idealThreadCount and maxThreads is incorrect: " << maxThreads <<". Using the sane value of 1";
-            ideal = 1;
+            maxThreads = ideal;
+            m_pConfig->setValue<int>(ConfigKey("[Library]", "MaxAnalysisThreads"),  maxThreads);
         }
     }
-    if (maxThreads <= 0 || maxThreads > ideal) {
+    else if (maxThreads <= 0 || maxThreads > ideal) {
         qWarning() << "maxThreads value is incorrect: " << maxThreads << ". Changing it to " << ideal;
         //Assume the value is incorrect, so fix it.
         maxThreads = ideal;
+        m_pConfig->setValue<int>(ConfigKey("[Library]", "MaxAnalysisThreads"),  maxThreads);
     }
     m_MaxThreads = maxThreads;
 }
@@ -62,23 +64,17 @@ bool AnalyzerManager::isDefaultQueueActive() {
 
 void AnalyzerManager::stop(bool shutdown) {
     m_defaultTrackQueue.clear();
-    QListIterator<AnalyzerWorker*> it(m_defaultWorkers);
-    while (it.hasNext()) {
-        AnalyzerWorker* worker = it.next();
+    foreach(AnalyzerWorker* worker, m_defaultWorkers) {
         worker->endProcess();
         m_endingWorkers.append(worker);
     }
-    QListIterator<AnalyzerWorker*> it3(m_pausedWorkers);
-    while (it3.hasNext()) {
-        AnalyzerWorker* worker = it3.next();
+    foreach(AnalyzerWorker* worker, m_pausedWorkers) {
         worker->endProcess();
         m_endingWorkers.append(worker);
     }
     if (shutdown) {
         m_prioTrackQueue.clear();
-        QListIterator<AnalyzerWorker*> it2(m_priorityWorkers);
-        while (it2.hasNext()) {
-            AnalyzerWorker* worker = it2.next();
+        foreach(AnalyzerWorker* worker, m_priorityWorkers) {
             worker->endProcess();
             m_endingWorkers.append(worker);
         }

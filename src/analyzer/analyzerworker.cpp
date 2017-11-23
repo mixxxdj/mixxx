@@ -70,7 +70,7 @@ AnalyzerWorker::AnalyzerWorker(UserSettingsPointer pConfig,
     m_pDbConnectionPool(std::move(pDbConnectionPool)) {
 
     m_pAnalysisDao = std::make_unique<AnalysisDao>(m_pConfig);
-	createAnalyzers();
+    createAnalyzers();
 
 }
 

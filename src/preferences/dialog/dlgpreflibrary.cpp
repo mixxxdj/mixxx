@@ -149,9 +149,6 @@ void DlgPrefLibrary::initializeDirList() {
 }
 
 void DlgPrefLibrary::initializeThreadsCombo() {
-    disconnect(cmbMaxThreads, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(slotMaxThreadsChanged(int)));
-
     // save which index was selected
     const int selected = cmbMaxThreads->currentIndex();
     // clear and fill model
@@ -163,8 +160,6 @@ void DlgPrefLibrary::initializeThreadsCombo() {
         cmbMaxThreads->addItem(displayname);
     }
     cmbMaxThreads->setCurrentIndex(selected);
-    connect(cmbMaxThreads, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(slotMaxThreadsChanged(int)));
 }
 
 void DlgPrefLibrary::slotExtraPlugins() {
@@ -228,16 +223,6 @@ void DlgPrefLibrary::slotUpdate() {
     setLibraryFont(m_originalTrackTableFont);
 
     m_iOriginalMaxThreads = m_pconfig->getValue<int>(ConfigKey("[Library]", "MaxAnalysisThreads"));
-    int ideal = QThread::idealThreadCount();
-    if (QThread::idealThreadCount() < 1) {
-        ideal = 1;
-    }
-    if (m_iOriginalMaxThreads <= 0 || m_iOriginalMaxThreads > 32) {
-        //Assume the value is incorrect, so fix it.
-        m_iOriginalMaxThreads = ideal;
-        m_pconfig->setValue<int>(ConfigKey("[Library]", "MaxAnalysisThreads"), 
-                            m_iOriginalMaxThreads);
-    }
     //setCurrentIndex is zero based. threads is one based.
     cmbMaxThreads->setCurrentIndex(m_iOriginalMaxThreads-1);
 

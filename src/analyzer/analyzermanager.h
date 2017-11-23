@@ -27,7 +27,7 @@ enum class WorkerType {
 
 public:
     //There should exist only one AnalyzerManager in order to control the amount of threads executing.
-    AnalyzerManager::AnalyzerManager(UserSettingsPointer pConfig,
+    AnalyzerManager(UserSettingsPointer pConfig,
         mixxx::DbConnectionPoolPtr pDbConnectionPool);
     virtual ~AnalyzerManager();
 
