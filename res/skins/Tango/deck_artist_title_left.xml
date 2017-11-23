@@ -19,7 +19,7 @@ Variables:
 
       <WidgetGroup><!-- Title/Artist -->
         <Layout>vertical</Layout>
-        <SizePolicy>min,me</SizePolicy>
+        <SizePolicy>i,me</SizePolicy>
         <Children>
           <TrackProperty>
             <TooltipId>track_title</TooltipId>
