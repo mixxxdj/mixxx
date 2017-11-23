@@ -11,7 +11,7 @@
 
 
 struct TremoloGroupState {
-    enum State {IDLE, ATTACK, HOLD, RELEASE} state;
+    enum class State {IDLE, ATTACK, HOLD, RELEASE} state;
     double gain;
     unsigned int currentFrame;
     unsigned int holdCounter;
@@ -20,7 +20,7 @@ struct TremoloGroupState {
 class TremoloEffect : public PerChannelEffectProcessor<TremoloGroupState> {
   public:
     TremoloEffect(EngineEffect* pEffect, const EffectManifest& manifest);
-    virtual ~TremoloEffect();
+    ~TremoloEffect() override;
 
     static QString getId();
     static EffectManifest getManifest();
@@ -32,7 +32,7 @@ class TremoloEffect : public PerChannelEffectProcessor<TremoloGroupState> {
                         const unsigned int numSamples,
                         const unsigned int sampleRate,
                         const EffectProcessor::EnableState enableState,
-                        const GroupFeatureState& groupFeatures);
+                        const GroupFeatureState& groupFeatures) override;
 
   private:
     QString debugString() const {

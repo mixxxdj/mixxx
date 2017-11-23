@@ -21,15 +21,22 @@ EffectManifest TremoloEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
     manifest.setName(QObject::tr("Tremolo"));
+    manifest.setShortName(QObject::tr("Tremolo"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
-    manifest.setDescription("");
+    manifest.setDescription("An amplitude modulation effect");
 
     EffectManifestParameter* rate = manifest.addParameter();
     rate->setId("rate");
     rate->setName(QObject::tr("Rate"));
-    rate->setDescription(QObject::tr(""));
+    rate->setShortName(QObject::tr("Rate"));
+    rate->setDescription(QObject::tr("Controls the rate of the effect\n"
+    "1/8 - 1 beat if tempo is detected (decks and samplers) \n"
+    "1/8 - 1 seconds if no tempo is detected (mic & aux inputs, master mix)"));
     rate->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    rate->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    rate->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
+    rate->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);    
     rate->setDefault(0.5);
     rate->setMinimum(0);
     rate->setMaximum(1);
@@ -37,7 +44,9 @@ EffectManifest TremoloEffect::getManifest() {
     EffectManifestParameter* shape = manifest.addParameter();
     shape->setId("shape");
     shape->setName(QObject::tr("Shape"));
-    shape->setDescription(QObject::tr(""));
+    shape->setShortName(QObject::tr("Shape"));
+    shape->setDescription(QObject::tr("Sets the duration for sound passing through the effect"
+    "10% - 90% of the effect period"));
     shape->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     shape->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     shape->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -50,7 +59,7 @@ EffectManifest TremoloEffect::getManifest() {
     quantize->setName("Quantize");
     quantize->setShortName("Quantize");
     quantize->setDescription(
-        "Round the Time parameter to the nearest 1/4 beat.");
+        "Round the Rate parameter to the nearest whole division of a beat.");
     quantize->setControlHint(
         EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     quantize->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
@@ -62,8 +71,9 @@ EffectManifest TremoloEffect::getManifest() {
     EffectManifestParameter* triplet = manifest.addParameter();
     triplet->setId("triplet");
     triplet->setName("Triplets");
+    triplet->setShortName(QObject::tr("Triplet"));
     triplet->setDescription("When the Quantize parameter is enabled, divide "
-                            "rounded 1/4 beats of Time parameter by 3.");
+                            "rounded 1/4 beats of Rate parameter by 3.");
     triplet->setControlHint(
         EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
@@ -75,7 +85,9 @@ EffectManifest TremoloEffect::getManifest() {
     EffectManifestParameter *phase = manifest.addParameter();
     phase->setId("phase");
     phase->setName("Phase");
-    phase->setDescription("");
+    phase->setShortName(QObject::tr("Phase"));
+    phase->setDescription("Shifts the start of the effect from the beginning of the effect period"
+    "0 - 1/2 of period shift");
     phase->setControlHint(
         EffectManifestParameter::ControlHint::KNOB_LINEAR);
     phase->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
@@ -115,11 +127,11 @@ void TremoloEffect::processChannel(const ChannelHandle& handle,
     const double shape  = m_pShapeParameter->value();
 
     // Used to divide a beat by a power of 2
-    int divider = pow(2, floor(3*rate));
+    int divider = pow(2, floor(3 * rate));
 
     // Attack & Release increase with the divider factor
-    double attackInc = kBaseAttackInc*divider;
-    double releaseInc = kBaseReleaseInc*divider;
+    double attackInc = kBaseAttackInc * divider;
+    double releaseInc = kBaseReleaseInc * divider;
 
     // Get channel specific state variable
     unsigned int currentFrame    = pState->currentFrame;
@@ -131,7 +143,7 @@ void TremoloEffect::processChannel(const ChannelHandle& handle,
     unsigned int beatPeriod = 1;
     if (enableState == EffectProcessor::ENABLING) {        
         // Start with the gate closed
-        state = TremoloGroupState::IDLE;
+        state = TremoloGroupState::State::IDLE;
         gain = 0;
         currentFrame = 0;   
         beatPeriod   = sampleRate; // 1 second
@@ -139,17 +151,17 @@ void TremoloEffect::processChannel(const ChannelHandle& handle,
 
     // Set period and current frame from beatgrid, 
     if (groupFeatures.has_beat_length_sec && groupFeatures.has_beat_fraction) {
-        beatPeriod   = groupFeatures.beat_length_sec*sampleRate;
-        currentFrame = groupFeatures.beat_fraction*beatPeriod;
+        beatPeriod   = groupFeatures.beat_length_sec * sampleRate;
+        currentFrame = groupFeatures.beat_fraction * beatPeriod;
     }
 
     // Adjust trigger period
     unsigned int triggerPeriod;
-    double period = 1-rate;
+    double period = 1 - rate;
     if (groupFeatures.has_beat_length_sec) {
         // triggerPeriod is a number of beats
         if (m_pQuantizeParameter->toBool()) {
-            period = 1.0/divider;
+            period = 1.0 / divider;
             
             if (m_pTripletParameter->toBool()) {
                 period /= 3.0;
@@ -167,20 +179,20 @@ void TremoloEffect::processChannel(const ChannelHandle& handle,
     // triggerTime : offset for the gate trigger
     unsigned int triggerTime;
     if (m_pPhaseParameter->toBool()) {
-        triggerTime = triggerPeriod/2;
+        triggerTime = triggerPeriod / 2;
     } else {
         triggerTime = 0;
     }
 
     // holdTime : number of frames spent in the Hold state
     unsigned int holdTime;
-    double attackTime  = kMaxGain/attackInc;
-    double releaseTime = kMaxGain/releaseInc;
-    holdTime = std::max(0.0, floor(triggerPeriod*shape-attackTime-releaseTime));
+    double attackTime  = kMaxGain / attackInc;
+    double releaseTime = kMaxGain / releaseInc;
+    holdTime = std::max(0.0, floor(triggerPeriod * shape - attackTime - releaseTime));
     
     for (unsigned int i = 0; i < numSamples; i+=kNumberOfChannels) {
          if (currentFrame % triggerPeriod == triggerTime) {
-            state = TremoloGroupState::ATTACK;
+            state = TremoloGroupState::State::ATTACK;
             if (currentFrame % beatPeriod == 1) {
                 currentFrame = 0;
             }
@@ -190,41 +202,41 @@ void TremoloEffect::processChannel(const ChannelHandle& handle,
         // Gate state machine : Idle->Attack->Hold->Release->Idle
         switch (state) {
             // Idle : Gain = 0
-            case TremoloGroupState::IDLE:
+            case TremoloGroupState::State::IDLE:
                 gain = 0;
                 break;
 
             // Attack : Increase gain up to maxGain, then Hold
-            case TremoloGroupState::ATTACK:
+            case TremoloGroupState::State::ATTACK:
                 gain += attackInc;
-                if(gain >= kMaxGain) {
-                    state = TremoloGroupState::HOLD;
+                if (gain >= kMaxGain) {
+                    state = TremoloGroupState::State::HOLD;
                     holdCounter = holdTime;
                 }
                 break;
 
             // Hold : Hold maxGain for holdCounter samples
-            case TremoloGroupState::HOLD:
+            case TremoloGroupState::State::HOLD:
                 gain = kMaxGain;
-                if(holdCounter == 0) {
-                    state = TremoloGroupState::RELEASE;  
+                if (holdCounter == 0) {
+                    state = TremoloGroupState::State::RELEASE;  
                 }
 
                 holdCounter--;
                 break;
 
             // Release : Decrease gain to 0, then Idle
-            case TremoloGroupState::RELEASE:
+            case TremoloGroupState::State::RELEASE:
                 gain -= releaseInc;
-                if(gain <= 0) {
-                    state = TremoloGroupState::IDLE;
+                if (gain <= 0) {
+                    state = TremoloGroupState::State::IDLE;
                 }
                 break;
         }
 
-        for(int channel = 0; channel < kNumberOfChannels; channel++)
+        for (int channel = 0; channel < kNumberOfChannels; channel++)
         {
-            pOutput[i+channel]   = gain*pInput[i+channel];
+            pOutput[i+channel]   = gain * pInput[i+channel];
         }
     }
 
