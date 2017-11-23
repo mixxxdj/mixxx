@@ -245,9 +245,9 @@ Description:
               <Time>
                 <TooltipId>time</TooltipId>
                 <ObjectName>Clock</ObjectName>
-                <MinimumSize>32,24</MinimumSize>
-                <MaximumSize>62,-1</MaximumSize>
-                <SizePolicy>min,min</SizePolicy>
+                <MinimumSize>32,20</MinimumSize>
+                <MaximumSize>62,20</MaximumSize>
+                <SizePolicy>min,f</SizePolicy>
                 <!-- <ShowSeconds>false</ShowSeconds>
                 <ClockFormat>12AP</ClockFormat>
                 This has no effect, neither has 'text-align' in qss.

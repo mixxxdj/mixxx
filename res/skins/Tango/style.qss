@@ -1108,27 +1108,25 @@ WBeatSpinBox {
   background-color: transparent;
   }
   #BroadcastButton[displayValue="0"] {
-    background: transparent url(skin:/buttons/btn_broadcast_off.svg) no-repeat center center;
+    image: url(skin:/buttons/btn_broadcast_off.svg) no-repeat center center;
     }
     #BroadcastButton[displayValue="0"]:hover {
-      background: #0f0f0f url(skin:/buttons/btn_broadcast_off_hover.svg) no-repeat center center;
+      image: url(skin:/buttons/btn_broadcast_off_hover.svg) no-repeat center center;
       }
   #BroadcastButton[displayValue="1"] {
-    background: transparent url(skin:/buttons/btn_broadcast_connecting.svg) no-repeat center center;
+    image: url(skin:/buttons/btn_broadcast_connecting.svg) no-repeat center center;
     }
   #BroadcastButton[displayValue="2"] {
-    background: transparent url(skin:/buttons/btn_broadcast_connected.svg) no-repeat center center;
+    image: url(skin:/buttons/btn_broadcast_connected.svg) no-repeat center center;
     }
   #BroadcastButton[displayValue="3"] {
-    background: transparent url(skin:/buttons/btn_broadcast_failure.svg) no-repeat center center;
+    image: url(skin:/buttons/btn_broadcast_failure.svg) no-repeat center center;
     }
   #BroadcastButton[displayValue="4"] {
-    background: transparent url(skin:/buttons/btn_broadcast_warning.svg) no-repeat center center;
+    image: url(skin:/buttons/btn_broadcast_warning.svg) no-repeat center center;
     }
-    #BroadcastButton[displayValue="2"]:hover,
-    #BroadcastButton[displayValue="3"]:hover,
-    #BroadcastButton[displayValue="4"]:hover {
-      background: #0f0f0f url(skin:/buttons/btn_broadcast_off.svg) no-repeat center center;
+    #BroadcastButton:hover {
+      background-color: #0f0f0f;
     }
 
 #BroadcastButtonNetbook {
@@ -1138,7 +1136,7 @@ WBeatSpinBox {
     background: transparent url(skin:/buttons/btn_broadcast_off_netbook.svg) no-repeat center center;
     }
     #BroadcastButtonNetbook[displayValue="0"]:hover {
-      background: #0f0f0f url(skin:/buttons/btn_broadcast_off_hover_netbook.svg) no-repeat center center;
+      image: url(skin:/buttons/btn_broadcast_off_hover_netbook.svg) no-repeat center center;
       }
   #BroadcastButtonNetbook[displayValue="1"] {
     background: transparent url(skin:/buttons/btn_broadcast_connecting_netbook.svg) no-repeat center center;
@@ -1152,10 +1150,8 @@ WBeatSpinBox {
   #BroadcastButtonNetbook[displayValue="4"] {
     background: transparent url(skin:/buttons/btn_broadcast_warning_netbook.svg) no-repeat center center;
     }
-    #BroadcastButtonNetbook[displayValue="2"]:hover,
-    #BroadcastButtonNetbook[displayValue="3"]:hover,
-    #BroadcastButtonNetbook[displayValue="4"]:hover {
-      background: #0f0f0f url(skin:/buttons/btn_broadcast_off_netbook.svg) no-repeat center center;
+    #BroadcastButtonNetbook:hover {
+      background-color: #0f0f0f;
     }
 
 #SkinSettingsToggler[displayValue="0"] {
