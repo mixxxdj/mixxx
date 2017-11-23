@@ -335,7 +335,8 @@ void BaseSqlTableModel::select() {
     qStableSort(rowInfos.begin(), rowInfos.end());
 
     TrackId2Rows trackIdToRows;
-    // We expect almost all rows to be valid
+    // We expect almost all rows to be valid and that only a few tracks
+    // are contained multiple times in rowInfos (e.g. in history playlists)
     trackIdToRows.reserve(rowInfos.size());
     for (int i = 0; i < rowInfos.size(); ++i) {
         const RowInfo& rowInfo = rowInfos[i];
@@ -348,7 +349,9 @@ void BaseSqlTableModel::select() {
         }
         trackIdToRows[rowInfo.trackId].push_back(i);
     }
-    DEBUG_ASSERT(trackIdToRows.size() == rowInfos.size());
+    // The number of unique tracks cannot be greater than the
+    // number of total rows returned by the query
+    DEBUG_ASSERT(trackIdToRows.size() <= rowInfos.size());
 
     // We're done! Issue the update signals and replace the master maps.
     replaceRows(
