@@ -84,9 +84,6 @@
         </item>
         <item row="1" column="6">
          <widget class="QPushButton" name="btnCreateConnection">
-          <property name="styleSheet">
-           <string notr="true">padding: 4px 7px 4px 7px;</string>
-          </property>
           <property name="text">
            <string>Create new connection</string>
           </property>
