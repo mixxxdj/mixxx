@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="12"
-   height="13"
-   id="svg3286"
    version="1.1"
-   inkscape:version="0.48.4 r9939"
-   sodipodi:docname="btn_key_up_hover.svg">
+   width="12"
+   height="11"
+   id="svg3286">
   <metadata
      id="metadata3294">
     <rdf:RDF>
@@ -27,29 +25,8 @@
   </metadata>
   <defs
      id="defs3292" />
-  <sodipodi:namedview
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="640"
-     inkscape:window-height="480"
-     id="namedview3290"
-     showgrid="false"
-     inkscape:zoom="18.153846"
-     inkscape:cx="6"
-     inkscape:cy="6.5"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
-     inkscape:window-maximized="0"
-     inkscape:current-layer="svg3286" />
   <path
-     d="M 6,1.3397458 1,10 h 10 z"
+     d="M 6,1.2057714 1.5,9 h 9 z"
      id="path3288"
-     inkscape:connector-curvature="0"
      style="fill:#d2d2d2" />
 </svg>

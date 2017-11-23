@@ -9,7 +9,7 @@
    xmlns="http://www.w3.org/2000/svg"
    version="1.1"
    width="12"
-   height="13"
+   height="11"
    id="svg3043">
   <metadata
      id="metadata3051">
@@ -26,7 +26,7 @@
   <defs
      id="defs3049" />
   <path
-     d="M 9.660269,6.5000001 1.000014,11.5 l 0,-10 z"
+     d="M 9.7942295,5.5000001 2,10 2,1 z"
      id="path3045"
      style="fill:#888888" />
 </svg>
