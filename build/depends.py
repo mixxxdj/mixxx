@@ -632,6 +632,12 @@ class Reverb(Dependence):
     def sources(self, build):
         return ['#lib/reverb/Reverb.cc']
 
+class QtKeychain(Dependence):
+    def configure(self, build, conf):
+        libs = ['qtkeychain']
+        if not conf.CheckLib(libs):
+            raise Exception(
+                "Could not find qtkeychain.")
 
 class MixxxCore(Feature):
 
@@ -680,9 +686,11 @@ class MixxxCore(Feature):
                    "preferences/settingsmanager.cpp",
                    "preferences/replaygainsettings.cpp",
                    "preferences/broadcastsettings.cpp",
+                   "preferences/broadcastsettings_legacy.cpp",
+                   "preferences/broadcastsettingsmodel.cpp",
+                   "preferences/broadcastprofile.cpp",
                    "preferences/upgrade.cpp",
                    "preferences/dlgpreferencepage.cpp",
-
 
                    "effects/effectmanifest.cpp",
                    "effects/effectmanifestparameter.cpp",
@@ -755,7 +763,8 @@ class MixxxCore(Feature):
                    "engine/enginevumeter.cpp",
                    "engine/enginesidechaincompressor.cpp",
                    "engine/sidechain/enginesidechain.cpp",
-                   "engine/sidechain/networkstreamworker.cpp",
+                   "engine/sidechain/networkoutputstreamworker.cpp",
+                   "engine/sidechain/networkinputstreamworker.cpp",
                    "engine/enginexfader.cpp",
                    "engine/enginemicrophone.cpp",
                    "engine/enginedeck.cpp",

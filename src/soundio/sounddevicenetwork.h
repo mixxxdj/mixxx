@@ -2,6 +2,7 @@
 #define SOUNDDEVICENETWORK_H
 
 #include <QString>
+#include <QSharedPointer>
 #include <QThread>
 
 #include "util/performancetimer.h"
@@ -40,6 +41,14 @@ class SoundDeviceNetwork : public SoundDevice {
   private:
     void updateCallbackEntryToDacTime();
     void updateAudioLatencyUsage();
+
+    void workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker,
+            int outChunkSize, int readAvailable,
+            CSAMPLE* dataPtr1, ring_buffer_size_t size1,
+            CSAMPLE* dataPtr2, ring_buffer_size_t size2);
+    void workerWrite(NetworkOutputStreamWorkerPtr pWorker,
+            const CSAMPLE* buffer, int frames);
+    void workerWriteSilence(NetworkOutputStreamWorkerPtr pWorker, int frames);
 
     QSharedPointer<EngineNetworkStream> m_pNetworkStream;
     std::unique_ptr<FIFO<CSAMPLE> > m_outputFifo;

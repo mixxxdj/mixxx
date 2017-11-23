@@ -1,6 +1,10 @@
-#ifndef ENGINE_SIDECHAIN_ENGINEBROADCAST_H
-#define ENGINE_SIDECHAIN_ENGINEBROADCAST_H
+// shoutconnection.h
+// Created July 4th 2017 by Stéphane Lepin <stephane.lepin@gmail.com>
 
+#ifndef ENGINE_SIDECHAIN_SHOUTCONNECTION_H
+#define ENGINE_SIDECHAIN_SHOUTCONNECTION_H
+
+#include <engine/sidechain/networkoutputstreamworker.h>
 #include <QMessageBox>
 #include <QMutex>
 #include <QWaitCondition>
@@ -9,19 +13,17 @@
 #include <QTextCodec>
 #include <QThread>
 #include <QVector>
+#include <QSharedPointer>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "encoder/encodercallback.h"
 #include "encoder/encoder.h"
-#include "engine/sidechain/networkstreamworker.h"
 #include "errordialoghandler.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/fifo.h"
-#include "preferences/broadcastsettings.h"
-
-class ControlPushButton;
+#include "preferences/broadcastprofile.h"
 
 // Forward declare libshout structures to prevent leaking shout.h definitions
 // beyond where they are needed.
@@ -30,19 +32,12 @@ typedef struct shout shout_t;
 struct _util_dict;
 typedef struct _util_dict shout_metadata_t;
 
-class EngineBroadcast
-        : public QThread, public EncoderCallback, public NetworkStreamWorker {
+class ShoutConnection
+        : public QThread, public EncoderCallback, public NetworkOutputStreamWorker {
     Q_OBJECT
   public:
-    enum StatusCOStates {
-        STATUSCO_UNCONNECTED = 0, // IDLE state, no error
-        STATUSCO_CONNECTING = 1, // 30 s max
-        STATUSCO_CONNECTED = 2, // On Air
-        STATUSCO_FAILURE = 3 // Happens when disconnected by an error
-    };
-
-    EngineBroadcast(UserSettingsPointer pConfig);
-    virtual ~EngineBroadcast();
+    ShoutConnection(BroadcastProfilePtr profile, UserSettingsPointer pConfig);
+    virtual ~ShoutConnection();
 
     // This is called by the Engine implementation for each sample. Encode and
     // send the stream, as well as check for metadata changes.
@@ -53,7 +48,7 @@ class EngineBroadcast
 
     // Called by the encoder in method 'encodebuffer()' to flush the stream to
     // the server.
-    void write(const unsigned char *header, const unsigned char *body,
+    void write(const unsigned char* header, const unsigned char* body,
                int headerLen, int bodyLen) override;
     // gets stream position
     int tell() override;
@@ -64,18 +59,25 @@ class EngineBroadcast
 
     /** connects to server **/
     bool serverConnect();
-    bool serverDisconnect();
     bool isConnected();
+    void applySettings();
 
     virtual void outputAvailable();
-    virtual void setOutputFifo(FIFO<CSAMPLE>* pOutputFifo);
-
+    virtual void setOutputFifo(QSharedPointer<FIFO<CSAMPLE>> pOutputFifo);
+    QSharedPointer<FIFO<CSAMPLE>> getOutputFifo();
     virtual bool threadWaiting();
-
     virtual void run();
 
-  private slots:
-    void slotEnableCO(double v);
+    BroadcastProfilePtr profile() {
+        return m_pProfile;
+    }
+
+    void setStatus(int newState) {
+        return m_pProfile->setConnectionStatus(newState);
+    }
+    int getStatus() {
+        return m_pProfile->connectionStatus();
+    }
 
   signals:
     void broadcastDisconnected();
@@ -85,7 +87,7 @@ class EngineBroadcast
     bool processConnect();
     bool processDisconnect();
 
-    // Update the libshout struct with info from Mixxx's broadcast preferences.
+    // Update the libshout struct with info from the current broadcast profile.
     void updateFromPreferences();
     int getActiveTracks();
     // Check if the metadata has changed since the previous check.  We also
@@ -115,7 +117,6 @@ class EngineBroadcast
 
     void tryReconnect();
 
-
     QTextCodec* m_pTextCodec;
     TrackPointer m_pMetaData;
     shout_t *m_pShout;
@@ -123,12 +124,11 @@ class EngineBroadcast
     int m_iMetaDataLife;
     long m_iShoutStatus;
     long m_iShoutFailures;
-    BroadcastSettings m_settings;
     UserSettingsPointer m_pConfig;
+    BroadcastProfilePtr m_pProfile;
     EncoderPointer m_encoder;
-    ControlPushButton* m_pBroadcastEnabled;
     ControlProxy* m_pMasterSamplerate;
-    ControlObject* m_pStatusCO;
+    ControlProxy* m_pBroadcastEnabled;
     // static metadata according to prefereneces
     bool m_custom_metadata;
     QString m_customArtist;
@@ -147,7 +147,7 @@ class EngineBroadcast
     bool m_ogg_dynamic_update;
     QAtomicInt m_threadWaiting;
     QSemaphore m_readSema;
-    FIFO<CSAMPLE>* m_pOutputFifo;
+    QSharedPointer<FIFO<CSAMPLE>> m_pOutputFifo;
 
     QString m_lastErrorStr;
     int m_retryCount;
@@ -162,4 +162,7 @@ class EngineBroadcast
     QWaitCondition m_waitEnabled;
 };
 
-#endif // ENGINE_SIDECHAIN_ENGINEBROADCAST_H
+typedef QSharedPointer<ShoutConnection> ShoutConnectionPtr;
+
+#endif // ENGINE_SIDECHAIN_SHOUTCONNECTION_H
+
