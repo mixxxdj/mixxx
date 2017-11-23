@@ -373,6 +373,85 @@
     </message>
 </context>
 <context>
+    <name>BroadcastManager</name>
+    <message>
+        <location filename="../../src/broadcast/broadcastmanager.cpp" line="105"/>
+        <source>Action failed</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/broadcast/broadcastmanager.cpp" line="106"/>
+        <source>Please enable at least one connection to use Live Broadcasting.</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
+    <name>BroadcastProfile</name>
+    <message>
+        <location filename="../../src/preferences/broadcastprofile.cpp" line="424"/>
+        <source>Can&apos;t use secure password storage: keychain access failed.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/broadcastprofile.cpp" line="452"/>
+        <source>Secure password retrieval unsuccessful: keychain access failed.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/broadcastprofile.cpp" line="462"/>
+        <source>Settings error</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/broadcastprofile.cpp" line="463"/>
+        <source>&lt;b&gt;Error with settings for &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
+    <name>BroadcastSettingsModel</name>
+    <message>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="126"/>
+        <source>Enabled</source>
+        <translation>Attivato</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="128"/>
+        <source>Name</source>
+        <translation>Nome</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="130"/>
+        <source>Status</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="176"/>
+        <source>Disconnected</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="178"/>
+        <source>Connecting...</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="180"/>
+        <source>Connected</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="182"/>
+        <source>Failed</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="185"/>
+        <source>Unknown</source>
+        <translation>Sconosciuto</translation>
+    </message>
+</context>
+<context>
     <name>BrowseFeature</name>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="38"/>
@@ -3479,44 +3558,104 @@ Hai provato ad imparare: %1,%2</translation>
 <context>
     <name>DlgPrefBroadcast</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="25"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="71"/>
         <source>Icecast 2</source>
         <translation>Icecast 2</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="26"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="72"/>
         <source>Shoutcast 1</source>
         <translation>Shoutcast 1</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="27"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="73"/>
         <source>Icecast 1</source>
         <translation>Icecast 1</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="120"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="96"/>
         <source>MP3</source>
         <translation>MP3</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="121"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="97"/>
         <source>Ogg Vorbis</source>
         <translation>Ogg Vorbis</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="130"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="100"/>
         <source>Automatic</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="132"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="102"/>
         <source>Mono</source>
         <translation>Mono</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="134"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="104"/>
         <source>Stereo</source>
         <translation>Stereo</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="178"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="238"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="492"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="526"/>
+        <source>Action failed</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="179"/>
+        <source>'%1' has the same Icecast mountpoint as '%2'.
+Two connections on the same server can&apos;t have the same mountpoint.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="239"/>
+        <source>You can&apos;t create more than %1 Live Broadcasting connections.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="252"/>
+        <source>Connection %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="493"/>
+        <source>At least one connection is required.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="499"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="536"/>
+        <source>Confirmation required</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="500"/>
+        <source>Are you sure you want to delete &apos;%1&apos;?</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="515"/>
+        <source>Renaming &apos;%1&apos;</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="516"/>
+        <source>New name for &apos;%1&apos;:</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="527"/>
+        <source>Can&apos;t rename &apos;%1&apos; to &apos;%2&apos;: name already in use</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="537"/>
+        <source>Are you sure you want to disconnect every active Live Broadcasting source connection?</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3527,194 +3666,244 @@ Hai provato ad imparare: %1,%2</translation>
         <translation>Impostazioni Trasmissione Live</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="289"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="507"/>
         <source>Mixxx Icecast Testing</source>
         <translation>Test Mixxx di Icecast</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="419"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="637"/>
         <source>Public stream</source>
         <translation>Stream pubblico</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="334"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="552"/>
         <source>http://www.mixxx.org</source>
         <translation>http://www.mixxx.org</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="302"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="520"/>
         <source>Stream name</source>
         <translation>Nome dello stream</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="496"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="455"/>
         <source>Due to flaws in some streaming clients, updating Ogg Vorbis metadata dynamically can cause listener glitches and disconnections. Check this box to update the metadata anyway.</source>
         <translation>A causa di falle in alcuni client per lo streaming, aggiornare i metadata Ogg Vorbis dinamicamente potrebbe causare problemi e disconnessioni agli ascoltatori. Spunta questa casella per aggiornare i metadata comunque.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="499"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="20"/>
+        <source>Live Broadcasting source connections</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="65"/>
+        <source>Delete selected</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="91"/>
+        <source>Create new connection</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="98"/>
+        <source>Rename selected</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="105"/>
+        <source>Disconnect all</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="127"/>
+        <source>Turn on Live Broadcasting when applying these settings</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="156"/>
+        <source>Settings for %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="458"/>
         <source>Dynamically update Ogg Vorbis metadata.</source>
         <translation>Aggiorna dinamicamente i metadata Ogg Vorbis.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="318"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="536"/>
         <source>Website</source>
         <translation>Sito Web</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="412"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="630"/>
         <source>Live mix</source>
         <translation>Mix live</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="396"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="789"/>
+        <source>Password storage</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="796"/>
+        <source>Plain text</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="806"/>
+        <source>Secure storage (OS keychain)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="614"/>
         <source>Genre</source>
         <translation>Genere</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="506"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="465"/>
         <source>Use UTF-8 encoding for metadata.</source>
         <translation>Utilizza la codifica UTF-8 per i metadati.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="347"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="565"/>
         <source>Description</source>
         <translation>Descrizione</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="162"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="283"/>
         <source>Encoding</source>
         <translation>Codifica</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="186"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="307"/>
         <source>Bitrate</source>
         <translation>Bitrate</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="170"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="442"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="291"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="401"/>
         <source>Format</source>
         <translation>Formato</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="199"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="320"/>
         <source>Channels</source>
         <translation>Canali</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="33"/>
-        <source>Enable Live Broadcasting</source>
-        <translation>Abilita la Trasmissione Live</translation>
-    </message>
-    <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="43"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="656"/>
         <source>Server connection</source>
         <translation>Connessione server</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="51"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="664"/>
         <source>Type</source>
         <translation>Digita</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="92"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="705"/>
         <source>Host</source>
         <translation>Host</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="126"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="739"/>
         <source>Login</source>
         <translation>Login</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="78"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="691"/>
         <source>Mount</source>
         <translation>Monta</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="106"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="649"/>
+        <source>Select a connection above to edit its settings here</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="719"/>
         <source>Port</source>
         <translation>Porta</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="140"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="753"/>
         <source>Password</source>
         <translation>Password</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="275"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="493"/>
         <source>Stream info</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="431"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="390"/>
         <source>Metadata</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="513"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="472"/>
         <source>Use static artist and title.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="473"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="432"/>
         <source>Static title</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="456"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="415"/>
         <source>Static artist</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="528"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="162"/>
         <source>Automatic reconnect</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="610"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="253"/>
         <source>Time to wait before the first reconnection attempt is made.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="564"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="613"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="207"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="256"/>
         <source> seconds</source>
         <translation>secondi</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="623"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="266"/>
         <source>Wait until first attempt</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="554"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="197"/>
         <source>Reconnect period</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="561"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="204"/>
         <source>Time to wait between two reconnection attempts.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="603"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="246"/>
         <source>Limit number of reconnection attempts</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="593"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="236"/>
         <source>Maximum retries</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="536"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="170"/>
         <source>Reconnect if the connection to the streaming server is lost.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="539"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="173"/>
         <source>Enable automatic reconnect</source>
         <translation type="unfinished"/>
     </message>
@@ -5529,78 +5718,88 @@ Il loudness finale è approssimativo e presume che pregain e master livello mast
         <translation>Disabilitato (ritardo corto)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="105"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="78"/>
+        <source>Soundcard Clock</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="79"/>
+        <source>Network Clock</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="112"/>
         <source>Master output only</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="107"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="114"/>
         <source>Master and booth outputs</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="109"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="116"/>
         <source>Direct monitor (recording and broadcasting only)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="155"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="164"/>
         <source>Disabled</source>
         <translation>Disabilitato</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="156"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="165"/>
         <source>Enabled</source>
         <translation>Attivato</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="163"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="172"/>
         <source>Stereo</source>
         <translation>Stereo</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="164"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="173"/>
         <source>Mono</source>
         <translation>Mono</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="676"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="701"/>
         <source>Microphone inputs are out of time in the record &amp; broadcast signal compared to what you hear.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="677"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="702"/>
         <source>Measure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="678"/>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="685"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="703"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="710"/>
         <source>Refer to the Mixxx User Manual for details.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="683"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="708"/>
         <source>Configured latency has changed.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="684"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="709"/>
         <source>Remeasure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="178"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="187"/>
         <source>Realtime scheduling is enabled.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="509"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="534"/>
         <source>%1 ms</source>
         <translation>%1 ms</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="229"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="238"/>
         <source>Configuration error</source>
         <translation>Errore di configurazione</translation>
     </message>
@@ -5628,25 +5827,35 @@ Il loudness finale è approssimativo e presume che pregain e master livello mast
         <translation>Buffer Audio</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="107"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="71"/>
+        <source>Engine Clock</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="78"/>
+        <source>Use soundcard clock for live audience setups and lowest latency.&lt;br&gt;Use network clock for broadcasting without a live audience.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="121"/>
         <source>Microphone Monitor Mode</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="114"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="128"/>
         <source>Microphone Latency Compensation</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="160"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="174"/>
         <source>Headphone Delay</source>
         <translation>Ritardo Cuffie</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="121"/>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="144"/>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="167"/>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="190"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="135"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="158"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="181"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="204"/>
         <source> ms</source>
         <extracomment>milliseconds
 ----------
@@ -5656,37 +5865,37 @@ milliseconds</extracomment>
         <translation>ms</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="183"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="197"/>
         <source>Booth Delay</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="331"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="345"/>
         <source>Enable Realtime scheduling (currently disabled), see the &lt;a href=&quot;http://mixxx.org/wiki/doku.php/adjusting_audio_latency&quot;&gt;Mixxx Wiki&lt;/a&gt;.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="374"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="388"/>
         <source>20 ms</source>
         <translation>20 ms</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="381"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="395"/>
         <source>Buffer Underflow Count</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="391"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="405"/>
         <source>0</source>
         <translation>0</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="137"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="151"/>
         <source>Master Delay</source>
         <translation>Ritardo Principale</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="71"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="85"/>
         <source>Keylock/Pitch-Bending Engine</source>
         <translation type="unfinished"/>
     </message>
@@ -5696,52 +5905,52 @@ milliseconds</extracomment>
         <translation>Sincronizzazione Schede Audio Multiple</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="87"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="98"/>
         <source>Master Mix</source>
         <translation>Master Mix</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="97"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="111"/>
         <source>Master Output Mode</source>
         <translation>Modo Master output</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="256"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="270"/>
         <source>Output</source>
         <translation>Output</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="279"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="293"/>
         <source>Input</source>
         <translation>Ingresso</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="344"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="358"/>
         <source>The &lt;a href=&quot;http://mixxx.org/wiki/doku.php/hardware_compatibility&quot;&gt;Mixxx DJ Hardware Guide&lt;/a&gt; lists sound cards and controllers you may want to consider for using Mixxx.</source>
         <translation>La &lt;a href=&quot;http://mixxx.org/wiki/doku.php/hardware_compatibility&quot;&gt;Mixxx Guida Hardware DJ&lt;/a&gt; elenca le schede sonore e i controllers che puoi considerare per l&apos;uso con Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="364"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="378"/>
         <source>System Reported Latency</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="311"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="325"/>
         <source>Enlarge your audio buffer if the underflow counter is increasing or you hear pops during playback.</source>
         <translation>Aumenta il tuo buffer audio se il contatore di underflow aumenta oppure se senti dei salti o rumori durante la musica.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="305"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="319"/>
         <source>Hints and Diagnostics</source>
         <translation>Suggerimenti e Diagnostica</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="321"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="335"/>
         <source>Downsize your audio buffer to improve Mixxx&apos;s responsiveness.</source>
         <translation>Diminuisci il tuo buffer audio per aumentare la responsività di Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="224"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="238"/>
         <source>Query Devices</source>
         <translation>Interroga i dispositivi</translation>
     </message>
@@ -6082,78 +6291,78 @@ Select from different types of displays for the waveform, which differ primarily
 <context>
     <name>DlgPreferences</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="163"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="165"/>
         <source>Sound Hardware</source>
         <translation>Hardware Audio</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="187"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="189"/>
         <source>Controllers</source>
         <translation>Controllers</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="181"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="183"/>
         <source>Library</source>
         <translation>Libreria</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="169"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="171"/>
         <source>Interface</source>
         <translation>Interfaccia</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="175"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="177"/>
         <source>Waveforms</source>
         <translation>Forme d&apos;onda</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="193"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="195"/>
         <source>Auto DJ</source>
         <translation>Auto DJ</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="199"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="201"/>
         <source>Equalizers</source>
         <translation>Equalizzatori</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="212"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="214"/>
         <source>Crossfader</source>
         <translation>Crossfader</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="218"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="220"/>
         <source>Recording</source>
         <translation>Registrazione</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="225"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="227"/>
         <source>Beat Detection</source>
         <translation>Riconoscimento Beat</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="231"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="233"/>
         <source>Key Detection</source>
         <translation>Rilevamento della chiave</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="238"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="240"/>
         <source>Normalization</source>
         <translation>Normalizzazione</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="247"/>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="255"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="249"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="257"/>
         <source>Vinyl Control</source>
         <translation>Controllo Vinile</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="263"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="265"/>
         <source>Live Broadcasting</source>
         <translation>Trasmissione live</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="271"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="273"/>
         <source>Modplug Decoder</source>
         <translation>Decoder Modplug</translation>
     </message>
@@ -6733,156 +6942,6 @@ Risultati di alta qualità si hanno spesso con tracce a ritmo costante, non funz
     </message>
 </context>
 <context>
-    <name>EngineBroadcast</name>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="78"/>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="83"/>
-        <source>Mixxx encountered a problem</source>
-        <translation>Mixxx ha riscontrato un problema</translation>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="79"/>
-        <source>Could not allocate shout_t</source>
-        <translation>Impossibile allocare shout_t</translation>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="84"/>
-        <source>Could not allocate shout_metadata_t</source>
-        <translation>Impossibile allocare shout_metadata_t</translation>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="89"/>
-        <source>Error setting non-blocking mode:</source>
-        <translation>Errore nell&apos;impostare il non-blocking mode:</translation>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="248"/>
-        <source>Error setting hostname!</source>
-        <translation>Errore durante l&apos;impostazione dell&apos;hostname!</translation>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="362"/>
-        <source>Error setting protocol!</source>
-        <translation>Errore nell&apos;impostazione del protocollo!</translation>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="255"/>
-        <source>Error setting port!</source>
-        <translation>Errore di configurazione della porta!</translation>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="261"/>
-        <source>Error setting password!</source>
-        <translation>Errore nell&apos;impostazione della password!</translation>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="267"/>
-        <source>Error setting mount!</source>
-        <translation>Errore nell&apos;impostazione del mount!</translation>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="273"/>
-        <source>Error setting username!</source>
-        <translation>Errore durante l&apos;impostazione dell&apos;username!</translation>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="278"/>
-        <source>Error setting stream name!</source>
-        <translation>Indefinito</translation>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="283"/>
-        <source>Error setting stream description!</source>
-        <translation>Errore nell&apos;impostazione della descrizione della trasmissione!</translation>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="288"/>
-        <source>Error setting stream genre!</source>
-        <translation>Errore nell&apos;impostazione del genere della trasmissione!</translation>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="293"/>
-        <source>Error setting stream url!</source>
-        <translation>Errore di impostazione URL corrente!</translation>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="298"/>
-        <source>Error setting stream public!</source>
-        <translation>Errore configurazione stream pubblico!</translation>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="324"/>
-        <source>Broadcasting at 96kHz with Ogg Vorbis is not currently supported. Please try a different sample-rate or switch to a different encoding.</source>
-        <translation>La trasmissione a 96kHz con Ogg Vorbis non è supportata in questo momento. Prova una frequenza di campionamento differente o cambia il codec.</translation>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="327"/>
-        <source>See https://bugs.launchpad.net/mixxx/+bug/686212 for more information.</source>
-        <translation>Visualizza https://bugs.launchpad.net/mixxx/+bug/686212 per ulteriori informazioni.</translation>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="335"/>
-        <source>Error setting bitrate</source>
-        <translation>Errore nella regolazione del bitrate</translation>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="351"/>
-        <source>Error: unknown server protocol!</source>
-        <translation>Errore: protocollo del server sconosciuto!</translation>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="356"/>
-        <source>Error: libshout only supports Shoutcast with MP3 format!</source>
-        <translation>Errore: libshout supporta solo Shoutcast con formato MP3!</translation>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="580"/>
-        <source>Network cache overflow</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="848"/>
-        <source>Mixxx has successfully connected to the streaming server</source>
-        <translation>Mixxx è connesso correttamente al server streaming</translation>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="860"/>
-        <source>Mixxx has successfully disconnected from the streaming server</source>
-        <translation>Mixxx si è disconeesso correttamente dal server streaming</translation>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="974"/>
-        <source>Lost connection to streaming server and %1 attempts to reconnect have failed.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="977"/>
-        <source>Lost connection to streaming server.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="982"/>
-        <source>Please check your connection to the Internet.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="791"/>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="804"/>
-        <source>Live broadcasting</source>
-        <translation>Trasmissione live</translation>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="841"/>
-        <source>Can&apos;t connect to streaming server</source>
-        <translation>Impossibile connettersi al server streaming</translation>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="843"/>
-        <source>Please check your connection to the Internet and verify that your username and password are correct.</source>
-        <translation>Controlla la tua connessione a Internet e verifica che username e password siano corrette</translation>
-    </message>
-</context>
-<context>
     <name>EngineBuffer</name>
     <message>
         <location filename="../../src/engine/enginebuffer.h" line="155"/>
@@ -7311,7 +7370,7 @@ supporto OpenGL.</translation>
 <context>
     <name>MixxxMainWindow</name>
     <message>
-        <location filename="../../src/mixxx.cpp" line="305"/>
+        <location filename="../../src/mixxx.cpp" line="306"/>
         <source>Choose music library directory</source>
         <translation>Scegli la cartella della tua libreria musicale</translation>
     </message>
@@ -7506,7 +7565,7 @@ Prego selezionare prima un dispositivo di input nel pannello di preferenze hardw
 <context>
     <name>NativeBackend</name>
     <message>
-        <location filename="../../src/effects/native/nativebackend.cpp" line="26"/>
+        <location filename="../../src/effects/native/nativebackend.cpp" line="27"/>
         <source>Native</source>
         <translation>Nativo</translation>
     </message>
@@ -8031,30 +8090,70 @@ Per annullare questa azione, clicca su Cancel nella maschera di dialogo.</transl
         <translation>Corner frequency ratio per il filtro passa alto</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/flangereffect.cpp" line="42"/>
         <location filename="../../src/effects/native/phasereffect.cpp" line="74"/>
         <source>Depth</source>
         <translation>Profondità</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/flangereffect.cpp" line="20"/>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="27"/>
         <source>Flanger</source>
         <translation>Flanger</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/flangereffect.cpp" line="23"/>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="30"/>
         <source>A simple modulation effect, created by taking the input signal and mixing it with a delayed, pitch modulated copy of itself.</source>
         <translation>Un semplice effetto di modulazione, creato prendendo il segnale in input e mixandolo con una sua stessa copia ritardata e con pitch modulato.</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/flangereffect.cpp" line="30"/>
-        <source>Controls the period of the LFO (low frequency oscillator)
-1/4 - 4 beats rounded to 1/2 beat if tempo is detected (decks and samplers) 
-0.05 - 4 seconds if no tempo is detected (mic &amp; aux inputs, master mix)</source>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="36"/>
+        <source>Speed</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/flangereffect.cpp" line="43"/>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="37"/>
+        <source>Controls the speed of the LFO (low frequency oscillator)
+32 - 1/4 beats rounded to 1/2 beat per lfo cycle if tempo is detected (decks and samplers) 
+1/32 - 4 Hz if no tempo is detected (mic &amp; aux inputs, master mix)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="49"/>
+        <source>Controls the delay amplitude of the LFO (low frequency oscillator).</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="59"/>
+        <source>Manual</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="60"/>
+        <source>Controls the delay offset of the LFO (low frequency oscillator).
+With width at zero, it allows to manual sweep over the entire delay range.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="71"/>
+        <source>Regeneration</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="72"/>
+        <source>Regen</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="73"/>
+        <source>Controls how much of the delay output is feed back into the input.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="83"/>
+        <source>Mix</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="84"/>
         <source>Controls the intensity of the effect.</source>
         <translation>Controlla l&apos;intensità dell&apos;effetto.</translation>
     </message>
@@ -8072,6 +8171,7 @@ Per annullare questa azione, clicca su Cancel nella maschera di dialogo.</transl
     </message>
     <message>
         <location filename="../../src/effects/native/autopaneffect.cpp" line="64"/>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="48"/>
         <source>Width</source>
         <translation>Larghezza</translation>
     </message>
@@ -8107,7 +8207,6 @@ Per annullare questa azione, clicca su Cancel nella maschera di dialogo.</transl
     </message>
     <message>
         <location filename="../../src/effects/native/autopaneffect.cpp" line="32"/>
-        <location filename="../../src/effects/native/flangereffect.cpp" line="29"/>
         <location filename="../../src/effects/native/phasereffect.cpp" line="28"/>
         <source>Period</source>
         <translation>Periodo</translation>
@@ -8336,7 +8435,7 @@ A delay, inversed on each side, is added to increase the spatial move and the pe
         <translation>Gain per Filtro Bassi (neutro a 1.0)</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/sounddevicenetwork.cpp" line="27"/>
+        <location filename="../../src/soundio/sounddevicenetwork.cpp" line="51"/>
         <source>Network stream</source>
         <translation>Trasmissione in rete</translation>
     </message>
@@ -8549,12 +8648,12 @@ A delay, inversed on each side, is added to increase the spatial move and the pe
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastsettings.cpp" line="48"/>
+        <location filename="../../src/preferences/broadcastprofile.cpp" line="72"/>
         <source>This stream is online for testing purposes!</source>
         <translation>Questo stream è online per test!</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastsettings.cpp" line="49"/>
+        <location filename="../../src/preferences/broadcastprofile.cpp" line="73"/>
         <source>Live Mix</source>
         <translation>Mix Live</translation>
     </message>
@@ -8626,6 +8725,86 @@ Fully left is mono, fully right is only side ambiance, and centered does not cha
     <message>
         <location filename="../../src/effects/native/balanceeffect.cpp" line="55"/>
         <source>Frequencies below this cutoff are not adjusted in the stereo field</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="19"/>
+        <source>Parametric Equalizer</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="20"/>
+        <source>Param EQ</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="23"/>
+        <source>An gentle 2-band parametric equalizer based on biquad filters.
+It is designed as a complement to the steep mixing equalizers.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="31"/>
+        <source>Gain 1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="32"/>
+        <source>Gain for Filter 1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="43"/>
+        <source>Q 1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="44"/>
+        <source>Controls the bandwidth of Filter 1.
+A lower Q affects a wider band of frequencies,
+a higher Q affects a narrower band of frequencies.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="58"/>
+        <source>Center 1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="59"/>
+        <source>Center frequency for Filter 1, from 100 Hz to 14 kHz</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="70"/>
+        <source>Gain 2</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="71"/>
+        <source>Gain for Filter 2</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="82"/>
+        <source>Q 2</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="83"/>
+        <source>Controls the bandwidth of Filter 2.
+A lower Q affects a wider band of frequencies,
+a higher Q affects a narrower band of frequencies.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="97"/>
+        <source>Center 2</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="98"/>
+        <source>Center frequency for Filter 2, from 100 Hz to 14 kHz</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -8792,6 +8971,160 @@ Fully left is mono, fully right is only side ambiance, and centered does not cha
     </message>
 </context>
 <context>
+    <name>ShoutConnection</name>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="77"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="82"/>
+        <source>Mixxx encountered a problem</source>
+        <translation>Mixxx ha riscontrato un problema</translation>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="78"/>
+        <source>Could not allocate shout_t</source>
+        <translation>Impossibile allocare shout_t</translation>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="83"/>
+        <source>Could not allocate shout_metadata_t</source>
+        <translation>Impossibile allocare shout_metadata_t</translation>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="88"/>
+        <source>Error setting non-blocking mode:</source>
+        <translation>Errore nell&apos;impostare il non-blocking mode:</translation>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="262"/>
+        <source>Error setting hostname!</source>
+        <translation>Errore durante l&apos;impostazione dell&apos;hostname!</translation>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="269"/>
+        <source>Error setting port!</source>
+        <translation>Errore di configurazione della porta!</translation>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="275"/>
+        <source>Error setting password!</source>
+        <translation>Errore nell&apos;impostazione della password!</translation>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="281"/>
+        <source>Error setting mount!</source>
+        <translation>Errore nell&apos;impostazione del mount!</translation>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="287"/>
+        <source>Error setting username!</source>
+        <translation>Errore durante l&apos;impostazione dell&apos;username!</translation>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="292"/>
+        <source>Error setting stream name!</source>
+        <translation>Indefinito</translation>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="297"/>
+        <source>Error setting stream description!</source>
+        <translation>Errore nell&apos;impostazione della descrizione della trasmissione!</translation>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="302"/>
+        <source>Error setting stream genre!</source>
+        <translation>Errore nell&apos;impostazione del genere della trasmissione!</translation>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="307"/>
+        <source>Error setting stream url!</source>
+        <translation>Errore di impostazione URL corrente!</translation>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="312"/>
+        <source>Error setting stream public!</source>
+        <translation>Errore configurazione stream pubblico!</translation>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="338"/>
+        <source>Broadcasting at 96kHz with Ogg Vorbis is not currently supported. Please try a different sample-rate or switch to a different encoding.</source>
+        <translation>La trasmissione a 96kHz con Ogg Vorbis non è supportata in questo momento. Prova una frequenza di campionamento differente o cambia il codec.</translation>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="341"/>
+        <source>See https://bugs.launchpad.net/mixxx/+bug/686212 for more information.</source>
+        <translation>Visualizza https://bugs.launchpad.net/mixxx/+bug/686212 per ulteriori informazioni.</translation>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="349"/>
+        <source>Error setting bitrate</source>
+        <translation>Errore nella regolazione del bitrate</translation>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="364"/>
+        <source>Error: unknown server protocol!</source>
+        <translation>Errore: protocollo del server sconosciuto!</translation>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="369"/>
+        <source>Error: libshout only supports Shoutcast with MP3 format!</source>
+        <translation>Errore: libshout supporta solo Shoutcast con formato MP3!</translation>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="375"/>
+        <source>Error setting protocol!</source>
+        <translation>Errore nell&apos;impostazione del protocollo!</translation>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="603"/>
+        <source>Network cache overflow</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="811"/>
+        <source>Connection error</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="812"/>
+        <source>One of the Live Broadcasting connections raised this error:&lt;br&gt;&lt;b&gt;Error with connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="826"/>
+        <source>Connection message</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="827"/>
+        <source>&lt;b&gt;Message from Live Broadcasting connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="877"/>
+        <source>Lost connection to streaming server and %1 attempts to reconnect have failed.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="880"/>
+        <source>Lost connection to streaming server.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="885"/>
+        <source>Please check your connection to the Internet.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="920"/>
+        <source>Can&apos;t connect to streaming server</source>
+        <translation>Impossibile connettersi al server streaming</translation>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="922"/>
+        <source>Please check your connection to the Internet and verify that your username and password are correct.</source>
+        <translation>Controlla la tua connessione a Internet e verifica che username e password siano corrette</translation>
+    </message>
+</context>
+<context>
     <name>SoftwareWaveformWidget</name>
     <message>
         <location filename="../../src/waveform/widgets/softwarewaveformwidget.h" line="15"/>
@@ -8807,23 +9140,23 @@ Fully left is mono, fully right is only side ambiance, and centered does not cha
 <context>
     <name>SoundManager</name>
     <message>
-        <location filename="../../src/soundio/soundmanager.cpp" line="510"/>
-        <location filename="../../src/soundio/soundmanager.cpp" line="515"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="533"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="538"/>
         <source>a device</source>
         <translation>un dispositivo</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanager.cpp" line="516"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="539"/>
         <source>An unknown error occurred</source>
         <translation>Errore sconosciuto</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanager.cpp" line="524"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="547"/>
         <source>Two outputs cannot share channels on &quot;%1&quot;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanager.cpp" line="527"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="550"/>
         <source>Error opening &quot;%1&quot;</source>
         <translation type="unfinished"/>
     </message>
