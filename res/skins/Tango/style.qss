@@ -1002,7 +1002,10 @@ WBeatSpinBox {
   margin-top: 4px;
   }
   #VUMeterFloating {
-    margin-top: 3px;
+    qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+    padding: 3px 0px;
+    background-color: #252525;
+    border-radius: 3px;
   }
 
 #VUMeterMasterContainer {

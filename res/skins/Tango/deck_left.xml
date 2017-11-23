@@ -49,16 +49,16 @@ Variables:
 
       <WidgetGroup><!-- Spinny/Cover + VUMeter -->
         <Layout>horizontal</Layout>
-        <SizePolicy>min,me</SizePolicy>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
 
           <WidgetGroup><!-- Spinny/Cover -->
-            <Layout>vertical</Layout>
-            <SizePolicy>min,me</SizePolicy>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
             <Children>
               <WidgetGroup><!-- if BIG spinny is enabled -->
                 <Layout>horizontal</Layout>
-                <SizePolicy>min,me</SizePolicy>
+                <SizePolicy>min,min</SizePolicy>
                 <Children>
                   <!-- margin to deck -->
                   <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
@@ -77,7 +77,7 @@ Variables:
           </WidgetGroup><!-- /Spinny/Cover -->
 
           <WidgetGroup>
-            <Size>3f,1me</Size>
+            <Size>3f,1min</Size>
             <Connection>
               <ConfigKey>[Tango],vumeter</ConfigKey>
               <BindProperty>visible</BindProperty>
@@ -102,7 +102,7 @@ Variables:
 
           <WidgetGroup>
             <Layout>vertical</Layout>
-            <Size>1me,25me</Size>
+            <Size>1me,25min</Size>
             <Children>
               <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,3f</Size></WidgetGroup>
               <WidgetGroup><ObjectName>RoundFiller25</ObjectName><Size>1me,22me</Size></WidgetGroup>
@@ -121,7 +121,7 @@ Variables:
 
       <!-- Pitch slider & Key controls -->
       <WidgetGroup>
-        <Size>3f,1me</Size>
+        <Size>3f,1min</Size>
         <Connection>
           <ConfigKey>[Tango],pitch_fader</ConfigKey>
           <BindProperty>visible</BindProperty>

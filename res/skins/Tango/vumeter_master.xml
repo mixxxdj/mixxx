@@ -6,80 +6,96 @@ Description:
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>VUMeterMasterContainer</ObjectName>
-    <Layout>vertical</Layout>
+    <Layout>horizontal</Layout>
     <SizePolicy>min,max</SizePolicy>
     <Children>
-      <WidgetGroup><!-- Left + Right VU -->
-        <Layout>horizontal</Layout>
+      <WidgetGroup><!-- Master VU incl. Label, + spacer -->
+        <ObjectName>VUMeterMasterContainer</ObjectName>
+        <Layout>vertical</Layout>
         <SizePolicy>min,max</SizePolicy>
         <Children>
-          <WidgetGroup><!-- Left VU -->
+          <WidgetGroup><!-- VU -->
             <ObjectName>VUMeterFloating</ObjectName>
-            <Layout>stacked</Layout>
-            <Size>4f,-1min</Size>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,max</SizePolicy>
             <Children>
-              <StatusLight>
-                <TooltipId>master_VuMeterL</TooltipId>
-                <PathStatusLight>skin:/graphics/vumeter_floating_clipping_over.png</PathStatusLight>
-                <PathBack>skin:/graphics/vumeter_floating_clipping.png</PathBack>
-                <Connection>
-                  <ConfigKey>[Master],PeakIndicatorL</ConfigKey>
-                </Connection>
-              </StatusLight>
-              <VuMeter>
-                <PathVu>skin:/graphics/vumeter_floating_over.png</PathVu>
-                <PathBack>skin:/graphics/vumeter_floating.png</PathBack>
-                <Horizontal>false</Horizontal>
-                <PeakHoldSize>5</PeakHoldSize>
-                <PeakHoldTime>500</PeakHoldTime>
-                <PeakFallTime>50</PeakFallTime>
-                <PeakFallStep>2</PeakFallStep>
-                <Connection>
-                  <ConfigKey>[Master],VuMeterL</ConfigKey>
-                </Connection>
-              </VuMeter>
+              <WidgetGroup><!-- VU Left -->
+                <Layout>stacked</Layout>
+                <Size>4f,-1min</Size>
+                <Children>
+                  <StatusLight>
+                    <TooltipId>master_VuMeterL</TooltipId>
+                    <PathStatusLight>skin:/graphics/vumeter_floating_clipping_over.png</PathStatusLight>
+                    <PathBack>skin:/graphics/vumeter_floating_clipping.png</PathBack>
+                    <Connection>
+                      <ConfigKey>[Master],PeakIndicatorL</ConfigKey>
+                    </Connection>
+                  </StatusLight>
+                  <VuMeter>
+                    <PathVu>skin:/graphics/vumeter_floating_over.png</PathVu>
+                    <PathBack>skin:/graphics/vumeter_floating.png</PathBack>
+                    <Horizontal>false</Horizontal>
+                    <PeakHoldSize>5</PeakHoldSize>
+                    <PeakHoldTime>500</PeakHoldTime>
+                    <PeakFallTime>50</PeakFallTime>
+                    <PeakFallStep>2</PeakFallStep>
+                    <Connection>
+                      <ConfigKey>[Master],VuMeterL</ConfigKey>
+                    </Connection>
+                  </VuMeter>
+                </Children>
+              </WidgetGroup><!-- /VU Left VU -->
+
+              <WidgetGroup><!-- Right -->
+                <Layout>stacked</Layout>
+                <Size>4f,-1min</Size>
+                <Children>
+                  <StatusLight>
+                    <TooltipId>master_VuMeterR</TooltipId>
+                    <PathStatusLight>skin:/graphics/vumeter_floating_clipping_over.png</PathStatusLight>
+                    <PathBack>skin:/graphics/vumeter_floating_clipping.png</PathBack>
+                    <Connection>
+                      <ConfigKey>[Master],PeakIndicatorR</ConfigKey>
+                    </Connection>
+                  </StatusLight>
+                  <VuMeter>
+                    <PathVu>skin:/graphics/vumeter_floating_over.png</PathVu>
+                    <PathBack>skin:/graphics/vumeter_floating.png</PathBack>
+                    <Horizontal>false</Horizontal>
+                    <PeakHoldSize>5</PeakHoldSize>
+                    <PeakHoldTime>500</PeakHoldTime>
+                    <PeakFallTime>50</PeakFallTime>
+                    <PeakFallStep>2</PeakFallStep>
+                    <Connection>
+                      <ConfigKey>[Master],VuMeterR</ConfigKey>
+                    </Connection>
+                  </VuMeter>
+                </Children>
+              </WidgetGroup><!-- /VU Right -->
             </Children>
-          </WidgetGroup><!-- /Left VU -->
-                  
-          <WidgetGroup><!-- Right VU -->
-            <ObjectName>VUMeterFloating</ObjectName>
-            <Layout>stacked</Layout>
-            <Size>4f,-1min</Size>
-            <Children>
-              <StatusLight>
-                <TooltipId>master_VuMeterR</TooltipId>
-                <PathStatusLight>skin:/graphics/vumeter_floating_clipping_over.png</PathStatusLight>
-                <PathBack>skin:/graphics/vumeter_floating_clipping.png</PathBack>
-                <Connection>
-                  <ConfigKey>[Master],PeakIndicatorR</ConfigKey>
-                </Connection>
-              </StatusLight>
-              <VuMeter>
-                <PathVu>skin:/graphics/vumeter_floating_over.png</PathVu>
-                <PathBack>skin:/graphics/vumeter_floating.png</PathBack>
-                <Horizontal>false</Horizontal>
-                <PeakHoldSize>5</PeakHoldSize>
-                <PeakHoldTime>500</PeakHoldTime>
-                <PeakFallTime>50</PeakFallTime>
-                <PeakFallStep>2</PeakFallStep>
-                <Connection>
-                  <ConfigKey>[Master],VuMeterR</ConfigKey>
-                </Connection>
-              </VuMeter>
-            </Children>
-          </WidgetGroup><!-- /Right VU -->
+          </WidgetGroup><!-- /VU -->
+
+          <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>VUMeterMasterLabel</ObjectName>
+            <Size>16f,20f</Size>
+          </WidgetGroup>
+
+          <WidgetGroup><Size>0min,3f</Size></WidgetGroup>
         </Children>
-      </WidgetGroup><!-- /Left + Right VU -->
+      </WidgetGroup><!-- /Master meter incl. Label, + spacer -->
 
-      <WidgetGroup><Size>0min,5f</Size></WidgetGroup>
-
+      <!-- spacer for normal mode when Channel Mixer is hidden -->
       <WidgetGroup>
-        <ObjectName>VUMeterMasterLabel</ObjectName>
-        <Size>16f,20f</Size>
+        <Layout>vertical</Layout>
+        <Size>4f,1min</Size>
+        <Connection>
+          <ConfigKey>[Tango],normal_mode</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
       </WidgetGroup>
 
-      <WidgetGroup><Size>0min,3f</Size></WidgetGroup>
     </Children>
   </WidgetGroup>
 </Template>

@@ -14,9 +14,9 @@ Variables:
   <WidgetGroup>
     <ObjectName>MixerChannelLeft</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>min,me</SizePolicy>
+    <SizePolicy>min,min</SizePolicy>
     <Children>
-      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1me</Size></WidgetGroup>
+      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
       <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
 
@@ -50,7 +50,7 @@ Variables:
       <WidgetGroup><!--  Volume Slider + Gain knob -->
         <ObjectName>VolumeSliderGain</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>f,me</SizePolicy>
+        <SizePolicy>f,min</SizePolicy>
         <Children>
           <SliderComposed><!-- Volume slider -->
             <ObjectName>VolumeSlider</ObjectName>
@@ -63,7 +63,7 @@ Variables:
             </Connection>
           </SliderComposed><!-- /Volume slider -->
 
-          <WidgetGroup><Size>1min,1me</Size></WidgetGroup>
+          <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
 
           <!-- Gain knob, centered below Volume slider -->
           <Template src="skin:knob_textless.xml">
@@ -97,7 +97,7 @@ Variables:
               <WidgetGroup>
                 <ObjectName>MixerbarCover</ObjectName>
                 <Layout>vertical</Layout>
-                <SizePolicy>me,me</SizePolicy>
+                <SizePolicy>min,min</SizePolicy>
                 <Connection>
                   <ConfigKey>[Master],headEnabled</ConfigKey>
                   <BindProperty>visible</BindProperty>
@@ -120,9 +120,5 @@ Variables:
         </Children>
       </WidgetGroup><!-- /VU Meter + Pfl button -->
     </Children>
-    <Connection>
-      <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
-      <BindProperty>visible</BindProperty>
-    </Connection>
   </WidgetGroup>
 </Template>

@@ -25,7 +25,7 @@ Variables:
       <Template src="skin:rate_pitch_key.xml"/>
 
       <WidgetGroup>
-        <Size>3f,1me</Size>
+        <Size>3f,1min</Size>
         <Connection>
           <ConfigKey>[Tango],pitch_fader</ConfigKey>
           <BindProperty>visible</BindProperty>
@@ -35,13 +35,13 @@ Variables:
 
       <WidgetGroup><!-- Spinny/Cover + VUMeter -->
         <Layout>horizontal</Layout>
-        <SizePolicy>min,me</SizePolicy>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
 
           <Template src="skin:vumeter_floating.xml"/>
 
           <WidgetGroup>
-            <Size>3f,1me</Size>
+            <Size>3f,1min</Size>
             <Connection>
               <ConfigKey>[Tango],vumeter</ConfigKey>
               <BindProperty>visible</BindProperty>
@@ -49,12 +49,12 @@ Variables:
           </WidgetGroup>
 
           <WidgetGroup><!-- Spinny/Cover -->
-            <Layout>vertical</Layout>
-            <SizePolicy>min,me</SizePolicy>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
             <Children>
               <WidgetGroup><!-- if BIG spinny is enabled -->
                 <Layout>horizontal</Layout>
-                <SizePolicy>min,me</SizePolicy>
+                <SizePolicy>min,min</SizePolicy>
                 <Children>
                   <Template src="skin:spinnyCover.xml"/>
                   <!-- margin to deck -->
@@ -88,7 +88,6 @@ Variables:
 
           <WidgetGroup>
             <Layout>vertical</Layout>
-            <Size>1me,25me</Size>
             <Children>
               <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,3f</Size></WidgetGroup>
               <WidgetGroup><ObjectName>RoundFiller25</ObjectName><Size>1me,22me</Size></WidgetGroup>

@@ -81,7 +81,7 @@ Variables:
 
       <WidgetGroup>
         <Layout>vertical</Layout>
-        <Size>0me,25me</Size>
+        <Size>0me,25min</Size>
         <Children>
           <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0me,3f</Size></WidgetGroup>
           <WidgetGroup><ObjectName>RoundFiller25</ObjectName><Size>0me,22me</Size></WidgetGroup>
