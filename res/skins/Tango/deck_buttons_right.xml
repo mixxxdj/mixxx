@@ -314,7 +314,6 @@ Variables:
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
-                    <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Tango],deck_controls</ConfigKey>
