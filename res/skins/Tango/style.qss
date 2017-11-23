@@ -724,7 +724,9 @@ WBeatSpinBox {
   max-width: 52px;
   min-height: 20px;
   max-height: 20px;
-  border: 1px solid #666;  /* = 54x22px */
+  border: 1px solid #666;
+  /* size of spinbox: 54x22px
+  incl. up/down button: 70x22px */
   border-radius: 2px;
   border-top-right-radius: 11px;
   border-bottom-right-radius: 11px;
@@ -795,6 +797,14 @@ WBeatSpinBox {
   margin-bottom: 1px;
 }
 
+#BPM, #KeyDisplayMatch,
+#RateUp, #RateDown,
+#KeyUp, #KeyDown,
+#PitchSlider {
+  background-color: #252525;
+  border-radius: 3px;
+}
+
 #BpmLabel {
   qproperty-alignment: 'AlignHCenter | AlignVCenter';
   font-size: 16px/16px;
@@ -802,14 +812,12 @@ WBeatSpinBox {
   text-align: center;
   padding-top: 1px;
   }
-  #SyncButtonOverlay[displayValue="0"]:hover {/*
-    image: url(skin:/buttons/btn_sync.svg) no-repeat center center;*/
+  #SyncButtonOverlay[displayValue="0"]:hover {
     image: url(skin:/buttons/btn_key_match_hover.svg) no-repeat center center;
     border: 1px solid #ff4800;
   }
   #SyncButtonOverlay[displayValue="0"]:hover,
-  #KeyMatch:hover {/*
-    background-color: #333;*/
+  #KeyMatch:hover {
     background-color: rgba(70,70,70,180);
   }
   #SyncButtonOverlay[displayValue="1"],
@@ -821,45 +829,51 @@ WBeatSpinBox {
   #SamplerSyncButton[displayValue="1"]:hover {
     border: 1px solid #eeeeee;
   }
+
+  #RateUp, #RateDown,
+  #KeyUp, #KeyDown {
+    border: 1px solid #333;    
+    }
+    #RateUp:hover, #RateDown:hover,
+    #KeyUp:hover, #KeyDown:hover {
+      background-color: #333;
+      border: 1px solid #666;    
+    }
   #RateUp {
     image: url(skin:/buttons/btn_rate_up.svg) no-repeat center center;
     }
     #RateUp:hover {
       image: url(skin:/buttons/btn_rate_up_hover.svg) no-repeat center center;
-      border: 1px solid #666;
     }
   #RateDown {
     image: url(skin:/buttons/btn_rate_down.svg) no-repeat center center;
     }
     #RateDown:hover {
       image: url(skin:/buttons/btn_rate_down_hover.svg) no-repeat center center;
-      border: 1px solid #666;
     }
 
-    #KeyDisplay {
-      font-size: 14px/14px;/*
-      font-weight: bold;*/
-      padding: 0px;
+  #KeyDisplay {
+    font-size: 14px/14px;/*
+    font-weight: bold;*/
+    padding: 0px;
+  }
+  #KeyMatch {
     }
-    #KeyMatch {
-      }
-      #KeyMatch:hover {
-        image: url(skin:/buttons/btn_key_match_hover.svg) no-repeat center center;
-        border: 1px solid #666;
-      }
+    #KeyMatch:hover {
+      image: url(skin:/buttons/btn_key_match_hover.svg) no-repeat center center;
+      border: 1px solid #888;
+    }
     #KeyUp {
       image: url(skin:/buttons/btn_key_up.svg) no-repeat center center;
       }
       #KeyUp:hover {
         image: url(skin:/buttons/btn_key_up_hover.svg) no-repeat center center;
-        border: 1px solid #666;
       }
     #KeyDown {
       image: url(skin:/buttons/btn_key_down.svg) no-repeat center center;
       }
       #KeyDown:hover {
         image: url(skin:/buttons/btn_key_down_hover.svg) no-repeat center center;
-        border: 1px solid #666;
       }
 /* */
 
@@ -1474,10 +1488,6 @@ WBeatSpinBox {
   background-color: #4b4b4b;
 }
 #FxSuperLinkButton[value="0"]:hover {
-  border: 1px solid #888;
-}
-
-#FxSuperLinkInvertButton[displayValue="0"]:hover {
   background-color: #888;
 }
 #FxSuperLinkInvertButton[displayValue="1"] {
@@ -1487,6 +1497,7 @@ WBeatSpinBox {
     background-color: #ff0000;
   }
 
+#FxSuperLinkInvertButton[displayValue="0"]:hover,
 #FxSuperLinkButton[value="1"] {
   background-color: #006596;
   }
@@ -1501,8 +1512,7 @@ WBeatSpinBox {
     stop: 0.34 #4b4b4b,
     stop: 1 #4b4b4b);
   }
-  #FxSuperLinkButton[value="2"]:hover {	/*
-    a simple way to achive a partitioning in thirds	*/
+  #FxSuperLinkButton[value="2"]:hover {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
       stop: 0 #078dcd,
       stop: 0.33 #078dcd,
@@ -1840,11 +1850,7 @@ qproperty-layoutAlignment: 'AlignRight | AlignBottom';
   color: #333;
   font-size: 1px/1px;
 }
-#RoundFiller25,
-#BPM, #KeyDisplayMatch,
-#RateUp, #RateDown,
-#KeyUp, #KeyDown,
-#PitchSlider {
+#RoundFiller25 {
   background-color: #252525;
   border-radius: 3px;
 }
