@@ -1,5 +1,5 @@
 <!--
-    Tango * a flat, super-minimizable, nightime-compatible skin for mixxx
+    Tango * a flat nightime skin for mixxx
 
     This skin is supposed to be an extension for your controller, in a way that
     almost all duplicate controls can be removed from screen.
@@ -9,16 +9,20 @@
     Main focus was to make every control easily and quickly recognizable,
     especially when your eyes are mostly on your controller and your hands.
     I started with LateNight and got much inspiration from Deere and how templates and
-    variables can be used.
+    variables can be used. I used WidgetStacks and SizeAwareStacks to switch i.e. netbook mode,
+    Star rating visibility.
 
-    Special feature:
-    comment row below track overview shows first line of track's comment (read from
-    metadata tag, editable in tracks table or Properties window).
-    How to use:
-    - add your notes on cue points, moods, whatever to the beginning of track comment
-    - for a line break press <shift> + <enter>
-    - to push iTunes info etc. down, insert a blank line: <space> then <shift> + <enter>
-    - disable completely in skin settings menu
+    Special features:
+    1) Netbook mode
+      Switch to ompact automatically if screen (window) has less than 1260 pixels in width.
+    2) Comment row
+      Display first line of track's comment below track overview (read from metadata tag,
+      editable in tracks table or Properties window).
+      Show/hide with toggle in skin settings menu.
+      How to use:
+      - add your notes on cue points, moods, whatever to the beginning of track comment
+      - for a line break in comment, press <shift> + <enter>
+      - to push iTunes info etc. down, insert a blank line: <space> then <shift> + <enter>
 
     Enjoy!
 
@@ -33,8 +37,8 @@
   <manifest>
     <title>Tango</title>
     <author>ronso0</author>
-    <version>2.1.4</version>
-    <description>A flat, super-minimizable, nightime-compatible skin</description>
+    <version>2.1.5</version>
+    <description>A flat nightime skin. Almost all controls can be hidden with Skin Settings menu.</description>
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
 
@@ -55,6 +59,16 @@
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
       <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
+      <!-- item index in skin_settings_sampler_rows.xml, '1' enables 2 sampler rows -->
+      <attribute persist="true" config_key="[Tango],sampler_rows">1</attribute>
+      <attribute persist="true" config_key="[SamplerRow1],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow2],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow3],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow4],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow5],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow6],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow7],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow8],expanded">0</attribute>
       <!-- [Tango] specific defaults -->
       <attribute persist="true" config_key="[Tango],2or4_FxUnits">0</attribute>
       <attribute persist="true" config_key="[Tango],fx_super_knob">0</attribute>
@@ -85,16 +99,6 @@
       <attribute persist="true" config_key="[Tango],mixerbar_below_library">0</attribute>
       <attribute persist="true" config_key="[Tango],mixer_spinnyCover">0</attribute>
       <attribute persist="true" config_key="[Tango],pitch_fader">1</attribute>
-      <!-- item index in skin_settings_sampler_rows.xml, sets 2 sampler rows -->
-      <attribute persist="true" config_key="[Tango],sampler_rows">1</attribute>
-      <attribute persist="true" config_key="[SamplerRow1],expanded">0</attribute>
-      <attribute persist="true" config_key="[SamplerRow2],expanded">0</attribute>
-      <attribute persist="true" config_key="[SamplerRow3],expanded">0</attribute>
-      <attribute persist="true" config_key="[SamplerRow4],expanded">0</attribute>
-      <attribute persist="true" config_key="[SamplerRow5],expanded">0</attribute>
-      <attribute persist="true" config_key="[SamplerRow6],expanded">0</attribute>
-      <attribute persist="true" config_key="[SamplerRow7],expanded">0</attribute>
-      <attribute persist="true" config_key="[SamplerRow8],expanded">0</attribute>
       <attribute persist="true" config_key="[Tango],symmetric_overviews">0</attribute>
       <attribute persist="true" config_key="[Tango],symmetric_time">0</attribute>
       <attribute persist="true" config_key="[Tango],stacked_waveforms">1</attribute>

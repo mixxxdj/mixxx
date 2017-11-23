@@ -123,7 +123,6 @@ Variables:
             <SizePolicy>me,min</SizePolicy>
           </WidgetGroup>
 
-          <!-- Loopmove / beatjump controls -->
           <Template src="skin:spacer_responsive_filler.xml">
             <SetVariable name="Color">25</SetVariable>
             <SetVariable name="Size">0me,0me</SetVariable>

@@ -21,11 +21,11 @@ Controls:
     <Children>
 
       <!-- Play button -->
-      <WidgetGroup><Size>63f,1f</Size></WidgetGroup>
+      <WidgetGroup><Size>63f,0f</Size></WidgetGroup>
 
       <!-- Separate Cue button -->
       <WidgetGroup>
-        <Size>25f,1f</Size>
+        <Size>25f,0f</Size>
         <Connection>
           <ConfigKey persist="true">[Tango],separate_cue_button</ConfigKey>
           <Transform><IsEqual>1</IsEqual></Transform>
@@ -39,10 +39,10 @@ Controls:
         <Layout>horizontal</Layout>
         <Children>
           <WidgetGroup><!-- HotCues 1-4 at minimum size -->
-            <Size>64f,1f</Size>
+            <Size>64f,0f</Size>
           </WidgetGroup>
           <WidgetGroup><!-- HotCues 5-8 at minimum size -->
-            <Size>64f,1f</Size>
+            <Size>64f,0f</Size>
             <Connection>
               <ConfigKey persist="true">[Tango],8_hotcues</ConfigKey>
               <BindProperty>visible</BindProperty>
@@ -57,7 +57,7 @@ Controls:
 
       <!-- deck controls toggle -->
       <WidgetGroup>
-        <Size>15f,1f</Size>
+        <Size>15f,0f</Size>
         <Connection>
           <ConfigKey>[Tango],deck_controls_toggle</ConfigKey>
           <BindProperty>visible</BindProperty>
@@ -66,7 +66,7 @@ Controls:
 
       <!-- spacers for deck controls that are set to be always visible -->
       <WidgetGroup><!-- keylock -->
-        <Size>20f,1f</Size>
+        <Size>20f,0f</Size>
         <Connection>
           <ConfigKey persist="true">[Tango],always_visible_keylock</ConfigKey>
           <BindProperty>visible</BindProperty>
@@ -74,7 +74,7 @@ Controls:
       </WidgetGroup>
 
       <WidgetGroup><!-- repeat -->
-        <Size>22f,1f</Size>
+        <Size>22f,0f</Size>
         <Connection>
           <ConfigKey persist="true">[Tango],always_visible_repeat</ConfigKey>
           <BindProperty>visible</BindProperty>
@@ -82,14 +82,14 @@ Controls:
       </WidgetGroup>
 
       <WidgetGroup><!-- eject -->
-        <Size>20f,1f</Size>
+        <Size>20f,0f</Size>
         <Connection>
           <ConfigKey persist="true">[Tango],always_visible_eject</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
       <WidgetGroup><!-- slip mode -->
-        <Size>22f,1f</Size>
+        <Size>22f,0f</Size>
         <Connection>
           <ConfigKey persist="true">[Tango],always_visible_slipMode</ConfigKey>
           <BindProperty>visible</BindProperty>
@@ -97,7 +97,7 @@ Controls:
       </WidgetGroup>
 
       <WidgetGroup><!-- xfader orientation -->
-        <Size>20f,1f</Size>
+        <Size>20f,0f</Size>
         <Connection>
           <ConfigKey persist="true">[Tango],always_visible_xfaderOrientation</ConfigKey>
           <BindProperty>visible</BindProperty>
@@ -105,7 +105,7 @@ Controls:
       </WidgetGroup>
 
       <WidgetGroup><!-- quantize -->
-        <Size>22f,1f</Size>
+        <Size>22f,0f</Size>
         <Connection>
           <ConfigKey persist="true">[Tango],always_visible_quantize</ConfigKey>
           <BindProperty>visible</BindProperty>
@@ -117,7 +117,7 @@ Controls:
         <Layout>horizontal</Layout>
         <Children>
           <WidgetGroup><!-- keylock expanded -->
-            <Size>20f,1f</Size>
+            <Size>20f,0f</Size>
             <Connection>
               <ConfigKey persist="true">[Tango],always_visible_keylock</ConfigKey>
               <Transform><Not/></Transform>
@@ -125,7 +125,7 @@ Controls:
             </Connection>
           </WidgetGroup>
           <WidgetGroup><!-- repeat expanded -->
-            <Size>22f,1f</Size>
+            <Size>22f,0f</Size>
             <Connection>
               <ConfigKey persist="true">[Tango],always_visible_repeat</ConfigKey>
               <Transform><Not/></Transform>
@@ -133,7 +133,7 @@ Controls:
             </Connection>
           </WidgetGroup>
           <WidgetGroup><!-- eject expanded -->
-            <Size>20f,1f</Size>
+            <Size>20f,0f</Size>
             <Connection>
               <ConfigKey persist="true">[Tango],always_visible_eject</ConfigKey>
               <Transform><Not/></Transform>
@@ -141,7 +141,7 @@ Controls:
             </Connection>
           </WidgetGroup>
           <WidgetGroup><!-- slip mode expanded -->
-            <Size>22f,1f</Size>
+            <Size>22f,0f</Size>
             <Connection>
               <ConfigKey persist="true">[Tango],always_visible_slipMode</ConfigKey>
               <Transform><Not/></Transform>
@@ -149,7 +149,7 @@ Controls:
             </Connection>
           </WidgetGroup>
           <WidgetGroup><!-- xfader orientation expanded -->
-            <Size>20f,1f</Size>
+            <Size>20f,0f</Size>
             <Connection>
               <ConfigKey persist="true">[Tango],always_visible_xfaderOrientation</ConfigKey>
               <Transform><Not/></Transform>
@@ -157,7 +157,7 @@ Controls:
             </Connection>
           </WidgetGroup>
           <WidgetGroup><!-- quantize expanded -->
-            <Size>22f,1f</Size>
+            <Size>22f,0f</Size>
             <Connection>
               <ConfigKey persist="true">[Tango],always_visible_quantize</ConfigKey>
               <Transform><Not/></Transform>
@@ -175,21 +175,21 @@ Controls:
         <Children>
           <WidgetStack><!-- Not enough space for stars -->
             <SizePolicy>me,f</SizePolicy>
-            <MinimumSize>0,1</MinimumSize>
-            <MaximumSize>82,1</MaximumSize>
+            <MinimumSize>0,0</MinimumSize>
+            <MaximumSize>82,0</MaximumSize>
             <Children>
-              <WidgetGroup><Size>1f,1f</Size></WidgetGroup>
-              <WidgetGroup trigger="[Tango],stars_fit"><Size>1f,1f</Size></WidgetGroup>
+              <WidgetGroup><Size>1f,0f</Size></WidgetGroup>
+              <WidgetGroup trigger="[Tango],stars_fit"><Size>1f,0f</Size></WidgetGroup>
             </Children>
           </WidgetStack>
 
           <WidgetStack><!-- when there is enough space for stars (min 83px) show them. -->
             <SizePolicy>me,f</SizePolicy>
-            <MinimumSize>83,1</MinimumSize>
-            <MaximumSize>-1,1</MaximumSize>
+            <MinimumSize>83,0</MinimumSize>
+            <MaximumSize>-1,0</MaximumSize>
             <Children>
-              <WidgetGroup trigger="[Tango],stars_fit"><Size>1f,1f</Size></WidgetGroup>
-              <WidgetGroup><Size>1f,1f</Size></WidgetGroup>
+              <WidgetGroup trigger="[Tango],stars_fit"><Size>1f,0f</Size></WidgetGroup>
+              <WidgetGroup><Size>1f,0f</Size></WidgetGroup>
             </Children>
           </WidgetStack>
 

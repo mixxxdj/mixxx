@@ -140,7 +140,7 @@ Variables:
       <WidgetGroup><!-- EffectSlots + Underlays, with focus button -->
         <ObjectName>Spacer0f</ObjectName>
         <Layout>stacked</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
           <WidgetGroup><!-- EffectSlots with focus -->
             <Layout>vertical</Layout>
@@ -241,7 +241,7 @@ Variables:
       <WidgetGroup><!-- EffectSlots + Underlays, no focus -->
         <ObjectName>Spacer0f</ObjectName>
         <Layout>stacked</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
           <WidgetGroup><!-- EffectSlots, no focus -->
             <Layout>vertical</Layout>

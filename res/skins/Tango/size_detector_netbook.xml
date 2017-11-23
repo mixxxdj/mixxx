@@ -22,7 +22,7 @@ Description:
             <Children>
 
               <WidgetStack><!-- 0  show skin controls at top edge of window -->
-                <SizePolicy>me,max</SizePolicy>
+                <SizePolicy>me,f</SizePolicy>
                 <MinimumSize>1,0</MinimumSize>
                 <MaximumSize>1259,0</MaximumSize>
                 <Children>
@@ -32,7 +32,7 @@ Description:
               </WidgetStack>
 
               <WidgetStack><!-- 1  show skin controls in the center between decks -->
-                <SizePolicy>me,me</SizePolicy>
+                <SizePolicy>me,f</SizePolicy>
                 <MinimumSize>1260,0</MinimumSize>
                 <Children>
                   <WidgetGroup trigger="[Tango],normal_mode"><Size>2f,0f</Size></WidgetGroup>
@@ -60,7 +60,7 @@ Description:
             <Children>
 
               <WidgetStack><!-- 0  show skin controls at top edge of window -->
-                <SizePolicy>me,max</SizePolicy>
+                <SizePolicy>me,f</SizePolicy>
                 <MinimumSize>1,0</MinimumSize>
                 <MaximumSize>1259,0</MaximumSize>
                 <Children>
@@ -70,7 +70,7 @@ Description:
               </WidgetStack>
 
               <WidgetStack><!-- 1  show skin controls in the center between decks -->
-                <SizePolicy>me,me</SizePolicy>
+                <SizePolicy>me,f</SizePolicy>
                 <MinimumSize>1260,0</MinimumSize>
                 <Children>
                   <WidgetGroup trigger="[Tango],normal_mode_0"><Size>2f,0f</Size></WidgetGroup>

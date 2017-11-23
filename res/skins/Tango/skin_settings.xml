@@ -55,7 +55,9 @@ Description:
               MaxSize = (num. of buttons/rows x 17px) + 15px + 3px padding + 3px border-bottom -->
           <WidgetGroup><!-- Decks / General | 9 buttons/rows 13-17px, 1 fixed row 15px -->
             <ObjectName>SkinSettingsCategory</ObjectName>
-            <MinimumSize>200,138</MinimumSize>
+            <!-- increse minimal height so that other categories get squeezed more
+            <MinimumSize>200,138</MinimumSize> -->
+            <MinimumSize>200,145</MinimumSize>
             <MaximumSize>200,174</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
@@ -81,7 +83,7 @@ Description:
                     </Connection>
                   </WidgetGroup>
 
-                  <WidgetGroup><!-- button when skin switched to netbook mode automatically -->
+                  <WidgetGroup><!-- button for normal mode -->
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
                     <MinimumSize>182,13</MinimumSize>
@@ -149,7 +151,7 @@ Description:
                     <SetVariable name="Setting">[Tango],hotcues</SetVariable>
                   </Template>
                   <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
-                  <WidgetGroup><!-- 2 or 4 -->
+                  <WidgetGroup><!-- 4 or 8 -->
                     <MinimumSize>182,13</MinimumSize>
                     <MaximumSize>182,17</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
@@ -191,7 +193,7 @@ Description:
                         </Children>
                       </WidgetGroup>
                     </Children>
-                  </WidgetGroup><!-- /2 or 4 -->
+                  </WidgetGroup><!-- /4 or 8 -->
                 </Children>
               </WidgetGroup><!-- /HotCue settings -->
 
@@ -424,7 +426,7 @@ Description:
                             <MinimumSize>10,13</MinimumSize>
                             <MaximumSize>10,17</MaximumSize>
                             <SizePolicy>me,f</SizePolicy>
-                            <Text>&#9664;</Text>
+                            <Text>!</Text>
                             <Connection>
                               <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
                               <BindProperty>visible</BindProperty>
@@ -504,7 +506,7 @@ Description:
             <Layout>vertical</Layout>
             <Children>
 
-              <WidgetGroup><!-- Spinny / Cover / Off -->
+              <WidgetGroup><!-- show Spinny/Cover + small/BIG selector -->
                 <MinimumSize>182,13</MinimumSize>
                 <MaximumSize>182,17</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
@@ -519,7 +521,7 @@ Description:
 
                   <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
-                  <WidgetGroup><!-- BIG/small Spinny / Cover -->
+                  <WidgetGroup><!-- small/BIG selector -->
                     <MinimumSize>182,13</MinimumSize>
                     <MaximumSize>182,17</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
@@ -539,50 +541,38 @@ Description:
                         </Connection>
                       </WidgetGroup>
 
-                      <WidgetGroup><!-- BIG/small Spinny / Cover with ChannelMixer -->
+                      <WidgetGroup><!-- hint: enforced small cover/spinny with mixer-->
+                        <ObjectName>SubmenuCover</ObjectName>
+                        <Layout>horizontal</Layout>
                         <MinimumSize>182,13</MinimumSize>
                         <MaximumSize>182,17</MaximumSize>
                         <SizePolicy>me,me</SizePolicy>
-                        <Layout>horizontal</Layout>
                         <Children>
-                          <WidgetGroup><!-- disabled BIG cover/spinny with hint -->
-                            <ObjectName>SubmenuCover</ObjectName>
-                            <Layout>horizontal</Layout>
-                            <MinimumSize>182,13</MinimumSize>
-                            <MaximumSize>182,17</MaximumSize>
-                            <SizePolicy>me,me</SizePolicy>
-                            <Children>
-                              <WidgetGroup><Size>8f,1min</Size></WidgetGroup>
-                              <Label>
-                                <ObjectName>CoverSpinnyHint</ObjectName>
-                                <MinimumSize>8,13</MinimumSize>
-                                <MaximumSize>8,17</MaximumSize>
-                                <SizePolicy>min,me</SizePolicy>
-                                <Text> ! </Text>
-                              </Label>
-                              <WidgetGroup><Size>40f,1min</Size></WidgetGroup>
-                              <Label>
-                                <ObjectName>SubmenuLabel</ObjectName>
-                                <MinimumSize>100,13</MinimumSize>
-                                <MaximumSize>100,17</MaximumSize>
-                                <SizePolicy>min,me</SizePolicy>
-                                <Text>(automatic)</Text>
-                              </Label>
-                              <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
-                            </Children>
-                            <Connection>
-                              <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
-                              <BindProperty>visible</BindProperty>
-                            </Connection>
-                          </WidgetGroup><!-- /disabled BIG cover/spinny with hint -->
+                          <WidgetGroup><Size>8f,1min</Size></WidgetGroup>
+                          <Label>
+                            <ObjectName>CoverSpinnyHint</ObjectName>
+                            <MinimumSize>8,13</MinimumSize>
+                            <MaximumSize>8,17</MaximumSize>
+                            <SizePolicy>min,me</SizePolicy>
+                            <Text> ° </Text>
+                          </Label>
+                          <WidgetGroup><Size>40f,1min</Size></WidgetGroup>
+                          <Label>
+                            <ObjectName>SubmenuLabel</ObjectName>
+                            <MinimumSize>100,13</MinimumSize>
+                            <MaximumSize>100,17</MaximumSize>
+                            <SizePolicy>min,me</SizePolicy>
+                            <Text>(automatic)</Text>
+                          </Label>
+                          <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
                         </Children>
                         <Connection>
                           <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
-                      </WidgetGroup>
+                      </WidgetGroup><!-- /hint: enforced small cover/spinny with mixer-->
 
-                      <WidgetGroup><!-- BIG/small Spinny / Cover without ChannelMixer -->
+                      <WidgetGroup><!-- small/BIG selector, hidden mixer -->
                         <MinimumSize>182,13</MinimumSize>
                         <MaximumSize>182,17</MaximumSize>
                         <SizePolicy>me,me</SizePolicy>
@@ -602,11 +592,12 @@ Description:
                           </Template>
                           <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
                         </Children>
-                      </WidgetGroup><!-- /BIG/small Spinny / Cover without ChannelMixer --><!-- /BIG/small Spinny / Cover with ChannelMixer -->
+                      </WidgetGroup><!-- /small/BIG selector, hidden mixer -->
                     </Children>
-                  </WidgetGroup><!-- /Spinny or Cover, BIG or small -->
+                  </WidgetGroup><!-- /small/BIG selector -->
                 </Children>
-              </WidgetGroup><!-- /Spinny / Cover / Off -->
+              </WidgetGroup><!-- /show Spinny/Cover + small/BIG selector -->
+
               <WidgetGroup><!-- Spinny or Cover -->
                 <MinimumSize>182,13</MinimumSize>
                 <MaximumSize>182,17</MaximumSize>
@@ -652,7 +643,7 @@ Description:
                 </Children>
               </WidgetGroup><!-- /Spinny or Cover -->
 
-              <WidgetGroup><!-- Spinny/Cover Cover on Spinny-->
+              <WidgetGroup><!-- Cover on Spinny-->
                 <Layout>stacked</Layout>
                 <MinimumSize>182,13</MinimumSize>
                 <MaximumSize>182,17</MaximumSize>
@@ -688,7 +679,7 @@ Description:
                     <SetVariable name="Setting">[Tango],spinnyWithCoverArt</SetVariable>
                   </Template>
                 </Children>
-              </WidgetGroup><!-- /Spinny/Cover Cover on Spinny-->
+              </WidgetGroup><!-- /Cover on Spinny-->
 
             </Children>
           </WidgetGroup><!-- /Spinny / Cover -->
@@ -829,7 +820,7 @@ Description:
                       <!-- index 0 due to bug -->
                       <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-                      <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
+                      <WidgetGroup><!-- translucent cover when Samlers are hidden -->
                         <ObjectName>SubmenuCover</ObjectName>
                         <Layout>vertical</Layout>
                         <MinimumSize>112,13</MinimumSize>

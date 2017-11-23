@@ -5,7 +5,7 @@ Description:
 -->
 <Template>
   <WidgetGroup>
-    <SizePolicy>max,0f</SizePolicy>
+    <SizePolicy>max,f</SizePolicy>
     <Layout>horizontal</Layout>
     <Children>
 
