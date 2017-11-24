@@ -28,6 +28,9 @@ SettingsManager::SettingsManager(QObject* pParent,
     initializeDefaults();
 
     ControlDoublePrivate::setUserConfig(m_pSettings);
+
+    m_pBroadcastSettings = BroadcastSettingsPointer(
+                               new BroadcastSettings(m_pSettings));
 }
 
 SettingsManager::~SettingsManager() {

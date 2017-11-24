@@ -11,6 +11,7 @@
 #include "effects/native/threebandbiquadeqeffect.h"
 #include "effects/native/biquadfullkilleqeffect.h"
 #include "effects/native/graphiceqeffect.h"
+#include "effects/native/parametriceqeffect.h"
 #include "effects/native/filtereffect.h"
 #include "effects/native/moogladder4filtereffect.h"
 #ifndef __MACAPPSTORE__
@@ -33,6 +34,7 @@ NativeBackend::NativeBackend(QObject* pParent)
     registerEffect<BiquadFullKillEQEffect>();
     // Compensations EQs
     registerEffect<GraphicEQEffect>();
+    registerEffect<ParametricEQEffect>();
     registerEffect<LoudnessContourEffect>();
     // Fading Effects
     registerEffect<FilterEffect>();

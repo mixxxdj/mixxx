@@ -51,8 +51,8 @@ def ProtocEmitter(target, source, env):
     except KeyError:
         pass
 
-    #~ print "PROTOC SOURCE:", [str(s) for s in source]
-    #~ print "PROTOC TARGET:", [str(s) for s in target]
+    #~ print("PROTOC SOURCE:", [str(s) for s in source])
+    #~ print("PROTOC TARGET:", [str(s) for s in target])
 
     return target, source
 
