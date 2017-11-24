@@ -174,9 +174,7 @@ void BaseTrackPlayerImpl::loadTrack(TrackPointer pTrack) {
         if (pCue->getType() == Cue::LOOP) {
             double loopStart = pCue->getPosition();
             double loopEnd = loopStart + pCue->getLength();
-            qDebug() << "Found loop cue" << loopStart << (loopEnd - loopStart);
             if (loopStart != -1 && loopEnd != -1 && loopStart <= loopEnd) {
-                qDebug() << "Loading loop cue" << loopStart << (loopEnd - loopStart);
                 m_pLoopInPoint->set(loopStart);
                 m_pLoopOutPoint->set(loopEnd);
                 break;
@@ -207,14 +205,10 @@ TrackPointer BaseTrackPlayerImpl::unloadTrack() {
                 pLoopCue = pCue;
             }
         }
-        if (pLoopCue) {
-            qDebug() << "Reusing existing loop cue";
-        } else {
-            qDebug() << "Creating new loop cue";
+        if (!pLoopCue) {
             pLoopCue = m_pLoadedTrack->createAndAddCue();
             pLoopCue->setType(Cue::LOOP);
         }
-        qDebug() << "Saving loop cue" << loopStart << (loopEnd - loopStart);
         pLoopCue->setPosition(loopStart);
         pLoopCue->setLength(loopEnd - loopStart);
     }
