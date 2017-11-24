@@ -8,6 +8,7 @@
 #include "track/track.h"
 #include "sources/soundsourceproxy.h"
 #include "engine/enginebuffer.h"
+#include "engine/enginecontrol.h"
 #include "engine/enginedeck.h"
 #include "engine/enginemaster.h"
 #include "track/beatgrid.h"
@@ -162,8 +163,8 @@ void BaseTrackPlayerImpl::loadTrack(TrackPointer pTrack) {
     // It seems that the trick is to first clear the loop out point, and then
     // the loop in point. If we first clear the loop in point, the loop out point
     // does not get cleared.
-    m_pLoopOutPoint->set(-1);
-    m_pLoopInPoint->set(-1);
+    m_pLoopOutPoint->set(kNoTrigger);
+    m_pLoopInPoint->set(kNoTrigger);
 
     // The loop in and out points must be set here and not in slotTrackLoaded
     // so LoopingControl::trackLoaded can access them.
@@ -174,7 +175,7 @@ void BaseTrackPlayerImpl::loadTrack(TrackPointer pTrack) {
         if (pCue->getType() == Cue::LOOP) {
             double loopStart = pCue->getPosition();
             double loopEnd = loopStart + pCue->getLength();
-            if (loopStart != -1 && loopEnd != -1 && loopStart <= loopEnd) {
+            if (loopStart != kNoTrigger && loopEnd != kNoTrigger && loopStart <= loopEnd) {
                 m_pLoopInPoint->set(loopStart);
                 m_pLoopOutPoint->set(loopEnd);
                 break;
@@ -195,7 +196,7 @@ TrackPointer BaseTrackPlayerImpl::unloadTrack() {
     // currently on the track, then create a new one.
     double loopStart = m_pLoopInPoint->get();
     double loopEnd = m_pLoopOutPoint->get();
-    if (loopStart != -1 && loopEnd != -1 && loopStart <= loopEnd) {
+    if (loopStart != kNoTrigger && loopEnd != kNoTrigger && loopStart <= loopEnd) {
         CuePointer pLoopCue;
         QList<CuePointer> cuePoints(m_pLoadedTrack->getCuePoints());
         QListIterator<CuePointer> it(cuePoints);
@@ -298,8 +299,8 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         m_pBPM->set(0);
         m_pKey->set(0);
         setReplayGain(0);
-        m_pLoopInPoint->set(-1);
-        m_pLoopOutPoint->set(-1);
+        m_pLoopInPoint->set(kNoTrigger);
+        m_pLoopOutPoint->set(kNoTrigger);
         m_pLoadedTrack.reset();
         emit(playerEmpty());
     } else if (pNewTrack && pNewTrack == m_pLoadedTrack) {
