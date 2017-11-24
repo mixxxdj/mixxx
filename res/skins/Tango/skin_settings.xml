@@ -52,13 +52,14 @@ Description:
               Each categroy has a padding: top 2px, bottom 2px
               For every button we need to provide space (13-17px):
               MinSize = (num. of buttons/rows x 13px) + 15px + 3px padding + 3px border-bottom
-              MaxSize = (num. of buttons/rows x 17px) + 15px + 3px padding + 3px border-bottom -->
+              MaxSize = (num. of buttons/rows x 17px) + 15px + 3px padding + 3px border-bottom +10px
+              (let's add 10px so sections can grow on big screens) -->
           <WidgetGroup><!-- Decks / General | 9 buttons/rows 13-17px, 1 fixed row 15px -->
             <ObjectName>SkinSettingsCategory</ObjectName>
             <!-- increse minimal height so that other categories get squeezed more
             <MinimumSize>200,138</MinimumSize> -->
             <MinimumSize>200,145</MinimumSize>
-            <MaximumSize>200,174</MaximumSize>
+            <MaximumSize>200,184</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
@@ -390,7 +391,7 @@ Description:
           <WidgetGroup><!-- 4 buttons -->
             <ObjectName>SkinSettingsCategory</ObjectName>
             <MinimumSize>200,58</MinimumSize>
-            <MaximumSize>200,74</MaximumSize>
+            <MaximumSize>200,84</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
@@ -479,11 +480,35 @@ Description:
                 </Children>
               </WidgetGroup><!-- /EQ knobs -->
 
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="state_0_text">      Permanent Level Meters</SetVariable>
-                <SetVariable name="state_1_text"> &#10004; Permanent Level Meters</SetVariable>
-                <SetVariable name="Setting">[Tango],vumeter</SetVariable>
-              </Template>
+              <WidgetGroup><!-- Permanent Level Meters -->
+                <Layout>stacked</Layout>
+                <MinimumSize>182,13</MinimumSize>
+                <MaximumSize>182,17</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <MinimumSize>182,13</MinimumSize>
+                    <MaximumSize>182,17</MaximumSize>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Connection>
+                      <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="state_0_text">      Always show Level Meters</SetVariable>
+                    <SetVariable name="state_1_text"> &#10004; Always show Level Meters</SetVariable>
+                    <SetVariable name="Setting">[Tango],vumeter</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup><!-- /Permanent Level Meters -->
 
               <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="state_0_text">      Crossfader</SetVariable>
@@ -501,7 +526,7 @@ Description:
           <WidgetGroup><!-- 3 buttons -->
             <ObjectName>SkinSettingsCategory</ObjectName>
             <MinimumSize>200,45</MinimumSize>
-            <MaximumSize>200,57</MaximumSize>
+            <MaximumSize>200,67</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
@@ -692,7 +717,7 @@ Description:
           <WidgetGroup><!-- 3 buttons (1 commented out) -->
             <ObjectName>SkinSettingsCategory</ObjectName>
             <MinimumSize>200,45</MinimumSize>
-            <MaximumSize>200,57</MaximumSize>
+            <MaximumSize>200,67</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
@@ -756,11 +781,33 @@ Description:
                 </Children>
               </WidgetGroup><!-- Effect Units, 2 or 4 -->
 
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="state_0_text">      Super Knobs</SetVariable>
-                <SetVariable name="state_1_text"> &#10004; Super Knobs</SetVariable>
-                <SetVariable name="Setting">[Tango],fx_super_knob</SetVariable>
-              </Template>
+              <WidgetGroup><!-- Super Knobs -->
+                <MinimumSize>182,13</MinimumSize>
+                <MaximumSize>182,17</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
+                <Layout>stacked</Layout>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover when Effects are invisble -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Size>182f,13me</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="state_0_text">      Super Knobs</SetVariable>
+                    <SetVariable name="state_1_text"> &#10004; Super Knobs</SetVariable>
+                    <SetVariable name="Setting">[Tango],fx_super_knob</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup><!-- /Super Knobs -->
 
               <!-- Buttons in samplers were removed for now
               <Template src="skin:skin_settings_button_2state.xml">
@@ -786,7 +833,7 @@ Description:
           <WidgetGroup>
             <ObjectName>SkinSettingsCategory</ObjectName>
             <MinimumSize>200,45</MinimumSize>
-            <MaximumSize>200,57</MaximumSize>
+            <MaximumSize>200,67</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
