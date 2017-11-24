@@ -497,7 +497,6 @@ Description:
                     <SizePolicy>me,me</SizePolicy>
                     <Connection>
                       <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
-                      <Transform><Not/></Transform>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
