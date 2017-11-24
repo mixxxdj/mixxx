@@ -37,7 +37,7 @@
   <manifest>
     <title>Tango</title>
     <author>ronso0</author>
-    <version>2.1.5</version>
+    <version>2.1.6</version>
     <description>A flat nightime skin. Almost all controls can be hidden with Skin Settings menu.</description>
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
@@ -200,7 +200,7 @@
      ############################################################### -->
     <WidgetGroup>
       <ObjectName>SkinContainer</ObjectName>
-      <Layout>vertical</Layout>
+      <Layout>horizontal</Layout>
       <SizePolicy>me,me</SizePolicy>
       <Children>
         <!-- Normal view, expandig library -->
@@ -208,9 +208,11 @@
         <!-- Netbook size detector -->
 
         <WidgetGroup><!-- Lib normal, stacked resizable waveforms, skin settings menu -->
-          <Layout>horizontal</Layout>
+          <Layout>vertical</Layout>
           <SizePolicy>me,me</SizePolicy>
           <Children>
+
+            <Template src="skin:topbar_netbook.xml"/>
 
             <Splitter>
               <ObjectName>WaveformSplitter</ObjectName>
@@ -237,8 +239,6 @@
                   <Layout>vertical</Layout>
                   <SizePolicy>me,min</SizePolicy>
                   <Children>
-
-                    <Template src="skin:topbar_netbook.xml"/>
 
 					          <!-- Spacer to window border with no parallel waveforms -->
 					          <WidgetGroup>
@@ -297,7 +297,8 @@
                       <ObjectName>Library_Singleton</ObjectName>
                     </SingletonContainer>
 
-                    <WidgetGroup><!-- MixerBar when Library is not shown -->
+                    <!-- MixerBar when Library is not shown
+                    <WidgetGroup>
                       <ObjectName>MixerBar_Container_skin</ObjectName>
                       <Layout>vertical</Layout>
                       <SizePolicy>min,me</SizePolicy>
@@ -310,14 +311,12 @@
                         <Transform><Not/></Transform>
                         <BindProperty>visible</BindProperty>
                       </Connection>
-                    </WidgetGroup><!-- /MixerBar when Library is not shown -->
+                    </WidgetGroup> -->
 
                   </Children>
                 </WidgetGroup><!-- Decks + FX + Samplers + Library -->
               </Children>
             </Splitter>
-
-            <Template src="skin:skin_settings.xml"/>
 
           </Children>
           <Connection>
@@ -341,7 +340,9 @@
           </Connection>
         </WidgetGroup><!-- /Lib maximized -->
 
-        <Template src="skin:size_detector_netbook.xml"/>
+        <Template src="skin:skin_settings.xml"/>
+
+        <!--Template src="skin:size_detector_netbook.xml"/-->
 
       </Children>
     </WidgetGroup><!-- /SkinContainer -->

@@ -98,7 +98,7 @@ Description:
                 <FgColor>#eece33</FgColor>
               </Library>
           <!-- Display Mixerbar here if it fits.
-              If not, display it below Library -->
+              If not, display it below Library
               <WidgetGroup>
                 <SizePolicy>min,min</SizePolicy>
                 <Layout>horizontal</Layout>
@@ -110,13 +110,14 @@ Description:
                   <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup><!-- /Mixerbar -->
+              </WidgetGroup> -->
             </Children>
           </WidgetGroup><!-- /Library Table -->
         </Children>
       </Splitter>
+
   <!-- Display Mixerbar here if it needs more h-space.
-      If not, display it next to TreeView -->
+      If not, display it next to TreeView
       <WidgetGroup>
         <SizePolicy>min,min</SizePolicy>
         <Layout>vertical</Layout>
@@ -127,7 +128,8 @@ Description:
           <ConfigKey>[Tango],mixerbar_below_library</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- /Mixerbar -->
+      </WidgetGroup> -->
+
     </Children>
     <Connection>
       <ConfigKey persist="true">[Library],show_library</ConfigKey>

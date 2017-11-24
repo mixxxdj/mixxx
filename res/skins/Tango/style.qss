@@ -246,7 +246,7 @@ WWidgetGroup {
 ##############################################################*/
 
 #Mixerbar {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
   margin: 0px;
   padding: 0px;
   border: 0px;
@@ -255,8 +255,8 @@ WWidgetGroup {
 
 #MixerbarSection {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-  margin: 3px 5px 0px 0px;
-  background-color: #333;
+  margin: 0px 10px 0px 0px;/*
+  background-color: #333;*/
 }
 
 #Mixerbar_BelowLibrary[displayValue="0"] {

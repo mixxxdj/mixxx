@@ -21,6 +21,80 @@ Description:
         <ObjectName>SkinControlsBarLeft</ObjectName>
         <SizePolicy>me,min</SizePolicy>
         <Children>
+          <Template src="skin:mixerbar.xml"/>
+        </Children>
+      </WidgetGroup><!-- /Skin controls -->
+
+      <!-- Vertical layout:
+          Top row (0px tall): spacers for PitchSlider, VUMeter etc.
+          Bootom row: Crossfader lies on top if enabled -->
+      <WidgetGroup>
+        <ObjectName>AlignHCenter</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+
+          <WidgetGroup><!-- Crossfader -->
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <!-- Margin is not respected if any <Connection> is attached
+                  to container. Put those spacers here to ensure the Crossfader
+                  stays centered. -->
+              <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
+              <WidgetGroup>
+                <SizePolicy>min,min</SizePolicy>
+                <Layout>vertical</Layout>
+                <Children>
+                  <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
+                  <SliderComposed>
+                    <TooltipId>crossfader</TooltipId>
+                    <Handle>skin:/knobs_sliders/slider_crossfader_handle.svg</Handle>
+                    <Slider>skin:/knobs_sliders/slider_crossfader_scale.svg</Slider>
+                    <Horizontal>true</Horizontal>
+                    <Connection>
+                      <ConfigKey>[Master],crossfader</ConfigKey>
+                    </Connection>
+                  </SliderComposed>
+                  <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Tango],crossfader</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+              <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Tango],crossfader</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /Crossfader -->
+
+          <!-- Zero-height spacers below Crossfader ensures left and right toolbars
+              are aligned with deck edges. -->
+          <Template src="skin:spacer_topbar_netbook.xml"/>
+
+        </Children>
+      </WidgetGroup><!-- Stack of spacers for PitchSlider, VUMeter etc.
+                      Crossfader lies on top if enabled -->
+
+      <WidgetGroup><!-- Logo, Rec, Broadcast, Clock, Skinsettings -->
+        <Layout>horizontal</Layout>
+        <ObjectName>SkinControlsBarRight</ObjectName>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="ObjectName">LogoMaxi</SetVariable>
+            <SetVariable name="Size">81f,20f</SetVariable>
+            <SetVariable name="state_0_pressed">logo_104x26_grey.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">logo_104x26_grey.svg</SetVariable>
+            <SetVariable name="state_1_pressed">logo_104x26.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">logo_104x26.svg</SetVariable>
+            <SetVariable name="ConfigKey">[Tango],colorLogo</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml"><!-- FX -->
             <SetVariable name="TooltipId">show_effects</SetVariable>
@@ -115,79 +189,7 @@ Description:
             <SetVariable name="ConfigKey">[Tango],channel_mixer</SetVariable>
           </Template>
 
-        </Children>
-      </WidgetGroup><!-- /Skin controls -->
-
-      <!-- Vertical layout:
-          Top row (0px tall): spacers for PitchSlider, VUMeter etc.
-          Bootom row: Crossfader lies on top if enabled -->
-      <WidgetGroup>
-        <ObjectName>AlignHCenter</ObjectName>
-        <SizePolicy>min,min</SizePolicy>
-        <Layout>vertical</Layout>
-        <Children>
-
-          <WidgetGroup><!-- Crossfader -->
-            <SizePolicy>min,min</SizePolicy>
-            <Layout>horizontal</Layout>
-            <Children>
-              <!-- Margin is not respected if any <Connection> is attached
-                  to container. Put those spacers here to ensure the Crossfader
-                  stays centered. -->
-              <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
-              <WidgetGroup>
-                <SizePolicy>min,min</SizePolicy>
-                <Layout>vertical</Layout>
-                <Children>
-                  <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
-                  <SliderComposed>
-                    <TooltipId>crossfader</TooltipId>
-                    <Handle>skin:/knobs_sliders/slider_crossfader_handle.svg</Handle>
-                    <Slider>skin:/knobs_sliders/slider_crossfader_scale.svg</Slider>
-                    <Horizontal>true</Horizontal>
-                    <Connection>
-                      <ConfigKey>[Master],crossfader</ConfigKey>
-                    </Connection>
-                  </SliderComposed>
-                  <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
-                </Children>
-                <Connection>
-                  <ConfigKey persist="true">[Tango],crossfader</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-              <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
-            </Children>
-            <Connection>
-              <ConfigKey persist="true">[Tango],crossfader</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup><!-- /Crossfader -->
-
-          <!-- Zero-height spacers below Crossfader ensures left and right toolbars
-              are aligned with deck edges. -->
-          <Template src="skin:spacer_topbar_netbook.xml"/>
-
-        </Children>
-      </WidgetGroup><!-- Stack of spacers for PitchSlider, VUMeter etc.
-                      Crossfader lies on top if enabled -->
-
-      <WidgetGroup><!-- Logo, Rec, Broadcast, Clock, Skinsettings -->
-        <Layout>horizontal</Layout>
-        <ObjectName>SkinControlsBarRight</ObjectName>
-        <SizePolicy>me,min</SizePolicy>
-        <Children>
-          <Template src="skin:button_2state_persist.xml">
-            <SetVariable name="ObjectName">LogoMaxi</SetVariable>
-            <SetVariable name="Size">81f,20f</SetVariable>
-            <SetVariable name="state_0_pressed">logo_104x26_grey.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">logo_104x26_grey.svg</SetVariable>
-            <SetVariable name="state_1_pressed">logo_104x26.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">logo_104x26.svg</SetVariable>
-            <SetVariable name="ConfigKey">[Tango],colorLogo</SetVariable>
-          </Template>
-
-          <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
           <WidgetGroup><!-- Recording button & recording duration label -->
             <Layout>stacked</Layout>
@@ -283,9 +285,5 @@ Description:
       </WidgetGroup><!-- /Logo, Rec, Broadcast, Clock, Skinsettings -->
 
     </Children>
-    <Connection>
-      <ConfigKey>[Tango],netbook_mode</ConfigKey>
-      <BindProperty>visible</BindProperty>
-    </Connection>
   </WidgetGroup>
 </Template>
