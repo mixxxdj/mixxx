@@ -204,8 +204,8 @@ Description:
               </Template>
 
               <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="state_0_text">      BPM / Pitch Fader</SetVariable>
-                <SetVariable name="state_1_text"> &#10004; BPM / Pitch Fader</SetVariable>
+                <SetVariable name="state_0_text">      BPM/Sync &amp; Pitch Fader</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; BPM/Sync &amp; Pitch Fader</SetVariable>
                 <SetVariable name="Setting">[Tango],pitch_fader</SetVariable>
               </Template>
 
@@ -236,15 +236,15 @@ Description:
                     <Size>182f,0me</Size>
                     <Children>
                       <Template src="skin:skin_settings_button_2state.xml">
-                        <SetVariable name="state_0_text">      Key Controls</SetVariable>
-                        <SetVariable name="state_1_text"> &#10004; Key Controls</SetVariable>
+                        <SetVariable name="state_0_text">      Key Display/Match</SetVariable>
+                        <SetVariable name="state_1_text"> &#10004; Key Display/Match</SetVariable>
                         <SetVariable name="width">182</SetVariable>
                         <SetVariable name="Setting">[Tango],key_controls</SetVariable>
                       </Template>
 
                       <Template src="skin:skin_settings_button_2state.xml">
-                        <SetVariable name="state_0_text">      Seperate Rate/Key Buttons</SetVariable>
-                        <SetVariable name="state_1_text"> &#10004; Seperate Rate/Key Buttons</SetVariable>
+                        <SetVariable name="state_0_text">      Rate/Key Adjustment Buttons</SetVariable>
+                        <SetVariable name="state_1_text"> &#10004; Rate/Key Adjustment Buttons</SetVariable>
                         <SetVariable name="width">182</SetVariable>
                         <SetVariable name="Setting">[Tango],rate_key_buttons</SetVariable>
                       </Template>

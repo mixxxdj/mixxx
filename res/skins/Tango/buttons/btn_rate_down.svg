@@ -8,7 +8,7 @@
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    version="1.1"
-   width="12"
+   width="22"
    height="11"
    id="svg3043">
   <metadata
@@ -26,7 +26,11 @@
   <defs
      id="defs3049" />
   <path
-     d="m 2.2089051,5.5 7.7942289,4.5 0,-9 z"
+     d="M 3.205771,5.5 11,9.9999999 11,1 z"
      id="path3045"
+     style="fill:#888888" />
+  <path
+     d="M 9.205771,5.5 17,10 17,1 z"
+     id="path3045-3"
      style="fill:#888888" />
 </svg>

@@ -792,8 +792,11 @@ WBeatSpinBox {
   border-radius: 3px;
 }
 
-#BPM, #RateButtons, #KeyDisplayMatch, #KeyControls {
+#KeyDisplayMatch, #KeyControls {
   margin-bottom: 1px;
+}
+#RateButtons {
+  margin-top: 1px;
 }
 
 #BPM, #KeyDisplayMatch,
@@ -815,6 +818,9 @@ WBeatSpinBox {
     image: url(skin:/buttons/btn_key_match_hover.svg) no-repeat center center;
     border: 1px solid #ff4800;
   }
+  #SyncButtonOverlay[displayValue="0"] {
+    border: 1px solid #444;
+  }
   #SyncButtonOverlay[displayValue="0"]:hover,
   #KeyMatch:hover {
     background-color: rgba(70,70,70,180);
@@ -831,12 +837,12 @@ WBeatSpinBox {
 
   #RateUp, #RateDown,
   #KeyUp, #KeyDown {
-    border: 1px solid #333;    
+    border: 1px solid #444;    
     }
     #RateUp:hover, #RateDown:hover,
     #KeyUp:hover, #KeyDown:hover {
       background-color: #333;
-      border: 1px solid #666;    
+      border: 1px solid #888;    
     }
   #RateUp {
     image: url(skin:/buttons/btn_rate_up.svg) no-repeat center center;
@@ -857,6 +863,7 @@ WBeatSpinBox {
     padding: 0px;
   }
   #KeyMatch {
+    border: 1px solid #444;
     }
     #KeyMatch:hover {
       image: url(skin:/buttons/btn_key_match_hover.svg) no-repeat center center;

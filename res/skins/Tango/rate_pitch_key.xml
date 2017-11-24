@@ -21,15 +21,44 @@ Variables:
         <Size>50f,136f</Size>
         <Children>
 
-          <WidgetGroup>
+          <WidgetGroup><!-- Key Display/Match + Key adjust buttons -->
             <Layout>vertical</Layout>
             <Children>
-              <WidgetGroup>
+              <WidgetGroup><!-- Key adjust buttons -->
+                <ObjectName>KeyControls</ObjectName>
+                <Layout>horizontal</Layout>
+                <Size>1me,14f</Size>
+                <Children>
+                  <Template src="skin:button_1state.xml">
+                    <SetVariable name="TooltipId">pitch_down</SetVariable>
+                    <SetVariable name="ObjectName">KeyDown</SetVariable>
+                    <SetVariable name="Size">12me,13f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,pitch_down</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,pitch_down_small</SetVariable>
+                  </Template>
+
+                  <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
+
+                  <Template src="skin:button_1state_right.xml">
+                    <SetVariable name="TooltipId">pitch_up</SetVariable>
+                    <SetVariable name="ObjectName">KeyUp</SetVariable>
+                    <SetVariable name="Size">12me,13f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,pitch_up</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,pitch_up_small</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Tango],rate_key_buttons</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- /Key adjust buttons -->
+
+              <WidgetGroup><!-- Key Display/Match -->
                 <ObjectName>KeyDisplayMatch</ObjectName>
                 <Layout>stacked</Layout>
                 <Size>1me,14f</Size>
                 <Children>
-                  <!-- Transparent button to mazch key of other deck -->
+                  <!-- KeyMatch, transparent -->
                   <Template src="skin:button_1state_right.xml">
                     <SetVariable name="TooltipId">sync_reset_key</SetVariable>
                     <SetVariable name="ObjectName">KeyMatch</SetVariable>
@@ -64,42 +93,13 @@ Variables:
                     </Connection>
                   </Key>
                 </Children>
-              </WidgetGroup>
-
-              <WidgetGroup><!-- Overlay buttons: down, reset, up -->
-                <ObjectName>KeyControls</ObjectName>
-                <Layout>horizontal</Layout>
-                <Size>1me,14f</Size>
-                <Children>
-                  <Template src="skin:button_1state.xml">
-                    <SetVariable name="TooltipId">pitch_down</SetVariable>
-                    <SetVariable name="ObjectName">KeyDown</SetVariable>
-                    <SetVariable name="Size">12me,13f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="group"/>,pitch_down</SetVariable>
-                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,pitch_down_small</SetVariable>
-                  </Template>
-
-                  <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
-
-                  <Template src="skin:button_1state_right.xml">
-                    <SetVariable name="TooltipId">pitch_up</SetVariable>
-                    <SetVariable name="ObjectName">KeyUp</SetVariable>
-                    <SetVariable name="Size">12me,13f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="group"/>,pitch_up</SetVariable>
-                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,pitch_up_small</SetVariable>
-                  </Template>
-                </Children>
-                <Connection>
-                  <ConfigKey persist="true">[Tango],rate_key_buttons</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
+              </WidgetGroup><!-- /Key Display/Match -->
             </Children>
             <Connection>
               <ConfigKey persist="true">[Tango],key_controls</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
-          </WidgetGroup><!-- /KeyControls --><!-- /Overlay buttons: down, reset, up -->
+          </WidgetGroup><!-- /Key Display/Match + Key adjust buttons -->
 
           <WidgetGroup><!-- BPM display & invisble sync button -->
             <ObjectName>BPM</ObjectName>
@@ -128,7 +128,7 @@ Variables:
             </Children>
           </WidgetGroup><!-- /BPM display & invisble sync button -->
 
-          <WidgetGroup><!-- KeyContainer -->
+          <WidgetGroup><!-- Rate adjust buttons -->
             <ObjectName>RateButtons</ObjectName>
             <Layout>horizontal</Layout>
             <Size>50f,14f</Size>
@@ -155,7 +155,7 @@ Variables:
               <ConfigKey persist="true">[Tango],rate_key_buttons</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
-          </WidgetGroup><!-- /Rate buttons -->
+          </WidgetGroup><!-- /Rate adjust buttons -->
 
           <SliderComposed>
             <ObjectName>PitchSlider</ObjectName>
