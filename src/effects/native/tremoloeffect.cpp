@@ -1,12 +1,8 @@
 #include "effects/native/tremoloeffect.h"
 
 namespace {
-// Gain when the gate is open, higher than 1 to still have a decent level
-constexpr double kMaxGain        = 1.5;
-// Attack slope
-constexpr double kBaseAttackInc  = 0.001;
-// Release slope
-constexpr double kBaseReleaseInc = 0.0005;
+//  Used to avoid gain discontinuities when changing parameters too fast
+constexpr double kMaxGainIncrement = 0.001;
 
 constexpr int kNumberOfChannels  = 2;
 }
@@ -31,21 +27,22 @@ EffectManifest TremoloEffect::getManifest() {
     rate->setName(QObject::tr("Rate"));
     rate->setShortName(QObject::tr("Rate"));
     rate->setDescription(QObject::tr("Controls the rate of the effect\n"
-    "1/8 - 1 beat if tempo is detected (decks and samplers) \n"
-    "1/8 - 1 seconds if no tempo is detected (mic & aux inputs, master mix)"));
-    rate->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    "every 4 beats - 1/8 beat if tempo is detected (decks and samplers) \n"
+    "1/4 Hz - 8 Hz if no tempo is detected (mic & aux inputs, master mix)"));
+    rate->setControlHint(
+        EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     rate->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     rate->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
-    rate->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);    
-    rate->setDefault(0.5);
-    rate->setMinimum(0);
-    rate->setMaximum(1);
+    rate->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
+    rate->setDefault(1);
+    rate->setMinimum(1.0/4);
+    rate->setMaximum(8);
 
     EffectManifestParameter* shape = manifest.addParameter();
     shape->setId("shape");
     shape->setName(QObject::tr("Shape"));
     shape->setShortName(QObject::tr("Shape"));
-    shape->setDescription(QObject::tr("Sets the duration for sound passing through the effect"
+    shape->setDescription(QObject::tr("Sets the duty cycle of the modulation"
     "10% - 90% of the effect period"));
     shape->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     shape->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
@@ -53,6 +50,36 @@ EffectManifest TremoloEffect::getManifest() {
     shape->setMinimum(0.1);
     shape->setDefault(0.5);
     shape->setMaximum(0.9);
+
+    EffectManifestParameter* smooth = manifest.addParameter();
+    smooth->setId("smooth");
+    smooth->setName(QObject::tr("Smooth"));
+    smooth->setShortName(QObject::tr("Smooth"));
+    smooth->setDescription(QObject::tr("Sets the smoothness of the modulation"
+    "0 - Square wave"
+    "1 - Sine wave"));
+    smooth->setControlHint(
+        EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+    smooth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    smooth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    smooth->setMinimum(0.005);
+    smooth->setDefault(0.5);
+    smooth->setMaximum(1);
+
+
+    EffectManifestParameter *phase = manifest.addParameter();
+    phase->setId("phase");
+    phase->setName("Phase");
+    phase->setShortName(QObject::tr("Phase"));
+    phase->setDescription("Shift the modulation inside the period"
+    "0 - 1 period shift");
+    phase->setControlHint(
+        EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    phase->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    phase->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    phase->setDefault(0);
+    phase->setMinimum(0);
+    phase->setMaximum(1);
 
     EffectManifestParameter* quantize = manifest.addParameter();
     quantize->setId("quantize");
@@ -82,20 +109,6 @@ EffectManifest TremoloEffect::getManifest() {
     triplet->setMinimum(0);
     triplet->setMaximum(1);
 
-    EffectManifestParameter *phase = manifest.addParameter();
-    phase->setId("phase");
-    phase->setName("Phase");
-    phase->setShortName(QObject::tr("Phase"));
-    phase->setDescription("Shifts the start of the effect from the beginning of the effect period"
-    "0 - 1/2 of period shift");
-    phase->setControlHint(
-        EffectManifestParameter::ControlHint::KNOB_LINEAR);
-    phase->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    phase->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    phase->setDefault(0);
-    phase->setMinimum(0);
-    phase->setMaximum(1);
-
     return manifest;
 }
 
@@ -103,10 +116,10 @@ TremoloEffect::TremoloEffect(EngineEffect* pEffect,
                              const EffectManifest& manifest)
         : m_pRateParameter(pEffect->getParameterById("rate")),
           m_pShapeParameter(pEffect->getParameterById("shape")),
+          m_pSmoothParameter(pEffect->getParameterById("smooth")),
+          m_pPhaseParameter(pEffect->getParameterById("phase")),
           m_pQuantizeParameter(pEffect->getParameterById("quantize")),
-          m_pTripletParameter(pEffect->getParameterById("triplet")),
-          m_pPhaseParameter(pEffect->getParameterById("phase")) 
-{
+          m_pTripletParameter(pEffect->getParameterById("triplet")) {
     Q_UNUSED(manifest);
 }
 
@@ -119,130 +132,93 @@ void TremoloEffect::processChannel(const ChannelHandle& handle,
                                 const unsigned int numSamples,
                                 const unsigned int sampleRate,
                                 const EffectProcessor::EnableState enableState,
-                                const GroupFeatureState& groupFeatures) { 
-                                    
+                                const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
-                                    
-    const double rate  = m_pRateParameter->value();
+
     const double shape  = m_pShapeParameter->value();
+    const double smooth = m_pSmoothParameter->value();
 
-    // Used to divide a beat by a power of 2
-    int divider = pow(2, floor(3 * rate));
+    unsigned int currentFrame = pState->currentFrame;
+    double       gain         = pState->gain;
 
-    // Attack & Release increase with the divider factor
-    double attackInc = kBaseAttackInc * divider;
-    double releaseInc = kBaseReleaseInc * divider;
+    const GroupFeatureState& gf = groupFeatures;
 
-    // Get channel specific state variable
-    unsigned int currentFrame    = pState->currentFrame;
-    unsigned int holdCounter     = pState->holdCounter;
-    double       gain            = pState->gain;
-    TremoloGroupState::State state = pState->state;
+    bool quantizeEnabling = !pState->quantizeEnabled
+                          && m_pQuantizeParameter->toBool();
+    bool tripletDisabling = pState->tripletEnabled
+                          && !m_pTripletParameter->toBool();
 
-    // Use to keep track of the beginning of beats when playing with the rate
-    unsigned int beatPeriod = 1;
-    if (enableState == EffectProcessor::ENABLING) {        
-        // Start with the gate closed
-        state = TremoloGroupState::State::IDLE;
+    if (enableState == EffectProcessor::ENABLING
+     || quantizeEnabling
+     || tripletDisabling) {
+        if (gf.has_beat_length_sec && gf.has_beat_fraction) {
+            currentFrame = gf.beat_fraction * gf.beat_length_sec * sampleRate;
+        } else {
+            currentFrame = 0;
+        }
         gain = 0;
-        currentFrame = 0;   
-        beatPeriod   = sampleRate; // 1 second
     }
 
-    // Set period and current frame from beatgrid, 
-    if (groupFeatures.has_beat_length_sec && groupFeatures.has_beat_fraction) {
-        beatPeriod   = groupFeatures.beat_length_sec * sampleRate;
-        currentFrame = groupFeatures.beat_fraction * beatPeriod;
-    }
-
-    // Adjust trigger period
-    unsigned int triggerPeriod;
-    double period = 1 - rate;
-    if (groupFeatures.has_beat_length_sec) {
-        // triggerPeriod is a number of beats
+    int framePerPeriod;
+    double rate  = m_pRateParameter->value();
+    if (gf.has_beat_length_sec && gf.has_beat_fraction) {
         if (m_pQuantizeParameter->toBool()) {
-            period = 1.0 / divider;
-            
+            int divider = log2(rate);
+            rate = pow(2, divider);
+
             if (m_pTripletParameter->toBool()) {
-                period /= 3.0;
+                rate *= 3.0;
             }
-        } else if (period < 1 / 8.0) {
-            period = 1 / 8.0;
         }
-        triggerPeriod = period * groupFeatures.beat_length_sec * sampleRate;
+        int framePerBeat = gf.beat_length_sec * sampleRate;
+        framePerPeriod = framePerBeat / rate;
     } else {
-        // triggerPeriod is a number of seconds
-        period = std::max(period, 1 / 8.0);
-        triggerPeriod = period * sampleRate;
+        framePerPeriod = sampleRate / rate;
     }
 
-    // triggerTime : offset for the gate trigger
-    unsigned int triggerTime;
-    if (m_pPhaseParameter->toBool()) {
-        triggerTime = triggerPeriod / 2;
-    } else {
-        triggerTime = 0;
-    }
+    unsigned int phaseOffsetFrame = m_pPhaseParameter->value() * framePerPeriod;
+    currentFrame = currentFrame % framePerPeriod;
 
-    // holdTime : number of frames spent in the Hold state
-    unsigned int holdTime;
-    double attackTime  = kMaxGain / attackInc;
-    double releaseTime = kMaxGain / releaseInc;
-    holdTime = std::max(0.0, floor(triggerPeriod * shape - attackTime - releaseTime));
-    
     for (unsigned int i = 0; i < numSamples; i+=kNumberOfChannels) {
-         if (currentFrame % triggerPeriod == triggerTime) {
-            state = TremoloGroupState::State::ATTACK;
-            if (currentFrame % beatPeriod == 1) {
-                currentFrame = 0;
-            }
-        }
-        currentFrame++;
+        unsigned int positionFrame = (currentFrame - phaseOffsetFrame);
+        positionFrame = positionFrame % framePerPeriod;
 
-        // Gate state machine : Idle->Attack->Hold->Release->Idle
-        switch (state) {
-            // Idle : Gain = 0
-            case TremoloGroupState::State::IDLE:
-                gain = 0;
-                break;
+        //  Relative position (0 to 1) in the period
+        double position = 1.0 * positionFrame / framePerPeriod;
 
-            // Attack : Increase gain up to maxGain, then Hold
-            case TremoloGroupState::State::ATTACK:
-                gain += attackInc;
-                if (gain >= kMaxGain) {
-                    state = TremoloGroupState::State::HOLD;
-                    holdCounter = holdTime;
-                }
-                break;
-
-            // Hold : Hold maxGain for holdCounter samples
-            case TremoloGroupState::State::HOLD:
-                gain = kMaxGain;
-                if (holdCounter == 0) {
-                    state = TremoloGroupState::State::RELEASE;  
-                }
-
-                holdCounter--;
-                break;
-
-            // Release : Decrease gain to 0, then Idle
-            case TremoloGroupState::State::RELEASE:
-                gain -= releaseInc;
-                if (gain <= 0) {
-                    state = TremoloGroupState::State::IDLE;
-                }
-                break;
+        //  Bend the position according to the shape parameter
+        //  This maps [0 shape] to [0 0.5] and [shape 1] to [0.5 1]
+        if (position < shape) {
+            position = 0.5 / shape * position;
+        } else {
+            position = 0.5 + 0.5 * (position - shape) / (1 - shape);
         }
 
-        for (int channel = 0; channel < kNumberOfChannels; channel++)
-        {
+        //  This is where the magic happens
+        //  This function gives the gain to apply for position in [0 1]
+        //  Plot the function to get a grasp :
+        //  From a sine to a square wave depending on the smooth parameter
+        double gainTarget = 0.5 + atan(sin(2.0 * M_PI * position) / smooth)
+                                   / (2 * atan(1 / smooth));
+
+        if (gainTarget > gain + kMaxGainIncrement) {
+            gain += kMaxGainIncrement;
+        } else if (gainTarget < gain - kMaxGainIncrement) {
+            gain -= kMaxGainIncrement;
+        } else {
+            gain = gainTarget;
+        }
+
+        for (int channel = 0; channel < kNumberOfChannels; channel++) {
             pOutput[i+channel]   = gain * pInput[i+channel];
         }
+
+        currentFrame++;
     }
 
     // Write back channel state
-    pState->currentFrame = currentFrame;
-    pState->holdCounter  = holdCounter;
-    pState->gain         = gain;
-    pState->state        = state;
+    pState->currentFrame  = currentFrame;
+    pState->gain = gain;
+    pState->quantizeEnabled = m_pQuantizeParameter->toBool();
+    pState->tripletEnabled  = m_pTripletParameter->toBool();
 }

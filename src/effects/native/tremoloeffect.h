@@ -11,10 +11,10 @@
 
 
 struct TremoloGroupState {
-    enum class State {IDLE, ATTACK, HOLD, RELEASE} state;
     double gain;
     unsigned int currentFrame;
-    unsigned int holdCounter;
+    bool quantizeEnabled = false;
+    bool tripletEnabled  = false;
 };
 
 class TremoloEffect : public PerChannelEffectProcessor<TremoloGroupState> {
@@ -41,9 +41,10 @@ class TremoloEffect : public PerChannelEffectProcessor<TremoloGroupState> {
 
     EngineEffectParameter* m_pRateParameter;
     EngineEffectParameter* m_pShapeParameter;
+    EngineEffectParameter* m_pSmoothParameter;
+    EngineEffectParameter* m_pPhaseParameter;
     EngineEffectParameter* m_pQuantizeParameter;
     EngineEffectParameter* m_pTripletParameter;
-    EngineEffectParameter* m_pPhaseParameter;
 
     DISALLOW_COPY_AND_ASSIGN(TremoloEffect);
 };
