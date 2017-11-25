@@ -977,7 +977,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
     }
     DEBUG_ASSERT(m_currentMixxxFrameIndex == seekFrameIndex);
 
-    const SINT numberOfFrames = writableSampleFrames.frameIndexRange().length();
+    const SINT numberOfFrames = writableSampleFrames.frameLength();
 
     DEBUG_ASSERT(m_currentMixxxFrameIndex == firstFrameIndex);
     DEBUG_ASSERT(m_SCache.size() > 0);

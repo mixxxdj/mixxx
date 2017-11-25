@@ -66,7 +66,7 @@ ReadableSampleFrames LegacyAudioSourceAdapter::readSampleFramesClamped(
     // Read or skip data
     const SINT numFramesRead =
             m_pImpl->readSampleFrames(
-                    writableSampleFrames.frameIndexRange().length(),
+                    writableSampleFrames.frameLength(),
                     writableSampleFrames.writableData());
     const auto resultFrameIndexRange =
             IndexRange::forward(writableSampleFrames.frameIndexRange().start(), numFramesRead);

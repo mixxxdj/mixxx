@@ -181,7 +181,7 @@ void SoundSourceModPlug::close() {
 ReadableSampleFrames SoundSourceModPlug::readSampleFramesClamped(
         WritableSampleFrames writableSampleFrames) {
     const SINT readOffset = frames2samples(writableSampleFrames.frameIndexRange().start());
-    const SINT readSamples = frames2samples(writableSampleFrames.frameIndexRange().length());
+    const SINT readSamples = frames2samples(writableSampleFrames.frameLength());
     SampleUtil::convertS16ToFloat32(
             writableSampleFrames.writableData(),
             &m_sampleBuf[readOffset],

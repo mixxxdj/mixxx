@@ -104,7 +104,7 @@ ReadableSampleFrames SoundSourceSndFile::readSampleFramesClamped(
     }
     DEBUG_ASSERT(m_curFrameIndex == firstFrameIndex);
 
-    const SINT numberOfFramesTotal = writableSampleFrames.frameIndexRange().length();
+    const SINT numberOfFramesTotal = writableSampleFrames.frameLength();
 
     const sf_count_t readCount =
             sf_readf_float(m_pSndFile, writableSampleFrames.writableData(), numberOfFramesTotal);

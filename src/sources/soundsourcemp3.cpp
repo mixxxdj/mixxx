@@ -354,7 +354,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
     initFrameIndexRangeOnce(IndexRange::forward(0, m_curFrameIndex));
 
     // Calculate average values
-    m_avgSeekFrameCount = frameIndexRange().length() / m_seekFrameList.size();
+    m_avgSeekFrameCount = frameLength() / m_seekFrameList.size();
     const unsigned long avgBitrate = sumBitrate / m_seekFrameList.size();
     initBitrateOnce(avgBitrate / 1000);
 
@@ -541,7 +541,7 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
     }
     DEBUG_ASSERT(m_curFrameIndex == firstFrameIndex);
 
-    const SINT numberOfFramesTotal = writableSampleFrames.frameIndexRange().length();
+    const SINT numberOfFramesTotal = writableSampleFrames.frameLength();
 
     CSAMPLE* pSampleBuffer = writableSampleFrames.writableData();
     SINT numberOfFramesRemaining = numberOfFramesTotal;

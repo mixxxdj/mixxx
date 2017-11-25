@@ -317,7 +317,7 @@ ReadableSampleFrames SoundSourceOpus::readSampleFramesClamped(
     }
     DEBUG_ASSERT(m_curFrameIndex == firstFrameIndex);
 
-    const SINT numberOfFramesTotal = writableSampleFrames.frameIndexRange().length();
+    const SINT numberOfFramesTotal = writableSampleFrames.frameLength();
 
     // pSampleBuffer might be null while skipping (see above)
     CSAMPLE* pSampleBuffer = writableSampleFrames.writableData();

@@ -261,7 +261,7 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
     }
     DEBUG_ASSERT(m_curFrameIndex == firstFrameIndex);
 
-    const SINT numberOfFramesTotal = writableSampleFrames.frameIndexRange().length();
+    const SINT numberOfFramesTotal = writableSampleFrames.frameLength();
 
     CSAMPLE* pSampleBuffer = writableSampleFrames.writableData();
     SINT numberOfFramesRemaining = numberOfFramesTotal;

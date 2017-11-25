@@ -122,7 +122,7 @@ ReadableSampleFrames SoundSourceWV::readSampleFramesClamped(
     }
     DEBUG_ASSERT(m_curFrameIndex == firstFrameIndex);
 
-    const SINT numberOfFramesTotal = writableSampleFrames.frameIndexRange().length();
+    const SINT numberOfFramesTotal = writableSampleFrames.frameLength();
 
     static_assert(sizeof(CSAMPLE) == sizeof(int32_t),
             "CSAMPLE and int32_t must have the same size");

@@ -23,6 +23,10 @@ class SampleFrames {
         return m_frameIndexRange;
     }
 
+    SINT frameLength() const {
+        return m_frameIndexRange.length();
+    }
+
   private:
     IndexRange m_frameIndexRange;
 };
@@ -223,6 +227,11 @@ class AudioSource: public UrlResource, public AudioSignal, public virtual /*impl
         return m_frameIndexRange;
     }
 
+    // The total length of audio data.
+    SINT frameLength() const {
+        return m_frameIndexRange.length();
+    }
+
     // The index of the first frame.
     SINT frameIndexMin() const {
         DEBUG_ASSERT(m_frameIndexRange.start() <= m_frameIndexRange.end());
@@ -250,7 +259,7 @@ class AudioSource: public UrlResource, public AudioSignal, public virtual /*impl
     }
     inline double getDuration() const {
         DEBUG_ASSERT(hasDuration()); // prevents division by zero
-        return double(frameIndexRange().length()) / double(sampleRate());
+        return double(frameLength()) / double(sampleRate());
     }
 
 

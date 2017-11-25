@@ -205,7 +205,7 @@ ReadableSampleFrames SoundSourceFLAC::readSampleFramesClamped(
     }
     DEBUG_ASSERT(m_curFrameIndex == firstFrameIndex);
 
-    const SINT numberOfSamplesTotal = frames2samples(writableSampleFrames.frameIndexRange().length());
+    const SINT numberOfSamplesTotal = frames2samples(writableSampleFrames.frameLength());
 
     SINT numberOfSamplesRemaining = numberOfSamplesTotal;
     SINT outputSampleOffset = 0;

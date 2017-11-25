@@ -71,7 +71,7 @@ ReadableSampleFrames AudioSourceStereoProxy::readSampleFramesClamped(
     {
         const SINT numberOfSamplesToRead =
                 m_pAudioSource->frames2samples(
-                        sampleFrames.frameIndexRange().length());
+                        sampleFrames.frameLength());
         VERIFY_OR_DEBUG_ASSERT(m_tempWritableSlice.length() >= numberOfSamplesToRead) {
             kLogger.warning()
                     << "Insufficient temporary sample buffer capacity"
@@ -99,17 +99,17 @@ ReadableSampleFrames AudioSourceStereoProxy::readSampleFramesClamped(
             readableSampleFrames.frameIndexRange().start() - sampleFrames.frameIndexRange().start();
     SampleBuffer::WritableSlice writableSlice(
             sampleFrames.writableData(frames2samples(frameOffset)),
-            frames2samples(readableSampleFrames.frameIndexRange().length()));
+            frames2samples(readableSampleFrames.frameLength()));
     if (m_pAudioSource->channelCount() == 1) {
         SampleUtil::copyMonoToDualMono(
                 writableSlice.data(),
                 readableSampleFrames.readableData(),
-                readableSampleFrames.frameIndexRange().length());
+                readableSampleFrames.frameLength());
     } else {
         SampleUtil::copyMultiToStereo(
                 writableSlice.data(),
                 readableSampleFrames.readableData(),
-                readableSampleFrames.frameIndexRange().length(),
+                readableSampleFrames.frameLength(),
                 m_pAudioSource->channelCount());
     }
     return ReadableSampleFrames(

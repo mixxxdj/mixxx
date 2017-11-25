@@ -202,7 +202,7 @@ bool AnalyzerQueue::doAnalysis(
                                 mixxx::SampleBuffer::WritableSlice(m_sampleBuffer)));
         // To compare apples to apples, let's only look at blocks that are
         // the full block size.
-        if (readableSampleFrames.frameIndexRange().length() == kAnalysisFramesPerBlock) {
+        if (readableSampleFrames.frameLength() == kAnalysisFramesPerBlock) {
             // Complete analysis block of audio samples has been read.
             for (auto const& pAnalyzer: m_pAnalyzers) {
                 pAnalyzer->process(
@@ -230,8 +230,8 @@ bool AnalyzerQueue::doAnalysis(
         // because the finalize functions will take also some time
         //fp div here prevents insane signed overflow
         const double frameProgress =
-                double(pAudioSource->frameIndexRange().length() - remainingFrames.length()) /
-                double(pAudioSource->frameIndexRange().length());
+                double(pAudioSource->frameLength() - remainingFrames.length()) /
+                double(pAudioSource->frameLength());
         int progressPromille = frameProgress * (1000 - FINALIZE_PROMILLE);
 
         if (m_progressInfo.track_progress != progressPromille) {
@@ -361,7 +361,7 @@ void AnalyzerQueue::execThread() {
             if (pAnalyzer->initialize(
                     nextTrack,
                     pAudioSource->sampleRate(),
-                    pAudioSource->frameIndexRange().length() * kAnalysisChannels)) {
+                    pAudioSource->frameLength() * kAnalysisChannels)) {
                 processTrack = true;
             }
         }

@@ -50,7 +50,7 @@ QString calcFingerprint(
 
     std::vector<SAMPLE> fingerprintSamples(
             audioSourceProxy.frames2samples(
-                    readableSampleFrames.frameIndexRange().length()));
+                    readableSampleFrames.frameLength()));
     // Convert floating-point to integer
     SampleUtil::convertFloat32ToS16(
             &fingerprintSamples[0],
