@@ -62,7 +62,7 @@ void ReadAheadSampleBuffer::adjustCapacity(SINT capacity) {
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 }
 
-SampleBuffer::WritableSlice ReadAheadSampleBuffer::writeToTail(SINT maxWriteLength) {
+SampleBuffer::WritableSlice ReadAheadSampleBuffer::growForWriting(SINT maxWriteLength) {
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 
     const SINT tailLength = math_min(maxWriteLength, writableLength());

@@ -431,7 +431,7 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
             }
             // Buffer the remaining samples
             SampleBuffer::WritableSlice writableSlice(
-                    m_sampleBuffer.writeToTail(lockedSampleBufferCount));
+                    m_sampleBuffer.growForWriting(lockedSampleBufferCount));
             // The required capacity has been calculated in advance (see above)
             DEBUG_ASSERT(writableSlice.length() == lockedSampleBufferCount);
             SampleUtil::copy(

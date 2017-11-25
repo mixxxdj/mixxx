@@ -376,7 +376,7 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
     // Decode buffer should be empty before decoding the next frame
     DEBUG_ASSERT(m_sampleBuffer.empty());
     const SampleBuffer::WritableSlice writableSlice(
-            m_sampleBuffer.writeToTail(frames2samples(numReadableFrames)));
+            m_sampleBuffer.growForWriting(frames2samples(numReadableFrames)));
 
     const SINT numWritableFrames = samples2frames(writableSlice.length());
     DEBUG_ASSERT(numWritableFrames <= numReadableFrames);

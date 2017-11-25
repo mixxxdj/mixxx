@@ -16,9 +16,9 @@ public:
 protected:
     static const SINT kCapacity;
 
-    SINT writeToTail(mixxx::ReadAheadSampleBuffer* pSampleBuffer, SINT length) {
+    SINT growAndWrite(mixxx::ReadAheadSampleBuffer* pSampleBuffer, SINT length) {
         const mixxx::SampleBuffer::WritableSlice writableSlice(
-                pSampleBuffer->writeToTail(length));
+                pSampleBuffer->growForWriting(length));
         for (SINT i = 0; i < writableSlice.length(); ++i) {
             writableSlice[i] = m_writeValue;
             m_writeValue += CSAMPLE_ONE;
@@ -64,7 +64,7 @@ TEST_F(ReadAheadSampleBufferTest, emptyWithoutCapacity) {
     EXPECT_TRUE(sampleBuffer.empty());
 
     const mixxx::SampleBuffer::WritableSlice writableSlice(
-            sampleBuffer.writeToTail(10));
+            sampleBuffer.growForWriting(10));
     EXPECT_EQ(writableSlice.data(), static_cast<CSAMPLE*>(NULL));
     EXPECT_EQ(writableSlice.length(), 0);
     EXPECT_TRUE(sampleBuffer.empty());
@@ -86,7 +86,7 @@ TEST_F(ReadAheadSampleBufferTest, emptyWithCapacity) {
 TEST_F(ReadAheadSampleBufferTest, readWriteTrim) {
     mixxx::ReadAheadSampleBuffer sampleBuffer(kCapacity);
 
-    SINT writeCount1 = writeToTail(&sampleBuffer, kCapacity + 10);
+    SINT writeCount1 = growAndWrite(&sampleBuffer, kCapacity + 10);
     // Buffer is completely filled with samples
     EXPECT_EQ(writeCount1, kCapacity);
     EXPECT_FALSE(sampleBuffer.empty());
@@ -100,7 +100,7 @@ TEST_F(ReadAheadSampleBufferTest, readWriteTrim) {
     EXPECT_EQ(sampleBuffer.readableLength(), kCapacity - readCount1);
     EXPECT_EQ(sampleBuffer.writableLength(), 0);
 
-    SINT writeCount2 = writeToTail(&sampleBuffer, kCapacity);
+    SINT writeCount2 = growAndWrite(&sampleBuffer, kCapacity);
     // Impossible to write more samples
     EXPECT_EQ(writeCount2, 0);
     EXPECT_FALSE(sampleBuffer.empty());
@@ -114,7 +114,7 @@ TEST_F(ReadAheadSampleBufferTest, readWriteTrim) {
     EXPECT_EQ(sampleBuffer.writableLength(), readCount1);
 
     // Refill Buffer with samples
-    SINT writeCount3 = writeToTail(&sampleBuffer, kCapacity);
+    SINT writeCount3 = growAndWrite(&sampleBuffer, kCapacity);
     EXPECT_EQ(writeCount3, readCount1);
     EXPECT_FALSE(sampleBuffer.empty());
     EXPECT_EQ(sampleBuffer.readableLength(), kCapacity);
@@ -134,7 +134,7 @@ TEST_F(ReadAheadSampleBufferTest, readWriteTrim) {
     EXPECT_EQ(sampleBuffer.writableLength(), readCount1);
     
     // Refill Buffer with samples
-    SINT writeCount4 = writeToTail(&sampleBuffer, kCapacity);
+    SINT writeCount4 = growAndWrite(&sampleBuffer, kCapacity);
     EXPECT_EQ(writeCount4, readCount2); // buffer has been refilled
     EXPECT_FALSE(sampleBuffer.empty());
     EXPECT_EQ(sampleBuffer.readableLength(), kCapacity);
@@ -151,7 +151,7 @@ TEST_F(ReadAheadSampleBufferTest, readWriteTrim) {
 TEST_F(ReadAheadSampleBufferTest, shrink) {
     mixxx::ReadAheadSampleBuffer sampleBuffer(kCapacity);
 
-    SINT writeCount1 = writeToTail(&sampleBuffer, kCapacity - 10);
+    SINT writeCount1 = growAndWrite(&sampleBuffer, kCapacity - 10);
     EXPECT_EQ(writeCount1, kCapacity - 10);
     EXPECT_FALSE(sampleBuffer.empty());
     SINT shrinkCount1 = readFromHeadAndVerify(&sampleBuffer, 10);
@@ -166,7 +166,7 @@ TEST_F(ReadAheadSampleBufferTest, shrink) {
     EXPECT_EQ(readCount3, 10);
     EXPECT_TRUE(sampleBuffer.empty());
 
-    SINT writeCount2 = writeToTail(&sampleBuffer, 20);
+    SINT writeCount2 = growAndWrite(&sampleBuffer, 20);
     EXPECT_EQ(writeCount2, 20);
     EXPECT_FALSE(sampleBuffer.empty());
     SINT shrinkCount2 = readFromHeadAndVerify(&sampleBuffer, 21);
@@ -177,7 +177,7 @@ TEST_F(ReadAheadSampleBufferTest, shrink) {
 TEST_F(ReadAheadSampleBufferTest, clear) {
     mixxx::ReadAheadSampleBuffer sampleBuffer(kCapacity);
 
-    SINT writeCount = writeToTail(&sampleBuffer, 10);
+    SINT writeCount = growAndWrite(&sampleBuffer, 10);
     EXPECT_EQ(writeCount, 10);
     EXPECT_FALSE(sampleBuffer.empty());
     clear(&sampleBuffer);

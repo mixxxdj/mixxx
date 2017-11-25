@@ -503,10 +503,10 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
             decodeBufferCapacity = numberOfSamplesRemaining;
         } else {
             // Decode next sample block into temporary buffer
-            const SINT writeToTailCount = math_max(
+            const SINT maxWriteLength = math_max(
                     numberOfSamplesRemaining, decodeBufferCapacityMin);
             const SampleBuffer::WritableSlice writableSlice(
-                    m_sampleBuffer.writeToTail(writeToTailCount));
+                    m_sampleBuffer.growForWriting(maxWriteLength));
             pDecodeBuffer = writableSlice.data();
             decodeBufferCapacity = writableSlice.length();
         }

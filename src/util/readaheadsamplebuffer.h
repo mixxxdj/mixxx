@@ -44,15 +44,15 @@ class ReadAheadSampleBuffer final {
     void swap(
             ReadAheadSampleBuffer& that);
 
-    // The maximum capacity of the buffer.
+    // The capacity is limited by the size of the underlying buffer.
     SINT capacity() const {
         return m_sampleBuffer.size();
     }
 
     // Tries to adjust the capacity taking into account the
     // current contents of the buffer. The resulting capacity
-    // may therefore be higher than requested when shrinking
-    // the buffer.
+    // may therefore be higher than requested when trying to
+    // reduce the current capacity.
     void adjustCapacity(SINT capacity);
 
     // Discards all buffered samples.
@@ -60,6 +60,11 @@ class ReadAheadSampleBuffer final {
 
     bool empty() const {
         return m_readableRange.empty();
+    }
+
+    // The number of readable samples.
+    SINT readableLength() const {
+        return m_readableRange.length();
     }
 
     // The number of samples that could be written instantly without
@@ -72,27 +77,27 @@ class ReadAheadSampleBuffer final {
         return capacity() - m_readableRange.end();
     }
 
-    // Reserves space at the buffer's tail for writing samples.
+    // Reserves space for writing samples by growing the readable
+    // range towards the back end of the buffer.
     //
     // Returns a pointer to the continuous memory region and the
-    // actual number of samples that have been reserved. The maximum
-    // length is limited by writableLength().
+    // actual number of samples that have been reserved as a slice.
+    // The maximum length is limited by writableLength() and the
+    // returned slice might be shorter than requested.
     //
-    // The returned pointer is valid until the next writeToTail() operation.
-    SampleBuffer::WritableSlice writeToTail(SINT maxWriteLength);
-
-    // The number of readable samples.
-    SINT readableLength() const {
-        return m_readableRange.length();
-    }
+    // The returned slice is only valid until the next non-const
+    // operation on this buffer.
+    SampleBuffer::WritableSlice growForWriting(SINT maxWriteLength);
 
     // Consumes buffered samples from the head of the buffer.
     //
     // Returns a pointer to the continuous memory region and the actual
-    // number of readable samples. The maximum length is limited by
-    // readableLength().
+    // number of readable samples as a slice. The maximum length is
+    // limited by readableLength() and the returned slice might be
+    // shorter than requested.
     //
-    // The returned pointer is valid until the next writeToTail() operation.
+    // The returned slice is only valid until the next non-const
+    // operation on this buffer.
     SampleBuffer::ReadableSlice readFromHead(SINT maxReadLength);
 
     // Discards the last samples that have been written at the tail of
