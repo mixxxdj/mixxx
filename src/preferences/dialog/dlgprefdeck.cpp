@@ -567,6 +567,8 @@ void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
         m_keyunlockModeControls.last()->set(static_cast<double>(m_keyunlockMode));
     }
 
+    m_iNumConfiguredDecks = numdecks;
+
     // The rate range hasn't been read from the config file when this is first called.
     if (!initializing) {
         setRateDirectionForAllDecks(m_rateDirectionControls[0]->get() == kRateDirectionInverted);
@@ -597,6 +599,8 @@ void DlgPrefDeck::slotNumSamplersChanged(double new_count, bool initializing) {
                 group, "keyunlockMode"));
         m_keyunlockModeControls.last()->set(static_cast<double>(m_keyunlockMode));
     }
+
+    m_iNumConfiguredSamplers = numsamplers;
 
     // The rate range hasn't been read from the config file when this is first called.
     if (!initializing) {
