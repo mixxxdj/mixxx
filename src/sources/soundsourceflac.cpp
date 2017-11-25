@@ -264,7 +264,7 @@ ReadableSampleFrames SoundSourceFLAC::readSampleFramesClamped(
         const SINT numberOfSamplesRead =
                 std::min(m_sampleBuffer.readableLength(), numberOfSamplesRemaining);
         const SampleBuffer::ReadableSlice readableSlice(
-                m_sampleBuffer.readFromHead(numberOfSamplesRead));
+                m_sampleBuffer.shrinkForReading(numberOfSamplesRead));
         DEBUG_ASSERT(readableSlice.length() == numberOfSamplesRead);
         if (writableSampleFrames.writableData()) {
             SampleUtil::copy(

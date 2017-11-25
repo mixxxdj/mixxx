@@ -89,7 +89,7 @@ SINT ReadAheadSampleBuffer::shrinkAfterWriting(SINT maxShrinkLength) {
     return shrinkLength;
 }
 
-SampleBuffer::ReadableSlice ReadAheadSampleBuffer::readFromHead(SINT maxReadLength) {
+SampleBuffer::ReadableSlice ReadAheadSampleBuffer::shrinkForReading(SINT maxReadLength) {
     DEBUG_ASSERT_CLASS_INVARIANT_ReadAheadSampleBuffer;
 
     const SINT headLength = math_min(maxReadLength, readableLength());

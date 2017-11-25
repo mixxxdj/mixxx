@@ -78,7 +78,7 @@ class ReadAheadSampleBuffer final {
     }
 
     // Reserves space for writing samples by growing the readable
-    // range towards the back end of the buffer.
+    // range at the back towards the end of the underlying buffer.
     //
     // Returns a pointer to the continuous memory region and the
     // actual number of samples that have been reserved as a slice.
@@ -89,8 +89,8 @@ class ReadAheadSampleBuffer final {
     // operation on this buffer.
     SampleBuffer::WritableSlice growForWriting(SINT maxWriteLength);
 
-    // Discards the last samples that have been written at the end
-    // of the readable range.
+    // Discards the last samples that have been written by shrinking
+    // the readable range from the back.
     //
     // Returns the number of samples that have actually been discarded.
     // The number of samples that can be discarded is limited by
@@ -98,7 +98,8 @@ class ReadAheadSampleBuffer final {
     // requested.
     SINT shrinkAfterWriting(SINT maxShrinkLength);
 
-    // Consumes buffered samples from the head of the buffer.
+    // Consumes buffered samples from the front of the readable range
+    // thereby shrinking it.
     //
     // Returns a pointer to the continuous memory region and the actual
     // number of readable samples as a slice. The maximum length is
@@ -107,7 +108,7 @@ class ReadAheadSampleBuffer final {
     //
     // The returned slice is only valid until the next non-const
     // operation on this buffer.
-    SampleBuffer::ReadableSlice readFromHead(SINT maxReadLength);
+    SampleBuffer::ReadableSlice shrinkForReading(SINT maxReadLength);
 
   private:
     ReadAheadSampleBuffer(

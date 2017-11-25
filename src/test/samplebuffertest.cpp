@@ -26,9 +26,9 @@ protected:
         return writableSlice.length();
     }
 
-    SINT readFromHeadAndVerify(mixxx::ReadAheadSampleBuffer* pSampleBuffer, SINT maxReadLength) {
+    SINT shrinkForReadingAndVerify(mixxx::ReadAheadSampleBuffer* pSampleBuffer, SINT maxReadLength) {
         const mixxx::SampleBuffer::ReadableSlice readableSlice(
-                pSampleBuffer->readFromHead(maxReadLength));
+                pSampleBuffer->shrinkForReading(maxReadLength));
         for (SINT i = 0; i < readableSlice.length(); ++i) {
             EXPECT_EQ(readableSlice[i], m_readValue);
             m_readValue += CSAMPLE_ONE;
@@ -93,7 +93,7 @@ TEST_F(ReadAheadSampleBufferTest, readWriteTrim) {
     EXPECT_EQ(sampleBuffer.readableLength(), kCapacity);
     EXPECT_EQ(sampleBuffer.writableLength(), 0);
 
-    SINT readCount1 = readFromHeadAndVerify(&sampleBuffer, kCapacity - 10);
+    SINT readCount1 = shrinkForReadingAndVerify(&sampleBuffer, kCapacity - 10);
     // Buffer contains the remaining 10 samples, but is still full
     EXPECT_EQ(readCount1, kCapacity - 10);
     EXPECT_FALSE(sampleBuffer.empty());
@@ -154,7 +154,7 @@ TEST_F(ReadAheadSampleBufferTest, shrink) {
     SINT writeCount1 = growAndWrite(&sampleBuffer, kCapacity - 10);
     EXPECT_EQ(writeCount1, kCapacity - 10);
     EXPECT_FALSE(sampleBuffer.empty());
-    SINT shrinkCount1 = readFromHeadAndVerify(&sampleBuffer, 10);
+    SINT shrinkCount1 = shrinkForReadingAndVerify(&sampleBuffer, 10);
     EXPECT_EQ(shrinkCount1, 10);
     SINT readCount1 = shrinkAfterWritingAndVerify(&sampleBuffer, 10);
     EXPECT_EQ(readCount1, 10);
@@ -169,7 +169,7 @@ TEST_F(ReadAheadSampleBufferTest, shrink) {
     SINT writeCount2 = growAndWrite(&sampleBuffer, 20);
     EXPECT_EQ(writeCount2, 20);
     EXPECT_FALSE(sampleBuffer.empty());
-    SINT shrinkCount2 = readFromHeadAndVerify(&sampleBuffer, 21);
+    SINT shrinkCount2 = shrinkForReadingAndVerify(&sampleBuffer, 21);
     EXPECT_EQ(shrinkCount2, 20);
     EXPECT_TRUE(sampleBuffer.empty());
 }

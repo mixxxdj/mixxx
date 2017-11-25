@@ -444,7 +444,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
         if (!m_sampleBuffer.empty()) {
             // Consume previously decoded sample data
             const SampleBuffer::ReadableSlice readableSlice(
-                    m_sampleBuffer.readFromHead(numberOfSamplesRemaining));
+                    m_sampleBuffer.shrinkForReading(numberOfSamplesRemaining));
             if (writableSampleFrames.writableData()) {
                 SampleUtil::copy(
                         writableSampleFrames.writableData(outputSampleOffset),
@@ -571,7 +571,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
             numberOfSamplesRead =
                     std::min(numberOfSamplesDecoded, numberOfSamplesRemaining);
             const SampleBuffer::ReadableSlice readableSlice(
-                    m_sampleBuffer.readFromHead(numberOfSamplesRead));
+                    m_sampleBuffer.shrinkForReading(numberOfSamplesRead));
             DEBUG_ASSERT(readableSlice.length() == numberOfSamplesRead);
             if (writableSampleFrames.writableData()) {
                 SampleUtil::copy(

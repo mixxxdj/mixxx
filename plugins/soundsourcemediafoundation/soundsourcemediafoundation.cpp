@@ -267,7 +267,7 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
     SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (numberOfFramesRemaining > 0) {
         SampleBuffer::ReadableSlice readableSlice(
-                m_sampleBuffer.readFromHead(
+                m_sampleBuffer.shrinkForReading(
                         frames2samples(numberOfFramesRemaining)));
         DEBUG_ASSERT(readableSlice.length()
                 <= frames2samples(numberOfFramesRemaining));
