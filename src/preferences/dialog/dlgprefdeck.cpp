@@ -38,8 +38,14 @@
 #include "defs_urls.h"
 
 namespace {
-    constexpr int kDefaultRateRangePercent = 8;
-    constexpr double kRateDirectionInverted = -1;
+constexpr int kDefaultRateRangePercent = 8;
+constexpr double kRateDirectionInverted = -1;
+constexpr RateControl::RampMode kDefaultRampingMode = RateControl::RampMode::Stepping;
+constexpr double kDefaultTemporaryRateChangeCoarse = 4.00; // percent
+constexpr double kDefaultTemporaryRateChangeFine = 2.00;
+constexpr double kDefaultPermanentRateChangeCoarse = 0.50;
+constexpr double kDefaultPermanentRateChangeFine = 0.05;
+constexpr int kDefaultRateRampSensitivity = 250;
 }
 
 DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
@@ -60,6 +66,29 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     m_pNumSamplers = new ControlProxy("[Master]", "num_samplers", this);
     m_pNumSamplers->connectValueChanged(SLOT(slotNumSamplersChanged(double)));
     slotNumSamplersChanged(m_pNumSamplers->get(), true);
+
+    // Set default value in config file and control objects, if not present
+    // Default is "0" = Mixxx Mode
+    int cueDefaultValue = m_pConfig->getValue(
+            ConfigKey("[Controls]", "CueDefault"), 0);
+
+    // Update combo box
+    // The itemData values are out of order to avoid breaking configurations
+    // when Mixxx mode (no blinking) was introduced.
+    // TODO: replace magic numbers with an enum class
+    ComboBoxCueMode->addItem(tr("Mixxx mode"), 0);
+    ComboBoxCueMode->addItem(tr("Mixxx mode (no blinking)"), 4);
+    ComboBoxCueMode->addItem(tr("Pioneer mode"), 1);
+    ComboBoxCueMode->addItem(tr("Denon mode"), 2);
+    ComboBoxCueMode->addItem(tr("Numark mode"), 3);
+    ComboBoxCueMode->addItem(tr("CUP mode"), 5);
+    const int cueModeIndex = cueDefaultIndexByData(cueDefaultValue);
+    ComboBoxCueMode->setCurrentIndex(cueModeIndex);
+    slotCueModeCombobox(cueModeIndex);
+    for (ControlProxy* pControl : m_cueControls) {
+        pControl->set(m_iCueMode);
+    }
+    connect(ComboBoxCueMode, SIGNAL(activated(int)), this, SLOT(slotCueModeCombobox(int)));
 
     // Track time display configuration
     m_pControlTrackTimeDisplay = new ControlObject(
@@ -176,34 +205,39 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     //
     // Rate buttons configuration
     //
-    //NOTE: THESE DEFAULTS ARE A LIE! You'll need to hack the same values into the static variables
-    //      at the top of ratecontrol.cpp
-    //
-    // "Left" and "Right" in the ConfigKeys refer to left versus right clicking
-    // on the skin buttons
-    m_dRateTempCoarse = m_pConfig->getValue(ConfigKey("[Controls]", "RateTempLeft"), 4.0);
-    m_dRateTempFine = m_pConfig->getValue(ConfigKey("[Controls]", "RateTempRight"), 2.0);
-    m_dRatePermCoarse = m_pConfig->getValue(ConfigKey("[Controls]", "RatePermLeft"), 0.5);
-    m_dRatePermFine = m_pConfig->getValue(ConfigKey("[Controls]", "RatePermRight"), 0.05);
-
-    RateControl::setTemp(m_dRateTempCoarse);
-    RateControl::setTempSmall(m_dRateTempFine);
-    RateControl::setPerm(m_dRatePermCoarse);
-    RateControl::setPermSmall(m_dRatePermFine);
-
-    spinBoxTempRateLeft->setValue(m_dRateTempCoarse);
-    spinBoxTempRateRight->setValue(m_dRateTempFine);
-    spinBoxPermRateLeft->setValue(m_dRatePermCoarse);
-    spinBoxPermRateRight->setValue(m_dRatePermFine);
-
-    connect(spinBoxTempRateLeft, SIGNAL(valueChanged(double)),
+    connect(spinBoxTemporaryRateCoarse, SIGNAL(valueChanged(double)),
             this, SLOT(slotRateTempCoarseSpinbox(double)));
-    connect(spinBoxTempRateRight, SIGNAL(valueChanged(double)),
+    connect(spinBoxTemporaryRateFine, SIGNAL(valueChanged(double)),
             this, SLOT(slotRateTempFineSpinbox(double)));
-    connect(spinBoxPermRateLeft, SIGNAL(valueChanged(double)),
+    connect(spinBoxPermanentRateCoarse, SIGNAL(valueChanged(double)),
             this, SLOT(slotRatePermCoarseSpinbox(double)));
-    connect(spinBoxPermRateRight, SIGNAL(valueChanged(double)),
+    connect(spinBoxPermanentRateFine, SIGNAL(valueChanged(double)),
             this, SLOT(slotRatePermFineSpinbox(double)));
+
+    m_dRateTempCoarse = m_pConfig->getValue(ConfigKey("[Controls]", "RateTempLeft"),
+            kDefaultPermanentRateChangeCoarse);
+    m_dRateTempFine = m_pConfig->getValue(ConfigKey("[Controls]", "RateTempRight"),
+            kDefaultPermanentRateChangeFine);
+    m_dRatePermCoarse = m_pConfig->getValue(ConfigKey("[Controls]", "RatePermLeft"),
+            kDefaultTemporaryRateChangeCoarse);
+    m_dRatePermFine = m_pConfig->getValue(ConfigKey("[Controls]", "RatePermRight"),
+            kDefaultTemporaryRateChangeFine);
+
+    spinBoxTemporaryRateCoarse->setValue(m_dRateTempCoarse);
+    spinBoxTemporaryRateFine->setValue(m_dRateTempFine);
+    spinBoxPermanentRateCoarse->setValue(m_dRatePermCoarse);
+    spinBoxPermanentRateFine->setValue(m_dRatePermFine);
+
+    RateControl::setTemporaryRateChangeCoarseAmount(m_dRateTempCoarse);
+    RateControl::setTemporaryRateChangeFineAmount(m_dRateTempFine);
+    RateControl::setPermanentRateChangeCoarseAmount(m_dRatePermCoarse);
+    RateControl::setPermanentRateChangeFineAmount(m_dRatePermFine);
+
+    // Rate Ramp Sensitivity
+    m_iRateRampSensitivity = m_pConfig->getValue(ConfigKey("[Controls]", "RateRampSensitivity"), kDefaultRateRampSensitivity);
+    SliderRateRampSensitivity->setValue(m_iRateRampSensitivity);
+    connect(SliderRateRampSensitivity, SIGNAL(valueChanged(int)),
+            this, SLOT(slotRateRampSensitivitySlider(int)));
 
     //
     // Cue Mode
@@ -216,45 +250,21 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
             MIXXX_MANUAL_URL +
             "/chapters/user_interface.html#using-cue-modes\">(?)</a>");
 
-    // Set default value in config file and control objects, if not present
-    // Default is "0" = Mixxx Mode
-    int cueDefaultValue = m_pConfig->getValue(
-            ConfigKey("[Controls]", "CueDefault"), 0);
-
-    // Update combo box
-    // The itemData values are out of order to avoid breaking configurations
-    // when Mixxx mode (no blinking) was introduced.
-    // TODO: replace magic numbers with an enum class
-    ComboBoxCueDefault->addItem(tr("Mixxx mode"), 0);
-    ComboBoxCueDefault->addItem(tr("Mixxx mode (no blinking)"), 4);
-    ComboBoxCueDefault->addItem(tr("Pioneer mode"), 1);
-    ComboBoxCueDefault->addItem(tr("Denon mode"), 2);
-    ComboBoxCueDefault->addItem(tr("Numark mode"), 3);
-    ComboBoxCueDefault->addItem(tr("CUP mode"), 5);
-    const int cueDefaultIndex = cueDefaultIndexByData(cueDefaultValue);
-    ComboBoxCueDefault->setCurrentIndex(cueDefaultIndex);
-    slotCueModeCombobox(cueDefaultIndex);
-    connect(ComboBoxCueDefault, SIGNAL(activated(int)), this, SLOT(slotCueModeCombobox(int)));
-
     //
     // Ramping Temporary Rate Change configuration
     //
 
     // Set Ramp Rate On or Off
-    m_bRateRamping = m_pConfig->getValue(ConfigKey("[Controls]", "RateRamp"), false);
-    if (m_bRateRamping) {
-        radioButtonSpeedBendRamping->setChecked(true);
+    connect(radioButtonRateRampModeLinear, SIGNAL(toggled(bool)),
+            this, SLOT(slotRateRampingModeLinearButton(bool)));
+    m_bRateRamping = static_cast<RateControl::RampMode>(
+        m_pConfig->getValue(ConfigKey("[Controls]", "RateRamp"),
+                            static_cast<int>(kDefaultRampingMode)));
+    if (m_bRateRamping == RateControl::RampMode::Linear) {
+        radioButtonRateRampModeLinear->setChecked(true);
     } else {
-        radioButtonSpeedBendStatic->setChecked(true);
+        radioButtonRateRampModeStepping->setChecked(true);
     }
-    connect(radioButtonSpeedBendRamping, SIGNAL(toggled(bool)),
-            this, SLOT(slotRateRampingButton(bool)));
-
-    // Update Ramp Rate Sensitivity
-    m_iRateRampSensitivity = m_pConfig->getValue(ConfigKey("[Controls]", "RateRampSensitivity"), 0);
-    SliderRateRampSensitivity->setValue(m_iRateRampSensitivity);
-    connect(SliderRateRampSensitivity, SIGNAL(valueChanged(int)),
-            this, SLOT(slotRateRampSensitivitySlider(int)));
 
     // Update "reset speed" and "reset pitch" check boxes
     // TODO: All defaults should only be set in slotResetToDefaults.
@@ -267,7 +277,6 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     m_pitchAutoReset = (configSPAutoReset==BaseTrackPlayer::RESET_PITCH ||
                         configSPAutoReset==BaseTrackPlayer::RESET_PITCH_AND_SPEED);
 
-    // Do these need to be here when slotUpdate() has them as well?
     checkBoxResetSpeed->setChecked(m_speedAutoReset);
     checkBoxResetPitch->setChecked(m_pitchAutoReset);
 
@@ -290,31 +299,69 @@ DlgPrefDeck::~DlgPrefDeck() {
 }
 
 void DlgPrefDeck::slotUpdate() {
+    slotSetTrackTimeDisplay(m_pControlTrackTimeDisplay->get());
+
+    checkBoxDisallowLoadToPlayingDeck->setChecked(!m_pConfig->getValue(
+            ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"), false));
+
+    checkBoxSeekToCue->setChecked(!m_pConfig->getValue(
+            ConfigKey("[Controls]", "CueRecall"), false));
+
     double deck1RateRange = m_rateRangeControls[0]->get();
-    int idx = ComboBoxRateRange->findData(static_cast<int>(deck1RateRange * 100));
-    if (idx == -1) {
+    int index = ComboBoxRateRange->findData(static_cast<int>(deck1RateRange * 100));
+    if (index == -1) {
         ComboBoxRateRange->addItem(QString::number(deck1RateRange * 100.).append("%"),
                                    deck1RateRange * 100.);
     }
-    ComboBoxRateRange->setCurrentIndex(idx);
+    ComboBoxRateRange->setCurrentIndex(index);
 
     double deck1RateDirection = m_rateDirectionControls[0]->get();
     checkBoxInvertSpeedSlider->setChecked(deck1RateDirection == kRateDirectionInverted);
 
-    if (m_keylockMode == KeylockMode::LockCurrentKey) {
+    double deck1CueMode = m_cueControls[0]->get();
+    index = ComboBoxCueMode->findData(static_cast<int>(deck1CueMode));
+    ComboBoxCueMode->setCurrentIndex(index);
+
+    KeylockMode deck1KeylockMode =
+        static_cast<KeylockMode>(static_cast<int>(m_keylockModeControls[0]->get()));
+    if (deck1KeylockMode == KeylockMode::LockCurrentKey) {
         radioButtonCurrentKey->setChecked(true);
     } else {
         radioButtonOriginalKey->setChecked(true);
     }
 
-    if (m_keyunlockMode == KeyunlockMode::KeepLockedKey) {
+    KeyunlockMode deck1KeyunlockMode =
+        static_cast<KeyunlockMode>(static_cast<int>(m_keyunlockModeControls[0]->get()));
+    if (deck1KeyunlockMode == KeyunlockMode::KeepLockedKey) {
         radioButtonKeepUnlockedKey->setChecked(true);
     } else {
         radioButtonResetUnlockedKey->setChecked(true);
     }
 
-    checkBoxResetSpeed->setChecked(m_speedAutoReset);
-    checkBoxResetPitch->setChecked(m_pitchAutoReset);
+    int reset = m_pConfig->getValue(ConfigKey("[Controls]", "SpeedAutoReset"),
+        static_cast<int>(BaseTrackPlayer::RESET_PITCH));
+    if (reset == BaseTrackPlayer::RESET_PITCH) {
+        checkBoxResetPitch->setChecked(true);
+        checkBoxResetSpeed->setChecked(false);
+    } else if (reset == BaseTrackPlayer::RESET_SPEED) {
+        checkBoxResetPitch->setChecked(false);
+        checkBoxResetSpeed->setChecked(true);
+    } else if (reset == BaseTrackPlayer::RESET_PITCH_AND_SPEED) {
+        checkBoxResetPitch->setChecked(true);
+        checkBoxResetSpeed->setChecked(true);
+    } else if (reset == BaseTrackPlayer::RESET_NONE) {
+        checkBoxResetPitch->setChecked(false);
+        checkBoxResetSpeed->setChecked(false);
+    }
+
+    SliderRateRampSensitivity->setValue(
+        m_pConfig->getValue(ConfigKey("[Controls]", "RateRampSensitivity"),
+                            kDefaultRateRampSensitivity));
+
+    spinBoxTemporaryRateCoarse->setValue(RateControl::getTemporaryRateChangeCoarseAmount());
+    spinBoxTemporaryRateFine->setValue(RateControl::getTemporaryRateChangeFineAmount());
+    spinBoxPermanentRateCoarse->setValue(RateControl::getPermanentRateChangeCoarseAmount());
+    spinBoxPermanentRateFine->setValue(RateControl::getPermanentRateChangeFineAmount());
 }
 
 void DlgPrefDeck::slotResetToDefaults() {
@@ -325,40 +372,32 @@ void DlgPrefDeck::slotResetToDefaults() {
     checkBoxInvertSpeedSlider->setChecked(false);
 
     // 8% Rate Range
-    ComboBoxRateRange->setCurrentIndex(ComboBoxRateRange->findData(8));
+    ComboBoxRateRange->setCurrentIndex(ComboBoxRateRange->findData(kDefaultRateRangePercent));
 
     // Don't load tracks into playing decks.
     checkBoxDisallowLoadToPlayingDeck->setChecked(true);
 
     // Mixxx cue mode
-    ComboBoxCueDefault->setCurrentIndex(0);
+    ComboBoxCueMode->setCurrentIndex(0);
 
     // Cue recall on.
     checkBoxSeekToCue->setChecked(true);
 
     // Rate-ramping default off.
-    radioButtonSpeedBendStatic->setChecked(true);
+    radioButtonRateRampModeStepping->setChecked(true);
 
-    // 0 rate-ramp sensitivity
-    SliderRateRampSensitivity->setValue(0);
+    SliderRateRampSensitivity->setValue(kDefaultRateRampSensitivity);
 
     // Permanent and temporary pitch adjust fine/coarse.
-    spinBoxTempRateLeft->setValue(4.0);
-    spinBoxTempRateRight->setValue(2.0);
-    spinBoxPermRateLeft->setValue(0.50);
-    spinBoxPermRateRight->setValue(0.05);
+    spinBoxTemporaryRateCoarse->setValue(4.0);
+    spinBoxTemporaryRateFine->setValue(2.0);
+    spinBoxPermanentRateCoarse->setValue(0.50);
+    spinBoxPermanentRateFine->setValue(0.05);
 
-    // Automatically reset the pitch/key but not speed/tempo slider on track load
-    m_speedAutoReset = false;
-    m_pitchAutoReset = true;
+    checkBoxResetSpeed->setChecked(false);
+    checkBoxResetPitch->setChecked(true);
 
-    checkBoxResetSpeed->setChecked(m_speedAutoReset);
-    checkBoxResetPitch->setChecked(m_pitchAutoReset);
-
-    m_keylockMode = KeylockMode::LockOriginalKey;
     radioButtonOriginalKey->setChecked(true);
-
-    m_keyunlockMode = KeyunlockMode::ResetLockedKey;
     radioButtonResetUnlockedKey->setChecked(true);
 }
 
@@ -416,7 +455,7 @@ void DlgPrefDeck::slotDisallowTrackLoadToPlayingDeckCheckbox(bool checked) {
 }
 
 void DlgPrefDeck::slotCueModeCombobox(int index) {
-    m_iCueMode = ComboBoxCueDefault->itemData(index).toInt();
+    m_iCueMode = ComboBoxCueMode->itemData(index).toInt();
 }
 
 void DlgPrefDeck::slotJumpToCueOnTrackLoadCheckbox(bool checked) {
@@ -469,8 +508,12 @@ void DlgPrefDeck::slotRateRampSensitivitySlider(int value) {
     m_iRateRampSensitivity = value;
 }
 
-void DlgPrefDeck::slotRateRampingButton(bool checked) {
-    m_bRateRamping = checked;
+void DlgPrefDeck::slotRateRampingModeLinearButton(bool checked) {
+    if (checked) {
+        m_bRateRamping = RateControl::RampMode::Linear;
+    } else {
+        m_bRateRamping = RateControl::RampMode::Stepping;
+    }
 }
 
 void DlgPrefDeck::slotApply() {
@@ -525,16 +568,16 @@ void DlgPrefDeck::slotApply() {
         pControl->set(static_cast<double>(m_keyunlockMode));
     }
 
-    RateControl::setRateRamp(m_bRateRamping);
-    m_pConfig->setValue(ConfigKey("[Controls]", "RateRamp"), m_bRateRamping);
+    RateControl::setRateRampMode(m_bRateRamping);
+    m_pConfig->setValue(ConfigKey("[Controls]", "RateRamp"), static_cast<int>(m_bRateRamping));
 
     RateControl::setRateRampSensitivity(m_iRateRampSensitivity);
     m_pConfig->setValue(ConfigKey("[Controls]", "RateRampSensitivity"), m_iRateRampSensitivity);
 
-    RateControl::setTemp(m_dRateTempCoarse);
-    RateControl::setTempSmall(m_dRateTempFine);
-    RateControl::setPerm(m_dRatePermCoarse);
-    RateControl::setPermSmall(m_dRatePermFine);
+    RateControl::setTemporaryRateChangeCoarseAmount(m_dRateTempCoarse);
+    RateControl::setTemporaryRateChangeFineAmount(m_dRateTempFine);
+    RateControl::setPermanentRateChangeCoarseAmount(m_dRatePermCoarse);
+    RateControl::setPermanentRateChangeFineAmount(m_dRatePermFine);
 
     m_pConfig->setValue(ConfigKey("[Controls]", "RateTempLeft"), m_dRateTempCoarse);
     m_pConfig->setValue(ConfigKey("[Controls]", "RateTempRight"), m_dRateTempFine);
@@ -618,8 +661,8 @@ void DlgPrefDeck::slotUpdatePitchAutoReset(bool b) {
 }
 
 int DlgPrefDeck::cueDefaultIndexByData(int userData) const {
-    for (int i = 0; i < ComboBoxCueDefault->count(); ++i) {
-        if (ComboBoxCueDefault->itemData(i).toInt() == userData) {
+    for (int i = 0; i < ComboBoxCueMode->count(); ++i) {
+        if (ComboBoxCueMode->itemData(i).toInt() == userData) {
             return i;
         }
     }

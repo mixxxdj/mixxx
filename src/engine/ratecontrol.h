@@ -34,6 +34,31 @@ public:
     RateControl(QString group, UserSettingsPointer pConfig);
     virtual ~RateControl();
 
+    // Enumerations which hold the state of the pitchbend buttons.
+    // These enumerations can be used like a bitmask.
+    enum RATERAMP_DIRECTION {
+        RATERAMP_NONE = 0,  // No buttons are held down
+        RATERAMP_DOWN = 1,  // Down button is being held
+        RATERAMP_UP = 2,    // Up button is being held
+        RATERAMP_BOTH = 3   // Both buttons are being held down
+    };
+
+    enum class RampMode {
+        Stepping = 0, // pitch takes a temporary step up/down a certain amount
+        Linear = 1 // pitch moves up/down in a progresively linear fashion
+    };
+
+    // This defines how the rate returns to normal. Currently unused.
+    // Rate ramp back mode:
+    //  RATERAMP_RAMPBACK_NONE: returns back to normal all at once.
+    //  RATERAMP_RAMPBACK_SPEED: moves back in a linearly progresive manner.
+    //  RATERAMP_RAMPBACK_PERIOD: returns to normal within a period of time.
+    enum RATERAMP_RAMPBACK_MODE {
+        RATERAMP_RAMPBACK_NONE,
+        RATERAMP_RAMPBACK_SPEED,
+        RATERAMP_RAMPBACK_PERIOD
+    };
+
     void setBpmControl(BpmControl* bpmcontrol);
     // Must be called during each callback of the audio thread so that
     // RateControl has a chance to update itself.
@@ -50,17 +75,23 @@ public:
     double calcRateRatio() const;
 
     // Set rate change when temp rate button is pressed
-    static void setTemp(double v);
+    static void setTemporaryRateChangeCoarseAmount(double v);
+    static double getTemporaryRateChangeCoarseAmount();
     // Set rate change when temp rate small button is pressed
-    static void setTempSmall(double v);
+    static void setTemporaryRateChangeFineAmount(double v);
+    static double getTemporaryRateChangeFineAmount();
     // Set rate change when perm rate button is pressed
-    static void setPerm(double v);
+    static void setPermanentRateChangeCoarseAmount(double v);
+    static double getPermanentRateChangeCoarseAmount();
     // Set rate change when perm rate small button is pressed
-    static void setPermSmall(double v);
+    static void setPermanentRateChangeFineAmount(double v);
+    static double getPermanentRateChangeFineAmount();
     // Set Rate Ramp Mode
-    static void setRateRamp(bool);
+    static void setRateRampMode(RampMode mode);
+    static RampMode getRateRampMode();
     // Set Rate Ramp Sensitivity
     static void setRateRampSensitivity(int);
+    static int getRateRampSensitivity();
     virtual void notifySeek(double dNewPlaypos);
 
   public slots:
@@ -94,7 +125,7 @@ public:
     double getTempRate(void);
 
     // Values used when temp and perm rate buttons are pressed
-    static double m_dTemp, m_dTempSmall, m_dPerm, m_dPermSmall;
+    static double m_dTemporaryRateChangeCoarse, m_dTemporaryRateChangeFine, m_dPermanentRateChangeCoarse, m_dPermanentRateChangeFine;
 
     ControlPushButton *buttonRateTempDown, *buttonRateTempDownSmall,
         *buttonRateTempUp, *buttonRateTempUpSmall;
@@ -130,34 +161,6 @@ public:
     ControlProxy* m_pSyncMode;
     ControlProxy* m_pSlipEnabled;
 
-    // Enumerations which hold the state of the pitchbend buttons.
-    // These enumerations can be used like a bitmask.
-    enum RATERAMP_DIRECTION {
-        RATERAMP_NONE = 0,  // No buttons are held down
-        RATERAMP_DOWN = 1,  // Down button is being held
-        RATERAMP_UP = 2,    // Up button is being held
-        RATERAMP_BOTH = 3   // Both buttons are being held down
-    };
-
-    // Rate ramping mode:
-    //  RATERAMP_STEP: pitch takes a temporary step up/down a certain amount.
-    //  RATERAMP_LINEAR: pitch moves up/down in a progresively linear fashion.
-    enum RATERAMP_MODE {
-        RATERAMP_STEP = 0,
-        RATERAMP_LINEAR = 1
-    };
-
-    // This defines how the rate returns to normal. Currently unused.
-    // Rate ramp back mode:
-    //  RATERAMP_RAMPBACK_NONE: returns back to normal all at once.
-    //  RATERAMP_RAMPBACK_SPEED: moves back in a linearly progresive manner.
-    //  RATERAMP_RAMPBACK_PERIOD: returns to normal within a period of time.
-    enum RATERAMP_RAMPBACK_MODE {
-        RATERAMP_RAMPBACK_NONE,
-        RATERAMP_RAMPBACK_SPEED,
-        RATERAMP_RAMPBACK_PERIOD
-    };
-
     // The current rate ramping direction. Only holds the last button pressed.
     int m_ePbCurrent;
     //  The rate ramping buttons which are currently being pressed.
@@ -168,7 +171,7 @@ public:
     // Set to the rate change used for rate temp
     double m_dTempRateChange;
     // Set the Temporary Rate Change Mode
-    static enum RATERAMP_MODE m_eRateRampMode;
+    static RampMode m_eRateRampMode;
     // The Rate Temp Sensitivity, the higher it is the slower it gets
     static int m_iRateRampSensitivity;
     // Factor applied to the deprecated "wheel" rate value.

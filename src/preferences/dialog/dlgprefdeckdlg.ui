@@ -29,12 +29,12 @@
          <bool>true</bool>
         </property>
         <property name="buddy">
-         <cstring>ComboBoxCueDefault</cstring>
+         <cstring>ComboBoxCueMode</cstring>
         </property>
        </widget>
       </item>
       <item row="0" column="1" colspan="2">
-       <widget class="QComboBox" name="ComboBoxCueDefault">
+       <widget class="QComboBox" name="ComboBoxCueMode">
         <property name="toolTip">
          <string>Mixxx mode:
 - Cue button while pause at cue point = preview
@@ -161,7 +161,7 @@ CUP mode:
       <item row="0" column="0">
        <layout class="QGridLayout" name="GridLayoutSpeedOptions">
         <item row="7" column="1">
-         <widget class="QDoubleSpinBox" name="spinBoxPermRateLeft">
+         <widget class="QDoubleSpinBox" name="spinBoxPermanentRateCoarse">
           <property name="toolTip">
            <string>Permanent rate change when left-clicking</string>
           </property>
@@ -189,7 +189,7 @@ CUP mode:
          </widget>
         </item>
         <item row="8" column="1">
-         <widget class="QDoubleSpinBox" name="spinBoxPermRateRight">
+         <widget class="QDoubleSpinBox" name="spinBoxPermanentRateFine">
           <property name="toolTip">
            <string>Permanent rate change when right-clicking</string>
           </property>
@@ -237,7 +237,7 @@ CUP mode:
          </widget>
         </item>
         <item row="8" column="2">
-         <widget class="QDoubleSpinBox" name="spinBoxTempRateRight">
+         <widget class="QDoubleSpinBox" name="spinBoxTemporaryRateFine">
           <property name="enabled">
            <bool>false</bool>
           </property>
@@ -367,7 +367,7 @@ CUP mode:
            <string>Pitch bend behavior</string>
           </property>
           <property name="buddy">
-           <cstring>radioButtonSpeedBendStatic</cstring>
+           <cstring>radioButtonRateRampModeStepping</cstring>
           </property>
          </widget>
         </item>
@@ -382,7 +382,7 @@ CUP mode:
          </widget>
         </item>
         <item row="7" column="2">
-         <widget class="QDoubleSpinBox" name="spinBoxTempRateLeft">
+         <widget class="QDoubleSpinBox" name="spinBoxTemporaryRateCoarse">
           <property name="enabled">
            <bool>false</bool>
           </property>
@@ -460,7 +460,7 @@ CUP mode:
            <bool>false</bool>
           </property>
           <property name="buddy">
-           <cstring>spinBoxPermRateLeft</cstring>
+           <cstring>spinBoxPermanentRateCoarse</cstring>
           </property>
          </widget>
         </item>
@@ -485,7 +485,7 @@ CUP mode:
            <bool>false</bool>
           </property>
           <property name="buddy">
-           <cstring>spinBoxPermRateRight</cstring>
+           <cstring>spinBoxPermanentRateFine</cstring>
           </property>
          </widget>
         </item>
@@ -529,7 +529,7 @@ CUP mode:
          </widget>
         </item>
         <item row="4" column="2">
-         <widget class="QRadioButton" name="radioButtonSpeedBendStatic">
+         <widget class="QRadioButton" name="radioButtonRateRampModeStepping">
           <property name="text">
            <string>Abrupt jump</string>
           </property>
@@ -539,7 +539,7 @@ CUP mode:
          </widget>
         </item>
         <item row="4" column="1">
-         <widget class="QRadioButton" name="radioButtonSpeedBendRamping">
+         <widget class="QRadioButton" name="radioButtonRateRampModeLinear">
           <property name="toolTip">
            <string>Smoothly adjusts deck speed when temporary change buttons are held down</string>
           </property>
@@ -600,7 +600,7 @@ CUP mode:
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
-  <tabstop>ComboBoxCueDefault</tabstop>
+  <tabstop>ComboBoxCueMode</tabstop>
   <tabstop>radioButtonElapsed</tabstop>
   <tabstop>radioButtonRemaining</tabstop>
   <tabstop>radioButtonElapsedAndRemaining</tabstop>
@@ -614,14 +614,14 @@ CUP mode:
   <tabstop>radioButtonCurrentKey</tabstop>
   <tabstop>radioButtonResetUnlockedKey</tabstop>
   <tabstop>radioButtonKeepUnlockedKey</tabstop>
-  <tabstop>radioButtonSpeedBendRamping</tabstop>
-  <tabstop>radioButtonSpeedBendStatic</tabstop>
+  <tabstop>radioButtonRateRampModeLinear</tabstop>
+  <tabstop>radioButtonRateRampModeStepping</tabstop>
   <tabstop>SliderRateRampSensitivity</tabstop>
   <tabstop>SpinBoxRateRampSensitivity</tabstop>
-  <tabstop>spinBoxPermRateLeft</tabstop>
-  <tabstop>spinBoxPermRateRight</tabstop>
-  <tabstop>spinBoxTempRateLeft</tabstop>
-  <tabstop>spinBoxTempRateRight</tabstop>
+  <tabstop>spinBoxPermanentRateCoarse</tabstop>
+  <tabstop>spinBoxPermanentRateFine</tabstop>
+  <tabstop>spinBoxTemporaryRateCoarse</tabstop>
+  <tabstop>spinBoxTemporaryRateFine</tabstop>
  </tabstops>
  <resources/>
  <connections>
@@ -658,7 +658,7 @@ CUP mode:
    </hints>
   </connection>
   <connection>
-   <sender>radioButtonSpeedBendRamping</sender>
+   <sender>radioButtonRateRampModeLinear</sender>
    <signal>toggled(bool)</signal>
    <receiver>labelSpeedRampSensitivity</receiver>
    <slot>setEnabled(bool)</slot>
@@ -674,7 +674,7 @@ CUP mode:
    </hints>
   </connection>
   <connection>
-   <sender>radioButtonSpeedBendRamping</sender>
+   <sender>radioButtonRateRampModeLinear</sender>
    <signal>toggled(bool)</signal>
    <receiver>SliderRateRampSensitivity</receiver>
    <slot>setEnabled(bool)</slot>
@@ -690,7 +690,7 @@ CUP mode:
    </hints>
   </connection>
   <connection>
-   <sender>radioButtonSpeedBendRamping</sender>
+   <sender>radioButtonRateRampModeLinear</sender>
    <signal>toggled(bool)</signal>
    <receiver>SpinBoxRateRampSensitivity</receiver>
    <slot>setEnabled(bool)</slot>
@@ -706,7 +706,7 @@ CUP mode:
    </hints>
   </connection>
   <connection>
-   <sender>radioButtonSpeedBendStatic</sender>
+   <sender>radioButtonRateRampModeStepping</sender>
    <signal>toggled(bool)</signal>
    <receiver>labelSpeedTemporary</receiver>
    <slot>setEnabled(bool)</slot>
@@ -722,9 +722,9 @@ CUP mode:
    </hints>
   </connection>
   <connection>
-   <sender>radioButtonSpeedBendStatic</sender>
+   <sender>radioButtonRateRampModeStepping</sender>
    <signal>toggled(bool)</signal>
-   <receiver>spinBoxTempRateLeft</receiver>
+   <receiver>spinBoxTemporaryRateCoarse</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -738,9 +738,9 @@ CUP mode:
    </hints>
   </connection>
   <connection>
-   <sender>radioButtonSpeedBendStatic</sender>
+   <sender>radioButtonRateRampModeStepping</sender>
    <signal>toggled(bool)</signal>
-   <receiver>spinBoxTempRateRight</receiver>
+   <receiver>spinBoxTemporaryRateFine</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">

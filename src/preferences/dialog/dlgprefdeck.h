@@ -3,6 +3,7 @@
 
 #include <QWidget>
 
+#include "engine/ratecontrol.h"
 #include "preferences/constants.h"
 #include "preferences/dialog/ui_dlgprefdeckdlg.h"
 #include "preferences/usersettings.h"
@@ -63,7 +64,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     void slotDisallowTrackLoadToPlayingDeckCheckbox(bool);
     void slotCueModeCombobox(int);
     void slotJumpToCueOnTrackLoadCheckbox(bool);
-    void slotRateRampingButton(bool);
+    void slotRateRampingModeLinearButton(bool);
     void slotRateRampSensitivitySlider(int);
 
     void slotNumDecksChanged(double, bool initializing=false);
@@ -113,7 +114,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     KeylockMode m_keylockMode;
     KeyunlockMode m_keyunlockMode;
 
-    bool m_bRateRamping;
+    RateControl::RampMode m_bRateRamping;
     int m_iRateRampSensitivity;
     double m_dRateTempCoarse;
     double m_dRateTempFine;
