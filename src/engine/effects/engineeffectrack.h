@@ -41,8 +41,8 @@ class EngineEffectRack : public EffectsRequestHandler {
     int m_iRackNumber;
     QList<EngineEffectChain*> m_chains;
 
-    SampleBuffer m_buffer1;
-    SampleBuffer m_buffer2;
+    mixxx::SampleBuffer m_buffer1;
+    mixxx::SampleBuffer m_buffer2;
 
     DISALLOW_COPY_AND_ASSIGN(EngineEffectRack);
 };

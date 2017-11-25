@@ -294,9 +294,13 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         m_pLoadedTrack.reset();
         emit(playerEmpty());
     } else if (pNewTrack && pNewTrack == m_pLoadedTrack) {
-        // Initialize track from file tags (just in case it has not
-        // been done already)
-        SoundSourceProxy(m_pLoadedTrack).updateTrack();
+        // NOTE(uklotzde): In a previous version track metadata was reloaded
+        // from the source file at this point again. This is no longer necessary
+        // since track objects will always be created in a controlled manner
+        // and populated from the database and their source file as required
+        // before handing them out to application code.
+        // TODO(XXX): Don't hesitate to delete the preceding NOTE if you think
+        // that it is not needed anymore.
 
         // Update the BPM and duration values that are stored in ControlObjects
         m_pDuration->set(m_pLoadedTrack->getDuration());

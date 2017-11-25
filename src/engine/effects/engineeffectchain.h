@@ -70,8 +70,8 @@ class EngineEffectChain : public EffectsRequestHandler {
     EffectChain::InsertionType m_insertionType;
     CSAMPLE m_dMix;
     QList<EngineEffect*> m_effects;
-    SampleBuffer m_buffer1;
-    SampleBuffer m_buffer2;
+    mixxx::SampleBuffer m_buffer1;
+    mixxx::SampleBuffer m_buffer2;
     ChannelHandleMap<ChannelHandleMap<ChannelStatus>> m_chainStatusForChannelMatrix;
 
     DISALLOW_COPY_AND_ASSIGN(EngineEffectChain);

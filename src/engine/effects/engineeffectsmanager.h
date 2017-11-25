@@ -86,8 +86,8 @@ class EngineEffectsManager : public EffectsRequestHandler {
     QList<EngineEffectChain*> m_chains;
     QList<EngineEffect*> m_effects;
 
-    SampleBuffer m_buffer1;
-    SampleBuffer m_buffer2;
+    mixxx::SampleBuffer m_buffer1;
+    mixxx::SampleBuffer m_buffer2;
 };
 
 

@@ -6,7 +6,7 @@
 #include "util/math.h"
 
 constexpr int EchoGroupState::kMaxDelaySeconds;
-constexpr int EchoGroupState::kChannelCount;
+constexpr mixxx::AudioSignal::ChannelCount EchoGroupState::kChannelCount;
 
 namespace {
 
@@ -190,7 +190,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         CSAMPLE bufferedSampleLeft = gs.delay_buf[read_position];
         CSAMPLE bufferedSampleRight = gs.delay_buf[read_position + 1];
         if (read_position != prev_read_position) {
-            double frac = static_cast<double>(i) / numSamples;            
+            double frac = static_cast<double>(i) / numSamples;
             bufferedSampleLeft *= frac;
             bufferedSampleRight *= frac;
             bufferedSampleLeft += gs.delay_buf[prev_read_position] * (1 - frac);

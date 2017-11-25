@@ -2,10 +2,20 @@
 
 #include <QtDebug>
 
+#include "sources/audiosourcestereoproxy.h"
+#include "engine/engine.h"
 #include "util/math.h"
 #include "util/sample.h"
+#include "util/logger.h"
 
-const SINT CachingReaderChunk::kInvalidIndex = -1;
+
+namespace {
+
+mixxx::Logger kLogger("CachingReaderChunk");
+
+const SINT kInvalidChunkIndex = -1;
+
+} // anonymous namespace
 
 // One chunk should contain 1/2 - 1/4th of a second of audio.
 // 8192 frames contain about 170 ms of audio at 48 kHz, which
@@ -15,16 +25,16 @@ const SINT CachingReaderChunk::kInvalidIndex = -1;
 // easier memory alignment.
 // TODO(XXX): The optimum value of the "constant" kFrames depends
 // on the properties of the AudioSource as the remarks above suggest!
-const SINT CachingReaderChunk::kChannels = mixxx::AudioSource::kChannelCountStereo;
+const mixxx::AudioSignal::ChannelCount CachingReaderChunk::kChannels = mixxx::kEngineChannelCount;
 const SINT CachingReaderChunk::kFrames = 8192; // ~ 170 ms at 48 kHz
 const SINT CachingReaderChunk::kSamples =
         CachingReaderChunk::frames2samples(CachingReaderChunk::kFrames);
 
 CachingReaderChunk::CachingReaderChunk(
-        CSAMPLE* sampleBuffer)
-        : m_index(kInvalidIndex),
-          m_sampleBuffer(sampleBuffer),
-          m_frameCount(0) {
+        mixxx::SampleBuffer::WritableSlice sampleBuffer)
+        : m_index(kInvalidChunkIndex),
+          m_sampleBuffer(sampleBuffer) {
+    DEBUG_ASSERT(sampleBuffer.length() == kSamples);
 }
 
 CachingReaderChunk::~CachingReaderChunk() {
@@ -32,101 +42,80 @@ CachingReaderChunk::~CachingReaderChunk() {
 
 void CachingReaderChunk::init(SINT index) {
     m_index = index;
-    m_frameCount = 0;
+    m_bufferedSampleFrames.frameIndexRange() = mixxx::IndexRange();
 }
 
-bool CachingReaderChunk::isReadable(
+// Frame index range of this chunk for the given audio source.
+mixxx::IndexRange CachingReaderChunk::frameIndexRange(
+        const mixxx::AudioSourcePointer& pAudioSource) const {
+    if (!pAudioSource) {
+        return mixxx::IndexRange();
+    }
+    const SINT minFrameIndex =
+            pAudioSource->frameIndexMin() +
+            frameIndexOffset();
+    return intersect(
+            mixxx::IndexRange::forward(minFrameIndex, kFrames),
+            pAudioSource->frameIndexRange());
+}
+
+mixxx::IndexRange CachingReaderChunk::bufferSampleFrames(
         const mixxx::AudioSourcePointer& pAudioSource,
-        SINT maxReadableFrameIndex) const {
-    DEBUG_ASSERT(mixxx::AudioSource::getMinFrameIndex() <= maxReadableFrameIndex);
-
-    if (!isValid() || !pAudioSource) {
-        return false;
-    }
-    const SINT frameIndex = frameForIndex(getIndex());
-    const SINT maxFrameIndex = math_min(
-            maxReadableFrameIndex, pAudioSource->getMaxFrameIndex());
-    return frameIndex <= maxFrameIndex;
+        mixxx::SampleBuffer::WritableSlice tempOutputBuffer) {
+    const auto sourceFrameIndexRange = frameIndexRange(pAudioSource);
+    mixxx::AudioSourceStereoProxy audioSourceProxy(
+            pAudioSource,
+            tempOutputBuffer);
+    DEBUG_ASSERT(audioSourceProxy.channelCount() == kChannels);
+    m_bufferedSampleFrames =
+            audioSourceProxy.readSampleFrames(
+                    mixxx::WritableSampleFrames(
+                            sourceFrameIndexRange,
+                            mixxx::SampleBuffer::WritableSlice(m_sampleBuffer)));
+    DEBUG_ASSERT(m_bufferedSampleFrames.frameIndexRange() <= sourceFrameIndexRange);
+    return m_bufferedSampleFrames.frameIndexRange();
 }
 
-SINT CachingReaderChunk::readSampleFrames(
-        const mixxx::AudioSourcePointer& pAudioSource,
-        SINT* pMaxReadableFrameIndex) {
-    DEBUG_ASSERT(pMaxReadableFrameIndex);
-
-    const SINT frameIndex = frameForIndex(getIndex());
-    const SINT maxFrameIndex = math_min(
-            *pMaxReadableFrameIndex, pAudioSource->getMaxFrameIndex());
-    const SINT framesRemaining =
-            *pMaxReadableFrameIndex - frameIndex;
-    const SINT framesToRead =
-            math_min(kFrames, framesRemaining);
-
-    SINT seekFrameIndex =
-            pAudioSource->seekSampleFrame(frameIndex);
-    if (frameIndex != seekFrameIndex) {
-        // Failed to seek to the requested index. The file might
-        // be corrupt and decoding should be aborted.
-        qWarning() << "Failed to seek chunk position:"
-                << "actual =" << seekFrameIndex
-                << ", expected =" << frameIndex
-                << ", maximum =" << maxFrameIndex;
-        if (frameIndex >= seekFrameIndex) {
-            // Simple strategy to compensate for seek inaccuracies in
-            // faulty files: Try to skip some samples up to the requested
-            // seek position. But only skip twice as many frames/samples
-            // as have been requested to avoid decoding great portions of
-            // the file for small read requests on seek errors.
-            const SINT framesToSkip = frameIndex - seekFrameIndex;
-            if (framesToSkip <= (2 * framesToRead)) {
-                seekFrameIndex += pAudioSource->skipSampleFrames(framesToSkip);
-            }
-        }
-        if (frameIndex != seekFrameIndex) {
-            // Unexpected/premature end of file -> prevent further
-            // seeks beyond the current seek position
-            *pMaxReadableFrameIndex = math_min(seekFrameIndex, *pMaxReadableFrameIndex);
-            // Don't read any samples on a seek failure!
-            m_frameCount = 0;
-            return m_frameCount;
-        }
+mixxx::IndexRange CachingReaderChunk::readBufferedSampleFrames(
+        CSAMPLE* sampleBuffer,
+        const mixxx::IndexRange& frameIndexRange) const {
+    const auto copyableFrameIndexRange =
+            intersect(frameIndexRange, m_bufferedSampleFrames.frameIndexRange());
+    if (!copyableFrameIndexRange.empty()) {
+        const SINT dstSampleOffset =
+                frames2samples(copyableFrameIndexRange.start() - frameIndexRange.start());
+        const SINT srcSampleOffset =
+                frames2samples(copyableFrameIndexRange.start() - m_bufferedSampleFrames.frameIndexRange().start());
+        const SINT sampleCount = frames2samples(copyableFrameIndexRange.length());
+        SampleUtil::copy(
+                sampleBuffer + dstSampleOffset,
+                m_bufferedSampleFrames.readableData(srcSampleOffset),
+                sampleCount);
     }
-
-    DEBUG_ASSERT(frameIndex == seekFrameIndex);
-    DEBUG_ASSERT(CachingReaderChunk::kChannels
-            == mixxx::AudioSource::kChannelCountStereo);
-    m_frameCount = pAudioSource->readSampleFramesStereo(
-            framesToRead, m_sampleBuffer, kSamples);
-    if (m_frameCount < framesToRead) {
-        qWarning() << "Failed to read chunk samples:"
-                << "actual =" << m_frameCount
-                << ", expected =" << framesToRead;
-        // Adjust the max. readable frame index for future
-        // read requests to avoid repeated invalid reads.
-        *pMaxReadableFrameIndex = frameIndex + m_frameCount;
-    }
-
-    return m_frameCount;
+    return copyableFrameIndexRange;
 }
 
-void CachingReaderChunk::copySamples(
-        CSAMPLE* sampleBuffer, SINT sampleOffset, SINT sampleCount) const {
-    DEBUG_ASSERT(0 <= sampleOffset);
-    DEBUG_ASSERT(0 <= sampleCount);
-    DEBUG_ASSERT((sampleOffset + sampleCount) <= frames2samples(m_frameCount));
-    SampleUtil::copy(sampleBuffer, m_sampleBuffer + sampleOffset, sampleCount);
-}
-
-void CachingReaderChunk::copySamplesReverse(
-        CSAMPLE* sampleBuffer, SINT sampleOffset, SINT sampleCount) const {
-    DEBUG_ASSERT(0 <= sampleOffset);
-    DEBUG_ASSERT(0 <= sampleCount);
-    DEBUG_ASSERT((sampleOffset + sampleCount) <= frames2samples(m_frameCount));
-    SampleUtil::copyReverse(sampleBuffer, m_sampleBuffer + sampleOffset, sampleCount);
+mixxx::IndexRange CachingReaderChunk::readBufferedSampleFramesReverse(
+        CSAMPLE* reverseSampleBuffer,
+        const mixxx::IndexRange& frameIndexRange) const {
+    const auto copyableFrameIndexRange =
+            intersect(frameIndexRange, m_bufferedSampleFrames.frameIndexRange());
+    if (!copyableFrameIndexRange.empty()) {
+        const SINT dstSampleOffset =
+                frames2samples(copyableFrameIndexRange.start() - frameIndexRange.start());
+        const SINT srcSampleOffset =
+                frames2samples(copyableFrameIndexRange.start() - m_bufferedSampleFrames.frameIndexRange().start());
+        const SINT sampleCount = frames2samples(copyableFrameIndexRange.length());
+        SampleUtil::copyReverse(
+                reverseSampleBuffer - dstSampleOffset - sampleCount,
+                m_bufferedSampleFrames.readableData(srcSampleOffset),
+                sampleCount);
+    }
+    return copyableFrameIndexRange;
 }
 
 CachingReaderChunkForOwner::CachingReaderChunkForOwner(
-        CSAMPLE* sampleBuffer)
+        mixxx::SampleBuffer::WritableSlice sampleBuffer)
         : CachingReaderChunk(sampleBuffer),
           m_state(FREE),
           m_pPrev(nullptr),
@@ -144,7 +133,7 @@ void CachingReaderChunkForOwner::init(SINT index) {
 
 void CachingReaderChunkForOwner::free() {
     DEBUG_ASSERT(READ_PENDING != m_state);
-    CachingReaderChunk::init(kInvalidIndex);
+    CachingReaderChunk::init(kInvalidChunkIndex);
     m_state = FREE;
 }
 
