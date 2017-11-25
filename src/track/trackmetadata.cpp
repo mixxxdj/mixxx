@@ -70,6 +70,7 @@ TrackMetadata::TrackMetadata()
     : m_duration(0.0),
       m_bitrate(0),
       m_channels(0),
+      m_rating(0),
       m_sampleRate(0) {
 }
 
@@ -92,6 +93,7 @@ bool operator==(const TrackMetadata& lhs, const TrackMetadata& rhs) {
             (lhs.getGrouping() == rhs.getGrouping()) &&
             (lhs.getKey() == rhs.getKey()) &&
             (lhs.getBpm() == rhs.getBpm()) &&
+            (lhs.getRating() == rhs.getRating()) &&
             (lhs.getReplayGain() == rhs.getReplayGain());
 }
 

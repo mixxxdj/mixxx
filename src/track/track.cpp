@@ -51,7 +51,6 @@ Track::Track(
           m_qMutex(QMutex::Recursive),
           m_id(trackId),
           m_bDirty(false),
-          m_iRating(0),
           m_cuePoint(0.0),
           m_dateAdded(QDateTime::currentDateTime()),
           m_bHeaderParsed(false),
@@ -831,12 +830,13 @@ bool Track::isDirty() {
 
 int Track::getRating() const {
     QMutexLocker lock(&m_qMutex);
-    return m_iRating;
+    return m_metadata.getRating();
 }
 
 void Track::setRating (int rating) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_iRating, rating)) {
+    if (m_metadata.getRating() != rating) {
+        m_metadata.setRating(rating);
         markDirtyAndUnlock(&lock);
     }
 }

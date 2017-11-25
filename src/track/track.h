@@ -57,6 +57,7 @@ class Track : public QObject {
     Q_PROPERTY(int times_played READ getTimesPlayed)
     Q_PROPERTY(QString comment READ getComment WRITE setComment)
     Q_PROPERTY(double bpm READ getBpm WRITE setBpm)
+    Q_PROPERTY(int rating READ getRating WRITE setRating)
     Q_PROPERTY(QString bpmFormatted READ getBpmText STORED false)
     Q_PROPERTY(QString key READ getKeyText WRITE setKeyText)
     Q_PROPERTY(double duration READ getDuration WRITE setDuration)
@@ -222,7 +223,7 @@ class Track : public QObject {
     // Returns rating
     int getRating() const;
     // Sets rating
-    void setRating(int);
+    void setRating(int rating);
 
     // Get URL for track
     QString getURL() const;
@@ -377,9 +378,6 @@ class Track : public QObject {
 
     // URL (used in promo track)
     QString m_sURL;
-
-    // Track rating
-    int m_iRating;
 
     // Cue point in samples
     double m_cuePoint;

@@ -49,6 +49,7 @@
 #include <taglib/aifffile.h>
 
 #include <taglib/commentsframe.h>
+#include <taglib/popularimeterframe.h>
 #include <taglib/textidentificationframe.h>
 #include <taglib/attachedpictureframe.h>
 #include <taglib/flacpicture.h>
@@ -232,13 +233,79 @@ inline QString formatBpmInteger(const TrackMetadata& trackMetadata) {
 
 bool parseBpm(TrackMetadata* pTrackMetadata, QString sBpm) {
     DEBUG_ASSERT(pTrackMetadata);
-
     bool isBpmValid = false;
     const double bpmValue = Bpm::valueFromString(sBpm, &isBpmValid);
     if (isBpmValid) {
         pTrackMetadata->setBpm(Bpm(bpmValue));
     }
     return isBpmValid;
+}
+
+int parseFlacRating(int rating) {
+
+        int starRatingValue;
+
+        if (rating <= 0) {
+            starRatingValue = 0;
+        } else if (rating <= 20) {
+            starRatingValue = 1;
+        } else if (rating <= 40) {
+            starRatingValue = 2;
+        } else if (rating <= 60) {
+            starRatingValue = 3;
+        } else if (rating <= 80) {
+            starRatingValue = 4;
+        } else if (rating <= 100) {
+            starRatingValue = 5;
+        } else {
+            starRatingValue = 0;
+        }
+
+        return starRatingValue;
+}
+
+int parseMp4Rating(int rating) {
+        int starRatingValue;
+
+        if (rating <= 0) {
+            starRatingValue = 0;
+        } else if (rating <= 20) {
+            starRatingValue = 1;
+        } else if (rating <= 40) {
+            starRatingValue = 2;
+        } else if (rating <= 60) {
+            starRatingValue = 3;
+        } else if (rating <= 80) {
+            starRatingValue = 4;
+        } else if (rating <= 100) {
+            starRatingValue = 5;
+        } else {
+            starRatingValue = 0;
+        }
+
+        return starRatingValue;
+}
+
+int parseMp3Rating(int rating) {
+        int starRatingValue;
+
+        if (rating <= 0) {
+            starRatingValue = 0;
+        } else if (rating <= 31) { //WMP writes 1
+            starRatingValue = 1;
+        } else if (rating <= 95) { //WMP writes 64
+            starRatingValue = 2;
+        } else if (rating <= 159) { //WMP writes 128 
+            starRatingValue = 3;
+        } else if (rating <= 221) { //WMP writes 196
+            starRatingValue = 4;
+        } else if (rating <= 255) { //WMP writes 255
+            starRatingValue = 5;
+        } else {
+            starRatingValue = 0;
+        }
+
+        return starRatingValue;
 }
 
 inline QString formatTrackGain(const TrackMetadata& trackMetadata) {
@@ -1065,6 +1132,19 @@ void readTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
         pTrackMetadata->setAlbumArtist(toQStringFirstNotEmpty(albumArtistFrame));
     }
 
+    int rating = -1;
+    const TagLib::ID3v2::FrameList popmRatingFrameList(tag.frameListMap()["POPM"]);
+    if (!popmRatingFrameList.isEmpty()) {
+        //All elements of frameListMap() are normal Framelist classes. 
+        //You have to convert to a PopularimeterFrame to access the rating()
+        //and email() functions.
+        auto popmRatingFrame = dynamic_cast<TagLib::ID3v2::PopularimeterFrame*>(popmRatingFrameList.front());
+        if (popmRatingFrame != nullptr){
+            rating = popmRatingFrame->rating();
+            pTrackMetadata->setRating(parseMp3Rating(rating));
+        }
+    }
+
     if (pTrackMetadata->getAlbum().isEmpty()) {
         const TagLib::ID3v2::FrameList originalAlbumFrame(
                 tag.frameListMap()["TOAL"]);
@@ -1285,6 +1365,12 @@ void readTrackMetadataFromVorbisCommentTag(TrackMetadata* pTrackMetadata,
         parseBpm(pTrackMetadata, bpm);
     }
 
+    QString rating;
+    if (readXiphCommentField(tag, "RATING", &rating)) {
+        int intRating = rating.toInt(); //readXiphCommentField reads all fields as strings
+        pTrackMetadata->setRating(parseFlacRating(intRating));
+    }
+
     // Only read track gain (not album gain)
     QString trackGain;
     if (readXiphCommentField(tag, "REPLAYGAIN_TRACK_GAIN", &trackGain)) {
@@ -1364,6 +1450,12 @@ void readTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::MP
 #else
             pTrackMetadata->setBpm(Bpm(item.toInt()));
 #endif
+    }
+
+    QString rating;
+    if (readMP4Atom(tag, "rate", &rating)) {
+        int intRating = rating.toInt(); //readMP4Atom reads all atoms as strings
+        pTrackMetadata->setRating(parseMp4Rating(intRating));
     }
 
     // Only read track gain (not album gain)
