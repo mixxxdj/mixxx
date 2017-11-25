@@ -565,7 +565,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
             // Shrink the size of the buffer to the samples that have
             // actually been decoded, i.e. dropping unneeded samples
             // from the back of the buffer.
-            m_sampleBuffer.dropFromTail(decodeBufferCapacity - numberOfSamplesDecoded);
+            m_sampleBuffer.shrinkAfterWriting(decodeBufferCapacity - numberOfSamplesDecoded);
             DEBUG_ASSERT(m_sampleBuffer.readableLength() == numberOfSamplesDecoded);
             // Read from the buffer's head
             numberOfSamplesRead =

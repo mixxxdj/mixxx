@@ -89,6 +89,15 @@ class ReadAheadSampleBuffer final {
     // operation on this buffer.
     SampleBuffer::WritableSlice growForWriting(SINT maxWriteLength);
 
+    // Discards the last samples that have been written at the end
+    // of the readable range.
+    //
+    // Returns the number of samples that have actually been discarded.
+    // The number of samples that can be discarded is limited by
+    // readableLength() and the returned length might be shorter than
+    // requested.
+    SINT shrinkAfterWriting(SINT maxShrinkLength);
+
     // Consumes buffered samples from the head of the buffer.
     //
     // Returns a pointer to the continuous memory region and the actual
@@ -99,13 +108,6 @@ class ReadAheadSampleBuffer final {
     // The returned slice is only valid until the next non-const
     // operation on this buffer.
     SampleBuffer::ReadableSlice readFromHead(SINT maxReadLength);
-
-    // Discards the last samples that have been written at the tail of
-    // the buffer
-    //
-    // Returns the number of samples that have actually been dropped. The
-    // number of samples that can be dropped is limited by readableLength().
-    SINT dropFromTail(SINT maxDropLength);
 
   private:
     ReadAheadSampleBuffer(

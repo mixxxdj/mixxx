@@ -36,9 +36,9 @@ protected:
         return readableSlice.length();
     }
 
-    SINT dropFromTailAndVerify(mixxx::ReadAheadSampleBuffer* pSampleBuffer, SINT maxDropLength) {
+    SINT shrinkAfterWritingAndVerify(mixxx::ReadAheadSampleBuffer* pSampleBuffer, SINT maxDropLength) {
         const SINT droppedLength =
-                pSampleBuffer->dropFromTail(maxDropLength);
+                pSampleBuffer->shrinkAfterWriting(maxDropLength);
         m_writeValue -= droppedLength * CSAMPLE_ONE;
         return droppedLength;
     }
@@ -70,7 +70,7 @@ TEST_F(ReadAheadSampleBufferTest, emptyWithoutCapacity) {
     EXPECT_TRUE(sampleBuffer.empty());
 
     const SINT droppedLength(
-            sampleBuffer.dropFromTail(10));
+            sampleBuffer.shrinkAfterWriting(10));
     EXPECT_EQ(droppedLength, 0);
     EXPECT_TRUE(sampleBuffer.empty());
 }
@@ -121,7 +121,7 @@ TEST_F(ReadAheadSampleBufferTest, readWriteTrim) {
     EXPECT_EQ(sampleBuffer.writableLength(), 0);
 
     // Read from the end
-    SINT readCount2 = dropFromTailAndVerify(&sampleBuffer, readCount1);
+    SINT readCount2 = shrinkAfterWritingAndVerify(&sampleBuffer, readCount1);
     EXPECT_EQ(readCount2, readCount1);
     EXPECT_FALSE(sampleBuffer.empty());
     EXPECT_EQ(sampleBuffer.readableLength(), kCapacity - readCount1);
@@ -141,7 +141,7 @@ TEST_F(ReadAheadSampleBufferTest, readWriteTrim) {
     EXPECT_EQ(sampleBuffer.writableLength(), 0);
 
     // Read whole buffer
-    SINT readCount3 = dropFromTailAndVerify(&sampleBuffer, kCapacity + 10);
+    SINT readCount3 = shrinkAfterWritingAndVerify(&sampleBuffer, kCapacity + 10);
     EXPECT_EQ(readCount3, kCapacity);
     EXPECT_TRUE(sampleBuffer.empty());
     EXPECT_EQ(sampleBuffer.readableLength(), 0);
@@ -156,13 +156,13 @@ TEST_F(ReadAheadSampleBufferTest, shrink) {
     EXPECT_FALSE(sampleBuffer.empty());
     SINT shrinkCount1 = readFromHeadAndVerify(&sampleBuffer, 10);
     EXPECT_EQ(shrinkCount1, 10);
-    SINT readCount1 = dropFromTailAndVerify(&sampleBuffer, 10);
+    SINT readCount1 = shrinkAfterWritingAndVerify(&sampleBuffer, 10);
     EXPECT_EQ(readCount1, 10);
     EXPECT_FALSE(sampleBuffer.empty());
-    SINT readCount2 = dropFromTailAndVerify(&sampleBuffer, kCapacity - 40);
+    SINT readCount2 = shrinkAfterWritingAndVerify(&sampleBuffer, kCapacity - 40);
     EXPECT_EQ(readCount2, kCapacity - 40);
     EXPECT_FALSE(sampleBuffer.empty());
-    SINT readCount3 = dropFromTailAndVerify(&sampleBuffer, 20);
+    SINT readCount3 = shrinkAfterWritingAndVerify(&sampleBuffer, 20);
     EXPECT_EQ(readCount3, 10);
     EXPECT_TRUE(sampleBuffer.empty());
 
@@ -182,7 +182,7 @@ TEST_F(ReadAheadSampleBufferTest, clear) {
     EXPECT_FALSE(sampleBuffer.empty());
     clear(&sampleBuffer);
     EXPECT_TRUE(sampleBuffer.empty());
-    SINT readCount = dropFromTailAndVerify(&sampleBuffer, 10);
+    SINT readCount = shrinkAfterWritingAndVerify(&sampleBuffer, 10);
     EXPECT_EQ(readCount, 0);
     EXPECT_TRUE(sampleBuffer.empty());
 }
