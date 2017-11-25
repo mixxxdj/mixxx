@@ -118,8 +118,11 @@ class SampleBuffer {
             DEBUG_ASSERT(m_length >= offset);
             return m_data + offset;
         }
-        SINT length() const {
-            return m_length;
+        SINT length(SINT offset = 0) const {
+            DEBUG_ASSERT(0 <= offset);
+            // >=: allow access to one element behind allocated memory
+            DEBUG_ASSERT(m_length >= offset);
+            return m_length - offset;
         }
         bool empty() const {
             return (m_data == nullptr) || (m_length <= 0);
@@ -160,8 +163,11 @@ class SampleBuffer {
             DEBUG_ASSERT(m_length >= offset);
             return m_data + offset;
         }
-        SINT length() const {
-            return m_length;
+        SINT length(SINT offset = 0) const {
+            DEBUG_ASSERT(0 <= offset);
+            // >=: allow access to one element behind allocated memory
+            DEBUG_ASSERT(m_length >= offset);
+            return m_length - offset;
         }
         bool empty() const {
             return (m_data == nullptr) || (m_length <= 0);
