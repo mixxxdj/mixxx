@@ -46,9 +46,22 @@ QSqlDatabase cloneDatabase(
 }
 
 void removeDatabase(
-        const QSqlDatabase& database) {
-    DEBUG_ASSERT(!database.isOpen());
-    QSqlDatabase::removeDatabase(database.connectionName());
+        QSqlDatabase* pDatabase) {
+    DEBUG_ASSERT(pDatabase);
+    DEBUG_ASSERT(!pDatabase->isOpen());
+    // pDatabase must be the last reference to the implicitly shared
+    // QSqlDatabase object
+    QString connectionName = pDatabase->connectionName();
+    // Drop the last reference before actually removing the database
+    // to avoid the following warning:
+    // "Warning [Main]: QSqlDatabasePrivate::removeDatabase: connection
+    // '...' is still in use, all queries will cease to work."
+    *pDatabase = QSqlDatabase();
+    // After all references have been dropped we can safely remove the
+    // connection. If still some of the afore mentioned warnings appear
+    // in the log than a component is misbehaving and still holding an
+    // invalid copy of the QSqlDatabase object that it shouldn't have!!
+    QSqlDatabase::removeDatabase(connectionName);
 }
 
 // The default comparison of strings for sorting.
@@ -296,7 +309,7 @@ DbConnection::DbConnection(
 
 DbConnection::~DbConnection() {
     close();
-    removeDatabase(m_sqlDatabase);
+    removeDatabase(&m_sqlDatabase);
 }
 
 bool DbConnection::open() {
