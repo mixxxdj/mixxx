@@ -20,16 +20,16 @@ AudioSourceStereoProxy::AudioSourceStereoProxy(
       m_tempSampleBuffer(
               (m_pAudioSource->channelCount() != 2) ?
                       m_pAudioSource->frames2samples(maxReadableFrames) : 0),
-      m_tempOutputBuffer(m_tempSampleBuffer) {
+      m_tempWritableSlice(m_tempSampleBuffer) {
     setChannelCount(2);
 }
 
 AudioSourceStereoProxy::AudioSourceStereoProxy(
         AudioSourcePointer pAudioSource,
-        SampleBuffer::WritableSlice m_tempOutputBuffer)
+        SampleBuffer::WritableSlice tempWritableSlice)
     : AudioSource(*pAudioSource),
       m_pAudioSource(std::move(pAudioSource)),
-      m_tempOutputBuffer(m_tempOutputBuffer) {
+      m_tempWritableSlice(std::move(tempWritableSlice)) {
     setChannelCount(2);
 }
 
@@ -42,13 +42,13 @@ bool isDisjunct(
     if (slice1.data() == slice2.data()) {
         return false;
     }
-    if ((slice1.size() == 0) || (slice2.size() == 0)) {
+    if ((slice1.length() == 0) || (slice2.length() == 0)) {
         return true;
     }
     if (slice1.data() < slice2.data()) {
-        return slice1.data(slice1.size()) <= slice2.data();
+        return slice1.data(slice1.length()) <= slice2.data();
     } else {
-        return slice2.data(slice2.size()) <= slice1.data();
+        return slice2.data(slice2.length()) <= slice1.data();
     }
 }
 
@@ -62,7 +62,7 @@ ReadableSampleFrames AudioSourceStereoProxy::readSampleFramesClamped(
 
     // Check location and capacity of temporary buffer
     VERIFY_OR_DEBUG_ASSERT(isDisjunct(
-            m_tempOutputBuffer,
+            m_tempWritableSlice,
             SampleBuffer::WritableSlice(sampleFrames.writableSlice()))) {
         kLogger.warning()
                 << "Overlap between output and temporary sample buffer detected";
@@ -70,11 +70,12 @@ ReadableSampleFrames AudioSourceStereoProxy::readSampleFramesClamped(
     }
     {
         const SINT numberOfSamplesToRead =
-                m_pAudioSource->frames2samples(sampleFrames.frameIndexRange().length());
-        VERIFY_OR_DEBUG_ASSERT(m_tempOutputBuffer.size() >= numberOfSamplesToRead) {
+                m_pAudioSource->frames2samples(
+                        sampleFrames.frameIndexRange().length());
+        VERIFY_OR_DEBUG_ASSERT(m_tempWritableSlice.length() >= numberOfSamplesToRead) {
             kLogger.warning()
                     << "Insufficient temporary sample buffer capacity"
-                    << m_tempOutputBuffer.size()
+                    << m_tempWritableSlice.length()
                     << "<"
                     << numberOfSamplesToRead
                     << "for reading frames"
@@ -88,7 +89,7 @@ ReadableSampleFrames AudioSourceStereoProxy::readSampleFramesClamped(
                     *m_pAudioSource,
                     WritableSampleFrames(
                             sampleFrames.frameIndexRange(),
-                            m_tempOutputBuffer));
+                            m_tempWritableSlice));
     if (readableSampleFrames.frameIndexRange().empty()) {
         return readableSampleFrames;
     }
@@ -115,7 +116,7 @@ ReadableSampleFrames AudioSourceStereoProxy::readSampleFramesClamped(
             readableSampleFrames.frameIndexRange(),
             SampleBuffer::ReadableSlice(
                     writableSlice.data(),
-                    writableSlice.size()));
+                    writableSlice.length()));
 }
 
 }

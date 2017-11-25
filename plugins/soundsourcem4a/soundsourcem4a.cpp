@@ -449,13 +449,13 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
                 SampleUtil::copy(
                         writableSampleFrames.writableData(outputSampleOffset),
                         readableSlice.data(),
-                        readableSlice.size());
-                outputSampleOffset += readableSlice.size();
+                        readableSlice.length());
+                outputSampleOffset += readableSlice.length();
             }
-            m_curFrameIndex += samples2frames(readableSlice.size());
+            m_curFrameIndex += samples2frames(readableSlice.length());
             DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-            DEBUG_ASSERT(numberOfSamplesRemaining >= readableSlice.size());
-            numberOfSamplesRemaining -= readableSlice.size();
+            DEBUG_ASSERT(numberOfSamplesRemaining >= readableSlice.length());
+            numberOfSamplesRemaining -= readableSlice.length();
             if (0 == numberOfSamplesRemaining) {
                 break; // exit loop
             }
@@ -508,7 +508,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
             const SampleBuffer::WritableSlice writableSlice(
                     m_sampleBuffer.writeToTail(writeToTailCount));
             pDecodeBuffer = writableSlice.data();
-            decodeBufferCapacity = writableSlice.size();
+            decodeBufferCapacity = writableSlice.length();
         }
         DEBUG_ASSERT(decodeBufferCapacityMin <= decodeBufferCapacity);
 
@@ -572,12 +572,12 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
                     std::min(numberOfSamplesDecoded, numberOfSamplesRemaining);
             const SampleBuffer::ReadableSlice readableSlice(
                     m_sampleBuffer.readFromHead(numberOfSamplesRead));
-            DEBUG_ASSERT(readableSlice.size() == numberOfSamplesRead);
+            DEBUG_ASSERT(readableSlice.length() == numberOfSamplesRead);
             if (writableSampleFrames.writableData()) {
                 SampleUtil::copy(
                         writableSampleFrames.writableData(outputSampleOffset),
                         readableSlice.data(),
-                        readableSlice.size());
+                        readableSlice.length());
                 outputSampleOffset += numberOfSamplesRead;
             }
         }
@@ -596,7 +596,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
             IndexRange::forward(firstFrameIndex, samples2frames(numberOfSamples)),
             SampleBuffer::ReadableSlice(
                     writableSampleFrames.writableData(),
-                    std::min(writableSampleFrames.writableSize(), numberOfSamples)));
+                    std::min(writableSampleFrames.writableLength(), numberOfSamples)));
 }
 
 QString SoundSourceProviderM4A::getName() const {

@@ -98,80 +98,80 @@ class SampleBuffer {
       public:
         ReadableSlice()
             : m_data(nullptr),
-              m_size(0) {
+              m_length(0) {
         }
-        ReadableSlice(const CSAMPLE* data, SINT size)
+        ReadableSlice(const CSAMPLE* data, SINT length)
             : m_data(data),
-              m_size(size) {
-            DEBUG_ASSERT(size >= 0);
-            DEBUG_ASSERT((size == 0) || (m_data != nullptr));
+              m_length(length) {
+            DEBUG_ASSERT(m_length >= 0);
+            DEBUG_ASSERT((m_length == 0) || (m_data != nullptr));
         }
         ReadableSlice(const SampleBuffer& buffer, SINT offset, SINT length)
             : m_data(buffer.data(offset)),
-              m_size(length) {
+              m_length(length) {
             DEBUG_ASSERT((buffer.size() - offset) >= length);
         }
         const CSAMPLE* data(SINT offset = 0) const {
             DEBUG_ASSERT((m_data != nullptr) || (offset == 0));
             DEBUG_ASSERT(0 <= offset);
             // >=: allow access to one element behind allocated memory
-            DEBUG_ASSERT(m_size >= offset);
+            DEBUG_ASSERT(m_length >= offset);
             return m_data + offset;
         }
-        SINT size() const {
-            return m_size;
+        SINT length() const {
+            return m_length;
         }
         bool empty() const {
-            return (m_data == nullptr) || (m_size <= 0);
+            return (m_data == nullptr) || (m_length <= 0);
         }
         const CSAMPLE& operator[](SINT index) const {
             return *data(index);
         }
       private:
         const CSAMPLE* m_data;
-        SINT m_size;
+        SINT m_length;
     };
 
     class WritableSlice {
       public:
         WritableSlice()
             : m_data(nullptr),
-              m_size(0) {
+              m_length(0) {
         }
-        WritableSlice(CSAMPLE* data, SINT size)
+        WritableSlice(CSAMPLE* data, SINT length)
             : m_data(data),
-              m_size(size) {
-            DEBUG_ASSERT(size >= 0);
-            DEBUG_ASSERT((size == 0) || (m_data != nullptr));
+              m_length(length) {
+            DEBUG_ASSERT(m_length >= 0);
+            DEBUG_ASSERT((m_length == 0) || (m_data != nullptr));
         }
         explicit WritableSlice(SampleBuffer& buffer)
             : m_data(buffer.data()),
-              m_size(buffer.size()) {
+              m_length(buffer.size()) {
         }
         WritableSlice(SampleBuffer& buffer, SINT offset, SINT length)
             : m_data(buffer.data(offset)),
-              m_size(length) {
+              m_length(length) {
             DEBUG_ASSERT((buffer.size() - offset) >= length);
         }
         CSAMPLE* data(SINT offset = 0) const {
             DEBUG_ASSERT((m_data != nullptr) || (offset == 0));
             DEBUG_ASSERT(0 <= offset);
             // >=: allow access to one element behind allocated memory
-            DEBUG_ASSERT(m_size >= offset);
+            DEBUG_ASSERT(m_length >= offset);
             return m_data + offset;
         }
-        SINT size() const {
-            return m_size;
+        SINT length() const {
+            return m_length;
         }
         bool empty() const {
-            return (m_data == nullptr) || (m_size <= 0);
+            return (m_data == nullptr) || (m_length <= 0);
         }
         CSAMPLE& operator[](SINT index) const {
             return *data(index);
         }
       private:
         CSAMPLE* m_data;
-        SINT m_size;
+        SINT m_length;
     };
 
   private:

@@ -34,7 +34,7 @@ CachingReaderChunk::CachingReaderChunk(
         mixxx::SampleBuffer::WritableSlice sampleBuffer)
         : m_index(kInvalidChunkIndex),
           m_sampleBuffer(sampleBuffer) {
-    DEBUG_ASSERT(sampleBuffer.size() == kSamples);
+    DEBUG_ASSERT(sampleBuffer.length() == kSamples);
 }
 
 CachingReaderChunk::~CachingReaderChunk() {

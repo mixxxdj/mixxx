@@ -191,7 +191,7 @@ ReadableSampleFrames SoundSourceOggVorbis::readSampleFramesClamped(
             IndexRange::forward(firstFrameIndex, numberOfFrames),
             SampleBuffer::ReadableSlice(
                     writableSampleFrames.writableData(),
-                    std::min(writableSampleFrames.writableSize(), frames2samples(numberOfFrames))));
+                    std::min(writableSampleFrames.writableLength(), frames2samples(numberOfFrames))));
 }
 
 

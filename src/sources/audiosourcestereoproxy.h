@@ -17,12 +17,15 @@ class AudioSourceStereoProxy: public AudioSource {
                 maxReadableFrames);
     }
 
+    // Create an instance with its own temporary buffer
     AudioSourceStereoProxy(
             AudioSourcePointer pAudioSource,
             SINT maxReadableFrames);
+    // Create an instance that borrows a writable slice of a
+    // temporary buffer owned by the caller
     AudioSourceStereoProxy(
             AudioSourcePointer pAudioSource,
-            SampleBuffer::WritableSlice tempSampleBufferSlice);
+            SampleBuffer::WritableSlice tempWritableSlice);
 
     void close() override {
         m_pAudioSource->close();
@@ -41,7 +44,7 @@ class AudioSourceStereoProxy: public AudioSource {
   private:
     AudioSourcePointer m_pAudioSource;
     SampleBuffer m_tempSampleBuffer;
-    SampleBuffer::WritableSlice m_tempOutputBuffer;
+    SampleBuffer::WritableSlice m_tempWritableSlice;
 };
 
 } // namespace mixxx

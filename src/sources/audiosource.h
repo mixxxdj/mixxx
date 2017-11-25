@@ -51,8 +51,8 @@ class ReadableSampleFrames final: public SampleFrames {
         return m_readableSlice;
     }
 
-    SINT readableSize() const {
-        return m_readableSlice.size();
+    SINT readableLength() const {
+        return m_readableSlice.length();
     }
 
     const CSAMPLE* readableData(SINT offset = 0) const {
@@ -87,8 +87,8 @@ class WritableSampleFrames final: public SampleFrames {
         return m_writableSlice;
     }
 
-    SINT writableSize() const {
-        return m_writableSlice.size();
+    SINT writableLength() const {
+        return m_writableSlice.length();
     }
 
     CSAMPLE* writableData(SINT offset = 0) const {

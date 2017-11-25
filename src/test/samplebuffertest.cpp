@@ -16,24 +16,24 @@ public:
 protected:
     static const SINT kCapacity;
 
-    SINT writeToTail(mixxx::ReadAheadSampleBuffer* pSampleBuffer, SINT size) {
+    SINT writeToTail(mixxx::ReadAheadSampleBuffer* pSampleBuffer, SINT length) {
         const mixxx::SampleBuffer::WritableSlice writableSlice(
-                pSampleBuffer->writeToTail(size));
-        for (SINT i = 0; i < writableSlice.size(); ++i) {
+                pSampleBuffer->writeToTail(length));
+        for (SINT i = 0; i < writableSlice.length(); ++i) {
             writableSlice[i] = m_writeValue;
             m_writeValue += CSAMPLE_ONE;
         }
-        return writableSlice.size();
+        return writableSlice.length();
     }
 
     SINT readFromHeadAndVerify(mixxx::ReadAheadSampleBuffer* pSampleBuffer, SINT maxReadLength) {
         const mixxx::SampleBuffer::ReadableSlice readableSlice(
                 pSampleBuffer->readFromHead(maxReadLength));
-        for (SINT i = 0; i < readableSlice.size(); ++i) {
+        for (SINT i = 0; i < readableSlice.length(); ++i) {
             EXPECT_EQ(readableSlice[i], m_readValue);
             m_readValue += CSAMPLE_ONE;
         }
-        return readableSlice.size();
+        return readableSlice.length();
     }
 
     SINT dropFromTailAndVerify(mixxx::ReadAheadSampleBuffer* pSampleBuffer, SINT maxDropLength) {
@@ -66,7 +66,7 @@ TEST_F(ReadAheadSampleBufferTest, emptyWithoutCapacity) {
     const mixxx::SampleBuffer::WritableSlice writableSlice(
             sampleBuffer.writeToTail(10));
     EXPECT_EQ(writableSlice.data(), static_cast<CSAMPLE*>(NULL));
-    EXPECT_EQ(writableSlice.size(), 0);
+    EXPECT_EQ(writableSlice.length(), 0);
     EXPECT_TRUE(sampleBuffer.empty());
 
     const SINT droppedLength(

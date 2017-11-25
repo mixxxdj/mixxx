@@ -269,19 +269,19 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
         SampleBuffer::ReadableSlice readableSlice(
                 m_sampleBuffer.readFromHead(
                         frames2samples(numberOfFramesRemaining)));
-        DEBUG_ASSERT(readableSlice.size()
+        DEBUG_ASSERT(readableSlice.length()
                 <= frames2samples(numberOfFramesRemaining));
-        if (readableSlice.size() > 0) {
+        if (readableSlice.length() > 0) {
             DEBUG_ASSERT(m_currentFrameIndex < frameIndexMax());
             if (pSampleBuffer) {
                 SampleUtil::copy(
                         pSampleBuffer,
                         readableSlice.data(),
-                        readableSlice.size());
-                pSampleBuffer += readableSlice.size();
+                        readableSlice.length());
+                pSampleBuffer += readableSlice.length();
             }
-            m_currentFrameIndex += samples2frames(readableSlice.size());
-            numberOfFramesRemaining -= samples2frames(readableSlice.size());
+            m_currentFrameIndex += samples2frames(readableSlice.length());
+            numberOfFramesRemaining -= samples2frames(readableSlice.length());
         }
         if (numberOfFramesRemaining == 0) {
             break; // finished reading
@@ -433,11 +433,11 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
             SampleBuffer::WritableSlice writableSlice(
                     m_sampleBuffer.writeToTail(lockedSampleBufferCount));
             // The required capacity has been calculated in advance (see above)
-            DEBUG_ASSERT(writableSlice.size() == lockedSampleBufferCount);
+            DEBUG_ASSERT(writableSlice.length() == lockedSampleBufferCount);
             SampleUtil::copy(
                     writableSlice.data(),
                     pLockedSampleBuffer,
-                    writableSlice.size());
+                    writableSlice.length());
             HRESULT hrUnlock = pMediaBuffer->Unlock();
             VERIFY_OR_DEBUG_ASSERT(SUCCEEDED(hrUnlock)) {
                 kLogger.warning()
@@ -466,7 +466,7 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
             IndexRange::forward(firstFrameIndex, numberOfFrames),
             SampleBuffer::ReadableSlice(
                     writableSampleFrames.writableData(),
-                    std::min(writableSampleFrames.writableSize(), frames2samples(numberOfFrames))));
+                    std::min(writableSampleFrames.writableLength(), frames2samples(numberOfFrames))));
 }
 
 //-------------------------------------------------------------------

@@ -207,7 +207,7 @@ bool AnalyzerQueue::doAnalysis(
             for (auto const& pAnalyzer: m_pAnalyzers) {
                 pAnalyzer->process(
                         readableSampleFrames.readableData(),
-                        readableSampleFrames.readableSize());
+                        readableSampleFrames.readableLength());
             }
         } else {
             // Partial analysis block of audio samples has been read.

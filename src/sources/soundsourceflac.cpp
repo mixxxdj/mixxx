@@ -265,12 +265,12 @@ ReadableSampleFrames SoundSourceFLAC::readSampleFramesClamped(
                 std::min(m_sampleBuffer.readableLength(), numberOfSamplesRemaining);
         const SampleBuffer::ReadableSlice readableSlice(
                 m_sampleBuffer.readFromHead(numberOfSamplesRead));
-        DEBUG_ASSERT(readableSlice.size() == numberOfSamplesRead);
+        DEBUG_ASSERT(readableSlice.length() == numberOfSamplesRead);
         if (writableSampleFrames.writableData()) {
             SampleUtil::copy(
                     writableSampleFrames.writableData(outputSampleOffset),
                     readableSlice.data(),
-                    readableSlice.size());
+                    readableSlice.length());
             outputSampleOffset += numberOfSamplesRead;
         }
         m_curFrameIndex += samples2frames(numberOfSamplesRead);
@@ -284,7 +284,7 @@ ReadableSampleFrames SoundSourceFLAC::readSampleFramesClamped(
             IndexRange::forward(firstFrameIndex, samples2frames(numberOfSamples)),
             SampleBuffer::ReadableSlice(
                     writableSampleFrames.writableData(),
-                    std::min(writableSampleFrames.writableSize(), numberOfSamples)));
+                    std::min(writableSampleFrames.writableLength(), numberOfSamples)));
 }
 
 // flac callback methods
@@ -378,7 +378,7 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
     const SampleBuffer::WritableSlice writableSlice(
             m_sampleBuffer.writeToTail(frames2samples(numReadableFrames)));
 
-    const SINT numWritableFrames = samples2frames(writableSlice.size());
+    const SINT numWritableFrames = samples2frames(writableSlice.length());
     DEBUG_ASSERT(numWritableFrames <= numReadableFrames);
     if (numWritableFrames < numReadableFrames) {
         kLogger.warning() << "Sample buffer has not enough free space for all decoded FLAC samples:"

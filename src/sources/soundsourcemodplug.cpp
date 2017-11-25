@@ -191,7 +191,7 @@ ReadableSampleFrames SoundSourceModPlug::readSampleFramesClamped(
             writableSampleFrames.frameIndexRange(),
             SampleBuffer::ReadableSlice(
                     writableSampleFrames.writableData(),
-                    writableSampleFrames.writableSize()));
+                    writableSampleFrames.writableLength()));
 }
 
 QString SoundSourceProviderModPlug::getName() const {
