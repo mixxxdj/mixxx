@@ -14,8 +14,11 @@ namespace mixxx {
 // any new samples. A full featured ring buffer is not needed for
 // this purpose.
 //
-// This class is not thread-safe and is not intended to be used from
-// multiple threads!
+// The API is not designed for concurrent readers and writers!
+// Samples reserved for writing are immediately available for
+// reading, even if the writer has not not yet written any samples.
+// With this in mind the implementation does not make any attempts
+// to be thread-safe!
 class ReadAheadSampleBuffer final {
   public:
     explicit ReadAheadSampleBuffer(
