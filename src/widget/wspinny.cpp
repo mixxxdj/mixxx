@@ -20,7 +20,7 @@
 WSpinny::WSpinny(QWidget* parent, const QString& group,
                  UserSettingsPointer pConfig,
                  VinylControlManager* pVCMan)
-        : QGLWidget(QGLFormat(QGL::SampleBuffers), parent, SharedGLContext::getWidget()),
+        : QWidget(parent),
           WBaseWidget(this),
           m_group(group),
           m_pConfig(pConfig),
@@ -65,9 +65,6 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
 #endif
     //Drag and drop
     setAcceptDrops(true);
-    qDebug() << "WSpinny(): Created QGLWidget, Context"
-             << "Valid:" << context()->isValid()
-             << "Sharing:" << context()->isSharing();
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != nullptr) {
@@ -132,7 +129,11 @@ void WSpinny::setup(const QDomNode& node, const SkinContext& context) {
     Paintable::DrawMode bgmode = context.selectScaleMode(backPathElement,
                                                          Paintable::FIXED);
     if (m_pBgImage && !m_pBgImage->isNull() && bgmode == Paintable::FIXED) {
-        setFixedSize(m_pBgImage->size());
+        setFixedSize(m_pBgImage->size()
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+            / m_pBgImage->devicePixelRatioF()
+#endif
+            );
     } else {
         setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     }
@@ -144,14 +145,22 @@ void WSpinny::setup(const QDomNode& node, const SkinContext& context) {
             context.getScaleFactor());
     if (m_pFgImage && !m_pFgImage->isNull()) {
         m_fgImageScaled = m_pFgImage->scaled(
-                size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+                size()
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+                * devicePixelRatioF()
+#endif
+                , Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
     m_pGhostImage = WImageStore::getImage(
             context.getPixmapSource(context.selectNode(node,"PathGhost")),
             context.getScaleFactor());
     if (m_pGhostImage && !m_pGhostImage->isNull()) {
         m_ghostImageScaled = m_pGhostImage->scaled(
-                size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+                size()
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+                * devicePixelRatioF()
+#endif
+                , Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
 
     m_bShowCover = context.selectBool(node, "ShowCover", false);
@@ -294,25 +303,33 @@ void WSpinny::paintEvent(QPaintEvent *e) {
     p.drawPrimitive(QStyle::PE_Widget, option);
 
     if (m_pBgImage) {
-        p.drawImage(rect(), *m_pBgImage, m_pBgImage->rect());
+        p.drawImage(rect(), *m_pBgImage);
     }
 
     if (m_bShowCover && !m_loadedCoverScaled.isNull()) {
         // Some covers aren't square, so center them.
-        int x = (width() - m_loadedCoverScaled.width()) / 2;
-        int y = (height() - m_loadedCoverScaled.height()) / 2;
+        int x = (width() - m_loadedCoverScaled.width()
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+            / m_loadedCoverScaled.devicePixelRatio()
+#endif
+            ) / 2;
+        int y = (height() - m_loadedCoverScaled.height()
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+            / m_loadedCoverScaled.devicePixelRatio()
+#endif
+            ) / 2;
         p.drawPixmap(x, y, m_loadedCoverScaled);
     }
 
     if (m_pMaskImage) {
-        p.drawImage(rect(), *m_pMaskImage, m_pMaskImage->rect());
+        p.drawImage(rect(), *m_pMaskImage);
     }
 
 #ifdef __VINYLCONTROL__
     // Overlay the signal quality drawing if vinyl is active
     if (m_bVinylActive && m_bSignalActive) {
         // draw the last good image
-        p.drawImage(this->rect(), m_qImage);
+        p.drawImage(rect(), m_qImage);
     }
 #endif
 
@@ -340,16 +357,24 @@ void WSpinny::paintEvent(QPaintEvent *e) {
     if (m_pFgImage && !m_pFgImage->isNull()) {
         // Now rotate the image and draw it on the screen.
         p.rotate(m_fAngle);
-        p.drawImage(-(m_fgImageScaled.width() / 2),
-                    -(m_fgImageScaled.height() / 2), m_fgImageScaled);
+        p.drawImage(QPoint(-(m_fgImageScaled.width() / 2),
+                    -(m_fgImageScaled.height() / 2))
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+                    / m_pBgImage->devicePixelRatioF()
+#endif
+                    , m_fgImageScaled);
     }
 
     if (paintGhost) {
         p.restore();
         p.save();
         p.rotate(m_fGhostAngle);
-        p.drawImage(-(m_ghostImageScaled.width() / 2),
-                    -(m_ghostImageScaled.height() / 2), m_ghostImageScaled);
+        p.drawImage(QPoint(-(m_ghostImageScaled.width() / 2),
+                    -(m_ghostImageScaled.height() / 2))
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+                    / m_pBgImage->devicePixelRatioF()
+#endif
+                    , m_ghostImageScaled);
 
         //Rotate back to the playback position (not the ghost positon),
         //and draw the beat marks from there.
@@ -361,19 +386,41 @@ QPixmap WSpinny::scaledCoverArt(const QPixmap& normal) {
     if (normal.isNull()) {
         return QPixmap();
     }
-    return normal.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    QPixmap result = normal.scaled(size()
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+                * devicePixelRatioF()
+#endif
+                         , Qt::KeepAspectRatio, Qt::SmoothTransformation);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    result.setDevicePixelRatio(devicePixelRatioF());
+#endif
+    return result;
 }
 
 void WSpinny::resizeEvent(QResizeEvent* /*unused*/) {
     m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
     if (m_pFgImage && !m_pFgImage->isNull()) {
         m_fgImageScaled = m_pFgImage->scaled(
-                size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+                size()
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+                * devicePixelRatioF()
+#endif
+                , Qt::KeepAspectRatio, Qt::SmoothTransformation);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    m_fgImageScaled.setDevicePixelRatio(devicePixelRatioF());
+#endif
     }
     if (m_pGhostImage && !m_pGhostImage->isNull()) {
         m_ghostImageScaled = m_pGhostImage->scaled(
-                size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+                size()
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+                * devicePixelRatioF()
+#endif
+                , Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    m_ghostImageScaled.setDevicePixelRatio(devicePixelRatioF());
+#endif
 }
 
 /* Convert between a normalized playback position (0.0 - 1.0) and an angle
@@ -618,7 +665,7 @@ bool WSpinny::event(QEvent* pEvent) {
     if (pEvent->type() == QEvent::ToolTip) {
         updateTooltip();
     }
-    return QGLWidget::event(pEvent);
+    return QWidget::event(pEvent);
 }
 
 void WSpinny::dragEnterEvent(QDragEnterEvent* event) {

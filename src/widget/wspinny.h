@@ -2,7 +2,6 @@
 #ifndef _WSPINNY_H
 #define _WSPINNY_H
 
-#include <QGLWidget>
 #include <QShowEvent>
 #include <QHideEvent>
 #include <QEvent>
@@ -18,7 +17,7 @@ class ControlProxy;
 class VisualPlayPosition;
 class VinylControlManager;
 
-class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityListener {
+class WSpinny : public QWidget, public WBaseWidget, public VinylSignalQualityListener {
     Q_OBJECT
   public:
     WSpinny(QWidget* parent, const QString& group,

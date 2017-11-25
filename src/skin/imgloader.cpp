@@ -1,4 +1,4 @@
-
+#include <QApplication>
 #include <QImageReader>
 #include <QFileInfo>
 
@@ -11,6 +11,7 @@ ImgLoader::ImgLoader() {
 QImage* ImgLoader::getImage(const QString& fileName, double scaleFactor) const {
     QImage* pImage = new QImage();
     QFileInfo info(fileName);
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     if (scaleFactor > 2.0) {
         // Try to load with @3x suffix
         QString strNewName = info.path() + "/" + info.baseName() + "@3x."
@@ -25,6 +26,9 @@ QImage* ImgLoader::getImage(const QString& fileName, double scaleFactor) const {
         }
     }
     if (scaleFactor > 1.0) {
+#else
+    if (qApp->devicePixelRatio() > 1.0) {
+#endif
         // Try to load with @2x suffix
         QString strNewName = info.path() + "/" + info.baseName() + "@2x."
                 + info.completeSuffix();
@@ -49,6 +53,7 @@ QImage* ImgLoader::getImage(const QString& fileName, double scaleFactor) const {
         }
     }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     // No Image found, matching the desired resolution or lower.
     // try to load a bigger Images.
 
@@ -79,7 +84,7 @@ QImage* ImgLoader::getImage(const QString& fileName, double scaleFactor) const {
             return pImage;
         }
     }
-
+#endif
     return pImage;
 }
 

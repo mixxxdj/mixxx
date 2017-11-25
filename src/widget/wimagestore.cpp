@@ -1,5 +1,6 @@
 #include "widget/wimagestore.h"
 
+#include <QApplication>
 #include <QtDebug>
 #include <QSvgRenderer>
 #include <QPainter>
@@ -68,11 +69,19 @@ QImage* WImageStore::getImageNoCache(const PixmapSource& source, double scaleFac
             renderer.load(source.getData());
         }
 
-        pImage = new QImage(renderer.defaultSize() * scaleFactor,
+        pImage = new QImage(
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+            renderer.defaultSize() * scaleFactor,
+#else
+            renderer.defaultSize() * qApp->devicePixelRatio(),
+#endif
                             QImage::Format_ARGB32);
         pImage->fill(0x00000000);  // Transparent black.
         QPainter painter(pImage);
         renderer.render(&painter);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+        pImage->setDevicePixelRatio(qApp->devicePixelRatio());
+#endif
     } else {
         pImage = m_loader->getImage(source.getPath(), scaleFactor);
     }
