@@ -102,8 +102,6 @@ class CachingReader : public QObject {
         m_worker.setScheduler(pScheduler);
     }
 
-    const static int maximumCachingReaderChunksInMemory;
-
   signals:
     // Emitted once a new track is loaded and ready to be read from.
     void trackLoading();
@@ -160,12 +158,10 @@ class CachingReader : public QObject {
     CachingReaderChunkForOwner* m_lruCachingReaderChunk;
 
     // The raw memory buffer which is divided up into chunks.
-    SampleBuffer m_sampleBuffer;
+    mixxx::SampleBuffer m_sampleBuffer;
 
-    // The maximum readable frame index as reported by the worker.
-    // This frame index references the frame that follows the last
-    // frame with sample data.
-    SINT m_maxReadableFrameIndex;
+    // The readable frame index range as reported by the worker.
+    mixxx::IndexRange m_readableFrameIndexRange;
 
     CachingReaderWorker m_worker;
 };

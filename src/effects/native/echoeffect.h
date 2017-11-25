@@ -4,24 +4,22 @@
 #include <QMap>
 
 #include "effects/effectprocessor.h"
+#include "engine/engine.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
-#include "util/audiosignal.h"
 #include "util/class.h"
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/samplebuffer.h"
-#include "util/types.h"
 
 struct EchoGroupState {
     // 3 seconds max. This supports the full range of 2 beats for tempos down to
     // 40 BPM.
     static constexpr int kMaxDelaySeconds = 3;
-    // TODO(XXX): When we move from stereo to multi-channel this needs updating.
-    static constexpr int kChannelCount = mixxx::AudioSignal::kChannelCountStereo;
+    static constexpr auto kChannelCount = mixxx::kEngineChannelCount;
 
     EchoGroupState()
-            : delay_buf(mixxx::AudioSignal::kSamplingRateMax * kMaxDelaySeconds *
+            : delay_buf(mixxx::AudioSignal::SampleRate::max() * kMaxDelaySeconds *
                         kChannelCount) {
         delay_buf.clear();
         prev_send = 0.0f;
@@ -31,7 +29,7 @@ struct EchoGroupState {
         ping_pong = 0;
     }
 
-    SampleBuffer delay_buf;
+    mixxx::SampleBuffer delay_buf;
     CSAMPLE_GAIN prev_send;
     CSAMPLE_GAIN prev_feedback;
     int prev_delay_samples;

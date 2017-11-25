@@ -48,9 +48,6 @@ void DlgTrackInfo::init() {
     connect(btnCancel, SIGNAL(clicked()),
             this, SLOT(cancel()));
 
-    connect(btnFetchTag, SIGNAL(clicked()),
-            this, SLOT(fetchTag()));
-
     connect(bpmDouble, SIGNAL(clicked()),
             this, SLOT(slotBpmDouble()));
     connect(bpmHalve, SIGNAL(clicked()),
@@ -83,8 +80,11 @@ void DlgTrackInfo::init() {
             m_pTapFilter.data(), SLOT(tap()));
     connect(m_pTapFilter.data(), SIGNAL(tapped(double, int)),
             this, SLOT(slotBpmTap(double, int)));
-    connect(btnReloadFromFile, SIGNAL(clicked()),
-            this, SLOT(reloadTrackMetadata()));
+
+    connect(btnImportMetadataFromFile, SIGNAL(clicked()),
+            this, SLOT(slotImportMetadataFromFile()));
+    connect(btnImportMetadataFromMusicBrainz, SIGNAL(clicked()),
+            this, SLOT(slotImportMetadataFromMusicBrainz()));
     connect(btnOpenFileBrowser, SIGNAL(clicked()),
             this, SLOT(slotOpenInFileBrowser()));
 
@@ -168,7 +168,7 @@ void DlgTrackInfo::populateFields(const Track& track) {
     txtDuration->setText(track.getDurationText(mixxx::Duration::Precision::SECONDS));
     txtLocation->setText(QDir::toNativeSeparators(track.getLocation()));
     txtType->setText(track.getType());
-    txtBitrate->setText(QString(track.getBitrateText()) + (" ") + tr("kbps"));
+    txtBitrate->setText(QString(track.getBitrateText()) + (" ") + tr(mixxx::AudioSource::Bitrate::unit()));
     txtBpm->setText(track.getBpmText());
     m_keysClone = track.getKeys();
     txtKey->setText(KeyUtils::getGlobalKeyText(m_keysClone));
@@ -612,7 +612,7 @@ void DlgTrackInfo::slotKeyTextChanged() {
     m_keysClone = newKeys;
 }
 
-void DlgTrackInfo::reloadTrackMetadata() {
+void DlgTrackInfo::slotImportMetadataFromFile() {
     if (m_pLoadedTrack) {
         // Allocate a temporary track object for reading the metadata.
         // We cannot reuse m_pLoadedTrack, because it might already been
@@ -622,7 +622,7 @@ void DlgTrackInfo::reloadTrackMetadata() {
                 m_pLoadedTrack->getFileInfo(),
                 m_pLoadedTrack->getSecurityToken());
         if (pTrack) {
-            SoundSourceProxy(pTrack).updateTrack();
+            SoundSourceProxy(pTrack).updateTrackFromSource();
             populateFields(*pTrack);
         }
     }
@@ -634,6 +634,6 @@ void DlgTrackInfo::updateTrackMetadata() {
     }
 }
 
-void DlgTrackInfo::fetchTag() {
+void DlgTrackInfo::slotImportMetadataFromMusicBrainz() {
     emit(showTagFetcher(m_pLoadedTrack));
 }
