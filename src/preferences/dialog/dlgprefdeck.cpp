@@ -37,8 +37,10 @@
 #include "mixxx.h"
 #include "defs_urls.h"
 
-const int kDefaultRateRangePercent = 8;
-const double kRateDirectionInverted = -1;
+namespace {
+    constexpr int kDefaultRateRangePercent = 8;
+    constexpr double kRateDirectionInverted = -1;
+}
 
 DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
                          PlayerManager* pPlayerManager,
