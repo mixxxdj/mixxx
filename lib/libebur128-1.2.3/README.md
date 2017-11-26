@@ -12,6 +12,24 @@ See also [loudness-scanner tool](https://github.com/jiixyj/loudness-scanner).
 News
 ----
 
+v1.2.3 released:
+ * Fix uninitialized memory access during true peak scanning (bug #72)
+
+v1.2.2 released (v1.2.1 was mistagged):
+ * Fix a null pointer dereference when doing true peak scanning of 192kHz data
+
+v1.2.0 released:
+
+ * New functions for real time loudness/peak monitoring:
+   * `ebur128_loudness_window()`
+   * `ebur128_set_max_window()`
+   * `ebur128_set_max_history()`
+   * `ebur128_prev_sample_peak()`
+   * `ebur128_prev_true_peak()`
+ * New FIR resampler for true peak calculation, removing Speex dependency
+ * Add true peak conformance tests
+ * Bug fixes
+
 v1.1.0 released:
 
  * Add `ebur128_relative_threshold()`
@@ -33,11 +51,6 @@ Features
 * Implements loudness range measurement (EBU - TECH 3342)
 * True peak scanning
 * Supports all samplerates by recalculation of the filter coefficients
-
-Requirements
-------------
-
-* [libspeexdsp](http://www.speex.org/) - Needed for `ebur128_true_peak`.
 
 Installation
 ------------

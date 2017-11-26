@@ -13,8 +13,8 @@ extern "C" {
 #endif
 
 #define EBUR128_VERSION_MAJOR 1
-#define EBUR128_VERSION_MINOR 1
-#define EBUR128_VERSION_PATCH 0
+#define EBUR128_VERSION_MINOR 2
+#define EBUR128_VERSION_PATCH 3
 
 #include <stddef.h>       /* for size_t */
 
@@ -24,16 +24,16 @@ extern "C" {
  */
 enum channel {
   EBUR128_UNUSED = 0,     /**< unused channel (for example LFE channel) */
-  EBUR128_LEFT,
-  EBUR128_Mp030 = 1,      /**< itu M+030 */
-  EBUR128_RIGHT,
-  EBUR128_Mm030 = 2,      /**< itu M-030 */
-  EBUR128_CENTER,
-  EBUR128_Mp000 = 3,      /**< itu M+000 */
-  EBUR128_LEFT_SURROUND,
-  EBUR128_Mp110 = 4,      /**< itu M+110 */
-  EBUR128_RIGHT_SURROUND,
-  EBUR128_Mm110 = 5,      /**< itu M-110 */
+  EBUR128_LEFT   = 1,
+  EBUR128_Mp030  = 1,     /**< itu M+030 */
+  EBUR128_RIGHT  = 2,
+  EBUR128_Mm030  = 2,     /**< itu M-030 */
+  EBUR128_CENTER = 3,
+  EBUR128_Mp000  = 3,     /**< itu M+000 */
+  EBUR128_LEFT_SURROUND  = 4,
+  EBUR128_Mp110  = 4,     /**< itu M+110 */
+  EBUR128_RIGHT_SURROUND = 5,
+  EBUR128_Mm110  = 5,     /**< itu M-110 */
   EBUR128_DUAL_MONO,      /**< a channel that is counted twice */
   EBUR128_MpSC,           /**< itu M+SC */
   EBUR128_MmSC,           /**< itu M-SC */
@@ -122,7 +122,7 @@ void ebur128_get_version(int* major, int* minor, int* patch);
  *  @param channels the number of channels.
  *  @param samplerate the sample rate.
  *  @param mode see the mode enum for possible values.
- *  @return an initialized library state.
+ *  @return an initialized library state, or NULL on error.
  */
 ebur128_state* ebur128_init(unsigned int channels,
                             unsigned long samplerate,
@@ -172,6 +172,40 @@ int ebur128_set_channel(ebur128_state* st,
 int ebur128_change_parameters(ebur128_state* st,
                               unsigned int channels,
                               unsigned long samplerate);
+
+/** \brief Set the maximum window duration.
+ *
+ *  Set the maximum duration that will be used for ebur128_window_loudness().
+ *  Note that this destroys the current content of the audio buffer.
+ *
+ *  @param st library state.
+ *  @param window duration of the window in ms.
+ *  @return
+ *    - EBUR128_SUCCESS on success.
+ *    - EBUR128_ERROR_NOMEM on memory allocation error. The state will be
+ *      invalid and must be destroyed.
+ *    - EBUR128_ERROR_NO_CHANGE if window duration not changed.
+ */
+int ebur128_set_max_window(ebur128_state* st, unsigned long window);
+
+/** \brief Set the maximum history.
+ *
+ *  Set the maximum history that will be stored for loudness integration.
+ *  More history provides more accurate results, but requires more resources.
+ *
+ *  Applies to ebur128_loudness_range() and ebur128_loudness_global() when
+ *  EBUR128_MODE_HISTOGRAM is not set.
+ *
+ *  Default is ULONG_MAX (at least ~50 days).
+ *  Minimum is 3000ms for EBUR128_MODE_LRA and 400ms for EBUR128_MODE_M.
+ *
+ *  @param st library state.
+ *  @param history duration of history in ms.
+ *  @return
+ *    - EBUR128_SUCCESS on success.
+ *    - EBUR128_ERROR_NO_CHANGE if history not changed.
+ */
+int ebur128_set_max_history(ebur128_state* st, unsigned long history);
 
 /** \brief Add frames to be processed.
  *
@@ -242,6 +276,22 @@ int ebur128_loudness_momentary(ebur128_state* st, double* out);
  */
 int ebur128_loudness_shortterm(ebur128_state* st, double* out);
 
+/** \brief Get loudness of the specified window in LUFS.
+ *
+ *  window must not be larger than the current window set in st.
+ *  The current window can be changed by calling ebur128_set_max_window().
+ *
+ *  @param st library state.
+ *  @param window window in ms to calculate loudness.
+ *  @param out loudness in LUFS. -HUGE_VAL if result is negative infinity.
+ *  @return
+ *    - EBUR128_SUCCESS on success.
+ *    - EBUR128_ERROR_INVALID_MODE if window larger than current window in st.
+ */
+int ebur128_loudness_window(ebur128_state* st,
+                            unsigned long window,
+                            double* out);
+
 /** \brief Get loudness range (LRA) of programme in LU.
  *
  *  Calculates loudness range according to EBU 3342.
@@ -274,7 +324,9 @@ int ebur128_loudness_range_multiple(ebur128_state** sts,
                                     size_t size,
                                     double* out);
 
-/** \brief Get maximum sample peak of selected channel in float format.
+/** \brief Get maximum sample peak from all frames that have been processed.
+ *
+ *  The equation to convert to dBFS is: 20 * log10(out)
  *
  *  @param st library state
  *  @param channel_number channel to analyse
@@ -289,19 +341,38 @@ int ebur128_sample_peak(ebur128_state* st,
                         unsigned int channel_number,
                         double* out);
 
-/** \brief Get maximum true peak of selected channel in float format.
+/** \brief Get maximum sample peak from the last call to add_frames().
+ *
+ *  The equation to convert to dBFS is: 20 * log10(out)
+ *
+ *  @param st library state
+ *  @param channel_number channel to analyse
+ *  @param out maximum sample peak in float format (1.0 is 0 dBFS)
+ *  @return
+ *    - EBUR128_SUCCESS on success.
+ *    - EBUR128_ERROR_INVALID_MODE if mode "EBUR128_MODE_SAMPLE_PEAK" has not
+ *      been set.
+ *    - EBUR128_ERROR_INVALID_CHANNEL_INDEX if invalid channel index.
+ */
+int ebur128_prev_sample_peak(ebur128_state* st,
+                             unsigned int channel_number,
+                             double* out);
+
+/** \brief Get maximum true peak from all frames that have been processed.
  *
  *  Uses an implementation defined algorithm to calculate the true peak. Do not
  *  try to compare resulting values across different versions of the library,
  *  as the algorithm may change.
  *
- *  The current implementation uses the Speex resampler with quality level 8 to
+ *  The current implementation uses a custom polyphase FIR interpolator to
  *  calculate true peak. Will oversample 4x for sample rates < 96000 Hz, 2x for
  *  sample rates < 192000 Hz and leave the signal unchanged for 192000 Hz.
  *
+ *  The equation to convert to dBTP is: 20 * log10(out)
+ *
  *  @param st library state
  *  @param channel_number channel to analyse
- *  @param out maximum true peak in float format (1.0 is 0 dBFS)
+ *  @param out maximum true peak in float format (1.0 is 0 dBTP)
  *  @return
  *    - EBUR128_SUCCESS on success.
  *    - EBUR128_ERROR_INVALID_MODE if mode "EBUR128_MODE_TRUE_PEAK" has not
@@ -311,6 +382,31 @@ int ebur128_sample_peak(ebur128_state* st,
 int ebur128_true_peak(ebur128_state* st,
                       unsigned int channel_number,
                       double* out);
+
+/** \brief Get maximum true peak from the last call to add_frames().
+ *
+ *  Uses an implementation defined algorithm to calculate the true peak. Do not
+ *  try to compare resulting values across different versions of the library,
+ *  as the algorithm may change.
+ *
+ *  The current implementation uses a custom polyphase FIR interpolator to
+ *  calculate true peak. Will oversample 4x for sample rates < 96000 Hz, 2x for
+ *  sample rates < 192000 Hz and leave the signal unchanged for 192000 Hz.
+ *
+ *  The equation to convert to dBTP is: 20 * log10(out)
+ *
+ *  @param st library state
+ *  @param channel_number channel to analyse
+ *  @param out maximum true peak in float format (1.0 is 0 dBTP)
+ *  @return
+ *    - EBUR128_SUCCESS on success.
+ *    - EBUR128_ERROR_INVALID_MODE if mode "EBUR128_MODE_TRUE_PEAK" has not
+ *      been set.
+ *    - EBUR128_ERROR_INVALID_CHANNEL_INDEX if invalid channel index.
+ */
+int ebur128_prev_true_peak(ebur128_state* st,
+                           unsigned int channel_number,
+                           double* out);
 
 /** \brief Get relative threshold in LUFS.
  *

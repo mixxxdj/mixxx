@@ -1,7 +1,6 @@
 set(BUILD_STATIC_LIBS       ON  CACHE BOOL "Build static library")
 set(WITH_STATIC_PIC         OFF CACHE BOOL "Compile static library with -fPIC flag")
 set(ENABLE_INTERNAL_QUEUE_H OFF CACHE BOOL "Use own queue.h")
-set(DISABLE_SPEEXDSP        OFF CACHE BOOL "Don't build with speexdsp")
 
 #### queue.h
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/queuetest.c
@@ -18,11 +17,13 @@ endif()
 
 if(MSVC)
   add_definitions(-D_USE_MATH_DEFINES)
+  add_definitions(/arch:SSE2)
+  add_definitions(-D __SSE2_MATH__)
 endif()
 
 
 set(EBUR128_VERSION_MAJOR 1)
-set(EBUR128_VERSION 1.1.0)
+set(EBUR128_VERSION 1.2.3)
 
 #### static
 if(BUILD_STATIC_LIBS)
@@ -35,36 +36,21 @@ if(WITH_STATIC_PIC)
 endif()
 
 #### shared
-add_library(ebur128 SHARED ebur128.c)
+# set source file for library, which includes def file if using MSVC
+set(EBUR128_SHARED_SOURCE ebur128.c)
+if(MSVC)
+  set(EBUR128_SHARED_SOURCE ${EBUR128_SHARED_SOURCE} ebur128.def)
+endif()
+
+add_library(ebur128 SHARED ${EBUR128_SHARED_SOURCE})
 set_target_properties(ebur128 PROPERTIES
     SOVERSION ${EBUR128_VERSION_MAJOR}
     VERSION ${EBUR128_VERSION})
-
-#### speexdsp
-if(NOT DISABLE_SPEEXDSP)
-  find_pkg_config(SPEEXDSP speexdsp)
-    if(SPEEXDSP_FOUND)
-      target_include_directories(ebur128 PRIVATE
-                                 ${SPEEXDSP_INCLUDE_DIRS})
-      target_compile_definitions(ebur128 PRIVATE
-                                 -DUSE_SPEEX_RESAMPLER
-                                 -DHAVE_STDINT_H)
-    endif()
-endif()
 
 if(UNIX)
   target_link_libraries(ebur128 m)
 endif()
 
-if(SPEEXDSP_FOUND AND NOT DISABLE_SPEEXDSP)
-    if(BUILD_STATIC_LIBS)
-      target_compile_options(ebur128_static PRIVATE ${SPEEXDSP_CFLAGS})
-    endif()
-  target_compile_options(ebur128 PRIVATE ${SPEEXDSP_CFLAGS})
-  target_link_libraries(ebur128 ${SPEEXDSP_LIBRARIES})
-endif()
-
-set(SUMMARY_SPEEXDSP_FOUND ${SPEEXDSP_FOUND} CACHE INTERNAL "")
 set(EBUR128_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "")
 
 install(FILES ebur128.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
@@ -73,3 +59,9 @@ if(BUILD_STATIC_LIBS)
 else()
   install(TARGETS ebur128 DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif()
+
+#### pkg-config
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libebur128.pc.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/libebur128.pc @ONLY)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libebur128.pc"
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
