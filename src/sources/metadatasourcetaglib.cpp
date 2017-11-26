@@ -631,36 +631,52 @@ class SafelyWritableFile final {
     }
 
     bool commit() {
-        if (m_tempFileName.isNull() ||
-                !QFile::exists(m_tempFileName)) {
+        if (m_tempFileName.isNull()) {
             return false; // nothing to do
         }
-        QString backupFileName = m_origFileName + kSafelyWritableOrigFileSuffix;
-        if (!QFile::rename(m_origFileName, backupFileName)) {
-            kLogger.critical()
-                    << "Failed to rename the original file for backup after writing:"
-                    << m_origFileName
-                    << "->"
-                    << backupFileName;
-            return false;
+        QFile newFile(m_tempFileName);
+        if (!newFile.exists()) {
+            return false; // nothing to do
         }
-        if (!QFile::rename(m_tempFileName, m_origFileName)) {
+        QFile oldFile(m_origFileName);
+        if (oldFile.exists()) {
+            QString backupFileName = m_origFileName + kSafelyWritableOrigFileSuffix;
+            DEBUG_ASSERT(!QFile::exists(backupFileName)); // very unlikely, otherwise renaming fails
+            if (!oldFile.rename(backupFileName)) {
+                kLogger.critical()
+                        << "Failed to rename the original file for backup before writing:"
+                        << oldFile.fileName()
+                        << "->"
+                        << backupFileName;
+                return false;
+            }
+        }
+        DEBUG_ASSERT(!QFile::exists(m_origFileName));
+        if (!newFile.rename(m_origFileName)) {
             kLogger.critical()
                     << "Failed to rename temporary file after writing:"
-                    << m_tempFileName
+                    << newFile.fileName()
                     << "->"
                     << m_origFileName;
-            kLogger.warning()
-                    << "Both the original an the updated file are still available here:"
-                    << backupFileName
-                    << m_tempFileName;
-            return false;
+            if (oldFile.exists()) {
+                // Try to restore the original file
+                if (!oldFile.rename(m_origFileName)) {
+                    // Undo operation failed
+                    kLogger.warning()
+                            << "Both the original and the temporary file are still available:"
+                            << oldFile.fileName()
+                            << newFile.fileName();
+                }
+                return false;
+            }
         }
-        if (!QFile::remove(backupFileName)) {
-            kLogger.warning()
-                << "Failed to remove backup file after writing:"
-                << backupFileName;
-            return false;
+        if (oldFile.exists()) {
+            if (!oldFile.remove()) {
+                kLogger.warning()
+                    << "Failed to remove backup file after writing:"
+                    << oldFile.fileName();
+                return false;
+            }
         }
         m_tempFileName = QString();
         return true;
