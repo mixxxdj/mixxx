@@ -23,7 +23,13 @@ namespace {
 
 Logger kLogger("MetadataSourceTagLib");
 
-const QString kSafelyWritableFileSuffix = "_writable";
+// Appended to the original file name of the temporary file used for writing
+const QString kSafelyWritableTempFileSuffix = "_temp";
+
+// Appended to the original file name for renaming and before deleting this
+// file. Should not be longer than kSafelyWritableTempFileSuffix to avoid
+// potential failures caused by exceeded path length.
+const QString kSafelyWritableOrigFileSuffix = "_orig";
 
 // Workaround for missing functionality in TagLib 1.11.x that
 // doesn't support to read text chunks from AIFF files.
@@ -564,7 +570,8 @@ public:
         : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
           m_modifiedTags(exportTrackMetadata(&m_file, trackMetadata)) {
     }
-    ~AiffTagSaver() override {}
+    ~AiffTagSaver() override {
+    }
 
     bool hasModifiedTags() const override {
         return m_modifiedTags;
@@ -604,7 +611,7 @@ class SafelyWritableFile final {
     explicit SafelyWritableFile(QString origFileName)
         : m_origFileName(std::move(origFileName)) {
         DEBUG_ASSERT(m_tempFileName.isNull());
-        QString tempFileName = m_origFileName + kSafelyWritableFileSuffix;
+        QString tempFileName = m_origFileName + kSafelyWritableTempFileSuffix;
         if (QFile::copy(m_origFileName, tempFileName)) {
             m_tempFileName = std::move(tempFileName);
         } else {
@@ -628,18 +635,31 @@ class SafelyWritableFile final {
                 !QFile::exists(m_tempFileName)) {
             return false; // nothing to do
         }
-        if (!QFile::remove(m_origFileName)) {
-            kLogger.warning()
-                << "Failed to remove original file after writing:"
-                << m_origFileName;
+        QString backupFileName = m_origFileName + kSafelyWritableOrigFileSuffix;
+        if (!QFile::rename(m_origFileName, backupFileName)) {
+            kLogger.critical()
+                    << "Failed to rename the original file for backup after writing:"
+                    << m_origFileName
+                    << "->"
+                    << backupFileName;
             return false;
         }
         if (!QFile::rename(m_tempFileName, m_origFileName)) {
             kLogger.critical()
-                << "Failed to rename temporary file after writing:"
-                << m_tempFileName
-                << "->"
-                << m_origFileName;
+                    << "Failed to rename temporary file after writing:"
+                    << m_tempFileName
+                    << "->"
+                    << m_origFileName;
+            kLogger.warning()
+                    << "Both the original an the updated file are still available here:"
+                    << backupFileName
+                    << m_tempFileName;
+            return false;
+        }
+        if (!QFile::remove(backupFileName)) {
+            kLogger.warning()
+                << "Failed to remove backup file after writing:"
+                << backupFileName;
             return false;
         }
         m_tempFileName = QString();
@@ -740,6 +760,8 @@ MetadataSourceTagLib::exportTrackMetadata(
         kLogger.warning() << "Failed to modify tags of file" << m_fileName;
         return std::make_pair(ExportResult::Failed, QDateTime());
     }
+
+    // pTagSaver will be destroyed and all open files closed before safelyWritableFile
 }
 
 } // namespace mixxx
