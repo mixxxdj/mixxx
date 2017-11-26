@@ -44,11 +44,13 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
           m_balrightOld(1.0),
           m_masterHandle(registerChannelGroup("[Master]")),
           m_headphoneHandle(registerChannelGroup("[Headphone]")),
+          m_busMicrophonesHandle(registerChannelGroup("[Microphones]")),
           m_busCrossfaderLeftHandle(registerChannelGroup("[BusLeft]")),
           m_busCrossfaderCenterHandle(registerChannelGroup("[BusCenter]")),
           m_busCrossfaderRightHandle(registerChannelGroup("[BusRight]")) {
     pEffectsManager->registerInputChannel(m_masterHandle);
     pEffectsManager->registerInputChannel(m_headphoneHandle);
+    pEffectsManager->registerInputChannel(m_busMicrophonesHandle);
     pEffectsManager->registerInputChannel(m_busCrossfaderLeftHandle);
     pEffectsManager->registerInputChannel(m_busCrossfaderCenterHandle);
     pEffectsManager->registerInputChannel(m_busCrossfaderRightHandle);
@@ -448,6 +450,16 @@ void EngineMaster::process(const int iBufferSize) {
         m_pTalkover, m_masterHandle.handle(),
         m_iBufferSize, m_iSampleRate, m_pEngineEffectsManager);
 
+    // Process effects on all microphones mixed together
+    // We have no metadata for mixed effect buses, so use an empty GroupFeatureState.
+    GroupFeatureState busFeatures;
+    m_pEngineEffectsManager->processPostFaderInPlace(
+            m_busMicrophonesHandle.handle(),
+            m_masterHandle.handle(),
+            m_pTalkover,
+            m_iBufferSize, m_iSampleRate, busFeatures);
+
+
     // Clear talkover compressor for the next round of gain calculation.
     m_pTalkoverDucking->clearKeys();
     if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF) {
@@ -480,7 +492,6 @@ void EngineMaster::process(const int iBufferSize) {
 
     // Process crossfader orientation bus channel effects
     if (m_pEngineEffectsManager) {
-        GroupFeatureState busFeatures;
         m_pEngineEffectsManager->processPostFaderInPlace(
             m_busCrossfaderLeftHandle.handle(),
             m_masterHandle.handle(),
