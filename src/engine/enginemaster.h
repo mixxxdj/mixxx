@@ -347,9 +347,9 @@ class EngineMaster : public QObject, public AudioSource {
     CSAMPLE_GAIN m_balrightOld;
     const ChannelHandleAndGroup m_masterHandle;
     const ChannelHandleAndGroup m_headphoneHandle;
-    const ChannelHandleAndGroup m_busLeftHandle;
-    const ChannelHandleAndGroup m_busCenterHandle;
-    const ChannelHandleAndGroup m_busRightHandle;
+    const ChannelHandleAndGroup m_busCrossfaderLeftHandle;
+    const ChannelHandleAndGroup m_busCrossfaderCenterHandle;
+    const ChannelHandleAndGroup m_busCrossfaderRightHandle;
 
     // Mix two Mono channels. This is useful for outdoor gigs
     ControlObject* m_pMasterMonoMixdown;

@@ -44,9 +44,14 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
           m_balrightOld(1.0),
           m_masterHandle(registerChannelGroup("[Master]")),
           m_headphoneHandle(registerChannelGroup("[Headphone]")),
-          m_busLeftHandle(registerChannelGroup("[BusLeft]")),
-          m_busCenterHandle(registerChannelGroup("[BusCenter]")),
-          m_busRightHandle(registerChannelGroup("[BusRight]")) {
+          m_busCrossfaderLeftHandle(registerChannelGroup("[BusLeft]")),
+          m_busCrossfaderCenterHandle(registerChannelGroup("[BusCenter]")),
+          m_busCrossfaderRightHandle(registerChannelGroup("[BusRight]")) {
+    pEffectsManager->registerInputChannel(m_masterHandle);
+    pEffectsManager->registerInputChannel(m_headphoneHandle);
+    pEffectsManager->registerInputChannel(m_busCrossfaderLeftHandle);
+    pEffectsManager->registerInputChannel(m_busCrossfaderCenterHandle);
+    pEffectsManager->registerInputChannel(m_busCrossfaderRightHandle);
     m_bBusOutputConnected[EngineChannel::LEFT] = false;
     m_bBusOutputConnected[EngineChannel::CENTER] = false;
     m_bBusOutputConnected[EngineChannel::RIGHT] = false;
@@ -477,17 +482,17 @@ void EngineMaster::process(const int iBufferSize) {
     if (m_pEngineEffectsManager) {
         GroupFeatureState busFeatures;
         m_pEngineEffectsManager->processPostFaderInPlace(
-            m_busLeftHandle.handle(),
+            m_busCrossfaderLeftHandle.handle(),
             m_masterHandle.handle(),
             m_pOutputBusBuffers[EngineChannel::LEFT],
             m_iBufferSize, m_iSampleRate, busFeatures);
         m_pEngineEffectsManager->processPostFaderInPlace(
-            m_busCenterHandle.handle(),
+            m_busCrossfaderCenterHandle.handle(),
             m_masterHandle.handle(),
             m_pOutputBusBuffers[EngineChannel::CENTER],
             m_iBufferSize, m_iSampleRate, busFeatures);
         m_pEngineEffectsManager->processPostFaderInPlace(
-            m_busRightHandle.handle(),
+            m_busCrossfaderRightHandle.handle(),
             m_masterHandle.handle(),
             m_pOutputBusBuffers[EngineChannel::RIGHT],
             m_iBufferSize, m_iSampleRate, busFeatures);
