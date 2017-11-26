@@ -3,26 +3,23 @@
 
     This skin is supposed to be an extension for your controller, in a way that
     almost all duplicate controls can be removed from screen.
-    Toggle skin settings menu with the hamburger button to the right of the clock
+    Toggle skin settings menu with the gear icon at the top right screen corner
     to find all options.
 
     Main focus was to make every control easily and quickly recognizable,
     especially when your eyes are mostly on your controller and your hands.
     I started with LateNight and got much inspiration from Deere and how templates and
-    variables can be used. I used WidgetStacks and SizeAwareStacks to switch i.e. netbook mode,
-    Star rating visibility.
+    variables can be used. I used WidgetStacks and SizeAwareStacks to switch i.e. Star rating
+    visibility.
 
-    Special features:
-    1) Netbook mode
-      Switch to ompact automatically if screen (window) has less than 1260 pixels in width.
-    2) Comment row
-      Display first line of track's comment below track overview (read from metadata tag,
-      editable in tracks table or Properties window).
-      Show/hide with toggle in skin settings menu.
-      How to use:
-      - add your notes on cue points, moods, whatever to the beginning of track comment
-      - for a line break in comment, press <shift> + <enter>
-      - to push iTunes info etc. down, insert a blank line: <space> then <shift> + <enter>
+    Special feature: Comment row
+    Display first line of track's comment below track overview (read from metadata tag,
+    editable in tracks table or Properties window).
+    Show/hide with toggle in skin settings menu.
+    How to use:
+    - add your notes on cue points, moods, whatever to the beginning of track comment
+    - for a line break in comment, press <shift> + <enter>
+    - to push iTunes info etc. down, insert a blank line: <space> then <shift> + <enter>
 
     Enjoy!
 
@@ -113,8 +110,6 @@
       <attribute persist="true" config_key="[Tango],vinylControlsDeck3">0</attribute>
       <attribute persist="true" config_key="[Tango],vinylControlsDeck4">0</attribute>
       <attribute persist="true" config_key="[Tango],vumeter">1</attribute>
-      <!-- Manually trigger netbook_mode from skin settings -->
-      <attribute persist="true" config_key="[Tango],enforce_netbook_mode">0</attribute>
     </attributes>
   </manifest>
 
@@ -200,149 +195,156 @@
      ############################################################### -->
     <WidgetGroup>
       <ObjectName>SkinContainer</ObjectName>
-      <Layout>horizontal</Layout>
+      <Layout>vertical</Layout>
       <SizePolicy>me,me</SizePolicy>
       <Children>
-        <!-- Normal view, expandig library -->
-        <!-- Maximized library -->
-        <!-- Netbook size detector -->
+      <!-- [
+            1 [
+                [ topbar ]
+                [ stacked scrolling waveforms ]
+                [ decks ]
+                [ fx units ]
+                [ samplers ]
+                [ mic/aux ]
+                [ Library ]
+              ]
+            2 [
+                [ maximized Library ]
+              ]
+            ]
+            screen width detector
+            ]
+         -->
 
-        <WidgetGroup><!-- Lib normal, stacked resizable waveforms, skin settings menu -->
-          <Layout>vertical</Layout>
+        <WidgetGroup><!-- All skin elements + Skin menu -->
+          <Layout>horizontal</Layout>
           <SizePolicy>me,me</SizePolicy>
           <Children>
-
-            <Template src="skin:topbar_netbook.xml"/>
-
-            <Splitter>
-              <ObjectName>WaveformSplitter</ObjectName>
+            <WidgetGroup><!-- topbar, stacked  waveforms, decks, FX, samplers, Mic/Aux, Lib normal-->
+              <Layout>vertical</Layout>
               <SizePolicy>me,me</SizePolicy>
-              <Orientation>vertical</Orientation>
-              <SplitSizes>100,10000</SplitSizes>
-              <SplitSizesConfigKey>[Tango],waveform_splitSize</SplitSizesConfigKey>
-              <Collapsible>0,0</Collapsible>
               <Children>
 
-                <WidgetGroup>
-                  <Layout>vertical</Layout>
-                  <SizePolicy>me,max</SizePolicy>
-                  <Children>
-                    <Template src="skin:waveforms_container.xml"/>
-                  </Children>
-                  <Connection>
-                    <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
-                    <BindProperty>visible</BindProperty>
-                  </Connection>
-                </WidgetGroup>
+                <Template src="skin:topbar.xml"/>
 
-                <WidgetGroup><!-- Decks + FX + Samplers + Library -->
-                  <Layout>vertical</Layout>
-                  <SizePolicy>me,min</SizePolicy>
+                <Splitter>
+                  <ObjectName>WaveformSplitter</ObjectName>
+                  <SizePolicy>me,me</SizePolicy>
+                  <Orientation>vertical</Orientation>
+                  <SplitSizes>100,10000</SplitSizes>
+                  <SplitSizesConfigKey>[Tango],waveform_splitSize</SplitSizesConfigKey>
+                  <Collapsible>0,0</Collapsible>
                   <Children>
 
-					          <!-- Spacer to window border with no parallel waveforms -->
-					          <WidgetGroup>
-					            <Size>1me,3f</Size>
-						          <Connection>
-						            <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
-						            <Transform><Not/></Transform>
-						            <BindProperty>visible</BindProperty>
-						          </Connection>
-					          </WidgetGroup>
-
-                    <Template src="skin:decks_12.xml"/>
-
                     <WidgetGroup>
                       <Layout>vertical</Layout>
-                      <SizePolicy>me,min</SizePolicy>
+                      <SizePolicy>me,max</SizePolicy>
                       <Children>
-                        <Template src="skin:fx_units_12.xml"/>
+                        <Template src="skin:waveforms_container.xml"/>
                       </Children>
                       <Connection>
-                        <ConfigKey persist="true">[Tango],2or4_FxUnits</ConfigKey>
+                        <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
                         <BindProperty>visible</BindProperty>
                       </Connection>
                     </WidgetGroup>
 
-                    <Template src="skin:decks_34.xml"/>
-
-                    <WidgetGroup>
+                    <WidgetGroup><!-- Decks + FX + Samplers + Library -->
                       <Layout>vertical</Layout>
                       <SizePolicy>me,min</SizePolicy>
                       <Children>
-                        <Template src="skin:fx_units_34.xml"/>
+
+					              <!-- Spacer to window border with no parallel waveforms
+					              <WidgetGroup>
+					                <Size>1me,3f</Size>
+						              <Connection>
+						                <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
+						                <Transform><Not/></Transform>
+						                <BindProperty>visible</BindProperty>
+						              </Connection>
+					              </WidgetGroup> -->
+
+                        <Template src="skin:decks_12.xml"/>
+
+                        <WidgetGroup>
+                          <Layout>vertical</Layout>
+                          <SizePolicy>me,min</SizePolicy>
+                          <Children>
+                            <Template src="skin:fx_units_12.xml"/>
+                          </Children>
+                          <Connection>
+                            <ConfigKey persist="true">[Tango],2or4_FxUnits</ConfigKey>
+                            <BindProperty>visible</BindProperty>
+                          </Connection>
+                        </WidgetGroup>
+
+                        <Template src="skin:decks_34.xml"/>
+
+                        <WidgetGroup>
+                          <Layout>vertical</Layout>
+                          <SizePolicy>me,min</SizePolicy>
+                          <Children>
+                            <Template src="skin:fx_units_34.xml"/>
+                          </Children>
+                          <Connection>
+                            <ConfigKey persist="true">[Tango],2or4_FxUnits</ConfigKey>
+                            <BindProperty>visible</BindProperty>
+                          </Connection>
+                        </WidgetGroup>
+
+                        <WidgetGroup>
+                          <Layout>vertical</Layout>
+                          <SizePolicy>me,min</SizePolicy>
+                          <Children>
+                            <Template src="skin:fx_units_12.xml"/>
+                          </Children>
+                          <Connection>
+                            <ConfigKey persist="true">[Tango],2or4_FxUnits</ConfigKey>
+                            <Transform><Not/></Transform>
+                            <BindProperty>visible</BindProperty>
+                          </Connection>
+                        </WidgetGroup>
+
+                        <Template src="skin:sample_decks.xml"/>
+
+                        <Template src="skin:mic_aux.xml"/>
+
+                        <SingletonContainer>
+                          <ObjectName>Library_Singleton</ObjectName>
+                        </SingletonContainer>
+
                       </Children>
-                      <Connection>
-                        <ConfigKey persist="true">[Tango],2or4_FxUnits</ConfigKey>
-                        <BindProperty>visible</BindProperty>
-                      </Connection>
-                    </WidgetGroup>
-
-                    <WidgetGroup>
-                      <Layout>vertical</Layout>
-                      <SizePolicy>me,min</SizePolicy>
-                      <Children>
-                        <Template src="skin:fx_units_12.xml"/>
-                      </Children>
-                      <Connection>
-                        <ConfigKey persist="true">[Tango],2or4_FxUnits</ConfigKey>
-                        <Transform><Not/></Transform>
-                        <BindProperty>visible</BindProperty>
-                      </Connection>
-                    </WidgetGroup>
-
-                    <Template src="skin:sample_decks.xml"/>
-
-                    <SingletonContainer>
-                      <ObjectName>Library_Singleton</ObjectName>
-                    </SingletonContainer>
-
-                    <!-- MixerBar when Library is not shown
-                    <WidgetGroup>
-                      <ObjectName>MixerBar_Container_skin</ObjectName>
-                      <Layout>vertical</Layout>
-                      <SizePolicy>min,me</SizePolicy>
-                      <Children>
-                        <WidgetGroup><SizePolicy>me,me</SizePolicy></WidgetGroup>
-                        <Template src="skin:mixerbar.xml"/>
-                      </Children>
-                      <Connection>
-                        <ConfigKey>[Library],show_library</ConfigKey>
-                        <Transform><Not/></Transform>
-                        <BindProperty>visible</BindProperty>
-                      </Connection>
-                    </WidgetGroup> -->
-
+                    </WidgetGroup><!-- Decks + FX + Samplers + Library -->
                   </Children>
-                </WidgetGroup><!-- Decks + FX + Samplers + Library -->
+                </Splitter>
+
               </Children>
-            </Splitter>
+              <Connection>
+                <ConfigKey>[Master],maximize_library</ConfigKey>
+                <Transform><Not/></Transform>
+                <BindProperty>visible</BindProperty>
+              </Connection>
+            </WidgetGroup><!-- /topbar, stacked  waveforms, decks, FX, samplers, Mic/Aux, Lib normal-->
+
+            <WidgetGroup><!-- Lib maximized -->
+              <Layout>vertical</Layout>
+              <SizePolicy>me,me</SizePolicy>
+              <Children>
+                <SingletonContainer>
+                  <ObjectName>Library_Singleton</ObjectName>
+                </SingletonContainer>
+              </Children>
+              <Connection>
+                <ConfigKey>[Master],maximize_library</ConfigKey>
+                <BindProperty>visible</BindProperty>
+              </Connection>
+            </WidgetGroup>
+
+            <Template src="skin:skin_settings.xml"/>
 
           </Children>
-          <Connection>
-            <ConfigKey>[Master],maximize_library</ConfigKey>
-            <Transform><Not/></Transform>
-            <BindProperty>visible</BindProperty>
-          </Connection>
-        </WidgetGroup><!-- /Lib normal, stacked resizable waveforms, skin settings menu -->
+        </WidgetGroup><!-- /All skin elements + Skin menu -->
 
-        <WidgetGroup><!-- Lib maximized -->
-          <Layout>vertical</Layout>
-          <SizePolicy>me,me</SizePolicy>
-          <Children>
-            <SingletonContainer>
-              <ObjectName>Library_Singleton</ObjectName>
-            </SingletonContainer>
-          </Children>
-          <Connection>
-            <ConfigKey>[Master],maximize_library</ConfigKey>
-            <BindProperty>visible</BindProperty>
-          </Connection>
-        </WidgetGroup><!-- /Lib maximized -->
-
-        <Template src="skin:skin_settings.xml"/>
-
-        <!--Template src="skin:size_detector_netbook.xml"/-->
+        <Template src="skin:size_detector_screen.xml"/>
 
       </Children>
     </WidgetGroup><!-- /SkinContainer -->

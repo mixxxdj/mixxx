@@ -54,78 +54,15 @@ Description:
               MinSize = (num. of buttons/rows x 13px) + 15px + 3px padding + 3px border-bottom
               MaxSize = (num. of buttons/rows x 17px) + 15px + 3px padding + 3px border-bottom +10px
               (let's add 10px so sections can grow on big screens) -->
-          <WidgetGroup><!-- Decks / General | 9 buttons/rows 13-17px, 1 fixed row 15px -->
+          <WidgetGroup><!-- Decks / General | 8 buttons/rows 13-17px, 1 fixed row 15px -->
             <ObjectName>SkinSettingsCategory</ObjectName>
             <!-- increse minimal height so that other categories get squeezed more
             <MinimumSize>200,138</MinimumSize> -->
-            <MinimumSize>200,145</MinimumSize>
-            <MaximumSize>200,184</MaximumSize>
+            <MinimumSize>200,150</MinimumSize>
+            <MaximumSize>200,167</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
-              <WidgetGroup><!-- force compact mode -->
-                <Layout>stacked</Layout>
-                <MinimumSize>182,13</MinimumSize>
-                <MaximumSize>182,17</MaximumSize>
-                <SizePolicy>me,me</SizePolicy>
-                <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
-                  <WidgetGroup><!-- translucent cover when skin switched to netbook mode automatically -->
-                    <ObjectName>SubmenuCover</ObjectName>
-                    <Layout>vertical</Layout>
-                    <MinimumSize>182,13</MinimumSize>
-                    <MaximumSize>182,17</MaximumSize>
-                    <SizePolicy>me,me</SizePolicy>
-                    <Connection>
-                      <ConfigKey persist="true">[Tango],netbook_mode_auto</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
-
-                  <WidgetGroup><!-- button for normal mode -->
-                    <ObjectName>SubmenuCover</ObjectName>
-                    <Layout>vertical</Layout>
-                    <MinimumSize>182,13</MinimumSize>
-                    <MaximumSize>182,17</MaximumSize>
-                    <SizePolicy>me,me</SizePolicy>
-                    <Children>
-                      <Template src="skin:skin_settings_button_2state.xml">
-                        <SetVariable name="state_0_text">      Netbook mode</SetVariable>
-                        <SetVariable name="state_1_text"> &#10004; Netbook mode</SetVariable>
-                        <SetVariable name="width">182</SetVariable>
-                        <SetVariable name="Setting">[Tango],enforce_netbook_mode</SetVariable>
-                      </Template>
-                    </Children>
-                    <Connection>
-                      <ConfigKey persist="true">[Tango],netbook_mode_auto</ConfigKey>
-                      <Transform><Not/></Transform>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
-
-                  <WidgetGroup><!-- button when skin switched to netbook mode automatically -->
-                    <ObjectName>SubmenuCover</ObjectName>
-                    <Layout>vertical</Layout>
-                    <MinimumSize>182,13</MinimumSize>
-                    <MaximumSize>182,17</MaximumSize>
-                    <SizePolicy>me,me</SizePolicy>
-                    <Children>
-                      <Template src="skin:skin_settings_button_2state.xml">
-                        <SetVariable name="state_0_text"> &#10004; Netbook mode (automatic)</SetVariable>
-                        <SetVariable name="state_1_text"> &#10004; Netbook mode (automatic)</SetVariable>
-                        <SetVariable name="width">182</SetVariable>
-                        <SetVariable name="Setting">[Tango],enforce_netbook_mode</SetVariable>
-                      </Template>
-                    </Children>
-                    <Connection>
-                      <ConfigKey persist="true">[Tango],netbook_mode_auto</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
-                </Children>
-              </WidgetGroup><!-- /force compact mode -->
 
               <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="state_0_text">      Symmetric Overviews</SetVariable>
@@ -237,8 +174,8 @@ Description:
                     <Size>182f,0me</Size>
                     <Children>
                       <Template src="skin:skin_settings_button_2state.xml">
-                        <SetVariable name="state_0_text">      Key Display/Match</SetVariable>
-                        <SetVariable name="state_1_text"> &#10004; Key Display/Match</SetVariable>
+                        <SetVariable name="state_0_text">      Key/Key Match</SetVariable>
+                        <SetVariable name="state_1_text"> &#10004; Key/Key Match</SetVariable>
                         <SetVariable name="width">182</SetVariable>
                         <SetVariable name="Setting">[Tango],key_controls</SetVariable>
                       </Template>
@@ -301,7 +238,7 @@ Description:
                         <SetVariable name="state_0_unpressed">slipmode_hidden.svg</SetVariable>
                         <SetVariable name="state_1_pressed">slipmode_visible.svg</SetVariable>
                         <SetVariable name="state_1_unpressed">slipmode_visible.svg</SetVariable>
-                        <SetVariable name="ConfigKey">[Tango],always_visible_slipMode</SetVariable>
+                        <SetVariable name="ConfigKey">[Tango],always_visible_slip_enabled</SetVariable>
                       </Template>
 
                       <Template src="skin:button_2state_persist.xml">
@@ -321,7 +258,7 @@ Description:
                         <SetVariable name="state_0_unpressed">xfader_center.svg</SetVariable>
                         <SetVariable name="state_1_pressed">xfader_visible.svg</SetVariable>
                         <SetVariable name="state_1_unpressed">xfader_visible.svg</SetVariable>
-                        <SetVariable name="ConfigKey">[Tango],always_visible_xfaderOrientation</SetVariable>
+                        <SetVariable name="ConfigKey">[Tango],always_visible_orientation</SetVariable>
                       </Template>
 
                       <Template src="skin:button_2state_persist.xml">
@@ -713,10 +650,10 @@ Description:
             <Size>200f,21f</Size>
             <Text>Effects</Text>
           </Label>
-          <WidgetGroup><!-- 3 buttons (1 commented out) -->
+          <WidgetGroup><!-- 2 buttons (1 commented out) -->
             <ObjectName>SkinSettingsCategory</ObjectName>
-            <MinimumSize>200,45</MinimumSize>
-            <MaximumSize>200,67</MaximumSize>
+            <MinimumSize>200,34</MinimumSize>
+            <MaximumSize>200,44</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
@@ -815,11 +752,6 @@ Description:
                 <SetVariable name="Setting">[Tango],sampler_fx_buttons</SetVariable>
               </Template>
               -->
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="state_0_text">      Mic/AUX FX buttons</SetVariable>
-                <SetVariable name="state_1_text"> &#10004; Mic/AUX FX buttons</SetVariable>
-                <SetVariable name="Setting">[Tango],micaux_fx_buttons</SetVariable>
-              </Template>
 
             </Children>
           </WidgetGroup><!-- /Effects -->

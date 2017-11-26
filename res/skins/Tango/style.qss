@@ -245,79 +245,49 @@ WWidgetGroup {
  ######## Mixer Bar #############################################
 ##############################################################*/
 
-#Mixerbar {
+#MixerBar {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
-  margin: 0px;
-  padding: 0px;
+  margin: 0px 0px 3px 0px;
   border: 0px;
-  qproperty-layoutSpacing: 0px;
 }
 
 #MixerbarSection {
-  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-  margin: 0px 10px 0px 0px;/*
-  background-color: #333;*/
+  qproperty-layoutAlignment: 'AlignCenter';
+  qproperty-layoutSpacing: 0px;
+  background-color: #252525;
+  border-radius: 3px;
+  border-top-right-radius: 0px;
+  border-top-left-radius: 0px;
+  margin: 0px;
+  padding: 2px;
 }
 
-#Mixerbar_BelowLibrary[displayValue="0"] {
-  background: transparent url(skin:/buttons/btn_arrow_downleft.svg) no-repeat center top;
-  }
-  #Mixerbar_BelowLibrary[displayValue="0"]:hover {
-    background: transparent url(skin:/buttons/btn_arrow_downleft_hover.svg) no-repeat center top;
-  }
-  #Mixerbar_BelowLibrary[displayValue="1"] {
-    background: transparent url(skin:/buttons/btn_arrow_upright.svg) no-repeat center top;
-  }
-  #Mixerbar_BelowLibrary[displayValue="1"]:hover {
-    background: transparent url(skin:/buttons/btn_arrow_upright_hover.svg) no-repeat center top;
-  }
+#MixerbarSection:hover {
+  background-color: #0f0f0f;
+}
 
-#MixerbarToggler[displayValue="0"] {
-  background: transparent url(skin:/buttons/btn_arrow_right.svg) no-repeat center top;
-  }
-  #MixerbarToggler[displayValue="0"]:hover {
-    background: transparent url(skin:/buttons/btn_arrow_right_hover.svg) no-repeat center top;
-  }
-  #MixerbarToggler[displayValue="1"] {
-    background: transparent url(skin:/buttons/btn_arrow_left.svg) no-repeat center top;
-  }
-  #MixerbarToggler[displayValue="1"]:hover {
-    background: transparent url(skin:/buttons/btn_arrow_left_hover.svg) no-repeat center top;
-  }
-
-#Mixerbar_MasterSectionLabel {
+#MasterSectionLabel {
   image: url(skin:/buttons/btn_master.svg) no-repeat center center;
 }
-#Mixerbar_BoothSectionLabel {
+#BoothSectionLabel {
   image: url(skin:/buttons/btn_booth.svg) no-repeat center center;
 }
-#Mixerbar_HeadSectionLabel {
+#HeadphoneSectionLabel {
   image: url(skin:/buttons/btn_head.svg) no-repeat center center;
 }
-#Mixerbar_MicSectionLabel {
-  image: url(skin:/buttons/btn_mic.svg) no-repeat center center;
-}
-#Mixerbar_AuxSectionLabel {
-  image: url(skin:/buttons/btn_aux.svg) no-repeat center center;
-}
-#Mixerbar_MicAuxLabel {
-  /* not apllied
-  border-left: 1px solid #453117; */
-  font-size: 22px/22px;
-  font-weight: bold;
-  text-align: center;
-}
+
+
 
 #MixerbarButton,
 #MixerbarPflButton,
 #MixerbarXfaderButton {
   font-weight: bold;
-  border: 1px solid #0f0f0f;
   }
   #MixerbarButton[displayValue="0"],
   #MixerbarPflButton[displayValue="0"],
   #MixerbarXfaderButton[displayValue="0"] {
     background-color: #333;
+    border: 1px solid #333;
     color: #888;
     }
     #MixerbarButton[displayValue="0"]:hover,
@@ -339,34 +309,89 @@ WWidgetGroup {
       border: 1px solid #eeeeee;
     }
 
-#MixerbarTalkover[displayValue="0"],
-#MixerbarMute[displayValue="1"] {
-  background-color: #333;
-  border: 1px solid #0f0f0f;
-}
-#MixerbarTalkover[displayValue="1"],
-#MixerbarMute[displayValue="0"] {
-  background-color: #ff8f00;
-  border: 1px solid #0f0f0f;
-}
-#MixerbarTalkover:hover,
-#MixerbarMute:hover {
-  border: 1px solid #eeeeee;
-}
-
 #VUMeterMixerbar {
   margin: 2px 0px 0px 0px;
 }
 #MixerbarKnob {
-  margin: 2px 0px 0px 0px;
+  margin: 2px 0px -4px 0px;
 }
 #MixerbarSlider {
   margin: 0px 0px 0px 0px;
 }
 #MixerbarCover {
   /* background is #333, so this has to blend in */
-  background-color: rgba(51, 51, 51, 200);
+  background-color: rgba(30, 30, 30, 200);
 }
+
+
+
+
+
+
+/*################################################################
+ ######  Mic & Aux  #############################################
+##############################################################*/
+#MicAuxContainer {
+  margin-bottom: 5px;
+}
+
+#MicSection {
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  }
+#AuxSection {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  }
+  #MicSectionIcon {
+    image: url(skin:/buttons/btn_mic_section.svg) no-repeat center center;
+    }
+  #AuxSectionLabel {
+    image: url(skin:/buttons/btn_aux_section.svg) no-repeat center center;
+    }
+
+  #MicUnit, #AuxUnit {
+    qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+    background-color: #333;
+    margin-right: 5px;
+    padding-left: 2px;
+    }
+    #MicUnitIcon {
+      image: url(skin:/buttons/btn_mic_unit.svg) no-repeat center left;
+    }
+    #AuxUnitIcon {
+      image: url(skin:/buttons/btn_aux_unit.svg) no-repeat center left;
+    }
+    #MicUnitLabel, #AuxUnitLabel {
+      /* not apllied
+      border-left: 1px solid #453117;
+      background-color: #456411;
+      margin-left: -2px;
+      background-color: #911669; */
+      padding-bottom: 10px;
+      color: #b4b4b4;
+      font-size: 16px/22px;
+      font-weight: bold;
+      text-align: right;
+    }
+
+#MicTalkover[displayValue="0"],
+#AuxMute[displayValue="1"] {
+  background-color: #777;
+  border: 1px solid #777;
+  }
+  #MicTalkover[displayValue="0"]:hover,
+  #AuxMute[displayValue="1"]:hover {
+    border: 1px solid #ff6600;
+  }
+
+#MicTalkover[displayValue="1"],
+#AuxMute[displayValue="0"] {
+  background-color: #ff6600;
+  border: 1px solid #ff6600;
+  }
+  #MicTalkover[displayValue="1"]:hover,
+  #AuxMute[displayValue="0"]:hover {
+    border: 1px solid #d2d2d2;
+  }
 
 /*################################################################
  ######  Decks  #################################################
@@ -1035,10 +1060,10 @@ WBeatSpinBox {
 }
 
 /* Netbook/compact mode */
-#SkinControlsBarLeft {
+#MainMixerBar {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
 }
-#SkinControlsBarRight {
+#SkinControlsBar {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
 }
 
@@ -1047,27 +1072,20 @@ WBeatSpinBox {
 #RecordingButton {
   text-align: center;
   font-weight: bold;
+  background-color: #333;
+  border: 1px solid #444;
   }
-  #GuiToggleButton[displayValue="0"]:hover,
+  #GuiToggleButton:hover,
   #GuiToggleButton2:hover {
-    border: 1px solid #888;
-    }
-  #GuiToggleButton[displayValue="1"]:hover,
-  #GuiToggleButton[displayValue="2"]:hover {
-    border: 1px solid #eeeeee;
-    }
-  #GuiToggleButton:hover {
-    background-color: #666;
-    }
+    border: 1px solid #999;
+  }
   #GuiToggleButton[displayValue="0"],
   #GuiToggleButton2 {
     color: #888;
-    background-color: #333;
     }
   #GuiToggleButton[displayValue="1"],
   #GuiToggleButton[displayValue="2"] {
     color: #eeeeee;
-    background-color: #666;
     }
 
 #RecordingButton[displayValue="0"] { /*
@@ -1081,10 +1099,14 @@ WBeatSpinBox {
   }
   #RecordingButton[displayValue="1"] {
     color: #d2d2d2;
-    border: 1px solid #ff8f00;
+    border: 1px solid #ff6600;
+  }
+  #RecordingButton[displayValue="2"] {
+    border: 1px solid #a90000;
+    background-color: transparent;
   }
   #RecordingButton[displayValue="2"]:hover {
-    border: 1px solid #ff8f00;
+    border: 1px solid #ff6600;
   }
 /* RecordingDuration underneath RecordingButton, as well as 'REC' text & Rec icon */
 #RecDurationLabel,
@@ -1099,14 +1121,14 @@ WBeatSpinBox {
   border-radius: 3px;
 }
   #RecDot {
-    background: #333 url(skin:/buttons/btn_rec_dot.svg) no-repeat center right;
+    image: url(skin:/buttons/btn_rec_dot.svg) no-repeat center center;
   }
 
-#ClockBox {
+#ClockBox, WTime {
   qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
   }
   #ClockBox WLabel,
-  #Clock {
+  #Clock, WTime {
     font-size: 13px/13px;
     color: #999999;
     text-align: center;

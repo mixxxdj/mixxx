@@ -1,0 +1,42 @@
+<!--
+Description:
+  Shows Logo in normal mode if 4 decks are enabled.
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <SizePolicy>min,f</SizePolicy>
+    <Children>
+
+      <WidgetGroup><!-- with mixer and Master VU -->
+        <Layout>vertical</Layout>
+        <Size>18f,0f</Size>
+        <Connection>
+          <ConfigKey>[Tango],channel_mixer</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup><!-- without mixer, levels meters always visible -->
+        <Layout>vertical</Layout>
+        <SizePolicy>min,f</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Size>18f,0f</Size>
+            <Connection>
+              <ConfigKey>[Tango],vumeter</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey>[Tango],channel_mixer</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

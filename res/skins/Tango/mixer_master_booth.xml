@@ -1,0 +1,84 @@
+<!--
+Description:
+	Container for Master & Booth mixer, showing up in topbar.
+-->
+<Template>
+  <WidgetGroup><!-- Master & Booth Mixer -->
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,max</SizePolicy>
+    <Children>
+
+      <WidgetGroup><!-- Master Mixer -->
+        <ObjectName>MixerbarSection</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>MasterMixerLabel</ObjectName>
+            <Size>24f,24f</Size>
+          </WidgetGroup>
+
+          <Template src="skin:knob_textless.xml">
+            <SetVariable name="TooltipId">master_gain</SetVariable>
+            <SetVariable name="ObjectName">MixerbarKnob</SetVariable>
+            <SetVariable name="Size">28f,28f</SetVariable>
+            <SetVariable name="group">[Master]</SetVariable>
+            <SetVariable name="ConfigKey">gain</SetVariable>
+            <SetVariable name="Color">yellow</SetVariable>
+          </Template>
+
+          <SliderComposed>
+            <TooltipId>balance</TooltipId>
+            <ObjectName>MixerbarSlider</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Handle>skin:/knobs_sliders/balance_handle.svg</Handle>
+            <Slider>skin:/knobs_sliders/balance_scale.svg</Slider>
+            <Horizontal>true</Horizontal>
+            <Connection>
+              <ConfigKey>[Master],balance</ConfigKey>
+            </Connection>
+          </SliderComposed>
+
+        </Children>
+      </WidgetGroup><!-- /Master Mixer -->
+
+      <WidgetGroup><!-- Booth Gain -->
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,max</SizePolicy>
+        <Children>
+
+          <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>MixerbarSection</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <WidgetGroup>
+                <ObjectName>BoothMixerLabel</ObjectName>
+                <Size>30f,24f</Size>
+              </WidgetGroup>
+
+              <Template src="skin:knob_textless.xml">
+                <SetVariable name="TooltipId">booth_gain</SetVariable>
+                <SetVariable name="ObjectName">MixerbarKnob</SetVariable>
+                <SetVariable name="Size">28f,28f</SetVariable>
+                <SetVariable name="group">[Master]</SetVariable>
+                <SetVariable name="ConfigKey">booth_gain</SetVariable>
+                <SetVariable name="Color">yellow</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+            </Children>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey>[Master],booth_enabled</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Booth Gain -->
+    </Children>
+  </WidgetGroup><!-- Booth & Master Mixer -->
+</Template>
