@@ -528,7 +528,7 @@ static void ebur128_check_true_peak(ebur128_state* st, size_t frames) {
   }
 }
 
-#ifdef __SSE2_MATH__
+#if defined(__SSE2_MATH__) || defined(__SSE2__)
 #include <xmmintrin.h>
 #define TURN_ON_FTZ \
         unsigned int mxcsr = _mm_getcsr(); \
