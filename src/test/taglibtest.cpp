@@ -29,8 +29,8 @@ QString generateTemporaryFileName(const QString& fileNameTemplate) {
     QTemporaryFile tmpFile(fileNameTemplate);
     tmpFile.open();
     DEBUG_ASSERT(tmpFile.exists());
-    const QString tmpFileName(tmpFile.fileName());
-    FileRemover tmpFileRemover(tmpFileName);
+    const QString tmpFileName = tmpFile.fileName();
+    DEBUG_ASSERT(tmpFile.remove());
     return tmpFileName;
 }
 
@@ -40,8 +40,8 @@ void copyFile(const QString& srcFileName, const QString& dstFileName) {
     qDebug() << "Copying file"
             << srcFileName
             << "->"
-            <<dstFileName;
-    srcFile.copy(dstFileName);
+            << dstFileName;
+    DEBUG_ASSERT(srcFile.copy(dstFileName));
     QFile dstFile(dstFileName);
     DEBUG_ASSERT(dstFile.exists());
     DEBUG_ASSERT(srcFile.size() == dstFile.size());
@@ -51,7 +51,7 @@ TEST_F(TagLibTest, WriteID3v2Tag) {
     // Generate a file name for the temporary file
     const QString tmpFileName = generateTemporaryFileName("no_id3v1_mp3");
 
-    // Create the temporary file by copying an exiting file
+    // Create the temporary file by copying an existing file
     copyFile(kTestDir.absoluteFilePath("empty.mp3"), tmpFileName);
 
     // Ensure that the temporary file is removed after the test
@@ -65,6 +65,8 @@ TEST_F(TagLibTest, WriteID3v2Tag) {
         EXPECT_FALSE(mixxx::taglib::hasID3v2Tag(mpegFile));
         EXPECT_FALSE(mixxx::taglib::hasAPETag(mpegFile));
     }
+
+    qDebug() << "Setting track title";
 
     // Write metadata -> only an ID3v2 tag should be added
     mixxx::TrackMetadata trackMetadata;
@@ -83,6 +85,8 @@ TEST_F(TagLibTest, WriteID3v2Tag) {
         EXPECT_TRUE(mixxx::taglib::hasID3v2Tag(mpegFile));
         EXPECT_FALSE(mixxx::taglib::hasAPETag(mpegFile));
     }
+
+    qDebug() << "Updating track title";
 
     // Write metadata again -> only the ID3v2 tag should be modified
     trackMetadata.refTrackInfo().setTitle("title2");
