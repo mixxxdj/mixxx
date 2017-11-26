@@ -490,7 +490,7 @@ class Ebur128Mit(Dependence):
 
 
 class SoundTouch(Dependence):
-    SOUNDTOUCH_INTERNAL_PATH = '#lib/soundtouch-1.9.2'
+    SOUNDTOUCH_INTERNAL_PATH = '#lib/soundtouch-2.0.0'
     INTERNAL_LINK = True
 
     def sources(self, build):
