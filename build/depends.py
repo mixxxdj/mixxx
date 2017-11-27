@@ -471,7 +471,7 @@ class ReplayGain(Dependence):
 
 
 class Ebur128Mit(Dependence):
-    INTERNAL_PATH = '#lib/libebur128-1.1.0'
+    INTERNAL_PATH = '#lib/libebur128-1.2.3'
     INTERNAL_LINK = False
 
     def sources(self, build):
@@ -484,7 +484,6 @@ class Ebur128Mit(Dependence):
         if not conf.CheckLib(['ebur128', 'libebur128']):
             self.INTERNAL_LINK = True;
             env.Append(CPPPATH=['%s/ebur128' % self.INTERNAL_PATH])
-            #env.Append(CPPDEFINES='USE_SPEEX_RESAMPLER') # Required for unused EBUR128_MODE_TRUE_PEAK
             if not conf.CheckHeader('sys/queue.h'):
                 env.Append(CPPPATH=['%s/ebur128/queue' % self.INTERNAL_PATH])
 
