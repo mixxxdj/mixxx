@@ -288,6 +288,9 @@ EngineBuffer::~EngineBuffer() {
     delete m_playStartButton;
     delete m_stopStartButton;
 
+    delete m_timeElapsed;
+    delete m_timeRemaining;
+
     delete m_startButton;
     delete m_endButton;
     delete m_stopButton;
