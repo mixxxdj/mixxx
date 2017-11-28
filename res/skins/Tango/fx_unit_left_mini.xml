@@ -181,7 +181,7 @@ Variables:
         <SizePolicy>min,min</SizePolicy>
         <Children>
           <Template src="skin:fx_head_master_button.xml">
-            <SetVariable name="Size">15f,15f</SetVariable>
+            <SetVariable name="Size">15f,14f</SetVariable>
             <SetVariable name="sourceType">master</SetVariable>
             <SetVariable name="labelOff">fx_master_off</SetVariable>
             <SetVariable name="labelOn">fx_master_on</SetVariable>
@@ -189,7 +189,7 @@ Variables:
           </Template>
             <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
           <WidgetGroup><!-- Headphone FX button -->
-            <Size>15f,14f</Size>
+            <Size>15f,15f</Size>
             <Layout>stacked</Layout>
             <Children>
               <!-- index 0 due to bug -->
@@ -197,7 +197,7 @@ Variables:
 
               <!-- Greyed out if no headphone device is configured -->
               <WidgetGroup>
-                <ObjectName>MixerbarCover</ObjectName>
+                <ObjectName>GuiCover</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>me,me</SizePolicy>
                 <Connection>
@@ -208,7 +208,7 @@ Variables:
               </WidgetGroup>
 
               <Template src="skin:fx_head_master_button.xml">
-                <SetVariable name="Size">15f,14f</SetVariable>
+                <SetVariable name="Size">15f,15f</SetVariable>
                 <SetVariable name="sourceType">headphones</SetVariable>
                 <SetVariable name="labelOff">fx_head_off</SetVariable>
                 <SetVariable name="labelOn">fx_head_on</SetVariable>

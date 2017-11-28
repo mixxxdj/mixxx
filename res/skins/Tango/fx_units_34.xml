@@ -56,7 +56,7 @@ Description:
         </Children>
       </WidgetGroup><!-- /EffectUnit 3 -->
 
-      <Template src="skin:spacer_fx_units.xml"/>
+      <WidgetGroup><Size>10f,0min</Size></WidgetGroup>
 
       <WidgetGroup><!-- EffectUnit 4 -->
         <Layout>vertical</Layout>

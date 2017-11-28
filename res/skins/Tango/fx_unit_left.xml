@@ -218,7 +218,7 @@ Variables:
             <Alignment>center</Alignment>
           </Label>
 
-          <WidgetGroup><!-- EffectUnitMixer -->
+          <WidgetGroup><!-- FxUnitControls + Master, Headphone -->
             <ObjectName>FxUnitMixerLeft</ObjectName>
             <Layout>vertical</Layout>
             <Size>44f,1me</Size>
@@ -294,7 +294,7 @@ Variables:
 
                       <!-- Greyed out if no headphone device is configured -->
                       <WidgetGroup>
-                        <ObjectName>MixerbarCover</ObjectName>
+                        <ObjectName>GuiCover</ObjectName>
                         <Layout>vertical</Layout>
                         <SizePolicy>me,me</SizePolicy>
                         <Connection>
