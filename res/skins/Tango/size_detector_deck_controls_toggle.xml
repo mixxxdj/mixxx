@@ -9,11 +9,11 @@ Description:
 <Template>
   <WidgetGroup>
     <Layout>horizontal</Layout>
-    <Size>126f,0f</Size>
+    <Size>120f,0f</Size>
     <Children>
       <!-- spacers for deck controls that are set to be always visible -->
       <WidgetGroup><!-- keylock -->
-        <Size>20f,0f</Size>
+        <Size>18f,0f</Size>
         <Connection>
           <ConfigKey persist="true">[Tango],always_visible_keylock</ConfigKey>
           <BindProperty>visible</BindProperty>
@@ -27,7 +27,7 @@ Description:
         </Connection>
       </WidgetGroup>
       <WidgetGroup><!-- eject -->
-        <Size>20f,0f</Size>
+        <Size>18f,0f</Size>
         <Connection>
           <ConfigKey persist="true">[Tango],always_visible_eject</ConfigKey>
           <BindProperty>visible</BindProperty>
@@ -36,19 +36,19 @@ Description:
       <WidgetGroup><!-- slip mode -->
         <Size>22f,0f</Size>
         <Connection>
-          <ConfigKey persist="true">[Tango],always_visible_slipMode</ConfigKey>
+          <ConfigKey persist="true">[Tango],always_visible_slip_enabled</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
       <WidgetGroup><!-- xfader orientation -->
         <Size>20f,0f</Size>
         <Connection>
-          <ConfigKey persist="true">[Tango],always_visible_xfaderOrientation</ConfigKey>
+          <ConfigKey persist="true">[Tango],always_visible_orientation</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
       <WidgetGroup><!-- quantize -->
-        <Size>22f,0f</Size>
+        <Size>20f,0f</Size>
         <Connection>
           <ConfigKey persist="true">[Tango],always_visible_quantize</ConfigKey>
           <BindProperty>visible</BindProperty>

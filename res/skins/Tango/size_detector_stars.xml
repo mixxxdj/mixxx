@@ -66,7 +66,7 @@ Controls:
 
       <!-- spacers for deck controls that are set to be always visible -->
       <WidgetGroup><!-- keylock -->
-        <Size>20f,0f</Size>
+        <Size>18f,0f</Size>
         <Connection>
           <ConfigKey persist="true">[Tango],always_visible_keylock</ConfigKey>
           <BindProperty>visible</BindProperty>
@@ -82,7 +82,7 @@ Controls:
       </WidgetGroup>
 
       <WidgetGroup><!-- eject -->
-        <Size>20f,0f</Size>
+        <Size>18f,0f</Size>
         <Connection>
           <ConfigKey persist="true">[Tango],always_visible_eject</ConfigKey>
           <BindProperty>visible</BindProperty>
@@ -105,7 +105,7 @@ Controls:
       </WidgetGroup>
 
       <WidgetGroup><!-- quantize -->
-        <Size>22f,0f</Size>
+        <Size>20f,0f</Size>
         <Connection>
           <ConfigKey persist="true">[Tango],always_visible_quantize</ConfigKey>
           <BindProperty>visible</BindProperty>
@@ -117,7 +117,7 @@ Controls:
         <Layout>horizontal</Layout>
         <Children>
           <WidgetGroup><!-- keylock expanded -->
-            <Size>20f,0f</Size>
+            <Size>18f,0f</Size>
             <Connection>
               <ConfigKey persist="true">[Tango],always_visible_keylock</ConfigKey>
               <Transform><Not/></Transform>
@@ -133,7 +133,7 @@ Controls:
             </Connection>
           </WidgetGroup>
           <WidgetGroup><!-- eject expanded -->
-            <Size>20f,0f</Size>
+            <Size>18f,0f</Size>
             <Connection>
               <ConfigKey persist="true">[Tango],always_visible_eject</ConfigKey>
               <Transform><Not/></Transform>
@@ -157,7 +157,7 @@ Controls:
             </Connection>
           </WidgetGroup>
           <WidgetGroup><!-- quantize expanded -->
-            <Size>22f,0f</Size>
+            <Size>20f,0f</Size>
             <Connection>
               <ConfigKey persist="true">[Tango],always_visible_quantize</ConfigKey>
               <Transform><Not/></Transform>

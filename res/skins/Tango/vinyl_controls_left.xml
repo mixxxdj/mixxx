@@ -92,7 +92,7 @@ Variables:
 
               <Template src="skin:button_3state_persist.xml">
                 <SetVariable name="TooltipId">vinylcontrol_cueing</SetVariable>
-                <SetVariable name="ObjectName">VinylCueModeButton</SetVariable>
+                <SetVariable name="ObjectName">VinylModeButton</SetVariable>
                 <SetVariable name="Size">40f,24f</SetVariable>
                 <SetVariable name="state_0_text">CUE</SetVariable>
                 <SetVariable name="state_1_text">CUE</SetVariable>
