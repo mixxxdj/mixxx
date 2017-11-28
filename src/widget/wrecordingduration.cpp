@@ -26,7 +26,7 @@ void WRecordingDuration::setup(const QDomNode& node, const SkinContext& context)
 }
 
 void WRecordingDuration::slotRecordingInactive(bool isRecording) {
-    // When we're recording show InactiveText
+    // When we're not recording show InactiveText
     if(!isRecording) {
         setText(m_inactiveText);
     }
