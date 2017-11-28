@@ -88,11 +88,11 @@
     </linearGradient>
   </defs>
   <path
-     d="m 24.257656,11.873073 h 2.212098 v 4.508377 h -2.212098 z m 7.189319,-4.3981995 -4.424197,4.5083755 v 4.508376 L 31.446975,21 H 32 V 7.4748735 h -0.553025 z"
+     d="m 24.882656,11.873073 h 2.212098 v 4.508377 h -2.212098 z m 7.189319,-4.3981995 -4.424197,4.5083755 v 4.508376 L 32.071975,21 H 32.625 V 7.4748735 h -0.553025 z"
      id="path11885"
      style="fill:#d2d2d2;fill-opacity:1;stroke:none" />
   <g
-     transform="translate(-1.1936765,-0.1337226)"
+     transform="translate(-0.5587487,1.0210608)"
      id="g11891"
      style="fill:#d2d2d2;fill-opacity:1;stroke:none">
     <path
@@ -113,7 +113,7 @@
      id="path11867"
      style="font-weight:400;text-indent:0;text-align:start;line-height:normal;text-transform:none;block-progression:tb;color:#000000;fill:#d2d2d2;fill-opacity:1;stroke:none;marker:none;overflow:visible;font-family:Sans;-inkscape-font-specification:Sans" />
   <path
-     d="m 25.34375,1.625 -12,20 1.3125,0.75 12,-20 -1.3125,-0.75 z"
-     id="path11898"
+     d="m 24.906188,1 -11.375,22 1.515625,0 11.375,-22 z"
+     id="path11898-3"
      style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#d2d2d2;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.5;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans" />
 </svg>
