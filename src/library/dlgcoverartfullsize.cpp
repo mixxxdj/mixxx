@@ -107,10 +107,13 @@ void DlgCoverArtFullSize::slotCoverFound(const QObject* pRequestor,
         if (m_pixmap.isNull()) {
             close();
         } else {
-            // Scale down dialog to screen size if the pixmap is larger than the screen
+            // Scale down dialog if the pixmap is larger than the screen.
+            // Use 90% of screen size instead of 100% to prevent an issue with
+            // whitespace appearing on the side when resizing a window whose
+            // borders touch the edges of the screen.
             QSize dialogSize = m_pixmap.size();
             const QSize availableScreenSpace =
-                QApplication::desktop()->availableGeometry().size();
+                QApplication::desktop()->availableGeometry().size() * 0.9;
             if (dialogSize.height() > availableScreenSpace.height()) {
                 dialogSize.scale(dialogSize.width(), availableScreenSpace.height(),
                                  Qt::KeepAspectRatio);
