@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.1"
    width="200"
-   height="80"
-   id="svg2"
-   inkscape:version="0.48.4 r9939"
-   sodipodi:docname="handle-vertical.svg">
+   height="75"
+   id="svg2">
   <metadata
      id="metadata12">
     <rdf:RDF>
@@ -27,46 +25,24 @@
   </metadata>
   <defs
      id="defs10" />
-  <sodipodi:namedview
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="1366"
-     inkscape:window-height="746"
-     id="namedview8"
-     showgrid="false"
-     inkscape:zoom="2.8284271"
-     inkscape:cx="106.38546"
-     inkscape:cy="58.920323"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="svg2"
-     inkscape:snap-page="true"
-     inkscape:snap-bbox="true" />
   <rect
-     style="fill:#333333;fill-opacity:1;stroke:#e0e0e0;stroke-width:10;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-     id="rect4138"
-     width="70"
+     width="65"
      height="190"
-     x="-75"
-     y="5"
      rx="10"
      ry="10"
-     transform="matrix(0,-1,1,0,0,0)" />
+     x="-70"
+     y="5"
+     transform="matrix(0,-1,1,0,0,0)"
+     id="rect4138"
+     style="fill:#333333;fill-opacity:1;stroke:#e0e0e0;stroke-width:9.99999905;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
   <rect
-     style="fill:#2f8dff;fill-opacity:1;stroke:none"
-     id="rect4151-3"
      width="155.73222"
-     height="34.525127"
-     x="-177.86612"
-     y="-57.262566"
-     transform="scale(-1,-1)"
+     height="29.525"
      rx="2"
-     ry="2" />
+     ry="2"
+     x="-177.86612"
+     y="-52.262566"
+     transform="scale(-1,-1)"
+     id="rect4151-3"
+     style="fill:#2f8dff;fill-opacity:1;stroke:none" />
 </svg>
