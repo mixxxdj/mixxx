@@ -8,6 +8,7 @@
 #include "track/track.h"
 #include "sources/soundsourceproxy.h"
 #include "engine/enginebuffer.h"
+#include "engine/enginecontrol.h"
 #include "engine/enginedeck.h"
 #include "engine/enginemaster.h"
 #include "track/beatgrid.h"
@@ -112,13 +113,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
 }
 
 BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
-    if (m_pLoadedTrack) {
-        emit(loadingTrack(TrackPointer(), m_pLoadedTrack));
-        disconnect(m_pLoadedTrack.get(), 0, m_pBPM.get(), 0);
-        disconnect(m_pLoadedTrack.get(), 0, this, 0);
-        disconnect(m_pLoadedTrack.get(), 0, m_pKey.get(), 0);
-        m_pLoadedTrack.reset();
-    }
+    unloadTrack();
 }
 
 TrackPointer BaseTrackPlayerImpl::loadFakeTrack(bool bPlay, double filebpm) {
@@ -145,12 +140,108 @@ TrackPointer BaseTrackPlayerImpl::loadFakeTrack(bool bPlay, double filebpm) {
                 this, SLOT(slotSetReplayGain(mixxx::ReplayGain)));
     }
 
-    // Request a new track from EngineBuffer and wait for slotTrackLoaded()
-    // call.
+    // Request a new track from EngineBuffer
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
     pEngineBuffer->loadFakeTrack(pTrack, bPlay);
+
+    // await slotTrackLoaded()/slotLoadFailed()
     emit(loadingTrack(pTrack, pOldTrack));
+
     return pTrack;
+}
+
+void BaseTrackPlayerImpl::loadTrack(TrackPointer pTrack) {
+    DEBUG_ASSERT(!m_pLoadedTrack);
+
+    m_pLoadedTrack = std::move(pTrack);
+    if (!m_pLoadedTrack) {
+        // nothing to
+        return;
+    }
+
+    // Clear loop
+    // It seems that the trick is to first clear the loop out point, and then
+    // the loop in point. If we first clear the loop in point, the loop out point
+    // does not get cleared.
+    m_pLoopOutPoint->set(kNoTrigger);
+    m_pLoopInPoint->set(kNoTrigger);
+
+    // The loop in and out points must be set here and not in slotTrackLoaded
+    // so LoopingControl::trackLoaded can access them.
+    const QList<CuePointer> trackCues(m_pLoadedTrack->getCuePoints());
+    QListIterator<CuePointer> it(trackCues);
+    while (it.hasNext()) {
+        CuePointer pCue(it.next());
+        if (pCue->getType() == Cue::LOOP) {
+            double loopStart = pCue->getPosition();
+            double loopEnd = loopStart + pCue->getLength();
+            if (loopStart != kNoTrigger && loopEnd != kNoTrigger && loopStart <= loopEnd) {
+                m_pLoopInPoint->set(loopStart);
+                m_pLoopOutPoint->set(loopEnd);
+                break;
+            }
+        }
+    }
+
+    connectLoadedTrack();
+}
+
+TrackPointer BaseTrackPlayerImpl::unloadTrack() {
+    if (!m_pLoadedTrack) {
+        // nothing to do
+        return TrackPointer();
+    }
+
+    // Save the loops that are currently set in a loop cue. If no loop cue is
+    // currently on the track, then create a new one.
+    double loopStart = m_pLoopInPoint->get();
+    double loopEnd = m_pLoopOutPoint->get();
+    if (loopStart != kNoTrigger && loopEnd != kNoTrigger && loopStart <= loopEnd) {
+        CuePointer pLoopCue;
+        QList<CuePointer> cuePoints(m_pLoadedTrack->getCuePoints());
+        QListIterator<CuePointer> it(cuePoints);
+        while (it.hasNext()) {
+            CuePointer pCue(it.next());
+            if (pCue->getType() == Cue::LOOP) {
+                pLoopCue = pCue;
+            }
+        }
+        if (!pLoopCue) {
+            pLoopCue = m_pLoadedTrack->createAndAddCue();
+            pLoopCue->setType(Cue::LOOP);
+        }
+        pLoopCue->setPosition(loopStart);
+        pLoopCue->setLength(loopEnd - loopStart);
+    }
+
+    disconnectLoadedTrack();
+
+    // Do not reset m_pReplayGain here, because the track might be still
+    // playing and the last buffer will be processed.
+
+    m_pPlay->set(0.0);
+
+    TrackPointer pUnloadedTrack(std::move(m_pLoadedTrack));
+    DEBUG_ASSERT(!m_pLoadedTrack);
+    return pUnloadedTrack;
+}
+
+void BaseTrackPlayerImpl::connectLoadedTrack() {
+    connect(m_pLoadedTrack.get(), SIGNAL(bpmUpdated(double)),
+            m_pBPM.get(), SLOT(set(double)));
+    connect(m_pLoadedTrack.get(), SIGNAL(keyUpdated(double)),
+            m_pKey.get(), SLOT(set(double)));
+    connect(m_pLoadedTrack.get(), SIGNAL(ReplayGainUpdated(mixxx::ReplayGain)),
+            this, SLOT(slotSetReplayGain(mixxx::ReplayGain)));
+}
+
+void BaseTrackPlayerImpl::disconnectLoadedTrack() {
+    // WARNING: Never. Ever. call bare disconnect() on an object. Mixxx
+    // relies on signals and slots to get tons of things done. Don't
+    // randomly disconnect things.
+    disconnect(m_pLoadedTrack.get(), 0, m_pBPM.get(), 0);
+    disconnect(m_pLoadedTrack.get(), 0, this, 0);
+    disconnect(m_pLoadedTrack.get(), 0, m_pKey.get(), 0);
 }
 
 void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
@@ -162,89 +253,15 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
         return;
     }
 
-    TrackPointer pOldTrack = m_pLoadedTrack;
+    auto pOldTrack = unloadTrack();
 
-    // Disconnect the old track's signals.
-    if (m_pLoadedTrack) {
-        // Save the loops that are currently set in a loop cue. If no loop cue is
-        // currently on the track, then create a new one.
-        double loopStart = m_pLoopInPoint->get();
-        double loopEnd = m_pLoopOutPoint->get();
-        if (loopStart != -1 && loopEnd != -1 && loopStart <= loopEnd) {
-            CuePointer pLoopCue;
-            QList<CuePointer> cuePoints(m_pLoadedTrack->getCuePoints());
-            QListIterator<CuePointer> it(cuePoints);
-            while (it.hasNext()) {
-                CuePointer pCue(it.next());
-                if (pCue->getType() == Cue::LOOP) {
-                    pLoopCue = pCue;
-                }
-            }
-            if (!pLoopCue) {
-                pLoopCue = m_pLoadedTrack->createAndAddCue();
-                pLoopCue->setType(Cue::LOOP);
-            }
-            pLoopCue->setPosition(loopStart);
-            pLoopCue->setLength(loopEnd - loopStart);
-        }
+    loadTrack(pNewTrack);
 
-        // WARNING: Never. Ever. call bare disconnect() on an object. Mixxx
-        // relies on signals and slots to get tons of things done. Don't
-        // randomly disconnect things.
-        disconnect(m_pLoadedTrack.get(), 0, m_pBPM.get(), 0);
-        disconnect(m_pLoadedTrack.get(), 0, this, 0);
-        disconnect(m_pLoadedTrack.get(), 0, m_pKey.get(), 0);
-
-        // Do not reset m_pReplayGain here, because the track might be still
-        // playing and the last buffer will be processed.
-
-        m_pPlay->set(0.0);
-    }
-
-    m_pLoadedTrack = pNewTrack;
-    if (m_pLoadedTrack) {
-        // Clear loop
-        // It seems that the trick is to first clear the loop out point, and then
-        // the loop in point. If we first clear the loop in point, the loop out point
-        // does not get cleared.
-        m_pLoopOutPoint->set(-1);
-        m_pLoopInPoint->set(-1);
-
-        // The loop in and out points must be set here and not in slotTrackLoaded
-        // so LoopingControl::trackLoaded can access them.
-        const QList<CuePointer> trackCues(pNewTrack->getCuePoints());
-        QListIterator<CuePointer> it(trackCues);
-        while (it.hasNext()) {
-            CuePointer pCue(it.next());
-            if (pCue->getType() == Cue::LOOP) {
-                double loopStart = pCue->getPosition();
-                double loopEnd = loopStart + pCue->getLength();
-                if (loopStart != -1 && loopEnd != -1) {
-                    m_pLoopInPoint->set(loopStart);
-                    m_pLoopOutPoint->set(loopEnd);
-                    break;
-                }
-            }
-        }
-
-        // Listen for updates to the file's BPM
-        connect(m_pLoadedTrack.get(), SIGNAL(bpmUpdated(double)),
-                m_pBPM.get(), SLOT(set(double)));
-
-        connect(m_pLoadedTrack.get(), SIGNAL(keyUpdated(double)),
-                m_pKey.get(), SLOT(set(double)));
-
-        // Listen for updates to the file's Replay Gain
-        connect(m_pLoadedTrack.get(), SIGNAL(ReplayGainUpdated(mixxx::ReplayGain)),
-                this, SLOT(slotSetReplayGain(mixxx::ReplayGain)));
-    }
-
-    // Request a new track from EngineBuffer and wait for slotTrackLoaded()
-    // call.
+    // Request a new track from EngineBuffer
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
     pEngineBuffer->loadTrack(pNewTrack, bPlay);
-    // Causes the track's data to be saved back to the library database and
-    // for all the widgets to change the track and update themselves.
+
+    // await slotTrackLoaded()/slotLoadFailed()
     emit(loadingTrack(pNewTrack, pOldTrack));
 }
 
@@ -273,13 +290,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
             pOldTrack &&
             pOldTrack == m_pLoadedTrack) {
         // eject Track
-        // WARNING: Never. Ever. call bare disconnect() on an object. Mixxx
-        // relies on signals and slots to get tons of things done. Don't
-        // randomly disconnect things.
-        // m_pLoadedTrack->disconnect();
-        disconnect(m_pLoadedTrack.get(), 0, m_pBPM.get(), 0);
-        disconnect(m_pLoadedTrack.get(), 0, this, 0);
-        disconnect(m_pLoadedTrack.get(), 0, m_pKey.get(), 0);
+        unloadTrack();
 
         // Causes the track's data to be saved back to the library database and
         // for all the widgets to change the track and update themselves.
@@ -288,8 +299,8 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         m_pBPM->set(0);
         m_pKey->set(0);
         setReplayGain(0);
-        m_pLoopInPoint->set(-1);
-        m_pLoopOutPoint->set(-1);
+        m_pLoopInPoint->set(kNoTrigger);
+        m_pLoopOutPoint->set(kNoTrigger);
         m_pLoadedTrack.reset();
         emit(playerEmpty());
     } else if (pNewTrack && pNewTrack == m_pLoadedTrack) {
