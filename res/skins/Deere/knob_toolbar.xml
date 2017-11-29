@@ -12,8 +12,8 @@
       <KnobComposed>
         <TooltipId><Variable name="TooltipId"/></TooltipId>
         <Size>34f,28f</Size>
-        <Knob>knob_<Variable name="color"/>.svg</Knob>
-        <BackPath>knob_bg.svg</BackPath>
+        <Knob>knob_white.svg</Knob>
+        <BackPath>knob_bg_<Variable name="color"/>.svg</BackPath>
         <MinAngle>-135</MinAngle>
         <MaxAngle>135</MaxAngle>
         <KnobCenterYOffset>1.32</KnobCenterYOffset>

@@ -62,7 +62,7 @@ Variables:
                     <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
                     <SetVariable name="control">super1</SetVariable>
                     <SetVariable name="label">Super</SetVariable>
-                    <SetVariable name="color">yellow</SetVariable>
+                    <SetVariable name="color">blue</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup>
@@ -71,7 +71,7 @@ Variables:
                 <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
                 <SetVariable name="control">mix</SetVariable>
                 <SetVariable name="label">Mix</SetVariable>
-                <SetVariable name="color">blue</SetVariable>
+                <SetVariable name="color">red</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
