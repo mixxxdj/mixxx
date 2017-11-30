@@ -103,7 +103,6 @@ void DlgCoverArtFullSize::slotCoverFound(const QObject* pRequestor,
         // qDebug() << "DlgCoverArtFullSize::slotCoverFound" << pRequestor << info
         //          << pixmap.size();
         m_pixmap = pixmap;
-        move(QApplication::desktop()->screenGeometry().center() - rect().center());
         if (m_pixmap.isNull()) {
             close();
         } else {
@@ -121,7 +120,13 @@ void DlgCoverArtFullSize::slotCoverFound(const QObject* pRequestor,
                 dialogSize.scale(availableScreenSpace.width(), dialogSize.height(),
                                  Qt::KeepAspectRatio);
             }
-            resize(dialogSize);
+            coverArt->setPixmap(m_pixmap);
+            // center the window
+            setGeometry(QStyle::alignedRect(
+                    Qt::LeftToRight,
+                    Qt::AlignCenter,
+                    dialogSize,
+                    QApplication::desktop()->availableGeometry()));
         }
     }
 }
