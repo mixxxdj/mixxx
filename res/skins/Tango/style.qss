@@ -203,6 +203,13 @@ WWidgetGroup {
   margin: 0px 0px 3px 0px;
 }
 
+#Logo[displayValue="0"] {
+  background: transparent url(skin:/buttons/btn_logo_102x24_grey.svg) no-repeat center center;
+  }
+  #Logo[displayValue="1"] {
+    background: transparent url(skin:/buttons/btn_logo_102x24.svg) no-repeat center center;
+  }
+
 #MixerBar {
   qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
   margin: 0px;
@@ -1289,18 +1296,30 @@ decks, samplers, mic, aux */
   color: #888;
 }
 
-#FxUnitMixerLeft {
-  padding-left:1px;
-  background-color: #0f0f0f;
-}
-#FxUnitMixerRight {
-  padding-right:1px;
-  background-color: #0f0f0f;
-}
-
-#SuperWetDryContainer {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+#FxUnitMixerLeft,
+#FxUnitMixerLeft_mini,
+#FxUnitMixerRight,
+#FxUnitMixerRight_mini {
+  qproperty-layoutAlignment: 'AlignCenter';
   background-color: #333;
+  }
+  #FxUnitMixerLeft,
+  #FxUnitMixerRight {
+    padding-bottom: 2px;
+  }
+  #FxUnitMixerLeft,
+  #FxUnitMixerLeft_mini {
+    border-left: 1px solid #0f0f0f;
+  }
+  #FxUnitMixerRight,
+  #FxUnitMixerRight_mini {
+    border-right: 1px solid #0f0f0f;
+  }
+  #FxUnitMixerLeft_mini {
+    padding-left: 2px;
+  }
+  #FxUnitMixerRight_mini {
+    padding-right: 2px;
   }
 
 /* minimal EffectSlots in horizontal layout */
@@ -1691,22 +1710,22 @@ decks, samplers, mic, aux */
       border: 1px solid #fff;
     }
 
-#FxHeadMasterButton {
+#MasterFxButton {
   font-size: 13px/13px;
   font-weight: bold;
   text-align: center;
   background-color: #333;
   }
-  #FxHeadMasterButton[displayValue="0"] {
+  #MasterFxButton[displayValue="0"] {
     color: #888;
     }
-    #FxHeadMasterButton[displayValue="0"]:hover {
+    #MasterFxButton[displayValue="0"]:hover {
       border: 1px solid #ff8f00;
     }
-  #FxHeadMasterButton[displayValue="1"] {
+  #MasterFxButton[displayValue="1"] {
     background-color: #ff8f00;
     }
-    #FxHeadMasterButton[displayValue="1"]:hover {
+    #MasterFxButton[displayValue="1"]:hover {
       border: 1px solid #fff;
     }
 

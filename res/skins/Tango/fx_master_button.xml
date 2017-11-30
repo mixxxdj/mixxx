@@ -1,15 +1,14 @@
 <!--
 Description:
-  A button to assign an effect unit to parent deck,
-  used in decks' artist/duration row.
+  A button to assign an effect unit to master output. 
 Variables:
-  FxUnitNum: [EffectRack1_EffectUnitN]
-  group:  [ChannelN]
+  Size
+  FxUnitNum      : [EffectRack1_EffectUnitN]
 -->
 <Template>
   <PushButton>
-    <TooltipId>EffectUnit_<Variable name="sourceType"/>_enabled</TooltipId>
-    <ObjectName>FxAssignButton</ObjectName>
+    <TooltipId>EffectUnit_master_enabled</TooltipId>
+    <ObjectName>MasterFxButton</ObjectName>
     <Size><Variable name="Size"/></Size>
     <NumberStates>2</NumberStates>
     <RightClickIsPushButton>false</RightClickIsPushButton>
@@ -24,7 +23,7 @@ Variables:
       <Alignment>center</Alignment>
     </State>
     <Connection>
-      <ConfigKey>[EffectRack1_EffectUnit<Variable name="FxUnitNum"/>],group_<Variable name="group"/>_enable</ConfigKey>
+      <ConfigKey>[EffectRack1_EffectUnit<Variable name="FxUnitNum"/>],group_[Master]_enable</ConfigKey>
       <ButtonState>LeftButton</ButtonState>
     </Connection>
   </PushButton>

@@ -293,7 +293,6 @@
 
                         <WidgetGroup>
                           <Layout>vertical</Layout>
-                          <SizePolicy>me,min</SizePolicy>
                           <Children>
                             <Template src="skin:fx_units_12.xml"/>
                           </Children>
@@ -304,7 +303,7 @@
                           </Connection>
                         </WidgetGroup>
 
-                        <Template src="skin:sample_decks.xml"/>
+                        <!--Template src="skin:sample_decks.xml"/-->
 
                         <Template src="skin:mic_aux.xml"/>
 

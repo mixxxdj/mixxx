@@ -83,7 +83,8 @@ Variables:
         <Layout>vertical</Layout>
         <Children>
           <Template src="skin:vumeter_mixer.xml"/>
-            <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
+
+          <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
 
           <WidgetGroup><!-- Pfl button, isolated with a 'gap' -->
             <ObjectName>PflBoxLeft</ObjectName>

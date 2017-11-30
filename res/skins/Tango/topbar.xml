@@ -30,25 +30,39 @@ Description:
             <SizePolicy>me,max</SizePolicy>
             <Children>
 
-              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+              <WidgetGroup>
+                <MaximumSize>3,-1</MaximumSize>
+                <SizePolicy>min,min</SizePolicy>
+              </WidgetGroup>
 
-              <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ObjectName">LogoMaxi</SetVariable>
-                <SetVariable name="Size">81f,20f</SetVariable>
-                <SetVariable name="state_0_pressed">logo_104x26_grey.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">logo_104x26_grey.svg</SetVariable>
-                <SetVariable name="state_1_pressed">logo_104x26.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">logo_104x26.svg</SetVariable>
-                <SetVariable name="ConfigKey">[Tango],colorLogo</SetVariable>
-              </Template>
+              <PushButton>
+                <MinimumSize>10,24</MinimumSize>
+                <MaximumSize>102,24</MaximumSize>
+                <SizePolicy>me,f</SizePolicy>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_logo_102x24_grey.svg</Pressed>
+                  <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_logo_102x24_grey.svg</Unpressed>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_logo_102x24.svg</Pressed>
+                  <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_logo_102x24.svg</Unpressed>
+                </State>
+                <Connection>
+                  <ConfigKey persist="true">[Tango],colorLogo</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton>
 
-              <WidgetGroup><Size>3me,1min</Size></WidgetGroup>
+              <WidgetGroup><Size>0min,1min</Size></WidgetGroup>
 
               <Template src="skin:mixer_master_booth.xml"/>
 
               <WidgetGroup>
                 <MaximumSize>50,-1</MaximumSize>
-                <SizePolicy>me,min</SizePolicy>
+                <SizePolicy>min,min</SizePolicy>
               </WidgetGroup>
 
               <Template src="skin:mixer_headphone.xml"/>
@@ -141,7 +155,7 @@ Description:
           <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml"><!-- Library -->
-            <SetVariable name="TooltipId">show_library</SetVariable>
+            <SetVariable name="TooltipId">show_microphone</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">30f,20f</SetVariable>
             <SetVariable name="state_0_pressed">mic_aux_off.svg</SetVariable>
