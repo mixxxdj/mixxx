@@ -7,7 +7,7 @@ Description:
   <SetVariable name="FxRack">EffectRack1</SetVariable>
   <SetVariable name="FxRackNum">1</SetVariable>
   <WidgetGroup>
-    <ObjectName>FxUnits34</ObjectName>
+    <ObjectName>Spacer1e</ObjectName>
     <SizePolicy>me,max</SizePolicy>
     <Layout>horizontal</Layout>
     <Children>
@@ -19,11 +19,11 @@ Description:
           was visible at that moment and opposing EffectUnit tries to expand horizontally.
           Putting both versions into a vertical layout fixes this issue.
       -->
-      <WidgetGroup><!-- EffectUnit 3 -->
-        <Layout>vertical</Layout>
+      <WidgetStack currentpage="[Tango],fx_unit3_expanded" persist="true"><!-- EffectUnit 1 -->
         <SizePolicy>me,min</SizePolicy>
         <Children>
-          <WidgetGroup><!-- EffectUnit 3 maxi -->
+
+          <WidgetGroup trigger="[EffectRack1_EffectUnit3],show_parameters" on_hide_select="1" persist="true"><!-- EffectUnit 3 maxi -->
             <Layout>vertical</Layout>
             <SizePolicy>min,max</SizePolicy>
             <Children>
@@ -32,10 +32,6 @@ Description:
               </Template>
               <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
             </Children>
-            <Connection>
-              <ConfigKey persist="true">[EffectRack1_EffectUnit3],show_parameters</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
           </WidgetGroup>
 
           <WidgetGroup><!-- EffectUnit 3 mini -->
@@ -47,22 +43,18 @@ Description:
               </Template>
               <WidgetGroup><Size>1min,5me</Size></WidgetGroup>
             </Children>
-            <Connection>
-              <ConfigKey persist="true">[EffectRack1_EffectUnit3],show_parameters</ConfigKey>
-              <Transform><Not/></Transform>
-              <BindProperty>visible</BindProperty>
-            </Connection>
           </WidgetGroup>
+
         </Children>
-      </WidgetGroup><!-- /EffectUnit 3 -->
+      </WidgetStack><!-- /EffectUnit 3 -->
 
       <WidgetGroup><Size>10f,0min</Size></WidgetGroup>
 
-      <WidgetGroup><!-- EffectUnit 4 -->
-        <Layout>vertical</Layout>
+      <WidgetStack currentpage="[Tango],fx_unit4_expanded" persist="true"><!-- EffectUnit 2 -->
         <SizePolicy>me,min</SizePolicy>
         <Children>
-          <WidgetGroup><!-- EffectUnit 4 maxi -->
+        
+          <WidgetGroup trigger="[EffectRack1_EffectUnit4],show_parameters" on_hide_select="1" persist="true"><!-- EffectUnit 4 maxi -->
             <Layout>vertical</Layout>
             <SizePolicy>min,max</SizePolicy>
             <Children>
@@ -71,10 +63,6 @@ Description:
               </Template>
               <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
             </Children>
-            <Connection>
-              <ConfigKey persist="true">[EffectRack1_EffectUnit4],show_parameters</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
           </WidgetGroup>
 
           <WidgetGroup><!-- EffectUnit 4 mini -->
@@ -86,14 +74,10 @@ Description:
               </Template>
               <WidgetGroup><Size>1min,5me</Size></WidgetGroup>
             </Children>
-            <Connection>
-              <ConfigKey persist="true">[EffectRack1_EffectUnit4],show_parameters</ConfigKey>
-              <Transform><Not/></Transform>
-              <BindProperty>visible</BindProperty>
-            </Connection>
           </WidgetGroup>
+
         </Children>
-      </WidgetGroup><!-- /EffectUnit 4 -->
+      </WidgetStack>
 
     </Children>
     <Connection>

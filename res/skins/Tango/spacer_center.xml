@@ -3,18 +3,12 @@ Description:
   Shows Logo in normal mode if 4 decks are enabled.
 -->
 <Template>
-  <WidgetGroup>
-    <Layout>vertical</Layout>
-    <SizePolicy>min,f</SizePolicy>
+  <WidgetStack currentpage="[Tango],mixer_stack" persist="true">
     <Children>
 
-      <WidgetGroup><!-- with mixer and Master VU -->
+      <WidgetGroup trigger="[Tango],channel_mixer" on_hide_select="1" persist="true"><!-- with mixer and Master VU -->
         <Layout>vertical</Layout>
         <Size>18f,0f</Size>
-        <Connection>
-          <ConfigKey>[Tango],channel_mixer</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
       </WidgetGroup>
 
       <WidgetGroup><!-- without mixer, levels meters always visible -->
@@ -30,13 +24,8 @@ Description:
             </Connection>
           </WidgetGroup>
         </Children>
-        <Connection>
-          <ConfigKey>[Tango],channel_mixer</ConfigKey>
-          <Transform><Not/></Transform>
-          <BindProperty>visible</BindProperty>
-        </Connection>
       </WidgetGroup>
 
     </Children>
-  </WidgetGroup>
+  </WidgetStack>
 </Template>

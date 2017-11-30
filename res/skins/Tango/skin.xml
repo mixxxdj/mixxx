@@ -128,7 +128,7 @@
       background-color: #0f0f0f;
     }
     QLabel {
-      image: url(skin:/buttons/btn_logo_104x26.svg);
+      image: url(skin:/buttons/btn_logo_102x24.svg);
       padding: 0;
       margin: 0;
       border: none;
@@ -303,7 +303,7 @@
                           </Connection>
                         </WidgetGroup>
 
-                        <!--Template src="skin:sample_decks.xml"/-->
+                        <Template src="skin:sample_decks.xml"/>
 
                         <Template src="skin:mic_aux.xml"/>
 
