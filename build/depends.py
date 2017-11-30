@@ -471,7 +471,7 @@ class ReplayGain(Dependence):
 
 
 class Ebur128Mit(Dependence):
-    INTERNAL_PATH = '#lib/libebur128-1.1.0'
+    INTERNAL_PATH = '#lib/libebur128-1.2.3'
     INTERNAL_LINK = False
 
     def sources(self, build):
@@ -484,13 +484,12 @@ class Ebur128Mit(Dependence):
         if not conf.CheckLib(['ebur128', 'libebur128']):
             self.INTERNAL_LINK = True;
             env.Append(CPPPATH=['%s/ebur128' % self.INTERNAL_PATH])
-            #env.Append(CPPDEFINES='USE_SPEEX_RESAMPLER') # Required for unused EBUR128_MODE_TRUE_PEAK
             if not conf.CheckHeader('sys/queue.h'):
                 env.Append(CPPPATH=['%s/ebur128/queue' % self.INTERNAL_PATH])
 
 
 class SoundTouch(Dependence):
-    SOUNDTOUCH_INTERNAL_PATH = '#lib/soundtouch-1.9.2'
+    SOUNDTOUCH_INTERNAL_PATH = '#lib/soundtouch-2.0.0'
     INTERNAL_LINK = True
 
     def sources(self, build):
@@ -826,6 +825,8 @@ class MixxxCore(Feature):
                    "errordialoghandler.cpp",
 
                    "sources/audiosource.cpp",
+                   "sources/audiosourcestereoproxy.cpp",
+                   "sources/metadatasourcetaglib.cpp",
                    "sources/soundsource.cpp",
                    "sources/soundsourceplugin.cpp",
                    "sources/soundsourcepluginlibrary.cpp",
@@ -1083,6 +1084,9 @@ class MixxxCore(Feature):
                    "track/trackmetadata.cpp",
                    "track/trackmetadatataglib.cpp",
                    "track/tracknumbers.cpp",
+                   "track/albuminfo.cpp",
+                   "track/trackinfo.cpp",
+                   "track/trackrecord.cpp",
 
                    "mixer/auxiliary.cpp",
                    "mixer/baseplayer.cpp",
@@ -1148,8 +1152,7 @@ class MixxxCore(Feature):
                    "util/db/sqltransaction.cpp",
                    "util/sample.cpp",
                    "util/samplebuffer.cpp",
-                   "util/singularsamplebuffer.cpp",
-                   "util/circularsamplebuffer.cpp",
+                   "util/readaheadsamplebuffer.cpp",
                    "util/rotary.cpp",
                    "util/logger.cpp",
                    "util/logging.cpp",
@@ -1158,6 +1161,7 @@ class MixxxCore(Feature):
                    "util/widgethider.cpp",
                    "util/autohidpi.cpp",
                    "util/screensaver.cpp",
+                   "util/indexrange.cpp",
 
                    '#res/mixxx.qrc'
                    ]

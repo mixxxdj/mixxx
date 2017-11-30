@@ -346,16 +346,16 @@
                </spacer>
               </item>
               <item>
-               <widget class="QPushButton" name="btnFetchTag">
+               <widget class="QPushButton" name="btnImportMetadataFromMusicBrainz">
                 <property name="text">
-                 <string>Get Metadata from MusicBrainz</string>
+                 <string>Import Metadata from MusicBrainz</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="btnReloadFromFile">
+               <widget class="QPushButton" name="btnImportMetadataFromFile">
                 <property name="text">
-                 <string>Reload Metadata from File</string>
+                 <string>Import Metadata from File</string>
                 </property>
                </widget>
               </item>
@@ -1006,8 +1006,8 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
   <tabstop>txtYear</tabstop>
   <tabstop>txtKey</tabstop>
   <tabstop>txtTrackNumber</tabstop>
-  <tabstop>btnFetchTag</tabstop>
-  <tabstop>btnReloadFromFile</tabstop>
+  <tabstop>btnImportMetadataFromMusicBrainz</tabstop>
+  <tabstop>btnImportMetadataFromFile</tabstop>
   <tabstop>btnOpenFileBrowser</tabstop>
   <tabstop>txtComment</tabstop>
   <tabstop>spinBpm</tabstop>
