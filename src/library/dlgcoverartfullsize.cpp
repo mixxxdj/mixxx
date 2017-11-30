@@ -120,7 +120,9 @@ void DlgCoverArtFullSize::slotCoverFound(const QObject* pRequestor,
                 dialogSize.scale(availableScreenSpace.width(), dialogSize.height(),
                                  Qt::KeepAspectRatio);
             }
-            coverArt->setPixmap(m_pixmap);
+            QPixmap resizedPixmap = m_pixmap.scaled(size(),
+                Qt::KeepAspectRatio, Qt::SmoothTransformation);
+            coverArt->setPixmap(resizedPixmap);
             // center the window
             setGeometry(QStyle::alignedRect(
                     Qt::LeftToRight,
