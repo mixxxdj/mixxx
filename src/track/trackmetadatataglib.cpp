@@ -7,9 +7,6 @@
 #include "util/logger.h"
 #include "util/memory.h"
 
-// TagLib has full support for MP4 atom types since version 1.8
-#define TAGLIB_HAS_MP4_ATOM_TYPES \
-    (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 8))
 
 // TagLib has support for has<TagType>() style functions since version 1.9
 #define TAGLIB_HAS_TAG_CHECK \
@@ -1564,7 +1561,8 @@ void importTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::
 
     // Read track number/total pair
     if (getItemListMap(tag).contains("trkn")) {
-        const TagLib::MP4::Item::IntPair trknPair(getItemListMap(tag)["trkn"].toIntPair());
+        const TagLib::MP4::Item trknItem = getItemListMap(tag)["trkn"];
+        const TagLib::MP4::Item::IntPair trknPair = trknItem.toIntPair();
         const TrackNumbers trackNumbers(trknPair.first, trknPair.second);
         QString trackNumber;
         QString trackTotal;
@@ -1582,15 +1580,12 @@ void importTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::
         // overwritten.
         parseBpm(pTrackMetadata, bpm);
     } else if (getItemListMap(tag).contains("tmpo")) {
-            // Read the BPM as an integer value.
-            const TagLib::MP4::Item& item = getItemListMap(tag)["tmpo"];
-#if (TAGLIB_HAS_MP4_ATOM_TYPES)
-            if (item.atomDataType() == TagLib::MP4::TypeInteger) {
-                pTrackMetadata->refTrackInfo().setBpm(Bpm(item.toInt()));
-            }
-#else
-            pTrackMetadata->refTrackInfo().setBpm(Bpm(item.toInt()));
-#endif
+        // Read the BPM as an integer value.
+        const TagLib::MP4::Item tmpoItem = getItemListMap(tag)["tmpo"];
+        double bpmValue = tmpoItem.toInt();
+        if (Bpm::isValidValue(bpmValue)) {
+            pTrackMetadata->refTrackInfo().setBpm(Bpm(bpmValue));
+        }
     }
 
     QString trackGain;
