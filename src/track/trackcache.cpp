@@ -492,7 +492,7 @@ Track* TrackCache::evictInternal(
         purgedItem.plainPtr->blockSignals(true);
 
         // Keep the cache locked while evicting the track object!
-        m_pEvictor->evictTrack(purgedItem.plainPtr);
+        m_pEvictor->onEvictingTrackFromCache(purgedItem.plainPtr);
     } else {
         qDebug() << "TrackCache:"
                 << "Uncached track cannot be evicted"

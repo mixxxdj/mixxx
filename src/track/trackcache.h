@@ -13,7 +13,7 @@
 
 class /*interface*/ TrackCacheEvictor {
 public:
-    virtual void evictTrack(Track* pTrack) = 0;
+    virtual void onEvictingTrackFromCache(Track* pTrack) = 0;
 
 protected:
     virtual ~TrackCacheEvictor() {}
