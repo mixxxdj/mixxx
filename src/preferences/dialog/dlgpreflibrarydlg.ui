@@ -169,7 +169,7 @@
       <item row="0" column="0" colspan="2">
        <widget class="QCheckBox" name="checkBox_SyncTrackMetadataExport">
         <property name="text">
-         <string>Export: Write back modified track metadata from the library when closing audio files</string>
+         <string>Export: Write back modified track metadata from the library into file tags</string>
         </property>
        </widget>
       </item>

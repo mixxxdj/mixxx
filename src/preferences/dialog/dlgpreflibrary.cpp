@@ -6,6 +6,7 @@
 #include <QApplication>
 #include <QFontDialog>
 #include <QFontMetrics>
+#include <QMessageBox>
 
 #include "preferences/dialog/dlgpreflibrary.h"
 #include "sources/soundsourceproxy.h"
@@ -348,5 +349,15 @@ void DlgPrefLibrary::slotSelectFont() {
                                       this, tr("Select Library Font"));
     if (ok) {
         setLibraryFont(font);
+    }
+}
+
+void DlgPrefLibrary::slotSyncTrackMetadataExportToggled() {
+    if (isVisible() && checkBox_SyncTrackMetadataExport->isChecked()) {
+        QMessageBox::information(
+                nullptr,
+                tr("Export Modified Track Metadata"),
+                tr("File modifications are deferred until considered safe and changes may not appear instantly."
+                        " Close Mixxx if you need to ensure that all pending write operations are finished."));
     }
 }
