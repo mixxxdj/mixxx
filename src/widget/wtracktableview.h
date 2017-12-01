@@ -60,8 +60,8 @@ class WTrackTableView : public WLibraryTableView {
     void slotPrevTrackInfo();
     void slotPrevDlgTagFetcher();
     void slotShowTrackInTagFetcher(TrackPointer track);
-    void slotImportTrackMetadata();
-    void slotExportTrackMetadata();
+    void slotImportTrackMetadataFromFileTags();
+    void slotExportTrackMetadataIntoFileTags();
     void slotResetPlayed();
     void addSelectionToPlaylist(int iPlaylistId);
     void addSelectionToCrate(int iCrateId);

@@ -404,7 +404,7 @@ void WTrackTableView::createActions() {
 
     m_pImportMetadataFromFileAct = new QAction(tr("Import Metadata from File"), this);
     connect(m_pImportMetadataFromFileAct, SIGNAL(triggered()),
-            this, SLOT(slotImportTrackMetadata()));
+            this, SLOT(slotImportTrackMetadataFromFileTags()));
 
     m_pImportMetadataFromMusicBrainzAct = new QAction(tr("Import Metadata from MusicBrainz"),this);
     connect(m_pImportMetadataFromMusicBrainzAct, SIGNAL(triggered()),
@@ -412,7 +412,7 @@ void WTrackTableView::createActions() {
 
     m_pExportMetadataAct = new QAction(tr("Export Metadata into File"), this);
     connect(m_pExportMetadataAct, SIGNAL(triggered()),
-            this, SLOT(slotExportTrackMetadata()));
+            this, SLOT(slotExportTrackMetadataIntoFileTags()));
 
     m_pAddToPreviewDeck = new QAction(tr("Load to Preview Deck"), this);
     // currently there is only one preview deck so just map it here.
@@ -1379,7 +1379,7 @@ void WTrackTableView::sendToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     playlistDao.sendToAutoDJ(trackIds, loc);
 }
 
-void WTrackTableView::slotImportTrackMetadata() {
+void WTrackTableView::slotImportTrackMetadataFromFileTags() {
     if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_IMPORTMETADATA)) {
         return;
     }
@@ -1404,7 +1404,7 @@ void WTrackTableView::slotImportTrackMetadata() {
     }
 }
 
-void WTrackTableView::slotExportTrackMetadata() {
+void WTrackTableView::slotExportTrackMetadataIntoFileTags() {
     if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_IMPORTMETADATA)) {
         return;
     }
