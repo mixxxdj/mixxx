@@ -103,6 +103,7 @@ protected:
     }
 
 private:
+    // Checks if all class invariants are met
     bool verifyConsistency() const;
 
     QString m_location;

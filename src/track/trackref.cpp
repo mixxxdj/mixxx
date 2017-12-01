@@ -2,10 +2,14 @@
 
 
 bool TrackRef::verifyConsistency() const {
-    VERIFY_OR_DEBUG_ASSERT(hasLocation() || !hasCanonicalLocation()) {
+    // Class invariant: The location can only be set together with
+    // at least one of the other members!
+    VERIFY_OR_DEBUG_ASSERT(!hasCanonicalLocation() || hasLocation()) {
+        // Condition violated: hasCanonicalLocation() => hasLocation()
         return false;
     }
-    VERIFY_OR_DEBUG_ASSERT(hasLocation() || !hasId()) {
+    VERIFY_OR_DEBUG_ASSERT(!hasId() || hasLocation()) {
+        // Condition violated: hasId() => hasLocation()
         return false;
     }
     return true;
