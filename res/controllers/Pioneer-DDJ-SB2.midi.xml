@@ -3028,7 +3028,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB2.highKillButton</key>
+                <key>PioneerDDJSB2.midKillButton</key>
                 <description>Mid kill Deck 2, Button: PAD2 (in CUE LOOP-Mode, Deck 2 active)</description>
                 <status>0x98</status>
                 <midino>0x61</midino>
@@ -3038,7 +3038,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>PioneerDDJSB2.highKillButton</key>
+                <key>PioneerDDJSB2.midKillButton</key>
                 <description>Mid kill Deck 3, Button: PAD2 (in CUE LOOP-Mode, Deck 3 active)</description>
                 <status>0x99</status>
                 <midino>0x61</midino>
@@ -3048,7 +3048,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>PioneerDDJSB2.highKillButton</key>
+                <key>PioneerDDJSB2.midKillButton</key>
                 <description>Mid kill Deck 4, Button: PAD2 (in CUE LOOP-Mode, Deck 4 active)</description>
                 <status>0x9A</status>
                 <midino>0x61</midino>
@@ -3619,7 +3619,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>PioneerDDJSB2.highKillButton</key>
-                <description>Low kill Deck 1, Button: PAD3 (in CUE LOOP-Mode, Deck 1 active)</description>
+                <description>High kill Deck 1, Button: PAD3 (in CUE LOOP-Mode, Deck 1 active)</description>
                 <status>0x97</status>
                 <midino>0x62</midino>
                 <options>
@@ -3629,7 +3629,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>PioneerDDJSB2.highKillButton</key>
-                <description>Low kill Deck 2, Button: PAD3 (in CUE LOOP-Mode, Deck 2 active)</description>
+                <description>High kill Deck 2, Button: PAD3 (in CUE LOOP-Mode, Deck 2 active)</description>
                 <status>0x98</status>
                 <midino>0x62</midino>
                 <options>
@@ -3639,7 +3639,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>PioneerDDJSB2.highKillButton</key>
-                <description>Low kill Deck 3, Button: PAD3 (in CUE LOOP-Mode, Deck 3 active)</description>
+                <description>High kill Deck 3, Button: PAD3 (in CUE LOOP-Mode, Deck 3 active)</description>
                 <status>0x99</status>
                 <midino>0x62</midino>
                 <options>
@@ -3649,7 +3649,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>PioneerDDJSB2.highKillButton</key>
-                <description>Low kill Deck 4, Button: PAD3 (in CUE LOOP-Mode, Deck 4 active)</description>
+                <description>High kill Deck 4, Button: PAD3 (in CUE LOOP-Mode, Deck 4 active)</description>
                 <status>0x9A</status>
                 <midino>0x62</midino>
                 <options>
