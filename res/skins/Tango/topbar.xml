@@ -225,7 +225,7 @@ Description:
             <Children>
               <!-- invisible Rec button -->
               <Template src="skin:button_3state_display.xml">
-                <SetVariable name="ObjectName">RecOverlay</SetVariable>
+                <SetVariable name="ObjectName">RecButton</SetVariable>
                 <SetVariable name="TooltipId">toggle_recording</SetVariable>
                 <SetVariable name="Size">70f,20f</SetVariable>
                 <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
@@ -236,33 +236,17 @@ Description:
                 <Layout>horizontal</Layout>
                 <Size>70f,20f</Size>
                 <Children>
-                  <Template src="skin:button_3state_display.xml">
-                    <SetVariable name="ObjectName">RecDot</SetVariable>
-                    <SetVariable name="Size">15f,20f</SetVariable>
-                    <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
-                  </Template>
+                  <Label>
+                    <ObjectName>RecDot</ObjectName>
+                    <Size>15f,20f</Size>
+                  </Label>
 
-                  <WidgetGroup><!-- "Rec" label or RecDuration -->
-                    <Layout>stacked</Layout>
+                  <RecordingDuration>
+                    <ObjectName>RecDuration</ObjectName>
                     <Size>55f,20f</Size>
-                    <Children>
-                      <Template src="skin:button_3state_display.xml">
-                        <SetVariable name="ObjectName">RecUnderlay</SetVariable>
-                        <SetVariable name="Size">55f,20f</SetVariable>
-                        <SetVariable name="state_0_text">REC</SetVariable>
-                        <SetVariable name="state_1_text">. . .</SetVariable>
-                        <!-- Empty to show the RecordingDuration underneath -->
-                        <SetVariable name="state_2_text"></SetVariable>
-                        <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
-                      </Template>
-
-                      <RecordingDuration>
-                        <ObjectName>RecDuration</ObjectName>
-                        <Size>55f,20f</Size>
-                        <Alignment>center</Alignment>
-                      </RecordingDuration>
-                    </Children>
-                  </WidgetGroup>
+                    <InactiveText>REC</InactiveText>
+                    <Alignment>center</Alignment>
+                  </RecordingDuration>
                 </Children>
               </WidgetGroup><!-- /Rec dot + RecDuration -->
             </Children>
