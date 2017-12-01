@@ -1417,6 +1417,15 @@ void WTrackTableView::slotExportTrackMetadataIntoFileTags() {
         return;
     }
 
+    if (QMessageBox::Apply != QMessageBox::question(
+            nullptr,
+            tr("Export Track Metadata"),
+            tr("Write track metadata back into the underlying audio file(s)?\n\nFile modifications are deferred and changes may not appear immediately! Close Mixxx to enforce writing of all pending exports."),
+            QMessageBox::Apply | QMessageBox::Cancel,
+            QMessageBox::Apply)) {
+        return;
+    }
+
     foreach (QModelIndex index, indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
