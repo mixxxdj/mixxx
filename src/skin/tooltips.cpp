@@ -166,6 +166,11 @@ void Tooltips::addStandardTooltips() {
             << tr("Adjusts the master output gain.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
+    add("booth_gain")
+            << tr("Booth Gain")
+            << tr("Adjusts the booth output gain.")
+            << QString("%1: %2").arg(rightClick, resetToDefault);
+
     add("crossfader")
             << tr("Crossfader")
             << tr("Determines the master output by fading between the left and right channels.")
