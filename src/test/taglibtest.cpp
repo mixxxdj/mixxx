@@ -47,6 +47,9 @@ void copyFile(const QString& srcFileName, const QString& dstFileName) {
     DEBUG_ASSERT(srcFile.size() == dstFile.size());
 }
 
+// TODO(XXX): The following test has been disabled on Windows until
+// file system issues with temporary files have been solved.
+#ifndef __WINDOWS__
 TEST_F(TagLibTest, WriteID3v2Tag) {
     // Generate a file name for the temporary file
     const QString tmpFileName = generateTemporaryFileName("no_id3v1_mp3");
@@ -105,5 +108,6 @@ TEST_F(TagLibTest, WriteID3v2Tag) {
         EXPECT_FALSE(mixxx::taglib::hasAPETag(mpegFile));
     }
 }
+#endif // __WINDOWS__
 
 }  // anonymous namespace
