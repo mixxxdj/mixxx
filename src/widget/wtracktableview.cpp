@@ -1420,15 +1420,16 @@ void WTrackTableView::slotExportTrackMetadataIntoFileTags() {
     if (QMessageBox::Apply != QMessageBox::question(
             nullptr,
             tr("Export Track Metadata"),
-            tr("Write track metadata back into the underlying audio file(s)?\n\n"
-                    "File modifications are deferred until considered safe and changes may not appear instantly!"
-                    " Close Mixxx if you need to ensure that all pending write operations are finished."),
+            tr("Write track metadata into the corresponding audio file(s)?\n\n"
+                    "File modifications are deferred and may not appear at once! "
+                    "If you do not see changed metadata in other programs, "
+                    "close Mixxx to modify those files immediately."),
             QMessageBox::Apply | QMessageBox::Cancel,
             QMessageBox::Apply)) {
         return;
     }
 
-    foreach (QModelIndex index, indices) {
+    for (const QModelIndex& index : indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
             // Export of metadata is deferred until all references to the
