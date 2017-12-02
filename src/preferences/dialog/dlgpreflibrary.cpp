@@ -9,6 +9,7 @@
 #include <QMessageBox>
 
 #include "preferences/dialog/dlgpreflibrary.h"
+#include "library/exporttrackmetadatainfo.h"
 #include "sources/soundsourceproxy.h"
 
 #define MIXXX_ADDONS_URL "http://www.mixxx.org/wiki/doku.php/add-ons"
@@ -355,11 +356,7 @@ void DlgPrefLibrary::slotSelectFont() {
 
 void DlgPrefLibrary::slotSyncTrackMetadataExportToggled() {
     if (isVisible() && checkBox_SyncTrackMetadataExport->isChecked() && m_bShowTrackMetadataExportInfo) {
-        QMessageBox::information(
-                nullptr,
-                tr("Export Modified Track Metadata"),
-                tr("Mixxx may wait to modify files until it is certain that writing into those files will not cause audible glitches! "
-                        "If you do not see changed metadata in other programs, close Mixxx to modify the files immediately."));
+        mixxx::ExportTrackMetadataInfo::showMessageBox();
         m_bShowTrackMetadataExportInfo = false;
     }
 }

@@ -16,6 +16,7 @@
 #include "library/librarytablemodel.h"
 #include "library/crate/cratefeaturehelper.h"
 #include "library/dao/trackschema.h"
+#include "library/exporttrackmetadatainfo.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "track/track.h"
@@ -1421,11 +1422,7 @@ void WTrackTableView::slotExportTrackMetadataIntoFileTags() {
     if (m_bShowTrackMetadataExportInfo) {
         // Inform the user once per session that the corresponding files
         // will not be modified at once and changes may appear later.
-        QMessageBox::information(
-            nullptr,
-            tr("Export Track Metadata"),
-            tr("Mixxx may wait to modify files until it is certain that writing into those files will not cause audible glitches! "
-                    "If you do not see changed metadata in other programs, close Mixxx to modify the files immediately."));
+        mixxx::ExportTrackMetadataInfo::showMessageBox();
         m_bShowTrackMetadataExportInfo = false;
     }
 
