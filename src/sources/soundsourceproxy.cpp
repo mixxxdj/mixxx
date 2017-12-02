@@ -427,8 +427,7 @@ void SoundSourceProxy::updateTrackFromSource(
     // not be supported at all and those would get lost!
     mixxx::TrackMetadata trackMetadata;
     bool metadataSynchronized = false;
-    bool isDirty = false;
-    m_pTrack->getTrackMetadata(&trackMetadata, &metadataSynchronized, &isDirty);
+    m_pTrack->getTrackMetadata(&trackMetadata, &metadataSynchronized);
     // Cast away the enriched track location by explicitly slicing the
     // returned CoverInfo to CoverInfoRelative
     const CoverInfoRelative coverInfo(m_pTrack->getCoverInfo());
@@ -438,7 +437,7 @@ void SoundSourceProxy::updateTrackFromSource(
     // If the file tags have already been parsed once, both track metadata
     // and cover art should not be updated implicitly.
     if (metadataSynchronized) {
-        if (isDirty || (importTrackMetadataMode == ImportTrackMetadataMode::Once)) {
+        if (importTrackMetadataMode == ImportTrackMetadataMode::Once) {
             kLogger.info() << "Skip parsing of track metadata and cover art from file"
                      << getUrl().toString();
             return; // abort

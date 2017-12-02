@@ -1388,10 +1388,28 @@ void WTrackTableView::slotImportTrackMetadata() {
 
     for (const QModelIndex& index : indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
+        if (pTrack && pTrack->isDirty()) {
+            if (QMessageBox::Apply == QMessageBox::question(
+                    nullptr,
+                    tr("Import Track Metadata"),
+                    tr("One or more selected tracks have unsaved changes. Continue anyway?"),
+                    QMessageBox::Apply | QMessageBox::Cancel,
+                    QMessageBox::Apply)) {
+                // Continue with import
+                break;
+            } else {
+                // Abort import
+                return;
+            }
+        }
+    }
+
+    for (const QModelIndex& index : indices) {
+        TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
             // The user has explicitly requested to reload metadata from the file
-            // to override the information within Mixxx! Cover art is reloaded
-            // separately.
+            // to override the information within Mixxx! Custom cover art must be
+            // reloaded separately.
             SoundSourceProxy(pTrack).updateTrackFromSource(
                     SoundSourceProxy::ImportTrackMetadataMode::Again);
         }
