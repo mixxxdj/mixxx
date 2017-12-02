@@ -126,16 +126,12 @@ void Track::setTrackMetadata(
 
 void Track::getTrackMetadata(
         mixxx::TrackMetadata* pTrackMetadata,
-        bool* pMetadataSynchronized,
-        bool* pDirty) const {
+        bool* pMetadataSynchronized) const {
     DEBUG_ASSERT(pTrackMetadata);
     QMutexLocker lock(&m_qMutex);
     *pTrackMetadata = m_record.getMetadata();
     if (pMetadataSynchronized != nullptr) {
         *pMetadataSynchronized = m_record.getMetadataSynchronized();
-    }
-    if (pDirty != nullptr) {
-        *pDirty = m_bDirty;
     }
 }
 
