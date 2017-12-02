@@ -68,6 +68,8 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     bool m_bAddedDirectory;
     QFont m_originalTrackTableFont;
     int m_iOriginalTrackTableRowHeight;
+
+    bool m_bShowTrackMetadataExportInfo;
 };
 
 #endif

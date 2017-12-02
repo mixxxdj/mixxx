@@ -190,6 +190,8 @@ class WTrackTableView : public WLibraryTableView {
     bool m_selectionChangedSinceLastGuiTick;
     bool m_loadCachedOnly;
     ControlProxy* m_pCOTGuiTick;
+
+    bool m_bShowTrackMetadataExportInfo;
 };
 
 #endif

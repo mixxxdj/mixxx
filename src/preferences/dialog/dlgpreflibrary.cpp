@@ -22,7 +22,8 @@ DlgPrefLibrary::DlgPrefLibrary(
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
           m_bAddedDirectory(false),
-          m_iOriginalTrackTableRowHeight(Library::kDefaultRowHeightPx) {
+          m_iOriginalTrackTableRowHeight(Library::kDefaultRowHeightPx),
+          m_bShowTrackMetadataExportInfo(true) {
     setupUi(this);
 
     connect(this, SIGNAL(requestAddDir(QString)),
@@ -353,12 +354,13 @@ void DlgPrefLibrary::slotSelectFont() {
 }
 
 void DlgPrefLibrary::slotSyncTrackMetadataExportToggled() {
-    if (isVisible() && checkBox_SyncTrackMetadataExport->isChecked()) {
+    if (isVisible() && checkBox_SyncTrackMetadataExport->isChecked() && m_bShowTrackMetadataExportInfo) {
         QMessageBox::information(
                 nullptr,
                 tr("Export Modified Track Metadata"),
                 tr("File modifications are deferred and may not appear at once! "
                         "If you do not see changed metadata in other programs, "
                         "close Mixxx to modify those files immediately."));
+        m_bShowTrackMetadataExportInfo = false;
     }
 }

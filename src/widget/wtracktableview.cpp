@@ -43,7 +43,8 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_iCoverHashColumn(-1),
           m_iCoverColumn(-1),
           m_selectionChangedSinceLastGuiTick(true),
-          m_loadCachedOnly(false) {
+          m_loadCachedOnly(false),
+          m_bShowTrackMetadataExportInfo(true) {
 
 
     connect(&m_loadTrackMapper, SIGNAL(mapped(QString)),
@@ -1417,16 +1418,16 @@ void WTrackTableView::slotExportTrackMetadataIntoFileTags() {
         return;
     }
 
-    if (QMessageBox::Apply != QMessageBox::question(
+    if (m_bShowTrackMetadataExportInfo) {
+        // Inform the user once per session that the corresponding files
+        // will not be modified at once and changes may appear later.
+        QMessageBox::information(
             nullptr,
             tr("Export Track Metadata"),
-            tr("Write track metadata into the corresponding audio file(s)?\n\n"
-                    "File modifications are deferred and may not appear at once! "
+            tr("File modifications are deferred and may not appear at once! "
                     "If you do not see changed metadata in other programs, "
-                    "close Mixxx to modify those files immediately."),
-            QMessageBox::Apply | QMessageBox::Cancel,
-            QMessageBox::Apply)) {
-        return;
+                    "close Mixxx to modify those files immediately."));
+        m_bShowTrackMetadataExportInfo = false;
     }
 
     for (const QModelIndex& index : indices) {
