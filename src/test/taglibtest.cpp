@@ -11,7 +11,35 @@ namespace {
 
 const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
 
-class TagLibTest : public testing::Test {};
+class TagLibTest : public testing::Test {
+  protected:
+    static QString generateTemporaryFileName(const QString& fileNameTemplate) {
+        QTemporaryFile tmpFile(fileNameTemplate);
+        tmpFile.setAutoRemove(true);
+        tmpFile.open();
+        DEBUG_ASSERT(tmpFile.exists());
+        const QString tmpFileName = tmpFile.fileName();
+        return tmpFileName;
+    }
+
+    static bool copyFile(const QString& srcFileName, const QString& dstFileName) {
+        QFile srcFile(srcFileName);
+        DEBUG_ASSERT(srcFile.exists());
+        if (!srcFile.copy(dstFileName)) {
+            qWarning()
+                    << srcFile.errorString()
+                    << "- Failed to copy file"
+                    << srcFileName
+                    << "->"
+                    << dstFileName;
+            return false;
+        }
+        QFile dstFile(dstFileName);
+        DEBUG_ASSERT(dstFile.exists());
+        DEBUG_ASSERT(srcFile.size() == dstFile.size());
+        return true;
+    }
+};
 
 class FileRemover final {
 public:
@@ -24,28 +52,6 @@ public:
 private:
     QString m_fileName;
 };
-
-QString generateTemporaryFileName(const QString& fileNameTemplate) {
-    QTemporaryFile tmpFile(fileNameTemplate);
-    tmpFile.open();
-    DEBUG_ASSERT(tmpFile.exists());
-    const QString tmpFileName = tmpFile.fileName();
-    DEBUG_ASSERT(tmpFile.remove());
-    return tmpFileName;
-}
-
-void copyFile(const QString& srcFileName, const QString& dstFileName) {
-    QFile srcFile(srcFileName);
-    DEBUG_ASSERT(srcFile.exists());
-    qDebug() << "Copying file"
-            << srcFileName
-            << "->"
-            << dstFileName;
-    DEBUG_ASSERT(srcFile.copy(dstFileName));
-    QFile dstFile(dstFileName);
-    DEBUG_ASSERT(dstFile.exists());
-    DEBUG_ASSERT(srcFile.size() == dstFile.size());
-}
 
 TEST_F(TagLibTest, WriteID3v2Tag) {
     // Generate a file name for the temporary file
