@@ -44,8 +44,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_iCoverHashColumn(-1),
           m_iCoverColumn(-1),
           m_selectionChangedSinceLastGuiTick(true),
-          m_loadCachedOnly(false),
-          m_bShowTrackMetadataExportInfo(true) {
+          m_loadCachedOnly(false) {
 
 
     connect(&m_loadTrackMapper, SIGNAL(mapped(QString)),
@@ -1419,12 +1418,9 @@ void WTrackTableView::slotExportTrackMetadataIntoFileTags() {
         return;
     }
 
-    if (m_bShowTrackMetadataExportInfo) {
-        // Inform the user once per session that the corresponding files
-        // will not be modified at once and changes may appear later.
-        mixxx::ExportTrackMetadataInfo::showMessageBox();
-        m_bShowTrackMetadataExportInfo = false;
-    }
+    // Inform the user once per session that the corresponding files
+    // will not be modified at once and changes may appear later.
+    mixxx::ExportTrackMetadataInfo::showMessageBox();
 
     for (const QModelIndex& index : indices) {
         TrackPointer pTrack = trackModel->getTrack(index);

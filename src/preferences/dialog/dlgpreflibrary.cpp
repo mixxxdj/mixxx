@@ -23,8 +23,7 @@ DlgPrefLibrary::DlgPrefLibrary(
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
           m_bAddedDirectory(false),
-          m_iOriginalTrackTableRowHeight(Library::kDefaultRowHeightPx),
-          m_bShowTrackMetadataExportInfo(true) {
+          m_iOriginalTrackTableRowHeight(Library::kDefaultRowHeightPx) {
     setupUi(this);
 
     connect(this, SIGNAL(requestAddDir(QString)),
@@ -355,8 +354,7 @@ void DlgPrefLibrary::slotSelectFont() {
 }
 
 void DlgPrefLibrary::slotSyncTrackMetadataExportToggled() {
-    if (isVisible() && checkBox_SyncTrackMetadataExport->isChecked() && m_bShowTrackMetadataExportInfo) {
+    if (isVisible() && checkBox_SyncTrackMetadataExport->isChecked()) {
         mixxx::ExportTrackMetadataInfo::showMessageBox();
-        m_bShowTrackMetadataExportInfo = false;
     }
 }
