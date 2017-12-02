@@ -776,18 +776,19 @@ MetadataSourceTagLib::exportTrackMetadata(
     }
 
     if (pTagSaver->hasModifiedTags()) {
-        if (pTagSaver->saveModifiedTags() && safelyWritableFile.commit()) {
-            return afterExportSucceeded();
-        } else {
-            kLogger.warning() << "Failed to save tags of file" << m_fileName;
-            return std::make_pair(ExportResult::Failed, QDateTime());
+        if (pTagSaver->saveModifiedTags()) {
+            // Close all file handles after modified tags have been saved into the temporary file!
+            pTagSaver.reset();
+            // Now we can safely replace the original file with the temporary file
+            if (safelyWritableFile.commit()) {
+                return afterExportSucceeded();
+            }
         }
+        kLogger.warning() << "Failed to save tags of file" << m_fileName;
     } else {
         kLogger.warning() << "Failed to modify tags of file" << m_fileName;
-        return std::make_pair(ExportResult::Failed, QDateTime());
     }
-
-    // pTagSaver will be destroyed and all open files closed before safelyWritableFile
+    return std::make_pair(ExportResult::Failed, QDateTime());
 }
 
 } // namespace mixxx
