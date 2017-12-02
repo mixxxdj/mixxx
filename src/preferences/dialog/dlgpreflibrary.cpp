@@ -358,9 +358,8 @@ void DlgPrefLibrary::slotSyncTrackMetadataExportToggled() {
         QMessageBox::information(
                 nullptr,
                 tr("Export Modified Track Metadata"),
-                tr("File modifications are deferred and may not appear at once! "
-                        "If you do not see changed metadata in other programs, "
-                        "close Mixxx to modify those files immediately."));
+                tr("Mixxx may wait to modify files until it is certain that writing into those files will not cause audible glitches! "
+                        "If you do not see changed metadata in other programs, close Mixxx to modify the files immediately."));
         m_bShowTrackMetadataExportInfo = false;
     }
 }
