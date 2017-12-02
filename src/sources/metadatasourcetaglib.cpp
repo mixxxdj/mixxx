@@ -612,12 +612,14 @@ class SafelyWritableFile final {
         : m_origFileName(std::move(origFileName)) {
         DEBUG_ASSERT(m_tempFileName.isNull());
         QString tempFileName = m_origFileName + kSafelyWritableTempFileSuffix;
-        if (QFile::copy(m_origFileName, tempFileName)) {
+        QFile origFile(m_origFileName);
+        if (origFile.copy(tempFileName)) {
             m_tempFileName = std::move(tempFileName);
         } else {
             kLogger.warning()
-                    << "Failed to copy original into temporary file before writing:"
-                    << m_origFileName
+                    << origFile.errorString()
+                    << "- Failed to copy original into temporary file before writing:"
+                    << origFile.fileName()
                     << "->"
                     << tempFileName;
         }
@@ -644,7 +646,8 @@ class SafelyWritableFile final {
             DEBUG_ASSERT(!QFile::exists(backupFileName)); // very unlikely, otherwise renaming fails
             if (!oldFile.rename(backupFileName)) {
                 kLogger.critical()
-                        << "Failed to rename the original file for backup before writing:"
+                        << oldFile.errorString()
+                        << "- Failed to rename the original file for backup before writing:"
                         << oldFile.fileName()
                         << "->"
                         << backupFileName;
@@ -654,7 +657,8 @@ class SafelyWritableFile final {
         DEBUG_ASSERT(!QFile::exists(m_origFileName));
         if (!newFile.rename(m_origFileName)) {
             kLogger.critical()
-                    << "Failed to rename temporary file after writing:"
+                    << newFile.errorString()
+                    << "- Failed to rename temporary file after writing:"
                     << newFile.fileName()
                     << "->"
                     << m_origFileName;
@@ -663,7 +667,8 @@ class SafelyWritableFile final {
                 if (!oldFile.rename(m_origFileName)) {
                     // Undo operation failed
                     kLogger.warning()
-                            << "Both the original and the temporary file are still available:"
+                            << oldFile.errorString()
+                            << "- Both the original and the temporary file are still available:"
                             << oldFile.fileName()
                             << newFile.fileName();
                 }
@@ -673,7 +678,8 @@ class SafelyWritableFile final {
         if (oldFile.exists()) {
             if (!oldFile.remove()) {
                 kLogger.warning()
-                    << "Failed to remove backup file after writing:"
+                    << oldFile.errorString()
+                    << "- Failed to remove backup file after writing:"
                     << oldFile.fileName();
                 return false;
             }
@@ -683,13 +689,17 @@ class SafelyWritableFile final {
     }
 
     void cancel() {
-        if (m_tempFileName.isNull() ||
-                !QFile::exists(m_tempFileName)) {
+        if (m_tempFileName.isNull()) {
             return; // nothing to do
         }
-        if (!QFile::remove(m_tempFileName)) {
+        QFile tempFile(m_tempFileName);
+        if (!tempFile.exists()) {
+            return; // nothing to do
+        }
+        if (!tempFile.remove()) {
             kLogger.warning()
-                    << "Failed to remove temporary file:"
+                    << tempFile.errorString()
+                    << "- Failed to remove temporary file:"
                     << m_tempFileName;
         }
         // Only try once to remove the temporary file
