@@ -641,7 +641,11 @@ class SafelyWritableFile final {
     }
 
     const QString& fileName() const {
-        return m_tempFileName;
+        if (m_tempFileName.isNull()) {
+            return m_origFileName;
+        } else {
+            return m_tempFileName;
+        }
     }
 
     bool commit() {
@@ -699,6 +703,8 @@ class SafelyWritableFile final {
                 return false;
             }
         }
+        // Prevent any further interaction and file access
+        m_origFileName = QString();
         m_tempFileName = QString();
         return true;
     }
@@ -717,7 +723,8 @@ class SafelyWritableFile final {
                     << "- Failed to remove temporary file:"
                     << m_tempFileName;
         }
-        // Only try once to remove the temporary file
+        // Prevent any further interaction and file access
+        m_origFileName = QString();
         m_tempFileName = QString();
     }
 
