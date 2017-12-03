@@ -1452,10 +1452,13 @@ void importTrackMetadataFromVorbisCommentTag(TrackMetadata* pTrackMetadata,
         pTrackMetadata->refTrackInfo().setYear(date);
     }
 
+    // MusicBrainz recommends "BPM": https://picard.musicbrainz.org/docs/mappings
+    // Mixxx (<= 2.0) favored "TEMPO": https://www.mixxx.org/wiki/doku.php/library_metadata_rewrite_using_taglib
     QString bpm;
-    if (readXiphCommentField(tag, "TEMPO", &bpm) || // recommended field
-            readXiphCommentField(tag, "BPM", &bpm)) { // alternative field
-        parseBpm(pTrackMetadata, bpm);
+    if (!readXiphCommentField(tag, "BPM", &bpm) || !parseBpm(pTrackMetadata, bpm)) {
+        if (readXiphCommentField(tag, "TEMPO", &bpm)) {
+            parseBpm(pTrackMetadata, bpm);
+        }
     }
 
     // Only read track gain (not album gain)
@@ -2115,8 +2118,16 @@ bool exportTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
 
     const TagLib::String bpm(
             toTagLibString(formatBpm(trackMetadata)));
-    writeXiphCommentField(pTag, "TEMPO", bpm); // recommended field
-    updateXiphCommentField(pTag, "BPM", bpm); // alternative field
+    // MusicBrainz recommends "BPM": https://picard.musicbrainz.org/docs/mappings
+    // Mixxx (<= 2.0) favored "TEMPO": https://www.mixxx.org/wiki/doku.php/library_metadata_rewrite_using_taglib
+    if (hasXiphCommentField(*pTag, "BPM") || !hasXiphCommentField(*pTag, "TEMPO")) {
+        // Update or add the recommended field for BPM values
+        writeXiphCommentField(pTag, "BPM", bpm);
+    } else {
+        // Update the legacy field for BPM values only if it already exists exclusively
+        DEBUG_ASSERT(hasXiphCommentField(*pTag, "TEMPO"));
+        writeXiphCommentField(pTag, "TEMPO", bpm);
+    }
 
     // Write both INITIALKEY and KEY
     const TagLib::String key(
