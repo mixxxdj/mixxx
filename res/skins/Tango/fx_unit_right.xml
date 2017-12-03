@@ -29,7 +29,10 @@ Variables:
 
           <Label>
             <ObjectName>FxUnitLabel</ObjectName>
-            <Size>30min,18f</Size>
+            <!-- Pretend it's in the same position like collapsed FX unit:
+                there, it has a 4px spacer above. here, we need some margin
+                to FX mixer below. Text is centerd vertically -->
+            <Size>30min,20f</Size>
             <Text>FX<Variable name="FxUnitNum"/></Text>
             <Alignment>center</Alignment>
           </Label>

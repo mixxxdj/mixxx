@@ -319,6 +319,7 @@ Variables:
             </Connection>
           </WidgetGroup><!-- /FX expand button when focus is shown -->
 
+          <!-- = 28x4px -->
           <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
 
           <Label>
