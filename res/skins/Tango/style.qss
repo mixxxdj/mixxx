@@ -284,7 +284,7 @@ WWidgetGroup {
   margin: 2px 0px 0px 0px;
 }
 #MixerbarKnob {
-  margin: 0px 0px -4px 0px;
+  margin: 2px 0px 0px 0px;
 }
 #MixerbarSlider {
   margin: 0px 0px 0px 0px;
