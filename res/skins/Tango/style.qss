@@ -2228,10 +2228,10 @@ QPushButton {
 
   /* BPM lock icon in the library "BPM" column. */
   #LibraryBPMButton::indicator:checked {
-    image: url(skin:/graphics/bpm_locked.png);
+    image: url(skin:/buttons/btn_bpm_locked.png);
     }
     #LibraryBPMButton::indicator:unchecked {
-      image: url(skin:/graphics/bpm_unlocked.png);
+      image: url(skin:/buttons/btn_bpm_unlocked.png);
       }
     #LibraryBPMButton::item {
       color: #cfcfcf;
