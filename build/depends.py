@@ -215,9 +215,9 @@ class Qt(Dependence):
                 import subprocess
                 try:
                     if qt5:
-                        core = subprocess.Popen(["pkg-config", "--variable=libdir", "Qt5Core"], stdout = subprocess.PIPE).communicate()[0].decode(sys.stdout.encoding).rstrip()
+                        core = subprocess.Popen(["pkg-config", "--variable=libdir", "Qt5Core"], stdout = subprocess.PIPE).communicate()[0].rstrip()
                     else:
-                        core = subprocess.Popen(["pkg-config", "--variable=libdir", "QtCore"], stdout = subprocess.PIPE).communicate()[0].decode(sys.stdout.encoding).rstrip()
+                        core = subprocess.Popen(["pkg-config", "--variable=libdir", "QtCore"], stdout = subprocess.PIPE).communicate()[0].rstrip()
                 finally:
                     if os.path.isdir(core):
                         return core
