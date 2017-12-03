@@ -20,10 +20,6 @@
 #define TAGLIB_HAS_VORBIS_COMMENT_PICTURES \
     (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 11))
 
-// TagLib correctly distinguishes between "DESCRIPTION" and "COMMENT" fields since version 1.11 (at least for reading)
-#define TAGLIB_HAS_VORBIS_COMMENT_READ_DESCRIPTION \
-    (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 11))
-
 #include <taglib/tfile.h>
 #include <taglib/tmap.h>
 #include <taglib/tstringlist.h>
@@ -1399,15 +1395,22 @@ void importTrackMetadataFromVorbisCommentTag(TrackMetadata* pTrackMetadata,
 
     importTrackMetadataFromTag(pTrackMetadata, tag);
 
-#ifndef TAGLIB_HAS_VORBIS_COMMENT_READ_DESCRIPTION
-    // Reference: http://www.xiph.org/vorbis/doc/v-comment.html
-    // Workaround for TagLib < 1.11, see also xiphcomment.cpp / Ogg::XiphComment::comment()
+    // The original specification only defines a "DESCRIPTION" field,
+    // while MusicBrainz recommends to use "COMMENT". Mixxx follows
+    // MusicBrainz.
+    // http://www.xiph.org/vorbis/doc/v-comment.html
+    // https://picard.musicbrainz.org/docs/mappings
+    //
+    // We are not relying on  TagLib (1.11.1) with a somehow inconsistent
+    // handling. It prefers "DECSCRIPTION" for reading, but adds a "COMMENT"
+    // fields upon writing when no "DESCRIPTION" field exists.
     QString comment;
-    if (!readXiphCommentField(tag, "DESCRIPTION", &comment) || comment.isEmpty()) {
-        readXiphCommentField(tag, "COMMENT", &comment);
+    if (!readXiphCommentField(tag, "COMMENT", &comment) || comment.isEmpty()) {
+        // Fallback to the the original "DESCRIPTION" field only if the
+        // "COMMENT" field is either missing or empty
+        readXiphCommentField(tag, "DESCRIPTION", &comment);
     }
     pTrackMetadata->refTrackInfo().setComment(comment);
-#endif
 
     QString albumArtist;
     if (readXiphCommentField(tag, "ALBUMARTIST", &albumArtist) || // recommended field
@@ -2041,16 +2044,19 @@ bool exportTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
             WRITE_TAG_OMIT_YEAR |
             WRITE_TAG_OMIT_COMMENT);
 
-    // Reference: http://www.xiph.org/vorbis/doc/v-comment.html
-    // NOTE(uklotzde, 2017-12-03): TagLib is doing it wrong up to the current version 1.11.1!
-    if (hasXiphCommentField(*pTag, "DESCRIPTION") || !hasXiphCommentField(*pTag, "COMMENT")) {
-        // Update or add the correct field for comments
-        writeXiphCommentField(pTag, "DESCRIPTION",
+    // The original specification only defines a "DESCRIPTION" field,
+    // while MusicBrainz recommends to use "COMMENT". Mixxx follows
+    // MusicBrainz.
+    // http://www.xiph.org/vorbis/doc/v-comment.html
+    // https://picard.musicbrainz.org/docs/mappings
+    if (hasXiphCommentField(*pTag, "COMMENT") || !hasXiphCommentField(*pTag, "DESCRIPTION")) {
+        // MusicBrainz-style
+        writeXiphCommentField(pTag, "COMMENT",
                 toTagLibString(trackMetadata.getTrackInfo().getComment()));
     } else {
-        // Update the "wrong" field for comments only if it already exists exclusively
-        DEBUG_ASSERT(hasXiphCommentField(*pTag, "COMMENT"));
-        writeXiphCommentField(pTag, "COMMENT",
+        // Preserve and update the "DESCRIPTION" field only if it already exists
+        DEBUG_ASSERT(hasXiphCommentField(*pTag, "DESCRIPTION"));
+        writeXiphCommentField(pTag, "DESCRIPTION",
                 toTagLibString(trackMetadata.getTrackInfo().getComment()));
     }
 
