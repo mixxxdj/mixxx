@@ -443,7 +443,7 @@ void SoundSourceProxy::updateTrackFromSource(
             return; // abort
         }
         // Only parse and update cover art from file tags if the track has
-        // no cover art or if cover art has already been loaded file tags.
+        // no cover art or if cover art has already been loaded from file tags.
         if (((coverInfo.type == CoverInfo::METADATA) ||
                 (coverInfo.type == CoverInfo::NONE)) &&
                 (coverInfo.source != CoverInfo::USER_SELECTED)) {
@@ -584,7 +584,7 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
             continue; // try again
         }
         if ((openResult == mixxx::SoundSource::OpenResult::Succeeded) && m_pSoundSource->verifyReadable()) {
-            m_pAudioSource = mixxx::AudioSourceTrackProxy::create(m_pSoundSource, m_pTrack);
+            m_pAudioSource = mixxx::AudioSourceTrackProxy::create(m_pTrack, m_pSoundSource);
             DEBUG_ASSERT(m_pAudioSource);
             if (m_pAudioSource->frameIndexRange().empty()) {
                 kLogger.warning() << "File is empty"
