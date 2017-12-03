@@ -20,6 +20,10 @@
 #define TAGLIB_HAS_VORBIS_COMMENT_PICTURES \
     (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 11))
 
+// TagLib correctly distinguishes between "DESCRIPTION" and "COMMENT" fields since version 1.11 (at least for reading)
+#define TAGLIB_HAS_VORBIS_COMMENT_READ_DESCRIPTION \
+    (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 11))
+
 #include <taglib/tfile.h>
 #include <taglib/tmap.h>
 #include <taglib/tstringlist.h>
@@ -760,7 +764,7 @@ void writeAPEItem(
 bool readXiphCommentField(
         const TagLib::Ogg::XiphComment& tag,
         const TagLib::String& key,
-        QString* pValue = nullptr) {
+        QString* pValue) {
     const TagLib::Ogg::FieldListMap::ConstIterator it(
             tag.fieldListMap().find(key));
     if (it != tag.fieldListMap().end() && !(*it).second.isEmpty()) {
@@ -771,6 +775,13 @@ bool readXiphCommentField(
     } else {
         return false;
     }
+}
+
+inline
+bool hasXiphCommentField(
+        const TagLib::Ogg::XiphComment& tag,
+        const TagLib::String& key) {
+    return readXiphCommentField(tag, key, nullptr);
 }
 
 // Unconditionally write the field
@@ -792,7 +803,7 @@ void updateXiphCommentField(
         TagLib::Ogg::XiphComment* pTag,
         const TagLib::String& key,
         const TagLib::String& value) {
-    if (readXiphCommentField(*pTag, key)) {
+    if (hasXiphCommentField(*pTag, key)) {
         writeXiphCommentField(pTag, key, value);
     }
 }
@@ -1388,15 +1399,15 @@ void importTrackMetadataFromVorbisCommentTag(TrackMetadata* pTrackMetadata,
 
     importTrackMetadataFromTag(pTrackMetadata, tag);
 
-    // Some applications (like puddletag up to version 1.0.5) write
-    // "COMMENT" instead "DESCRIPTION".
+#ifndef TAGLIB_HAS_VORBIS_COMMENT_READ_DESCRIPTION
     // Reference: http://www.xiph.org/vorbis/doc/v-comment.html
-    if (!readXiphCommentField(tag, "DESCRIPTION")) { // recommended field (already read by TagLib)
-        QString comment;
-        if (readXiphCommentField(tag, "COMMENT", &comment)) { // alternative field
-            pTrackMetadata->refTrackInfo().setComment(comment);
-        }
+    // Workaround for TagLib < 1.11, see also xiphcomment.cpp / Ogg::XiphComment::comment()
+    QString comment;
+    if (!readXiphCommentField(tag, "DESCRIPTION", &comment) || comment.isEmpty()) {
+        readXiphCommentField(tag, "COMMENT", &comment);
     }
+    pTrackMetadata->refTrackInfo().setComment(comment);
+#endif
 
     QString albumArtist;
     if (readXiphCommentField(tag, "ALBUMARTIST", &albumArtist) || // recommended field
@@ -2023,7 +2034,22 @@ bool exportTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
     }
 
     exportTrackMetadataIntoTag(pTag, trackMetadata,
-            WRITE_TAG_OMIT_TRACK_NUMBER | WRITE_TAG_OMIT_YEAR);
+            WRITE_TAG_OMIT_TRACK_NUMBER |
+            WRITE_TAG_OMIT_YEAR |
+            WRITE_TAG_OMIT_COMMENT);
+
+    // Reference: http://www.xiph.org/vorbis/doc/v-comment.html
+    // NOTE(uklotzde, 2017-12-03): TagLib is doing it wrong up to the current version 1.11.1!
+    if (hasXiphCommentField(*pTag, "DESCRIPTION") || !hasXiphCommentField(*pTag, "COMMENT")) {
+        // Update or add the correct field for comments
+        writeXiphCommentField(pTag, "DESCRIPTION",
+                toTagLibString(trackMetadata.getTrackInfo().getComment()));
+    } else {
+        // Update the "wrong" field for comments only if it already exists exclusively
+        DEBUG_ASSERT(hasXiphCommentField(*pTag, "COMMENT"));
+        writeXiphCommentField(pTag, "COMMENT",
+                toTagLibString(trackMetadata.getTrackInfo().getComment()));
+    }
 
     // Write unambiguous fields
     writeXiphCommentField(pTag, "DATE",
