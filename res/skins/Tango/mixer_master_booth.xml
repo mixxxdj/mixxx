@@ -11,7 +11,7 @@ Description:
       <WidgetGroup><!-- Master Mixer -->
         <ObjectName>MixerbarSection</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <Size>-1min,28f</Size>
         <Children>
           <WidgetGroup>
             <ObjectName>MasterMixerLabel</ObjectName>
@@ -39,45 +39,47 @@ Description:
             </Connection>
           </SliderComposed>
 
-          <WidgetGroup><!-- FX assignment buttons -->
-            <ObjectName>Spacer0f</ObjectName>
-            <Layout>horizontal</Layout>
+          <WidgetGroup><!-- FX assignment buttons
+            <ObjectName>Spacer0f</ObjectName> -->
+            <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
 
-              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+              <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
 
               <WidgetGroup>
-                <Layout>vertical</Layout>
+                <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
                   <Template src="skin:fx_master_button.xml">
                     <SetVariable name="Size">26f,13f</SetVariable>
                     <SetVariable name="FxUnitNum">1</SetVariable>
                   </Template>
-                    <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
-                  <Template src="skin:fx_master_button.xml">
-                    <SetVariable name="Size">26f,13f</SetVariable>
-                    <SetVariable name="FxUnitNum">3</SetVariable>
-                  </Template>
-                </Children>
-              </WidgetGroup>
-
-              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-
-              <WidgetGroup>
-                <Layout>vertical</Layout>
-                <SizePolicy>min,min</SizePolicy>
-                <Children>
+                    <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_master_button.xml">
                     <SetVariable name="Size">26f,13f</SetVariable>
                     <SetVariable name="FxUnitNum">2</SetVariable>
                   </Template>
-                    <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
+                    <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Template src="skin:fx_master_button.xml">
+                    <SetVariable name="Size">26f,13f</SetVariable>
+                    <SetVariable name="FxUnitNum">3</SetVariable>
+                  </Template>
+                    <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_master_button.xml">
                     <SetVariable name="Size">26f,13f</SetVariable>
                     <SetVariable name="FxUnitNum">4</SetVariable>
                   </Template>
+                    <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
                 </Children>
               </WidgetGroup>
 
@@ -97,7 +99,7 @@ Description:
           <WidgetGroup>
             <ObjectName>MixerbarSection</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>min,min</SizePolicy>
+            <Size>-1min,28f</Size>
             <Children>
 
               <WidgetGroup>

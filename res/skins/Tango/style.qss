@@ -239,8 +239,8 @@ WWidgetGroup {
 }
 
 #MixerbarSection {
-  margin: 0px;
-  padding: 2px 2px 2px 0px;
+  margin: 0px;/*
+  padding: 2px 2px 2px 0px;*/
 }
 
 #CrossfaderContainer {
@@ -1712,6 +1712,7 @@ decks, samplers, mic, aux */
     }
   #MasterFxButton[displayValue="1"] {
     background-color: #ff8f00;
+    color: #0f0f0f;
     }
     #MasterFxButton[displayValue="1"]:hover {
       border: 1px solid #fff;
