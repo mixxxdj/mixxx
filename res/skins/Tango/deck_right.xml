@@ -27,7 +27,7 @@ Variables:
       <WidgetGroup>
         <Size>3f,1min</Size>
         <Connection>
-          <ConfigKey>[Tango],pitch_fader</ConfigKey>
+          <ConfigKey persist="true">[Tango],pitch_fader</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
@@ -43,7 +43,7 @@ Variables:
           <WidgetGroup>
             <Size>3f,1min</Size>
             <Connection>
-              <ConfigKey>[Tango],vumeter</ConfigKey>
+              <ConfigKey persist="true">[Tango],vumeter</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
@@ -74,7 +74,7 @@ Variables:
 
         </Children>
         <Connection>
-          <ConfigKey>[Tango],channel_mixer</ConfigKey>
+          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
@@ -93,13 +93,13 @@ Variables:
               <WidgetGroup><ObjectName>RoundFiller25</ObjectName><Size>1me,22me</Size></WidgetGroup>
             </Children>
             <Connection>
-              <ConfigKey>[Tango],loop_beatjump_controls</ConfigKey>
+              <ConfigKey persist="true">[Tango],loop_beatjump_controls</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey>[Tango],channel_mixer</ConfigKey>
+          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /Mixer -->

@@ -27,7 +27,7 @@ Description:
           </WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
+          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
@@ -41,7 +41,7 @@ Description:
           <Template src="skin:vumeter_master.xml"/>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
+          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /Master VU when mixer is shown -->

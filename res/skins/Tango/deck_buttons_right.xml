@@ -253,7 +253,7 @@ Variables:
                   </Template>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Tango],deck_controls</ConfigKey>
+                  <ConfigKey persist="true">[Tango],deck_controls_expanded</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- /Expandable Deck controls -->
@@ -266,11 +266,11 @@ Variables:
                     <SetVariable name="ObjectName">DeckControlsToggler_Right</SetVariable>
                     <!-- Size needs to be changed in size_detector_stars.xml, too -->
                     <SetVariable name="Size">15f,22f</SetVariable>
-                    <SetVariable name="ConfigKey">[Tango],deck_controls</SetVariable>
+                    <SetVariable name="ConfigKey">[Tango],deck_controls_expanded</SetVariable>
                   </Template>
                 </Children>
                 <Connection>
-                  <ConfigKey>[Tango],deck_controls_toggle</ConfigKey>
+                  <ConfigKey>[Tango],show_deck_controls_toggle</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>

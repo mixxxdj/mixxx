@@ -19,7 +19,7 @@ Description:
           was visible at that moment and opposing EffectUnit tries to expand horizontally.
           Putting both versions into a vertical layout fixes this issue.
       -->
-      <WidgetStack currentpage="[Tango],fx_unit3_expanded" persist="true"><!-- EffectUnit 1 -->
+      <WidgetStack currentpage="[Tango],SwitchStack_fx_unit3_expanded" persist="true"><!-- EffectUnit 1 -->
         <SizePolicy>me,min</SizePolicy>
         <Children>
 
@@ -50,7 +50,7 @@ Description:
 
       <WidgetGroup><Size>10f,0min</Size></WidgetGroup>
 
-      <WidgetStack currentpage="[Tango],fx_unit4_expanded" persist="true"><!-- EffectUnit 2 -->
+      <WidgetStack currentpage="[Tango],SwitchStack_fx_unit4_expanded" persist="true"><!-- EffectUnit 2 -->
         <SizePolicy>me,min</SizePolicy>
         <Children>
         

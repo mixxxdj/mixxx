@@ -57,7 +57,7 @@ Variables:
                       <Template src="skin:spinnyCover_mini.xml"/>
                     </Children>
                     <Connection>
-                      <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
+                      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>

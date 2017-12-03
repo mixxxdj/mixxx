@@ -99,7 +99,7 @@ Controls:
       <WidgetGroup><!-- xfader orientation -->
         <Size>20f,0f</Size>
         <Connection>
-          <ConfigKey persist="true">[Tango],always_visible_xfaderOrientation</ConfigKey>
+          <ConfigKey persist="true">[Tango],always_visible_orientation</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
@@ -151,7 +151,7 @@ Controls:
           <WidgetGroup><!-- xfader orientation expanded -->
             <Size>20f,0f</Size>
             <Connection>
-              <ConfigKey persist="true">[Tango],always_visible_xfaderOrientation</ConfigKey>
+              <ConfigKey persist="true">[Tango],always_visible_orientation</ConfigKey>
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>

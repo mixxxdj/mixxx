@@ -63,7 +63,7 @@ Description:
             <MaximumSize>0,0</MaximumSize>
             <Children>
               <WidgetGroup><Size>1f,0f</Size></WidgetGroup>
-              <WidgetGroup trigger="[Tango],deck_controls_toggle"><Size>1f,0f</Size></WidgetGroup>
+              <WidgetGroup trigger="[Tango],show_deck_controls_toggle"><Size>1f,0f</Size></WidgetGroup>
             </Children>
           </WidgetStack>
 
@@ -72,7 +72,7 @@ Description:
             <MinimumSize>1,0</MinimumSize>
             <MaximumSize>-1,0</MaximumSize>
             <Children>
-              <WidgetGroup trigger="[Tango],deck_controls_toggle"><Size>1f,0f</Size></WidgetGroup>
+              <WidgetGroup trigger="[Tango],show_deck_controls_toggle"><Size>1f,0f</Size></WidgetGroup>
               <WidgetGroup><Size>1f,0f</Size></WidgetGroup>
             </Children>
           </WidgetStack>

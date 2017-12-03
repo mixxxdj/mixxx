@@ -47,7 +47,7 @@
       <!-- Set skin defaults. -->
       <attribute config_key="[Master],num_decks">4</attribute>
       <attribute config_key="[Master],num_samplers">64</attribute>
-      <attribute persist="true" config_key="[Master],show_mixer">0</attribute>
+      <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
       <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Master],maximize_library">0</attribute>
       <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
@@ -67,20 +67,19 @@
       <attribute persist="true" config_key="[SamplerRow7],expanded">0</attribute>
       <attribute persist="true" config_key="[SamplerRow8],expanded">0</attribute>
       <!-- [Tango] specific defaults -->
-      <attribute persist="true" config_key="[Tango],2or4_FxUnits">0</attribute>
+      <attribute persist="true" config_key="[Tango],4_fx_units">0</attribute>
       <attribute persist="true" config_key="[Tango],fx_super_knob">0</attribute>
-      <attribute persist="true" config_key="[Tango],sampler_fx_buttons">1</attribute>
-      <attribute persist="true" config_key="[Tango],micaux_fx_buttons">1</attribute>
+      <!--attribute persist="true" config_key="[Tango],sampler_fx_buttons">1</attribute-->
       <attribute persist="true" config_key="[Tango],beatgrid_buttons">0</attribute>
+      <attribute persist="true" config_key="[Tango],deck_controls_expanded">0</attribute>
       <attribute persist="true" config_key="[Tango],colorLogo">0</attribute>
-      <attribute persist="true" config_key="[Tango],channel_mixer">1</attribute>
       <attribute persist="true" config_key="[Tango],crossfader">1</attribute>
       <attribute persist="true" config_key="[Tango],deck_controls">1</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_keylock">1</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_eject">0</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_slipMode">1</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_repeat">0</attribute>
-      <attribute persist="true" config_key="[Tango],always_visible_xfaderOrientation">0</attribute>
+      <attribute persist="true" config_key="[Tango],always_visible_orientation">0</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_quantize">1</attribute>
       <attribute persist="true" config_key="[Tango],eq_knobs">1</attribute>
       <attribute persist="true" config_key="[Tango],hotcues">1</attribute>
@@ -89,12 +88,6 @@
       <attribute persist="true" config_key="[Tango],rate_key_buttons">0</attribute>
       <attribute persist="true" config_key="[Tango],loop_beatjump_controls">1</attribute>
       <attribute persist="true" config_key="[Tango],loop_sizes">0</attribute>
-      <attribute persist="true" config_key="[Tango],mixerbar">1</attribute>
-      <attribute persist="true" config_key="[Tango],mixerbar_headphone">1</attribute>
-      <attribute persist="true" config_key="[Tango],mixerbar_mic">1</attribute>
-      <attribute persist="true" config_key="[Tango],mixerbar_aux">1</attribute>
-      <attribute persist="true" config_key="[Tango],mixerbar_below_library">0</attribute>
-      <attribute persist="true" config_key="[Tango],mixer_spinnyCover">0</attribute>
       <attribute persist="true" config_key="[Tango],pitch_fader">1</attribute>
       <attribute persist="true" config_key="[Tango],symmetric_overviews">0</attribute>
       <attribute persist="true" config_key="[Tango],symmetric_time">0</attribute>
