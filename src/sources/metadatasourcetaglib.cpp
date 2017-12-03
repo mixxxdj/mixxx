@@ -23,6 +23,9 @@ namespace {
 
 Logger kLogger("MetadataSourceTagLib");
 
+// TODO(uklotzde): Add a configurable option in the user settings
+const bool kExportTrackMetadataIntoTemporaryFile = true;
+
 // Appended to the original file name of the temporary file used for writing
 const QString kSafelyWritableTempFileSuffix = "_temp";
 
@@ -615,20 +618,22 @@ private:
  */
 class SafelyWritableFile final {
   public:
-    explicit SafelyWritableFile(QString origFileName)
+    SafelyWritableFile(QString origFileName, bool useTemporaryFile)
         : m_origFileName(std::move(origFileName)) {
         DEBUG_ASSERT(m_tempFileName.isNull());
-        QString tempFileName = m_origFileName + kSafelyWritableTempFileSuffix;
-        QFile origFile(m_origFileName);
-        if (origFile.copy(tempFileName)) {
-            m_tempFileName = std::move(tempFileName);
-        } else {
-            kLogger.warning()
-                    << origFile.errorString()
-                    << "- Failed to copy original into temporary file before writing:"
-                    << origFile.fileName()
-                    << "->"
-                    << tempFileName;
+        if (useTemporaryFile) {
+            QString tempFileName = m_origFileName + kSafelyWritableTempFileSuffix;
+            QFile origFile(m_origFileName);
+            if (origFile.copy(tempFileName)) {
+                m_tempFileName = std::move(tempFileName);
+            } else {
+                kLogger.warning()
+                        << origFile.errorString()
+                        << "- Failed to copy original into temporary file before writing:"
+                        << origFile.fileName()
+                        << "->"
+                        << tempFileName;
+            }
         }
     }
     ~SafelyWritableFile() {
@@ -641,11 +646,14 @@ class SafelyWritableFile final {
 
     bool commit() {
         if (m_tempFileName.isNull()) {
-            return false; // nothing to do
+            return true; // nothing to do
         }
         QFile newFile(m_tempFileName);
         if (!newFile.exists()) {
-            return false; // nothing to do
+            kLogger.warning()
+                    << "Temporary file not found:"
+                    << newFile.fileName();
+            return false;
         }
         QFile oldFile(m_origFileName);
         if (oldFile.exists()) {
@@ -727,7 +735,7 @@ MetadataSourceTagLib::exportTrackMetadata(
             << "into file" << m_fileName
             << "with type" << m_fileType;
 
-    SafelyWritableFile safelyWritableFile(m_fileName);
+    SafelyWritableFile safelyWritableFile(m_fileName, kExportTrackMetadataIntoTemporaryFile);
 
     std::unique_ptr<TagSaver> pTagSaver;
     switch (m_fileType) {
