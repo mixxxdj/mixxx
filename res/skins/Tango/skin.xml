@@ -128,9 +128,9 @@
       background-color: #0f0f0f;
     }
     QLabel {
-      image: url(skin:/buttons/btn_logo_102x24.svg);
+      image: url(skin:/graphics/logo_160x40.svg);
       padding: 0;
-      margin: 0;
+      margin: 0px 2px 0px 2px;
       border: none;
       min-width: 160px;
       min-height: 40px;
@@ -139,10 +139,10 @@
     }
     QProgressBar {
       background-color: #333333;
-      border:none;
-      min-width: 162px;
+      border: none;
+      min-width: 164px;
       min-height: 3px;
-      max-width: 162px;
+      max-width: 164px;
       max-height: 3px;
     }
     QProgressBar::chunk {
