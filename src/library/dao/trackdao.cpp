@@ -39,20 +39,6 @@
 
 enum { UndefinedRecordIndex = -2 };
 
-RecentTrackCacheItem::RecentTrackCacheItem(
-        const TrackPointer& pTrack)
-        : m_pTrack(pTrack) {
-    DEBUG_ASSERT(m_pTrack);
-}
-
-// The number of recently used tracks to cache strong references to at
-// once. Once the n+1'th track is created, the TrackDAO's QCache deletes it
-// and drops the strong reference. The recent tracks cache basically
-// functions to prevent repeated getTrack() calls for the same track from
-// repeatedly deserializing / serializing a track to the database since this is
-// expensive.
-const int kRecentTracksCacheSize = 5;
-
 TrackDAO::TrackDAO(CueDAO& cueDao,
                    PlaylistDAO& playlistDao,
                    AnalysisDao& analysisDao,
@@ -63,7 +49,6 @@ TrackDAO::TrackDAO(CueDAO& cueDao,
           m_analysisDao(analysisDao),
           m_libraryHashDao(libraryHashDao),
           m_pConfig(pConfig),
-          m_recentTracksCache(kRecentTracksCacheSize),
           m_trackLocationIdColumn(UndefinedRecordIndex),
           m_queryLibraryIdColumn(UndefinedRecordIndex),
           m_queryLibraryMixxxDeletedColumn(UndefinedRecordIndex) {
@@ -77,9 +62,6 @@ TrackDAO::~TrackDAO() {
 
 void TrackDAO::finish() {
     qDebug() << "TrackDAO::finish()";
-
-    // Drop all strong references of recently loaded tracks.
-    clearCache();
 
     // clear out played information on exit
     // crash prevention: if mixxx crashes, played information will be maintained
@@ -679,9 +661,6 @@ TrackPointer TrackDAO::addSingleTrack(const QFileInfo& fileInfo, bool unremove) 
     addTracksPrepare();
     TrackPointer pTrack(addTracksAddFile(fileInfo, unremove));
     addTracksFinish(!pTrack);
-    if (pTrack) {
-        cacheRecentTrack(pTrack->getId(), pTrack);
-    }
     return pTrack;
 }
 
@@ -1160,15 +1139,6 @@ struct ColumnPopulator {
 
 #define ARRAYLENGTH(x) (sizeof(x) / sizeof(*x))
 
-void TrackDAO::cacheRecentTrack(
-        TrackId trackId,
-        const TrackPointer& pTrack) const {
-    std::unique_ptr<RecentTrackCacheItem> pCacheItem =
-            std::make_unique<RecentTrackCacheItem>(pTrack);
-    m_recentTracksCache.insert(trackId, pCacheItem.get());
-    pCacheItem.release(); // m_recentTracksCache has taken ownership
-}
-
 TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     if (!trackId.isValid()) {
         return TrackPointer();
@@ -1343,9 +1313,6 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
             this, SLOT(slotTrackChanged(Track*)),
             Qt::DirectConnection);
 
-    // Insert the loaded track into the recent tracks cache
-    cacheRecentTrack(trackId, pTrack);
-
     // Finish the caching operation to release all locks before
     // emitting any signals.
     cacheResolver.unlockCache();
@@ -1363,32 +1330,13 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     return pTrack;
 }
 
-TrackPointer TrackDAO::getTrack(TrackId trackId, const bool cacheOnly) const {
+TrackPointer TrackDAO::getTrack(TrackId trackId) const {
     //qDebug() << "TrackDAO::getTrack" << QThread::currentThread() << m_database.connectionName();
 
-    // If the track cache contains the track ID, use it to get a strong
-    // reference to the track. We do this first so that the QCache keeps track
-    // of the least-recently-used track so that it expires them intelligently.
-    RecentTrackCacheItem* pTrackCacheItem = m_recentTracksCache.object(trackId);
-    if (pTrackCacheItem != nullptr) {
-        return pTrackCacheItem->getTrack();
-    }
-
-    // Next, check the weak-reference cache to see if the track still has a
-    // strong reference somewhere.
     TrackCacheLocker cacheLocker(
             TrackCache::instance().lookupById(trackId));
-    TrackPointer pTrack(cacheLocker.getTrack());
-    if (!pTrack) {
-        // Cache miss
-        if (!cacheOnly) {
-            // Deserialize the track from the database.
-            pTrack = getTrackFromDB(trackId);
-            // The loaded track has already been inserted into
-            // the recent tracks cache.
-        }
-    }
-    return pTrack;
+    TrackPointer pTrack = cacheLocker.getTrack();
+    return pTrack ? pTrack : getTrackFromDB(trackId);
 }
 
 // Saves a track's info back to the database
@@ -1706,11 +1654,6 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
         }
     }
     return true;
-}
-
-void TrackDAO::clearCache() {
-    // Drops all strong references from the recent tracks cache.
-    m_recentTracksCache.clear();
 }
 
 void TrackDAO::markTracksAsMixxxDeleted(const QString& dir) {

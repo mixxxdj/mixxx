@@ -6,7 +6,6 @@
 #include <QSet>
 #include <QList>
 #include <QSqlDatabase>
-#include <QCache>
 #include <QString>
 
 #include "preferences/usersettings.h"
@@ -23,20 +22,6 @@ class LibraryHashDAO;
 class TrackCollection;
 class TrackCacheResolver;
 
-// Holds a strong reference to a track while it is in the "recent tracks"
-// cache.
-class RecentTrackCacheItem final {
-  public:
-    explicit RecentTrackCacheItem(
-            const TrackPointer& pTrack);
-
-    const TrackPointer& getTrack() const {
-        return m_pTrack;
-    }
-
-  private:
-    TrackPointer m_pTrack;
-};
 
 class TrackDAO : public QObject, public virtual DAO {
     Q_OBJECT
@@ -63,7 +48,7 @@ class TrackDAO : public QObject, public virtual DAO {
     bool trackExistsInDatabase(const QString& absoluteFilePath);
 
     // WARNING: Only call this from the main thread instance of TrackDAO.
-    TrackPointer getTrack(TrackId trackId, const bool cacheOnly=false) const;
+    TrackPointer getTrack(TrackId trackId) const;
 
     // Returns a set of all track locations in the library.
     QSet<QString> getTrackLocations();
@@ -135,12 +120,6 @@ class TrackDAO : public QObject, public virtual DAO {
     void forceModelUpdate();
 
   public slots:
-    // Clears the cached TrackInfoObjects, which can be useful when the
-    // underlying database tables change (eg. during a library rescan,
-    // we might detect that a track has been moved and modify the update
-    // the tables directly.)
-    void clearCache();
-
     void databaseTrackAdded(TrackPointer pTrack);
     void databaseTracksMoved(QSet<TrackId> tracksMovedSetOld, QSet<TrackId> tracksMovedSetNew);
     void databaseTracksChanged(QSet<TrackId> tracksChanged);
@@ -165,19 +144,6 @@ class TrackDAO : public QObject, public virtual DAO {
     LibraryHashDAO& m_libraryHashDao;
 
     UserSettingsPointer m_pConfig;
-
-    void cacheRecentTrack(
-            TrackId trackId,
-            const TrackPointer& pTrack) const;
-
-    // "Recent tracks" cache -- holds strong references to recently used
-    // tracks. When a track is expired, calls saveTrack(TrackPointer) without
-    // dropping the strong reference to the track. This prevents a race
-    // condition where the strong reference is dropped and therefore cache-only
-    // getTrack calls made by BaseSqlTableModel return null and serve stale
-    // results from BaseTrackCache before the newly expired TrackPointer has
-    // been saved to the database.
-    mutable QCache<TrackId, RecentTrackCacheItem> m_recentTracksCache;
 
     std::unique_ptr<QSqlQuery> m_pQueryTrackLocationInsert;
     std::unique_ptr<QSqlQuery> m_pQueryTrackLocationSelect;
