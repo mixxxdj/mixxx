@@ -6,101 +6,55 @@
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.1"
-   id="svg2"
-   height="34"
    width="40"
-   inkscape:version="0.48.4 r9939"
-   sodipodi:docname="knob_bg_yellow.svg">
-  <sodipodi:namedview
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="1366"
-     inkscape:window-height="746"
-     id="namedview17"
-     showgrid="false"
-     inkscape:zoom="45.254834"
-     inkscape:cx="13.74589"
-     inkscape:cy="7.6972229"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="svg2"
-     showguides="true"
-     inkscape:guide-bbox="true"
-     inkscape:object-nodes="true"
-     inkscape:snap-smooth-nodes="true"
-     inkscape:snap-midpoints="true"
-     inkscape:object-paths="true"
-     inkscape:snap-object-midpoints="true"
-     inkscape:snap-intersection-paths="false"
-     inkscape:snap-nodes="true">
-    <sodipodi:guide
-       orientation="0,1"
-       position="45.027121,15.373"
-       id="guide6351" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="20,17.623738"
-       id="guide6353" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="27.375,3.2"
-       id="guide5656" />
-  </sodipodi:namedview>
+   height="34"
+   id="svg2">
   <defs
      id="defs4">
     <linearGradient
        id="linearGradient5441">
       <stop
          id="stop5443"
-         offset="0"
-         style="stop-color:#060606;stop-opacity:1;" />
+         style="stop-color:#060606;stop-opacity:1"
+         offset="0" />
       <stop
          id="stop5445"
-         offset="1"
-         style="stop-color:#343434;stop-opacity:1;" />
+         style="stop-color:#343434;stop-opacity:1"
+         offset="1" />
     </linearGradient>
     <linearGradient
-       y2="472.02954"
-       x2="484.71231"
-       y1="472.02954"
        x1="256.73965"
-       gradientTransform="matrix(0.10675958,0,0,0.1067605,-60.001687,-36.030994)"
-       gradientUnits="userSpaceOnUse"
+       y1="472.02954"
+       x2="484.71231"
+       y2="472.02954"
        id="linearGradient3839"
-       xlink:href="#linearGradient5441" />
-    <linearGradient
-       gradientTransform="matrix(1.257316,0,0,1,-241.05158,-602.90563)"
+       xlink:href="#linearGradient5441"
        gradientUnits="userSpaceOnUse"
-       y2="634.36542"
-       x2="202.48778"
-       y1="618.50647"
+       gradientTransform="matrix(0.10675958,0,0,0.1067605,-60.001687,-36.030994)" />
+    <linearGradient
        x1="202.50447"
+       y1="618.50647"
+       x2="202.48778"
+       y2="634.36542"
        id="linearGradient4945"
-       xlink:href="#linearGradient4937" />
+       xlink:href="#linearGradient4937"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.257316,0,0,1,-241.05158,-602.90563)" />
     <linearGradient
        id="linearGradient4937">
       <stop
          id="stop4939"
-         offset="0"
-         style="stop-color:#ffffff;stop-opacity:1" />
+         style="stop-color:#ffffff;stop-opacity:1"
+         offset="0" />
       <stop
+         id="stop4185"
          style="stop-color:#c8c8c8;stop-opacity:1"
-         offset="0.25399527"
-         id="stop4185" />
+         offset="0.25399527" />
       <stop
          id="stop4941"
-         offset="1"
-         style="stop-color:#afafaf;stop-opacity:1" />
+         style="stop-color:#afafaf;stop-opacity:1"
+         offset="1" />
     </linearGradient>
   </defs>
   <metadata
@@ -116,34 +70,18 @@
     </rdf:RDF>
   </metadata>
   <ellipse
-     style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:0;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;marker:none;enable-background:accumulate"
-     id="path4202"
      cx="-13.524048"
      cy="0.45841381"
      rx="2.5876327"
-     ry="2.4899862" />
+     ry="2.4899862"
+     id="path4202"
+     style="opacity:0;color:#000000;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
   <path
-     sodipodi:type="arc"
-     style="color:#000000;fill:none;stroke:#fc9d00;stroke-width:1.85000002;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+     d="M 9.3196275,29.68685 A 15.375,15.375 0 0 1 17.860214,3.4016293"
      id="path2995"
-     sodipodi:cx="20"
-     sodipodi:cy="18.627001"
-     sodipodi:rx="15.375"
-     sodipodi:ry="15.375"
-     d="M 9.5142753,29.871564 A 15.375,15.375 0 0 1 18.392874,3.3362267"
-     sodipodi:start="2.3212879"
-     sodipodi:end="4.6076692"
-     sodipodi:open="true" />
+     style="color:#000000;fill:none;stroke:#fc9d00;stroke-width:1.85000002;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
   <path
-     sodipodi:type="arc"
-     style="color:#000000;fill:none;stroke:#fc9d00;stroke-width:1.85000002;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+     d="M 22.139786,3.4016293 A 15.375,15.375 0 0 1 30.680372,29.68685"
      id="path2995-5"
-     sodipodi:cx="20"
-     sodipodi:cy="18.627001"
-     sodipodi:rx="15.375"
-     sodipodi:ry="15.375"
-     d="M 21.607125,3.3362266 A 15.375,15.375 0 0 1 30.485724,29.871564"
-     sodipodi:start="4.8171087"
-     sodipodi:end="7.1034901"
-     sodipodi:open="true" />
+     style="color:#000000;fill:none;stroke:#fc9d00;stroke-width:1.85000002;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
 </svg>
