@@ -64,7 +64,7 @@
         <Children>
           <EffectParameterKnobComposed>
             <Size>40f,34f</Size>
-            <Knob>knob_white.svg</Knob>
+            <Knob>knob.svg</Knob>
             <BackPath>knob_bg_<Variable name="color"/>.svg</BackPath>
             <MinAngle>-135</MinAngle>
             <MaxAngle>135</MaxAngle>
