@@ -22,43 +22,43 @@ class DurationBase {
     };
 
     // Returns the duration as an integer number of seconds (rounded-down).
-    inline qint64 toIntegerSeconds() const {
+    qint64 toIntegerSeconds() const {
         return m_durationNanos / kNanosPerSecond;
     }
 
     // Returns the duration as a floating point number of seconds.
-    inline double toDoubleSeconds() const {
+    double toDoubleSeconds() const {
         return static_cast<double>(m_durationNanos) / kNanosPerSecond;
     }
 
     // Returns the duration as an integer number of milliseconds (rounded-down).
-    inline qint64 toIntegerMillis() const {
+    qint64 toIntegerMillis() const {
         return m_durationNanos / kNanosPerMilli;
     }
 
     // Returns the duration as a floating point number of milliseconds.
-    inline qint64 toDoubleMillis() const {
+    double toDoubleMillis() const {
         return static_cast<double>(m_durationNanos) / kNanosPerMilli;
     }
 
     // Returns the duration as an integer number of microseconds (rounded-down).
-    inline qint64 toIntegerMicros() const {
+    qint64 toIntegerMicros() const {
         return m_durationNanos / kNanosPerMicro;
     }
 
     // Returns the duration as a floating point number of microseconds.
-    inline qint64 toDoubleMicros() const {
+    double toDoubleMicros() const {
         return static_cast<double>(m_durationNanos) / kNanosPerMicro;
     }
 
     // Returns the duration as an integer number of nanoseconds. The duration is
     // represented internally as nanoseconds so no rounding occurs.
-    inline qint64 toIntegerNanos() const {
+    qint64 toIntegerNanos() const {
         return m_durationNanos;
     }
 
     // Returns the duration as an integer number of nanoseconds.
-    inline qint64 toDoubleNanos() const {
+    double toDoubleNanos() const {
         return static_cast<double>(m_durationNanos);
     }
 
@@ -74,14 +74,14 @@ class DurationBase {
             double dSeconds,
             Precision precision = Precision::SECONDS);
 
-    static const qint64 kMillisPerSecond = 1000;
-    static const qint64 kMicrosPerSecond = kMillisPerSecond * 1000;
-    static const qint64 kNanosPerSecond  = kMicrosPerSecond * 1000;
-    static const qint64 kNanosPerMilli   = kNanosPerSecond / 1000;
-    static const qint64 kNanosPerMicro   = kNanosPerMilli / 1000;
+    static constexpr qint64 kMillisPerSecond = 1000;
+    static constexpr qint64 kMicrosPerSecond = kMillisPerSecond * 1000;
+    static constexpr qint64 kNanosPerSecond  = kMicrosPerSecond * 1000;
+    static constexpr qint64 kNanosPerMilli   = kNanosPerSecond / 1000;
+    static constexpr qint64 kNanosPerMicro   = kNanosPerMilli / 1000;
 
   protected:
-    DurationBase(qint64 durationNanos)
+    explicit DurationBase(qint64 durationNanos)
         : m_durationNanos(durationNanos) {
     }
 
@@ -140,12 +140,12 @@ class Duration : public DurationBase {
         return Duration(nanos);
     }
 
-    Duration()
-        : DurationBase(0) {
+    static Duration empty() {
+        return Duration();
     }
 
-    void reset() {
-        m_durationNanos = 0;
+    Duration()
+        : DurationBase(0) {
     }
 
     const Duration operator+(const Duration& other) const {
@@ -250,7 +250,7 @@ class Duration : public DurationBase {
     }
 
   private:
-    Duration(qint64 durationNanos)
+    explicit Duration(qint64 durationNanos)
             : DurationBase(durationNanos) {
     }
 };
