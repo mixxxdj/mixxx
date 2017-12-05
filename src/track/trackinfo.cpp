@@ -28,4 +28,32 @@ bool operator==(const TrackInfo& lhs, const TrackInfo& rhs) {
             (lhs.getYear() == rhs.getYear());
 }
 
+QDebug operator<<(QDebug dbg, const TrackInfo& arg) {
+    dbg << '{';
+    arg.dbgArtist(dbg);
+    arg.dbgBpm(dbg);
+    arg.dbgComment(dbg);
+    arg.dbgComposer(dbg);
+    arg.dbgConductor(dbg);
+    arg.dbgGrouping(dbg);
+    arg.dbgGenre(dbg);
+    arg.dbgISRC(dbg);
+    arg.dbgKey(dbg);
+    arg.dbgLanguage(dbg);
+    arg.dbgLyricist(dbg);
+    arg.dbgMood(dbg);
+    arg.dbgMusicBrainzArtistId(dbg);
+    arg.dbgMusicBrainzReleaseId(dbg);
+    arg.dbgRecordLabel(dbg);
+    arg.dbgRemixer(dbg);
+    arg.dbgReplayGain(dbg);
+    arg.dbgSubtitle(dbg);
+    arg.dbgTitle(dbg);
+    arg.dbgTrackNumber(dbg);
+    arg.dbgTrackTotal(dbg);
+    arg.dbgYear(dbg);
+    dbg << '}';
+    return dbg;
+}
+
 } // namespace mixxx

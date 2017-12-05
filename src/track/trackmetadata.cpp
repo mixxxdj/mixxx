@@ -75,4 +75,16 @@ bool operator==(const TrackMetadata& lhs, const TrackMetadata& rhs) {
             (lhs.getSampleRate() == rhs.getSampleRate());
 }
 
+QDebug operator<<(QDebug dbg, const TrackMetadata& arg) {
+    dbg << '{';
+    arg.dbgTrackInfo(dbg);
+    arg.dbgAlbumInfo(dbg);
+    arg.dbgBitrate(dbg);
+    arg.dbgChannels(dbg);
+    arg.dbgDuration(dbg);
+    arg.dbgSampleRate(dbg);
+    dbg << '}';
+    return dbg;
+}
+
 } //namespace mixxx

@@ -59,6 +59,11 @@ bool operator!=(const Bpm& lhs, const Bpm& rhs) {
     return !(lhs == rhs);
 }
 
+inline
+QDebug operator<<(QDebug dbg, const Bpm& arg) {
+    return dbg << arg.getValue();
+}
+
 }
 
 Q_DECLARE_TYPEINFO(mixxx::Bpm, Q_MOVABLE_TYPE);

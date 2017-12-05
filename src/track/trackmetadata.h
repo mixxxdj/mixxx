@@ -72,6 +72,8 @@ bool operator!=(const TrackMetadata& lhs, const TrackMetadata& rhs) {
     return !(lhs == rhs);
 }
 
+QDebug operator<<(QDebug dbg, const TrackMetadata& arg);
+
 } // namespace mixxx
 
 Q_DECLARE_METATYPE(mixxx::TrackMetadata)

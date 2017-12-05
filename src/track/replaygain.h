@@ -107,6 +107,11 @@ bool operator!=(const ReplayGain& lhs, const ReplayGain& rhs) {
     return !(lhs == rhs);
 }
 
+inline
+QDebug operator<<(QDebug dbg, const ReplayGain& arg) {
+    return dbg << "ratio =" << arg.getRatio() << "/" << "peak =" << arg.getPeak();
+}
+
 }
 
 Q_DECLARE_TYPEINFO(mixxx::ReplayGain, Q_MOVABLE_TYPE);

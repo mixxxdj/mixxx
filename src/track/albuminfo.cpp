@@ -12,4 +12,16 @@ bool operator==(const AlbumInfo& lhs, const AlbumInfo& rhs) {
             (lhs.getTitle() == rhs.getTitle());
 }
 
+QDebug operator<<(QDebug dbg, const AlbumInfo& arg) {
+    dbg << '{';
+    arg.dbgArtist(dbg);
+    arg.dbgMusicBrainzArtistId(dbg);
+    arg.dbgMusicBrainzReleaseId(dbg);
+    arg.dbgMusicBrainzReleaseGroupId(dbg);
+    arg.dbgReplayGain(dbg);
+    arg.dbgTitle(dbg);
+    dbg << '}';
+    return dbg;
+}
+
 } // namespace mixxx

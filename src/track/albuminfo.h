@@ -36,6 +36,8 @@ bool operator!=(const AlbumInfo& lhs, const AlbumInfo& rhs) {
     return !(lhs == rhs);
 }
 
+QDebug operator<<(QDebug dbg, const AlbumInfo& arg);
+
 } // namespace mixxx
 
 Q_DECLARE_METATYPE(mixxx::AlbumInfo)
