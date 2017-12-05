@@ -161,7 +161,8 @@ class EngineMaster : public QObject, public AudioSource {
 
     struct GainCache {
         CSAMPLE m_gain;
-        bool m_fadeout;
+        bool m_fadeout; // fade channel to zero instead of the calculated gain.
+                        // This is used if the channel was disabled.
     };
 
     class GainCalculator {
@@ -170,7 +171,7 @@ class EngineMaster : public QObject, public AudioSource {
     };
     class PflGainCalculator : public GainCalculator {
       public:
-        inline double getGain(ChannelInfo* pChannelInfo) const {
+        double getGain(ChannelInfo* pChannelInfo) const override {
             Q_UNUSED(pChannelInfo);
             return m_dGain;
         }
@@ -182,7 +183,7 @@ class EngineMaster : public QObject, public AudioSource {
     };
     class TalkoverGainCalculator : public GainCalculator {
       public:
-        inline double getGain(ChannelInfo* pChannelInfo) const {
+        double getGain(ChannelInfo* pChannelInfo) const override {
             Q_UNUSED(pChannelInfo);
             return 1.0;
         }
@@ -196,7 +197,7 @@ class EngineMaster : public QObject, public AudioSource {
                   m_dTalkoverDuckingGain(1.0) {
         }
 
-        inline double getGain(ChannelInfo* pChannelInfo) const {
+        double getGain(ChannelInfo* pChannelInfo) const override {
             const double channelVolume = pChannelInfo->m_pVolumeControl->get();
             const double orientationGain = EngineMaster::gainForOrientation(
                     pChannelInfo->m_pChannel->getOrientation(),
@@ -210,6 +211,13 @@ class EngineMaster : public QObject, public AudioSource {
             m_dCenterGain = centerGain;
             m_dRightGain = rightGain;
             m_dTalkoverDuckingGain = talkoverDuckingGain;
+        }
+
+        inline double getLeftGain() {
+            return m_dLeftGain;
+        }
+        inline double getRightGain() {
+            return m_dLeftGain;
         }
 
       private:

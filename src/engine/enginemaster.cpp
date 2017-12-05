@@ -29,6 +29,10 @@
 #include "util/timer.h"
 #include "util/trace.h"
 
+namespace {
+    constexpr float kHardCutRampTime = 0.002f; // Ramp in time in s for xfader hard cuts.
+} // anonymous namespace
+
 EngineMaster::EngineMaster(UserSettingsPointer pConfig,
                            const char* group,
                            EffectsManager* pEffectsManager,
@@ -446,11 +450,23 @@ void EngineMaster::process(const int iBufferSize) {
 
     // Calculate the crossfader gains for left and right side of the crossfader
     double crossfaderLeftGain, crossfaderRightGain;
+    bool fastCut;
     EngineXfader::getXfadeGains(m_pCrossfader->get(), m_pXFaderCurve->get(),
                                 m_pXFaderCalibration->get(),
                                 m_pXFaderMode->get(),
                                 m_pXFaderReverse->toBool(),
-                                &crossfaderLeftGain, &crossfaderRightGain);
+                                &crossfaderLeftGain, &crossfaderRightGain, &fastCut);
+
+    const int fastRampBufferSize = iSampleRate * kHardCutRampTime * 2; // 2 channels, assuming stereo
+    bool fastCutByO[3] = {false, false, false};
+    if (fastCut && iBufferSize > fastRampBufferSize) {
+        if (crossfaderLeftGain != m_masterGain.getLeftGain()) {
+            fastCutByO[EngineChannel::LEFT] = true;
+        }
+        if (crossfaderRightGain != m_masterGain.getRightGain()) {
+            fastCutByO[EngineChannel::RIGHT] = true;
+        }
+    }
 
     m_masterGain.setGains(crossfaderLeftGain, 1.0, crossfaderRightGain,
                             m_pTalkoverDucking->getGain(iBufferSize / 2));
@@ -461,11 +477,29 @@ void EngineMaster::process(const int iBufferSize) {
     // Talkover is mixed in later according to the configured MicMonitorMode
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
         if (m_bRampingGain) {
-            ChannelMixer::mixChannelsRamping(
-                    m_masterGain,
-                    &m_activeBusChannels[o],
-                    &m_channelMasterGainCache, // no [o] because the old gain follows an orientation switch
-                    m_pOutputBusBuffers[o], iBufferSize);
+            if (fastCutByO[o]) {
+                // First copy the whole buffer without ramping
+                // save the cache for the second call.
+                QVarLengthArray<GainCache, kPreallocatedChannels> oldGainCache =
+                        m_channelMasterGainCache;
+                ChannelMixer::mixChannels(
+                        m_masterGain,
+                        &m_activeBusChannels[o],
+                        &m_channelMasterGainCache, // no [o] because the old gain follows an orientation switch
+                        m_pOutputBusBuffers[o], iBufferSize);
+                // Than add a small ramp at the beginning to suppress clicks
+                ChannelMixer::mixChannelsRamping(
+                        m_masterGain,
+                        &m_activeBusChannels[o],
+                        &oldGainCache,
+                        m_pOutputBusBuffers[o], fastRampBufferSize);
+            } else {
+                ChannelMixer::mixChannelsRamping(
+                        m_masterGain,
+                        &m_activeBusChannels[o],
+                        &m_channelMasterGainCache, // no [o] because the old gain follows an orientation switch
+                        m_pOutputBusBuffers[o], iBufferSize);
+            }
         } else {
             ChannelMixer::mixChannels(
                     m_masterGain,
