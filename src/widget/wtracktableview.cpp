@@ -1401,8 +1401,8 @@ void WTrackTableView::slotImportTrackMetadata() {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
             // The user has explicitly requested to reload metadata from the file
-            // to override the information within Mixxx! Cover art is reloaded
-            // separately.
+            // to override the information within Mixxx! Custom cover art must be
+            // reloaded separately.
             SoundSourceProxy(pTrack).updateTrackFromSource(
                     SoundSourceProxy::ImportTrackMetadataMode::Again);
         }

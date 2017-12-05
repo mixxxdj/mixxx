@@ -281,8 +281,7 @@ class Track : public QObject {
             QDateTime metadataSynchronized);
     void getTrackMetadata(
             mixxx::TrackMetadata* pTrackMetadata,
-            bool* pMetadataSynchronized = nullptr,
-            bool* pDirty = nullptr) const;
+            bool* pMetadataSynchronized = nullptr) const;
 
     void getTrackRecord(
             mixxx::TrackRecord* pTrackRecord,
