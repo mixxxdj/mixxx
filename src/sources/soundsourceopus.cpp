@@ -117,13 +117,13 @@ SoundSourceOpus::importTrackMetadataAndCoverImage(
     int i = 0;
     const OpusTags *l_ptrOpusTags = op_tags(pOggOpusFile, -1);
 
-    pTrackMetadata->refTrackInfo().setChannels(ChannelCount(op_channel_count(pOggOpusFile, -1)));
-    pTrackMetadata->refTrackInfo().setSampleRate(kSampleRate);
-    pTrackMetadata->refTrackInfo().setBitrate(Bitrate(op_bitrate(pOggOpusFile, -1) / 1000));
+    pTrackMetadata->setChannels(ChannelCount(op_channel_count(pOggOpusFile, -1)));
+    pTrackMetadata->setSampleRate(kSampleRate);
+    pTrackMetadata->setBitrate(Bitrate(op_bitrate(pOggOpusFile, -1) / 1000));
     // Cast to double is required for duration with sub-second precision
     const double dTotalFrames = op_pcm_total(pOggOpusFile, -1);
-    pTrackMetadata->refTrackInfo().setDuration(Duration::fromMicros(
-            1000000 * dTotalFrames / pTrackMetadata->getTrackInfo().getSampleRate()));
+    pTrackMetadata->setDuration(Duration::fromMicros(
+            1000000 * dTotalFrames / pTrackMetadata->getSampleRate()));
 
     bool hasDate = false;
     for (i = 0; i < l_ptrOpusTags->comments; ++i) {

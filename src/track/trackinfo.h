@@ -21,7 +21,6 @@ class TrackInfo final {
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    comment,              Comment)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    composer,             Composer)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    conductor,            Conductor)
-    PROPERTY_SET_BYVAL_GET_BYREF(Duration,   duration,             Duration)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    genre,                Genre)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    grouping,             Grouping)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    isrc,                 ISRC)
@@ -39,11 +38,6 @@ class TrackInfo final {
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    trackNumber,          TrackNumber)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    trackTotal,           TrackTotal)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    year,                 Year) // = release date
-
-    // Audio properties (in alphabetical order)
-    PROPERTY_SET_BYVAL_GET_BYREF(AudioSource::Bitrate,      bitrate,    Bitrate)
-    PROPERTY_SET_BYVAL_GET_BYREF(AudioSignal::ChannelCount, channels,   Channels)
-    PROPERTY_SET_BYVAL_GET_BYREF(AudioSignal::SampleRate,   sampleRate, SampleRate)
 
 public:
     TrackInfo() = default;

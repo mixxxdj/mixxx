@@ -369,15 +369,15 @@ void readAudioProperties(
     // the audio data for this track. Often those properties
     // stored in tags don't match with the corresponding
     // audio data in the file.
-    pTrackMetadata->refTrackInfo().setChannels(AudioSignal::ChannelCount(audioProperties.channels()));
-    pTrackMetadata->refTrackInfo().setSampleRate(AudioSignal::SampleRate(audioProperties.sampleRate()));
-    pTrackMetadata->refTrackInfo().setBitrate(AudioSource::Bitrate(audioProperties.bitrate()));
+    pTrackMetadata->setChannels(AudioSignal::ChannelCount(audioProperties.channels()));
+    pTrackMetadata->setSampleRate(AudioSignal::SampleRate(audioProperties.sampleRate()));
+    pTrackMetadata->setBitrate(AudioSource::Bitrate(audioProperties.bitrate()));
 #if (TAGLIB_HAS_LENGTH_IN_MILLISECONDS)
     const auto duration = Duration::fromMillis(audioProperties.lengthInMilliseconds());
 #else
     const auto duration = Duration::fromSeconds(audioProperties.length());
 #endif
-    pTrackMetadata->refTrackInfo().setDuration(duration);
+    pTrackMetadata->setDuration(duration);
 }
 
 // Workaround for missing const member function in TagLib

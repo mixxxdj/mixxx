@@ -373,22 +373,22 @@ void Track::setDateAdded(const QDateTime& dateAdded) {
 
 void Track::setDuration(mixxx::Duration duration) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_record.refMetadata().refTrackInfo().refDuration(), duration)) {
+    if (compareAndSet(&m_record.refMetadata().refDuration(), duration)) {
         markDirtyAndUnlock(&lock);
     }
 }
 
 void Track::setDuration(double duration) {
-    setDuration(mixxx::Duration::fromNanos(duration * 1000000000L));
+    setDuration(mixxx::Duration::fromSeconds(duration));
 }
 
 double Track::getDuration(DurationRounding rounding) const {
     QMutexLocker lock(&m_qMutex);
     switch (rounding) {
     case DurationRounding::SECONDS:
-        return std::round(m_record.getMetadata().getTrackInfo().getDuration().toDoubleSeconds());
+        return std::round(m_record.getMetadata().getDuration().toDoubleSeconds());
     default:
-        return m_record.getMetadata().getTrackInfo().getDuration().toDoubleSeconds();
+        return m_record.getMetadata().getDuration().toDoubleSeconds();
     }
 }
 
@@ -582,31 +582,31 @@ void Track::setType(const QString& sType) {
 
 void Track::setSampleRate(int iSampleRate) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_record.refMetadata().refTrackInfo().refSampleRate(), mixxx::AudioSignal::SampleRate(iSampleRate))) {
+    if (compareAndSet(&m_record.refMetadata().refSampleRate(), mixxx::AudioSignal::SampleRate(iSampleRate))) {
         markDirtyAndUnlock(&lock);
     }
 }
 
 int Track::getSampleRate() const {
     QMutexLocker lock(&m_qMutex);
-    return m_record.getMetadata().getTrackInfo().getSampleRate();
+    return m_record.getMetadata().getSampleRate();
 }
 
 void Track::setChannels(int iChannels) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_record.refMetadata().refTrackInfo().refChannels(), mixxx::AudioSignal::ChannelCount(iChannels))) {
+    if (compareAndSet(&m_record.refMetadata().refChannels(), mixxx::AudioSignal::ChannelCount(iChannels))) {
         markDirtyAndUnlock(&lock);
     }
 }
 
 int Track::getChannels() const {
     QMutexLocker lock(&m_qMutex);
-    return m_record.getMetadata().getTrackInfo().getChannels();
+    return m_record.getMetadata().getChannels();
 }
 
 int Track::getBitrate() const {
     QMutexLocker lock(&m_qMutex);
-    return m_record.getMetadata().getTrackInfo().getBitrate();
+    return m_record.getMetadata().getBitrate();
 }
 
 QString Track::getBitrateText() const {
@@ -615,7 +615,7 @@ QString Track::getBitrateText() const {
 
 void Track::setBitrate(int iBitrate) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_record.refMetadata().refTrackInfo().refBitrate(), mixxx::AudioSource::Bitrate(iBitrate))) {
+    if (compareAndSet(&m_record.refMetadata().refBitrate(), mixxx::AudioSource::Bitrate(iBitrate))) {
         markDirtyAndUnlock(&lock);
     }
 }
@@ -949,10 +949,10 @@ Track::ExportMetadataResult Track::exportMetadata(
         // if the file has been modified by another program since we have imported
         // the metadata? But this is expected to happen if files have been copied
         // or after upgrading the column 'header_parsed' from bool to QDateTime.
-        mixxx::TrackMetadata trackMetadata;
-        if ((pMetadataSource->importTrackMetadataAndCoverImage(&trackMetadata, nullptr).first ==
+        mixxx::TrackMetadata importedFromFile;
+        if ((pMetadataSource->importTrackMetadataAndCoverImage(&importedFromFile, nullptr).first ==
                 mixxx::MetadataSource::ImportResult::Succeeded) &&
-                (m_record.getMetadata() == trackMetadata))  {
+                !m_record.getMetadata().hasBeenModifiedAfterImport(importedFromFile))  {
             kLogger.debug()
                     << "Skip exporting of unmodified track metadata:"
                     << getLocation();
