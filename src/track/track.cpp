@@ -965,11 +965,6 @@ Track::ExportMetadataResult Track::exportMetadata(
                 return ExportMetadataResult::Skipped;
             }
         }
-        kLogger.debug()
-                << "m_record.getMetadata()"
-                << m_record.getMetadata()
-                << "importedFromFile"
-                << importedFromFile;
     }
     m_bExportMetadata = false; // reset flag
     const auto trackMetadataExported =
