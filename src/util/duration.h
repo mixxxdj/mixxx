@@ -15,7 +15,6 @@ class DurationBase {
 
   public:
     enum Units {
-        HEX,
         SECONDS,
         MILLIS,
         MICROS,
@@ -98,13 +97,6 @@ class DurationDebug : public DurationBase {
 
     friend QDebug operator<<(QDebug debug, const DurationDebug& dd) {
         switch (dd.m_unit) {
-        case HEX:
-        {
-            QByteArray ret("0x0000000000000000");
-            QByteArray hex = QByteArray::number(dd.m_durationNanos, 16);
-            ret.replace(18 - hex.size(), hex.size(), hex);
-            return debug << ret;
-        }
         case SECONDS:
             return debug << dd.toIntegerSeconds() << "s";
         case MILLIS:
@@ -219,17 +211,6 @@ class Duration : public DurationBase {
 
     friend QDebug operator<<(QDebug debug, const Duration& duration) {
         return debug << duration.m_durationNanos << "ns";
-    }
-
-    // Formats the duration as a two's-complement hexadecimal string.
-    QString formatHex() const {
-        // Format as fixed-width (8 digits).
-        return QString("0x%1").arg(m_durationNanos, 16, 16, QLatin1Char('0'));
-    }
-
-    // Formats the duration as a two's-complement hexadecimal string.
-    inline DurationDebug debugHex() const {
-        return debug(HEX);
     }
 
     QString formatNanosWithUnit() const {
