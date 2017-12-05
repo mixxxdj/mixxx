@@ -114,9 +114,6 @@ SoundSourceOpus::importTrackMetadataAndCoverImage(
         return imported;
     }
 
-    int i = 0;
-    const OpusTags *l_ptrOpusTags = op_tags(pOggOpusFile, -1);
-
     pTrackMetadata->setChannels(ChannelCount(op_channel_count(pOggOpusFile, -1)));
     pTrackMetadata->setSampleRate(kSampleRate);
     pTrackMetadata->setBitrate(Bitrate(op_bitrate(pOggOpusFile, -1) / 1000));
@@ -125,8 +122,10 @@ SoundSourceOpus::importTrackMetadataAndCoverImage(
     pTrackMetadata->setDuration(Duration::fromMicros(
             1000000 * dTotalFrames / pTrackMetadata->getSampleRate()));
 
+#ifndef TAGLIB_HAS_OPUSFILE
+    const OpusTags *l_ptrOpusTags = op_tags(pOggOpusFile, -1);
     bool hasDate = false;
-    for (i = 0; i < l_ptrOpusTags->comments; ++i) {
+    for (int i = 0; i < l_ptrOpusTags->comments; ++i) {
         QString l_SWholeTag = QString(l_ptrOpusTags->user_comments[i]);
         QString l_STag = l_SWholeTag.left(l_SWholeTag.indexOf("="));
         QString l_SPayload = l_SWholeTag.right((l_SWholeTag.length() - l_SWholeTag.indexOf("=")) - 1);
@@ -174,6 +173,7 @@ SoundSourceOpus::importTrackMetadataAndCoverImage(
 #endif // EXCLUDE_EXTRA_METADATA_PROPERTIES
         }
     }
+#endif // TAGLIB_HAS_OPUSFILE
 
     return std::make_pair(
             ImportResult::Succeeded,
