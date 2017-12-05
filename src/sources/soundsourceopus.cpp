@@ -162,6 +162,7 @@ SoundSourceOpus::importTrackMetadataAndCoverImage(
                 trackGain.setRatio(gainRatio);
                 pTrackMetadata->refTrackInfo().setReplayGain(trackGain);
             }
+#ifndef EXCLUDE_EXTRA_METADATA_PROPERTIES
         } else if (!l_STag.compare("REPLAYGAIN_ALBUM_GAIN")) {
             bool gainRatioValid = false;
             double gainRatio = ReplayGain::ratioFromString(l_SPayload, &gainRatioValid);
@@ -170,6 +171,7 @@ SoundSourceOpus::importTrackMetadataAndCoverImage(
                 albumGain.setRatio(gainRatio);
                 pTrackMetadata->refAlbumInfo().setReplayGain(albumGain);
             }
+#endif // EXCLUDE_EXTRA_METADATA_PROPERTIES
         }
     }
 
