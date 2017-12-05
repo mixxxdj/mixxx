@@ -24,6 +24,8 @@ public:
     static bool isValidValue(double value) {
         return kValueMin < value;
     }
+    // Convert and normalize from a value
+    static Bpm fromValue(double value);
 
     bool hasValue() const {
         return isValidValue(m_value);
@@ -37,7 +39,6 @@ public:
     void resetValue() {
         m_value = kValueUndefined;
     }
-    void normalizeValue();
 
     static double valueFromString(const QString& str, bool* pValid = nullptr);
     static QString valueToString(double value);

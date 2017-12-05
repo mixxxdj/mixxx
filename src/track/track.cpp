@@ -37,6 +37,21 @@ bool compareAndSet(T* pField, const T& value) {
     }
 }
 
+mixxx::Bpm getActualFromImportedBpm(
+        mixxx::Bpm importedBpm,
+        BeatsPointer pBeats = BeatsPointer()) {
+    // Only use the imported BPM if the beat grid is not valid!
+    // Reason: The BPM value in the metadata might be normalized
+    // or rounded, e.g. ID3v2 only supports integer values.
+    if (pBeats) {
+        const double beatsBpm = pBeats->getBpm();
+        if (mixxx::Bpm::isValidValue(beatsBpm)) {
+            return mixxx::Bpm::fromValue(beatsBpm);
+        }
+    }
+    return importedBpm;
+}
+
 } // anonymous namespace
 
 Track::Track(
@@ -111,12 +126,9 @@ void Track::setTrackMetadata(
 
     // Need to set BPM after sample rate since beat grid creation depends on
     // knowing the sample rate. Bug #1020438.
-    if (newBpm.hasValue() &&
-            ((nullptr == m_pBeats) || !mixxx::Bpm::isValidValue(m_pBeats->getBpm()))) {
-        // Only (re-)set the BPM to the new value if the beat grid is not valid.
-        // Reason: The BPM value in the metadata might be normalized or rounded,
-        // e.g. ID3v2 only supports integer values!
-        setBpm(newBpm.getValue());
+    const auto actualBpm = getActualFromImportedBpm(newBpm, m_pBeats);
+    if (actualBpm.hasValue()) {
+        setBpm(actualBpm.getValue());
     }
 
     if (!newKey.isEmpty()) {
@@ -249,9 +261,6 @@ double Track::setBpm(double bpmValue) {
         return bpmValue;
     }
 
-    mixxx::Bpm normalizedBpm(bpmValue);
-    normalizedBpm.normalizeValue();
-
     QMutexLocker lock(&m_qMutex);
 
     if (!m_pBeats) {
@@ -303,24 +312,19 @@ void Track::setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats) {
     }
 
     mixxx::Bpm bpm;
-    double bpmValue = bpm.getValue();
-
     m_pBeats = pBeats;
     if (m_pBeats) {
-        bpmValue = m_pBeats->getBpm();
-        bpm.setValue(bpmValue);
-        bpm.normalizeValue();
+        bpm = mixxx::Bpm::fromValue(m_pBeats->getBpm());
         pObject = dynamic_cast<QObject*>(m_pBeats.data());
         if (pObject) {
             connect(pObject, SIGNAL(updated()),
                     this, SLOT(slotBeatsUpdated()));
         }
     }
-
     m_record.refMetadata().refTrackInfo().setBpm(bpm);
 
     markDirtyAndUnlock(pLock);
-    emit(bpmUpdated(bpmValue));
+    emit(bpmUpdated(bpm.getValue()));
     emit(beatsUpdated());
 }
 
@@ -331,12 +335,10 @@ BeatsPointer Track::getBeats() const {
 
 void Track::slotBeatsUpdated() {
     QMutexLocker lock(&m_qMutex);
-    double bpmValue = m_pBeats->getBpm();
-    mixxx::Bpm bpm(bpmValue);
-    bpm.normalizeValue();
+    const auto bpm = mixxx::Bpm::fromValue(m_pBeats->getBpm());
     m_record.refMetadata().refTrackInfo().setBpm(bpm);
     markDirtyAndUnlock(&lock);
-    emit(bpmUpdated(bpmValue));
+    emit(bpmUpdated(bpm.getValue()));
     emit(beatsUpdated());
 }
 
@@ -951,13 +953,23 @@ Track::ExportMetadataResult Track::exportMetadata(
         // or after upgrading the column 'header_parsed' from bool to QDateTime.
         mixxx::TrackMetadata importedFromFile;
         if ((pMetadataSource->importTrackMetadataAndCoverImage(&importedFromFile, nullptr).first ==
-                mixxx::MetadataSource::ImportResult::Succeeded) &&
-                !m_record.getMetadata().hasBeenModifiedAfterImport(importedFromFile))  {
-            kLogger.debug()
-                    << "Skip exporting of unmodified track metadata:"
-                    << getLocation();
-            return ExportMetadataResult::Skipped;
+                mixxx::MetadataSource::ImportResult::Succeeded)) {
+            // Before comparison: Adjust imported bpm values that might be imprecise,
+            // e.g. integer values from ID3v2
+            importedFromFile.refTrackInfo().setBpm(
+                    getActualFromImportedBpm(importedFromFile.getTrackInfo().getBpm(), m_pBeats));
+            if (!m_record.getMetadata().hasBeenModifiedAfterImport(importedFromFile))  {
+                kLogger.debug()
+                        << "Skip exporting of unmodified track metadata:"
+                        << getLocation();
+                return ExportMetadataResult::Skipped;
+            }
         }
+        kLogger.debug()
+                << "m_record.getMetadata()"
+                << m_record.getMetadata()
+                << "importedFromFile"
+                << importedFromFile;
     }
     m_bExportMetadata = false; // reset flag
     const auto trackMetadataExported =

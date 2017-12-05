@@ -45,13 +45,15 @@ QString Bpm::valueToString(double value) {
     }
 }
 
-void Bpm::normalizeValue() {
-    if (isValidValue(m_value)) {
-        const double normalizedValue = valueFromString(valueToString(m_value));
+Bpm Bpm::fromValue(double value) {
+    if (isValidValue(value)) {
+        const double normalizedValue = valueFromString(valueToString(value));
         // NOTE(uklotzde): Subsequently formatting and parsing the
         // normalized value should not alter it anymore!
         DEBUG_ASSERT(normalizedValue == valueFromString(valueToString(normalizedValue)));
-        m_value = normalizedValue;
+        return Bpm(normalizedValue);
+    } else {
+        return Bpm(value);
     }
 }
 
