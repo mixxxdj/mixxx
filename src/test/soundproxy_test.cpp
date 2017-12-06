@@ -437,11 +437,34 @@ TEST_F(SoundSourceProxyTest, seekBoundaries) {
         seekFrameIndices.push_back(
                 pSeekReadSource->frameIndexMin() +
                 pSeekReadSource->frameLength() / 2);
-        // ...and to the boundaries again in opposite order.
+        // ...and to the boundaries again in opposite order...
         seekFrameIndices.push_back(pSeekReadSource->frameIndexMax());
         seekFrameIndices.push_back(pSeekReadSource->frameIndexMin() + 1);
         seekFrameIndices.push_back(pSeekReadSource->frameIndexMax() - 1);
         seekFrameIndices.push_back(pSeekReadSource->frameIndexMin());
+        // ...near the end and back to middle of the stream...
+        seekFrameIndices.push_back(
+                pSeekReadSource->frameIndexMax()
+                - 4 * kReadFrameCount);
+        seekFrameIndices.push_back(
+                pSeekReadSource->frameIndexMin()
+                + pSeekReadSource->frameLength() / 2);
+        // ...before the middle and then near the end of the stream...
+        seekFrameIndices.push_back(
+                pSeekReadSource->frameIndexMin()
+                + pSeekReadSource->frameLength() / 2
+                - 4 * kReadFrameCount);
+        seekFrameIndices.push_back(
+                pSeekReadSource->frameIndexMax()
+                - 4 * kReadFrameCount);
+        // ...to the moddle of the stream and then skipping kReadFrameCount samples.
+        seekFrameIndices.push_back(
+                pSeekReadSource->frameIndexMin()
+                + pSeekReadSource->frameLength() / 2);
+        seekFrameIndices.push_back(
+                pSeekReadSource->frameIndexMin()
+                + pSeekReadSource->frameLength() / 2
+                + 2 * kReadFrameCount);
 
         // Read and verify results
         for (SINT seekFrameIndex: seekFrameIndices) {
@@ -538,6 +561,45 @@ TEST_F(SoundSourceProxyTest, readBeyondEnd) {
                 pAudioSource->readSampleFrames(
                         mixxx::WritableSampleFrames(
                                 mixxx::IndexRange::forward(seekIndex, kReadFrameCount),
+                                mixxx::SampleBuffer::WritableSlice(readBuffer))).frameIndexRange());
+    }
+}
+
+TEST_F(SoundSourceProxyTest, regressionTestCachingReaderChunkJumpForward) {
+    const SINT kReadFrameCount = 8192; // like caching reader
+
+    for (const auto& filePath: getFilePaths()) {
+        ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
+
+        mixxx::AudioSourcePointer pAudioSource(openAudioSource(filePath));
+        // Obtaining an AudioSource may fail for unsupported file formats,
+        // even if the corresponding file extension is supported, e.g.
+        // AAC vs. ALAC in .m4a files
+        if (!pAudioSource) {
+            // skip test file
+            continue;
+        }
+        mixxx::SampleBuffer readBuffer(
+                pAudioSource->frames2samples(kReadFrameCount));
+
+        // Read chunk from beginning
+        auto firstChunkRange = mixxx::IndexRange::forward(
+                pAudioSource->frameIndexMin(), kReadFrameCount);
+        EXPECT_EQ(
+                firstChunkRange,
+                pAudioSource->readSampleFrames(
+                        mixxx::WritableSampleFrames(
+                                firstChunkRange,
+                                mixxx::SampleBuffer::WritableSlice(readBuffer))).frameIndexRange());
+
+        // Read chunk from near the end, rounded to chunk boundary
+        auto secondChunkRange = mixxx::IndexRange::forward(
+                ((pAudioSource->frameIndexMax() - 2 * kReadFrameCount) / kReadFrameCount) * kReadFrameCount, kReadFrameCount);
+        EXPECT_EQ(
+                secondChunkRange,
+                pAudioSource->readSampleFrames(
+                        mixxx::WritableSampleFrames(
+                                secondChunkRange,
                                 mixxx::SampleBuffer::WritableSlice(readBuffer))).frameIndexRange());
     }
 }
