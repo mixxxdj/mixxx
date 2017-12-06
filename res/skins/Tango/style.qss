@@ -210,42 +210,33 @@ WWidgetGroup {
   margin: 0px 0px 3px 0px;
 }
 
-#Logo[displayValue="0"] {
-  background: transparent url(skin:/buttons/btn_logo_102x24_grey.svg) no-repeat center center;
-  }
-  #Logo[displayValue="1"] {
-    background: transparent url(skin:/buttons/btn_logo_102x24.svg) no-repeat center center;
-  }
-
 #MixerBar {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   margin: 0px;
+  padding: 0px;
+  qproperty-layoutSpacing: 0px;
   border: 0px;
 }
 
 #MixerbarSection,
 #CrossfaderContainer {
-  qproperty-layoutAlignment: 'AlignCenter';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   qproperty-layoutSpacing: 0px;
   border-radius: 3px;
   border-top-right-radius: 0px;
   border-top-left-radius: 0px;
   background-color: #252525;
-}
-
-#MixerbarSection:hover,
-#CrossfaderContainer:hover {
-  background-color: #0f0f0f;
-}
-
-#MixerbarSection {
-  margin: 0px;/*
-  padding: 2px 2px 2px 0px;*/
-}
-
-#CrossfaderContainer {
-  margin: 0px 10px;
-}
+  }
+  #MixerbarSection {
+    margin: 0px;
+  }
+  #CrossfaderContainer {
+    margin: 0px 10px;
+  }
+  #MixerbarSection:hover,
+  #CrossfaderContainer:hover {
+    background-color: #0f0f0f;
+  }
 
 #MasterMixerLabel {
   image: url(skin:/buttons/btn_master.svg) no-repeat center center;

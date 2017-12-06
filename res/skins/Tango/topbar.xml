@@ -27,7 +27,7 @@ Description:
           <WidgetGroup><!-- Logo + Master, Headphone & Booth Mixer -->
             <ObjectName>MixerBar</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>me,max</SizePolicy>
+            <Size>-1me,28f</Size>
             <Children>
 
               <WidgetGroup>
@@ -36,7 +36,7 @@ Description:
               </WidgetGroup>
 
               <PushButton>
-                <MinimumSize>10,24</MinimumSize>
+                <MinimumSize>50,24</MinimumSize>
                 <MaximumSize>102,24</MaximumSize>
                 <SizePolicy>me,f</SizePolicy>
                 <NumberStates>2</NumberStates>
@@ -61,6 +61,7 @@ Description:
               <Template src="skin:mixer_master_booth.xml"/>
 
               <WidgetGroup>
+                <MinimumSize>5,-1</MinimumSize>
                 <MaximumSize>50,-1</MaximumSize>
                 <SizePolicy>min,min</SizePolicy>
               </WidgetGroup>

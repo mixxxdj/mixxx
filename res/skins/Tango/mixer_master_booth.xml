@@ -5,7 +5,7 @@ Description:
 <Template>
   <WidgetGroup><!-- Master & Booth Mixer -->
     <Layout>horizontal</Layout>
-    <SizePolicy>min,max</SizePolicy>
+    <Size>-1min,28f</Size>
     <Children>
 
       <WidgetGroup><!-- Master Mixer -->
