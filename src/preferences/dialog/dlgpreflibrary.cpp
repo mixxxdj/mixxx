@@ -9,7 +9,7 @@
 #include <QMessageBox>
 
 #include "preferences/dialog/dlgpreflibrary.h"
-#include "library/exporttrackmetadatainfo.h"
+#include "library/dlgtrackmetadataexport.h"
 #include "sources/soundsourceproxy.h"
 
 #define MIXXX_ADDONS_URL "http://www.mixxx.org/wiki/doku.php/add-ons"
@@ -355,6 +355,6 @@ void DlgPrefLibrary::slotSelectFont() {
 
 void DlgPrefLibrary::slotSyncTrackMetadataExportToggled() {
     if (isVisible() && checkBox_SyncTrackMetadataExport->isChecked()) {
-        mixxx::ExportTrackMetadataInfo::showMessageBox();
+        mixxx::DlgTrackMetadataExport::showMessageBoxOncePerSession();
     }
 }

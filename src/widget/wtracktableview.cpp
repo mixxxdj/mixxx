@@ -16,7 +16,7 @@
 #include "library/librarytablemodel.h"
 #include "library/crate/cratefeaturehelper.h"
 #include "library/dao/trackschema.h"
-#include "library/exporttrackmetadatainfo.h"
+#include "library/dlgtrackmetadataexport.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "track/track.h"
@@ -1421,20 +1421,20 @@ void WTrackTableView::slotExportTrackMetadataIntoFileTags() {
         return;
     }
 
-    QModelIndexList indices = selectionModel()->selectedRows();
-
-    TrackModel* trackModel = getTrackModel();
-
-    if (trackModel == NULL) {
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
         return;
     }
 
-    // Inform the user once per session that the corresponding files
-    // will not be modified at once and changes may appear later.
-    mixxx::ExportTrackMetadataInfo::showMessageBox();
+    QModelIndexList indices = selectionModel()->selectedRows();
+    if (indices.isEmpty()) {
+        return;
+    }
+
+    mixxx::DlgTrackMetadataExport::showMessageBoxOncePerSession();
 
     for (const QModelIndex& index : indices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
+        TrackPointer pTrack = pTrackModel->getTrack(index);
         if (pTrack) {
             // Export of metadata is deferred until all references to the
             // corresponding track object have been dropped. Otherwise
