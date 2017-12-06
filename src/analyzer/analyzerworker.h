@@ -93,7 +93,7 @@ private:
     std::vector<AnalyzerPtr> m_pAnalyzers;
     bool m_priorizedJob;
     int m_workerIdx;
-    SampleBuffer m_sampleBuffer;
+    mixxx::SampleBuffer m_sampleBuffer;
     TrackPointer m_currentTrack;
 
     QAtomicInt m_exit;
