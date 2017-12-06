@@ -33,6 +33,13 @@ public:
     TrackMetadata& operator=(TrackMetadata&&) = default;
     TrackMetadata& operator=(const TrackMetadata&) = default;
 
+    // Adjusts floating-point values to match their string representation
+    // in file tags to account for rounding errors.
+    void normalizeBeforeExport() {
+        refAlbumInfo().normalizeBeforeExport();
+        refTrackInfo().normalizeBeforeExport();
+    }
+
     // Compares the contents with metadata that has been freshly imported
     // from a file.
     bool hasBeenModifiedAfterImport(const TrackMetadata& importedFromFile) const {

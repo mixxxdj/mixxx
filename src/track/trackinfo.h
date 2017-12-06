@@ -48,6 +48,13 @@ public:
 
     TrackInfo& operator=(TrackInfo&&) = default;
     TrackInfo& operator=(const TrackInfo&) = default;
+
+    // Adjusts floating-point values to match their string representation
+    // in file tags to account for rounding errors.
+    void normalizeBeforeExport() {
+        refBpm().normalizeBeforeExport();
+        refReplayGain().normalizeBeforeExport();
+    }
 };
 
 bool operator==(const TrackInfo& lhs, const TrackInfo& rhs);

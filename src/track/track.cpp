@@ -37,19 +37,18 @@ bool compareAndSet(T* pField, const T& value) {
     }
 }
 
-mixxx::Bpm getActualFromImportedBpm(
-        mixxx::Bpm importedBpm,
+inline
+mixxx::Bpm getActualBpm(
+        mixxx::Bpm bpm,
         BeatsPointer pBeats = BeatsPointer()) {
     // Only use the imported BPM if the beat grid is not valid!
     // Reason: The BPM value in the metadata might be normalized
     // or rounded, e.g. ID3v2 only supports integer values.
     if (pBeats) {
-        const double beatsBpm = pBeats->getBpm();
-        if (mixxx::Bpm::isValidValue(beatsBpm)) {
-            return mixxx::Bpm::fromValue(beatsBpm);
-        }
+        return mixxx::Bpm(pBeats->getBpm());
+    } else {
+        return bpm;
     }
-    return importedBpm;
 }
 
 } // anonymous namespace
@@ -126,7 +125,7 @@ void Track::setTrackMetadata(
 
     // Need to set BPM after sample rate since beat grid creation depends on
     // knowing the sample rate. Bug #1020438.
-    const auto actualBpm = getActualFromImportedBpm(newBpm, m_pBeats);
+    const auto actualBpm = getActualBpm(newBpm, m_pBeats);
     if (actualBpm.hasValue()) {
         setBpm(actualBpm.getValue());
     }
@@ -302,29 +301,29 @@ void Track::setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats) {
         return;
     }
 
-    QObject* pObject = nullptr;
     if (m_pBeats) {
-        pObject = dynamic_cast<QObject*>(m_pBeats.data());
+        auto pObject = dynamic_cast<QObject*>(m_pBeats.data());
         if (pObject) {
             disconnect(pObject, SIGNAL(updated()),
                        this, SLOT(slotBeatsUpdated()));
         }
     }
 
-    mixxx::Bpm bpm;
     m_pBeats = pBeats;
+
+    auto bpmValue = mixxx::Bpm::kValueUndefined;
     if (m_pBeats) {
-        bpm = mixxx::Bpm::fromValue(m_pBeats->getBpm());
-        pObject = dynamic_cast<QObject*>(m_pBeats.data());
+        bpmValue = m_pBeats->getBpm();
+        auto pObject = dynamic_cast<QObject*>(m_pBeats.data());
         if (pObject) {
             connect(pObject, SIGNAL(updated()),
                     this, SLOT(slotBeatsUpdated()));
         }
     }
-    m_record.refMetadata().refTrackInfo().setBpm(bpm);
+    m_record.refMetadata().refTrackInfo().setBpm(mixxx::Bpm(bpmValue));
 
     markDirtyAndUnlock(pLock);
-    emit(bpmUpdated(bpm.getValue()));
+    emit(bpmUpdated(bpmValue));
     emit(beatsUpdated());
 }
 
@@ -335,10 +334,15 @@ BeatsPointer Track::getBeats() const {
 
 void Track::slotBeatsUpdated() {
     QMutexLocker lock(&m_qMutex);
-    const auto bpm = mixxx::Bpm::fromValue(m_pBeats->getBpm());
-    m_record.refMetadata().refTrackInfo().setBpm(bpm);
+
+    auto bpmValue = mixxx::Bpm::kValueUndefined;
+    if (m_pBeats) {
+        bpmValue = m_pBeats->getBpm();
+    }
+    m_record.refMetadata().refTrackInfo().setBpm(mixxx::Bpm(bpmValue));
+
     markDirtyAndUnlock(&lock);
-    emit(bpmUpdated(bpm.getValue()));
+    emit(bpmUpdated(bpmValue));
     emit(beatsUpdated());
 }
 
@@ -931,11 +935,13 @@ Track::ExportMetadataResult Track::exportMetadata(
     // be called after all references to the object have been dropped.
     // But it doesn't hurt much, so let's play it safe ;)
     QMutexLocker lock(&m_qMutex);
+    // Normalize metadata before export to adjust the precision of
+    // floating values, ...
+    m_record.refMetadata().normalizeBeforeExport();
     if (!m_bExportMetadata) {
         // Perform some consistency checks if metadata is exported
-        // implicitly after a track has been modified and has NOT
-        // been explicitly requested by a user as indicated by this
-        // flag.
+        // implicitly after a track has been modified and NOT explicitly
+        // requested by a user as indicated by this flag.
         if (!m_record.getMetadataSynchronized()) {
             kLogger.debug()
                     << "Skip exporting of unsynchronized track metadata:"
@@ -956,14 +962,22 @@ Track::ExportMetadataResult Track::exportMetadata(
                 mixxx::MetadataSource::ImportResult::Succeeded)) {
             // Before comparison: Adjust imported bpm values that might be imprecise,
             // e.g. integer values from ID3v2
-            importedFromFile.refTrackInfo().setBpm(
-                    getActualFromImportedBpm(importedFromFile.getTrackInfo().getBpm(), m_pBeats));
+            auto actualBpm =
+                    getActualBpm(importedFromFile.getTrackInfo().getBpm(), m_pBeats);
+            // Account for rounding errors during export
+            actualBpm.normalizeBeforeExport();
+            // Replace the imported bpm value
+            importedFromFile.refTrackInfo().setBpm(actualBpm);
             if (!m_record.getMetadata().hasBeenModifiedAfterImport(importedFromFile))  {
                 kLogger.debug()
                         << "Skip exporting of unmodified track metadata:"
                         << getLocation();
                 return ExportMetadataResult::Skipped;
             }
+        } else {
+            kLogger.warning()
+                    << "Failed to import track metadata before exporting:"
+                    << getLocation();
         }
     }
     m_bExportMetadata = false; // reset flag

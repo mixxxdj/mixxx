@@ -92,6 +92,13 @@ public:
 
     static CSAMPLE normalizePeak(CSAMPLE peak);
 
+    // Adjusts floating-point values to match their string representation
+    // in file tags to account for rounding errors.
+    void normalizeBeforeExport() {
+        m_ratio = normalizeRatio(m_ratio);
+        m_peak = normalizePeak(m_peak);
+    }
+
 private:
     double m_ratio;
     CSAMPLE m_peak;

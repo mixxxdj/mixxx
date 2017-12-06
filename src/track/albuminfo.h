@@ -29,6 +29,12 @@ public:
 
     AlbumInfo& operator=(AlbumInfo&&) = default;
     AlbumInfo& operator=(const AlbumInfo&) = default;
+
+    // Adjusts floating-point values to match their string representation
+    // in file tags to account for rounding errors.
+    void normalizeBeforeExport() {
+        //refReplayGain().normalizeBeforeExport();
+    }
 };
 
 bool operator==(const AlbumInfo& lhs, const AlbumInfo& rhs);

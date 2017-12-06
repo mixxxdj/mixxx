@@ -21,11 +21,17 @@ public:
         : m_value(value) {
     }
 
+    static double normalizeValue(double value);
+
+    // Adjusts floating-point values to match their string representation
+    // in file tags to account for rounding errors.
+    void normalizeBeforeExport() {
+        m_value = normalizeValue(m_value);
+    }
+
     static bool isValidValue(double value) {
         return kValueMin < value;
     }
-    // Convert and normalize from a value
-    static Bpm fromValue(double value);
 
     bool hasValue() const {
         return isValidValue(m_value);
