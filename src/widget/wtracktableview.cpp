@@ -44,7 +44,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_selectionChangedSinceLastGuiTick(true),
           m_loadCachedOnly(false) {
 
-
     connect(&m_loadTrackMapper, SIGNAL(mapped(QString)),
             this, SLOT(loadSelectionToGroup(QString)));
 
@@ -115,8 +114,8 @@ WTrackTableView::~WTrackTableView() {
         pHeader->saveHeaderState();
     }
 
-    delete m_pReloadMetadataAct;
-    delete m_pReloadMetadataFromMusicBrainzAct;
+    delete m_pImportMetadataFromFileAct;
+    delete m_pImportMetadataFromMusicBrainzAct;
     delete m_pAddToPreviewDeck;
     delete m_pAutoDJBottomAct;
     delete m_pAutoDJTopAct;
@@ -202,7 +201,7 @@ void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
 
 // slot
 void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
-    //qDebug() << "WTrackTableView::loadTrackModel()" << model;
+    qDebug() << "WTrackTableView::loadTrackModel()" << model;
 
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
 
@@ -213,6 +212,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         return;
     }
 
+    TrackModel* newModel = 0;
+
     /* If the model has not changed
      * there's no need to exchange the headers
      * this will cause a small GUI freeze
@@ -222,6 +223,11 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         // a select() if the table is dirty.
         doSortByColumn(horizontalHeader()->sortIndicatorSection());
         return;
+    }else{
+        newModel = trackModel;
+        saveVScrollBarPos(getTrackModel());
+        //saving current vertical bar position
+        //using adress of track model as key
     }
 
     // The "coverLocation" and "hash" column numbers are required very often
@@ -362,6 +368,10 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // target though, so my hax above may not be completely unjustified.
 
     setVisible(true);
+
+    restoreVScrollBarPos(newModel);
+    // restoring scrollBar position using model pointer as key
+    // scrollbar positions with respect  to different models are backed by map
 }
 
 void WTrackTableView::createActions() {
@@ -400,12 +410,12 @@ void WTrackTableView::createActions() {
     connect(m_pAutoDJReplaceAct, SIGNAL(triggered()),
             this, SLOT(slotSendToAutoDJReplace()));
 
-    m_pReloadMetadataAct = new QAction(tr("Reload Metadata from File"), this);
-    connect(m_pReloadMetadataAct, SIGNAL(triggered()),
-            this, SLOT(slotReloadTrackMetadata()));
+    m_pImportMetadataFromFileAct = new QAction(tr("Import Metadata from File"), this);
+    connect(m_pImportMetadataFromFileAct, SIGNAL(triggered()),
+            this, SLOT(slotImportTrackMetadata()));
 
-    m_pReloadMetadataFromMusicBrainzAct = new QAction(tr("Get Metadata from MusicBrainz"),this);
-    connect(m_pReloadMetadataFromMusicBrainzAct, SIGNAL(triggered()),
+    m_pImportMetadataFromMusicBrainzAct = new QAction(tr("Import Metadata from MusicBrainz"),this);
+    connect(m_pImportMetadataFromMusicBrainzAct, SIGNAL(triggered()),
             this, SLOT(slotShowDlgTagFetcher()));
 
     m_pAddToPreviewDeck = new QAction(tr("Load to Preview Deck"), this);
@@ -941,10 +951,10 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     m_pMenu->addAction(m_pReplayGainResetAction);
 
     m_pMenu->addSeparator();
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_RELOADMETADATA)) {
-        m_pMenu->addAction(m_pReloadMetadataAct);
-        m_pReloadMetadataFromMusicBrainzAct->setEnabled(oneSongSelected);
-        m_pMenu->addAction(m_pReloadMetadataFromMusicBrainzAct);
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_IMPORTMETADATA)) {
+        m_pMenu->addAction(m_pImportMetadataFromFileAct);
+        m_pImportMetadataFromMusicBrainzAct->setEnabled(oneSongSelected);
+        m_pMenu->addAction(m_pImportMetadataFromMusicBrainzAct);
     }
 
     // Cover art menu only applies if at least one track is selected.
@@ -1017,6 +1027,7 @@ void WTrackTableView::onSearchCleared() {
 }
 
 void WTrackTableView::onShow() {
+    restoreVScrollBarPos();
 }
 
 void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
@@ -1373,8 +1384,8 @@ void WTrackTableView::sendToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     playlistDao.sendToAutoDJ(trackIds, loc);
 }
 
-void WTrackTableView::slotReloadTrackMetadata() {
-    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_RELOADMETADATA)) {
+void WTrackTableView::slotImportTrackMetadata() {
+    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_IMPORTMETADATA)) {
         return;
     }
 
@@ -1392,8 +1403,8 @@ void WTrackTableView::slotReloadTrackMetadata() {
             // The user has explicitly requested to reload metadata from the file
             // to override the information within Mixxx! Cover art is reloaded
             // separately.
-            SoundSourceProxy(pTrack).updateTrack(
-                    SoundSourceProxy::ParseFileTagsMode::Again);
+            SoundSourceProxy(pTrack).updateTrackFromSource(
+                    SoundSourceProxy::ImportTrackMetadataMode::Again);
         }
     }
 }
@@ -1671,4 +1682,14 @@ void WTrackTableView::slotReloadCoverArt() {
 
 bool WTrackTableView::hasFocus() const {
     return QWidget::hasFocus();
+}
+
+void WTrackTableView::saveCurrentVScrollBarPos()
+{
+    saveVScrollBarPos(getTrackModel());
+}
+
+void WTrackTableView::restoreCurrentVScrollBarPos()
+{
+    restoreVScrollBarPos(getTrackModel());
 }

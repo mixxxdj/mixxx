@@ -560,6 +560,12 @@ void MixxxMainWindow::finalize() {
     // CoverArtCache is fairly independent of everything else.
     CoverArtCache::destroy();
 
+    // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
+    // The player manager has to be deleted before the library to ensure
+    // that all modified track metadata of loaded tracks is saved.
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting PlayerManager";
+    delete m_pPlayerManager;
+
     // Delete the library after the view so there are no dangling pointers to
     // the data models.
     // Depends on RecordingManager and PlayerManager
@@ -569,10 +575,6 @@ void MixxxMainWindow::finalize() {
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "closing database connection(s)";
     m_pDbConnectionPool->destroyThreadLocalConnection();
     m_pDbConnectionPool.reset(); // should drop the last reference
-
-    // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
-    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting PlayerManager";
-    delete m_pPlayerManager;
 
     // RecordingManager depends on config, engine
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting RecordingManager";

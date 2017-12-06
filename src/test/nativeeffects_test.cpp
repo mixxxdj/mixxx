@@ -40,8 +40,8 @@ void benchmarkNativeEffectDefaultParameters(const unsigned int sampleRate,
     GroupFeatureState featureState;
     EffectProcessor::EnableState enableState = EffectProcessor::ENABLED;
 
-    SampleBuffer input(numSamples);
-    SampleBuffer output(numSamples);
+    mixxx::SampleBuffer input(numSamples);
+    mixxx::SampleBuffer output(numSamples);
 
     while (pState->KeepRunning()) {
         effect.process(channel1, input.data(), output.data(), numSamples,
