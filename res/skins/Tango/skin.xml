@@ -246,16 +246,6 @@
                       <SizePolicy>me,min</SizePolicy>
                       <Children>
 
-					              <!-- Spacer to window border with no parallel waveforms
-					              <WidgetGroup>
-					                <Size>1me,3f</Size>
-						              <Connection>
-						                <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
-						                <Transform><Not/></Transform>
-						                <BindProperty>visible</BindProperty>
-						              </Connection>
-					              </WidgetGroup> -->
-
                         <Template src="skin:decks_12.xml"/>
 
                         <WidgetGroup>

@@ -1514,17 +1514,17 @@ decks, samplers, mic, aux */
     border-radius: 3px;
     }
     WEffectSelector::drop-down {
-      width: 10px;
+      width: 11px;
       height: 20px;
       border: 0;
     }
     WEffectSelector::down-arrow {
-      width: 10px;
+      width: 11px;
       height: 20px;
       image: url(skin:/buttons/btn_fx_selector_list.svg);
       }
       WEffectSelector::down-arrow:hover {
-        width: 10px;
+        width: 11px;
         height: 20px;
         image: url(skin:/buttons/btn_fx_selector_list_hover.svg);
       }
