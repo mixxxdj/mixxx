@@ -710,7 +710,7 @@ padding-left: 2px;
     WLabel#PlayPosition:hover {
       /* Emphasize that play position display can be changed
       to show both elapsed and remaining time */
-      border: 1px solid #cccccc;
+      border: 1px solid #ccc;
     }
   WLabel#Duration, WLabel#TrackBy, WLabel#TrackArtist {
     font-size: 16px/16px;
@@ -984,7 +984,7 @@ WBeatSpinBox {
   }
   WBeatSpinBox:focus {
     border-color: #d2d2d2;
-    color: #cccccc;
+    color: #ccc;
   }
 
   WBeatSpinBox::up-button, WBeatSpinBox::down-button {
@@ -1201,6 +1201,10 @@ WBeatSpinBox {
     border-radius: 13px;
     margin: 2px;
   }
+
+#GainKnob {
+  margin: 0px 0px -2px 0px;
+}
 
 /*  This wouldn't scale the image:
 #PflButton[displayValue="0"] {
@@ -1471,6 +1475,12 @@ decks, samplers, mic, aux */
       image: url(skin:/buttons/btn_fx_focus_on_hover.svg) no-repeat center center;
     }
 
+#FxMetaknob {
+  /* Should shift Meta knob 2px down.
+  Not working, though it works for Gain knob... */
+  margin: 0px 0px -2px 0px;
+}
+
 #FxToggleSelector {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
   border-radius: 3px;
@@ -1478,17 +1488,17 @@ decks, samplers, mic, aux */
   #FxToggleButton[displayValue="0"]:hover {
     border: 1px solid #ff8f00;
     }
-  #FxToggleButton[displayValue="1"]:hover {
-    border: 1px solid #fff;
-    }
+    #FxToggleButton[displayValue="1"]:hover {
+      border: 1px solid #fff;
+      }
   #FxToggleButtonUnderlay[displayValue="0"] {
-    background-color: #777777;
+    background-color: #888;
     }
-  #FxToggleButtonUnderlay[displayValue="1"] {
-    background-color: #ff8f00;
-    }
+    #FxToggleButtonUnderlay[displayValue="1"] {
+      background-color: #ff8f00;
+      }
   #FxNameContainer {
-    padding: 1px;
+    padding: 1px 2px 1px 1px;
     qproperty-layoutAlignment: 'AlignLeft';
     }
     #FxName {
@@ -1502,7 +1512,7 @@ decks, samplers, mic, aux */
     font-family: Ubuntu;
     font-weight: normal;
     font-size: 13px/13px;
-    color: #cccccc;
+    color: #ccc;
     background-color: transparent;
     /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
     margin: 0px;
@@ -1539,7 +1549,7 @@ decks, samplers, mic, aux */
       /* On Linux, this is not applied but font color from WEffectSelector
       is inherited.
       On Windows, it must be defined here */
-      color: #cccccc;
+      color: #ccc;
       border: 0px;
       border-radius: 2px;
     }
@@ -1601,12 +1611,19 @@ decks, samplers, mic, aux */
     qproperty-alignment: 'AlignLeft | AlignVCenter';
     margin-left: 1px;
     }
-    #FxParameterButtonName_0 {
+    #FxParameterButtonName_inactive {
       color: #aaaaaa;
     }
-    #FxParameterButtonName_1 {
+    #FxParameterButtonName_active {
       color: #eeeeee;
     }
+
+#FxSuperLinkButton,
+#FxSuperLinkInvertButton {
+  /* those buttons are 5px tall, that's why they won't accept
+  3px radius which is set for all WPushButtons */
+  border-radius: 2px;
+}
 
 #FxSuperLinkButton[value="0"],
 #FxSuperLinkInvertButton[displayValue="0"] {
@@ -1884,7 +1901,7 @@ WTrackProperty#SamplerTitle_mini {
 
 QToolTip {
   background-color: #1e1e1e;
-  color: #cccccc;
+  color: #ccc;
   border: 1px solid #333;
 }
 
@@ -2181,7 +2198,7 @@ QPushButton {
   font-family: Ubuntu;
   font-weight: normal;
   font-size: 14px/14px;
-  color: #cccccc;
+  color: #ccc;
   border-radius: 2px;
   min-height: 22px;
   max-height: 22px;
