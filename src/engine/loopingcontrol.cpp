@@ -473,6 +473,12 @@ void LoopingControl::setLoopInToCurrentPosition() {
 
     m_pCOLoopStartPosition->set(loopSamples.start);
 
+    // start looping
+    if (loopSamples.start != kNoTrigger &&
+            loopSamples.end != kNoTrigger) {
+        setLoopingEnabled(true);
+    }
+
     if (m_pQuantizeEnabled->toBool()
             && loopSamples.start < loopSamples.end
             && m_pBeats != nullptr) {
