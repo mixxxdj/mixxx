@@ -341,6 +341,7 @@ WWidgetGroup {
     background: none url(skin:/graphics/rec_dot.svg) no-repeat center center;
     }
   #RecDuration {
+    font-weight: bold;
     color: #d2d2d2;
   }
 
