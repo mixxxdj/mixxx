@@ -25,7 +25,7 @@
 // TODO(XXX): Add those fields to the Mixxx library and remove the #define
 // If those properties are imported but not stored in the database
 // Mixxx would detect metadata as modified and export it again although
-// it nothing has changed.
+// nothing has changed.
 #define EXCLUDE_EXTRA_METADATA_PROPERTIES
 
 #include <QImage>
