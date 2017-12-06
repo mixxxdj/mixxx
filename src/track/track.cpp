@@ -935,6 +935,9 @@ Track::ExportMetadataResult Track::exportMetadata(
     // be called after all references to the object have been dropped.
     // But it doesn't hurt much, so let's play it safe ;)
     QMutexLocker lock(&m_qMutex);
+    // Discard the values of all currently unsupported fields that are
+    // not stored in the library, yet
+    m_record.refMetadata().resetUnsupportedValues();
     // Normalize metadata before export to adjust the precision of
     // floating values, ...
     m_record.refMetadata().normalizeBeforeExport();
@@ -960,14 +963,19 @@ Track::ExportMetadataResult Track::exportMetadata(
         mixxx::TrackMetadata importedFromFile;
         if ((pMetadataSource->importTrackMetadataAndCoverImage(&importedFromFile, nullptr).first ==
                 mixxx::MetadataSource::ImportResult::Succeeded)) {
+            // Discard the values of all currently unsupported fields that are
+            // not stored in the library, yet
+            importedFromFile.resetUnsupportedValues();
             // Before comparison: Adjust imported bpm values that might be imprecise,
             // e.g. integer values from ID3v2
             auto actualBpm =
                     getActualBpm(importedFromFile.getTrackInfo().getBpm(), m_pBeats);
-            // Account for rounding errors during export
+            // ...account for bpm rounding errors during export...
             actualBpm.normalizeBeforeExport();
-            // Replace the imported bpm value
+            // ...and replace the imported bpm value
             importedFromFile.refTrackInfo().setBpm(actualBpm);
+            // Finally the current and the just imported metadata can be checked for
+            // differences that will affect the file tags
             if (!m_record.getMetadata().hasBeenModifiedAfterImport(importedFromFile))  {
                 kLogger.debug()
                         << "Skip exporting of unmodified track metadata:"

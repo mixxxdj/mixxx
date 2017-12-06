@@ -33,6 +33,12 @@ public:
     TrackMetadata& operator=(TrackMetadata&&) = default;
     TrackMetadata& operator=(const TrackMetadata&) = default;
 
+    // TODO(XXX): Remove after all new fields have been added to the library
+    void resetUnsupportedValues() {
+        refAlbumInfo().resetUnsupportedValues();
+        refTrackInfo().resetUnsupportedValues();
+    }
+
     // Adjusts floating-point values to match their string representation
     // in file tags to account for rounding errors.
     void normalizeBeforeExport() {

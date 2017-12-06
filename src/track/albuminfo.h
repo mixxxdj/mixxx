@@ -12,14 +12,12 @@ namespace mixxx {
 
 class AlbumInfo final {
     // Album properties (in alphabetical order)
-    // TODO(XXX): Add the commented out properties to the Mixxx library
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    artist,                    Artist)
-    //PROPERTY_SET_BYVAL_GET_BYREF(ReplayGain, replayGain,                ReplayGain)
-    //PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzArtistId,       MusicBrainzArtistId)
-    //PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzReleaseId,      MusicBrainzReleaseId)
-    //PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzReleaseGroupId, MusicBrainzReleaseGroupId)
+    PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzArtistId,       MusicBrainzArtistId)
+    PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzReleaseId,      MusicBrainzReleaseId)
+    PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzReleaseGroupId, MusicBrainzReleaseGroupId)
+    PROPERTY_SET_BYVAL_GET_BYREF(ReplayGain, replayGain,                ReplayGain)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    title,                     Title)
-
 
 public:
     AlbumInfo() = default;
@@ -30,10 +28,13 @@ public:
     AlbumInfo& operator=(AlbumInfo&&) = default;
     AlbumInfo& operator=(const AlbumInfo&) = default;
 
+    // TODO(XXX): Remove after all new fields have been added to the library
+    void resetUnsupportedValues();
+
     // Adjusts floating-point values to match their string representation
     // in file tags to account for rounding errors.
     void normalizeBeforeExport() {
-        //refReplayGain().normalizeBeforeExport();
+        refReplayGain().normalizeBeforeExport();
     }
 };
 

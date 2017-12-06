@@ -22,12 +22,6 @@
 #define TAGLIB_HAS_AIFF_HAS_ID3V2TAG \
     (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 10))
 
-// TODO(XXX): Add those fields to the Mixxx library and remove the #define
-// If those properties are imported but not stored in the database
-// Mixxx would detect metadata as modified and export it again although
-// nothing has changed.
-#define EXCLUDE_EXTRA_METADATA_PROPERTIES
-
 #include <QImage>
 
 #include "track/trackmetadata.h"
