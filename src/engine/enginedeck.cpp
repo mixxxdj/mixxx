@@ -35,10 +35,12 @@ EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
         : EngineChannel(handle_group, defaultOrientation,
                         pEffectsManager, false, effectable),
           m_pConfig(pConfig),
+          m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_configured"))),
           m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))),
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
           m_wasActive(false) {
+    m_pInputConfigured->setReadOnly();
     // Set up passthrough utilities and fields
     m_pPassing->setButtonMode(ControlPushButton::POWERWINDOW);
     m_bPassthroughIsActive = false;
