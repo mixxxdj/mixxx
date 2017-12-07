@@ -217,7 +217,7 @@ Description:
             <SetVariable name="ConfigKey">[Master],show_4decks</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
+          <WidgetGroup><Size>10me,1min</Size></WidgetGroup>
 
           <WidgetGroup><!-- Recording button & recording duration label -->
             <ObjectName>RecBox</ObjectName>
@@ -253,7 +253,7 @@ Description:
             </Children>
           </WidgetGroup><!-- /Recording button & recording duration label -->
 
-          <WidgetGroup><Size>10me,1min</Size></WidgetGroup>
+          <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_5state_display.xml">
             <SetVariable name="TooltipId">broadcast_enabled</SetVariable>
