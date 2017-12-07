@@ -12,12 +12,9 @@
     <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>me,me</SizePolicy>
-    <MinimumSize>-1,65</MinimumSize>
-    <MaximumSize>-1,195</MaximumSize>
     <Children>
       <WidgetGroup>
         <ObjectName>EffectUnitGroupControls</ObjectName>
-        <Size>-1,20</Size>
         <SizePolicy>me,max</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
@@ -77,9 +74,13 @@
 
       <WidgetGroup>
         <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
-          <Template src="skin:effect_unit_no_parameters.xml">
-          </Template>
+          <Template src="skin:effect_unit_no_parameters.xml"/>
+          <WidgetGroup>
+            <ObjectName>EffectUnitFiller</ObjectName>
+            <SizePolicy>me,me</SizePolicy>
+          </WidgetGroup>
         </Children>
         <Connection>
           <ConfigKey><Variable name="group"/>,show_parameters</ConfigKey>
@@ -93,8 +94,7 @@
       <WidgetGroup>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:effect_unit_with_parameters.xml">
-          </Template>
+          <Template src="skin:effect_unit_with_parameters.xml"/>
         </Children>
         <Connection>
           <ConfigKey><Variable name="group"/>,show_parameters</ConfigKey>

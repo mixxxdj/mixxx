@@ -44,7 +44,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_selectionChangedSinceLastGuiTick(true),
           m_loadCachedOnly(false) {
 
-
     connect(&m_loadTrackMapper, SIGNAL(mapped(QString)),
             this, SLOT(loadSelectionToGroup(QString)));
 
@@ -202,7 +201,7 @@ void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
 
 // slot
 void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
-    //qDebug() << "WTrackTableView::loadTrackModel()" << model;
+    qDebug() << "WTrackTableView::loadTrackModel()" << model;
 
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
 
@@ -213,6 +212,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         return;
     }
 
+    TrackModel* newModel = 0;
+
     /* If the model has not changed
      * there's no need to exchange the headers
      * this will cause a small GUI freeze
@@ -222,6 +223,11 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         // a select() if the table is dirty.
         doSortByColumn(horizontalHeader()->sortIndicatorSection());
         return;
+    }else{
+        newModel = trackModel;
+        saveVScrollBarPos(getTrackModel());
+        //saving current vertical bar position
+        //using adress of track model as key
     }
 
     // The "coverLocation" and "hash" column numbers are required very often
@@ -362,6 +368,10 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // target though, so my hax above may not be completely unjustified.
 
     setVisible(true);
+
+    restoreVScrollBarPos(newModel);
+    // restoring scrollBar position using model pointer as key
+    // scrollbar positions with respect  to different models are backed by map
 }
 
 void WTrackTableView::createActions() {
@@ -1017,6 +1027,7 @@ void WTrackTableView::onSearchCleared() {
 }
 
 void WTrackTableView::onShow() {
+    restoreVScrollBarPos();
 }
 
 void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
@@ -1671,4 +1682,14 @@ void WTrackTableView::slotReloadCoverArt() {
 
 bool WTrackTableView::hasFocus() const {
     return QWidget::hasFocus();
+}
+
+void WTrackTableView::saveCurrentVScrollBarPos()
+{
+    saveVScrollBarPos(getTrackModel());
+}
+
+void WTrackTableView::restoreCurrentVScrollBarPos()
+{
+    restoreVScrollBarPos(getTrackModel());
 }
