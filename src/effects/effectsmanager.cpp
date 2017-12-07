@@ -34,15 +34,6 @@ EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig,
 
     m_pNumEffectsAvailable = new ControlObject(ConfigKey("[Master]", "num_effectsavailable"));
     m_pNumEffectsAvailable->setReadOnly();
-
-    ChannelHandleAndGroup master = ChannelHandleAndGroup(
-          m_pChannelHandleFactory->getOrCreateHandle("[Master]"), "[Master]");
-    registerInputChannel(master);
-    registerOutputChannel(master);
-    ChannelHandleAndGroup headphone = ChannelHandleAndGroup(
-          m_pChannelHandleFactory->getOrCreateHandle("[Headphone]"), "[Headphone]");
-    registerInputChannel(headphone);
-    registerOutputChannel(headphone);
 }
 
 EffectsManager::~EffectsManager() {
@@ -329,7 +320,6 @@ void EffectsManager::setup() {
 
     // Add postfader effect racks
     addStandardEffectRack();
-    m_pChannelHandleFactory->getOrCreateHandle("[Master]");
     addMasterEffectRack();
 
     EffectChainPointer pChain(new EffectChain(

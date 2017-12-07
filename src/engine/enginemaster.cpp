@@ -42,7 +42,7 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
           m_headphoneGainOld(1.0),
           m_balleftOld(1.0),
           m_balrightOld(1.0),
-          m_masterHandle(registerChannelGroup("[Master]")),
+          m_masterHandle(registerChannelGroup(group)),
           m_headphoneHandle(registerChannelGroup("[Headphone]")),
           m_busMicrophonesHandle(registerChannelGroup("[Microphones]")),
           m_busCrossfaderLeftHandle(registerChannelGroup("[BusLeft]")),
@@ -50,6 +50,9 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
           m_busCrossfaderRightHandle(registerChannelGroup("[BusRight]")) {
     pEffectsManager->registerInputChannel(m_masterHandle);
     pEffectsManager->registerInputChannel(m_headphoneHandle);
+    pEffectsManager->registerOutputChannel(m_masterHandle);
+    pEffectsManager->registerOutputChannel(m_headphoneHandle);
+
     pEffectsManager->registerInputChannel(m_busMicrophonesHandle);
     pEffectsManager->registerInputChannel(m_busCrossfaderLeftHandle);
     pEffectsManager->registerInputChannel(m_busCrossfaderCenterHandle);
