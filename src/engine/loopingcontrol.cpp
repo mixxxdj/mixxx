@@ -1090,7 +1090,7 @@ void LoopingControl::slotLoopMove(double beats) {
         double new_loop_in = m_pBeats->findNBeatsFromSample(loopSamples.start, beats);
         double new_loop_out = currentLoopMatchesBeatloopSize() ?
                 m_pBeats->findNBeatsFromSample(new_loop_in, m_pCOBeatLoopSize->get()) :
-                m_pBeats->findNBeatsFromSample(loopSamples.start, beats);
+                m_pBeats->findNBeatsFromSample(loopSamples.end, beats);
 
         // If we are looping make sure that the play head does not leave the
         // loop as a result of our adjustment.
@@ -1120,6 +1120,7 @@ int LoopingControl::seekInsideAdjustedLoop(
     }
 
     double new_loop_size = new_loop_out - new_loop_in;
+    DEBUG_ASSERT(new_loop_size > 0);
     double adjusted_position = currentSample;
     while (adjusted_position > new_loop_out) {
         adjusted_position -= new_loop_size;
