@@ -56,10 +56,12 @@ class PerChannelEffectProcessor : public EffectProcessor {
     PerChannelEffectProcessor() {
     }
     virtual ~PerChannelEffectProcessor() {
-        for (ChannelHandleMap<ChannelStateHolder> outputsMap : m_channelStateMatrix) {
+        // loop over each output channel
+        for (auto&& outputsMap : m_channelStateMatrix) {
+            // loop over each input channel
             for (typename ChannelHandleMap<ChannelStateHolder>::iterator it =
                         outputsMap.begin();
-                it != outputsMap.end(); ++it) {
+                        it != outputsMap.end(); ++it) {
                 T* pState = it->state;
                 delete pState;
             }

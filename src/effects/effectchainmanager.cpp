@@ -19,22 +19,18 @@ EffectChainManager::~EffectChainManager() {
 }
 
 void EffectChainManager::registerInputChannel(const ChannelHandleAndGroup& handle_group) {
-    if (m_registeredInputChannels.contains(handle_group)) {
-        qWarning() << debugString() << "WARNING: Input channel already registered:"
-                   << handle_group.name();
+    VERIFY_OR_DEBUG_ASSERT(!m_registeredInputChannels.contains(handle_group)) {
         return;
     }
     m_registeredInputChannels.insert(handle_group);
 
-    foreach (StandardEffectRackPointer pRack, m_standardEffectRacks) {
+    for (auto& pRack : m_standardEffectRacks) {
         pRack->registerInputChannel(handle_group);
     }
 }
 
 void EffectChainManager::registerOutputChannel(const ChannelHandleAndGroup& handle_group) {
-    if (m_registeredOutputChannels.contains(handle_group)) {
-        qWarning() << debugString() << "WARNING: Output channel already registered:"
-                   << handle_group.name();
+    VERIFY_OR_DEBUG_ASSERT(!m_registeredOutputChannels.contains(handle_group)) {
         return;
     }
     m_registeredOutputChannels.insert(handle_group);

@@ -140,7 +140,7 @@ bool EngineEffectChain::processEffectsRequest(const EffectsRequest& message,
 
 bool EngineEffectChain::enableForInputChannel(const ChannelHandle& inputHandle) {
     auto& outputMap = m_chainStatusForChannelMatrix[inputHandle];
-    for (auto& outputChannelStatus : outputMap) {
+    for (auto&& outputChannelStatus : outputMap) {
         if (outputChannelStatus.enable_state != EffectProcessor::ENABLED) {
             outputChannelStatus.enable_state = EffectProcessor::ENABLING;
         }
@@ -150,7 +150,7 @@ bool EngineEffectChain::enableForInputChannel(const ChannelHandle& inputHandle) 
 
 bool EngineEffectChain::disableForInputChannel(const ChannelHandle& inputHandle) {
     auto& outputMap = m_chainStatusForChannelMatrix[inputHandle];
-    for (auto& outputChannelStatus : outputMap) {
+    for (auto&& outputChannelStatus : outputMap) {
         if (outputChannelStatus.enable_state != EffectProcessor::DISABLED) {
             outputChannelStatus.enable_state = EffectProcessor::DISABLING;
         }
