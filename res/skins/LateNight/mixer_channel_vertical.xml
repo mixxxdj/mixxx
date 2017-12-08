@@ -10,7 +10,7 @@
                 <SizePolicy>min,max</SizePolicy>
                 <Children>
                     <WidgetGroup>
-                        <Layout>horizontal</Layout>
+                        <Layout>vertical</Layout>
                         <Children>
                             <PushButton>
                                 <TooltipId>pfl</TooltipId>
@@ -29,11 +29,15 @@
                                     <ConfigKey>[Channel<Variable name="channum"/>],pfl</ConfigKey>
                                 </Connection>
                             </PushButton>
+                            <!-- Spacer to put the PFL button a little bit higher -->
+                            <WidgetGroup>
+                                <Layout>vertical</Layout>
+                                <Size>1min,8f</Size>
+                                <Children/>
+                            </WidgetGroup>
                         </Children>
                     </WidgetGroup>
-                    <Template src="skin:knob_sized.xml">
-                       <SetVariable name="width">48</SetVariable>
-                       <SetVariable name="height">41</SetVariable>
+                    <Template src="skin:knob.xml">
                        <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
                        <SetVariable name="control">pregain</SetVariable>
                        <SetVariable name="label">gain</SetVariable>

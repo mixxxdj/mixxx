@@ -32,22 +32,18 @@
   <manifest>
     <title>LateNight</title>
     <author>owilliams</author>
-    <version>2.1.0</version>
+    <version>1.12.0.01</version>
     <description>A nighttime-compatible skin</description>
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
       <!-- Set skin defaults. -->
       <attribute config_key="[Master],num_decks">4</attribute>
-      <attribute persist="true" config_key="[Spinny1],show_spinny">1</attribute>
-      <attribute persist="true" config_key="[Spinny2],show_spinny">1</attribute>
-      <attribute persist="true" config_key="[Spinny3],show_spinny">1</attribute>
-      <attribute persist="true" config_key="[Spinny4],show_spinny">1</attribute>
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
       <attribute persist="true" config_key="[MicrophoneRack],show">0</attribute>
       <attribute persist="true" config_key="[EffectRack1],show">0</attribute>
       <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
-      <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
+      <attribute persist="true" config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
       <attribute persist="true" config_key="[Master],show_eqs">1</attribute>
@@ -57,7 +53,8 @@
       <attribute persist="true" config_key="[Library],show_current">1</attribute>
       <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Spinny],show_spinnies">1</attribute>
-      <attribute config_key="[Library],show_library">1</attribute>
+      <attribute persist="true" config_key="[Library],show_library">1</attribute>
+      <attribute persist="true" config_key="[Master],show_xfader">1</attribute>
       <attribute config_key="[Master],maximize_library">0</attribute>
     </attributes>
   </manifest>
@@ -67,7 +64,7 @@
 
   <!-- MinimumSize should not be an exact monitor resolution. There needs
   to be space for the title bar or other chrome at full screen -->
-  <MinimumSize>1280,700</MinimumSize>
+  <MinimumSize>1280,670</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>
 

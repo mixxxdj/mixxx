@@ -34,7 +34,14 @@
                                         <Collapsible>0,0</Collapsible>
                                         <Children>
                                             <!--Library Tree View-->
-                                            <LibrarySidebar></LibrarySidebar>
+                                            <WidgetGroup>
+                                                <ObjectName>SidebarContainer</ObjectName>
+                                                <Size>1min,50min</Size>
+                                                <Layout>vertical</Layout>
+                                                <Children>
+                                                    <LibrarySidebar></LibrarySidebar>
+                                                </Children>
+                                            </WidgetGroup>
                                             <!--Cover Art-->
                                             <CoverArt>
                                                 <SizePolicy>me,me</SizePolicy>
