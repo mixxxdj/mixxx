@@ -14,9 +14,9 @@
 #include "util/samplebuffer.h"
 
 struct EchoGroupState {
-    // 3 seconds max. This supports the full range of 2 beats for tempos down to
-    // 40 BPM.
-    static constexpr int kMaxDelaySeconds = 3;
+    // 2 seconds max. This supports the full range of 2 beats for tempos down to
+    // 60 BPM.
+    static constexpr int kMaxDelaySeconds = 2;
     static constexpr auto kChannelCount = mixxx::kEngineChannelCount;
 
     // TODO: allocate buffers of the appropriate size when the sample rate is configured
