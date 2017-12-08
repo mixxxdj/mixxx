@@ -59,6 +59,21 @@ class SoundManager : public QObject {
     SoundManager(UserSettingsPointer pConfig, EngineMaster *_master);
     virtual ~SoundManager();
 
+    // PortAudio sample rate enumeration is very slow on Linux
+    // (ALSA dmix sucks, so we can't blame PortAudio), so use this static
+    // list of supported sample rates.
+
+    // There is no reason Mixxx should support higher sample rates for playback,
+    // even if a user's sound card does. It provides no benefit and is likely to
+    // introduce introduce intermodulation distortion when playing ultrasonic
+    // frequencies. Refer to http://xiph.org/~xiphmont/demo/neil-young.html
+    // for details.
+    constexpr static const unsigned int s_iSupportedSampleRates[3] = {
+        44100,
+        48000,
+        96000
+    };
+
     // Returns a list of all devices we've enumerated that match the provided
     // filterApi, and have at least one output or input channel if the
     // bOutputDevices or bInputDevices are set, respectively.
@@ -81,12 +96,6 @@ class SoundManager : public QObject {
     SoundDevice* getErrorDevice() const;
     QString getErrorDeviceName() const;
     QString getLastErrorMessage(SoundDeviceError err) const;
-
-    // Returns a list of samplerates we will attempt to support for a given API.
-    QList<unsigned int> getSampleRates(QString api) const;
-
-    // Convenience overload for SoundManager::getSampleRates(QString)
-    QList<unsigned int> getSampleRates() const;
 
     // Get a list of host APIs supported by PortAudio.
     QList<QString> getHostAPIList() const;
@@ -150,7 +159,6 @@ class SoundManager : public QObject {
     unsigned int m_jackSampleRate;
 #endif
     QList<SoundDevice*> m_devices;
-    QList<unsigned int> m_samplerates;
     QList<CSAMPLE*> m_inputBuffers;
 
     SoundManagerConfig m_config;

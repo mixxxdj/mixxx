@@ -52,7 +52,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(apiChanged(int)));
 
     sampleRateComboBox->clear();
-    foreach (unsigned int srate, m_pSoundManager->getSampleRates()) {
+    for (unsigned int srate : SoundManager::s_iSupportedSampleRates) {
         if (srate > 0) {
             // no ridiculous sample rate values. prohibiting zero means
             // avoiding a potential div-by-0 error in ::updateLatencies
