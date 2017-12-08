@@ -32,7 +32,7 @@ EffectManifest AutoPanEffect::getManifest() {
     period->setName(QObject::tr("Period"));
     period->setDescription(QObject::tr("How fast the sound goes from a side to another\n"
             "1/4 - 4 beats rounded to 1/2 beat if tempo is detected (decks and samplers)\n"
-            "1/4 - 4 seconds if tempo is detected (mic & aux inputs, master mix)"));
+            "1/4 - 4 seconds if no tempo is detected (mic & aux inputs, master mix)"));
     period->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);

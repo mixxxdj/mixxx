@@ -100,7 +100,7 @@ EncoderPointer EncoderFactory::getNewEncoder(Encoder::Format format,
         #endif
         pEncoder->setEncoderSettings(EncoderVorbisSettings(pConfig));
     } else {
-        qWarning() << "Unsuported format requested! " << format.internalName;
+        qWarning() << "Unsupported format requested! " << format.internalName;
         DEBUG_ASSERT(false);
         pEncoder = std::make_shared<EncoderWave>(pCallback);
         pEncoder->setEncoderSettings(EncoderWaveSettings(pConfig, format));
@@ -122,7 +122,7 @@ EncoderSettingsPointer EncoderFactory::getEncoderSettings(Encoder::Format format
     } else if (format.internalName == ENCODING_OGG) {
         return std::make_shared<EncoderVorbisSettings>(pConfig);
     } else {
-        qWarning() << "Unsuported format requested! " << format.internalName;
+        qWarning() << "Unsupported format requested! " << format.internalName;
         DEBUG_ASSERT(false);
         return std::make_shared<EncoderWaveSettings>(pConfig, format);
     }

@@ -79,7 +79,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         float kfc = cutoff / sampleRate;
         float kf = kfc;
         if (MODE == LP_OVERS || MODE == HP_OVERS) {
-            // m_inputSampeRate is half the actual filter sampling rate in oversampling mode
+            // m_inputSampeRate is half the actual filter sample rate in oversampling mode
             kf = kfc / 2;
         }
 

@@ -38,7 +38,7 @@ QImage CoverArtUtils::extractEmbeddedCover(
         const QFileInfo& fileInfo,
         SecurityTokenPointer pToken) {
     auto pTrack = Track::newTemporary(fileInfo, pToken);
-    return SoundSourceProxy(pTrack).parseCoverImage();
+    return SoundSourceProxy(pTrack).importCoverImage();
 }
 
 //static

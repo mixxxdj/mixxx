@@ -1,4 +1,4 @@
-#ifndef PANEFFECT_H
+#ifndef BALANCEEFFECT_H
 #define BALANCEEFFECT_H
 
 #include "effects/effectprocessor.h"
@@ -19,7 +19,7 @@ class BalanceGroupState final {
     std::unique_ptr<EngineFilterLinkwitzRiley4Low> m_low;
     std::unique_ptr<EngineFilterLinkwitzRiley4High> m_high;
 
-    SampleBuffer m_pHighBuf;
+    mixxx::SampleBuffer m_pHighBuf;
 
     unsigned int m_oldSampleRate;
     int m_freq;

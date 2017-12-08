@@ -39,8 +39,8 @@ EngineBufferScaleRubberBand::~EngineBufferScaleRubberBand() {
 
 void EngineBufferScaleRubberBand::initRubberBand() {
     m_pRubberBand = std::make_unique<RubberBandStretcher>(
-            getAudioSignal().getSamplingRate(),
-            getAudioSignal().getChannelCount(),
+            getAudioSignal().sampleRate(),
+            getAudioSignal().channelCount(),
             RubberBandStretcher::OptionProcessRealTime);
     m_pRubberBand->setMaxProcessSize(kRubberBandBlockSize);
     // Setting the time ratio to a very high value will cause RubberBand
