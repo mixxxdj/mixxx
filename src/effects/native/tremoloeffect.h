@@ -14,7 +14,7 @@ struct TremoloGroupState {
     double gain;
     unsigned int currentFrame;
     bool quantizeEnabled = false;
-    bool tripletEnabled  = false;
+    bool tripletEnabled = false;
 };
 
 class TremoloEffect : public PerChannelEffectProcessor<TremoloGroupState> {

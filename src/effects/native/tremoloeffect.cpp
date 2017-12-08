@@ -4,7 +4,7 @@ namespace {
 //  Used to avoid gain discontinuities when changing parameters too fast
 constexpr double kMaxGainIncrement = 0.001;
 
-constexpr int kNumberOfChannels  = 2;
+constexpr int kNumberOfChannels = 2;
 }
 
 // static
@@ -135,11 +135,11 @@ void TremoloEffect::processChannel(const ChannelHandle& handle,
                                 const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
 
-    const double shape  = m_pShapeParameter->value();
+    const double shape = m_pShapeParameter->value();
     const double smooth = m_pSmoothParameter->value();
 
     unsigned int currentFrame = pState->currentFrame;
-    double       gain         = pState->gain;
+    double gain = pState->gain;
 
     const GroupFeatureState& gf = groupFeatures;
 
@@ -160,7 +160,7 @@ void TremoloEffect::processChannel(const ChannelHandle& handle,
     }
 
     int framePerPeriod;
-    double rate  = m_pRateParameter->value();
+    double rate = m_pRateParameter->value();
     if (gf.has_beat_length_sec && gf.has_beat_fraction) {
         if (m_pQuantizeParameter->toBool()) {
             int divider = log2(rate);
@@ -210,15 +210,15 @@ void TremoloEffect::processChannel(const ChannelHandle& handle,
         }
 
         for (int channel = 0; channel < kNumberOfChannels; channel++) {
-            pOutput[i+channel]   = gain * pInput[i+channel];
+            pOutput[i+channel] = gain * pInput[i+channel];
         }
 
         currentFrame++;
     }
 
     // Write back channel state
-    pState->currentFrame  = currentFrame;
+    pState->currentFrame = currentFrame;
     pState->gain = gain;
     pState->quantizeEnabled = m_pQuantizeParameter->toBool();
-    pState->tripletEnabled  = m_pTripletParameter->toBool();
+    pState->tripletEnabled = m_pTripletParameter->toBool();
 }
