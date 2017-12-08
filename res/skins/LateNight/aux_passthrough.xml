@@ -61,13 +61,13 @@
                     <NumberStates>2</NumberStates>
                     <State>
                         <Number>0</Number>
-                        <Pressed>btn_pfl1_down.png</Pressed>
-                        <Unpressed>btn_pfl1.png</Unpressed>
+                        <Pressed>buttons/btn_pfl1_down.png</Pressed>
+                        <Unpressed>buttons/btn_pfl1.png</Unpressed>
                     </State>
                     <State>
                         <Number>1</Number>
-                        <Pressed>btn_pfl1_overdown.png</Pressed>
-                        <Unpressed>btn_pfl1_over.png</Unpressed>
+                        <Pressed>buttons/btn_pfl1_overdown.png</Pressed>
+                        <Unpressed>buttons/btn_pfl1_over.png</Unpressed>
                     </State>
                     <Connection>
                         <ConfigKey>[Auxiliary<Variable name="auxnum"/>],pfl</ConfigKey>
@@ -103,18 +103,18 @@
                 <NumberStates>3</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>btn_orientation_microphone_left_over.png</Pressed>
-                  <Unpressed>btn_orientation_microphone_left_over.png</Unpressed>
+                  <Pressed>buttons/btn_orientation_microphone_left_over.png</Pressed>
+                  <Unpressed>buttons/btn_orientation_microphone_left_over.png</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>btn_orientation_microphone_master.png</Pressed>
-                  <Unpressed>btn_orientation_microphone_master.png</Unpressed>
+                  <Pressed>buttons/btn_orientation_microphone_master.png</Pressed>
+                  <Unpressed>buttons/btn_orientation_microphone_master.png</Unpressed>
                 </State>
                 <State>
                   <Number>2</Number>
-                  <Pressed>btn_orientation_microphone_right_over.png</Pressed>
-                  <Unpressed>btn_orientation_microphone_right_over.png</Unpressed>
+                  <Pressed>buttons/btn_orientation_microphone_right_over.png</Pressed>
+                  <Unpressed>buttons/btn_orientation_microphone_right_over.png</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey>[Auxiliary<Variable name="auxnum"/>],orientation</ConfigKey>

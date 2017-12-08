@@ -16,8 +16,8 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_beatloop2_halve_overdown.png</Pressed>
-							<Unpressed>btn_beatloop2_halve.png</Unpressed>
+							<Pressed>buttons/btn_beatloop2_halve_overdown.png</Pressed>
+							<Unpressed>buttons/btn_beatloop2_halve.png</Unpressed>
 						</State>
 						<Connection>
 							<ConfigKey>[Channel<Variable name="channum" />],loop_halve</ConfigKey>
@@ -43,13 +43,13 @@
 										<RightClickIsPushButton>true</RightClickIsPushButton>
 										<State>
 											<Number>0</Number>
-											<Pressed>btn_beatloop2_0125_down.png</Pressed>
-											<Unpressed>btn_beatloop2_0125.png</Unpressed>
+											<Pressed>buttons/btn_beatloop2_0125_down.png</Pressed>
+											<Unpressed>buttons/btn_beatloop2_0125.png</Unpressed>
 										</State>
 										<State>
 											<Number>1</Number>
-											<Pressed>btn_beatloop2_0125_overdown.png</Pressed>
-											<Unpressed>btn_beatloop2_0125_over.png</Unpressed>
+											<Pressed>buttons/btn_beatloop2_0125_overdown.png</Pressed>
+											<Unpressed>buttons/btn_beatloop2_0125_over.png</Unpressed>
 										</State>
 										<Connection>
 											<ConfigKey>[Channel<Variable name="channum" />],beatloop_0.125_toggle</ConfigKey>
@@ -70,13 +70,13 @@
 										<RightClickIsPushButton>true</RightClickIsPushButton>
 										<State>
 											<Number>0</Number>
-											<Pressed>btn_beatloop2_0250_down.png</Pressed>
-											<Unpressed>btn_beatloop2_0250.png</Unpressed>
+											<Pressed>buttons/btn_beatloop2_0250_down.png</Pressed>
+											<Unpressed>buttons/btn_beatloop2_0250.png</Unpressed>
 										</State>
 										<State>
 											<Number>1</Number>
-											<Pressed>btn_beatloop2_0250_overdown.png</Pressed>
-											<Unpressed>btn_beatloop2_0250_over.png</Unpressed>
+											<Pressed>buttons/btn_beatloop2_0250_overdown.png</Pressed>
+											<Unpressed>buttons/btn_beatloop2_0250_over.png</Unpressed>
 										</State>
 										<Connection>
 											<ConfigKey>[Channel<Variable name="channum" />],beatloop_0.25_toggle</ConfigKey>
@@ -97,13 +97,13 @@
 										<RightClickIsPushButton>true</RightClickIsPushButton>
 										<State>
 											<Number>0</Number>
-											<Pressed>btn_beatloop2_0500_down.png</Pressed>
-											<Unpressed>btn_beatloop2_0500.png</Unpressed>
+											<Pressed>buttons/btn_beatloop2_0500_down.png</Pressed>
+											<Unpressed>buttons/btn_beatloop2_0500.png</Unpressed>
 										</State>
 										<State>
 											<Number>1</Number>
-											<Pressed>btn_beatloop2_0500_overdown.png</Pressed>
-											<Unpressed>btn_beatloop2_0500_over.png</Unpressed>
+											<Pressed>buttons/btn_beatloop2_0500_overdown.png</Pressed>
+											<Unpressed>buttons/btn_beatloop2_0500_over.png</Unpressed>
 										</State>
 										<Connection>
 											<ConfigKey>[Channel<Variable name="channum" />],beatloop_0.5_toggle</ConfigKey>
@@ -124,13 +124,13 @@
 										<RightClickIsPushButton>true</RightClickIsPushButton>
 										<State>
 											<Number>0</Number>
-											<Pressed>btn_beatloop2_1_down.png</Pressed>
-											<Unpressed>btn_beatloop2_1.png</Unpressed>
+											<Pressed>buttons/btn_beatloop2_1_down.png</Pressed>
+											<Unpressed>buttons/btn_beatloop2_1.png</Unpressed>
 										</State>
 										<State>
 											<Number>1</Number>
-											<Pressed>btn_beatloop2_1_overdown.png</Pressed>
-											<Unpressed>btn_beatloop2_1_over.png</Unpressed>
+											<Pressed>buttons/btn_beatloop2_1_overdown.png</Pressed>
+											<Unpressed>buttons/btn_beatloop2_1_over.png</Unpressed>
 										</State>
 										<Connection>
 											<ConfigKey>[Channel<Variable name="channum" />],beatloop_1_toggle</ConfigKey>
@@ -157,13 +157,13 @@
 										<RightClickIsPushButton>true</RightClickIsPushButton>
 										<State>
 											<Number>0</Number>
-											<Pressed>btn_beatloop2_2_down.png</Pressed>
-											<Unpressed>btn_beatloop2_2.png</Unpressed>
+											<Pressed>buttons/btn_beatloop2_2_down.png</Pressed>
+											<Unpressed>buttons/btn_beatloop2_2.png</Unpressed>
 										</State>
 										<State>
 											<Number>1</Number>
-											<Pressed>btn_beatloop2_2_overdown.png</Pressed>
-											<Unpressed>btn_beatloop2_2_over.png</Unpressed>
+											<Pressed>buttons/btn_beatloop2_2_overdown.png</Pressed>
+											<Unpressed>buttons/btn_beatloop2_2_over.png</Unpressed>
 										</State>
 										<Connection>
 											<ConfigKey>[Channel<Variable name="channum" />],beatloop_2_toggle</ConfigKey>
@@ -184,13 +184,13 @@
 										<RightClickIsPushButton>true</RightClickIsPushButton>
 										<State>
 											<Number>0</Number>
-											<Pressed>btn_beatloop2_4_down.png</Pressed>
-											<Unpressed>btn_beatloop2_4.png</Unpressed>
+											<Pressed>buttons/btn_beatloop2_4_down.png</Pressed>
+											<Unpressed>buttons/btn_beatloop2_4.png</Unpressed>
 										</State>
 										<State>
 											<Number>1</Number>
-											<Pressed>btn_beatloop2_4_overdown.png</Pressed>
-											<Unpressed>btn_beatloop2_4_over.png</Unpressed>
+											<Pressed>buttons/btn_beatloop2_4_overdown.png</Pressed>
+											<Unpressed>buttons/btn_beatloop2_4_over.png</Unpressed>
 										</State>
 										<Connection>
 											<ConfigKey>[Channel<Variable name="channum" />],beatloop_4_toggle</ConfigKey>
@@ -211,13 +211,13 @@
 										<RightClickIsPushButton>true</RightClickIsPushButton>
 										<State>
 											<Number>0</Number>
-											<Pressed>btn_beatloop2_8_down.png</Pressed>
-											<Unpressed>btn_beatloop2_8.png</Unpressed>
+											<Pressed>buttons/btn_beatloop2_8_down.png</Pressed>
+											<Unpressed>buttons/btn_beatloop2_8.png</Unpressed>
 										</State>
 										<State>
 											<Number>1</Number>
-											<Pressed>btn_beatloop2_8_overdown.png</Pressed>
-											<Unpressed>btn_beatloop2_8_over.png</Unpressed>
+											<Pressed>buttons/btn_beatloop2_8_overdown.png</Pressed>
+											<Unpressed>buttons/btn_beatloop2_8_over.png</Unpressed>
 										</State>
 										<Connection>
 											<ConfigKey>[Channel<Variable name="channum" />],beatloop_8_toggle</ConfigKey>
@@ -238,13 +238,13 @@
 										<RightClickIsPushButton>true</RightClickIsPushButton>
 										<State>
 											<Number>0</Number>
-											<Pressed>btn_beatloop2_16_down.png</Pressed>
-											<Unpressed>btn_beatloop2_16.png</Unpressed>
+											<Pressed>buttons/btn_beatloop2_16_down.png</Pressed>
+											<Unpressed>buttons/btn_beatloop2_16.png</Unpressed>
 										</State>
 										<State>
 											<Number>1</Number>
-											<Pressed>btn_beatloop2_16_overdown.png</Pressed>
-											<Unpressed>btn_beatloop2_16_over.png</Unpressed>
+											<Pressed>buttons/btn_beatloop2_16_overdown.png</Pressed>
+											<Unpressed>buttons/btn_beatloop2_16_over.png</Unpressed>
 										</State>
 										<Connection>
 											<ConfigKey>[Channel<Variable name="channum" />],beatloop_16_toggle</ConfigKey>
@@ -268,8 +268,8 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_beatloop2_double_overdown.png</Pressed>
-							<Unpressed>btn_beatloop2_double.png</Unpressed>
+							<Pressed>buttons/btn_beatloop2_double_overdown.png</Pressed>
+							<Unpressed>buttons/btn_beatloop2_double.png</Unpressed>
 						</State>
 						<Connection>
 							<ConfigKey>[Channel<Variable name="channum" />],loop_double</ConfigKey>
@@ -296,8 +296,8 @@
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_loop_in2_overdown.png</Pressed>
-									<Unpressed>btn_loop_in2.png</Unpressed>
+									<Pressed>buttons/btn_loop_in2_overdown.png</Pressed>
+									<Unpressed>buttons/btn_loop_in2.png</Unpressed>
 								</State>
 								<Connection>
 									<ConfigKey>[Channel<Variable name="channum" />],loop_in</ConfigKey>
@@ -309,8 +309,8 @@
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_loop_out2_overdown.png</Pressed>
-									<Unpressed>btn_loop_out2.png</Unpressed>
+									<Pressed>buttons/btn_loop_out2_overdown.png</Pressed>
+									<Unpressed>buttons/btn_loop_out2.png</Unpressed>
 								</State>
 								<Connection>
 									<ConfigKey>[Channel<Variable name="channum" />],loop_out</ConfigKey>
@@ -365,8 +365,8 @@
                                 <NumberStates>1</NumberStates>
                                 <State>
                                     <Number>0</Number>
-                                    <Pressed>btn_rewind2_overdown.png</Pressed>
-                                    <Unpressed>btn_rewind2.png</Unpressed>
+                                    <Pressed>buttons/btn_rewind2_overdown.png</Pressed>
+                                    <Unpressed>buttons/btn_rewind2.png</Unpressed>
                                 </State>
                                 <Connection>
                                     <ConfigKey>[Channel<Variable name="channum" />],back</ConfigKey>
@@ -382,8 +382,8 @@
                                 <NumberStates>1</NumberStates>
                                 <State>
                                     <Number>0</Number>
-                                    <Pressed>btn_forward2_overdown.png</Pressed>
-                                    <Unpressed>btn_forward2.png</Unpressed>
+                                    <Pressed>buttons/btn_forward2_overdown.png</Pressed>
+                                    <Unpressed>buttons/btn_forward2.png</Unpressed>
                                 </State>
                                 <Connection>
                                     <ConfigKey>[Channel<Variable name="channum" />],fwd</ConfigKey>
@@ -407,8 +407,8 @@
                                 <RightClickIsPushButton>true</RightClickIsPushButton>
                                 <State>
                                     <Number>0</Number>
-                                    <Pressed>btn_reverse2_overdown.png</Pressed>
-                                    <Unpressed>btn_reverse2.png</Unpressed>
+                                    <Pressed>buttons/btn_reverse2_overdown.png</Pressed>
+                                    <Unpressed>buttons/btn_reverse2.png</Unpressed>
                                 </State>
                                 <Connection>
                                     <ConfigKey>[Channel<Variable name="channum" />],reverse</ConfigKey>
@@ -459,13 +459,13 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_play1_down.png</Pressed>
-							<Unpressed>btn_play1.png</Unpressed>
+							<Pressed>buttons/btn_play1_down.png</Pressed>
+							<Unpressed>buttons/btn_play1.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_play1_overdown.png</Pressed>
-							<Unpressed>btn_play1_over.png</Unpressed>
+							<Pressed>buttons/btn_play1_overdown.png</Pressed>
+							<Unpressed>buttons/btn_play1_over.png</Unpressed>
 						</State>
 						<Connection>
 							<ConfigKey>[Channel<Variable name="channum" />],play</ConfigKey>

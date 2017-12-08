@@ -60,13 +60,13 @@
 	              <NumberStates>2</NumberStates>
 	              <State>
 		              <Number>0</Number>
-		              <Pressed>btn_repeat2.png</Pressed>
-		              <Unpressed>btn_repeat2.png</Unpressed>
+		              <Pressed>buttons/btn_repeat2.png</Pressed>
+		              <Unpressed>buttons/btn_repeat2.png</Unpressed>
 	              </State>
 	              <State>
 		              <Number>1</Number>
-		              <Pressed>btn_repeat2_over.png</Pressed>
-		              <Unpressed>btn_repeat2_over.png</Unpressed>
+		              <Pressed>buttons/btn_repeat2_over.png</Pressed>
+		              <Unpressed>buttons/btn_repeat2_over.png</Unpressed>
 	              </State>
 	              <Connection>
 		              <ConfigKey>[Channel<Variable name="channum"/>],repeat</ConfigKey>
@@ -78,8 +78,8 @@
 	              <NumberStates>1</NumberStates>
 	              <State>
 		              <Number>0</Number>
-		              <Pressed>btn_eject2_over.png</Pressed>
-		              <Unpressed>btn_eject2.png</Unpressed>
+		              <Pressed>buttons/btn_eject2_over.png</Pressed>
+		              <Unpressed>buttons/btn_eject2.png</Unpressed>
 	              </State>
 	              <Connection>
 		              <ConfigKey>[Channel<Variable name="channum"/>],eject</ConfigKey>
@@ -97,13 +97,13 @@
                   <NumberStates>2</NumberStates>
                   <State>
                       <Number>0</Number>
-                      <Pressed>btn_quantize2.png</Pressed>
-                      <Unpressed>btn_quantize2.png</Unpressed>
+                      <Pressed>buttons/btn_quantize2.png</Pressed>
+                      <Unpressed>buttons/btn_quantize2.png</Unpressed>
                   </State>
                   <State>
                       <Number>1</Number>
-                      <Pressed>btn_quantize2_over.png</Pressed>
-                      <Unpressed>btn_quantize2_over.png</Unpressed>
+                      <Pressed>buttons/btn_quantize2_over.png</Pressed>
+                      <Unpressed>buttons/btn_quantize2_over.png</Unpressed>
                   </State>
                   <Pos>26,23</Pos>
                   <Connection>
@@ -117,13 +117,13 @@
 			          <NumberStates>2</NumberStates>
 			          <State>
 				          <Number>0</Number>
-				          <Pressed>btn_keylock2.png</Pressed>
-				          <Unpressed>btn_keylock2.png</Unpressed>
+				          <Pressed>buttons/btn_keylock2.png</Pressed>
+				          <Unpressed>buttons/btn_keylock2.png</Unpressed>
 			          </State>
 			          <State>
 				          <Number>1</Number>
-				          <Pressed>btn_keylock2_over.png</Pressed>
-				          <Unpressed>btn_keylock2_over.png</Unpressed>
+				          <Pressed>buttons/btn_keylock2_over.png</Pressed>
+				          <Unpressed>buttons/btn_keylock2_over.png</Unpressed>
 			          </State>
 			          <Pos>52,23</Pos>
 			          <Connection>

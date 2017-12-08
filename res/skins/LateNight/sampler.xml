@@ -42,13 +42,13 @@
 		                                <RightClickIsPushButton>true</RightClickIsPushButton>
 		                                <State>
 		                                    <Number>0</Number>
-		                                    <Pressed>btn_play_sampler_down.png</Pressed>
-		                                    <Unpressed>btn_play_sampler.png</Unpressed>
+		                                    <Pressed>buttons/btn_play_sampler_down.png</Pressed>
+		                                    <Unpressed>buttons/btn_play_sampler.png</Unpressed>
 		                                </State>
 		                                <State>
 		                                    <Number>1</Number>
-		                                    <Pressed>btn_play_sampler_overdown.png</Pressed>
-		                                    <Unpressed>btn_play_sampler_over.png</Unpressed>
+		                                    <Pressed>buttons/btn_play_sampler_overdown.png</Pressed>
+		                                    <Unpressed>buttons/btn_play_sampler_over.png</Unpressed>
 		                                </State>
 		                                <Connection>
 		                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_gotoandplay</ConfigKey>
@@ -99,13 +99,13 @@
 				                                <NumberStates>2</NumberStates>
 				                                <State>
 				                                    <Number>0</Number>
-				                                    <Pressed>btn_repeat_sampler.png</Pressed>
-				                                    <Unpressed>btn_repeat_sampler.png</Unpressed>
+				                                    <Pressed>buttons/btn_repeat_sampler.png</Pressed>
+				                                    <Unpressed>buttons/btn_repeat_sampler.png</Unpressed>
 				                                </State>
 				                                <State>
 				                                    <Number>1</Number>
-				                                    <Pressed>btn_repeat_sampler_over.png</Pressed>
-				                                    <Unpressed>btn_repeat_sampler_over.png</Unpressed>
+				                                    <Pressed>buttons/btn_repeat_sampler_over.png</Pressed>
+				                                    <Unpressed>buttons/btn_repeat_sampler_over.png</Unpressed>
 				                                </State>
 				                                <Connection>
 				                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],repeat</ConfigKey>
@@ -116,8 +116,8 @@
 				                                <NumberStates>1</NumberStates>
 				                                <State>
 				                                    <Number>0</Number>
-				                                    <Pressed>btn_eject_sampler_over.png</Pressed>
-				                                    <Unpressed>btn_eject_sampler.png</Unpressed>
+				                                    <Pressed>buttons/btn_eject_sampler_over.png</Pressed>
+				                                    <Unpressed>buttons/btn_eject_sampler.png</Unpressed>
 				                                </State>
 				                                <Connection>
 				                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],eject</ConfigKey>
@@ -135,18 +135,18 @@
 				                                <NumberStates>3</NumberStates>
 				                                <State>
 				                                    <Number>0</Number>
-				                                    <Pressed>btn_orientation_sampler_left_over.png</Pressed>
-				                                    <Unpressed>btn_orientation_sampler_left_over.png</Unpressed>
+				                                    <Pressed>buttons/btn_orientation_sampler_left_over.png</Pressed>
+				                                    <Unpressed>buttons/btn_orientation_sampler_left_over.png</Unpressed>
 				                                </State>
 				                                <State>
 				                                    <Number>1</Number>
-				                                    <Pressed>btn_orientation_sampler_master.png</Pressed>
-				                                    <Unpressed>btn_orientation_sampler_master.png</Unpressed>
+				                                    <Pressed>buttons/btn_orientation_sampler_master.png</Pressed>
+				                                    <Unpressed>buttons/btn_orientation_sampler_master.png</Unpressed>
 				                                </State>
 				                                <State>
 				                                    <Number>2</Number>
-				                                    <Pressed>btn_orientation_sampler_right_over.png</Pressed>
-				                                    <Unpressed>btn_orientation_sampler_right_over.png</Unpressed>
+				                                    <Pressed>buttons/btn_orientation_sampler_right_over.png</Pressed>
+				                                    <Unpressed>buttons/btn_orientation_sampler_right_over.png</Unpressed>
 				                                </State>
 				                                <Connection>
 				                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],orientation</ConfigKey>
@@ -158,13 +158,13 @@
 				                                <NumberStates>2</NumberStates>
 				                                <State>
 				                                    <Number>0</Number>
-				                                    <Pressed>btn_keylock_sampler.png</Pressed>
-				                                    <Unpressed>btn_keylock_sampler.png</Unpressed>
+				                                    <Pressed>buttons/btn_keylock_sampler.png</Pressed>
+				                                    <Unpressed>buttons/btn_keylock_sampler.png</Unpressed>
 				                                </State>
 				                                <State>
 				                                    <Number>1</Number>
-				                                    <Pressed>btn_keylock_sampler_over.png</Pressed>
-				                                    <Unpressed>btn_keylock_sampler_over.png</Unpressed>
+				                                    <Pressed>buttons/btn_keylock_sampler_over.png</Pressed>
+				                                    <Unpressed>buttons/btn_keylock_sampler_over.png</Unpressed>
 				                                </State>
 				                                <Connection>
 				                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],keylock</ConfigKey>
@@ -204,8 +204,8 @@
 			                           <NumberStates>1</NumberStates>
 			                           <State>
 			                               <Number>0</Number>
-			                               <Pressed>btn_sync_sampler_overdown.png</Pressed>
-			                               <Unpressed>btn_sync_sampler.png</Unpressed>
+			                               <Pressed>buttons/btn_sync_sampler_overdown.png</Pressed>
+			                               <Unpressed>buttons/btn_sync_sampler.png</Unpressed>
 			                           </State>
 			                           <Connection>
 			                               <ConfigKey>[Sampler<Variable name="samplernum"/>],beatsync</ConfigKey>
@@ -230,13 +230,13 @@
 		                                <RightClickIsPushButton>true</RightClickIsPushButton>
 		                                <State>
 		                                    <Number>0</Number>
-		                                    <Pressed>btn_hotcue1_1_down.png</Pressed>
-		                                    <Unpressed>btn_hotcue1_1.png</Unpressed>
+		                                    <Pressed>buttons/btn_hotcue1_1_down.png</Pressed>
+		                                    <Unpressed>buttons/btn_hotcue1_1.png</Unpressed>
 		                                </State>
 		                                <State>
 		                                    <Number>1</Number>
-		                                    <Pressed>btn_hotcue1_1_overdown.png</Pressed>
-		                                    <Unpressed>btn_hotcue1_1_over.png</Unpressed>
+		                                    <Pressed>buttons/btn_hotcue1_1_overdown.png</Pressed>
+		                                    <Unpressed>buttons/btn_hotcue1_1_over.png</Unpressed>
 		                                </State>
 		                                <Connection>
 		                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_1_activate</ConfigKey>
@@ -257,13 +257,13 @@
 		                                <RightClickIsPushButton>true</RightClickIsPushButton>
 		                                <State>
 		                                    <Number>0</Number>
-		                                    <Pressed>btn_hotcue1_2_down.png</Pressed>
-		                                    <Unpressed>btn_hotcue1_2.png</Unpressed>
+		                                    <Pressed>buttons/btn_hotcue1_2_down.png</Pressed>
+		                                    <Unpressed>buttons/btn_hotcue1_2.png</Unpressed>
 		                                </State>
 		                                <State>
 		                                    <Number>1</Number>
-		                                    <Pressed>btn_hotcue1_2_overdown.png</Pressed>
-		                                    <Unpressed>btn_hotcue1_2_over.png</Unpressed>
+		                                    <Pressed>buttons/btn_hotcue1_2_overdown.png</Pressed>
+		                                    <Unpressed>buttons/btn_hotcue1_2_over.png</Unpressed>
 		                                </State>
 		                                <Connection>
 		                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_2_activate</ConfigKey>
@@ -284,13 +284,13 @@
 		                                <RightClickIsPushButton>true</RightClickIsPushButton>
 		                                <State>
 		                                    <Number>0</Number>
-		                                    <Pressed>btn_hotcue1_3_down.png</Pressed>
-		                                    <Unpressed>btn_hotcue1_3.png</Unpressed>
+		                                    <Pressed>buttons/btn_hotcue1_3_down.png</Pressed>
+		                                    <Unpressed>buttons/btn_hotcue1_3.png</Unpressed>
 		                                </State>
 		                                <State>
 		                                    <Number>1</Number>
-		                                    <Pressed>btn_hotcue1_3_overdown.png</Pressed>
-		                                    <Unpressed>btn_hotcue1_3_over.png</Unpressed>
+		                                    <Pressed>buttons/btn_hotcue1_3_overdown.png</Pressed>
+		                                    <Unpressed>buttons/btn_hotcue1_3_over.png</Unpressed>
 		                                </State>
 		                                <Connection>
 		                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_3_activate</ConfigKey>
@@ -311,13 +311,13 @@
 		                                <RightClickIsPushButton>true</RightClickIsPushButton>
 		                                <State>
 		                                    <Number>0</Number>
-		                                    <Pressed>btn_hotcue1_4_down.png</Pressed>
-		                                    <Unpressed>btn_hotcue1_4.png</Unpressed>
+		                                    <Pressed>buttons/btn_hotcue1_4_down.png</Pressed>
+		                                    <Unpressed>buttons/btn_hotcue1_4.png</Unpressed>
 		                                </State>
 		                                <State>
 		                                    <Number>1</Number>
-		                                    <Pressed>btn_hotcue1_4_overdown.png</Pressed>
-		                                    <Unpressed>btn_hotcue1_4_over.png</Unpressed>
+		                                    <Pressed>buttons/btn_hotcue1_4_overdown.png</Pressed>
+		                                    <Unpressed>buttons/btn_hotcue1_4_over.png</Unpressed>
 		                                </State>
 		                                <Connection>
 		                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_4_activate</ConfigKey>
@@ -343,13 +343,13 @@
 		                                <NumberStates>2</NumberStates>
 		                                <State>
 		                                    <Number>0</Number>
-		                                    <Pressed>btn_pfl_sampler_down.png</Pressed>
-		                                    <Unpressed>btn_pfl_sampler.png</Unpressed>
+		                                    <Pressed>buttons/btn_pfl_sampler_down.png</Pressed>
+		                                    <Unpressed>buttons/btn_pfl_sampler.png</Unpressed>
 		                                </State>
 		                                <State>
 		                                    <Number>1</Number>
-		                                    <Pressed>btn_pfl_sampler_overdown.png</Pressed>
-		                                    <Unpressed>btn_pfl_sampler_over.png</Unpressed>
+		                                    <Pressed>buttons/btn_pfl_sampler_overdown.png</Pressed>
+		                                    <Unpressed>buttons/btn_pfl_sampler_over.png</Unpressed>
 		                                </State>
 		                                <Connection>
 		                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],pfl</ConfigKey>
@@ -370,16 +370,16 @@
 				<Children>
 					<StatusLight>
 						<TooltipId>sampler_PeakIndicator</TooltipId>
-						<PathStatusLight>btn_clipping_sampler_over.png</PathStatusLight>
-						<PathBack>btn_clipping_sampler.png</PathBack>
+						<PathStatusLight>buttons/btn_clipping_sampler_over.png</PathStatusLight>
+						<PathBack>buttons/btn_clipping_sampler.png</PathBack>
 						<Connection>
 							<ConfigKey>[Sampler<Variable name="samplernum"/>],PeakIndicator</ConfigKey>
 						</Connection>
 					</StatusLight>
 					<VuMeter>
 						<TooltipId>sampler_VuMeter</TooltipId>
-						<PathVu>btn_volume_display_sampler_over.png</PathVu>
-						<PathBack>btn_volume_display_sampler.png</PathBack>
+						<PathVu>buttons/btn_volume_display_sampler_over.png</PathVu>
+						<PathBack>buttons/btn_volume_display_sampler.png</PathBack>
 						<Horizontal>false</Horizontal>
 						<PeakHoldSize>5</PeakHoldSize>
 						<PeakHoldTime>500</PeakHoldTime>

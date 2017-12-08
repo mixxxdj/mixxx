@@ -26,8 +26,8 @@
                                       <NumberStates>1</NumberStates>
                                       <State>
                                         <Number>0</Number>
-                                        <Unpressed>btn_prev.png</Unpressed>
-                                        <Pressed>btn_prev_down.png</Pressed>
+                                        <Unpressed>buttons/btn_prev.png</Unpressed>
+                                        <Pressed>buttons/btn_prev_down.png</Pressed>
                                       </State>
                                       <Connection>
                                         <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_down</ConfigKey>
@@ -68,8 +68,8 @@
                                       <NumberStates>1</NumberStates>
                                       <State>
                                         <Number>0</Number>
-                                        <Unpressed>btn_next.png</Unpressed>
-                                        <Pressed>btn_next_down.png</Pressed>
+                                        <Unpressed>buttons/btn_next.png</Unpressed>
+                                        <Pressed>buttons/btn_next_down.png</Pressed>
                                       </State>
                                       <Connection>
                                         <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_up</ConfigKey>
@@ -179,8 +179,8 @@
 		                                <NumberStates>1</NumberStates>
 		                                <State>
 		                                    <Number>0</Number>
-		                                    <Pressed>btn_pitch_down1_overdown.png</Pressed>
-		                                    <Unpressed>btn_pitch_down1.png</Unpressed>
+		                                    <Pressed>buttons/btn_pitch_down1_overdown.png</Pressed>
+		                                    <Unpressed>buttons/btn_pitch_down1.png</Unpressed>
 		                                </State>
 		                                <Connection>
 		                                    <ConfigKey>[Channel<Variable name="channum" />],rate_perm_down</ConfigKey>
@@ -196,8 +196,8 @@
 		                                <NumberStates>1</NumberStates>
 		                                <State>
 		                                    <Number>0</Number>
-		                                    <Pressed>btn_pitch_up1_overdown.png</Pressed>
-		                                    <Unpressed>btn_pitch_up1.png</Unpressed>
+		                                    <Pressed>buttons/btn_pitch_up1_overdown.png</Pressed>
+		                                    <Unpressed>buttons/btn_pitch_up1.png</Unpressed>
 		                                </State>
 		                                <Connection>
 		                                    <ConfigKey>[Channel<Variable name="channum" />],rate_perm_up</ConfigKey>
@@ -219,8 +219,8 @@
 		                                <NumberStates>1</NumberStates>
 		                                <State>
 		                                    <Number>0</Number>
-		                                    <Pressed>btn_nudge_down1_overdown.png</Pressed>
-		                                    <Unpressed>btn_nudge_down1.png</Unpressed>
+		                                    <Pressed>buttons/btn_nudge_down1_overdown.png</Pressed>
+		                                    <Unpressed>buttons/btn_nudge_down1.png</Unpressed>
 		                                </State>
 		                                <Connection>
 		                                    <ConfigKey>[Channel<Variable name="channum" />],rate_temp_down</ConfigKey>
@@ -236,8 +236,8 @@
 		                                <NumberStates>1</NumberStates>
 		                                <State>
 		                                    <Number>0</Number>
-		                                    <Pressed>btn_nudge_up1_overdown.png</Pressed>
-		                                    <Unpressed>btn_nudge_up1.png</Unpressed>
+		                                    <Pressed>buttons/btn_nudge_up1_overdown.png</Pressed>
+		                                    <Unpressed>buttons/btn_nudge_up1.png</Unpressed>
 		                                </State>
 		                                <Connection>
 		                                    <ConfigKey>[Channel<Variable name="channum" />],rate_temp_up</ConfigKey>
@@ -287,13 +287,13 @@
                                 <NumberStates>2</NumberStates>
                                 <State>
                                     <Number>0</Number>
-                                    <Pressed>btn_mastersync_master_on.png</Pressed>
-                                    <Unpressed>btn_mastersync_master_off.png</Unpressed>
+                                    <Pressed>buttons/btn_mastersync_master_on.png</Pressed>
+                                    <Unpressed>buttons/btn_mastersync_master_off.png</Unpressed>
                                 </State>
                                 <State>
                                     <Number>1</Number>
-                                    <Pressed>btn_mastersync_master_on.png</Pressed>
-                                    <Unpressed>btn_mastersync_master_on.png</Unpressed>
+                                    <Pressed>buttons/btn_mastersync_master_on.png</Pressed>
+                                    <Unpressed>buttons/btn_mastersync_master_on.png</Unpressed>
                                 </State>
                                 <Connection>
                                     <ConfigKey>[Channel<Variable name="channum" />],sync_master</ConfigKey>
@@ -320,9 +320,9 @@
 		                        <Size>2me,10f</Size>
 		                        <TooltipId>vinylcontrol_status</TooltipId>
 		                        <NumberPos>3</NumberPos>
-		                        <PathStatusLight scalemode="STRETCH">btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
-		                        <PathStatusLight2 scalemode="STRETCH">btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
-		                        <PathStatusLight3 scalemode="STRETCH">btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
+		                        <PathStatusLight scalemode="STRETCH">buttons/btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
+		                        <PathStatusLight2 scalemode="STRETCH">buttons/btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
+		                        <PathStatusLight3 scalemode="STRETCH">buttons/btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
 		                        <Connection>
 		                            <ConfigKey>[Channel<Variable name="channum"/>],vinylcontrol_status</ConfigKey>
 		                        </Connection>
