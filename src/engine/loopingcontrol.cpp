@@ -49,7 +49,7 @@ LoopingControl::LoopingControl(QString group,
           m_bLoopOutPressedWhileLoopDisabled(false) {
     m_oldLoopSamples = { kNoTrigger, kNoTrigger, false };
     m_loopSamples.setValue(m_oldLoopSamples);
-    m_iCurrentSample = 0;
+    m_currentSample.setValue(0.0);
     m_pActiveBeatLoop = NULL;
 
     //Create loop-in, loop-out, loop-exit, and reloop/exit ControlObjects
@@ -310,20 +310,33 @@ void LoopingControl::process(const double dRate,
     Q_UNUSED(iBufferSize);
     Q_UNUSED(dRate);
 
-    int currentSampleEven = static_cast<int>(currentSample);
-    if (!even(currentSampleEven)) {
-        currentSampleEven--;
-    }
+    double oldCurrentSample = m_currentSample.getValue();
 
-    if (m_iCurrentSample != currentSampleEven) {
-        m_iCurrentSample = currentSampleEven;
+    if (oldCurrentSample != currentSample) {
+        m_currentSample.setValue(currentSample);
     } else {
         // no transport, so we have to do scheduled seeks here
-        double target;
-        const double loop_trigger = nextTrigger(
-                false, m_iCurrentSample, &target);
-       if (loop_trigger == m_iCurrentSample) {
-            seekAbs(target);
+        LoopSamples loopSamples = m_loopSamples.getValue();
+        if (m_bLoopingEnabled &&
+            !m_bAdjustingLoopIn && !m_bAdjustingLoopOut &&
+            loopSamples.start != kNoTrigger &&
+            loopSamples.end != kNoTrigger) {
+
+            if (loopSamples.start != m_oldLoopSamples.start ||
+                    loopSamples.end != m_oldLoopSamples.end) {
+                // bool seek is only valid after the loop has changed
+                if (loopSamples.seek) {
+                    // here the loop has changed and the play position
+                    // should be moved with it
+                    double target = seekInsideAdjustedLoop(currentSample,
+                            m_oldLoopSamples.start, loopSamples.start, loopSamples.end);
+                    if (target != kNoTrigger) {
+                        // jump immediately
+                        seekAbs(target);
+                    }
+                }
+                m_oldLoopSamples = loopSamples;
+            }
         }
     }
 
@@ -376,6 +389,8 @@ double LoopingControl::nextTrigger(bool reverse,
             m_oldLoopSamples = loopSamples;
             if (*pTarget != kNoTrigger) {
                 // jump immediately
+                qDebug() << currentSample <<
+                        m_oldLoopSamples.start << loopSamples.start << loopSamples.end;
                 return currentSample;
             }
         }
@@ -428,7 +443,7 @@ void LoopingControl::setLoopInToCurrentPosition() {
     // set loop-in position
     LoopSamples loopSamples = m_loopSamples.getValue();
     double quantizedBeat = -1;
-    double pos = m_iCurrentSample;
+    double pos = m_currentSample.getValue();
     if (m_pQuantizeEnabled->toBool() && m_pBeats != nullptr) {
         if (m_bAdjustingLoopIn) {
             double closestBeat = m_pClosestBeat->get();
@@ -469,7 +484,6 @@ void LoopingControl::setLoopInToCurrentPosition() {
     }
 
     loopSamples.start = pos;
-    loopSamples.seek = false;
 
     m_pCOLoopStartPosition->set(loopSamples.start);
 
@@ -477,6 +491,9 @@ void LoopingControl::setLoopInToCurrentPosition() {
     if (loopSamples.start != kNoTrigger &&
             loopSamples.end != kNoTrigger) {
         setLoopingEnabled(true);
+        loopSamples.seek = true;
+    } else {
+        loopSamples.seek = false;
     }
 
     if (m_pQuantizeEnabled->toBool()
@@ -527,7 +544,7 @@ void LoopingControl::slotLoopInGoto(double pressed) {
 void LoopingControl::setLoopOutToCurrentPosition() {
     LoopSamples loopSamples = m_loopSamples.getValue();
     double quantizedBeat = -1;
-    int pos = m_iCurrentSample + 2;
+    int pos = m_currentSample.getValue();
     if (m_pQuantizeEnabled->toBool() && m_pBeats != nullptr) {
         if (m_bAdjustingLoopOut) {
             double closestBeat = m_pClosestBeat->get();
@@ -566,15 +583,16 @@ void LoopingControl::setLoopOutToCurrentPosition() {
 
     // set loop out position
     loopSamples.end = pos;
-    loopSamples.seek = false;
 
     m_pCOLoopEndPosition->set(loopSamples.end);
-    m_loopSamples.setValue(loopSamples);
 
     // start looping
     if (loopSamples.start != kNoTrigger &&
             loopSamples.end != kNoTrigger) {
         setLoopingEnabled(true);
+        loopSamples.seek = true;
+    } else {
+        loopSamples.seek = false;
     }
 
     if (m_pQuantizeEnabled->toBool() && m_pBeats != nullptr) {
@@ -585,6 +603,8 @@ void LoopingControl::setLoopOutToCurrentPosition() {
         clearActiveBeatLoop();
     }
     //qDebug() << "set loop_out to " << loopSamples.end;
+
+    m_loopSamples.setValue(loopSamples);
 }
 
 void LoopingControl::slotLoopOut(double pressed) {
@@ -734,19 +754,18 @@ void LoopingControl::slotLoopEndPos(double pos) {
 // This is called from the engine thread
 void LoopingControl::notifySeek(double dNewPlaypos) {
     LoopSamples loopSamples = m_loopSamples.getValue();
+    double currentSample = m_currentSample.getValue();
     if (m_bLoopingEnabled) {
         // Disable loop when we jumping out, or over a catching loop,
         // using hot cues or waveform overview.
-        // + 2 because the new playposition can be rounded to loop end because of
-        // playing not at rate 1.
-        if (m_iCurrentSample >= loopSamples.start - 2 &&
-                m_iCurrentSample <= loopSamples.end + 2 &&
-                dNewPlaypos < loopSamples.start - 2) {
+        if (currentSample >= loopSamples.start &&
+                currentSample <= loopSamples.end &&
+                dNewPlaypos < loopSamples.start) {
             // jumping out of loop in backwards
             setLoopingEnabled(false);
         }
-        if (m_iCurrentSample <= loopSamples.end + 2 &&
-                dNewPlaypos > loopSamples.end + 2) {
+        if (currentSample <= loopSamples.end &&
+                dNewPlaypos > loopSamples.end) {
             // jumping out a loop or over a catching loop forward
             setLoopingEnabled(false);
         }
@@ -1052,11 +1071,11 @@ void LoopingControl::slotBeatJump(double beats) {
     }
 
     LoopSamples loopSamples = m_loopSamples.getValue();
-    int currentSample = m_iCurrentSample;
+    double currentSample = m_currentSample.getValue();
 
     if (m_bLoopingEnabled && !m_bAdjustingLoopIn && !m_bAdjustingLoopOut &&
-            loopSamples.start <= currentSample + 2 &&
-            loopSamples.end >= currentSample - 2) {
+            loopSamples.start <= currentSample &&
+            loopSamples.end >= currentSample) {
         // If inside an active loop, move loop
         slotLoopMove(beats);
     } else {
@@ -1113,7 +1132,7 @@ int LoopingControl::seekInsideAdjustedLoop(
         // playposition already is inside the loop
         return kNoTrigger;
     }
-    if (currentSample < old_loop_in - 2 && currentSample <= new_loop_out) {
+    if (currentSample < old_loop_in && currentSample <= new_loop_out) {
         // Playposition was before a catching loop and is still a catching loop
         // nothing to do
         return kNoTrigger;

@@ -91,7 +91,7 @@ class LoopingControl : public EngineControl {
     struct LoopSamples {
         double start;
         double end;
-        bool seek;
+        bool seek; // force the playposition to be inside the loop after adjusting it.
     };
 
     void setLoopingEnabled(bool enabled);
@@ -135,7 +135,7 @@ class LoopingControl : public EngineControl {
     // TODO(DSC) Make the following values double
     ControlValueAtomic<LoopSamples> m_loopSamples;
     LoopSamples m_oldLoopSamples;
-    QAtomicInt m_iCurrentSample;
+    ControlValueAtomic<double> m_currentSample;
     ControlObject* m_pQuantizeEnabled;
     ControlObject* m_pNextBeat;
     ControlObject* m_pPreviousBeat;
