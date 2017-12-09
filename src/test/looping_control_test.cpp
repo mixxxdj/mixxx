@@ -527,7 +527,7 @@ TEST_F(LoopingControlTest, LoopMoveTest) {
     m_pButtonBeatMoveBackward->set(0.0);
     ProcessBuffer();
     EXPECT_EQ(0, m_pLoopStartPoint->get());
-    EXPECT_EQ(300, m_pLoopEndPoint->get());
+    EXPECT_NEAR(300, m_pLoopEndPoint->get(), 0.000000001);
     ProcessBuffer();
     EXPECT_EQ(200, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
 
@@ -552,7 +552,7 @@ TEST_F(LoopingControlTest, LoopMoveTest) {
     m_pButtonBeatMoveBackward->set(0.0);
     ProcessBuffer();
     EXPECT_EQ(0, m_pLoopStartPoint->get());
-    EXPECT_EQ(300, m_pLoopEndPoint->get());
+    EXPECT_NEAR(300, m_pLoopEndPoint->get(), 0.000000001);
     EXPECT_EQ(500, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
 }
 
