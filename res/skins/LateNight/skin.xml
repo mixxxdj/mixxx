@@ -73,50 +73,51 @@
     library doesn't actually appear here, it's just instantiated and configured.
     -->
     <SingletonDefinition>
-        <ObjectName>LibrarySingleton</ObjectName>
-        <Children>
-            <Template src="skin:library.xml"/>
-        </Children>
+      <ObjectName>LibrarySingleton</ObjectName>
+      <Children>
+        <Template src="skin:library.xml"/>
+      </Children>
     </SingletonDefinition>
 
     <WidgetGroup>
-        <ObjectName>SkinContainer</ObjectName>
-        <Layout>horizontal</Layout>
-        <SizePolicy>me,me</SizePolicy>
-        <Children>
-            <!-- Select between either the full UI or the big library -->
-            <WidgetStack currentpage="[Master],maximize_library">
-                <Children>
-                    <WidgetGroup>
-                        <Layout>vertical</Layout>
-                        <SizePolicy>me,me</SizePolicy>
-                        <Children>
-                            <WidgetGroup>
-                                <Layout>horizontal</Layout>
-                                <SizePolicy>i,max</SizePolicy>
-                                <Children>
-                                    <Template src="skin:decks_left.xml"/>
-                                    <Template src="skin:waveform_and_mixer.xml"/>
-                                    <Template src="skin:decks_right.xml"/>
-                                </Children>
-                            </WidgetGroup>
-                            <Template src="skin:lower_half.xml"/>
-                        </Children>
-                    </WidgetGroup>
+      <ObjectName>SkinContainer</ObjectName>
+      <Layout>horizontal</Layout>
+      <SizePolicy>me,me</SizePolicy>
+      <Children>
+          <!-- Select between either the full UI or the big library -->
+        <WidgetStack currentpage="[Master],maximize_library">
+          <Children>
+            <WidgetGroup>
+              <Layout>vertical</Layout>
+              <SizePolicy>me,min</SizePolicy>
+              <Children>
+                <Template src="skin:waveforms.xml"/>
+                <WidgetGroup>
+                  <Layout>horizontal</Layout>
+                  <SizePolicy>me,max</SizePolicy>
+                  <Children>
+                    <Template src="skin:decks_left.xml"/>
+                    <Template src="skin:mixer.xml"/>
+                    <Template src="skin:decks_right.xml"/>
+                  </Children>
+                </WidgetGroup>
+                <Template src="skin:lower_half.xml"/>
+              </Children>
+            </WidgetGroup>
 
-                    <WidgetGroup>
-                        <Layout>vertical</Layout>
-                        <SizePolicy>me,me</SizePolicy>
-                        <Children>
-                            <SingletonContainer>
-                                <ObjectName>LibrarySingleton</ObjectName>
-                            </SingletonContainer>
-                            <Template src="skin:toolbar_big_library.xml"/>
-                        </Children>
-                    </WidgetGroup>
-                </Children>
-            </WidgetStack>
-        </Children>
+            <WidgetGroup>
+              <Layout>vertical</Layout>
+              <SizePolicy>me,me</SizePolicy>
+              <Children>
+                <SingletonContainer>
+                  <ObjectName>LibrarySingleton</ObjectName>
+                </SingletonContainer>
+                <Template src="skin:toolbar_big_library.xml"/>
+              </Children>
+            </WidgetGroup>
+          </Children>
+        </WidgetStack>
+      </Children>
     </WidgetGroup>
   </Children>
 </skin>

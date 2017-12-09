@@ -14,6 +14,7 @@
         <Layout>horizontal</Layout>
         <ObjectName>KnobCentered</ObjectName>
         <Children>
+
           <KnobComposed>
             <TooltipId><Variable name="tooltip"/></TooltipId>
             <Size>40f,34f</Size>
@@ -27,10 +28,12 @@
           </KnobComposed>
         </Children>
       </WidgetGroup>
+
       <Label>
         <ObjectName>KnobLabel</ObjectName>
         <Text><Variable name="label"/></Text>
       </Label>
+
     </Children>
   </WidgetGroup>
 </Template>

@@ -51,7 +51,6 @@
 
 #LibrarySingleton {
   padding-top: 3px;
-  padding-bottom: 2px;
 }
 
 #Library {
@@ -72,7 +71,6 @@
 #DeckRowTwoThreeFour {
   border-bottom: 1px solid #585858;
   background-color: #1e1e1e;
-  /*padding: 3px;*/
 }
 
 #DeckRowFive {
@@ -160,25 +158,29 @@
   padding-bottom: 2px;
 }
 
+#Mixer {
+  border: 1px solid #585858;
+}
+
 #PrimaryMixer {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   padding: 0px;
   margin: 0px;
-  border: 1px solid #585858;
-  border-left: 0px;
-  border-bottom: 0px;
-  border-top: 0px;
+  border-right: 1px solid #585858;
 }
 
 #MixerChannelControls {
   padding-bottom: 2px;
+  border-right: 1px solid #585858;
 }
 
 #MasterControls {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
   padding-right: 2px;
-  padding-top: 10px;
+  padding-top: 5px;
   padding-left: 5px;
+  border-left: 1px solid #585858;
+  background-color: #1e1e1e;
 }
 
 #MasterVuMeter2ch {
@@ -367,13 +369,12 @@
 
 #KnobLabel {
   font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 10px/12px;
+  font: bold 10px/10px;
   text-transform: uppercase;
   color: #585858;
   text-align: center;
   qproperty-alignment: 'AlignCenter | AlignBottom';
-  padding-bottom: 1px;
-  padding-top: -3px;
+  padding-top: -2px;
 }
 
 #SyncControls {
@@ -786,16 +787,7 @@
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
-#VinylStatusTop1, #VinylStatusTop3 {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  border: 1px solid #585858;
-  border-top: 0px;
-  border-left: 0px;
-  border-right: 0px;
-  padding: 0px;
-}
-
-#VinylStatusTop2, #VinylStatusTop4 {
+#VinylStatusTop {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   border: 1px solid #585858;
   border-top: 0px;
@@ -832,7 +824,7 @@
   border: 1px solid #585858;
   border-right: 0px;
   border-top: 0px;
-  padding: 3px;
+  padding: 2px;
 }
 
 #RateContainer4 {
@@ -841,14 +833,14 @@
   border-right: 0px;
   border-left: 0px;
   border-top: 0px;
-  padding: 3px;
+  padding: 2px;
 }
 
 #RateContainer1 {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   border: 1px solid #585858;
   border-right: 0px;
-  padding: 3px;
+  padding: 2px;
 }
 
 #RateContainer2 {
@@ -856,7 +848,7 @@
   border: 1px solid #585858;
   border-right: 0px;
   border-left: 0px;
-  padding: 3px;
+  padding: 2px;
 }
 
 #RateAdjust {
@@ -1092,12 +1084,9 @@
   font-size: 16px;
 }
 
-#EffectKnobContainer {
-}
-
 #EffectKnob {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  padding-left: 5px;
+  padding-left: 2px;
   padding-right: 5px;
 }
 

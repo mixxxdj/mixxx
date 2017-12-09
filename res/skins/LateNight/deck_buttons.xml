@@ -1,10 +1,9 @@
 <Template>
 	<WidgetGroup>
 		<ObjectName>DeckButtons</ObjectName>
-		<SizePolicy>me,me</SizePolicy>
+		<SizePolicy>min,min</SizePolicy>
 		<BackPath>background_tile.png</BackPath>
 		<Layout>horizontal</Layout>
-		<MinimumSize>200,-1</MinimumSize>
 		<Children>
 			<WidgetGroup>
 				<Layout>horizontal</Layout>

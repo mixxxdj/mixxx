@@ -4,9 +4,9 @@
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
+
 			<Overview>
 				<TooltipId>waveform_overview</TooltipId>
-				<Style></Style>
 				<Channel><Variable name="channum"/></Channel>
 				<MinimumSize>-1,10</MinimumSize>
 				<!-- transparent background if no <BgColor> & <BgPixmap> is present
@@ -16,9 +16,9 @@
 				<SizePolicy>me,min</SizePolicy>
 				<MinimumSize>-1,-1</MinimumSize>
 				<SignalColor><Variable name="signal_color" /></SignalColor>
-                <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
-                <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
-                <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
+        <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
+        <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
+        <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
 				<PlayPosColor>#00FF00</PlayPosColor>
 				<EndOfTrackColor>#EA0000</EndOfTrackColor>
 				<DefaultMark>
@@ -54,6 +54,7 @@
             <ObjectName>ToggleRowOne</ObjectName>
             <Layout>horizontal</Layout>
             <Children>
+
               <PushButton>
 	              <TooltipId>repeat</TooltipId>
 	              <Style></Style>
@@ -72,6 +73,7 @@
 		              <ConfigKey>[Channel<Variable name="channum"/>],repeat</ConfigKey>
 	              </Connection>
               </PushButton>
+
               <PushButton>
 	              <TooltipId>eject</TooltipId>
 	              <Style></Style>
@@ -86,31 +88,35 @@
 		              <ButtonState>LeftButton</ButtonState>
 	              </Connection>
               </PushButton>
+
     	      </Children>
     	    </WidgetGroup>
+
     	    <WidgetGroup>
     	      <Layout>horizontal</Layout>
     	      <Children>
+
               <PushButton>
-                  <TooltipId>quantize</TooltipId>
-                  <Style></Style>
-                  <NumberStates>2</NumberStates>
-                  <State>
-                      <Number>0</Number>
-                      <Pressed>buttons/btn_quantize2.png</Pressed>
-                      <Unpressed>buttons/btn_quantize2.png</Unpressed>
-                  </State>
-                  <State>
-                      <Number>1</Number>
-                      <Pressed>buttons/btn_quantize2_over.png</Pressed>
-                      <Unpressed>buttons/btn_quantize2_over.png</Unpressed>
-                  </State>
-                  <Pos>26,23</Pos>
-                  <Connection>
-                      <ConfigKey>[Channel<Variable name="channum"/>],quantize</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                  </Connection>
+                <TooltipId>quantize</TooltipId>
+                <Style></Style>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Pressed>buttons/btn_quantize2.png</Pressed>
+                  <Unpressed>buttons/btn_quantize2.png</Unpressed>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Pressed>buttons/btn_quantize2_over.png</Pressed>
+                  <Unpressed>buttons/btn_quantize2_over.png</Unpressed>
+                </State>
+                <Pos>26,23</Pos>
+                <Connection>
+                  <ConfigKey>[Channel<Variable name="channum"/>],quantize</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
               </PushButton>
+
 		          <PushButton>
 			          <TooltipId>keylock</TooltipId>
 			          <Style></Style>
@@ -130,6 +136,7 @@
 				          <ConfigKey>[Channel<Variable name="channum"/>],keylock</ConfigKey>
 			          </Connection>
 		          </PushButton>
+
 	          </Children>
           </WidgetGroup> <!-- /Channel1 Toggle Buttons -->
         </Children>
