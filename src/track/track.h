@@ -367,7 +367,7 @@ class Track : public QObject {
 
     // Flag indicating that the user has explicitly requested to save
     // the metadata.
-    bool m_bExportMetadata;
+    bool m_bMarkedForMetadataExport;
 
     // The list of cue points for the track
     QList<CuePointer> m_cuePoints;

@@ -62,7 +62,7 @@ Track::Track(
           m_qMutex(QMutex::Recursive),
           m_record(trackId),
           m_bDirty(false),
-          m_bExportMetadata(false),
+          m_bMarkedForMetadataExport(false),
           m_analyzerProgress(-1) {
 }
 
@@ -811,7 +811,7 @@ bool Track::isDirty() {
 
 void Track::markForMetadataExport() {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_bExportMetadata, true)) {
+    if (compareAndSet(&m_bMarkedForMetadataExport, true)) {
         markDirtyAndUnlock(&lock);
     }
 }
@@ -936,16 +936,26 @@ Track::ExportMetadataResult Track::exportMetadata(
     // But it doesn't hurt much, so let's play it safe ;)
     QMutexLocker lock(&m_qMutex);
     // Discard the values of all currently unsupported fields that are
-    // not stored in the library, yet
+    // not stored in the library, yet. Those fields are already imported
+    // from file tags, but the database schema needs to be extended for
+    // storing them. Currently those fields will be empty/null when read
+    // from the database and must be ignored until the schema has been
+    // updated.
     m_record.refMetadata().resetUnsupportedValues();
-    // Normalize metadata before export to adjust the precision of
-    // floating values, ...
+    // Normalize metadata before exporting to adjust the precision of
+    // floating values, ... Otherwise the following comparisons may
+    // repeatedly indicate that values have changed only due to
+    // rounding errors.
     m_record.refMetadata().normalizeBeforeExport();
-    if (!m_bExportMetadata) {
+    if (!m_bMarkedForMetadataExport) {
         // Perform some consistency checks if metadata is exported
         // implicitly after a track has been modified and NOT explicitly
         // requested by a user as indicated by this flag.
         if (!m_record.getMetadataSynchronized()) {
+            // If the metadata has never been imported from file tags it
+            // must be exported explicitly once. This ensures that we don't
+            // overwrite existing file tags with completely different
+            // information.
             kLogger.debug()
                     << "Skip exporting of unsynchronized track metadata:"
                     << getLocation();
@@ -954,44 +964,72 @@ Track::ExportMetadataResult Track::exportMetadata(
         // Check if the metadata has actually been modified. Otherwise
         // we don't need to write it back. Exporting unmodified metadata
         // would needlessly update the file's time stamp and should be
-        // avoided.
-        // TODO(XXX): How to we handle the case that importTrackMetadataAndCoverImage()
-        // returns a newer time stamp than m_record.getMetadataSynchronized(), i.e.
-        // if the file has been modified by another program since we have imported
-        // the metadata? But this is expected to happen if files have been copied
-        // or after upgrading the column 'header_parsed' from bool to QDateTime.
+        // avoided. Since we don't know in which state the file's metadata
+        // is we import it again into a temporary variable.
+        // TODO(XXX): m_record.getMetadataSynchronized() currently is a
+        // boolean flag, but it should become a time stamp in the future.
+        // We could take this time stamp and the file's last modification
+        // time stamp into // account and might decide to skip importing
+        // the metadata again.
         mixxx::TrackMetadata importedFromFile;
         if ((pMetadataSource->importTrackMetadataAndCoverImage(&importedFromFile, nullptr).first ==
                 mixxx::MetadataSource::ImportResult::Succeeded)) {
             // Discard the values of all currently unsupported fields that are
-            // not stored in the library, yet
+            // not stored in the library, yet. We have done the same with the track's
+            // current metadata to make the tags comparable (see above).
             importedFromFile.resetUnsupportedValues();
             // Before comparison: Adjust imported bpm values that might be imprecise,
-            // e.g. integer values from ID3v2
+            // e.g. integer values from ID3v2. The same strategy has is used when
+            // importing the track's metadata in order to preserve the more accurate
+            // bpm value stored by Mixxx. Again, this is necessary to make the tags
+            // comparable.
             auto actualBpm =
                     getActualBpm(importedFromFile.getTrackInfo().getBpm(), m_pBeats);
-            // ...account for bpm rounding errors during export...
+            // All imported floating point values are already properly rounded, because
+            // they have just been imported. But the imported bpm value might have been
+            // replaced by a more accurate bpm value, that also needs to be rounded before
+            // comparison.
             actualBpm.normalizeBeforeExport();
-            // ...and replace the imported bpm value
+            // Replace the imported with the actual bpm value managed by Mixxx.
             importedFromFile.refTrackInfo().setBpm(actualBpm);
-            // Finally the current and the just imported metadata can be checked for
-            // differences that will affect the file tags
+            // Finally the track's current metadata and the imported/adjusted metadata
+            // can be compared for differences to decide whether the tags in the file
+            // would change if we perform the write operation. We are using a special
+            // comparison function that excludes all read-only audio properties which
+            // are stored in file tags, but may not be accurate. They can't be written
+            // anyway, so we must not take them into account here.
             if (!m_record.getMetadata().hasBeenModifiedAfterImport(importedFromFile))  {
+                // The file tags are in-sync with the track's metadata and don't need
+                // to be updated.
                 kLogger.debug()
-                        << "Skip exporting of unmodified track metadata:"
+                        << "Skip exporting of unmodified track metadata into file:"
                         << getLocation();
                 return ExportMetadataResult::Skipped;
             }
         } else {
+            // Something must be wrong with the file or it doesn't
+            // contain any file tags. We don't want to risk a failure
+            // during export and abort the operation for safety here.
+            // The user may decide to explicitly export the metadata.
             kLogger.warning()
-                    << "Failed to import track metadata before exporting:"
+                    << "Skip exporting of track metadata after import failed."
+                    << "Export of metadata must be triggered explicitly for this file:"
                     << getLocation();
+            return ExportMetadataResult::Skipped;
         }
+        // ...by continuing the file tags will be updated
     }
-    m_bExportMetadata = false; // reset flag
+    // The track's metadata will be exported instantly. The export should
+    // only be tried once so we reset the marker flag.
+    m_bMarkedForMetadataExport = false;
     const auto trackMetadataExported =
             pMetadataSource->exportTrackMetadata(m_record.getMetadata());
     if (trackMetadataExported.first == mixxx::MetadataSource::ExportResult::Succeeded) {
+        // After successfully exporting the metadata we record the fact
+        // that now the file tags and the track's metadata are in sync.
+        // This information (flag or time stamp) is stored in the database.
+        // The database update will follow immediately after returning from
+        // this operation!
         // TODO(XXX): Replace bool with QDateTime
         DEBUG_ASSERT(!trackMetadataExported.second.isNull());
         //pTrack->setMetadataSynchronized(trackMetadataExported.second);
