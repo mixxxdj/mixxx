@@ -518,10 +518,10 @@
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
-								<Connection>
-						        	<ConfigKey>[EqualizerRack1_[Channel1]_Effect2],button_parameter2_loaded</ConfigKey>
-						        	<BindProperty>visible</BindProperty>
-					        	</Connection>
+							<Connection>
+								<ConfigKey>[EqualizerRack1_[Channel2]_Effect1],button_parameter2_loaded</ConfigKey>
+						        <BindProperty>visible</BindProperty>
+							</Connection>
 						</EffectPushButton>
 						<EffectPushButton>
 							<NumberStates>2</NumberStates>
