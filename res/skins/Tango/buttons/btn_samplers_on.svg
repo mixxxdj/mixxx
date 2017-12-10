@@ -317,9 +317,28 @@
     <inkscape:path-effect
        effect="spiro"
        id="path-effect3115-3" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect4697" />
   </defs>
   <path
-     d="M 22.196138,9.9999999 11.803862,15.999984 V 4.0000165 z"
+     d="M 11.196152,5.5 6,8.5 v -6 z"
      id="path4172"
-     style="fill:#eeeeee" />
+     style="fill:#eeeeee;fill-opacity:1" />
+  <path
+     d="M 11.196152,14.5 6,17.5 v -6 z"
+     id="path4172-7"
+     style="fill:#eeeeee;fill-opacity:1" />
+  <path
+     d="m 25.196152,5.4999996 -5.196152,3 v -6 z"
+     id="path4172-9"
+     style="fill:#eeeeee;fill-opacity:1" />
+  <path
+     d="M 25.196152,14.5 20,17.5 v -6 z"
+     id="path4172-7-6"
+     style="fill:#eeeeee;fill-opacity:1" />
+  <path
+     d="m 1,9.7 13.7,0 0,-8.7 0.6,0 0,8.7 13.7,0 0,0.6 -13.7,0 0,8.7 -0.6,0 0,-8.7 -13.7,0 0,-0.6"
+     id="path4695"
+     style="fill:#999999;fill-opacity:1;stroke:none" />
 </svg>
