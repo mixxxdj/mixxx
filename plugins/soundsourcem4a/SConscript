@@ -22,6 +22,8 @@ m4a_sources = [
     "util/sample.cpp",
     "util/logger.cpp",
     "util/indexrange.cpp",
+    "track/albuminfo.cpp",
+    "track/trackinfo.cpp",
     "track/trackmetadata.cpp",
     "track/trackmetadatataglib.cpp",
     "track/tracknumbers.cpp",
