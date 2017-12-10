@@ -15,7 +15,24 @@ namespace {
 
 const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
 
-const SINT kMaxReadFrameCount = 10000;
+const SINT kBufferSizes[] = {
+        256,
+        512,
+        768,
+        1024,
+        1536,
+        2048,
+        3072,
+        4096,
+        6144,
+        8192,
+        12288,
+        16384,
+        24576,
+        32768,
+};
+
+const SINT kMaxReadFrameCount = kBufferSizes[sizeof(kBufferSizes) / sizeof(kBufferSizes[0]) - 1];
 
 } // anonymous namespace
 
@@ -295,115 +312,115 @@ TEST_F(SoundSourceProxyTest, seekForwardBackward) {
 }
 
 TEST_F(SoundSourceProxyTest, skipAndRead) {
-    const SINT kReadFrameCount = 1000;
+    for (auto kReadFrameCount: kBufferSizes) {
+        for (const auto& filePath: getFilePaths()) {
+            ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
 
-    for (const auto& filePath: getFilePaths()) {
-        ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
+            qDebug() << "Skip and read test:" << filePath;
 
-        qDebug() << "Skip and read test:" << filePath;
+            mixxx::AudioSourcePointer pContReadSource(openAudioSource(filePath));
+            // Obtaining an AudioSource may fail for unsupported file formats,
+            // even if the corresponding file extension is supported, e.g.
+            // AAC vs. ALAC in .m4a files
+            if (!pContReadSource) {
+                // skip test file
+                continue;
+            }
+            SINT contFrameIndex = pContReadSource->frameIndexMin();
 
-        mixxx::AudioSourcePointer pContReadSource(openAudioSource(filePath));
-        // Obtaining an AudioSource may fail for unsupported file formats,
-        // even if the corresponding file extension is supported, e.g.
-        // AAC vs. ALAC in .m4a files
-        if (!pContReadSource) {
-            // skip test file
-            continue;
-        }
-        SINT contFrameIndex = pContReadSource->frameIndexMin();
+            mixxx::AudioSourcePointer pSkipReadSource(openAudioSource(filePath));
+            ASSERT_FALSE(!pSkipReadSource);
+            ASSERT_EQ(pContReadSource->channelCount(), pSkipReadSource->channelCount());
+            ASSERT_EQ(pContReadSource->frameIndexRange(), pSkipReadSource->frameIndexRange());
+            SINT skipFrameIndex = pSkipReadSource->frameIndexMin();
 
-        mixxx::AudioSourcePointer pSkipReadSource(openAudioSource(filePath));
-        ASSERT_FALSE(!pSkipReadSource);
-        ASSERT_EQ(pContReadSource->channelCount(), pSkipReadSource->channelCount());
-        ASSERT_EQ(pContReadSource->frameIndexRange(), pSkipReadSource->frameIndexRange());
-        SINT skipFrameIndex = pSkipReadSource->frameIndexMin();
+            mixxx::SampleBuffer contReadData(
+                    pContReadSource->frames2samples(kReadFrameCount));
+            mixxx::SampleBuffer skipReadData(
+                    pSkipReadSource->frames2samples(kReadFrameCount));
 
-        mixxx::SampleBuffer contReadData(
-                pContReadSource->frames2samples(kReadFrameCount));
-        mixxx::SampleBuffer skipReadData(
-                pSkipReadSource->frames2samples(kReadFrameCount));
+            SINT minFrameIndex = pContReadSource->frameIndexMin();
+            SINT skipCount = 1;
+            while (pContReadSource->frameIndexRange().containsIndex(minFrameIndex += skipCount)) {
+                skipCount = minFrameIndex / 4 + 1; // for next iteration
 
-        SINT minFrameIndex = pContReadSource->frameIndexMin();
-        SINT skipCount = 1;
-        while (pContReadSource->frameIndexRange().containsIndex(minFrameIndex += skipCount)) {
-            skipCount = minFrameIndex / 4 + 1; // for next iteration
+                qDebug() << "Skipping to:" << minFrameIndex;
 
-            qDebug() << "Skipping to:" << minFrameIndex;
+                const auto readFrameIndexRange =
+                        mixxx::IndexRange::forward(minFrameIndex, kReadFrameCount);
 
-            const auto readFrameIndexRange =
-                    mixxx::IndexRange::forward(minFrameIndex, kReadFrameCount);
-
-            // Read (and discard samples) until reaching the desired frame index
-            // and read next chunk
-            ASSERT_LE(contFrameIndex, minFrameIndex);
-            while (contFrameIndex < minFrameIndex) {
-                auto skippingFrameIndexRange =
-                        mixxx::IndexRange::forward(
-                                contFrameIndex,
-                                std::min(minFrameIndex - contFrameIndex, kReadFrameCount));
-                auto const skippedSampleFrames =
+                // Read (and discard samples) until reaching the desired frame index
+                // and read next chunk
+                ASSERT_LE(contFrameIndex, minFrameIndex);
+                while (contFrameIndex < minFrameIndex) {
+                    auto skippingFrameIndexRange =
+                            mixxx::IndexRange::forward(
+                                    contFrameIndex,
+                                    std::min(minFrameIndex - contFrameIndex, kReadFrameCount));
+                    auto const skippedSampleFrames =
+                            pContReadSource->readSampleFrames(
+                                    mixxx::WritableSampleFrames(
+                                            skippingFrameIndexRange,
+                                            mixxx::SampleBuffer::WritableSlice(contReadData)));
+                    ASSERT_FALSE(skippedSampleFrames.frameIndexRange().empty());
+                    ASSERT_EQ(skippedSampleFrames.frameIndexRange().start(), contFrameIndex);
+                    contFrameIndex += skippedSampleFrames.frameLength();
+                }
+                ASSERT_EQ(minFrameIndex, contFrameIndex);
+                const auto contSampleFrames =
                         pContReadSource->readSampleFrames(
                                 mixxx::WritableSampleFrames(
-                                        skippingFrameIndexRange,
+                                        readFrameIndexRange,
                                         mixxx::SampleBuffer::WritableSlice(contReadData)));
-                ASSERT_FALSE(skippedSampleFrames.frameIndexRange().empty());
-                ASSERT_EQ(skippedSampleFrames.frameIndexRange().start(), contFrameIndex);
-                contFrameIndex += skippedSampleFrames.frameLength();
+                ASSERT_FALSE(contSampleFrames.frameIndexRange().empty());
+                ASSERT_LE(contSampleFrames.frameIndexRange(), readFrameIndexRange);
+                ASSERT_EQ(contSampleFrames.frameIndexRange().start(), readFrameIndexRange.start());
+                contFrameIndex += contSampleFrames.frameLength();
+
+                const SINT sampleCount =
+                        pContReadSource->frames2samples(contSampleFrames.frameLength());
+
+                // Skip until reaching the frame index and read next chunk
+                ASSERT_LE(skipFrameIndex, minFrameIndex);
+                while (skipFrameIndex < minFrameIndex) {
+                    auto const skippedFrameIndexRange =
+                            skipSampleFrames(pSkipReadSource,
+                                    mixxx::IndexRange::between(skipFrameIndex, minFrameIndex));
+                    ASSERT_FALSE(skippedFrameIndexRange.empty());
+                    ASSERT_EQ(skippedFrameIndexRange.start(), skipFrameIndex);
+                    skipFrameIndex += skippedFrameIndexRange.length();
+                }
+                ASSERT_EQ(minFrameIndex, skipFrameIndex);
+                const auto skippedSampleFrames =
+                        pSkipReadSource->readSampleFrames(
+                                mixxx::WritableSampleFrames(
+                                        readFrameIndexRange,
+                                        mixxx::SampleBuffer::WritableSlice(skipReadData)));
+
+                skipFrameIndex += skippedSampleFrames.frameLength();
+
+                // Both buffers should be equal
+                ASSERT_EQ(contSampleFrames.frameIndexRange(), skippedSampleFrames.frameIndexRange());
+    #ifdef __OPUS__
+                if (filePath.endsWith(".opus")) {
+                    expectDecodedSamplesEqualOpus(
+                            sampleCount,
+                            &contReadData[0],
+                            &skipReadData[0],
+                            "Decoding mismatch after skipping");
+                } else {
+    #endif // __OPUS__
+                    expectDecodedSamplesEqual(
+                            sampleCount,
+                            &contReadData[0],
+                            &skipReadData[0],
+                            "Decoding mismatch after skipping");
+    #ifdef __OPUS__
+                }
+    #endif // __OPUS__
+
+                minFrameIndex = contFrameIndex;
             }
-            ASSERT_EQ(minFrameIndex, contFrameIndex);
-            const auto contSampleFrames =
-                    pContReadSource->readSampleFrames(
-                            mixxx::WritableSampleFrames(
-                                    readFrameIndexRange,
-                                    mixxx::SampleBuffer::WritableSlice(contReadData)));
-            ASSERT_FALSE(contSampleFrames.frameIndexRange().empty());
-            ASSERT_LE(contSampleFrames.frameIndexRange(), readFrameIndexRange);
-            ASSERT_EQ(contSampleFrames.frameIndexRange().start(), readFrameIndexRange.start());
-            contFrameIndex += contSampleFrames.frameLength();
-
-            const SINT sampleCount =
-                    pContReadSource->frames2samples(contSampleFrames.frameLength());
-
-            // Skip until reaching the frame index and read next chunk
-            ASSERT_LE(skipFrameIndex, minFrameIndex);
-            while (skipFrameIndex < minFrameIndex) {
-                auto const skippedFrameIndexRange =
-                        skipSampleFrames(pSkipReadSource,
-                                mixxx::IndexRange::between(skipFrameIndex, minFrameIndex));
-                ASSERT_FALSE(skippedFrameIndexRange.empty());
-                ASSERT_EQ(skippedFrameIndexRange.start(), skipFrameIndex);
-                skipFrameIndex += skippedFrameIndexRange.length();
-            }
-            ASSERT_EQ(minFrameIndex, skipFrameIndex);
-            const auto skippedSampleFrames =
-                    pSkipReadSource->readSampleFrames(
-                            mixxx::WritableSampleFrames(
-                                    readFrameIndexRange,
-                                    mixxx::SampleBuffer::WritableSlice(skipReadData)));
-
-            skipFrameIndex += skippedSampleFrames.frameLength();
-
-            // Both buffers should be equal
-            ASSERT_EQ(contSampleFrames.frameIndexRange(), skippedSampleFrames.frameIndexRange());
-#ifdef __OPUS__
-            if (filePath.endsWith(".opus")) {
-                expectDecodedSamplesEqualOpus(
-                        sampleCount,
-                        &contReadData[0],
-                        &skipReadData[0],
-                        "Decoding mismatch after skipping");
-            } else {
-#endif // __OPUS__
-                expectDecodedSamplesEqual(
-                        sampleCount,
-                        &contReadData[0],
-                        &skipReadData[0],
-                        "Decoding mismatch after skipping");
-#ifdef __OPUS__
-            }
-#endif // __OPUS__
-
-            minFrameIndex = contFrameIndex;
         }
     }
 }
@@ -566,40 +583,45 @@ TEST_F(SoundSourceProxyTest, readBeyondEnd) {
 }
 
 TEST_F(SoundSourceProxyTest, regressionTestCachingReaderChunkJumpForward) {
-    const SINT kReadFrameCount = 8192; // like caching reader
+    // NOTE(uklotzde, 2017-12-10): Potential regression test for an infinite
+    // seek/read loop in SoundSourceMediaFoundation. Unfortunately this
+    // test doesn't fail even prior to fixing the reported bug.
+    // https://github.com/mixxxdj/mixxx/pull/1317#issuecomment-349674161
 
-    for (const auto& filePath: getFilePaths()) {
-        ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
+    for (auto kReadFrameCount: kBufferSizes) {
+        for (const auto& filePath: getFilePaths()) {
+            ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
 
-        mixxx::AudioSourcePointer pAudioSource(openAudioSource(filePath));
-        // Obtaining an AudioSource may fail for unsupported file formats,
-        // even if the corresponding file extension is supported, e.g.
-        // AAC vs. ALAC in .m4a files
-        if (!pAudioSource) {
-            // skip test file
-            continue;
+            mixxx::AudioSourcePointer pAudioSource(openAudioSource(filePath));
+            // Obtaining an AudioSource may fail for unsupported file formats,
+            // even if the corresponding file extension is supported, e.g.
+            // AAC vs. ALAC in .m4a files
+            if (!pAudioSource) {
+                // skip test file
+                continue;
+            }
+            mixxx::SampleBuffer readBuffer(
+                    pAudioSource->frames2samples(kReadFrameCount));
+
+            // Read chunk from beginning
+            auto firstChunkRange = mixxx::IndexRange::forward(
+                    pAudioSource->frameIndexMin(), kReadFrameCount);
+            EXPECT_EQ(
+                    firstChunkRange,
+                    pAudioSource->readSampleFrames(
+                            mixxx::WritableSampleFrames(
+                                    firstChunkRange,
+                                    mixxx::SampleBuffer::WritableSlice(readBuffer))).frameIndexRange());
+
+            // Read chunk from near the end, rounded to chunk boundary
+            auto secondChunkRange = mixxx::IndexRange::forward(
+                    ((pAudioSource->frameIndexMax() - 2 * kReadFrameCount) / kReadFrameCount) * kReadFrameCount, kReadFrameCount);
+            EXPECT_EQ(
+                    secondChunkRange,
+                    pAudioSource->readSampleFrames(
+                            mixxx::WritableSampleFrames(
+                                    secondChunkRange,
+                                    mixxx::SampleBuffer::WritableSlice(readBuffer))).frameIndexRange());
         }
-        mixxx::SampleBuffer readBuffer(
-                pAudioSource->frames2samples(kReadFrameCount));
-
-        // Read chunk from beginning
-        auto firstChunkRange = mixxx::IndexRange::forward(
-                pAudioSource->frameIndexMin(), kReadFrameCount);
-        EXPECT_EQ(
-                firstChunkRange,
-                pAudioSource->readSampleFrames(
-                        mixxx::WritableSampleFrames(
-                                firstChunkRange,
-                                mixxx::SampleBuffer::WritableSlice(readBuffer))).frameIndexRange());
-
-        // Read chunk from near the end, rounded to chunk boundary
-        auto secondChunkRange = mixxx::IndexRange::forward(
-                ((pAudioSource->frameIndexMax() - 2 * kReadFrameCount) / kReadFrameCount) * kReadFrameCount, kReadFrameCount);
-        EXPECT_EQ(
-                secondChunkRange,
-                pAudioSource->readSampleFrames(
-                        mixxx::WritableSampleFrames(
-                                secondChunkRange,
-                                mixxx::SampleBuffer::WritableSlice(readBuffer))).frameIndexRange());
     }
 }
