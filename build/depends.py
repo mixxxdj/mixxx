@@ -1073,6 +1073,7 @@ class MixxxCore(Feature):
                    "track/beatgrid.cpp",
                    "track/beatmap.cpp",
                    "track/beatutils.cpp",
+                   "track/beats.cpp",
                    "track/bpm.cpp",
                    "track/keyfactory.cpp",
                    "track/keys.cpp",
