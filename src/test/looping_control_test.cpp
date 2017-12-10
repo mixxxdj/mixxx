@@ -11,6 +11,10 @@
 #include "test/mockedenginebackendtest.h"
 #include "util/memory.h"
 
+// Due to rounding errors loop positions should be compared with EXPECT_NEAR instead of EXPECT_EQ.
+// NOTE(uklotzde, 2017-12-10): The rounding errors currently only appeared with GCC 7.2.1.
+constexpr double kLoopPositionMaxAbsError = 0.000000001;
+
 class LoopingControlTest : public MockedEngineBackendTest {
   public:
     LoopingControlTest()
@@ -527,7 +531,7 @@ TEST_F(LoopingControlTest, LoopMoveTest) {
     m_pButtonBeatMoveBackward->set(0.0);
     ProcessBuffer();
     EXPECT_EQ(0, m_pLoopStartPoint->get());
-    EXPECT_NEAR(300, m_pLoopEndPoint->get(), 0.000000001);
+    EXPECT_NEAR(300, m_pLoopEndPoint->get(), kLoopPositionMaxAbsError);
     ProcessBuffer();
     EXPECT_EQ(200, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
 
@@ -552,7 +556,7 @@ TEST_F(LoopingControlTest, LoopMoveTest) {
     m_pButtonBeatMoveBackward->set(0.0);
     ProcessBuffer();
     EXPECT_EQ(0, m_pLoopStartPoint->get());
-    EXPECT_NEAR(300, m_pLoopEndPoint->get(), 0.000000001);
+    EXPECT_NEAR(300, m_pLoopEndPoint->get(), kLoopPositionMaxAbsError);
     EXPECT_EQ(500, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
 }
 
