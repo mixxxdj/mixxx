@@ -27,7 +27,7 @@ EffectManifest TremoloEffect::getManifest() {
     rate->setName(QObject::tr("Rate"));
     rate->setShortName(QObject::tr("Rate"));
     rate->setDescription(QObject::tr("Controls the rate of the effect\n"
-    "every 4 beats - 1/8 beat if tempo is detected (decks and samplers) \n"
+    "4 beats - 1/8 beat if tempo is detected (decks and samplers) \n"
     "1/4 Hz - 8 Hz if no tempo is detected (mic & aux inputs, master mix)"));
     rate->setControlHint(
         EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
@@ -42,7 +42,7 @@ EffectManifest TremoloEffect::getManifest() {
     shape->setId("shape");
     shape->setName(QObject::tr("Shape"));
     shape->setShortName(QObject::tr("Shape"));
-    shape->setDescription(QObject::tr("Sets the duty cycle of the modulation"
+    shape->setDescription(QObject::tr("Sets the duty cycle of the modulation\n"
     "10% - 90% of the effect period"));
     shape->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     shape->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
@@ -51,27 +51,27 @@ EffectManifest TremoloEffect::getManifest() {
     shape->setDefault(0.5);
     shape->setMaximum(0.9);
 
-    EffectManifestParameter* smooth = manifest.addParameter();
-    smooth->setId("smooth");
-    smooth->setName(QObject::tr("Smooth"));
-    smooth->setShortName(QObject::tr("Smooth"));
-    smooth->setDescription(QObject::tr("Sets the smoothness of the modulation"
-    "0 - Square wave"
+    EffectManifestParameter* waveform = manifest.addParameter();
+    waveform->setId("waveform");
+    waveform->setName(QObject::tr("Waveform"));
+    waveform->setShortName(QObject::tr("Waveform"));
+    waveform->setDescription(QObject::tr("Sets the waveform of the modulation\n"
+    "0 - Square wave\n"
     "1 - Sine wave"));
-    smooth->setControlHint(
+    waveform->setControlHint(
         EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
-    smooth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    smooth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    smooth->setMinimum(0.005);
-    smooth->setDefault(0.5);
-    smooth->setMaximum(1);
+    waveform->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    waveform->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    waveform->setMinimum(0.005);
+    waveform->setDefault(0.5);
+    waveform->setMaximum(1);
 
 
     EffectManifestParameter *phase = manifest.addParameter();
     phase->setId("phase");
     phase->setName("Phase");
     phase->setShortName(QObject::tr("Phase"));
-    phase->setDescription("Shift the modulation inside the period"
+    phase->setDescription("Shift the modulation inside the period\n"
     "0 - 1 period shift");
     phase->setControlHint(
         EffectManifestParameter::ControlHint::KNOB_LINEAR);
@@ -100,7 +100,7 @@ EffectManifest TremoloEffect::getManifest() {
     triplet->setName("Triplets");
     triplet->setShortName(QObject::tr("Triplet"));
     triplet->setDescription("When the Quantize parameter is enabled, divide "
-                            "rounded 1/4 beats of Rate parameter by 3.");
+                            "the effect period by 3.");
     triplet->setControlHint(
         EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
@@ -116,7 +116,7 @@ TremoloEffect::TremoloEffect(EngineEffect* pEffect,
                              const EffectManifest& manifest)
         : m_pRateParameter(pEffect->getParameterById("rate")),
           m_pShapeParameter(pEffect->getParameterById("shape")),
-          m_pSmoothParameter(pEffect->getParameterById("smooth")),
+          m_pWaveformParameter(pEffect->getParameterById("waveform")),
           m_pPhaseParameter(pEffect->getParameterById("phase")),
           m_pQuantizeParameter(pEffect->getParameterById("quantize")),
           m_pTripletParameter(pEffect->getParameterById("triplet")) {
@@ -136,7 +136,7 @@ void TremoloEffect::processChannel(const ChannelHandle& handle,
     Q_UNUSED(handle);
 
     const double shape = m_pShapeParameter->value();
-    const double smooth = m_pSmoothParameter->value();
+    const double smooth = m_pWaveformParameter->value();
 
     unsigned int currentFrame = pState->currentFrame;
     double gain = pState->gain;
