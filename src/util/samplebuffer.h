@@ -45,7 +45,7 @@ class SampleBuffer {
         that.m_data = nullptr;
         that.m_size = 0;
     }
-    virtual ~SampleBuffer();
+    ~SampleBuffer();
 
     SampleBuffer& operator=(SampleBuffer& that) = delete;
     SampleBuffer& operator=(SampleBuffer&& that) {
