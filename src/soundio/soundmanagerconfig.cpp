@@ -216,11 +216,13 @@ void SoundManagerConfig::setForceNetworkClock(bool force) {
  * @returns false if the sample rate is not found in SoundManager's list,
  *          otherwise true
  */
-bool SoundManagerConfig::checkSampleRate(const SoundManager &soundManager) {
-    if (!soundManager.getSampleRates(m_api).contains(m_sampleRate)) {
-        return false;
+bool SoundManagerConfig::checkSampleRate() {
+    for (const unsigned int& rate : SoundManager::s_iSupportedSampleRates) {
+        if (rate == m_sampleRate) {
+            return true;
+        }
     }
-    return true;
+    return false;
 }
 
 unsigned int SoundManagerConfig::getDeckCount() const {
@@ -398,15 +400,15 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
         }
     }
     if (flags & SoundManagerConfig::OTHER) {
-        QList<unsigned int> sampleRates = soundManager->getSampleRates(m_api);
-        if (sampleRates.contains(defaultSampleRate)) {
-            m_sampleRate = defaultSampleRate;
-        } else if (sampleRates.contains(kFallbackSampleRate)) {
-            m_sampleRate = kFallbackSampleRate;
-        } else if (!sampleRates.isEmpty()) {
-            m_sampleRate = sampleRates.first();
-        } else {
-            qWarning() << "got empty sample rate list from SoundManager, this is a bug";
+        m_sampleRate = defaultSampleRate;
+        bool bDefaultSampleRateIsSupported = false;
+        for (const unsigned int& rate : SoundManager::s_iSupportedSampleRates) {
+            if (rate == defaultSampleRate) {
+                bDefaultSampleRateIsSupported = true;
+                break;
+            }
+        }
+        if (!bDefaultSampleRateIsSupported) {
             m_sampleRate = kFallbackSampleRate;
         }
         m_audioBufferSizeIndex = kDefaultAudioBufferSizeIndex;

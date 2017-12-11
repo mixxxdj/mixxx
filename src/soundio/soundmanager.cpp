@@ -61,6 +61,8 @@ const unsigned int kSleepSecondsAfterClosingDevice = 5;
 #endif
 } // anonymous namespace
 
+constexpr const unsigned int SoundManager::s_iSupportedSampleRates[3];
+
 SoundManager::SoundManager(UserSettingsPointer pConfig,
                            EngineMaster *pMaster)
         : m_pMaster(pMaster),
@@ -85,11 +87,6 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
 
     m_pMasterAudioLatencyOverload = new ControlProxy("[Master]",
             "audio_latency_overload");
-
-    //Hack because PortAudio samplerate enumeration is slow as hell on Linux (ALSA dmix sucks, so we can't blame PortAudio)
-    m_samplerates.push_back(44100);
-    m_samplerates.push_back(48000);
-    m_samplerates.push_back(96000);
 
     m_pNetworkStream = QSharedPointer<EngineNetworkStream>(
             new EngineNetworkStream(2, 0));
@@ -240,23 +237,6 @@ void SoundManager::clearDeviceList(bool sleepAfterClosing) {
         m_paInitialized = false;
     }
 #endif
-}
-
-QList<unsigned int> SoundManager::getSampleRates(QString api) const {
-#ifdef __PORTAUDIO__
-    if (api == MIXXX_PORTAUDIO_JACK_STRING) {
-        // queryDevices must have been called for this to work, but the
-        // ctor calls it -bkgood
-        QList<unsigned int> samplerates;
-        samplerates.append(m_jackSampleRate);
-        return samplerates;
-    }
-#endif
-    return m_samplerates;
-}
-
-QList<unsigned int> SoundManager::getSampleRates() const {
-    return getSampleRates("");
 }
 
 void SoundManager::queryDevices() {
@@ -585,7 +565,7 @@ void SoundManager::checkConfig() {
         m_config.setAPI(SoundManagerConfig::kDefaultAPI);
         m_config.loadDefaults(this, SoundManagerConfig::API | SoundManagerConfig::DEVICES);
     }
-    if (!m_config.checkSampleRate(*this)) {
+    if (!m_config.checkSampleRate()) {
         m_config.setSampleRate(SoundManagerConfig::kFallbackSampleRate);
         m_config.loadDefaults(this, SoundManagerConfig::OTHER);
     }

@@ -7,20 +7,24 @@
 #include "engine/engine.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
+#include "soundio/soundmanager.h"
 #include "util/class.h"
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/samplebuffer.h"
 
 struct EchoGroupState {
-    // 3 seconds max. This supports the full range of 2 beats for tempos down to
-    // 40 BPM.
-    static constexpr int kMaxDelaySeconds = 3;
+    // 2 seconds max. This supports the full range of 2 beats for tempos down to
+    // 60 BPM.
+    static constexpr int kMaxDelaySeconds = 2;
     static constexpr auto kChannelCount = mixxx::kEngineChannelCount;
 
+    // TODO: allocate buffers of the appropriate size when the sample rate is configured
     EchoGroupState()
-            : delay_buf(mixxx::AudioSignal::SampleRate::max() * kMaxDelaySeconds *
-                        kChannelCount) {
+            : delay_buf(kMaxDelaySeconds * kChannelCount *
+                        SoundManager::s_iSupportedSampleRates[
+                            sizeof(SoundManager::s_iSupportedSampleRates) /
+                            sizeof(SoundManager::s_iSupportedSampleRates[0]) - 1]) {
         delay_buf.clear();
         prev_send = 0.0f;
         prev_feedback= 0.0f;

@@ -54,7 +54,7 @@ public:
     bool checkAPI(const SoundManager &soundManager);
     unsigned int getSampleRate() const;
     void setSampleRate(unsigned int sampleRate);
-    bool checkSampleRate(const SoundManager &soundManager);
+    bool checkSampleRate();
 
     // Record the number of decks configured with this setup so they can
     // be created and configured.
