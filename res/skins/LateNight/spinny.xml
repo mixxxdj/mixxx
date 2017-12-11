@@ -1,7 +1,7 @@
 <Template>
   <WidgetGroup>
     <Layout>horizontal</Layout>
-    <SizePolicy>max,min</SizePolicy>
+    <SizePolicy>min,min</SizePolicy>
     <Children>
       <SingletonDefinition>
         <ObjectName>SpinnySingleton<Variable name="channum"/></ObjectName>
@@ -19,7 +19,7 @@
 
       <!-- The spinnies determine the size of the waveform. -->
       <WidgetGroup>
-        <SizePolicy>max,min</SizePolicy>
+        <SizePolicy>min,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
 

@@ -45,13 +45,13 @@
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
-#SpinnyBorder {
-  border: 1px solid #585858;
-}
-
 #SpinnyContainer {
   border: 0px;
   background-color: #0f0f0f;
+}
+
+#DebugResizingSpinnies {
+  background-color: #451169;
 }
 
 #LibrarySingleton {
