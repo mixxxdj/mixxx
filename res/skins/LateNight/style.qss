@@ -1022,7 +1022,6 @@
 }
 
 #EffectRows {
-  padding: 2px;
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
 
@@ -1045,6 +1044,7 @@
 #EffectSlot2,
 #EffectSlot3 {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+  padding-top: 2px;
   border: 1px solid #585858;
   }
   #EffectSlot1,

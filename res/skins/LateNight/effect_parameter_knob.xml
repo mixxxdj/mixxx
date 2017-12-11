@@ -11,7 +11,7 @@
 <Template>
   <WidgetGroup>
     <Layout>vertical</Layout>
-    <Size>60f,57f</Size>
+    <Size>60f,53f</Size>
     <Children>
       <WidgetGroup>
         <ObjectName>EffectKnob</ObjectName>
@@ -25,7 +25,7 @@
 	     </Children>
       </WidgetGroup>
       <EffectParameterName>
-        <Size>1min,18f</Size>
+        <Size>1min,14f</Size>
         <ObjectName>KnobLabel</ObjectName>
         <EffectRack><Variable name="EffectRack"/></EffectRack>
         <EffectUnit><Variable name="EffectUnit"/></EffectUnit>

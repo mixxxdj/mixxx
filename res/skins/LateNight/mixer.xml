@@ -172,6 +172,7 @@
             <ObjectName>MasterControls</ObjectName>
             <SizePolicy>min,min</SizePolicy>
             <Layout>vertical</Layout>
+            <!--BackPath>background_tile.png</BackPath-->
             <Children>
               <WidgetGroup>
                 <ObjectName>MasterKnobs</ObjectName>
