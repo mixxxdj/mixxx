@@ -87,23 +87,33 @@
           <!-- Select between either the full UI or the big library -->
         <WidgetStack currentpage="[Master],maximize_library">
           <Children>
-            <WidgetGroup>
-              <Layout>vertical</Layout>
+            <Splitter>
+              <Orientation>vertical</Orientation>
               <SizePolicy>me,min</SizePolicy>
+              <SplitSizesConfigKey>[LateNight],waveform_splitSize</SplitSizesConfigKey>
+              <Collapsible>0,0</Collapsible>
               <Children>
                 <Template src="skin:waveforms.xml"/>
+
                 <WidgetGroup>
-                  <Layout>horizontal</Layout>
-                  <SizePolicy>me,max</SizePolicy>
+                  <Layout>vertical</Layout>
+                  <SizePolicy>me,me</SizePolicy>
                   <Children>
-                    <Template src="skin:decks_left.xml"/>
-                    <Template src="skin:mixer.xml"/>
-                    <Template src="skin:decks_right.xml"/>
+                    <WidgetGroup>
+                      <Layout>horizontal</Layout>
+                      <SizePolicy>me,max</SizePolicy>
+                      <Children>
+                        <Template src="skin:decks_left.xml"/>
+                        <Template src="skin:mixer.xml"/>
+                        <Template src="skin:decks_right.xml"/>
+                      </Children>
+                      </WidgetGroup>
+                      <Template src="skin:lower_half.xml"/>
                   </Children>
                 </WidgetGroup>
-                <Template src="skin:lower_half.xml"/>
+
               </Children>
-            </WidgetGroup>
+            </Splitter>
 
             <WidgetGroup>
               <Layout>vertical</Layout>
