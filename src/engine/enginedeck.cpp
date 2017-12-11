@@ -30,10 +30,8 @@ EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
                        UserSettingsPointer pConfig,
                        EngineMaster* pMixingEngine,
                        EffectsManager* pEffectsManager,
-                       EngineChannel::ChannelOrientation defaultOrientation,
-                       bool effectable)
-        : EngineChannel(handle_group, defaultOrientation,
-                        pEffectsManager, false, effectable),
+                       EngineChannel::ChannelOrientation defaultOrientation)
+        : EngineChannel(handle_group, defaultOrientation, pEffectsManager),
           m_pConfig(pConfig),
           m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_configured"))),
           m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))),
