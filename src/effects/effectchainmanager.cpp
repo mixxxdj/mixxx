@@ -207,8 +207,11 @@ void EffectChainManager::loadEffectChains() {
             if (pChain) { // null = ejected chains.
                 EffectChainSlotPointer pChainSlot = getStandardEffectRack(0)->getEffectChainSlot(i);
                 if (pChainSlot) {
-                    pChainSlot->loadEffectChain(pChain);
+                    pChainSlot->loadEffectChainToSlot(pChain);
                     pChainSlot->loadChainSlotFromXml(chainElement);
+                    pChain->addToEngine(getStandardEffectRack(0)->getEngineEffectRack(), i);
+                    pChain->updateEngineState();
+                    pChainSlot->updateRoutingSwitches();
                 }
             }
         }

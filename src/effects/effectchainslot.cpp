@@ -192,15 +192,12 @@ void EffectChainSlot::slotChainEffectChanged(unsigned int effectSlotNumber,
     }
 }
 
-void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
-    //qDebug() << debugString() << "loadEffectChain" << (pEffectChain ? pEffectChain->id() : "(null)");
+void EffectChainSlot::loadEffectChainToSlot(EffectChainPointer pEffectChain) {
+    //qDebug() << debugString() << "loadEffectChainToSlot" << (pEffectChain ? pEffectChain->id() : "(null)");
     clear();
 
     if (pEffectChain) {
         m_pEffectChain = pEffectChain;
-        m_pEffectChain->addToEngine(m_pEffectRack->getEngineEffectRack(),
-                                    m_iChainSlotNumber);
-        m_pEffectChain->updateEngineState();
 
         connect(m_pEffectChain.data(), SIGNAL(effectChanged(unsigned int)),
                 this, SLOT(slotChainEffectChanged(unsigned int)));
@@ -222,13 +219,6 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
         // not of the chain. Propagate the current settings to the chain.
         m_pEffectChain->setMix(m_pControlChainMix->get());
         m_pEffectChain->setEnabled(m_pControlChainEnabled->get() > 0.0);
-        foreach (ChannelInfo* pChannelInfo, m_channelInfoByName) {
-            if (pChannelInfo->pEnabled->toBool()) {
-                m_pEffectChain->enableForChannel(pChannelInfo->handle_group);
-            } else {
-                m_pEffectChain->disableForChannel(pChannelInfo->handle_group);
-            }
-        }
 
         // Don't emit because we will below.
         for (int i = 0; i < m_slots.size(); ++i) {
@@ -238,6 +228,19 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
 
     emit(effectChainLoaded(pEffectChain));
     emit(updated());
+}
+
+void EffectChainSlot::updateRoutingSwitches() {
+    VERIFY_OR_DEBUG_ASSERT(m_pEffectChain) {
+        return;
+    }
+    for (const ChannelInfo* pChannelInfo : m_channelInfoByName) {
+        if (pChannelInfo->pEnabled->toBool()) {
+            m_pEffectChain->enableForChannel(pChannelInfo->handle_group);
+        } else {
+            m_pEffectChain->disableForChannel(pChannelInfo->handle_group);
+        }
+    }
 }
 
 EffectChainPointer EffectChainSlot::getEffectChain() const {
@@ -251,7 +254,10 @@ EffectChainPointer EffectChainSlot::getOrCreateEffectChain(
                 new EffectChain(pEffectsManager, QString()));
         //: Name for an empty effect chain, that is created after eject
         pEffectChain->setName(tr("Empty Chain"));
-        loadEffectChain(pEffectChain);
+        loadEffectChainToSlot(pEffectChain);
+        pEffectChain->addToEngine(m_pEffectRack->getEngineEffectRack(), m_iChainSlotNumber);
+        pEffectChain->updateEngineState();
+        updateRoutingSwitches();
     }
     return m_pEffectChain;
 }
@@ -261,7 +267,7 @@ void EffectChainSlot::clear() {
     if (m_pEffectChain) {
         m_pEffectChain->removeFromEngine(m_pEffectRack->getEngineEffectRack(),
                                          m_iChainSlotNumber);
-        foreach (EffectSlotPointer pSlot, m_slots) {
+        for (EffectSlotPointer pSlot : m_slots) {
             pSlot->clear();
         }
         m_pEffectChain->disconnect(this);
@@ -323,14 +329,6 @@ void EffectChainSlot::registerInputChannel(const ChannelHandleAndGroup& handle_g
     m_channelStatusMapper.setMapping(pEnableControl, handle_group.name());
     connect(pEnableControl, SIGNAL(valueChanged(double)),
             &m_channelStatusMapper, SLOT(map()));
-
-    if (m_pEffectChain != nullptr) {
-        if (pEnableControl->toBool()) {
-            m_pEffectChain->enableForChannel(handle_group);
-        } else {
-            m_pEffectChain->disableForChannel(handle_group);
-        }
-    }
 }
 
 void EffectChainSlot::slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber) {
@@ -487,7 +485,7 @@ void EffectChainSlot::loadChainSlotFromXml(const QDomElement& effectChainElement
         return;
     }
 
-    // Note: insertion type is set in EffectChain::createFromXml
+    // FIXME: insertion type is set in EffectChain::createFromXml
 
     m_pControlChainSuperParameter->set(XmlParse::selectNodeDouble(
                                           effectChainElement,

@@ -153,35 +153,37 @@ void EffectChain::setEnabled(bool enabled) {
 }
 
 void EffectChain::enableForChannel(const ChannelHandleAndGroup& handle_group) {
-    if (!m_bAddedToEngine) {
+    // TODO(Be): remove m_enabledChannels from this class and move this logic
+    // to EffectChainSlot
+    bool bWasAlreadyEnabled = m_enabledChannels.contains(handle_group);
+    if (!bWasAlreadyEnabled) {
+        m_enabledChannels.insert(handle_group);
+    }
+
+    // The allocation of EffectStates below may be expensive, so avoid it if
+    // not needed.
+    if (!m_bAddedToEngine || bWasAlreadyEnabled) {
         return;
     }
-    if (!m_enabledChannels.contains(handle_group)) {
-        m_enabledChannels.insert(handle_group);
 
         EffectsRequest* request = new EffectsRequest();
         request->type = EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL;
         request->pTargetChain = m_pEngineEffectChain;
         request->channel = handle_group.handle();
-        m_pEffectsManager->writeRequest(request);
 
-        emit(channelStatusChanged(handle_group.name(), true));
-    }
+    m_pEffectsManager->writeRequest(request);
+    emit(channelStatusChanged(handle_group.name(), true));
 }
 
 bool EffectChain::enabledForChannel(const ChannelHandleAndGroup& handle_group) const {
     return m_enabledChannels.contains(handle_group);
 }
 
-const QSet<ChannelHandleAndGroup>& EffectChain::enabledChannels() const {
-    return m_enabledChannels;
-}
-
 void EffectChain::disableForChannel(const ChannelHandleAndGroup& handle_group) {
-    if (!m_bAddedToEngine) {
-        return;
-    }
     if (m_enabledChannels.remove(handle_group)) {
+        if (!m_bAddedToEngine) {
+            return;
+        }
         EffectsRequest* request = new EffectsRequest();
         request->type = EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL;
         request->pTargetChain = m_pEngineEffectChain;
@@ -213,7 +215,7 @@ void EffectChain::setInsertionType(InsertionType insertionType) {
 }
 
 void EffectChain::addEffect(EffectPointer pEffect) {
-    //qDebug() << debugString() << "addEffect";
+    //qDebug() << debugString() << "addEffect" << pEffect;
     if (!pEffect) {
         // Insert empty effects to preserve chain order
         // when loading chains with empty effects
@@ -221,12 +223,10 @@ void EffectChain::addEffect(EffectPointer pEffect) {
         return;
     }
 
-    if (m_effects.contains(pEffect)) {
-        qWarning() << debugString()
-                 << "WARNING: EffectChain already contains Effect:"
-                 << pEffect;
+    VERIFY_OR_DEBUG_ASSERT(!m_effects.contains(pEffect)) {
         return;
     }
+
     m_effects.append(pEffect);
     if (m_bAddedToEngine) {
         pEffect->addToEngine(m_pEngineEffectChain, m_effects.size() - 1);

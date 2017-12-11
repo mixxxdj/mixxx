@@ -33,7 +33,8 @@ class EffectChainSlot : public QObject {
     EffectSlotPointer addEffectSlot(const QString& group);
     EffectSlotPointer getEffectSlot(unsigned int slotNumber);
 
-    void loadEffectChain(EffectChainPointer pEffectChain);
+    void loadEffectChainToSlot(EffectChainPointer pEffectChain);
+    void updateRoutingSwitches();
     EffectChainPointer getEffectChain() const;
     EffectChainPointer getOrCreateEffectChain(EffectsManager* pEffectsManager);
 

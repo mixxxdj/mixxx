@@ -57,9 +57,13 @@ void Effect::addToEngine(EngineEffectChain* pChain, int iIndex) {
 }
 
 void Effect::removeFromEngine(EngineEffectChain* pChain, int iIndex) {
-    if (!m_pEngineEffect) {
+    VERIFY_OR_DEBUG_ASSERT(pChain) {
         return;
     }
+    VERIFY_OR_DEBUG_ASSERT(m_pEngineEffect) {
+        return;
+    }
+
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::REMOVE_EFFECT_FROM_CHAIN;
     request->pTargetChain = pChain;
