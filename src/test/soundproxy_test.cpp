@@ -1,3 +1,4 @@
+#include <QTemporaryFile>
 #include <QtDebug>
 
 #include "test/mixxxtest.h"
@@ -74,7 +75,7 @@ class SoundSourceProxyTest: public MixxxTest {
         // to test the upscaling of channels
         mixxx::AudioSource::OpenParams openParams;
         openParams.setChannelCount(2);
-        auto pAudioSource = proxy.openAudioSource();
+        auto pAudioSource = proxy.openAudioSource(openParams);
         EXPECT_FALSE(!pAudioSource);
         if (pAudioSource->channelCount() != 2) {
             // Wrap into proxy object
@@ -157,7 +158,7 @@ TEST_F(SoundSourceProxyTest, open) {
     for (const auto& filePath: getFilePaths()) {
         ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
 
-        mixxx::AudioSourcePointer pAudioSource(openAudioSource(filePath));
+        mixxx::AudioSourcePointer pAudioSource = openAudioSource(filePath);
         // Obtaining an AudioSource may fail for unsupported file formats,
         // even if the corresponding file extension is supported, e.g.
         // AAC vs. ALAC in .m4a files
@@ -168,6 +169,23 @@ TEST_F(SoundSourceProxyTest, open) {
         EXPECT_LT(0, pAudioSource->channelCount());
         EXPECT_LT(0, pAudioSource->sampleRate());
         EXPECT_FALSE(pAudioSource->frameIndexRange().empty());
+    }
+}
+
+TEST_F(SoundSourceProxyTest, openEmptyFile) {
+    for (const auto& fileNameSuffix: getFileNameSuffixes()) {
+        QTemporaryFile tempFile("emptyXXXXXX" + fileNameSuffix);
+        qDebug() << "Created testing to open empty file:"
+                << tempFile.fileName();
+        tempFile.open();
+        tempFile.close();
+
+        ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(tempFile.fileName()));
+        auto pTrack = Track::newTemporary(tempFile.fileName());
+        SoundSourceProxy proxy(pTrack);
+
+        auto pAudioSource = proxy.openAudioSource();
+        EXPECT_TRUE(!pAudioSource);
     }
 }
 

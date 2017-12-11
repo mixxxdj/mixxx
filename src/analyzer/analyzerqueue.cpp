@@ -349,8 +349,7 @@ void AnalyzerQueue::execThread() {
         if (!pAudioSource) {
             kLogger.warning()
                     << "Failed to open file for analyzing:"
-                    << nextTrack->getLocation()
-                    << *pAudioSource;
+                    << nextTrack->getLocation();
             emptyCheck();
             continue;
         }
