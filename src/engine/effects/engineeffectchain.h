@@ -40,14 +40,16 @@ class EngineEffectChain : public EffectsRequestHandler {
 
     bool enabledForChannel(const ChannelHandle& handle) const;
 
+    void deleteStatesForInputChannel(const ChannelHandle& channel);
+
   private:
     struct ChannelStatus {
         ChannelStatus()
                 : old_gain(0),
-                  enable_state(EffectProcessor::DISABLED) {
+                  enable_state(EffectEnableState::Disabled) {
         }
         CSAMPLE old_gain;
-        EffectProcessor::EnableState enable_state;
+        EffectEnableState enable_state;
     };
 
     QString debugString() const {
@@ -57,7 +59,8 @@ class EngineEffectChain : public EffectsRequestHandler {
     bool updateParameters(const EffectsRequest& message);
     bool addEffect(EngineEffect* pEffect, int iIndex);
     bool removeEffect(EngineEffect* pEffect, int iIndex);
-    bool enableForInputChannel(const ChannelHandle& inputHandle);
+    bool enableForInputChannel(const ChannelHandle& inputHandle,
+            const QList<EffectStatesPointer>* statesForEffectsInChain);
     bool disableForInputChannel(const ChannelHandle& inputHandle);
 
     // Gets or creates a ChannelStatus entry in m_channelStatus for the provided
@@ -66,7 +69,7 @@ class EngineEffectChain : public EffectsRequestHandler {
                                     const ChannelHandle& outputHandle);
 
     QString m_id;
-    EffectProcessor::EnableState m_enableState;
+    EffectEnableState m_enableState;
     EffectChain::InsertionType m_insertionType;
     CSAMPLE m_dMix;
     QList<EngineEffect*> m_effects;

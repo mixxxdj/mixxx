@@ -11,13 +11,14 @@
 
 #define MAXSTAGES 12
 
-class PhaserGroupState final {
+class PhaserGroupState final : public EffectState {
   public:
-    PhaserGroupState() {
-        init();
+    PhaserGroupState(const mixxx::AudioParameters& bufferParameters)
+            : EffectState(bufferParameters) {
+        clear();
     }
 
-    void init() {
+    void clear() {
         leftPhase = 0;
         rightPhase = 0;
         oldDepth = 0;
@@ -37,7 +38,7 @@ class PhaserGroupState final {
 
 };
 
-class PhaserEffect : public PerChannelEffectProcessor<PhaserGroupState> {
+class PhaserEffect : public EffectProcessorImpl<PhaserGroupState> {
 
   public:
     PhaserEffect(EngineEffect* pEffect, const EffectManifest& manifest);
@@ -50,9 +51,8 @@ class PhaserEffect : public PerChannelEffectProcessor<PhaserGroupState> {
     void processChannel(const ChannelHandle& handle,
                         PhaserGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE* pOutput,
-                        const unsigned int numSamples,
-                        const unsigned int sampleRate,
-                        const EffectProcessor::EnableState enableState,
+                        const mixxx::AudioParameters& bufferParameters,
+                        const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatures);
 
   private:

@@ -67,13 +67,11 @@ BitCrusherEffect::~BitCrusherEffect() {
 void BitCrusherEffect::processChannel(const ChannelHandle& handle,
                                       BitCrusherGroupState* pState,
                                       const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                      const unsigned int numSamples,
-                                      const unsigned int sampleRate,
-                                      const EffectProcessor::EnableState enableState,
+                                      const mixxx::AudioParameters& bufferParameters,
+                                      const EffectEnableState enableState,
                                       const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
-    Q_UNUSED(sampleRate); // we are normalized to 1
     Q_UNUSED(enableState); // no need to ramp, it is just a bitcrusher ;-)
 
     const CSAMPLE downsample = m_pDownsampleParameter ?
@@ -88,8 +86,9 @@ void BitCrusherEffect::processChannel(const ChannelHandle& handle,
     // rarely used, to achieve equal loudness and maximum dynamic
     const CSAMPLE gainCorrection = (17 - bit_depth) / 8;
 
-    const int kChannels = 2;
-    for (unsigned int i = 0; i < numSamples; i += kChannels) {
+    for (unsigned int i = 0;
+            i < bufferParameters.bufferSize();
+            i += bufferParameters.channelCount()) {
         pState->accumulator += downsample;
 
         if (pState->accumulator >= 1.0) {

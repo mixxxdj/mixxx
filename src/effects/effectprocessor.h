@@ -1,3 +1,4 @@
+
 #ifndef EFFECTPROCESSOR_H
 #define EFFECTPROCESSOR_H
 
@@ -6,115 +7,198 @@
 #include <QPair>
 
 #include "util/types.h"
+#include "engine/engine.h"
+#include "effects/defs.h"
+#include "effects/effectsmanager.h"
 #include "engine/effects/groupfeaturestate.h"
 #include "engine/channelhandle.h"
 
 class EngineEffect;
 
+// Effects are implemented as two separate classes, an EffectState subclass and
+// EffectProcessorImpl subclass. Separating state from the DSP code allows memory
+// and deletion, which is slow, to be done on the main thread instead of
+// potentially blocking the audio engine callback thread and causing audible
+// glitches. EffectStates allocated on the main thread are passed as pointers
+// to the EffectProcessorImpl in the audio callback thread via the effect
+// MessagePipe FIFO. EffectStates are allocated when an input channel is enabled
+// for a chain. Also, when a new effect is loaded to a chain, EffectStates are only
+// allocated for input channels that are enabled at that time. This allows for
+// scaling up to an arbitrary number of channels without wasting a lot of memory.
+class EffectState {
+  public:
+    EffectState(const mixxx::AudioParameters& bufferParameters) {
+        // Subclasses should call allocateBuffers here.
+        Q_UNUSED(bufferParameters);
+    };
+    virtual ~EffectState() {};
+
+    // TODO: implement this for all subclasses and call it when the buffer
+    // size and sample rate are configured by SoundManager
+    virtual void audioParametersChanged(const mixxx::AudioParameters& bufferParameters) {
+        Q_UNUSED(bufferParameters);
+    };
+    // Subclasses should clear any mixxx::SampleBuffer members and set
+    // other values back to their defaults.
+    virtual void clear() {};
+};
+
+// EffectProcessor is an abstract base class for interfacing with the main
+// thread without needing to specify a specific EffectState subclass for the
+// template in EffectProcessorImpl.
 class EffectProcessor {
   public:
-    enum EnableState {
-        DISABLED = 0x00,
-        ENABLED = 0x01,
-        DISABLING = 0x02,
-        ENABLING = 0x03
-    };
-
-
     virtual ~EffectProcessor() { }
 
+    // Called from main thread to avoid allocating memory in the audio callback thread
     virtual void initialize(
-            const QSet<ChannelHandleAndGroup>& registeredInputChannels,
-            const QSet<ChannelHandleAndGroup>& registeredOutputChannels) = 0;
+            const QSet<ChannelHandleAndGroup>& activeInputChannels,
+            EffectsManager* pEffectsManager,
+            const mixxx::AudioParameters& bufferParameters) = 0;
+    virtual EffectState* createState(const mixxx::AudioParameters& bufferParameters) = 0;
+    virtual bool loadStatesForInputChannel(const ChannelHandle& inputChannel,
+          const EffectStatesPointer pStates) = 0;
+    // Called from main thread for garbage collection after the last audio thread
+    // callback executes process() with EffectEnableState::Disabling
+    virtual void deleteStatesForInputChannel(const ChannelHandle& inputChannel) = 0;
 
-    // Take a buffer of numSamples samples of audio from a channel, provided as
-    // pInput, process the buffer according to Effect-specific logic, and output
-    // it to the buffer pOutput. If pInput is equal to pOutput, then the
-    // operation must occur in-place. Both pInput and pOutput are represented as
-    // stereo interleaved samples. There are numSamples total samples, so
-    // numSamples/2 left channel samples and numSamples/2 right channel
-    // samples. The provided channel handle allows the effect to maintain state
-    // on a per-channel basis. This is important because one Effect instance may
-    // be used to process the audio of multiple channels.
-    virtual void process(const ChannelHandle& inputHandle, const ChannelHandle& outputHandle,
+    // Take a buffer of audio samples as pInput, process the buffer according to
+    // Effect-specific logic, and output it to the buffer pOutput. If pInput is
+    // equal to pOutput, then the operation must occur in-place. Both pInput and
+    // pOutput are represented as stereo interleaved samples for now, but effects
+    // should not be written assuming this will remain true. The properties
+    // of the buffer necessary for determining how to process it (frames per
+    // buffer, number of channels, and sample rate) are available on the
+    // mixxx::AudioParameters argument. The provided channel handles allows the
+    // effect to maintain state independently for every combination of input and
+    // output channel. This is important because one EffectProcessor instance is
+    // used to process the audio of multiple channels.
+    virtual void process(const ChannelHandle& inputHandle,
+                         const ChannelHandle& outputHandle,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
-                         const unsigned int numSamples,
-                         const unsigned int sampleRate,
-                         const enum EnableState enableState,
+                         const mixxx::AudioParameters& bufferParameters,
+                         const EffectEnableState enableState,
                          const GroupFeatureState& groupFeatures) = 0;
 };
 
-// Helper class for automatically fetching channel state parameters upon receipt
-// of a channel-specific process call.
-template <typename T>
-class PerChannelEffectProcessor : public EffectProcessor {
-    struct ChannelStateHolder {
-        ChannelStateHolder() : state(NULL) { }
-        T* state;
-    };
+// EffectProcessorImpl manages a separate EffectState for every routing of
+// input channel to output channel. This allows for processing effects in
+// parallel for PFL and post-fader for the master output.
+// EffectSpecificState must be a subclass of EffectState.
+template <typename EffectSpecificState>
+class EffectProcessorImpl : public EffectProcessor {
   public:
-    PerChannelEffectProcessor() {
+    EffectProcessorImpl() {
     }
-    virtual ~PerChannelEffectProcessor() {
-        // loop over each output channel
-        for (auto&& outputsMap : m_channelStateMatrix) {
-            // loop over each input channel
-            for (typename ChannelHandleMap<ChannelStateHolder>::iterator it =
-                        outputsMap.begin();
-                        it != outputsMap.end(); ++it) {
-                T* pState = it->state;
+    // Subclasses should not implement their own destructor. All state should
+    // be stored in the EffectState subclass, not the EffectProcessorImpl subclass.
+    ~EffectProcessorImpl() {
+        //qDebug() << "~EffectProcessorImpl" << this;
+        for (ChannelHandleMap<EffectSpecificState*>& outputsMap : m_channelStateMatrix) {
+            for (EffectSpecificState* pState : outputsMap) {
+                VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
+                    continue;
+                }
+                //qDebug() << "~EffectProcessorImpl deleting state" << pState;
                 delete pState;
             }
             outputsMap.clear();
         }
         m_channelStateMatrix.clear();
-    }
+    };
 
-    virtual void initialize(
-            const QSet<ChannelHandleAndGroup>& registeredInputChannels,
-            const QSet<ChannelHandleAndGroup>& registeredOutputChannels) {
-        for (const ChannelHandleAndGroup& inputChannel : registeredInputChannels) {
-            ChannelHandleMap<ChannelStateHolder> outputChannelMap;
-            m_channelStateMatrix.insert(inputChannel.handle(), outputChannelMap);
-            for (const ChannelHandleAndGroup& outputChannel : registeredOutputChannels) {
-                getOrCreateChannelState(inputChannel.handle(), outputChannel.handle());
-            }
-        }
-    }
+    // NOTE: Subclasses must implement the following static methods for
+    // EffectInstantiator to work:
+    // static QString getId();
+    // static EffectManifest getManifest();
 
-    virtual void process(const ChannelHandle& inputHandle, const ChannelHandle& outputHandle,
-                         const CSAMPLE* pInput, CSAMPLE* pOutput,
-                         const unsigned int numSamples,
-                         const unsigned int sampleRate,
-                         const EffectProcessor::EnableState enableState,
-                         const GroupFeatureState& groupFeatures) {
-        T* pState = getOrCreateChannelState(inputHandle, outputHandle);
-        processChannel(inputHandle, pState, pInput, pOutput, numSamples, sampleRate,
-                       enableState, groupFeatures);
-    }
-
+    // This is the only non-static method that subclasses need to implement.
     // TODO(Be): remove ChannelHandle& argument? No (native) effects use it. Why should
     // effects be concerned with the ChannelHandle& when process() takes care of giving
     // it the appropriate ChannelStateHolder?
     virtual void processChannel(const ChannelHandle& handle,
-                                T* channelState,
+                                EffectSpecificState* channelState,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                const unsigned int numSamples,
-                                const unsigned int sampleRate,
-                                const EffectProcessor::EnableState enableState,
+                                const mixxx::AudioParameters& bufferParameters,
+                                const EffectEnableState enableState,
                                 const GroupFeatureState& groupFeatures) = 0;
 
-  private:
-    inline T* getOrCreateChannelState(const ChannelHandle& inputHandle,
-                                      const ChannelHandle& outputHandle) {
-        ChannelStateHolder& holder = m_channelStateMatrix[inputHandle][outputHandle];
-        if (holder.state == NULL) {
-            holder.state = new T();
+    void process(const ChannelHandle& inputHandle, const ChannelHandle& outputHandle,
+                         const CSAMPLE* pInput, CSAMPLE* pOutput,
+                         const mixxx::AudioParameters& bufferParameters,
+                         const EffectEnableState enableState,
+                         const GroupFeatureState& groupFeatures) final {
+        EffectSpecificState* pState = m_channelStateMatrix[inputHandle][outputHandle];
+        VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
+            qWarning() << "EffectProcessorImpl::process could not retrieve"
+                          "EffectState for input" << inputHandle
+                       << "and output" << outputHandle
+                       << "EffectState should have been preallocated in the main thread.";
+            pState = createState(bufferParameters);
+            m_channelStateMatrix[inputHandle][outputHandle] = pState;
         }
-        return holder.state;
+        processChannel(inputHandle, pState, pInput, pOutput, bufferParameters,
+                       enableState, groupFeatures);
     }
 
-    ChannelHandleMap<ChannelHandleMap<ChannelStateHolder>> m_channelStateMatrix;
+   void initialize(const QSet<ChannelHandleAndGroup>& activeInputChannels,
+            EffectsManager* pEffectsManager,
+            const mixxx::AudioParameters& bufferParameters) final {
+        for (const ChannelHandleAndGroup& inputChannel : activeInputChannels) {
+            qDebug() << this << "EffectProcessorImpl::initialize allocating EffectStates for input" << inputChannel;
+            ChannelHandleMap<EffectSpecificState*> outputChannelMap;
+            for (const ChannelHandleAndGroup& outputChannel :
+                    pEffectsManager->registeredOutputChannels()) {
+                outputChannelMap.insert(outputChannel.handle(),
+                        createState(bufferParameters));
+                qDebug() << this << "EffectProcessorImpl::initialize registering output" << outputChannel;
+            }
+            m_channelStateMatrix.insert(inputChannel.handle(), outputChannelMap);
+        }
+        m_pEffectsManager = pEffectsManager;
+        DEBUG_ASSERT(m_pEffectsManager != nullptr);
+    };
+
+    EffectSpecificState* createState(const mixxx::AudioParameters& bufferParameters) final {
+        return new EffectSpecificState(bufferParameters);
+    };
+
+    bool loadStatesForInputChannel(const ChannelHandle& inputChannel,
+              const EffectStatesPointer pStates) final {
+          // Can't directly cast a ChannelHandleMap from containing the base
+          // EffectState* type to EffectSpecificState* type, so iterate through
+          // the ChannelHandleMap to build a new ChannelHandleMap with
+          // dynamic_cast'ed states.
+          ChannelHandleMap<EffectSpecificState*> newMap;
+          //qDebug() << "EffectProcessorImpl::loadStatesForInputChannel" << this << "input"
+          //         << inputChannel;
+          for (const ChannelHandleAndGroup& outputChannel :
+                  m_pEffectsManager->registeredOutputChannels()) {
+              //qDebug() << "EffectProcessorImpl::loadStatesForInputChannel" << this << "output" << outputChannel;
+              auto pState = dynamic_cast<EffectSpecificState*>(
+                        pStates->at(outputChannel.handle()));
+              VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
+                    return false;
+              }
+              newMap.insert(outputChannel.handle(), pState);
+          }
+          m_channelStateMatrix.insert(inputChannel, newMap);
+          return true;
+    };
+
+    // Called from main thread for garbage collection after an input channel is disabled
+    void deleteStatesForInputChannel(const ChannelHandle& inputChannel) final {
+          //qDebug() << "EffectProcessorImpl::deleteStatesForInputChannel" << this << inputChannel;
+          for (EffectSpecificState* pState : m_channelStateMatrix.at(inputChannel)) {
+                //qDebug() << "EffectProcessorImpl::deleteStatesForInputChannel" << this << "deleting state" << pState;
+                delete pState;
+          }
+          m_channelStateMatrix[inputChannel].clear();
+    };
+
+  private:
+    EffectsManager* m_pEffectsManager;
+    ChannelHandleMap<ChannelHandleMap<EffectSpecificState*>> m_channelStateMatrix;
 };
 
 #endif /* EFFECTPROCESSOR_H */

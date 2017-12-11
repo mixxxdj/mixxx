@@ -10,6 +10,7 @@
 
 class EngineEffectChain;
 
+//TODO(Be): Remove this superflous class.
 class EngineEffectRack : public EffectsRequestHandler {
   public:
     EngineEffectRack(int iRackNumber);

@@ -4,11 +4,14 @@
 #include <QSharedPointer>
 #include <QDomDocument>
 
+#include "engine/channelhandle.h"
+#include "engine/engine.h"
 #include "effects/effectmanifest.h"
 #include "effects/effectparameter.h"
 #include "effects/effectinstantiator.h"
 #include "util/class.h"
 
+class EffectState;
 class EffectProcessor;
 class EngineEffectChain;
 class EngineEffect;
@@ -31,6 +34,8 @@ class Effect : public QObject {
            EffectInstantiatorPointer pInstantiator);
     virtual ~Effect();
 
+    EffectState* createState(const mixxx::AudioParameters& bufferParameters);
+
     const EffectManifest& getManifest() const;
 
     unsigned int numKnobParameters() const;
@@ -51,7 +56,8 @@ class Effect : public QObject {
 
     EngineEffect* getEngineEffect();
 
-    void addToEngine(EngineEffectChain* pChain, int iIndex);
+    void addToEngine(EngineEffectChain* pChain, int iIndex,
+                     const QSet<ChannelHandleAndGroup>& activeInputChannels);
     void removeFromEngine(EngineEffectChain* pChain, int iIndex);
     void updateEngineState();
 

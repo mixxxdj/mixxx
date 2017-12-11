@@ -109,6 +109,7 @@ class EffectsManager : public QObject {
     }
 
     void processEffectsResponses();
+    void collectGarbage(const EffectsRequest* pResponse);
 
     ChannelHandleFactory* m_pChannelHandleFactory;
 

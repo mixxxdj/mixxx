@@ -12,6 +12,7 @@
 namespace {
 const QString kEffectGroupSeparator = "_";
 const QString kGroupClose = "]";
+const unsigned int kEffectMessagPipeFifoSize = 2048;
 } // anonymous namespace
 
 
@@ -27,7 +28,7 @@ EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig,
     qRegisterMetaType<EffectChain::InsertionType>("EffectChain::InsertionType");
     QPair<EffectsRequestPipe*, EffectsResponsePipe*> requestPipes =
             TwoWayMessagePipe<EffectsRequest*, EffectsResponse>::makeTwoWayMessagePipe(
-                2048, 2048, false, false);
+                kEffectMessagPipeFifoSize, kEffectMessagPipeFifoSize, false, false);
 
     m_pRequestPipe.reset(requestPipes.first);
     m_pEngineEffectsManager = new EngineEffectsManager(requestPipes.second);
@@ -376,19 +377,8 @@ void EffectsManager::loadEffectChains() {
 bool EffectsManager::writeRequest(EffectsRequest* request) {
     if (m_underDestruction) {
         // Catch all delete Messages since the engine is already down
-        // and we cannot what for a communication cycle
-        if (request->type == EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
-            //qDebug() << debugString() << "delete" << request->RemoveEffectFromChain.pEffect;
-            delete request->RemoveEffectFromChain.pEffect;
-        } else if (request->type == EffectsRequest::REMOVE_CHAIN_FROM_RACK) {
-            //qDebug() << debugString() << "delete" << request->RemoveEffectFromChain.pEffect;
-            delete request->RemoveChainFromRack.pChain;
-        } else if (request->type == EffectsRequest::REMOVE_EFFECT_RACK) {
-            //qDebug() << debugString() << "delete" << request->RemoveEffectRack.pRack;
-            delete request->RemoveEffectRack.pRack;
-        }
-        delete request;
-        return false;
+        // and we cannot wait for a communication cycle
+        collectGarbage(request);
     }
 
     if (m_pRequestPipe.isNull()) {
@@ -396,8 +386,8 @@ bool EffectsManager::writeRequest(EffectsRequest* request) {
         return false;
     }
 
-    // This is effectively only GC at this point so only deal with responses
-    // when writing new requests.
+    // This is effectively only garbage collection at this point so only deal
+    // with responses when writing new requests.
     processEffectsResponses();
 
     request->request_id = m_nextRequestId++;
@@ -420,7 +410,7 @@ void EffectsManager::processEffectsResponses() {
         QHash<qint64, EffectsRequest*>::iterator it =
                 m_activeRequests.find(response.request_id);
 
-        if (it == m_activeRequests.end()) {
+        VERIFY_OR_DEBUG_ASSERT(it != m_activeRequests.end()) {
             qWarning() << debugString()
                        << "WARNING: EffectsResponse with an inactive request_id:"
                        << response.request_id;
@@ -430,27 +420,30 @@ void EffectsManager::processEffectsResponses() {
                it.key() == response.request_id) {
             EffectsRequest* pRequest = it.value();
 
-            if (!response.success) {
-                qWarning() << debugString() << "WARNING: Failed EffectsRequest"
-                           << "type" << pRequest->type;
-            } else {
-                //qDebug() << debugString() << "EffectsRequest Success"
-                //           << "type" << pRequest->type;
+            // Don't check whether the response was successful here because
+            // specific errors should be caught with DEBUG_ASSERTs in
+            // EngineEffectsManager and functions it calls to handle requests.
 
-                if (pRequest->type == EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
-                    //qDebug() << debugString() << "delete" << pRequest->RemoveEffectFromChain.pEffect;
-                    delete pRequest->RemoveEffectFromChain.pEffect;
-                } else if (pRequest->type == EffectsRequest::REMOVE_CHAIN_FROM_RACK) {
-                    //qDebug() << debugString() << "delete" << request->RemoveEffectFromChain.pEffect;
-                    delete pRequest->RemoveChainFromRack.pChain;
-                } else if (pRequest->type == EffectsRequest::REMOVE_EFFECT_RACK) {
-                    qDebug() << debugString() << "delete" << pRequest->RemoveEffectRack.pRack;
-                    delete pRequest->RemoveEffectRack.pRack;
-                }
-            }
+            collectGarbage(pRequest);
 
             delete pRequest;
             it = m_activeRequests.erase(it);
         }
+    }
+}
+
+void EffectsManager::collectGarbage(const EffectsRequest* pRequest) {
+    if (pRequest->type == EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
+        //qDebug() << debugString() << "delete" << pRequest->RemoveEffectFromChain.pEffect;
+        delete pRequest->RemoveEffectFromChain.pEffect;
+    } else if (pRequest->type == EffectsRequest::REMOVE_CHAIN_FROM_RACK) {
+        //qDebug() << debugString() << "delete" << request->RemoveEffectFromChain.pEffect;
+        delete pRequest->RemoveChainFromRack.pChain;
+    } else if (pRequest->type == EffectsRequest::REMOVE_EFFECT_RACK) {
+        //qDebug() << debugString() << "delete" << pRequest->RemoveEffectRack.pRack;
+        delete pRequest->RemoveEffectRack.pRack;
+    } else if (pRequest->type == EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL) {
+        //qDebug() << debugString() << "deleting states for input channel" << pRequest->channel << "for EngineEffectChain" << pRequest->pTargetChain;
+        pRequest->pTargetChain->deleteStatesForInputChannel(pRequest->channel);
     }
 }

@@ -8,6 +8,7 @@
 #include <QSet>
 #include <QtDebug>
 
+#include "effects/effectsmanager.h"
 #include "effects/effectmanifest.h"
 #include "effects/effectprocessor.h"
 #include "effects/effectinstantiator.h"
@@ -19,8 +20,8 @@
 class EngineEffect : public EffectsRequestHandler {
   public:
     EngineEffect(const EffectManifest& manifest,
-                 const QSet<ChannelHandleAndGroup>& registeredInputChannels,
-                 const QSet<ChannelHandleAndGroup>& registeredOutputChannels,
+                 const QSet<ChannelHandleAndGroup>& activeInputChannels,
+                 EffectsManager* pEffectsManager,
                  EffectInstantiatorPointer pInstantiator);
     virtual ~EngineEffect();
 
@@ -32,6 +33,12 @@ class EngineEffect : public EffectsRequestHandler {
         return m_parametersById.value(id, NULL);
     }
 
+    EffectState* createState(const mixxx::AudioParameters& bufferParameters);
+
+    void loadStatesForInputChannel(const ChannelHandle& inputChannel,
+        const EffectStatesPointer states);
+    void deleteStatesForInputChannel(const ChannelHandle& inputChannel);
+
     bool processEffectsRequest(
         const EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe);
@@ -40,7 +47,7 @@ class EngineEffect : public EffectsRequestHandler {
                  const CSAMPLE* pInput, CSAMPLE* pOutput,
                  const unsigned int numSamples,
                  const unsigned int sampleRate,
-                 const EffectProcessor::EnableState chainEnableState,
+                 const EffectEnableState chainEnableState,
                  const GroupFeatureState& groupFeatures);
 
   private:
@@ -50,11 +57,13 @@ class EngineEffect : public EffectsRequestHandler {
 
     EffectManifest m_manifest;
     EffectProcessor* m_pProcessor;
-    ChannelHandleMap<ChannelHandleMap<EffectProcessor::EnableState>> m_effectEnableStateForChannelMatrix;
+    ChannelHandleMap<ChannelHandleMap<EffectEnableState>> m_effectEnableStateForChannelMatrix;
     bool m_effectRampsFromDry;
     // Must not be modified after construction.
     QVector<EngineEffectParameter*> m_parameters;
     QMap<QString, EngineEffectParameter*> m_parametersById;
+
+    const EffectsManager* m_pEffectsManager;
 
     DISALLOW_COPY_AND_ASSIGN(EngineEffect);
 };

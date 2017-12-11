@@ -6,6 +6,7 @@
 #include <QtGlobal>
 
 #include "util/fifo.h"
+#include "effects/defs.h"
 #include "effects/effectchain.h"
 #include "engine/channelhandle.h"
 
@@ -49,9 +50,9 @@ struct EffectsRequest {
               maximum(0.0),
               default_value(0.0),
               value(0.0) {
-        pTargetRack = NULL;
-        pTargetChain = NULL;
-        pTargetEffect = NULL;
+        pTargetRack = nullptr;
+        pTargetChain = nullptr;
+        pTargetEffect = nullptr;
 #define CLEAR_STRUCT(x) memset(&x, 0, sizeof(x));
         CLEAR_STRUCT(AddEffectRack);
         CLEAR_STRUCT(RemoveEffectRack);
@@ -78,8 +79,8 @@ struct EffectsRequest {
         // - ADD_EFFECT_TO_CHAIN
         // - REMOVE_EFFECT_FROM_CHAIN
         // - SET_EFFECT_CHAIN_PARAMETERS
-        // - ENABLE_EFFECT_CHAIN_FOR_CHANNEL
-        // - DISABLE_EFFECT_CHAIN_FOR_CHANNEL
+        // - ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL
+        // - DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL
         EngineEffectChain* pTargetChain;
         // Used by:
         // - SET_EFFECT_PARAMETER
@@ -129,8 +130,12 @@ struct EffectsRequest {
     // Message-specific, non-POD values that can't be part of the above union.
     ////////////////////////////////////////////////////////////////////////////
 
-    // Used by ENABLE_EFFECT_CHAIN_FOR_CHANNEL and DISABLE_EFFECT_CHAIN_FOR_CHANNEL.
+    // Used by ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL and
+    // DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL.
     ChannelHandle channel;
+
+    // Used by ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL
+    QList<EffectStatesPointer>* pStatesForEffectsInChain;
 
     // Used by SET_EFFECT_PARAMETER.
     double minimum;

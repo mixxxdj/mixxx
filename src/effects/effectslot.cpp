@@ -5,6 +5,7 @@
 
 #include "control/controlpushbutton.h"
 #include "control/controlproxy.h"
+#include "util/math.h"
 #include "util/xml.h"
 
 // The maximum number of effect parameters we're going to support.

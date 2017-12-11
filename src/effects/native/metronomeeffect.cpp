@@ -61,35 +61,36 @@ MetronomeEffect::MetronomeEffect(EngineEffect* pEffect, const EffectManifest& ma
 MetronomeEffect::~MetronomeEffect() {
 }
 
-void MetronomeEffect::processChannel(const ChannelHandle& handle, MetronomeGroupState* pGroupState,
-                              const CSAMPLE* pInput,
-                              CSAMPLE* pOutput, const unsigned int numSamples,
-                              const unsigned int sampleRate,
-                              const EffectProcessor::EnableState enableState,
-                              const GroupFeatureState& groupFeatures) {
+void MetronomeEffect::processChannel(
+        const ChannelHandle& handle,
+        MetronomeGroupState* pGroupState,
+        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const mixxx::AudioParameters& bufferParameters,
+        const EffectEnableState enableState,
+        const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
     Q_UNUSED(pInput);
 
     MetronomeGroupState* gs = pGroupState;
 
-    if (enableState == EffectProcessor::DISABLED) {
+    if (enableState == EffectEnableState::Disabled) {
         gs->m_framesSinceClickStart = 0;
         return;
     }
 
     unsigned int clickSize = kClickSize44100;
     const CSAMPLE* click = kClick44100;
-    if (sampleRate >= 96000) {
+    if (bufferParameters.sampleRate() >= 96000) {
         clickSize = kClickSize96000;
         click = kClick96000;
-    } else if (sampleRate >= 48000) {
+    } else if (bufferParameters.sampleRate() >= 48000) {
         clickSize = kClickSize48000;
         click = kClick48000;
     }
 
     unsigned int maxFrames;
     if (m_pSyncParameter->toBool() && groupFeatures.has_beat_length_sec) {
-        maxFrames = sampleRate * groupFeatures.beat_length_sec;
+        maxFrames = bufferParameters.sampleRate() * groupFeatures.beat_length_sec;
         if (groupFeatures.has_beat_fraction) {
             unsigned int currentFrame =  maxFrames * groupFeatures.beat_fraction;
             if (maxFrames > clickSize &&
@@ -101,35 +102,34 @@ void MetronomeEffect::processChannel(const ChannelHandle& handle, MetronomeGroup
             }
         }
     } else {
-        maxFrames = sampleRate * 60 / m_pBpmParameter->value();
+        maxFrames = bufferParameters.sampleRate() * 60 / m_pBpmParameter->value();
     }
 
-    SampleUtil::copy(pOutput, pInput, numSamples);
-
-    const unsigned int numFrames = numSamples / 2;
+    SampleUtil::copy(pOutput, pInput, bufferParameters.bufferSize());
 
     if (gs->m_framesSinceClickStart < clickSize) {
         // still in click region, write remaining click frames.
         const unsigned int copyFrames =
-                math_min(numFrames, clickSize - gs->m_framesSinceClickStart);
+                math_min(static_cast<unsigned int>(bufferParameters.framesPerBuffer()),
+                         clickSize - gs->m_framesSinceClickStart);
         SampleUtil::addMonoToStereo(pOutput, &click[gs->m_framesSinceClickStart],
                 copyFrames);
     }
 
-    gs->m_framesSinceClickStart += numFrames;
+    gs->m_framesSinceClickStart += bufferParameters.framesPerBuffer();
 
     if (gs->m_framesSinceClickStart > maxFrames) {
         // overflow, all overflowed frames are the start of a new click sound
         gs->m_framesSinceClickStart -= maxFrames;
-        while (gs->m_framesSinceClickStart > numFrames) {
+        while (gs->m_framesSinceClickStart > bufferParameters.framesPerBuffer()) {
             // loop into a valid region, this happens if the maxFrames was lowered
-            gs->m_framesSinceClickStart -= numFrames;
+            gs->m_framesSinceClickStart -= bufferParameters.framesPerBuffer();
         }
 
         // gs->m_framesSinceClickStart matches now already at the first frame
         // of next pOutput.
         const unsigned int outputOffset =
-                numFrames - gs->m_framesSinceClickStart;
+                bufferParameters.framesPerBuffer() - gs->m_framesSinceClickStart;
         const unsigned int copyFrames =
                 math_min(gs->m_framesSinceClickStart, clickSize);
         SampleUtil::addMonoToStereo(&pOutput[outputOffset * 2], click,

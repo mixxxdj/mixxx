@@ -19,10 +19,9 @@
 
 static const int kMaxDelay2 = 3300; // allows a 30 Hz filter at 97346;
 
-class BiquadFullKillEQEffectGroupState final {
+class BiquadFullKillEQEffectGroupState : public EffectState {
   public:
-    BiquadFullKillEQEffectGroupState();
-    ~BiquadFullKillEQEffectGroupState();
+    BiquadFullKillEQEffectGroupState(const mixxx::AudioParameters& bufferParameters);
 
     void setFilters(
             int sampleRate, double lowFreqCorner, double highFreqCorner);
@@ -59,23 +58,20 @@ class BiquadFullKillEQEffectGroupState final {
     unsigned int m_oldSampleRate;
 };
 
-class BiquadFullKillEQEffect : public PerChannelEffectProcessor<BiquadFullKillEQEffectGroupState> {
+class BiquadFullKillEQEffect : public EffectProcessorImpl<BiquadFullKillEQEffectGroupState> {
   public:
     BiquadFullKillEQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
-    ~BiquadFullKillEQEffect() override;
 
     static QString getId();
     static EffectManifest getManifest();
 
     void setFilters(int sampleRate, double lowFreqCorner, double highFreqCorner);
 
-    // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,
                         BiquadFullKillEQEffectGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
-                        const unsigned int numSamples,
-                        const unsigned int sampleRate,
-                        const EffectProcessor::EnableState enableState,
+                        const mixxx::AudioParameters& bufferParameters,
+                        const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatureState);
 
   private:

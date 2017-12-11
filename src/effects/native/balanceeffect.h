@@ -8,10 +8,9 @@
 #include "util/samplebuffer.h"
 #include "util/memory.h"
 
-// This effect does not need to store any state.
-class BalanceGroupState final {
+class BalanceGroupState : public EffectState {
   public:
-    BalanceGroupState();
+    BalanceGroupState(const mixxx::AudioParameters& bufferParameters);
     ~BalanceGroupState();
 
     void setFilters(int sampleRate, int freq);
@@ -28,7 +27,7 @@ class BalanceGroupState final {
     CSAMPLE m_oldMidSide;
 };
 
-class BalanceEffect : public PerChannelEffectProcessor<BalanceGroupState> {
+class BalanceEffect : public EffectProcessorImpl<BalanceGroupState> {
   public:
     BalanceEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~BalanceEffect();
@@ -36,13 +35,11 @@ class BalanceEffect : public PerChannelEffectProcessor<BalanceGroupState> {
     static QString getId();
     static EffectManifest getManifest();
 
-    // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,
                         BalanceGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE* pOutput,
-                        const unsigned int numSamples,
-                        const unsigned int sampleRate,
-                        const EffectProcessor::EnableState enableState,
+                        const mixxx::AudioParameters& bufferParameters,
+                        const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatures);
 
   private:

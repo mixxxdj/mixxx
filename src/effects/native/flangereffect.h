@@ -23,9 +23,10 @@ constexpr double kMinLfoBeats = 1/4.0;
 constexpr double kMaxLfoBeats = 32.0;
 } // anonymous namespace
 
-struct FlangerGroupState {
-    FlangerGroupState()
-            : delayPos(0),
+struct FlangerGroupState : public EffectState {
+    FlangerGroupState(const mixxx::AudioParameters& bufferParameters)
+            : EffectState(bufferParameters),
+              delayPos(0),
               lfoFrames(0),
               previousPeriodFrames(-1),
               prev_regen(0),
@@ -46,7 +47,7 @@ struct FlangerGroupState {
     CSAMPLE_GAIN prev_manual;
 };
 
-class FlangerEffect : public PerChannelEffectProcessor<FlangerGroupState> {
+class FlangerEffect : public EffectProcessorImpl<FlangerGroupState> {
   public:
     FlangerEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~FlangerEffect();
@@ -58,9 +59,8 @@ class FlangerEffect : public PerChannelEffectProcessor<FlangerGroupState> {
     void processChannel(const ChannelHandle& handle,
                         FlangerGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE* pOutput,
-                        const unsigned int numSamples,
-                        const unsigned int sampleRate,
-                        const EffectProcessor::EnableState enableState,
+                        const mixxx::AudioParameters& bufferParameters,
+                        const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatures);
 
   private:

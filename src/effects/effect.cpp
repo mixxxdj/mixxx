@@ -40,14 +40,21 @@ Effect::~Effect() {
     }
 }
 
-void Effect::addToEngine(EngineEffectChain* pChain, int iIndex) {
-    if (m_pEngineEffect) {
+EffectState* Effect::createState(const mixxx::AudioParameters& bufferParameters) {
+    return m_pEngineEffect->createState(bufferParameters);
+}
+
+void Effect::addToEngine(EngineEffectChain* pChain, int iIndex,
+                         const QSet<ChannelHandleAndGroup>& activeInputChannels) {
+    VERIFY_OR_DEBUG_ASSERT(pChain) {
         return;
     }
+
     m_pEngineEffect = new EngineEffect(m_manifest,
-            m_pEffectsManager->registeredInputChannels(),
-            m_pEffectsManager->registeredOutputChannels(),
+            activeInputChannels,
+            m_pEffectsManager,
             m_pInstantiator);
+
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::ADD_EFFECT_TO_CHAIN;
     request->pTargetChain = pChain;

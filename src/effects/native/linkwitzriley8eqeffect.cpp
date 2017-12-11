@@ -28,8 +28,10 @@ EffectManifest LinkwitzRiley8EQEffect::getManifest() {
     return manifest;
 }
 
-LinkwitzRiley8EQEffectGroupState::LinkwitzRiley8EQEffectGroupState()
-        : old_low(1.0),
+LinkwitzRiley8EQEffectGroupState::LinkwitzRiley8EQEffectGroupState(
+        const mixxx::AudioParameters& bufferParameters)
+        : EffectState(bufferParameters),
+          old_low(1.0),
           old_mid(1.0),
           old_high(1.0),
           m_oldSampleRate(kStartupSamplerate),
@@ -85,9 +87,8 @@ LinkwitzRiley8EQEffect::~LinkwitzRiley8EQEffect() {
 void LinkwitzRiley8EQEffect::processChannel(const ChannelHandle& handle,
                                             LinkwitzRiley8EQEffectGroupState* pState,
                                             const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                            const unsigned int numSamples,
-                                            const unsigned int sampleRate,
-                                            const EffectProcessor::EnableState enableState,
+                                            const mixxx::AudioParameters& bufferParameters,
+                                            const EffectEnableState enableState,
                                             const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
@@ -103,47 +104,47 @@ void LinkwitzRiley8EQEffect::processChannel(const ChannelHandle& handle,
         fHigh = m_pPotHigh->value();
     }
 
-    if (pState->m_oldSampleRate != sampleRate ||
+    if (pState->m_oldSampleRate != bufferParameters.sampleRate() ||
             (pState->m_loFreq != static_cast<int>(m_pLoFreqCorner->get())) ||
             (pState->m_hiFreq != static_cast<int>(m_pHiFreqCorner->get()))) {
         pState->m_loFreq = static_cast<int>(m_pLoFreqCorner->get());
         pState->m_hiFreq = static_cast<int>(m_pHiFreqCorner->get());
-        pState->m_oldSampleRate = sampleRate;
-        pState->setFilters(sampleRate, pState->m_loFreq, pState->m_hiFreq);
+        pState->m_oldSampleRate = bufferParameters.sampleRate();
+        pState->setFilters(bufferParameters.sampleRate(), pState->m_loFreq, pState->m_hiFreq);
     }
 
-    pState->m_high2->process(pInput, pState->m_pHighBuf, numSamples); // HighPass first run
-    pState->m_low2->process(pInput, pState->m_pLowBuf, numSamples); // LowPass first run for low and bandpass
+    pState->m_high2->process(pInput, pState->m_pHighBuf, bufferParameters.bufferSize()); // HighPass first run
+    pState->m_low2->process(pInput, pState->m_pLowBuf, bufferParameters.bufferSize()); // LowPass first run for low and bandpass
 
     if (fMid != pState->old_mid ||
             fHigh != pState->old_high) {
         SampleUtil::copy2WithRampingGain(pState->m_pHighBuf,
                 pState->m_pHighBuf, pState->old_high, fHigh,
                 pState->m_pLowBuf, pState->old_mid, fMid,
-                numSamples);
+                bufferParameters.bufferSize());
     } else {
         SampleUtil::copy2WithGain(pState->m_pHighBuf,
                 pState->m_pHighBuf, fHigh,
                 pState->m_pLowBuf, fMid,
-                numSamples);
+                bufferParameters.bufferSize());
     }
 
-    pState->m_high1->process(pState->m_pHighBuf, pState->m_pMidBuf, numSamples); // HighPass + BandPass second run
-    pState->m_low1->process(pState->m_pLowBuf, pState->m_pLowBuf, numSamples); // LowPass second run
+    pState->m_high1->process(pState->m_pHighBuf, pState->m_pMidBuf, bufferParameters.bufferSize()); // HighPass + BandPass second run
+    pState->m_low1->process(pState->m_pLowBuf, pState->m_pLowBuf, bufferParameters.bufferSize()); // LowPass second run
 
     if (fLow != pState->old_low) {
         SampleUtil::copy2WithRampingGain(pOutput,
                 pState->m_pLowBuf, pState->old_low, fLow,
                 pState->m_pMidBuf, 1, 1,
-                numSamples);
+                bufferParameters.bufferSize());
     } else {
         SampleUtil::copy2WithGain(pOutput,
                 pState->m_pLowBuf, fLow,
                 pState->m_pMidBuf, 1,
-                numSamples);
+                bufferParameters.bufferSize());
     }
 
-    if (enableState == EffectProcessor::DISABLING) {
+    if (enableState == EffectEnableState::Disabling) {
         // we rely on the ramping to dry in EngineEffect
         // since this EQ is not fully dry at unity
         pState->m_low1->pauseFilter();

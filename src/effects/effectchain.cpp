@@ -1,11 +1,13 @@
 #include "effects/effectchain.h"
 
+#include "engine/engine.h"
 #include "effects/effectchainmanager.h"
 #include "effects/effectsmanager.h"
 #include "effects/effectxmlelements.h"
 #include "engine/effects/engineeffectchain.h"
 #include "engine/effects/engineeffectrack.h"
 #include "engine/effects/message.h"
+#include "util/defs.h"
 #include "util/sample.h"
 #include "util/xml.h"
 
@@ -47,7 +49,7 @@ void EffectChain::addToEngine(EngineEffectRack* pRack, int iIndex) {
         // Add the effect to the engine.
         EffectPointer pEffect = m_effects[i];
         if (pEffect) {
-            pEffect->addToEngine(m_pEngineEffectChain, i);
+            pEffect->addToEngine(m_pEngineEffectChain, i, m_enabledChannels);
         }
     }
 }
@@ -166,10 +168,34 @@ void EffectChain::enableForChannel(const ChannelHandleAndGroup& handle_group) {
         return;
     }
 
-        EffectsRequest* request = new EffectsRequest();
-        request->type = EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL;
-        request->pTargetChain = m_pEngineEffectChain;
-        request->channel = handle_group.handle();
+    EffectsRequest* request = new EffectsRequest();
+    request->type = EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL;
+    request->pTargetChain = m_pEngineEffectChain;
+    request->channel = handle_group.handle();
+
+    // Allocate EffectStates here in the main thread to avoid allocating
+    // memory in the realtime audio callback thread.
+    auto pStatesForEffectsInChain = new QList<ChannelHandleMap<EffectState*>*>;
+    pStatesForEffectsInChain->reserve(m_effects.size());
+
+    //TODO: get actual configuration of engine
+    const mixxx::AudioParameters bufferParameters(
+          mixxx::AudioSignal::SampleLayout::Interleaved,
+          mixxx::kEngineChannelCount,
+          mixxx::AudioSignal::SampleRate(96000),
+          MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
+
+    for (int i = 0; i < m_effects.size(); ++i) {
+        auto pStates = new ChannelHandleMap<EffectState*>;
+        if (m_effects[i] != nullptr) {
+            for (const auto& outputChannel : m_pEffectsManager->registeredOutputChannels()) {
+                pStates->insert(outputChannel.handle(),
+                        m_effects[i]->createState(bufferParameters));
+            }
+        }
+        pStatesForEffectsInChain->append(pStates);
+    }
+    request->pStatesForEffectsInChain = pStatesForEffectsInChain;
 
     m_pEffectsManager->writeRequest(request);
     emit(channelStatusChanged(handle_group.name(), true));
@@ -229,7 +255,7 @@ void EffectChain::addEffect(EffectPointer pEffect) {
 
     m_effects.append(pEffect);
     if (m_bAddedToEngine) {
-        pEffect->addToEngine(m_pEngineEffectChain, m_effects.size() - 1);
+        pEffect->addToEngine(m_pEngineEffectChain, m_effects.size() - 1, m_enabledChannels);
     }
     emit(effectChanged(m_effects.size() - 1));
 }
@@ -254,7 +280,7 @@ void EffectChain::replaceEffect(unsigned int effectSlotNumber,
     m_effects.replace(effectSlotNumber, pEffect);
     if (!pEffect.isNull()) {
         if (m_bAddedToEngine) {
-            pEffect->addToEngine(m_pEngineEffectChain, effectSlotNumber);
+            pEffect->addToEngine(m_pEngineEffectChain, effectSlotNumber, m_enabledChannels);
         }
     }
 

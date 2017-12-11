@@ -35,35 +35,31 @@ void EngineEffectsManager::onCallbackStart() {
                 break;
             case EffectsRequest::ADD_CHAIN_TO_RACK:
             case EffectsRequest::REMOVE_CHAIN_FROM_RACK:
-                if (!m_preFaderRacks.contains(request->pTargetRack)
-                    && !m_postFaderRacks.contains(request->pTargetRack)) {
-                    if (kEffectDebugOutput) {
-                        qDebug() << debugString()
-                                 << "WARNING: message for unloaded rack"
-                                 << request->pTargetRack;
-                    }
+                VERIFY_OR_DEBUG_ASSERT(m_preFaderRacks.contains(request->pTargetRack)
+                        || m_postFaderRacks.contains(request->pTargetRack)) {
                     response.success = false;
                     response.status = EffectsResponse::NO_SUCH_RACK;
-                } else {
-                    processed = request->pTargetRack->processEffectsRequest(
-                        *request, m_pResponsePipe.data());
+                    break;
+                }
 
-                    if (processed) {
-                        // When an effect-chain becomes active (part of a rack), keep
-                        // it in our master list so that we can respond to
-                        // requests about it.
-                        if (request->type == EffectsRequest::ADD_CHAIN_TO_RACK) {
-                            m_chains.append(request->AddChainToRack.pChain);
-                        } else if (request->type == EffectsRequest::REMOVE_CHAIN_FROM_RACK) {
-                            m_chains.removeAll(request->RemoveChainFromRack.pChain);
-                        }
-                    } else {
-                        if (!processed) {
-                            // If we got here, the message was not handled for
-                            // an unknown reason.
-                            response.success = false;
-                            response.status = EffectsResponse::INVALID_REQUEST;
-                        }
+                processed = request->pTargetRack->processEffectsRequest(
+                    *request, m_pResponsePipe.data());
+
+                if (processed) {
+                    // When an effect-chain becomes active (part of a rack), keep
+                    // it in our master list so that we can respond to
+                    // requests about it.
+                    if (request->type == EffectsRequest::ADD_CHAIN_TO_RACK) {
+                        m_chains.append(request->AddChainToRack.pChain);
+                    } else if (request->type == EffectsRequest::REMOVE_CHAIN_FROM_RACK) {
+                        m_chains.removeAll(request->RemoveChainFromRack.pChain);
+                    }
+                } else {
+                    if (!processed) {
+                        // If we got here, the message was not handled for
+                        // an unknown reason.
+                        response.success = false;
+                        response.status = EffectsResponse::INVALID_REQUEST;
                     }
                 }
                 break;
@@ -72,57 +68,46 @@ void EngineEffectsManager::onCallbackStart() {
             case EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS:
             case EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL:
             case EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL:
-                if (!m_chains.contains(request->pTargetChain)) {
-                    if (kEffectDebugOutput) {
-                        qDebug() << debugString()
-                                 << "WARNING: message for unloaded chain"
-                                 << request->pTargetChain;
-                    }
+                VERIFY_OR_DEBUG_ASSERT(m_chains.contains(request->pTargetChain)) {
                     response.success = false;
                     response.status = EffectsResponse::NO_SUCH_CHAIN;
-                } else {
-                    processed = request->pTargetChain->processEffectsRequest(
-                        *request, m_pResponsePipe.data());
+                    break;
+                }
 
-                    if (processed) {
-                        // When an effect becomes active (part of a chain), keep
-                        // it in our master list so that we can respond to
-                        // requests about it.
-                        if (request->type == EffectsRequest::ADD_EFFECT_TO_CHAIN) {
-                            m_effects.append(request->AddEffectToChain.pEffect);
-                        } else if (request->type == EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
-                            m_effects.removeAll(request->RemoveEffectFromChain.pEffect);
-                        }
-                    } else {
-                        if (!processed) {
-                            // If we got here, the message was not handled for
-                            // an unknown reason.
-                            response.success = false;
-                            response.status = EffectsResponse::INVALID_REQUEST;
-                        }
+                processed = request->pTargetChain->processEffectsRequest(
+                    *request, m_pResponsePipe.data());
+                if (processed) {
+                    // When an effect becomes active (part of a chain), keep
+                    // it in our master list so that we can respond to
+                    // requests about it.
+                    if (request->type == EffectsRequest::ADD_EFFECT_TO_CHAIN) {
+                        m_effects.append(request->AddEffectToChain.pEffect);
+                    } else if (request->type == EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
+                        m_effects.removeAll(request->RemoveEffectFromChain.pEffect);
                     }
+                } else {
+                    // If we got here, the message was not handled for
+                    // an unknown reason.
+                    response.success = false;
+                    response.status = EffectsResponse::INVALID_REQUEST;
                 }
                 break;
             case EffectsRequest::SET_EFFECT_PARAMETERS:
             case EffectsRequest::SET_PARAMETER_PARAMETERS:
-                if (!m_effects.contains(request->pTargetEffect)) {
-                    if (kEffectDebugOutput) {
-                        qDebug() << debugString()
-                                 << "WARNING: message for unloaded effect"
-                                 << request->pTargetEffect;
-                    }
+                VERIFY_OR_DEBUG_ASSERT(m_effects.contains(request->pTargetEffect)) {
                     response.success = false;
                     response.status = EffectsResponse::NO_SUCH_EFFECT;
-                } else {
-                    processed = request->pTargetEffect
-                            ->processEffectsRequest(*request, m_pResponsePipe.data());
+                    break;
+                }
 
-                    if (!processed) {
-                        // If we got here, the message was not handled for an
-                        // unknown reason.
-                        response.success = false;
-                        response.status = EffectsResponse::INVALID_REQUEST;
-                    }
+                processed = request->pTargetEffect
+                        ->processEffectsRequest(*request, m_pResponsePipe.data());
+
+                if (!processed) {
+                    // If we got here, the message was not handled for an
+                    // unknown reason.
+                    response.success = false;
+                    response.status = EffectsResponse::INVALID_REQUEST;
                 }
                 break;
             default:
@@ -250,11 +235,7 @@ void EngineEffectsManager::processInner(
 }
 
 bool EngineEffectsManager::addPostFaderEffectRack(EngineEffectRack* pRack) {
-    if (m_postFaderRacks.contains(pRack)) {
-        if (kEffectDebugOutput) {
-            qDebug() << debugString() << "WARNING: EffectRack already added to EngineEffectsManager:"
-                     << pRack->number();
-        }
+    VERIFY_OR_DEBUG_ASSERT(!m_postFaderRacks.contains(pRack)) {
         return false;
     }
     m_postFaderRacks.append(pRack);
@@ -266,11 +247,7 @@ bool EngineEffectsManager::removePostFaderEffectRack(EngineEffectRack* pRack) {
 }
 
 bool EngineEffectsManager::addPreFaderEffectRack(EngineEffectRack* pRack) {
-    if (m_preFaderRacks.contains(pRack)) {
-        if (kEffectDebugOutput) {
-            qDebug() << debugString() << "WARNING: EffectRack already added to EngineEffectsManager:"
-                     << pRack->number();
-        }
+    VERIFY_OR_DEBUG_ASSERT(!m_preFaderRacks.contains(pRack)) {
         return false;
     }
     m_preFaderRacks.append(pRack);
@@ -288,7 +265,8 @@ bool EngineEffectsManager::processEffectsRequest(const EffectsRequest& message,
         case EffectsRequest::ADD_EFFECT_RACK:
             if (kEffectDebugOutput) {
                 qDebug() << debugString() << "ADD_EFFECT_RACK"
-                         << message.AddEffectRack.pRack;
+                         << message.AddEffectRack.pRack
+                         << message.AddEffectRack.preFader;
             }
             if (message.AddEffectRack.preFader) {
                 response.success = addPreFaderEffectRack(message.AddEffectRack.pRack);
@@ -299,7 +277,8 @@ bool EngineEffectsManager::processEffectsRequest(const EffectsRequest& message,
         case EffectsRequest::REMOVE_EFFECT_RACK:
             if (kEffectDebugOutput) {
                 qDebug() << debugString() << "REMOVE_EFFECT_RACK"
-                         << message.RemoveEffectRack.pRack;
+                         << message.RemoveEffectRack.pRack
+                         << message.RemoveEffectRack.preFader;
             }
             if (message.AddEffectRack.preFader) {
                 response.success = removePreFaderEffectRack(message.AddEffectRack.pRack);

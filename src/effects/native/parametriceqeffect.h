@@ -22,9 +22,9 @@
 // The main use case is to tweak the room or recording sound, which is hard to achieve
 // with the sharp and wide curves of the mixing EQs.
 
-class ParametricEQEffectGroupState final {
+class ParametricEQEffectGroupState final : public EffectState {
   public:
-    ParametricEQEffectGroupState();
+    ParametricEQEffectGroupState(const mixxx::AudioParameters& bufferParameters);
 
     void setFilters(int sampleRate);
 
@@ -36,7 +36,7 @@ class ParametricEQEffectGroupState final {
     QList<CSAMPLE*> m_pBufs;
 };
 
-class ParametricEQEffect : public PerChannelEffectProcessor<ParametricEQEffectGroupState> {
+class ParametricEQEffect : public EffectProcessorImpl<ParametricEQEffectGroupState> {
   public:
     ParametricEQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~ParametricEQEffect();
@@ -48,9 +48,8 @@ class ParametricEQEffect : public PerChannelEffectProcessor<ParametricEQEffectGr
     void processChannel(const ChannelHandle& handle,
                         ParametricEQEffectGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
-                        const unsigned int numSamples,
-                        const unsigned int sampleRate,
-                        const EffectProcessor::EnableState enableState,
+                        const mixxx::AudioParameters& bufferParameters,
+                        const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatureState);
 
   private:
