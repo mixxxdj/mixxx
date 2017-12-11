@@ -1,3 +1,4 @@
+#include <QTemporaryFile>
 #include <QtDebug>
 
 #include "test/mixxxtest.h"
@@ -168,6 +169,23 @@ TEST_F(SoundSourceProxyTest, open) {
         EXPECT_LT(0, pAudioSource->channelCount());
         EXPECT_LT(0, pAudioSource->sampleRate());
         EXPECT_FALSE(pAudioSource->frameIndexRange().empty());
+    }
+}
+
+TEST_F(SoundSourceProxyTest, openEmptyFile) {
+    for (const auto& fileNameSuffix: getFileNameSuffixes()) {
+        QTemporaryFile tempFile("emptyXXXXXX" + fileNameSuffix);
+        qDebug() << "Created testing to open empty file:"
+                << tempFile.fileName();
+        tempFile.open();
+        tempFile.close();
+
+        ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(tempFile.fileName()));
+        auto pTrack = Track::newTemporary(tempFile.fileName());
+        SoundSourceProxy proxy(pTrack);
+
+        auto pAudioSource = proxy.openAudioSource();
+        EXPECT_TRUE(!pAudioSource);
     }
 }
 
