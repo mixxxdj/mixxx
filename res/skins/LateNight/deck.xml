@@ -1,11 +1,12 @@
 <Template>
   <WidgetGroup>
-    <ObjectName>Deck</ObjectName>
+    <ObjectName>Deck<Variable name="channum" /></ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
+
       <WidgetGroup>
-        <ObjectName>RateContainer<Variable name="channum" /></ObjectName>
+        <ObjectName>RateContainer</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
@@ -18,45 +19,47 @@
               widget group and put the bpm pushbutton on top of the display. -->
               <WidgetGroup>
                 <ObjectName>BpmContainer</ObjectName>
-                <Size>60,22</Size>
+                <Layout>stacked</Layout>
+                <Size>60f,22f</Size>
                 <Children>
-                    <NumberBpm>
-                      <ObjectName>BpmTextColor<Variable name="channum" /></ObjectName>
-                      <TooltipId>visual_bpm</TooltipId>
-                      <Pos>0,0</Pos>
-                      <Size>60,22</Size>
-                      <Channel><Variable name="channum" /></Channel>
-                      <NumberOfDigits>2</NumberOfDigits>
-                      <Connection>
-                        <ConfigKey>[Channel<Variable name="channum" />],visual_bpm</ConfigKey>
-                      </Connection>
-                    </NumberBpm>
-                    <PushButton>
-                      <TooltipId>bpm_tap_visual_bpm</TooltipId>
-                      <NumberStates>1</NumberStates>
-                      <State>
-                        <Number>0</Number>
-                        <Text></Text>
-                      </State>
-                      <State>
-                        <Number>1</Number>
-                        <Text></Text>
-                      </State>
-                      <Pos>0,0</Pos>
-                      <Size>60,22</Size>
-                      <Connection>
-                        <ConfigKey>[Channel<Variable name="channum" />],bpm_tap</ConfigKey>
-                        <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                      </Connection>
-                    </PushButton>
+                  <NumberBpm>
+                    <ObjectName>BpmTextColor<Variable name="channum" /></ObjectName>
+                    <TooltipId>visual_bpm</TooltipId>
+                    <Size>60f,22f</Size>
+                    <Channel><Variable name="channum" /></Channel>
+                    <NumberOfDigits>2</NumberOfDigits>
+                    <Connection>
+                      <ConfigKey>[Channel<Variable name="channum" />],visual_bpm</ConfigKey>
+                    </Connection>
+                  </NumberBpm>
+
+                  <PushButton>
+                    <TooltipId>bpm_tap_visual_bpm</TooltipId>
+                    <Size>60f,22f</Size>
+                    <NumberStates>1</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Text></Text>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Text></Text>
+                    </State>
+                    <Connection>
+                      <ConfigKey>[Channel<Variable name="channum" />],bpm_tap</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                    </Connection>
+                  </PushButton>
                 </Children>
               </WidgetGroup>
+
               <NumberRate>
                 <TooltipId>rate_display</TooltipId>
                 <ObjectName>RateTextColor<Variable name="channum" /></ObjectName>
                 <Channel><Variable name="channum" /></Channel>
                 <NumberOfDigits>2</NumberOfDigits>
               </NumberRate>
+
             </Children>
           </WidgetGroup>
 
@@ -208,8 +211,8 @@
         </Children>
       </WidgetGroup><!-- /RateContainer -->
 
-      <WidgetGroup>  <!-- Deck Channel1 -->
-        <ObjectName>Deck<Variable name="channum" /></ObjectName>
+      <WidgetGroup>  <!-- Deck Channel
+        <ObjectName>Deck<Variable name="channum" /></ObjectName> -->
         <SizePolicy>me,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>

@@ -19,7 +19,6 @@
           </Template>
 
           <WidgetGroup>
-            <ObjectName>Deck</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>me,min</SizePolicy>
             <Children>

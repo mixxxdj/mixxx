@@ -11,21 +11,21 @@
 <Template>
   <WidgetGroup>
     <Layout>vertical</Layout>
+    <Size>60f,57f</Size>
     <Children>
       <WidgetGroup>
-        <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
         <ObjectName>EffectKnob</ObjectName>
-        <MinimumSize>0,50</MinimumSize>
+        <Layout>horizontal</Layout>
+        <Size>0me,34f</Size>
         <Children>
-           <Template src="skin:knob_textless.xml">
-             <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>]</SetVariable>
-             <SetVariable name="control">parameter<Variable name="EffectParameter"/></SetVariable>
-           </Template>
+          <Template src="skin:knob_textless.xml">
+            <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>]</SetVariable>
+            <SetVariable name="control">parameter<Variable name="EffectParameter"/></SetVariable>
+          </Template>
 	     </Children>
       </WidgetGroup>
       <EffectParameterName>
-        <Size>1me,18f</Size>
+        <Size>1min,18f</Size>
         <ObjectName>KnobLabel</ObjectName>
         <EffectRack><Variable name="EffectRack"/></EffectRack>
         <EffectUnit><Variable name="EffectUnit"/></EffectUnit>

@@ -1,8 +1,8 @@
 <Template>
     <WidgetGroup>
 		<ObjectName>Library</ObjectName>
-		<SizePolicy>me,me</SizePolicy>
-		<MinimumSize>1280,50</MinimumSize>
+		<SizePolicy>me,i</SizePolicy>
+		<MinimumSize>1280,-</MinimumSize>
 		<Layout>vertical</Layout>
 		<Children>
 			<!--
@@ -13,46 +13,50 @@
 			<WidgetGroup>
 				<Layout>horizontal</Layout>
 				<Children>
+
 					<Splitter>
-                        <ObjectName>LibrarySplitter</ObjectName>
+            <ObjectName>LibrarySplitter</ObjectName>
 						<Size>me,me</Size>
 						<SplitSizes>1,12</SplitSizes>
-                        <SplitSizesConfigKey>[LateNight],LibrarySidebarSplitSize</SplitSizesConfigKey>
+            <SplitSizesConfigKey>[LateNight],LibrarySidebarSplitSize</SplitSizesConfigKey>
 						<Children>
 							<WidgetGroup>
 								<Style>QGroupBox {}</Style>
 								<Layout>vertical</Layout>
 								<Children>
+
 									<!--Search Input Field-->
 									<SearchBox></SearchBox>
-                                    <Splitter>
-                                        <ObjectName>CoverArtSplitter</ObjectName>
-                                        <Size>me,me</Size>
-                                        <SplitSizes>1,1</SplitSizes>
-                                        <SplitSizesConfigKey>[LateNight],CoverArtSplitSize</SplitSizesConfigKey>
-                                        <Orientation>vertical</Orientation>
-                                        <Collapsible>0,0</Collapsible>
-                                        <Children>
-                                            <!--Library Tree View-->
-                                            <WidgetGroup>
-                                                <ObjectName>SidebarContainer</ObjectName>
-                                                <Size>1min,50min</Size>
-                                                <Layout>vertical</Layout>
-                                                <Children>
-                                                    <LibrarySidebar></LibrarySidebar>
-                                                </Children>
-                                            </WidgetGroup>
-                                            <!--Cover Art-->
-                                            <CoverArt>
-                                                <SizePolicy>me,me</SizePolicy>
-                                                <MinimumSize>40,40</MinimumSize>
-                                                <Connection>
-                                                    <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
-                                                    <BindProperty>visible</BindProperty>
-                                                </Connection>
-                                            </CoverArt>
-                                        </Children>
-                                    </Splitter>
+
+                  <Splitter>
+                    <ObjectName>CoverArtSplitter</ObjectName>
+                    <Size>me,me</Size>
+                    <SplitSizes>1,1</SplitSizes>
+                    <SplitSizesConfigKey>[LateNight],CoverArtSplitSize</SplitSizesConfigKey>
+                    <Orientation>vertical</Orientation>
+                    <Collapsible>0,0</Collapsible>
+                    <Children>
+                      <!--Library Tree View-->
+                      <WidgetGroup>
+                        <ObjectName>SidebarContainer</ObjectName>
+                        <Size>1min,50min</Size>
+                        <Layout>vertical</Layout>
+                        <Children>
+                          <LibrarySidebar></LibrarySidebar>
+                        </Children>
+                      </WidgetGroup>
+                      <!--Cover Art-->
+                      <CoverArt>
+                        <SizePolicy>me,me</SizePolicy>
+                        <MinimumSize>40,40</MinimumSize>
+                        <Connection>
+                          <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </CoverArt>
+                    </Children>
+                  </Splitter>
+
 								</Children>
 							</WidgetGroup>
 							<WidgetGroup>
@@ -68,6 +72,7 @@
 							</WidgetGroup>
 						</Children>
 					</Splitter>
+
 				</Children>
 			</WidgetGroup>
 		</Children>

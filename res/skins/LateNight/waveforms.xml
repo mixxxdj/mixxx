@@ -1,6 +1,5 @@
 <Template>
   <WidgetGroup>
-    <ObjectName>WaveformMixerContainer</ObjectName>
     <Layout>vertical</Layout>
     <Size>0me,100f</Size>
     <Children>

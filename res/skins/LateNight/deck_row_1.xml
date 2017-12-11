@@ -30,6 +30,7 @@
                   <ButtonState>RightButton</ButtonState>
                 </Connection>
               </PushButton>
+
               <PushButton>
                 <Size>28f,16f</Size>
                 <ObjectName>PitchTweakButton</ObjectName>
@@ -54,6 +55,21 @@
                   <ButtonState>RightButton</ButtonState>
                 </Connection>
               </PushButton>
+
+              <Key>
+                <ObjectName>TextColor<Variable name="channum" /></ObjectName>
+                <Style>QLabel { qproperty-alignment: 'AlignCenter';
+                    font: bold 13px/16px Lucida Grande, Lucida Sans
+                    Unicode, Segoe UI, Arial, Verdana, sans-serif;
+                    background-color: transparent; padding: 0px; margin: 0px;}
+                </Style>
+                <Group>[Channel<Variable name="channum"/>]</Group>
+                <Size>40f,17f</Size>
+                <Connection>
+                  <ConfigKey>[Channel<Variable name="channum"/>],visual_key</ConfigKey>
+                </Connection>
+              </Key>
+
               <PushButton>
                 <Size>16f,16f</Size>
                 <ObjectName>PitchTweakButton</ObjectName>
@@ -75,20 +91,6 @@
             </Children>
           </WidgetGroup><!-- /Key adjust -->
 
-          <Key>
-            <ObjectName>TextColor<Variable name="channum" /></ObjectName>
-            <Style>QLabel { qproperty-alignment: 'AlignCenter';
-                font: bold 13px/16px Lucida Grande, Lucida Sans
-                Unicode, Segoe UI, Arial, Verdana, sans-serif;
-                background-color: transparent; padding: 0px; margin: 0px;}
-            </Style>
-            <Group>[Channel<Variable name="channum"/>]</Group>
-            <SizePolicy>min,f</SizePolicy>
-            <Size>-1,17</Size>
-            <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],visual_key</ConfigKey>
-            </Connection>
-          </Key>
         </Children>
       </WidgetGroup>
 

@@ -1,3 +1,5 @@
+/* LateNight 2.1 */
+
 #debugbg {
     background-color: #fff;
 }
@@ -16,8 +18,9 @@
   background-color: #1e1e1e;
 }
 
-#Deck {
+#Deck1, #Deck2, #Deck3, #Deck4 {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  margin-bottom: 3px;
 }
 
 #DecksSizer {
@@ -35,7 +38,9 @@
   background-color: #1e1e1e;
 }
 
-#DecksLeftContainer, #DecksRightContainer, #SkinContainer {
+#DecksLeftContainer,
+#DecksRightContainer,
+#SkinContainer {
   background-color: #0f0f0f;
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
@@ -91,28 +96,19 @@
   border-left: 0px;
 }
 
-#Deck4 {
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  border: 1px solid #585858;
-  border-top: 0px;
-}
-
-#Deck2 {
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  border: 1px solid #585858;
-}
-
+#Deck1,
 #Deck3 {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   border: 1px solid #585858;
   border-right: 0px;
-  border-top: 0px;
+  
 }
 
-#Deck1 {
+#Deck2,
+#Deck4 {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   border: 1px solid #585858;
-  border-right: 0px;
+  border-left: 0px;
 }
 
 #DeckContainer {
@@ -136,13 +132,6 @@
   background-color: #0f0f0f;
 }
 
-#Mixer {
-  background-color: #1e1e1e;
-  qproperty-layoutAlignment: 'AlignCenter';
-  border: 1px solid #585858;
-  border-top: 0px;
-}
-
 #ClockWidget {
   qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
   margin-bottom: 2px;
@@ -158,43 +147,40 @@
   padding-bottom: 2px;
 }
 
-#Mixer {
-  border: 1px solid #585858;
+#Mixer {/*
+  background-color: #1e1e1e;
+  qproperty-layoutAlignment: 'AlignCenter';
+  border: 1px solid #585858;*/
 }
 
-#PrimaryMixer {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding: 0px;
-  margin: 0px;
-  border-right: 1px solid #585858;
+#NoMixer {
+  margin-bottom: 3px;
+  border: 1px solid #585858;
+  border-width: 0px 1px 0px 1px;
+  background-color: #0f0f0f;
 }
 
 #MixerChannelControls {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   padding-bottom: 2px;
-  border-right: 1px solid #585858;
-}
+  border: 1px solid #585858;
+  border-right: 0px;
+  background-color: #1e1e1e;
+  }
+
+  #MixerContainer {
+    qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+    background-color: #1e1e1e;
+    padding-top: 3px;
+  }
 
 #MasterControls {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
-  padding-right: 2px;
-  padding-top: 5px;
-  padding-left: 5px;
+  padding: 5px 2px 0px 5px;
+  /* this wouldn't work:
   border-left: 1px solid #585858;
-  background-color: #1e1e1e;
-}
-
-#MasterVuMeter2ch {
-  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-}
-
-#MasterVuMeter4ch {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-}
-
-#MixerContainer {
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  background-color: #1e1e1e;
-  padding-top: 3px;
+  border-width: 0px 0px 0px 1px; */
+  border: 1px solid #585858;
 }
 
 #MixerChannel {
@@ -213,12 +199,12 @@
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
 }
 
-#MixerLeftMargin {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+#MasterVuMeter2ch {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
 }
 
-#MixerRightMargin {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+#MasterVuMeter4ch {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
 }
 
 #NoMixerLogo {
@@ -796,7 +782,7 @@
   padding: 0px;
 }
 
-#ToolbarTop {
+#Toolbar {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   border: 1px solid #585858;
   padding: 0px;
@@ -808,10 +794,6 @@
 }
 
 #Waveform {
-  border: 1px solid #585858;
-  border-top: 0px;
-  border-left: 0px;
-  border-bottom: 0px;
 }
 
 #RateSlider {
@@ -819,35 +801,10 @@
   padding-bottom: 2px;
 }
 
-#RateContainer3 {
+#RateContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   border: 1px solid #585858;
-  border-right: 0px;
-  border-top: 0px;
-  padding: 2px;
-}
-
-#RateContainer4 {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  border: 1px solid #585858;
-  border-right: 0px;
-  border-left: 0px;
-  border-top: 0px;
-  padding: 2px;
-}
-
-#RateContainer1 {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  border: 1px solid #585858;
-  border-right: 0px;
-  padding: 2px;
-}
-
-#RateContainer2 {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  border: 1px solid #585858;
-  border-right: 0px;
-  border-left: 0px;
+  border-width: 0px 1px 0px 0px;
   padding: 2px;
 }
 
@@ -1020,11 +977,18 @@
 #EffectUnit1, #EffectUnit2, #EffectUnit3, #EffectUnit4 {
   qproperty-layoutAlignment: 'AlignTop';
   border: 1px solid #585858;
-  border-left:none;
 }
 
-#EffectUnit1 {
-  border-left: 1px solid #585858;
+#EffectUnit1,
+#EffectUnit3 {
+  border-left:none;
+  margin-right: 2px;
+}
+
+#EffectUnit2,
+#EffectUnit4 {
+  border-right:none;
+  margin-left: 2px;
 }
 
 #EffectUnitNameContainer {
@@ -1057,23 +1021,16 @@
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
 
-#EffectUnitParameters {
+#EffectRows {
   padding: 2px;
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  qproperty-layoutSpacing: 2;
-}
-
-#EffectUnitControlRow {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-}
-
-#EffectControlsRight {
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';
 }
 
 #EffectUnitControls {
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  qproperty-layoutAlignment: 'AlignCenter | AlignTop';
+  background-color: #1e1e1e;
   padding: 2px;
+  border-left: 1px solid #585858;
 }
 
 #EffectUnitGroupControls {
@@ -1083,6 +1040,20 @@
 #EffectUnit {
   font-size: 16px;
 }
+
+#EffectSlot1,
+#EffectSlot2,
+#EffectSlot3 {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+  border: 1px solid #585858;
+  }
+  #EffectSlot1,
+  #EffectSlot2 {
+    border-width: 0px 0px 1px 0px;
+  }
+  #EffectSlot3 {
+    border: none;
+  }
 
 #EffectKnob {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';

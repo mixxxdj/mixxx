@@ -1,48 +1,51 @@
 <Template>
-    <SizeAwareStack currentpage="[Master],lower_half_size" persist="true">
+  <SizeAwareStack currentpage="[Master],lower_half_size" persist="true">
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>UILowerHalf</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,i</SizePolicy>
+        <MinimumSize>0,0</MinimumSize>
+        <MaximumSize>-1,249</MaximumSize>
         <Children>
-            <WidgetGroup>
-                <ObjectName>UILowerHalf</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>min,i</SizePolicy>
-                <MinimumSize>0,0</MinimumSize>
-                <MaximumSize>1920,249</MaximumSize>
-                <Children>
-                    <Template src="skin:fx_samplers_container_small.xml"/>
-                    <WidgetGroup> <!-- Vertical spacer-->
-                        <SizePolicy>me,me</SizePolicy>
-                        <Children/>
-                    </WidgetGroup>
-                    <Template src="skin:toolbar.xml"/>
-                </Children>
-            </WidgetGroup>
-            <WidgetGroup>
-                <ObjectName>UILowerHalf</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>min,me</SizePolicy>
-                <MinimumSize>0,250</MinimumSize>
-                <MaximumSize>1920,419</MaximumSize>
-                <Children>
-                    <Template src="skin:fx_samplers_container_med.xml"/>
-                    <SingletonContainer>
-                        <ObjectName>LibrarySingleton</ObjectName>
-                    </SingletonContainer>
-                    <Template src="skin:toolbar_no_library_button.xml"/>
-                </Children>
-            </WidgetGroup>
-            <WidgetGroup>
-                <ObjectName>UILowerHalf</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>min,me</SizePolicy>
-                <MinimumSize>0,420</MinimumSize>
-                <Children>
-                    <Template src="skin:fx_samplers_container_full.xml"/>
-                    <SingletonContainer>
-                        <ObjectName>LibrarySingleton</ObjectName>
-                    </SingletonContainer>
-                    <Template src="skin:toolbar_no_library_button.xml"/>
-                </Children>
-            </WidgetGroup>
+          <Template src="skin:fx_samplers_container_small.xml"/>
+          <WidgetGroup> <!-- Vertical spacer-->
+            <SizePolicy>me,me</SizePolicy>
+          </WidgetGroup>
+          <Template src="skin:toolbar.xml"/>
         </Children>
-    </SizeAwareStack>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>UILowerHalf</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,me</SizePolicy>
+        <MinimumSize>0,250</MinimumSize>
+        <MaximumSize>-1,419</MaximumSize>
+        <Children>
+          <Template src="skin:fx_samplers_container_med.xml"/>
+          <SingletonContainer>
+            <ObjectName>LibrarySingleton</ObjectName>
+          </SingletonContainer>
+          <Template src="skin:toolbar_no_library_button.xml"/>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>UILowerHalf</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,me</SizePolicy>
+        <MinimumSize>0,420</MinimumSize>
+        <Children>
+          <Template src="skin:fx_samplers_container_full.xml"/>
+          <SingletonContainer>
+            <ObjectName>LibrarySingleton</ObjectName>
+          </SingletonContainer>
+          <Template src="skin:toolbar_no_library_button.xml"/>
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </SizeAwareStack>
 </Template>

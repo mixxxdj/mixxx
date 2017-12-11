@@ -31,7 +31,7 @@
         </Connection>
       </WidgetGroup-->
       <!-- Same, but for the smaller spinny size. -->
-      <WidgetGroup>
+      <!--WidgetGroup>
         <ObjectName>SpinnyBorder</ObjectName>
         <Layout>horizontal</Layout>
         <Size>1f,48f</Size>
@@ -40,7 +40,7 @@
           <ConfigKey>[Master],show_mixer</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup>
+      </WidgetGroup-->
 
       <!-- The spinnies determine the size of the waveform. -->
       <WidgetGroup>
