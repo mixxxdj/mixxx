@@ -16,19 +16,30 @@
 class EngineEffect;
 
 // Effects are implemented as two separate classes, an EffectState subclass and
-// EffectProcessorImpl subclass. Separating state from the DSP code allows memory
-// and deletion, which is slow, to be done on the main thread instead of
-// potentially blocking the audio engine callback thread and causing audible
-// glitches. EffectStates allocated on the main thread are passed as pointers
-// to the EffectProcessorImpl in the audio callback thread via the effect
-// MessagePipe FIFO. EffectStates are allocated when an input channel is enabled
-// for a chain. Also, when a new effect is loaded to a chain, EffectStates are only
-// allocated for input channels that are enabled at that time. This allows for
-// scaling up to an arbitrary number of channels without wasting a lot of memory.
+// an EffectProcessorImpl subclass. Separating state from the DSP code allows
+// memory allocation and deletion, which is slow, to be done on the main thread
+// instead of potentially blocking the audio engine callback thread and causing
+// audible glitches. EffectStates allocated on the main thread are passed as
+// pointers to the EffectProcessorImpl in the audio callback thread via the
+// effect MessagePipe FIFO (see EngineEffectsManager::onCallbackStart).
+
+// Each EffectState instance is responsible for one routing of input signal to
+// output signal. The base EffectProcessorImpl class handles the management
+// of EffectStates. EffectProcessorImpl subclasses only need to be concerned
+// with implementing the signal processing logic and providing metadata for
+// describing the effect and its parameters.
+
+// Input signals can be any EngineChannel, but output channels are hardcoded in
+// EngineMaster as the post-fader processing for the master mix and pre-fader
+// processing for headphones. EffectStates are allocated when an input signal is
+// enabled for a chain. Also, when a new effect is loaded to a chain,
+// EffectStates are only allocated for input signals that are enabled at that
+// time. This allows for scaling up to an arbitrary number of input signals
+// without wasting a lot of memory.
 class EffectState {
   public:
     EffectState(const mixxx::AudioParameters& bufferParameters) {
-        // Subclasses should call allocateBuffers here.
+        // Subclasses should call audioParametersChanged here.
         Q_UNUSED(bufferParameters);
     };
     virtual ~EffectState() {};
@@ -63,16 +74,15 @@ class EffectProcessor {
     virtual void deleteStatesForInputChannel(const ChannelHandle& inputChannel) = 0;
 
     // Take a buffer of audio samples as pInput, process the buffer according to
-    // Effect-specific logic, and output it to the buffer pOutput. If pInput is
-    // equal to pOutput, then the operation must occur in-place. Both pInput and
-    // pOutput are represented as stereo interleaved samples for now, but effects
-    // should not be written assuming this will remain true. The properties
+    // Effect-specific logic, and output it to the buffer pOutput. Both pInput
+    // and pOutput are represented as stereo interleaved samples for now, but
+    // effects should not be written assuming this will remain true. The properties
     // of the buffer necessary for determining how to process it (frames per
     // buffer, number of channels, and sample rate) are available on the
-    // mixxx::AudioParameters argument. The provided channel handles allows the
-    // effect to maintain state independently for every combination of input and
-    // output channel. This is important because one EffectProcessor instance is
-    // used to process the audio of multiple channels.
+    // mixxx::AudioParameters argument. The provided channel handles allow
+    // EffectProcessorImpl::process to fetch the appropriate EffectState and
+    // pass it on to EffectProcessorImpl::processChannel, allowing one
+    // EffectProcessor instance to process multiple signals simultaneously.
     virtual void process(const ChannelHandle& inputHandle,
                          const ChannelHandle& outputHandle,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
