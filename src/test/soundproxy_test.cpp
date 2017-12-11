@@ -75,7 +75,7 @@ class SoundSourceProxyTest: public MixxxTest {
         // to test the upscaling of channels
         mixxx::AudioSource::OpenParams openParams;
         openParams.setChannelCount(2);
-        auto pAudioSource = proxy.openAudioSource();
+        auto pAudioSource = proxy.openAudioSource(openParams);
         EXPECT_FALSE(!pAudioSource);
         if (pAudioSource->channelCount() != 2) {
             // Wrap into proxy object
@@ -158,7 +158,7 @@ TEST_F(SoundSourceProxyTest, open) {
     for (const auto& filePath: getFilePaths()) {
         ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
 
-        mixxx::AudioSourcePointer pAudioSource(openAudioSource(filePath));
+        mixxx::AudioSourcePointer pAudioSource = openAudioSource(filePath);
         // Obtaining an AudioSource may fail for unsupported file formats,
         // even if the corresponding file extension is supported, e.g.
         // AAC vs. ALAC in .m4a files
