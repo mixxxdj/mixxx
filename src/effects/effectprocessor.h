@@ -145,13 +145,13 @@ class EffectProcessorImpl : public EffectProcessor {
             EffectsManager* pEffectsManager,
             const mixxx::AudioParameters& bufferParameters) final {
         for (const ChannelHandleAndGroup& inputChannel : activeInputChannels) {
-            qDebug() << this << "EffectProcessorImpl::initialize allocating EffectStates for input" << inputChannel;
+            //qDebug() << this << "EffectProcessorImpl::initialize allocating EffectStates for input" << inputChannel;
             ChannelHandleMap<EffectSpecificState*> outputChannelMap;
             for (const ChannelHandleAndGroup& outputChannel :
                     pEffectsManager->registeredOutputChannels()) {
                 outputChannelMap.insert(outputChannel.handle(),
                         createState(bufferParameters));
-                qDebug() << this << "EffectProcessorImpl::initialize registering output" << outputChannel;
+                //qDebug() << this << "EffectProcessorImpl::initialize registering output" << outputChannel;
             }
             m_channelStateMatrix.insert(inputChannel.handle(), outputChannelMap);
         }
