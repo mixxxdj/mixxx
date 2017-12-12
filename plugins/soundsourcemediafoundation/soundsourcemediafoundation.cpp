@@ -267,7 +267,7 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
                              m_currentFrameIndex,
                              m_currentFrameIndex));
         }
-        DEBUG_ASSERT(m_curFrameIndex == firstFrameIndex);
+        DEBUG_ASSERT(m_currentFrameIndex == firstFrameIndex);
     } else {
         // Unknown position should only occur after seeking
         // when all temporary buffers are empty
@@ -474,7 +474,7 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
         }
     }
 
-    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
+    DEBUG_ASSERT(isValidFrameIndex(m_currentFrameIndex));
     DEBUG_ASSERT(numberOfFramesTotal >= numberOfFramesRemaining);
     const SINT numberOfFrames = numberOfFramesTotal - numberOfFramesRemaining;
     return ReadableSampleFrames(
