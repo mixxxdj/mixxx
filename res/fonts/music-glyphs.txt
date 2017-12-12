@@ -1,0 +1,5 @@
+Music Flat Sign U+266D
+https://unicode-table.com/en/266D/
+
+Music Sharp Sign U+266F
+https://unicode-table.com/en/266F/
