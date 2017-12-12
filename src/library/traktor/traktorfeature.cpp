@@ -425,19 +425,21 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query, QSqlQue
                 //int position = int(attr.value("START").toString().toFloat()/1000.0 * float(samplerate) * 2.0);
                 int position = int(attr.value("START").toString().toDouble()/1000.0 * 48000.0 * 2.0);
                 int length = attr.value("LEN").toString().toInt();
-                int type = attr.value("TYPE").toString().toInt();
+                TraktorCueType type = (TraktorCueType)attr.value("TYPE").toString().toInt();
                 QString label = attr.value("NAME").toString();
-                switch (type) { //TODO
-                    case 0:
-                        type = 1;
+                Cue::CueType cue_type;
+                switch (type) {
+                    case HOTCUE:
+                        cue_type = Cue::CueType::CUE;
                         break;
-                    case 4:
-                        type = 2;
+                    case AUTOGRID:
+                        cue_type = Cue::CueType::LOAD;
                         break;
                     default:
+                        qDebug() << "Unsupported traktor cue type: " << type;
                         continue;
                 }
-                Cue *cue = new Cue(0, TrackId(), (Cue::CueType)type, position, length, hotcue, label, QColor("#FF0000"));
+                Cue *cue = new Cue(0, TrackId(), cue_type, position, length, hotcue, label, QColor("#FF0000"));
                 cues.push_back(CuePointer(cue));
                 continue;
             }
