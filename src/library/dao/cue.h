@@ -23,6 +23,8 @@ class Cue : public QObject {
         JUMP    = 5,
     };
 
+    Cue(int id, TrackId trackId, CueType type, double position, double length,
+        int hotCue, QString label, QColor color);
     ~Cue() override;
 
     bool isDirty() const;
@@ -52,8 +54,6 @@ class Cue : public QObject {
 
   private:
     explicit Cue(TrackId trackId);
-    Cue(int id, TrackId trackId, CueType type, double position, double length,
-        int hotCue, QString label, QColor color);
     void setDirty(bool dirty);
     void setId(int id);
     void setTrackId(TrackId trackId);

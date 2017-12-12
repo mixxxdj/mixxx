@@ -56,6 +56,9 @@ class TrackCollection : public QObject,
     AnalysisDao& getAnalysisDAO() {
         return m_analysisDao;
     }
+    CueDAO& getCueDAO() {
+        return m_cueDao;
+    }
 
     QSharedPointer<BaseTrackCache> getTrackSource() const {
         return m_pTrackSource;

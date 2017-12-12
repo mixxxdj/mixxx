@@ -25,6 +25,7 @@ class TraktorTrackModel : public BaseExternalTrackModel {
                       TrackCollection* pTrackCollection,
                       QSharedPointer<BaseTrackCache> trackSource);
     virtual bool isColumnHiddenByDefault(int column);
+    TrackPointer getTrack(const QModelIndex& index) const override;
 };
 
 class TraktorPlaylistModel : public BaseExternalPlaylistModel {
@@ -33,6 +34,7 @@ class TraktorPlaylistModel : public BaseExternalPlaylistModel {
                          TrackCollection* pTrackCollection,
                          QSharedPointer<BaseTrackCache> trackSource);
     virtual bool isColumnHiddenByDefault(int column);
+    TrackPointer getTrack(const QModelIndex& index) const override;
 };
 
 class TraktorFeature : public BaseExternalLibraryFeature {
@@ -57,7 +59,7 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist);
     TreeItem* importLibrary(QString file);
     // parses a track in the music collection
-    void parseTrack(QXmlStreamReader &xml, QSqlQuery &query);
+    void parseTrack(QXmlStreamReader &xml, QSqlQuery &query, QSqlQuery &cue_query);
     // Iterates over all playliost and folders and constructs the childmodel
     TreeItem* parsePlaylists(QXmlStreamReader &xml);
     // processes a particular playlist
