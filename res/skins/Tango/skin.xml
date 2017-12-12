@@ -81,6 +81,7 @@
       <attribute persist="true" config_key="[Tango],always_visible_repeat">0</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_orientation">0</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_quantize">1</attribute>
+      <attribute persist="true" config_key="[Tango],[Tango],separate_cue_button">1</attribute>
       <attribute persist="true" config_key="[Tango],eq_knobs">1</attribute>
       <attribute persist="true" config_key="[Tango],hotcues">1</attribute>
       <attribute persist="true" config_key="[Tango],8_hotcues">0</attribute>
