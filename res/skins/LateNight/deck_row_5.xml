@@ -2,7 +2,7 @@
   <WidgetGroup>
     <ObjectName>DeckRowFive</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>me,min</SizePolicy>
+    <SizePolicy>me,me</SizePolicy>
     <Children>
 
 			<Overview>
@@ -13,7 +13,7 @@
 				<BgColor>#1C1C1C</BgColor>
 				<BgPixmap></BgPixmap>
 				-->
-				<SizePolicy>me,min</SizePolicy>
+				<SizePolicy>me,me</SizePolicy>
 				<MinimumSize>-1,-1</MinimumSize>
 				<SignalColor><Variable name="signal_color" /></SignalColor>
         <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>

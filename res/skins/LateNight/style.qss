@@ -20,6 +20,16 @@
 
 #Deck1, #Deck2, #Deck3, #Deck4 {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
+#Deck1, #Deck2,
+#NoMixer12 {
+  margin-bottom: 5px;
+}
+
+#Deck3, #Deck4,
+#NoMixer34 {
+  margin-top: 2px;
   margin-bottom: 3px;
 }
 
@@ -158,8 +168,8 @@
   border: 1px solid #585858;*/
 }
 
-#NoMixer {
-  margin-bottom: 3px;
+#NoMixer12,
+#NoMixer34 {
   border: 1px solid #585858;
   border-width: 0px 1px 0px 1px;
   background-color: #0f0f0f;
@@ -252,12 +262,16 @@
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
-#KillButton {
+#KillButtonLeft {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+  padding-left: 6px;
+  margin-top: 2px;
 }
 
-#KillButtonReversed {
+#KillButtonRight {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+  padding-right: 4px;
+  margin-top: 2px;
 }
 
 #TitleGutter, #AlbumGutter {
@@ -646,9 +660,9 @@
 }
 
 #CrossFadeContainer {
- qproperty-layoutAlignment: 'AlignCenter';
- background-color: #1e1e1e;
- padding-top: 5px;
+qproperty-layoutAlignment: 'AlignCenter';
+background-color: #1e1e1e;
+padding-top: 5px;
 }
 
 #GuiToggleContainer {
@@ -673,7 +687,7 @@
 }
 
 /*################################################################
- #######  Loop Controls  ########################################
+#######  Loop Controls  ########################################
 ##############################################################*/
 
 #LoopBeatJumpButton,
@@ -814,7 +828,7 @@ WBeatSpinBox {
 }
 
 #NoBorder {
- border: 0px;
+border: 0px;
 }
 
 #PreviewColumnOne {
@@ -880,14 +894,22 @@ WBeatSpinBox {
 #AlignCenterTop {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
+/**/
+#TEST {
+  background-color: #456113;
+}
+
+#PFLVUMeterBox {
+  padding: 7px 0px 7px 0px;
+}
+
+#VUMeterBox {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  padding-right: 2px;  
+}
 
 #VinylStatusTop {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  border: 1px solid #585858;
-  border-top: 0px;
-  border-left: 0px;
-  border-right: 0px;
-  padding: 0px;
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
 }
 
 #Toolbar {

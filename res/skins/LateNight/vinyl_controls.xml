@@ -4,6 +4,26 @@
     <Layout>horizontal</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
+
+      <WidgetGroup>
+        <ObjectName>VinylStatusTop</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <StatusLight>
+            <Size>10f,10f</Size>
+            <TooltipId>vinylcontrol_status</TooltipId>
+            <NumberPos>3</NumberPos>
+            <PathStatusLight scalemode="STRETCH">buttons/btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
+            <PathStatusLight2 scalemode="STRETCH">buttons/btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
+            <PathStatusLight3 scalemode="STRETCH">buttons/btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,vinylcontrol_status</ConfigKey>
+            </Connection>
+          </StatusLight>
+        </Children>
+      </WidgetGroup>
+
       <PushButton>
         <Size>42f,22f</Size>
         <ObjectName>VinylToggleButtonUL</ObjectName>
@@ -17,11 +37,11 @@
           <Text>VINYL</Text>
         </State>
         <Connection>
-          <ConfigKey>[Channel<Variable name="channum" />],vinylcontrol_enabled</ConfigKey>
+          <ConfigKey><Variable name="group"/>,vinylcontrol_enabled</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
         </Connection>
         <Connection>
-          <ConfigKey>[Channel<Variable name="channum" />],vinylcontrol_enabled</ConfigKey>
+          <ConfigKey><Variable name="group"/>,vinylcontrol_enabled</ConfigKey>
         </Connection>
       </PushButton>
 
@@ -42,11 +62,11 @@
           <Text>CONST</Text>
         </State>
         <Connection>
-          <ConfigKey persist="true">[Channel<Variable name="channum" />],vinylcontrol_mode</ConfigKey>
+          <ConfigKey persist="true"><Variable name="group"/>,vinylcontrol_mode</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
         </Connection>
         <Connection>
-          <ConfigKey persist="true">[Channel<Variable name="channum" />],vinylcontrol_mode</ConfigKey>
+          <ConfigKey persist="true"><Variable name="group"/>,vinylcontrol_mode</ConfigKey>
         </Connection>
       </PushButton>
 
@@ -68,11 +88,11 @@
           <Text>HOT</Text>
         </State>
         <Connection>
-          <ConfigKey persist="true">[Channel<Variable name="channum" />],vinylcontrol_cueing</ConfigKey>
+          <ConfigKey persist="true"><Variable name="group"/>,vinylcontrol_cueing</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
         </Connection>
         <Connection>
-          <ConfigKey persist="true">[Channel<Variable name="channum" />],vinylcontrol_cueing</ConfigKey>
+          <ConfigKey persist="true"><Variable name="group"/>,vinylcontrol_cueing</ConfigKey>
         </Connection>
       </PushButton>
 
@@ -90,11 +110,11 @@
           <Text>PASS</Text>
         </State>
         <Connection>
-          <ConfigKey>[Channel<Variable name="channum" />],passthrough</ConfigKey>
+          <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
         </Connection>
         <Connection>
-          <ConfigKey>[Channel<Variable name="channum" />],passthrough</ConfigKey>
+          <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
         </Connection>
       </PushButton>
 

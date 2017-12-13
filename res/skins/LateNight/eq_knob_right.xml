@@ -1,0 +1,67 @@
+<!DOCTYPE template>
+<Template>
+  <SetVariable name="EqualizerRackGroup">[EqualizerRack1]</SetVariable>
+  <SetVariable name="EqualizerEffectUnitGroup">[EqualizerRack1_<Variable name="group"/>]</SetVariable>
+  <SetVariable name="EqualizerEffectGroup">[EqualizerRack1_<Variable name="group"/>_Effect1]</SetVariable>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me, min</SizePolicy>
+            <Children>
+              <Template src="skin:knob_textless.xml">
+                <SetVariable name="group"><Variable name="EqualizerEffectGroup"/></SetVariable>
+                <SetVariable name="control">parameter<Variable name="parameter"/></SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>KillButtonRight</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <MinimumSize>-1,30</MinimumSize>
+            <Children>
+              <EffectPushButton>
+                <EffectRackGroup><Variable name="EqualizerRackGroup"/></EffectRackGroup>
+                <EffectUnitGroup><Variable name="EqualizerEffectUnitGroup"/></EffectUnitGroup>
+                <Effect>1</Effect>
+                <EffectButtonParameter><Variable name="parameter"/></EffectButtonParameter>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Pressed>buttons/btn_kill_down.png</Pressed>
+                  <Unpressed>buttons/btn_kill.png</Unpressed>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Pressed>buttons/btn_kill_overdown.png</Pressed>
+                  <Unpressed>buttons/btn_kill_over.png</Unpressed>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="EqualizerEffectGroup"/>,button_parameter<Variable name="parameter"/></ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </EffectPushButton>
+            </Children>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey><Variable name="EqualizerEffectGroup"/>,parameter<Variable name="parameter"/>_loaded</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey>[Master],show_eqs</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>
