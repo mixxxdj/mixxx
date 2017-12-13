@@ -21,7 +21,7 @@ Description:
         </Connection>
       </WidgetGroup>
 
-      <!-- Center spacer for netbook mode (screen 1260+ px) -->
+      <!-- Center spacer for netbook mode (screen -1259 px) -->
       <WidgetGroup>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
@@ -63,7 +63,7 @@ Description:
           <ConfigKey>[Tango],netbook_mode</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- /Center spacer for narrow netbook mode -->
+      </WidgetGroup><!-- /Center spacer for netbook mode (screen -1259 px) -->
 
       <!-- Center spacer for normal mode (screen 1260+ px) -->
       <WidgetGroup>

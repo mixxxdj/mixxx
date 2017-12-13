@@ -299,16 +299,30 @@ Description:
                   <ConfigKey>[Master],audio_latency_usage</ConfigKey>
                 </Connection>
               </VuMeter><!-- /latency usage -->
+
+              <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
             </Children>
           </WidgetGroup><!-- Clock + latency display -->
 
           <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
-          <Template src="skin:button_2state.xml">
-            <SetVariable name="ObjectName">SkinSettingsToggler</SetVariable>
-            <SetVariable name="Size">24f,24f</SetVariable>
-            <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>
-          </Template>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="ObjectName">SkinSettingsToggler</SetVariable>
+                <SetVariable name="Size">24f,24f</SetVariable>
+                <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Tango],skin_settings</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
 
         </Children>
       </WidgetGroup><!-- /Skin toggles, Rec, Broadcast, Clock, Skin menu toggle -->
