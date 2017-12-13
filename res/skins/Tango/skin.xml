@@ -327,7 +327,11 @@
           </Children>
         </WidgetGroup><!-- /All skin elements + Skin menu -->
 
+        <!-- Detect if screen (window) size is netbook-like -->
         <Template src="skin:size_detector_screen.xml"/>
+
+        <!-- Detect if Star rating fits into deck buttons row -->
+        <Template src="skin:size_detector_stars.xml"/>
 
       </Children>
     </WidgetGroup><!-- /SkinContainer -->

@@ -1911,7 +1911,12 @@ QToolTip {
   background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
     stop: 0 #0f0f0f,
     stop: 1 #006596);
-  }
+}
+#SizeTest2 {
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 #0f0f0f,
+    stop: 1 #991245);
+}
 
 #AlignTop {
   qproperty-layoutAlignment: 'AlignTop';
