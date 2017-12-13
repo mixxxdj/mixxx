@@ -342,7 +342,7 @@ Description:
                     <SetVariable name="state_0_text">      Channel Mixer</SetVariable>
                     <SetVariable name="state_1_text"> &#10004; Channel Mixer</SetVariable>
                     <SetVariable name="width">110</SetVariable>
-                    <SetVariable name="Setting">[Master],show_mixerr</SetVariable>
+                    <SetVariable name="Setting">[Master],show_mixer</SetVariable>
                   </Template>
 
                   <WidgetGroup><!-- Show hint when Big Cover was enabled but Channel mixer is visible -->
