@@ -136,40 +136,38 @@ bool AnalyzerQueue::isLoadedTrackWaiting(TrackPointer analysingTrack) {
 }
 
 // This is called from the AnalyzerQueue thread
-// The returned track might be NULL, up to the caller to check.
+// The returned track might be null if the analysis has been cancelled
 TrackPointer AnalyzerQueue::dequeueNextBlocking() {
     QMutexLocker locked(&m_qm);
-    if (m_queuedTracks.isEmpty()) {
-        Event::end("AnalyzerQueue process");
+
+    Event::end("AnalyzerQueue process");
+    while (m_queuedTracks.isEmpty()) {
+        kLogger.debug() << "Suspending thread";
         m_qwait.wait(&m_qm);
-        Event::start("AnalyzerQueue process");
+        kLogger.debug() << "Resuming thread";
 
         if (m_exit) {
             return TrackPointer();
         }
     }
+    Event::start("AnalyzerQueue process");
 
     const PlayerInfo& info = PlayerInfo::instance();
-    TrackPointer pLoadTrack;
     QMutableListIterator<TrackPointer> it(m_queuedTracks);
     while (it.hasNext()) {
-        TrackPointer& pTrack = it.next();
+        TrackPointer pTrack = it.next();
         DEBUG_ASSERT(pTrack);
         // Prioritize tracks that are loaded.
         if (info.isTrackLoaded(pTrack)) {
-            kLogger.debug() << "Prioritizing" << pTrack->getTitle() << pTrack->getLocation();
-            pLoadTrack = pTrack;
+            kLogger.debug() << "Prioritizing" << pTrack->getLocation();
             it.remove();
-            break;
+            return pTrack;
         }
     }
 
-    if (!pLoadTrack && !m_queuedTracks.isEmpty()) {
-        // no prioritized track found, use head track
-        pLoadTrack = m_queuedTracks.dequeue();
-    }
-
-    return pLoadTrack;
+    // no prioritized track found, use head track
+    DEBUG_ASSERT(!m_queuedTracks.isEmpty());
+    return m_queuedTracks.dequeue();
 }
 
 // This is called from the AnalyzerQueue thread
@@ -323,21 +321,12 @@ void AnalyzerQueue::execThread() {
 
     while (!m_exit) {
         TrackPointer nextTrack = dequeueNextBlocking();
-
-        // It's important to check for m_exit here in case we decided to exit
-        // while blocking for a new track.
         if (m_exit) {
+            emptyCheck();
             break;
         }
 
-        // If the track is NULL, try to get the next one.
-        // Could happen if the track was queued but then deleted.
-        // Or if dequeueNextBlocking is unblocked by exit == true
-        if (!nextTrack) {
-            emptyCheck();
-            continue;
-        }
-
+        DEBUG_ASSERT(nextTrack);
         kLogger.debug() << "Analyzing" << nextTrack->getTitle() << nextTrack->getLocation();
 
         Trace trace("AnalyzerQueue analyzing track");
