@@ -20,8 +20,6 @@ Variables:
 
       <Template src="skin:vumeter_master_container.xml"/>
 
-      <Template src="skin:centerbox_deck12.xml"/>
-
       <Template src="skin:deck_right.xml">
         <SetVariable name="chanNum">2</SetVariable>
         <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_2"/></SetVariable>

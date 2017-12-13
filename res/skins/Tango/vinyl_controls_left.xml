@@ -20,7 +20,7 @@ Variables:
         <Size>80f,24f</Size>
         <Children>
 
-          <WidgetGroup>
+          <WidgetGroup><!-- Toggle Vinyl Control, statuslight underneath -->
             <Layout>stacked</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
@@ -40,7 +40,7 @@ Variables:
                 <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,vinylcontrol_status</SetVariable>
               </Template>
             </Children>
-          </WidgetGroup>
+          </WidgetGroup><!-- /Toggle Vinyl Control, statuslight underneath -->
 
           <Template src="skin:button_2state.xml">
             <SetVariable name="TooltipId">passthrough_enabled</SetVariable>
@@ -92,7 +92,7 @@ Variables:
 
               <Template src="skin:button_3state_persist.xml">
                 <SetVariable name="TooltipId">vinylcontrol_cueing</SetVariable>
-                <SetVariable name="ObjectName">VinylCueModeButton</SetVariable>
+                <SetVariable name="ObjectName">VinylModeButton</SetVariable>
                 <SetVariable name="Size">40f,24f</SetVariable>
                 <SetVariable name="state_0_text">CUE</SetVariable>
                 <SetVariable name="state_1_text">CUE</SetVariable>

@@ -25,13 +25,60 @@ Variables:
       <Template src="skin:rate_pitch_key.xml"/>
 
       <WidgetGroup>
-        <Size>3f,1me</Size>
+        <Size>3f,1min</Size>
         <Connection>
-          <ConfigKey>[Tango],pitch_fader</ConfigKey>
+          <ConfigKey persist="true">[Tango],pitch_fader</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
       <!-- /Pitch slider & Key controls -->
+
+      <WidgetGroup><!-- Spinny/Cover + VUMeter -->
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+
+          <Template src="skin:vumeter_floating.xml"/>
+
+          <WidgetGroup>
+            <Size>3f,1min</Size>
+            <Connection>
+              <ConfigKey persist="true">[Tango],vumeter</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup><!-- Spinny/Cover -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <WidgetGroup><!-- if BIG spinny is enabled -->
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Template src="skin:spinnyCover.xml"/>
+                  <!-- margin to deck -->
+                  <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- if BIG spinny is enabled -->
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Tango],show_spinny_cover</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /Spinny/Cover -->
+
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Spinny/Cover + VUMeter -->
 
       <WidgetGroup><!-- Mixer -->
         <Layout>vertical</Layout>
@@ -41,78 +88,21 @@ Variables:
 
           <WidgetGroup>
             <Layout>vertical</Layout>
-            <Size>1me,25me</Size>
             <Children>
               <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,3f</Size></WidgetGroup>
               <WidgetGroup><ObjectName>RoundFiller25</ObjectName><Size>1me,22me</Size></WidgetGroup>
             </Children>
             <Connection>
-              <ConfigKey>[Tango],loop_beatjump_controls</ConfigKey>
+              <ConfigKey persist="true">[Tango],loop_beatjump_controls</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey>[Tango],channel_mixer</ConfigKey>
+          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /Mixer -->
-
-      <WidgetGroup><!-- Spinny/Cover + VUMeter -->
-        <Layout>horizontal</Layout>
-        <SizePolicy>min,me</SizePolicy>
-        <Children>
-
-          <Template src="skin:vumeter_floating.xml"/>
-
-          <WidgetGroup>
-            <Size>5f,1me</Size>
-            <Connection>
-              <ConfigKey>[Tango],vumeter</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-
-          <WidgetGroup><!-- Spinny/Cover -->
-            <Layout>vertical</Layout>
-            <SizePolicy>min,me</SizePolicy>
-            <Children>
-              <WidgetGroup><!-- if BIG spinny is enabled -->
-                <Layout>vertical</Layout>
-                <SizePolicy>min,me</SizePolicy>
-                <Children>
-                  <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>min,min</SizePolicy>
-                    <Children>
-                      <Template src="skin:spinnyCover.xml"/>
-                      <!-- margin to deck -->
-                      <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
-                    </Children>
-                  </WidgetGroup>
-                  <!-- push spinny to the top -->
-                  <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
-                </Children>
-                <Connection>
-                  <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup><!-- if BIG spinny is enabled -->
-            </Children>
-            <Connection>
-              <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
-              <Transform><IsEqual>2</IsEqual><Not/></Transform>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup><!-- /Spinny/Cover -->
-
-        </Children>
-        <Connection>
-          <ConfigKey>[Tango],channel_mixer</ConfigKey>
-          <Transform><Not/></Transform>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup><!-- /Spinny/Cover + VUMeter -->
 
       <WidgetGroup><!-- [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
         <ObjectName>Deck<Variable name="chanNum"/></ObjectName>
