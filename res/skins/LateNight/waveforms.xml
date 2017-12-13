@@ -4,10 +4,11 @@
     <Size>0me,40min</Size>
     <Children>
 
-      <WidgetGroup>
+      <WidgetGroup><!-- Waveform 3 -->
         <Layout>horizontal</Layout>
         <SizePolicy>me,me</SizePolicy>
         <Children>
+          <WidgetGroup><Size>0f,0me</Size></WidgetGroup>
           <Template src="skin:spinny.xml">
             <SetVariable name="channum">3</SetVariable>
             <SetVariable name="color">2</SetVariable>
@@ -25,71 +26,76 @@
           <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup>
+      </WidgetGroup><!-- Waveform 3 -->
 
       <WidgetGroup>
-        <Layout>horizontal</Layout>
+        <Layout>stacked</Layout>
         <SizePolicy>me,me</SizePolicy>
         <Children>
 
-          <SizeAwareStack>
-            <Size>1f,0me</Size>
+          <WidgetGroup><!-- Waveform 1 -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,me</SizePolicy>
             <Children>
 
-              <WidgetStack><!-- Spinny 20x20 -->
-                <MinimumSize>1,-1</MinimumSize>
-                <MaximumSize>1,39</MaximumSize>
-                <Children>
-                  <WidgetGroup trigger="[Latenight],spinny_20x20"><Size>1f,1f</Size></WidgetGroup>
-                  <WidgetGroup trigger="[Latenight],spinny_40x40"><Size>1f,1f</Size></WidgetGroup>
-                  <WidgetGroup trigger="[Latenight],spinny_70x70"><Size>1f,1f</Size></WidgetGroup>
-                </Children>
-              </WidgetStack>
+              <Template src="skin:spinny.xml">
+                <SetVariable name="channum">1</SetVariable>
+                <SetVariable name="color">1</SetVariable>
+              </Template>
 
-              <WidgetStack><!-- Spinny 40x40 -->
+              <Template src="skin:waveform.xml">
+                <SetVariable name="channum">1</SetVariable>
+                <SetVariable name="signal_color">#E7C413</SetVariable>
+                <SetVariable name="SignalBgColor">#2f290a</SetVariable>
+                <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
+                <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
+                <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <!-- SizeAwareStack detects available height and switches to appropriate spinny size -->
+          <SizeAwareStack>
+            <SizePolicy>0f,0me</SizePolicy>
+            <Children>
+
+              <WidgetGroup trigger="[Latenight],spinny_20x20">
+                <MinimumSize>0,10</MinimumSize>
+                <MaximumSize>0,39</MaximumSize>
+                <SizePolicy>f,me</SizePolicy>
+                <Children>
+                  <WidgetGroup><Size>1f,1f</Size></WidgetGroup>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup trigger="[Latenight],spinny_40x40">
                 <MinimumSize>0,40</MinimumSize>
                 <MaximumSize>0,69</MaximumSize>
+                <SizePolicy>f,me</SizePolicy>
                 <Children>
-                  <WidgetGroup trigger="[Latenight],spinny_40x40"><Size>1f,1f</Size></WidgetGroup>
-                  <WidgetGroup trigger="[Latenight],spinny_20x20"><Size>1f,1f</Size></WidgetGroup>
-                  <WidgetGroup trigger="[Latenight],spinny_70x70"><Size>1f,1f</Size></WidgetGroup>
+                  <WidgetGroup><Size>1f,1f</Size></WidgetGroup>
                 </Children>
-              </WidgetStack>
+              </WidgetGroup>
 
-              <WidgetStack><!-- Spinny 70x70 -->
+              <WidgetGroup trigger="[Latenight],spinny_70x70">
                 <MinimumSize>0,70</MinimumSize>
+                <MaximumSize>0,-1</MaximumSize>
+                <SizePolicy>f,me</SizePolicy>
                 <Children>
-                  <WidgetGroup trigger="[Latenight],spinny_70x70"><Size>1f,1f</Size></WidgetGroup>
-                  <WidgetGroup trigger="[Latenight],spinny_20x20"><Size>1f,1f</Size></WidgetGroup>
-                  <WidgetGroup trigger="[Latenight],spinny_40x40"><Size>1f,1f</Size></WidgetGroup>
+                  <WidgetGroup><Size>0f,1f</Size></WidgetGroup>
                 </Children>
-              </WidgetStack>
+              </WidgetGroup>
+
             </Children>
           </SizeAwareStack>
-          <Template src="skin:spinny.xml">
-            <SetVariable name="channum">1</SetVariable>
-            <SetVariable name="color">1</SetVariable>
-          </Template>
-          <Template src="skin:waveform.xml">
-            <SetVariable name="channum">1</SetVariable>
-            <SetVariable name="signal_color">#E7C413</SetVariable>
-            <SetVariable name="SignalBgColor">#2f290a</SetVariable>
-            <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
-            <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
-            <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
-          </Template>
-
-          <WidgetGroup>
-            <ObjectName>DebugResizingSpinnies</ObjectName>
-            <Size>10f,0me</Size>
-          </WidgetGroup>
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup>
+      <WidgetGroup><!-- Waveform 2 -->
         <Layout>horizontal</Layout>
         <SizePolicy>me,me</SizePolicy>
         <Children>
+          <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
           <Template src="skin:spinny.xml">
             <SetVariable name="channum">2</SetVariable>
             <SetVariable name="color">1</SetVariable>
@@ -103,12 +109,13 @@
             <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
           </Template>
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- Waveform 2 -->
 
-      <WidgetGroup>
+      <WidgetGroup><!-- Waveform 4 -->
         <Layout>horizontal</Layout>
         <SizePolicy>me,me</SizePolicy>
         <Children>
+          <WidgetGroup><Size>0f,0me</Size></WidgetGroup>
           <Template src="skin:spinny.xml">
             <SetVariable name="channum">4</SetVariable>
             <SetVariable name="color">2</SetVariable>
@@ -126,7 +133,7 @@
           <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup>
+      </WidgetGroup><!-- Waveform 4 -->
 
     </Children>
   </WidgetGroup>
