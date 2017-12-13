@@ -11,17 +11,24 @@
 <Template>
   <WidgetGroup>
     <Layout>vertical</Layout>
-    <Size>60f,53f</Size>
+    <Size>60f,42f</Size>
     <Children>
       <WidgetGroup>
         <ObjectName>EffectKnob</ObjectName>
         <Layout>horizontal</Layout>
-        <Size>0me,34f</Size>
+        <Size>0me,25f</Size>
         <Children>
-          <Template src="skin:knob_textless.xml">
-            <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>]</SetVariable>
-            <SetVariable name="control">parameter<Variable name="EffectParameter"/></SetVariable>
-          </Template>
+          <KnobComposed>
+            <TooltipId><Variable name="tooltip"/></TooltipId>
+            <Size>25f,25f</Size>
+            <Knob>knob_sm_indicator.svg</Knob>
+            <BackPath>knob_sm_bg.svg</BackPath>
+            <MinAngle>-135</MinAngle>
+            <MaxAngle>135</MaxAngle>
+            <Connection>
+              <ConfigKey>[EffectRack1_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/></ConfigKey>
+            </Connection>
+          </KnobComposed>
 	     </Children>
       </WidgetGroup>
       <EffectParameterName>
@@ -35,7 +42,7 @@
       </EffectParameterName>
     </Children>
     <Connection>
-      <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/>_loaded</ConfigKey>
+      <ConfigKey>[EffectRack1_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/>_loaded</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

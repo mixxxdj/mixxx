@@ -10,7 +10,7 @@
   <WidgetGroup>
     <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
     <Layout>horizontal</Layout>
-    <Size>500me,170f</Size>
+    <SizePolicy>me,min</SizePolicy>
     <Children>
 
       <WidgetGroup>
@@ -24,6 +24,38 @@
             <SizePolicy>me,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
+              <Template src="skin:effect_parameter_button.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="EffectParameter">1</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_button.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="EffectParameter">2</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_button.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="EffectParameter">3</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_button.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="EffectParameter">4</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_button.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="EffectParameter">5</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_button.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="EffectParameter">6</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_button.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="EffectParameter">7</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_button.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="EffectParameter">8</SetVariable>
+              </Template>
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">1</SetVariable>
                 <SetVariable name="EffectParameter">1</SetVariable>
@@ -40,6 +72,36 @@
                 <SetVariable name="Effect">1</SetVariable>
                 <SetVariable name="EffectParameter">4</SetVariable>
               </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="EffectParameter">5</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="EffectParameter">6</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="EffectParameter">7</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="EffectParameter">8</SetVariable>
+              </Template>
+
+              <WidgetGroup>
+                <ObjectName>FxToggleSelector</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <EffectSelector>
+                    <EffectRack><Variable name="EffectRack"/></EffectRack>
+                    <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+                    <Effect>1</Effect>
+                  </EffectSelector>
+                </Children>
+              </WidgetGroup>
+              
             </Children>
           </WidgetGroup><!-- Effect 1 -->
 
@@ -48,6 +110,38 @@
             <SizePolicy>me,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
+              <Template src="skin:effect_parameter_button.xml">
+                <SetVariable name="Effect">2</SetVariable>
+                <SetVariable name="EffectParameter">1</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_button.xml">
+                <SetVariable name="Effect">2</SetVariable>
+                <SetVariable name="EffectParameter">2</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_button.xml">
+                <SetVariable name="Effect">2</SetVariable>
+                <SetVariable name="EffectParameter">3</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_button.xml">
+                <SetVariable name="Effect">2</SetVariable>
+                <SetVariable name="EffectParameter">4</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_button.xml">
+                <SetVariable name="Effect">2</SetVariable>
+                <SetVariable name="EffectParameter">5</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_button.xml">
+                <SetVariable name="Effect">2</SetVariable>
+                <SetVariable name="EffectParameter">6</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_button.xml">
+                <SetVariable name="Effect">2</SetVariable>
+                <SetVariable name="EffectParameter">7</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_button.xml">
+                <SetVariable name="Effect">2</SetVariable>
+                <SetVariable name="EffectParameter">8</SetVariable>
+              </Template>
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">2</SetVariable>
                 <SetVariable name="EffectParameter">1</SetVariable>
@@ -64,6 +158,35 @@
                 <SetVariable name="Effect">2</SetVariable>
                 <SetVariable name="EffectParameter">4</SetVariable>
               </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="Effect">2</SetVariable>
+                <SetVariable name="EffectParameter">5</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="Effect">2</SetVariable>
+                <SetVariable name="EffectParameter">6</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="Effect">2</SetVariable>
+                <SetVariable name="EffectParameter">7</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="Effect">2</SetVariable>
+                <SetVariable name="EffectParameter">8</SetVariable>
+              </Template>
+
+              <WidgetGroup>
+                <ObjectName>FxToggleSelector</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <EffectSelector>
+                    <EffectRack><Variable name="EffectRack"/></EffectRack>
+                    <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+                    <Effect>2</Effect>
+                  </EffectSelector>
+                </Children>
+              </WidgetGroup>
             </Children>
           </WidgetGroup><!-- Effect 2 -->
 
@@ -72,6 +195,38 @@
             <SizePolicy>me,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
+              <Template src="skin:effect_parameter_button.xml">
+                <SetVariable name="Effect">3</SetVariable>
+                <SetVariable name="EffectParameter">1</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_button.xml">
+                <SetVariable name="Effect">3</SetVariable>
+                <SetVariable name="EffectParameter">2</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_button.xml">
+                <SetVariable name="Effect">3</SetVariable>
+                <SetVariable name="EffectParameter">3</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_button.xml">
+                <SetVariable name="Effect">3</SetVariable>
+                <SetVariable name="EffectParameter">4</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_button.xml">
+                <SetVariable name="Effect">3</SetVariable>
+                <SetVariable name="EffectParameter">5</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_button.xml">
+                <SetVariable name="Effect">3</SetVariable>
+                <SetVariable name="EffectParameter">6</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_button.xml">
+                <SetVariable name="Effect">3</SetVariable>
+                <SetVariable name="EffectParameter">7</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_button.xml">
+                <SetVariable name="Effect">3</SetVariable>
+                <SetVariable name="EffectParameter">8</SetVariable>
+              </Template>
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">3</SetVariable>
                 <SetVariable name="EffectParameter">1</SetVariable>
@@ -88,6 +243,34 @@
                 <SetVariable name="Effect">3</SetVariable>
                 <SetVariable name="EffectParameter">4</SetVariable>
               </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="Effect">3</SetVariable>
+                <SetVariable name="EffectParameter">5</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="Effect">3</SetVariable>
+                <SetVariable name="EffectParameter">6</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="Effect">3</SetVariable>
+                <SetVariable name="EffectParameter">7</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="Effect">3</SetVariable>
+                <SetVariable name="EffectParameter">8</SetVariable>
+              </Template>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <EffectSelector>
+                    <EffectRack><Variable name="EffectRack"/></EffectRack>
+                    <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+                    <Effect>3</Effect>
+                  </EffectSelector>
+                </Children>
+              </WidgetGroup>
             </Children>
           </WidgetGroup><!-- Effect 3 -->
         </Children>
@@ -121,6 +304,10 @@
                 <SizePolicy>me,min</SizePolicy>
               </WidgetGroup>
             </Children>
+          </WidgetGroup>
+
+          <WidgetGroup><!-- Spacer -->
+            <Size>0min,3f</Size>
           </WidgetGroup>
           
           <WidgetGroup>

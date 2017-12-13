@@ -1126,19 +1126,11 @@ border: 0px;
   padding: 2px;
 }
 
-#EffectUnitNextPrevContainer {
-  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-}
-
 #EffectUnitButton {
   font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI Symbol", Arial, "Open Sans Light";
   font: bold 16px/19px;
   text-transform: none;
   color: #eece33;
-}
-
-#EffectUnitNextPrevContainer WPushButton {
-  font-size: 16px;
 }
 
 #EffectRackContainer {
@@ -1187,14 +1179,96 @@ border: 0px;
 
 #EffectKnob {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  padding-left: 2px;
-  padding-right: 5px;
+}
+
+#EffectButton {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  padding-top: 4px;
 }
 
 #EffectUnitKnob {
   qproperty-layoutAlignment: 'AlignRight';
   padding:3px;
 }
+
+WEffectSelector {
+  font-family: Ubuntu;
+  font-weight: normal;
+  font-size: 13px/13px;
+  color: #ccc;
+  background-color: #0f0f0f;
+  width: 77px;
+  height: 24px;
+  /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
+  margin: 0px 3px 0px 0px;
+  /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
+      names start getting cut off. Adding explicit padding improves this. */
+  padding: 0px 0px 0px 3px;
+  /* The 3D frame on the combo box becomes flat when you give it a border */
+  border: 1px solid #666;
+  border-radius: 3px;
+  }
+  WEffectSelector::drop-down {
+    width: 16px;
+    height: 24px;
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+  WEffectSelector::down-arrow {
+    width: 16px;
+    height: 24px;
+    image: url(skin:/buttons/btn_fxSelector.svg);
+    border: 0;
+    padding: 0;
+    margin: 0;
+    }
+    WEffectSelector::down-arrow:hover {
+      width: 16px;
+      height: 24px;
+      image: url(skin:/buttons/btn_fxSelector_pressed.svg);
+    border: 0;
+    padding: 0;
+    margin: 0;
+    }
+
+  WEffectSelector QAbstractItemView {
+    min-width: 142px;
+    max-width: 142px;
+    background-color: #0f0f0f;
+    /* padding-left: 6px; */
+    font-family: Ubuntu;
+    font-size: 13px/13px;
+    /* On Linux, this is not applied but font color from WEffectSelector
+    is inherited.
+    On Windows, it must be defined here */
+    color: #ccc;
+    border: 0px;
+    border-radius: 2px;
+  }
+  /* selected item */
+  WEffectSelector::checked {
+    /* not applied
+    padding-left: 5px;
+    font-weight: bold;	*/
+    color: #eee;
+    background-color: #1e1e1e;
+  }
+  /* hovered items */
+  WEffectSelector::item:selected {
+    background-color: #333;
+  /* This moves the tick mark behind item text,
+    text sits at left border now
+    border: 0; */
+  }
+  WEffectSelector::indicator {
+  /* This is sufficient to completely hide the tick mark, but
+    this alone would show an empty, shadowed box instead of tick mark
+    background-color: transparent;
+    This should decrease the tick mark's left & right margin but is not respected */
+    margin: 0px -4px 0px -4px;
+    background-color: transparent;
+  }
 
 /* this is now inline in the pushbutton so we can change styles */
 /*#EffectUnitGroupControlButton {
