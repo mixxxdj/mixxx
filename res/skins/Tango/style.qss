@@ -175,6 +175,7 @@ WWidgetGroup {
 }
 #DeckButtonVisibility {
   margin-right: 1px;
+  font-weight: bold;
   }
   #DeckButtonVisibility[displayValue="0"] {
     color: #888;

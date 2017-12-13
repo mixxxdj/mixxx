@@ -126,7 +126,8 @@ Controls:
         <Children>
 
           <!-- Play button -->
-          <!-- here and for Cue button we ignore the 1px borders -->
+          <!-- here and for Cue button we the 1px borders.
+              Virtually no one uses Mixxx on WinXP in windowed mode... -->
           <WidgetGroup><Size>50f,20f</Size></WidgetGroup>
 
           <!-- Separate Cue button -->
