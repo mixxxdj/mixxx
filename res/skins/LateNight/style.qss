@@ -728,23 +728,21 @@ padding-top: 5px;
 WBeatSpinBox {
   /* make it 2px smaller in each dimension,
     border is added for final size */
-  min-width: 52px;
-  max-width: 52px;
+  min-width: 45px;
+  max-width: 45px;
   min-height: 22px;
   max-height: 22px;
   border: 1px solid #666;
   /* size of spinbox: 54x22px
   incl. up/down button: 70x22px */
   border-radius: 2px;
-  border-top-right-radius: 11px;
-  border-bottom-right-radius: 11px;
   color: #aaaaaa;
   background-color: #0f0f0f;
   selection-color: #0f0f0f;
   selection-background-color: #d2d2d2;
   font-size: 13px/13px;
   padding-left: 3px;
-  margin: 0 13px 2px 0;
+  margin: 0 22px 2px 0;
 }
   WBeatSpinBox:hover {
     border-color: #888;
@@ -761,10 +759,7 @@ WBeatSpinBox {
       define it with same width as hover border, otherwise size jumps */
     width: 16px;
     height: 24px;
-    margin-bottom: 1px;/* = 16x26px
-    background-color:qlineargradient(x1:0, y1:1, x2:0, y2:0,
-      stop:0 #101010,
-      stop:1 #242424); */
+    margin-bottom: 1px;
     }
 
   WBeatSpinBox::up-button {
