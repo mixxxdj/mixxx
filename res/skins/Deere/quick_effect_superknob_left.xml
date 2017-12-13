@@ -5,7 +5,7 @@
   Variables:
     QuickEffect: the quick effect rack
     group: the group
-    color: the notch color. red, green, yellow, blue or light_blue
+    color: the knob ring color. red, yellow or light_blue
 -->
 <Template>
   <SetVariable name="QuickEffectRackGroup">[QuickEffectRack<Variable name="QuickEffect"/>]</SetVariable>
