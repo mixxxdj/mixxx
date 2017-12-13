@@ -92,7 +92,7 @@
                 <SetVariable name="TooltipId">balance</SetVariable>
                 <SetVariable name="group">[Master]</SetVariable>
                 <SetVariable name="control">balance</SetVariable>
-                <SetVariable name="color">blue</SetVariable>
+                <SetVariable name="color">orange</SetVariable>
                 <SetVariable name="label">Balance</SetVariable>
               </Template>
 
