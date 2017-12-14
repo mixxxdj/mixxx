@@ -92,7 +92,7 @@ QString joinSqlStringList(const QList<TrackId>& trackIds) {
     // assume that all track ids fit into 6 decimal digits and
     // add 1 character for the list separator.
     joinedTrackIds.reserve((6 + 1) * trackIds.size());
-    for (const auto trackId: trackIds) {
+    for (const auto& trackId: trackIds) {
         if (!joinedTrackIds.isEmpty()) {
             joinedTrackIds += kSqlListSeparator;
         }

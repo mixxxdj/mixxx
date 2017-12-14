@@ -100,7 +100,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(addSelectionToPlaylist(int)));
 
     connect(&m_crateMapper, SIGNAL(mapped(QWidget *)),
-            this, SLOT(addRemoveSelectionInCrate(QWidget *)));
+            this, SLOT(updateSelectionCrates(QWidget *)));
 
     m_pCOTGuiTick = new ControlProxy("[Master]", "guiTick50ms", this);
     m_pCOTGuiTick->connectValueChanged(SLOT(slotGuiTick50ms(double)));
@@ -865,9 +865,9 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             pAction->setEnabled(!crate.isLocked());
             pAction->setDefaultWidget(pCheckBox.get());
 
-            if(crate.getTrackCount() == 0) {
+            if (crate.getTrackCount() == 0) {
                 pCheckBox->setChecked(false);
-            } else if(crate.getTrackCount() == (uint)trackIds.length()) {
+            } else if (crate.getTrackCount() == (uint)trackIds.length()) {
                 pCheckBox->setChecked(true);
             } else {
                 pCheckBox->setTristate(true);
@@ -1414,7 +1414,7 @@ void WTrackTableView::setSelectedTracks(QList<TrackId> trackIds) {
         return;
     }
 
-    foreach(TrackId trackId, trackIds) {
+    for (const auto& trackId : trackIds) {
         const QLinkedList<int> gts = pTrackModel->getTrackRows(trackId);
 
         QLinkedList<int>::const_iterator i;
@@ -1566,10 +1566,10 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
     playlistDao.appendTracksToPlaylist(trackIds, iPlaylistId);
 }
 
-void WTrackTableView::addRemoveSelectionInCrate(QWidget* pWidget) {
+void WTrackTableView::updateSelectionCrates(QWidget* pWidget) {
     auto pCheckBox = qobject_cast<QCheckBox*>(pWidget);
     VERIFY_OR_DEBUG_ASSERT(pCheckBox) {
-        qWarning() << "crateId is not ef CrateId type";
+        qWarning() << "crateId is not of CrateId type";
         return;
     }
     CrateId crateId = pCheckBox->property("crateId").value<CrateId>();
