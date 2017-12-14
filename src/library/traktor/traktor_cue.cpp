@@ -45,16 +45,27 @@ void TraktorCue::fillQuery(int track_id, QSqlQuery &query) {
 
 CuePointer TraktorCue::toCue(int samplerate) {
     //Incomplete
+    int hotcue = this->hotcue;
     Cue::CueType type;
     switch (this->type) {
         case HOTCUE:
             type = Cue::CueType::CUE;
             break;
-        case AUTOGRID:
+        case LOAD:
             type = Cue::CueType::LOAD;
             break;
+        case LOOP:
+            type = Cue::CueType::LOOP;
+            break;
+        case AUTOGRID:
+            type = Cue::CueType::BEAT;
+            break;
+        case FADEIN:
+        case FADEOUT:
+            qDebug() << "Fade cue points are not yet supported in mixxx";
+            return CuePointer(NULL);
         default:
-            qDebug() << "Unsupported traktor cue type: " << this->type;
+            qDebug() << "Unknown traktor cue type: " << this->type;
             return CuePointer(NULL);
     }
     TrackId track_id(this->track_id);
@@ -62,8 +73,9 @@ CuePointer TraktorCue::toCue(int samplerate) {
     //start is a a float denoting milliseconds
     //convert to stereoSamplePointer
     int position = int(start/1000.0 * double(samplerate) * 2.0);
+    int length = int(len/1000.0 * double(samplerate) * 2.0);
 
-    return CuePointer(new Cue(-1, track_id, type, position, len, hotcue, name, 
-                color));
+    return CuePointer(new Cue(-1, track_id, type, position, length, hotcue,
+                name, color));
 }
 

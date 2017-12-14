@@ -51,7 +51,7 @@ bool TraktorPlaylistModel::isColumnHiddenByDefault(int column) {
     return BaseSqlTableModel::isColumnHiddenByDefault(column);
 }
 
-void addCuesToTrack(CueDAO &cueDao, TrackPointer pTrack, QString traktorTrackId, const QSqlDatabase &m_database) {
+void addCuesToTrack(TrackPointer pTrack, QString traktorTrackId, const QSqlDatabase &m_database) {
     QList<CuePointer> cues;
     QSqlQuery query(m_database);
     query.prepare("SELECT * FROM traktor_cues WHERE track_id = :track_id");
@@ -65,8 +65,7 @@ void addCuesToTrack(CueDAO &cueDao, TrackPointer pTrack, QString traktorTrackId,
             }
         }
         qDebug() << "Found " << cues.count() << " cues";
-        cueDao.saveTrackCues(pTrack->getId(), cues);
-        pTrack->setCuePoints(cues); //needed?
+        pTrack->setCuePoints(cues);
     } else {
         LOG_FAILED_QUERY(query);
     }
@@ -79,7 +78,7 @@ TrackPointer TraktorTrackModel::getTrack(const QModelIndex& index) const {
     TrackPointer pTrack = BaseExternalTrackModel::getTrack(index);
 
     if (pTrack && !track_already_in_library) {
-        addCuesToTrack(m_pTrackCollection->getCueDAO(), pTrack, id, m_database);
+        addCuesToTrack(pTrack, id, m_database);
     }
 
     return pTrack;
@@ -92,7 +91,7 @@ TrackPointer TraktorPlaylistModel::getTrack(const QModelIndex& index) const {
     TrackPointer pTrack = BaseExternalPlaylistModel::getTrack(index);
 
     if (pTrack && !track_already_in_library) {
-        addCuesToTrack(m_pTrackCollection->getCueDAO(), pTrack, id, m_database);
+        addCuesToTrack(pTrack, id, m_database);
     }
 
     return pTrack;

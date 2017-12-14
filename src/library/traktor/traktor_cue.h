@@ -11,12 +11,12 @@
                             " VALUES (:track_id, :displ_order, :hotcue, :len," \
                             ":name, :repeats, :start, :type)"
 enum TraktorCueType {
-    HOTCUE,
-    TBD1,
-    TBD2,
-    TBD3,
-    AUTOGRID,
-    TBD5
+    HOTCUE,     //Normal Cue
+    FADEIN,     //Triggered by fadeout in playing deck
+    FADEOUT,    //Triggers fadein cue in other deck
+    LOAD,       //Position to jump to when track is loaded into deck
+    AUTOGRID,   //First beat of track
+    LOOP        //Loop Cue
 };
 
 class TraktorCue {
