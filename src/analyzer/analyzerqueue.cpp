@@ -88,11 +88,8 @@ bool AnalyzerQueue::isLoadedTrackWaiting(TrackPointer analysingTrack) {
     QMutexLocker locked(&m_qm);
     QMutableListIterator<TrackPointer> it(m_queuedTracks);
     while (it.hasNext()) {
-        TrackPointer& pTrack = it.next();
-        if (!pTrack) {
-            it.remove();
-            continue;
-        }
+        TrackPointer pTrack = it.next();
+        DEBUG_ASSERT(pTrack);
         if (!trackWaiting) {
             trackWaiting = info.isTrackLoaded(pTrack);
         }
@@ -109,8 +106,11 @@ bool AnalyzerQueue::isLoadedTrackWaiting(TrackPointer analysingTrack) {
                 }
             }
             if (!processTrack) {
+                kLogger.debug()
+                        << "Skipping analysis of file"
+                        << pTrack->getLocation();
                 progress100List.append(pTrack);
-                it.remove(); // since pTrack is a reference it is invalid now.
+                it.remove();
             } else {
                 progress0List.append(pTrack);
             }
