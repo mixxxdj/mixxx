@@ -9,6 +9,7 @@
     EffectParameter: the parameter
 -->
 <Template>
+  <SetVariable name="FxButtonNumber">[EffectRack1_EffectUnit<Variable name="FxUnit"/>_Effect<Variable name="FxNum"/>]</SetVariable>
   <WidgetGroup>
     <Layout>vertical</Layout>
     <Size>60f,42f</Size>
@@ -20,26 +21,21 @@
         <Children>
           <PushButton>
             <TooltipId><Variable name="TooltipId"/></TooltipId>
-            <ObjectName><Variable name="ObjectName"/></ObjectName>
             <Size>40f,20f</Size>
             <NumberStates>2</NumberStates>
             <RightClickIsPushButton>true</RightClickIsPushButton>
             <State>
               <Number>0</Number>
-              <Text><Variable name="state_0_text"/></Text>
-              <Alignment>center</Alignment>
               <Pressed>skin:/buttons/btn_fxButton_down.png</Pressed>
               <Unpressed>skin:/buttons/btn_fxButton.png</Unpressed>
             </State>
             <State>
               <Number>1</Number>
-              <Text><Variable name="state_1_text"/></Text>
-              <Alignment><Variable name="Align"/></Alignment>
               <Pressed>skin:/buttons/btn_fxButton_overdown.png</Pressed>
               <Unpressed>skin:/buttons/btn_fxButton_over.png</Unpressed>
             </State>
             <Connection>
-              <ConfigKey>[EffectRack1_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],button_parameter<Variable name="EffectParameter"/></ConfigKey>
+              <ConfigKey><Variable name="FxButtonNumber"/>,button_parameter<Variable name="FxParameter"/></ConfigKey>
             </Connection>
           </PushButton>
 	     </Children>
@@ -48,16 +44,16 @@
       <EffectButtonParameterName>
         <Size>1min,14f</Size>
         <ObjectName>KnobLabel</ObjectName>
-        <EffectRack><Variable name="EffectRack"/></EffectRack>
-        <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
-        <Effect><Variable name="Effect"/></Effect>
-        <EffectButtonParameter><Variable name="EffectParameter"/></EffectButtonParameter>
+        <EffectRack><Variable name="FxRack"/></EffectRack>
+        <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+        <Effect><Variable name="FxNum"/></Effect>
+        <EffectButtonParameter><Variable name="FxParameter"/></EffectButtonParameter>
         <Alignment>center</Alignment>
       </EffectButtonParameterName>
 
     </Children>
     <Connection>
-      <ConfigKey>[EffectRack1_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],button_parameter<Variable name="EffectParameter"/>_loaded</ConfigKey>
+      <ConfigKey><Variable name="FxButtonNumber"/>,button_parameter<Variable name="FxParameter"/>_loaded</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

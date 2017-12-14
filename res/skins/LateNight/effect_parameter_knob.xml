@@ -9,6 +9,7 @@
     EffectParameter: the parameter
 -->
 <Template>
+  <SetVariable name="FxRack_FxUnit_FxNum">[EffectRack1_EffectUnit<Variable name="FxUnit"/>_Effect<Variable name="FxNum"/>]</SetVariable>
   <WidgetGroup>
     <Layout>vertical</Layout>
     <Size>60f,42f</Size>
@@ -26,7 +27,7 @@
             <MinAngle>-135</MinAngle>
             <MaxAngle>135</MaxAngle>
             <Connection>
-              <ConfigKey>[EffectRack1_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/></ConfigKey>
+              <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/></ConfigKey>
             </Connection>
           </KnobComposed>
 	     </Children>
@@ -34,15 +35,15 @@
       <EffectParameterName>
         <Size>1min,14f</Size>
         <ObjectName>KnobLabel</ObjectName>
-        <EffectRack><Variable name="EffectRack"/></EffectRack>
-        <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
-        <Effect><Variable name="Effect"/></Effect>
-        <EffectParameter><Variable name="EffectParameter"/></EffectParameter>
+        <EffectRack><Variable name="FxRack"/></EffectRack>
+        <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+        <Effect><Variable name="FxNum"/></Effect>
+        <EffectParameter><Variable name="FxParameter"/></EffectParameter>
         <Alignment>center</Alignment>
       </EffectParameterName>
     </Children>
     <Connection>
-      <ConfigKey>[EffectRack1_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/>_loaded</ConfigKey>
+      <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/>_loaded</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

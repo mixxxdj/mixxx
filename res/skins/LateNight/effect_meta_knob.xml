@@ -9,18 +9,19 @@
   <WidgetGroup>
     <Layout>horizontal</Layout>
     <ObjectName>KnobCentered</ObjectName>
+    <Size>25f,25f</Size>
     <Children>
       <KnobComposed>
         <TooltipId><Variable name="tooltip"/></TooltipId>
         <!--Size>40f,34f</Size-->
-        <Size>36f,30f</Size>
-        <Knob>knob_indicator.svg</Knob>
-        <BackPath>knob_bg.svg</BackPath>
+        <Size>25f,25f</Size>
+        <Knob>knob_sm_indicator.svg</Knob>
+        <BackPath>knob_sm_bg.svg</BackPath>
         <MinAngle>-135</MinAngle>
         <MaxAngle>135</MaxAngle>
         <KnobCenterYOffset>1.602</KnobCenterYOffset>
         <Connection>
-          <ConfigKey><Variable name="group"/>,<Variable name="control"/></ConfigKey>
+          <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,meta</ConfigKey>
         </Connection>
       </KnobComposed>
     </Children>

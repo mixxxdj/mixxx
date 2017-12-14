@@ -1,0 +1,117 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An effect unit widget.
+  Variables:
+    group: The group for the controls.
+-->
+<Template>
+  <SetVariable name="FxRack_FxUnit_FxNum">[EffectRack1_EffectUnit<Variable name="FxUnit"/>_Effect<Variable name="FxNum"/>]</SetVariable>
+  <SetVariable name="FxRack_FxUnit">[EffectRack1_EffectUnit<Variable name="FxUnit"/>]</SetVariable>
+
+  <WidgetGroup><!-- Effect1 -->
+    <ObjectName>EffectSlot<Variable name="FxNum"/></ObjectName>
+    <SizePolicy>me,me</SizePolicy>
+    <Layout>horizontal</Layout>
+    <Children>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:effect_parameter_button.xml">
+            <SetVariable name="FxParameter">1</SetVariable>
+          </Template>
+          <Template src="skin:effect_parameter_button.xml">
+            <SetVariable name="FxParameter">2</SetVariable>
+          </Template>
+          <Template src="skin:effect_parameter_button.xml">
+            <SetVariable name="FxParameter">3</SetVariable>
+          </Template>
+          <Template src="skin:effect_parameter_button.xml">
+            <SetVariable name="FxParameter">4</SetVariable>
+          </Template>
+          <Template src="skin:effect_parameter_button.xml">
+            <SetVariable name="FxParameter">5</SetVariable>
+          </Template>
+          <Template src="skin:effect_parameter_button.xml">
+            <SetVariable name="FxParameter">6</SetVariable>
+          </Template>
+          <Template src="skin:effect_parameter_button.xml">
+            <SetVariable name="FxParameter">7</SetVariable>
+          </Template>
+          <Template src="skin:effect_parameter_button.xml">
+            <SetVariable name="FxParameter">8</SetVariable>
+          </Template>
+          <Template src="skin:effect_parameter_knob.xml">
+            <SetVariable name="FxParameter">1</SetVariable>
+          </Template>
+          <Template src="skin:effect_parameter_knob.xml">
+            <SetVariable name="FxParameter">2</SetVariable>
+          </Template>
+          <Template src="skin:effect_parameter_knob.xml">
+            <SetVariable name="FxParameter">3</SetVariable>
+          </Template>
+          <Template src="skin:effect_parameter_knob.xml">
+            <SetVariable name="FxParameter">4</SetVariable>
+          </Template>
+          <Template src="skin:effect_parameter_knob.xml">
+            <SetVariable name="FxParameter">5</SetVariable>
+          </Template>
+          <Template src="skin:effect_parameter_knob.xml">
+            <SetVariable name="FxParameter">6</SetVariable>
+          </Template>
+          <Template src="skin:effect_parameter_knob.xml">
+            <SetVariable name="FxParameter">7</SetVariable>
+          </Template>
+          <Template src="skin:effect_parameter_knob.xml">
+            <SetVariable name="FxParameter">8</SetVariable>
+          </Template>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true"><Variable name="FxRack_FxUnit"/>,show_parameters</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Size>100f,26f</Size>
+        <Children>
+          <EffectSelector>
+            <Size>100f,26f</Size>
+            <EffectRack><Variable name="FxRack"/></EffectRack>
+            <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+            <Effect><Variable name="FxNum"/></Effect>
+          </EffectSelector>
+        </Children>
+      </WidgetGroup>
+
+      <Template src="skin:effect_meta_knob.xml">
+        <SetVariable name="group"><Variable name="FxRack_FxUnit_FxNum"/></SetVariable>
+        <SetVariable name="control">meta</SetVariable>
+      </Template>
+
+      <PushButton><!-- Effect toggle -->
+        <TooltipId><Variable name="TooltipId"/></TooltipId>
+        <Size>30f,30f</Size>
+        <NumberStates>2</NumberStates>
+        <RightClickIsPushButton>true</RightClickIsPushButton>
+        <State>
+          <Number>0</Number>
+          <Pressed>skin:/buttons/btn_fxToggle_down.png</Pressed>
+          <Unpressed>skin:/buttons/btn_fxToggle.png</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>skin:/buttons/btn_fxToggle_overdown.png</Pressed>
+          <Unpressed>skin:/buttons/btn_fxToggle_over.png</Unpressed>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,enabled</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+    </Children>
+  </WidgetGroup>
+</Template>

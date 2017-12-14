@@ -894,6 +894,10 @@ border: 0px;
   background-color: #456113;
 }
 
+#Spacer58 {
+  border: 1px solid #585858;
+}
+
 #PFLVUMeterBox {
   padding: 7px 0px 7px 0px;
 }
@@ -1100,7 +1104,7 @@ border: 0px;
 }
 
 #EffectUnit1, #EffectUnit2, #EffectUnit3, #EffectUnit4 {
-  qproperty-layoutAlignment: 'AlignTop';
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
   border: 1px solid #585858;
 }
 
@@ -1128,24 +1132,20 @@ border: 0px;
   color: #eece33;
 }
 
-#EffectRackContainer {
+#EffectRack {
+  qproperty-layoutAlignment: 'AlignCenter | AlignTop';
   background-color: #0e0e0e;
   padding-top: 5px;
-  /*border-bottom: 10px solid #585858;*/
-}
-
-#EffectRackExpanded, #EffectRackCollapsed {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
 
 #EffectRows {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
 }
 
 #EffectUnitControls {
-  qproperty-layoutAlignment: 'AlignCenter | AlignTop';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   background-color: #1e1e1e;
-  padding: 2px;
+  padding: 3px;
   border-left: 1px solid #585858;
 }
 
@@ -1161,16 +1161,8 @@ border: 0px;
 #EffectSlot2,
 #EffectSlot3 {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-  padding-top: 2px;
-  border: 1px solid #585858;
-  }
-  #EffectSlot1,
-  #EffectSlot2 {
-    border-width: 0px 0px 1px 0px;
-  }
-  #EffectSlot3 {
-    border: none;
-  }
+  padding: 2px;
+}
 
 #EffectKnob {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
@@ -1187,9 +1179,9 @@ border: 0px;
 }
 
 WEffectSelector {
-  font-family: Ubuntu;
-  font-weight: normal;
-  font-size: 13px/13px;
+  font-weight: bold;
+  font-size: 12px/13px;
+  text-transform: uppercase;
   color: #ccc;
   background-color: #0f0f0f;
   width: 77px;
@@ -1232,8 +1224,7 @@ WEffectSelector {
     max-width: 142px;
     background-color: #0f0f0f;
     /* padding-left: 6px; */
-    font-family: Ubuntu;
-    font-size: 13px/13px;
+    font-size: 12px/13px;
     /* On Linux, this is not applied but font color from WEffectSelector
     is inherited.
     On Windows, it must be defined here */
