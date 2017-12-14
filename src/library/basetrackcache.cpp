@@ -42,7 +42,8 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
                     << "grouping"
                     << "comment"
                     << "title"
-                    << "genre";
+                    << "genre"
+                    << "crate";
 
     m_pKeyNotationCP = new ControlProxy("[Library]", "key_notation", this);
     // Convert all the search column names to their field indexes because we use
