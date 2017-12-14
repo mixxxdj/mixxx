@@ -29,10 +29,8 @@ SettingsManager::SettingsManager(QObject* pParent,
 
     ControlDoublePrivate::setUserConfig(m_pSettings);
 
-    VERIFY_OR_DEBUG_ASSERT(!m_pBroadcastSettings.isNull()) {
-        m_pBroadcastSettings = BroadcastSettingsPointer(
-                                   new BroadcastSettings(m_pSettings));
-    }
+    m_pBroadcastSettings = BroadcastSettingsPointer(
+                               new BroadcastSettings(m_pSettings));
 }
 
 SettingsManager::~SettingsManager() {
@@ -45,13 +43,6 @@ void SettingsManager::initializeDefaults() {
     // Store the last resource path in the config database.
     // TODO(rryan): this looks unused.
     m_pSettings->set(ConfigKey("[Config]", "Path"), ConfigValue(resourcePath));
-
-    // Do not write meta data back to ID3 when meta data has changed
-    // Because multiple TrackDao objects can exists for a particular track
-    // writing meta data may ruin your MP3 file if done simultaneously.
-    // see Bug #728197
-    // For safety reasons, we deactivate this feature.
-    m_pSettings->set(ConfigKey("[Library]","WriteAudioTags"), ConfigValue(0));
 
     // Intialize default BPM system values.
     // NOTE(rryan): These should be in a better place but they've always been in

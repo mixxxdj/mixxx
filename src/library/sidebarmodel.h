@@ -55,6 +55,7 @@ class SidebarModel : public QAbstractItemModel {
     void slotRowsAboutToBeRemoved(const QModelIndex& parent, int start, int end);
     void slotRowsInserted(const QModelIndex& parent, int start, int end);
     void slotRowsRemoved(const QModelIndex& parent, int start, int end);
+    void slotModelAboutToBeReset();
     void slotModelReset();
     void slotFeatureIsLoading(LibraryFeature*, bool selectFeature);
     void slotFeatureLoadingFinished(LibraryFeature*);

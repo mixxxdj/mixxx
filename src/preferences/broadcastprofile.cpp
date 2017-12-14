@@ -54,7 +54,9 @@ const char* kStreamName = "StreamName";
 const char* kStreamPublic = "StreamPublic";
 const char* kStreamWebsite = "StreamWebsite";
 
+#ifdef __QTKEYCHAIN__
 const char* kKeychainPrefix = "Mixxx - ";
+#endif
 
 const double kDefaultBitrate = 128;
 const int kDefaultChannels = 2;
@@ -425,8 +427,11 @@ bool BroadcastProfile::setSecurePassword(QString login, QString password) {
                 writeJob.errorString());
         return false;
     }
-#endif
+#else
+    Q_UNUSED(login);
+    Q_UNUSED(password);
     return false;
+#endif
 }
 
 QString BroadcastProfile::getSecurePassword(QString login) {

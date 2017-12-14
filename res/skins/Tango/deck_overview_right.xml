@@ -57,7 +57,7 @@ Variables:
                       <Template src="skin:spinnyCover_mini.xml"/>
                     </Children>
                     <Connection>
-                      <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
+                      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
@@ -71,44 +71,49 @@ Variables:
 
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
-              <Transform><IsEqual>2</IsEqual><Not/></Transform>
+              <ConfigKey persist="true">[Tango],show_spinny_cover</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /[Spinny / Cover / none] -->
 
-          <WidgetGroup><!-- Vinyl Controls toggle with passthrough -->
+          <WidgetGroup><!-- Vinyl Controls toggles -->
             <Size>11f,50f</Size>
-            <Layout>horizontal</Layout>
+            <Layout>vertical</Layout>
             <Children>
-              <Template src="skin:button_2state.xml">
-                <SetVariable name="ObjectName">VinylTogglerRightPassthrough</SetVariable>
-                <SetVariable name="Size">11f,50f</SetVariable>
-                <SetVariable name="ConfigKey">[Tango],vinylControlsDeck<Variable name="chanNum"/></SetVariable>
-              </Template>
-            </Children>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
+              <WidgetGroup><!-- Vinyl Controls toggle with passthrough -->
+                <Size>11f,50f</Size>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="ObjectName">VinylTogglerRightPassthrough</SetVariable>
+                    <SetVariable name="Size">11f,50f</SetVariable>
+                    <SetVariable name="ConfigKey">[Tango],vinylControlsDeck<Variable name="chanNum"/></SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
 
-          <WidgetGroup><!-- Vinyl Controls toggle without passthrough -->
-            <Size>11f,50f</Size>
-            <Layout>horizontal</Layout>
-            <Children>
-              <Template src="skin:button_2state.xml">
-                <SetVariable name="ObjectName">VinylTogglerRight</SetVariable>
-                <SetVariable name="Size">11f,50f</SetVariable>
-                <SetVariable name="ConfigKey">[Tango],vinylControlsDeck<Variable name="chanNum"/></SetVariable>
-              </Template>
+              <WidgetGroup><!-- Vinyl Controls toggle without passthrough -->
+                <Size>11f,50f</Size>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="ObjectName">VinylTogglerRight</SetVariable>
+                    <SetVariable name="Size">11f,50f</SetVariable>
+                    <SetVariable name="ConfigKey">[Tango],vinylControlsDeck<Variable name="chanNum"/></SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
             </Children>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
-              <Transform><Not/></Transform>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
+          </WidgetGroup><!-- /Vinyl Controls toggles -->
 
           <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 

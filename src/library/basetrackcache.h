@@ -126,7 +126,11 @@ class BaseTrackCache : public QObject {
 
     QVector<TrackId> m_trackOrder;
 
-    QSet<TrackId> m_dirtyTracks;
+    // This set is updated by signals from the Track object. It might contain
+    // false positives, i.e. track ids of tracks that are neither cached nor
+    // dirty. Each invocation of lookupCachedTrack() will take care of
+    // updating this set by inserting and removing entries as required.
+    mutable QSet<TrackId> m_dirtyTracks;
 
     bool m_bIndexBuilt;
     bool m_bIsCaching;

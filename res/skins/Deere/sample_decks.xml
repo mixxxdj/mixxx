@@ -141,6 +141,10 @@
   </SingletonDefinition>
 
   <WidgetGroup>
+    <Connection>
+      <ConfigKey>[Samplers],show_samplers</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
     <Layout>vertical</Layout>
     <!-- I don't now why this works but a WidgetGroup wrapper around a
          WidgetStack with a 'fixed' size policy makes the group track the

@@ -2,15 +2,16 @@
 Description:
   3-state button for skin settings menu.
 Variables:
+  width         :
   state_X_text  : label text for state X
   Setting       : persistent left-click control
 -->
 <Template>
   <PushButton>
     <ObjectName>SkinSettingsButton</ObjectName>
-    <MinimumSize>20,13</MinimumSize>
+    <MinimumSize><Variable name="width"/>,13</MinimumSize>
     <MaximumSize>182,17</MaximumSize>
-    <SizePolicy>me,me</SizePolicy>
+    <SizePolicy>min,me</SizePolicy>
     <NumberStates>3</NumberStates>
     <RightClickIsPushButton>false</RightClickIsPushButton>
     <State>

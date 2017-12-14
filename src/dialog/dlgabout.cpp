@@ -123,7 +123,8 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
             << "Tatsuyuki Ishi"
             << "Kilian Feess"
 			<< "Conner Phillips"
-			<< "Daniel Poelzleithner";
+			<< "Daniel Poelzleithner"
+            << "Artyom Lyan";
 
     QStringList specialThanks;
     specialThanks
