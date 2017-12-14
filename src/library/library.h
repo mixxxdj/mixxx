@@ -13,7 +13,7 @@
 #include <QFont>
 
 #include "preferences/usersettings.h"
-#include "track/track.h"
+#include "track/trackcache.h"
 #include "recording/recordingmanager.h"
 #include "analysisfeature.h"
 #include "library/coverartcache.h"
@@ -37,7 +37,8 @@ class KeyboardEventFilter;
 class PlayerManagerInterface;
 class AnalyzerManager;
 
-class Library : public QObject {
+class Library: public QObject,
+    public virtual /*implements*/ TrackCacheEvictor {
     Q_OBJECT
 
   public:
@@ -84,6 +85,8 @@ class Library : public QObject {
     };
 
     static const int kDefaultRowHeightPx;
+
+    void onEvictingTrackFromCache(Track* pTrack) override;
 
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);

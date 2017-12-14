@@ -426,3 +426,7 @@ void Library::slotSetTrackTableRowHeight(int rowHeight) {
     m_iTrackTableRowHeight = rowHeight;
     emit(setTrackTableRowHeight(rowHeight));
 }
+
+void Library::onEvictingTrackFromCache(Track* pTrack) {
+    m_pTrackCollection->saveTrack(pTrack);
+}

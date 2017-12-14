@@ -35,7 +35,7 @@ Variables:
           <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
           <EffectButtonParameterName>
             <SizePolicy>min,me</SizePolicy>
-            <ObjectName>FxParameterButtonName_0</ObjectName>
+            <ObjectName>FxParameterButtonName_inactive</ObjectName>
             <EffectRack><Variable name="FxRackNum"/></EffectRack>
             <EffectUnit><Variable name="FxUnitNum"/></EffectUnit>
             <Effect><Variable name="FxNum"/></Effect>
@@ -59,7 +59,7 @@ Variables:
           <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
           <EffectButtonParameterName>
             <SizePolicy>min,me</SizePolicy>
-            <ObjectName>FxParameterButtonName_1</ObjectName>
+            <ObjectName>FxParameterButtonName_active</ObjectName>
             <EffectRack><Variable name="FxRackNum"/></EffectRack>
             <EffectUnit><Variable name="FxUnitNum"/></EffectUnit>
             <Effect><Variable name="FxNum"/></Effect>

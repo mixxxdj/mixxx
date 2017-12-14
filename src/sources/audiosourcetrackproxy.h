@@ -17,19 +17,19 @@ namespace mixxx {
 class AudioSourceTrackProxy: public AudioSource {
   public:
     static AudioSourcePointer create(
-            AudioSourcePointer pAudioSource,
-            TrackPointer pTrack) {
+            TrackPointer pTrack,
+            AudioSourcePointer pAudioSource) {
         return std::make_shared<AudioSourceTrackProxy>(
-                std::move(pAudioSource),
-                std::move(pTrack));
+                std::move(pTrack),
+                std::move(pAudioSource));
     }
 
     AudioSourceTrackProxy(
-            AudioSourcePointer pAudioSource,
-            TrackPointer pTrack)
+            TrackPointer pTrack,
+            AudioSourcePointer pAudioSource)
         : AudioSource(*pAudioSource),
-          m_pAudioSource(std::move(pAudioSource)),
-          m_pTrack(std::move(pTrack)) {
+          m_pTrack(std::move(pTrack)),
+          m_pAudioSource(std::move(pAudioSource)) {
     }
 
     void close() override {
@@ -49,8 +49,12 @@ class AudioSourceTrackProxy: public AudioSource {
     }
 
   private:
-    AudioSourcePointer m_pAudioSource;
     TrackPointer m_pTrack;
+    // The audio source must be closed before releasing the track
+    // pointer to close any open file handles. Otherwise exporting
+    // track metadata into the same file may not work, because the
+    // file is still locked by the OS!
+    AudioSourcePointer m_pAudioSource;
 };
 
 } // namespace mixxx

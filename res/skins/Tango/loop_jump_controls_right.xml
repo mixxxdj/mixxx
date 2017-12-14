@@ -24,7 +24,7 @@ Variables:
           </WidgetGroup>
 
           <WidgetGroup><!-- Beatjump controls + spacer below -->
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>max,min</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
               <WidgetGroup><!-- Beatjump controls -->
@@ -92,7 +92,6 @@ Variables:
             <SizePolicy>me,min</SizePolicy>
           </WidgetGroup>
 
-          <!-- Loopmove / beatjump controls -->
           <Template src="skin:spacer_responsive_filler.xml">
             <SetVariable name="Color">25</SetVariable>
             <SetVariable name="Size">0me,0me</SetVariable>
@@ -106,7 +105,7 @@ Variables:
 
           <WidgetGroup><!-- Beatloop controls -->
             <Layout>vertical</Layout>
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>max,min</SizePolicy>
             <Children>
               <WidgetGroup><!-- Beatloop controls 2.1 -->
                 <Layout>horizontal</Layout>
@@ -144,6 +143,7 @@ Variables:
                   <WidgetGroup>
                     <ObjectName>Spacer0f</ObjectName>
                     <Layout>horizontal</Layout>
+                    <SizePolicy>min,min</SizePolicy>
                     <Children>
                       <Template src="skin:button_2state_right_display.xml">
                         <SetVariable name="TooltipId">reloop_toggle</SetVariable>
