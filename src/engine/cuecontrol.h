@@ -86,9 +86,9 @@ class CueControl : public EngineControl {
   public:
     CueControl(QString group,
                UserSettingsPointer pConfig);
-    virtual ~CueControl();
+    ~CueControl() override;
 
-    virtual void hintReader(HintVector* pHintList);
+    virtual void hintReader(HintVector* pHintList) override;
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible);
     void updateIndicators();
     bool isTrackAtCue();

@@ -19,7 +19,7 @@ Variables:
         <SetVariable name="SignalColor"><Variable name="SignalColor_3"/></SetVariable>
       </Template>
 
-      <Template src="skin:centerbox_deck34.xml"/>
+      <Template src="skin:spacer_center.xml"/>
 
       <Template src="skin:deck_right.xml">
         <SetVariable name="chanNum">4</SetVariable>

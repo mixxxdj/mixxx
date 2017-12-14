@@ -9,9 +9,9 @@ Variables:
   <WidgetGroup>
     <ObjectName>VUMeterMixer</ObjectName>
     <Layout>horizontal</Layout>
-    <Size>12me,1me</Size>
+    <SizePolicy>me,min</SizePolicy>
     <Children>
-      <WidgetGroup><!-- Left -->
+      <WidgetGroup><!-- VU Left -->
         <Layout>stacked</Layout>
         <Size>4f,1me</Size>
         <Children>
@@ -36,9 +36,9 @@ Variables:
             </Connection>
           </VuMeter>
         </Children>
-      </WidgetGroup><!-- /Left -->
+      </WidgetGroup><!-- /VU Left -->
 
-      <WidgetGroup><!-- Right -->
+      <WidgetGroup><!-- VU Right -->
         <Layout>stacked</Layout>
         <Size>4f,1me</Size>
         <Children>
@@ -63,7 +63,7 @@ Variables:
             </Connection>
           </VuMeter>
         </Children>
-      </WidgetGroup><!-- /Right -->
+      </WidgetGroup><!-- /VU Right -->
     </Children>
   </WidgetGroup>
 </Template>

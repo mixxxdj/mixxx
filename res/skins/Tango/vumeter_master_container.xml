@@ -1,14 +1,6 @@
 <!--
 Description:
-  The channel mixer containing
-  * EQ knobs incl. Kill buttons ] if enabled
-  * QuickEffect knob            ]
-  * Headphone cue button
-  * Volume slider
-  * Gain knob
-  * VUMeter
-Variables:
-  group : [ChannelXY]
+  Container for the master level meter, suiting various configurations.
 -->
 <Template>
   <WidgetGroup>
@@ -16,21 +8,9 @@ Variables:
     <SizePolicy>max,min</SizePolicy>
     <Children>
 
-      <WidgetGroup><!-- Master VU when mixer is shown -->
-        <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <Template src="skin:vumeter_master.xml"/>
-        </Children>
-        <Connection>
-          <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup><!-- /Master VU when mixer is shown -->
-
       <!-- Master VU when mixer is hidden but permament level meters are shown -->
       <WidgetGroup>
-        <Layout>vertical</Layout>
+        <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
           <WidgetGroup>
@@ -47,12 +27,24 @@ Variables:
           </WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
+          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
       <!-- /Master VU when mixer is hidden but permament level meters are shown -->
+
+      <WidgetGroup><!-- Master VU when mixer is shown -->
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:vumeter_master.xml"/>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Master VU when mixer is shown -->
 
     </Children>
   </WidgetGroup>

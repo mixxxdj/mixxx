@@ -4,6 +4,7 @@
 #include <QtDebug>
 
 #include "track/track.h"
+#include "track/trackref.h"
 
 #include "track/beatfactory.h"
 #include "util/assert.h"
@@ -36,6 +37,20 @@ bool compareAndSet(T* pField, const T& value) {
     }
 }
 
+inline
+mixxx::Bpm getActualBpm(
+        mixxx::Bpm bpm,
+        BeatsPointer pBeats = BeatsPointer()) {
+    // Only use the imported BPM if the beat grid is not valid!
+    // Reason: The BPM value in the metadata might be normalized
+    // or rounded, e.g. ID3v2 only supports integer values.
+    if (pBeats) {
+        return mixxx::Bpm(pBeats->getBpm());
+    } else {
+        return bpm;
+    }
+}
+
 } // anonymous namespace
 
 Track::Track(
@@ -44,11 +59,10 @@ Track::Track(
         TrackId trackId)
         : m_fileInfo(fileInfo),
           m_pSecurityToken(openSecurityToken(m_fileInfo, pSecurityToken)),
-          m_bDeleteOnReferenceExpiration(false),
           m_qMutex(QMutex::Recursive),
           m_record(trackId),
           m_bDirty(false),
-          m_bExportMetadata(false),
+          m_bMarkedForMetadataExport(false),
           m_analyzerProgress(-1) {
 }
 
@@ -74,24 +88,6 @@ TrackPointer Track::newDummy(
                     SecurityTokenPointer(),
                     trackId);
     return TrackPointer(pTrack);
-}
-
-// static
-void Track::onTrackReferenceExpired(Track* pTrack) {
-    VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
-        return;
-    }
-    //qDebug() << "Track::onTrackReferenceExpired"
-    //         << pTrack << pTrack->getId() << pTrack->getInfo();
-    if (pTrack->m_bDeleteOnReferenceExpiration) {
-        delete pTrack;
-    } else {
-        emit(pTrack->referenceExpired(pTrack));
-    }
-}
-
-void Track::setDeleteOnReferenceExpiration(bool deleteOnReferenceExpiration) {
-    m_bDeleteOnReferenceExpiration = deleteOnReferenceExpiration;
 }
 
 void Track::setTrackMetadata(
@@ -129,12 +125,9 @@ void Track::setTrackMetadata(
 
     // Need to set BPM after sample rate since beat grid creation depends on
     // knowing the sample rate. Bug #1020438.
-    if (newBpm.hasValue() &&
-            ((nullptr == m_pBeats) || !mixxx::Bpm::isValidValue(m_pBeats->getBpm()))) {
-        // Only (re-)set the BPM to the new value if the beat grid is not valid.
-        // Reason: The BPM value in the metadata might be normalized or rounded,
-        // e.g. ID3v2 only supports integer values!
-        setBpm(newBpm.getValue());
+    const auto actualBpm = getActualBpm(newBpm, m_pBeats);
+    if (actualBpm.hasValue()) {
+        setBpm(actualBpm.getValue());
     }
 
     if (!newKey.isEmpty()) {
@@ -144,16 +137,12 @@ void Track::setTrackMetadata(
 
 void Track::getTrackMetadata(
         mixxx::TrackMetadata* pTrackMetadata,
-        bool* pMetadataSynchronized,
-        bool* pDirty) const {
+        bool* pMetadataSynchronized) const {
     DEBUG_ASSERT(pTrackMetadata);
     QMutexLocker lock(&m_qMutex);
     *pTrackMetadata = m_record.getMetadata();
     if (pMetadataSynchronized != nullptr) {
         *pMetadataSynchronized = m_record.getMetadataSynchronized();
-    }
-    if (pDirty != nullptr) {
-        *pDirty = m_bDirty;
     }
 }
 
@@ -173,7 +162,7 @@ QString Track::getLocation() const {
     // (copy-on write). But operating on a single instance of QFileInfo
     // might not be thread-safe due to internal caching!
     QMutexLocker lock(&m_qMutex);
-    return m_fileInfo.absoluteFilePath();
+    return TrackRef::location(m_fileInfo);
 }
 
 QString Track::getCanonicalLocation() const {
@@ -181,7 +170,7 @@ QString Track::getCanonicalLocation() const {
     // (copy-on write). But operating on a single instance of QFileInfo
     // might not be thread-safe due to internal caching!
     QMutexLocker lock(&m_qMutex);
-    return m_fileInfo.canonicalFilePath();
+    return TrackRef::canonicalLocation(m_fileInfo);
 }
 
 QString Track::getDirectory() const {
@@ -271,9 +260,6 @@ double Track::setBpm(double bpmValue) {
         return bpmValue;
     }
 
-    mixxx::Bpm normalizedBpm(bpmValue);
-    normalizedBpm.normalizeValue();
-
     QMutexLocker lock(&m_qMutex);
 
     if (!m_pBeats) {
@@ -315,31 +301,26 @@ void Track::setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats) {
         return;
     }
 
-    QObject* pObject = nullptr;
     if (m_pBeats) {
-        pObject = dynamic_cast<QObject*>(m_pBeats.data());
+        auto pObject = dynamic_cast<QObject*>(m_pBeats.data());
         if (pObject) {
             disconnect(pObject, SIGNAL(updated()),
                        this, SLOT(slotBeatsUpdated()));
         }
     }
 
-    mixxx::Bpm bpm;
-    double bpmValue = bpm.getValue();
-
     m_pBeats = pBeats;
+
+    auto bpmValue = mixxx::Bpm::kValueUndefined;
     if (m_pBeats) {
         bpmValue = m_pBeats->getBpm();
-        bpm.setValue(bpmValue);
-        bpm.normalizeValue();
-        pObject = dynamic_cast<QObject*>(m_pBeats.data());
+        auto pObject = dynamic_cast<QObject*>(m_pBeats.data());
         if (pObject) {
             connect(pObject, SIGNAL(updated()),
                     this, SLOT(slotBeatsUpdated()));
         }
     }
-
-    m_record.refMetadata().refTrackInfo().setBpm(bpm);
+    m_record.refMetadata().refTrackInfo().setBpm(mixxx::Bpm(bpmValue));
 
     markDirtyAndUnlock(pLock);
     emit(bpmUpdated(bpmValue));
@@ -353,10 +334,13 @@ BeatsPointer Track::getBeats() const {
 
 void Track::slotBeatsUpdated() {
     QMutexLocker lock(&m_qMutex);
-    double bpmValue = m_pBeats->getBpm();
-    mixxx::Bpm bpm(bpmValue);
-    bpm.normalizeValue();
-    m_record.refMetadata().refTrackInfo().setBpm(bpm);
+
+    auto bpmValue = mixxx::Bpm::kValueUndefined;
+    if (m_pBeats) {
+        bpmValue = m_pBeats->getBpm();
+    }
+    m_record.refMetadata().refTrackInfo().setBpm(mixxx::Bpm(bpmValue));
+
     markDirtyAndUnlock(&lock);
     emit(bpmUpdated(bpmValue));
     emit(beatsUpdated());
@@ -395,22 +379,22 @@ void Track::setDateAdded(const QDateTime& dateAdded) {
 
 void Track::setDuration(mixxx::Duration duration) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_record.refMetadata().refTrackInfo().refDuration(), duration)) {
+    if (compareAndSet(&m_record.refMetadata().refDuration(), duration)) {
         markDirtyAndUnlock(&lock);
     }
 }
 
 void Track::setDuration(double duration) {
-    setDuration(mixxx::Duration::fromNanos(duration * 1000000000L));
+    setDuration(mixxx::Duration::fromSeconds(duration));
 }
 
 double Track::getDuration(DurationRounding rounding) const {
     QMutexLocker lock(&m_qMutex);
     switch (rounding) {
     case DurationRounding::SECONDS:
-        return std::round(m_record.getMetadata().getTrackInfo().getDuration().toDoubleSeconds());
+        return std::round(m_record.getMetadata().getDuration().toDoubleSeconds());
     default:
-        return m_record.getMetadata().getTrackInfo().getDuration().toDoubleSeconds();
+        return m_record.getMetadata().getDuration().toDoubleSeconds();
     }
 }
 
@@ -604,31 +588,31 @@ void Track::setType(const QString& sType) {
 
 void Track::setSampleRate(int iSampleRate) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_record.refMetadata().refTrackInfo().refSampleRate(), mixxx::AudioSignal::SampleRate(iSampleRate))) {
+    if (compareAndSet(&m_record.refMetadata().refSampleRate(), mixxx::AudioSignal::SampleRate(iSampleRate))) {
         markDirtyAndUnlock(&lock);
     }
 }
 
 int Track::getSampleRate() const {
     QMutexLocker lock(&m_qMutex);
-    return m_record.getMetadata().getTrackInfo().getSampleRate();
+    return m_record.getMetadata().getSampleRate();
 }
 
 void Track::setChannels(int iChannels) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_record.refMetadata().refTrackInfo().refChannels(), mixxx::AudioSignal::ChannelCount(iChannels))) {
+    if (compareAndSet(&m_record.refMetadata().refChannels(), mixxx::AudioSignal::ChannelCount(iChannels))) {
         markDirtyAndUnlock(&lock);
     }
 }
 
 int Track::getChannels() const {
     QMutexLocker lock(&m_qMutex);
-    return m_record.getMetadata().getTrackInfo().getChannels();
+    return m_record.getMetadata().getChannels();
 }
 
 int Track::getBitrate() const {
     QMutexLocker lock(&m_qMutex);
-    return m_record.getMetadata().getTrackInfo().getBitrate();
+    return m_record.getMetadata().getBitrate();
 }
 
 QString Track::getBitrateText() const {
@@ -637,7 +621,7 @@ QString Track::getBitrateText() const {
 
 void Track::setBitrate(int iBitrate) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_record.refMetadata().refTrackInfo().refBitrate(), mixxx::AudioSource::Bitrate(iBitrate))) {
+    if (compareAndSet(&m_record.refMetadata().refBitrate(), mixxx::AudioSource::Bitrate(iBitrate))) {
         markDirtyAndUnlock(&lock);
     }
 }
@@ -827,7 +811,7 @@ bool Track::isDirty() {
 
 void Track::markForMetadataExport() {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_bExportMetadata, true)) {
+    if (compareAndSet(&m_bMarkedForMetadataExport, true)) {
         markDirtyAndUnlock(&lock);
     }
 }
@@ -951,12 +935,27 @@ Track::ExportMetadataResult Track::exportMetadata(
     // be called after all references to the object have been dropped.
     // But it doesn't hurt much, so let's play it safe ;)
     QMutexLocker lock(&m_qMutex);
-    if (!m_bExportMetadata) {
+    // Discard the values of all currently unsupported fields that are
+    // not stored in the library, yet. Those fields are already imported
+    // from file tags, but the database schema needs to be extended for
+    // storing them. Currently those fields will be empty/null when read
+    // from the database and must be ignored until the schema has been
+    // updated.
+    m_record.refMetadata().resetUnsupportedValues();
+    // Normalize metadata before exporting to adjust the precision of
+    // floating values, ... Otherwise the following comparisons may
+    // repeatedly indicate that values have changed only due to
+    // rounding errors.
+    m_record.refMetadata().normalizeBeforeExport();
+    if (!m_bMarkedForMetadataExport) {
         // Perform some consistency checks if metadata is exported
-        // implicitly after a track has been modified and has NOT
-        // been explicitly requested by a user as indicated by this
-        // flag.
+        // implicitly after a track has been modified and NOT explicitly
+        // requested by a user as indicated by this flag.
         if (!m_record.getMetadataSynchronized()) {
+            // If the metadata has never been imported from file tags it
+            // must be exported explicitly once. This ensures that we don't
+            // overwrite existing file tags with completely different
+            // information.
             kLogger.debug()
                     << "Skip exporting of unsynchronized track metadata:"
                     << getLocation();
@@ -965,26 +964,72 @@ Track::ExportMetadataResult Track::exportMetadata(
         // Check if the metadata has actually been modified. Otherwise
         // we don't need to write it back. Exporting unmodified metadata
         // would needlessly update the file's time stamp and should be
-        // avoided.
-        // TODO(XXX): How to we handle the case that importTrackMetadataAndCoverImage()
-        // returns a newer time stamp than m_record.getMetadataSynchronized(), i.e.
-        // if the file has been modified by another program since we have imported
-        // the metadata? But this is expected to happen if files have been copied
-        // or after upgrading the column 'header_parsed' from bool to QDateTime.
-        mixxx::TrackMetadata trackMetadata;
-        if ((pMetadataSource->importTrackMetadataAndCoverImage(&trackMetadata, nullptr).first ==
-                mixxx::MetadataSource::ImportResult::Succeeded) &&
-                (m_record.getMetadata() == trackMetadata))  {
-            kLogger.debug()
-                    << "Skip exporting of unmodified track metadata:"
+        // avoided. Since we don't know in which state the file's metadata
+        // is we import it again into a temporary variable.
+        // TODO(XXX): m_record.getMetadataSynchronized() currently is a
+        // boolean flag, but it should become a time stamp in the future.
+        // We could take this time stamp and the file's last modification
+        // time stamp into // account and might decide to skip importing
+        // the metadata again.
+        mixxx::TrackMetadata importedFromFile;
+        if ((pMetadataSource->importTrackMetadataAndCoverImage(&importedFromFile, nullptr).first ==
+                mixxx::MetadataSource::ImportResult::Succeeded)) {
+            // Discard the values of all currently unsupported fields that are
+            // not stored in the library, yet. We have done the same with the track's
+            // current metadata to make the tags comparable (see above).
+            importedFromFile.resetUnsupportedValues();
+            // Before comparison: Adjust imported bpm values that might be imprecise,
+            // e.g. integer values from ID3v2. The same strategy has is used when
+            // importing the track's metadata in order to preserve the more accurate
+            // bpm value stored by Mixxx. Again, this is necessary to make the tags
+            // comparable.
+            auto actualBpm =
+                    getActualBpm(importedFromFile.getTrackInfo().getBpm(), m_pBeats);
+            // All imported floating point values are already properly rounded, because
+            // they have just been imported. But the imported bpm value might have been
+            // replaced by a more accurate bpm value, that also needs to be rounded before
+            // comparison.
+            actualBpm.normalizeBeforeExport();
+            // Replace the imported with the actual bpm value managed by Mixxx.
+            importedFromFile.refTrackInfo().setBpm(actualBpm);
+            // Finally the track's current metadata and the imported/adjusted metadata
+            // can be compared for differences to decide whether the tags in the file
+            // would change if we perform the write operation. We are using a special
+            // comparison function that excludes all read-only audio properties which
+            // are stored in file tags, but may not be accurate. They can't be written
+            // anyway, so we must not take them into account here.
+            if (!m_record.getMetadata().hasBeenModifiedAfterImport(importedFromFile))  {
+                // The file tags are in-sync with the track's metadata and don't need
+                // to be updated.
+                kLogger.debug()
+                        << "Skip exporting of unmodified track metadata into file:"
+                        << getLocation();
+                return ExportMetadataResult::Skipped;
+            }
+        } else {
+            // Something must be wrong with the file or it doesn't
+            // contain any file tags. We don't want to risk a failure
+            // during export and abort the operation for safety here.
+            // The user may decide to explicitly export the metadata.
+            kLogger.warning()
+                    << "Skip exporting of track metadata after import failed."
+                    << "Export of metadata must be triggered explicitly for this file:"
                     << getLocation();
             return ExportMetadataResult::Skipped;
         }
+        // ...by continuing the file tags will be updated
     }
-    m_bExportMetadata = false; // reset flag
+    // The track's metadata will be exported instantly. The export should
+    // only be tried once so we reset the marker flag.
+    m_bMarkedForMetadataExport = false;
     const auto trackMetadataExported =
             pMetadataSource->exportTrackMetadata(m_record.getMetadata());
     if (trackMetadataExported.first == mixxx::MetadataSource::ExportResult::Succeeded) {
+        // After successfully exporting the metadata we record the fact
+        // that now the file tags and the track's metadata are in sync.
+        // This information (flag or time stamp) is stored in the database.
+        // The database update will follow immediately after returning from
+        // this operation!
         // TODO(XXX): Replace bool with QDateTime
         DEBUG_ASSERT(!trackMetadataExported.second.isNull());
         //pTrack->setMetadataSynchronized(trackMetadataExported.second);

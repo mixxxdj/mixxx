@@ -28,11 +28,9 @@ class MetadataTest : public testing::Test {
     }
 
     void normalizeBpm(double normalizedValue) {
-        mixxx::Bpm normalizedBpm(normalizedValue);
-        normalizedBpm.normalizeValue(); // re-normalize
         // Expected: Re-normalization does not change the value
         // that should already be normalized.
-        EXPECT_EQ(normalizedBpm.getValue(), normalizedValue);
+        EXPECT_EQ(normalizedValue, mixxx::Bpm::normalizeValue(normalizedValue));
     }
     
     void readBPMFromId3(const char* inputValue, double expectedValue) {

@@ -427,8 +427,7 @@ void SoundSourceProxy::updateTrackFromSource(
     // not be supported at all and those would get lost!
     mixxx::TrackMetadata trackMetadata;
     bool metadataSynchronized = false;
-    bool isDirty = false;
-    m_pTrack->getTrackMetadata(&trackMetadata, &metadataSynchronized, &isDirty);
+    m_pTrack->getTrackMetadata(&trackMetadata, &metadataSynchronized);
     // Cast away the enriched track location by explicitly slicing the
     // returned CoverInfo to CoverInfoRelative
     const CoverInfoRelative coverInfo(m_pTrack->getCoverInfo());
@@ -438,13 +437,13 @@ void SoundSourceProxy::updateTrackFromSource(
     // If the file tags have already been parsed once, both track metadata
     // and cover art should not be updated implicitly.
     if (metadataSynchronized) {
-        if (isDirty || (importTrackMetadataMode == ImportTrackMetadataMode::Once)) {
+        if (importTrackMetadataMode == ImportTrackMetadataMode::Once) {
             kLogger.info() << "Skip parsing of track metadata and cover art from file"
                      << getUrl().toString();
             return; // abort
         }
         // Only parse and update cover art from file tags if the track has
-        // no cover art or if cover art has already been loaded file tags.
+        // no cover art or if cover art has already been loaded from file tags.
         if (((coverInfo.type == CoverInfo::METADATA) ||
                 (coverInfo.type == CoverInfo::NONE)) &&
                 (coverInfo.source != CoverInfo::USER_SELECTED)) {
@@ -585,7 +584,7 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
             continue; // try again
         }
         if ((openResult == mixxx::SoundSource::OpenResult::Succeeded) && m_pSoundSource->verifyReadable()) {
-            m_pAudioSource = mixxx::AudioSourceTrackProxy::create(m_pSoundSource, m_pTrack);
+            m_pAudioSource = mixxx::AudioSourceTrackProxy::create(m_pTrack, m_pSoundSource);
             DEBUG_ASSERT(m_pAudioSource);
             if (m_pAudioSource->frameIndexRange().empty()) {
                 kLogger.warning() << "File is empty"

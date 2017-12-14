@@ -64,7 +64,8 @@ class WTrackTableView : public WLibraryTableView {
     void slotPrevTrackInfo();
     void slotPrevDlgTagFetcher();
     void slotShowTrackInTagFetcher(TrackPointer track);
-    void slotImportTrackMetadata();
+    void slotImportTrackMetadataFromFileTags();
+    void slotExportTrackMetadataIntoFileTags();
     void slotResetPlayed();
     void addSelectionToPlaylist(int iPlaylistId);
     void addRemoveSelectionInCrate(QWidget* qc);
@@ -132,6 +133,9 @@ class WTrackTableView : public WLibraryTableView {
     // Reload Track Metadata Action:
     QAction *m_pImportMetadataFromFileAct;
     QAction *m_pImportMetadataFromMusicBrainzAct;
+
+    // Save Track Metadata Action:
+    QAction *m_pExportMetadataAct;
 
     // Load Track to PreviewDeck
     QAction* m_pAddToPreviewDeck;
