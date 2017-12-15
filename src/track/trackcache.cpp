@@ -389,7 +389,6 @@ TrackRef TrackCache::updateTrackIdInternal(
         DEBUG_ASSERT(m_tracksById.end() == m_tracksById.find(trackId));
         TrackRef trackRefWithId(trackRef, trackId);
         Item item(trackRefWithId, pTrack);
-        if (trackRef.hasId())
         m_tracksById.insert(
                 item.ref.getId(),
                 item);
