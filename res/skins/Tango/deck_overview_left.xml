@@ -54,7 +54,7 @@ Variables:
             </MarkRange>
             <Mark>
               <Control>cue_point</Control>
-              <Text>C</Text>
+              <Text>Q</Text>
               <Align>top|right</Align>
               <Color>#FF0080</Color>
               <TextColor>#FFFFFF</TextColor>
