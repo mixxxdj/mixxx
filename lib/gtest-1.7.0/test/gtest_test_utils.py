@@ -229,7 +229,7 @@ class Subprocess:
                                combined in a string.
     """
 
-    # The subprocess module is the preferrable way of running programs
+    # The subprocess module is the preferable way of running programs
     # since it is available and behaves consistently on all platforms,
     # including Windows. But it is only available starting in python 2.4.
     # In earlier python versions, we revert to the popen2 module, which is
@@ -245,7 +245,7 @@ class Subprocess:
       p = subprocess.Popen(command,
                            stdout=subprocess.PIPE, stderr=stderr,
                            cwd=working_dir, universal_newlines=True, env=env)
-      # communicate returns a tuple with the file obect for the child's
+      # communicate returns a tuple with the file object for the child's
       # output.
       self.output = p.communicate()[0]
       self._return_code = p.returncode

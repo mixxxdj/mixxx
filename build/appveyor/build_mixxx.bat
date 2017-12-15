@@ -105,7 +105,7 @@ echo Could not find Qt %QT_VERSION% at "%QT_DIR%".
 exit /b 1
 )
 
-REM Everyting prepared. Setup the compiler.
+REM Everything prepared. Setup the compiler.
 if %MACHINE_X86% (
 call "%BUILDTOOLS_PATH%\%BUILDTOOLS_SCRIPT%" %COMPILER_X86%
 ) else (

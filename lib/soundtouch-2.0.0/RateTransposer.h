@@ -138,7 +138,7 @@ public:
 
     /// Use this function instead of "new" operator to create a new instance of this class. 
     /// This function automatically chooses a correct implementation, depending on if 
-    /// integer ot floating point arithmetics are to be used.
+    /// integer or floating point arithmetics are to be used.
 //    static RateTransposer *newInstance();
 
     /// Returns the output buffer object

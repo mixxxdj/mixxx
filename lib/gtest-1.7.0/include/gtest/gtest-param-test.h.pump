@@ -78,7 +78,7 @@ TEST_P(FooTest, HasBlahBlah) {
 // Finally, you can use INSTANTIATE_TEST_CASE_P to instantiate the test
 // case with any set of parameters you want. Google Test defines a number
 // of functions for generating test parameters. They return what we call
-// (surprise!) parameter generators. Here is a  summary of them, which
+// (surprise!) parameter generators. Here is a summary of them, which
 // are all in the testing namespace:
 //
 //

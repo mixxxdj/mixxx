@@ -519,7 +519,7 @@ void TDStretch::clearCrossCorrState()
 void TDStretch::calcSeqParameters()
 {
     // Adjust tempo param according to tempo, so that variating processing sequence length is used
-    // at varius tempo settings, between the given low...top limits
+    // at various tempo settings, between the given low...top limits
     #define AUTOSEQ_TEMPO_LOW   0.5     // auto setting low tempo range (-50%)
     #define AUTOSEQ_TEMPO_TOP   2.0     // auto setting top tempo range (+100%)
 
@@ -895,7 +895,7 @@ double TDStretch::calcCrossCorr(const short *mixingPos, const short *compare, do
     corr = lnorm = 0;
     // Same routine for stereo and mono. For stereo, unroll loop for better
     // efficiency and gives slightly better resolution against rounding. 
-    // For mono it same routine, just  unrolls loop by factor of 4
+    // For mono it same routine, just unrolls loop by factor of 4
     for (i = 0; i < channels * overlapLength; i += 4) 
     {
         corr += (mixingPos[i] * compare[i] + 
@@ -941,7 +941,7 @@ double TDStretch::calcCrossCorrAccumulate(const short *mixingPos, const short *c
     corr = 0;
     // Same routine for stereo and mono. For stereo, unroll loop for better
     // efficiency and gives slightly better resolution against rounding. 
-    // For mono it same routine, just  unrolls loop by factor of 4
+    // For mono it same routine, just unrolls loop by factor of 4
     for (i = 0; i < channels * overlapLength; i += 4) 
     {
         corr += (mixingPos[i] * compare[i] + 

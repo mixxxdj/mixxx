@@ -193,7 +193,7 @@ Benchmark* RegisterBenchmarkInternal(Benchmark*);
 
 // The DoNotOptimize(...) function can be used to prevent a value or
 // expression from being optimized away by the compiler. This function is
-// intented to add little to no overhead.
+// intended to add little to no overhead.
 // See: http://stackoverflow.com/questions/28287064
 #if defined(__clang__) && defined(__GNUC__)
 // TODO(ericwf): Clang has a bug where it tries to always use a register
