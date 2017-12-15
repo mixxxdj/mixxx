@@ -315,7 +315,7 @@ void EffectChainSlot::registerChannel(const ChannelHandleAndGroup& handle_group)
     }
     ControlPushButton* pEnableControl = new ControlPushButton(
             ConfigKey(m_group, QString("group_%1_enable").arg(handle_group.name())),
-            true, initialValue);
+            false, initialValue);
     pEnableControl->setButtonMode(ControlPushButton::POWERWINDOW);
 
     ChannelInfo* pInfo = new ChannelInfo(handle_group, pEnableControl);
