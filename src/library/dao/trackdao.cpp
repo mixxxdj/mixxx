@@ -635,13 +635,22 @@ TrackPointer TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove
 
     TrackCacheResolver cacheResolver(
             TrackCache::instance().resolve(fileInfo));
-    TrackPointer pTrack(cacheResolver.getTrack());
+    const TrackPointer pTrack = cacheResolver.getTrack();
     if (!pTrack) {
         qWarning() << "TrackDAO::addTracksAddFile:"
                 << "File not found"
                 << TrackRef::location(fileInfo);
         return TrackPointer();
     }
+    const TrackId trackId = pTrack->getId();
+    if (trackId.isValid()) {
+        qDebug() << "TrackDAO::addTracksAddFile:"
+                << "Track has already been added to the database"
+                << trackId;
+        return TrackPointer();
+    }
+    // Keep the TrackCache locked until the id of the Track
+    // object is known and has been updated in the cache.
 
     // Initially (re-)import the metadata for the newly created track
     // from the file.
