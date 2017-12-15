@@ -48,6 +48,7 @@
       <attribute config_key="[Master],num_decks">4</attribute>
       <attribute config_key="[Master],num_samplers">64</attribute>
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
+      <attribute persist="true" config_key="[Master],show_eqs">1</attribute>
       <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Master],maximize_library">0</attribute>
       <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
@@ -68,7 +69,6 @@
       <attribute persist="true" config_key="[SamplerRow8],expanded">0</attribute>
       <!-- [Tango] specific defaults -->
       <attribute persist="true" config_key="[Tango],4_fx_units">0</attribute>
-      <attribute persist="true" config_key="[Tango],fx_super_knob">0</attribute>
       <!--attribute persist="true" config_key="[Tango],sampler_fx_buttons">1</attribute-->
       <attribute persist="true" config_key="[Tango],beatgrid_buttons">0</attribute>
       <attribute persist="true" config_key="[Tango],deck_controls_expanded">0</attribute>
@@ -82,7 +82,6 @@
       <attribute persist="true" config_key="[Tango],always_visible_orientation">0</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_quantize">1</attribute>
       <attribute persist="true" config_key="[Tango],[Tango],separate_cue_button">1</attribute>
-      <attribute persist="true" config_key="[Tango],eq_knobs">1</attribute>
       <attribute persist="true" config_key="[Tango],hotcues">1</attribute>
       <attribute persist="true" config_key="[Tango],8_hotcues">0</attribute>
       <attribute persist="true" config_key="[Tango],key_controls">1</attribute>

@@ -125,7 +125,7 @@ Variables:
               </Template>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],fx_super_knob</ConfigKey>
+              <ConfigKey persist="true">[Master],show_superknobs</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>

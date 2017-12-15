@@ -401,7 +401,7 @@ Description:
                     <MaximumSize>182,17</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
                     <Connection>
-                      <ConfigKey persist="true">[Master],show_mixerr</ConfigKey>
+                      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
                       <Transform><Not/></Transform>
                       <BindProperty>visible</BindProperty>
                     </Connection>
@@ -410,7 +410,7 @@ Description:
                   <Template src="skin:skin_settings_button_2state.xml">
                     <SetVariable name="state_0_text">      EQ Knobs</SetVariable>
                     <SetVariable name="state_1_text"> &#10004; EQ Knobs</SetVariable>
-                    <SetVariable name="Setting">[Tango],eq_knobs</SetVariable>
+                    <SetVariable name="Setting">[Master],show_eqs</SetVariable>
                   </Template>
 
                 </Children>
@@ -739,7 +739,7 @@ Description:
                   <Template src="skin:skin_settings_button_2state.xml">
                     <SetVariable name="state_0_text">      Super Knobs</SetVariable>
                     <SetVariable name="state_1_text"> &#10004; Super Knobs</SetVariable>
-                    <SetVariable name="Setting">[Tango],fx_super_knob</SetVariable>
+                    <SetVariable name="Setting">[Master],show_superknobs</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup><!-- /Super Knobs -->

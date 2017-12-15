@@ -40,7 +40,7 @@ Variables:
           <Template src="skin:quick_fx_knob_button_left.xml"/><!-- Quick Effect knob -->
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Tango],eq_knobs</ConfigKey>
+          <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /EQs + QuickEffect knobs -->
