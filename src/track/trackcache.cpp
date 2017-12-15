@@ -1,9 +1,12 @@
 #include "track/trackcache.h"
 
 #include "util/assert.h"
+#include "util/logger.h"
 
 
 namespace {
+
+const mixxx::Logger kLogger("TrackCache");
 
 inline
 TrackRef createTrackRef(const Track& track) {
@@ -279,7 +282,7 @@ bool TrackCache::resolveInternal(
     DEBUG_ASSERT(nullptr != pCacheResolver);
     // Primary lookup by id (if available)
     if (trackId.isValid()) {
-        qDebug() << "TrackCache:"
+        kLogger.debug()
                 << "Resolving track by id"
                 << trackId;
         const auto trackById(m_tracksById.find(trackId));
@@ -288,7 +291,7 @@ bool TrackCache::resolveInternal(
             TrackRef resolvedTrackRef((*trackById).ref);
             TrackPointer pResolvedTrack((*trackById).weakPtr);
             if (pResolvedTrack) {
-                qDebug() << "TrackCache:"
+                kLogger.debug()
                         << "Cache hit - found track by id"
                         << resolvedTrackRef;
                 *pCacheResolver = TrackCacheResolver(
@@ -299,7 +302,7 @@ bool TrackCache::resolveInternal(
                 return true;
             } else {
                 // Explicitly evict the cached track before the deleter does it
-                qDebug() << "TrackCache:"
+                kLogger.debug()
                         << "Cache hit - evicting zombie track"
                         << resolvedTrackRef;
                 Track* pEvictedTrack = evictInternal(resolvedTrackRef);
@@ -313,7 +316,7 @@ bool TrackCache::resolveInternal(
     // avoid calculating the canonical file path if it is not needed.
     TrackRef trackRef(TrackRef::fromFileInfo(fileInfo, trackId));
     if (trackRef.hasCanonicalLocation()) {
-        qDebug() << "TrackCache:"
+        kLogger.debug()
                 << "Resolving track by canonical location"
                 << trackRef.getCanonicalLocation();
         const auto trackByCanonicalLocation(
@@ -324,7 +327,7 @@ bool TrackCache::resolveInternal(
             TrackRef resolvedTrackRef((*trackByCanonicalLocation).ref);
             TrackPointer pResolvedTrack((*trackByCanonicalLocation).weakPtr);
             if (pResolvedTrack) {
-                qDebug() << "TrackCache:"
+                kLogger.debug()
                         << "Cache hit - found track by canonical location"
                         << resolvedTrackRef;
                 // Consistency: Resolving by id  must return the same result!
@@ -338,7 +341,7 @@ bool TrackCache::resolveInternal(
                 return true;
             } else {
                 // Explicitly evict the cached track before the deleter does it
-                qDebug() << "TrackCache:"
+                kLogger.debug()
                         << "Cache hit - evicting zombie track"
                         << resolvedTrackRef;
                 Track* pEvictedTrack = evictInternal(resolvedTrackRef);
@@ -365,12 +368,12 @@ TrackCacheResolver TrackCache::resolve(
     }
     if (!trackRef.isValid()) {
         DEBUG_ASSERT(cacheResolver.getTrackCacheLookupResult() == TrackCacheLookupResult::NONE);
-        qWarning() << "TrackCache:"
+        kLogger.warning()
                 << "Cache miss - ignoring invalid track"
                 << trackRef;
         return cacheResolver;
     }
-    qDebug() << "TrackCache:"
+    kLogger.debug()
             << "Cache miss - inserting new track into cache"
             << trackRef;
     TrackPointer pTrack(
@@ -431,7 +434,7 @@ void TrackCache::evict(
 
 TrackCache::Item TrackCache::purgeInternal(
         const TrackRef& trackRef) {
-    qDebug() << "TrackCache:"
+    kLogger.debug()
             << "Purging track"
             << trackRef;
 
@@ -478,7 +481,7 @@ TrackCache::Item TrackCache::purgeInternal(
 
 Track* TrackCache::evictInternal(
         const TrackRef& trackRef) {
-    qDebug() << "TrackCache:"
+    kLogger.debug()
             << "Evicting track"
             << trackRef;
 
@@ -494,7 +497,7 @@ Track* TrackCache::evictInternal(
         // Keep the cache locked while evicting the track object!
         m_pEvictor->onEvictingTrackFromCache(purgedItem.plainPtr);
     } else {
-        qDebug() << "TrackCache:"
+        kLogger.debug()
                 << "Uncached track cannot be evicted"
                 << trackRef;
     }
