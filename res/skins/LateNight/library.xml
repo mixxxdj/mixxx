@@ -25,6 +25,8 @@
 								<Layout>vertical</Layout>
 								<Children>
 
+                  <Template src="skin:preview_deck.xml"/>
+
 									<!--Search Input Field-->
 									<SearchBox></SearchBox>
 

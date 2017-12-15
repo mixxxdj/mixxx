@@ -781,8 +781,7 @@ WBeatSpinBox {
   border: 1px solid #585858;
   padding: 0px;
   margin: 0px;
-  margin-top: 3px;
-  margin-right: 3px;
+  margin-bottom: 5px;
 }
 
 #PreviewDeckText {
