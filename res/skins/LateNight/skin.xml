@@ -88,11 +88,14 @@
         <WidgetStack currentpage="[Master],maximize_library">
           <Children>
             <Splitter>
+              <ObjectName>CoverArtSplitter</ObjectName>
               <Orientation>vertical</Orientation>
               <SizePolicy>me,min</SizePolicy>
+              <SplitSizes>100,10000</SplitSizes>
               <SplitSizesConfigKey>[LateNight],waveform_splitSize</SplitSizesConfigKey>
               <Collapsible>0,0</Collapsible>
               <Children>
+
                 <Template src="skin:waveforms.xml"/>
 
                 <WidgetGroup>
