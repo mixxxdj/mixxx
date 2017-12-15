@@ -274,7 +274,7 @@ public:
     /// Example: if processing with parameters "-tempo=15 -pitch=-3", the function
     /// will return value 0.8695652... Now, if processing an audio stream whose duration
     /// is exactly one million audio samples, then you can expect the processed 
-    /// output duration  be 0.869565 * 1000000 = 869565 samples.
+    /// output duration be 0.869565 * 1000000 = 869565 samples.
     double getInputOutputSampleRatio();
 
     /// Flushes the last samples from the processing pipeline to the output.
@@ -320,7 +320,7 @@ public:
     /// Changes a setting controlling the processing system behaviour. See the
     /// 'SETTING_...' defines for available setting ID's.
     /// 
-    /// \return 'true' if the setting was succesfully changed
+    /// \return 'true' if the setting was successfully changed
     bool setSetting(int settingId,   ///< Setting ID number. see SETTING_... defines.
                     int value        ///< New setting value.
                     );

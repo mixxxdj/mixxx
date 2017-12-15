@@ -3679,7 +3679,7 @@ class GTEST_API_ FilePath {
 
   void Normalize();
 
-  // Returns a pointer to the last occurence of a valid path separator in
+  // Returns a pointer to the last occurrence of a valid path separator in
   // the FilePath. On Windows, for example, both '/' and '\' are valid path
   // separators. Returns NULL if no path separator was found.
   const char* FindLastPathSeparator() const;
@@ -8808,7 +8808,7 @@ TEST_P(FooTest, HasBlahBlah) {
 // Finally, you can use INSTANTIATE_TEST_CASE_P to instantiate the test
 // case with any set of parameters you want. Google Test defines a number
 // of functions for generating test parameters. They return what we call
-// (surprise!) parameter generators. Here is a  summary of them, which
+// (surprise!) parameter generators. Here is a summary of them, which
 // are all in the testing namespace:
 //
 //

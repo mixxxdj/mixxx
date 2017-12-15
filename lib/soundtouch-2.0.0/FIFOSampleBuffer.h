@@ -115,11 +115,11 @@ public:
     /// not corrupt the book-keeping!
     ///
     /// When using this function as means for inserting new samples, also remember 
-    /// to increase the sample count afterwards, by calling  the 
+    /// to increase the sample count afterwards, by calling the 
     /// 'putSamples(numSamples)' function.
     SAMPLETYPE *ptrEnd(
                 uint slackCapacity   ///< How much free capacity (in samples) there _at least_ 
-                                     ///< should be so that the caller can succesfully insert the 
+                                     ///< should be so that the caller can successfully insert the 
                                      ///< desired samples to the buffer. If necessary, the function 
                                      ///< grows the buffer size to comply with this requirement.
                 );

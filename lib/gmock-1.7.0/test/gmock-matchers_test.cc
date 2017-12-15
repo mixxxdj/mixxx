@@ -855,7 +855,7 @@ TEST(TypedEqTest, CanDescribeSelf) {
 // Type<T>::IsTypeOf(v) compiles iff the type of value v is T, where T
 // is a "bare" type (i.e. not in the form of const U or U&).  If v's
 // type is not T, the compiler will generate a message about
-// "undefined referece".
+// "undefined reference".
 template <typename T>
 struct Type {
   static bool IsTypeOf(const T& /* v */) { return true; }
@@ -4051,8 +4051,8 @@ TYPED_TEST(ContainerEqTest, DuplicateDifference) {
 }
 #endif  // GTEST_HAS_TYPED_TEST
 
-// Tests that mutliple missing values are reported.
-// Using just vector here, so order is predicatble.
+// Tests that multiple missing values are reported.
+// Using just vector here, so order is predictable.
 TEST(ContainerEqExtraTest, MultipleValuesMissing) {
   static const int vals[] = {1, 1, 2, 3, 5, 8};
   static const int test_vals[] = {2, 1, 5};
@@ -4065,7 +4065,7 @@ TEST(ContainerEqExtraTest, MultipleValuesMissing) {
 }
 
 // Tests that added values are reported.
-// Using just vector here, so order is predicatble.
+// Using just vector here, so order is predictable.
 TEST(ContainerEqExtraTest, MultipleValuesAdded) {
   static const int vals[] = {1, 1, 2, 3, 5, 8};
   static const int test_vals[] = {1, 2, 92, 3, 5, 8, 46};

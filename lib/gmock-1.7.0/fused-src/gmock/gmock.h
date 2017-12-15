@@ -1834,7 +1834,7 @@ typedef internal::IgnoredValue Unused;
 
 // This constructor allows us to turn an Action<From> object into an
 // Action<To>, as long as To's arguments can be implicitly converted
-// to From's and From's return type cann be implicitly converted to
+// to From's and From's return type can be implicitly converted to
 // To's.
 template <typename To>
 template <typename From>
@@ -6128,7 +6128,7 @@ class BothOfMatcherImpl : public MatcherInterface<T> {
 // MatcherList provides mechanisms for storing a variable number of matchers in
 // a list structure (ListType) and creating a combining matcher from such a
 // list.
-// The template is defined recursively using the following template paramters:
+// The template is defined recursively using the following template parameters:
 //   * kSize is the length of the MatcherList.
 //   * Head is the type of the first matcher of the list.
 //   * Tail denotes the types of the remaining matchers of the list.
@@ -6851,9 +6851,9 @@ class ResultOfMatcher {
 
    private:
     // Functors often define operator() as non-const method even though
-    // they are actualy stateless. But we need to use them even when
+    // they are actually stateless. But we need to use them even when
     // 'this' is a const pointer. It's the user's responsibility not to
-    // use stateful callables with ResultOf(), which does't guarantee
+    // use stateful callables with ResultOf(), which doesn't guarantee
     // how many times the callable will be invoked.
     mutable CallableStorageType callable_;
     const Matcher<ResultType> matcher_;

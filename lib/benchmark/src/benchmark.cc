@@ -909,7 +909,7 @@ void Initialize(int* argc, char** argv) {
   internal::ParseCommandLineFlags(argc, argv);
   internal::SetLogLevel(FLAGS_v);
   // TODO remove this. It prints some output the first time it is called.
-  // We don't want to have this ouput printed during benchmarking.
+  // We don't want to have this output printed during benchmarking.
   MyCPUUsage();
   // The first call to walltime::Now initialized it. Call it once to
   // prevent the initialization from happening in a benchmark.

@@ -257,7 +257,7 @@ def GetTokens(source):
             # raise is conditionally disabled so that bogus code
             # in an #if 0 block can be handled.  Since we will ignore
             # it anyways, this is probably fine.  So disable the
-            # exception and  return the bogus char.
+            # exception and return the bogus char.
             i += 1
         else:
             sys.stderr.write('Got invalid token in %s @ %d token:%s: %r\n' %
