@@ -1837,9 +1837,10 @@ WTrackProperty#SamplerTitle_mini {
  ######  Spinnies  ##############################################
 ##############################################################*/
 
-#SpinnyContainer {
+#SpinnyCover_Container {
   margin: 0px;
   padding: 0px;
+  background-color: #1e1e1e;
 }
 
 #SpinnyMini {
