@@ -17,6 +17,7 @@
             <SizePolicy>me, min</SizePolicy>
             <Children>
               <Template src="skin:knob_textless.xml">
+                <SetVariable name="Size">40f,34f</SetVariable>
                 <SetVariable name="group"><Variable name="EqualizerEffectGroup"/></SetVariable>
                 <SetVariable name="control">parameter<Variable name="parameter"/></SetVariable>
               </Template>

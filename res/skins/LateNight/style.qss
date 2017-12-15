@@ -285,8 +285,8 @@
 
 #ArtistGutter{
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  padding: 1px;
-  padding-bottom: 4px;
+  padding: 1px;/*
+  padding-bottom: 2px;*/
   border: 0px solid #585858;
 }
 
@@ -729,9 +729,9 @@ WBeatSpinBox {
   /* make it 2px smaller in each dimension,
     border is added for final size */
   min-width: 45px;
-  max-width: 45px;
+  max-width: 180px;
   min-height: 22px;
-  max-height: 22px;
+  max-height: 88px;
   border: 1px solid #666;
   /* size of spinbox: 54x22px
   incl. up/down button: 70x22px */
@@ -741,8 +741,9 @@ WBeatSpinBox {
   selection-color: #0f0f0f;
   selection-background-color: #d2d2d2;
   font-size: 13px/13px;
+  padding: 0px;
   padding-left: 3px;
-  margin: 0 22px 2px 0;
+  margin: 0 24px 2px 0;
 }
   WBeatSpinBox:hover {
     border-color: #888;
@@ -757,9 +758,11 @@ WBeatSpinBox {
     position: relative;
     /* as with spinbox: border is added to size.
       define it with same width as hover border, otherwise size jumps */
-    width: 16px;
-    height: 24px;
-    margin-bottom: 1px;
+    min-width: 16px;
+    min-height: 26px;
+    margin: 1px 0px 1px 0px;
+    padding: 0px;
+    border: 0px;
     }
 
   WBeatSpinBox::up-button {
@@ -771,7 +774,7 @@ WBeatSpinBox {
     }
   WBeatSpinBox::down-button {
     subcontrol-position: center right;
-    left: -16px;
+    left: -15px;
     image: url(skin:/buttons/btn_beatbox_halve.svg) no-repeat;
     }
     WBeatSpinBox::down-button:pressed {
@@ -944,7 +947,7 @@ border: 0px;
 #MicContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   border: 1px solid #585858;
-  padding: 5px;
+  padding: 3px;
   margin: 2px;
   background-color: #1e1e1e;
 }
@@ -952,9 +955,6 @@ border: 0px;
 #MicBorder {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   border: 1px solid #585858;
-  padding: 2px;
-  padding-left:0px;
-  padding-right:0px;
   margin-left: 3px;
   margin-right: 3px;
 }
@@ -1004,7 +1004,7 @@ border: 0px;
 }
 
 #SamplerVU {
-  padding: 5px;
+  padding: 0px 5px 0px 5px;
   qproperty-layoutAlignment: 'AlignRight | AlignBottom';
   border: 1px solid #585858;
   border-top: 0px;
@@ -1013,7 +1013,7 @@ border: 0px;
 }
 
 #SamplerPitch {
-  padding: 5px;
+  padding: 0px 5px 0px 5px;
   qproperty-layoutAlignment: 'AlignRight | AlignBottom';
 }
 
@@ -1097,45 +1097,27 @@ border: 0px;
   text-align: left;
 }
 
-#EffectUnitNameRow {
-  border-bottom: 1px solid #585858;
-  background-color: transparent;
-  margin: 0px;
+#EffectRack {
+  qproperty-layoutAlignment: 'AlignCenter | AlignTop';
+  background-color: #0e0e0e;
 }
 
 #EffectUnit1, #EffectUnit2, #EffectUnit3, #EffectUnit4 {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
   border: 1px solid #585858;
+  margin-top: 5px;
 }
 
 #EffectUnit1,
 #EffectUnit3 {
-  border-left:none;
+  border-left: none;
   margin-right: 2px;
 }
 
 #EffectUnit2,
 #EffectUnit4 {
-  border-right:none;
+  border-right: none;
   margin-left: 2px;
-}
-
-#EffectUnitNameContainer {
-  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-  padding: 2px;
-}
-
-#EffectUnitButton {
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI Symbol", Arial, "Open Sans Light";
-  font: bold 16px/19px;
-  text-transform: none;
-  color: #eece33;
-}
-
-#EffectRack {
-  qproperty-layoutAlignment: 'AlignCenter | AlignTop';
-  background-color: #0e0e0e;
-  padding-top: 5px;
 }
 
 #EffectRows {
@@ -1145,27 +1127,41 @@ border: 0px;
 #EffectUnitControls {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   background-color: #1e1e1e;
-  padding: 3px;
   border-left: 1px solid #585858;
+  padding: 1px 0px 2px 1px;
 }
 
-#EffectUnitGroupControls {
-  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+#FxUnit1_ExpandCollapseButton,
+#FxUnit2_ExpandCollapseButton {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
 }
 
-#EffectUnit {
-  font-size: 16px;
+#FxUnit1_ExpandCollapseButton WPushButton,
+#FxUnit2_ExpandCollapseButton WPushButton {
+  font-size: 13px/13px;
+  font-weight: bold;
+  padding-top: 10px;
+  color: #bfbfbf;
 }
 
 #EffectSlot1,
 #EffectSlot2,
 #EffectSlot3 {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-  padding: 2px;
+  padding: 2px 0px 2px 0px;
+}
+
+#EffectSlot_focused {
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #0f0f0f, stop:1 #222222);
+}
+
+#MetaKnob {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+  padding: 0px 3px 0px 3px;
 }
 
 #EffectKnob {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
 }
 
 #EffectButton {
@@ -1184,35 +1180,34 @@ WEffectSelector {
   text-transform: uppercase;
   color: #ccc;
   background-color: #0f0f0f;
-  width: 77px;
-  height: 24px;
   /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
-  margin: 0px 3px 0px 0px;
+  min-height: 13px;
+  margin: 0px;
   /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
       names start getting cut off. Adding explicit padding improves this. */
-  padding: 0px 0px 0px 3px;
+  padding: 4px 0px 4px 3px;
   /* The 3D frame on the combo box becomes flat when you give it a border */
   border: 1px solid #666;
   border-radius: 3px;
   }
-  WEffectSelector::drop-down {
+  WEffectSelector::drop-down {/*
     width: 16px;
     height: 24px;
-    border: 0;
     padding: 0;
-    margin: 0;
+    margin: 0;*/
+    border: 0;
   }
-  WEffectSelector::down-arrow {
+  WEffectSelector::down-arrow {/*
     width: 16px;
-    height: 24px;
+    height: 24px;*/
     image: url(skin:/buttons/btn_fxSelector.svg);
     border: 0;
     padding: 0;
     margin: 0;
     }
-    WEffectSelector::down-arrow:hover {
+    WEffectSelector::down-arrow:hover {/*
       width: 16px;
-      height: 24px;
+      height: 24px;*/
       image: url(skin:/buttons/btn_fxSelector_pressed.svg);
     border: 0;
     padding: 0;
@@ -1221,7 +1216,7 @@ WEffectSelector {
 
   WEffectSelector QAbstractItemView {
     min-width: 142px;
-    max-width: 142px;
+    max-width: 200px;
     background-color: #0f0f0f;
     /* padding-left: 6px; */
     font-size: 12px/13px;
@@ -1267,6 +1262,82 @@ WEffectSelector {
   border: 1px solid #eece33;
   margin: 1px;
 }*/
+
+#FxSuperLinkButton,
+#FxSuperLinkInvertButton {
+  /* those buttons are 5px tall, that's why they won't accept
+  3px radius which is set for all WPushButtons
+  border-radius: 2px; */
+}
+
+#FxSuperLinkButton[value="0"],
+#FxSuperLinkInvertButton[displayValue="0"] {
+  background-color: #4b4b4b;
+}
+#FxSuperLinkButton[value="0"]:hover,
+#FxSuperLinkInvertButton[displayValue="0"]:hover {
+  background-color: #888;
+}
+#FxSuperLinkInvertButton[displayValue="1"] {
+  background-color: #9C0900;
+  }
+  #FxSuperLinkInvertButton[displayValue="1"]:hover {
+    background-color: #B50A00;
+  }
+
+#FxSuperLinkButton[value="1"] {
+  background-color: #A5A5A5;
+  }
+  #FxSuperLinkButton[value="1"]:hover {
+    background-color: #CDCDCD;
+  }
+#FxSuperLinkButton[value="2"] {	/*
+  a simple way to achive a partitioning in thirds	*/
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 #A5A5A5,
+    stop: 0.33 #A5A5A5,
+    stop: 0.34 #4b4b4b,
+    stop: 1 #4b4b4b);
+  }
+  #FxSuperLinkButton[value="2"]:hover {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+      stop: 0 #CDCDCD,
+      stop: 0.33 #CDCDCD,
+      stop: 0.34 #4b4b4b,
+      stop: 1 #4b4b4b);
+    }
+#FxSuperLinkButton[value="3"] {
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 #4b4b4b,
+    stop: 0.66 #4b4b4b,
+    stop: 0.67 #A5A5A5,
+    stop: 1 #A5A5A5);
+  }
+  #FxSuperLinkButton[value="3"]:hover {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+      stop: 0 #4b4b4b,
+      stop: 0.66 #4b4b4b,
+      stop: 0.67 #CDCDCD,
+      stop: 1 #CDCDCD);
+    }
+#FxSuperLinkButton[value="4"] {
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 #A5A5A5,
+    stop: 0.330000 #A5A5A5,
+    stop: 0.340000 #4b4b4b,
+    stop: 0.660000 #4b4b4b,
+    stop: 0.670000 #A5A5A5,
+    stop: 1 #A5A5A5);
+  }
+  #FxSuperLinkButton[value="4"]:hover {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+      stop: 0 #CDCDCD,
+      stop: 0.330000 #CDCDCD,
+      stop: 0.340000 #4b4b4b,
+      stop: 0.660000 #4b4b4b,
+      stop: 0.670000 #CDCDCD,
+      stop: 1 #CDCDCD);
+  }
 
 #EffectUnitGroupControlButton[displayValue="0"] {
     font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";

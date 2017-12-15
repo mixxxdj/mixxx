@@ -24,21 +24,42 @@
         <BackPath>background_tile.png</BackPath>
         <Children>
 
-          <SingletonContainer>
-            <ObjectName>FxUnit<Variable name="FxUnit"/>_FxSlot1</ObjectName>
-          </SingletonContainer>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>FxUnit<Variable name="FxUnit"/>_FxSlot1</ObjectName>
+              </SingletonContainer>
+            </Children>
+          </WidgetGroup>
+
 
           <WidgetGroup><ObjectName>Spacer58</ObjectName><Size>1f,1me</Size></WidgetGroup>
 
-          <SingletonContainer>
-            <ObjectName>FxUnit<Variable name="FxUnit"/>_FxSlot2</ObjectName>
-          </SingletonContainer>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <MaximumSize>200,-1</MaximumSize>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>FxUnit<Variable name="FxUnit"/>_FxSlot2</ObjectName>
+              </SingletonContainer>
+            </Children>
+          </WidgetGroup>
 
           <WidgetGroup><ObjectName>Spacer58</ObjectName><Size>1f,1me</Size></WidgetGroup>
 
-          <SingletonContainer>
-            <ObjectName>FxUnit<Variable name="FxUnit"/>_FxSlot3</ObjectName>
-          </SingletonContainer>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <MaximumSize>200,-1</MaximumSize>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>FxUnit<Variable name="FxUnit"/>_FxSlot3</ObjectName>
+              </SingletonContainer>
+            </Children>
+          </WidgetGroup>
         </Children>
       </WidgetGroup><!-- /No parameters -->
 
@@ -47,31 +68,46 @@
         <Layout>horizontal</Layout>
         <SizePolicy>max,min</SizePolicy>
         <Children>
-          <WidgetGroup><Size>8f,</Size></WidgetGroup>
-
-          <SingletonContainer>
-            <ObjectName>FxUnit<Variable name="FxUnit"/>_PflButton</ObjectName>
-          </SingletonContainer>
 
           <WidgetGroup><Size>5f,</Size></WidgetGroup>
 
-          <SingletonContainer>
-            <ObjectName>FxUnit<Variable name="FxUnit"/>_SuperKnob</ObjectName>
-          </SingletonContainer>
+          <WidgetGroup><!-- Super knob, optional -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>max,min</SizePolicy>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>FxUnit<Variable name="FxUnit"/>_SuperKnob</ObjectName>
+              </SingletonContainer>
 
-          <WidgetGroup><Size>5f,</Size></WidgetGroup>
+              <WidgetGroup><Size>5f,</Size></WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Master],show_superknobs</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
 
           <SingletonContainer>
               <ObjectName>FxUnit<Variable name="FxUnit"/>_DryWetKnob</ObjectName>
             </SingletonContainer>
 
-          <WidgetGroup><Size>5f,</Size></WidgetGroup>
+          <WidgetGroup><Size>3f,</Size></WidgetGroup>
 
-          <SingletonContainer>
-            <ObjectName>FxUnit<Variable name="FxUnit"/>_ExpandCollapseButton</ObjectName>
-          </SingletonContainer>
+          <WidgetGroup><!-- No parameters -->
+            <SizePolicy>me,min</SizePolicy>
+            <Layout>vertical</Layout>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>FxUnit<Variable name="FxUnit"/>_ExpandCollapseButton</ObjectName>
+              </SingletonContainer>
 
-          <WidgetGroup><Size>5f,</Size></WidgetGroup>
+              <WidgetGroup><Size>3f,</Size></WidgetGroup>
+
+              <SingletonContainer>
+                <ObjectName>FxUnit<Variable name="FxUnit"/>_PflButton</ObjectName>
+              </SingletonContainer>
+            </Children>
+          </WidgetGroup>
         </Children>
       </WidgetGroup><!-- /Mix / Supers -->
 

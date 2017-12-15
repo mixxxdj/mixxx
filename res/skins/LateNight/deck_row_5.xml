@@ -8,7 +8,7 @@
 			<Overview>
 				<TooltipId>waveform_overview</TooltipId>
 				<Channel><Variable name="channum"/></Channel>
-				<MinimumSize>-1,10</MinimumSize>
+				<MinimumSize>-1,50</MinimumSize>
 				<!-- transparent background if no <BgColor> & <BgPixmap> is present
 				<BgColor>#1C1C1C</BgColor>
 				<BgPixmap></BgPixmap>

@@ -47,7 +47,6 @@
             <Layout>vertical</Layout>
             <SizePolicy>max,min</SizePolicy>
             <Children>
-              <WidgetGroup><Size>,3f</Size></WidgetGroup>
 
               <SingletonContainer>
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_ExpandCollapseButton</ObjectName>
@@ -59,11 +58,21 @@
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_DryWetKnob</ObjectName>
               </SingletonContainer>
 
-              <WidgetGroup><Size>,3me</Size></WidgetGroup>
+              <WidgetGroup><!-- Super knob, optional -->
+                <Layout>vertical</Layout>
+                <SizePolicy>min,me</SizePolicy>
+                <Children>
+                  <WidgetGroup><Size>,3me</Size></WidgetGroup>
 
-              <SingletonContainer>
-                <ObjectName>FxUnit<Variable name="FxUnit"/>_SuperKnob</ObjectName>
-              </SingletonContainer>
+                  <SingletonContainer>
+                    <ObjectName>FxUnit<Variable name="FxUnit"/>_SuperKnob</ObjectName>
+                  </SingletonContainer>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Master],show_superknobs</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
 
               <WidgetGroup><Size>,3me</Size></WidgetGroup>
 

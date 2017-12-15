@@ -9,10 +9,10 @@
         <SizePolicy>me,me</SizePolicy>
         <Children>
           <WidgetGroup><Size>0f,0me</Size></WidgetGroup>
-          <Template src="skin:spinny.xml">
+          <!--Template src="skin:spinny.xml">
             <SetVariable name="channum">3</SetVariable>
             <SetVariable name="color">2</SetVariable>
-          </Template>
+          </Template-->
           <Template src="skin:waveform.xml">
             <SetVariable name="channum">3</SetVariable>
             <SetVariable name="signal_color">#09B2AE</SetVariable>
@@ -38,10 +38,10 @@
             <SizePolicy>me,me</SizePolicy>
             <Children>
 
-              <Template src="skin:spinny.xml">
+              <!--Template src="skin:spinny.xml">
                 <SetVariable name="channum">1</SetVariable>
                 <SetVariable name="color">1</SetVariable>
-              </Template>
+              </Template-->
 
               <Template src="skin:waveform.xml">
                 <SetVariable name="channum">1</SetVariable>
@@ -96,10 +96,10 @@
         <SizePolicy>me,me</SizePolicy>
         <Children>
           <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
-          <Template src="skin:spinny.xml">
+          <!--Template src="skin:spinny.xml">
             <SetVariable name="channum">2</SetVariable>
             <SetVariable name="color">1</SetVariable>
-          </Template>
+          </Template-->
           <Template src="skin:waveform.xml">
             <SetVariable name="channum">2</SetVariable>
             <SetVariable name="signal_color">#E7C413</SetVariable>
@@ -116,10 +116,10 @@
         <SizePolicy>me,me</SizePolicy>
         <Children>
           <WidgetGroup><Size>0f,0me</Size></WidgetGroup>
-          <Template src="skin:spinny.xml">
+          <!--Template src="skin:spinny.xml">
             <SetVariable name="channum">4</SetVariable>
             <SetVariable name="color">2</SetVariable>
-          </Template>
+          </Template-->
           <Template src="skin:waveform.xml">
             <SetVariable name="channum">4</SetVariable>
             <SetVariable name="signal_color">#09B2AE</SetVariable>

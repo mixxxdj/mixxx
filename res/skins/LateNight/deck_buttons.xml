@@ -81,12 +81,21 @@
       <WidgetGroup><!-- Jump buttons + beatjump size spinbox -->
         <ObjectName>AlignLeftTop</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>min,max</SizePolicy>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
-          <BeatSpinBox>
-            <TooltipId>beatloop_size</TooltipId>
-            <Value><Variable name="group"/>,beatjump_size</Value>
-          </BeatSpinBox>
+          <WidgetGroup><!-- beatjump size -->
+            <ObjectName>AlignLeftTop</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>26f,min</SizePolicy>
+            <Children>
+              <!-- put this spacer here so BeatSpinBox expands whith HiDPI scaling -->
+              <WidgetGroup><Size>0f,26f</Size></WidgetGroup>
+              <BeatSpinBox>
+                <TooltipId>beatloop_size</TooltipId>
+                <Value><Variable name="group"/>,beatjump_size</Value>
+              </BeatSpinBox>
+            </Children>
+          </WidgetGroup>
           <WidgetGroup>
             <ObjectName>AlignLeftTop</ObjectName>
             <Layout>horizontal</Layout>

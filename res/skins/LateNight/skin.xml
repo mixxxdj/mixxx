@@ -64,7 +64,7 @@
 
   <!-- MinimumSize should not be an exact monitor resolution. There needs
   to be space for the title bar or other chrome at full screen -->
-  <MinimumSize>1350,666</MinimumSize>
+  <MinimumSize>1270,666</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>
 
@@ -107,8 +107,9 @@
                         <Template src="skin:mixer.xml"/>
                         <Template src="skin:decks_right.xml"/>
                       </Children>
-                      </WidgetGroup>
-                      <Template src="skin:lower_half.xml"/>
+                    </WidgetGroup>
+                    <Template src="skin:effect_rack.xml"/>
+                    <Template src="skin:lower_half.xml"/>
                   </Children>
                 </WidgetGroup>
 

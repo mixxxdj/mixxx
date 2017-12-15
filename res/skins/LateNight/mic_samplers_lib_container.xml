@@ -6,7 +6,6 @@
     <Children>
 
       <WidgetStack currentpage="[Master],view_curpage" persist="true">
-        <SizePolicy>me,min</SizePolicy>
         <Children>
 
           <!-- First page is blank for when the user just wants the library. -->
@@ -16,28 +15,26 @@
             <Children/>
           </WidgetGroup>
 
-          <!-- When any tab is hidden, go back to the first (empty) page. -->
-          <WidgetGroup trigger="[EffectRack1],show" on_hide_select="0">
+          <WidgetGroup trigger="[Microphone],show_microphone" persist="true" on_hide_select="0">
             <Layout>vertical</Layout>
-            <SizePolicy>me,min</SizePolicy>
             <Children>
-              <Template src="skin:effect_rack.xml"/>
+              <Template src="skin:mic_aux_container.xml"/>
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup trigger="[Microphone],show_microphone" on_hide_select="0">
+          <WidgetGroup trigger="[Samplers],show_samplers" persist="true" on_hide_select="0">
             <Layout>vertical</Layout>
-            <SizePolicy>me,min</SizePolicy>
             <Children>
-              <Template src="skin:microphone_rack.xml"/>
+              <Template src="skin:samplers_container.xml"/>
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup trigger="[Samplers],show_samplers" on_hide_select="0">
+          <WidgetGroup trigger="[Library],show_library" persist="true" on_hide_select="0">
             <Layout>vertical</Layout>
-            <SizePolicy>me,min</SizePolicy>
             <Children>
-              <Template src="skin:sampler_decks.xml"/>
+              <SingletonContainer>
+                <ObjectName>LibrarySingleton</ObjectName>
+              </SingletonContainer>
             </Children>
           </WidgetGroup>
 

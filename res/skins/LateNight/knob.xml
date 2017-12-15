@@ -17,7 +17,7 @@
 
           <KnobComposed>
             <TooltipId><Variable name="tooltip"/></TooltipId>
-            <Size>36f,30f</Size>
+            <Size><Variable name="Size"/></Size>
             <Knob>knob_indicator.svg</Knob>
             <BackPath>knob_bg.svg</BackPath>
             <MinAngle>-135</MinAngle>
