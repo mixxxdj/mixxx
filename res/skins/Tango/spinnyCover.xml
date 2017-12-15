@@ -7,14 +7,14 @@ Variables:
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>SpinnyCover</ObjectName>
+    <ObjectName>SpinnyCover_Container</ObjectName>
     <SizePolicy>max,me</SizePolicy>
     <Layout>vertical</Layout>
     <Children>
 
       <!-- spinny -->
       <WidgetGroup>
-        <ObjectName>SpinnyCover_Container</ObjectName>
+        <ObjectName>SpinnyCover</ObjectName>
         <Size>111f,111f</Size>
         <Layout>vertical</Layout>
         <Children>

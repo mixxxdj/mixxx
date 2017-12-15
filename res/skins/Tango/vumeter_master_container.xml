@@ -3,6 +3,20 @@ Description:
   Container for the master level meter, suiting various configurations.
 -->
 <Template>
+  <SingletonDefinition>
+    <ObjectName>VuMeterMaster</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName></ObjectName>
+        <Size>min,min</Size>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skin:vumeter_master.xml"/>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
   <WidgetGroup>
     <Layout>horizontal</Layout>
     <SizePolicy>max,min</SizePolicy>
@@ -18,7 +32,9 @@ Description:
             <Size>min,min</Size>
             <Layout>vertical</Layout>
             <Children>
-              <Template src="skin:vumeter_master.xml"/>
+              <SingletonContainer>
+                <ObjectName>VuMeterMaster</ObjectName>
+              </SingletonContainer>
             </Children>
             <Connection>
               <ConfigKey persist="true">[Tango],vumeter</ConfigKey>
@@ -38,13 +54,15 @@ Description:
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:vumeter_master.xml"/>
+          <SingletonContainer>
+            <ObjectName>VuMeterMaster</ObjectName>
+          </SingletonContainer>
         </Children>
         <Connection>
           <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- /Master VU when mixer is shown -->
+      </WidgetGroup>
 
     </Children>
   </WidgetGroup>
