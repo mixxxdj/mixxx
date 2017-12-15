@@ -154,7 +154,7 @@ void EffectChain::setEnabled(bool enabled) {
     emit(enabledChanged(enabled));
 }
 
-void EffectChain::enableForChannel(const ChannelHandleAndGroup& handle_group) {
+void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handle_group) {
     // TODO(Be): remove m_enabledChannels from this class and move this logic
     // to EffectChainSlot
     bool bWasAlreadyEnabled = m_enabledChannels.contains(handle_group);
@@ -203,7 +203,7 @@ bool EffectChain::enabledForChannel(const ChannelHandleAndGroup& handle_group) c
     return m_enabledChannels.contains(handle_group);
 }
 
-void EffectChain::disableForChannel(const ChannelHandleAndGroup& handle_group) {
+void EffectChain::disableForInputChannel(const ChannelHandleAndGroup& handle_group) {
     if (m_enabledChannels.remove(handle_group)) {
         if (!m_bAddedToEngine) {
             return;

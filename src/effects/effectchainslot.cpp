@@ -236,9 +236,9 @@ void EffectChainSlot::updateRoutingSwitches() {
     }
     for (const ChannelInfo* pChannelInfo : m_channelInfoByName) {
         if (pChannelInfo->pEnabled->toBool()) {
-            m_pEffectChain->enableForChannel(pChannelInfo->handle_group);
+            m_pEffectChain->enableForInputChannel(pChannelInfo->handle_group);
         } else {
-            m_pEffectChain->disableForChannel(pChannelInfo->handle_group);
+            m_pEffectChain->disableForInputChannel(pChannelInfo->handle_group);
         }
     }
 }
@@ -431,9 +431,9 @@ void EffectChainSlot::slotChannelStatusChanged(const QString& group) {
         if (pChannelInfo != NULL && pChannelInfo->pEnabled != NULL) {
             bool bEnable = pChannelInfo->pEnabled->toBool();
             if (bEnable) {
-                m_pEffectChain->enableForChannel(pChannelInfo->handle_group);
+                m_pEffectChain->enableForInputChannel(pChannelInfo->handle_group);
             } else {
-                m_pEffectChain->disableForChannel(pChannelInfo->handle_group);
+                m_pEffectChain->disableForInputChannel(pChannelInfo->handle_group);
             }
         }
     }

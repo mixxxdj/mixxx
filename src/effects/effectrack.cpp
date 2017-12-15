@@ -294,7 +294,7 @@ MasterEffectRack::MasterEffectRack(EffectsManager* pEffectsManager,
 
     pChainSlot->registerInputChannel(*masterHandleAndGroup);
     pChainSlot->updateRoutingSwitches();
-    pChain->enableForChannel(*masterHandleAndGroup);
+    pChain->enableForInputChannel(*masterHandleAndGroup);
     pChain->setMix(1.0);
 
     EffectChainSlotPointer pChainSlotPointer = EffectChainSlotPointer(pChainSlot);
