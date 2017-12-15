@@ -209,7 +209,7 @@
                           <Text>FX1</Text>
                         </State>
                         <Connection>
-                          <ConfigKey>[EffectRack1_EffectUnit1],group_<Variable name="group"/>_enable</ConfigKey>
+                          <ConfigKey>[EffectRack1_EffectUnit1],group_[Master]_enable</ConfigKey>
                           <ButtonState>LeftButton</ButtonState>
                         </Connection>
                       </PushButton>
@@ -227,7 +227,7 @@
                           <Text>FX2</Text>
                         </State>
                         <Connection>
-                          <ConfigKey>[EffectRack1_EffectUnit2],group_<Variable name="group"/>_enable</ConfigKey>
+                          <ConfigKey>[EffectRack1_EffectUnit2],group_[Master]_enable</ConfigKey>
                           <ButtonState>LeftButton</ButtonState>
                         </Connection>
                       </PushButton>
