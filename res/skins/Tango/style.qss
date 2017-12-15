@@ -78,8 +78,8 @@ WWidgetGroup {
 #WaveformContainer3,
 #WaveformContainer4 {
 /* waveform play position should stay centered, so we shift the waveform
-  containers right to compensate for (inactive) beatgrid button toggle */
-  padding-right: 17px;
+  containers right to compensate for (inactive) beatgrid button toggle
+  padding-right: 17px; */
 /* Also add respective padding at the right, so all beatgrid buttons are shown */
   margin-right: -17px;
 }
