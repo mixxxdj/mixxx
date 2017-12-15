@@ -126,8 +126,11 @@ bool AnalyzerQueue::isLoadedTrackWaiting(TrackPointer pAnalyzingTrack) {
         emitUpdateProgress(pTrack, 1000);
     }
 
-    return anyQueuedTrackLoaded ||
-            PlayerInfo::instance().isTrackLoaded(pAnalyzingTrack);
+    // The analysis will be aborted if the currently analyzing
+    // track is not loaded, but one or more tracks in the queue
+    // are loaded and need to be prioritized.
+    return anyQueuedTrackLoaded &&
+            !PlayerInfo::instance().isTrackLoaded(pAnalyzingTrack);
 }
 
 // This is called from the AnalyzerQueue thread
