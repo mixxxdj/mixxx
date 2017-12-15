@@ -62,7 +62,10 @@ EffectState* EngineEffect::createState(const mixxx::EngineParameters& bufferPara
 
 void EngineEffect::loadStatesForInputChannel(const ChannelHandle& inputChannel,
     const EffectStatesPointer states) {
-    qDebug() << "EngineEffect::loadStatesForInputChannel" << this << "loading states for input" << inputChannel;
+    if (kEffectDebugOutput) {
+        qDebug() << "EngineEffect::loadStatesForInputChannel" << this
+                 << "loading states for input" << inputChannel;
+    }
     m_pProcessor->loadStatesForInputChannel(inputChannel, states);
 }
 

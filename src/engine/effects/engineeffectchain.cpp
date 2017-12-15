@@ -143,20 +143,21 @@ bool EngineEffectChain::processEffectsRequest(const EffectsRequest& message,
 
 bool EngineEffectChain::enableForInputChannel(const ChannelHandle& inputHandle,
         const QList<EffectStatesPointer>* statesForEffectsInChain) {
-    qDebug() << "EngineEffectChain::enableForInputChannel" << this << inputHandle;
+    if (kEffectDebugOutput) {
+        qDebug() << "EngineEffectChain::enableForInputChannel" << this << inputHandle;
+    }
     auto& outputMap = m_chainStatusForChannelMatrix[inputHandle];
     for (auto&& outputChannelStatus : outputMap) {
         if (outputChannelStatus.enable_state != EffectEnableState::Enabled) {
             outputChannelStatus.enable_state = EffectEnableState::Enabling;
         }
     }
-//     VERIFY_OR_DEBUG_ASSERT(m_effects.size() > 0) {
-//         return false;
-//     }
     for (int i = 0; i < m_effects.size(); ++i) {
         if (m_effects[i] != nullptr) {
-            qDebug() << "EngineEffectChain::enableForInputChannel" << this
-                     << "loading states for effect" << i;
+            if (kEffectDebugOutput) {
+                qDebug() << "EngineEffectChain::enableForInputChannel" << this
+                        << "loading states for effect" << i;
+            }
             EffectStatesPointer pStates = statesForEffectsInChain->at(i);
             VERIFY_OR_DEBUG_ASSERT(pStates != nullptr) {
                 return false;

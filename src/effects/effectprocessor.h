@@ -140,10 +140,13 @@ class EffectProcessorImpl : public EffectProcessor {
                          const GroupFeatureState& groupFeatures) final {
         EffectSpecificState* pState = m_channelStateMatrix[inputHandle][outputHandle];
         VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
-            qWarning() << "EffectProcessorImpl::process could not retrieve"
-                          "EffectState for input" << inputHandle
-                       << "and output" << outputHandle
-                       << "EffectState should have been preallocated in the main thread.";
+            if (kEffectDebugOutput) {
+                qWarning() << "EffectProcessorImpl::process could not retrieve"
+                              "EffectState for input" << inputHandle
+                           << "and output" << outputHandle
+                           << "EffectState should have been preallocated in the"
+                              "main thread.";
+            }
             pState = createState(bufferParameters);
             m_channelStateMatrix[inputHandle][outputHandle] = pState;
         }
@@ -155,13 +158,19 @@ class EffectProcessorImpl : public EffectProcessor {
             EffectsManager* pEffectsManager,
             const mixxx::EngineParameters& bufferParameters) final {
         for (const ChannelHandleAndGroup& inputChannel : activeInputChannels) {
-            //qDebug() << this << "EffectProcessorImpl::initialize allocating EffectStates for input" << inputChannel;
+            if (kEffectDebugOutput) {
+                qDebug() << this << "EffectProcessorImpl::initialize allocating"
+                            "EffectStates for input" << inputChannel;
+            }
             ChannelHandleMap<EffectSpecificState*> outputChannelMap;
             for (const ChannelHandleAndGroup& outputChannel :
                     pEffectsManager->registeredOutputChannels()) {
                 outputChannelMap.insert(outputChannel.handle(),
                         createState(bufferParameters));
-                //qDebug() << this << "EffectProcessorImpl::initialize registering output" << outputChannel;
+                if (kEffectDebugOutput) {
+                    qDebug() << this << "EffectProcessorImpl::initialize"
+                                "registering output" << outputChannel;
+                }
             }
             m_channelStateMatrix.insert(inputChannel.handle(), outputChannelMap);
         }
@@ -180,11 +189,16 @@ class EffectProcessorImpl : public EffectProcessor {
           // the ChannelHandleMap to build a new ChannelHandleMap with
           // dynamic_cast'ed states.
           ChannelHandleMap<EffectSpecificState*> newMap;
-          //qDebug() << "EffectProcessorImpl::loadStatesForInputChannel" << this << "input"
-          //         << inputChannel;
+          if (kEffectDebugOutput) {
+              qDebug() << "EffectProcessorImpl::loadStatesForInputChannel" << this
+                       << "input" << inputChannel;
+          }
           for (const ChannelHandleAndGroup& outputChannel :
                   m_pEffectsManager->registeredOutputChannels()) {
-              //qDebug() << "EffectProcessorImpl::loadStatesForInputChannel" << this << "output" << outputChannel;
+              if (kEffectDebugOutput) {
+                  qDebug() << "EffectProcessorImpl::loadStatesForInputChannel"
+                           << this << "output" << outputChannel;
+              }
               auto pState = dynamic_cast<EffectSpecificState*>(
                         pStates->at(outputChannel.handle()));
               VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
