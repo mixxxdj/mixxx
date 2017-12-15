@@ -34,10 +34,10 @@ class AnalyzerQueue : public QThread {
     ~AnalyzerQueue() override;
 
     void stop();
-    void queueAnalyseTrack(TrackPointer tio);
+    void enqueueTrack(TrackPointer pTrack);
 
   public slots:
-    void slotAnalyseTrack(TrackPointer tio);
+    void slotAnalyseTrack(TrackPointer pTrack);
     void slotUpdateProgress();
 
   signals:
@@ -52,12 +52,6 @@ class AnalyzerQueue : public QThread {
     void run();
 
   private:
-    struct progress_info {
-        TrackPointer current_track;
-        int track_progress; // in 0.1 %
-        int queue_size;
-        QSemaphore sema;
-    };
 
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
 
@@ -68,24 +62,33 @@ class AnalyzerQueue : public QThread {
 
     void execThread();
 
-    bool isLoadedTrackWaiting(TrackPointer analysingTrack);
+    bool isLoadedTrackWaiting(TrackPointer pAnalyzingTrack);
     TrackPointer dequeueNextBlocking();
-    bool doAnalysis(TrackPointer tio, mixxx::AudioSourcePointer pAudioSource);
-    void emitUpdateProgress(TrackPointer tio, int progress);
+    bool doAnalysis(TrackPointer pTrack, mixxx::AudioSourcePointer pAudioSource);
+    void emitUpdateProgress(TrackPointer pTrack, int progress);
     void emptyCheck();
     void updateSize();
 
-    bool m_exit;
-    QAtomicInt m_aiCheckPriorities;
+    QAtomicInt m_queueSize;
+    QAtomicInt m_queueModifiedFlag;
+    QAtomicInt m_exitPendingFlag;
+
+    // The processing queue and associated mutex
+    QMutex m_qm;
+    QWaitCondition m_qwait;
+    QQueue<TrackPointer> m_queuedTracks;
+
+    // The following members are only accessed by the worker thread
 
     mixxx::SampleBuffer m_sampleBuffer;
 
-    // The processing queue and associated mutex
-    QQueue<TrackPointer> m_queuedTracks;
-    QMutex m_qm;
-    QWaitCondition m_qwait;
+    struct progress_info {
+        TrackPointer current_track;
+        int track_progress; // in 0.1 %
+        int queue_size;
+        QSemaphore sema;
+    };
     struct progress_info m_progressInfo;
-    int m_queue_size;
 };
 
 #endif /* ANALYZER_ANALYZERQUEUE_H */

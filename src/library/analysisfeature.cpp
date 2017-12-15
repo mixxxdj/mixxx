@@ -153,7 +153,7 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
         TrackPointer pTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
         if (pTrack) {
             //qDebug() << this << "Queueing track for analysis" << pTrack->getLocation();
-            m_pAnalyzerQueue->queueAnalyseTrack(pTrack);
+            m_pAnalyzerQueue->enqueueTrack(pTrack);
         }
     }
     if (trackIds.size() > 0) {
