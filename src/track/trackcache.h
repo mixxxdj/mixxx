@@ -127,18 +127,6 @@ public:
     TrackCacheLocker lookupById(
             const TrackId& trackId) const;
 
-    // Lookup an existing Track object in the cache or create
-    // a temporary object on cache miss. The temporary object for
-    // the file should be released before the cache is unlocked
-    // to prevent concurrent file access.
-    //
-    // NOTE: The TrackCache is locked during the lifetime of the
-    // result object. It should be destroyed ASAP to reduce lock
-    // contention!
-    TrackCacheLocker lookupOrCreateTemporaryForFile(
-            const QFileInfo& fileInfo,
-            const SecurityTokenPointer& pSecurityToken = SecurityTokenPointer()) const;
-
     QList<TrackPointer> lookupAll() const;
 
     // Lookup an existing or create a new Track object.

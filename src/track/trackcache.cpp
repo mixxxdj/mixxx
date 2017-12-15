@@ -224,27 +224,6 @@ TrackCacheLocker TrackCache::lookupById(
     return std::move(cacheLocker);
 }
 
-TrackCacheLocker TrackCache::lookupOrCreateTemporaryForFile(
-        const QFileInfo& fileInfo,
-        const SecurityTokenPointer& pSecurityToken) const {
-    const TrackRef trackRef(TrackRef::fromFileInfo(fileInfo));
-    TrackCacheLocker cacheLocker;
-    if (trackRef.isValid()) {
-        const TrackPointer pTrack(lookupInternal(trackRef));
-        if (pTrack) {
-            cacheLocker.m_lookupResult = TrackCacheLookupResult::HIT;
-            cacheLocker.m_trackRef = createTrackRef(*pTrack);
-            cacheLocker.m_pTrack = pTrack;
-        } else {
-            cacheLocker.m_lookupResult = TrackCacheLookupResult::MISS;
-            cacheLocker.m_trackRef = trackRef;
-            cacheLocker.m_pTrack =
-                    Track::newTemporary(fileInfo, pSecurityToken);
-        }
-    }
-    return std::move(cacheLocker);
-}
-
 TrackPointer TrackCache::lookupInternal(
         const TrackId& trackId) const {
     const auto trackById(m_tracksById.find(trackId));
