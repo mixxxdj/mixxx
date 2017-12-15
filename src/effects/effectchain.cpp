@@ -183,12 +183,12 @@ void EffectChain::enableForChannel(const ChannelHandleAndGroup& handle_group) {
           mixxx::AudioSignal::SampleRate(96000),
           MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
 
-    for (int i = 0; i < m_effects.size(); ++i) {
+    for (const EffectPointer& pEffect : m_effects) {
         auto pStates = new ChannelHandleMap<EffectState*>;
-        if (m_effects[i] != nullptr) {
+        if (pEffect != nullptr) {
             for (const auto& outputChannel : m_pEffectsManager->registeredOutputChannels()) {
                 pStates->insert(outputChannel.handle(),
-                        m_effects[i]->createState(bufferParameters));
+                        pEffect->createState(bufferParameters));
             }
         }
         pStatesForEffectsInChain->append(pStates);
