@@ -16,7 +16,7 @@
 
 class GraphicEQEffectGroupState : public EffectState {
   public:
-    GraphicEQEffectGroupState(const mixxx::AudioParameters& bufferParameters);
+    GraphicEQEffectGroupState(const mixxx::EngineParameters& bufferParameters);
     virtual ~GraphicEQEffectGroupState();
 
     void setFilters(int sampleRate);
@@ -42,7 +42,7 @@ class GraphicEQEffect : public EffectProcessorImpl<GraphicEQEffectGroupState> {
     void processChannel(const ChannelHandle& handle,
                         GraphicEQEffectGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
-                        const mixxx::AudioParameters& bufferParameters,
+                        const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatureState);
 

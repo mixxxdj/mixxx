@@ -73,7 +73,7 @@ EffectManifest GraphicEQEffect::getManifest() {
 }
 
 GraphicEQEffectGroupState::GraphicEQEffectGroupState(
-        const mixxx::AudioParameters& bufferParameters)
+        const mixxx::EngineParameters& bufferParameters)
             : EffectState(bufferParameters) {
     m_oldLow = 0;
     for (int i = 0; i < 6; i++) {
@@ -81,8 +81,8 @@ GraphicEQEffectGroupState::GraphicEQEffectGroupState(
     }
     m_oldHigh = 0;
 
-    m_pBufs.append(SampleUtil::alloc(bufferParameters.bufferSize()));
-    m_pBufs.append(SampleUtil::alloc(bufferParameters.bufferSize()));
+    m_pBufs.append(SampleUtil::alloc(bufferParameters.samplesPerBuffer()));
+    m_pBufs.append(SampleUtil::alloc(bufferParameters.samplesPerBuffer()));
 
     // Initialize the default center frequencies
     m_centerFrequencies[0] = 81;
@@ -145,7 +145,7 @@ GraphicEQEffect::~GraphicEQEffect() {
 void GraphicEQEffect::processChannel(const ChannelHandle& handle,
                                      GraphicEQEffectGroupState* pState,
                                      const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                     const mixxx::AudioParameters& bufferParameters,
+                                     const mixxx::EngineParameters& bufferParameters,
                                      const EffectEnableState enableState,
                                      const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
@@ -198,17 +198,17 @@ void GraphicEQEffect::processChannel(const ChannelHandle& handle,
 
     int bufIndex = 0;
     if (fLow) {
-        pState->m_low->process(pInput, pState->m_pBufs[1 - bufIndex], bufferParameters.bufferSize());
+        pState->m_low->process(pInput, pState->m_pBufs[1 - bufIndex], bufferParameters.samplesPerBuffer());
         bufIndex = 1 - bufIndex;
     } else {
         pState->m_low->pauseFilter();
-        SampleUtil::copy(pState->m_pBufs[bufIndex], pInput, bufferParameters.bufferSize());
+        SampleUtil::copy(pState->m_pBufs[bufIndex], pInput, bufferParameters.samplesPerBuffer());
     }
 
     for (int i = 0; i < 6; i++) {
         if (fMid[i]) {
             pState->m_bands[i]->process(pState->m_pBufs[bufIndex],
-                                        pState->m_pBufs[1 - bufIndex], bufferParameters.bufferSize());
+                                        pState->m_pBufs[1 - bufIndex], bufferParameters.samplesPerBuffer());
             bufIndex = 1 - bufIndex;
         } else {
             pState->m_bands[i]->pauseFilter();
@@ -217,10 +217,10 @@ void GraphicEQEffect::processChannel(const ChannelHandle& handle,
 
     if (fHigh) {
         pState->m_high->process(pState->m_pBufs[bufIndex],
-                                pOutput, bufferParameters.bufferSize());
+                                pOutput, bufferParameters.samplesPerBuffer());
         bufIndex = 1 - bufIndex;
     } else {
-        SampleUtil::copy(pOutput, pState->m_pBufs[bufIndex], bufferParameters.bufferSize());
+        SampleUtil::copy(pOutput, pState->m_pBufs[bufIndex], bufferParameters.samplesPerBuffer());
         pState->m_high->pauseFilter();
     }
 

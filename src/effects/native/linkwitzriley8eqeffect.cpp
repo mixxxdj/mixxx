@@ -29,7 +29,7 @@ EffectManifest LinkwitzRiley8EQEffect::getManifest() {
 }
 
 LinkwitzRiley8EQEffectGroupState::LinkwitzRiley8EQEffectGroupState(
-        const mixxx::AudioParameters& bufferParameters)
+        const mixxx::EngineParameters& bufferParameters)
         : EffectState(bufferParameters),
           old_low(1.0),
           old_mid(1.0),
@@ -87,7 +87,7 @@ LinkwitzRiley8EQEffect::~LinkwitzRiley8EQEffect() {
 void LinkwitzRiley8EQEffect::processChannel(const ChannelHandle& handle,
                                             LinkwitzRiley8EQEffectGroupState* pState,
                                             const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                            const mixxx::AudioParameters& bufferParameters,
+                                            const mixxx::EngineParameters& bufferParameters,
                                             const EffectEnableState enableState,
                                             const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
@@ -113,35 +113,35 @@ void LinkwitzRiley8EQEffect::processChannel(const ChannelHandle& handle,
         pState->setFilters(bufferParameters.sampleRate(), pState->m_loFreq, pState->m_hiFreq);
     }
 
-    pState->m_high2->process(pInput, pState->m_pHighBuf, bufferParameters.bufferSize()); // HighPass first run
-    pState->m_low2->process(pInput, pState->m_pLowBuf, bufferParameters.bufferSize()); // LowPass first run for low and bandpass
+    pState->m_high2->process(pInput, pState->m_pHighBuf, bufferParameters.samplesPerBuffer()); // HighPass first run
+    pState->m_low2->process(pInput, pState->m_pLowBuf, bufferParameters.samplesPerBuffer()); // LowPass first run for low and bandpass
 
     if (fMid != pState->old_mid ||
             fHigh != pState->old_high) {
         SampleUtil::copy2WithRampingGain(pState->m_pHighBuf,
                 pState->m_pHighBuf, pState->old_high, fHigh,
                 pState->m_pLowBuf, pState->old_mid, fMid,
-                bufferParameters.bufferSize());
+                bufferParameters.samplesPerBuffer());
     } else {
         SampleUtil::copy2WithGain(pState->m_pHighBuf,
                 pState->m_pHighBuf, fHigh,
                 pState->m_pLowBuf, fMid,
-                bufferParameters.bufferSize());
+                bufferParameters.samplesPerBuffer());
     }
 
-    pState->m_high1->process(pState->m_pHighBuf, pState->m_pMidBuf, bufferParameters.bufferSize()); // HighPass + BandPass second run
-    pState->m_low1->process(pState->m_pLowBuf, pState->m_pLowBuf, bufferParameters.bufferSize()); // LowPass second run
+    pState->m_high1->process(pState->m_pHighBuf, pState->m_pMidBuf, bufferParameters.samplesPerBuffer()); // HighPass + BandPass second run
+    pState->m_low1->process(pState->m_pLowBuf, pState->m_pLowBuf, bufferParameters.samplesPerBuffer()); // LowPass second run
 
     if (fLow != pState->old_low) {
         SampleUtil::copy2WithRampingGain(pOutput,
                 pState->m_pLowBuf, pState->old_low, fLow,
                 pState->m_pMidBuf, 1, 1,
-                bufferParameters.bufferSize());
+                bufferParameters.samplesPerBuffer());
     } else {
         SampleUtil::copy2WithGain(pOutput,
                 pState->m_pLowBuf, fLow,
                 pState->m_pMidBuf, 1,
-                bufferParameters.bufferSize());
+                bufferParameters.samplesPerBuffer());
     }
 
     if (enableState == EffectEnableState::Disabling) {

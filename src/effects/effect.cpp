@@ -40,7 +40,7 @@ Effect::~Effect() {
     }
 }
 
-EffectState* Effect::createState(const mixxx::AudioParameters& bufferParameters) {
+EffectState* Effect::createState(const mixxx::EngineParameters& bufferParameters) {
     return m_pEngineEffect->createState(bufferParameters);
 }
 

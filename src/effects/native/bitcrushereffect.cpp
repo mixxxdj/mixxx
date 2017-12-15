@@ -67,7 +67,7 @@ BitCrusherEffect::~BitCrusherEffect() {
 void BitCrusherEffect::processChannel(const ChannelHandle& handle,
                                       BitCrusherGroupState* pState,
                                       const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                      const mixxx::AudioParameters& bufferParameters,
+                                      const mixxx::EngineParameters& bufferParameters,
                                       const EffectEnableState enableState,
                                       const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
@@ -87,7 +87,7 @@ void BitCrusherEffect::processChannel(const ChannelHandle& handle,
     const CSAMPLE gainCorrection = (17 - bit_depth) / 8;
 
     for (unsigned int i = 0;
-            i < bufferParameters.bufferSize();
+            i < bufferParameters.samplesPerBuffer();
             i += bufferParameters.channelCount()) {
         pState->accumulator += downsample;
 

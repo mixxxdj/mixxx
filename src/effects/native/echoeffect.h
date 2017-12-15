@@ -18,13 +18,13 @@ class EchoGroupState : public EffectState {
     // 40 BPM.
     static constexpr int kMaxDelaySeconds = 3;
 
-    EchoGroupState(const mixxx::AudioParameters bufferParameters)
+    EchoGroupState(const mixxx::EngineParameters bufferParameters)
            : EffectState(bufferParameters) {
         audioParametersChanged(bufferParameters);
        clear();
     }
 
-    void audioParametersChanged(const mixxx::AudioParameters bufferParameters) {
+    void audioParametersChanged(const mixxx::EngineParameters bufferParameters) {
         delay_buf = mixxx::SampleBuffer(kMaxDelaySeconds
                 * bufferParameters.sampleRate() * bufferParameters.channelCount());
     };
@@ -56,7 +56,7 @@ class EchoEffect : public EffectProcessorImpl<EchoGroupState> {
     void processChannel(const ChannelHandle& handle,
                         EchoGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE* pOutput,
-                        const mixxx::AudioParameters& bufferParameters,
+                        const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatures) override;
 

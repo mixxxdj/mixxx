@@ -24,7 +24,7 @@
 
 class ParametricEQEffectGroupState final : public EffectState {
   public:
-    ParametricEQEffectGroupState(const mixxx::AudioParameters& bufferParameters);
+    ParametricEQEffectGroupState(const mixxx::EngineParameters& bufferParameters);
 
     void setFilters(int sampleRate);
 
@@ -48,7 +48,7 @@ class ParametricEQEffect : public EffectProcessorImpl<ParametricEQEffectGroupSta
     void processChannel(const ChannelHandle& handle,
                         ParametricEQEffectGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
-                        const mixxx::AudioParameters& bufferParameters,
+                        const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatureState);
 

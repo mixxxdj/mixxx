@@ -10,7 +10,7 @@
 
 class BalanceGroupState : public EffectState {
   public:
-    BalanceGroupState(const mixxx::AudioParameters& bufferParameters);
+    BalanceGroupState(const mixxx::EngineParameters& bufferParameters);
     ~BalanceGroupState();
 
     void setFilters(int sampleRate, int freq);
@@ -38,7 +38,7 @@ class BalanceEffect : public EffectProcessorImpl<BalanceGroupState> {
     void processChannel(const ChannelHandle& handle,
                         BalanceGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE* pOutput,
-                        const mixxx::AudioParameters& bufferParameters,
+                        const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatures);
 

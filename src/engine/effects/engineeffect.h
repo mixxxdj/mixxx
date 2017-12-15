@@ -33,7 +33,7 @@ class EngineEffect : public EffectsRequestHandler {
         return m_parametersById.value(id, NULL);
     }
 
-    EffectState* createState(const mixxx::AudioParameters& bufferParameters);
+    EffectState* createState(const mixxx::EngineParameters& bufferParameters);
 
     void loadStatesForInputChannel(const ChannelHandle& inputChannel,
         const EffectStatesPointer states);

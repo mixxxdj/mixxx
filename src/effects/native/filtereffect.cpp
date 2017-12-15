@@ -64,18 +64,18 @@ EffectManifest FilterEffect::getManifest() {
     return manifest;
 }
 
-FilterGroupState::FilterGroupState(const mixxx::AudioParameters& bufferParameters)
+FilterGroupState::FilterGroupState(const mixxx::EngineParameters& bufferParameters)
         : EffectState(bufferParameters),
           m_loFreq(kMaxCorner / bufferParameters.sampleRate()),
           m_q(0.707106781),
           m_hiFreq(kMinCorner / bufferParameters.sampleRate()) {
-    audioParametersChanged(bufferParameters);
+    engineParametersChanged(bufferParameters);
     m_pLowFilter = new EngineFilterBiquad1Low(1, m_loFreq, m_q, true);
     m_pHighFilter = new EngineFilterBiquad1High(1, m_hiFreq, m_q, true);
 }
 
-void FilterGroupState::audioParametersChanged(const mixxx::AudioParameters& bufferParameters) {
-    m_pBuf = SampleUtil::alloc(bufferParameters.bufferSize());
+void FilterGroupState::engineParametersChanged(const mixxx::EngineParameters& bufferParameters) {
+    m_pBuf = SampleUtil::alloc(bufferParameters.samplesPerBuffer());
 }
 
 FilterGroupState::~FilterGroupState() {
@@ -99,7 +99,7 @@ FilterEffect::~FilterEffect() {
 void FilterEffect::processChannel(const ChannelHandle& handle,
                                   FilterGroupState* pState,
                                   const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                  const mixxx::AudioParameters& bufferParameters,
+                                  const mixxx::EngineParameters& bufferParameters,
                                   const EffectEnableState enableState,
                                   const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
@@ -153,11 +153,11 @@ void FilterEffect::processChannel(const ChannelHandle& handle,
 
     if (hpf > minCornerNormalized) {
         // hpf enabled, fade-in is handled in the filter when starting from pause
-        pState->m_pHighFilter->process(pInput, pHpfOutput, bufferParameters.bufferSize());
+        pState->m_pHighFilter->process(pInput, pHpfOutput, bufferParameters.samplesPerBuffer());
     } else if (pState->m_hiFreq > minCornerNormalized) {
             // hpf disabling
             pState->m_pHighFilter->processAndPauseFilter(pInput,
-                    pHpfOutput, bufferParameters.bufferSize());
+                    pHpfOutput, bufferParameters.samplesPerBuffer());
     } else {
         // paused LP uses input directly
         pLpfInput = pInput;
@@ -165,16 +165,16 @@ void FilterEffect::processChannel(const ChannelHandle& handle,
 
     if (lpf < maxCornerNormalized) {
         // lpf enabled, fade-in is handled in the filter when starting from pause
-        pState->m_pLowFilter->process(pLpfInput, pOutput, bufferParameters.bufferSize());
+        pState->m_pLowFilter->process(pLpfInput, pOutput, bufferParameters.samplesPerBuffer());
     } else if (pState->m_loFreq < maxCornerNormalized) {
         // hpf disabling
         pState->m_pLowFilter->processAndPauseFilter(pLpfInput,
-                pOutput, bufferParameters.bufferSize());
+                pOutput, bufferParameters.samplesPerBuffer());
     } else if (pLpfInput == pInput) {
         // Both disabled
         if (pOutput != pInput) {
             // We need to copy pInput pOutput
-            SampleUtil::copy(pOutput, pInput, bufferParameters.bufferSize());
+            SampleUtil::copy(pOutput, pInput, bufferParameters.samplesPerBuffer());
         }
     }
 

@@ -21,7 +21,7 @@ static const int kMaxDelay2 = 3300; // allows a 30 Hz filter at 97346;
 
 class BiquadFullKillEQEffectGroupState : public EffectState {
   public:
-    BiquadFullKillEQEffectGroupState(const mixxx::AudioParameters& bufferParameters);
+    BiquadFullKillEQEffectGroupState(const mixxx::EngineParameters& bufferParameters);
 
     void setFilters(
             int sampleRate, double lowFreqCorner, double highFreqCorner);
@@ -70,7 +70,7 @@ class BiquadFullKillEQEffect : public EffectProcessorImpl<BiquadFullKillEQEffect
     void processChannel(const ChannelHandle& handle,
                         BiquadFullKillEQEffectGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
-                        const mixxx::AudioParameters& bufferParameters,
+                        const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatureState);
 

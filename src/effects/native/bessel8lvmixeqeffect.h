@@ -21,7 +21,7 @@
 class Bessel8LVMixEQEffectGroupState :
         public LVMixEQEffectGroupState<EngineFilterBessel8Low> {
   public:
-        Bessel8LVMixEQEffectGroupState(const mixxx::AudioParameters& bufferParameters)
+        Bessel8LVMixEQEffectGroupState(const mixxx::EngineParameters& bufferParameters)
             : LVMixEQEffectGroupState<EngineFilterBessel8Low>(bufferParameters) {
         }
 };
@@ -38,7 +38,7 @@ class Bessel8LVMixEQEffect : public EffectProcessorImpl<Bessel8LVMixEQEffectGrou
     void processChannel(const ChannelHandle& handle,
                         Bessel8LVMixEQEffectGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE* pOutput,
-                        const mixxx::AudioParameters& bufferParameters,
+                        const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatureState);
 

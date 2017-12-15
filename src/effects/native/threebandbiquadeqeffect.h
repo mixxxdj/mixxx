@@ -16,7 +16,7 @@
 
 class ThreeBandBiquadEQEffectGroupState final : public EffectState {
   public:
-    ThreeBandBiquadEQEffectGroupState(const mixxx::AudioParameters& bufferParameters);
+    ThreeBandBiquadEQEffectGroupState(const mixxx::EngineParameters& bufferParameters);
     ~ThreeBandBiquadEQEffectGroupState();
 
     void setFilters(
@@ -56,7 +56,7 @@ class ThreeBandBiquadEQEffect : public EffectProcessorImpl<ThreeBandBiquadEQEffe
     void processChannel(const ChannelHandle& handle,
                         ThreeBandBiquadEQEffectGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
-                        const mixxx::AudioParameters& bufferParameters,
+                        const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatureState);
 

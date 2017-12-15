@@ -122,7 +122,7 @@ FlangerEffect::~FlangerEffect() {
 void FlangerEffect::processChannel(const ChannelHandle& handle,
                                    FlangerGroupState* pState,
                                    const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                   const mixxx::AudioParameters& bufferParameters,
+                                   const mixxx::EngineParameters& bufferParameters,
                                    const EffectEnableState enableState,
                                    const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
@@ -185,7 +185,7 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE* delayRight = pState->delayRight;
 
    for (unsigned int i = 0;
-          i < bufferParameters.bufferSize();
+          i < bufferParameters.samplesPerBuffer();
           i += bufferParameters.channelCount()) {
 
         CSAMPLE_GAIN mix_ramped = mixRamped.getNext();

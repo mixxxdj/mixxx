@@ -12,7 +12,7 @@
 
 struct BitCrusherGroupState : public EffectState {
     // Default accumulator to 1 so we immediately pick an input value.
-    BitCrusherGroupState(const mixxx::AudioParameters& bufferParameters)
+    BitCrusherGroupState(const mixxx::EngineParameters& bufferParameters)
             : EffectState(bufferParameters),
               hold_l(0),
               hold_r(0),
@@ -35,7 +35,7 @@ class BitCrusherEffect : public EffectProcessorImpl<BitCrusherGroupState> {
     void processChannel(const ChannelHandle& handle,
                         BitCrusherGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
-                        const mixxx::AudioParameters& bufferParameters,
+                        const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatureState);
 

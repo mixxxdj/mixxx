@@ -17,7 +17,7 @@ static const double kStartupHiFreq = 2484;
 template<class LPF>
 class LVMixEQEffectGroupState : public EffectState {
   public:
-    LVMixEQEffectGroupState(const mixxx::AudioParameters& bufferParameters)
+    LVMixEQEffectGroupState(const mixxx::EngineParameters& bufferParameters)
         : EffectState(bufferParameters),
           m_oldLow(1.0),
           m_oldMid(1.0),
@@ -26,9 +26,9 @@ class LVMixEQEffectGroupState : public EffectState {
           m_oldSampleRate(bufferParameters.sampleRate()),
           m_loFreq(kStartupLoFreq),
           m_hiFreq(kStartupHiFreq) {
-        m_pLowBuf = SampleUtil::alloc(bufferParameters.bufferSize());
-        m_pBandBuf = SampleUtil::alloc(bufferParameters.bufferSize());
-        m_pHighBuf = SampleUtil::alloc(bufferParameters.bufferSize());
+        m_pLowBuf = SampleUtil::alloc(bufferParameters.samplesPerBuffer());
+        m_pBandBuf = SampleUtil::alloc(bufferParameters.samplesPerBuffer());
+        m_pHighBuf = SampleUtil::alloc(bufferParameters.samplesPerBuffer());
 
         m_low1 = new LPF(bufferParameters.sampleRate(), kStartupLoFreq);
         m_low2 = new LPF(bufferParameters.sampleRate(), kStartupHiFreq);

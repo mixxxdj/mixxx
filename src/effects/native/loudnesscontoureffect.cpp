@@ -60,7 +60,7 @@ EffectManifest LoudnessContourEffect::getManifest() {
 }
 
 LoudnessContourEffectGroupState::LoudnessContourEffectGroupState(
-        const mixxx::AudioParameters& bufferParameters)
+        const mixxx::EngineParameters& bufferParameters)
         : EffectState(bufferParameters),
           m_oldGainKnob(1.0),
           m_oldLoudness(0.0),
@@ -69,7 +69,7 @@ LoudnessContourEffectGroupState::LoudnessContourEffectGroupState(
           m_oldUseGain(false),
           m_oldSampleRate(bufferParameters.sampleRate()) {
 
-    m_pBuf = SampleUtil::alloc(bufferParameters.bufferSize());
+    m_pBuf = SampleUtil::alloc(bufferParameters.samplesPerBuffer());
 
     // Initialize the filters with default parameters
     m_low = std::make_unique<EngineFilterBiquad1Peaking>(
@@ -105,7 +105,7 @@ void LoudnessContourEffect::processChannel(
         LoudnessContourEffectGroupState* pState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
-        const mixxx::AudioParameters& bufferParameters,
+        const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
@@ -150,13 +150,13 @@ void LoudnessContourEffect::processChannel(
     if (filterGainDb == 0) {
         pState->m_low->pauseFilter();
         pState->m_high->pauseFilter();
-        SampleUtil::copy(pOutput, pInput, bufferParameters.bufferSize());
+        SampleUtil::copy(pOutput, pInput, bufferParameters.samplesPerBuffer());
     } else {
-        pState->m_low->process(pInput, pOutput, bufferParameters.bufferSize());
-        pState->m_high->process(pOutput, pState->m_pBuf, bufferParameters.bufferSize());
+        pState->m_low->process(pInput, pOutput, bufferParameters.samplesPerBuffer());
+        pState->m_high->process(pOutput, pState->m_pBuf, bufferParameters.samplesPerBuffer());
         SampleUtil::copyWithRampingGain(
                 pOutput, pState->m_pBuf, pState->m_oldGain, gain,
-                bufferParameters.bufferSize());
+                bufferParameters.samplesPerBuffer());
     }
 
     pState->m_oldFilterGainDb = filterGainDb ;

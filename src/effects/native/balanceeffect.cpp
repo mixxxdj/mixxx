@@ -65,7 +65,7 @@ EffectManifest BalanceEffect::getManifest() {
     return manifest;
 }
 
-BalanceGroupState::BalanceGroupState(const mixxx::AudioParameters& bufferParameters)
+BalanceGroupState::BalanceGroupState(const mixxx::EngineParameters& bufferParameters)
         : EffectState(bufferParameters),
           m_pHighBuf(MAX_BUFFER_LEN),
           m_oldSampleRate(bufferParameters.sampleRate()),
@@ -100,7 +100,7 @@ BalanceEffect::~BalanceEffect() {
 void BalanceEffect::processChannel(const ChannelHandle& handle,
                                BalanceGroupState* pGroupState,
                                const CSAMPLE* pInput, CSAMPLE* pOutput,
-                               const mixxx::AudioParameters& bufferParameters,
+                               const mixxx::EngineParameters& bufferParameters,
                                const EffectEnableState enableState,
                                const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
@@ -131,14 +131,14 @@ void BalanceEffect::processChannel(const ChannelHandle& handle,
 
     if (pGroupState->m_freq > kMinCornerHz) {
         if (freq > kMinCornerHz && enableState != EffectEnableState::Disabling) {
-            pGroupState->m_high->process(pInput, pGroupState->m_pHighBuf.data(), bufferParameters.bufferSize());
-            pGroupState->m_low->process(pInput, pOutput, bufferParameters.bufferSize());
+            pGroupState->m_high->process(pInput, pGroupState->m_pHighBuf.data(), bufferParameters.samplesPerBuffer());
+            pGroupState->m_low->process(pInput, pOutput, bufferParameters.samplesPerBuffer());
         } else {
-            pGroupState->m_high->processAndPauseFilter(pInput, pGroupState->m_pHighBuf.data(), bufferParameters.bufferSize());
-            pGroupState->m_low->processAndPauseFilter(pInput, pOutput, bufferParameters.bufferSize());
+            pGroupState->m_high->processAndPauseFilter(pInput, pGroupState->m_pHighBuf.data(), bufferParameters.samplesPerBuffer());
+            pGroupState->m_low->processAndPauseFilter(pInput, pOutput, bufferParameters.samplesPerBuffer());
         }
 
-        for (SINT i = 0; i < bufferParameters.bufferSize() / 2; ++i) {
+        for (SINT i = 0; i < bufferParameters.samplesPerBuffer() / 2; ++i) {
             CSAMPLE mid = (pGroupState->m_pHighBuf[i * 2]  + pGroupState->m_pHighBuf[i * 2 + 1]) / 2.0f;
             CSAMPLE side = (pGroupState->m_pHighBuf[i * 2 + 1] - pGroupState->m_pHighBuf[i * 2]) / 2.0f;
             CSAMPLE_GAIN currentMidSide = midSideStart + midSideDelta * i;
@@ -160,7 +160,7 @@ void BalanceEffect::processChannel(const ChannelHandle& handle,
         pGroupState->m_high->pauseFilter();
         pGroupState->m_low->pauseFilter();
 
-        for (SINT i = 0; i < bufferParameters.bufferSize() / 2; ++i) {
+        for (SINT i = 0; i < bufferParameters.samplesPerBuffer() / 2; ++i) {
             CSAMPLE mid = (pInput[i * 2]  + pInput[i * 2 + 1]) / 2.0f;
             CSAMPLE side = (pInput[i * 2 + 1] - pInput[i * 2]) / 2.0f;
             CSAMPLE_GAIN currentMidSide = midSideStart + midSideDelta * i;

@@ -8,26 +8,34 @@ namespace mixxx {
     static constexpr mixxx::AudioSignal::ChannelCount kEngineChannelCount(2);
 
     // Contains the information needed to process a buffer of audio
-    class AudioParameters : public AudioSignal {
+    class EngineParameters {
       public:
         SINT framesPerBuffer() const {
             return m_framesPerBuffer;
         }
-        SINT bufferSize() const {
-            return static_cast<SINT>(channelCount()) * framesPerBuffer();
+        SINT samplesPerBuffer() const {
+            return m_audioSignal.frames2samples(framesPerBuffer());
         }
 
-        explicit AudioParameters(
-                SampleLayout sampleLayout,
-                ChannelCount channelCount,
-                SampleRate sampleRate,
+        mixxx::AudioSignal::ChannelCount channelCount() const {
+            return m_audioSignal.channelCount();
+        }
+
+        mixxx::AudioSignal::SampleRate sampleRate() const {
+            return m_audioSignal.sampleRate();
+        }
+
+        explicit EngineParameters(
+                AudioSignal::SampleRate sampleRate,
                 SINT framesPerBuffer)
-          : AudioSignal(sampleLayout, channelCount, sampleRate),
+          : m_audioSignal(mixxx::AudioSignal::SampleLayout::Interleaved,
+                          kEngineChannelCount, sampleRate),
             m_framesPerBuffer(framesPerBuffer) {
             DEBUG_ASSERT(framesPerBuffer > 0);
         }
 
       private:
-        SINT m_framesPerBuffer;
+        const mixxx::AudioSignal m_audioSignal;
+        const SINT m_framesPerBuffer;
     };
 }

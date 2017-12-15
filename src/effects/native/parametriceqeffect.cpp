@@ -108,7 +108,7 @@ EffectManifest ParametricEQEffect::getManifest() {
 }
 
 ParametricEQEffectGroupState::ParametricEQEffectGroupState(
-      const mixxx::AudioParameters& bufferParameters)
+      const mixxx::EngineParameters& bufferParameters)
       : EffectState(bufferParameters) {
     for (int i = 0; i < kBandCount; i++) {
         m_oldGain.append(1.0);
@@ -150,7 +150,7 @@ ParametricEQEffect::~ParametricEQEffect() {
 void ParametricEQEffect::processChannel(const ChannelHandle& handle,
                                      ParametricEQEffectGroupState* pState,
                                      const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                     const mixxx::AudioParameters& bufferParameters,
+                                     const mixxx::EngineParameters& bufferParameters,
                                      const EffectEnableState enableState,
                                      const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
@@ -185,19 +185,19 @@ void ParametricEQEffect::processChannel(const ChannelHandle& handle,
     }
 
     if (fGain[0]) {
-        pState->m_bands[0]->process(pInput, pOutput, bufferParameters.bufferSize());
+        pState->m_bands[0]->process(pInput, pOutput, bufferParameters.samplesPerBuffer());
         if (fGain[1]) {
-            pState->m_bands[1]->process(pOutput, pOutput, bufferParameters.bufferSize());
+            pState->m_bands[1]->process(pOutput, pOutput, bufferParameters.samplesPerBuffer());
         } else {
             pState->m_bands[1]->pauseFilter();
         }
     } else {
         pState->m_bands[0]->pauseFilter();
         if (fGain[1]) {
-            pState->m_bands[1]->process(pInput, pOutput, bufferParameters.bufferSize());
+            pState->m_bands[1]->process(pInput, pOutput, bufferParameters.samplesPerBuffer());
         } else {
             pState->m_bands[1]->pauseFilter();
-            SampleUtil::copy(pOutput, pInput, bufferParameters.bufferSize());
+            SampleUtil::copy(pOutput, pInput, bufferParameters.samplesPerBuffer());
         }
     }
 

@@ -34,7 +34,7 @@ class Effect : public QObject {
            EffectInstantiatorPointer pInstantiator);
     virtual ~Effect();
 
-    EffectState* createState(const mixxx::AudioParameters& bufferParameters);
+    EffectState* createState(const mixxx::EngineParameters& bufferParameters);
 
     const EffectManifest& getManifest() const;
 

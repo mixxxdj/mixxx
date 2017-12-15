@@ -33,9 +33,7 @@ EngineEffect::EngineEffect(const EffectManifest& manifest,
     // Creating the processor must come last.
     m_pProcessor = pInstantiator->instantiate(this, manifest);
     //TODO: get actual configuration of engine
-    const mixxx::AudioParameters bufferParameters(
-          mixxx::AudioSignal::SampleLayout::Interleaved,
-          mixxx::kEngineChannelCount,
+    const mixxx::EngineParameters bufferParameters(
           mixxx::AudioSignal::SampleRate(96000),
           MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
     m_pProcessor->initialize(activeInputChannels, pEffectsManager, bufferParameters);
@@ -55,7 +53,7 @@ EngineEffect::~EngineEffect() {
     }
 }
 
-EffectState* EngineEffect::createState(const mixxx::AudioParameters& bufferParameters) {
+EffectState* EngineEffect::createState(const mixxx::EngineParameters& bufferParameters) {
     if (!m_pProcessor) {
         return new EffectState(bufferParameters);
     }
@@ -189,9 +187,7 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
 
     if (effectiveEffectEnableState != EffectEnableState::Disabled) {
         //TODO: refactor rest of audio engine to use mixxx::AudioParameters
-        const mixxx::AudioParameters bufferParameters(
-              mixxx::AudioSignal::SampleLayout::Interleaved,
-              mixxx::kEngineChannelCount,
+        const mixxx::EngineParameters bufferParameters(
               mixxx::AudioSignal::SampleRate(sampleRate),
               numSamples / mixxx::kEngineChannelCount);
 

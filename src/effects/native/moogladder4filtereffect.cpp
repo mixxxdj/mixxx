@@ -65,13 +65,13 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
 }
 
 MoogLadder4FilterGroupState::MoogLadder4FilterGroupState(
-        const mixxx::AudioParameters& bufferParameters)
+        const mixxx::EngineParameters& bufferParameters)
         : EffectState(bufferParameters),
           m_loFreq(kMaxCorner),
           m_resonance(0),
           m_hiFreq(kMinCorner),
           m_samplerate(bufferParameters.sampleRate()) {
-    m_pBuf = SampleUtil::alloc(bufferParameters.bufferSize());
+    m_pBuf = SampleUtil::alloc(bufferParameters.samplesPerBuffer());
     m_pLowFilter = new EngineFilterMoogLadder4Low(
             bufferParameters.sampleRate(),
             m_loFreq * bufferParameters.sampleRate(), m_resonance);
@@ -102,7 +102,7 @@ void MoogLadder4FilterEffect::processChannel(
         const ChannelHandle& handle,
         MoogLadder4FilterGroupState* pState,
         const CSAMPLE* pInput, CSAMPLE* pOutput,
-        const mixxx::AudioParameters& bufferParameters,
+        const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
@@ -147,11 +147,11 @@ void MoogLadder4FilterEffect::processChannel(
 
     if (hpf > kMinCorner) {
         // hpf enabled, fade-in is handled in the filter when starting from pause
-        pState->m_pHighFilter->process(pInput, pHpfOutput, bufferParameters.bufferSize());
+        pState->m_pHighFilter->process(pInput, pHpfOutput, bufferParameters.samplesPerBuffer());
     } else if (pState->m_hiFreq > kMinCorner) {
         // hpf disabling
         pState->m_pHighFilter->processAndPauseFilter(pInput,
-                pHpfOutput, bufferParameters.bufferSize());
+                pHpfOutput, bufferParameters.samplesPerBuffer());
     } else {
         // paused LP uses input directly
         pLpfInput = pInput;
@@ -159,16 +159,16 @@ void MoogLadder4FilterEffect::processChannel(
 
     if (lpf < kMaxCorner) {
         // lpf enabled, fade-in is handled in the filter when starting from pause
-        pState->m_pLowFilter->process(pLpfInput, pOutput, bufferParameters.bufferSize());
+        pState->m_pLowFilter->process(pLpfInput, pOutput, bufferParameters.samplesPerBuffer());
     } else if (pState->m_loFreq < kMaxCorner) {
         // hpf disabling
         pState->m_pLowFilter->processAndPauseFilter(pLpfInput,
-                pOutput, bufferParameters.bufferSize());
+                pOutput, bufferParameters.samplesPerBuffer());
     } else if (pLpfInput == pInput) {
         // Both disabled
         if (pOutput != pInput) {
             // We need to copy pInput pOutput
-            SampleUtil::copy(pOutput, pInput, bufferParameters.bufferSize());
+            SampleUtil::copy(pOutput, pInput, bufferParameters.samplesPerBuffer());
         }
     }
 

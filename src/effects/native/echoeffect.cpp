@@ -124,7 +124,7 @@ EchoEffect::EchoEffect(EngineEffect* pEffect, const EffectManifest& manifest)
 void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGroupState,
                                 const CSAMPLE* pInput,
                                 CSAMPLE* pOutput,
-                                const mixxx::AudioParameters& bufferParameters,
+                                const mixxx::EngineParameters& bufferParameters,
                                 const EffectEnableState enableState,
                                 const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
@@ -178,7 +178,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
 
     //TODO: rewrite to remove assumption of stereo buffer
     for (unsigned int i = 0;
-            i < bufferParameters.bufferSize();
+            i < bufferParameters.samplesPerBuffer();
             i += bufferParameters.channelCount()) {
         CSAMPLE_GAIN send_ramped = send_start
                 + send_delta * i / bufferParameters.channelCount();
@@ -189,7 +189,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         CSAMPLE bufferedSampleRight = gs.delay_buf[read_position + 1];
         if (read_position != prev_read_position) {
             double frac = static_cast<double>(i)
-                / bufferParameters.bufferSize();
+                / bufferParameters.samplesPerBuffer();
             bufferedSampleLeft *= frac;
             bufferedSampleRight *= frac;
             bufferedSampleLeft += gs.delay_buf[prev_read_position] * (1 - frac);

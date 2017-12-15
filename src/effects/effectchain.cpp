@@ -179,9 +179,7 @@ void EffectChain::enableForChannel(const ChannelHandleAndGroup& handle_group) {
     pStatesForEffectsInChain->reserve(m_effects.size());
 
     //TODO: get actual configuration of engine
-    const mixxx::AudioParameters bufferParameters(
-          mixxx::AudioSignal::SampleLayout::Interleaved,
-          mixxx::kEngineChannelCount,
+    const mixxx::EngineParameters bufferParameters(
           mixxx::AudioSignal::SampleRate(96000),
           MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
 

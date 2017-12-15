@@ -77,9 +77,9 @@ EffectManifest ThreeBandBiquadEQEffect::getManifest() {
 }
 
 ThreeBandBiquadEQEffectGroupState::ThreeBandBiquadEQEffectGroupState(
-      const mixxx::AudioParameters& bufferParameters)
+      const mixxx::EngineParameters& bufferParameters)
         : EffectState(bufferParameters),
-          m_tempBuf(bufferParameters.bufferSize()),
+          m_tempBuf(bufferParameters.samplesPerBuffer()),
           m_oldLowBoost(0),
           m_oldMidBoost(0),
           m_oldHighBoost(0),
@@ -153,7 +153,7 @@ void ThreeBandBiquadEQEffect::processChannel(
         ThreeBandBiquadEQEffectGroupState* pState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
-        const mixxx::AudioParameters& bufferParameters,
+        const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
@@ -258,10 +258,10 @@ void ThreeBandBiquadEQEffect::processChannel(
         }
         if (bqGainLow > 0.0) {
             pState->m_lowBoost->process(
-                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.bufferSize());
+                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
         } else {
             pState->m_lowBoost->processAndPauseFilter(
-                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.bufferSize());
+                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
         }
         ++bufIndex;
     } else {
@@ -278,10 +278,10 @@ void ThreeBandBiquadEQEffect::processChannel(
         }
         if (bqGainLow < 0.0) {
             pState->m_lowCut->process(
-                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.bufferSize());
+                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
         } else {
             pState->m_lowCut->processAndPauseFilter(
-                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.bufferSize());
+                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
         }
         ++bufIndex;
     } else {
@@ -298,10 +298,10 @@ void ThreeBandBiquadEQEffect::processChannel(
         }
         if (bqGainMid > 0.0) {
             pState->m_midBoost->process(
-                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.bufferSize());
+                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
         } else {
             pState->m_midBoost->processAndPauseFilter(
-                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.bufferSize());
+                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
         }
         ++bufIndex;
     } else {
@@ -319,10 +319,10 @@ void ThreeBandBiquadEQEffect::processChannel(
         }
         if (bqGainMid < 0.0) {
             pState->m_midCut->process(
-                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.bufferSize());
+                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
         } else {
             pState->m_midCut->processAndPauseFilter(
-                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.bufferSize());
+                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
         }
         ++bufIndex;
     } else {
@@ -339,10 +339,10 @@ void ThreeBandBiquadEQEffect::processChannel(
         }
         if (bqGainHigh > 0.0) {
             pState->m_highBoost->process(
-                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.bufferSize());
+                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
         } else {
             pState->m_highBoost->processAndPauseFilter(
-                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.bufferSize());
+                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
         }
         ++bufIndex;
     } else {
@@ -359,10 +359,10 @@ void ThreeBandBiquadEQEffect::processChannel(
         }
         if (bqGainHigh < 0.0) {
             pState->m_highCut->process(
-                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.bufferSize());
+                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
         } else {
             pState->m_highCut->processAndPauseFilter(
-                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.bufferSize());
+                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
         }
         ++bufIndex;
     } else {
@@ -370,7 +370,7 @@ void ThreeBandBiquadEQEffect::processChannel(
     }
 
     if (activeFilters == 0) {
-        SampleUtil::copy(pOutput, pInput, bufferParameters.bufferSize());
+        SampleUtil::copy(pOutput, pInput, bufferParameters.samplesPerBuffer());
     }
 
     if (enableState == EffectEnableState::Disabling) {

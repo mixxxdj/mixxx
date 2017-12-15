@@ -87,7 +87,7 @@ AutoPanEffect::~AutoPanEffect() {
 void AutoPanEffect::processChannel(
           const ChannelHandle& handle, AutoPanGroupState* pGroupState,
           const CSAMPLE* pInput, CSAMPLE* pOutput,
-          const mixxx::AudioParameters& bufferParameters,
+          const mixxx::EngineParameters& bufferParameters,
           const EffectEnableState enableState,
           const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
@@ -145,7 +145,7 @@ void AutoPanEffect::processChannel(
     double sinusoid = 0;
 
     // NOTE: Assuming engine is working in stereo.
-    for (unsigned int i = 0; i + 1 < bufferParameters.bufferSize(); i += 2) {
+    for (unsigned int i = 0; i + 1 < bufferParameters.samplesPerBuffer(); i += 2) {
 
         CSAMPLE periodFraction = CSAMPLE(gs.time) / period;
 

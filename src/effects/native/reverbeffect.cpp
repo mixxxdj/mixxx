@@ -89,7 +89,7 @@ ReverbEffect::~ReverbEffect() {
 void ReverbEffect::processChannel(const ChannelHandle& handle,
                                 ReverbGroupState* pState,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                const mixxx::AudioParameters& bufferParameters,
+                                const mixxx::EngineParameters& bufferParameters,
                                 const EffectEnableState enableState,
                                 const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
@@ -114,6 +114,6 @@ void ReverbEffect::processChannel(const ChannelHandle& handle,
         pState->sampleRate = bufferParameters.sampleRate();
     }
     pState->reverb.processBuffer(pInput, pOutput,
-                                 bufferParameters.bufferSize(),
+                                 bufferParameters.samplesPerBuffer(),
                                  bandwidth, decay, damping, send);
 }

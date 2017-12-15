@@ -65,7 +65,7 @@ void MetronomeEffect::processChannel(
         const ChannelHandle& handle,
         MetronomeGroupState* pGroupState,
         const CSAMPLE* pInput, CSAMPLE* pOutput,
-        const mixxx::AudioParameters& bufferParameters,
+        const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
@@ -105,7 +105,7 @@ void MetronomeEffect::processChannel(
         maxFrames = bufferParameters.sampleRate() * 60 / m_pBpmParameter->value();
     }
 
-    SampleUtil::copy(pOutput, pInput, bufferParameters.bufferSize());
+    SampleUtil::copy(pOutput, pInput, bufferParameters.samplesPerBuffer());
 
     if (gs->m_framesSinceClickStart < clickSize) {
         // still in click region, write remaining click frames.

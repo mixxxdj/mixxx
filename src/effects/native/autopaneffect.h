@@ -63,7 +63,7 @@ static const int panMaxDelay = 3300; // allows a 30 Hz filter at 97346;
 
 class AutoPanGroupState : public EffectState {
   public:
-    AutoPanGroupState(const mixxx::AudioParameters& bufferParameters)
+    AutoPanGroupState(const mixxx::EngineParameters& bufferParameters)
             : EffectState(bufferParameters) {
         time = 0;
         delay = new EngineFilterPanSingle<panMaxDelay>();
@@ -88,7 +88,7 @@ class AutoPanEffect : public EffectProcessorImpl<AutoPanGroupState> {
     void processChannel(const ChannelHandle& handle,
             AutoPanGroupState* pState,
             const CSAMPLE* pInput, CSAMPLE* pOutput,
-            const mixxx::AudioParameters& bufferParameters,
+            const mixxx::EngineParameters& bufferParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures);
 

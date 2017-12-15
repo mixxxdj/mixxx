@@ -18,11 +18,11 @@
 
 class ReverbGroupState : public EffectState {
   public:
-    ReverbGroupState(const mixxx::AudioParameters& bufferParameters)
+    ReverbGroupState(const mixxx::EngineParameters& bufferParameters)
         : EffectState(bufferParameters) {
     }
 
-    void audioParametersChanged(const mixxx::AudioParameters& bufferParameters) {
+    void engineParametersChanged(const mixxx::EngineParameters& bufferParameters) {
         sampleRate = bufferParameters.sampleRate();
     }
 
@@ -42,7 +42,7 @@ class ReverbEffect : public EffectProcessorImpl<ReverbGroupState> {
     void processChannel(const ChannelHandle& handle,
                         ReverbGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE* pOutput,
-                        const mixxx::AudioParameters& bufferParameters,
+                        const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatures);
 

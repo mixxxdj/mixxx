@@ -38,15 +38,15 @@ class EngineEffect;
 // without wasting a lot of memory.
 class EffectState {
   public:
-    EffectState(const mixxx::AudioParameters& bufferParameters) {
-        // Subclasses should call audioParametersChanged here.
+    EffectState(const mixxx::EngineParameters& bufferParameters) {
+        // Subclasses should call engineParametersChanged here.
         Q_UNUSED(bufferParameters);
     };
     virtual ~EffectState() {};
 
     // TODO: implement this for all subclasses and call it when the buffer
     // size and sample rate are configured by SoundManager
-    virtual void audioParametersChanged(const mixxx::AudioParameters& bufferParameters) {
+    virtual void engineParametersChanged(const mixxx::EngineParameters& bufferParameters) {
         Q_UNUSED(bufferParameters);
     };
     // Subclasses should clear any mixxx::SampleBuffer members and set
@@ -65,8 +65,8 @@ class EffectProcessor {
     virtual void initialize(
             const QSet<ChannelHandleAndGroup>& activeInputChannels,
             EffectsManager* pEffectsManager,
-            const mixxx::AudioParameters& bufferParameters) = 0;
-    virtual EffectState* createState(const mixxx::AudioParameters& bufferParameters) = 0;
+            const mixxx::EngineParameters& bufferParameters) = 0;
+    virtual EffectState* createState(const mixxx::EngineParameters& bufferParameters) = 0;
     virtual bool loadStatesForInputChannel(const ChannelHandle& inputChannel,
           const EffectStatesPointer pStates) = 0;
     // Called from main thread for garbage collection after the last audio thread
@@ -79,14 +79,14 @@ class EffectProcessor {
     // effects should not be written assuming this will remain true. The properties
     // of the buffer necessary for determining how to process it (frames per
     // buffer, number of channels, and sample rate) are available on the
-    // mixxx::AudioParameters argument. The provided channel handles allow
+    // mixxx::EngineParameters argument. The provided channel handles allow
     // EffectProcessorImpl::process to fetch the appropriate EffectState and
     // pass it on to EffectProcessorImpl::processChannel, allowing one
     // EffectProcessor instance to process multiple signals simultaneously.
     virtual void process(const ChannelHandle& inputHandle,
                          const ChannelHandle& outputHandle,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
-                         const mixxx::AudioParameters& bufferParameters,
+                         const mixxx::EngineParameters& bufferParameters,
                          const EffectEnableState enableState,
                          const GroupFeatureState& groupFeatures) = 0;
 };
@@ -129,13 +129,13 @@ class EffectProcessorImpl : public EffectProcessor {
     virtual void processChannel(const ChannelHandle& handle,
                                 EffectSpecificState* channelState,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                const mixxx::AudioParameters& bufferParameters,
+                                const mixxx::EngineParameters& bufferParameters,
                                 const EffectEnableState enableState,
                                 const GroupFeatureState& groupFeatures) = 0;
 
     void process(const ChannelHandle& inputHandle, const ChannelHandle& outputHandle,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
-                         const mixxx::AudioParameters& bufferParameters,
+                         const mixxx::EngineParameters& bufferParameters,
                          const EffectEnableState enableState,
                          const GroupFeatureState& groupFeatures) final {
         EffectSpecificState* pState = m_channelStateMatrix[inputHandle][outputHandle];
@@ -153,7 +153,7 @@ class EffectProcessorImpl : public EffectProcessor {
 
    void initialize(const QSet<ChannelHandleAndGroup>& activeInputChannels,
             EffectsManager* pEffectsManager,
-            const mixxx::AudioParameters& bufferParameters) final {
+            const mixxx::EngineParameters& bufferParameters) final {
         for (const ChannelHandleAndGroup& inputChannel : activeInputChannels) {
             //qDebug() << this << "EffectProcessorImpl::initialize allocating EffectStates for input" << inputChannel;
             ChannelHandleMap<EffectSpecificState*> outputChannelMap;
@@ -169,7 +169,7 @@ class EffectProcessorImpl : public EffectProcessor {
         DEBUG_ASSERT(m_pEffectsManager != nullptr);
     };
 
-    EffectSpecificState* createState(const mixxx::AudioParameters& bufferParameters) final {
+    EffectSpecificState* createState(const mixxx::EngineParameters& bufferParameters) final {
         return new EffectSpecificState(bufferParameters);
     };
 

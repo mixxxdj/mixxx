@@ -46,7 +46,7 @@ Bessel8LVMixEQEffect::~Bessel8LVMixEQEffect() {
 void Bessel8LVMixEQEffect::processChannel(const ChannelHandle& handle,
                                           Bessel8LVMixEQEffectGroupState* pState,
                                           const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                          const mixxx::AudioParameters& bufferParameters,
+                                          const mixxx::EngineParameters& bufferParameters,
                                           const EffectEnableState enableState,
                                           const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
@@ -55,7 +55,7 @@ void Bessel8LVMixEQEffect::processChannel(const ChannelHandle& handle,
 
     if (enableState == EffectEnableState::Disabling) {
         // Ramp to dry, when disabling, this will ramp from dry when enabling as well
-        pState->processChannelAndPause(pInput, pOutput, bufferParameters.bufferSize());
+        pState->processChannelAndPause(pInput, pOutput, bufferParameters.samplesPerBuffer());
     } else {
         double fLow;
         double fMid;
@@ -77,7 +77,7 @@ void Bessel8LVMixEQEffect::processChannel(const ChannelHandle& handle,
         }
         pState->processChannel(
                 pInput, pOutput,
-                bufferParameters.bufferSize(), bufferParameters.sampleRate(),
+                bufferParameters.samplesPerBuffer(), bufferParameters.sampleRate(),
                 fLow, fMid, fHigh,
                 m_pLoFreqCorner->get(), m_pHiFreqCorner->get());
     }

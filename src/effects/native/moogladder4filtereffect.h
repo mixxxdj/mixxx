@@ -13,7 +13,7 @@
 
 class MoogLadder4FilterGroupState : public EffectState {
   public:
-    MoogLadder4FilterGroupState(const mixxx::AudioParameters& bufferParameters);
+    MoogLadder4FilterGroupState(const mixxx::EngineParameters& bufferParameters);
     ~MoogLadder4FilterGroupState();
     void setFilters(int sampleRate, double lowFreq, double highFreq);
 
@@ -39,7 +39,7 @@ class MoogLadder4FilterEffect : public EffectProcessorImpl<MoogLadder4FilterGrou
     void processChannel(const ChannelHandle& handle,
                         MoogLadder4FilterGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
-                        const mixxx::AudioParameters& bufferParameters,
+                        const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatures);
 

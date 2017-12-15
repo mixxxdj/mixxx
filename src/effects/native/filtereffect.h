@@ -12,10 +12,10 @@
 #include "util/types.h"
 
 struct FilterGroupState : public EffectState {
-    FilterGroupState(const mixxx::AudioParameters& bufferParameters);
+    FilterGroupState(const mixxx::EngineParameters& bufferParameters);
     ~FilterGroupState();
 
-    void audioParametersChanged(const mixxx::AudioParameters& bufferParameters) override;
+    void engineParametersChanged(const mixxx::EngineParameters& bufferParameters) override;
 
     void setFilters(int sampleRate, double lowFreq, double highFreq);
 
@@ -40,7 +40,7 @@ class FilterEffect : public EffectProcessorImpl<FilterGroupState> {
     void processChannel(const ChannelHandle& handle,
                         FilterGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
-                        const mixxx::AudioParameters& bufferParameters,
+                        const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatures);
 

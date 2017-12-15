@@ -13,7 +13,7 @@
 
 class PhaserGroupState final : public EffectState {
   public:
-    PhaserGroupState(const mixxx::AudioParameters& bufferParameters)
+    PhaserGroupState(const mixxx::EngineParameters& bufferParameters)
             : EffectState(bufferParameters) {
         clear();
     }
@@ -51,7 +51,7 @@ class PhaserEffect : public EffectProcessorImpl<PhaserGroupState> {
     void processChannel(const ChannelHandle& handle,
                         PhaserGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE* pOutput,
-                        const mixxx::AudioParameters& bufferParameters,
+                        const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatures);
 

@@ -125,7 +125,7 @@ PhaserEffect::~PhaserEffect() {
 void PhaserEffect::processChannel(const ChannelHandle& handle,
                                   PhaserGroupState* pState,
                                   const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                  const mixxx::AudioParameters& bufferParameters,
+                                  const mixxx::EngineParameters& bufferParameters,
                                   const EffectEnableState enableState,
                                   const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
@@ -180,7 +180,7 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
     int counter = 0;
 
     for (unsigned int i = 0;
-            i < bufferParameters.bufferSize();
+            i < bufferParameters.samplesPerBuffer();
             i += bufferParameters.channelCount()) {
         left = pInput[i] + tanh(left * feedback);
         right = pInput[i + 1] + tanh(right * feedback);
