@@ -54,7 +54,7 @@
             </Children>
           </WidgetGroup>
 
-          <!-- SizeAwareStack detects available height and switches to appropriate spinny size -->
+          <!-- SizeAwareStack detects available height and switches to appropriate spinny size
           <SizeAwareStack>
             <SizePolicy>0f,0me</SizePolicy>
             <Children>
@@ -87,7 +87,7 @@
               </WidgetGroup>
 
             </Children>
-          </SizeAwareStack>
+          </SizeAwareStack> -->
         </Children>
       </WidgetGroup>
 

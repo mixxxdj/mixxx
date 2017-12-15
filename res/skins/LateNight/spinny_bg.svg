@@ -80,6 +80,7 @@
        id="image3047" />
   </g>
   <g
+     transform="translate(111.45763,2.440678)"
      id="layer4">
     <path
        d="m 47.991495,2.0578677 c -25.449278,0 -46.0279049,20.6223863 -46.0279049,45.9545373 0,25.332151 20.5786269,45.954537 46.0279049,45.954537 25.449278,0 46.027906,-20.622386 46.027906,-45.954537 0,-25.332151 -20.578628,-45.9545373 -46.027906,-45.9545373 z"
@@ -117,4 +118,11 @@
        id="rect3776"
        style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none" />
   </g>
+  <rect
+     width="96"
+     height="96"
+     x="0"
+     y="0"
+     id="rect3001"
+     style="color:#000000;fill:#1e1e1e;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.5;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
 </svg>

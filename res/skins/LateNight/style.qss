@@ -55,16 +55,6 @@
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
-#SpinnyContainer1,
-#SpinnyContainer2 {
-  background-color: #2f290a;
-}
-
-#SpinnyContainer3,
-#SpinnyContainer4 {
-  background-color: #012322;
-}
-
 #DebugResizingSpinnies {
   background-color: #451169;
 }
@@ -97,7 +87,6 @@
   border-bottom: 1px solid #585858;
   background-color: #1e1e1e;
   padding: 0px;
-  padding-left: 2px;
 }
 
 #DecksAndMixer {

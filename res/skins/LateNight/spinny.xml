@@ -1,0 +1,21 @@
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>max,min</SizePolicy>
+    <Children>
+      <Spinny>
+        <Size>50f,50f</Size>
+        <Group>[Channel<Variable name="channum"/>]</Group>
+        <PathBackground scalemode="STRETCH_ASPECT">spinny_bg.svg</PathBackground>
+        <PathMask scalemode="STRETCH_ASPECT">spinny<Variable name="channum"/>_mask.svg</PathMask>
+        <PathForeground>spinny_indicator.svg</PathForeground>
+        <PathGhost>spinny_indicator_ghost.svg</PathGhost>
+        <ShowCover>true</ShowCover>
+      </Spinny>
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Spinny],show_spinnies</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

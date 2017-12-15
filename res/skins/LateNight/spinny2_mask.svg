@@ -19,22 +19,22 @@
        id="linearGradient3861">
       <stop
          id="stop3863"
-         style="stop-color:#09b2ae;stop-opacity:1"
+         style="stop-color:#eece33;stop-opacity:1"
          offset="0" />
       <stop
          id="stop3865"
-         style="stop-color:#09b2ae;stop-opacity:0"
+         style="stop-color:#eece33;stop-opacity:0"
          offset="1" />
     </linearGradient>
     <linearGradient
        id="linearGradient3851">
       <stop
          id="stop3853"
-         style="stop-color:#09b2ae;stop-opacity:1"
+         style="stop-color:#eece33;stop-opacity:1"
          offset="0" />
       <stop
          id="stop3855"
-         style="stop-color:#09b2ae;stop-opacity:0"
+         style="stop-color:#eece33;stop-opacity:0"
          offset="1" />
     </linearGradient>
     <linearGradient
@@ -80,6 +80,17 @@
        id="image3047" />
   </g>
   <g
+     id="layer4"
+     style="display:none">
+    <rect
+       width="96"
+       height="96"
+       x="0"
+       y="-8.8817842e-16"
+       id="rect4304"
+       style="fill:#2f290a;fill-opacity:1;fill-rule:nonzero;stroke:none" />
+  </g>
+  <g
      id="layer2"
      style="display:inline">
     <path
@@ -99,9 +110,9 @@
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none" />
     <path
        d="m 89.524769,48.144024 a 42.110733,45.330597 0 1 1 -84.2214662,0 42.110733,45.330597 0 1 1 84.2214662,0 z"
-       transform="matrix(1.0686112,0,0,0.99270698,-2.6671686,0.20709149)"
+       transform="matrix(1.0923581,0,0,1.0147671,-3.7931057,-0.85497323)"
        id="path4919"
-       style="fill:none;stroke:#585858;stroke-width:1.94182289;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline" />
+       style="fill:none;stroke:#585858;stroke-width:1.89960933;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
   </g>
   <g
      id="layer3"

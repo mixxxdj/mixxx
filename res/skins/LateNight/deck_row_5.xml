@@ -5,16 +5,16 @@
     <SizePolicy>me,me</SizePolicy>
     <Children>
 
+      <Template src="skin:spinny.xml"/>
+
 			<Overview>
 				<TooltipId>waveform_overview</TooltipId>
 				<Channel><Variable name="channum"/></Channel>
-				<MinimumSize>-1,50</MinimumSize>
+				<Size>-1me,50me</Size>
 				<!-- transparent background if no <BgColor> & <BgPixmap> is present
 				<BgColor>#1C1C1C</BgColor>
 				<BgPixmap></BgPixmap>
 				-->
-				<SizePolicy>me,me</SizePolicy>
-				<MinimumSize>-1,-1</MinimumSize>
 				<SignalColor><Variable name="signal_color" /></SignalColor>
         <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
         <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
