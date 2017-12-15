@@ -5,13 +5,13 @@
       <WidgetGroup>
         <ObjectName>UILowerHalf</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>min,i</SizePolicy>
+        <SizePolicy>me,i</SizePolicy>
         <MinimumSize>0,0</MinimumSize>
         <MaximumSize>-1,230</MaximumSize>
         <Children>
           <Template src="skin:mic_samplers_lib_container.xml"/>
           <WidgetGroup> <!-- Vertical spacer-->
-            <SizePolicy>me,me</SizePolicy>
+            <SizePolicy>me,min</SizePolicy>
           </WidgetGroup>
           <Template src="skin:toolbar.xml"/>
         </Children>
@@ -20,7 +20,7 @@
       <WidgetGroup>
         <ObjectName>UILowerHalf</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>min,me</SizePolicy>
+        <SizePolicy>me,me</SizePolicy>
         <MinimumSize>0,231</MinimumSize>
         <MaximumSize>-1,300</MaximumSize>
         <Children>
@@ -35,7 +35,7 @@
       <WidgetGroup>
         <ObjectName>UILowerHalf</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>min,me</SizePolicy>
+        <SizePolicy>me,me</SizePolicy>
         <MinimumSize>0,301</MinimumSize>
         <Children>
           <Template src="skin:mic_aux_container.xml"/>

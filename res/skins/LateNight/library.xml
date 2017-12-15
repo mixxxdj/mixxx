@@ -1,5 +1,5 @@
 <Template>
-    <WidgetGroup>
+  <WidgetGroup>
 		<ObjectName>Library</ObjectName>
 		<SizePolicy>me,i</SizePolicy>
 		<MinimumSize>1280,-</MinimumSize>
@@ -12,16 +12,16 @@
 			-->
 			<WidgetGroup>
 				<Layout>horizontal</Layout>
+				<SizePolicy>me,me</SizePolicy>
 				<Children>
 
 					<Splitter>
             <ObjectName>LibrarySplitter</ObjectName>
-						<Size>me,me</Size>
+						<SizePolicy>me,me</SizePolicy>
 						<SplitSizes>1,12</SplitSizes>
             <SplitSizesConfigKey>[LateNight],LibrarySidebarSplitSize</SplitSizesConfigKey>
 						<Children>
 							<WidgetGroup>
-								<Style>QGroupBox {}</Style>
 								<Layout>vertical</Layout>
 								<Children>
 
