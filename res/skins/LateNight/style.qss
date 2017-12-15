@@ -180,7 +180,7 @@
 
 #MasterControls {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
-  padding: 5px 2px 0px 5px;
+  padding: 2px;
   /* this wouldn't work:
   border-left: 1px solid #585858;
   border-width: 0px 0px 0px 1px; */
