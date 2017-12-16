@@ -141,7 +141,7 @@ class PerGroupRack : public EffectRack {
     virtual ~PerGroupRack() {}
 
 
-    EffectChainSlotPointer setupForGroup(const QString& group);
+    void setupForGroup(const QString& group);
     EffectChainSlotPointer getGroupEffectChainSlot(const QString& group);
     virtual bool loadEffectToGroup(const QString& group, EffectPointer pEffect);
 

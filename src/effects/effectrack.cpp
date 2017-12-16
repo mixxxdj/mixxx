@@ -312,10 +312,9 @@ PerGroupRack::PerGroupRack(EffectsManager* pEffectsManager,
         : EffectRack(pEffectsManager, pChainManager, iRackNumber, group, true) {
 }
 
-EffectChainSlotPointer PerGroupRack::setupForGroup(
-        const QString& groupName) {
+void PerGroupRack::setupForGroup(const QString& groupName) {
     VERIFY_OR_DEBUG_ASSERT(!m_groupToChainSlot.contains(groupName)) {
-        return getGroupEffectChainSlot(groupName);
+        return;
     }
 
     int iChainSlotNumber = m_groupToChainSlot.size();
@@ -356,8 +355,6 @@ EffectChainSlotPointer PerGroupRack::setupForGroup(
     // DlgPrefEq loads the Effect with loadEffectToGroup
 
     configureEffectChainSlotForGroup(pChainSlotPointer, groupName);
-
-    return pChainSlotPointer;
 }
 
 bool PerGroupRack::loadEffectToGroup(const QString& groupName, EffectPointer pEffect) {
