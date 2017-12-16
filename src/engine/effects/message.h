@@ -136,7 +136,7 @@ struct EffectsRequest {
     ChannelHandle channel;
 
     // Used by ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL
-    std::unique_ptr<EffectStatesMapArray> pEffectStatesMapArray;
+    EffectStatesMapArray* pEffectStatesMapArray;
 
     // Used by SET_EFFECT_PARAMETER.
     double minimum;

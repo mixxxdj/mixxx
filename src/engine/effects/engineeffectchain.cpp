@@ -142,7 +142,7 @@ bool EngineEffectChain::processEffectsRequest(EffectsRequest& message,
 }
 
 bool EngineEffectChain::enableForInputChannel(const ChannelHandle& inputHandle,
-        std::unique_ptr<EffectStatesMapArray> statesForEffectsInChain) {
+        EffectStatesMapArray* statesForEffectsInChain) {
     if (kEffectDebugOutput) {
         qDebug() << "EngineEffectChain::enableForInputChannel" << this << inputHandle;
     }
@@ -151,7 +151,7 @@ bool EngineEffectChain::enableForInputChannel(const ChannelHandle& inputHandle,
         VERIFY_OR_DEBUG_ASSERT(outputChannelStatus.enable_state !=
                 EffectEnableState::Enabled) {
             for (auto&& pStatesMap : *statesForEffectsInChain) {
-                for (auto&& pState : *pStatesMap) {
+                for (auto&& pState : pStatesMap) {
                     delete pState;
                 }
             }
@@ -165,12 +165,11 @@ bool EngineEffectChain::enableForInputChannel(const ChannelHandle& inputHandle,
                 qDebug() << "EngineEffectChain::enableForInputChannel" << this
                          << "loading states for effect" << i;
             }
-            std::unique_ptr<EffectStatesMap> pStatesMap =
-                    std::move(statesForEffectsInChain->at(i));
+            EffectStatesMap* pStatesMap = &(*statesForEffectsInChain)[i];
             VERIFY_OR_DEBUG_ASSERT(pStatesMap) {
                 return false;
             }
-            m_effects[i]->loadStatesForInputChannel(inputHandle, std::move(pStatesMap));
+            m_effects[i]->loadStatesForInputChannel(inputHandle, pStatesMap);
         }
     }
     return true;

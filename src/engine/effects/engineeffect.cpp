@@ -61,12 +61,12 @@ EffectState* EngineEffect::createState(const mixxx::EngineParameters& bufferPara
 }
 
 void EngineEffect::loadStatesForInputChannel(const ChannelHandle& inputChannel,
-    std::unique_ptr<EffectStatesMap> pStatesMap) {
+    EffectStatesMap* pStatesMap) {
     if (kEffectDebugOutput) {
         qDebug() << "EngineEffect::loadStatesForInputChannel" << this
                  << "loading states for input" << inputChannel;
     }
-    m_pProcessor->loadStatesForInputChannel(inputChannel, std::move(pStatesMap));
+    m_pProcessor->loadStatesForInputChannel(inputChannel, pStatesMap);
 }
 
 // Called from the main thread for garbage collection after an input channel is disabled

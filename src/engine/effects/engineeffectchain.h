@@ -60,7 +60,7 @@ class EngineEffectChain : public EffectsRequestHandler {
     bool addEffect(EngineEffect* pEffect, int iIndex);
     bool removeEffect(EngineEffect* pEffect, int iIndex);
     bool enableForInputChannel(const ChannelHandle& inputHandle,
-            std::unique_ptr<EffectStatesMapArray> statesForEffectsInChain);
+            EffectStatesMapArray* statesForEffectsInChain);
     bool disableForInputChannel(const ChannelHandle& inputHandle);
 
     // Gets or creates a ChannelStatus entry in m_channelStatus for the provided

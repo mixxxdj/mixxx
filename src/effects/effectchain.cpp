@@ -174,8 +174,11 @@ void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handle_grou
     request->channel = handle_group.handle();
 
     // Allocate EffectStates here in the main thread to avoid allocating
-    // memory in the realtime audio callback thread.
-    auto pEffectStatesMapArray = std::make_unique<EffectStatesMapArray>();
+    // memory in the realtime audio callback thread. Pointers to the
+    // EffectStates are passed to the EffectRequest and the EffectProcessorImpls
+    // store the pointers. The EffectStatesMapArray and EffectStatesMap containers
+    // are owned by this EffectChain so they do not need be reallocated for each
+    // EffectRequest.
 
     //TODO: get actual configuration of engine
     const mixxx::EngineParameters bufferParameters(
@@ -183,16 +186,22 @@ void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handle_grou
           MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
 
     for (int i = 0; i < m_effects.size(); ++i) {
-        auto pStatesMap = std::make_unique<EffectStatesMap>();
+        auto& pStatesMap = m_effectStatesMapArray[i];
         if (m_effects[i] != nullptr) {
             for (const auto& outputChannel : m_pEffectsManager->registeredOutputChannels()) {
-                pStatesMap->insert(outputChannel.handle(),
+                pStatesMap.insert(outputChannel.handle(),
                         m_effects[i]->createState(bufferParameters));
             }
+        } else {
+            for (EffectState* pState : pStatesMap) {
+                if (pState != nullptr) {
+                    delete pState;
+                }
+            }
+            pStatesMap.clear();
         }
-        pEffectStatesMapArray->at(i) = std::move(pStatesMap);
     }
-    request->pEffectStatesMapArray = std::move(pEffectStatesMapArray);
+    request->pEffectStatesMapArray = &m_effectStatesMapArray;
 
     m_pEffectsManager->writeRequest(request);
     emit(channelStatusChanged(handle_group.name(), true));
