@@ -98,7 +98,7 @@ Hercules4Mx.userSettings = {
     'FXbuttonsSetup': 'mixxx21',
     // This allows to use the left jog wheel in place of the right jog wheel when pressing the right jog wheel.
     // I implemented this to overcome the failure of the right jog wheel on my controller.
-    'useSingleJogWeelHack': true
+    'useSingleJogWeelHack': false
 };
 
 //
