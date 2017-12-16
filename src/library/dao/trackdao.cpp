@@ -192,6 +192,8 @@ void TrackDAO::saveTrack(Track* pTrack) {
     DEBUG_ASSERT(nullptr != pTrack);
 
     if (pTrack->isDirty()) {
+        qDebug() << "TrackDAO: Saving track" << pTrack->getLocation();
+
         // Write audio meta data, if enabled in the preferences.
         //
         // This must be done before updating the database, because
@@ -1256,6 +1258,10 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         return pTrack;
     }
     DEBUG_ASSERT(cacheResolver.getTrackCacheLookupResult() == TrackCacheLookupResult::MISS);
+    DEBUG_ASSERT(pTrack->getId() == trackId);
+    // After the Track object has been cached with an id we can safely
+    // release the lock the cache. This is needed to reduce lock contention.
+    cacheResolver.unlockCache();
 
     // For every column run its populator to fill the track in with the data.
     bool shouldDirty = false;
@@ -1323,10 +1329,6 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     connect(pTrack.get(), SIGNAL(changed(Track*)),
             this, SLOT(slotTrackChanged(Track*)),
             Qt::DirectConnection);
-
-    // Finish the caching operation to release all locks before
-    // emitting any signals.
-    cacheResolver.unlockCache();
 
     // BaseTrackCache cares about track trackDirty/trackClean notifications
     // from TrackDAO that are triggered by the track itself. But the preceding
