@@ -148,9 +148,16 @@ bool EngineEffectChain::enableForInputChannel(const ChannelHandle& inputHandle,
     }
     auto& outputMap = m_chainStatusForChannelMatrix[inputHandle];
     for (auto&& outputChannelStatus : outputMap) {
-        if (outputChannelStatus.enable_state != EffectEnableState::Enabled) {
-            outputChannelStatus.enable_state = EffectEnableState::Enabling;
+        VERIFY_OR_DEBUG_ASSERT(outputChannelStatus.enable_state !=
+                EffectEnableState::Enabled) {
+            for (auto&& pStatesMap : *statesForEffectsInChain) {
+                for (auto&& pState : *pStatesMap) {
+                    delete pState;
+                }
+            }
+            return false;
         }
+        outputChannelStatus.enable_state = EffectEnableState::Enabling;
     }
     for (int i = 0; i < m_effects.size(); ++i) {
         if (m_effects[i] != nullptr) {
