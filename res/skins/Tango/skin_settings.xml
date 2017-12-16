@@ -700,13 +700,13 @@ Description:
                             <SetVariable name="state_x_text"> [ 2 ] </SetVariable>
                             <SetVariable name="width">26</SetVariable>
                             <SetVariable name="stateX">0</SetVariable>
-                            <SetVariable name="Setting">[Tango],4_fx_units</SetVariable>
+                            <SetVariable name="Setting">[Tango],4_FxUnits</SetVariable>
                           </Template>
                           <Template src="skin:skin_settings_button_multi.xml">
                             <SetVariable name="state_x_text"> [ 4 ] </SetVariable>
                             <SetVariable name="width">26</SetVariable>
                             <SetVariable name="stateX">1</SetVariable>
-                            <SetVariable name="Setting">[Tango],4_fx_units</SetVariable>
+                            <SetVariable name="Setting">[Tango],4_FxUnits</SetVariable>
                           </Template>
                           <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
                         </Children>

@@ -11,7 +11,8 @@ Variables:
 <Template>
   <SetVariable name="FxRack">EqualizerRack1</SetVariable>
   <SetVariable name="FxNum">1</SetVariable>
-  <SetVariable name="EQEffect">[EqualizerRack1_<Variable name="group"/>_Effect1]</SetVariable>
+  <SetVariable name="FxRack_FxUnit_FxNum">[EqualizerRack1_<Variable name="group"/>_Effect1]</SetVariable>
+
   <WidgetGroup>
     <ObjectName>EQKnobContainerRight</ObjectName>
     <SizePolicy>min,min</SizePolicy>
@@ -40,7 +41,7 @@ Variables:
                 <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                 <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
                 <Connection>
-                  <ConfigKey><Variable name="EQEffect"/>,parameter<Variable name="parameter"/></ConfigKey>
+                  <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="parameter"/></ConfigKey>
                 </Connection>
               </EffectParameterKnobComposed>
 
@@ -53,14 +54,14 @@ Variables:
           </WidgetGroup><!-- /EQ knob + Kill indicator underneath -->
         </Children>
         <Connection>
-          <ConfigKey><Variable name="EQEffect"/>,loaded</ConfigKey>
+          <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,loaded</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /EQ knob + Kill button -->
       <WidgetGroup><!-- Spacer when no EQ plugin is loaded -->
         <Size>42me,30f</Size>
         <Connection>
-          <ConfigKey><Variable name="EQEffect"/>,loaded</ConfigKey>
+          <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,loaded</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>

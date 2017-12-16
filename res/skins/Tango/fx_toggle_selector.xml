@@ -6,13 +6,13 @@ Description:
   * enable feedback
   * effect selector drop-down list
 Variables:
-  FxRack    : effect rack number
-  FxUnitNum : effect unit number
-  FxGroup   : EffectRack1_EffectUnitX
-  FxNum     : effect number
+  FxRack        : effect rack number
+  FxUnitNum     : effect unit number
+  FxRack_FxUnit : EffectRack1_EffectUnitX
+  FxNum         : effect number
 -->
 <Template>
-  <SetVariable name="FxGroup_FxNum">[<Variable name="FxGroup"/>_Effect<Variable name="FxNum"/>]</SetVariable>
+  <SetVariable name="FxRack_FxUnit_FxNum">[<Variable name="FxRack_FxUnit"/>_Effect<Variable name="FxNum"/>]</SetVariable>
   <WidgetGroup>
     <ObjectName>FxToggleSelector</ObjectName>
     <Layout>stacked</Layout>
@@ -23,7 +23,7 @@ Variables:
         <SetVariable name="TooltipId">EffectSlot_enabled</SetVariable>
         <SetVariable name="ObjectName">FxToggleButton</SetVariable>
         <SetVariable name="Size">71f,20f</SetVariable>
-        <SetVariable name="ConfigKey"><Variable name="FxGroup_FxNum"/>,enabled</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,enabled</SetVariable>
       </Template>
 
       <WidgetGroup>
@@ -34,8 +34,8 @@ Variables:
           <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
           <EffectName>
             <ObjectName>FxName</ObjectName>
-            <EffectRack><Variable name="FxRackNum"/></EffectRack>
-            <EffectUnit><Variable name="FxUnitNum"/></EffectUnit>
+            <EffectRack><Variable name="FxRack"/></EffectRack>
+            <EffectUnit><Variable name="FxUnit"/></EffectUnit>
             <Effect><Variable name="FxNum"/></Effect>
           </EffectName>
           <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
@@ -46,13 +46,13 @@ Variables:
       <Template src="skin:button_2state.xml">
         <SetVariable name="ObjectName">FxToggleButtonUnderlay</SetVariable>
         <SetVariable name="Size">71f,20f</SetVariable>
-        <SetVariable name="ConfigKey"><Variable name="FxGroup_FxNum"/>,enabled</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,enabled</SetVariable>
       </Template>
 
       <EffectSelector>
         <Size>82f,20f</Size>
-        <EffectRack><Variable name="FxRackNum"/></EffectRack>
-        <EffectUnit><Variable name="FxUnitNum"/></EffectUnit>
+        <EffectRack><Variable name="FxRack"/></EffectRack>
+        <EffectUnit><Variable name="FxUnit"/></EffectUnit>
         <Effect><Variable name="FxNum"/></Effect>
       </EffectSelector>
 

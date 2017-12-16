@@ -4,8 +4,7 @@ Description:
   Units are pushed apart by spacers, see fx_units_spacer.xml.
 -->
 <Template>
-  <SetVariable name="FxRack">EffectRack1</SetVariable>
-  <SetVariable name="FxRackNum">1</SetVariable>
+  <SetVariable name="FxRack">1</SetVariable>
   <WidgetGroup>
     <ObjectName>FxUnits12</ObjectName>
     <SizePolicy>me,max</SizePolicy>
@@ -28,7 +27,7 @@ Description:
             <SizePolicy>min,max</SizePolicy>
             <Children>
               <Template src="skin:fx_unit_left.xml">
-                <SetVariable name="FxUnitNum">1</SetVariable>
+                <SetVariable name="FxUnit">1</SetVariable>
               </Template>
               <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
             </Children>
@@ -39,7 +38,7 @@ Description:
             <SizePolicy>min,me</SizePolicy>
             <Children>
               <Template src="skin:fx_unit_left_mini.xml">
-                <SetVariable name="FxUnitNum">1</SetVariable>
+                <SetVariable name="FxUnit">1</SetVariable>
               </Template>
               <WidgetGroup><Size>1min,5me</Size></WidgetGroup>
             </Children>
@@ -68,7 +67,7 @@ Description:
             <SizePolicy>min,max</SizePolicy>
             <Children>
               <Template src="skin:fx_unit_right.xml">
-                <SetVariable name="FxUnitNum">2</SetVariable>
+                <SetVariable name="FxUnit">2</SetVariable>
               </Template>
               <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
             </Children>
@@ -79,7 +78,7 @@ Description:
             <SizePolicy>min,me</SizePolicy>
             <Children>
               <Template src="skin:fx_unit_right_mini.xml">
-                <SetVariable name="FxUnitNum">2</SetVariable>
+                <SetVariable name="FxUnit">2</SetVariable>
               </Template>
               <WidgetGroup><Size>1min,5me</Size></WidgetGroup>
             </Children>

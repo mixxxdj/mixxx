@@ -1591,8 +1591,8 @@ decks, samplers, mic, aux */
   #FxParameterButtonUnderlay[displayValue="1"] {
     background-color: #006596;
   }
-  #FxParameterButtonName_0,
-  #FxParameterButtonName_1 {
+  #FxParameterButtonName_inactive,
+  #FxParameterButtonName_active {
     font-size: 10px/10px;
     font-weight: bold;
     qproperty-alignment: 'AlignLeft | AlignVCenter';

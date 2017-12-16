@@ -1,12 +1,11 @@
 <!--
 Description:
   A row of up to 8 effect parameter knobs and up to 8 parameter buttons.
-Variables:
-  FxGroup : EffectRack1_EffectUnitX
+Variables passed through from fx_unit:
+  FxRack_FxUnit : EffectRack1_EffectUnitX
   FxNum   : effect number
 -->
 <Template>
-  <SetVariable name="FxGroup_FxNum">[<Variable name="FxGroup"/>_Effect<Variable name="FxNum"/>]</SetVariable>
   <WidgetGroup>
     <ObjectName>FxParameters</ObjectName>
     <Layout>horizontal</Layout>

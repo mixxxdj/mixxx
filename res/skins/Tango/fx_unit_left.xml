@@ -5,11 +5,11 @@ Description:
   * mixer with Wet/Dry knob and Super knob (optional)
   * assignment buttons for master & headphone
 Variables:
-  FxUnitNum:   number of effect unit for FX label
+  FxUnit:   number of effect unit for FX label
 -->
 <Template>
-  <SetVariable name="FxGroup">EffectRack1_EffectUnit<Variable name="FxUnitNum"/></SetVariable>
-  <SetVariable name="group">EffectUnit<Variable name="FxUnitNum"/></SetVariable>
+  <SetVariable name="FxRack_FxUnit">EffectRack<Variable name="FxRack"/>_EffectUnit<Variable name="FxUnit"/></SetVariable>
+
   <WidgetGroup><!-- EffectUnit -->
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
@@ -83,7 +83,7 @@ Variables:
                 <ObjectName>FxFlowUnderlay_left_focus1</ObjectName>
                 <Size>1me,53f</Size>
                 <Connection>
-                  <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
+                  <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
                   <BindProperty>highlight</BindProperty>
                   <Transform><IsEqual>1</IsEqual></Transform>
                 </Connection>
@@ -93,7 +93,7 @@ Variables:
                 <ObjectName>FxFlowUnderlay_left_focus2</ObjectName>
                 <Size>1me,99f</Size>
                 <Connection>
-                  <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
+                  <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
                   <BindProperty>highlight</BindProperty>
                   <Transform><IsEqual>2</IsEqual></Transform>
                 </Connection>
@@ -103,7 +103,7 @@ Variables:
                 <ObjectName>FxFlowUnderlay_left_focus3</ObjectName>
                 <Size>1me,137f</Size>
                 <Connection>
-                  <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
+                  <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
                   <BindProperty>highlight</BindProperty>
                   <Transform><IsEqual>3</IsEqual></Transform>
                 </Connection>
@@ -112,7 +112,7 @@ Variables:
           </WidgetGroup><!-- /Underlays with focus -->
         </Children>
         <Connection>
-          <ConfigKey>[<Variable name="FxGroup"/>],show_focus</ConfigKey>
+          <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /EffectSlots + Underlays, with focus button -->
@@ -193,7 +193,7 @@ Variables:
           </WidgetGroup><!-- /Underlays, no focus -->
         </Children>
         <Connection>
-          <ConfigKey>[<Variable name="FxGroup"/>],show_focus</ConfigKey>
+          <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
@@ -208,7 +208,7 @@ Variables:
             <SetVariable name="ObjectName">FxSamplersMiniMaxi</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
             <SetVariable name="Size">22min,14f</SetVariable>
-            <SetVariable name="ConfigKey">[<Variable name="FxGroup"/>],show_parameters</SetVariable>
+            <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],show_parameters</SetVariable>
           </Template>
 
           <Label>
@@ -217,7 +217,7 @@ Variables:
                 there, it has a 4px spacer above. here, we need some margin
                 to FX mixer below. Text is centerd vertically -->
             <Size>30min,20f</Size>
-            <Text>FX<Variable name="FxUnitNum"/></Text>
+            <Text>FX<Variable name="FxUnit"/></Text>
             <Alignment>center</Alignment>
           </Label>
 
@@ -233,7 +233,7 @@ Variables:
                 <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
                 <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
                 <SetVariable name="Size">30f,30f</SetVariable>
-                <SetVariable name="group">[<Variable name="FxGroup"/>]</SetVariable>
+                <SetVariable name="group">[<Variable name="FxRack_FxUnit"/>]</SetVariable>
                 <SetVariable name="ConfigKey">mix</SetVariable>
                 <SetVariable name="Color">red</SetVariable>
               </Template>
@@ -248,7 +248,7 @@ Variables:
                     <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
                     <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
                     <SetVariable name="Size">30f,30f</SetVariable>
-                    <SetVariable name="group">[<Variable name="FxGroup"/>]</SetVariable>
+                    <SetVariable name="group">[<Variable name="FxRack_FxUnit"/>]</SetVariable>
                     <SetVariable name="ConfigKey">super1</SetVariable>
                     <SetVariable name="Color">blue</SetVariable>
                   </Template>
@@ -299,7 +299,7 @@ Variables:
                         <SetVariable name="state_0_unpressed">pfl_off.svg</SetVariable>
                         <SetVariable name="state_1_pressed">pfl_on.svg</SetVariable>
                         <SetVariable name="state_1_unpressed">pfl_on.svg</SetVariable>
-                        <SetVariable name="ConfigKey">[EffectRack1_EffectUnit<Variable name="FxUnitNum"/>],group_[Headphone]_enable</SetVariable>
+                        <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],group_[Headphone]_enable</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup>

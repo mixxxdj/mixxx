@@ -68,7 +68,7 @@
       <attribute persist="true" config_key="[SamplerRow7],expanded">0</attribute>
       <attribute persist="true" config_key="[SamplerRow8],expanded">0</attribute>
       <!-- [Tango] specific defaults -->
-      <attribute persist="true" config_key="[Tango],4_fx_units">0</attribute>
+      <attribute persist="true" config_key="[Tango],4_FxUnits">0</attribute>
       <!--attribute persist="true" config_key="[Tango],sampler_fx_buttons">1</attribute-->
       <attribute persist="true" config_key="[Tango],beatgrid_buttons">0</attribute>
       <attribute persist="true" config_key="[Tango],deck_controls_expanded">0</attribute>
@@ -183,6 +183,13 @@
       </Children>
     </SingletonDefinition>
 
+    <SingletonDefinition>
+      <ObjectName>FxUnits_12_Singleton</ObjectName>
+      <Children>
+        <Template src="skin:fx_units_12.xml"/>
+      </Children>
+    </SingletonDefinition>
+
 <!--  ################################################################
        SkinContainer  ###############################################
      ############################################################### -->
@@ -252,10 +259,12 @@
                           <Layout>vertical</Layout>
                           <SizePolicy>me,min</SizePolicy>
                           <Children>
-                            <Template src="skin:fx_units_12.xml"/>
+                            <SingletonContainer>
+                              <ObjectName>FxUnits_12_Singleton</ObjectName>
+                            </SingletonContainer>
                           </Children>
                           <Connection>
-                            <ConfigKey persist="true">[Tango],2or4_FxUnits</ConfigKey>
+                            <ConfigKey persist="true">[Tango],4_FxUnits</ConfigKey>
                             <BindProperty>visible</BindProperty>
                           </Connection>
                         </WidgetGroup>
@@ -269,7 +278,7 @@
                             <Template src="skin:fx_units_34.xml"/>
                           </Children>
                           <Connection>
-                            <ConfigKey persist="true">[Tango],2or4_FxUnits</ConfigKey>
+                            <ConfigKey persist="true">[Tango],4_FxUnits</ConfigKey>
                             <BindProperty>visible</BindProperty>
                           </Connection>
                         </WidgetGroup>
@@ -277,10 +286,12 @@
                         <WidgetGroup>
                           <Layout>vertical</Layout>
                           <Children>
-                            <Template src="skin:fx_units_12.xml"/>
+                            <SingletonContainer>
+                              <ObjectName>FxUnits_12_Singleton</ObjectName>
+                            </SingletonContainer>
                           </Children>
                           <Connection>
-                            <ConfigKey persist="true">[Tango],2or4_FxUnits</ConfigKey>
+                            <ConfigKey persist="true">[Tango],4_FxUnits</ConfigKey>
                             <Transform><Not/></Transform>
                             <BindProperty>visible</BindProperty>
                           </Connection>
@@ -326,10 +337,12 @@
           </Children>
         </WidgetGroup><!-- /All skin elements + Skin menu -->
 
-        <!-- Detect if screen (window) size is netbook-like -->
+        <!-- Detect if screen (window) size is netbook-like.
+            Center spacer in top bar will adapt to size. -->
         <Template src="skin:size_detector_screen.xml"/>
 
-        <!-- Detect if Star rating fits into deck buttons row -->
+        <!-- Detect if Star rating fits into deck buttons row.
+            Do this here, so it doesn't interfere with expanded skin menu -->
         <Template src="skin:size_detector_stars.xml"/>
 
       </Children>

@@ -5,11 +5,11 @@ Description:
   * mixer with Wet/Dry knob and Super knob (optional)
   * assignment buttons for master & headphone
 Variables:
-  FxUnitNum:   number of effect unit for FX label
+  FxUnit:   number of effect unit for FX label
 -->
 <Template>
-  <SetVariable name="FxGroup">EffectRack1_EffectUnit<Variable name="FxUnitNum"/></SetVariable>
-  <SetVariable name="group">EffectUnit<Variable name="FxUnitNum"/></SetVariable>
+  <SetVariable name="FxRack_FxUnit">EffectRack<Variable name="FxRack"/>_EffectUnit<Variable name="FxUnit"/></SetVariable>
+
   <WidgetGroup>
     <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
@@ -82,7 +82,7 @@ Variables:
           </WidgetGroup><!-- /Underlays, no focus -->
         </Children>
         <Connection>
-          <ConfigKey>[<Variable name="FxGroup"/>],show_focus</ConfigKey>
+          <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
@@ -140,7 +140,7 @@ Variables:
                 <ObjectName>FxFlowUnderlay_mini_focus1</ObjectName>
                 <Size>134f,30f</Size>
                 <Connection>
-                  <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
+                  <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
                   <Transform><IsEqual>1</IsEqual></Transform>
                   <BindProperty>highlight</BindProperty>
                 </Connection>
@@ -150,7 +150,7 @@ Variables:
                 <ObjectName>FxFlowUnderlay_mini_focus2</ObjectName>
                 <Size>268f,30f</Size>
                 <Connection>
-                  <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
+                  <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
                   <Transform><IsEqual>2</IsEqual></Transform>
                   <BindProperty>highlight</BindProperty>
                 </Connection>
@@ -160,7 +160,7 @@ Variables:
                 <ObjectName>FxFlowUnderlay_mini_focus3</ObjectName>
                 <Size>402f,30f</Size>
                 <Connection>
-                  <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
+                  <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
                   <Transform><IsEqual>3</IsEqual></Transform>
                   <BindProperty>highlight</BindProperty>
                 </Connection>
@@ -169,7 +169,7 @@ Variables:
           </WidgetGroup><!-- /Underlays with focus -->
         </Children>
         <Connection>
-          <ConfigKey>[<Variable name="FxGroup"/>],show_focus</ConfigKey>
+          <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /EffectSlots + Underlays, with focus -->
@@ -212,7 +212,7 @@ Variables:
                     <SetVariable name="state_0_unpressed">pfl_off.svg</SetVariable>
                     <SetVariable name="state_1_pressed">pfl_on.svg</SetVariable>
                     <SetVariable name="state_1_unpressed">pfl_on.svg</SetVariable>
-                    <SetVariable name="ConfigKey">[EffectRack1_EffectUnit<Variable name="FxUnitNum"/>],group_[Headphone]_enable</SetVariable>
+                    <SetVariable name="ConfigKey">[EffectRack1_EffectUnit<Variable name="FxUnit"/>],group_[Headphone]_enable</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup>
@@ -227,7 +227,7 @@ Variables:
                 <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
                 <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
                 <SetVariable name="Size">30f,30f</SetVariable>
-                <SetVariable name="group">[<Variable name="FxGroup"/>]</SetVariable>
+                <SetVariable name="group">[<Variable name="FxRack_FxUnit"/>]</SetVariable>
                 <SetVariable name="ConfigKey">super1</SetVariable>
                 <SetVariable name="Color">blue</SetVariable>
               </Template>
@@ -242,7 +242,7 @@ Variables:
             <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
             <SetVariable name="Size">30f,30f</SetVariable>
-            <SetVariable name="group">[<Variable name="FxGroup"/>]</SetVariable>
+            <SetVariable name="group">[<Variable name="FxRack_FxUnit"/>]</SetVariable>
             <SetVariable name="ConfigKey">mix</SetVariable>
             <SetVariable name="Color">red</SetVariable>
           </Template>
@@ -263,11 +263,11 @@ Variables:
                 <SetVariable name="ObjectName">FxSamplersMiniMaxi</SetVariable>
                 <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
                 <SetVariable name="Size">28f,14f</SetVariable>
-                <SetVariable name="ConfigKey">[<Variable name="FxGroup"/>],show_parameters</SetVariable>
+                <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],show_parameters</SetVariable>
               </Template>
             </Children>
             <Connection>
-              <ConfigKey>[<Variable name="FxGroup"/>],show_focus</ConfigKey>
+              <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
@@ -285,11 +285,11 @@ Variables:
                     <SetVariable name="ObjectName">FxSamplersMiniMaxi</SetVariable>
                     <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
                     <SetVariable name="Size">28f,14f</SetVariable>
-                    <SetVariable name="ConfigKey">[<Variable name="FxGroup"/>],show_parameters</SetVariable>
+                    <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],show_parameters</SetVariable>
                   </Template>
                 </Children>
                 <Connection>
-                  <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
+                  <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
                   <Transform><IsEqual>0</IsEqual></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
@@ -303,18 +303,18 @@ Variables:
                     <SetVariable name="ObjectName">FxSamplersMiniMaxi_Focus</SetVariable>
                     <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
                     <SetVariable name="Size">28f,14f</SetVariable>
-                    <SetVariable name="ConfigKey">[<Variable name="FxGroup"/>],show_parameters</SetVariable>
+                    <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],show_parameters</SetVariable>
                   </Template>
                 </Children>
                 <Connection>
-                  <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
+                  <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
                   <Transform><IsEqual>0</IsEqual><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
             </Children>
             <Connection>
-              <ConfigKey>[<Variable name="FxGroup"/>],show_focus</ConfigKey>
+              <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /FX expand button when focus is shown -->
@@ -325,7 +325,7 @@ Variables:
           <Label>
             <ObjectName>FxUnitLabel</ObjectName>
             <Size>28f,12f</Size>
-            <Text>FX<Variable name="FxUnitNum"/></Text>
+            <Text>FX<Variable name="FxUnit"/></Text>
             <Alignment>center</Alignment>
           </Label>
         </Children>
