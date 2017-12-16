@@ -46,9 +46,9 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
     connectionList->setModel(m_pSettingsModel);
 
     connect(connectionList->selectionModel(),
-            SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),
+            SIGNAL(currentRowChanged(const QModelIndex&, const QModelIndex&)),
             this,
-            SLOT(profileListItemSelected(const QModelIndex&, const QModelIndex&)));
+            SLOT(connectionListItemSelected(const QModelIndex&)));
     connect(btnRemoveConnection, SIGNAL(clicked(bool)),
             this, SLOT(btnRemoveConnectionClicked()));
     connect(btnRenameConnection, SIGNAL(clicked(bool)),
@@ -104,9 +104,6 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
      comboBoxEncodingChannels->addItem(tr("Stereo"),
              static_cast<int>(EncoderSettings::ChannelMode::STEREO));
 
-     BroadcastProfilePtr pProfile = m_pBroadcastSettings->profileAt(0);
-     getValuesFromProfile(pProfile);
-
      connect(checkBoxEnableReconnect, SIGNAL(stateChanged(int)),
              this, SLOT(checkBoxEnableReconnectChanged(int)));
 
@@ -130,7 +127,7 @@ void DlgPrefBroadcast::slotUpdate() {
 
     // Force select an item to have the current selection
     // set to a profile pointer belonging to the model
-    connectionList->selectRow(0);
+    selectConnectionRow(0);
 
     // Don't let user modify information if
     // sending is enabled.
@@ -261,9 +258,7 @@ void DlgPrefBroadcast::btnCreateConnectionClicked() {
     selectConnectionRowByName(newProfile->getProfileName());
 }
 
-void DlgPrefBroadcast::profileListItemSelected(const QModelIndex& selected,
-        const QModelIndex& deselected) {
-    Q_UNUSED(deselected);
+void DlgPrefBroadcast::connectionListItemSelected(const QModelIndex& selected) {
     setValuesToProfile(m_pProfileListSelection);
 
     QString selectedName = m_pSettingsModel->data(selected,
@@ -292,11 +287,22 @@ void DlgPrefBroadcast::updateModel() {
 }
 
 void DlgPrefBroadcast::selectConnectionRow(int row) {
-    if(row < 0 || row > m_pSettingsModel->rowCount()) {
-        return;
+    if (row < 0) {
+        row = 0;
+    }
+
+    const int maxRow = m_pSettingsModel->rowCount() - 1;
+    if (row > maxRow) {
+        row = maxRow;
     }
 
     connectionList->selectRow(row);
+
+    // QTableView::selectRow updates the UI but doesn't trigger
+    // currentRowChanged in the selection model object, so
+    // we must do it manually
+    QModelIndex newSelection = m_pSettingsModel->index(row, kColumnName);
+    connectionListItemSelected(newSelection);
 }
 
 void DlgPrefBroadcast::selectConnectionRowByName(QString rowName) {
