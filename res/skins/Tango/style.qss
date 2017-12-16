@@ -1260,12 +1260,6 @@ decks, samplers, mic, aux */
   padding: 0px 2px 0px 1px;
 }
 
-#VUMeterMasterContainer {
-  margin: 0px 1px 0px 1px;
-  background-color: #252525;
-  border-radius: 3px;
-}
-
 #VUMeterMasterLabel {
   image: url(skin:/buttons/btn_master_vu_label.svg) no-repeat center center;
 }
