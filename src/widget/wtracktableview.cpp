@@ -1363,11 +1363,13 @@ QList<TrackId> WTrackTableView::getSelectedTrackIds() const {
     trackIds.reserve(rows.size());
     for (const QModelIndex& row: rows) {
         const TrackId trackId = pTrackModel->getTrackId(row);
-        VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
-            qWarning() << "Skipping invalid track id @" << row;
-            continue;
+        if (trackId.isValid()) {
+            trackIds.append(trackId);
+        } else {
+            // This happens in the browse view where only some tracks
+            // have an id.
+            qDebug() << "Skipping row" << row << "with invalid track id";
         }
-        trackIds.append(trackId);
     }
 
     return trackIds;
