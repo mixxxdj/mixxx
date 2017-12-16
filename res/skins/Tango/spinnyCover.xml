@@ -69,14 +69,12 @@ Variables:
       </CoverArt>
 
       <WidgetGroup>
-        <MinimumSize>0,0</MinimumSize>
-        <MaximumSize>-1,3</MaximumSize>
-        <SizePolicy>me,me</SizePolicy>
+        <Size>0me,1f</Size>
       </WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>RoundFiller25</ObjectName>
-        <Size>0me,22f</Size>
+        <Size>0me,24f</Size>
       </WidgetGroup>
 
       <WidgetGroup>
