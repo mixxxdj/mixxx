@@ -64,7 +64,13 @@ class AnalyzerQueue : public QThread {
 
     bool isLoadedTrackWaiting(TrackPointer pAnalyzingTrack);
     TrackPointer dequeueNextBlocking();
-    bool doAnalysis(TrackPointer pTrack, mixxx::AudioSourcePointer pAudioSource);
+    enum class AnalysisResult {
+        Pending,
+        Partial,
+        Complete,
+        Cancelled,
+    };
+    AnalysisResult doAnalysis(TrackPointer pTrack, mixxx::AudioSourcePointer pAudioSource);
     void emitUpdateProgress(TrackPointer pTrack, int progress);
     void emptyCheck();
     void updateSize();

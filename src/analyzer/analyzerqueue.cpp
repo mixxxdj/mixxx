@@ -169,7 +169,7 @@ TrackPointer AnalyzerQueue::dequeueNextBlocking() {
 }
 
 // This is called from the AnalyzerQueue thread
-bool AnalyzerQueue::doAnalysis(
+AnalyzerQueue::AnalysisResult AnalyzerQueue::doAnalysis(
         TrackPointer pTrack,
         mixxx::AudioSourcePointer pAudioSource) {
 
@@ -182,9 +182,8 @@ bool AnalyzerQueue::doAnalysis(
     DEBUG_ASSERT(audioSourceProxy.channelCount() == kAnalysisChannels);
 
     mixxx::IndexRange remainingFrames = pAudioSource->frameIndexRange();
-    bool dieflag = false;
-    bool cancelled = false;
-    while (!dieflag && !remainingFrames.empty()) {
+    auto result = remainingFrames.empty() ? AnalysisResult::Complete : AnalysisResult::Pending;
+    while (result == AnalysisResult::Pending) {
         ScopedTimer t("AnalyzerQueue::doAnalysis block");
 
         const auto inputFrameIndexRange =
@@ -205,26 +204,30 @@ bool AnalyzerQueue::doAnalysis(
                         readableSampleFrames.readableData(),
                         readableSampleFrames.readableLength());
             }
+            if (remainingFrames.empty()) {
+                result = AnalysisResult::Complete;
+            }
         } else {
             // Partial analysis block of audio samples has been read.
             // This should only happen at the end of an audio stream,
             // otherwise a decoding error must have occurred.
-            if (!remainingFrames.empty()) {
+            if (remainingFrames.empty()) {
+                result = AnalysisResult::Complete;
+            } else {
                 // EOF not reached -> Maybe a corrupt file?
                 kLogger.warning()
                         << "Aborting analysis after failed to read sample data from"
                         << pTrack->getLocation()
                         << ": expected frames =" << inputFrameIndexRange
                         << ", actual frames =" << readableSampleFrames.frameIndexRange();
-                dieflag = true; // abort
-                cancelled = false; // completed, no retry
+                result = AnalysisResult::Partial;
             }
         }
 
         // emit progress updates
         // During the doAnalysis function it goes only to 100% - FINALIZE_PERCENT
         // because the finalize functions will take also some time
-        //fp div here prevents insane signed overflow
+        // fp div here prevents insane signed overflow
         const double frameProgress =
                 double(pAudioSource->frameLength() - remainingFrames.length()) /
                 double(pAudioSource->frameLength());
@@ -247,26 +250,25 @@ bool AnalyzerQueue::doAnalysis(
 
         // has something new entered the queue?
         if (m_queueModifiedFlag.fetchAndStoreAcquire(false)) {
-            // Don't short circuit isLoadedTrackWaiting() here!
             if (isLoadedTrackWaiting(pTrack)) {
-                kLogger.debug() << "Interrupting analysis to give preference to a loaded track.";
-                dieflag = true;
-                cancelled = true;
+                if (result == AnalysisResult::Pending) {
+                    kLogger.debug() << "Interrupting analysis to give preference to a loaded track.";
+                    result = AnalysisResult::Cancelled;
+                }
             }
         }
 
         if (m_exitPendingFlag) {
-            dieflag = true;
-            cancelled = true;
+            result = AnalysisResult::Cancelled;
         }
 
         // Ignore blocks in which we decided to bail for stats purposes.
-        if (dieflag || cancelled) {
+        if ((result != AnalysisResult::Pending) || (result != AnalysisResult::Complete)) {
             t.cancel();
         }
     }
 
-    return !cancelled; //don't return !dieflag or we might reanalyze over and over
+    return result;
 }
 
 void AnalyzerQueue::stop() {
@@ -357,15 +359,12 @@ void AnalyzerQueue::execThread() {
 
         if (processTrack) {
             emitUpdateProgress(nextTrack, 0);
-            bool completed = doAnalysis(nextTrack, pAudioSource);
-            if (!completed) {
-                // This track was cancelled
-                for (auto const& pAnalyzer: m_pAnalyzers) {
-                    pAnalyzer->cleanup(nextTrack);
-                }
-                enqueueTrack(nextTrack);
-                emitUpdateProgress(nextTrack, 0);
-            } else {
+            const auto analysisResult = doAnalysis(nextTrack, pAudioSource);
+            DEBUG_ASSERT(analysisResult != AnalysisResult::Pending);
+            if ((analysisResult == AnalysisResult::Complete) ||
+                    (analysisResult == AnalysisResult::Partial)) {
+                // Don't try to reanalyze tracks during this session if the
+                // analysis failed even if only partial results are available!
                 // 100% - FINALIZE_PERCENT finished
                 emitUpdateProgress(nextTrack, 1000 - FINALIZE_PROMILLE);
                 // This takes around 3 sec on a Atom Netbook
@@ -374,6 +373,12 @@ void AnalyzerQueue::execThread() {
                 }
                 emit(trackDone(nextTrack));
                 emitUpdateProgress(nextTrack, 1000); // 100%
+            } else {
+                for (auto const& pAnalyzer: m_pAnalyzers) {
+                    pAnalyzer->cleanup(nextTrack);
+                }
+                enqueueTrack(nextTrack);
+                emitUpdateProgress(nextTrack, 0);
             }
         } else {
             emitUpdateProgress(nextTrack, 1000); // 100%
