@@ -200,7 +200,7 @@ class EffectProcessorImpl : public EffectProcessor {
                            << this << "output" << outputChannel;
               }
               auto pState = dynamic_cast<EffectSpecificState*>(
-                        pStatesMap.get()->at(outputChannel.handle()));
+                        pStatesMap->at(outputChannel.handle()));
               VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
                     return false;
               }

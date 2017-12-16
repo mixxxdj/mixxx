@@ -186,11 +186,11 @@ void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handle_grou
         auto pStatesMap = std::make_unique<EffectStatesMap>();
         if (m_effects[i] != nullptr) {
             for (const auto& outputChannel : m_pEffectsManager->registeredOutputChannels()) {
-                pStatesMap.get()->insert(outputChannel.handle(),
+                pStatesMap->insert(outputChannel.handle(),
                         m_effects[i]->createState(bufferParameters));
             }
         }
-        pEffectStatesMapArray.get()->at(i) = std::move(pStatesMap);
+        pEffectStatesMapArray->at(i) = std::move(pStatesMap);
     }
     request->pEffectStatesMapArray = std::move(pEffectStatesMapArray);
 

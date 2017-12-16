@@ -159,7 +159,7 @@ bool EngineEffectChain::enableForInputChannel(const ChannelHandle& inputHandle,
                          << "loading states for effect" << i;
             }
             std::unique_ptr<EffectStatesMap> pStatesMap =
-                    std::move(statesForEffectsInChain.get()->at(i));
+                    std::move(statesForEffectsInChain->at(i));
             VERIFY_OR_DEBUG_ASSERT(pStatesMap) {
                 return false;
             }
