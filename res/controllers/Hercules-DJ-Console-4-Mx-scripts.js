@@ -1415,10 +1415,10 @@ Hercules4Mx.FXButton = function(midichan, control, value, status, groupInitial) 
             Hercules4Mx.deactivateEditModeAction();
         }
     } else if (value) {
-		if (Hercules4Mx.debuglog === true) {
-	        engine.log(JSON.stringify(mapping));
-	        engine.log(JSON.stringify(Hercules4Mx.noActionButtonMap));
-		}
+        if (Hercules4Mx.debuglog === true) {
+            engine.log(JSON.stringify(mapping));
+            engine.log(JSON.stringify(Hercules4Mx.noActionButtonMap));
+        }
         mapping.buttonPressAction(group, fxbutton, 1, mapping.extraParameter);
     } else if (mapping.buttonReleaseAction !== null) {
         mapping.buttonReleaseAction(group, fxbutton, 0, mapping.extraParameter);
@@ -1494,7 +1494,7 @@ Hercules4Mx.scratchWheel = function(midichan, control, value, status, groupIniti
     } else {
         //It has a speed sensor, but you have to move it really fast for it to send something different.
         var direction = (value < 0x40) ? value : value - 0x80;
-		var group = (Hercules4Mx.previewOnDeck[groupInitial]) ? '[PreviewDeck1]' : groupInitial;
+        var group = (Hercules4Mx.previewOnDeck[groupInitial]) ? '[PreviewDeck1]' : groupInitial;
         engine.scratchTick(script.deckFromGroup(group), direction);
     }
 };
@@ -1563,7 +1563,7 @@ Hercules4Mx.faderToVolume = function (value) {
         return value*lowerdb/lowerval;
     } else {
         var dbs = -(127-value)*6/32;
-		return Math.pow(10.0,dbs/20.0);
+        return Math.pow(10.0,dbs/20.0);
     }
 };
 
