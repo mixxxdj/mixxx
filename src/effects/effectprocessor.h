@@ -212,9 +212,15 @@ class EffectProcessorImpl : public EffectProcessor {
 
     // Called from main thread for garbage collection after an input channel is disabled
     void deleteStatesForInputChannel(const ChannelHandle& inputChannel) final {
-          //qDebug() << "EffectProcessorImpl::deleteStatesForInputChannel" << this << inputChannel;
+          if (kEffectDebugOutput) {
+              qDebug() << "EffectProcessorImpl::deleteStatesForInputChannel"
+                       << this << inputChannel;
+          }
           for (EffectSpecificState* pState : m_channelStateMatrix.at(inputChannel)) {
-                //qDebug() << "EffectProcessorImpl::deleteStatesForInputChannel" << this << "deleting state" << pState;
+                if (kEffectDebugOutput) {
+                      qDebug() << "EffectProcessorImpl::deleteStatesForInputChannel"
+                               << this << "deleting state" << pState;
+                }
                 delete pState;
           }
           m_channelStateMatrix[inputChannel].clear();

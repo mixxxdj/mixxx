@@ -49,7 +49,7 @@ void EffectChain::addToEngine(EngineEffectRack* pRack, int iIndex) {
         // Add the effect to the engine.
         EffectPointer pEffect = m_effects[i];
         if (pEffect) {
-            pEffect->addToEngine(m_pEngineEffectChain, i, m_enabledChannels);
+            pEffect->addToEngine(m_pEngineEffectChain, i, m_enabledInputChannels);
         }
     }
 }
@@ -157,9 +157,9 @@ void EffectChain::setEnabled(bool enabled) {
 void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handle_group) {
     // TODO(Be): remove m_enabledChannels from this class and move this logic
     // to EffectChainSlot
-    bool bWasAlreadyEnabled = m_enabledChannels.contains(handle_group);
+    bool bWasAlreadyEnabled = m_enabledInputChannels.contains(handle_group);
     if (!bWasAlreadyEnabled) {
-        m_enabledChannels.insert(handle_group);
+        m_enabledInputChannels.insert(handle_group);
     }
 
     // The allocation of EffectStates below may be expensive, so avoid it if
@@ -200,11 +200,11 @@ void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handle_grou
 }
 
 bool EffectChain::enabledForChannel(const ChannelHandleAndGroup& handle_group) const {
-    return m_enabledChannels.contains(handle_group);
+    return m_enabledInputChannels.contains(handle_group);
 }
 
 void EffectChain::disableForInputChannel(const ChannelHandleAndGroup& handle_group) {
-    if (m_enabledChannels.remove(handle_group)) {
+    if (m_enabledInputChannels.remove(handle_group)) {
         if (!m_bAddedToEngine) {
             return;
         }
@@ -253,7 +253,7 @@ void EffectChain::addEffect(EffectPointer pEffect) {
 
     m_effects.append(pEffect);
     if (m_bAddedToEngine) {
-        pEffect->addToEngine(m_pEngineEffectChain, m_effects.size() - 1, m_enabledChannels);
+        pEffect->addToEngine(m_pEngineEffectChain, m_effects.size() - 1, m_enabledInputChannels);
     }
     emit(effectChanged(m_effects.size() - 1));
 }
@@ -278,7 +278,7 @@ void EffectChain::replaceEffect(unsigned int effectSlotNumber,
     m_effects.replace(effectSlotNumber, pEffect);
     if (!pEffect.isNull()) {
         if (m_bAddedToEngine) {
-            pEffect->addToEngine(m_pEngineEffectChain, effectSlotNumber, m_enabledChannels);
+            pEffect->addToEngine(m_pEngineEffectChain, effectSlotNumber, m_enabledInputChannels);
         }
     }
 

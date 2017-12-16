@@ -124,7 +124,7 @@ class EffectChain : public QObject {
     InsertionType m_insertionType;
     double m_dMix;
 
-    QSet<ChannelHandleAndGroup> m_enabledChannels;
+    QSet<ChannelHandleAndGroup> m_enabledInputChannels;
     QList<EffectPointer> m_effects;
     EngineEffectChain* m_pEngineEffectChain;
     bool m_bAddedToEngine;

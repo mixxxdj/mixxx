@@ -306,10 +306,7 @@ EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
 }
 
 void EffectChainSlot::registerInputChannel(const ChannelHandleAndGroup& handle_group) {
-    if (m_channelInfoByName.contains(handle_group.name())) {
-        qWarning() << debugString()
-                   << "WARNING: registerChannel already has channel registered:"
-                   << handle_group.name();
+    VERIFY_OR_DEBUG_ASSERT(!m_channelInfoByName.contains(handle_group.name())) {
         return;
     }
 
