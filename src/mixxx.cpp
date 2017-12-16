@@ -286,10 +286,16 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             m_pDbConnectionPool,
             m_pPlayerManager,
             m_pRecordingManager);
-    m_pPlayerManager->bindToLibrary(m_pLibrary);
-
-    // Create the singular TrackCache instance
+    // Create the singular TrackCache instance immediately after
+    // the Library has been created and BEFORE binding the
+    // PlayerManager to it!
     TrackCache::createInstance(m_pLibrary);
+
+    // Binding the PlayManager to the Library may already trigger
+    // loading of tracks which requires that the TrackCache has
+    // been created. Otherwise Mixxx might hang when accessing
+    // the uninitialized singleton instance!
+    m_pPlayerManager->bindToLibrary(m_pLibrary);
 
     launchProgress(40);
 
