@@ -114,7 +114,9 @@ void EffectRack::loadNextChain(const unsigned int iChainSlotNumber,
             pLoadedChain);
 
     pNextChain = EffectChain::clone(pNextChain);
+    pNextChain->addToEngine(m_pEngineEffectRack, iChainSlotNumber);
     m_effectChainSlots[iChainSlotNumber]->loadEffectChainToSlot(pNextChain);
+    m_effectChainSlots[iChainSlotNumber]->updateRoutingSwitches();
 }
 
 
@@ -128,7 +130,9 @@ void EffectRack::loadPrevChain(const unsigned int iChainSlotNumber,
         pLoadedChain);
 
     pPrevChain = EffectChain::clone(pPrevChain);
+    pPrevChain->addToEngine(m_pEngineEffectRack, iChainSlotNumber);
     m_effectChainSlots[iChainSlotNumber]->loadEffectChainToSlot(pPrevChain);
+    m_effectChainSlots[iChainSlotNumber]->updateRoutingSwitches();
 }
 
 void EffectRack::maybeLoadEffect(const unsigned int iChainSlotNumber,
