@@ -42,7 +42,7 @@ EffectManifest TremoloEffect::getManifest() {
     shape->setId("shape");
     shape->setName(QObject::tr("Shape"));
     shape->setShortName(QObject::tr("Shape"));
-    shape->setDescription(QObject::tr("Sets the duty cycle of the modulation\n"
+    shape->setDescription(QObject::tr("Sets the length of the modulation\n"
     "10% - 90% of the effect period"));
     shape->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     shape->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
@@ -56,8 +56,8 @@ EffectManifest TremoloEffect::getManifest() {
     waveform->setName(QObject::tr("Waveform"));
     waveform->setShortName(QObject::tr("Waveform"));
     waveform->setDescription(QObject::tr("Sets the waveform of the modulation\n"
-    "0 - Square wave\n"
-    "1 - Sine wave"));
+    "Fully left - Square wave\n"
+    "Fully right - Sine wave"));
     waveform->setControlHint(
         EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     waveform->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
