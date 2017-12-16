@@ -45,9 +45,13 @@ Description:
           </WidgetGroup>
 
         </Children>
+        <Connection>
+          <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
       </WidgetStack><!-- /EffectUnit 3 -->
 
-      <WidgetGroup><Size>5f,0min</Size></WidgetGroup>
+      <WidgetGroup><Size>5f,0f</Size></WidgetGroup>
 
       <WidgetGroup>
         <Size>5f,0min</Size>
@@ -85,12 +89,12 @@ Description:
           </WidgetGroup>
 
         </Children>
+        <Connection>
+          <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
       </WidgetStack>
 
     </Children>
-    <Connection>
-      <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
-      <BindProperty>visible</BindProperty>
-    </Connection>
   </WidgetGroup><!-- /EffectUnits 3 & 4 -->
 </Template>
