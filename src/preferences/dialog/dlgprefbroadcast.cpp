@@ -177,7 +177,7 @@ void DlgPrefBroadcast::slotApply() {
                 QMessageBox::warning(
                     this, tr("Action failed"),
                     tr("'%1' has the same Icecast mountpoint as '%2'.\n"
-                       "Two connections on the same server can't have the same mountpoint.")
+                       "Two source connections to the same server can't have the same mountpoint.")
                        .arg(profileName).arg(profileNameWithSameMountpoint));
                 return;
             }
@@ -236,7 +236,7 @@ void DlgPrefBroadcast::enableCustomMetadataChanged(int value) {
 void DlgPrefBroadcast::btnCreateConnectionClicked() {
     if(m_pSettingsModel->rowCount() >= BROADCAST_MAX_CONNECTIONS) {
         QMessageBox::warning(this, tr("Action failed"),
-                tr("You can't create more than %1 Live Broadcasting connections.")
+                tr("You can't create more than %1 source connections.")
                 .arg(BROADCAST_MAX_CONNECTIONS));
         return;
     }
@@ -249,7 +249,7 @@ void DlgPrefBroadcast::btnCreateConnectionClicked() {
     QString newName;
     do {
         profileNumber++;
-        newName = tr("Connection %1").arg(profileNumber);
+        newName = tr("Source connection %1").arg(profileNumber);
         existingProfile = m_pSettingsModel->getProfileByName(newName);
     } while(!existingProfile.isNull());
 
@@ -490,7 +490,7 @@ void DlgPrefBroadcast::setValuesToProfile(BroadcastProfilePtr profile) {
 void DlgPrefBroadcast::btnRemoveConnectionClicked() {
     if(m_pSettingsModel->rowCount() < 2) {
         QMessageBox::information(this, tr("Action failed"),
-                tr("At least one connection is required."));
+                tr("At least one source connection is required."));
         return;
     }
 
@@ -534,7 +534,7 @@ void DlgPrefBroadcast::btnRenameConnectionClicked() {
 void DlgPrefBroadcast::btnDisconnectAllClicked() {
     auto response = QMessageBox::question(this,
             tr("Confirmation required"),
-            tr("Are you sure you want to disconnect every active Live Broadcasting source connection?"),
+            tr("Are you sure you want to disconnect every active source connection?"),
             QMessageBox::Yes, QMessageBox::No);
 
     if(response == QMessageBox::Yes) {
