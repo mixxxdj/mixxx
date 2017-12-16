@@ -21,12 +21,6 @@
 #include "util/trace.h"
 #include "util/logger.h"
 
-// Measured in 0.1%,
-// 0 for no progress during finalize
-// 1 to display the text "finalizing"
-// 100 for 10% step after finalize
-#define FINALIZE_PROMILLE 1
-
 namespace {
 
 mixxx::Logger kLogger("AnalyzerQueue");
@@ -35,10 +29,18 @@ mixxx::Logger kLogger("AnalyzerQueue");
 // We need to use a smaller block size, because on Linux the AnalyzerQueue
 // can starve the CPU of its resources, resulting in xruns. A block size
 // of 4096 frames per block seems to do fine.
-const mixxx::AudioSignal::ChannelCount kAnalysisChannels(mixxx::kEngineChannelCount);
-const SINT kAnalysisFramesPerBlock = 4096;
+constexpr mixxx::AudioSignal::ChannelCount kAnalysisChannels = mixxx::kEngineChannelCount;
+constexpr SINT kAnalysisFramesPerBlock = 4096;
 const SINT kAnalysisSamplesPerBlock =
         kAnalysisFramesPerBlock * kAnalysisChannels;
+
+// Measured in 0.1%, i.e. promille
+constexpr int kProgressNone = 0; // 0.0 %
+constexpr int kProgressFinalizing = 950; // 95.0 %
+constexpr int kProgressDone = 1000; // 100.0%
+
+// Maximum frequency of progress updates
+constexpr int kProgressUpdateInhibitMillis = 250;
 
 QAtomicInt s_instanceCounter(0);
 
@@ -95,7 +97,7 @@ bool AnalyzerQueue::isLoadedTrackWaiting(TrackPointer pAnalyzingTrack) {
         // and remove them from queue if already analysed
         // This avoids waiting for a running analysis for those tracks.
         int progress = pTrack->getAnalyzerProgress();
-        if (progress < 0) {
+        if (progress < kProgressNone) {
             // Load stored analysis
             bool processTrack = false;
             for (auto const& pAnalyzer: m_pAnalyzers) {
@@ -112,7 +114,7 @@ bool AnalyzerQueue::isLoadedTrackWaiting(TrackPointer pAnalyzingTrack) {
                 finishedTracks.append(pTrack);
                 it.remove();
             }
-        } else if (progress == 1000) {
+        } else if (progress == kProgressDone) {
             it.remove();
         }
     }
@@ -120,10 +122,10 @@ bool AnalyzerQueue::isLoadedTrackWaiting(TrackPointer pAnalyzingTrack) {
 
     // update progress after unlock to avoid a deadlock
     foreach (TrackPointer pTrack, waitingTracks) {
-        emitUpdateProgress(pTrack, 0);
+        emitUpdateProgress(pTrack, kProgressNone);
     }
     foreach (TrackPointer pTrack, finishedTracks) {
-        emitUpdateProgress(pTrack, 1000);
+        emitUpdateProgress(pTrack, kProgressDone);
     }
 
     // The analysis will be aborted if the currently analyzing
@@ -174,7 +176,7 @@ AnalyzerQueue::AnalysisResult AnalyzerQueue::doAnalysis(
         mixxx::AudioSourcePointer pAudioSource) {
 
     QTime progressUpdateInhibitTimer;
-    progressUpdateInhibitTimer.start(); // Inhibit Updates for 60 milliseconds
+    progressUpdateInhibitTimer.start();
 
     mixxx::AudioSourceStereoProxy audioSourceProxy(
             pAudioSource,
@@ -225,17 +227,16 @@ AnalyzerQueue::AnalysisResult AnalyzerQueue::doAnalysis(
         }
 
         // emit progress updates
-        // During the doAnalysis function it goes only to 100% - FINALIZE_PERCENT
+        // During the doAnalysis function it goes only to kProgressFinalizing
         // because the finalize functions will take also some time
         // fp div here prevents insane signed overflow
         const double frameProgress =
                 double(pAudioSource->frameLength() - remainingFrames.length()) /
                 double(pAudioSource->frameLength());
-        int progressPromille = frameProgress * (1000 - FINALIZE_PROMILLE);
+        int progressPromille = frameProgress * kProgressFinalizing;
 
         if (m_progressInfo.track_progress != progressPromille) {
-            if (progressUpdateInhibitTimer.elapsed() > 60) {
-                // Inhibit Updates for 60 milliseconds
+            if (progressUpdateInhibitTimer.elapsed() > kProgressUpdateInhibitMillis) {
                 emitUpdateProgress(pTrack, progressPromille);
                 progressUpdateInhibitTimer.start();
             }
@@ -321,7 +322,7 @@ void AnalyzerQueue::execThread() {
     }
 
     m_progressInfo.current_track.reset();
-    m_progressInfo.track_progress = 0;
+    m_progressInfo.track_progress = kProgressNone;
     m_progressInfo.queue_size = 0;
     m_progressInfo.sema.release(); // Initialize with one
 
@@ -363,30 +364,29 @@ void AnalyzerQueue::execThread() {
         updateSize();
 
         if (processTrack) {
-            emitUpdateProgress(nextTrack, 0);
+            emitUpdateProgress(nextTrack, kProgressNone);
             const auto analysisResult = doAnalysis(nextTrack, pAudioSource);
             DEBUG_ASSERT(analysisResult != AnalysisResult::Pending);
             if ((analysisResult == AnalysisResult::Complete) ||
                     (analysisResult == AnalysisResult::Partial)) {
                 // Don't try to reanalyze tracks during this session if the
                 // analysis failed even if only partial results are available!
-                // 100% - FINALIZE_PERCENT finished
-                emitUpdateProgress(nextTrack, 1000 - FINALIZE_PROMILLE);
+                emitUpdateProgress(nextTrack, kProgressFinalizing);
                 // This takes around 3 sec on a Atom Netbook
                 for (auto const& pAnalyzer: m_pAnalyzers) {
                     pAnalyzer->finalize(nextTrack);
                 }
                 emit(trackDone(nextTrack));
-                emitUpdateProgress(nextTrack, 1000); // 100%
+                emitUpdateProgress(nextTrack, kProgressDone);
             } else {
                 for (auto const& pAnalyzer: m_pAnalyzers) {
                     pAnalyzer->cleanup(nextTrack);
                 }
                 enqueueTrack(nextTrack);
-                emitUpdateProgress(nextTrack, 0);
+                emitUpdateProgress(nextTrack, kProgressNone);
             }
         } else {
-            emitUpdateProgress(nextTrack, 1000); // 100%
+            emitUpdateProgress(nextTrack, kProgressDone);
             kLogger.debug() << "Skipping track analysis because no analyzer initialized.";
         }
         emptyCheck();
@@ -420,7 +420,7 @@ void AnalyzerQueue::emitUpdateProgress(TrackPointer track, int progress) {
         // The following tries will success if the previous signal was processed in the GUI Thread
         // This prevent the AnalysisQueue from filling up the GUI Thread event Queue
         // 100 % is emitted in any case
-        if (progress < 1000 - FINALIZE_PROMILLE && progress > 0) {
+        if ((progress > kProgressNone) && (progress < kProgressFinalizing)) {
             // Signals during processing are not required in any case
             if (!m_progressInfo.sema.tryAcquire()) {
                return;
@@ -442,7 +442,7 @@ void AnalyzerQueue::slotUpdateProgress() {
         m_progressInfo.current_track.reset();
     }
     emit(trackProgress(m_progressInfo.track_progress / 10));
-    if (m_progressInfo.track_progress == 1000) {
+    if (m_progressInfo.track_progress == kProgressDone) {
         emit(trackFinished(m_progressInfo.queue_size));
     }
     m_progressInfo.sema.release();
