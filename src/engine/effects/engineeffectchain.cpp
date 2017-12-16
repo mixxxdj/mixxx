@@ -87,7 +87,7 @@ bool EngineEffectChain::updateParameters(const EffectsRequest& message) {
     return true;
 }
 
-bool EngineEffectChain::processEffectsRequest(const EffectsRequest& message,
+bool EngineEffectChain::processEffectsRequest(EffectsRequest& message,
                                               EffectsResponsePipe* pResponsePipe) {
     EffectsResponse response(message);
     switch (message.type) {
@@ -124,7 +124,7 @@ bool EngineEffectChain::processEffectsRequest(const EffectsRequest& message,
                          << message.channel;
             }
             response.success = enableForInputChannel(message.channel,
-                    message.pStatesForEffectsInChain);
+                    std::move(message.pEffectStatesMapArray));
             break;
         case EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL:
             if (kEffectDebugOutput) {
@@ -142,7 +142,7 @@ bool EngineEffectChain::processEffectsRequest(const EffectsRequest& message,
 }
 
 bool EngineEffectChain::enableForInputChannel(const ChannelHandle& inputHandle,
-        const QList<EffectStatesPointer>* statesForEffectsInChain) {
+        std::unique_ptr<EffectStatesMapArray> statesForEffectsInChain) {
     if (kEffectDebugOutput) {
         qDebug() << "EngineEffectChain::enableForInputChannel" << this << inputHandle;
     }
@@ -156,13 +156,14 @@ bool EngineEffectChain::enableForInputChannel(const ChannelHandle& inputHandle,
         if (m_effects[i] != nullptr) {
             if (kEffectDebugOutput) {
                 qDebug() << "EngineEffectChain::enableForInputChannel" << this
-                        << "loading states for effect" << i;
+                         << "loading states for effect" << i;
             }
-            EffectStatesPointer pStates = statesForEffectsInChain->at(i);
-            VERIFY_OR_DEBUG_ASSERT(pStates != nullptr) {
+            std::unique_ptr<EffectStatesMap> pStatesMap =
+                    std::move(statesForEffectsInChain.get()->at(i));
+            VERIFY_OR_DEBUG_ASSERT(pStatesMap) {
                 return false;
             }
-            m_effects[i]->loadStatesForInputChannel(inputHandle, pStates);
+            m_effects[i]->loadStatesForInputChannel(inputHandle, std::move(pStatesMap));
         }
     }
     return true;

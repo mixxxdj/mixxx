@@ -15,7 +15,7 @@ EngineEffectRack::~EngineEffectRack() {
     //qDebug() << "EngineEffectRack::~EngineEffectRack()" << this;
 }
 
-bool EngineEffectRack::processEffectsRequest(const EffectsRequest& message,
+bool EngineEffectRack::processEffectsRequest(EffectsRequest& message,
                                              EffectsResponsePipe* pResponsePipe) {
     EffectsResponse response(message);
     switch (message.type) {

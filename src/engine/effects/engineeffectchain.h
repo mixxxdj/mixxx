@@ -24,7 +24,7 @@ class EngineEffectChain : public EffectsRequestHandler {
     virtual ~EngineEffectChain();
 
     bool processEffectsRequest(
-        const EffectsRequest& message,
+        EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe);
 
     bool process(const ChannelHandle& inputHandle,
@@ -60,7 +60,7 @@ class EngineEffectChain : public EffectsRequestHandler {
     bool addEffect(EngineEffect* pEffect, int iIndex);
     bool removeEffect(EngineEffect* pEffect, int iIndex);
     bool enableForInputChannel(const ChannelHandle& inputHandle,
-            const QList<EffectStatesPointer>* statesForEffectsInChain);
+            std::unique_ptr<EffectStatesMapArray> statesForEffectsInChain);
     bool disableForInputChannel(const ChannelHandle& inputHandle);
 
     // Gets or creates a ChannelStatus entry in m_channelStatus for the provided

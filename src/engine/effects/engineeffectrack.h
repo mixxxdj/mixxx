@@ -17,7 +17,7 @@ class EngineEffectRack : public EffectsRequestHandler {
     virtual ~EngineEffectRack();
 
     bool processEffectsRequest(
-        const EffectsRequest& message,
+        EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe);
 
     bool process(const ChannelHandle& inputHandle,

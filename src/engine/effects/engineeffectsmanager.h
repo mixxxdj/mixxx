@@ -56,7 +56,7 @@ class EngineEffectsManager : public EffectsRequestHandler {
         const CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE);
 
     bool processEffectsRequest(
-        const EffectsRequest& message,
+        EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe);
 
   private:

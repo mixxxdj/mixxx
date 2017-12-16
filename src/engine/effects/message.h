@@ -6,6 +6,7 @@
 #include <QtGlobal>
 
 #include "util/fifo.h"
+#include "util/memory.h"
 #include "effects/defs.h"
 #include "effects/effectchain.h"
 #include "engine/channelhandle.h"
@@ -135,7 +136,7 @@ struct EffectsRequest {
     ChannelHandle channel;
 
     // Used by ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL
-    QList<EffectStatesPointer>* pStatesForEffectsInChain;
+    std::unique_ptr<EffectStatesMapArray> pEffectStatesMapArray;
 
     // Used by SET_EFFECT_PARAMETER.
     double minimum;
@@ -184,7 +185,7 @@ typedef MessagePipe<EffectsResponse, EffectsRequest*> EffectsResponsePipe;
 class EffectsRequestHandler {
   public:
     virtual bool processEffectsRequest(
-        const EffectsRequest& message,
+        EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe) = 0;
 };
 

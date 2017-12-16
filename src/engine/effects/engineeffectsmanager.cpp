@@ -258,7 +258,7 @@ bool EngineEffectsManager::removePreFaderEffectRack(EngineEffectRack* pRack) {
     return m_preFaderRacks.removeAll(pRack) > 0;
 }
 
-bool EngineEffectsManager::processEffectsRequest(const EffectsRequest& message,
+bool EngineEffectsManager::processEffectsRequest(EffectsRequest& message,
                                                  EffectsResponsePipe* pResponsePipe) {
     EffectsResponse response(message);
     switch (message.type) {

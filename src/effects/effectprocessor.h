@@ -68,7 +68,7 @@ class EffectProcessor {
             const mixxx::EngineParameters& bufferParameters) = 0;
     virtual EffectState* createState(const mixxx::EngineParameters& bufferParameters) = 0;
     virtual bool loadStatesForInputChannel(const ChannelHandle& inputChannel,
-          const EffectStatesPointer pStates) = 0;
+          const std::unique_ptr<EffectStatesMap> pStatesMap) = 0;
     // Called from main thread for garbage collection after the last audio thread
     // callback executes process() with EffectEnableState::Disabling
     virtual void deleteStatesForInputChannel(const ChannelHandle& inputChannel) = 0;
@@ -183,7 +183,7 @@ class EffectProcessorImpl : public EffectProcessor {
     };
 
     bool loadStatesForInputChannel(const ChannelHandle& inputChannel,
-              const EffectStatesPointer pStates) final {
+              const std::unique_ptr<EffectStatesMap> pStatesMap) final {
           // Can't directly cast a ChannelHandleMap from containing the base
           // EffectState* type to EffectSpecificState* type, so iterate through
           // the ChannelHandleMap to build a new ChannelHandleMap with
@@ -200,7 +200,7 @@ class EffectProcessorImpl : public EffectProcessor {
                            << this << "output" << outputChannel;
               }
               auto pState = dynamic_cast<EffectSpecificState*>(
-                        pStates->at(outputChannel.handle()));
+                        pStatesMap.get()->at(outputChannel.handle()));
               VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
                     return false;
               }

@@ -61,7 +61,6 @@ class EffectChainManager : public QObject {
     bool saveEffectChains();
     void loadEffectChains();
 
-    static const int kNumEffectsPerUnit = 4;
     static const int kNumStandardEffectChains = 4;
 
   private:

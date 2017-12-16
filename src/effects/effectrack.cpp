@@ -225,7 +225,7 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
     EffectChainSlot* pChainSlot =
             new EffectChainSlot(this, group, iChainSlotNumber);
 
-    for (int i = 0; i < EffectChainManager::kNumEffectsPerUnit; ++i) {
+    for (int i = 0; i < kNumEffectsPerUnit; ++i) {
         pChainSlot->addEffectSlot(
                 StandardEffectRack::formatEffectSlotGroupString(
                         getRackNumber(), iChainSlotNumber, i));
