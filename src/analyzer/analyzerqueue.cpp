@@ -451,6 +451,7 @@ void AnalyzerQueue::slotUpdateProgress() {
 void AnalyzerQueue::slotAnalyseTrack(TrackPointer pTrack) {
     // This slot is called from the decks and and samplers when the track was loaded.
     enqueueTrack(pTrack);
+    resume();
 }
 
 // This is called from the GUI and from the AnalyzerQueue thread
