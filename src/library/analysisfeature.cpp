@@ -152,14 +152,14 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
     for (const auto& trackId: trackIds) {
         TrackPointer pTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
         if (pTrack) {
-            //qDebug() << this << "Queueing track for analysis" << pTrack->getLocation();
             m_pAnalyzerQueue->enqueueTrack(pTrack);
         }
     }
-    if (trackIds.size() > 0) {
-        setTitleProgress(0, trackIds.size());
+    int queueSize = m_pAnalyzerQueue->resume();
+    if (queueSize > 0) {
+        setTitleProgress(0, queueSize);
     }
-    emit(trackAnalysisStarted(trackIds.size()));
+    emit(trackAnalysisStarted(queueSize));
 }
 
 void AnalysisFeature::slotProgressUpdate(int num_left) {

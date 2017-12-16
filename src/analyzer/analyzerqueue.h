@@ -33,8 +33,14 @@ class AnalyzerQueue : public QThread {
             Mode mode = Mode::Default);
     ~AnalyzerQueue() override;
 
-    void stop();
     void enqueueTrack(TrackPointer pTrack);
+
+    // After adding tracks the analysis must be resumed.
+    // This function returns the number of tracks that
+    // are currently queued for analysis.
+    int resume();
+
+    void stop();
 
   public slots:
     void slotAnalyseTrack(TrackPointer pTrack);

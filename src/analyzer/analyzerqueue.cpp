@@ -271,10 +271,15 @@ AnalyzerQueue::AnalysisResult AnalyzerQueue::doAnalysis(
     return result;
 }
 
-void AnalyzerQueue::stop() {
-    m_exitPendingFlag = true;
+int AnalyzerQueue::resume() {
     QMutexLocker locked(&m_qm);
     m_qwait.wakeAll();
+    return m_queuedTracks.size();
+}
+
+void AnalyzerQueue::stop() {
+    m_exitPendingFlag = true;
+    resume();
 }
 
 void AnalyzerQueue::run() {
@@ -455,9 +460,13 @@ void AnalyzerQueue::enqueueTrack(TrackPointer pTrack) {
     }
 
     QMutexLocker locked(&m_qm);
+    // TODO(XXX): Enqueuing with containment checking of each track
+    // has an algorithmic complexity of O(n^2)!
     if (!m_queuedTracks.contains(pTrack)) {
         m_queuedTracks.enqueue(pTrack);
-        m_qwait.wakeAll();
         m_queueModifiedFlag = true;
+        // Don't wake up paused threads now to avoid race conditions
+        // if multiple threads are added in a row. The caller is
+        // responsible to finish the enqueuing of tracks with resume().
     }
 }
