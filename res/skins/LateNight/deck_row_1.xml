@@ -59,7 +59,7 @@
               <Key>
                 <ObjectName>KeyText</ObjectName>
                 <Group><Variable name="group"/></Group>
-                <Size>40f,20f</Size>
+                <Size>44f,20f</Size>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
                 </Connection>
