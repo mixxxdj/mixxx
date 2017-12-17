@@ -125,7 +125,7 @@ bool EngineEffectChain::processEffectsRequest(EffectsRequest& message,
                          << message.channel;
             }
             response.success = enableForInputChannel(message.channel,
-                    std::move(message.pEffectStatesMapArray));
+                  message.EnableInputChannelForChain.pEffectStatesMapArray);
             break;
         case EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL:
             if (kEffectDebugOutput) {

@@ -107,6 +107,9 @@ struct EffectsRequest {
             int iIndex;
         } RemoveChainFromRack;
         struct {
+            EffectStatesMapArray* pEffectStatesMapArray;
+        } EnableInputChannelForChain;
+        struct {
             EngineEffect* pEffect;
             int iIndex;
         } AddEffectToChain;
@@ -134,9 +137,6 @@ struct EffectsRequest {
     // Used by ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL and
     // DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL.
     ChannelHandle channel;
-
-    // Used by ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL
-    EffectStatesMapArray* pEffectStatesMapArray;
 
     // Used by SET_EFFECT_PARAMETER.
     double minimum;

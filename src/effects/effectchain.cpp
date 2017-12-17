@@ -201,7 +201,7 @@ void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handle_grou
             statesMap.clear();
         }
     }
-    request->pEffectStatesMapArray = &m_effectStatesMapArray;
+    request->EnableInputChannelForChain.pEffectStatesMapArray = &m_effectStatesMapArray;
 
     m_pEffectsManager->writeRequest(request);
     emit(channelStatusChanged(handle_group.name(), true));
