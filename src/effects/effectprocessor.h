@@ -184,29 +184,42 @@ class EffectProcessorImpl : public EffectProcessor {
 
     bool loadStatesForInputChannel(const ChannelHandle& inputChannel,
               const EffectStatesMap* pStatesMap) final {
-          // Can't directly cast a ChannelHandleMap from containing the base
-          // EffectState* type to EffectSpecificState* type, so iterate through
-          // the ChannelHandleMap to build a new ChannelHandleMap with
-          // dynamic_cast'ed states.
-          ChannelHandleMap<EffectSpecificState*> newMap;
           if (kEffectDebugOutput) {
               qDebug() << "EffectProcessorImpl::loadStatesForInputChannel" << this
                        << "input" << inputChannel;
           }
+
+          // Can't directly cast a ChannelHandleMap from containing the base
+          // EffectState* type to EffectSpecificState* type, so iterate through
+          // pStatesMap to build a new ChannelHandleMap with
+          // dynamic_cast'ed states.
+          ChannelHandleMap<EffectSpecificState*>& effectSpecificStatesMap =
+                  m_channelStateMatrix[inputChannel];
+
+          // deleteStatesForInputChannel should have been called before a new
+          // set of EffectStates was sent to this function, so
+          // effectSpecificStatesMap should be empty and this loop should
+          // not go through any iterations.
+          for (EffectSpecificState* pState : effectSpecificStatesMap) {
+              VERIFY_OR_DEBUG_ASSERT(pState == nullptr) {
+                  delete pState;
+              }
+          }
+
           for (const ChannelHandleAndGroup& outputChannel :
                   m_pEffectsManager->registeredOutputChannels()) {
               if (kEffectDebugOutput) {
                   qDebug() << "EffectProcessorImpl::loadStatesForInputChannel"
                            << this << "output" << outputChannel;
               }
+
               auto pState = dynamic_cast<EffectSpecificState*>(
                         pStatesMap->at(outputChannel.handle()));
               VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
                     return false;
               }
-              newMap.insert(outputChannel.handle(), pState);
+              effectSpecificStatesMap.insert(outputChannel.handle(), pState);
           }
-          m_channelStateMatrix.insert(inputChannel, newMap);
           return true;
     };
 
