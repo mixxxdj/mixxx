@@ -28,9 +28,9 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <SingletonContainer>
-                <ObjectName>FxUnit<Variable name="FxUnit"/>_FxSlot1</ObjectName>
-              </SingletonContainer>
+              <Template src="skin:effect_slot.xml">
+                <SetVariable name="FxNum">1</SetVariable>
+              </Template>
             </Children>
           </WidgetGroup>
 
@@ -42,9 +42,9 @@
             <MaximumSize>200,-1</MaximumSize>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <SingletonContainer>
-                <ObjectName>FxUnit<Variable name="FxUnit"/>_FxSlot2</ObjectName>
-              </SingletonContainer>
+              <Template src="skin:effect_slot.xml">
+                <SetVariable name="FxNum">2</SetVariable>
+              </Template>
             </Children>
           </WidgetGroup>
 
@@ -55,9 +55,9 @@
             <MaximumSize>200,-1</MaximumSize>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <SingletonContainer>
-                <ObjectName>FxUnit<Variable name="FxUnit"/>_FxSlot3</ObjectName>
-              </SingletonContainer>
+              <Template src="skin:effect_slot.xml">
+                <SetVariable name="FxNum">3</SetVariable>
+              </Template>
             </Children>
           </WidgetGroup>
         </Children>

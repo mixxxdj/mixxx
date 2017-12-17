@@ -3,7 +3,6 @@
     <ObjectName>DeckRowTwoThreeFour</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>i,min</SizePolicy>
-    <MinimumSize>-1,-1</MinimumSize>
     <Children>
 
       <WidgetGroup>
