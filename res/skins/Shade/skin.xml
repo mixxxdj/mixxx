@@ -160,15 +160,14 @@
   			<Children>
 				<WidgetGroup>
 					<ObjectName>DeckLeftBorder</ObjectName>
-					<Size>3f,259f</Size>
+					<Size>3f,223f</Size>
 					<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
 				</WidgetGroup>
   				<WidgetGroup>
-  					<Size>0e,259f</Size>
+  					<Size>0e,223f</Size>
 					<Layout>vertical</Layout>
 					<Children>
 		                <WidgetGroup>
-                            <Size>0e,255f</Size>
 			                <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 							<Layout>vertical</Layout>			                
 							<Children>
@@ -204,18 +203,17 @@
 					</Children>
 				</WidgetGroup>
 				<WidgetGroup>
-					<Size>261f,259f</Size>
+					<Size>261f,223f</Size>
 					<Children>
 						<Template src="skin:mixer_panel.xml">
 						</Template>
 					</Children>
 				</WidgetGroup>
 				<WidgetGroup>
-  					<Size>0e,259f</Size>
+  					<Size>0e,223f</Size>
 					<Layout>vertical</Layout>
 					<Children>
 	        		    <WidgetGroup>
-				            <Size>0e,255f</Size>
 						    <Layout>vertical</Layout>
 				            <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 				            <Children>
@@ -252,7 +250,7 @@
 				</WidgetGroup>
 				<WidgetGroup>
 					<ObjectName>DeckRightBorder</ObjectName>
-					<Size>3f,259f</Size>
+					<Size>3f,223f</Size>
 					<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 				</WidgetGroup>
 			</Children>
