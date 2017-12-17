@@ -1,6 +1,7 @@
 <Template>
   <WidgetGroup>
     <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
     <Children>
 
       <WidgetGroup>
@@ -73,7 +74,7 @@
       </WidgetGroup><!-- /Mic -->
       
       <WidgetGroup><!-- Aux -->
-        <ObjectName>MicContainer</ObjectName>
+        <ObjectName>AuxContainer</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>max,min</SizePolicy>
         <Children>

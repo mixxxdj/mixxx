@@ -55,18 +55,17 @@
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
-#DebugResizingSpinnies {
-  background-color: #451169;
-}
-
 #LibrarySingleton {
-  padding-top: 3px;
+  /* This doesn't work as expected:
+  it appears LibrarySingleton is displayed twice, so
+  padding/margin would double.
+  Placed a plain spacer in library.xml which works reliably
+  padding-top: 5px;*/
 }
 
 #Library {
   border-left: 0px solid #585858;
   background-color: #0e0e0e;
-  padding-top: 5px;
   padding-bottom: 2px;
   /*border-top: 1px solid #585858;*/
 }
@@ -953,12 +952,19 @@ border: 0px;
   padding: 2px 0px 0px 2px;
 }
 
-#MicContainer {
+#MicContainer, #AuxContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   border: 1px solid #585858;
   padding: 3px;
-  margin: 2px;
   background-color: #1e1e1e;
+}
+
+#MicContainer {
+  margin: 5px 2px 0px 0px;
+}
+
+#AuxContainer {
+  margin: 5px 0px 0px 2px;
 }
 
 #MicBorder {

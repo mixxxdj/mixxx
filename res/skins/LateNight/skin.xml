@@ -91,9 +91,12 @@
       <Layout>horizontal</Layout>
       <SizePolicy>me,me</SizePolicy>
       <Children>
-          <!-- Select between either the full UI or the big library -->
+
+        <!-- Select between either the full UI or the big library -->
         <WidgetStack currentpage="[Master],maximize_library">
           <Children>
+
+            <!-- Decks, Effects ... Library -->
             <Splitter>
               <ObjectName>CoverArtSplitter</ObjectName>
               <Orientation>vertical</Orientation>
@@ -124,9 +127,10 @@
                 </WidgetGroup>
 
               </Children>
-            </Splitter>
+            </Splitter><!-- Decks, Effects ... Library -->
 
-            <WidgetGroup>
+            <!-- MAximized Library -->
+            <WidgetGroup trigger="[Master],maximize_library" on_hide_select="0">
               <Layout>vertical</Layout>
               <SizePolicy>me,me</SizePolicy>
               <Children>
@@ -136,6 +140,7 @@
                 <Template src="skin:toolbar_big_library.xml"/>
               </Children>
             </WidgetGroup>
+
           </Children>
         </WidgetStack>
       </Children>
