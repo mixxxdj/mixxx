@@ -40,7 +40,7 @@ constexpr int kProgressFinalizing = 950; // 95.0 %
 constexpr int kProgressDone = 1000; // 100.0%
 
 // Maximum frequency of progress updates
-constexpr int kProgressUpdateInhibitMillis = 250;
+constexpr int kProgressUpdateInhibitMillis = 100;
 
 constexpr int kProgressStateEmpty   = 0;
 constexpr int kProgressStateWriting = 1;
