@@ -230,14 +230,16 @@ class EffectProcessorImpl : public EffectProcessor {
               qDebug() << "EffectProcessorImpl::deleteStatesForInputChannel"
                        << this << inputChannel;
           }
-          for (EffectSpecificState* pState : m_channelStateMatrix.at(inputChannel)) {
+          ChannelHandleMap<EffectSpecificState*>& stateMap =
+                  m_channelStateMatrix[inputChannel];
+          for (EffectSpecificState* pState : stateMap) {
                 if (kEffectDebugOutput) {
                       qDebug() << "EffectProcessorImpl::deleteStatesForInputChannel"
                                << this << "deleting state" << pState;
                 }
                 delete pState;
           }
-          m_channelStateMatrix[inputChannel].clear();
+          stateMap.clear();
     };
 
   private:
