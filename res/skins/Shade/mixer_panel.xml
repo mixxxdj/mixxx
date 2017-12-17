@@ -1,7 +1,7 @@
 <Template>
 		<WidgetGroup>
 			<Pos>3,2</Pos>
-			<Size>255,219</Size>
+			<Size>255,229</Size>
 			<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 			<BackPath>style/style_bg_mixer_panel.png</BackPath>
 			<Children>
@@ -10,7 +10,7 @@
 				-->
 				<WidgetGroup>
 					<Pos>0,0</Pos>
-					<Size>250,214</Size>
+					<Size>250,224</Size>
 					<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; } </Style>
 					<Children>
 						<!--
@@ -131,7 +131,7 @@
 							<Style></Style>
 							<Handle>knob_crossfader.png</Handle>
 							<Slider>slider_crossfader.png</Slider>
-							<Pos>72,194</Pos>
+							<Pos>72,204</Pos>
 							<Horizontal>true</Horizontal>
 							<Connection>
 								<ConfigKey>[Master],crossfader</ConfigKey>
@@ -158,7 +158,7 @@
 								<Pressed>btn_play1_overdown.png</Pressed>
 								<Unpressed>btn_play1_over.png</Unpressed>
 							</State>
-							<Pos>11,190</Pos>
+							<Pos>11,200</Pos>
 							<Connection>
 								<ConfigKey>[Channel1],play</ConfigKey>
 								<ButtonState>LeftButton</ButtonState>
@@ -185,7 +185,7 @@
 								<Pressed>btn_play2_overdown.png</Pressed>
 								<Unpressed>btn_play2_over.png</Unpressed>
 							</State>
-							<Pos>203,190</Pos>
+							<Pos>203,200</Pos>
 							<Connection>
 								<ConfigKey>[Channel2],play</ConfigKey>
 								<ButtonState>LeftButton</ButtonState>
@@ -218,7 +218,7 @@
 								<Pressed>btn_cue1_overdown.png</Pressed>
 								<Unpressed>btn_cue1_over.png</Unpressed>
 							</State>
-							<Pos>11,169</Pos>
+							<Pos>11,179</Pos>
 							<Connection>
 								<ConfigKey>[Channel1],cue_default</ConfigKey>
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -247,7 +247,7 @@
 								<Pressed>btn_cue2_overdown.png</Pressed>
 								<Unpressed>btn_cue2_over.png</Unpressed>
 							</State>
-							<Pos>203,169</Pos>
+							<Pos>203,179</Pos>
 							<Connection>
 								<ConfigKey>[Channel2],cue_default</ConfigKey>
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>

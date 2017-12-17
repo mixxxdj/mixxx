@@ -160,11 +160,11 @@
   			<Children>
 				<WidgetGroup>
 					<ObjectName>DeckLeftBorder</ObjectName>
-					<Size>3f,223f</Size>
+					<Size>3f,233f</Size>
 					<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
 				</WidgetGroup>
   				<WidgetGroup>
-  					<Size>0e,223f</Size>
+  					<Size>0e,233f</Size>
 					<Layout>vertical</Layout>
 					<Children>
 		                <WidgetGroup>
@@ -176,13 +176,12 @@
 	      						</Template>
 								<WidgetGroup>
 									<ObjectName>Deck</ObjectName>
-									<Size>0e,54f</Size>
 									<Layout>horizontal</Layout>
 									<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 									<Children>
 										<WidgetGroup>
 											<ObjectName>DeckLeftBorder</ObjectName>
-											<Size>5f,54f</Size>
+											<Size>5f,64f</Size>
 											<BackPath>style/style_bg_deck_border.png</BackPath>
 											<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 										</WidgetGroup>
@@ -192,7 +191,7 @@
 				 						<Template src="skin:deck_microphone.xml"/>
 										<WidgetGroup>
 											<ObjectName>DeckRightBorder</ObjectName>
-											<Size>5f,54f</Size>
+											<Size>5f,64f</Size>
 											<BackPath>style/style_bg_deck_border.png</BackPath>
 											<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 										</WidgetGroup>
@@ -203,14 +202,14 @@
 					</Children>
 				</WidgetGroup>
 				<WidgetGroup>
-					<Size>261f,223f</Size>
+					<Size>261f,233f</Size>
 					<Children>
 						<Template src="skin:mixer_panel.xml">
 						</Template>
 					</Children>
 				</WidgetGroup>
 				<WidgetGroup>
-  					<Size>0e,223f</Size>
+  					<Size>0e,233f</Size>
 					<Layout>vertical</Layout>
 					<Children>
 	        		    <WidgetGroup>
@@ -222,13 +221,12 @@
 						        </Template>
 								<WidgetGroup>
 									<ObjectName>Deck</ObjectName>
-									<Size>0e,54f</Size>
 									<Layout>horizontal</Layout>
 									<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 									<Children>
 										<WidgetGroup>
 											<ObjectName>DeckLeftBorder</ObjectName>
-											<Size>5f,54f</Size>
+											<Size>5f,64f</Size>
 											<BackPath>style/style_bg_deck_border.png</BackPath>
 											<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 										</WidgetGroup>
@@ -238,7 +236,7 @@
 				 	                    <Template src="skin:deck_auxiliary.xml"/>
 										<WidgetGroup>
 											<ObjectName>DeckRightBorder</ObjectName>
-											<Size>5f,54f</Size>
+											<Size>5f,64f</Size>
 											<BackPath>style/style_bg_deck_border.png</BackPath>
 											<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 										</WidgetGroup>
@@ -250,7 +248,7 @@
 				</WidgetGroup>
 				<WidgetGroup>
 					<ObjectName>DeckRightBorder</ObjectName>
-					<Size>3f,223f</Size>
+					<Size>3f,233f</Size>
 					<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 				</WidgetGroup>
 			</Children>
