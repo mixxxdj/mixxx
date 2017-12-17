@@ -11,9 +11,11 @@ namespace {
 
 const mixxx::Logger kLogger("SoundSourceMediaFoundation");
 
-const SINT kBytesPerSample = sizeof(CSAMPLE);
-const SINT kBitsPerSample = kBytesPerSample * 8;
-const SINT kLeftoverSize = 4096; // in CSAMPLE's, this seems to be the size MF AAC
+constexpr SINT kUnknownFrameIndex = -1;
+
+constexpr SINT kBytesPerSample = sizeof(CSAMPLE);
+constexpr SINT kBitsPerSample = kBytesPerSample * 8;
+constexpr SINT kLeftoverSize = 4096; // in CSAMPLE's, this seems to be the size MF AAC
 
 // Decoding will be restarted one or more blocks of samples
 // before the actual position after seeking randomly in the
@@ -24,10 +26,10 @@ const SINT kLeftoverSize = 4096; // in CSAMPLE's, this seems to be the size MF A
 // "It must also be assumed that without an explicit value, the playback
 // system will trim 2112 samples from the AAC decoder output when starting
 // playback from any point in the bistream."
-const SINT kNumberOfPrefetchFrames = 2112;
+constexpr SINT kNumberOfPrefetchFrames = 2112;
 
 // Only read the first audio stream
-const DWORD kStreamIndex = MF_SOURCE_READER_FIRST_AUDIO_STREAM;
+constexpr DWORD kStreamIndex = MF_SOURCE_READER_FIRST_AUDIO_STREAM;
 
 /** Microsoft examples use this snippet often. */
 template<class T> static void safeRelease(T **ppT) {
@@ -53,12 +55,14 @@ SoundSourceMediaFoundation::~SoundSourceMediaFoundation() {
     close();
 }
 
-SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(const AudioSourceConfig& audioSrcCfg) {
+SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(
+        OpenMode /*mode*/,
+        const OpenParams& params) {
     VERIFY_OR_DEBUG_ASSERT(!SUCCEEDED(m_hrCoInitialize)) {
         kLogger.warning()
                 << "Cannot reopen file"
                 << getUrlString();
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
     const QString fileName(getLocalFileName());
@@ -69,14 +73,14 @@ SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(const AudioSourceCon
     if (FAILED(m_hrCoInitialize)) {
         kLogger.warning()
                 << "failed to initialize COM";
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
     // Initialize the Media Foundation platform.
     m_hrMFStartup = MFStartup(MF_VERSION);
     if (FAILED(m_hrCoInitialize)) {
         kLogger.warning()
                 << "failed to initialize Media Foundation";
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
     // Create the source reader to read the input file.
@@ -93,29 +97,29 @@ SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(const AudioSourceCon
         kLogger.warning()
                 << "Error opening input file:"
                 << fileName;
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
-    if (!configureAudioStream(audioSrcCfg)) {
+    if (!configureAudioStream(params)) {
         kLogger.warning()
                 << "Failed to configure audio stream";
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
-    m_streamUnitConverter = StreamUnitConverter(getSamplingRate());
+    m_streamUnitConverter = StreamUnitConverter(this);
 
     if (!readProperties()) {
         kLogger.warning()
                 << "Failed to read file properties";
-        return OpenResult::FAILED;
+        return OpenResult::Failed;
     }
 
-    //Seek to position 0, which forces us to skip over all the header frames.
+    //Seek to first position, which forces us to skip over all the header frames.
     //This makes sure we're ready to just let the Analyzer rip and it'll
     //get the number of samples it expects (ie. no header frames).
-    seekSampleFrame(0);
+    seekSampleFrame(frameIndexMin());
 
-    return OpenResult::SUCCEEDED;
+    return OpenResult::Succeeded;
 }
 
 void SoundSourceMediaFoundation::close() {
@@ -131,19 +135,12 @@ void SoundSourceMediaFoundation::close() {
     }
 }
 
-SINT SoundSourceMediaFoundation::seekSampleFrame(
-        SINT frameIndex) {
-    DEBUG_ASSERT(isValidFrameIndex(m_currentFrameIndex));
+void SoundSourceMediaFoundation::seekSampleFrame(SINT frameIndex) {
+    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
 
-    if (frameIndex >= getMaxFrameIndex()) {
-        // EOF
-        m_currentFrameIndex = getMaxFrameIndex();
-        return m_currentFrameIndex;
-    }
-
-    if (frameIndex > m_currentFrameIndex) {
+    if (isValidFrameIndex(m_currentFrameIndex) && (m_currentFrameIndex < frameIndex)) {
         // seeking forward
-        SINT skipFramesCount = frameIndex - m_currentFrameIndex;
+        const auto skipFrames = IndexRange::between(m_currentFrameIndex, frameIndex);
         // When to prefer skipping over seeking:
         // 1) The sample buffer would be discarded before seeking anyway and
         //    skipping those already decoded samples effectively costs nothing
@@ -152,117 +149,161 @@ SINT SoundSourceMediaFoundation::seekSampleFrame(
         //    need to decode more than  2 * kNumberOfPrefetchFrames frames
         //    while skipping
         SINT skipFramesCountMax =
-                samples2frames(m_sampleBuffer.getSize()) +
+                samples2frames(m_sampleBuffer.readableLength()) +
                 2 * kNumberOfPrefetchFrames;
-        if (skipFramesCount <= skipFramesCountMax) {
-            skipSampleFrames(skipFramesCount);
+        if (skipFrames.length() <= skipFramesCountMax) {
+            if (skipFrames != readSampleFramesClamped(
+                    WritableSampleFrames(skipFrames)).frameIndexRange()) {
+                kLogger.warning()
+                        << "Failed to skip frames before decoding"
+                        << skipFrames;
+                return; // abort
+            }
         }
     }
-    if (frameIndex == m_currentFrameIndex) {
-        return m_currentFrameIndex;
-    }
+    if (m_currentFrameIndex != frameIndex) {
+        // Discard decoded samples
+        m_sampleBuffer.clear();
 
-    // Discard decoded samples
-    m_sampleBuffer.reset();
+        // Invalidate current position (end of stream to prevent further reading)
+        m_currentFrameIndex = frameIndexMax();
 
-    // Invalidate current position (end of stream)
-    m_currentFrameIndex = getMaxFrameIndex();
+        if (m_pSourceReader == nullptr) {
+            // reader is dead
+            return; // abort
+        }
 
-    if (m_pSourceReader == nullptr) {
-        // reader is dead
-        return m_currentFrameIndex;
-    }
+        // Jump to a position before the actual seeking position.
+        // Prefetching a certain number of frames is necessary for
+        // sample accurate decoding. The decoder needs to decode
+        // some frames in advance to produce the same result at
+        // each position in the stream.
+        SINT seekIndex = std::max(SINT(frameIndex - kNumberOfPrefetchFrames), frameIndexMin());
+        DEBUG_ASSERT(isValidFrameIndex(seekIndex));
 
-    // Jump to a position before the actual seeking position.
-    // Prefetching a certain number of frames is necessary for
-    // sample accurate decoding. The decoder needs to decode
-    // some frames in advance to produce the same result at
-    // each position in the stream.
-    SINT seekIndex = std::max(SINT(frameIndex - kNumberOfPrefetchFrames), AudioSource::getMinFrameIndex());
-
-    LONGLONG seekPos = m_streamUnitConverter.fromFrameIndex(seekIndex);
-    DEBUG_ASSERT(seekPos >= 0);
-    PROPVARIANT prop;
-    HRESULT hrInitPropVariantFromInt64 =
-            InitPropVariantFromInt64(seekPos, &prop);
-    DEBUG_ASSERT(SUCCEEDED(hrInitPropVariantFromInt64)); // never fails
-    HRESULT hrSetCurrentPosition =
-            m_pSourceReader->SetCurrentPosition(GUID_NULL, prop);
-    PropVariantClear(&prop);
-    if (SUCCEEDED(hrSetCurrentPosition)) {
-        // NOTE(uklotzde): After SetCurrentPosition() the actual position
-        // of the stream is unknown until reading the next samples from
-        // the reader. Please note that the first sample decoded after
-        // SetCurrentPosition() may start BEFORE the actual target position.
-        // See also: https://msdn.microsoft.com/en-us/library/windows/desktop/dd374668(v=vs.85).aspx
-        //   "The SetCurrentPosition method does not guarantee exact seeking." ...
-        //   "After seeking, the application should call IMFSourceReader::ReadSample
-        //    and advance to the desired position.
-        SINT skipFramesCount = frameIndex - seekIndex;
-        if (skipFramesCount > 0) {
-            // We need to fetch at least 1 sample from the reader to obtain the
-            // current position!
-            skipSampleFrames(skipFramesCount);
-            // Now m_currentFrameIndex reflects the actual position of the reader
-            if (m_currentFrameIndex < frameIndex) {
-                // Skip more samples if frameIndex has not yet been reached
-                skipSampleFrames(frameIndex - m_currentFrameIndex);
-            }
-            if (m_currentFrameIndex != frameIndex) {
-                kLogger.warning()
-                        << "Seek to frame"
-                        << frameIndex
-                        << "failed";
-                // Jump to end of stream (= invalidate current position)
-                m_currentFrameIndex = getMaxFrameIndex();
+        LONGLONG seekPos = m_streamUnitConverter.fromFrameIndex(seekIndex);
+        DEBUG_ASSERT(seekPos >= 0);
+        PROPVARIANT prop;
+        HRESULT hrInitPropVariantFromInt64 =
+                InitPropVariantFromInt64(seekPos, &prop);
+        DEBUG_ASSERT(SUCCEEDED(hrInitPropVariantFromInt64)); // never fails
+        HRESULT hrSetCurrentPosition =
+                m_pSourceReader->SetCurrentPosition(GUID_NULL, prop);
+        PropVariantClear(&prop);
+        if (SUCCEEDED(hrSetCurrentPosition)) {
+            // NOTE(uklotzde): After SetCurrentPosition() the actual position
+            // of the stream is unknown until reading the next samples from
+            // the reader. Please note that the first sample decoded after
+            // SetCurrentPosition() may start BEFORE the actual target position.
+            // See also: https://msdn.microsoft.com/en-us/library/windows/desktop/dd374668(v=vs.85).aspx
+            //   "The SetCurrentPosition method does not guarantee exact seeking." ...
+            //   "After seeking, the application should call IMFSourceReader::ReadSample
+            //    and advance to the desired position.
+            auto skipFrames = IndexRange::between(seekIndex, frameIndex);
+            if (skipFrames.empty()) {
+                // We are at the beginning of the stream and don't need
+                // to skip any frames. Calling IMFSourceReader::ReadSample
+                // is not necessary in this special case.
+                DEBUG_ASSERT(frameIndex == frameIndexMin());
+                m_currentFrameIndex = frameIndex;
+            } else {
+                // We need to fetch at least 1 sample from the reader to obtain the
+                // current position!
+                m_currentFrameIndex = kUnknownFrameIndex; // prevent further seeking
+                DEBUG_ASSERT(!isValidFrameIndex(m_currentFrameIndex));
+                if (skipFrames != readSampleFramesClamped(
+                        WritableSampleFrames(skipFrames)).frameIndexRange()) {
+                    kLogger.warning()
+                            << "Failed to skip frames while seeking"
+                            << skipFrames;
+                    return; // abort
+                }
+                // Now m_currentFrameIndex reflects the actual position of the reader
+                if (m_currentFrameIndex < frameIndex) {
+                    // Skip more frames if the seek has taken us to a position before
+                    // the requested target position (see comment above about the behavior
+                    // of SetCurrentPosition()
+                    skipFrames = IndexRange::between(m_currentFrameIndex, frameIndex);
+                    // Skip more samples if frameIndex has not yet been reached
+                    if (skipFrames != readSampleFramesClamped(
+                            WritableSampleFrames(skipFrames)).frameIndexRange()) {
+                        kLogger.warning()
+                                << "Failed to skip frames while seeking"
+                                << skipFrames;
+                        return; // abort
+                    }
+                }
+                if (m_currentFrameIndex != frameIndex) {
+                    kLogger.warning()
+                            << "Seeking to frame"
+                            << frameIndex
+                            << "failed";
+                    // Jump to end of stream to prevent further reading
+                    m_currentFrameIndex = frameIndexMax();
+                }
             }
         } else {
-            // We are at the beginning of the stream and don't need
-            // to skip any frames. Calling IMFSourceReader::ReadSample
-            // is not necessary in this special case.
-            DEBUG_ASSERT(frameIndex == AudioSource::getMinFrameIndex());
-            m_currentFrameIndex = frameIndex;
+            kLogger.warning()
+                    << "IMFSourceReader::SetCurrentPosition() failed"
+                    << hrSetCurrentPosition;
+            safeRelease(&m_pSourceReader); // kill the reader
         }
-    } else {
-        kLogger.warning()
-                << "IMFSourceReader::SetCurrentPosition() failed"
-                << hrSetCurrentPosition;
-        safeRelease(&m_pSourceReader); // kill the reader
     }
-
-    return m_currentFrameIndex;
 }
 
-SINT SoundSourceMediaFoundation::readSampleFrames(
-        SINT numberOfFrames, CSAMPLE* sampleBuffer) {
+ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
+        WritableSampleFrames writableSampleFrames) {
 
-    SINT numberOfFramesRemaining = numberOfFrames;
-    CSAMPLE* pSampleBuffer = sampleBuffer;
+    const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
+    if (m_currentFrameIndex != kUnknownFrameIndex) {
+        seekSampleFrame(firstFrameIndex);
+        if (m_currentFrameIndex != firstFrameIndex) {
+             kLogger.warning()
+                    << "Failed to position reader at beginning of decoding range"
+                    << writableSampleFrames.frameIndexRange();
+             // Abort
+             return ReadableSampleFrames(
+                     mixxx::IndexRange::between(
+                             m_currentFrameIndex,
+                             m_currentFrameIndex));
+        }
+        DEBUG_ASSERT(m_currentFrameIndex == firstFrameIndex);
+    } else {
+        // Unknown position should only occur after seeking
+        // when all temporary buffers are empty
+        DEBUG_ASSERT(!isValidFrameIndex(m_currentFrameIndex));
+        DEBUG_ASSERT(m_sampleBuffer.empty());
+    }
 
+    const SINT numberOfFramesTotal = writableSampleFrames.frameLength();
+
+    CSAMPLE* pSampleBuffer = writableSampleFrames.writableData();
+    SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (numberOfFramesRemaining > 0) {
-        SampleBuffer::ReadableChunk readableChunk(
-                m_sampleBuffer.readFromHead(
+        SampleBuffer::ReadableSlice readableSlice(
+                m_sampleBuffer.shrinkForReading(
                         frames2samples(numberOfFramesRemaining)));
-        DEBUG_ASSERT(readableChunk.size()
+        DEBUG_ASSERT(readableSlice.length()
                 <= frames2samples(numberOfFramesRemaining));
-        if (readableChunk.size() > 0) {
-            DEBUG_ASSERT(m_currentFrameIndex < getMaxFrameIndex());
-            if (sampleBuffer != nullptr) {
+        if (readableSlice.length() > 0) {
+            DEBUG_ASSERT(isValidFrameIndex(m_currentFrameIndex));
+            DEBUG_ASSERT(m_currentFrameIndex < frameIndexMax());
+            if (pSampleBuffer) {
                 SampleUtil::copy(
                         pSampleBuffer,
-                        readableChunk.data(),
-                        readableChunk.size());
-                pSampleBuffer += readableChunk.size();
+                        readableSlice.data(),
+                        readableSlice.length());
+                pSampleBuffer += readableSlice.length();
             }
-            m_currentFrameIndex += samples2frames(readableChunk.size());
-            numberOfFramesRemaining -= samples2frames(readableChunk.size());
+            m_currentFrameIndex += samples2frames(readableSlice.length());
+            numberOfFramesRemaining -= samples2frames(readableSlice.length());
         }
         if (numberOfFramesRemaining == 0) {
             break; // finished reading
         }
 
         // No more decoded sample frames available
-        DEBUG_ASSERT(m_sampleBuffer.isEmpty());
+        DEBUG_ASSERT(m_sampleBuffer.empty());
 
         if (m_pSourceReader == nullptr) {
             break; // abort if reader is dead
@@ -311,7 +352,7 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
         DEBUG_ASSERT(pSample != nullptr);
         SINT readerFrameIndex = m_streamUnitConverter.toFrameIndex(streamPos);
         DEBUG_ASSERT(
-                (m_currentFrameIndex == getMaxFrameIndex()) || // unknown position after seeking
+                (m_currentFrameIndex == kUnknownFrameIndex) || // unknown position after seeking
                 (m_currentFrameIndex == readerFrameIndex));
         m_currentFrameIndex = readerFrameIndex;
 
@@ -341,18 +382,18 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
         DEBUG_ASSERT((dwSampleTotalLengthInBytes % kBytesPerSample) == 0);
         SINT numberOfSamplesToBuffer =
             dwSampleTotalLengthInBytes / kBytesPerSample;
-        SINT sampleBufferCapacity = m_sampleBuffer.getCapacity();
+        SINT sampleBufferCapacity = m_sampleBuffer.capacity();
         DEBUG_ASSERT(sampleBufferCapacity > 0);
         while (sampleBufferCapacity < numberOfSamplesToBuffer) {
             sampleBufferCapacity *= 2;
         }
-        if (m_sampleBuffer.getCapacity() < sampleBufferCapacity) {
+        if (m_sampleBuffer.capacity() < sampleBufferCapacity) {
             kLogger.debug()
                     << "Enlarging sample buffer capacity"
-                    << m_sampleBuffer.getCapacity()
+                    << m_sampleBuffer.capacity()
                     << "->"
                     << sampleBufferCapacity;
-            m_sampleBuffer.resetCapacity(sampleBufferCapacity);
+            m_sampleBuffer.adjustCapacity(sampleBufferCapacity);
         }
 
         DWORD dwSampleBufferIndex = 0;
@@ -404,14 +445,14 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
                 numberOfFramesRemaining -= samples2frames(copySamplesCount);
             }
             // Buffer the remaining samples
-            SampleBuffer::WritableChunk writableChunk(
-                    m_sampleBuffer.writeToTail(lockedSampleBufferCount));
+            SampleBuffer::WritableSlice writableSlice(
+                    m_sampleBuffer.growForWriting(lockedSampleBufferCount));
             // The required capacity has been calculated in advance (see above)
-            DEBUG_ASSERT(writableChunk.size() == lockedSampleBufferCount);
+            DEBUG_ASSERT(writableSlice.length() == lockedSampleBufferCount);
             SampleUtil::copy(
-                    writableChunk.data(),
+                    writableSlice.data(),
                     pLockedSampleBuffer,
-                    writableChunk.size());
+                    writableSlice.length());
             HRESULT hrUnlock = pMediaBuffer->Unlock();
             VERIFY_OR_DEBUG_ASSERT(SUCCEEDED(hrUnlock)) {
                 kLogger.warning()
@@ -433,7 +474,14 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
         }
     }
 
-    return numberOfFrames - numberOfFramesRemaining;
+    DEBUG_ASSERT(isValidFrameIndex(m_currentFrameIndex));
+    DEBUG_ASSERT(numberOfFramesTotal >= numberOfFramesRemaining);
+    const SINT numberOfFrames = numberOfFramesTotal - numberOfFramesRemaining;
+    return ReadableSampleFrames(
+            IndexRange::forward(firstFrameIndex, numberOfFrames),
+            SampleBuffer::ReadableSlice(
+                    writableSampleFrames.writableData(),
+                    std::min(writableSampleFrames.writableLength(), frames2samples(numberOfFrames))));
 }
 
 //-------------------------------------------------------------------
@@ -450,7 +498,7 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
  If anything in here fails, just bail. I'm not going to decode HRESULTS.
  -- Bill
  */
-bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& audioSrcCfg) {
+bool SoundSourceMediaFoundation::configureAudioStream(const OpenParams& params) {
     HRESULT hr;
 
     // deselect all streams, we only want the first
@@ -490,7 +538,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
         return false;
     }
 
-    setBitrate( (avgBytesPerSecond * 8) / 1000);
+    initBitrateOnce( (avgBytesPerSecond * 8) / 1000);
     //------
 
     hr = pAudioType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
@@ -556,8 +604,8 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     } else {
         qDebug() << "Number of channels in input stream" << numChannels;
     }
-    if (audioSrcCfg.hasValidChannelCount()) {
-        numChannels = audioSrcCfg.getChannelCount();
+    if (params.channelCount().valid()) {
+        numChannels = params.channelCount();
         hr = pAudioType->SetUINT32(
                 MF_MT_AUDIO_NUM_CHANNELS, numChannels);
         if (FAILED(hr)) {
@@ -580,8 +628,8 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     } else {
         qDebug() << "Samples per second in input stream" << samplesPerSecond;
     }
-    if (audioSrcCfg.hasValidSamplingRate()) {
-        samplesPerSecond = audioSrcCfg.getSamplingRate();
+    if (params.sampleRate().valid()) {
+        samplesPerSecond = params.sampleRate();
         hr = pAudioType->SetUINT32(
                 MF_MT_AUDIO_SAMPLES_PER_SECOND, samplesPerSecond);
         if (FAILED(hr)) {
@@ -642,7 +690,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
                 << "failed to get the actual sample rate";
         return false;
     }
-    setSamplingRate(samplesPerSecond);
+    setSampleRate(samplesPerSecond);
 
     UINT32 leftoverBufferSizeInBytes = 0;
     hr = pAudioType->GetUINT32(MF_MT_SAMPLE_SIZE, &leftoverBufferSizeInBytes);
@@ -652,11 +700,15 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
         return false;
     }
     DEBUG_ASSERT((leftoverBufferSizeInBytes % kBytesPerSample) == 0);
-    m_sampleBuffer.resetCapacity(leftoverBufferSizeInBytes / kBytesPerSample);
-    DEBUG_ASSERT(m_sampleBuffer.getCapacity() > 0);
+    const SINT sampleBufferCapacity =
+            leftoverBufferSizeInBytes / kBytesPerSample;
+    if (m_sampleBuffer.capacity() < sampleBufferCapacity) {
+        m_sampleBuffer.adjustCapacity(sampleBufferCapacity);
+    }
+    DEBUG_ASSERT(m_sampleBuffer.capacity() > 0);
     kLogger.debug()
             << "Sample buffer capacity"
-            << m_sampleBuffer.getCapacity();
+            << m_sampleBuffer.capacity();
 
             
     // Finally release the reference
@@ -676,10 +728,12 @@ bool SoundSourceMediaFoundation::readProperties() {
         kLogger.warning() << "error getting duration";
         return false;
     }
-    setFrameCount(m_streamUnitConverter.toFrameIndex(prop.hVal.QuadPart));
-    kLogger.debug() << "Frame count" << getFrameCount();
+    initFrameIndexRangeOnce(
+            mixxx::IndexRange::forward(
+                    0,
+                    m_streamUnitConverter.toFrameIndex(prop.hVal.QuadPart)));
+    kLogger.debug() << "Frame index range" << frameIndexRange();
     PropVariantClear(&prop);
-
    
     return true;
 }

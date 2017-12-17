@@ -14,7 +14,9 @@ Variables:
     <Layout>vertical</Layout>
     <Size>52f,45f</Size>
     <Children>
-      <WidgetGroup>
+      <WidgetGroup><!-- Parameter knob + parameter name -->
+        <!-- stacked because there was no other way to get knob and
+            name closer together -->
         <Layout>stacked</Layout>
         <Size>52f,34f</Size>
         <Children>
@@ -56,7 +58,7 @@ Variables:
             </Children>
           </WidgetGroup>
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- Parameter knob + parameter name -->
 
       <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
 

@@ -32,15 +32,15 @@ class RateControl : public EngineControl {
     Q_OBJECT
 public:
     RateControl(QString group, UserSettingsPointer pConfig);
-    virtual ~RateControl();
+    ~RateControl() override;
 
     void setBpmControl(BpmControl* bpmcontrol);
     // Must be called during each callback of the audio thread so that
     // RateControl has a chance to update itself.
-    double process(const double dRate,
+    void process(const double dRate,
                    const double currentSample,
                    const double totalSamples,
-                   const int bufferSamples);
+                   const int bufferSamples) override;
     // Returns the current engine rate.  "reportScratching" is used to tell
     // the caller that the user is currently scratching, and this is used to
     // disable keylock.
@@ -61,7 +61,7 @@ public:
     static void setRateRamp(bool);
     // Set Rate Ramp Sensitivity
     static void setRateRampSensitivity(int);
-    virtual void notifySeek(double dNewPlaypos);
+    void notifySeek(double dNewPlaypos) override;
 
   public slots:
     void slotReverseRollActivate(double);

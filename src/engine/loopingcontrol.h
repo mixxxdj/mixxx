@@ -28,35 +28,27 @@ class LoopingControl : public EngineControl {
     static QList<double> getBeatSizes();
 
     LoopingControl(QString group, UserSettingsPointer pConfig);
-    virtual ~LoopingControl();
+    ~LoopingControl() override;
 
     // process() updates the internal state of the LoopingControl to reflect the
     // correct current sample. If a loop should be taken LoopingControl returns
     // the sample that should be seeked to. Otherwise it returns currentSample.
-    virtual double process(const double dRate,
+    void process(const double dRate,
                    const double currentSample,
                    const double totalSamples,
-                   const int iBufferSize);
+                   const int iBufferSize) override;
 
     // nextTrigger returns the sample at which the engine will be triggered to
     // take a loop, given the value of currentSample and dRate.
-    virtual double nextTrigger(const double dRate,
+    virtual double nextTrigger(bool reverse,
                        const double currentSample,
-                       const double totalSamples,
-                       const int iBufferSize);
-
-    // getTrigger returns the sample that the engine will next be triggered to
-    // loop to, given the value of currentSample and dRate.
-    virtual double getTrigger(const double dRate,
-                      const double currentSample,
-                      const double totalSamples,
-                      const int iBufferSize);
+                       double *pTarget);
 
     // hintReader will add to hintList hints both the loop in and loop out
     // sample, if set.
-    virtual void hintReader(HintVector* pHintList);
+    void hintReader(HintVector* pHintList) override;
 
-    virtual void notifySeek(double dNewPlaypos);
+    void notifySeek(double dNewPlaypos) override;
 
   public slots:
     void slotLoopIn(double pressed);
@@ -97,8 +89,9 @@ class LoopingControl : public EngineControl {
   private:
 
     struct LoopSamples {
-        int start;
-        int end;
+        double start;
+        double end;
+        bool seek; // force the playposition to be inside the loop after adjusting it.
     };
 
     void setLoopingEnabled(bool enabled);
@@ -111,8 +104,8 @@ class LoopingControl : public EngineControl {
     // When a loop changes size such that the playposition is outside of the loop,
     // we can figure out the best place in the new loop to seek to maintain
     // the beat.  It will even keep multi-bar phrasing correct with 4/4 tracks.
-    void seekInsideAdjustedLoop(int old_loop_in, int old_loop_out,
-                                int new_loop_in, int new_loop_out);
+    int seekInsideAdjustedLoop(double currentSample,
+            double old_loop_in, double new_loop_in, double new_loop_out);
 
     ControlPushButton* m_pCOBeatLoopActivate;
     ControlPushButton* m_pCOBeatLoopRollActivate;
@@ -132,16 +125,17 @@ class LoopingControl : public EngineControl {
     ControlObject* m_pSlipEnabled;
     ControlObject* m_pPlayButton;
 
-    bool m_bLoopingEnabled = false;
-    bool m_bLoopRollActive = false;
-    bool m_bLoopManualTogglePressedToExitLoop = false;
-    bool m_bReloopCatchUpcomingLoop = false;
-    bool m_bAdjustingLoopIn = false;
-    bool m_bAdjustingLoopOut = false;
-    bool m_bLoopOutPressedWhileLoopDisabled = false;
+    bool m_bLoopingEnabled;
+    bool m_bLoopRollActive;
+    bool m_bAdjustingLoopIn;
+    bool m_bAdjustingLoopOut;
+    bool m_bAdjustingLoopInOld;
+    bool m_bAdjustingLoopOutOld;
+    bool m_bLoopOutPressedWhileLoopDisabled;
     // TODO(DSC) Make the following values double
     ControlValueAtomic<LoopSamples> m_loopSamples;
-    QAtomicInt m_iCurrentSample;
+    LoopSamples m_oldLoopSamples;
+    ControlValueAtomic<double> m_currentSample;
     ControlObject* m_pQuantizeEnabled;
     ControlObject* m_pNextBeat;
     ControlObject* m_pPreviousBeat;

@@ -28,6 +28,8 @@ void SidebarModel::addLibraryFeature(LibraryFeature* feature) {
 
     QAbstractItemModel* model = feature->getChildModel();
 
+    connect(model, SIGNAL(modelAboutToBeReset()),
+            this, SLOT(slotModelAboutToBeReset()));
     connect(model, SIGNAL(modelReset()),
             this, SLOT(slotModelReset()));
     connect(model, SIGNAL(dataChanged(const QModelIndex&,const QModelIndex&)),
@@ -381,10 +383,12 @@ void SidebarModel::slotRowsRemoved(const QModelIndex& parent, int start, int end
     endRemoveRows();
 }
 
+void SidebarModel::slotModelAboutToBeReset() {
+    beginResetModel();
+}
+
 void SidebarModel::slotModelReset() {
-    // If a child model is reset, we can't really do anything but reset(). This
-    // will close any open items.
-    reset();
+    endResetModel();
 }
 
 /*
