@@ -128,5 +128,9 @@ Description:
         </Connection>
       </WidgetGroup><!-- /Booth Gain -->
     </Children>
+    <Connection>
+      <ConfigKey>[Tango],master_mixer</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
   </WidgetGroup><!-- Booth & Master Mixer -->
 </Template>
