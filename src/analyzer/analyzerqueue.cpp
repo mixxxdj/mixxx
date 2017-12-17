@@ -42,9 +42,84 @@ constexpr int kProgressDone = 1000; // 100.0%
 // Maximum frequency of progress updates
 constexpr int kProgressUpdateInhibitMillis = 250;
 
+constexpr int kProgressStateEmpty   = 0;
+constexpr int kProgressStateWriting = 1;
+constexpr int kProgressStateReady   = 2;
+constexpr int kProgressStateReading = 3;
+
 QAtomicInt s_instanceCounter(0);
 
 } // anonymous namespace
+
+AnalyzerQueue::ProgressInfo::ProgressInfo()
+    : m_state(kProgressStateEmpty),
+      m_trackProgress(kProgressNone),
+      m_queueSize(0) {
+}
+
+bool AnalyzerQueue::ProgressInfo::tryWrite(
+        TracksWithProgress* pTracksWithProgress,
+        TrackPointer pCurrentTrack,
+        int trackProgress,
+        int queueSize) {
+    DEBUG_ASSERT(pTracksWithProgress);
+    DEBUG_ASSERT(pCurrentTrack);
+    bool firstWrite = m_state.testAndSetAcquire(
+            kProgressStateEmpty, kProgressStateWriting);
+    if (firstWrite || m_state.testAndSetAcquire(
+            kProgressStateReady, kProgressStateWriting)) {
+        DEBUG_ASSERT(m_state == kProgressStateWriting);
+        // Keep all track references alive until the main thread releases them!
+        if (!pTracksWithProgress->empty()) {
+            if (m_tracksWithProgress.empty()) {
+                pTracksWithProgress->swap(m_tracksWithProgress);
+            } else {
+                for (const auto trackProgress: *pTracksWithProgress) {
+                    m_tracksWithProgress[trackProgress.first] = trackProgress.second;
+                }
+                pTracksWithProgress->insert(
+                        m_tracksWithProgress.begin(),
+                        m_tracksWithProgress.end());
+            }
+            pTracksWithProgress->clear();
+        }
+        m_tracksWithProgress[pCurrentTrack] = trackProgress;
+        m_trackProgress = trackProgress;
+        m_queueSize = queueSize;
+        // Finally allow the main thread to consume progress info
+        // updates
+        m_state = kProgressStateReady;
+    } else {
+        // Ensure that track references are not dropped within the
+        // analysis thread!
+        (*pTracksWithProgress)[pCurrentTrack] = trackProgress;
+    }
+    return firstWrite;
+}
+
+AnalyzerQueue::ProgressInfo::ReadScope::ReadScope(ProgressInfo* pProgressInfo)
+    : m_pProgressInfo(nullptr) {
+    DEBUG_ASSERT(pProgressInfo);
+    // Defer updates from the analysis thread while the
+    // current progress info is consumed.
+    if (pProgressInfo->m_state.testAndSetAcquire(
+            kProgressStateReady, kProgressStateReading)) {
+        m_pProgressInfo = pProgressInfo;
+    }
+}
+
+AnalyzerQueue::ProgressInfo::ReadScope::~ReadScope() {
+    if (m_pProgressInfo) {
+        DEBUG_ASSERT(m_pProgressInfo->m_state == kProgressStateReading);
+        // Releasing all track reference here in the main thread might
+        // trigger save actions. This is necessary to avoid that the
+        // last reference is dropped within the analysis thread!
+        m_pProgressInfo->m_tracksWithProgress.clear();
+        // Finally allow the analysis thread to write progress info
+        // updates again
+        m_pProgressInfo->m_state = kProgressStateEmpty;
+    }
+}
 
 AnalyzerQueue::AnalyzerQueue(
         mixxx::DbConnectionPoolPtr pDbConnectionPool,
@@ -75,15 +150,13 @@ AnalyzerQueue::AnalyzerQueue(
 
 AnalyzerQueue::~AnalyzerQueue() {
     stop();
-    m_progressInfo.sema.release();
-    wait(); //Wait until thread has actually stopped before proceeding.
+    // Wait until thread has actually stopped before proceeding
+    wait();
 }
 
 // This is called from the AnalyzerQueue thread
 bool AnalyzerQueue::isLoadedTrackWaiting(TrackPointer pAnalyzingTrack) {
     bool anyQueuedTrackLoaded = false;
-    QList<TrackPointer> waitingTracks;
-    QList<TrackPointer> finishedTracks;
 
     QMutexLocker locked(&m_qm);
     QMutableListIterator<TrackPointer> it(m_queuedTracks);
@@ -106,26 +179,17 @@ bool AnalyzerQueue::isLoadedTrackWaiting(TrackPointer pAnalyzingTrack) {
                 }
             }
             if (processTrack) {
-                waitingTracks.append(pTrack);
+                m_tracksWithProgress[pTrack] = kProgressNone;
             } else {
                 kLogger.debug()
                         << "Skipping analysis of file"
                         << pTrack->getLocation();
-                finishedTracks.append(pTrack);
+                m_tracksWithProgress[pTrack] = kProgressDone;
                 it.remove();
             }
         } else if (progress == kProgressDone) {
             it.remove();
         }
-    }
-    locked.unlock();
-
-    // update progress after unlock to avoid a deadlock
-    foreach (TrackPointer pTrack, waitingTracks) {
-        emitUpdateProgress(pTrack, kProgressNone);
-    }
-    foreach (TrackPointer pTrack, finishedTracks) {
-        emitUpdateProgress(pTrack, kProgressDone);
     }
 
     // The analysis will be aborted if the currently analyzing
@@ -235,13 +299,6 @@ AnalyzerQueue::AnalysisResult AnalyzerQueue::doAnalysis(
                 double(pAudioSource->frameLength());
         int progressPromille = frameProgress * kProgressFinalizing;
 
-        if (m_progressInfo.track_progress != progressPromille) {
-            if (progressUpdateInhibitTimer.elapsed() > kProgressUpdateInhibitMillis) {
-                emitUpdateProgress(pTrack, progressPromille);
-                progressUpdateInhibitTimer.start();
-            }
-        }
-
         // Since this is a background analysis queue, we should co-operatively
         // yield every now and then to try and reduce CPU contention. The
         // analyzer queue is CPU intensive so we want to get out of the way of
@@ -256,6 +313,14 @@ AnalyzerQueue::AnalysisResult AnalyzerQueue::doAnalysis(
                     kLogger.debug() << "Interrupting analysis to give preference to a loaded track.";
                     result = AnalysisResult::Cancelled;
                 }
+            }
+        }
+
+        if ((m_progressInfo.m_trackProgress != progressPromille) ||
+                !m_tracksWithProgress.empty()) {
+            if (progressUpdateInhibitTimer.elapsed() > kProgressUpdateInhibitMillis) {
+                emitUpdateProgress(pTrack, progressPromille);
+                progressUpdateInhibitTimer.start();
             }
         }
 
@@ -320,11 +385,6 @@ void AnalyzerQueue::execThread() {
         DEBUG_ASSERT(dbConnection.isOpen());
         m_pAnalysisDao->initialize(dbConnection);
     }
-
-    m_progressInfo.current_track.reset();
-    m_progressInfo.track_progress = kProgressNone;
-    m_progressInfo.queue_size = 0;
-    m_progressInfo.sema.release(); // Initialize with one
 
     while (!m_exitPendingFlag) {
         TrackPointer nextTrack = dequeueNextBlocking();
@@ -418,47 +478,35 @@ void AnalyzerQueue::updateSize() {
 }
 
 // This is called from the AnalyzerQueue thread
-void AnalyzerQueue::emitUpdateProgress(TrackPointer track, int progress) {
+void AnalyzerQueue::emitUpdateProgress(TrackPointer pTrack, int progress) {
     if (!m_exitPendingFlag) {
-        // First tryAcqire will have always success because sema is initialized with on
-        // The following tries will success if the previous signal was processed in the GUI Thread
-        // This prevent the AnalysisQueue from filling up the GUI Thread event Queue
-        // 100 % is emitted in any case
-        if ((progress > kProgressNone) && (progress < kProgressFinalizing)) {
-            // Signals during processing are not required in any case
-            if (!m_progressInfo.sema.tryAcquire()) {
-               return;
-            }
-        } else {
-            m_progressInfo.sema.acquire();
+        if (m_progressInfo.tryWrite(&m_tracksWithProgress, std::move(pTrack), progress, m_queueSize)) {
+            emit(updateProgress());
         }
-        // The receiver (this class within the main thread) is responsible
-        // to reset the release the reference to the track object which might
-        // trigger save actions (export metadata, update database)!
-        DEBUG_ASSERT(!m_progressInfo.current_track);
-        m_progressInfo.current_track = std::move(track);
-        DEBUG_ASSERT(!track);
-        m_progressInfo.track_progress = progress;
-        m_progressInfo.queue_size = m_queueSize;
-        emit(updateProgress());
     }
 }
 
 //slot
 void AnalyzerQueue::slotUpdateProgress() {
-    if (m_progressInfo.current_track) {
-        m_progressInfo.current_track->setAnalyzerProgress(m_progressInfo.track_progress);
-        // Releasing the track reference here in the main thread might
-        // trigger save actions. This is necessary to avoid that the
-        // last reference is dropped within the analysis thread!
-        m_progressInfo.current_track.reset();
+    const auto readScope = m_progressInfo.read();
+    if (readScope) {
+        // TODO(XXX): Bulk updates of many track objects will
+        // limit the responsiveness of the UI or may cause freezing.
+        bool oneOrMoreTracksFinished = false;
+        for (const auto trackWithProgress: readScope.tracksWithProgress()) {
+            trackWithProgress.first->setAnalyzerProgress(trackWithProgress.second);
+            if (trackWithProgress.second == kProgressDone) {
+                oneOrMoreTracksFinished = true;
+            }
+        }
+        DEBUG_ASSERT(oneOrMoreTracksFinished ||
+                (readScope.trackProgress() != kProgressDone));
+        int trackProgressPercent = readScope.trackProgress() / 10;
+        emit(trackProgress(trackProgressPercent));
+        if (oneOrMoreTracksFinished) {
+            emit(trackFinished(readScope.queueSize()));
+        }
     }
-    int progressPercent = m_progressInfo.track_progress / 10;
-    emit(trackProgress(progressPercent));
-    if (m_progressInfo.track_progress == kProgressDone) {
-        emit(trackFinished(m_progressInfo.queue_size));
-    }
-    m_progressInfo.sema.release();
 }
 
 void AnalyzerQueue::slotAnalyseTrack(TrackPointer pTrack) {
