@@ -359,7 +359,8 @@
   font-size: 13px/16px;
   font-weight: bold;
   font-family: Lucida Grande, Lucida Sans Unicode, Segoe UI, Arial, Verdana, sans-serif;
-  background-color: transparent;
+  background-color: #0f0f0f;
+  border-radius: 3px;
   padding: 0px;
   margin: 0px;
 }
