@@ -25,7 +25,7 @@
                 <Size>60f,22f</Size>
                 <Children>
                   <NumberBpm>
-                    <ObjectName>BpmTextColor<Variable name="channum" /></ObjectName>
+                    <ObjectName>BpmText</ObjectName>
                     <TooltipId>visual_bpm</TooltipId>
                     <Size>60f,22f</Size>
                     <Channel><Variable name="channum" /></Channel>
@@ -57,7 +57,7 @@
 
               <NumberRate>
                 <TooltipId>rate_display</TooltipId>
-                <ObjectName>RateTextColor<Variable name="channum" /></ObjectName>
+                <ObjectName>RateText</ObjectName>
                 <Channel><Variable name="channum" /></Channel>
                 <NumberOfDigits>2</NumberOfDigits>
               </NumberRate>

@@ -323,7 +323,7 @@
   qproperty-layoutAlignment: 'AlignRight | AlignBottom';
 }
 
-#RateButtons, #RatePermButtons, #RateTempButtons {
+#RateButtons {
   qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
 }
 
@@ -354,11 +354,31 @@
   padding: 2px;
 }
 
-#VinylControls {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+#KeyText {
+  qproperty-alignment: 'AlignCenter';
+  font-size: 13px/16px;
+  font-weight: bold;
+  font-family: Lucida Grande, Lucida Sans Unicode, Segoe UI, Arial, Verdana, sans-serif;
+  background-color: transparent;
+  padding: 0px;
+  margin: 0px;
 }
 
-#VinylControls2 {
+#ArtistText,
+#TitleText,
+#PlayPositionText {
+ font-size: 18px/21px;
+ font-weight: bold;
+ font-family: Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+}
+
+#DurationText {
+  font-size: 13px/15px;
+  font-weight: bold;
+  font-family: Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+}
+
+#VinylControls {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
 
@@ -423,6 +443,10 @@
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                     stop:0 #282828,
                                     stop:1 #0e0e0e);
+}
+
+#VinylStatus {
+  border-radius: 5px;
 }
 
 #VinylToggleButtonUL[displayValue="0"] {
@@ -599,54 +623,6 @@
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #d80000, stop:1 #910000);
     margin-right: 2px;
     margin-bottom: 2px;
-}
-
-#BpmContainer {
-  qproperty-layoutAlignment: 'AlignCenter';
-}
-
-#BpmTextColor1, #BpmTextColor2 {
-  qproperty-alignment: 'AlignCenter';
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 16px/18px;
-  background-color: transparent;
-  text-align: center;
-  padding: 0px;
-  margin: 0px;
-  color: #eece33;
-}
-
-#BpmTextColor3, #BpmTextColor4 {
-  qproperty-alignment: 'AlignCenter';
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 16px/18px;
-  background-color: transparent;
-  text-align: center;
-  padding: 0px;
-  margin: 0px;
-  color: #09B2AE;
-}
-
-#RateTextColor1, #RateTextColor2 {
-  qproperty-alignment: 'AlignCenter';
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 12px/13px;
-  background-color: transparent;
-  text-align: center;
-  padding: 0px;
-  margin: 0px;
-  color: #eece33;
-}
-
-#RateTextColor3, #RateTextColor4 {
-  qproperty-alignment: 'AlignCenter';
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 12px/13px;
-  background-color: transparent;
-  text-align: center;
-  padding: 0px;
-  margin: 0px;
-  color: #09B2AE;
 }
 
 #CrossFadeContainer {
@@ -903,10 +879,6 @@ border: 0px;
   padding-right: 2px;
 }
 
-#VinylStatusTop {
-  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-}
-
 #Toolbar {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   border: 1px solid #585858;
@@ -926,6 +898,33 @@ border: 0px;
   border: 1px solid #585858;
   border-width: 0px 1px 0px 0px;
   padding: 4px 1px 2px 2px;
+}
+
+#BpmContainer {
+  qproperty-layoutAlignment: 'AlignCenter';
+}
+
+#BpmText {
+  qproperty-alignment: 'AlignCenter';
+  font-size: 16px/18px;
+  font-weight: bold;
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
+  background-color: transparent;
+  text-align: center;
+  padding: 0px;
+  margin: 0px;
+}
+
+#RateText {
+  qproperty-alignment: 'AlignCenter';
+  font-size: 12px/13px;
+  font-weight: bold;
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
+  background-color: transparent;
+  text-align: center;
+  padding: 0px;
+  margin: 0px;
+  color: #eece33;
 }
 
 #RateControls {
@@ -1081,11 +1080,11 @@ border: 0px;
   padding: 2px;
 }
 
-#TextColor1, #TextColor2 {
+#Deck1 WLabel, Deck2 WLabel {
   color: #eece33;
 }
 
-#TextColor3, #TextColor4 {
+#Deck3 WLabel, #Deck4 WLabel {
   color: #09B2AE;
 }
 

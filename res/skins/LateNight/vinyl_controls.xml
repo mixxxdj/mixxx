@@ -6,11 +6,12 @@
     <Children>
 
       <WidgetGroup>
-        <ObjectName>VinylStatusTop</ObjectName>
+        <ObjectName>AlignVCenter</ObjectName>
         <SizePolicy>min,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
           <StatusLight>
+            <ObjectName>VinylStatus</ObjectName>
             <Size>10f,10f</Size>
             <TooltipId>vinylcontrol_status</TooltipId>
             <NumberPos>3</NumberPos>
