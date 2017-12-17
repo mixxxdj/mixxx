@@ -186,19 +186,19 @@ void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handle_grou
           MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
 
     for (int i = 0; i < m_effects.size(); ++i) {
-        auto& pStatesMap = m_effectStatesMapArray[i];
+        auto& statesMap = m_effectStatesMapArray[i];
         if (m_effects[i] != nullptr) {
             for (const auto& outputChannel : m_pEffectsManager->registeredOutputChannels()) {
-                pStatesMap.insert(outputChannel.handle(),
+                statesMap.insert(outputChannel.handle(),
                         m_effects[i]->createState(bufferParameters));
             }
         } else {
-            for (EffectState* pState : pStatesMap) {
+            for (EffectState* pState : statesMap) {
                 if (pState != nullptr) {
                     delete pState;
                 }
             }
-            pStatesMap.clear();
+            statesMap.clear();
         }
     }
     request->pEffectStatesMapArray = &m_effectStatesMapArray;
