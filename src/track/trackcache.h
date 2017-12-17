@@ -11,14 +11,6 @@
 #include "track/trackref.h"
 
 
-class /*interface*/ TrackCacheEvictor {
-public:
-    virtual void onEvictingTrackFromCache(Track* pTrack) = 0;
-
-protected:
-    virtual ~TrackCacheEvictor() {}
-};
-
 enum class TrackCacheLookupResult {
     NONE,
     HIT,
@@ -106,6 +98,27 @@ private:
 #else
     TrackCacheResolver& operator=(TrackCacheResolver&&) = default;
 #endif
+};
+
+class /*interface*/ TrackCacheEvictor {
+public:
+    /**
+     * This function will be called when evicting a track from the
+     * cache to perform operations before the track object is deleted.
+     *
+     * The parameter pCacheLocker is optional and might be null. It
+     * allows the callee to explicitly unlock the cache before performing
+     * any long running operations that don't require that the cache is
+     * kept locked. The unlockCache() operation is the only operation that
+     * should be called on pCacheLocker! The second pointer is accessible
+     * and valid even if after the cache has been unlocked.
+     */
+    virtual void onEvictingTrackFromCache(
+            TrackCacheLocker* /*nullable*/ pCacheLocker,
+            Track* pTrack) = 0; // not null
+
+protected:
+    virtual ~TrackCacheEvictor() {}
 };
 
 class TrackCache {
@@ -218,6 +231,7 @@ private:
     void evict(
             Track* pTrack);
     Track* evictInternal(
+            TrackCacheLocker* /*nullable*/ pCacheLocker,
             const TrackRef& trackRef);
 
     TrackCacheEvictor* m_pEvictor;

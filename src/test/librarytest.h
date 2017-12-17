@@ -14,8 +14,8 @@ class LibraryTest : public MixxxTest,
     public virtual /*implements*/ TrackCacheEvictor {
 
   public:
-    void onEvictingTrackFromCache(Track* pTrack) override {
-        m_trackCollection.saveTrack(pTrack);
+    void onEvictingTrackFromCache(TrackCacheLocker* pCacheLocker, Track* pTrack) override {
+        m_trackCollection.saveTrack(pCacheLocker, pTrack);
     }
 
   protected:

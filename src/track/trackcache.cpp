@@ -279,14 +279,20 @@ bool TrackCache::resolveInternal(
                         resolvedTrackRef,
                         pResolvedTrack);
                 return true;
-            } else {
+            }
+            // We don't expect that this might ever happen, but let's even
+            // handle this special case!
+            VERIFY_OR_DEBUG_ASSERT(pResolvedTrack) {
                 // Explicitly evict the cached track before the deleter does it
-                kLogger.debug()
+                kLogger.warning()
                         << "Cache hit - evicting zombie track"
                         << resolvedTrackRef;
-                Track* pEvictedTrack = evictInternal(resolvedTrackRef);
+                // The cache must stay locked after evicting the zombie entry
+                // so we don't pass the locker on!
+                Track* pEvictedTrack = evictInternal(nullptr, resolvedTrackRef);
                 DEBUG_ASSERT((nullptr == pEvictedTrack) ||
                         (pEvictedTrack == (*trackById).plainPtr));
+                // ...and continue like it has not been found
             }
         }
     }
@@ -318,14 +324,20 @@ bool TrackCache::resolveInternal(
                         resolvedTrackRef,
                         pResolvedTrack);
                 return true;
-            } else {
-                // Explicitly evict the cached track before the deleter does it
-                kLogger.debug()
+            }
+            // We don't expect that this might ever happen, but let's even
+            // handle this special case!
+            VERIFY_OR_DEBUG_ASSERT(pResolvedTrack) {
+                // Explicitly evict the cached track before the deleter does it.
+                kLogger.warning()
                         << "Cache hit - evicting zombie track"
                         << resolvedTrackRef;
-                Track* pEvictedTrack = evictInternal(resolvedTrackRef);
+                // The cache must stay locked after evicting the zombie entry
+                // so we don't pass the locker on!
+                Track* pEvictedTrack = evictInternal(nullptr, resolvedTrackRef);
                 DEBUG_ASSERT((nullptr == pEvictedTrack) ||
                         (pEvictedTrack == (*trackByCanonicalLocation).plainPtr));
+                // ...and continue like it has not been found
             }
         }
     }
@@ -403,11 +415,13 @@ TrackRef TrackCache::updateTrackIdInternal(
 void TrackCache::evict(
         Track* pTrack) {
     DEBUG_ASSERT(pTrack != nullptr);
-    const TrackCacheLocker cacheLocker;
-    Track* pEvictedTrack = evictInternal(
-        TrackRef::fromFileInfo(pTrack->m_fileInfo, pTrack->m_record.getId()));
+    const auto trackRef = TrackRef::fromFileInfo(
+            pTrack->m_fileInfo,
+            pTrack->m_record.getId());
+    TrackCacheLocker cacheLocker;
+    Track* pEvictedTrack = evictInternal(&cacheLocker, trackRef);
+    // The cache might have been unlocked during the callback!
     DEBUG_ASSERT((nullptr == pEvictedTrack) || (pEvictedTrack == pTrack));
-    DEBUG_ASSERT(verifyConsistency());
 }
 
 TrackCache::Item TrackCache::purgeInternal(
@@ -458,12 +472,14 @@ TrackCache::Item TrackCache::purgeInternal(
 }
 
 Track* TrackCache::evictInternal(
+        TrackCacheLocker* pCacheLocker,
         const TrackRef& trackRef) {
     kLogger.debug()
             << "Evicting track"
             << trackRef;
 
-    const Item purgedItem(purgeInternal(trackRef));
+    const Item purgedItem = purgeInternal(trackRef);
+    DEBUG_ASSERT(verifyConsistency());
     if (nullptr != purgedItem.plainPtr) {
         // It can produce dangerous signal loops if the track is still
         // sending signals while being saved! All references to this
@@ -473,7 +489,13 @@ Track* TrackCache::evictInternal(
         purgedItem.plainPtr->blockSignals(true);
 
         // Keep the cache locked while evicting the track object!
-        m_pEvictor->onEvictingTrackFromCache(purgedItem.plainPtr);
+        // The callback is given the chance to unlock the cache
+        // after all operations that rely on managed track ownership
+        // have been done, e.g. exporting track metadata into a file.
+        m_pEvictor->onEvictingTrackFromCache(
+                pCacheLocker,
+                purgedItem.plainPtr);
+        // At this point the cache might have been unlocked already
     } else {
         kLogger.debug()
                 << "Uncached track cannot be evicted"
