@@ -1,7 +1,8 @@
 <Template>
   <WidgetGroup>
+    <ObjectName>AlignHCenter</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>max,min</SizePolicy>
+    <Size>54f,52me</Size>
     <Children>
       <Spinny>
         <Size>50f,50f</Size>

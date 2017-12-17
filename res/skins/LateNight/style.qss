@@ -750,7 +750,7 @@ WBeatSpinBox {
 #Crossfader {
   qproperty-layoutAlignment: 'AlignCenter';
   /*background-color:#1e1e1e;*/
-  padding-top: 10px;
+  padding-top: 5px;
 }
 
 #PreviewDeck {
