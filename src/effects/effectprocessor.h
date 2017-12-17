@@ -103,13 +103,17 @@ class EffectProcessorImpl : public EffectProcessor {
     // Subclasses should not implement their own destructor. All state should
     // be stored in the EffectState subclass, not the EffectProcessorImpl subclass.
     ~EffectProcessorImpl() {
-        //qDebug() << "~EffectProcessorImpl" << this;
+        if (kEffectDebugOutput) {
+            qDebug() << "~EffectProcessorImpl" << this;
+        }
         for (ChannelHandleMap<EffectSpecificState*>& outputsMap : m_channelStateMatrix) {
             for (EffectSpecificState* pState : outputsMap) {
                 VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
                     continue;
                 }
-                //qDebug() << "~EffectProcessorImpl deleting state" << pState;
+                if (kEffectDebugOutput) {
+                    qDebug() << "~EffectProcessorImpl deleting state" << pState;
+                }
                 delete pState;
             }
             outputsMap.clear();
