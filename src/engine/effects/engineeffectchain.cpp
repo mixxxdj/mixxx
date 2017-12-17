@@ -119,7 +119,8 @@ bool EngineEffectChain::processEffectsRequest(EffectsRequest& message,
             break;
         case EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL:
             if (kEffectDebugOutput) {
-                qDebug() << debugString() << this << "ENABLE_EFFECT_CHAIN_FOR_CHANNEL"
+                qDebug() << debugString() << this
+                         << "ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL"
                          << message.pTargetChain
                          << message.channel;
             }
@@ -128,7 +129,8 @@ bool EngineEffectChain::processEffectsRequest(EffectsRequest& message,
             break;
         case EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL:
             if (kEffectDebugOutput) {
-                qDebug() << debugString() << this << "DISABLE_EFFECT_CHAIN_FOR_CHANNEL"
+                qDebug() << debugString() << this
+                         << "DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL"
                          << message.pTargetChain
                          << message.channel;
             }
