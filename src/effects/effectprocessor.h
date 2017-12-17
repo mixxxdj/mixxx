@@ -237,12 +237,12 @@ class EffectProcessorImpl : public EffectProcessor {
           ChannelHandleMap<EffectSpecificState*>& stateMap =
                   m_channelStateMatrix[inputChannel];
           for (EffectSpecificState* pState : stateMap) {
+                VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
+                      continue;
+                }
                 if (kEffectDebugOutput) {
                       qDebug() << "EffectProcessorImpl::deleteStatesForInputChannel"
                                << this << "deleting state" << pState;
-                }
-                VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
-                      return;
                 }
                 delete pState;
           }
