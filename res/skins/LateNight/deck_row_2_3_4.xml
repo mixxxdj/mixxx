@@ -33,9 +33,8 @@
           <WidgetGroup>
             <ObjectName>AlignRightTop</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>f,min</SizePolicy>
+            <SizePolicy>min,min</SizePolicy>
             <MinimumSize>100,</MinimumSize>
-            <MaximumSize>100,</MaximumSize>
             <Children>
               <NumberPos>
                 <ObjectName>PlayPositionText</ObjectName>
