@@ -197,7 +197,8 @@ class EffectProcessorImpl : public EffectProcessor {
                   m_channelStateMatrix[inputChannel];
 
           // deleteStatesForInputChannel should have been called before a new
-          // set of EffectStates was sent to this function, so
+          // map of EffectStates was sent to this function, or this is the first
+          // time states are being loaded for this input channel, so
           // effectSpecificStatesMap should be empty and this loop should
           // not go through any iterations.
           for (EffectSpecificState* pState : effectSpecificStatesMap) {
