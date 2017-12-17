@@ -17,23 +17,21 @@ Description:
           later in xml (collapsed) to the earlier (expanded), since none of both versions
           was visible at that moment and opposing EffectUnit tries to expand horizontally.
           Putting both versions into a vertical layout fixes this issue.
+          UPDATE: now using WidgetStacks, it appears they are even more stable when switching
+
+          Normally the first widget in stack is shown. currentpage="[XYZ],blabla" makes the
+          WidgetStack remember which item was visible when stack was hidden or Mixxx restarted.
+          To make this persistent, I used the same CO that controls if the parameters are visible.
+          For that to work index of item in stack must match ...,show_parameters
       -->
-      <WidgetStack currentpage="[Tango],SwitchStack_fx_unit3_expanded" persist="true"><!-- EffectUnit 1 -->
+
+      <!-- EffectUnit 3 -->
+      <WidgetStack currentpage="[EffectRack1_EffectUnit3],show_parameters" persist="true"><!-- EffectUnit 1 -->
         <SizePolicy>me,min</SizePolicy>
         <Children>
 
-          <WidgetGroup trigger="[EffectRack1_EffectUnit3],show_parameters" on_hide_select="1" persist="true"><!-- EffectUnit 3 maxi -->
-            <Layout>vertical</Layout>
-            <SizePolicy>min,max</SizePolicy>
-            <Children>
-              <Template src="skin:fx_unit_left.xml">
-                <SetVariable name="FxUnit">3</SetVariable>
-              </Template>
-              <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
-            </Children>
-          </WidgetGroup>
-
-          <WidgetGroup><!-- EffectUnit 3 mini -->
+          <!-- EffectUnit 3 mini -->
+          <WidgetGroup>
             <Layout>vertical</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
@@ -41,6 +39,18 @@ Description:
                 <SetVariable name="FxUnit">3</SetVariable>
               </Template>
               <WidgetGroup><Size>1min,5me</Size></WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+          <!-- EffectUnit 3 maxi -->
+          <WidgetGroup trigger="[EffectRack1_EffectUnit3],show_parameters" persist="true" on_hide_select="0">
+            <Layout>vertical</Layout>
+            <SizePolicy>min,max</SizePolicy>
+            <Children>
+              <Template src="skin:fx_unit_left.xml">
+                <SetVariable name="FxUnit">3</SetVariable>
+              </Template>
+              <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
             </Children>
           </WidgetGroup>
 
@@ -62,22 +72,13 @@ Description:
         </Connection>
       </WidgetGroup>
 
-      <WidgetStack currentpage="[Tango],SwitchStack_fx_unit4_expanded" persist="true"><!-- EffectUnit 2 -->
+      <!-- EffectUnit 4 -->
+      <WidgetStack currentpage="[EffectRack1_EffectUnit4],show_parameters" persist="true">
         <SizePolicy>me,min</SizePolicy>
         <Children>
-        
-          <WidgetGroup trigger="[EffectRack1_EffectUnit4],show_parameters" on_hide_select="1" persist="true"><!-- EffectUnit 4 maxi -->
-            <Layout>vertical</Layout>
-            <SizePolicy>min,max</SizePolicy>
-            <Children>
-              <Template src="skin:fx_unit_right.xml">
-                <SetVariable name="FxUnit">4</SetVariable>
-              </Template>
-              <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
-            </Children>
-          </WidgetGroup>
 
-          <WidgetGroup><!-- EffectUnit 4 mini -->
+          <!-- EffectUnit 4 mini -->
+          <WidgetGroup>
             <Layout>vertical</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
@@ -88,12 +89,24 @@ Description:
             </Children>
           </WidgetGroup>
 
+          <!-- EffectUnit 4 maxi -->
+          <WidgetGroup trigger="[EffectRack1_EffectUnit4],show_parameters" persist="true" on_hide_select="0">
+            <Layout>vertical</Layout>
+            <SizePolicy>min,max</SizePolicy>
+            <Children>
+              <Template src="skin:fx_unit_right.xml">
+                <SetVariable name="FxUnit">4</SetVariable>
+              </Template>
+              <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
         </Children>
         <Connection>
           <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetStack>
+      </WidgetStack><!-- /EffectUnit 4 -->
 
     </Children>
   </WidgetGroup><!-- /EffectUnits 3 & 4 -->

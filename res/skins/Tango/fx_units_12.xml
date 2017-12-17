@@ -17,23 +17,21 @@ Description:
           later in xml (collapsed) to the earlier (expanded), since none of both versions
           was visible at that moment and opposing EffectUnit tries to expand horizontally.
           Putting both versions into a vertical layout fixes this issue.
+          UPDATE: now using WidgetStacks, it appears they are even more stable when switching
+
+          Normally the first widget in stack is shown. currentpage="[XYZ],blabla" makes the
+          WidgetStack remember which item was visible when stack was hidden or Mixxx restarted.
+          To make this persistent, I used the same CO that controls if the parameters are visible.
+          For that to work index of item in stack must match ...,show_parameters
       -->
-      <WidgetStack currentpage="[Tango],SwitchStack_fx_unit1_expanded" persist="true"><!-- EffectUnit 1 -->
+
+      <!-- EffectUnit 1 -->
+      <WidgetStack currentpage="[EffectRack1_EffectUnit1],show_parameters" persist="true">
         <SizePolicy>me,min</SizePolicy>
         <Children>
 
-          <WidgetGroup trigger="[EffectRack1_EffectUnit1],show_parameters" on_hide_select="1" persist="true"><!-- EffectUnit 1 maxi -->
-            <Layout>vertical</Layout>
-            <SizePolicy>min,max</SizePolicy>
-            <Children>
-              <Template src="skin:fx_unit_left.xml">
-                <SetVariable name="FxUnit">1</SetVariable>
-              </Template>
-              <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
-            </Children>
-          </WidgetGroup>
-
-          <WidgetGroup><!-- EffectUnit 1 mini -->
+          <!-- EffectUnit 1 mini -->
+          <WidgetGroup>
             <Layout>vertical</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
@@ -41,6 +39,18 @@ Description:
                 <SetVariable name="FxUnit">1</SetVariable>
               </Template>
               <WidgetGroup><Size>1min,5me</Size></WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+          <!-- EffectUnit 1 maxi -->
+          <WidgetGroup trigger="[EffectRack1_EffectUnit1],show_parameters" on_hide_select="0" persist="true">
+            <Layout>vertical</Layout>
+            <SizePolicy>min,max</SizePolicy>
+            <Children>
+              <Template src="skin:fx_unit_left.xml">
+                <SetVariable name="FxUnit">1</SetVariable>
+              </Template>
+              <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
             </Children>
           </WidgetGroup>
 
@@ -62,22 +72,13 @@ Description:
         </Connection>
       </WidgetGroup>
 
-      <WidgetStack currentpage="[Tango],SwitchStack_fx_unit2_expanded" persist="true"><!-- EffectUnit 2 -->
+      <!-- EffectUnit 2 -->
+      <WidgetStack currentpage="[EffectRack1_EffectUnit2],show_parameters" persist="true">
         <SizePolicy>me,min</SizePolicy>
         <Children>
-        
-          <WidgetGroup trigger="[EffectRack1_EffectUnit2],show_parameters" on_hide_select="1" persist="true"><!-- EffectUnit 2 maxi -->
-            <Layout>vertical</Layout>
-            <SizePolicy>min,max</SizePolicy>
-            <Children>
-              <Template src="skin:fx_unit_right.xml">
-                <SetVariable name="FxUnit">2</SetVariable>
-              </Template>
-              <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
-            </Children>
-          </WidgetGroup>
 
-          <WidgetGroup><!-- EffectUnit 2 mini -->
+          <!-- EffectUnit 2 mini -->
+          <WidgetGroup>
             <Layout>vertical</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
@@ -85,6 +86,18 @@ Description:
                 <SetVariable name="FxUnit">2</SetVariable>
               </Template>
               <WidgetGroup><Size>1min,5me</Size></WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+          <!-- EffectUnit 2 maxi -->
+          <WidgetGroup trigger="[EffectRack1_EffectUnit2],show_parameters" on_hide_select="1" persist="true">
+            <Layout>vertical</Layout>
+            <SizePolicy>min,max</SizePolicy>
+            <Children>
+              <Template src="skin:fx_unit_right.xml">
+                <SetVariable name="FxUnit">2</SetVariable>
+              </Template>
+              <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
             </Children>
           </WidgetGroup>
 
