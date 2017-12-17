@@ -887,6 +887,10 @@ border: 0px;
   background-color: #0f0f0f;
 }
 
+#ToolbarLogo {
+  background: url(skin:style/mixxx_logo_toolbar.png) no-repeat center center;
+}
+
 #WaveformMixerContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
