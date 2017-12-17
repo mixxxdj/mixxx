@@ -105,7 +105,7 @@
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   border: 1px solid #585858;
   border-right: 0px;
-  
+
 }
 
 #Deck2,
@@ -900,7 +900,7 @@ border: 0px;
 
 #VUMeterBox {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  padding-right: 2px;  
+  padding-right: 2px;
 }
 
 #VinylStatusTop {
@@ -921,20 +921,26 @@ border: 0px;
 #Waveform {
 }
 
-#RateSlider {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  padding-bottom: 2px;
-}
-
 #RateContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   border: 1px solid #585858;
   border-width: 0px 1px 0px 0px;
-  padding: 2px;
+  padding: 4px 1px 2px 2px;
 }
 
-#RateAdjust {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+#RateControls {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+}
+
+#RateSlider {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+  /* no respected since RateSlider has a connection attached
+  margin: 0px 10px 0px 0px; */
+}
+
+#RateButtons {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+  padding: 2px 0px 0px 2px;
 }
 
 #MicContainer {

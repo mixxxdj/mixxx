@@ -9,12 +9,13 @@
       <WidgetGroup>
         <ObjectName>RateContainer</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>min,me</SizePolicy>
         <Children>
           <WidgetGroup>
-            <ObjectName>RateAdjust</ObjectName>
+            <ObjectName>AlignCenter</ObjectName>
             <Layout>vertical</Layout>
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>min,me</SizePolicy>
+            <MaximumSize>-1,46</MaximumSize>
             <Children>
               <!-- In order to make the bpm display tappable, we use an old-style
               widget group and put the bpm pushbutton on top of the display. -->
@@ -65,11 +66,12 @@
           </WidgetGroup>
 
           <WidgetGroup>
-            <SizePolicy>min,min</SizePolicy>
+            <ObjectName>RateControls</ObjectName>
+            <Size>-1min,110me</Size>
             <Layout>horizontal</Layout>
-            <ObjectName>RateSlider</ObjectName>
             <Children>
               <SliderComposed>
+                <ObjectName>RateSlider</ObjectName>
                 <TooltipId>rate</TooltipId>
                 <Handle>knob_pitch1.png</Handle>
                 <Slider>slider_pitch1.png</Slider>
@@ -79,84 +81,178 @@
                 </Connection>
               </SliderComposed>
 
-              <WidgetGroup>
+              <WidgetGroup><!-- RateButtons for different rate directions -->
                 <ObjectName>RateButtons</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <PushButton>
-                    <TooltipId>rate_perm_up_rate_perm_up_small</TooltipId>
-                    <NumberStates>1</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Pressed>buttons/btn_pitch_up1_overdown.png</Pressed>
-                      <Unpressed>buttons/btn_pitch_up1.png</Unpressed>
-                    </State>
+                  <WidgetGroup><!-- Rate buttons for up=faster -->
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <PushButton>
+                        <TooltipId>rate_perm_up_rate_perm_up_small</TooltipId>
+                        <NumberStates>1</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Pressed>buttons/btn_pitch_up1_overdown.png</Pressed>
+                          <Unpressed>buttons/btn_pitch_up1.png</Unpressed>
+                        </State>
+                        <Connection>
+                          <ConfigKey>[Channel<Variable name="channum" />],rate_perm_up</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey>[Channel<Variable name="channum" />],rate_perm_up_small</ConfigKey>
+                          <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                      </PushButton>
+
+                      <PushButton>
+                        <TooltipId>rate_temp_down_rate_temp_down_small</TooltipId>
+                        <NumberStates>1</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Pressed>buttons/btn_nudge_down1_overdown.png</Pressed>
+                          <Unpressed>buttons/btn_nudge_down1.png</Unpressed>
+                        </State>
+                        <Connection>
+                          <ConfigKey>[Channel<Variable name="channum" />],rate_temp_down</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey>[Channel<Variable name="channum" />],rate_temp_down_small</ConfigKey>
+                          <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                      </PushButton>
+
+                      <PushButton>
+                        <TooltipId>rate_temp_up_rate_temp_up_small</TooltipId>
+                        <NumberStates>1</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Pressed>buttons/btn_nudge_up1_overdown.png</Pressed>
+                          <Unpressed>buttons/btn_nudge_up1.png</Unpressed>
+                        </State>
+                        <Connection>
+                          <ConfigKey>[Channel<Variable name="channum" />],rate_temp_up</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey>[Channel<Variable name="channum" />],rate_temp_up_small</ConfigKey>
+                          <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                      </PushButton>
+
+                      <PushButton>
+                        <TooltipId>rate_perm_down_rate_perm_down_small</TooltipId>
+                        <NumberStates>1</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Pressed>buttons/btn_pitch_down1_overdown.png</Pressed>
+                          <Unpressed>buttons/btn_pitch_down1.png</Unpressed>
+                        </State>
+                        <Connection>
+                          <ConfigKey>[Channel<Variable name="channum" />],rate_perm_down</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey>[Channel<Variable name="channum" />],rate_perm_down_small</ConfigKey>
+                          <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                      </PushButton>
+                    </Children>
                     <Connection>
-                      <ConfigKey>[Channel<Variable name="channum" />],rate_perm_up</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
+                      <ConfigKey><Variable name="group"/>,rate_dir</ConfigKey>
+                      <Transform><IsEqual>1</IsEqual></Transform>
+                      <BindProperty>visible</BindProperty>
                     </Connection>
+                  </WidgetGroup><!-- /Rate buttons for up=faster -->
+
+                  <WidgetGroup><!-- Rate buttons for up=slower -->
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <PushButton>
+                        <TooltipId>rate_perm_down_rate_perm_down_small</TooltipId>
+                        <NumberStates>1</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Pressed>buttons/btn_pitch_down1_overdown.png</Pressed>
+                          <Unpressed>buttons/btn_pitch_down1.png</Unpressed>
+                        </State>
+                        <Connection>
+                          <ConfigKey>[Channel<Variable name="channum" />],rate_perm_down</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey>[Channel<Variable name="channum" />],rate_perm_down_small</ConfigKey>
+                          <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                      </PushButton>
+
+                      <PushButton>
+                        <TooltipId>rate_temp_down_rate_temp_down_small</TooltipId>
+                        <NumberStates>1</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Pressed>buttons/btn_nudge_down1_overdown.png</Pressed>
+                          <Unpressed>buttons/btn_nudge_down1.png</Unpressed>
+                        </State>
+                        <Connection>
+                          <ConfigKey>[Channel<Variable name="channum" />],rate_temp_down</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey>[Channel<Variable name="channum" />],rate_temp_down_small</ConfigKey>
+                          <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                      </PushButton>
+
+                      <PushButton>
+                        <TooltipId>rate_temp_up_rate_temp_up_small</TooltipId>
+                        <NumberStates>1</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Pressed>buttons/btn_nudge_up1_overdown.png</Pressed>
+                          <Unpressed>buttons/btn_nudge_up1.png</Unpressed>
+                        </State>
+                        <Connection>
+                          <ConfigKey>[Channel<Variable name="channum" />],rate_temp_up</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey>[Channel<Variable name="channum" />],rate_temp_up_small</ConfigKey>
+                          <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                      </PushButton>
+
+                      <PushButton>
+                        <TooltipId>rate_perm_up_rate_perm_up_small</TooltipId>
+                        <NumberStates>1</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Pressed>buttons/btn_pitch_up1_overdown.png</Pressed>
+                          <Unpressed>buttons/btn_pitch_up1.png</Unpressed>
+                        </State>
+                        <Connection>
+                          <ConfigKey>[Channel<Variable name="channum" />],rate_perm_up</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey>[Channel<Variable name="channum" />],rate_perm_up_small</ConfigKey>
+                          <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                      </PushButton>
+                    </Children>
                     <Connection>
-                      <ConfigKey>[Channel<Variable name="channum" />],rate_perm_up_small</ConfigKey>
-                      <ButtonState>RightButton</ButtonState>
+                      <ConfigKey><Variable name="group"/>,rate_dir</ConfigKey>
+                      <Transform><IsEqual>-1</IsEqual></Transform>
+                      <BindProperty>visible</BindProperty>
                     </Connection>
-                  </PushButton>
-  
-                  <PushButton>
-                    <TooltipId>rate_temp_down_rate_temp_down_small</TooltipId>
-                    <NumberStates>1</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Pressed>buttons/btn_nudge_down1_overdown.png</Pressed>
-                      <Unpressed>buttons/btn_nudge_down1.png</Unpressed>
-                    </State>
-                    <Connection>
-                      <ConfigKey>[Channel<Variable name="channum" />],rate_temp_down</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey>[Channel<Variable name="channum" />],rate_temp_down_small</ConfigKey>
-                      <ButtonState>RightButton</ButtonState>
-                    </Connection>
-                  </PushButton>
-  
-                  <PushButton>
-                    <TooltipId>rate_temp_up_rate_temp_up_small</TooltipId>
-                    <NumberStates>1</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Pressed>buttons/btn_nudge_up1_overdown.png</Pressed>
-                      <Unpressed>buttons/btn_nudge_up1.png</Unpressed>
-                    </State>
-                    <Connection>
-                      <ConfigKey>[Channel<Variable name="channum" />],rate_temp_up</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey>[Channel<Variable name="channum" />],rate_temp_up_small</ConfigKey>
-                      <ButtonState>RightButton</ButtonState>
-                    </Connection>
-                  </PushButton>
-  
-                  <PushButton>
-                    <TooltipId>rate_perm_down_rate_perm_down_small</TooltipId>
-                    <NumberStates>1</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Pressed>buttons/btn_pitch_down1_overdown.png</Pressed>
-                      <Unpressed>buttons/btn_pitch_down1.png</Unpressed>
-                    </State>
-                    <Connection>
-                      <ConfigKey>[Channel<Variable name="channum" />],rate_perm_down</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey>[Channel<Variable name="channum" />],rate_perm_down_small</ConfigKey>
-                      <ButtonState>RightButton</ButtonState>
-                    </Connection>
-                  </PushButton>
+                  </WidgetGroup><!-- /Rate buttons for up=slower -->
                 </Children>
-              </WidgetGroup>
+              </WidgetGroup><!-- RateButtons for different rate directions -->
             </Children>
           </WidgetGroup>
 
@@ -166,7 +262,7 @@
             <SizePolicy>min,min</SizePolicy>
             <Children>
               <PushButton>
-                <Size>52,17</Size>
+                <Size>52,22</Size>
                 <ObjectName>SyncToggleButton</ObjectName>
                 <TooltipId>sync_enabled</TooltipId>
                 <NumberStates>2</NumberStates>
