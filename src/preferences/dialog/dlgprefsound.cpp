@@ -290,8 +290,8 @@ void DlgPrefSound::addPath(AudioOutput output) {
         toInsert = new DlgPrefSoundItem(outputTab, type,
             m_outputDevices, false);
     }
-    connect(this, SIGNAL(refreshOutputDevices(const QList<SoundDevice*>&)),
-            toInsert, SLOT(refreshDevices(const QList<SoundDevice*>&)));
+    connect(this, SIGNAL(refreshOutputDevices(const QList<QSharedPointer<SoundDevice>>&)),
+            toInsert, SLOT(refreshDevices(const QList<QSharedPointer<SoundDevice>>&)));
     insertItem(toInsert, outputVLayout);
     connectSoundItem(toInsert);
 }
@@ -321,8 +321,8 @@ void DlgPrefSound::addPath(AudioInput input) {
         toInsert = new DlgPrefSoundItem(inputTab, type,
             m_inputDevices, true);
     }
-    connect(this, SIGNAL(refreshInputDevices(const QList<SoundDevice*>&)),
-            toInsert, SLOT(refreshDevices(const QList<SoundDevice*>&)));
+    connect(this, SIGNAL(refreshInputDevices(const QList<QSharedPointer<SoundDevice>>&)),
+            toInsert, SLOT(refreshDevices(const QList<QSharedPointer<SoundDevice>>&)));
     insertItem(toInsert, inputVLayout);
     connectSoundItem(toInsert);
 }

@@ -21,18 +21,18 @@ class SoundDeviceNetworkThread;
 class SoundDeviceNetwork : public SoundDevice {
   public:
     SoundDeviceNetwork(UserSettingsPointer config,
-                       SoundManager *sm,
+                       SoundManager* sm,
                        QSharedPointer<EngineNetworkStream> pNetworkStream);
-    virtual ~SoundDeviceNetwork();
+    ~SoundDeviceNetwork() override;
 
-    virtual SoundDeviceError open(bool isClkRefDevice, int syncBuffers);
-    virtual bool isOpen() const;
-    virtual SoundDeviceError close();
-    virtual void readProcess();
-    virtual void writeProcess();
-    virtual QString getError() const;
+    SoundDeviceError open(bool isClkRefDevice, int syncBuffers) override;
+    bool isOpen() const override;
+    SoundDeviceError close() override;
+    void readProcess() override;
+    void writeProcess() override;
+    QString getError() const override;
 
-    virtual unsigned int getDefaultSampleRate() const {
+    unsigned int getDefaultSampleRate() const override {
         return 44100;
     }
 

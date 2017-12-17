@@ -62,7 +62,8 @@ class SoundManager : public QObject {
     // Returns a list of all devices we've enumerated that match the provided
     // filterApi, and have at least one output or input channel if the
     // bOutputDevices or bInputDevices are set, respectively.
-    QList<SoundDevice*> getDeviceList(QString filterAPI, bool bOutputDevices, bool bInputDevices);
+    QList<QSharedPointer<SoundDevice>> getDeviceList(
+            QString filterAPI, bool bOutputDevices, bool bInputDevices);
 
     // Creates a list of sound devices
     void clearAndQueryDevices();
@@ -78,7 +79,7 @@ class SoundManager : public QObject {
     void setConfiguredDeckCount(int count);
     int getConfiguredDeckCount() const;
 
-    SoundDevice* getErrorDevice() const;
+    QSharedPointer<SoundDevice> getErrorDevice() const;
     QString getErrorDeviceName() const;
     QString getLastErrorMessage(SoundDeviceError err) const;
 
@@ -149,12 +150,12 @@ class SoundManager : public QObject {
     bool m_paInitialized;
     unsigned int m_jackSampleRate;
 #endif
-    QList<SoundDevice*> m_devices;
+    QList<QSharedPointer<SoundDevice>> m_devices;
     QList<unsigned int> m_samplerates;
     QList<CSAMPLE*> m_inputBuffers;
 
     SoundManagerConfig m_config;
-    SoundDevice* m_pErrorDevice;
+    QSharedPointer<SoundDevice> m_pErrorDevice;
     QHash<AudioOutput, AudioSource*> m_registeredSources;
     QHash<AudioInput, AudioDestination*> m_registeredDestinations;
     ControlObject* m_pControlObjectSoundStatusCO;
@@ -166,8 +167,6 @@ class SoundManager : public QObject {
     int m_underflowUpdateCount;
     ControlProxy* m_pMasterAudioLatencyOverloadCount;
     ControlProxy* m_pMasterAudioLatencyOverload;
-
-    std::unique_ptr<SoundDeviceNotFound> m_soundDeviceNotFound;
 };
 
 #endif

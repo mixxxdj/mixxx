@@ -31,8 +31,9 @@ class SoundManagerConfig;
 class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     Q_OBJECT
   public:
-    DlgPrefSoundItem(QWidget *parent, AudioPathType type,
-            QList<SoundDevice*> &devices, bool isInput, unsigned int index = 0);
+    DlgPrefSoundItem(QWidget* parent, AudioPathType type,
+            const QList<QSharedPointer<SoundDevice>>& devices,
+            bool isInput, unsigned int index = 0);
     virtual ~DlgPrefSoundItem();
 
     AudioPathType type() const { return m_type; };
@@ -42,7 +43,7 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     void settingChanged();
 
   public slots:
-    void refreshDevices(const QList<SoundDevice*> &devices);
+    void refreshDevices(const QList<QSharedPointer<SoundDevice>>& devices);
     void deviceChanged(int index);
     void channelChanged();
     void loadPath(const SoundManagerConfig &config);
@@ -51,14 +52,14 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     void reload();
 
   private:
-    SoundDevice* getDevice() const; // if this returns NULL, we don't have a valid AudioPath
+    QSharedPointer<SoundDevice> getDevice() const; // if this returns NULL, we don't have a valid AudioPath
     void setDevice(const QString &deviceName);
     void setChannel(unsigned int channelBase, unsigned int channels);
-    int hasSufficientChannels(const SoundDevice *device) const;
+    int hasSufficientChannels(const SoundDevice* pDevice) const;
 
     AudioPathType m_type;
     unsigned int m_index;
-    QList<SoundDevice*> m_devices;
+    QList<QSharedPointer<SoundDevice>> m_devices;
     bool m_isInput;
     QString m_savedDevice;
     // Because QVariant supports QPoint natively we use a QPoint to store the
