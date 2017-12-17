@@ -241,6 +241,9 @@ class EffectProcessorImpl : public EffectProcessor {
                       qDebug() << "EffectProcessorImpl::deleteStatesForInputChannel"
                                << this << "deleting state" << pState;
                 }
+                VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
+                      return;
+                }
                 delete pState;
           }
           stateMap.clear();
