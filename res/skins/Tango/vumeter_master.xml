@@ -75,14 +75,14 @@ Description:
                 </Children>
               </WidgetGroup><!-- /VU -->
 
-              <WidgetGroup><Size>0f,2f</Size></WidgetGroup>
+              <WidgetGroup><Size>0f,4f</Size></WidgetGroup>
 
               <WidgetGroup>
                 <ObjectName>VUMeterMasterLabel</ObjectName>
                 <Size>16f,20f</Size>
               </WidgetGroup>
 
-              <WidgetGroup><Size>0f,3f</Size></WidgetGroup>
+              <WidgetGroup><Size>0f,1f</Size></WidgetGroup>
             </Children>
           </WidgetGroup>
         </Children>
