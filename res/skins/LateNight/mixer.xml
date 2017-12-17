@@ -261,7 +261,7 @@
 
                       <WidgetGroup><Size>0min,5f</Size></WidgetGroup>
 
-                      <WidgetGroup><!-- Peak indicator L +R -->
+                      <WidgetGroup><!-- Peak indicator L + R -->
                         <Layout>horizontal</Layout>
                         <SizePolicy>max,max</SizePolicy>
                         <Children>
@@ -284,9 +284,9 @@
                             </Connection>
                           </StatusLight>
                         </Children>
-                      </WidgetGroup><!-- /Peak indicator L +R -->
+                      </WidgetGroup><!-- /Peak indicator L + R -->
 
-                      <WidgetGroup><!-- Level L +R -->
+                      <WidgetGroup><!-- Level L + R -->
                         <Layout>horizontal</Layout>
                         <SizePolicy>max,max</SizePolicy>
                         <Children>
@@ -319,7 +319,7 @@
                             </Connection>
                           </VuMeter>
                         </Children>
-                      </WidgetGroup><!-- /Level L +R -->
+                      </WidgetGroup><!-- /Level L + R -->
 
                       <WidgetGroup><Size>0min,15f</Size></WidgetGroup>
                     </Children>

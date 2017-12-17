@@ -185,6 +185,7 @@
   border-left: 1px solid #585858;
   border-width: 0px 0px 0px 1px; */
   border: 1px solid #585858;
+  background: transparent url(skin:background_tile.png) repeat;
 }
 
 #MixerChannel {
@@ -875,6 +876,10 @@ border: 0px;
 
 #AlignLeftBottom {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+}
+
+#AlignCenter {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
 }
 
 #AlignCenterTop {
