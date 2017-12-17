@@ -11,6 +11,9 @@
 #include "effects/effectchain.h"
 #include "engine/channelhandle.h"
 
+// NOTE: Setting this to true will enable string manipulation and calls to
+// qDebug() in the audio engine thread. That may cause audio dropouts, so only
+// enable this when debugging the effects system.
 const bool kEffectDebugOutput = false;
 
 class EngineEffectRack;
