@@ -79,6 +79,13 @@
       </Children>
     </SingletonDefinition>
 
+    <SingletonDefinition>
+      <ObjectName>ClockRecLogo</ObjectName>
+      <Children>
+        <Template src="skin:toolbar_clock_rec_logo.xml"/>
+      </Children>
+    </SingletonDefinition>
+
     <WidgetGroup>
       <ObjectName>SkinContainer</ObjectName>
       <Layout>horizontal</Layout>

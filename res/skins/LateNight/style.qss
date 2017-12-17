@@ -4,7 +4,7 @@
     background-color: #fff;
 }
 
-#UIButtons {
+#ToolBar {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   background-color: #1e1e1e;
   padding-top: 1px;
@@ -397,6 +397,11 @@
   qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
   padding-right: 0px;
   border-bottom: 1px solid #585858;
+}
+
+#GuiToggleButton,
+#GuiToggleButtonInverted {
+  margin: 2px;
 }
 
 #GuiToggleButton[displayValue="0"] {
