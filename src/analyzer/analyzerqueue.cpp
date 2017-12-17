@@ -377,18 +377,22 @@ void AnalyzerQueue::execThread() {
                     pAnalyzer->finalize(nextTrack);
                 }
                 emit(trackDone(nextTrack));
-                emitUpdateProgress(nextTrack, kProgressDone);
+                emitUpdateProgress(std::move(nextTrack), kProgressDone);
             } else {
                 for (auto const& pAnalyzer: m_pAnalyzers) {
                     pAnalyzer->cleanup(nextTrack);
                 }
                 enqueueTrack(nextTrack);
-                emitUpdateProgress(nextTrack, kProgressNone);
+                emitUpdateProgress(std::move(nextTrack), kProgressNone);
             }
         } else {
-            emitUpdateProgress(nextTrack, kProgressDone);
             kLogger.debug() << "Skipping track analysis because no analyzer initialized.";
+            emitUpdateProgress(std::move(nextTrack), kProgressDone);
         }
+        // All references to the track object within the analysis thread
+        // should have been released to avoid exporting metadata or updating
+        // the database within the low-prio analysis thread!
+        DEBUG_ASSERT(!nextTrack);
         emptyCheck();
     }
 
@@ -428,7 +432,12 @@ void AnalyzerQueue::emitUpdateProgress(TrackPointer track, int progress) {
         } else {
             m_progressInfo.sema.acquire();
         }
-        m_progressInfo.current_track = track;
+        // The receiver (this class within the main thread) is responsible
+        // to reset the release the reference to the track object which might
+        // trigger save actions (export metadata, update database)!
+        DEBUG_ASSERT(!m_progressInfo.current_track);
+        m_progressInfo.current_track = std::move(track);
+        DEBUG_ASSERT(!track);
         m_progressInfo.track_progress = progress;
         m_progressInfo.queue_size = m_queueSize;
         emit(updateProgress());
@@ -439,9 +448,13 @@ void AnalyzerQueue::emitUpdateProgress(TrackPointer track, int progress) {
 void AnalyzerQueue::slotUpdateProgress() {
     if (m_progressInfo.current_track) {
         m_progressInfo.current_track->setAnalyzerProgress(m_progressInfo.track_progress);
+        // Releasing the track reference here in the main thread might
+        // trigger save actions. This is necessary to avoid that the
+        // last reference is dropped within the analysis thread!
         m_progressInfo.current_track.reset();
     }
-    emit(trackProgress(m_progressInfo.track_progress / 10));
+    int progressPercent = m_progressInfo.track_progress / 10;
+    emit(trackProgress(progressPercent));
     if (m_progressInfo.track_progress == kProgressDone) {
         emit(trackFinished(m_progressInfo.queue_size));
     }
