@@ -184,7 +184,7 @@ void TremoloEffect::processChannel(const ChannelHandle& handle,
         positionFrame = positionFrame % framePerPeriod;
 
         //  Relative position (0 to 1) in the period
-        double position = 1.0 * positionFrame / framePerPeriod;
+        double position = static_cast<double>(positionFrame) / framePerPeriod;
 
         //  Bend the position according to the shape parameter
         //  This maps [0 shape] to [0 0.5] and [shape 1] to [0.5 1]
