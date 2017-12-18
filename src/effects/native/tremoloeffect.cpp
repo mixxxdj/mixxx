@@ -127,12 +127,12 @@ TremoloEffect::~TremoloEffect() {
 }
 
 void TremoloEffect::processChannel(const ChannelHandle& handle,
-                                TremoloGroupState* pState,
-                                const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                const unsigned int numSamples,
-                                const unsigned int sampleRate,
-                                const EffectProcessor::EnableState enableState,
-                                const GroupFeatureState& groupFeatures) {
+                                   TremoloGroupState* pState,
+                                   const CSAMPLE* pInput, CSAMPLE* pOutput,
+                                   const unsigned int numSamples,
+                                   const unsigned int sampleRate,
+                                   const EffectProcessor::EnableState enableState,
+                                   const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
 
     const double shape = m_pShapeParameter->value();
