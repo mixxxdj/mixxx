@@ -85,7 +85,7 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
 
     QList<QDir> skinSearchPaths = m_pSkinLoader->getSkinSearchPaths();
     QList<QFileInfo> skins;
-    for (QDir dir : skinSearchPaths) {
+    for (QDir& dir : skinSearchPaths) {
         dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
         skins.append(dir.entryInfoList());
     }
@@ -93,7 +93,7 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
     QString configuredSkinPath = m_pSkinLoader->getConfiguredSkinPath();
     QIcon sizeWarningIcon(":/images/preferences/ic_preferences_warning.png");
     int index = 0;
-    for (QFileInfo skinInfo : skins) {
+    for (const QFileInfo& skinInfo : skins) {
         bool size_ok = checkSkinResolution(skinInfo.absoluteFilePath());
         if (size_ok) {
             ComboBoxSkinconf->insertItem(index, skinInfo.fileName());
@@ -197,19 +197,7 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
     //
 
     // Initialize checkboxes to match config
-    mixxx::TooltipsPreference configTooltips = m_mixxx->getToolTipsCfg();
-    switch (configTooltips) {
-        case mixxx::TooltipsPreference::TOOLTIPS_OFF:
-            radioButtonTooltipsOff->setChecked(true);
-            break;
-        case mixxx::TooltipsPreference::TOOLTIPS_ON:
-            radioButtonTooltipsLibraryAndSkin->setChecked(true);
-            break;
-        case mixxx::TooltipsPreference::TOOLTIPS_ONLY_IN_LIBRARY:
-            radioButtonTooltipsLibrary->setChecked(true);
-            break;
-    }
-
+    loadTooltipPreferenceFromConfig();
     slotSetTooltips();  // Update disabled status of "only library" checkbox
     connect(buttonGroupTooltips, SIGNAL(buttonClicked(QAbstractButton*)),
             this, SLOT(slotSetTooltips()));
@@ -245,6 +233,28 @@ void DlgPrefInterface::slotUpdateSchemes() {
 }
 
 void DlgPrefInterface::slotUpdate() {
+    m_skinOnUpdate = m_pConfig->getValueString(ConfigKey("[Config]", "ResizableSkin"));
+    ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findText(m_skinOnUpdate));
+    slotUpdateSchemes();
+    m_bRebootMixxxView = false;
+
+    m_localeOnUpdate = m_pConfig->getValueString(ConfigKey("[Config]", "Locale"));
+    ComboBoxLocale->setCurrentIndex(ComboBoxLocale->findData(m_localeOnUpdate));
+
+    checkBoxScaleFactorAuto->setChecked(m_pConfig->getValue(
+            ConfigKey("[Config]", "ScaleFactorAuto"), m_bUseAutoScaleFactor));
+
+    comboBoxScaleFactor->setCurrentIndex(comboBoxScaleFactor->findData(
+            m_pConfig->getValue(
+                    ConfigKey("[Config]", "ScaleFactor"), m_dScaleFactorAuto)));
+
+    checkBoxStartFullScreen->setChecked(m_pConfig->getValue(
+            ConfigKey("[Config]", "StartInFullscreen"), m_bStartWithFullScreen));
+
+    loadTooltipPreferenceFromConfig();
+
+    int inhibitsettings = static_cast<int>(m_mixxx->getInhibitScreensaver());
+    comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(inhibitsettings));
 }
 
 void DlgPrefInterface::slotResetToDefaults() {
@@ -273,9 +283,7 @@ void DlgPrefInterface::slotResetToDefaults() {
 }
 
 void DlgPrefInterface::slotSetLocale(int pos) {
-    QString newLocale = ComboBoxLocale->itemData(pos).toString();
-    m_pConfig->set(ConfigKey("[Config]", "Locale"), ConfigValue(newLocale));
-    notifyRebootNecessary();
+    m_locale = ComboBoxLocale->itemData(pos).toString();
 }
 
 void DlgPrefInterface::slotSetScaleFactor(int index) {
@@ -300,7 +308,6 @@ void DlgPrefInterface::slotSetScaleFactorAuto(bool newValue) {
 }
 
 void DlgPrefInterface::slotSetTooltips() {
-    //0=OFF, 1=ON, 2=ON (only in Library)
     m_tooltipMode = mixxx::TooltipsPreference::TOOLTIPS_ON;
     if (radioButtonTooltipsOff->isChecked()) {
         m_tooltipMode = mixxx::TooltipsPreference::TOOLTIPS_OFF;
@@ -313,7 +320,7 @@ void DlgPrefInterface::notifyRebootNecessary() {
     // make the fact that you have to restart mixxx more obvious
     QMessageBox::information(
         this, tr("Information"),
-        tr("Mixxx must be restarted before the changes will take effect."));
+        tr("Mixxx must be restarted before the new locale setting will take effect."));
 }
 
 void DlgPrefInterface::slotSetScheme(int) {
@@ -328,7 +335,7 @@ void DlgPrefInterface::slotSetSkin(int) {
     QString newSkin = ComboBoxSkinconf->currentText();
     if (newSkin != m_skin) {
         m_skin = newSkin;
-        m_bRebootMixxxView = true;
+        m_bRebootMixxxView = newSkin != m_skinOnUpdate;
         checkSkinResolution(ComboBoxSkinconf->currentText())
             ? warningLabel->hide() : warningLabel->show();
         slotUpdateSchemes();
@@ -338,6 +345,8 @@ void DlgPrefInterface::slotSetSkin(int) {
 void DlgPrefInterface::slotApply() {
     m_pConfig->set(ConfigKey("[Config]", "ResizableSkin"), m_skin);
     m_pConfig->set(ConfigKey("[Config]", "Scheme"), m_colorScheme);
+
+    m_pConfig->set(ConfigKey("[Config]", "Locale"), m_locale);
 
     m_pConfig->setValue(
             ConfigKey("[Config]", "ScaleFactorAuto"), m_bUseAutoScaleFactor);
@@ -362,8 +371,16 @@ void DlgPrefInterface::slotApply() {
                 static_cast<mixxx::ScreenSaverPreference>(screensaverComboBoxState));
     }
 
+    if (m_locale != m_localeOnUpdate) {
+        notifyRebootNecessary();
+        // hack to prevent showing the notification when pressing "Okay" after "Apply"
+        m_localeOnUpdate = m_locale;
+    }
+
     if (m_bRebootMixxxView) {
         m_mixxx->rebootMixxxView();
+        // Allow switching skins multiple times without closing the dialog
+        m_skinOnUpdate = m_skin;
     }
     m_bRebootMixxxView = false;
 }
@@ -398,4 +415,20 @@ bool DlgPrefInterface::checkSkinResolution(QString skin)
     QString skinWidth = res.left(res.indexOf("x"));
     QString skinHeight = res.right(res.count()-skinWidth.count()-1);
     return !(skinWidth.toInt() > screenWidth || skinHeight.toInt() > screenHeight);
+}
+
+void DlgPrefInterface::loadTooltipPreferenceFromConfig() {
+    mixxx::TooltipsPreference configTooltips = m_mixxx->getToolTipsCfg();
+    switch (configTooltips) {
+        case mixxx::TooltipsPreference::TOOLTIPS_OFF:
+            radioButtonTooltipsOff->setChecked(true);
+            break;
+        case mixxx::TooltipsPreference::TOOLTIPS_ON:
+            radioButtonTooltipsLibraryAndSkin->setChecked(true);
+            break;
+        case mixxx::TooltipsPreference::TOOLTIPS_ONLY_IN_LIBRARY:
+            radioButtonTooltipsLibrary->setChecked(true);
+            break;
+    }
+    m_tooltipMode = configTooltips;
 }

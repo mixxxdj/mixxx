@@ -58,6 +58,7 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
 
   private:
     void notifyRebootNecessary();
+    void loadTooltipPreferenceFromConfig();
     bool checkSkinResolution(QString skin);
 
     // Because the CueDefault list is out of order, we have to set the combo
@@ -73,7 +74,10 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     PlayerManager* m_pPlayerManager;
 
     QString m_skin;
+    QString m_skinOnUpdate;
     QString m_colorScheme;
+    QString m_locale;
+    QString m_localeOnUpdate;
     mixxx::TooltipsPreference m_tooltipMode;
     double m_dScaleFactorAuto;
     bool m_bUseAutoScaleFactor;
