@@ -125,13 +125,23 @@ public:
     double getTempRate(void);
 
     // Values used when temp and perm rate buttons are pressed
-    static double m_dTemporaryRateChangeCoarse, m_dTemporaryRateChangeFine, m_dPermanentRateChangeCoarse, m_dPermanentRateChangeFine;
+    static double m_dTemporaryRateChangeCoarse;
+    static double m_dTemporaryRateChangeFine;
+    static double m_dPermanentRateChangeCoarse;
+    static double m_dPermanentRateChangeFine;
 
-    ControlPushButton *buttonRateTempDown, *buttonRateTempDownSmall,
-        *buttonRateTempUp, *buttonRateTempUpSmall;
-    ControlPushButton *buttonRatePermDown, *buttonRatePermDownSmall,
-        *buttonRatePermUp, *buttonRatePermUpSmall;
-    ControlObject *m_pRateDir, *m_pRateRange;
+    ControlPushButton *buttonRateTempDown;
+    ControlPushButton *buttonRateTempDownSmall;
+    ControlPushButton *buttonRateTempUp;
+    ControlPushButton *buttonRateTempUpSmall;
+
+    ControlPushButton *buttonRatePermDown;
+    ControlPushButton *buttonRatePermDownSmall;
+    ControlPushButton *buttonRatePermUp;
+    ControlPushButton *buttonRatePermUpSmall;
+
+    ControlObject *m_pRateDir;
+    ControlObject *m_pRateRange;
     ControlPotmeter* m_pRateSlider;
     ControlPotmeter* m_pRateSearch;
     ControlPushButton* m_pReverseButton;
