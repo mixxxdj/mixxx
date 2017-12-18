@@ -111,8 +111,8 @@ class AnalyzerQueue : public QThread {
         // result of true requires further action.
         bool tryWrite(
                 TracksWithProgress* pTracksWithProgress,
-                TrackPointer pCurrentTrack,
-                int trackProgress,
+                TrackPointer /*nullable*/ pCurrentTrack,
+                int currentTrackProgress,
                 int queueSize);
 
         friend class ReadScope;
@@ -137,9 +137,9 @@ class AnalyzerQueue : public QThread {
                 return m_pProgressInfo->m_tracksWithProgress;
             }
 
-            int trackProgress() const {
+            int currentTrackProgress() const {
                 DEBUG_ASSERT(m_pProgressInfo);
-                return m_pProgressInfo->m_trackProgress;
+                return m_pProgressInfo->m_currentTrackProgress;
             }
 
             int queueSize() const {
@@ -162,7 +162,7 @@ class AnalyzerQueue : public QThread {
         friend class AnalyzerQueue;
         QAtomicInt m_state;
         TracksWithProgress m_tracksWithProgress;
-        int m_trackProgress;
+        int m_currentTrackProgress;
         int m_queueSize;
     };
     ProgressInfo m_progressInfo;

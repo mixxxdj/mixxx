@@ -53,20 +53,20 @@ QAtomicInt s_instanceCounter(0);
 
 AnalyzerQueue::ProgressInfo::ProgressInfo()
     : m_state(kProgressStateEmpty),
-      m_trackProgress(kProgressNone),
+      m_currentTrackProgress(kProgressNone),
       m_queueSize(0) {
 }
 
 bool AnalyzerQueue::ProgressInfo::tryWrite(
         TracksWithProgress* pTracksWithProgress,
         TrackPointer pCurrentTrack,
-        int trackProgress,
+        int currentTrackProgress,
         int queueSize) {
     DEBUG_ASSERT(pTracksWithProgress);
-    DEBUG_ASSERT(pCurrentTrack);
-    bool firstWrite = m_state.testAndSetAcquire(
+    bool wasEmpty = m_state.testAndSetAcquire(
             kProgressStateEmpty, kProgressStateWriting);
-    if (firstWrite || m_state.testAndSetAcquire(
+    bool progressChanged = false;
+    if (wasEmpty || m_state.testAndSetAcquire(
             kProgressStateReady, kProgressStateWriting)) {
         DEBUG_ASSERT(m_state == kProgressStateWriting);
         // Keep all track references alive until the main thread releases them!
@@ -82,19 +82,38 @@ bool AnalyzerQueue::ProgressInfo::tryWrite(
                         m_tracksWithProgress.end());
             }
             pTracksWithProgress->clear();
+            progressChanged = true;
         }
-        m_tracksWithProgress[pCurrentTrack] = trackProgress;
-        m_trackProgress = trackProgress;
-        m_queueSize = queueSize;
-        // Finally allow the main thread to consume progress info
-        // updates
-        m_state = kProgressStateReady;
+        if (pCurrentTrack) {
+            const auto i = m_tracksWithProgress.find(pCurrentTrack);
+            if (i == m_tracksWithProgress.end()) {
+                m_tracksWithProgress[pCurrentTrack] = currentTrackProgress;
+                progressChanged = true;
+            } else if (i->second != currentTrackProgress) {
+                i->second = currentTrackProgress;
+                progressChanged = true;
+            }
+            m_currentTrackProgress = currentTrackProgress;
+        }
+        if (m_queueSize != queueSize) {
+            m_queueSize = queueSize;
+            progressChanged = true;
+        }
+        if (wasEmpty && !progressChanged) {
+            // Still empty, nothing to do
+            m_state = kProgressStateEmpty;
+        } else {
+            // Allow the main thread to consume progress info updates
+            m_state = kProgressStateReady;
+        }
     } else {
         // Ensure that track references are not dropped within the
         // analysis thread!
-        (*pTracksWithProgress)[pCurrentTrack] = trackProgress;
+        if (pCurrentTrack) {
+            (*pTracksWithProgress)[pCurrentTrack] = currentTrackProgress;
+        }
     }
-    return firstWrite;
+    return wasEmpty && progressChanged;
 }
 
 AnalyzerQueue::ProgressInfo::ReadScope::ReadScope(ProgressInfo* pProgressInfo)
@@ -316,7 +335,7 @@ AnalyzerQueue::AnalysisResult AnalyzerQueue::doAnalysis(
             }
         }
 
-        if ((m_progressInfo.m_trackProgress != progressPromille) ||
+        if ((m_progressInfo.m_currentTrackProgress != progressPromille) ||
                 !m_tracksWithProgress.empty()) {
             if (progressUpdateInhibitTimer.elapsed() > kProgressUpdateInhibitMillis) {
                 emitUpdateProgress(pTrack, progressPromille);
@@ -500,8 +519,8 @@ void AnalyzerQueue::slotUpdateProgress() {
             }
         }
         DEBUG_ASSERT(oneOrMoreTracksFinished ||
-                (readScope.trackProgress() != kProgressDone));
-        int trackProgressPercent = readScope.trackProgress() / 10;
+                (readScope.currentTrackProgress() != kProgressDone));
+        int trackProgressPercent = readScope.currentTrackProgress() / 10;
         emit(trackProgress(trackProgressPercent));
         if (oneOrMoreTracksFinished) {
             emit(trackFinished(readScope.queueSize()));
