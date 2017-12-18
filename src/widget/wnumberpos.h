@@ -21,6 +21,7 @@ class WNumberPos : public WNumber {
   private slots:
     void setValue(double dValue) override;
     void slotSetTimeElapsed(double);
+    void slotTimeRemainingUpdated(double);
     void slotSetDisplayMode(double);
 
   private:

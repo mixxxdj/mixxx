@@ -14,6 +14,7 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
     m_pTimeElapsed = new ControlProxy(group, "time_elapsed", this);
     m_pTimeElapsed->connectValueChanged(SLOT(slotSetTimeElapsed(double)));
     m_pTimeRemaining = new ControlProxy(group, "time_remaining", this);
+    m_pTimeRemaining->connectValueChanged(SLOT(slotTimeRemainingUpdated(double)));
 
     m_pShowTrackTimeRemaining = new ControlProxy(
             "[Controls]", "ShowDurationRemaining", this);
@@ -78,6 +79,17 @@ void WNumberPos::slotSetTimeElapsed(double dTimeElapsed) {
         }
     }
     m_dOldTimeElapsed = dTimeElapsed;
+}
+
+// m_pTimeElapsed is not updated when paused at the beginning of a track,
+// but m_pTimeRemaining is updated in that case. So, call slotSetTimeElapsed to
+// update this widget's text.
+void WNumberPos::slotTimeRemainingUpdated(double dTimeRemaining) {
+    Q_UNUSED(dTimeRemaining);
+    double dTimeElapsed = m_pTimeElapsed->get();
+    if (dTimeElapsed == 0.0) {
+        slotSetTimeElapsed(dTimeElapsed);
+    }
 }
 
 void WNumberPos::slotSetDisplayMode(double remain) {
