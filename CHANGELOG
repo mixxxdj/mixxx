@@ -1,0 +1,107 @@
+==== 2.1 beta 2017-12-22 ====
+After two years of hard work, we are pleased to announce Mixxx 2.1 beta. We
+have overhauled the effects system, redesigned the skins, added and improved
+lots of controller mappings, rewrote the audio file decoders twice, and of
+course fixed a bunch of bugs. Download it!
+
+Here is a quick summary of what is new in Mixxx 2.1:
+  * Skins scale for high resolution screens
+  * Overhauled Deere and LateNight skins
+  * New Tango skin
+  * Effects are synchronized to the tempo
+  * Effects are processed post-fader and post-crossfader and can be previewed
+in headphones
+  * One metaknob per effect for powerful control of effect chains
+  * Nine new effects: Autopan, Biquad Equalizer, Biquad Full Kill Equalizer,
+Loudness Contour, Metronome, Parametric Equalizer, Phaser, Stereo Balance,
+Tremolo
+  * Loaded effects are saved and restored when Mixxx restarts
+  * Improved scratching sounds with jog wheels, vinyl control, and dragging
+waveforms with the mouse cursor
+  * Simplified looping and beatjump controls
+  * Configurable rows of 8 samplers with up to 8 rows available for a total of
+64 samplers
+  * Files loaded to samplers are reloaded when Mixxx restarts
+  * Improved volume normalization algorithm (EBU-R 128)
+  * Filter library table by crates
+  * Sort musical keys in library table by circle of fifths
+  * Write metadata tags back to audio files
+  * New JavaScript library for controller mapping
+  * Configure multiple broadcasting stations and use multiple stations at the
+same time
+  * Broadcast and record microphones with direct monitoring and latency
+compensation
+  * Broadcast and record from an external mixer
+  * Booth output with independent gain knob for using sound cards with 6
+output channels without an external mixer
+  * Prevent screensaver from starting while Mixxx is running
+  * CUP (Cue And Play) cue button mode
+  * Time remaining and time elapsed now take into account the tempo fader
+  * Clicking cover art now shows it full size in a separate window
+  * and of course, lots and lots of bug fixes.
+
+Here are controllers with mappings that have been added or updated since the 2.0
+release. Mappings marked with an asterisk (*) have been updated for the new
+effects interface:
+  * American Audio VMS2
+  * American Audio VMS4
+  * Behringer CMD Micro
+  * Behringer CMD Studio 4a
+  * Denon MC4000
+  * FaderFox DJ2
+  * Hercules DJ Control MP3 LE / Glow
+  * Hercules DJ Control Compact
+  * Hercules P32*
+  * Ion Discover DJ
+  * Korg Nanokontrol 2
+  * M-Audio Xponent
+  * Novation Twitch
+  * Numark Mixtrack Pro 3 & Numark Mixtrack 3*
+  * Pioneer DDJ-SB2*
+  * Pioneer DDJ-SX*
+  * Reloop Beatmix 2
+  * Reloop Beatmix 4
+  * Reloop Digital Jockey 3 ME
+  * Reloop Terminal Mix 2
+  * Reloop Terminal Mix 4
+  * Vestax VCI-100 Mk2
+  * Vestax Typhoon
+
+We will be beta testing 2.1 for 3 months before releasing 2.1 at the end of
+March 2018. The beta release will be updated continuously until that time. No
+big new features will be added to 2.1 after this point. We will fix small bugs,
+continue to polish the skins, and update more controller mappings until the
+final 2.1 release. If you have a controller with an old mapping, please
+consider contributing an updated mapping for the 2.1 release. We have some
+tips for updating controller mappings on the wiki. We will be writing the
+English version of the manual during January 2018 to allow two months for
+translating it before the release. To get you exciting new features sooner, we
+have decided to move to a fixed 6 month release cycle going forward, so look for
+Mixxx 2.2 at the end of September 2018.
+
+For users upgrading from older versions of Mixxx, we have an important warning.
+The good news is that we fixed a bug where the waveforms and audio playback of
+MP3 files were misaligned. The bad news is that we have no way of knowing which
+MP3 files were affected or how much the offset was. That means that waveforms,
+beatgrids, cues, and loops from older versions of Mixxx may be offset by an
+unknown amount for any MP3 file. Only MP3 files were affected by this bug; other
+audio file types are unaffected. You can either correct your beatgrids and cue
+points manually for each track, or you can clear this information for all MP3s
+and start fresh. To do that, type "location:mp3" into the library search bar,
+press Control + A to select all tracks, right click, and FIXME!!
+
+In the works for Mixxx 2.2, we have a big redesign of the library GUI.
+Along with that will come saving & restoring search queries plus nested crates.
+We are also planning on adding support for saving and loading custom effect
+chain presets with the ability to import and export them to share online.
+
+Want to contribute to Mixxx? The biggest resource we need is labor. You do not
+need to be a programmer to help out. If you are comfortable playing on the
+bleeding edge and compiling Mixxx, giving feedback on the design of new
+features as they are being made is very valuable. Refer to the Testing page on
+the wiki for more information. Reporting bugs and telling us your ideas on the
+Launchpad bug tracker is a big help too! Of course, more developers could
+always help. Read the Developer Documentation on the wiki for tips on getting
+started making Mixxx even more awesome.
+
+We hope you have as much fun with Mixxx as we do!
