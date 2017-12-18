@@ -19,6 +19,7 @@
                 <SetVariable name="Size">40f,34f</SetVariable>
                 <SetVariable name="group"><Variable name="QuickEffectGroup"/></SetVariable>
                 <SetVariable name="control">super1</SetVariable>
+                <SetVariable name="tooltip">QuickEffectRack_super1</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
@@ -30,6 +31,7 @@
             <Children>
               <PushButton>
                 <NumberStates>2</NumberStates>
+                <TooltipId>QuickEffectRack_enabled</TooltipId>
                 <State>
                   <Number>0</Number>
                   <Pressed>buttons/btn_kill_down.png</Pressed>

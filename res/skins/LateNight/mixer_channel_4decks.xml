@@ -47,6 +47,7 @@
             <SetVariable name="group"><Variable name="group"/></SetVariable>
             <SetVariable name="control">pregain</SetVariable>
             <SetVariable name="label">gain</SetVariable>
+            <SetVariable name="tooltip">pregain</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>
