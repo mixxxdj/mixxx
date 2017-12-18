@@ -80,6 +80,7 @@ class AnalyzerQueue : public QThread {
     };
     AnalysisResult doAnalysis(TrackPointer pTrack, mixxx::AudioSourcePointer pAudioSource);
     void emitUpdateProgress(TrackPointer pTrack, int progress);
+    void emitUpdateProgress(); // no current track
     void emptyCheck();
     void updateSize();
 

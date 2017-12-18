@@ -225,6 +225,9 @@ TrackPointer AnalyzerQueue::dequeueNextBlocking() {
 
     Event::end("AnalyzerQueue process");
     while (m_queuedTracks.isEmpty()) {
+        // One last try to deliver all collected updates before
+        // suspending the analysis thread
+        emitUpdateProgress();
         kLogger.debug() << "Suspending thread";
         m_qwait.wait(&m_qm);
         kLogger.debug() << "Resuming thread";
@@ -503,6 +506,10 @@ void AnalyzerQueue::emitUpdateProgress(TrackPointer pTrack, int progress) {
             emit(updateProgress());
         }
     }
+}
+
+void AnalyzerQueue::emitUpdateProgress() {
+    emitUpdateProgress(TrackPointer(), kProgressNone);
 }
 
 //slot
