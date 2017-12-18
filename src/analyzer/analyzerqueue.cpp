@@ -69,7 +69,8 @@ bool AnalyzerQueue::ProgressInfo::tryWrite(
     if (wasEmpty || m_state.testAndSetAcquire(
             kProgressStateReady, kProgressStateWriting)) {
         DEBUG_ASSERT(m_state == kProgressStateWriting);
-        // Keep all track references alive until the main thread releases them!
+        // Keep all track references alive until the main thread releases
+        // them by moving them into the progress info exchange object!
         if (!pTracksWithProgress->empty()) {
             if (m_tracksWithProgress.empty()) {
                 pTracksWithProgress->swap(m_tracksWithProgress);
@@ -82,6 +83,9 @@ bool AnalyzerQueue::ProgressInfo::tryWrite(
                         m_tracksWithProgress.end());
             }
             pTracksWithProgress->clear();
+            // Simply assume that something must have changed.
+            // It is just too complicated to check for individual
+            // changes.
             progressChanged = true;
         }
         if (pCurrentTrack) {
@@ -108,7 +112,8 @@ bool AnalyzerQueue::ProgressInfo::tryWrite(
         }
     } else {
         // Ensure that track references are not dropped within the
-        // analysis thread!
+        // analysis thread by accumulating progress updates until
+        // the receiver is ready to consume them!
         if (pCurrentTrack) {
             (*pTracksWithProgress)[pCurrentTrack] = currentTrackProgress;
         }
@@ -451,8 +456,12 @@ void AnalyzerQueue::execThread() {
             DEBUG_ASSERT(analysisResult != AnalysisResult::Pending);
             if ((analysisResult == AnalysisResult::Complete) ||
                     (analysisResult == AnalysisResult::Partial)) {
-                // Don't try to reanalyze tracks during this session if the
-                // analysis failed even if only partial results are available!
+                // The analysis has been finished, and is either complete without
+                // any errors or partial if it has been aborted due to a corrupt
+                // audio file. In both cases don't reanalyze tracks during this
+                // session. A partial analysis would otherwise be repeated again
+                // and again, because it is very unlikely that the error vanishes
+                // suddenly.
                 emitUpdateProgress(nextTrack, kProgressFinalizing);
                 // This takes around 3 sec on a Atom Netbook
                 for (auto const& pAnalyzer: m_pAnalyzers) {
