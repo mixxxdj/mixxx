@@ -28,6 +28,16 @@
           U	    U   P P P
             U	U	    P        to mixxx devs for their work over the past years!!
 
+
+    Note - Number of samplers:
+    To set the number of available sample decks, three numbers need to be changed
+    * how many samplers are instantiated in the engine
+      line 61:  <attribute config_key="[Master],num_samplers">XX</attribute>
+    * how many sample decks are loaded in the skin
+      line 322:  <Template src="skin:sample_decks_XX.xml"/>
+    * the selection button insied the skin menu (instantiated here as Singleton)
+      line 210:  <Template src="skin:skin_settings_sampler_rows_16.xml"/
+
 -->
 
 <skin>
@@ -35,7 +45,8 @@
     <title>Tango</title>
     <author>ronso0</author>
     <version>2.1.6</version>
-    <description>A flat nightime skin. Almost all controls can be hidden with Skin Settings menu.</description>
+    <description>A controller-focused nightime skin. Almost all controls can be hidden with skin menu.
+    This version features 16 sample decks only, to shorten Mixxx shut down duration.</description>
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
 
@@ -46,7 +57,9 @@
     <attributes>
       <!-- Set skin defaults. -->
       <attribute config_key="[Master],num_decks">4</attribute>
-      <attribute config_key="[Master],num_samplers">64</attribute>
+      <!-- First setting to choose between 16 or 64 samplers -->
+      <attribute config_key="[Master],num_samplers">16</attribute>
+      <!--attribute config_key="[Master],num_samplers">64</attribute-->
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
       <attribute persist="true" config_key="[Master],show_eqs">1</attribute>
       <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
@@ -147,7 +160,7 @@
      ###############################################################
       Put these variable definitions at the beginning in order to have
       have all variables available for SingletonDefinitions -->
-        
+
 <!--  Knob range in degrees, 0-360
       Initially I was trying to match the responsive area on Reloop TerminalMix 2,
       but tweak to your liking.
@@ -181,10 +194,21 @@
       </Children>
     </SingletonDefinition>
 
+    <!-- FX units 1 & 2 show up at different places, depending on the number
+    of units enabled (2 or 4). -->
     <SingletonDefinition>
       <ObjectName>FxUnits_12_Singleton</ObjectName>
       <Children>
         <Template src="skin:fx_units_12.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+    <!-- Here we can choose between 16 or 64 sample decks -->
+    <SingletonDefinition>
+      <ObjectName>SamplerRowsButton_Singleton</ObjectName>
+      <Children>
+        <Template src="skin:skin_settings_sampler_rows_16.xml"/>
+        <!--Template src="skin:skin_settings_sampler_rows_64.xml"/-->
       </Children>
     </SingletonDefinition>
 
@@ -295,7 +319,8 @@
                           </Connection>
                         </WidgetGroup>
 
-                        <Template src="skin:sample_decks.xml"/>
+                        <Template src="skin:sample_decks_16.xml"/>
+                        <!--Template src="skin:sample_decks_64.xml"/-->
 
                         <Template src="skin:mic_aux.xml"/>
 

@@ -810,13 +810,17 @@ Description:
                         </Connection>
                       </WidgetGroup>
 
-                      <Template src="skin:skin_settings_sampler_rows.xml"/>
+                      <!--Template src="skin:skin_settings_sampler_rows.xml"/-->
+
+                      <SingletonContainer>
+                        <ObjectName>SamplerRowsButton_Singleton</ObjectName>
+                      </SingletonContainer>
 
                     </Children>
                   </WidgetGroup><!-- /Sampler row buttons -->
                 </Children>
               </WidgetGroup><!-- /Sampler rows -->
-          
+
               <WidgetGroup><!-- Load/Save Sampler Bank -->
                 <ObjectName>AlignLeft</ObjectName>
                 <Layout>horizontal</Layout>
