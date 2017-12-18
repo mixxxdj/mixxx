@@ -98,7 +98,8 @@ class EffectProcessor {
 template <typename EffectSpecificState>
 class EffectProcessorImpl : public EffectProcessor {
   public:
-    EffectProcessorImpl() {
+    EffectProcessorImpl()
+      : m_pEffectsManager(nullptr) {
     }
     // Subclasses should not implement their own destructor. All state should
     // be stored in the EffectState subclass, not the EffectProcessorImpl subclass.
