@@ -95,11 +95,11 @@ struct EffectsRequest {
     union {
         struct {
             EngineEffectRack* pRack;
-            bool preFader;
+            SignalProcessingStage signalProcessingStage;
         } AddEffectRack;
         struct {
             EngineEffectRack* pRack;
-            bool preFader;
+            SignalProcessingStage signalProcessingStage;
         } RemoveEffectRack;
         struct {
             EngineEffectChain* pChain;

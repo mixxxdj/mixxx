@@ -9,6 +9,15 @@ enum class EffectEnableState {
     Enabling
 };
 
+enum class SignalProcessingStage {
+    Prefader,
+    Postfader
+};
+
+inline uint qHash(SignalProcessingStage stage) {
+    return static_cast<uint>(stage);
+};
+
 const int kNumEffectsPerUnit = 4;
 
 class EffectState;

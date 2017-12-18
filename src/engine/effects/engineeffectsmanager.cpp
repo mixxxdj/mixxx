@@ -12,8 +12,6 @@ EngineEffectsManager::EngineEffectsManager(EffectsResponsePipe* pResponsePipe)
           m_buffer1(MAX_BUFFER_LEN),
           m_buffer2(MAX_BUFFER_LEN) {
     // Try to prevent memory allocation.
-    m_preFaderRacks.reserve(256);
-    m_postFaderRacks.reserve(256);
     m_chains.reserve(256);
     m_effects.reserve(256);
 }
@@ -35,8 +33,7 @@ void EngineEffectsManager::onCallbackStart() {
                 break;
             case EffectsRequest::ADD_CHAIN_TO_RACK:
             case EffectsRequest::REMOVE_CHAIN_FROM_RACK:
-                VERIFY_OR_DEBUG_ASSERT(m_preFaderRacks.contains(request->pTargetRack)
-                        || m_postFaderRacks.contains(request->pTargetRack)) {
+                VERIFY_OR_DEBUG_ASSERT(request->pTargetRack) {
                     response.success = false;
                     response.status = EffectsResponse::NO_SUCH_RACK;
                     break;
@@ -133,7 +130,7 @@ void EngineEffectsManager::processPreFaderInPlace(const ChannelHandle& inputHand
     // of the GroupFeatureState, it will not sound the same as if it is loaded into
     // a StandardEffectRack.
     GroupFeatureState featureState;
-    processInner(m_preFaderRacks,
+    processInner(SignalProcessingStage::Prefader,
                  inputHandle, outputHandle,
                  pInOut, pInOut,
                  numSamples, sampleRate, featureState);
@@ -148,7 +145,7 @@ void EngineEffectsManager::processPostFaderInPlace(
     const GroupFeatureState& groupFeatures,
     const CSAMPLE_GAIN oldGain,
     const CSAMPLE_GAIN newGain) {
-    processInner(m_postFaderRacks,
+    processInner(SignalProcessingStage::Postfader,
                  inputHandle, outputHandle,
                  pInOut, pInOut,
                  numSamples, sampleRate, groupFeatures,
@@ -164,7 +161,7 @@ void EngineEffectsManager::processPostFaderAndMix(
     const GroupFeatureState& groupFeatures,
     const CSAMPLE_GAIN oldGain,
     const CSAMPLE_GAIN newGain) {
-    processInner(m_postFaderRacks,
+    processInner(SignalProcessingStage::Postfader,
                  inputHandle, outputHandle,
                  pIn, pOut,
                  numSamples, sampleRate, groupFeatures,
@@ -172,7 +169,7 @@ void EngineEffectsManager::processPostFaderAndMix(
 }
 
 void EngineEffectsManager::processInner(
-    const QList<EngineEffectRack*>& racks,
+    const SignalProcessingStage stage,
     const ChannelHandle& inputHandle,
     const ChannelHandle& outputHandle,
     CSAMPLE* pIn, CSAMPLE* pOut,
@@ -181,6 +178,8 @@ void EngineEffectsManager::processInner(
     const GroupFeatureState& groupFeatures,
     const CSAMPLE_GAIN oldGain,
     const CSAMPLE_GAIN newGain) {
+
+    const QList<EngineEffectRack*>& racks = m_racksByStage.value(stage);
     if (pIn == pOut) {
         // Gain and effects are applied to the buffer in place,
         // modifying the original input buffer
@@ -234,28 +233,24 @@ void EngineEffectsManager::processInner(
     }
 }
 
-bool EngineEffectsManager::addPostFaderEffectRack(EngineEffectRack* pRack) {
-    VERIFY_OR_DEBUG_ASSERT(!m_postFaderRacks.contains(pRack)) {
+bool EngineEffectsManager::addEffectRack(EngineEffectRack* pRack,
+        SignalProcessingStage stage) {
+    QList<EngineEffectRack*>& rackList = m_racksByStage[stage];
+    VERIFY_OR_DEBUG_ASSERT(!rackList.contains(pRack)) {
         return false;
     }
-    m_postFaderRacks.append(pRack);
+    rackList.append(pRack);
     return true;
 }
 
-bool EngineEffectsManager::removePostFaderEffectRack(EngineEffectRack* pRack) {
-    return m_postFaderRacks.removeAll(pRack) > 0;
-}
-
-bool EngineEffectsManager::addPreFaderEffectRack(EngineEffectRack* pRack) {
-    VERIFY_OR_DEBUG_ASSERT(!m_preFaderRacks.contains(pRack)) {
+bool EngineEffectsManager::removeEffectRack(EngineEffectRack* pRack,
+        SignalProcessingStage stage) {
+    QList<EngineEffectRack*>& rackList = m_racksByStage[stage];
+    VERIFY_OR_DEBUG_ASSERT(rackList.contains(pRack)) {
         return false;
     }
-    m_preFaderRacks.append(pRack);
+    rackList.removeAll(pRack);
     return true;
-}
-
-bool EngineEffectsManager::removePreFaderEffectRack(EngineEffectRack* pRack) {
-    return m_preFaderRacks.removeAll(pRack) > 0;
 }
 
 bool EngineEffectsManager::processEffectsRequest(EffectsRequest& message,
@@ -265,26 +260,18 @@ bool EngineEffectsManager::processEffectsRequest(EffectsRequest& message,
         case EffectsRequest::ADD_EFFECT_RACK:
             if (kEffectDebugOutput) {
                 qDebug() << debugString() << "ADD_EFFECT_RACK"
-                         << message.AddEffectRack.pRack
-                         << message.AddEffectRack.preFader;
+                         << message.AddEffectRack.pRack;
             }
-            if (message.AddEffectRack.preFader) {
-                response.success = addPreFaderEffectRack(message.AddEffectRack.pRack);
-            } else {
-                response.success = addPostFaderEffectRack(message.AddEffectRack.pRack);
-            }
+            response.success = addEffectRack(message.AddEffectRack.pRack,
+                    message.AddEffectRack.signalProcessingStage);
             break;
         case EffectsRequest::REMOVE_EFFECT_RACK:
             if (kEffectDebugOutput) {
                 qDebug() << debugString() << "REMOVE_EFFECT_RACK"
-                         << message.RemoveEffectRack.pRack
-                         << message.RemoveEffectRack.preFader;
+                         << message.RemoveEffectRack.pRack;
             }
-            if (message.AddEffectRack.preFader) {
-                response.success = removePreFaderEffectRack(message.AddEffectRack.pRack);
-            } else {
-                response.success = removePostFaderEffectRack(message.AddEffectRack.pRack);
-            }
+            response.success = removeEffectRack(message.AddEffectRack.pRack,
+                    message.AddEffectRack.signalProcessingStage);
             break;
         default:
             return false;

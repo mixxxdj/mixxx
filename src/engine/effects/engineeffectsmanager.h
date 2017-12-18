@@ -64,13 +64,16 @@ class EngineEffectsManager : public EffectsRequestHandler {
         return QString("EngineEffectsManager");
     }
 
+    bool addEffectRack(EngineEffectRack* pRack, SignalProcessingStage stage);
+    bool removeEffectRack(EngineEffectRack* pRack, SignalProcessingStage stage);
+
     bool addPreFaderEffectRack(EngineEffectRack* pRack);
     bool removePreFaderEffectRack(EngineEffectRack* pRack);
 
     bool addPostFaderEffectRack(EngineEffectRack* pRack);
     bool removePostFaderEffectRack(EngineEffectRack* pRack);
 
-    void processInner(const QList<EngineEffectRack*>& racks,
+    void processInner(const SignalProcessingStage stage,
                       const ChannelHandle& inputHandle,
                       const ChannelHandle& outputHandle,
                       CSAMPLE* pIn, CSAMPLE* pOut,
@@ -81,8 +84,7 @@ class EngineEffectsManager : public EffectsRequestHandler {
                       const CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE);
 
     QScopedPointer<EffectsResponsePipe> m_pResponsePipe;
-    QList<EngineEffectRack*> m_preFaderRacks;
-    QList<EngineEffectRack*> m_postFaderRacks;
+    QHash<SignalProcessingStage, QList<EngineEffectRack*>> m_racksByStage;
     QList<EngineEffectChain*> m_chains;
     QList<EngineEffect*> m_effects;
 
