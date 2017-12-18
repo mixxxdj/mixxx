@@ -792,17 +792,6 @@ void BpmControl::setCurrentSample(const double dCurrentSample, const double dTot
     EngineControl::setCurrentSample(dCurrentSample, dTotalSamples);
 }
 
-double BpmControl::process(const double dRate,
-                           const double dCurrentSample,
-                           const double dTotalSamples,
-                           const int iBufferSize) {
-    Q_UNUSED(dRate);
-    Q_UNUSED(dCurrentSample);
-    Q_UNUSED(dTotalSamples);
-    Q_UNUSED(iBufferSize);
-    return kNoTrigger;
-}
-
 double BpmControl::updateLocalBpm() {
     double prev_local_bpm = m_pLocalBpm->get();
     double local_bpm = 0;

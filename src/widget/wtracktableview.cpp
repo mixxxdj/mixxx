@@ -16,9 +16,11 @@
 #include "library/librarytablemodel.h"
 #include "library/crate/cratefeaturehelper.h"
 #include "library/dao/trackschema.h"
+#include "library/dlgtrackmetadataexport.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "track/track.h"
+#include "track/trackref.h"
 #include "sources/soundsourceproxy.h"
 #include "mixer/playermanager.h"
 #include "preferences/dialog/dlgpreflibrary.h"
@@ -43,7 +45,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_iCoverColumn(-1),
           m_selectionChangedSinceLastGuiTick(true),
           m_loadCachedOnly(false) {
-
 
     connect(&m_loadTrackMapper, SIGNAL(mapped(QString)),
             this, SLOT(loadSelectionToGroup(QString)));
@@ -117,6 +118,7 @@ WTrackTableView::~WTrackTableView() {
 
     delete m_pImportMetadataFromFileAct;
     delete m_pImportMetadataFromMusicBrainzAct;
+    delete m_pExportMetadataAct;
     delete m_pAddToPreviewDeck;
     delete m_pAutoDJBottomAct;
     delete m_pAutoDJTopAct;
@@ -202,7 +204,7 @@ void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
 
 // slot
 void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
-    //qDebug() << "WTrackTableView::loadTrackModel()" << model;
+    qDebug() << "WTrackTableView::loadTrackModel()" << model;
 
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
 
@@ -213,6 +215,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         return;
     }
 
+    TrackModel* newModel = 0;
+
     /* If the model has not changed
      * there's no need to exchange the headers
      * this will cause a small GUI freeze
@@ -222,6 +226,11 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         // a select() if the table is dirty.
         doSortByColumn(horizontalHeader()->sortIndicatorSection());
         return;
+    }else{
+        newModel = trackModel;
+        saveVScrollBarPos(getTrackModel());
+        //saving current vertical bar position
+        //using adress of track model as key
     }
 
     // The "coverLocation" and "hash" column numbers are required very often
@@ -362,6 +371,10 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // target though, so my hax above may not be completely unjustified.
 
     setVisible(true);
+
+    restoreVScrollBarPos(newModel);
+    // restoring scrollBar position using model pointer as key
+    // scrollbar positions with respect  to different models are backed by map
 }
 
 void WTrackTableView::createActions() {
@@ -402,11 +415,15 @@ void WTrackTableView::createActions() {
 
     m_pImportMetadataFromFileAct = new QAction(tr("Import Metadata from File"), this);
     connect(m_pImportMetadataFromFileAct, SIGNAL(triggered()),
-            this, SLOT(slotImportTrackMetadata()));
+            this, SLOT(slotImportTrackMetadataFromFileTags()));
 
     m_pImportMetadataFromMusicBrainzAct = new QAction(tr("Import Metadata from MusicBrainz"),this);
     connect(m_pImportMetadataFromMusicBrainzAct, SIGNAL(triggered()),
             this, SLOT(slotShowDlgTagFetcher()));
+
+    m_pExportMetadataAct = new QAction(tr("Export Metadata into File"), this);
+    connect(m_pExportMetadataAct, SIGNAL(triggered()),
+            this, SLOT(slotExportTrackMetadataIntoFileTags()));
 
     m_pAddToPreviewDeck = new QAction(tr("Load to Preview Deck"), this);
     // currently there is only one preview deck so just map it here.
@@ -945,6 +962,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pMenu->addAction(m_pImportMetadataFromFileAct);
         m_pImportMetadataFromMusicBrainzAct->setEnabled(oneSongSelected);
         m_pMenu->addAction(m_pImportMetadataFromMusicBrainzAct);
+        m_pMenu->addAction(m_pExportMetadataAct);
     }
 
     // Cover art menu only applies if at least one track is selected.
@@ -1017,6 +1035,7 @@ void WTrackTableView::onSearchCleared() {
 }
 
 void WTrackTableView::onShow() {
+    restoreVScrollBarPos();
 }
 
 void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
@@ -1232,8 +1251,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
 
         QList<QString> fileLocationList;
         for (const QFileInfo& fileInfo : fileList) {
-            // TODO(uklotzde): Replace with TrackRef::location()
-            fileLocationList.append(fileInfo.absoluteFilePath());
+            fileLocationList.append(TrackRef::location(fileInfo));
         }
 
         // Drag-and-drop from an external application
@@ -1373,7 +1391,7 @@ void WTrackTableView::sendToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     playlistDao.sendToAutoDJ(trackIds, loc);
 }
 
-void WTrackTableView::slotImportTrackMetadata() {
+void WTrackTableView::slotImportTrackMetadataFromFileTags() {
     if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_IMPORTMETADATA)) {
         return;
     }
@@ -1390,10 +1408,39 @@ void WTrackTableView::slotImportTrackMetadata() {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
             // The user has explicitly requested to reload metadata from the file
-            // to override the information within Mixxx! Cover art is reloaded
-            // separately.
+            // to override the information within Mixxx! Custom cover art must be
+            // reloaded separately.
             SoundSourceProxy(pTrack).updateTrackFromSource(
                     SoundSourceProxy::ImportTrackMetadataMode::Again);
+        }
+    }
+}
+
+void WTrackTableView::slotExportTrackMetadataIntoFileTags() {
+    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_IMPORTMETADATA)) {
+        return;
+    }
+
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
+        return;
+    }
+
+    QModelIndexList indices = selectionModel()->selectedRows();
+    if (indices.isEmpty()) {
+        return;
+    }
+
+    mixxx::DlgTrackMetadataExport::showMessageBoxOncePerSession();
+
+    for (const QModelIndex& index : indices) {
+        TrackPointer pTrack = pTrackModel->getTrack(index);
+        if (pTrack) {
+            // Export of metadata is deferred until all references to the
+            // corresponding track object have been dropped. Otherwise
+            // writing to files that are still used for playback might
+            // cause crashes or at least audible glitches!
+            pTrack->markForMetadataExport();
         }
     }
 }
@@ -1671,4 +1718,14 @@ void WTrackTableView::slotReloadCoverArt() {
 
 bool WTrackTableView::hasFocus() const {
     return QWidget::hasFocus();
+}
+
+void WTrackTableView::saveCurrentVScrollBarPos()
+{
+    saveVScrollBarPos(getTrackModel());
+}
+
+void WTrackTableView::restoreCurrentVScrollBarPos()
+{
+    restoreVScrollBarPos(getTrackModel());
 }

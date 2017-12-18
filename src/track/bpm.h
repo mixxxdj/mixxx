@@ -21,6 +21,14 @@ public:
         : m_value(value) {
     }
 
+    static double normalizeValue(double value);
+
+    // Adjusts floating-point values to match their string representation
+    // in file tags to account for rounding errors.
+    void normalizeBeforeExport() {
+        m_value = normalizeValue(m_value);
+    }
+
     static bool isValidValue(double value) {
         return kValueMin < value;
     }
@@ -37,7 +45,6 @@ public:
     void resetValue() {
         m_value = kValueUndefined;
     }
-    void normalizeValue();
 
     static double valueFromString(const QString& str, bool* pValid = nullptr);
     static QString valueToString(double value);
@@ -57,6 +64,11 @@ bool operator==(const Bpm& lhs, const Bpm& rhs) {
 inline
 bool operator!=(const Bpm& lhs, const Bpm& rhs) {
     return !(lhs == rhs);
+}
+
+inline
+QDebug operator<<(QDebug dbg, const Bpm& arg) {
+    return dbg << arg.getValue();
 }
 
 }

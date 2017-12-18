@@ -18,11 +18,11 @@ Variables:
       <WidgetGroup><!-- EffectSlots + Underlays, with focus button -->
         <ObjectName>Spacer0f</ObjectName>
         <Layout>stacked</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
           <WidgetGroup><!-- EffectSlots with focus -->
             <Layout>vertical</Layout>
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>me,min</SizePolicy>
             <Children>
               <WidgetGroup><!-- EffectSlot 1 -->
                 <ObjectName>AlignRight</ObjectName>
@@ -77,7 +77,7 @@ Variables:
 
           <WidgetGroup><!-- Underlays with focus -->
             <Layout>stacked</Layout>
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>me,min</SizePolicy>
             <Children>
               <WidgetGroup><!-- EffectSlot 1 -->
                 <ObjectName>FxFlowUnderlay_left_focus1</ObjectName>
@@ -120,11 +120,11 @@ Variables:
       <WidgetGroup><!-- EffectSlots + Underlays, no focus -->
         <ObjectName>Spacer0f</ObjectName>
         <Layout>stacked</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
           <WidgetGroup><!-- EffectSlots, no focus -->
             <Layout>vertical</Layout>
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>me,min</SizePolicy>
             <Children>
               <WidgetGroup><!-- EffectSlot 1 -->
                 <ObjectName>AlignRight</ObjectName>
@@ -173,7 +173,7 @@ Variables:
 
           <WidgetGroup><!-- Underlays, no focus -->
             <Layout>stacked</Layout>
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>me,min</SizePolicy>
             <Children>
               <WidgetGroup><!-- EffectSlot 1 -->
                 <ObjectName>FxFlowUnderlay_left_noFocus1</ObjectName>
@@ -199,94 +199,81 @@ Variables:
         </Connection>
       </WidgetGroup><!-- /EffectSlots + Underlays, no focus -->
 
-      <WidgetGroup><!-- EffectUnitMixer + Master, Headphone -->
+      <WidgetGroup><!-- FX label + expand toggle + EffectUnitMixer -->
         <ObjectName>FxUnitControlsLeft</ObjectName>
         <Layout>vertical</Layout>
-        <Size>44f,1me</Size>
+        <SizePolicy>max,me</SizePolicy>
         <Children>
           <Template src="skin:button_2state_persist.xml">
             <SetVariable name="ObjectName">FxSamplersMiniMaxi</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
-            <SetVariable name="Size">22me,14f</SetVariable>
+            <SetVariable name="Size">22min,14f</SetVariable>
             <SetVariable name="ConfigKey">[<Variable name="FxGroup"/>],show_parameters</SetVariable>
           </Template>
 
           <Label>
             <ObjectName>FxUnitLabel</ObjectName>
-            <Size>44f,18f</Size>
+            <!-- Pretend it's in the same position like collapsed FX unit:
+                there, it has a 4px spacer above. here, we need some margin
+                to FX mixer below. Text is centerd vertically -->
+            <Size>30min,20f</Size>
             <Text>FX<Variable name="FxUnitNum"/></Text>
             <Alignment>center</Alignment>
           </Label>
 
-          <WidgetGroup><!-- EffectUnitMixer -->
+          <WidgetGroup><!-- FxUnitControls + Master, Headphone -->
             <ObjectName>FxUnitMixerLeft</ObjectName>
             <Layout>vertical</Layout>
-            <Size>44f,1me</Size>
+            <SizePolicy>min,me</SizePolicy>
             <Children>
 
-              <WidgetGroup><!-- SuperWetDryContainer -->
-                <ObjectName>SuperWetDryContainer</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>me,me</SizePolicy>
-                <Children>
-                  <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
+              <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
 
-                  <Template src="skin:knob_textless.xml">
-                    <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
-                    <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
-                    <SetVariable name="Size">32f,32f</SetVariable>
-                    <SetVariable name="group">[<Variable name="FxGroup"/>]</SetVariable>
-                    <SetVariable name="ConfigKey">mix</SetVariable>
-                    <SetVariable name="Color">red</SetVariable>
-                  </Template>
+              <Template src="skin:knob_textless.xml">
+                <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
+                <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
+                <SetVariable name="Size">30f,30f</SetVariable>
+                <SetVariable name="group">[<Variable name="FxGroup"/>]</SetVariable>
+                <SetVariable name="ConfigKey">mix</SetVariable>
+                <SetVariable name="Color">red</SetVariable>
+              </Template>
 
-                  <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
+              <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
 
-                  <WidgetGroup><!-- Super Knob, if enabled -->
-                    <Size>32f,32f</Size>
-                    <Layout>vertical</Layout>
-                    <Children>
-                      <Template src="skin:knob_textless.xml">
-                        <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
-                        <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
-                        <SetVariable name="Size">32f,32f</SetVariable>
-                        <SetVariable name="group">[<Variable name="FxGroup"/>]</SetVariable>
-                        <SetVariable name="ConfigKey">super1</SetVariable>
-                        <SetVariable name="Color">blue</SetVariable>
-                      </Template>
-                    </Children>
-                    <Connection>
-                      <ConfigKey persist="true">[Tango],fx_super_knob</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup><!-- /Super Knob, if enabled -->
-
-                  <WidgetGroup><!-- additional spacer for Super Knob, if enabled -->
-                    <Size>1min,0me</Size>
-                    <Connection>
-                      <ConfigKey persist="true">[Tango],fx_super_knob</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup><!-- /additional spacer for Super Knob, if enabled -->
-                </Children>
-              </WidgetGroup><!-- /SuperWetDryContainer -->
-
-              <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
-
-              <WidgetGroup><!-- Master, Headphone -->
-                <Layout>horizontal</Layout>
+              <WidgetGroup><!-- Super Knob, if enabled -->
                 <SizePolicy>min,min</SizePolicy>
+                <Layout>vertical</Layout>
                 <Children>
-                  <Template src="skin:fx_head_master_button.xml">
-                    <SetVariable name="Size">21f,21f</SetVariable>
-                    <SetVariable name="sourceType">master</SetVariable>
-                    <SetVariable name="labelOff">fx_master_off</SetVariable>
-                    <SetVariable name="labelOn">fx_master_on</SetVariable>
-                    <SetVariable name="group">[Master]</SetVariable>
+                  <Template src="skin:knob_textless.xml">
+                    <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
+                    <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
+                    <SetVariable name="Size">30f,30f</SetVariable>
+                    <SetVariable name="group">[<Variable name="FxGroup"/>]</SetVariable>
+                    <SetVariable name="ConfigKey">super1</SetVariable>
+                    <SetVariable name="Color">blue</SetVariable>
                   </Template>
-                    <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Tango],fx_super_knob</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- /Super Knob, if enabled -->
+
+              <WidgetGroup><!-- additional spacer for Super Knob, if enabled -->
+                <SizePolicy>min,me</SizePolicy>
+                <Connection>
+                  <ConfigKey persist="true">[Tango],fx_super_knob</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- /additional spacer for Super Knob, if enabled -->
+
+              <WidgetGroup><!-- Headphone FX button -->
+                <ObjectName>AlignCenter</ObjectName>
+                <SizePolicy>min,max</SizePolicy>
+                <Layout>vertical</Layout>
+                <Children>
                   <WidgetGroup><!-- Headphone FX button -->
-                    <Size>21f,21f</Size>
+                    <SizePolicy>max,max</SizePolicy>
                     <Layout>stacked</Layout>
                     <Children>
                       <!-- index 0 due to bug -->
@@ -294,9 +281,9 @@ Variables:
 
                       <!-- Greyed out if no headphone device is configured -->
                       <WidgetGroup>
-                        <ObjectName>MixerbarCover</ObjectName>
+                        <ObjectName>GuiCover</ObjectName>
                         <Layout>vertical</Layout>
-                        <SizePolicy>me,me</SizePolicy>
+                        <SizePolicy>me,min</SizePolicy>
                         <Connection>
                           <ConfigKey>[Master],headEnabled</ConfigKey>
                           <BindProperty>visible</BindProperty>
@@ -304,22 +291,25 @@ Variables:
                         </Connection>
                       </WidgetGroup>
 
-                      <Template src="skin:fx_head_master_button.xml">
-                        <SetVariable name="Size">21f,21f</SetVariable>
-                        <SetVariable name="sourceType">headphones</SetVariable>
-                        <SetVariable name="labelOff">fx_head_off</SetVariable>
-                        <SetVariable name="labelOn">fx_head_on</SetVariable>
-                        <SetVariable name="group">[Headphone]</SetVariable>
+                      <Template src="skin:button_2state.xml">
+                        <SetVariable name="ObjectName">PflButton</SetVariable>
+                        <SetVariable name="TooltipId">EffectUnit_headphones_enabled</SetVariable>
+                        <SetVariable name="Size">24f,24f</SetVariable>
+                        <SetVariable name="state_0_pressed">pfl_off.svg</SetVariable>
+                        <SetVariable name="state_0_unpressed">pfl_off.svg</SetVariable>
+                        <SetVariable name="state_1_pressed">pfl_on.svg</SetVariable>
+                        <SetVariable name="state_1_unpressed">pfl_on.svg</SetVariable>
+                        <SetVariable name="ConfigKey">[EffectRack1_EffectUnit<Variable name="FxUnitNum"/>],group_[Headphone]_enable</SetVariable>
                       </Template>
                     </Children>
-                  </WidgetGroup><!-- /Headphone FX button -->
+                  </WidgetGroup>
                 </Children>
-              </WidgetGroup><!-- /Master, Headphone -->
+              </WidgetGroup><!-- /Headphone FX button -->
 
             </Children>
           </WidgetGroup><!-- EffectUnitMixer -->
         </Children>
-      </WidgetGroup><!-- /EffectUnitMixer + Master, Headphone -->
+      </WidgetGroup><!-- /FX label + expand toggle + EffectUnitMixer -->
     </Children>
   </WidgetGroup><!-- /EffectUnit -->
 </Template>

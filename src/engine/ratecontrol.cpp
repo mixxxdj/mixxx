@@ -533,7 +533,7 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
     return rate;
 }
 
-double RateControl::process(const double rate,
+void RateControl::process(const double rate,
                             const double currentSample,
                             const double totalSamples,
                             const int bufferSamples)
@@ -568,7 +568,7 @@ double RateControl::process(const double rate,
             // Avoid Division by Zero
             if (range == 0) {
                 qDebug() << "Avoiding a Division by Zero in RATERAMP_STEP code";
-                return kNoTrigger;
+                return;
             }
 
             double change = m_pRateDir->get() * m_dTemporaryRateChangeCoarse /
@@ -631,8 +631,6 @@ double RateControl::process(const double rate,
             resetRateTemp();
         }
     }
-
-    return kNoTrigger;
 }
 
 double RateControl::getTempRate() {

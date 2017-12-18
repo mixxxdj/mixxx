@@ -7,9 +7,6 @@
 #include "util/logger.h"
 #include "util/memory.h"
 
-// TagLib has full support for MP4 atom types since version 1.8
-#define TAGLIB_HAS_MP4_ATOM_TYPES \
-    (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 8))
 
 // TagLib has support for has<TagType>() style functions since version 1.9
 #define TAGLIB_HAS_TAG_CHECK \
@@ -240,16 +237,6 @@ QString formatTrackGain(const TrackMetadata& trackMetadata) {
     return formatReplayGainGain(trackMetadata.getTrackInfo().getReplayGain());
 }
 
-inline
-bool hasAlbumGain(const TrackMetadata& trackMetadata) {
-    return trackMetadata.getAlbumInfo().getReplayGain().hasRatio();
-}
-
-inline
-QString formatAlbumGain(const TrackMetadata& trackMetadata) {
-    return formatReplayGainGain(trackMetadata.getAlbumInfo().getReplayGain());
-}
-
 bool parseReplayGainGain(
         ReplayGain* pReplayGain,
         const QString& dbGain) {
@@ -285,19 +272,6 @@ bool parseTrackGain(
     return isRatioValid;
 }
 
-bool parseAlbumGain(
-        TrackMetadata* pTrackMetadata,
-        const QString& dbGain) {
-    DEBUG_ASSERT(pTrackMetadata);
-
-    ReplayGain replayGain(pTrackMetadata->getAlbumInfo().getReplayGain());
-    bool isRatioValid = parseReplayGainGain(&replayGain, dbGain);
-    if (isRatioValid) {
-        pTrackMetadata->refAlbumInfo().setReplayGain(replayGain);
-    }
-    return isRatioValid;
-}
-
 inline
 QString formatReplayGainPeak(const ReplayGain& replayGain) {
     return ReplayGain::peakToString(replayGain.getPeak());
@@ -311,16 +285,6 @@ bool hasTrackPeak(const TrackMetadata& trackMetadata) {
 inline
 QString formatTrackPeak(const TrackMetadata& trackMetadata) {
     return formatReplayGainPeak(trackMetadata.getTrackInfo().getReplayGain());
-}
-
-inline
-bool hasAlbumPeak(const TrackMetadata& trackMetadata) {
-    return trackMetadata.getAlbumInfo().getReplayGain().hasPeak();
-}
-
-inline
-QString formatAlbumPeak(const TrackMetadata& trackMetadata) {
-    return formatReplayGainPeak(trackMetadata.getAlbumInfo().getReplayGain());
 }
 
 bool parseReplayGainPeak(
@@ -349,6 +313,39 @@ bool parseTrackPeak(
     return isPeakValid;
 }
 
+inline
+bool hasAlbumGain(const TrackMetadata& trackMetadata) {
+    return trackMetadata.getAlbumInfo().getReplayGain().hasRatio();
+}
+
+inline
+QString formatAlbumGain(const TrackMetadata& trackMetadata) {
+    return formatReplayGainGain(trackMetadata.getAlbumInfo().getReplayGain());
+}
+
+bool parseAlbumGain(
+        TrackMetadata* pTrackMetadata,
+        const QString& dbGain) {
+    DEBUG_ASSERT(pTrackMetadata);
+
+    ReplayGain replayGain(pTrackMetadata->getAlbumInfo().getReplayGain());
+    bool isRatioValid = parseReplayGainGain(&replayGain, dbGain);
+    if (isRatioValid) {
+        pTrackMetadata->refAlbumInfo().setReplayGain(replayGain);
+    }
+    return isRatioValid;
+}
+
+inline
+bool hasAlbumPeak(const TrackMetadata& trackMetadata) {
+    return trackMetadata.getAlbumInfo().getReplayGain().hasPeak();
+}
+
+inline
+QString formatAlbumPeak(const TrackMetadata& trackMetadata) {
+    return formatReplayGainPeak(trackMetadata.getAlbumInfo().getReplayGain());
+}
+
 bool parseAlbumPeak(
         TrackMetadata* pTrackMetadata,
         const QString& strPeak) {
@@ -372,15 +369,15 @@ void readAudioProperties(
     // the audio data for this track. Often those properties
     // stored in tags don't match with the corresponding
     // audio data in the file.
-    pTrackMetadata->refTrackInfo().setChannels(AudioSignal::ChannelCount(audioProperties.channels()));
-    pTrackMetadata->refTrackInfo().setSampleRate(AudioSignal::SampleRate(audioProperties.sampleRate()));
-    pTrackMetadata->refTrackInfo().setBitrate(AudioSource::Bitrate(audioProperties.bitrate()));
+    pTrackMetadata->setChannels(AudioSignal::ChannelCount(audioProperties.channels()));
+    pTrackMetadata->setSampleRate(AudioSignal::SampleRate(audioProperties.sampleRate()));
+    pTrackMetadata->setBitrate(AudioSource::Bitrate(audioProperties.bitrate()));
 #if (TAGLIB_HAS_LENGTH_IN_MILLISECONDS)
     const auto duration = Duration::fromMillis(audioProperties.lengthInMilliseconds());
 #else
     const auto duration = Duration::fromSeconds(audioProperties.length());
 #endif
-    pTrackMetadata->refTrackInfo().setDuration(duration);
+    pTrackMetadata->setDuration(duration);
 }
 
 // Workaround for missing const member function in TagLib
@@ -603,7 +600,6 @@ void writeID3v2TextIdentificationFrame(
     }
 }
 
-
 bool writeID3v2TextIdentificationFrameStringIfNotNull(
         TagLib::ID3v2::Tag* pTag,
         const TagLib::ByteVector &id,
@@ -763,7 +759,7 @@ void writeAPEItem(
 bool readXiphCommentField(
         const TagLib::Ogg::XiphComment& tag,
         const TagLib::String& key,
-        QString* pValue = nullptr) {
+        QString* pValue) {
     const TagLib::Ogg::FieldListMap::ConstIterator it(
             tag.fieldListMap().find(key));
     if (it != tag.fieldListMap().end() && !(*it).second.isEmpty()) {
@@ -774,6 +770,13 @@ bool readXiphCommentField(
     } else {
         return false;
     }
+}
+
+inline
+bool hasXiphCommentField(
+        const TagLib::Ogg::XiphComment& tag,
+        const TagLib::String& key) {
+    return readXiphCommentField(tag, key, nullptr);
 }
 
 // Unconditionally write the field
@@ -795,7 +798,7 @@ void updateXiphCommentField(
         TagLib::Ogg::XiphComment* pTag,
         const TagLib::String& key,
         const TagLib::String& value) {
-    if (readXiphCommentField(*pTag, key)) {
+    if (hasXiphCommentField(*pTag, key)) {
         writeXiphCommentField(pTag, key, value);
     }
 }
@@ -1191,6 +1194,7 @@ void importTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
     if (!trackPeak.isEmpty()) {
         parseTrackPeak(pTrackMetadata, trackPeak);
     }
+
     QString albumGain =
             readFirstUserTextIdentificationFrame(tag, "REPLAYGAIN_ALBUM_GAIN");
     if (!albumGain.isEmpty()) {
@@ -1319,6 +1323,7 @@ void importTrackMetadataFromAPETag(TrackMetadata* pTrackMetadata, const TagLib::
     if (readAPEItem(tag, "REPLAYGAIN_TRACK_PEAK", &trackPeak)) {
         parseTrackPeak(pTrackMetadata, trackPeak);
     }
+
     QString albumGain;
     if (readAPEItem(tag, "REPLAYGAIN_ALBUM_GAIN", &albumGain)) {
         parseTrackGain(pTrackMetadata, albumGain);
@@ -1391,15 +1396,22 @@ void importTrackMetadataFromVorbisCommentTag(TrackMetadata* pTrackMetadata,
 
     importTrackMetadataFromTag(pTrackMetadata, tag);
 
-    // Some applications (like puddletag up to version 1.0.5) write
-    // "COMMENT" instead "DESCRIPTION".
-    // Reference: http://www.xiph.org/vorbis/doc/v-comment.html
-    if (!readXiphCommentField(tag, "DESCRIPTION")) { // recommended field (already read by TagLib)
-        QString comment;
-        if (readXiphCommentField(tag, "COMMENT", &comment)) { // alternative field
-            pTrackMetadata->refTrackInfo().setComment(comment);
-        }
+    // The original specification only defines a "DESCRIPTION" field,
+    // while MusicBrainz recommends to use "COMMENT". Mixxx follows
+    // MusicBrainz.
+    // http://www.xiph.org/vorbis/doc/v-comment.html
+    // https://picard.musicbrainz.org/docs/mappings
+    //
+    // We are not relying on  TagLib (1.11.1) with a somehow inconsistent
+    // handling. It prefers "DECSCRIPTION" for reading, but adds a "COMMENT"
+    // fields upon writing when no "DESCRIPTION" field exists.
+    QString comment;
+    if (!readXiphCommentField(tag, "COMMENT", &comment) || comment.isEmpty()) {
+        // Fallback to the the original "DESCRIPTION" field only if the
+        // "COMMENT" field is either missing or empty
+        readXiphCommentField(tag, "DESCRIPTION", &comment);
     }
+    pTrackMetadata->refTrackInfo().setComment(comment);
 
     QString albumArtist;
     if (readXiphCommentField(tag, "ALBUMARTIST", &albumArtist) || // recommended field
@@ -1444,10 +1456,25 @@ void importTrackMetadataFromVorbisCommentTag(TrackMetadata* pTrackMetadata,
         pTrackMetadata->refTrackInfo().setYear(date);
     }
 
+    // MusicBrainz recommends "BPM": https://picard.musicbrainz.org/docs/mappings
+    // Mixxx (<= 2.0) favored "TEMPO": https://www.mixxx.org/wiki/doku.php/library_metadata_rewrite_using_taglib
     QString bpm;
-    if (readXiphCommentField(tag, "TEMPO", &bpm) || // recommended field
-            readXiphCommentField(tag, "BPM", &bpm)) { // alternative field
-        parseBpm(pTrackMetadata, bpm);
+    if (!readXiphCommentField(tag, "BPM", &bpm) || !parseBpm(pTrackMetadata, bpm)) {
+        if (readXiphCommentField(tag, "TEMPO", &bpm)) {
+            parseBpm(pTrackMetadata, bpm);
+        }
+    }
+
+    // Reading key code information
+    // Unlike, ID3 tags, there's no standard or recommendation on how to store 'key' code
+    //
+    // Luckily, there are only a few tools for that, e.g., Rapid Evolution (RE).
+    // Assuming no distinction between start and end key, RE uses a "INITIALKEY"
+    // or a "KEY" vorbis comment.
+    QString key;
+    if (readXiphCommentField(tag, "INITIALKEY", &key) || // recommended field
+            readXiphCommentField(tag, "KEY", &key)) { // alternative field
+        pTrackMetadata->refTrackInfo().setKey(key);
     }
 
     // Only read track gain (not album gain)
@@ -1459,6 +1486,7 @@ void importTrackMetadataFromVorbisCommentTag(TrackMetadata* pTrackMetadata,
     if (readXiphCommentField(tag, "REPLAYGAIN_TRACK_PEAK", &trackPeak)) {
         parseTrackPeak(pTrackMetadata, trackPeak);
     }
+
     QString albumGain;
     if (readXiphCommentField(tag, "REPLAYGAIN_ALBUM_GAIN", &albumGain)) {
         parseAlbumGain(pTrackMetadata, albumGain);
@@ -1487,18 +1515,6 @@ void importTrackMetadataFromVorbisCommentTag(TrackMetadata* pTrackMetadata,
     QString albumReleaseGroupId;
     if (readXiphCommentField(tag, "MUSICBRAINZ_RELEASEGROUPID", &albumReleaseGroupId)) {
         pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseGroupId(QUuid(albumReleaseGroupId));
-    }
-
-    // Reading key code information
-    // Unlike, ID3 tags, there's no standard or recommendation on how to store 'key' code
-    //
-    // Luckily, there are only a few tools for that, e.g., Rapid Evolution (RE).
-    // Assuming no distinction between start and end key, RE uses a "INITIALKEY"
-    // or a "KEY" vorbis comment.
-    QString key;
-    if (readXiphCommentField(tag, "INITIALKEY", &key) || // recommended field
-            readXiphCommentField(tag, "KEY", &key)) { // alternative field
-        pTrackMetadata->refTrackInfo().setKey(key);
     }
 
     QString conductor;
@@ -1564,7 +1580,8 @@ void importTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::
 
     // Read track number/total pair
     if (getItemListMap(tag).contains("trkn")) {
-        const TagLib::MP4::Item::IntPair trknPair(getItemListMap(tag)["trkn"].toIntPair());
+        const TagLib::MP4::Item trknItem = getItemListMap(tag)["trkn"];
+        const TagLib::MP4::Item::IntPair trknPair = trknItem.toIntPair();
         const TrackNumbers trackNumbers(trknPair.first, trknPair.second);
         QString trackNumber;
         QString trackTotal;
@@ -1582,15 +1599,18 @@ void importTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::
         // overwritten.
         parseBpm(pTrackMetadata, bpm);
     } else if (getItemListMap(tag).contains("tmpo")) {
-            // Read the BPM as an integer value.
-            const TagLib::MP4::Item& item = getItemListMap(tag)["tmpo"];
-#if (TAGLIB_HAS_MP4_ATOM_TYPES)
-            if (item.atomDataType() == TagLib::MP4::TypeInteger) {
-                pTrackMetadata->refTrackInfo().setBpm(Bpm(item.toInt()));
-            }
-#else
-            pTrackMetadata->refTrackInfo().setBpm(Bpm(item.toInt()));
-#endif
+        // Read the BPM as an integer value.
+        const TagLib::MP4::Item tmpoItem = getItemListMap(tag)["tmpo"];
+        double bpmValue = tmpoItem.toInt();
+        if (Bpm::isValidValue(bpmValue)) {
+            pTrackMetadata->refTrackInfo().setBpm(Bpm(bpmValue));
+        }
+    }
+
+    QString key;
+    if (readMP4Atom(tag, "----:com.apple.iTunes:initialkey", &key) || // preferred (conforms to MixedInKey, Serato, Traktor)
+            readMP4Atom(tag, "----:com.apple.iTunes:KEY", &key)) { // alternative (conforms to Rapid Evolution)
+        pTrackMetadata->refTrackInfo().setKey(key);
     }
 
     QString trackGain;
@@ -1601,6 +1621,7 @@ void importTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::
     if (readMP4Atom(tag, "----:com.apple.iTunes:replaygain_track_peak", &trackPeak)) {
         parseTrackPeak(pTrackMetadata, trackPeak);
     }
+
     QString albumGain;
     if (readMP4Atom(tag, "----:com.apple.iTunes:replaygain_album_gain", &albumGain)) {
         parseAlbumGain(pTrackMetadata, albumGain);
@@ -1629,12 +1650,6 @@ void importTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::
     QString albumReleaseGroupId;
     if (readMP4Atom(tag, "----:com.apple.iTunes:MusicBrainz Release Group Id", &albumReleaseGroupId)) {
         pTrackMetadata->refAlbumInfo().setMusicBrainzReleaseGroupId(QUuid(albumReleaseGroupId));
-    }
-
-    QString key;
-    if (readMP4Atom(tag, "----:com.apple.iTunes:initialkey", &key) || // preferred (conforms to MixedInKey, Serato, Traktor)
-            readMP4Atom(tag, "----:com.apple.iTunes:KEY", &key)) { // alternative (conforms to Rapid Evolution)
-        pTrackMetadata->refTrackInfo().setKey(key);
     }
 
     QString conductor;
@@ -1824,6 +1839,11 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
                 formatTrackPeak(trackMetadata),
                 true);
     }
+
+    // TODO(XXX): The following tags are currently not stored in the
+    // Mixxx library. Only write properties that have non-null values
+    // to prevent deleting existing tags!
+
     if (hasAlbumGain(trackMetadata)) {
         writeID3v2UserTextIdentificationFrame(
                 pTag,
@@ -1875,9 +1895,6 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
                 false);
     }
 
-    // TODO(XXX): The following tags are currently not stored in the
-    // Mixxx library. Only write properties that have non-null values
-    // to prevent deleting existing tags!
     writeID3v2TextIdentificationFrameStringIfNotNull(
             pTag,
             "TPE3",
@@ -1944,6 +1961,10 @@ bool exportTrackMetadataIntoAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& 
 
     writeAPEItem(pTag, "BPM",
             toTagLibString(formatBpm(trackMetadata)));
+
+    writeAPEItem(pTag, "INITIALKEY",
+            toTagLibString(trackMetadata.getTrackInfo().getKey()));
+
     if (hasTrackGain(trackMetadata)) {
         writeAPEItem(pTag, "REPLAYGAIN_TRACK_GAIN",
                 toTagLibString(formatTrackGain(trackMetadata)));
@@ -1952,6 +1973,11 @@ bool exportTrackMetadataIntoAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& 
         writeAPEItem(pTag, "REPLAYGAIN_TRACK_PEAK",
                 toTagLibString(formatTrackPeak(trackMetadata)));
     }
+
+    // TODO(XXX): The following tags are currently not stored in the
+    // Mixxx library. Only write properties that have non-null values
+    // to prevent deleting existing tags!
+
     if (hasAlbumGain(trackMetadata)) {
         writeAPEItem(pTag, "REPLAYGAIN_ALBUM_GAIN",
                 toTagLibString(formatAlbumGain(trackMetadata)));
@@ -1982,9 +2008,6 @@ bool exportTrackMetadataIntoAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& 
                 toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId().toString()));
     }
 
-    // TODO(XXX): The following tags are currently not stored in the
-    // Mixxx library. Only write properties that have non-null values
-    // to prevent deleting existing tags!
     if (!trackMetadata.getTrackInfo().getConductor().isNull()) {
         writeAPEItem(pTag, "Conductor",
                 toTagLibString(trackMetadata.getTrackInfo().getConductor()));
@@ -2028,7 +2051,25 @@ bool exportTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
     }
 
     exportTrackMetadataIntoTag(pTag, trackMetadata,
-            WRITE_TAG_OMIT_TRACK_NUMBER | WRITE_TAG_OMIT_YEAR);
+            WRITE_TAG_OMIT_TRACK_NUMBER |
+            WRITE_TAG_OMIT_YEAR |
+            WRITE_TAG_OMIT_COMMENT);
+
+    // The original specification only defines a "DESCRIPTION" field,
+    // while MusicBrainz recommends to use "COMMENT". Mixxx follows
+    // MusicBrainz.
+    // http://www.xiph.org/vorbis/doc/v-comment.html
+    // https://picard.musicbrainz.org/docs/mappings
+    if (hasXiphCommentField(*pTag, "COMMENT") || !hasXiphCommentField(*pTag, "DESCRIPTION")) {
+        // MusicBrainz-style
+        writeXiphCommentField(pTag, "COMMENT",
+                toTagLibString(trackMetadata.getTrackInfo().getComment()));
+    } else {
+        // Preserve and update the "DESCRIPTION" field only if it already exists
+        DEBUG_ASSERT(hasXiphCommentField(*pTag, "DESCRIPTION"));
+        writeXiphCommentField(pTag, "DESCRIPTION",
+                toTagLibString(trackMetadata.getTrackInfo().getComment()));
+    }
 
     // Write unambiguous fields
     writeXiphCommentField(pTag, "DATE",
@@ -2040,6 +2081,39 @@ bool exportTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
     writeXiphCommentField(pTag, "TRACKNUMBER",
             toTagLibString(trackMetadata.getTrackInfo().getTrackNumber()));
 
+    // According to https://wiki.xiph.org/Field_names "TRACKTOTAL" is
+    // the proposed field name, but some applications use "TOTALTRACKS".
+    const TagLib::String trackTotal(
+            toTagLibString(trackMetadata.getTrackInfo().getTrackTotal()));
+    writeXiphCommentField(pTag, "TRACKTOTAL", trackTotal); // recommended field
+    updateXiphCommentField(pTag, "TOTALTRACKS", trackTotal); // alternative field
+
+    const TagLib::String albumArtist(
+            toTagLibString(trackMetadata.getAlbumInfo().getArtist()));
+    writeXiphCommentField(pTag, "ALBUMARTIST", albumArtist); // recommended field
+    updateXiphCommentField(pTag, "ALBUM_ARTIST", albumArtist); // alternative field
+    updateXiphCommentField(pTag, "ALBUM ARTIST", albumArtist); // alternative field
+    updateXiphCommentField(pTag, "ENSEMBLE", albumArtist); // alternative field
+
+    const TagLib::String bpm(
+            toTagLibString(formatBpm(trackMetadata)));
+    // MusicBrainz recommends "BPM": https://picard.musicbrainz.org/docs/mappings
+    // Mixxx (<= 2.0) favored "TEMPO": https://www.mixxx.org/wiki/doku.php/library_metadata_rewrite_using_taglib
+    if (hasXiphCommentField(*pTag, "BPM") || !hasXiphCommentField(*pTag, "TEMPO")) {
+        // Update or add the recommended field for BPM values
+        writeXiphCommentField(pTag, "BPM", bpm);
+    } else {
+        // Update the legacy field for BPM values only if it already exists exclusively
+        DEBUG_ASSERT(hasXiphCommentField(*pTag, "TEMPO"));
+        writeXiphCommentField(pTag, "TEMPO", bpm);
+    }
+
+    // Write both INITIALKEY and KEY
+    const TagLib::String key(
+            toTagLibString(trackMetadata.getTrackInfo().getKey()));
+    writeXiphCommentField(pTag, "INITIALKEY", key); // recommended field
+    updateXiphCommentField(pTag, "KEY", key); // alternative field
+
     if (hasTrackGain(trackMetadata)) {
         writeXiphCommentField(pTag, "REPLAYGAIN_TRACK_GAIN",
                 toTagLibString(formatTrackGain(trackMetadata)));
@@ -2048,6 +2122,11 @@ bool exportTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
         writeXiphCommentField(pTag, "REPLAYGAIN_TRACK_PEAK",
                 toTagLibString(formatTrackPeak(trackMetadata)));
     }
+
+    // TODO(XXX): The following tags are currently not stored in the
+    // Mixxx library. Only write properties that have non-null values
+    // to prevent deleting existing tags!
+
     if (hasAlbumGain(trackMetadata)) {
         writeXiphCommentField(pTag, "REPLAYGAIN_ALBUM_GAIN",
                 toTagLibString(formatAlbumGain(trackMetadata)));
@@ -2056,7 +2135,6 @@ bool exportTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
         writeXiphCommentField(pTag, "REPLAYGAIN_ALBUM_PEAK",
                 toTagLibString(formatAlbumPeak(trackMetadata)));
     }
-
     if (!trackMetadata.getTrackInfo().getMusicBrainzArtistId().isNull()) {
         writeXiphCommentField(pTag, "MUSICBRAINZ_ARTISTID",
                 toTagLibString(trackMetadata.getTrackInfo().getMusicBrainzArtistId().toString()));
@@ -2077,35 +2155,6 @@ bool exportTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
         writeXiphCommentField(pTag, "MUSICBRAINZ_RELEASEGROUPID",
                 toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId().toString()));
     }
-
-    // According to https://wiki.xiph.org/Field_names "TRACKTOTAL" is
-    // the proposed field name, but some applications use "TOTALTRACKS".
-    const TagLib::String trackTotal(
-            toTagLibString(trackMetadata.getTrackInfo().getTrackTotal()));
-    writeXiphCommentField(pTag, "TRACKTOTAL", trackTotal); // recommended field
-    updateXiphCommentField(pTag, "TOTALTRACKS", trackTotal); // alternative field
-
-    const TagLib::String albumArtist(
-            toTagLibString(trackMetadata.getAlbumInfo().getArtist()));
-    writeXiphCommentField(pTag, "ALBUMARTIST", albumArtist); // recommended field
-    updateXiphCommentField(pTag, "ALBUM_ARTIST", albumArtist); // alternative field
-    updateXiphCommentField(pTag, "ALBUM ARTIST", albumArtist); // alternative field
-    updateXiphCommentField(pTag, "ENSEMBLE", albumArtist); // alternative field
-
-    const TagLib::String bpm(
-            toTagLibString(formatBpm(trackMetadata)));
-    writeXiphCommentField(pTag, "TEMPO", bpm); // recommended field
-    updateXiphCommentField(pTag, "BPM", bpm); // alternative field
-
-    // Write both INITIALKEY and KEY
-    const TagLib::String key(
-            toTagLibString(trackMetadata.getTrackInfo().getKey()));
-    writeXiphCommentField(pTag, "INITIALKEY", key); // recommended field
-    updateXiphCommentField(pTag, "KEY", key); // alternative field
-
-    // TODO(XXX): The following tags are currently not stored in the
-    // Mixxx library. Only write properties that have non-null values
-    // to prevent deleting existing tags!
     if (!trackMetadata.getTrackInfo().getConductor().isNull()) {
         writeXiphCommentField(pTag, "CONDUCTOR",
                 toTagLibString(trackMetadata.getTrackInfo().getConductor()));
@@ -2193,6 +2242,11 @@ bool exportTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& 
     writeMP4Atom(pTag, "----:com.apple.iTunes:BPM",
             toTagLibString(formatBpm(trackMetadata)));
 
+    const TagLib::String key =
+            toTagLibString(trackMetadata.getTrackInfo().getKey());
+    writeMP4Atom(pTag, "----:com.apple.iTunes:initialkey", key); // preferred
+    updateMP4Atom(pTag, "----:com.apple.iTunes:KEY", key); // alternative
+
     if (hasTrackGain(trackMetadata)) {
         writeMP4Atom(pTag, "----:com.apple.iTunes:replaygain_track_gain",
                 toTagLibString(formatTrackGain(trackMetadata)));
@@ -2201,6 +2255,11 @@ bool exportTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& 
         writeMP4Atom(pTag, "----:com.apple.iTunes:replaygain_track_peak",
                 toTagLibString(formatTrackPeak(trackMetadata)));
     }
+
+    // TODO(XXX): The following tags are currently not stored in the
+    // Mixxx library. Only write properties that have non-null values
+    // to prevent deleting existing tags!
+
     if (hasAlbumGain(trackMetadata)) {
         writeMP4Atom(pTag, "----:com.apple.iTunes:replaygain_album_gain",
                 toTagLibString(formatAlbumGain(trackMetadata)));
@@ -2209,7 +2268,6 @@ bool exportTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& 
         writeMP4Atom(pTag, "----:com.apple.iTunes:replaygain_album_peak",
                 toTagLibString(formatAlbumPeak(trackMetadata)));
     }
-
     if (!trackMetadata.getTrackInfo().getMusicBrainzArtistId().isNull()) {
         writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Artist Id",
                 toTagLibString(trackMetadata.getTrackInfo().getMusicBrainzArtistId().toString()));
@@ -2230,15 +2288,6 @@ bool exportTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& 
         writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Release Group Id",
                 toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId().toString()));
     }
-
-    const TagLib::String key =
-            toTagLibString(trackMetadata.getTrackInfo().getKey());
-    writeMP4Atom(pTag, "----:com.apple.iTunes:initialkey", key); // preferred
-    updateMP4Atom(pTag, "----:com.apple.iTunes:KEY", key); // alternative
-
-    // TODO(XXX): The following tags are currently not stored in the
-    // Mixxx library. Only write properties that have non-null values
-    // to prevent deleting existing tags!
     if (!trackMetadata.getTrackInfo().getConductor().isNull()) {
         writeMP4Atom(pTag, "----:com.apple.iTunes:CONDUCTOR",
                 toTagLibString(trackMetadata.getTrackInfo().getConductor()));

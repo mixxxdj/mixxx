@@ -63,6 +63,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Spinning Vinyl")
             << tr("Rotates during playback and shows the position of a track.")
             << scratchMouse
+            << tr("Right click to show cover art of loaded track.")
             << dropTracksHere
             << tr("If Vinyl control is enabled, displays time-coded vinyl signal quality (see Preferences -> Vinyl Control).");
 
@@ -163,6 +164,11 @@ void Tooltips::addStandardTooltips() {
     add("master_gain")
             << tr("Master Gain")
             << tr("Adjusts the master output gain.")
+            << QString("%1: %2").arg(rightClick, resetToDefault);
+
+    add("booth_gain")
+            << tr("Booth Gain")
+            << tr("Adjusts the booth output gain.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("crossfader")

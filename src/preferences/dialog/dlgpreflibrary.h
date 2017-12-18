@@ -1,20 +1,3 @@
-/***************************************************************************
-                          dlgpreflibrary.h  -  description
-                             -------------------
-    begin                : Thu Apr 17 2003
-    copyright            : (C) 2003 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 #ifndef DLGPREFLIBRARY_H
 #define DLGPREFLIBRARY_H
 
@@ -40,9 +23,11 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
         ADD_TRACK_TOP     // Add track to Auto-DJ Queue (top).
     };
 
-    DlgPrefLibrary(QWidget *parent, UserSettingsPointer config,
-                   Library *pLibrary);
-    virtual ~DlgPrefLibrary();
+    DlgPrefLibrary(
+            QWidget* pParent,
+            UserSettingsPointer pConfig,
+            Library* pLibrary);
+    ~DlgPrefLibrary() override {}
 
   public slots:
     // Common preference page slots.
@@ -71,15 +56,16 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
   private slots:
     void slotRowHeightValueChanged(int);
     void slotSelectFont();
+    void slotSyncTrackMetadataExportToggled();
 
   private:
     void initializeDirList();
     void setLibraryFont(const QFont& font);
 
     QStandardItemModel m_dirListModel;
-    UserSettingsPointer m_pconfig;
+    UserSettingsPointer m_pConfig;
     Library* m_pLibrary;
-    bool m_baddedDirectory;
+    bool m_bAddedDirectory;
     QFont m_originalTrackTableFont;
     int m_iOriginalTrackTableRowHeight;
 };

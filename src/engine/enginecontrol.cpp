@@ -19,7 +19,7 @@ EngineControl::EngineControl(QString group,
 EngineControl::~EngineControl() {
 }
 
-double EngineControl::process(const double dRate,
+void EngineControl::process(const double dRate,
                            const double dCurrentSample,
                            const double dTotalSamples,
                            const int iBufferSize) {
@@ -27,29 +27,6 @@ double EngineControl::process(const double dRate,
     Q_UNUSED(dCurrentSample);
     Q_UNUSED(dTotalSamples);
     Q_UNUSED(iBufferSize);
-    return kNoTrigger;
-}
-
-double EngineControl::nextTrigger(const double dRate,
-                                  const double currentSample,
-                                  const double totalSamples,
-                                  const int iBufferSize) {
-    Q_UNUSED(dRate);
-    Q_UNUSED(currentSample);
-    Q_UNUSED(totalSamples);
-    Q_UNUSED(iBufferSize);
-    return kNoTrigger;
-}
-
-double EngineControl::getTrigger(const double dRate,
-                                 const double currentSample,
-                                 const double totalSamples,
-                                 const int iBufferSize) {
-    Q_UNUSED(dRate);
-    Q_UNUSED(currentSample);
-    Q_UNUSED(totalSamples);
-    Q_UNUSED(iBufferSize);
-    return kNoTrigger;
 }
 
 void EngineControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
