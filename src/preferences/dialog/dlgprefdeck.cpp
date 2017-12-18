@@ -456,18 +456,14 @@ void DlgPrefDeck::slotSetTrackTimeDisplay(QAbstractButton* b) {
 }
 
 void DlgPrefDeck::slotSetTrackTimeDisplay(double v) {
-    if (v == 1.0) {
-        // Remaining
+    m_timeDisplayMode = static_cast<TrackTime::DisplayMode>(v);
+    m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(v));
+    if (m_timeDisplayMode == TrackTime::DisplayMode::Remaining) {
         radioButtonRemaining->setChecked(true);
-        m_pConfig->set(ConfigKey("[Controls]", "PositionDisplay"), ConfigValue(1));
-    } else if (v == 2.0) {
-        // Elapsed and remaining
+    } else if (m_timeDisplayMode == TrackTime::DisplayMode::ElapsedAndRemaining) {
         radioButtonElapsedAndRemaining->setChecked(true);
-        m_pConfig->set(ConfigKey("[Controls]", "PositionDisplay"), ConfigValue(2));
-    } else {
-        // Elapsed
+    } else { // Elapsed
         radioButtonElapsed->setChecked(true);
-        m_pConfig->set(ConfigKey("[Controls]", "PositionDisplay"), ConfigValue(0));
     }
 }
 
