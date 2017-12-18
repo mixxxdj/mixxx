@@ -22,6 +22,19 @@ EffectManifest TremoloEffect::getManifest() {
     manifest.setVersion("1.0");
     manifest.setDescription("An amplitude modulation effect");
 
+    EffectManifestParameter* depth = manifest.addParameter();
+    depth->setId("depth");
+    depth->setName("Depth");
+    depth->setShortName("Depth");
+    depth->setDescription("How much the effect changes the volume");
+    depth->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    depth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    depth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    depth->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
+    depth->setDefault(1);
+    depth->setMinimum(0);
+    depth->setMaximum(1);
+
     EffectManifestParameter* rate = manifest.addParameter();
     rate->setId("rate");
     rate->setName(QObject::tr("Rate"));
@@ -33,7 +46,6 @@ EffectManifest TremoloEffect::getManifest() {
         EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     rate->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     rate->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
-    rate->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     rate->setDefault(1);
     rate->setMinimum(1.0/4);
     rate->setMaximum(8);
@@ -65,7 +77,6 @@ EffectManifest TremoloEffect::getManifest() {
     waveform->setMinimum(0.005);
     waveform->setDefault(0.5);
     waveform->setMaximum(1);
-
 
     EffectManifestParameter *phase = manifest.addParameter();
     phase->setId("phase");
@@ -114,7 +125,8 @@ EffectManifest TremoloEffect::getManifest() {
 
 TremoloEffect::TremoloEffect(EngineEffect* pEffect,
                              const EffectManifest& manifest)
-        : m_pRateParameter(pEffect->getParameterById("rate")),
+        : m_pDepthParameter(pEffect->getParameterById("depth")),
+          m_pRateParameter(pEffect->getParameterById("rate")),
           m_pShapeParameter(pEffect->getParameterById("shape")),
           m_pWaveformParameter(pEffect->getParameterById("waveform")),
           m_pPhaseParameter(pEffect->getParameterById("phase")),
@@ -137,6 +149,7 @@ void TremoloEffect::processChannel(const ChannelHandle& handle,
 
     const double shape = m_pShapeParameter->value();
     const double smooth = m_pWaveformParameter->value();
+    const double depth = m_pDepthParameter->value();
 
     unsigned int currentFrame = pState->currentFrame;
     double gain = pState->gain;
@@ -198,8 +211,9 @@ void TremoloEffect::processChannel(const ChannelHandle& handle,
         //  This function gives the gain to apply for position in [0 1]
         //  Plot the function to get a grasp :
         //  From a sine to a square wave depending on the smooth parameter
-        double gainTarget = 0.5 + atan(sin(2.0 * M_PI * position) / smooth)
-                                   / (2 * atan(1 / smooth));
+        double gainTarget = 1.0 - (depth / 2.0)
+                + (atan(sin(2.0 * M_PI * position) / smooth) / (2 * atan(1 / smooth)))
+                    * depth;
 
         if (gainTarget > gain + kMaxGainIncrement) {
             gain += kMaxGainIncrement;
