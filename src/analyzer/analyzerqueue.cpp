@@ -223,8 +223,10 @@ bool AnalyzerQueue::isLoadedTrackQueued(TrackPointer pCurrentTrack) {
 TrackPointer AnalyzerQueue::dequeueNextBlocking() {
     QMutexLocker locked(&m_qm);
 
+    DEBUG_ASSERT(m_queuedTracks.size() == int(m_pendingTracks.size()));
     Event::end("AnalyzerQueue process");
     while (m_queuedTracks.isEmpty()) {
+        DEBUG_ASSERT(m_pendingTracks.empty());
         // One last try to deliver all collected updates before
         // suspending the analysis thread
         emitUpdateProgress();
@@ -237,6 +239,7 @@ TrackPointer AnalyzerQueue::dequeueNextBlocking() {
         }
     }
     Event::start("AnalyzerQueue process");
+    DEBUG_ASSERT(m_queuedTracks.size() == int(m_pendingTracks.size()));
 
     const PlayerInfo& info = PlayerInfo::instance();
     QMutableListIterator<TrackPointer> it(m_queuedTracks);
@@ -485,6 +488,8 @@ void AnalyzerQueue::execThread() {
         DEBUG_ASSERT(!nextTrack);
         emptyCheck();
     }
+    m_queuedTracks.clear();
+    m_pendingTracks.clear();
 
     if (m_pAnalysisDao) {
         // Invalidate reference to the thread-local database connection
