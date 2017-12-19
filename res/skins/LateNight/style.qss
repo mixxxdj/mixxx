@@ -400,56 +400,86 @@
   border-bottom: 1px solid #585858;
 }
 
+#ToolbarDivider {
+  background: transparent url(skin:/buttons/toolbar_divider.png) no-repeat center center;
+}
+
+#RecBox {
+  border: 1px solid #585858;
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+  margin: 2px;
+  border-radius: 2px;
+}
+
+#RecFeedback[displayValue="0"] {
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+}
+
+#RecFeedback[displayValue="1"],
+#RecFeedback[displayValue="2"] {
+  background-color: #840600;
+}
+
+#RecDot {
+  background: none url(skin:/buttons/rec_dot.svg) no-repeat center center;
+}
+
+#RecDuration {
+    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
+    font: bold 10px/12px;
+    color: #ddd;
+}
+
 #GuiToggleButton,
 #GuiToggleButtonInverted {
   margin: 2px;
 }
 
 #GuiToggleButton[displayValue="0"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #ddd;
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+  border: 1px solid #585858;
+  border-radius: 2px;
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
+  font: bold 10px/12px;
+  color: #ddd;
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
 }
 
 #GuiToggleButton[displayValue="1"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #0e0e0e;
-    background-color: #eece33;
+  border: 1px solid #585858;
+  border-radius: 2px;
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
+  font: bold 10px/12px;
+  color: #0e0e0e;
+  background-color: #eece33;
 }
 
 #GuiToggleButton[displayValue="2"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #0e0e0e;
-    background-color: #eece33;
+  border: 1px solid #585858;
+  border-radius: 2px;
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
+  font: bold 10px/12px;
+  color: #0e0e0e;
+  background-color: #eece33;
 }
 
 #GuiToggleButtonInverted[displayValue="0"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #0e0e0e;
-    background-color: #eece33;
+  border: 1px solid #585858;
+  border-radius: 2px;
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
+  font: bold 10px/12px;
+  color: #0e0e0e;
+  background-color: #eece33;
 }
 
 #GuiToggleButtonInverted[displayValue="1"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #ddd;
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                    stop:0 #282828,
-                                    stop:1 #0e0e0e);
+  border: 1px solid #585858;
+  border-radius: 2px;
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
+  font: bold 10px/12px;
+  color: #ddd;
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                  stop:0 #282828,
+                                  stop:1 #0e0e0e);
 }
 
 #VinylStatus {
@@ -457,15 +487,15 @@
 }
 
 #VinylToggleButtonUL[displayValue="0"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    margin: 1px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #ddd;
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                    stop:0 #282828,
-                                    stop:1 #0e0e0e);
+  border: 1px solid #585858;
+  border-radius: 2px;
+  margin: 1px;
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
+  font: bold 10px/12px;
+  color: #ddd;
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                  stop:0 #282828,
+                                  stop:1 #0e0e0e);
 }
 
 #VinylToggleButtonUL[displayValue="1"] {

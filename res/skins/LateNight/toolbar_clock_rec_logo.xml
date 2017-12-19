@@ -4,6 +4,56 @@
     <SizePolicy>min,min</SizePolicy>
     <Children>
 
+      <WidgetGroup><!-- Recording button & recording duration label -->
+        <ObjectName>RecBox</ObjectName>
+        <Layout>stacked</Layout>
+        <Size>76f,24f</Size>
+        <!-- minus 2px margin, minus 1px border
+            = 70x18 available for text -->
+        <Children>
+          <!-- invisible Rec button -->
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="ObjectName">RecButton</SetVariable>
+            <SetVariable name="TooltipId">toggle_recording</SetVariable>
+            <SetVariable name="Size">70f,18f</SetVariable>
+            <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
+          </Template>
+
+          <WidgetGroup><!-- Rec dot + RecDuration -->
+            <Layout>horizontal</Layout>
+            <Size>70f,18f</Size>
+            <Children>
+              <Label>
+                <ObjectName>RecDot</ObjectName>
+                <Size>15f,18f</Size>
+              </Label>  
+
+              <RecordingDuration>
+                <ObjectName>RecDuration</ObjectName>
+                <Size>55f,18f</Size>
+                <InactiveText>REC</InactiveText>
+                <Alignment>center</Alignment>
+              </RecordingDuration>
+            </Children>
+          </WidgetGroup><!-- /Rec dot + RecDuration -->
+
+          <!-- invisible Rec button -->
+          <Template src="skin:button_3state_display.xml">
+            <SetVariable name="ObjectName">RecFeedback</SetVariable>
+            <SetVariable name="TooltipId">toggle_recording</SetVariable>
+            <SetVariable name="Size">70f,18f</SetVariable>
+            <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
+            <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup><!-- /Recording button & recording duration label -->
+
+      <WidgetGroup> <!-- Spacer -->
+        <Layout>horizontal</Layout>
+        <Size>5f,min</Size>
+        <Children/>
+      </WidgetGroup>
+
       <Label>
         <ObjectName>ToolbarLogo</ObjectName>
         <Size>78f,24f</Size>
@@ -36,32 +86,9 @@
         <Children/>
       </WidgetGroup>
 
-      <WidgetGroup> <!-- Divider -->
-        <Layout>vertical</Layout>
-        <Size>min,min</Size>
-        <Children>
-          <WidgetGroup>
-            <Layout>Vertical</Layout>
-            <Size>3f,3f</Size>
-            <Style>
-                QGroupBox {background: #585858;}
-            </Style>
-            <Children/>
-          </WidgetGroup>
-          <WidgetGroup>
-            <Layout>Vertical</Layout>
-            <Size>3f,3f</Size>
-            <Children/>
-          </WidgetGroup>
-          <WidgetGroup>
-            <Layout>Vertical</Layout>
-            <Size>3f,3f</Size>
-            <Style>
-                QGroupBox {background: #585858;}
-            </Style>
-            <Children/>
-          </WidgetGroup>
-        </Children>
+      <WidgetGroup>
+        <ObjectName>ToolbarDivider</ObjectName>
+        <Size>3f,9min</Size>
       </WidgetGroup>
 
       <WidgetGroup> <!-- Spacer -->

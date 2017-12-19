@@ -33,32 +33,9 @@
         <Children/>
       </WidgetGroup>
 
-      <WidgetGroup> <!-- Divider -->
-        <Layout>vertical</Layout>
-        <Size>min,min</Size>
-        <Children>
-          <WidgetGroup>
-            <Layout>Vertical</Layout>
-            <Size>3f,3f</Size>
-            <Style>
-                QGroupBox {background: #585858;}
-            </Style>
-            <Children/>
-          </WidgetGroup>
-          <WidgetGroup>
-            <Layout>Vertical</Layout>
-            <Size>3f,3f</Size>
-            <Children/>
-          </WidgetGroup>
-          <WidgetGroup>
-            <Layout>Vertical</Layout>
-            <Size>3f,3f</Size>
-            <Style>
-                QGroupBox {background: #585858;}
-            </Style>
-            <Children/>
-          </WidgetGroup>
-        </Children>
+      <WidgetGroup>
+        <ObjectName>ToolbarDivider</ObjectName>
+        <Size>3f,9min</Size>
       </WidgetGroup>
 
       <WidgetGroup> <!-- Spacer -->
@@ -201,32 +178,9 @@
         <Children/>
       </WidgetGroup>
 
-      <WidgetGroup> <!-- Divider -->
-        <Layout>vertical</Layout>
-        <Size>min,min</Size>
-        <Children>
-          <WidgetGroup>
-            <Layout>Vertical</Layout>
-            <Size>3f,3f</Size>
-            <Style>
-                QGroupBox {background: #585858;}
-            </Style>
-            <Children/>
-          </WidgetGroup>
-          <WidgetGroup>
-            <Layout>Vertical</Layout>
-            <Size>3f,3f</Size>
-            <Children/>
-          </WidgetGroup>
-          <WidgetGroup>
-            <Layout>Vertical</Layout>
-            <Size>3f,3f</Size>
-            <Style>
-                QGroupBox {background: #585858;}
-            </Style>
-            <Children/>
-          </WidgetGroup>
-        </Children>
+      <WidgetGroup>
+        <ObjectName>ToolbarDivider</ObjectName>
+        <Size>3f,9min</Size>
       </WidgetGroup>
 
       <WidgetGroup> <!-- Spacer -->
