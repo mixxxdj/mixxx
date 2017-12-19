@@ -30,7 +30,7 @@ class MetaLinkTest : public BaseEffectTest {
 
         StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
         m_pChainSlot = pRack->getEffectChainSlot(iChainNumber);
-        m_pChainSlot->loadEffectChain(pChain);
+        m_pChainSlot->loadEffectChainToSlot(pChain);
         m_pEffectSlot = m_pChainSlot->getEffectSlot(iEffectNumber);
 
         QString group = StandardEffectRack::formatEffectSlotGroupString(

@@ -38,7 +38,7 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain) {
 
     QString group = StandardEffectRack::formatEffectChainSlotGroupString(
         iRackNumber, iChainNumber);
-    pChainSlot->loadEffectChain(pChain);
+    pChainSlot->loadEffectChainToSlot(pChain);
 
     pChain->setEnabled(true);
     EXPECT_LT(0.0, ControlObject::get(ConfigKey(group, "enabled")));
@@ -72,8 +72,7 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain) {
     EXPECT_DOUBLE_EQ(EffectChain::INSERT, pChain->insertionType());
 
     EXPECT_FALSE(pChain->enabledForChannel(m_master));
-    pChain->enableForChannel(m_master);
-    EXPECT_LT(0.0, ControlObject::get(ConfigKey(group, "group_[Master]_enable")));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(group, "group_[Master]_enable")));
 
     ControlObject::set(ConfigKey(group, "group_[Master]_enable"), 0);
     EXPECT_FALSE(pChain->enabledForChannel(m_master));
@@ -87,7 +86,7 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain_StartsWithChainLoaded) {
 
     StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
     EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(iChainNumber);
-    pChainSlot->loadEffectChain(pChain); 
+    pChainSlot->loadEffectChainToSlot(pChain);
     QString group = StandardEffectRack::formatEffectChainSlotGroupString(
         iRackNumber, iChainNumber);
     EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(group, "loaded")));
@@ -106,7 +105,7 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain_Clear) {
     QString group = StandardEffectRack::formatEffectChainSlotGroupString(
         iRackNumber, iChainNumber);
     EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(group, "loaded")));
-    pChainSlot->loadEffectChain(pChain);
+    pChainSlot->loadEffectChainToSlot(pChain);
     EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(group, "loaded")));
     ControlObject::set(ConfigKey(group, "clear"), 1.0);
     EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(group, "loaded")));
