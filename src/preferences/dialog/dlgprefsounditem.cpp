@@ -185,7 +185,7 @@ void DlgPrefSoundItem::loadPath(const SoundManagerConfig &config) {
  */
 void DlgPrefSoundItem::writePath(SoundManagerConfig *config) const {
     SoundDevicePointer pDevice = getDevice();
-    if (pDevice.isNull()) {
+    if (!pDevice) {
         return;
     } // otherwise, this will have a valid audiopath
 

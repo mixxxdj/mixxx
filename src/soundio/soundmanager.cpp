@@ -522,7 +522,7 @@ SoundDevicePointer SoundManager::getErrorDevice() const {
 
 QString SoundManager::getErrorDeviceName() const {
     SoundDevicePointer pDevice = getErrorDevice();
-    if (!pDevice.isNull()) {
+    if (pDevice) {
         return pDevice->getDisplayName();
     }
     return tr("a device");
@@ -533,7 +533,7 @@ QString SoundManager::getLastErrorMessage(SoundDeviceError err) const {
     QString deviceName(tr("a device"));
     QString detailedError(tr("An unknown error occurred"));
     SoundDevicePointer pDevice = getErrorDevice();
-    if (!pDevice.isNull()) {
+    if (pDevice) {
         deviceName = pDevice->getDisplayName();
         detailedError = pDevice->getError();
     }
@@ -613,7 +613,7 @@ void SoundManager::pushInputBuffers(const QList<AudioInputBuffer>& inputs,
 
 void SoundManager::writeProcess() {
     for (const auto& pDevice: m_devices) {
-        if (!pDevice.isNull()) {
+        if (pDevice) {
             pDevice->writeProcess();
         }
     }
@@ -621,7 +621,7 @@ void SoundManager::writeProcess() {
 
 void SoundManager::readProcess() {
     for (const auto& pDevice: m_devices) {
-        if (!pDevice.isNull()) {
+        if (pDevice) {
             pDevice->readProcess();
         }
     }
