@@ -94,8 +94,8 @@
       </WidgetGroup>
 
       <WidgetGroup>
-        <Layout>horizontal</Layout>
         <ObjectName>VuAndSlider</ObjectName>
+        <Layout>horizontal</Layout>
         <Children>
           <WidgetGroup>
             <ObjectName>VuMeter</ObjectName>

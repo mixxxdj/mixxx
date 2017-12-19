@@ -228,12 +228,13 @@
 }
 
 #VuAndSlider {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   padding-top: 3px;
 }
 
 #VuMeter {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-  padding-right: 6px;
+  padding-right: 4px;
 }
 
 #MasterSync {
@@ -910,12 +911,12 @@ border: 0px;
 }
 
 #PFLVUMeterBox {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   padding: 7px 0px 7px 0px;
 }
 
 #VUMeterBox {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  padding-right: 2px;
 }
 
 #Toolbar {
