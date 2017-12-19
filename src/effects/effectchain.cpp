@@ -189,6 +189,9 @@ void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handle_grou
         auto& statesMap = m_effectStatesMapArray[i];
         if (m_effects[i] != nullptr) {
             for (const auto& outputChannel : m_pEffectsManager->registeredOutputChannels()) {
+                if (kEffectDebugOutput) {
+                    qDebug() << debugString() << "EffectChain::enableForInputChannel creating EffectState for input" << handle_group << "output" << outputChannel;
+                }
                 statesMap.insert(outputChannel.handle(),
                         m_effects[i]->createState(bufferParameters));
             }

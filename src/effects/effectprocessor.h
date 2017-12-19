@@ -164,7 +164,7 @@ class EffectProcessorImpl : public EffectProcessor {
             const mixxx::EngineParameters& bufferParameters) final {
         for (const ChannelHandleAndGroup& inputChannel : activeInputChannels) {
             if (kEffectDebugOutput) {
-                qDebug() << this << "EffectProcessorImpl::initialize allocating"
+                qDebug() << this << "EffectProcessorImpl::initialize allocating "
                             "EffectStates for input" << inputChannel;
             }
             ChannelHandleMap<EffectSpecificState*> outputChannelMap;
@@ -173,8 +173,8 @@ class EffectProcessorImpl : public EffectProcessor {
                 outputChannelMap.insert(outputChannel.handle(),
                         createState(bufferParameters));
                 if (kEffectDebugOutput) {
-                    qDebug() << this << "EffectProcessorImpl::initialize"
-                                "registering output" << outputChannel;
+                    qDebug() << this << "EffectProcessorImpl::initialize "
+                                "registering output" << outputChannel << outputChannelMap[outputChannel.handle()];
                 }
             }
             m_channelStateMatrix.insert(inputChannel.handle(), outputChannelMap);
@@ -184,7 +184,11 @@ class EffectProcessorImpl : public EffectProcessor {
     };
 
     EffectSpecificState* createState(const mixxx::EngineParameters& bufferParameters) final {
-        return new EffectSpecificState(bufferParameters);
+        EffectSpecificState* pState = new EffectSpecificState(bufferParameters);
+        if (kEffectDebugOutput) {
+            qDebug() << this << "EffectProcessorImpl creating EffectState" << pState;
+        }
+        return pState;
     };
 
     bool loadStatesForInputChannel(const ChannelHandle& inputChannel,
