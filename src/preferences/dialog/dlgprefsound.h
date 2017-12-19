@@ -21,6 +21,7 @@
 #include "soundio/soundmanagerconfig.h"
 #include "soundio/sounddeviceerror.h"
 #include "preferences/dlgpreferencepage.h"
+#include "soundio/sounddevice.h"
 
 class SoundManager;
 class PlayerManager;
@@ -49,8 +50,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
   signals:
     void loadPaths(const SoundManagerConfig &config);
     void writePaths(SoundManagerConfig *config);
-    void refreshOutputDevices(const QList<QSharedPointer<SoundDevice>>& devices);
-    void refreshInputDevices(const QList<QSharedPointer<SoundDevice>>& devices);
+    void refreshOutputDevices(const QList<SoundDevicePointer>& devices);
+    void refreshInputDevices(const QList<SoundDevicePointer>& devices);
     void updatingAPI();
     void updatedAPI();
 
@@ -106,8 +107,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     ControlProxy* m_pMasterEnabled;
     ControlProxy* m_pMasterMonoMixdown;
     ControlProxy* m_pMicMonitorMode;
-    QList<QSharedPointer<SoundDevice>> m_inputDevices;
-    QList<QSharedPointer<SoundDevice>> m_outputDevices;
+    QList<SoundDevicePointer> m_inputDevices;
+    QList<SoundDevicePointer> m_outputDevices;
     bool m_settingsModified;
     bool m_bLatencyChanged;
     bool m_bSkipConfigClear;

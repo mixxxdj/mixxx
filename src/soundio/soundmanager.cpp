@@ -51,7 +51,7 @@ namespace {
 #define CPU_OVERLOAD_DURATION 500 // in ms
 
 struct DeviceMode {
-    QSharedPointer<SoundDevice> pDevice;
+    SoundDevicePointer pDevice;
     bool isInput;
     bool isOutput;
 };
@@ -123,17 +123,17 @@ SoundManager::~SoundManager() {
     delete m_pMasterAudioLatencyOverload;
 }
 
-QList<QSharedPointer<SoundDevice>> SoundManager::getDeviceList(
-    QString filterAPI, bool bOutputDevices, bool bInputDevices) {
+QList<SoundDevicePointer> SoundManager::getDeviceList(
+    QString filterAPI, bool bOutputDevices, bool bInputDevices) const {
     //qDebug() << "SoundManager::getDeviceList";
 
     if (filterAPI == "None") {
-        return QList<QSharedPointer<SoundDevice>>();
+        return QList<SoundDevicePointer>();
     }
 
     // Create a list of sound devices filtered to match given API and
     // input/output.
-    QList<QSharedPointer<SoundDevice>> filteredDeviceList;
+    QList<SoundDevicePointer> filteredDeviceList;
 
     for (const auto& pDevice: m_devices) {
         // Skip devices that don't match the API, don't have input channels when
@@ -310,7 +310,7 @@ void SoundManager::queryDevicesPortaudio() {
             PaTime  defaultHighOutputLatency
             double  defaultSampleRate
          */
-        auto currentDevice = QSharedPointer<SoundDevice>(new SoundDevicePortAudio(
+        auto currentDevice = SoundDevicePointer(new SoundDevicePortAudio(
                 m_pConfig, this, deviceInfo, i));
         m_devices.push_back(currentDevice);
         if (!strcmp(Pa_GetHostApiInfo(deviceInfo->hostApi)->name,
@@ -322,7 +322,7 @@ void SoundManager::queryDevicesPortaudio() {
 }
 
 void SoundManager::queryDevicesMixxx() {
-    auto currentDevice = QSharedPointer<SoundDevice>(new SoundDeviceNetwork(
+    auto currentDevice = SoundDevicePointer(new SoundDeviceNetwork(
             m_pConfig, this, m_pNetworkStream));
     m_devices.append(currentDevice);
 }
@@ -359,7 +359,7 @@ SoundDeviceError SoundManager::setupDevices() {
 
     // Instead of clearing m_pClkRefDevice and then assigning it directly,
     // compute the new one then atomically hand off below.
-    QSharedPointer<SoundDevice> pNewMasterClockRef;
+    SoundDevicePointer pNewMasterClockRef;
 
     m_pMasterAudioLatencyOverloadCount->set(0);
 
@@ -455,7 +455,7 @@ SoundDeviceError SoundManager::setupDevices() {
     }
 
     for (const auto& mode: toOpen) {
-        QSharedPointer<SoundDevice> pDevice = mode.pDevice;
+        SoundDevicePointer pDevice = mode.pDevice;
         m_pErrorDevice = pDevice;
 
         // If we have not yet set a clock source then we use the first
@@ -506,7 +506,7 @@ SoundDeviceError SoundManager::setupDevices() {
         emit(devicesSetup());
         return SOUNDDEVICE_ERROR_OK;
     }
-    m_pErrorDevice = QSharedPointer<SoundDevice>(
+    m_pErrorDevice = SoundDevicePointer(
             new SoundDeviceNotFound(*devicesNotFound.constBegin()));
     return SOUNDDEVICE_ERROR_DEVICE_COUNT;
 
@@ -516,12 +516,12 @@ closeAndError:
     return err;
 }
 
-QSharedPointer<SoundDevice> SoundManager::getErrorDevice() const {
+SoundDevicePointer SoundManager::getErrorDevice() const {
     return m_pErrorDevice;
 }
 
 QString SoundManager::getErrorDeviceName() const {
-    QSharedPointer<SoundDevice> pDevice = getErrorDevice();
+    SoundDevicePointer pDevice = getErrorDevice();
     if (!pDevice.isNull()) {
         return pDevice->getDisplayName();
     }
@@ -532,7 +532,7 @@ QString SoundManager::getLastErrorMessage(SoundDeviceError err) const {
     QString error;
     QString deviceName(tr("a device"));
     QString detailedError(tr("An unknown error occurred"));
-    QSharedPointer<SoundDevice> pDevice = getErrorDevice();
+    SoundDevicePointer pDevice = getErrorDevice();
     if (!pDevice.isNull()) {
         deviceName = pDevice->getDisplayName();
         detailedError = pDevice->getError();

@@ -384,7 +384,7 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
     if (flags & SoundManagerConfig::DEVICES) {
         clearOutputs();
         clearInputs();
-        QList<QSharedPointer<SoundDevice>> outputDevices = soundManager->getDeviceList(m_api, true, false);
+        QList<SoundDevicePointer> outputDevices = soundManager->getDeviceList(m_api, true, false);
         if (!outputDevices.isEmpty()) {
             for (const auto& pDevice: outputDevices) {
                 if (pDevice->getNumOutputChannels() < 2) {

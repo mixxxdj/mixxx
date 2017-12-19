@@ -29,7 +29,7 @@
  * @param index the index of the represented AudioPath, if applicable
  */
 DlgPrefSoundItem::DlgPrefSoundItem(QWidget* parent, AudioPathType type,
-                                   const QList<QSharedPointer<SoundDevice>>& devices, bool isInput,
+                                   const QList<SoundDevicePointer>& devices, bool isInput,
                                    unsigned int index)
         : QWidget(parent),
           m_type(type),
@@ -55,7 +55,7 @@ DlgPrefSoundItem::~DlgPrefSoundItem() {
  * Slot called when the parent preferences pane updates its list of sound
  * devices, to update the item widget's list of devices to display.
  */
-void DlgPrefSoundItem::refreshDevices(const QList<QSharedPointer<SoundDevice>>& devices) {
+void DlgPrefSoundItem::refreshDevices(const QList<SoundDevicePointer>& devices) {
     m_devices = devices;
     QString oldDev = deviceComboBox->itemData(deviceComboBox->currentIndex()).toString();
     deviceComboBox->setCurrentIndex(0);
@@ -184,7 +184,7 @@ void DlgPrefSoundItem::loadPath(const SoundManagerConfig &config) {
  * config.
  */
 void DlgPrefSoundItem::writePath(SoundManagerConfig *config) const {
-    QSharedPointer<SoundDevice> pDevice = getDevice();
+    SoundDevicePointer pDevice = getDevice();
     if (pDevice.isNull()) {
         return;
     } // otherwise, this will have a valid audiopath
@@ -235,10 +235,10 @@ void DlgPrefSoundItem::reload() {
  * Gets the currently selected SoundDevice
  * @returns pointer to SoundDevice, or NULL if the "None" option is selected.
  */
-QSharedPointer<SoundDevice> DlgPrefSoundItem::getDevice() const {
+SoundDevicePointer DlgPrefSoundItem::getDevice() const {
     QString selection = deviceComboBox->itemData(deviceComboBox->currentIndex()).toString();
     if (selection == "None") {
-        return QSharedPointer<SoundDevice>();
+        return SoundDevicePointer();
     }
     for (const auto& pDevice: m_devices) {
         qDebug() << "1" << pDevice->getDisplayName();
@@ -249,7 +249,7 @@ QSharedPointer<SoundDevice> DlgPrefSoundItem::getDevice() const {
     }
     // looks like something became invalid ???
     deviceComboBox->setCurrentIndex(0); // set it to none
-    return QSharedPointer<SoundDevice>();
+    return SoundDevicePointer();
 }
 
 /**
