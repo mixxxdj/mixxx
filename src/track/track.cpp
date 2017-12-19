@@ -65,7 +65,7 @@ Track::Track(
           m_record(trackId),
           m_bDirty(false),
           m_bMarkedForMetadataExport(false),
-          m_analyzerProgress(kAnalysisProgressUnknown) {
+          m_analysisProgress(kAnalysisProgressUnknown) {
 }
 
 //static
@@ -677,17 +677,17 @@ void Track::setWaveformSummary(ConstWaveformPointer pWaveform) {
     emit(waveformSummaryUpdated());
 }
 
-void Track::setAnalyzerProgress(int progress) {
+void Track::setAnalysisProgress(int progress) {
     // progress in 0 .. 1000. QAtomicInt so no need for lock.
-    int oldProgress = m_analyzerProgress.fetchAndStoreAcquire(progress);
+    int oldProgress = m_analysisProgress.fetchAndStoreAcquire(progress);
     if (progress != oldProgress) {
         emit(analyzerProgress(progress));
     }
 }
 
-int Track::getAnalyzerProgress() const {
+int Track::getAnalysisProgress() const {
     // QAtomicInt so no need for lock.
-    return load_atomic(m_analyzerProgress);
+    return load_atomic(m_analysisProgress);
 }
 
 void Track::setCuePoint(double cue) {

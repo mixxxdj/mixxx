@@ -231,7 +231,7 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
         connect(pNewTrack.get(), SIGNAL(analyzerProgress(int)),
                 this, SLOT(slotAnalyzerProgress(int)));
 
-        slotAnalyzerProgress(pNewTrack->getAnalyzerProgress());
+        slotAnalyzerProgress(pNewTrack->getAnalysisProgress());
     } else {
         m_pCurrentTrack.reset();
         m_pWaveform.clear();

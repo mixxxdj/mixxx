@@ -173,6 +173,31 @@ AnalyzerQueue::~AnalyzerQueue() {
     wait();
 }
 
+int AnalyzerQueue::adjustTrackAnalysisProgress(const TrackPointer& pTrack) const {
+    const auto analysisProgress = pTrack->getAnalysisProgress();
+    if (analysisProgress < kAnalysisProgressNone) {
+        // Do not shortcut the following loop, because each
+        // analyzer must be given a chance to load the analysis
+        // results for this track!
+        bool analysisNeeded = false;
+        for (auto const& pAnalyzer: m_pAnalyzers) {
+            if (!pAnalyzer->isDisabledOrLoadStoredSuccess(pTrack)) {
+                analysisNeeded = true;
+            }
+        }
+        if (analysisNeeded) {
+            pTrack->setAnalysisProgress(kAnalysisProgressNone);
+            return kAnalysisProgressNone;
+        } else {
+            pTrack->setAnalysisProgress(kAnalysisProgressDone);
+            return kAnalysisProgressDone;
+        }
+    } else {
+        DEBUG_ASSERT(analysisProgress <= kAnalysisProgressDone);
+    }
+    return analysisProgress ;
+}
+
 // This is called from the AnalyzerQueue thread
 bool AnalyzerQueue::isLoadedTrackWaiting(TrackPointer pAnalyzingTrack) {
     bool anyQueuedTrackLoaded = false;
@@ -182,32 +207,12 @@ bool AnalyzerQueue::isLoadedTrackWaiting(TrackPointer pAnalyzingTrack) {
     while (it.hasNext()) {
         TrackPointer pTrack = it.next();
         DEBUG_ASSERT(pTrack);
-        if (!anyQueuedTrackLoaded) {
-            anyQueuedTrackLoaded = PlayerInfo::instance().isTrackLoaded(pTrack);
-        }
-        // try to load waveforms for all new tracks first
-        // and remove them from queue if already analysed
-        // This avoids waiting for a running analysis for those tracks.
-        int progress = pTrack->getAnalyzerProgress();
-        if ((progress < kAnalysisProgressNone) ||
-                (progress > kAnalysisProgressDone)) {
-            // Load stored analysis
-            bool processTrack = false;
-            for (auto const& pAnalyzer: m_pAnalyzers) {
-                if (!pAnalyzer->isDisabledOrLoadStoredSuccess(pTrack)) {
-                    processTrack = true;
-                }
-            }
-            if (processTrack) {
-                m_tracksWithProgress[pTrack] = kAnalysisProgressNone;
-            } else {
-                kLogger.debug()
-                        << "Skipping analysis of file"
-                        << pTrack->getLocation();
-                m_tracksWithProgress[pTrack] = kAnalysisProgressDone;
-                it.remove();
-            }
-        } else if (progress == kAnalysisProgressDone) {
+        const auto analysisProgress = adjustTrackAnalysisProgress(pTrack);
+        if (analysisProgress == kAnalysisProgressDone) {
+            kLogger.debug()
+                    << "Skipping analysis of file"
+                    << pTrack->getLocation();
+            m_tracksWithProgress[pTrack] = analysisProgress;
             it.remove();
         }
     }
@@ -361,6 +366,7 @@ AnalyzerQueue::AnalysisResult AnalyzerQueue::doAnalysis(
 }
 
 int AnalyzerQueue::resume() {
+    m_queueModifiedFlag = true;
     QMutexLocker locked(&m_qm);
     m_qwait.wakeAll();
     return m_queuedTracks.size();
@@ -521,7 +527,7 @@ void AnalyzerQueue::slotUpdateProgress() {
         // limit the responsiveness of the UI or may cause freezing.
         bool oneOrMoreTracksFinished = false;
         for (const auto trackWithProgress: readScope.tracksWithProgress()) {
-            trackWithProgress.first->setAnalyzerProgress(trackWithProgress.second);
+            trackWithProgress.first->setAnalysisProgress(trackWithProgress.second);
             if (trackWithProgress.second == kAnalysisProgressDone) {
                 oneOrMoreTracksFinished = true;
             }
@@ -548,12 +554,29 @@ void AnalyzerQueue::enqueueTrack(TrackPointer pTrack) {
         return;
     }
 
-    QMutexLocker locked(&m_qm);
-    // TODO(XXX): Enqueuing with containment checking of each track
-    // has an algorithmic complexity of O(n^2)!
-    if (!m_queuedTracks.contains(pTrack)) {
-        m_queuedTracks.enqueue(pTrack);
-        m_queueModifiedFlag = true;
+    const auto analysisProgress = adjustTrackAnalysisProgress(pTrack);
+    if (analysisProgress > kAnalysisProgressNone) {
+        if (analysisProgress == kAnalysisProgressDone) {
+            kLogger.debug()
+                    << "Skipping analysis of file"
+                    << pTrack->getLocation();
+        } else {
+            DEBUG_ASSERT(analysisProgress < kAnalysisProgressDone);
+            kLogger.debug()
+                    << "Analysis already in progress for file"
+                    << pTrack->getLocation();
+        }
+    } else {
+        DEBUG_ASSERT(analysisProgress == kAnalysisProgressNone);
+        QMutexLocker locked(&m_qm);
+        // Don't check for duplicate tracks now, since they will be detected
+        // during analysis
+        if (PlayerInfo::instance().isTrackLoaded(pTrack)) {
+            // Prioritize track
+            m_queuedTracks.prepend(pTrack);
+        } else {
+            m_queuedTracks.enqueue(pTrack);
+        }
         // Don't wake up paused threads now to avoid race conditions
         // if multiple threads are added in a row. The caller is
         // responsible to finish the enqueuing of tracks with resume().

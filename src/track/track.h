@@ -235,8 +235,8 @@ class Track : public QObject {
     ConstWaveformPointer getWaveformSummary() const;
     void setWaveformSummary(ConstWaveformPointer pWaveform);
 
-    void setAnalyzerProgress(int progress);
-    int getAnalyzerProgress() const;
+    void setAnalysisProgress(int progress);
+    int getAnalysisProgress() const;
 
     // Save the cue point in samples
     void setCuePoint(double cue);
@@ -380,7 +380,7 @@ class Track : public QObject {
     ConstWaveformPointer m_waveform;
     ConstWaveformPointer m_waveformSummary;
 
-    QAtomicInt m_analyzerProgress; // in 0.1%
+    QAtomicInt m_analysisProgress; // in 0.1%
 
     friend class TrackDAO;
     friend class TrackCache;

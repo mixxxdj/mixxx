@@ -73,6 +73,10 @@ class AnalyzerQueue : public QThread {
     typedef std::unique_ptr<Analyzer> AnalyzerPtr;
     std::vector<AnalyzerPtr> m_pAnalyzers;
 
+    // Checks, updates, and returns the analyzer progress of
+    // of the track according to the current user settings
+    int adjustTrackAnalysisProgress(const TrackPointer& pTrack) const;
+
     void execThread();
 
     bool isLoadedTrackWaiting(TrackPointer pAnalyzingTrack);
