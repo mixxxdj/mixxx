@@ -346,11 +346,12 @@
 }
 
 #ToolbarButtons {
+  qproperty-alignment: 'AlignCenter';
   border: 1px solid #585858;
   border-top: 0px;
   border-right: 0px;
   border-bottom: 0px;
-  padding: 2px;
+  padding: 0px 2px;
 }
 
 #KeyText {
