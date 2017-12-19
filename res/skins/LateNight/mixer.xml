@@ -255,21 +255,21 @@
                     <SetVariable name="label">Balance</SetVariable>
                   </Template>
 
+                  <WidgetGroup><Size>0min,5f</Size></WidgetGroup>
+
                   <WidgetGroup>
                     <ObjectName>MasterVuMeter4ch</ObjectName>
                     <Layout>vertical</Layout>
                     <SizePolicy>min,me</SizePolicy>
                     <Children>
 
-                      <WidgetGroup><Size>0min,5f</Size></WidgetGroup>
-
                       <WidgetGroup><!-- Peak indicator L + R -->
+                        <ObjectName>Spacer1e</ObjectName>
                         <Layout>horizontal</Layout>
                         <SizePolicy>max,max</SizePolicy>
                         <Children>
                           <StatusLight>
                             <TooltipId>master_PeakIndicator</TooltipId>
-                            <Style></Style>
                             <PathStatusLight>buttons/btn_clipping1_over.png</PathStatusLight>
                             <PathBack>buttons/btn_clipping1.png</PathBack>
                             <Connection>
@@ -278,7 +278,6 @@
                           </StatusLight>
                           <StatusLight>
                             <TooltipId>master_PeakIndicator</TooltipId>
-                            <Style></Style>
                             <PathStatusLight>buttons/btn_clipping1_over.png</PathStatusLight>
                             <PathBack>buttons/btn_clipping1.png</PathBack>
                             <Connection>
@@ -289,12 +288,12 @@
                       </WidgetGroup><!-- /Peak indicator L + R -->
 
                       <WidgetGroup><!-- Level L + R -->
+                        <ObjectName>Spacer1e</ObjectName>
                         <Layout>horizontal</Layout>
                         <SizePolicy>max,max</SizePolicy>
                         <Children>
                           <VuMeter>
                             <TooltipId>master_VuMeterL</TooltipId>
-                            <Style></Style>
                             <PathVu>buttons/btn_volume_display1_over.png</PathVu>
                             <PathBack>buttons/btn_volume_display1.png</PathBack>
                             <Horizontal>false</Horizontal>
@@ -308,7 +307,6 @@
                           </VuMeter>
                           <VuMeter>
                             <TooltipId>master_VuMeterR</TooltipId>
-                            <Style></Style>
                             <PathVu>buttons/btn_volume_display1_over.png</PathVu>
                             <PathBack>buttons/btn_volume_display1.png</PathBack>
                             <Horizontal>false</Horizontal>

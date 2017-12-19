@@ -906,6 +906,10 @@ border: 0px;
   background-color: #456113;
 }
 
+#Spacer1e {
+  background-color: #1e1e1e;
+}
+
 #Spacer58 {
   border: 1px solid #585858;
 }
