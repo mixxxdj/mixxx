@@ -9,7 +9,8 @@
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
       <attribute config_key="[Master],num_decks">4</attribute>
-      <attribute config_key="[Master],num_samplers">8</attribute>
+      <attribute config_key="[Master],num_samplers">16</attribute>
+      <!--attribute config_key="[Master],num_samplers">64</attribute-->
       <attribute config_key="[Master],num_preview_decks">1</attribute>
       <attribute config_key="[Library],show_library">1</attribute>
 
@@ -164,6 +165,15 @@
       </Children>
     </SingletonDefinition>
 
+    <!-- Here we can choose between 16 or 64 sample decks -->
+    <SingletonDefinition>
+      <ObjectName>SamplerRowsButton_Singleton</ObjectName>
+      <Children>
+        <Template src="skin:sampler_rows_selection_stack_16.xml"/>
+        <!--Template src="skin:sampler_rows_selection_stack_64.xml.xml"/-->
+      </Children>
+    </SingletonDefinition>
+
     <WidgetGroup>
       <SizePolicy>me,me</SizePolicy>
       <Layout>vertical</Layout>
@@ -234,7 +244,8 @@
               <Children>
                 <Template src="skin:main_decks.xml"/>
                 <Template src="skin:effect_rack.xml"/>
-                <!--Template src="skin:sample_decks.xml"/-->
+                <Template src="skin:sample_decks_16.xml"/>
+                <!--Template src="skin:sample_decks_64.xml"/-->
                 <Template src="skin:microphone_rack.xml"/>
                 <SingletonContainer>
                   <ObjectName>Library</ObjectName>
