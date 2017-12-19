@@ -1,0 +1,12 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A horizontal and vertical space filling widget. Grows to fit available space.
+-->
+<Template>
+  <!-- grows to fill the space between the top and the first deck -->
+  <WidgetGroup>
+    <ObjectName>SpaceFiller</ObjectName>
+    <SizePolicy>me,me</SizePolicy>
+  </WidgetGroup>
+</Template>

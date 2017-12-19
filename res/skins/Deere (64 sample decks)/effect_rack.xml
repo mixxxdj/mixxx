@@ -1,0 +1,74 @@
+<!DOCTYPE template>
+<!--
+Container for all the effect units
+-->
+<Template>
+  <WidgetGroup>
+    <Connection>
+      <ConfigKey>[EffectRack1],show</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+    <Layout>vertical</Layout>
+    <!-- I don't now why this works but a WidgetGroup wrapper around a
+         WidgetStack with a 'fixed' size policy makes the group track the
+         minimum size of the current stack widget. -->
+    <SizePolicy>me,f</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>EffectRackContainer</ObjectName>
+        <Layout>vertical</Layout>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>EffectUnitsRow</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,me</SizePolicy>
+            <Children>
+              <Template src="skin:effect_unit.xml">
+                <SetVariable name="EffectRack">1</SetVariable>
+                <SetVariable name="EffectUnit">1</SetVariable>
+              </Template>
+
+              <Template src="skin:spacer_hx.xml">
+                <SetVariable name="width">4</SetVariable>
+                <SetVariable name="color">22</SetVariable>
+              </Template>
+
+              <Template src="skin:effect_unit.xml">
+                <SetVariable name="EffectRack">1</SetVariable>
+                <SetVariable name="EffectUnit">2</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>EffectUnitsRow</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,me</SizePolicy>
+            <Children>
+              <Template src="skin:effect_unit.xml">
+                <SetVariable name="EffectRack">1</SetVariable>
+                <SetVariable name="EffectUnit">3</SetVariable>
+              </Template>
+
+              <Template src="skin:spacer_hx.xml">
+                <SetVariable name="width">4</SetVariable>
+                <SetVariable name="color">22</SetVariable>
+              </Template>
+
+              <Template src="skin:effect_unit.xml">
+                <SetVariable name="EffectRack">1</SetVariable>
+                <SetVariable name="EffectUnit">4</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[Master],show_4effectunits</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>
