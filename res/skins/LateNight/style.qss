@@ -1235,14 +1235,14 @@ WEffectSelector {
   font-weight: bold;
   font-size: 12px/13px;
   text-transform: uppercase;
-  color: #ccc;
+  color: #cfb32c;
   background-color: #0f0f0f;
   /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
   min-height: 13px;
   margin: 0px;
   /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
       names start getting cut off. Adding explicit padding improves this. */
-  padding: 4px 0px 4px 3px;
+  padding: 4px 0px 4px 5px;
   /* The 3D frame on the combo box becomes flat when you give it a border */
   border: 1px solid #666;
   border-radius: 3px;
@@ -1280,7 +1280,7 @@ WEffectSelector {
     /* On Linux, this is not applied but font color from WEffectSelector
     is inherited.
     On Windows, it must be defined here */
-    color: #ccc;
+    color: #cfb32c;
     border: 0px;
     border-radius: 2px;
   }
@@ -1646,4 +1646,14 @@ QTreeView::branch:open:has-children:has-siblings:selected { border-image: none; 
 QTreeView::item:selected {
   background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
   color: #cfb32c;
+}
+
+
+
+QToolTip {
+  background-color: #0f0f0f;
+  color: #cfb32c;
+  padding: 3px;
+  border: 1px solid #333;
+  border-radius: 2px;
 }
