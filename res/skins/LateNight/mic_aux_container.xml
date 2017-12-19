@@ -56,16 +56,16 @@
             <Layout>horizontal</Layout>
             <SizePolicy>max,min</SizePolicy>
             <Children>
-              <Template src="skin:microphone.xml">
+              <Template src="skin:mic_unit.xml">
                 <SetVariable name="mic1hack">1</SetVariable>
               </Template>
-              <Template src="skin:microphone.xml">
+              <Template src="skin:mic_unit.xml">
                 <SetVariable name="micnum">2</SetVariable>
               </Template>
-              <Template src="skin:microphone.xml">
+              <Template src="skin:mic_unit.xml">
                 <SetVariable name="micnum">3</SetVariable>
               </Template>
-              <Template src="skin:microphone.xml">
+              <Template src="skin:mic_unit.xml">
                 <SetVariable name="micnum">4</SetVariable>
               </Template>
             </Children>
@@ -98,16 +98,16 @@
             <Layout>horizontal</Layout>
             <SizePolicy>max,min</SizePolicy>
             <Children>
-              <Template src="skin:aux_passthrough.xml">
+              <Template src="skin:aux_unit.xml">
                 <SetVariable name="auxnum">1</SetVariable>
               </Template>
-              <Template src="skin:aux_passthrough.xml">
+              <Template src="skin:aux_unit.xml">
                 <SetVariable name="auxnum">2</SetVariable>
               </Template>
-              <Template src="skin:aux_passthrough.xml">
+              <Template src="skin:aux_unit.xml">
                 <SetVariable name="auxnum">3</SetVariable>
               </Template>
-              <Template src="skin:aux_passthrough.xml">
+              <Template src="skin:aux_unit.xml">
                 <SetVariable name="auxnum">4</SetVariable>
               </Template>
             </Children>

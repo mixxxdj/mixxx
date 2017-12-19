@@ -1,5 +1,5 @@
 <Template>
-  <SetVariable name="group">[Channel<Variable name="channum" />]</SetVariable>
+  <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
   <WidgetGroup>
     <ObjectName>Deck<Variable name="channum" /></ObjectName>
     <Layout>horizontal</Layout>
@@ -31,7 +31,7 @@
                     <Channel><Variable name="channum" /></Channel>
                     <NumberOfDigits>2</NumberOfDigits>
                     <Connection>
-                      <ConfigKey>[Channel<Variable name="channum" />],visual_bpm</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
                     </Connection>
                   </NumberBpm>
 
@@ -48,7 +48,7 @@
                       <Text></Text>
                     </State>
                     <Connection>
-                      <ConfigKey>[Channel<Variable name="channum" />],bpm_tap</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,bpm_tap</ConfigKey>
                       <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                     </Connection>
                   </PushButton>
@@ -77,7 +77,7 @@
                 <Slider>slider_pitch1.png</Slider>
                 <Horizontal>false</Horizontal>
                 <Connection>
-                  <ConfigKey>[Channel<Variable name="channum" />],rate</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,rate</ConfigKey>
                 </Connection>
               </SliderComposed>
 
@@ -99,11 +99,11 @@
                           <Unpressed>buttons/btn_pitch_up1.png</Unpressed>
                         </State>
                         <Connection>
-                          <ConfigKey>[Channel<Variable name="channum" />],rate_perm_up</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,rate_perm_up</ConfigKey>
                           <ButtonState>LeftButton</ButtonState>
                         </Connection>
                         <Connection>
-                          <ConfigKey>[Channel<Variable name="channum" />],rate_perm_up_small</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,rate_perm_up_small</ConfigKey>
                           <ButtonState>RightButton</ButtonState>
                         </Connection>
                       </PushButton>
@@ -117,11 +117,11 @@
                           <Unpressed>buttons/btn_nudge_down1.png</Unpressed>
                         </State>
                         <Connection>
-                          <ConfigKey>[Channel<Variable name="channum" />],rate_temp_down</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,rate_temp_down</ConfigKey>
                           <ButtonState>LeftButton</ButtonState>
                         </Connection>
                         <Connection>
-                          <ConfigKey>[Channel<Variable name="channum" />],rate_temp_down_small</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,rate_temp_down_small</ConfigKey>
                           <ButtonState>RightButton</ButtonState>
                         </Connection>
                       </PushButton>
@@ -135,11 +135,11 @@
                           <Unpressed>buttons/btn_nudge_up1.png</Unpressed>
                         </State>
                         <Connection>
-                          <ConfigKey>[Channel<Variable name="channum" />],rate_temp_up</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,rate_temp_up</ConfigKey>
                           <ButtonState>LeftButton</ButtonState>
                         </Connection>
                         <Connection>
-                          <ConfigKey>[Channel<Variable name="channum" />],rate_temp_up_small</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,rate_temp_up_small</ConfigKey>
                           <ButtonState>RightButton</ButtonState>
                         </Connection>
                       </PushButton>
@@ -153,11 +153,11 @@
                           <Unpressed>buttons/btn_pitch_down1.png</Unpressed>
                         </State>
                         <Connection>
-                          <ConfigKey>[Channel<Variable name="channum" />],rate_perm_down</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,rate_perm_down</ConfigKey>
                           <ButtonState>LeftButton</ButtonState>
                         </Connection>
                         <Connection>
-                          <ConfigKey>[Channel<Variable name="channum" />],rate_perm_down_small</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,rate_perm_down_small</ConfigKey>
                           <ButtonState>RightButton</ButtonState>
                         </Connection>
                       </PushButton>
@@ -182,11 +182,11 @@
                           <Unpressed>buttons/btn_pitch_down1.png</Unpressed>
                         </State>
                         <Connection>
-                          <ConfigKey>[Channel<Variable name="channum" />],rate_perm_down</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,rate_perm_down</ConfigKey>
                           <ButtonState>LeftButton</ButtonState>
                         </Connection>
                         <Connection>
-                          <ConfigKey>[Channel<Variable name="channum" />],rate_perm_down_small</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,rate_perm_down_small</ConfigKey>
                           <ButtonState>RightButton</ButtonState>
                         </Connection>
                       </PushButton>
@@ -200,11 +200,11 @@
                           <Unpressed>buttons/btn_nudge_down1.png</Unpressed>
                         </State>
                         <Connection>
-                          <ConfigKey>[Channel<Variable name="channum" />],rate_temp_down</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,rate_temp_down</ConfigKey>
                           <ButtonState>LeftButton</ButtonState>
                         </Connection>
                         <Connection>
-                          <ConfigKey>[Channel<Variable name="channum" />],rate_temp_down_small</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,rate_temp_down_small</ConfigKey>
                           <ButtonState>RightButton</ButtonState>
                         </Connection>
                       </PushButton>
@@ -218,11 +218,11 @@
                           <Unpressed>buttons/btn_nudge_up1.png</Unpressed>
                         </State>
                         <Connection>
-                          <ConfigKey>[Channel<Variable name="channum" />],rate_temp_up</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,rate_temp_up</ConfigKey>
                           <ButtonState>LeftButton</ButtonState>
                         </Connection>
                         <Connection>
-                          <ConfigKey>[Channel<Variable name="channum" />],rate_temp_up_small</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,rate_temp_up_small</ConfigKey>
                           <ButtonState>RightButton</ButtonState>
                         </Connection>
                       </PushButton>
@@ -236,11 +236,11 @@
                           <Unpressed>buttons/btn_pitch_up1.png</Unpressed>
                         </State>
                         <Connection>
-                          <ConfigKey>[Channel<Variable name="channum" />],rate_perm_up</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,rate_perm_up</ConfigKey>
                           <ButtonState>LeftButton</ButtonState>
                         </Connection>
                         <Connection>
-                          <ConfigKey>[Channel<Variable name="channum" />],rate_perm_up_small</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,rate_perm_up_small</ConfigKey>
                           <ButtonState>RightButton</ButtonState>
                         </Connection>
                       </PushButton>
@@ -275,11 +275,11 @@
                   <Text>SYNC</Text>
                 </State>
                 <Connection>
-                  <ConfigKey>[Channel<Variable name="channum" />],sync_enabled</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,sync_enabled</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
                 <Connection>
-                  <ConfigKey>[Channel<Variable name="channum" />],beatsync</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,beatsync</ConfigKey>
                   <ButtonState>RightButton</ButtonState>
                 </Connection>
               </PushButton>
@@ -299,7 +299,7 @@
                   <Unpressed>buttons/btn_mastersync_master_on.png</Unpressed>
                 </State>
                 <Connection>
-                  <ConfigKey>[Channel<Variable name="channum" />],sync_master</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,sync_master</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
               </PushButton> -->

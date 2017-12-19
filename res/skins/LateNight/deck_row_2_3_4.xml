@@ -22,9 +22,7 @@
                 <Property>title</Property>
                 <Elide>right</Elide>
                 <SizePolicy>me,min</SizePolicy>
-                <Channel>
-                  <Variable name="channum" />
-                </Channel>
+                <Channel><Variable name="channum"/></Channel>
               </TrackProperty>
             </Children>
           </WidgetGroup>
@@ -39,9 +37,9 @@
                 <ObjectName>PlayPositionText</ObjectName>
                 <TooltipId>track_time</TooltipId>
                 <Alignment>right</Alignment>
-                <Channel><Variable name="channum" /></Channel>
+                <Channel><Variable name="channum"/></Channel>
                 <Connection>
-                  <ConfigKey>[Channel<Variable name="channum" />],playposition</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
                 </Connection>
               </NumberPos>
             </Children>
@@ -66,7 +64,7 @@
                 <Elide>right</Elide>
                 <SizePolicy>me,min</SizePolicy>
                 <Channel>
-                  <Variable name="channum" />
+                  <Variable name="channum"/>
                 </Channel>
               </TrackProperty>
             </Children>
@@ -81,7 +79,7 @@
                 <TooltipId>track_duration</TooltipId>
                 <Property>durationFormatted</Property>
                 <Channel>
-                  <Variable name="channum" />
+                  <Variable name="channum"/>
                 </Channel>
               </TrackProperty>
             </Children>

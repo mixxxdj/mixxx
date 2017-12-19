@@ -13,7 +13,7 @@
           <StatusLight>
             <ObjectName>VinylStatus</ObjectName>
             <Size>10f,10f</Size>
-            <TooltipId>vinylcontrol_status</TooltipId>
+            <TooltipId>vinylcontrol_status</TooltipId>vinylcontrol_enabled
             <NumberPos>3</NumberPos>
             <PathStatusLight scalemode="STRETCH">buttons/btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
             <PathStatusLight2 scalemode="STRETCH">buttons/btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
@@ -27,6 +27,7 @@
 
       <PushButton>
         <Size>42f,22f</Size>
+        <TooltipId>vinylcontrol_enabled</TooltipId>
         <ObjectName>VinylToggleButtonUL</ObjectName>
         <NumberStates>2</NumberStates>
         <State>
@@ -48,6 +49,7 @@
 
       <PushButton>
         <Size>42f,22f</Size>
+        <TooltipId>vinylcontrol_mode</TooltipId>
         <ObjectName>TristateButton</ObjectName>
         <NumberStates>3</NumberStates>
         <State>

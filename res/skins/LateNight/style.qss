@@ -346,7 +346,7 @@
 }
 
 #ToolbarButtons {
-  qproperty-alignment: 'AlignCenter';
+  qproperty-layoutAlignment: 'AlignCenter';
   border: 1px solid #585858;
   border-top: 0px;
   border-right: 0px;
@@ -486,7 +486,8 @@
   border-radius: 5px;
 }
 
-#VinylToggleButtonUL[displayValue="0"] {
+#VinylToggleButtonUL[displayValue="0"],
+#FxAssignButton[displayValue="0"] {
   border: 1px solid #585858;
   border-radius: 2px;
   margin: 1px;
@@ -498,7 +499,8 @@
                                   stop:1 #0e0e0e);
 }
 
-#VinylToggleButtonUL[displayValue="1"] {
+#VinylToggleButtonUL[displayValue="1"],
+#FxAssignButton[displayValue="1"] {
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
@@ -808,7 +810,7 @@ WBeatSpinBox {
 }
 
 #PreviewLabel {
-  qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
+  qproperty-alignment: 'AlignVCenter | AlignHCenter';
   font: 13px/14px "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
   background-color: #1e1e1e;
   font-weight:bold;
@@ -973,7 +975,6 @@ border: 0px;
 }
 
 #RateSlider {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   /* no respected since RateSlider has a connection attached
   margin: 0px 10px 0px 0px; */
 }

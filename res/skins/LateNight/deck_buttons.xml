@@ -150,15 +150,15 @@
                   <Unpressed>buttons/btn_hotcue2_1_over.png</Unpressed>
                 </State>
                 <Connection>
-                  <ConfigKey>[Channel<Variable name="channum" />],hotcue_1_activate</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,hotcue_1_activate</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
                 <Connection>
-                  <ConfigKey>[Channel<Variable name="channum" />],hotcue_1_clear</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,hotcue_1_clear</ConfigKey>
                   <ButtonState>RightButton</ButtonState>
                 </Connection>
                 <Connection>
-                  <ConfigKey>[Channel<Variable name="channum" />],hotcue_1_enabled</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,hotcue_1_enabled</ConfigKey>
                 </Connection>
               </PushButton>
 
@@ -178,15 +178,15 @@
                   <Unpressed>buttons/btn_hotcue2_2_over.png</Unpressed>
                 </State>
                 <Connection>
-                  <ConfigKey>[Channel<Variable name="channum" />],hotcue_2_activate</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,hotcue_2_activate</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
                 <Connection>
-                  <ConfigKey>[Channel<Variable name="channum" />],hotcue_2_clear</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,hotcue_2_clear</ConfigKey>
                   <ButtonState>RightButton</ButtonState>
                 </Connection>
                 <Connection>
-                  <ConfigKey>[Channel<Variable name="channum" />],hotcue_2_enabled</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,hotcue_2_enabled</ConfigKey>
                 </Connection>
               </PushButton>
 
@@ -206,15 +206,15 @@
                   <Unpressed>buttons/btn_hotcue2_3_over.png</Unpressed>
                 </State>
                 <Connection>
-                  <ConfigKey>[Channel<Variable name="channum" />],hotcue_3_activate</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,hotcue_3_activate</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
                 <Connection>
-                  <ConfigKey>[Channel<Variable name="channum" />],hotcue_3_clear</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,hotcue_3_clear</ConfigKey>
                   <ButtonState>RightButton</ButtonState>
                 </Connection>
                 <Connection>
-                  <ConfigKey>[Channel<Variable name="channum" />],hotcue_3_enabled</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,hotcue_3_enabled</ConfigKey>
                 </Connection>
               </PushButton>
 
@@ -234,15 +234,15 @@
                   <Unpressed>buttons/btn_hotcue2_4_over.png</Unpressed>
                 </State>
                 <Connection>
-                  <ConfigKey>[Channel<Variable name="channum" />],hotcue_4_activate</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,hotcue_4_activate</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
                 <Connection>
-                  <ConfigKey>[Channel<Variable name="channum" />],hotcue_4_clear</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,hotcue_4_clear</ConfigKey>
                   <ButtonState>RightButton</ButtonState>
                 </Connection>
                 <Connection>
-                  <ConfigKey>[Channel<Variable name="channum" />],hotcue_4_enabled</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,hotcue_4_enabled</ConfigKey>
                 </Connection>
               </PushButton>
 
@@ -260,15 +260,15 @@
 							    <Text>CUE</Text>
 						    </State>
 						    <Connection>
-							    <ConfigKey>[Channel<Variable name="channum" />],cue_default</ConfigKey>
+							    <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
 							    <ButtonState>LeftButton</ButtonState>
 						    </Connection>
 						    <Connection>
-							    <ConfigKey>[Channel<Variable name="channum" />],cue_gotoandstop</ConfigKey>
+							    <ConfigKey><Variable name="group"/>,cue_gotoandstop</ConfigKey>
 							    <ButtonState>RightButton</ButtonState>
 						    </Connection>
 						    <Connection>
-							    <ConfigKey>[Channel<Variable name="channum" />],cue_indicator</ConfigKey>
+							    <ConfigKey><Variable name="group"/>,cue_indicator</ConfigKey>
 						    </Connection>
 					    </PushButton>
 				    </Children>
@@ -288,11 +288,11 @@
                   <Unpressed>buttons/btn_rewind2.png</Unpressed>
                 </State>
                 <Connection>
-                  <ConfigKey>[Channel<Variable name="channum" />],back</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,back</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
                 <Connection>
-                  <ConfigKey>[Channel<Variable name="channum" />],start</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,start</ConfigKey>
                   <ButtonState>RightButton</ButtonState>
                 </Connection>
               </PushButton>
@@ -306,11 +306,11 @@
                   <Unpressed>buttons/btn_forward2.png</Unpressed>
                 </State>
                 <Connection>
-                  <ConfigKey>[Channel<Variable name="channum" />],fwd</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,fwd</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
                 <Connection>
-                  <ConfigKey>[Channel<Variable name="channum" />],end</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,end</ConfigKey>
                   <ButtonState>RightButton</ButtonState>
                 </Connection>
               </PushButton>
@@ -325,11 +325,11 @@
                   <Unpressed>buttons/btn_reverse2.png</Unpressed>
                 </State>
                 <Connection>
-                  <ConfigKey>[Channel<Variable name="channum" />],reverse</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,reverse</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
                 <Connection>
-                  <ConfigKey>[Channel<Variable name="channum" />],reverseroll</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,reverseroll</ConfigKey>
                   <ButtonState>RightButton</ButtonState>
                 </Connection>
               </PushButton>
@@ -349,11 +349,11 @@
 							    <Unpressed>buttons/btn_play1_over.png</Unpressed>
 						    </State>
 						    <Connection>
-							    <ConfigKey>[Channel<Variable name="channum" />],play</ConfigKey>
+							    <ConfigKey><Variable name="group"/>,play</ConfigKey>
 							    <ButtonState>LeftButton</ButtonState>
 						    </Connection>
 						    <Connection>
-							    <ConfigKey>[Channel<Variable name="channum" />],play_indicator</ConfigKey>
+							    <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>
 						    </Connection>
 					    </PushButton>
 				    </Children>

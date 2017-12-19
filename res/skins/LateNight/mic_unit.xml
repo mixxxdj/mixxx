@@ -8,25 +8,28 @@
         <BackPath>background_tile.png</BackPath>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
-        <MinimumSize>75, 50</MinimumSize>
+        <MinimumSize>100,-1</MinimumSize>
         <Children>
           <Label>
             <ObjectName>MicSubTitle</ObjectName>
-            <Text>Aux <Variable name="auxnum"/></Text>
+            <Text>Mic <Variable name="mic1hack"/><Variable name="micnum"/></Text>
           </Label>
+
           <!-- To make each widget centered, we have to put them each in their own
             widgetgroup. -->
-          <WidgetGroup>
+          <WidgetGroup><!-- Gain, Talk, Pfl -->
             <Layout>horizontal</Layout>
             <SizePolicy>min,max</SizePolicy>
             <MaximumSize>-1, 26</MaximumSize>
             <Children>
               <Template src="skin:knob_sized_textless.xml">
-                 <SetVariable name="width">28</SetVariable>
-                 <SetVariable name="height">24</SetVariable>
-                 <SetVariable name="group">[Auxiliary<Variable name="auxnum"/>]</SetVariable>
-                 <SetVariable name="control">pregain</SetVariable>
+                <SetVariable name="TooltipId">pregain</SetVariable>
+                <SetVariable name="width">28</SetVariable>
+                <SetVariable name="height">24</SetVariable>
+                <SetVariable name="group">[Microphone<Variable name="micnum"/>]</SetVariable>
+                <SetVariable name="control">pregain</SetVariable>
               </Template>
+
               <WidgetGroup>
                 <ObjectName>GuiToggleContainerPadLeft</ObjectName>
                 <Layout>vertical</Layout>
@@ -34,23 +37,25 @@
                 <Children>
                   <PushButton>
                     <Size>40f,24f</Size>
+                    <TooltipId>microphone_talkover</TooltipId>
                     <ObjectName>GuiToggleButton</ObjectName>
                     <NumberStates>2</NumberStates>
                     <State>
                       <Number>0</Number>
-                      <Text>MUTE</Text>
+                      <Text>TALK</Text>
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Text>MUTE</Text>
+                      <Text>TALK</Text>
                     </State>
                     <Connection>
-                      <ConfigKey>[Auxiliary<Variable name="auxnum"/>],mute</ConfigKey>
+                      <ConfigKey>[Microphone<Variable name="micnum"/>],talkover</ConfigKey>
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                   </PushButton>
                 </Children>
               </WidgetGroup>
+
               <WidgetGroup>
                 <ObjectName>GuiToggleContainerPadLeft</ObjectName>
                 <Layout>vertical</Layout>
@@ -60,29 +65,30 @@
                     <TooltipId>pfl</TooltipId>
                     <NumberStates>2</NumberStates>
                     <State>
-                        <Number>0</Number>
-                        <Pressed>buttons/btn_pfl1_down.png</Pressed>
-                        <Unpressed>buttons/btn_pfl1.png</Unpressed>
+                      <Number>0</Number>
+                      <Pressed>buttons/btn_pfl1_down.png</Pressed>
+                      <Unpressed>buttons/btn_pfl1.png</Unpressed>
                     </State>
                     <State>
-                        <Number>1</Number>
-                        <Pressed>buttons/btn_pfl1_overdown.png</Pressed>
-                        <Unpressed>buttons/btn_pfl1_over.png</Unpressed>
+                      <Number>1</Number>
+                      <Pressed>buttons/btn_pfl1_overdown.png</Pressed>
+                      <Unpressed>buttons/btn_pfl1_over.png</Unpressed>
                     </State>
                     <Connection>
-                        <ConfigKey>[Auxiliary<Variable name="auxnum"/>],pfl</ConfigKey>
+                      <ConfigKey>[Microphone<Variable name="micnum"/>],pfl</ConfigKey>
                     </Connection>
                   </PushButton>
                 </Children>
               </WidgetGroup>
             </Children>
-          </WidgetGroup>
-          <WidgetGroup>
+          </WidgetGroup><!-- /Gain, Talk, Pfl -->
+
+          <WidgetGroup><!-- VU meter, xfader orientation -->
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
               <VuMeter>
-                <TooltipId>channel_VuMeter</TooltipId>
+                <TooltipId>microphone_VuMeter</TooltipId>
                 <MinimumSize>64,4</MinimumSize>
                 <MaximumSize>64,4</MaximumSize>
                 <PathVu>vumeter_latency_over.png</PathVu>
@@ -94,7 +100,7 @@
                 <PeakFallTime>50</PeakFallTime>
                 <PeakFallStep>2</PeakFallStep>
                 <Connection>
-                  <ConfigKey>[Auxiliary<Variable name="auxnum"/>],VuMeter</ConfigKey>
+                  <ConfigKey>[Microphone<Variable name="micnum"/>],VuMeter</ConfigKey>
                 </Connection>
               </VuMeter>
               <PushButton>
@@ -117,14 +123,15 @@
                   <Unpressed>buttons/btn_orientation_microphone_right_over.png</Unpressed>
                 </State>
                 <Connection>
-                  <ConfigKey>[Auxiliary<Variable name="auxnum"/>],orientation</ConfigKey>
+                  <ConfigKey>[Microphone<Variable name="micnum"/>],orientation</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
               </PushButton>
             </Children>
-          </WidgetGroup>
+          </WidgetGroup><!-- VU meter, xfader orientation -->
+
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- /MicInterior -->
     </Children>
-  </WidgetGroup>
+  </WidgetGroup><!-- /MicBorder -->
 </Template>
