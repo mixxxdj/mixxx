@@ -49,6 +49,12 @@ void Effect::addToEngine(EngineEffectChain* pChain, int iIndex,
     VERIFY_OR_DEBUG_ASSERT(pChain) {
         return;
     }
+    VERIFY_OR_DEBUG_ASSERT(m_pEngineEffect == nullptr) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(!m_bAddedToEngine) {
+        return;
+    }
 
     m_pEngineEffect = new EngineEffect(m_manifest,
             activeInputChannels,
@@ -61,13 +67,18 @@ void Effect::addToEngine(EngineEffectChain* pChain, int iIndex,
     request->AddEffectToChain.pEffect = m_pEngineEffect;
     request->AddEffectToChain.iIndex = iIndex;
     m_pEffectsManager->writeRequest(request);
+
+    m_bAddedToEngine = true;
 }
 
 void Effect::removeFromEngine(EngineEffectChain* pChain, int iIndex) {
     VERIFY_OR_DEBUG_ASSERT(pChain) {
         return;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_pEngineEffect) {
+    VERIFY_OR_DEBUG_ASSERT(m_pEngineEffect != nullptr) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_bAddedToEngine) {
         return;
     }
 
@@ -78,6 +89,8 @@ void Effect::removeFromEngine(EngineEffectChain* pChain, int iIndex) {
     request->RemoveEffectFromChain.iIndex = iIndex;
     m_pEffectsManager->writeRequest(request);
     m_pEngineEffect = NULL;
+
+    m_bAddedToEngine = false;
 }
 
 void Effect::updateEngineState() {
