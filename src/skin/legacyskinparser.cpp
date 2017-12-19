@@ -2226,3 +2226,8 @@ void LegacySkinParser::addShortcutToToolTip(WBaseWidget* pWidget,
 QString LegacySkinParser::parseLaunchImageStyle(const QDomNode& node) {
     return m_pContext->selectString(node, "LaunchImageStyle");
 }
+
+void LegacySkinParser::setThis(QSharedPointer<LegacySkinParser> me) {
+    DEBUG_ASSERT(me.data() == this);
+    m_this = me;
+}

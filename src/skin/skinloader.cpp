@@ -126,10 +126,11 @@ QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent,
         return NULL;
     }
 
-    LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager,
+    QSharedPointer<LegacySkinParser> pLegacy = QSharedPointer<LegacySkinParser>(new LegacySkinParser(m_pConfig, pKeyboard, pPlayerManager,
                             pControllerManager, pLibrary, pVCMan,
-                            pEffectsManager, pRecordingManager);
-    return legacy.parseSkin(skinPath, pParent);
+                            pEffectsManager, pRecordingManager));
+    pLegacy->setThis(pLegacy);
+    return pLegacy->parseSkin(skinPath, pParent);
 }
 
 LaunchImage* SkinLoader::loadLaunchImage(QWidget* pParent) {
