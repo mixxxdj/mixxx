@@ -183,6 +183,7 @@
                 <ObjectName>SamplerVol</ObjectName>
                 <Children>
                   <Template src="skin:knob_sm_textless.xml">
+                    <SetVariable name="TooltipId">pregain</SetVariable>
                     <SetVariable name="Size">25f,25f</SetVariable>
                     <SetVariable name="group">[Sampler<Variable name="samplernum"/>]</SetVariable>
                     <SetVariable name="control">pregain</SetVariable>

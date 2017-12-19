@@ -69,6 +69,8 @@
   <Layout>vertical</Layout>
 
   <Children>
+    <SetVariable name="PotiMinAngle">-135</SetVariable>
+    <SetVariable name="PotiMaxAngle">135</SetVariable>
     <!-- Define singletons as early in the skin as possible.  Note that the
     library doesn't actually appear here, it's just instantiated and configured.
     -->
@@ -121,7 +123,7 @@
                         <Template src="skin:decks_right.xml"/>
                       </Children>
                     </WidgetGroup>
-                    <Template src="skin:effect_rack.xml"/>
+                    <Template src="skin:fx_units_12.xml"/>
                     <Template src="skin:lower_half.xml"/>
                   </Children>
                 </WidgetGroup>

@@ -5,8 +5,9 @@
     <Size>54f,52me</Size>
     <Children>
       <Spinny>
+        <TooltipId>spinny</TooltipId>
         <Size>50f,50f</Size>
-        <Group>[Channel<Variable name="channum"/>]</Group>
+        <Group><Variable name="group"/></Group>
         <PathBackground scalemode="STRETCH_ASPECT">spinny_bg.svg</PathBackground>
         <PathMask scalemode="STRETCH_ASPECT">spinny<Variable name="channum"/>_mask.svg</PathMask>
         <PathForeground>spinny_indicator.svg</PathForeground>

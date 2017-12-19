@@ -43,19 +43,19 @@ vertical layout and a side-by-side layout for two-deck mode -->
               </WidgetGroup>
 
               <Template src="skin:eq_knob_left.xml">
-                <SetVariable name="parameter">4</SetVariable>
+                <SetVariable name="FxParameter">4</SetVariable>
               </Template>
 
               <Template src="skin:eq_knob_left.xml">
-                <SetVariable name="parameter">3</SetVariable>
+                <SetVariable name="FxParameter">3</SetVariable>
               </Template>
 
               <Template src="skin:eq_knob_left.xml">
-                <SetVariable name="parameter">2</SetVariable>
+                <SetVariable name="FxParameter">2</SetVariable>
               </Template>
 
               <Template src="skin:eq_knob_left.xml">
-                <SetVariable name="parameter">1</SetVariable>
+                <SetVariable name="FxParameter">1</SetVariable>
               </Template>
 
               <Template src="skin:quick_effect_knob_left.xml"/>
@@ -77,7 +77,7 @@ vertical layout and a side-by-side layout for two-deck mode -->
                 <SetVariable name="Size">40f,34f</SetVariable>
                 <SetVariable name="group"><Variable name="group"/></SetVariable>
                 <SetVariable name="control">pregain</SetVariable>
-                <SetVariable name="tooltip">pregain</SetVariable>
+                <SetVariable name="TooltipId">pregain</SetVariable>
               </Template>
 
               <!-- Spacer -->

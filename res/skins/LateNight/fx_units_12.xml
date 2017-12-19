@@ -16,7 +16,7 @@
         <Layout>vertical</Layout>
         <Children>
         <PushButton>
-          <TooltipId><Variable name="TooltipId"/></TooltipId>
+          <TooltipId>EffectUnit_show_parameters</TooltipId>
           <Size>40f,26f</Size>
           <NumberStates>2</NumberStates>
           <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -50,7 +50,7 @@
         <Layout>vertical</Layout>
         <Children>
         <PushButton>
-          <TooltipId><Variable name="TooltipId"/></TooltipId>
+          <TooltipId>EffectUnit_show_parameters</TooltipId>
           <Size>40f,26f</Size>
           <NumberStates>2</NumberStates>
           <RightClickIsPushButton>true</RightClickIsPushButton>
@@ -85,7 +85,7 @@
         <Children>
           <PushButton>
             <Size>28f,28f</Size>
-            <TooltipId>pfl</TooltipId>
+            <TooltipId>EffectUnit_headphones_enabled</TooltipId>
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
@@ -115,7 +115,7 @@
         <Children>
           <PushButton>
             <Size>28f,28f</Size>
-            <TooltipId>pfl</TooltipId>
+            <TooltipId>EffectUnit_headphones_enabled</TooltipId>
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
@@ -145,6 +145,7 @@
         <Children>
           <Template src="skin:knob.xml">
             <SetVariable name="Size">36f,30f</SetVariable>
+            <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
             <SetVariable name="group">[EffectRack1_EffectUnit1]</SetVariable>
             <SetVariable name="control">super1</SetVariable>
             <SetVariable name="label">Super</SetVariable>
@@ -163,6 +164,7 @@
         <Children>
           <Template src="skin:knob.xml">
             <SetVariable name="Size">36f,30f</SetVariable>
+            <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
             <SetVariable name="group">[EffectRack1_EffectUnit2]</SetVariable>
             <SetVariable name="control">super1</SetVariable>
             <SetVariable name="label">Super</SetVariable>
@@ -181,6 +183,7 @@
         <Children>
           <Template src="skin:knob.xml">
             <SetVariable name="Size">36f,30f</SetVariable>
+            <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
             <SetVariable name="group">[EffectRack1_EffectUnit1]</SetVariable>
             <SetVariable name="control">mix</SetVariable>
             <SetVariable name="label">Mix</SetVariable>
@@ -199,6 +202,7 @@
         <Children>
           <Template src="skin:knob.xml">
             <SetVariable name="Size">36f,30f</SetVariable>
+            <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
             <SetVariable name="group">[EffectRack1_EffectUnit2]</SetVariable>
             <SetVariable name="control">mix</SetVariable>
             <SetVariable name="label">Mix</SetVariable>
@@ -223,7 +227,7 @@
             <Layout>vertical</Layout>
             <SizePolicy>me,max</SizePolicy>
             <Children>
-              <Template src="skin:effect_unit_parameters_visible.xml">
+              <Template src="skin:fx_unit_parameters_visible.xml">
                 <SetVariable name="FxUnit">1</SetVariable>
               </Template>
             </Children>
@@ -234,7 +238,7 @@
             <Layout>vertical</Layout>
             <SizePolicy>me,min</SizePolicy>
             <Children>
-              <Template src="skin:effect_unit_parameters_hidden.xml">
+              <Template src="skin:fx_unit_parameters_hidden.xml">
                 <SetVariable name="FxUnit">1</SetVariable>
               </Template>
               <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
@@ -254,7 +258,7 @@
             <Layout>vertical</Layout>
             <SizePolicy>me,min</SizePolicy>
             <Children>
-              <Template src="skin:effect_unit_parameters_visible.xml">
+              <Template src="skin:fx_unit_parameters_visible.xml">
                 <SetVariable name="FxUnit">2</SetVariable>
               </Template>
             </Children>
@@ -264,7 +268,7 @@
             <Layout>vertical</Layout>
             <SizePolicy>me,min</SizePolicy>
             <Children>
-              <Template src="skin:effect_unit_parameters_hidden.xml">
+              <Template src="skin:fx_unit_parameters_hidden.xml">
                 <SetVariable name="FxUnit">2</SetVariable>
               </Template>
               <WidgetGroup><Size>1min,0me</Size></WidgetGroup>

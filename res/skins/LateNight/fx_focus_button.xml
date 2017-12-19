@@ -4,7 +4,7 @@ Description:
   Left-click sets focus, right-click removes focus from all effects.
   If focused, left-click also removes focus.
 Variables:
-  FxGroup : [EffectRack1_EffectUnitN]
+  FxRack_FxUnit : [EffectRack1_EffectUnitN]
   FxNum   : effect number
 -->
 <Template>

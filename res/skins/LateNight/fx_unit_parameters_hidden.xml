@@ -28,7 +28,7 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Template src="skin:effect_slot.xml">
+              <Template src="skin:fx_slot.xml">
                 <SetVariable name="FxNum">1</SetVariable>
               </Template>
             </Children>
@@ -42,7 +42,7 @@
             <MaximumSize>200,-1</MaximumSize>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Template src="skin:effect_slot.xml">
+              <Template src="skin:fx_slot.xml">
                 <SetVariable name="FxNum">2</SetVariable>
               </Template>
             </Children>
@@ -55,7 +55,7 @@
             <MaximumSize>200,-1</MaximumSize>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Template src="skin:effect_slot.xml">
+              <Template src="skin:fx_slot.xml">
                 <SetVariable name="FxNum">3</SetVariable>
               </Template>
             </Children>
@@ -88,8 +88,8 @@
           </WidgetGroup>
 
           <SingletonContainer>
-              <ObjectName>FxUnit<Variable name="FxUnit"/>_DryWetKnob</ObjectName>
-            </SingletonContainer>
+            <ObjectName>FxUnit<Variable name="FxUnit"/>_DryWetKnob</ObjectName>
+          </SingletonContainer>
 
           <WidgetGroup><Size>3f,</Size></WidgetGroup>
 
@@ -109,7 +109,7 @@
             </Children>
           </WidgetGroup>
         </Children>
-      </WidgetGroup><!-- /Mix / Supers -->
+      </WidgetGroup><!-- /Mix / Super -->
 
     </Children>
   </WidgetGroup>

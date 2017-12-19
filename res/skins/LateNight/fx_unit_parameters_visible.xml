@@ -24,19 +24,19 @@
             <Layout>vertical</Layout>
             <BackPath>background_tile.png</BackPath>
             <Children>
-              <Template src="skin:effect_slot.xml">
+              <Template src="skin:fx_slot.xml">
                 <SetVariable name="FxNum">1</SetVariable>
               </Template>
 
               <WidgetGroup><ObjectName>Spacer58</ObjectName><Size>1me,1f</Size></WidgetGroup>
 
-              <Template src="skin:effect_slot.xml">
+              <Template src="skin:fx_slot.xml">
                 <SetVariable name="FxNum">2</SetVariable>
               </Template>
 
               <WidgetGroup><ObjectName>Spacer58</ObjectName><Size>1me,1f</Size></WidgetGroup>
 
-              <Template src="skin:effect_slot.xml">
+              <Template src="skin:fx_slot.xml">
                 <SetVariable name="FxNum">3</SetVariable>
               </Template>
             </Children>

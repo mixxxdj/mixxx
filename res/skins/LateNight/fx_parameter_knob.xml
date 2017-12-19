@@ -10,30 +10,32 @@
 -->
 <Template>
   <SetVariable name="FxRack_FxUnit_FxNum">[EffectRack1_EffectUnit<Variable name="FxUnit"/>_Effect<Variable name="FxNum"/>]</SetVariable>
+
   <WidgetGroup>
     <Layout>vertical</Layout>
     <Size>60f,48f</Size>
     <Children>
 
       <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
+
       <WidgetGroup>
         <ObjectName>EffectKnob</ObjectName>
         <Layout>horizontal</Layout>
-        <Size>0me,25f</Size>
+        <Size>26me,25f</Size>
         <Children>
-          <KnobComposed>
-            <TooltipId><Variable name="tooltip"/></TooltipId>
-            <Size>25f,25f</Size>
-            <Knob>knob_sm_indicator.svg</Knob>
-            <BackPath>knob_sm_bg.svg</BackPath>
-            <MinAngle>-135</MinAngle>
-            <MaxAngle>135</MaxAngle>
+          <EffectParameterKnobComposed>
+            <Size>26f,26f</Size>
+            <Knob>skin:knob_sm_indicator.svg</Knob>
+            <BackPath>skin:knob_sm_bg.svg</BackPath>
+            <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+            <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
             <Connection>
               <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/></ConfigKey>
             </Connection>
-          </KnobComposed>
+          </EffectParameterKnobComposed>
 	     </Children>
       </WidgetGroup>
+
       <EffectParameterName>
         <Size>1min,10f</Size>
         <ObjectName>KnobLabel</ObjectName>
@@ -63,6 +65,7 @@
         <SetVariable name="Size">51f,5f</SetVariable>
         <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/>_link_inverse</SetVariable>
       </Template>
+
     </Children>
     <Connection>
       <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/>_loaded</ConfigKey>
