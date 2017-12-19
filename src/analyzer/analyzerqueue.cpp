@@ -160,6 +160,7 @@ AnalyzerQueue::AnalyzerQueue(
     m_pAnalyzers.push_back(std::make_unique<AnalyzerBeats>(pConfig));
     m_pAnalyzers.push_back(std::make_unique<AnalyzerKey>(pConfig));
 #endif
+    kLogger.info() << "Activated" << m_pAnalyzers.size() << "analyzers";
 
     connect(this, SIGNAL(updateProgress()),
             this, SLOT(slotUpdateProgress()));
@@ -173,55 +174,48 @@ AnalyzerQueue::~AnalyzerQueue() {
     wait();
 }
 
-int AnalyzerQueue::adjustTrackAnalysisProgress(const TrackPointer& pTrack) const {
-    const auto analysisProgress = pTrack->getAnalysisProgress();
-    if (analysisProgress < kAnalysisProgressNone) {
-        // Do not shortcut the following loop, because each
-        // analyzer must be given a chance to load the analysis
-        // results for this track!
-        bool analysisNeeded = false;
-        for (auto const& pAnalyzer: m_pAnalyzers) {
-            if (!pAnalyzer->isDisabledOrLoadStoredSuccess(pTrack)) {
-                analysisNeeded = true;
-            }
-        }
-        if (analysisNeeded) {
-            pTrack->setAnalysisProgress(kAnalysisProgressNone);
-            return kAnalysisProgressNone;
-        } else {
-            pTrack->setAnalysisProgress(kAnalysisProgressDone);
-            return kAnalysisProgressDone;
-        }
-    } else {
-        DEBUG_ASSERT(analysisProgress <= kAnalysisProgressDone);
-    }
-    return analysisProgress ;
-}
-
 // This is called from the AnalyzerQueue thread
-bool AnalyzerQueue::isLoadedTrackWaiting(TrackPointer pAnalyzingTrack) {
-    bool anyQueuedTrackLoaded = false;
+bool AnalyzerQueue::isLoadedTrackQueued(TrackPointer pCurrentTrack) {
+    const bool currentTrackLoaded =
+            PlayerInfo::instance().isTrackLoaded(pCurrentTrack);
+    bool prioritizeQueuedTrack = false;
 
     QMutexLocker locked(&m_qm);
     QMutableListIterator<TrackPointer> it(m_queuedTracks);
     while (it.hasNext()) {
-        TrackPointer pTrack = it.next();
-        DEBUG_ASSERT(pTrack);
-        const auto analysisProgress = adjustTrackAnalysisProgress(pTrack);
-        if (analysisProgress == kAnalysisProgressDone) {
-            kLogger.debug()
-                    << "Skipping analysis of file"
-                    << pTrack->getLocation();
-            m_tracksWithProgress[pTrack] = analysisProgress;
+        TrackPointer pQueuedTrack = it.next();
+        DEBUG_ASSERT(pQueuedTrack);
+        bool analysisNeeded = false;
+        // Do not shortcut the following loop, because each
+        // analyzer must be given a chance to load the analysis
+        // results for this track!
+        for (auto const& pAnalyzer: m_pAnalyzers) {
+            if (!pAnalyzer->isDisabledOrLoadStoredSuccess(pQueuedTrack)) {
+                analysisNeeded = true;
+            }
+        }
+        if (analysisNeeded) {
+            if (!currentTrackLoaded && !prioritizeQueuedTrack) {
+                prioritizeQueuedTrack =
+                        PlayerInfo::instance().isTrackLoaded(pQueuedTrack);
+            }
+        } else {
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Skipping re-analysis of file"
+                        << pQueuedTrack->getLocation();
+            }
             it.remove();
+            m_pendingTracks.erase(pQueuedTrack);
+            // Record progress for the next update cycle
+            m_tracksWithProgress[pQueuedTrack] = kAnalysisProgressDone;
         }
     }
 
     // The analysis will be aborted if the currently analyzing
     // track is not loaded, but one or more tracks in the queue
     // are loaded and need to be prioritized.
-    return anyQueuedTrackLoaded &&
-            !PlayerInfo::instance().isTrackLoaded(pAnalyzingTrack);
+    return prioritizeQueuedTrack;
 }
 
 // This is called from the AnalyzerQueue thread
@@ -336,7 +330,7 @@ AnalyzerQueue::AnalysisResult AnalyzerQueue::doAnalysis(
 
         // has something new entered the queue?
         if (m_queueModifiedFlag.fetchAndStoreAcquire(false)) {
-            if (isLoadedTrackWaiting(pTrack)) {
+            if (isLoadedTrackQueued(pTrack)) {
                 if (result == AnalysisResult::Pending) {
                     kLogger.debug() << "Interrupting analysis to give preference to a loaded track.";
                     result = AnalysisResult::Cancelled;
@@ -470,16 +464,19 @@ void AnalyzerQueue::execThread() {
                     pAnalyzer->finalize(nextTrack);
                 }
                 emit(trackDone(nextTrack));
+                m_pendingTracks.erase(nextTrack);
                 emitUpdateProgress(std::move(nextTrack), kAnalysisProgressDone);
             } else {
                 for (auto const& pAnalyzer: m_pAnalyzers) {
                     pAnalyzer->cleanup(nextTrack);
                 }
+                // still pending -> re-enqueue
                 enqueueTrack(nextTrack);
                 emitUpdateProgress(std::move(nextTrack), kAnalysisProgressNone);
             }
         } else {
             kLogger.debug() << "Skipping track analysis because no analyzer initialized.";
+            m_pendingTracks.erase(nextTrack);
             emitUpdateProgress(std::move(nextTrack), kAnalysisProgressDone);
         }
         // All references to the track object within the analysis thread
@@ -544,41 +541,35 @@ void AnalyzerQueue::slotUpdateProgress() {
 
 void AnalyzerQueue::slotAnalyseTrack(TrackPointer pTrack) {
     // This slot is called from the decks and and samplers when the track was loaded.
-    enqueueTrack(pTrack);
-    resume();
+    if (enqueueTrack(pTrack)) {
+        resume();
+    }
 }
 
 // This is called from the GUI and from the AnalyzerQueue thread
-void AnalyzerQueue::enqueueTrack(TrackPointer pTrack) {
+bool AnalyzerQueue::enqueueTrack(TrackPointer pTrack) {
     VERIFY_OR_DEBUG_ASSERT(pTrack) {
-        return;
+        return false;
     }
 
-    const auto analysisProgress = adjustTrackAnalysisProgress(pTrack);
-    if (analysisProgress > kAnalysisProgressNone) {
-        if (analysisProgress == kAnalysisProgressDone) {
-            kLogger.debug()
-                    << "Skipping analysis of file"
-                    << pTrack->getLocation();
-        } else {
-            DEBUG_ASSERT(analysisProgress < kAnalysisProgressDone);
-            kLogger.debug()
-                    << "Analysis already in progress for file"
-                    << pTrack->getLocation();
-        }
-    } else {
-        DEBUG_ASSERT(analysisProgress == kAnalysisProgressNone);
-        QMutexLocker locked(&m_qm);
-        // Don't check for duplicate tracks now, since they will be detected
-        // during analysis
+    QMutexLocker locked(&m_qm);
+    if (m_pendingTracks.insert(pTrack).second) {
         if (PlayerInfo::instance().isTrackLoaded(pTrack)) {
             // Prioritize track
             m_queuedTracks.prepend(pTrack);
         } else {
             m_queuedTracks.enqueue(pTrack);
         }
-        // Don't wake up paused threads now to avoid race conditions
+        // Don't wake up the paused thread now to avoid race conditions
         // if multiple threads are added in a row. The caller is
         // responsible to finish the enqueuing of tracks with resume().
+        return true;
+    } else {
+        if (kLogger.debugEnabled()) {
+            kLogger.debug()
+                    << "Analysis of track is already pending"
+                    << pTrack->getLocation();
+        }
+        return false;
     }
 }

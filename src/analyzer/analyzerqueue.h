@@ -6,17 +6,18 @@
 #include <QAtomicInt>
 
 #include <map>
+#include <set>
 #include <vector>
 
 #include "preferences/usersettings.h"
 #include "sources/audiosource.h"
 #include "track/track.h"
+#include "analyzer/analyzer.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/samplebuffer.h"
 #include "util/memory.h"
 
 
-class Analyzer;
 class AnalysisDao;
 
 // Measured in 0.1%, i.e. promille
@@ -40,7 +41,7 @@ class AnalyzerQueue : public QThread {
             Mode mode = Mode::Default);
     ~AnalyzerQueue() override;
 
-    void enqueueTrack(TrackPointer pTrack);
+    bool enqueueTrack(TrackPointer pTrack);
 
     // After adding tracks the analysis must be resumed.
     // This function returns the number of tracks that
@@ -65,21 +66,20 @@ class AnalyzerQueue : public QThread {
     void run();
 
   private:
-
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
 
+    // This DAO belongs to the analysis thread and must not
+    // be accessed from any other thread!
     std::unique_ptr<AnalysisDao> m_pAnalysisDao;
 
+    // The analyzers belong to the analysis thread and must not
+    // be accessed from any other thread!
     typedef std::unique_ptr<Analyzer> AnalyzerPtr;
     std::vector<AnalyzerPtr> m_pAnalyzers;
 
-    // Checks, updates, and returns the analyzer progress of
-    // of the track according to the current user settings
-    int adjustTrackAnalysisProgress(const TrackPointer& pTrack) const;
-
     void execThread();
 
-    bool isLoadedTrackWaiting(TrackPointer pAnalyzingTrack);
+    bool isLoadedTrackQueued(TrackPointer pCurrentTrack);
     TrackPointer dequeueNextBlocking();
     enum class AnalysisResult {
         Pending,
@@ -104,6 +104,8 @@ class AnalyzerQueue : public QThread {
     QMutex m_qm;
     QWaitCondition m_qwait;
     QQueue<TrackPointer> m_queuedTracks;
+    // All queued and the current track
+    std::set<TrackPointer> m_pendingTracks;
 
     // The following members are only accessed by the worker thread
 
