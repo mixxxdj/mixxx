@@ -5,8 +5,10 @@
 
 #include "track/track.h"
 #include "track/trackref.h"
-
 #include "track/beatfactory.h"
+
+#include "analyzer/analyzerqueue.h"
+
 #include "util/assert.h"
 #include "util/logger.h"
 #include "util/compatibility.h"
@@ -63,7 +65,7 @@ Track::Track(
           m_record(trackId),
           m_bDirty(false),
           m_bMarkedForMetadataExport(false),
-          m_analyzerProgress(-1) {
+          m_analyzerProgress(kAnalysisProgressUnknown) {
 }
 
 //static

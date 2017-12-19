@@ -26,6 +26,7 @@
 #include "wskincolor.h"
 #include "widget/controlwidgetconnection.h"
 #include "track/track.h"
+#include "analyzer/analyzerqueue.h"
 #include "util/math.h"
 #include "util/timer.h"
 #include "util/dnd.h"
@@ -186,11 +187,10 @@ void WOverview::slotAnalyzerProgress(int progress) {
         return;
     }
 
-    double analyzerProgress = progress / 1000.0;
-    bool finalizing = progress == 999;
+    double analyzerProgress = progress / double(kAnalysisProgressDone);
+    bool finalizing = progress == kAnalysisProgressFinalizing;
 
     bool updateNeeded = drawNextPixmapPart();
-    // progress 0 .. 1000
     if (updateNeeded || (m_dAnalyzerProgress != analyzerProgress)) {
         m_dAnalyzerProgress = analyzerProgress;
         m_bAnalyzerFinalizing = finalizing;

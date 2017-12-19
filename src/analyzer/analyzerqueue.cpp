@@ -34,11 +34,6 @@ constexpr SINT kAnalysisFramesPerBlock = 4096;
 const SINT kAnalysisSamplesPerBlock =
         kAnalysisFramesPerBlock * kAnalysisChannels;
 
-// Measured in 0.1%, i.e. promille
-constexpr int kProgressNone = 0; // 0.0 %
-constexpr int kProgressFinalizing = 950; // 95.0 %
-constexpr int kProgressDone = 1000; // 100.0%
-
 // Maximum frequency of progress updates
 constexpr int kProgressUpdateInhibitMillis = 100;
 
@@ -53,7 +48,7 @@ QAtomicInt s_instanceCounter(0);
 
 AnalyzerQueue::ProgressInfo::ProgressInfo()
     : m_state(kProgressStateEmpty),
-      m_currentTrackProgress(kProgressNone),
+      m_currentTrackProgress(kAnalysisProgressNone),
       m_queueSize(0) {
 }
 
@@ -194,7 +189,8 @@ bool AnalyzerQueue::isLoadedTrackWaiting(TrackPointer pAnalyzingTrack) {
         // and remove them from queue if already analysed
         // This avoids waiting for a running analysis for those tracks.
         int progress = pTrack->getAnalyzerProgress();
-        if (progress < kProgressNone) {
+        if ((progress < kAnalysisProgressNone) ||
+                (progress > kAnalysisProgressDone)) {
             // Load stored analysis
             bool processTrack = false;
             for (auto const& pAnalyzer: m_pAnalyzers) {
@@ -203,15 +199,15 @@ bool AnalyzerQueue::isLoadedTrackWaiting(TrackPointer pAnalyzingTrack) {
                 }
             }
             if (processTrack) {
-                m_tracksWithProgress[pTrack] = kProgressNone;
+                m_tracksWithProgress[pTrack] = kAnalysisProgressNone;
             } else {
                 kLogger.debug()
                         << "Skipping analysis of file"
                         << pTrack->getLocation();
-                m_tracksWithProgress[pTrack] = kProgressDone;
+                m_tracksWithProgress[pTrack] = kAnalysisProgressDone;
                 it.remove();
             }
-        } else if (progress == kProgressDone) {
+        } else if (progress == kAnalysisProgressDone) {
             it.remove();
         }
     }
@@ -318,13 +314,13 @@ AnalyzerQueue::AnalysisResult AnalyzerQueue::doAnalysis(
         }
 
         // emit progress updates
-        // During the doAnalysis function it goes only to kProgressFinalizing
+        // During the doAnalysis function it goes only to kAnalysisProgressFinalizing
         // because the finalize functions will take also some time
         // fp div here prevents insane signed overflow
         const double frameProgress =
                 double(pAudioSource->frameLength() - remainingFrames.length()) /
                 double(pAudioSource->frameLength());
-        int progressPromille = frameProgress * kProgressFinalizing;
+        int progressPromille = frameProgress * kAnalysisProgressFinalizing;
 
         // Since this is a background analysis queue, we should co-operatively
         // yield every now and then to try and reduce CPU contention. The
@@ -451,7 +447,7 @@ void AnalyzerQueue::execThread() {
         updateSize();
 
         if (processTrack) {
-            emitUpdateProgress(nextTrack, kProgressNone);
+            emitUpdateProgress(nextTrack, kAnalysisProgressNone);
             const auto analysisResult = doAnalysis(nextTrack, pAudioSource);
             DEBUG_ASSERT(analysisResult != AnalysisResult::Pending);
             if ((analysisResult == AnalysisResult::Complete) ||
@@ -462,23 +458,23 @@ void AnalyzerQueue::execThread() {
                 // session. A partial analysis would otherwise be repeated again
                 // and again, because it is very unlikely that the error vanishes
                 // suddenly.
-                emitUpdateProgress(nextTrack, kProgressFinalizing);
+                emitUpdateProgress(nextTrack, kAnalysisProgressFinalizing);
                 // This takes around 3 sec on a Atom Netbook
                 for (auto const& pAnalyzer: m_pAnalyzers) {
                     pAnalyzer->finalize(nextTrack);
                 }
                 emit(trackDone(nextTrack));
-                emitUpdateProgress(std::move(nextTrack), kProgressDone);
+                emitUpdateProgress(std::move(nextTrack), kAnalysisProgressDone);
             } else {
                 for (auto const& pAnalyzer: m_pAnalyzers) {
                     pAnalyzer->cleanup(nextTrack);
                 }
                 enqueueTrack(nextTrack);
-                emitUpdateProgress(std::move(nextTrack), kProgressNone);
+                emitUpdateProgress(std::move(nextTrack), kAnalysisProgressNone);
             }
         } else {
             kLogger.debug() << "Skipping track analysis because no analyzer initialized.";
-            emitUpdateProgress(std::move(nextTrack), kProgressDone);
+            emitUpdateProgress(std::move(nextTrack), kAnalysisProgressDone);
         }
         // All references to the track object within the analysis thread
         // should have been released to avoid exporting metadata or updating
@@ -517,10 +513,6 @@ void AnalyzerQueue::emitUpdateProgress(TrackPointer pTrack, int progress) {
     }
 }
 
-void AnalyzerQueue::emitUpdateProgress() {
-    emitUpdateProgress(TrackPointer(), kProgressNone);
-}
-
 //slot
 void AnalyzerQueue::slotUpdateProgress() {
     const auto readScope = m_progressInfo.read();
@@ -530,12 +522,12 @@ void AnalyzerQueue::slotUpdateProgress() {
         bool oneOrMoreTracksFinished = false;
         for (const auto trackWithProgress: readScope.tracksWithProgress()) {
             trackWithProgress.first->setAnalyzerProgress(trackWithProgress.second);
-            if (trackWithProgress.second == kProgressDone) {
+            if (trackWithProgress.second == kAnalysisProgressDone) {
                 oneOrMoreTracksFinished = true;
             }
         }
         DEBUG_ASSERT(oneOrMoreTracksFinished ||
-                (readScope.currentTrackProgress() != kProgressDone));
+                (readScope.currentTrackProgress() != kAnalysisProgressDone));
         int trackProgressPercent = readScope.currentTrackProgress() / 10;
         emit(trackProgress(trackProgressPercent));
         if (oneOrMoreTracksFinished) {

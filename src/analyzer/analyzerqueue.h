@@ -19,6 +19,11 @@
 class Analyzer;
 class AnalysisDao;
 
+// Measured in 0.1%, i.e. promille
+constexpr int kAnalysisProgressUnknown = -1;
+constexpr int kAnalysisProgressNone = 0; // 0.0 %
+constexpr int kAnalysisProgressFinalizing = 950; // 95.0 %
+constexpr int kAnalysisProgressDone = 1000; // 100.0%
 
 class AnalyzerQueue : public QThread {
     Q_OBJECT
@@ -80,7 +85,10 @@ class AnalyzerQueue : public QThread {
     };
     AnalysisResult doAnalysis(TrackPointer pTrack, mixxx::AudioSourcePointer pAudioSource);
     void emitUpdateProgress(TrackPointer pTrack, int progress);
-    void emitUpdateProgress(); // no current track
+    void emitUpdateProgress() {
+        // No current track
+        emitUpdateProgress(TrackPointer(), kAnalysisProgressNone);
+    }
     void emptyCheck();
     void updateSize();
 
