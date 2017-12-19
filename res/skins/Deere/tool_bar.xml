@@ -92,7 +92,7 @@
                 <SetVariable name="TooltipId">balance</SetVariable>
                 <SetVariable name="group">[Master]</SetVariable>
                 <SetVariable name="control">balance</SetVariable>
-                <SetVariable name="color">blue</SetVariable>
+                <SetVariable name="color">orange</SetVariable>
                 <SetVariable name="label">Balance</SetVariable>
               </Template>
 
@@ -100,7 +100,7 @@
                 <SetVariable name="TooltipId">master_gain</SetVariable>
                 <SetVariable name="group">[Master]</SetVariable>
                 <SetVariable name="control">gain</SetVariable>
-                <SetVariable name="color">red</SetVariable>
+                <SetVariable name="color">grey</SetVariable>
                 <SetVariable name="label">Master</SetVariable>
               </Template>
 
@@ -123,7 +123,7 @@
                 <SetVariable name="TooltipId">booth_gain</SetVariable>
                 <SetVariable name="group">[Master]</SetVariable>
                 <SetVariable name="control">booth_gain</SetVariable>
-                <SetVariable name="color">red</SetVariable>
+                <SetVariable name="color">grey</SetVariable>
                 <SetVariable name="label">Booth</SetVariable>
               </Template>
             </Children>

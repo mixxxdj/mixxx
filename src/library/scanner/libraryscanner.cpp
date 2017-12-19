@@ -59,7 +59,6 @@ LibraryScanner::LibraryScanner(
     // when we detected moved files, and the TIOs corresponding to the moved
     // files would then have the wrong track location.
     TrackDAO* dao = &(m_pTrackCollection->getTrackDAO());
-    connect(this, SIGNAL(scanFinished()), dao, SLOT(clearCache()));
     connect(this, SIGNAL(trackAdded(TrackPointer)),
             dao, SLOT(databaseTrackAdded(TrackPointer)));
     connect(this, SIGNAL(tracksMoved(QSet<TrackId>, QSet<TrackId>)),

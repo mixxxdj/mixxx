@@ -174,7 +174,16 @@
            <item>
             <widget class="QWidget" name="widgetReconnectControls" native="true">
              <layout class="QGridLayout" name="gridLayout_5">
-              <property name="margin">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
                <number>0</number>
               </property>
               <item row="0" column="0">
@@ -634,7 +643,7 @@ p, li { white-space: pre-wrap; }
       <item row="0" column="0" colspan="2">
        <widget class="QLabel" name="labelHowtoSettings">
         <property name="text">
-         <string>Select a connection above to edit its settings here</string>
+         <string>Select a source connection above to edit its settings here</string>
         </property>
        </widget>
       </item>
@@ -757,7 +766,16 @@ p, li { white-space: pre-wrap; }
          <item row="1" column="0">
           <widget class="QWidget" name="groupPasswordStorage" native="true">
            <layout class="QHBoxLayout" name="horizontalLayout_2">
-            <property name="margin">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
              <number>0</number>
             </property>
             <item>
