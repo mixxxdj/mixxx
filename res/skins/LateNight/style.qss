@@ -1163,16 +1163,27 @@ border: 0px;
 #EffectSlot2,
 #EffectSlot3 {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-  padding: 2px 0px 2px 0px;
+  padding: 2px 4px 2px 4px;
 }
 
-#EffectSlot_focused {
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #0f0f0f, stop:1 #222222);
+#EffectSlot_focused {/*
+  background: transparent url(skin:background_tile_focused.png) repeat;
+  background-color: #000;*/
+  background-color:qlineargradient(
+      x1:0, y1:0, x2:0, y2:1,
+        stop:0 #000,
+        stop:0.1 #090909,
+        stop:1 #090909);
+}
+
+#EffectFocusButton {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+  margin: 0px 0px 0px 0px;
 }
 
 #MetaKnob {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-  padding: 0px 3px 0px 3px;
+  padding: 0px 2px 0px 5px;
 }
 
 #EffectKnob {

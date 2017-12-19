@@ -82,7 +82,7 @@
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <MinimumSize>72,26</MinimumSize>
-            <MaximumSize>100,-1</MaximumSize>
+            <MaximumSize>120,-1</MaximumSize>
             <SizePolicy>min,me</SizePolicy>
             <Children>
               <EffectSelector>
@@ -119,6 +119,10 @@
               <ButtonState>LeftButton</ButtonState>
             </Connection>
           </PushButton>
+
+          <WidgetGroup><Size>2f,-1min</Size></WidgetGroup>
+
+          <Template src="skin:effect_focus_button.xml"/>
         </Children>
       </WidgetGroup>
 
