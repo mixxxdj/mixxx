@@ -82,7 +82,7 @@ QuickEffectRackPointer EffectChainManager::getQuickEffectRack(int i) {
 }
 
 MasterEffectRackPointer EffectChainManager::addMasterEffectRack() {
-    MasterEffectRackPointer pRack(new MasterEffectRack(
+    MasterEffectRackPointer pRack(new MasterOutputEffectRack(
         m_pEffectsManager, this));
     m_pMasterEffectRack = pRack;
     m_effectRacksByGroup.insert(pRack->getGroup(), pRack);

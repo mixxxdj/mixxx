@@ -302,7 +302,6 @@ class EngineMaster : public QObject, public AudioSource {
     CSAMPLE* m_pTalkover;
     CSAMPLE* m_pTalkoverHeadphones;
     CSAMPLE* m_pSidechainMix;
-    CSAMPLE** m_ppSidechainOutput;
 
     EngineWorkerScheduler* m_pWorkerScheduler;
     EngineSync* m_pMasterSync;
@@ -347,6 +346,7 @@ class EngineMaster : public QObject, public AudioSource {
     CSAMPLE_GAIN m_balrightOld;
     const ChannelHandleAndGroup m_masterHandle;
     const ChannelHandleAndGroup m_headphoneHandle;
+    const ChannelHandleAndGroup m_masterOutputHandle;
     const ChannelHandleAndGroup m_busMicrophonesHandle;
     const ChannelHandleAndGroup m_busCrossfaderLeftHandle;
     const ChannelHandleAndGroup m_busCrossfaderCenterHandle;

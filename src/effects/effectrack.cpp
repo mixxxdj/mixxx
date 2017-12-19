@@ -258,19 +258,19 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
     return pChainSlotPointer;
 }
 
-MasterEffectRack::MasterEffectRack(EffectsManager* pEffectsManager,
-                                   EffectChainManager* pChainManager)
+MasterOutputEffectRack::MasterOutputEffectRack(EffectsManager* pEffectsManager,
+                                               EffectChainManager* pChainManager)
         : EffectRack(pEffectsManager, pChainManager, 0,
-                     "[MasterEffectRack]", SignalProcessingStage::Postfader) {
+                     "[MasterOutputEffectRack]", SignalProcessingStage::Postfader) {
 
-    const QString unitGroup = "[MasterEffectRack_EffectUnit]";
+    const QString unitGroup = "[MasterOutputEffectRack_EffectUnit]";
     // Hard code only one EffectChainSlot
     EffectChainSlot* pChainSlot = new EffectChainSlot(this, unitGroup, 0);
     EffectChainPointer pChain(new EffectChain(m_pEffectsManager, unitGroup));
     pChainSlot->loadEffectChainToSlot(pChain);
     pChain->addToEngine(getEngineEffectRack(), 0);
     // Add a single EffectSlot for the master EQ effect
-    pChainSlot->addEffectSlot("[MasterEffectRack_EffectUnit_Effect1]");
+    pChainSlot->addEffectSlot("[MasterOutputEffectRack_EffectUnit_Effect1]");
 
     connect(pChainSlot, SIGNAL(nextChain(unsigned int, EffectChainPointer)),
             this, SLOT(loadNextChain(unsigned int, EffectChainPointer)));
@@ -289,7 +289,7 @@ MasterEffectRack::MasterEffectRack(EffectsManager* pEffectsManager,
     const QSet<ChannelHandleAndGroup>& registeredChannels =
             m_pEffectChainManager->registeredInputChannels();
     for (const ChannelHandleAndGroup& handle_group : registeredChannels) {
-        if (handle_group.name() == "[Master]") {
+        if (handle_group.name() == "[MasterOutput]") {
             masterHandleAndGroup = &handle_group;
             break;
         }
@@ -297,7 +297,6 @@ MasterEffectRack::MasterEffectRack(EffectsManager* pEffectsManager,
     DEBUG_ASSERT(masterHandleAndGroup != nullptr);
 
     pChainSlot->registerInputChannel(*masterHandleAndGroup);
-    pChainSlot->updateRoutingSwitches();
     pChain->enableForInputChannel(*masterHandleAndGroup);
     pChain->setMix(1.0);
 

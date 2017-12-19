@@ -44,6 +44,7 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
           m_balrightOld(1.0),
           m_masterHandle(registerChannelGroup(group)),
           m_headphoneHandle(registerChannelGroup("[Headphone]")),
+          m_masterOutputHandle(registerChannelGroup("[MasterOutput]")),
           m_busMicrophonesHandle(registerChannelGroup("[Microphones]")),
           m_busCrossfaderLeftHandle(registerChannelGroup("[BusLeft]")),
           m_busCrossfaderCenterHandle(registerChannelGroup("[BusCenter]")),
@@ -53,6 +54,7 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
     pEffectsManager->registerOutputChannel(m_masterHandle);
     pEffectsManager->registerOutputChannel(m_headphoneHandle);
 
+    pEffectsManager->registerInputChannel(m_masterOutputHandle);
     pEffectsManager->registerInputChannel(m_busMicrophonesHandle);
     pEffectsManager->registerInputChannel(m_busCrossfaderLeftHandle);
     pEffectsManager->registerInputChannel(m_busCrossfaderCenterHandle);
@@ -149,8 +151,6 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
         m_pOutputBusBuffers[o] = SampleUtil::alloc(MAX_BUFFER_LEN);
         SampleUtil::clear(m_pOutputBusBuffers[o], MAX_BUFFER_LEN);
     }
-
-    m_ppSidechainOutput = &m_pMaster;
 
     // Starts a thread for recording and broadcast
     m_pEngineSideChain = bEnableSidechain ? new EngineSideChain(pConfig) : NULL;
@@ -262,7 +262,7 @@ const CSAMPLE* EngineMaster::getHeadphoneBuffer() const {
 }
 
 const CSAMPLE* EngineMaster::getSidechainBuffer() const {
-    return *m_ppSidechainOutput;
+    return m_pSidechainMix;
 }
 
 void EngineMaster::processChannels(int iBufferSize) {
@@ -563,7 +563,9 @@ void EngineMaster::process(const int iBufferSize) {
             m_masterGainOld = master_gain;
 
             // Record/broadcast signal is the same as the master output
-            m_ppSidechainOutput = &m_pMaster;
+            if (!m_bExternalRecordBroadcastInputConnected) {
+                SampleUtil::copy(m_pSidechainMix, m_pMaster, m_iBufferSize);
+            }
         } else if (configuredMicMonitorMode == MicMonitorMode::MASTER_AND_BOOTH) {
             // Process master channel effects
             // TODO(Be): Move this after mixing in talkover. For the MASTER only
@@ -601,7 +603,9 @@ void EngineMaster::process(const int iBufferSize) {
             m_masterGainOld = master_gain;
 
             // Record/broadcast signal is the same as the master output
-            m_ppSidechainOutput = &m_pMaster;
+            if (!m_bExternalRecordBroadcastInputConnected) {
+                SampleUtil::copy(m_pSidechainMix, m_pMaster, m_iBufferSize);
+            }
         } else if (configuredMicMonitorMode == MicMonitorMode::DIRECT_MONITOR) {
             // Skip mixing talkover with the master and booth outputs
             // if using direct monitoring because it is being mixed in hardware
@@ -632,6 +636,9 @@ void EngineMaster::process(const int iBufferSize) {
             SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld,
                                          master_gain, m_iBufferSize);
             m_masterGainOld = master_gain;
+            if (!m_bExternalRecordBroadcastInputConnected) {
+                SampleUtil::copy(m_pSidechainMix, m_pMaster, m_iBufferSize);
+            }
 
             // The talkover signal Mixxx receives is delayed by the round trip latency.
             // There is an output latency between the time Mixxx processes the audio
@@ -652,15 +659,11 @@ void EngineMaster::process(const int iBufferSize) {
                 && !m_bExternalRecordBroadcastInputConnected) {
                 // Copy the master mix to a separate buffer before delaying it
                 // to avoid delaying the master output.
-                SampleUtil::copy(m_pSidechainMix, m_pMaster, m_iBufferSize);
                 m_pLatencyCompensationDelay->process(m_pSidechainMix, m_iBufferSize);
                 SampleUtil::copy2WithGain(m_pSidechainMix,
                                           m_pSidechainMix, 1.0,
                                           m_pTalkover, 1.0,
                                           m_iBufferSize);
-                m_ppSidechainOutput = &m_pSidechainMix;
-            } else {
-                m_ppSidechainOutput = &m_pMaster;
             }
         }
 
@@ -671,7 +674,21 @@ void EngineMaster::process(const int iBufferSize) {
         // so skip sending a buffer to m_pSidechain here.
         if (!m_bExternalRecordBroadcastInputConnected
             && m_pEngineSideChain != nullptr) {
-            m_pEngineSideChain->writeSamples(*m_ppSidechainOutput, iFrames);
+            m_pEngineSideChain->writeSamples(m_pSidechainMix, iFrames);
+        }
+
+        // Process effects that apply to master hardware output only but not
+        // record/broadcast signal
+        if (m_pEngineEffectsManager) {
+            GroupFeatureState masterFeatures;
+            masterFeatures.has_gain = true;
+            masterFeatures.gain = m_pMasterGain->get();
+            m_pEngineEffectsManager->processPostFaderInPlace(
+                    m_masterOutputHandle.handle(),
+                    m_masterHandle.handle(),
+                    m_pMaster,
+                    m_iBufferSize, m_iSampleRate,
+                    masterFeatures);
         }
 
         // Balance values

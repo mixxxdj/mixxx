@@ -681,7 +681,6 @@ void DlgPrefEQ::setUpMasterEQ() {
         masterEqIndex = availableMasterEQEffects.size(); // selects "None"
     }
     comboBoxMasterEq->setCurrentIndex(masterEqIndex);
-    slotMasterEqEffectChanged(masterEqIndex);
 
     // Load parameters from preferences:
     EffectPointer effect(m_pEffectMasterEQ);
