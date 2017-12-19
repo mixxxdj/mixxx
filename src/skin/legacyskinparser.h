@@ -54,10 +54,10 @@ class LegacySkinParser : public QObject, public SkinParser {
     static Qt::MouseButton parseButtonState(const QDomNode& node,
                                             const SkinContext& context);
 
+    QList<QWidget*> parseNode(const QDomElement& node);
+
   private:
     static QDomElement openSkin(const QString& skinPath);
-
-    QList<QWidget*> parseNode(const QDomElement& node);
 
     // Load the given template from file and return its document element.
     QDomElement loadTemplate(const QString& path);

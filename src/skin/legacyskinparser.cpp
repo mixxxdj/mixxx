@@ -1230,40 +1230,10 @@ void LegacySkinParser::parseSingletonDefinition(const QDomElement& node) {
                 << "SingletonDefinition requires a Children tag with one child";
     }
 
-    // Descend chilren, taking the first valid element.
-    QDomNode child_node;
-    QDomNodeList children = childrenNode.childNodes();
-    for (int i = 0; i < children.count(); ++i) {
-        child_node = children.at(i);
-        if (child_node.isElement()) {
-            break;
-        }
-    }
-
-    if (child_node.isNull()) {
-        SKIN_WARNING(node, *m_pContext)
-                << "SingletonDefinition Children node is empty";
-        return;
-    }
-
-    QDomElement element = child_node.toElement();
-    QList<QWidget*> child_widgets = parseNode(element);
-    if (child_widgets.empty()) {
-        SKIN_WARNING(node, *m_pContext)
-                << "SingletonDefinition child produced no widget.";
-        return;
-    } else if (child_widgets.size() > 1) {
-        SKIN_WARNING(node, *m_pContext)
-                << "SingletonDefinition child produced multiple widgets."
-                << "All but the first are ignored.";
-    }
-
-    QWidget* pChild = child_widgets[0];
-    if (pChild == NULL) {
-        SKIN_WARNING(node, *m_pContext)
-                << "SingletonDefinition child widget is NULL";
-        return;
-    }
+    WSingleton* pChild = new WSingleton(
+            m_this,
+            childrenNode,
+            m_pParent);
 
     pChild->setObjectName(objectName);
     m_pContext->defineSingleton(objectName, pChild);

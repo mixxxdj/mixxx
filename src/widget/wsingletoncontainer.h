@@ -49,6 +49,8 @@
 
 #include <QPointer>
 
+class LegacySkinParser;
+
 #include "widget/wwidgetgroup.h"
 
 class WSingletonContainer : public WWidgetGroup {
@@ -84,5 +86,20 @@ class SingletonMap {
     QMap<QString, QWidget*> m_singletons;
 };
 
+class WSingleton : public QWidget {
+    Q_OBJECT
+  public:
+    explicit WSingleton(
+            QSharedPointer<LegacySkinParser> pParser,
+            QDomNode childrenNode,
+            QWidget* pParent);
+
+    void setVisible(bool visible) override;
+
+  private:
+    QPointer<QWidget> m_pWidget;
+    QSharedPointer<LegacySkinParser> m_pParser;
+    QDomNode m_childrenNode;
+};
 
 #endif  // WSINGLETONCONTAINER_H
