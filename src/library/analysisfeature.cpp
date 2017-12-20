@@ -144,7 +144,7 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
         connect(m_pAnalyzerQueue, SIGNAL(trackFinished(int)),
                 m_pAnalysisView, SLOT(trackAnalysisFinished(int)));
 
-        connect(m_pAnalyzerQueue, SIGNAL(queueEmpty()),
+        connect(m_pAnalyzerQueue, SIGNAL(threadIdle()),
                 this, SLOT(cleanupAnalyzer()));
         emit(analysisActive(true));
     }

@@ -48,19 +48,21 @@ class AnalyzerQueue : public QThread {
     // are currently queued for analysis.
     int resume();
 
+    bool isTrackPending(const TrackPointer& pTrack) const;
+
     void stop();
 
   public slots:
     void slotAnalyseTrack(TrackPointer pTrack);
-    void slotUpdateProgress();
+    void slotThreadProgress();
 
   signals:
     void trackProgress(int progress);
-    void trackDone(TrackPointer track);
-    void trackFinished(int size);
-    // Signals from AnalyzerQueue Thread:
-    void queueEmpty();
-    void updateProgress();
+    void trackFinished(int queueSize);
+
+    // Queued signals from the worker thread
+    void threadProgress();
+    void threadIdle();
 
   protected:
     void run();
@@ -79,33 +81,33 @@ class AnalyzerQueue : public QThread {
 
     void execThread();
 
-    bool isLoadedTrackQueued(TrackPointer pCurrentTrack);
-    TrackPointer dequeueNextBlocking();
+    void dequeueNextTrackBlocking();
+    void finishCurrentTrack(int finishedProgress = kAnalysisProgressUnknown);
+
     enum class AnalysisResult {
         Pending,
         Partial,
         Complete,
         Cancelled,
     };
-    AnalysisResult doAnalysis(TrackPointer pTrack, mixxx::AudioSourcePointer pAudioSource);
-    void emitUpdateProgress(TrackPointer pTrack, int progress);
-    void emitUpdateProgress() {
-        // No current track
-        emitUpdateProgress(TrackPointer(), kAnalysisProgressNone);
-    }
-    void emptyCheck();
-    void updateSize();
+    AnalysisResult analyzeCurrentTrack(
+            mixxx::AudioSourcePointer pAudioSource);
 
-    QAtomicInt m_queueSize;
-    QAtomicInt m_queueModifiedFlag;
-    QAtomicInt m_exitPendingFlag;
+    void emitThreadProgress(int currentTrackProgress = kAnalysisProgressUnknown);
+
+    QAtomicInt m_cancelCurrentTrack;
+    QAtomicInt m_exitThread;
+
+    QAtomicInt m_threadIdle;
+    void emitThreadIdle();
 
     // The processing queue and associated mutex
-    QMutex m_qm;
+    mutable QMutex m_qm;
     QWaitCondition m_qwait;
-    QQueue<TrackPointer> m_queuedTracks;
-    // All queued and the current track
+    // pendingTracks = queuedTracks + currentTrack
     std::set<TrackPointer> m_pendingTracks;
+    QQueue<TrackPointer> m_queuedTracks;
+    TrackPointer m_currentTrack;
 
     // The following members are only accessed by the worker thread
 
@@ -113,9 +115,9 @@ class AnalyzerQueue : public QThread {
 
     typedef std::map<TrackPointer, int> TracksWithProgress;
 
-    class ProgressInfo {
+    class ThreadProgress {
       public:
-        ProgressInfo();
+        ThreadProgress();
 
         // Returns true if this was the first successful write
         // operation while idling. If false is returned the
@@ -125,8 +127,8 @@ class AnalyzerQueue : public QThread {
         // write operation that has not been read yet. Only a
         // result of true requires further action.
         bool tryWrite(
-                TracksWithProgress* pTracksWithProgress,
-                TrackPointer /*nullable*/ pCurrentTrack,
+                TracksWithProgress* previousTracksWithProgress,
+                TrackPointer /*nullable*/ currentTrack,
                 int currentTrackProgress,
                 int queueSize);
 
@@ -135,37 +137,37 @@ class AnalyzerQueue : public QThread {
           public:
             ReadScope(const ReadScope&) = delete;
             ReadScope(ReadScope&& that)
-                : m_pProgressInfo(that.m_pProgressInfo) {
-                that.m_pProgressInfo = nullptr;
+                : m_pThreadProgress(that.m_pThreadProgress) {
+                that.m_pThreadProgress = nullptr;
             }
             ~ReadScope();
 
             ReadScope& operator=(const ReadScope&) = delete;
             ReadScope& operator=(const ReadScope&&) = delete;
 
-            operator const ProgressInfo*() const {
-                return m_pProgressInfo;
+            operator const ThreadProgress*() const {
+                return m_pThreadProgress;
             }
 
             const TracksWithProgress& tracksWithProgress() const {
-                DEBUG_ASSERT(m_pProgressInfo);
-                return m_pProgressInfo->m_tracksWithProgress;
+                DEBUG_ASSERT(m_pThreadProgress);
+                return m_pThreadProgress->m_tracksWithProgress;
             }
 
             int currentTrackProgress() const {
-                DEBUG_ASSERT(m_pProgressInfo);
-                return m_pProgressInfo->m_currentTrackProgress;
+                DEBUG_ASSERT(m_pThreadProgress);
+                return m_pThreadProgress->m_currentTrackProgress;
             }
 
             int queueSize() const {
-                DEBUG_ASSERT(m_pProgressInfo);
-                return m_pProgressInfo->m_queueSize;
+                DEBUG_ASSERT(m_pThreadProgress);
+                return m_pThreadProgress->m_queueSize;
             }
 
           private:
-            friend class ProgressInfo;
-            ReadScope(ProgressInfo* pProgressInfo);
-            ProgressInfo* m_pProgressInfo;
+            friend class ThreadProgress;
+            ReadScope(ThreadProgress* pThreadProgress);
+            ThreadProgress* m_pThreadProgress;
         };
 
         ReadScope read() {
@@ -180,9 +182,9 @@ class AnalyzerQueue : public QThread {
         int m_currentTrackProgress;
         int m_queueSize;
     };
-    ProgressInfo m_progressInfo;
+    ThreadProgress m_threadProgress;
 
     // These members are only accessed by the analysis thread
     // for collecting tracks until the next update.
-    TracksWithProgress m_tracksWithProgress;
+    TracksWithProgress m_previousTracksWithProgress;
 };

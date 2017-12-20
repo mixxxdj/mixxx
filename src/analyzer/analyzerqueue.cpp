@@ -46,47 +46,48 @@ QAtomicInt s_instanceCounter(0);
 
 } // anonymous namespace
 
-AnalyzerQueue::ProgressInfo::ProgressInfo()
+AnalyzerQueue::ThreadProgress::ThreadProgress()
     : m_state(kProgressStateEmpty),
       m_currentTrackProgress(kAnalysisProgressNone),
       m_queueSize(0) {
 }
 
-bool AnalyzerQueue::ProgressInfo::tryWrite(
-        TracksWithProgress* pTracksWithProgress,
-        TrackPointer pCurrentTrack,
+bool AnalyzerQueue::ThreadProgress::tryWrite(
+        TracksWithProgress* previousTracksWithProgress,
+        TrackPointer currentTrack,
         int currentTrackProgress,
         int queueSize) {
-    DEBUG_ASSERT(pTracksWithProgress);
+    DEBUG_ASSERT(previousTracksWithProgress);
     bool wasEmpty = m_state.testAndSetAcquire(
             kProgressStateEmpty, kProgressStateWriting);
     bool progressChanged = false;
     if (wasEmpty || m_state.testAndSetAcquire(
             kProgressStateReady, kProgressStateWriting)) {
         DEBUG_ASSERT(m_state == kProgressStateWriting);
+        kLogger.trace() << "Writing progress info";
         // Keep all track references alive until the main thread releases
         // them by moving them into the progress info exchange object!
-        if (!pTracksWithProgress->empty()) {
+        if (!previousTracksWithProgress->empty()) {
             if (m_tracksWithProgress.empty()) {
-                pTracksWithProgress->swap(m_tracksWithProgress);
+                previousTracksWithProgress->swap(m_tracksWithProgress);
             } else {
-                for (const auto trackProgress: *pTracksWithProgress) {
+                for (const auto trackProgress: *previousTracksWithProgress) {
                     m_tracksWithProgress[trackProgress.first] = trackProgress.second;
                 }
-                pTracksWithProgress->insert(
+                previousTracksWithProgress->insert(
                         m_tracksWithProgress.begin(),
                         m_tracksWithProgress.end());
             }
-            pTracksWithProgress->clear();
+            previousTracksWithProgress->clear();
             // Simply assume that something must have changed.
             // It is just too complicated to check for individual
             // changes.
             progressChanged = true;
         }
-        if (pCurrentTrack) {
-            const auto i = m_tracksWithProgress.find(pCurrentTrack);
+        if (currentTrack) {
+            const auto i = m_tracksWithProgress.find(currentTrack);
             if (i == m_tracksWithProgress.end()) {
-                m_tracksWithProgress[pCurrentTrack] = currentTrackProgress;
+                m_tracksWithProgress[currentTrack] = currentTrackProgress;
                 progressChanged = true;
             } else if (i->second != currentTrackProgress) {
                 i->second = currentTrackProgress;
@@ -109,34 +110,34 @@ bool AnalyzerQueue::ProgressInfo::tryWrite(
         // Ensure that track references are not dropped within the
         // analysis thread by accumulating progress updates until
         // the receiver is ready to consume them!
-        if (pCurrentTrack) {
-            (*pTracksWithProgress)[pCurrentTrack] = currentTrackProgress;
+        if (currentTrack) {
+            (*previousTracksWithProgress)[currentTrack] = currentTrackProgress;
         }
     }
     return wasEmpty && progressChanged;
 }
 
-AnalyzerQueue::ProgressInfo::ReadScope::ReadScope(ProgressInfo* pProgressInfo)
-    : m_pProgressInfo(nullptr) {
-    DEBUG_ASSERT(pProgressInfo);
+AnalyzerQueue::ThreadProgress::ReadScope::ReadScope(ThreadProgress* pThreadProgress)
+    : m_pThreadProgress(nullptr) {
+    DEBUG_ASSERT(pThreadProgress);
     // Defer updates from the analysis thread while the
     // current progress info is consumed.
-    if (pProgressInfo->m_state.testAndSetAcquire(
+    if (pThreadProgress->m_state.testAndSetAcquire(
             kProgressStateReady, kProgressStateReading)) {
-        m_pProgressInfo = pProgressInfo;
+        m_pThreadProgress = pThreadProgress;
     }
 }
 
-AnalyzerQueue::ProgressInfo::ReadScope::~ReadScope() {
-    if (m_pProgressInfo) {
-        DEBUG_ASSERT(m_pProgressInfo->m_state == kProgressStateReading);
+AnalyzerQueue::ThreadProgress::ReadScope::~ReadScope() {
+    if (m_pThreadProgress) {
+        DEBUG_ASSERT(m_pThreadProgress->m_state == kProgressStateReading);
         // Releasing all track reference here in the main thread might
         // trigger save actions. This is necessary to avoid that the
         // last reference is dropped within the analysis thread!
-        m_pProgressInfo->m_tracksWithProgress.clear();
+        m_pThreadProgress->m_tracksWithProgress.clear();
         // Finally allow the analysis thread to write progress info
         // updates again
-        m_pProgressInfo->m_state = kProgressStateEmpty;
+        m_pThreadProgress->m_state = kProgressStateEmpty;
     }
 }
 
@@ -145,9 +146,9 @@ AnalyzerQueue::AnalyzerQueue(
         const UserSettingsPointer& pConfig,
         Mode mode)
         : m_pDbConnectionPool(std::move(pDbConnectionPool)),
-          m_queueSize(0),
-          m_queueModifiedFlag(false),
-          m_exitPendingFlag(false),
+          m_cancelCurrentTrack(false),
+          m_exitThread(false),
+          m_threadIdle(false),
           m_sampleBuffer(kAnalysisSamplesPerBlock) {
 
     if (mode != Mode::WithoutWaveform) {
@@ -162,8 +163,8 @@ AnalyzerQueue::AnalyzerQueue(
 #endif
     kLogger.info() << "Activated" << m_pAnalyzers.size() << "analyzers";
 
-    connect(this, SIGNAL(updateProgress()),
-            this, SLOT(slotUpdateProgress()));
+    connect(this, SIGNAL(threadProgress()),
+            this, SLOT(slotThreadProgress()));
 
     start(QThread::LowPriority);
 }
@@ -174,94 +175,74 @@ AnalyzerQueue::~AnalyzerQueue() {
     wait();
 }
 
-// This is called from the AnalyzerQueue thread
-bool AnalyzerQueue::isLoadedTrackQueued(TrackPointer pCurrentTrack) {
-    const bool currentTrackLoaded =
-            PlayerInfo::instance().isTrackLoaded(pCurrentTrack);
-    bool prioritizeQueuedTrack = false;
-
+bool AnalyzerQueue::isTrackPending(const TrackPointer& pTrack) const {
     QMutexLocker locked(&m_qm);
-    QMutableListIterator<TrackPointer> it(m_queuedTracks);
-    while (it.hasNext()) {
-        TrackPointer pQueuedTrack = it.next();
-        DEBUG_ASSERT(pQueuedTrack);
-        bool analysisNeeded = false;
-        // Do not shortcut the following loop, because each
-        // analyzer must be given a chance to load the analysis
-        // results for this track!
-        for (auto const& pAnalyzer: m_pAnalyzers) {
-            if (!pAnalyzer->isDisabledOrLoadStoredSuccess(pQueuedTrack)) {
-                analysisNeeded = true;
-            }
-        }
-        if (analysisNeeded) {
-            if (!currentTrackLoaded && !prioritizeQueuedTrack) {
-                prioritizeQueuedTrack =
-                        PlayerInfo::instance().isTrackLoaded(pQueuedTrack);
-            }
-        } else {
-            if (kLogger.debugEnabled()) {
-                kLogger.debug()
-                        << "Skipping re-analysis of file"
-                        << pQueuedTrack->getLocation();
-            }
-            it.remove();
-            m_pendingTracks.erase(pQueuedTrack);
-            // Record progress for the next update cycle
-            m_tracksWithProgress[pQueuedTrack] = kAnalysisProgressDone;
-        }
-    }
-
-    // The analysis will be aborted if the currently analyzing
-    // track is not loaded, but one or more tracks in the queue
-    // are loaded and need to be prioritized.
-    return prioritizeQueuedTrack;
+    return m_pendingTracks.find(pTrack) != m_pendingTracks.end();
 }
 
 // This is called from the AnalyzerQueue thread
 // The returned track might be null if the analysis has been cancelled
-TrackPointer AnalyzerQueue::dequeueNextBlocking() {
+void AnalyzerQueue::dequeueNextTrackBlocking() {
     QMutexLocker locked(&m_qm);
+    DEBUG_ASSERT(!m_currentTrack);
 
-    DEBUG_ASSERT(m_queuedTracks.size() == int(m_pendingTracks.size()));
     Event::end("AnalyzerQueue process");
     while (m_queuedTracks.isEmpty()) {
         DEBUG_ASSERT(m_pendingTracks.empty());
-        // One last try to deliver all collected updates before
-        // suspending the analysis thread
-        emitUpdateProgress();
         kLogger.debug() << "Suspending thread";
         m_qwait.wait(&m_qm);
         kLogger.debug() << "Resuming thread";
 
-        if (m_exitPendingFlag) {
-            return TrackPointer();
+        if (m_exitThread) {
+            return;
         }
     }
     Event::start("AnalyzerQueue process");
     DEBUG_ASSERT(m_queuedTracks.size() == int(m_pendingTracks.size()));
 
-    const PlayerInfo& info = PlayerInfo::instance();
+    const PlayerInfo& playerInfo = PlayerInfo::instance();
     QMutableListIterator<TrackPointer> it(m_queuedTracks);
     while (it.hasNext()) {
         TrackPointer pTrack = it.next();
         DEBUG_ASSERT(pTrack);
-        // Prioritize tracks that are loaded.
-        if (info.isTrackLoaded(pTrack)) {
-            kLogger.debug() << "Prioritizing" << pTrack->getLocation();
+        // Prioritize tracks that are loaded
+        if (playerInfo.isTrackLoaded(pTrack)) {
+            kLogger.debug()
+                    << "Prioritizing loaded track"
+                    << pTrack->getLocation();
             it.remove();
-            return pTrack;
+            m_currentTrack = std::move(pTrack);
+            DEBUG_ASSERT(m_currentTrack);
+            return;
         }
     }
 
     // no prioritized track found, use head track
     DEBUG_ASSERT(!m_queuedTracks.isEmpty());
-    return m_queuedTracks.dequeue();
+    TrackPointer pTrack = m_queuedTracks.dequeue();
+    m_currentTrack = std::move(pTrack);
+    DEBUG_ASSERT(m_currentTrack);
+}
+
+void AnalyzerQueue::finishCurrentTrack(int currentTrackProgress) {
+    {
+        QMutexLocker locked(&m_qm);
+        if (m_currentTrack) {
+            m_pendingTracks.erase(m_currentTrack);
+        }
+        DEBUG_ASSERT(m_queuedTracks.size() == int(m_pendingTracks.size()));
+        if (m_queuedTracks.empty()) {
+            m_threadIdle = true;
+        }
+    }
+    // Emit signals after unlocking to avoid deadlocks!
+    emitThreadProgress(currentTrackProgress);
+    m_currentTrack.reset();
+    emitThreadIdle();
 }
 
 // This is called from the AnalyzerQueue thread
-AnalyzerQueue::AnalysisResult AnalyzerQueue::doAnalysis(
-        TrackPointer pTrack,
+AnalyzerQueue::AnalysisResult AnalyzerQueue::analyzeCurrentTrack(
         mixxx::AudioSourcePointer pAudioSource) {
 
     QTime progressUpdateInhibitTimer;
@@ -308,7 +289,7 @@ AnalyzerQueue::AnalysisResult AnalyzerQueue::doAnalysis(
                 // EOF not reached -> Maybe a corrupt file?
                 kLogger.warning()
                         << "Aborting analysis after failed to read sample data from"
-                        << pTrack->getLocation()
+                        << m_currentTrack->getLocation()
                         << ": expected frames =" << inputFrameIndexRange
                         << ", actual frames =" << readableSampleFrames.frameIndexRange();
                 result = AnalysisResult::Partial;
@@ -324,32 +305,18 @@ AnalyzerQueue::AnalysisResult AnalyzerQueue::doAnalysis(
                 double(pAudioSource->frameLength());
         int progressPromille = frameProgress * kAnalysisProgressFinalizing;
 
-        // Since this is a background analysis queue, we should co-operatively
-        // yield every now and then to try and reduce CPU contention. The
-        // analyzer queue is CPU intensive so we want to get out of the way of
-        // the audio callback thread.
-        //QThread::yieldCurrentThread();
-        //QThread::usleep(10);
-
-        // has something new entered the queue?
-        if (m_queueModifiedFlag.fetchAndStoreAcquire(false)) {
-            if (isLoadedTrackQueued(pTrack)) {
-                if (result == AnalysisResult::Pending) {
-                    kLogger.debug() << "Interrupting analysis to give preference to a loaded track.";
-                    result = AnalysisResult::Cancelled;
-                }
-            }
-        }
-
-        if ((m_progressInfo.m_currentTrackProgress != progressPromille) ||
-                !m_tracksWithProgress.empty()) {
+        if ((m_threadProgress.m_currentTrackProgress != progressPromille) ||
+                !m_previousTracksWithProgress.empty()) {
             if (progressUpdateInhibitTimer.elapsed() > kProgressUpdateInhibitMillis) {
-                emitUpdateProgress(pTrack, progressPromille);
+                emitThreadProgress(progressPromille);
                 progressUpdateInhibitTimer.start();
             }
         }
 
-        if (m_exitPendingFlag) {
+        // Don't shortcut fetchAndStoreAcquire()!
+        if ((m_cancelCurrentTrack.fetchAndStoreAcquire(false)
+                && (result != AnalysisResult::Complete))
+                || m_exitThread) {
             result = AnalysisResult::Cancelled;
         }
 
@@ -363,14 +330,13 @@ AnalyzerQueue::AnalysisResult AnalyzerQueue::doAnalysis(
 }
 
 int AnalyzerQueue::resume() {
-    m_queueModifiedFlag = true;
     QMutexLocker locked(&m_qm);
     m_qwait.wakeAll();
     return m_queuedTracks.size();
 }
 
 void AnalyzerQueue::stop() {
-    m_exitPendingFlag = true;
+    m_exitThread = true;
     resume();
 }
 
@@ -412,27 +378,27 @@ void AnalyzerQueue::execThread() {
         m_pAnalysisDao->initialize(dbConnection);
     }
 
-    while (!m_exitPendingFlag) {
-        TrackPointer nextTrack = dequeueNextBlocking();
-        if (m_exitPendingFlag) {
-            emptyCheck();
+    while (!m_exitThread) {
+        DEBUG_ASSERT(!m_currentTrack);
+        emitThreadProgress();
+        emitThreadIdle();
+        dequeueNextTrackBlocking();
+        if (!m_currentTrack) {
             break;
         }
 
-        DEBUG_ASSERT(nextTrack);
-        kLogger.debug() << "Analyzing" << nextTrack->getTitle() << nextTrack->getLocation();
-
+        kLogger.debug() << "Analyzing" << m_currentTrack->getTitle() << m_currentTrack->getLocation();
         Trace trace("AnalyzerQueue analyzing track");
 
         // Get the audio
         mixxx::AudioSource::OpenParams openParams;
         openParams.setChannelCount(kAnalysisChannels);
-        auto pAudioSource = SoundSourceProxy(nextTrack).openAudioSource(openParams);
+        auto pAudioSource = SoundSourceProxy(m_currentTrack).openAudioSource(openParams);
         if (!pAudioSource) {
             kLogger.warning()
                     << "Failed to open file for analyzing:"
-                    << nextTrack->getLocation();
-            emptyCheck();
+                    << m_currentTrack->getLocation();
+            finishCurrentTrack();
             continue;
         }
 
@@ -440,18 +406,16 @@ void AnalyzerQueue::execThread() {
         for (auto const& pAnalyzer: m_pAnalyzers) {
             // Make sure not to short-circuit initialize(...)
             if (pAnalyzer->initialize(
-                    nextTrack,
+                    m_currentTrack,
                     pAudioSource->sampleRate(),
                     pAudioSource->frameLength() * kAnalysisChannels)) {
                 processTrack = true;
             }
         }
 
-        updateSize();
-
         if (processTrack) {
-            emitUpdateProgress(nextTrack, kAnalysisProgressNone);
-            const auto analysisResult = doAnalysis(nextTrack, pAudioSource);
+            emitThreadProgress(kAnalysisProgressNone);
+            const auto analysisResult = analyzeCurrentTrack(pAudioSource);
             DEBUG_ASSERT(analysisResult != AnalysisResult::Pending);
             if ((analysisResult == AnalysisResult::Complete) ||
                     (analysisResult == AnalysisResult::Partial)) {
@@ -461,83 +425,96 @@ void AnalyzerQueue::execThread() {
                 // session. A partial analysis would otherwise be repeated again
                 // and again, because it is very unlikely that the error vanishes
                 // suddenly.
-                emitUpdateProgress(nextTrack, kAnalysisProgressFinalizing);
+                emitThreadProgress(kAnalysisProgressFinalizing);
                 // This takes around 3 sec on a Atom Netbook
                 for (auto const& pAnalyzer: m_pAnalyzers) {
-                    pAnalyzer->finalize(nextTrack);
+                    pAnalyzer->finalize(m_currentTrack);
                 }
-                emit(trackDone(nextTrack));
-                m_pendingTracks.erase(nextTrack);
-                emitUpdateProgress(std::move(nextTrack), kAnalysisProgressDone);
+                finishCurrentTrack(kAnalysisProgressDone);
             } else {
                 for (auto const& pAnalyzer: m_pAnalyzers) {
-                    pAnalyzer->cleanup(nextTrack);
+                    pAnalyzer->cleanup(m_currentTrack);
                 }
-                // still pending -> re-enqueue
-                enqueueTrack(nextTrack);
-                emitUpdateProgress(std::move(nextTrack), kAnalysisProgressNone);
+                TrackPointer deferredTrack = m_currentTrack;
+                finishCurrentTrack(kAnalysisProgressNone);
+                // Re-enqueue AFTER finishing the current track
+                enqueueTrack(std::move(deferredTrack));
             }
         } else {
             kLogger.debug() << "Skipping track analysis because no analyzer initialized.";
-            m_pendingTracks.erase(nextTrack);
-            emitUpdateProgress(std::move(nextTrack), kAnalysisProgressDone);
+            finishCurrentTrack(kAnalysisProgressDone);
         }
         // All references to the track object within the analysis thread
         // should have been released to avoid exporting metadata or updating
         // the database within the low-prio analysis thread!
-        DEBUG_ASSERT(!nextTrack);
-        emptyCheck();
+        DEBUG_ASSERT(!m_currentTrack);
     }
-    m_queuedTracks.clear();
-    m_pendingTracks.clear();
+    DEBUG_ASSERT(m_exitThread);
+    {
+        QMutexLocker locked(&m_qm);
+        DEBUG_ASSERT(!m_currentTrack);
+        m_pendingTracks.clear();
+        m_queuedTracks.clear();
+    }
+    DEBUG_ASSERT(!m_currentTrack);
+    emitThreadProgress();
+    emitThreadIdle();
 
     if (m_pAnalysisDao) {
         // Invalidate reference to the thread-local database connection
         // that will be closed soon. Not necessary, just in case ;)
         m_pAnalysisDao->initialize(QSqlDatabase());
     }
-
-    emit(queueEmpty()); // emit in case of exit;
 }
 
-void AnalyzerQueue::emptyCheck() {
-    updateSize();
-    if (m_queueSize == 0) {
-        emit(queueEmpty()); // emit asynchrony for no deadlock
+void AnalyzerQueue::emitThreadIdle() {
+    if (m_threadIdle.fetchAndStoreAcquire(false)) {
+        emit(threadIdle());
     }
 }
 
-void AnalyzerQueue::updateSize() {
-    QMutexLocker locked(&m_qm);
-    m_queueSize = m_queuedTracks.size();
-}
-
 // This is called from the AnalyzerQueue thread
-void AnalyzerQueue::emitUpdateProgress(TrackPointer pTrack, int progress) {
-    if (!m_exitPendingFlag) {
-        if (m_progressInfo.tryWrite(&m_tracksWithProgress, std::move(pTrack), progress, m_queueSize)) {
-            emit(updateProgress());
+void AnalyzerQueue::emitThreadProgress(int currentTrackProgress) {
+    if (!m_exitThread) {
+        int queueSize;
+        {
+            QMutexLocker locked(&m_qm);
+            queueSize = m_queuedTracks.size();
+            if (m_currentTrack) {
+                ++queueSize;
+            }
+        }
+        if (m_threadProgress.tryWrite(
+                &m_previousTracksWithProgress,
+                m_currentTrack,
+                currentTrackProgress,
+                queueSize)) {
+            emit(threadProgress());
         }
     }
 }
 
-//slot
-void AnalyzerQueue::slotUpdateProgress() {
-    const auto readScope = m_progressInfo.read();
+void AnalyzerQueue::slotThreadProgress() {
+    const auto readScope = m_threadProgress.read();
     if (readScope) {
-        // TODO(XXX): Bulk updates of many track objects will
+        kLogger.trace() << "Reading progress info";
+        // TODO(XXX): Bulk updates of many track objects could
         // limit the responsiveness of the UI or may cause freezing.
         bool oneOrMoreTracksFinished = false;
         for (const auto trackWithProgress: readScope.tracksWithProgress()) {
-            trackWithProgress.first->setAnalysisProgress(trackWithProgress.second);
-            if (trackWithProgress.second == kAnalysisProgressDone) {
-                oneOrMoreTracksFinished = true;
+            if (trackWithProgress.second != kAnalysisProgressUnknown) {
+                trackWithProgress.first->setAnalysisProgress(trackWithProgress.second);
+                if (trackWithProgress.second == kAnalysisProgressDone) {
+                    oneOrMoreTracksFinished = true;
+                }
             }
         }
         DEBUG_ASSERT(oneOrMoreTracksFinished ||
                 (readScope.currentTrackProgress() != kAnalysisProgressDone));
-        int trackProgressPercent = readScope.currentTrackProgress() / 10;
-        emit(trackProgress(trackProgressPercent));
+        if (readScope.currentTrackProgress() != kAnalysisProgressUnknown) {
+            int trackProgressPercent = readScope.currentTrackProgress() / 10;
+            emit(trackProgress(trackProgressPercent));
+        }
         if (oneOrMoreTracksFinished) {
             emit(trackFinished(readScope.queueSize()));
         }
@@ -557,12 +534,28 @@ bool AnalyzerQueue::enqueueTrack(TrackPointer pTrack) {
         return false;
     }
 
+    m_threadIdle = false;
+
     QMutexLocker locked(&m_qm);
     if (m_pendingTracks.insert(pTrack).second) {
         if (PlayerInfo::instance().isTrackLoaded(pTrack)) {
-            // Prioritize track
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Enqueuing prioritized track"
+                        << pTrack->getLocation();
+            }
             m_queuedTracks.prepend(pTrack);
+            // Read access on smart-pointer is thread safe
+            TrackPointer currentTrack = m_currentTrack;
+            if (currentTrack && !PlayerInfo::instance().isTrackLoaded(currentTrack)) {
+                m_cancelCurrentTrack = true;
+            }
         } else {
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Enqueuing track"
+                        << pTrack->getLocation();
+            }
             m_queuedTracks.enqueue(pTrack);
         }
         // Don't wake up the paused thread now to avoid race conditions
