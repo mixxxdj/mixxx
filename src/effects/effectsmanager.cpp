@@ -367,6 +367,13 @@ void EffectsManager::setup() {
     pEffect = instantiateEffect("org.mixxx.effects.autopan");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
+
+    pChain = EffectChainPointer(new EffectChain(
+            this, "org.mixxx.effectchain.tremolo"));
+    pChain->setName(tr("Tremolo"));
+    pEffect = instantiateEffect("org.mixxx.effects.tremolo");
+    pChain->addEffect(pEffect);
+    m_pEffectChainManager->addEffectChain(pChain);
 }
 
 void EffectsManager::loadEffectChains() {
