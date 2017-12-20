@@ -9,14 +9,12 @@
 #include "analyzer/analyzerwaveform.h"
 #include "library/dao/analysisdao.h"
 #include "engine/engine.h"
-#include "mixer/playerinfo.h"
 #include "sources/soundsourceproxy.h"
 #include "sources/audiosourcestereoproxy.h"
 #include "track/track.h"
 #include "util/compatibility.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/db/dbconnectionpooled.h"
-#include "util/event.h"
 #include "util/timer.h"
 #include "util/trace.h"
 #include "util/logger.h"
@@ -146,7 +144,6 @@ AnalyzerQueue::AnalyzerQueue(
         const UserSettingsPointer& pConfig,
         Mode mode)
         : m_pDbConnectionPool(std::move(pDbConnectionPool)),
-          m_cancelCurrentTrack(false),
           m_exitThread(false),
           m_threadIdle(false),
           m_sampleBuffer(kAnalysisSamplesPerBlock) {
@@ -198,29 +195,10 @@ void AnalyzerQueue::dequeueNextTrackBlocking() {
         }
     }
     Event::start("AnalyzerQueue process");
-    DEBUG_ASSERT(m_queuedTracks.size() == int(m_pendingTracks.size()));
 
-    const PlayerInfo& playerInfo = PlayerInfo::instance();
-    QMutableListIterator<TrackPointer> it(m_queuedTracks);
-    while (it.hasNext()) {
-        TrackPointer pTrack = it.next();
-        DEBUG_ASSERT(pTrack);
-        // Prioritize tracks that are loaded
-        if (playerInfo.isTrackLoaded(pTrack)) {
-            kLogger.debug()
-                    << "Prioritizing loaded track"
-                    << pTrack->getLocation();
-            it.remove();
-            m_currentTrack = std::move(pTrack);
-            DEBUG_ASSERT(m_currentTrack);
-            return;
-        }
-    }
-
-    // no prioritized track found, use head track
     DEBUG_ASSERT(!m_queuedTracks.isEmpty());
-    TrackPointer pTrack = m_queuedTracks.dequeue();
-    m_currentTrack = std::move(pTrack);
+    DEBUG_ASSERT(m_queuedTracks.size() == int(m_pendingTracks.size()));
+    m_currentTrack = m_queuedTracks.dequeue();
     DEBUG_ASSERT(m_currentTrack);
 }
 
@@ -313,10 +291,7 @@ AnalyzerQueue::AnalysisResult AnalyzerQueue::analyzeCurrentTrack(
             }
         }
 
-        // Don't shortcut fetchAndStoreAcquire()!
-        if ((m_cancelCurrentTrack.fetchAndStoreAcquire(false)
-                && (result != AnalysisResult::Complete))
-                || m_exitThread) {
+        if (m_exitThread) {
             result = AnalysisResult::Cancelled;
         }
 
@@ -538,26 +513,12 @@ bool AnalyzerQueue::enqueueTrack(TrackPointer pTrack) {
 
     QMutexLocker locked(&m_qm);
     if (m_pendingTracks.insert(pTrack).second) {
-        if (PlayerInfo::instance().isTrackLoaded(pTrack)) {
-            if (kLogger.debugEnabled()) {
-                kLogger.debug()
-                        << "Enqueuing prioritized track"
-                        << pTrack->getLocation();
-            }
-            m_queuedTracks.prepend(pTrack);
-            // Read access on smart-pointer is thread safe
-            TrackPointer currentTrack = m_currentTrack;
-            if (currentTrack && !PlayerInfo::instance().isTrackLoaded(currentTrack)) {
-                m_cancelCurrentTrack = true;
-            }
-        } else {
-            if (kLogger.debugEnabled()) {
-                kLogger.debug()
-                        << "Enqueuing track"
-                        << pTrack->getLocation();
-            }
-            m_queuedTracks.enqueue(pTrack);
+        if (kLogger.debugEnabled()) {
+            kLogger.debug()
+                    << "Enqueuing track"
+                    << pTrack->getLocation();
         }
+        m_queuedTracks.enqueue(pTrack);
         // Don't wake up the paused thread now to avoid race conditions
         // if multiple threads are added in a row. The caller is
         // responsible to finish the enqueuing of tracks with resume().

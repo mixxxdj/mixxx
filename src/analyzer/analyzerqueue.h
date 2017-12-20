@@ -95,7 +95,6 @@ class AnalyzerQueue : public QThread {
 
     void emitThreadProgress(int currentTrackProgress = kAnalysisProgressUnknown);
 
-    QAtomicInt m_cancelCurrentTrack;
     QAtomicInt m_exitThread;
 
     QAtomicInt m_threadIdle;
