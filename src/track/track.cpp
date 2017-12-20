@@ -746,6 +746,42 @@ void Track::removeCue(const CuePointer& pCue) {
     emit(cuesUpdated());
 }
 
+void Track::removeMainCue() {
+    QMutexLocker lock(&m_qMutex);
+    for (CuePointer pCue : m_cuePoints) {
+        if (pCue->getType() == Cue::LOAD) {
+            disconnect(pCue.get(), 0, this, 0);
+            m_cuePoints.removeOne(pCue);
+        }
+    }
+    markDirtyAndUnlock(&lock);
+    emit(cuesUpdated());
+}
+
+void Track::removeHotCues() {
+    QMutexLocker lock(&m_qMutex);
+    for (CuePointer pCue : m_cuePoints) {
+        if (pCue->getType() == Cue::CUE) {
+            disconnect(pCue.get(), 0, this, 0);
+            m_cuePoints.removeOne(pCue);
+        }
+    }
+    markDirtyAndUnlock(&lock);
+    emit(cuesUpdated());
+}
+
+void Track::removeLoopCues() {
+    QMutexLocker lock(&m_qMutex);
+    for (CuePointer pCue : m_cuePoints) {
+        if (pCue->getType() == Cue::LOOP) {
+            disconnect(pCue.get(), 0, this, 0);
+            m_cuePoints.removeOne(pCue);
+        }
+    }
+    markDirtyAndUnlock(&lock);
+    emit(cuesUpdated());
+}
+
 QList<CuePointer> Track::getCuePoints() const {
     QMutexLocker lock(&m_qMutex);
     return m_cuePoints;
