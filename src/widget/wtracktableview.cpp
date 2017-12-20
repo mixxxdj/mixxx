@@ -1342,6 +1342,30 @@ QList<TrackId> WTrackTableView::getSelectedTrackIds() const {
     return trackIds;
 }
 
+void WTrackTableView::setSelectedTracks(const QList<TrackId>& trackIds) {
+    QItemSelectionModel* pSelectionModel = selectionModel();
+    VERIFY_OR_DEBUG_ASSERT(pSelectionModel != nullptr) {
+        qWarning() << "No selected tracks available";
+        return;
+    }
+
+    TrackModel* pTrackModel = getTrackModel();
+    VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
+        qWarning() << "No selected tracks available";
+        return;
+    }
+
+    for (const auto& trackId : trackIds) {
+        const QLinkedList<int> gts = pTrackModel->getTrackRows(trackId);
+
+        QLinkedList<int>::const_iterator i;
+        for (i = gts.constBegin(); i != gts.constEnd(); ++i) {
+            pSelectionModel->select(model()->index(*i, 0),
+                                    QItemSelectionModel::Select | QItemSelectionModel::Rows);
+        }
+    }
+}
+
 void WTrackTableView::sendToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
         return;

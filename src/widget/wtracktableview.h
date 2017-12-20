@@ -42,6 +42,8 @@ class WTrackTableView : public WLibraryTableView {
     void setScrollBar(WMiniViewScrollBar* pScrollbar);
     void restoreQuery(const SavedSearchQuery& query) override;
     SavedSearchQuery saveQuery(SavedSearchQuery query = SavedSearchQuery()) const override;
+    QList<TrackId> getSelectedTrackIds() const;
+    void setSelectedTracks(const QList<TrackId>& tracks);
 
   public slots:
     void loadTrackModel(QAbstractItemModel* model);
