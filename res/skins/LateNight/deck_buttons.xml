@@ -91,7 +91,7 @@
               <!-- put this spacer here so BeatSpinBox expands whith HiDPI scaling -->
               <WidgetGroup><Size>0f,26f</Size></WidgetGroup>
               <BeatSpinBox>
-                <TooltipId>beatloop_size</TooltipId>
+                <TooltipId>beatjump_size</TooltipId>
                 <Value><Variable name="group"/>,beatjump_size</Value>
               </BeatSpinBox>
             </Children>
