@@ -1401,7 +1401,7 @@ QList<TrackId> WTrackTableView::getSelectedTrackIds() const {
     return trackIds;
 }
 
-void WTrackTableView::setSelectedTracks(QList<TrackId> trackIds) {
+void WTrackTableView::setSelectedTracks(const QList<TrackId>& trackIds) {
     QItemSelectionModel* pSelectionModel = selectionModel();
     VERIFY_OR_DEBUG_ASSERT(pSelectionModel != nullptr) {
         qWarning() << "No selected tracks available";

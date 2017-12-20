@@ -38,7 +38,7 @@ class WTrackTableView : public WLibraryTableView {
     void loadSelectedTrack() override;
     void loadSelectedTrackToGroup(QString group, bool play) override;
     QList<TrackId> getSelectedTrackIds() const;
-    void setSelectedTracks(QList<TrackId> tracks);
+    void setSelectedTracks(const QList<TrackId>& tracks);
     void saveCurrentVScrollBarPos();
     void restoreCurrentVScrollBarPos();
 
