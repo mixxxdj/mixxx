@@ -50,24 +50,24 @@ EffectManifest TremoloEffect::getManifest() {
     rate->setMinimum(1.0/4);
     rate->setMaximum(8);
 
-    EffectManifestParameter* shape = manifest.addParameter();
-    shape->setId("shape");
-    shape->setName(QObject::tr("Shape"));
-    shape->setShortName(QObject::tr("Shape"));
-    shape->setDescription(QObject::tr("Sets the length of the modulation\n"
+    EffectManifestParameter* width = manifest.addParameter();
+    width->setId("width");
+    width->setName(QObject::tr("Width"));
+    width->setShortName(QObject::tr("Width"));
+    width->setDescription(QObject::tr("Sets the width of the volume peak\n"
     "10% - 90% of the effect period"));
-    shape->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
-    shape->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    shape->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    shape->setMinimum(0.1);
-    shape->setDefault(0.5);
-    shape->setMaximum(0.9);
+    width->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    width->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    width->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    width->setMinimum(0.1);
+    width->setDefault(0.5);
+    width->setMaximum(0.9);
 
     EffectManifestParameter* waveform = manifest.addParameter();
     waveform->setId("waveform");
     waveform->setName(QObject::tr("Waveform"));
     waveform->setShortName(QObject::tr("Waveform"));
-    waveform->setDescription(QObject::tr("Sets the waveform of the modulation\n"
+    waveform->setDescription(QObject::tr("Sets the shape of the modulation\n"
     "Fully left - Square wave\n"
     "Fully right - Sine wave"));
     waveform->setControlHint(
@@ -82,8 +82,9 @@ EffectManifest TremoloEffect::getManifest() {
     phase->setId("phase");
     phase->setName("Phase");
     phase->setShortName(QObject::tr("Phase"));
-    phase->setDescription("Shift the modulation inside the period\n"
-    "0 - 1 period shift");
+    phase->setDescription("Shifts the position of the volume peak\n"
+    "Fully left - beginning of the effect period\n"
+    "Fully right - end of the effect period");
     phase->setControlHint(
         EffectManifestParameter::ControlHint::KNOB_LINEAR);
     phase->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
@@ -127,7 +128,7 @@ TremoloEffect::TremoloEffect(EngineEffect* pEffect,
                              const EffectManifest& manifest)
         : m_pDepthParameter(pEffect->getParameterById("depth")),
           m_pRateParameter(pEffect->getParameterById("rate")),
-          m_pShapeParameter(pEffect->getParameterById("shape")),
+          m_pWidthParameter(pEffect->getParameterById("width")),
           m_pWaveformParameter(pEffect->getParameterById("waveform")),
           m_pPhaseParameter(pEffect->getParameterById("phase")),
           m_pQuantizeParameter(pEffect->getParameterById("quantize")),
@@ -147,7 +148,7 @@ void TremoloEffect::processChannel(const ChannelHandle& handle,
                                    const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
 
-    const double shape = m_pShapeParameter->value();
+    const double width = m_pWidthParameter->value();
     const double smooth = m_pWaveformParameter->value();
     const double depth = m_pDepthParameter->value();
 
@@ -199,12 +200,12 @@ void TremoloEffect::processChannel(const ChannelHandle& handle,
         //  Relative position (0 to 1) in the period
         double position = static_cast<double>(positionFrame) / framePerPeriod;
 
-        //  Bend the position according to the shape parameter
-        //  This maps [0 shape] to [0 0.5] and [shape 1] to [0.5 1]
-        if (position < shape) {
-            position = 0.5 / shape * position;
+        //  Bend the position according to the width parameter
+        //  This maps [0 width] to [0 0.5] and [width 1] to [0.5 1]
+        if (position < width) {
+            position = 0.5 / width * position;
         } else {
-            position = 0.5 + 0.5 * (position - shape) / (1 - shape);
+            position = 0.5 + 0.5 * (position - width) / (1 - width);
         }
 
         //  This is where the magic happens

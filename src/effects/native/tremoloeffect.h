@@ -41,7 +41,7 @@ class TremoloEffect : public PerChannelEffectProcessor<TremoloGroupState> {
 
     EngineEffectParameter* m_pDepthParameter;
     EngineEffectParameter* m_pRateParameter;
-    EngineEffectParameter* m_pShapeParameter;
+    EngineEffectParameter* m_pWidthParameter;
     EngineEffectParameter* m_pWaveformParameter;
     EngineEffectParameter* m_pPhaseParameter;
     EngineEffectParameter* m_pQuantizeParameter;
