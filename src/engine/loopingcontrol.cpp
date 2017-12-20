@@ -832,7 +832,7 @@ void LoopingControl::slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopContr
 
     // Disregard existing loops.
     m_pSlipEnabled->set(1);
-    slotBeatLoop(pBeatLoopControl->getSize(), false, true);
+    slotBeatLoop(pBeatLoopControl->getSize(), false, true, false);
     m_bLoopRollActive = true;
 }
 
@@ -896,7 +896,10 @@ void LoopingControl::updateBeatLoopingControls() {
     clearActiveBeatLoop();
 }
 
-void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable) {
+void LoopingControl::slotBeatLoop(double beats,
+        bool keepStartPoint,
+        bool enable,
+        bool adjustBeatloopSizeCO) {
     double maxBeatSize = s_dBeatSizes[sizeof(s_dBeatSizes)/sizeof(s_dBeatSizes[0]) - 1];
     double minBeatSize = s_dBeatSizes[0];
     if (beats < 0) {
@@ -910,8 +913,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     }
 
     int samples = m_pTrackSamples->get();
-    if (!m_pTrack || samples == 0
-            || !m_pBeats) {
+    if ((!m_pTrack || samples == 0 || !m_pBeats) && adjustBeatloopSizeCO) {
         clearActiveBeatLoop();
         m_pCOBeatLoopSize->setAndConfirm(beats);
         return;
@@ -984,7 +986,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         double previousBeatloopOutPoint = m_pBeats->findNBeatsFromSample(
                 newloopSamples.start, previousBeatloopSize);
         if (previousBeatloopOutPoint < newloopSamples.start
-                && beats < previousBeatloopSize) {
+                && beats < previousBeatloopSize && adjustBeatloopSizeCO) {
             m_pCOBeatLoopSize->setAndConfirm(beats);
         }
         return;
@@ -999,7 +1001,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         omitResize = true;
     }
 
-    if (m_pCOBeatLoopSize->get() != beats) {
+    if (m_pCOBeatLoopSize->get() != beats && adjustBeatloopSizeCO) {
         m_pCOBeatLoopSize->setAndConfirm(beats);
     }
 

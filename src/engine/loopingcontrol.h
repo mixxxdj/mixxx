@@ -65,7 +65,10 @@ class LoopingControl : public EngineControl {
 
     // Generate a loop of 'beats' length. It can also do fractions for a
     // beatslicing effect.
-    void slotBeatLoop(double loopSize, bool keepStartPoint=false, bool enable=true);
+    void slotBeatLoop(double loopSize,
+                      bool keepStartPoint = false,
+                      bool enable = true,
+                      bool adjustBeatloopSizeCO = true);
     void slotBeatLoopSizeChangeRequest(double beats);
     void slotBeatLoopToggle(double pressed);
     void slotBeatLoopRollActivate(double pressed);

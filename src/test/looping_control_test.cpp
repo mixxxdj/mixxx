@@ -59,6 +59,7 @@ class LoopingControlTest : public MockedEngineBackendTest {
         m_pBeatJumpSize = std::make_unique<ControlProxy>(m_sGroup1, "beatjump_size");
         m_pButtonBeatJumpForward = std::make_unique<ControlProxy>(m_sGroup1, "beatjump_forward");
         m_pButtonBeatJumpBackward = std::make_unique<ControlProxy>(m_sGroup1, "beatjump_backward");
+        m_pButtonBeatloopRoll2Activate = std::make_unique<ControlProxy>(m_sGroup1, "beatlooproll_2_activate");
     }
 
     bool isLoopEnabled() {
@@ -101,6 +102,7 @@ class LoopingControlTest : public MockedEngineBackendTest {
     std::unique_ptr<ControlProxy> m_pBeatJumpSize;
     std::unique_ptr<ControlProxy> m_pButtonBeatJumpForward;
     std::unique_ptr<ControlProxy> m_pButtonBeatJumpBackward;
+    std::unique_ptr<ControlProxy> m_pButtonBeatloopRoll2Activate;
 };
 
 TEST_F(LoopingControlTest, LoopSet) {
@@ -867,4 +869,14 @@ TEST_F(LoopingControlTest, LoopEscape) {
     // seek outside a loop schould disable it
     seekToSampleAndProcess(50);
     EXPECT_FALSE(isLoopEnabled());
+}
+
+TEST_F(LoopingControlTest, BeatloopRollButtonDoesNotChangeBeatloopSize) {
+    m_pTrack1->setBpm(120.0);
+    m_pBeatLoopSize->set(8.0);
+    m_pButtonBeatloopRoll2Activate->set(1.0);
+    ProcessBuffer();
+    m_pButtonBeatloopRoll2Activate->set(0.0);
+    ProcessBuffer();
+    EXPECT_EQ(8.0, m_pBeatLoopSize->get());
 }
