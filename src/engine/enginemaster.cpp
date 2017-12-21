@@ -45,7 +45,7 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
           m_masterHandle(registerChannelGroup(group)),
           m_headphoneHandle(registerChannelGroup("[Headphone]")),
           m_masterOutputHandle(registerChannelGroup("[MasterOutput]")),
-          m_busMicrophonesHandle(registerChannelGroup("[Microphones]")),
+          m_busMicrophonesHandle(registerChannelGroup("[MicrophoneMix]")),
           m_busCrossfaderLeftHandle(registerChannelGroup("[BusLeft]")),
           m_busCrossfaderCenterHandle(registerChannelGroup("[BusCenter]")),
           m_busCrossfaderRightHandle(registerChannelGroup("[BusRight]")) {
