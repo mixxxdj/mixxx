@@ -387,12 +387,27 @@
 
 #KnobLabel {
   font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 10px/10px;
+  font: bold 10px/8px;
   text-transform: uppercase;
   color: #585858;
   text-align: center;
   qproperty-alignment: 'AlignCenter | AlignBottom';
   padding-top: -2px;
+}
+
+#FxKnobLabel {
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
+  font: bold 10px/8px;
+  text-transform: uppercase;
+  color: #585858;
+  text-align: center;
+  qproperty-alignment: 'AlignCenter | AlignBottom';
+  padding-top: 26px;
+}
+
+#FxKnobContainer {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';/*
+  background-color: #113397;*/
 }
 
 #SyncControls {
@@ -1331,6 +1346,7 @@ WEffectSelector {
   /* those buttons are 5px tall, that's why they won't accept
   3px radius which is set for all WPushButtons
   border-radius: 2px; */
+  margin: 0px 5px 0px 5px;
 }
 
 #FxSuperLinkButton[value="0"],
