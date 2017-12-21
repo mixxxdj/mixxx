@@ -832,6 +832,9 @@ void LoopingControl::slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopContr
 
     // Disregard existing loops.
     m_pSlipEnabled->set(1);
+    // Do not adjust beatloop_size when using these beatlooproll_X_activate buttons.
+    // beatloop_size is a more persistent value, but beatlooproll_X_activate is
+    // only held down briefly and it would be annoying if that changed beatloop_size.
     slotBeatLoop(pBeatLoopControl->getSize(), false, true, false);
     m_bLoopRollActive = true;
 }
