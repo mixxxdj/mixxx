@@ -1,0 +1,107 @@
+<!--
+Description:
+  A button that displays focus state of an effect slot.
+  Left-click sets focus, right-click removes focus from all effects.
+  If focused, left-click also removes focus.
+Variables:
+  FxRack_FxUnit : [EffectRack1_EffectUnitN]
+  FxNum   : effect number
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>EffectFocusButton</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,me</SizePolicy>
+    <Children>
+      <WidgetGroup><Size>2f,-1min</Size></WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>EffectFocusButton</ObjectName>
+        <Layout>vertical</Layout>
+        <Size>-1min,20f</Size>
+        <Children>
+          <!-- visible if unfocused: left-click > focus, right click > unfocus -->
+          <PushButton>
+            <TooltipId>EffectSlot_focus</TooltipId>
+            <Size>20f,20f</Size>
+            <NumberStates>2</NumberStates>
+            <RightClickIsPushButton>true</RightClickIsPushButton>
+            <State>
+              <Number>0</Number>
+              <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fx_focus_off.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fx_focus_off.svg</Unpressed>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fx_focus_on.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fx_focus_on.svg</Unpressed>
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="FxRack_FxUnit"/>,focused_effect</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+              <EmitOnDownPress>true</EmitOnDownPress>
+              <Transform><IsEqual><Variable name="FxNum"/></IsEqual></Transform>
+            </Connection>
+            <Connection>
+              <ConfigKey><Variable name="FxRack_FxUnit"/>,focused_effect</ConfigKey>
+              <ButtonState>RightButton</ButtonState>
+              <EmitOnDownPress>true</EmitOnDownPress>
+              <Transform><IsEqual><Variable name="FxNum"/></IsEqual><Not/></Transform>
+            </Connection>
+            <Connection>
+              <ConfigKey><Variable name="FxRack_FxUnit"/>,focused_effect</ConfigKey>
+              <Transform><IsEqual><Variable name="FxNum"/></IsEqual><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </PushButton>
+
+          <!-- visible if focused: left-click > unfocus, right click > unfocus -->
+          <PushButton>
+            <TooltipId>EffectSlot_focus</TooltipId>
+            <Size>20f,20f</Size>
+            <NumberStates>2</NumberStates>
+            <RightClickIsPushButton>true</RightClickIsPushButton>
+            <State>
+              <Number>0</Number>
+              <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fx_focus_off.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fx_focus_off.svg</Unpressed>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fx_focus_on.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_fx_focus_on.svg</Unpressed>
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="FxRack_FxUnit"/>,focused_effect</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+              <EmitOnDownPress>true</EmitOnDownPress>
+              <Transform><IsEqual><Variable name="FxNum"/></IsEqual><Not/></Transform>
+            </Connection>
+            <Connection>
+              <ConfigKey><Variable name="FxRack_FxUnit"/>,focused_effect</ConfigKey>
+              <ButtonState>RightButton</ButtonState>
+              <EmitOnDownPress>true</EmitOnDownPress>
+              <Transform><IsEqual><Variable name="FxNum"/></IsEqual><Not/></Transform>
+            </Connection>
+            <Connection>
+              <ConfigKey><Variable name="FxRack_FxUnit"/>,focused_effect</ConfigKey>
+              <Transform><IsEqual><Variable name="FxNum"/></IsEqual></Transform>
+              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+            </Connection>
+            <Connection>
+              <ConfigKey><Variable name="FxRack_FxUnit"/>,focused_effect</ConfigKey>
+              <Transform><IsEqual><Variable name="FxNum"/></IsEqual></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </PushButton>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup><Size>2f,-1min</Size></WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey><Variable name="FxRack_FxUnit"/>,show_focus</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

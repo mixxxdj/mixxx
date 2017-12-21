@@ -1,8 +1,10 @@
+/* LateNight 2.1 */
+
 #debugbg {
     background-color: #fff;
 }
 
-#UIButtons {
+#ToolBar {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   background-color: #1e1e1e;
   padding-top: 1px;
@@ -16,8 +18,19 @@
   background-color: #1e1e1e;
 }
 
-#Deck {
+#Deck1, #Deck2, #Deck3, #Deck4 {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
+#Deck1, #Deck2,
+#NoMixer12 {
+  margin-bottom: 5px;
+}
+
+#Deck3, #Deck4,
+#NoMixer34 {
+  margin-top: 2px;
+  margin-bottom: 3px;
 }
 
 #DecksSizer {
@@ -35,29 +48,24 @@
   background-color: #1e1e1e;
 }
 
-#DecksLeftContainer, #DecksRightContainer, #SkinContainer {
+#DecksLeftContainer,
+#DecksRightContainer,
+#SkinContainer {
   background-color: #0f0f0f;
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
-#SpinnyBorder {
-  border: 1px solid #585858;
-}
-
-#SpinnyContainer {
-  border: 0px;
-  background-color: #0f0f0f;
-}
-
 #LibrarySingleton {
-  padding-top: 5px;
-  padding-bottom: 2px;
+  /* This doesn't work as expected:
+  it appears LibrarySingleton is displayed twice, so
+  padding/margin would double.
+  Placed a plain spacer in library.xml which works reliably
+  padding-top: 5px;*/
 }
 
 #Library {
   border-left: 0px solid #585858;
   background-color: #0e0e0e;
-  padding-top: 5px;
   padding-bottom: 2px;
   /*border-top: 1px solid #585858;*/
 }
@@ -66,20 +74,18 @@
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   border-bottom: 1px solid #585858;
   background-color: #1e1e1e;
-  padding: 2px;
+  padding: 1px 0px 1px 2px;
 }
 
 #DeckRowTwoThreeFour {
   border-bottom: 1px solid #585858;
   background-color: #1e1e1e;
-  /*padding: 3px;*/
 }
 
 #DeckRowFive {
   border-bottom: 1px solid #585858;
   background-color: #1e1e1e;
   padding: 0px;
-  padding-left: 2px;
 }
 
 #DecksAndMixer {
@@ -93,28 +99,19 @@
   border-left: 0px;
 }
 
-#Deck4 {
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  border: 1px solid #585858;
-  border-top: 0px;
-}
-
-#Deck2 {
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  border: 1px solid #585858;
-}
-
+#Deck1,
 #Deck3 {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   border: 1px solid #585858;
   border-right: 0px;
-  border-top: 0px;
+
 }
 
-#Deck1 {
+#Deck2,
+#Deck4 {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   border: 1px solid #585858;
-  border-right: 0px;
+  border-left: 0px;
 }
 
 #DeckContainer {
@@ -138,54 +135,56 @@
   background-color: #0f0f0f;
 }
 
-#Mixer {
-  background-color: #1e1e1e;
-  qproperty-layoutAlignment: 'AlignCenter';
-  border: 1px solid #585858;
-  border-top: 0px;
-}
-
 #ClockWidget {
   qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
+  margin-bottom: 2px;
 }
 
 #LatencyMeter {
   margin: 1px;
+  padding-right: 4px;
+  padding-left: 4px;
 }
 
-#PrimaryMixer {
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  padding: 0px;
-  margin: 0px;
-  border: 1px solid #585858;
-  border-left: 0px;
-  border-bottom: 0px;
-  border-top: 0px;
-}
-
-#MixerChannelControls {
+#LatencyLabel {
   padding-bottom: 2px;
 }
 
+#Mixer {/*
+  background-color: #1e1e1e;
+  qproperty-layoutAlignment: 'AlignCenter';
+  border: 1px solid #585858;*/
+}
+
+#NoMixer12,
+#NoMixer34 {
+  border: 1px solid #585858;
+  border-width: 0px 1px 0px 1px;
+  background-color: #0f0f0f;
+}
+
+#MixerChannelControls {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  padding-bottom: 2px;
+  border: 1px solid #585858;
+  border-right: 0px;
+  background-color: #1e1e1e;
+  }
+
+  #MixerContainer {
+    qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+    background-color: #1e1e1e;
+    padding-top: 3px;
+  }
+
 #MasterControls {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
-  padding-right: 2px;
-  padding-top: 10px;
-  padding-left: 5px;
-}
-
-#MasterVuMeter2ch {
-  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-}
-
-#MasterVuMeter4ch {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-}
-
-#MixerContainer {
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  background-color: #1e1e1e;
-  padding-top: 3px;
+  padding: 2px;
+  /* this wouldn't work:
+  border-left: 1px solid #585858;
+  border-width: 0px 0px 0px 1px; */
+  border: 1px solid #585858;
+  background: transparent url(skin:background_tile.png) repeat;
 }
 
 #MixerChannel {
@@ -204,12 +203,12 @@
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
 }
 
-#MixerLeftMargin {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+#MasterVuMeter2ch {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
 }
 
-#MixerRightMargin {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+#MasterVuMeter4ch {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
 }
 
 #NoMixerLogo {
@@ -229,12 +228,13 @@
 }
 
 #VuAndSlider {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   padding-top: 3px;
 }
 
 #VuMeter {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-  padding-right: 6px;
+  padding-right: 4px;
 }
 
 #MasterSync {
@@ -252,12 +252,16 @@
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
-#KillButton {
+#KillButtonLeft {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+  padding-left: 2px;
+  margin-top: 2px;
 }
 
-#KillButtonReversed {
+#KillButtonRight {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+  padding-right: 2px;
+  margin-top: 2px;
 }
 
 #TitleGutter, #AlbumGutter {
@@ -271,8 +275,8 @@
 
 #ArtistGutter{
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  padding: 1px;
-  padding-bottom: 4px;
+  padding: 1px;/*
+  padding-bottom: 2px;*/
   border: 0px solid #585858;
 }
 
@@ -319,7 +323,7 @@
   qproperty-layoutAlignment: 'AlignRight | AlignBottom';
 }
 
-#RateButtons, #RatePermButtons, #RateTempButtons {
+#RateButtons {
   qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
 }
 
@@ -335,7 +339,7 @@
 
 #DeckButtons {
   qproperty-layoutAlignment: 'AlignBottom';
-  padding: 3px;
+  padding: 3px 1px 1px 3px;
 }
 
 #ColumnTwo {
@@ -343,30 +347,67 @@
 }
 
 #ToolbarButtons {
+  qproperty-layoutAlignment: 'AlignCenter';
   border: 1px solid #585858;
   border-top: 0px;
   border-right: 0px;
   border-bottom: 0px;
-  padding: 2px;
+  padding: 0px 2px;
+}
+
+#KeyText {
+  qproperty-alignment: 'AlignCenter';
+  font-size: 13px/16px;
+  font-weight: bold;
+  font-family: Lucida Grande, Lucida Sans Unicode, Segoe UI, Arial, Verdana, sans-serif;
+  background-color: #0f0f0f;
+  border: 1px solid #585858;
+  border-radius: 3px;
+  padding: 0px;
+  margin: 0px 1px;
+}
+
+#ArtistText,
+#TitleText,
+#PlayPositionText {
+ font-size: 18px/21px;
+ font-weight: bold;
+ font-family: Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+}
+
+#DurationText {
+  font-size: 13px/15px;
+  font-weight: bold;
+  font-family: Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 }
 
 #VinylControls {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
 
-#VinylControls2 {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-}
-
 #KnobLabel {
   font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 10px/12px;
+  font: bold 10px/8px;
   text-transform: uppercase;
   color: #585858;
   text-align: center;
   qproperty-alignment: 'AlignCenter | AlignBottom';
-  padding-bottom: 1px;
-  padding-top: -3px;
+  padding-top: -2px;
+}
+
+#FxKnobLabel {
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
+  font: bold 10px/8px;
+  text-transform: uppercase;
+  color: #585858;
+  text-align: center;
+  qproperty-alignment: 'AlignCenter | AlignBottom';
+  padding-top: 26px;
+}
+
+#FxKnobContainer {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';/*
+  background-color: #113397;*/
 }
 
 #SyncControls {
@@ -375,62 +416,107 @@
   border-bottom: 1px solid #585858;
 }
 
-#GuiToggleButton[displayValue="0"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
+#ToolbarDivider {
+  background: transparent url(skin:/buttons/toolbar_divider.png) no-repeat center center;
+}
+
+#RecBox {
+  border: 1px solid #585858;
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+  margin: 2px;
+  border-radius: 2px;
+}
+
+#RecFeedback[displayValue="0"] {
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+}
+
+#RecFeedback[displayValue="1"],
+#RecFeedback[displayValue="2"] {
+  background-color: #840600;
+}
+
+#RecDot {
+  background: none url(skin:/buttons/rec_dot.svg) no-repeat center center;
+}
+
+#RecDuration {
     font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
     font: bold 10px/12px;
     color: #ddd;
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+}
+
+#GuiToggleButton,
+#GuiToggleButtonInverted {
+  margin: 2px;
+}
+
+#GuiToggleButton[displayValue="0"] {
+  border: 1px solid #585858;
+  border-radius: 2px;
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
+  font: bold 10px/12px;
+  color: #ddd;
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
 }
 
 #GuiToggleButton[displayValue="1"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #0e0e0e;
-    background-color: #eece33;
+  border: 1px solid #585858;
+  border-radius: 2px;
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
+  font: bold 10px/12px;
+  color: #0e0e0e;
+  background-color: #eece33;
 }
 
 #GuiToggleButton[displayValue="2"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #0e0e0e;
-    background-color: #eece33;
+  border: 1px solid #585858;
+  border-radius: 2px;
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
+  font: bold 10px/12px;
+  color: #0e0e0e;
+  background-color: #eece33;
 }
 
 #GuiToggleButtonInverted[displayValue="0"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #0e0e0e;
-    background-color: #eece33;
+  border: 1px solid #585858;
+  border-radius: 2px;
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
+  font: bold 10px/12px;
+  color: #0e0e0e;
+  background-color: #eece33;
 }
 
 #GuiToggleButtonInverted[displayValue="1"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #ddd;
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+  border: 1px solid #585858;
+  border-radius: 2px;
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
+  font: bold 10px/12px;
+  color: #ddd;
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                  stop:0 #282828,
+                                  stop:1 #0e0e0e);
 }
 
-#VinylToggleButtonUL[displayValue="0"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    margin: 1px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #ddd;
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+#VinylStatus {
+  border-radius: 5px;
 }
 
-#VinylToggleButtonUL[displayValue="1"] {
+#VinylToggleButtonUL[displayValue="0"],
+#FxAssignButton[displayValue="0"] {
+  border: 1px solid #585858;
+  border-radius: 2px;
+  margin: 1px;
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
+  font: bold 10px/12px;
+  color: #ddd;
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                  stop:0 #282828,
+                                  stop:1 #0e0e0e);
+}
+
+#VinylToggleButtonUL[displayValue="1"],
+#FxAssignButton[displayValue="1"] {
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
@@ -447,7 +533,9 @@
     font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
     font: bold 10px/12px;
     color: #ddd;
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                    stop:0 #282828,
+                                    stop:1 #0e0e0e);
 }
 
 #VinylToggleButtonLL[displayValue="1"] {
@@ -592,58 +680,10 @@
     margin-bottom: 2px;
 }
 
-#BpmContainer {
-  qproperty-layoutAlignment: 'AlignCenter';
-}
-
-#BpmTextColor1, #BpmTextColor2 {
-  qproperty-alignment: 'AlignCenter';
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 16px/18px;
-  background-color: transparent;
-  text-align: center;
-  padding: 0px;
-  margin: 0px;
-  color: #eece33;
-}
-
-#BpmTextColor3, #BpmTextColor4 {
-  qproperty-alignment: 'AlignCenter';
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 16px/18px;
-  background-color: transparent;
-  text-align: center;
-  padding: 0px;
-  margin: 0px;
-  color: #09B2AE;
-}
-
-#RateTextColor1, #RateTextColor2 {
-  qproperty-alignment: 'AlignCenter';
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 12px/13px;
-  background-color: transparent;
-  text-align: center;
-  padding: 0px;
-  margin: 0px;
-  color: #eece33;
-}
-
-#RateTextColor3, #RateTextColor4 {
-  qproperty-alignment: 'AlignCenter';
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 12px/13px;
-  background-color: transparent;
-  text-align: center;
-  padding: 0px;
-  margin: 0px;
-  color: #09B2AE;
-}
-
 #CrossFadeContainer {
- qproperty-layoutAlignment: 'AlignCenter';
- background-color: #1e1e1e;
- padding-top: 5px;
+qproperty-layoutAlignment: 'AlignCenter';
+background-color: #1e1e1e;
+padding-top: 5px;
 }
 
 #GuiToggleContainer {
@@ -667,10 +707,105 @@
   background-color: transparent;
 }
 
+/*################################################################
+#######  Loop Controls  ########################################
+##############################################################*/
+
+#LoopBeatJumpButton,
+#LoopSizeButton {
+  font-weight: bold;
+  color: #888;
+  background-color: #333;
+  }
+  #LoopSizeButton {
+    font-size: 14px/12px;
+  }
+  #LoopBeatJumpButton:hover,
+  #LoopSizeButton:hover {
+    border: 1px solid #888;
+  }
+  #LoopSizeButton[displayValue="1"] {
+    border: 1px solid #ff8f00;
+    color: #d2d2d2;
+  }
+  #LoopSizeButton[displayValue="1"]:hover {
+    border: 1px solid #eeeeee;
+  }
+
+#ReloopButton[displayValue="0"] {
+  background-color: #333;
+  }
+  #ReloopButton[displayValue="0"]:hover {
+    border: 1px solid #888;
+  }
+  #ReloopButton[displayValue="1"] {
+  /* See also #LoopIndicator near DeckButtons */
+    background-color: #ff8f00;
+    }
+    #ReloopButton[displayValue="1"]:hover {
+      border: 1px solid #eeeeee;
+    }
+
+WBeatSpinBox {
+  /* make it 2px smaller in each dimension,
+    border is added for final size */
+  min-width: 45px;
+  max-width: 180px;
+  min-height: 22px;
+  max-height: 88px;
+  border: 1px solid #666;
+  /* size of spinbox: 54x22px
+  incl. up/down button: 70x22px */
+  border-radius: 2px;
+  color: #aaaaaa;
+  background-color: #0f0f0f;
+  selection-color: #0f0f0f;
+  selection-background-color: #d2d2d2;
+  font-size: 13px/13px;
+  padding: 0px;
+  padding-left: 3px;
+  margin: 0 24px 2px 0;
+}
+  WBeatSpinBox:hover {
+    border-color: #888;
+  }
+  WBeatSpinBox:focus {
+    border-color: #d2d2d2;
+    color: #ccc;
+  }
+
+  WBeatSpinBox::up-button, WBeatSpinBox::down-button {
+    subcontrol-origin: margin;
+    position: relative;
+    /* as with spinbox: border is added to size.
+      define it with same width as hover border, otherwise size jumps */
+    min-width: 16px;
+    min-height: 26px;
+    margin: 1px 0px 1px 0px;
+    padding: 0px;
+    border: 0px;
+    }
+
+  WBeatSpinBox::up-button {
+    subcontrol-position: center right;
+    image: url(skin:/buttons/btn_beatbox_double.svg) no-repeat;
+    }
+    WBeatSpinBox::up-button:pressed {
+      image: url(skin:/buttons/btn_beatbox_double_pressed.svg) no-repeat;
+    }
+  WBeatSpinBox::down-button {
+    subcontrol-position: center right;
+    left: -15px;
+    image: url(skin:/buttons/btn_beatbox_halve.svg) no-repeat;
+    }
+    WBeatSpinBox::down-button:pressed {
+      image: url(skin:/buttons/btn_beatbox_halve_pressed.svg) no-repeat;
+    }
+
 #Crossfader {
   qproperty-layoutAlignment: 'AlignCenter';
   /*background-color:#1e1e1e;*/
-  padding-top: 10px;
+  padding-top: 5px;
 }
 
 #PreviewDeck {
@@ -678,8 +813,7 @@
   border: 1px solid #585858;
   padding: 0px;
   margin: 0px;
-  margin-top: 3px;
-  margin-right: 3px;
+  margin-bottom: 5px;
 }
 
 #PreviewDeckText {
@@ -692,7 +826,7 @@
 }
 
 #PreviewLabel {
-  qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
+  qproperty-alignment: 'AlignVCenter | AlignHCenter';
   font: 13px/14px "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
   background-color: #1e1e1e;
   font-weight:bold;
@@ -712,7 +846,7 @@
 }
 
 #NoBorder {
- border: 0px;
+border: 0px;
 }
 
 #PreviewColumnOne {
@@ -775,34 +909,44 @@
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
 
+#AlignCenter {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+}
+
 #AlignCenterTop {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
-
-#VinylStatusTop1, #VinylStatusTop3 {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  border: 1px solid #585858;
-  border-top: 0px;
-  border-left: 0px;
-  border-right: 0px;
-  padding: 0px;
+/**/
+#TEST {
+  background-color: #456113;
 }
 
-#VinylStatusTop2, #VinylStatusTop4 {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  border: 1px solid #585858;
-  border-top: 0px;
-  border-left: 0px;
-  border-right: 0px;
-  padding: 0px;
-}
-
-#ToolbarTop {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  border: 1px solid #585858;
-  border-top: 0px;
-  padding: 0px;
+#Spacer1e {
   background-color: #1e1e1e;
+}
+
+#Spacer58 {
+  border: 1px solid #585858;
+}
+
+#PFLVUMeterBox {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  padding: 7px 0px 7px 0px;
+}
+
+#VUMeterBox {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
+#Toolbar {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  border: 1px solid #585858;
+  padding: 0px;
+  background-color: #0f0f0f;
+}
+
+#ToolbarLogo {
+  background: url(skin:style/mixxx_logo_toolbar.png) no-repeat center center;
 }
 
 #WaveformMixerContainer {
@@ -810,67 +954,74 @@
 }
 
 #Waveform {
+}
+
+#RateContainer {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   border: 1px solid #585858;
-  border-top: 0px;
-  border-left: 0px;
-  border-bottom: 0px;
+  border-width: 0px 1px 0px 0px;
+  padding: 4px 1px 2px 2px;
+}
+
+#BpmContainer {
+  qproperty-layoutAlignment: 'AlignCenter';
+}
+
+#BpmText {
+  qproperty-alignment: 'AlignCenter';
+  font-size: 16px/18px;
+  font-weight: bold;
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
+  background-color: transparent;
+  text-align: center;
+  padding: 0px;
+  margin: 0px;
+}
+
+#RateText {
+  qproperty-alignment: 'AlignCenter';
+  font-size: 12px/13px;
+  font-weight: bold;
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
+  background-color: transparent;
+  text-align: center;
+  padding: 0px;
+  margin: 0px;
+  color: #eece33;
+}
+
+#RateControls {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
 }
 
 #RateSlider {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  padding-bottom: 2px;
+  /* no respected since RateSlider has a connection attached
+  margin: 0px 10px 0px 0px; */
 }
 
-#RateContainer3 {
+#RateButtons {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+  padding: 2px 0px 0px 2px;
+}
+
+#MicContainer, #AuxContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   border: 1px solid #585858;
-  border-right: 0px;
-  border-top: 0px;
   padding: 3px;
-}
-
-#RateContainer4 {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  border: 1px solid #585858;
-  border-right: 0px;
-  border-left: 0px;
-  border-top: 0px;
-  padding: 3px;
-}
-
-#RateContainer1 {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  border: 1px solid #585858;
-  border-right: 0px;
-  padding: 3px;
-}
-
-#RateContainer2 {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  border: 1px solid #585858;
-  border-right: 0px;
-  border-left: 0px;
-  padding: 3px;
-}
-
-#RateAdjust {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  background-color: #1e1e1e;
 }
 
 #MicContainer {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  border: 1px solid #585858;
-  padding: 5px;
-  margin: 2px;
-  background-color: #1e1e1e;
+  margin: 5px 2px 0px 0px;
+}
+
+#AuxContainer {
+  margin: 5px 0px 0px 2px;
 }
 
 #MicBorder {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   border: 1px solid #585858;
-  padding: 2px;
-  padding-left:0px;
-  padding-right:0px;
   margin-left: 3px;
   margin-right: 3px;
 }
@@ -920,7 +1071,7 @@
 }
 
 #SamplerVU {
-  padding: 5px;
+  padding: 0px 5px 0px 5px;
   qproperty-layoutAlignment: 'AlignRight | AlignBottom';
   border: 1px solid #585858;
   border-top: 0px;
@@ -929,7 +1080,7 @@
 }
 
 #SamplerPitch {
-  padding: 5px;
+  padding: 0px 5px 0px 5px;
   qproperty-layoutAlignment: 'AlignRight | AlignBottom';
 }
 
@@ -998,11 +1149,11 @@
   padding: 2px;
 }
 
-#TextColor1, #TextColor2 {
+#Deck1 WLabel, Deck2 WLabel {
   color: #eece33;
 }
 
-#TextColor3, #TextColor4 {
+#Deck3 WLabel, #Deck4 WLabel {
   color: #09B2AE;
 }
 
@@ -1013,92 +1164,171 @@
   text-align: left;
 }
 
-#EffectUnitNameRow {
-  border-bottom: 1px solid #585858;
-  background-color: transparent;
-  margin: 0px;
+#EffectRack {
+  qproperty-layoutAlignment: 'AlignCenter | AlignTop';
+  background-color: #0e0e0e;
 }
 
 #EffectUnit1, #EffectUnit2, #EffectUnit3, #EffectUnit4 {
-  qproperty-layoutAlignment: 'AlignTop';
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
   border: 1px solid #585858;
-  border-left:none;
+  margin-top: 5px;
 }
 
-#EffectUnit1 {
-  border-left: 1px solid #585858;
+#EffectUnit1,
+#EffectUnit3 {
+  border-left: none;
+  margin-right: 2px;
 }
 
-#EffectUnitNameContainer {
-  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-  padding: 2px;
+#EffectUnit2,
+#EffectUnit4 {
+  border-right: none;
+  margin-left: 2px;
 }
 
-#EffectUnitNextPrevContainer {
-  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-}
-
-#EffectUnitButton {
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI Symbol", Arial, "Open Sans Light";
-  font: bold 16px/19px;
-  text-transform: none;
-  color: #eece33;
-}
-
-#EffectUnitNextPrevContainer WPushButton {
-  font-size: 16px;
-}
-
-#EffectRackContainer {
-  background-color: #0e0e0e;
-  padding-top: 5px;
-  /*border-bottom: 10px solid #585858;*/
-}
-
-#EffectRackExpanded, #EffectRackCollapsed {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-}
-
-#EffectUnitParameters {
-  padding: 2px;
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  qproperty-layoutSpacing: 2;
-}
-
-#EffectUnitControlRow {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-}
-
-#EffectControlsRight {
+#EffectRows {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
 }
 
 #EffectUnitControls {
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';
-  padding: 2px;
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+  background-color: #1e1e1e;
+  border-left: 1px solid #585858;
+  padding: 1px 0px 2px 1px;
 }
 
-#EffectUnitGroupControls {
+#FxUnit1_ExpandCollapseButton,
+#FxUnit2_ExpandCollapseButton {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+}
+
+#FxUnit1_ExpandCollapseButton WPushButton,
+#FxUnit2_ExpandCollapseButton WPushButton {
+  font-size: 13px/13px;
+  font-weight: bold;
+  padding-top: 10px;
+  color: #bfbfbf;
+}
+
+#EffectSlot1,
+#EffectSlot2,
+#EffectSlot3 {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+  padding: 2px 4px 2px 4px;
 }
 
-#EffectUnit {
-  font-size: 16px;
+#EffectSlot_focused {/*
+  background: transparent url(skin:background_tile_focused.png) repeat;
+  background-color: #000;*/
+  background-color:qlineargradient(
+      x1:0, y1:0, x2:0, y2:1,
+        stop:0 #000,
+        stop:0.1 #090909,
+        stop:1 #090909);
 }
 
-#EffectKnobContainer {
+#EffectFocusButton {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+  margin: 0px 0px 0px 0px;
+}
+
+#MetaKnob {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+  padding: 0px 2px 0px 5px;
 }
 
 #EffectKnob {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+  margin-left: 1px;
+}
+
+#EffectButton {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  padding-left: 5px;
-  padding-right: 5px;
+  padding-top: 4px;
 }
 
 #EffectUnitKnob {
   qproperty-layoutAlignment: 'AlignRight';
   padding:3px;
 }
+
+WEffectSelector {
+  font-weight: bold;
+  font-size: 12px/13px;
+  text-transform: uppercase;
+  color: #cfb32c;
+  background-color: #0f0f0f;
+  /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
+  min-height: 13px;
+  margin: 0px;
+  /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
+      names start getting cut off. Adding explicit padding improves this. */
+  padding: 4px 0px 4px 5px;
+  /* The 3D frame on the combo box becomes flat when you give it a border */
+  border: 1px solid #666;
+  border-radius: 3px;
+  }
+  WEffectSelector::drop-down {/*
+    width: 16px;
+    height: 24px;
+    padding: 0;
+    margin: 0;*/
+    border: 0;
+  }
+  WEffectSelector::down-arrow {/*
+    width: 16px;
+    height: 24px;*/
+    image: url(skin:/buttons/btn_fxSelector.svg);
+    border: 0;
+    padding: 0;
+    margin: 0;
+    }
+    WEffectSelector::down-arrow:hover {/*
+      width: 16px;
+      height: 24px;*/
+      image: url(skin:/buttons/btn_fxSelector_pressed.svg);
+    border: 0;
+    padding: 0;
+    margin: 0;
+    }
+
+  WEffectSelector QAbstractItemView {
+    min-width: 142px;
+    max-width: 200px;
+    background-color: #0f0f0f;
+    /* padding-left: 6px; */
+    font-size: 12px/13px;
+    /* On Linux, this is not applied but font color from WEffectSelector
+    is inherited.
+    On Windows, it must be defined here */
+    color: #cfb32c;
+    border: 0px;
+    border-radius: 2px;
+  }
+  /* selected item */
+  WEffectSelector::checked {
+    /* not applied
+    padding-left: 5px;
+    font-weight: bold;	*/
+    color: #eee;
+    background-color: #1e1e1e;
+  }
+  /* hovered items */
+  WEffectSelector::item:selected {
+    background-color: #333;
+  /* This moves the tick mark behind item text,
+    text sits at left border now
+    border: 0; */
+  }
+  WEffectSelector::indicator {
+  /* This is sufficient to completely hide the tick mark, but
+    this alone would show an empty, shadowed box instead of tick mark
+    background-color: transparent;
+    This should decrease the tick mark's left & right margin but is not respected */
+    margin: 0px -4px 0px -4px;
+    background-color: transparent;
+  }
 
 /* this is now inline in the pushbutton so we can change styles */
 /*#EffectUnitGroupControlButton {
@@ -1111,6 +1341,83 @@
   border: 1px solid #eece33;
   margin: 1px;
 }*/
+
+#FxSuperLinkButton,
+#FxSuperLinkInvertButton {
+  /* those buttons are 5px tall, that's why they won't accept
+  3px radius which is set for all WPushButtons
+  border-radius: 2px; */
+  margin: 0px 5px 0px 5px;
+}
+
+#FxSuperLinkButton[value="0"],
+#FxSuperLinkInvertButton[displayValue="0"] {
+  background-color: #4b4b4b;
+}
+#FxSuperLinkButton[value="0"]:hover,
+#FxSuperLinkInvertButton[displayValue="0"]:hover {
+  background-color: #888;
+}
+#FxSuperLinkInvertButton[displayValue="1"] {
+  background-color: #9C0900;
+  }
+  #FxSuperLinkInvertButton[displayValue="1"]:hover {
+    background-color: #B50A00;
+  }
+
+#FxSuperLinkButton[value="1"] {
+  background-color: #A5A5A5;
+  }
+  #FxSuperLinkButton[value="1"]:hover {
+    background-color: #CDCDCD;
+  }
+#FxSuperLinkButton[value="2"] {	/*
+  a simple way to achive a partitioning in thirds	*/
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 #A5A5A5,
+    stop: 0.33 #A5A5A5,
+    stop: 0.34 #4b4b4b,
+    stop: 1 #4b4b4b);
+  }
+  #FxSuperLinkButton[value="2"]:hover {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+      stop: 0 #CDCDCD,
+      stop: 0.33 #CDCDCD,
+      stop: 0.34 #4b4b4b,
+      stop: 1 #4b4b4b);
+    }
+#FxSuperLinkButton[value="3"] {
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 #4b4b4b,
+    stop: 0.66 #4b4b4b,
+    stop: 0.67 #A5A5A5,
+    stop: 1 #A5A5A5);
+  }
+  #FxSuperLinkButton[value="3"]:hover {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+      stop: 0 #4b4b4b,
+      stop: 0.66 #4b4b4b,
+      stop: 0.67 #CDCDCD,
+      stop: 1 #CDCDCD);
+    }
+#FxSuperLinkButton[value="4"] {
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 #A5A5A5,
+    stop: 0.330000 #A5A5A5,
+    stop: 0.340000 #4b4b4b,
+    stop: 0.660000 #4b4b4b,
+    stop: 0.670000 #A5A5A5,
+    stop: 1 #A5A5A5);
+  }
+  #FxSuperLinkButton[value="4"]:hover {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+      stop: 0 #CDCDCD,
+      stop: 0.330000 #CDCDCD,
+      stop: 0.340000 #4b4b4b,
+      stop: 0.660000 #4b4b4b,
+      stop: 0.670000 #CDCDCD,
+      stop: 1 #CDCDCD);
+  }
 
 #EffectUnitGroupControlButton[displayValue="0"] {
     font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
@@ -1199,11 +1506,12 @@ QPushButton#LibraryPreviewButton:!checked{ image: url(skin:/style/style_library_
 QPushButton#LibraryPreviewButton:checked{ image: url(skin:/style/style_library_preview_pause.png); }
 
 QHeaderView {
-  font: 10pt;
+  font: 13px/15px;
   color: #cfb32c;
   background-color: #0f0f0f;
 }
 QHeaderView::section {
+  height: 18px;
   border: 1px solid #585858;
   border-left: 0px;
   background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
@@ -1266,20 +1574,50 @@ QSpinBox { min-height: 20px; max-height: 20px;min-width: 40px; max-width: 40px;}
 WSearchLineEdit { padding: 2px; border: 1px solid #656565; background: #181818; color: #cfb32c; }
 WSearchLineEdit:focus { padding: 2px; border: 2px solid #FF6600; background: #0f0f0f; color: #eece33;}
 
+#SidebarContainer{
+    margin-top: -5px;
+}
+
 /* cover art */
 WCoverArt { background: transparent; color: #ACACAC; }
 
 /* splitter between treeview and library */
-#LibrarySplitter::handle { image: url(skin:/style/style_handle_unchecked.png); background-color: #1e1e1e; }
-#LibrarySplitter::handle:pressed { image: url(skin:/style/style_handle_checked.png); background-color: #1e1e1e; }
-#LibrarySplitter::handle:horizontal { width: 10px; background-color: #0e0e0e;}
-#LibrarySplitter::handle:vertical { height: 10px; background-color: #0e0e0e;}
+#LibrarySplitter::handle {
+  image: url(skin:/style/style_handle_unchecked.png);
+  background-color: #1e1e1e;
+}
+#LibrarySplitter::handle:pressed,
+#LibrarySplitter::handle:hover {
+  image: url(skin:/style/style_handle_checked.png);
+  background-color: #1e1e1e;
+}
+#LibrarySplitter::handle:horizontal {
+  width: 5px;
+  background-color: #0e0e0e;
+}
+#LibrarySplitter::handle:vertical {
+  height: 5px;
+  background-color: #0e0e0e;
+}
 
 /* splitter between treeview and coverart */
-#CoverArtSplitter::handle { image: url(skin:/style/style_handle_horizontal_unchecked.png); background-color: #1e1e1e; }
-#CoverArtSplitter::handle:pressed { image: url(skin:/style/style_handle_horizontal_checked.png); background-color: #1e1e1e; }
-#CoverArtSplitter::handle:horizontal { width: 10px; background-color: #0e0e0e;}
-#CoverArtSplitter::handle:vertical { height: 10px; background-color: #0e0e0e;}
+#CoverArtSplitter::handle {
+  image: url(skin:/style/style_handle_horizontal_unchecked.png);
+  background-color: #1e1e1e;
+  }
+  #CoverArtSplitter::handle:pressed,
+  #CoverArtSplitter::handle:hover {
+    image: url(skin:/style/style_handle_horizontal_checked.png);
+    background-color: #1e1e1e;
+  }
+#CoverArtSplitter::handle:horizontal {
+  width: 10px;
+  background-color: #0e0e0e;
+}
+#CoverArtSplitter::handle:vertical {
+  height: 10px;
+  background-color: #0e0e0e;
+}
 
 /* Extra declaration for QRadioButton otherwise it shows up with wrong colors in Linux with Gnome */
 QLabel, QRadioButton { background: transparent; color: #cfb32c; }
@@ -1331,4 +1669,14 @@ QTreeView::branch:open:has-children:has-siblings:selected { border-image: none; 
 QTreeView::item:selected {
   background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
   color: #cfb32c;
+}
+
+
+
+QToolTip {
+  background-color: #0f0f0f;
+  color: #cfb32c;
+  padding: 3px;
+  border: 1px solid #333;
+  border-radius: 2px;
 }

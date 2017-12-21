@@ -1,0 +1,39 @@
+<!--
+Description:
+  An EffectPushButton template used for FX parameter buttons,
+  EQ kill buttons and QuickEffect buttons.
+Variables:
+  ObjectName:
+  Size      :
+  parameter : 1, 2, 3, ...
+  icon      : optional button graphic for ON/OFF state, is prefixed with
+              '_over', '_down' & '_over_down' is respective button template
+  labelOff  : optional button graphic for OFF state
+  FxRack_FxUnit_FxNum : various, might be
+      [EffectRack1_EffectUnitX_EffectY]
+      [EqualizerRack1_[ChannelA]_EffectY]
+      [QuickEffectRack1_[ChannelA]_EffectY]
+  FxParameter : 
+-->
+<Template>
+  <EffectPushButton>
+    <ObjectName><Variable name="ObjectName"/></ObjectName>
+    <Size><Variable name="Size"/></Size>
+    <NumberStates>2</NumberStates>
+    <RightClickIsPushButton>false</RightClickIsPushButton>
+    <State>
+      <Number>0</Number>
+      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="icon"/>_down.png</Pressed>
+      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="icon"/>.png</Unpressed>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="icon"/>_overdown.png</Pressed>
+      <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="icon"/>_over.png</Unpressed>
+    </State>
+    <Connection>
+      <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,<Variable name="FxParameter"/></ConfigKey>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+  </EffectPushButton>
+</Template>
