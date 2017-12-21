@@ -125,7 +125,7 @@ namespace {
 } // anonymous namespace
 
 void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
-    if (m_pAnalyzerQueue == NULL) {
+    if (!m_pAnalyzerQueue) {
         // Save the old BPM detection prefs setting (on or off)
         m_iOldBpmEnabled = m_pConfig->getValueString(ConfigKey("[BPM]","BPMDetectionEnabled")).toInt();
         // Force BPM detection to be on.
@@ -155,7 +155,7 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
             m_pAnalyzerQueue->enqueueTrack(pTrack);
         }
     }
-    int queueSize = m_pAnalyzerQueue->resume();
+    int queueSize = m_pAnalyzerQueue->resumeThread();
     if (queueSize > 0) {
         setTitleProgress(0, queueSize);
     }
@@ -172,18 +172,18 @@ void AnalysisFeature::slotProgressUpdate(int num_left) {
 
 void AnalysisFeature::stopAnalysis() {
     //qDebug() << this << "stopAnalysis()";
-    if (m_pAnalyzerQueue != NULL) {
-        m_pAnalyzerQueue->stop();
+    if (m_pAnalyzerQueue) {
+        m_pAnalyzerQueue->stopThread();
     }
 }
 
 void AnalysisFeature::cleanupAnalyzer() {
     setTitleDefault();
     emit(analysisActive(false));
-    if (m_pAnalyzerQueue != NULL) {
-        m_pAnalyzerQueue->stop();
+    if (m_pAnalyzerQueue) {
+        m_pAnalyzerQueue->stopThread();
         m_pAnalyzerQueue->deleteLater();
-        m_pAnalyzerQueue = NULL;
+        m_pAnalyzerQueue = nullptr;
         // Restore old BPM detection setting for preferences...
         m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(m_iOldBpmEnabled));
     }

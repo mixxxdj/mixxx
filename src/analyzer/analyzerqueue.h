@@ -18,8 +18,6 @@
 #include "util/memory.h"
 
 
-class AnalysisDao;
-
 // Measured in 0.1%, i.e. promille
 constexpr int kAnalysisProgressUnknown = -1;
 constexpr int kAnalysisProgressNone = 0; // 0.0 %
@@ -31,13 +29,14 @@ class AnalyzerQueue : public QThread {
 
   public:
     enum class Mode {
-        Default,
+        WithWaveform,
         WithoutWaveform,
+        Default = WithWaveform,
     };
 
     AnalyzerQueue(
             mixxx::DbConnectionPoolPtr pDbConnectionPool,
-            const UserSettingsPointer& pConfig,
+            UserSettingsPointer pConfig,
             Mode mode = Mode::Default);
     ~AnalyzerQueue() override;
 
@@ -46,11 +45,9 @@ class AnalyzerQueue : public QThread {
     // After adding tracks the analysis must be resumed.
     // This function returns the number of tracks that
     // are currently queued for analysis.
-    int resume();
+    int resumeThread();
 
-    bool isTrackPending(const TrackPointer& pTrack) const;
-
-    void stop();
+    void stopThread();
 
   public slots:
     void slotAnalyseTrack(TrackPointer pTrack);
@@ -65,21 +62,15 @@ class AnalyzerQueue : public QThread {
     void threadIdle();
 
   protected:
-    void run();
+    void run() override;
 
   private:
-    mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
+    /////////////////////////////////////////////////////////////////////////
+    // Immutable
 
-    // This DAO belongs to the analysis thread and must not
-    // be accessed from any other thread!
-    std::unique_ptr<AnalysisDao> m_pAnalysisDao;
-
-    // The analyzers belong to the analysis thread and must not
-    // be accessed from any other thread!
-    typedef std::unique_ptr<Analyzer> AnalyzerPtr;
-    std::vector<AnalyzerPtr> m_pAnalyzers;
-
-    void execThread();
+    const mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
+    const UserSettingsPointer m_pConfig;
+    const Mode m_mode;
 
     /////////////////////////////////////////////////////////////////////////
     // Thread shared
@@ -89,10 +80,10 @@ class AnalyzerQueue : public QThread {
     // The processing queue and associated mutex
     mutable QMutex m_qm;
     QWaitCondition m_qwait;
+    QQueue<TrackPointer> m_queuedTracks;
 
     // pendingTracks = queuedTracks + currentTrack
     std::set<TrackPointer> m_pendingTracks;
-    QQueue<TrackPointer> m_queuedTracks;
 
     typedef std::map<TrackPointer, int> TracksWithProgress;
 
@@ -168,11 +159,16 @@ class AnalyzerQueue : public QThread {
     /////////////////////////////////////////////////////////////////////////
     // Thread private
 
-    TrackPointer m_currentTrack;
+    typedef std::unique_ptr<Analyzer> AnalyzerPtr;
+    std::vector<AnalyzerPtr> m_analyzers;
 
     mixxx::SampleBuffer m_sampleBuffer;
 
+    TrackPointer m_currentTrack;
+
     TracksWithProgress m_previousTracksWithProgress;
+
+    void execThread();
 
     void dequeueNextTrackBlocking();
 

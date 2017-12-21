@@ -11,13 +11,13 @@
 #include "engine/engine.h"
 #include "sources/soundsourceproxy.h"
 #include "sources/audiosourcestereoproxy.h"
-#include "track/track.h"
 #include "util/compatibility.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/timer.h"
 #include "util/trace.h"
 #include "util/logger.h"
+
 
 namespace {
 
@@ -141,23 +141,13 @@ AnalyzerQueue::ThreadProgress::ReadScope::~ReadScope() {
 
 AnalyzerQueue::AnalyzerQueue(
         mixxx::DbConnectionPoolPtr pDbConnectionPool,
-        const UserSettingsPointer& pConfig,
+        UserSettingsPointer pConfig,
         Mode mode)
         : m_pDbConnectionPool(std::move(pDbConnectionPool)),
+          m_pConfig(std::move(pConfig)),
+          m_mode(mode),
           m_exitThread(false),
           m_sampleBuffer(kAnalysisSamplesPerBlock) {
-
-    if (mode != Mode::WithoutWaveform) {
-        m_pAnalysisDao = std::make_unique<AnalysisDao>(pConfig);
-        m_pAnalyzers.push_back(std::make_unique<AnalyzerWaveform>(m_pAnalysisDao.get()));
-    }
-    m_pAnalyzers.push_back(std::make_unique<AnalyzerGain>(pConfig));
-    m_pAnalyzers.push_back(std::make_unique<AnalyzerEbur128>(pConfig));
-#ifdef __VAMP__
-    m_pAnalyzers.push_back(std::make_unique<AnalyzerBeats>(pConfig));
-    m_pAnalyzers.push_back(std::make_unique<AnalyzerKey>(pConfig));
-#endif
-    kLogger.info() << "Activated" << m_pAnalyzers.size() << "analyzers";
 
     connect(this, SIGNAL(threadProgress()),
             this, SLOT(slotThreadProgress()));
@@ -166,14 +156,9 @@ AnalyzerQueue::AnalyzerQueue(
 }
 
 AnalyzerQueue::~AnalyzerQueue() {
-    stop();
+    stopThread();
     // Wait until thread has actually stopped before proceeding
     wait();
-}
-
-bool AnalyzerQueue::isTrackPending(const TrackPointer& pTrack) const {
-    QMutexLocker locked(&m_qm);
-    return m_pendingTracks.find(pTrack) != m_pendingTracks.end();
 }
 
 // This is called from the AnalyzerQueue thread
@@ -253,7 +238,7 @@ AnalyzerQueue::AnalysisResult AnalyzerQueue::analyzeCurrentTrack(
         // the full block size.
         if (readableSampleFrames.frameLength() == kAnalysisFramesPerBlock) {
             // Complete analysis block of audio samples has been read.
-            for (auto const& pAnalyzer: m_pAnalyzers) {
+            for (auto const& pAnalyzer: m_analyzers) {
                 pAnalyzer->process(
                         readableSampleFrames.readableData(),
                         readableSampleFrames.readableLength());
@@ -308,23 +293,18 @@ AnalyzerQueue::AnalysisResult AnalyzerQueue::analyzeCurrentTrack(
     return result;
 }
 
-int AnalyzerQueue::resume() {
+int AnalyzerQueue::resumeThread() {
     QMutexLocker locked(&m_qm);
     m_qwait.wakeAll();
     return m_queuedTracks.size();
 }
 
-void AnalyzerQueue::stop() {
+void AnalyzerQueue::stopThread() {
     m_exitThread = true;
-    resume();
+    resumeThread();
 }
 
 void AnalyzerQueue::run() {
-    // If there are no analyzers, don't waste time running.
-    if (m_pAnalyzers.empty()) {
-        return;
-    }
-
     const int instanceId = s_instanceCounter.fetchAndAddAcquire(1) + 1;
     QThread::currentThread()->setObjectName(QString("AnalyzerQueue %1").arg(instanceId));
 
@@ -336,15 +316,34 @@ void AnalyzerQueue::run() {
 }
 
 void AnalyzerQueue::execThread() {
-    // The thread-local database connection for waveform analysis must not
-    // be closed before returning from this function. Therefore the
-    // DbConnectionPooler is defined at this outer function scope,
-    // independent of whether a database connection will be opened
-    // or not.
+    // The thread-local database connection for waveform analysis
+    // must not be closed before returning from this function.
+    // Therefore the DbConnectionPooler is defined here independent
+    // of whether a database connection will be opened or not.
     mixxx::DbConnectionPooler dbConnectionPooler;
-    // m_pAnalysisDao remains null if no analyzer needs database access.
+
+    std::unique_ptr<AnalysisDao> pAnalysisDao;
+    if (m_mode != Mode::WithoutWaveform) {
+        pAnalysisDao = std::make_unique<AnalysisDao>(m_pConfig);
+        m_analyzers.push_back(std::make_unique<AnalyzerWaveform>(pAnalysisDao.get()));
+    }
+    m_analyzers.push_back(std::make_unique<AnalyzerGain>(m_pConfig));
+    m_analyzers.push_back(std::make_unique<AnalyzerEbur128>(m_pConfig));
+#ifdef __VAMP__
+    m_analyzers.push_back(std::make_unique<AnalyzerBeats>(m_pConfig));
+    m_analyzers.push_back(std::make_unique<AnalyzerKey>(m_pConfig));
+#endif
+    // If there are no analyzers, don't waste time running.
+    if (m_analyzers.empty()) {
+        kLogger.warning() << "No analyzers activated";
+        return;
+    } else {
+        kLogger.info() << "Activated" << m_analyzers.size() << "analyzers";
+    }
+
+    // pAnalysisDao remains null if no analyzer needs database access.
     // Currently only waveform analyses makes use of it.
-    if (m_pAnalysisDao) {
+    if (pAnalysisDao) {
         dbConnectionPooler = mixxx::DbConnectionPooler(m_pDbConnectionPool); // move assignment
         if (!dbConnectionPooler.isPooling()) {
             kLogger.warning()
@@ -354,7 +353,7 @@ void AnalyzerQueue::execThread() {
         // Obtain and use the newly created database connection within this thread
         QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
         DEBUG_ASSERT(dbConnection.isOpen());
-        m_pAnalysisDao->initialize(dbConnection);
+        pAnalysisDao->initialize(dbConnection);
     }
 
     while (!m_exitThread) {
@@ -381,7 +380,7 @@ void AnalyzerQueue::execThread() {
         }
 
         bool processTrack = false;
-        for (auto const& pAnalyzer: m_pAnalyzers) {
+        for (auto const& pAnalyzer: m_analyzers) {
             // Make sure not to short-circuit initialize(...)
             if (pAnalyzer->initialize(
                     m_currentTrack,
@@ -405,12 +404,12 @@ void AnalyzerQueue::execThread() {
                 // suddenly.
                 emitThreadProgress(kAnalysisProgressFinalizing);
                 // This takes around 3 sec on a Atom Netbook
-                for (auto const& pAnalyzer: m_pAnalyzers) {
+                for (auto const& pAnalyzer: m_analyzers) {
                     pAnalyzer->finalize(m_currentTrack);
                 }
                 finishCurrentTrack(kAnalysisProgressDone);
             } else {
-                for (auto const& pAnalyzer: m_pAnalyzers) {
+                for (auto const& pAnalyzer: m_analyzers) {
                     pAnalyzer->cleanup(m_currentTrack);
                 }
                 TrackPointer deferredTrack = m_currentTrack;
@@ -428,21 +427,18 @@ void AnalyzerQueue::execThread() {
         DEBUG_ASSERT(!m_currentTrack);
     }
     DEBUG_ASSERT(m_exitThread);
+
     {
         QMutexLocker locked(&m_qm);
         DEBUG_ASSERT(!m_currentTrack);
         m_pendingTracks.clear();
         m_queuedTracks.clear();
     }
-    DEBUG_ASSERT(!m_currentTrack);
+
     emitThreadProgress();
     emit(threadIdle());
 
-    if (m_pAnalysisDao) {
-        // Invalidate reference to the thread-local database connection
-        // that will be closed soon. Not necessary, just in case ;)
-        m_pAnalysisDao->initialize(QSqlDatabase());
-    }
+    m_analyzers.clear();
 }
 
 // This is called from the AnalyzerQueue thread
@@ -497,7 +493,7 @@ void AnalyzerQueue::slotThreadProgress() {
 void AnalyzerQueue::slotAnalyseTrack(TrackPointer pTrack) {
     // This slot is called from the decks and and samplers when the track was loaded.
     if (enqueueTrack(pTrack)) {
-        resume();
+        resumeThread();
     }
 }
 
@@ -517,7 +513,7 @@ bool AnalyzerQueue::enqueueTrack(TrackPointer pTrack) {
         m_queuedTracks.enqueue(pTrack);
         // Don't wake up the paused thread now to avoid race conditions
         // if multiple threads are added in a row. The caller is
-        // responsible to finish the enqueuing of tracks with resume().
+        // responsible to finish the enqueuing of tracks with resumeThread().
         return true;
     } else {
         if (kLogger.debugEnabled()) {
