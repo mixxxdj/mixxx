@@ -249,8 +249,7 @@ bool EngineEffectsManager::removeEffectRack(EngineEffectRack* pRack,
     VERIFY_OR_DEBUG_ASSERT(rackList.contains(pRack)) {
         return false;
     }
-    rackList.removeAll(pRack);
-    return true;
+    return rackList.removeAll(pRack) > 0;
 }
 
 bool EngineEffectsManager::processEffectsRequest(EffectsRequest& message,
