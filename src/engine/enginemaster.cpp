@@ -45,7 +45,7 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
           m_masterHandle(registerChannelGroup(group)),
           m_headphoneHandle(registerChannelGroup("[Headphone]")),
           m_masterOutputHandle(registerChannelGroup("[MasterOutput]")),
-          m_busMicrophonesHandle(registerChannelGroup("[MicrophoneMix]")),
+          m_busTalkoverHandle(registerChannelGroup("[BusTalkover]")),
           m_busCrossfaderLeftHandle(registerChannelGroup("[BusLeft]")),
           m_busCrossfaderCenterHandle(registerChannelGroup("[BusCenter]")),
           m_busCrossfaderRightHandle(registerChannelGroup("[BusRight]")) {
@@ -55,7 +55,7 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
     pEffectsManager->registerOutputChannel(m_headphoneHandle);
 
     pEffectsManager->registerInputChannel(m_masterOutputHandle);
-    pEffectsManager->registerInputChannel(m_busMicrophonesHandle);
+    pEffectsManager->registerInputChannel(m_busTalkoverHandle);
     pEffectsManager->registerInputChannel(m_busCrossfaderLeftHandle);
     pEffectsManager->registerInputChannel(m_busCrossfaderCenterHandle);
     pEffectsManager->registerInputChannel(m_busCrossfaderRightHandle);
@@ -457,7 +457,7 @@ void EngineMaster::process(const int iBufferSize) {
     // We have no metadata for mixed effect buses, so use an empty GroupFeatureState.
     GroupFeatureState busFeatures;
     m_pEngineEffectsManager->processPostFaderInPlace(
-            m_busMicrophonesHandle.handle(),
+            m_busTalkoverHandle.handle(),
             m_masterHandle.handle(),
             m_pTalkover,
             m_iBufferSize, m_iSampleRate, busFeatures);
