@@ -56,7 +56,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
           m_bGainAutoReset(false) {
     m_pEQEffectRack = m_pEffectsManager->getEqualizerRack(0);
     m_pQuickEffectRack = m_pEffectsManager->getQuickEffectRack(0);
-    m_pMasterEffectRack = m_pEffectsManager->getMasterEffectRack();
+    m_pOutputEffectRack = m_pEffectsManager->getOutputsEffectRack();
 
     setupUi(this);
     // Connection
@@ -718,7 +718,7 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
         pbResetMasterEq->show();
     }
 
-    EffectChainSlotPointer pChainSlot = m_pMasterEffectRack->getEffectChainSlot(0);
+    EffectChainSlotPointer pChainSlot = m_pOutputEffectRack->getEffectChainSlot(0);
 
     if (pChainSlot) {
         EffectChainPointer pChain = pChainSlot->getEffectChain();

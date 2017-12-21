@@ -228,11 +228,11 @@ QuickEffectRackPointer EffectsManager::getQuickEffectRack(int rack) {
     return m_pEffectChainManager->getQuickEffectRack(rack);
 }
 
-MasterEffectRackPointer EffectsManager::addMasterEffectRack() {
-    return m_pEffectChainManager->addMasterEffectRack();
+OutputEffectRackPointer EffectsManager::addOutputsEffectRack() {
+    return m_pEffectChainManager->addOutputsEffectRack();
 }
 
-MasterEffectRackPointer EffectsManager::getMasterEffectRack() {
+OutputEffectRackPointer EffectsManager::getOutputsEffectRack() {
     return m_pEffectChainManager->getMasterEffectRack();
 }
 
@@ -321,7 +321,7 @@ void EffectsManager::setup() {
 
     // Add postfader effect racks
     addStandardEffectRack();
-    addMasterEffectRack();
+    addOutputsEffectRack();
 
     EffectChainPointer pChain(new EffectChain(
            this, "org.mixxx.effectchain.flanger"));

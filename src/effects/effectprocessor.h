@@ -11,6 +11,7 @@
 #include "effects/defs.h"
 #include "effects/effectsmanager.h"
 #include "engine/effects/groupfeaturestate.h"
+#include "engine/effects/message.h"
 #include "engine/channelhandle.h"
 
 class EngineEffect;

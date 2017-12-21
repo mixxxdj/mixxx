@@ -18,12 +18,12 @@ class EffectRack;
 class StandardEffectRack;
 class EqualizerRack;
 class QuickEffectRack;
-class MasterOutputEffectRack;
+class OutputEffectRack;
 typedef QSharedPointer<EffectRack> EffectRackPointer;
 typedef QSharedPointer<StandardEffectRack> StandardEffectRackPointer;
 typedef QSharedPointer<EqualizerRack> EqualizerRackPointer;
 typedef QSharedPointer<QuickEffectRack> QuickEffectRackPointer;
-typedef QSharedPointer<MasterOutputEffectRack> MasterEffectRackPointer;
+typedef QSharedPointer<OutputEffectRack> OutputEffectRackPointer;
 
 //TODO(Be): Remove these superfluous classes.
 class EffectRack : public QObject {
@@ -123,12 +123,12 @@ class StandardEffectRack : public EffectRack {
     EffectChainSlotPointer addEffectChainSlot();
 };
 
-class MasterOutputEffectRack : public EffectRack {
+class OutputEffectRack : public EffectRack {
     Q_OBJECT
   public:
-    MasterOutputEffectRack(EffectsManager* pEffectsManager,
+    OutputEffectRack(EffectsManager* pEffectsManager,
                      EffectChainManager* pChainManager);
-    virtual ~MasterOutputEffectRack() {};
+    virtual ~OutputEffectRack() {};
 };
 
 class PerGroupRack : public EffectRack {

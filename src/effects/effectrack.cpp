@@ -258,19 +258,19 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
     return pChainSlotPointer;
 }
 
-MasterOutputEffectRack::MasterOutputEffectRack(EffectsManager* pEffectsManager,
-                                               EffectChainManager* pChainManager)
+OutputEffectRack::OutputEffectRack(EffectsManager* pEffectsManager,
+                                   EffectChainManager* pChainManager)
         : EffectRack(pEffectsManager, pChainManager, 0,
-                     "[MasterOutputEffectRack]", SignalProcessingStage::Postfader) {
+                     "[OutputEffectRack]", SignalProcessingStage::Postfader) {
 
-    const QString unitGroup = "[MasterOutputEffectRack_EffectUnit]";
+    const QString unitGroup = "[OutputEffectRack_[Master]]";
     // Hard code only one EffectChainSlot
     EffectChainSlot* pChainSlot = new EffectChainSlot(this, unitGroup, 0);
     EffectChainPointer pChain(new EffectChain(m_pEffectsManager, unitGroup));
     pChainSlot->loadEffectChainToSlot(pChain);
     pChain->addToEngine(getEngineEffectRack(), 0);
     // Add a single EffectSlot for the master EQ effect
-    pChainSlot->addEffectSlot("[MasterOutputEffectRack_EffectUnit_Effect1]");
+    pChainSlot->addEffectSlot("[OutputEffectRack_[Master]_Effect1]");
 
     connect(pChainSlot, SIGNAL(nextChain(unsigned int, EffectChainPointer)),
             this, SLOT(loadNextChain(unsigned int, EffectChainPointer)));
