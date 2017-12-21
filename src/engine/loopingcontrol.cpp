@@ -916,9 +916,11 @@ void LoopingControl::slotBeatLoop(double beats,
     }
 
     int samples = m_pTrackSamples->get();
-    if ((!m_pTrack || samples == 0 || !m_pBeats) && adjustBeatloopSizeCO) {
+    if (!m_pTrack || samples == 0 || !m_pBeats) {
         clearActiveBeatLoop();
-        m_pCOBeatLoopSize->setAndConfirm(beats);
+        if (adjustBeatloopSizeCO) {
+            m_pCOBeatLoopSize->setAndConfirm(beats);
+        }
         return;
     }
 
