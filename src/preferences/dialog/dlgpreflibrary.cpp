@@ -210,7 +210,7 @@ void DlgPrefLibrary::slotUpdate() {
     spinBoxRowHeight->setValue(m_iOriginalTrackTableRowHeight);
     setLibraryFont(m_originalTrackTableFont);
 
-    m_iOriginalMaxThreads = m_pconfig->getValue<int>(ConfigKey("[Library]", "MaxAnalysisThreads"));
+    m_iOriginalMaxThreads = m_pConfig->getValue<int>(ConfigKey("[Library]", "MaxAnalysisThreads"));
     //setCurrentIndex is zero based. threads is one based.
     cmbMaxThreads->setCurrentIndex(m_iOriginalMaxThreads-1);
 
@@ -355,7 +355,7 @@ void DlgPrefLibrary::slotApply() {
     //setCurrentIndex is zero based. threads is one based.
     int threads = cmbMaxThreads->currentIndex()+1;
     if (m_iOriginalMaxThreads != threads && threads > 0) {
-        m_pconfig->setValue<int>(ConfigKey("[Library]", "MaxAnalysisThreads"),
+        m_pConfig->setValue<int>(ConfigKey("[Library]", "MaxAnalysisThreads"),
                       threads);
         emit(setMaxThreads(threads));
     }
