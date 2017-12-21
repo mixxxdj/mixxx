@@ -103,9 +103,9 @@
               <ObjectName>CoverArtSplitter</ObjectName>
               <Orientation>vertical</Orientation>
               <SizePolicy>me,min</SizePolicy>
-              <SplitSizes>100,10000</SplitSizes>
+              <SplitSizes>1,5</SplitSizes>
               <SplitSizesConfigKey>[LateNight],waveform_splitSize</SplitSizesConfigKey>
-              <Collapsible>0,0</Collapsible>
+              <Collapsible>1,0</Collapsible>
               <Children>
 
                 <Template src="skin:waveforms.xml"/>
