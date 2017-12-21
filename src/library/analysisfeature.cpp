@@ -114,12 +114,12 @@ void AnalysisFeature::activate() {
 
 namespace {
     inline
-    AnalyzerQueue::Mode getAnalyzerQueueMode(
+    AnalyzerMode getAnalyzerMode(
             const UserSettingsPointer& pConfig) {
         if (pConfig->getValue<bool>(ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"), true)) {
-            return AnalyzerQueue::Mode::Default;
+            return AnalyzerMode::WithWaveform;
         } else {
-            return AnalyzerQueue::Mode::WithoutWaveform;
+            return AnalyzerMode::WithoutWaveform;
         }
     }
 } // anonymous namespace
@@ -135,7 +135,7 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
         m_pAnalyzerQueue = new AnalyzerQueue(
                 m_pDbConnectionPool,
                 m_pConfig,
-                getAnalyzerQueueMode(m_pConfig));
+                getAnalyzerMode(m_pConfig));
 
         connect(m_pAnalyzerQueue, SIGNAL(trackProgress(int)),
                 m_pAnalysisView, SLOT(trackAnalysisProgress(int)));
@@ -149,16 +149,17 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
         emit(analysisActive(true));
     }
 
+    int queueSize = 0;
     for (const auto& trackId: trackIds) {
         TrackPointer pTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
         if (pTrack) {
-            m_pAnalyzerQueue->enqueueTrack(pTrack);
+            queueSize = m_pAnalyzerQueue->enqueueTrack(pTrack);
         }
     }
-    int queueSize = m_pAnalyzerQueue->resumeThread();
     if (queueSize > 0) {
         setTitleProgress(0, queueSize);
     }
+    m_pAnalyzerQueue->resumeAnalysis();
     emit(trackAnalysisStarted(queueSize));
 }
 
@@ -173,7 +174,7 @@ void AnalysisFeature::slotProgressUpdate(int num_left) {
 void AnalysisFeature::stopAnalysis() {
     //qDebug() << this << "stopAnalysis()";
     if (m_pAnalyzerQueue) {
-        m_pAnalyzerQueue->stopThread();
+        m_pAnalyzerQueue->cancelAnalysis();
     }
 }
 
@@ -181,7 +182,7 @@ void AnalysisFeature::cleanupAnalyzer() {
     setTitleDefault();
     emit(analysisActive(false));
     if (m_pAnalyzerQueue) {
-        m_pAnalyzerQueue->stopThread();
+        m_pAnalyzerQueue->cancelAnalysis();
         m_pAnalyzerQueue->deleteLater();
         m_pAnalyzerQueue = nullptr;
         // Restore old BPM detection setting for preferences...
