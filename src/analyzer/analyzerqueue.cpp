@@ -62,7 +62,7 @@ bool AnalyzerQueue::ThreadProgress::tryWrite(
     if (wasEmpty || m_state.testAndSetAcquire(
             kProgressStateReady, kProgressStateWriting)) {
         DEBUG_ASSERT(m_state == kProgressStateWriting);
-        kLogger.trace() << "Writing progress info";
+        //kLogger.trace() << "Writing progress info";
         // Keep all track references alive until the main thread releases
         // them by moving them into the progress info exchange object!
         if (!previousTracksWithProgress->empty()) {
@@ -145,7 +145,6 @@ AnalyzerQueue::AnalyzerQueue(
         Mode mode)
         : m_pDbConnectionPool(std::move(pDbConnectionPool)),
           m_exitThread(false),
-          m_threadIdle(false),
           m_sampleBuffer(kAnalysisSamplesPerBlock) {
 
     if (mode != Mode::WithoutWaveform) {
@@ -203,6 +202,7 @@ void AnalyzerQueue::dequeueNextTrackBlocking() {
 }
 
 void AnalyzerQueue::finishCurrentTrack(int currentTrackProgress) {
+    bool queueEmpty = false;
     {
         QMutexLocker locked(&m_qm);
         if (m_currentTrack) {
@@ -210,13 +210,17 @@ void AnalyzerQueue::finishCurrentTrack(int currentTrackProgress) {
         }
         DEBUG_ASSERT(m_queuedTracks.size() == int(m_pendingTracks.size()));
         if (m_queuedTracks.empty()) {
-            m_threadIdle = true;
+            queueEmpty = true;
         }
     }
     // Emit signals after unlocking to avoid deadlocks!
     emitThreadProgress(currentTrackProgress);
+    // Reset the current thread AFTER emitting the final progress update
     m_currentTrack.reset();
-    emitThreadIdle();
+    // Finally indicate if all scheduled tasks has been finished
+    if (queueEmpty) {
+        emit(threadIdle());
+    }
 }
 
 // This is called from the AnalyzerQueue thread
@@ -356,7 +360,6 @@ void AnalyzerQueue::execThread() {
     while (!m_exitThread) {
         DEBUG_ASSERT(!m_currentTrack);
         emitThreadProgress();
-        emitThreadIdle();
         dequeueNextTrackBlocking();
         if (!m_currentTrack) {
             break;
@@ -433,18 +436,12 @@ void AnalyzerQueue::execThread() {
     }
     DEBUG_ASSERT(!m_currentTrack);
     emitThreadProgress();
-    emitThreadIdle();
+    emit(threadIdle());
 
     if (m_pAnalysisDao) {
         // Invalidate reference to the thread-local database connection
         // that will be closed soon. Not necessary, just in case ;)
         m_pAnalysisDao->initialize(QSqlDatabase());
-    }
-}
-
-void AnalyzerQueue::emitThreadIdle() {
-    if (m_threadIdle.fetchAndStoreAcquire(false)) {
-        emit(threadIdle());
     }
 }
 
@@ -472,9 +469,10 @@ void AnalyzerQueue::emitThreadProgress(int currentTrackProgress) {
 void AnalyzerQueue::slotThreadProgress() {
     const auto readScope = m_threadProgress.read();
     if (readScope) {
-        kLogger.trace() << "Reading progress info";
-        // TODO(XXX): Bulk updates of many track objects could
-        // limit the responsiveness of the UI or may cause freezing.
+        //kLogger.trace() << "Reading progress info";
+        // TODO(XXX): Bulk progress updates of many track objects
+        // that have been skipped during analysis can still limit
+        // the responsiveness of the UI.
         bool oneOrMoreTracksFinished = false;
         for (const auto trackWithProgress: readScope.tracksWithProgress()) {
             if (trackWithProgress.second != kAnalysisProgressUnknown) {
@@ -508,8 +506,6 @@ bool AnalyzerQueue::enqueueTrack(TrackPointer pTrack) {
     VERIFY_OR_DEBUG_ASSERT(pTrack) {
         return false;
     }
-
-    m_threadIdle = false;
 
     QMutexLocker locked(&m_qm);
     if (m_pendingTracks.insert(pTrack).second) {

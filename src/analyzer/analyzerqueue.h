@@ -81,36 +81,18 @@ class AnalyzerQueue : public QThread {
 
     void execThread();
 
-    void dequeueNextTrackBlocking();
-    void finishCurrentTrack(int finishedProgress = kAnalysisProgressUnknown);
-
-    enum class AnalysisResult {
-        Pending,
-        Partial,
-        Complete,
-        Cancelled,
-    };
-    AnalysisResult analyzeCurrentTrack(
-            mixxx::AudioSourcePointer pAudioSource);
-
-    void emitThreadProgress(int currentTrackProgress = kAnalysisProgressUnknown);
+    /////////////////////////////////////////////////////////////////////////
+    // Thread shared
 
     QAtomicInt m_exitThread;
-
-    QAtomicInt m_threadIdle;
-    void emitThreadIdle();
 
     // The processing queue and associated mutex
     mutable QMutex m_qm;
     QWaitCondition m_qwait;
+
     // pendingTracks = queuedTracks + currentTrack
     std::set<TrackPointer> m_pendingTracks;
     QQueue<TrackPointer> m_queuedTracks;
-    TrackPointer m_currentTrack;
-
-    // The following members are only accessed by the worker thread
-
-    mixxx::SampleBuffer m_sampleBuffer;
 
     typedef std::map<TrackPointer, int> TracksWithProgress;
 
@@ -183,7 +165,27 @@ class AnalyzerQueue : public QThread {
     };
     ThreadProgress m_threadProgress;
 
-    // These members are only accessed by the analysis thread
-    // for collecting tracks until the next update.
+    /////////////////////////////////////////////////////////////////////////
+    // Thread private
+
+    TrackPointer m_currentTrack;
+
+    mixxx::SampleBuffer m_sampleBuffer;
+
     TracksWithProgress m_previousTracksWithProgress;
+
+    void dequeueNextTrackBlocking();
+
+    enum class AnalysisResult {
+        Pending,
+        Partial,
+        Complete,
+        Cancelled,
+    };
+    AnalysisResult analyzeCurrentTrack(
+            mixxx::AudioSourcePointer pAudioSource);
+
+    void finishCurrentTrack(int finishedProgress = kAnalysisProgressUnknown);
+
+    void emitThreadProgress(int currentTrackProgress = kAnalysisProgressUnknown);
 };
