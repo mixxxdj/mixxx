@@ -748,7 +748,7 @@ void Track::removeCue(const CuePointer& pCue) {
 
 void Track::removeMainCue() {
     QMutexLocker lock(&m_qMutex);
-    for (CuePointer pCue : m_cuePoints) {
+    for (const CuePointer& pCue : m_cuePoints) {
         if (pCue->getType() == Cue::LOAD) {
             disconnect(pCue.get(), 0, this, 0);
             m_cuePoints.removeOne(pCue);
@@ -760,7 +760,7 @@ void Track::removeMainCue() {
 
 void Track::removeHotCues() {
     QMutexLocker lock(&m_qMutex);
-    for (CuePointer pCue : m_cuePoints) {
+    for (const CuePointer& pCue : m_cuePoints) {
         if (pCue->getType() == Cue::CUE) {
             disconnect(pCue.get(), 0, this, 0);
             m_cuePoints.removeOne(pCue);
@@ -772,7 +772,7 @@ void Track::removeHotCues() {
 
 void Track::removeLoopCues() {
     QMutexLocker lock(&m_qMutex);
-    for (CuePointer pCue : m_cuePoints) {
+    for (const CuePointer& pCue : m_cuePoints) {
         if (pCue->getType() == Cue::LOOP) {
             disconnect(pCue.get(), 0, this, 0);
             m_cuePoints.removeOne(pCue);
