@@ -1240,6 +1240,7 @@ border: 0px;
 
 #EffectKnob {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+  margin-left: 1px;
 }
 
 #EffectButton {
