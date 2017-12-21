@@ -136,8 +136,6 @@ class WTrackTableView : public WLibraryTableView {
     // Context menu machinery
     QMenu *m_pMenu;
 
-    QMenu *m_pAutoDJMenu;
-
     QMenu *m_pLoadToMenu;
     QMenu *m_pDeckMenu;
     QMenu *m_pSamplerMenu;

@@ -71,9 +71,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
 
     m_pMenu = new QMenu(this);
 
-    m_pAutoDJMenu = new QMenu(this);
-    m_pAutoDJMenu->setTitle(tr("Add to AutoDJ Queue"));
-
     m_pLoadToMenu = new QMenu(this);
     m_pLoadToMenu->setTitle(tr("Load to"));
     m_pDeckMenu = new QMenu(this);
@@ -438,15 +435,15 @@ void WTrackTableView::createActions() {
     connect(m_pFileBrowserAct, SIGNAL(triggered()),
             this, SLOT(slotOpenInFileBrowser()));
 
-    m_pAutoDJBottomAct = new QAction(tr("Bottom"), this);
+    m_pAutoDJBottomAct = new QAction(tr("Add to Auto DJ Queue (Bottom)"), this);
     connect(m_pAutoDJBottomAct, SIGNAL(triggered()),
             this, SLOT(slotSendToAutoDJBottom()));
 
-    m_pAutoDJTopAct = new QAction(tr("Top"), this);
+    m_pAutoDJTopAct = new QAction(tr("Add to Auto DJ Queue (Top)"), this);
     connect(m_pAutoDJTopAct, SIGNAL(triggered()),
             this, SLOT(slotSendToAutoDJTop()));
 
-    m_pAutoDJReplaceAct = new QAction(tr("Replace"), this);
+    m_pAutoDJReplaceAct = new QAction(tr("Add to Auto DJ Queue (Replace)"), this);
     connect(m_pAutoDJReplaceAct, SIGNAL(triggered()),
             this, SLOT(slotSendToAutoDJReplace()));
 
@@ -813,11 +810,11 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     m_pMenu->clear();
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
-        m_pAutoDJMenu->clear();
-        m_pAutoDJMenu->addAction(m_pAutoDJBottomAct);
-        m_pAutoDJMenu->addAction(m_pAutoDJTopAct);
-        m_pAutoDJMenu->addAction(m_pAutoDJReplaceAct);
-        m_pMenu->addMenu(m_pAutoDJMenu);
+        m_pMenu->clear();
+        m_pMenu->addAction(m_pAutoDJBottomAct);
+        m_pMenu->addAction(m_pAutoDJTopAct);
+        m_pMenu->addAction(m_pAutoDJReplaceAct);
+        m_pMenu->addSeparator();
     }
 
     m_pLoadToMenu->clear();
