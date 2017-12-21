@@ -62,6 +62,8 @@ struct EffectsRequest {
         CLEAR_STRUCT(RemoveEffectRack);
         CLEAR_STRUCT(AddChainToRack);
         CLEAR_STRUCT(RemoveChainFromRack);
+        CLEAR_STRUCT(EnableInputChannelForChain);
+        CLEAR_STRUCT(DisableInputChannelForChain);
         CLEAR_STRUCT(AddEffectToChain);
         CLEAR_STRUCT(RemoveEffectFromChain);
         CLEAR_STRUCT(SetEffectChainParameters);
@@ -111,7 +113,11 @@ struct EffectsRequest {
         } RemoveChainFromRack;
         struct {
             EffectStatesMapArray* pEffectStatesMapArray;
+            const ChannelHandle* pChannelHandle;
         } EnableInputChannelForChain;
+        struct {
+            const ChannelHandle* pChannelHandle;
+        } DisableInputChannelForChain;
         struct {
             EngineEffect* pEffect;
             int iIndex;
@@ -132,14 +138,6 @@ struct EffectsRequest {
             int iParameter;
         } SetParameterParameters;
     };
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Message-specific, non-POD values that can't be part of the above union.
-    ////////////////////////////////////////////////////////////////////////////
-
-    // Used by ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL and
-    // DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL.
-    ChannelHandle channel;
 
     // Used by SET_EFFECT_PARAMETER.
     double minimum;

@@ -40,7 +40,7 @@ class EngineEffectChain : public EffectsRequestHandler {
 
     bool enabledForChannel(const ChannelHandle& handle) const;
 
-    void deleteStatesForInputChannel(const ChannelHandle& channel);
+    void deleteStatesForInputChannel(const ChannelHandle* channel);
 
   private:
     struct ChannelStatus {
@@ -59,9 +59,9 @@ class EngineEffectChain : public EffectsRequestHandler {
     bool updateParameters(const EffectsRequest& message);
     bool addEffect(EngineEffect* pEffect, int iIndex);
     bool removeEffect(EngineEffect* pEffect, int iIndex);
-    bool enableForInputChannel(const ChannelHandle& inputHandle,
+    bool enableForInputChannel(const ChannelHandle* inputHandle,
             EffectStatesMapArray* statesForEffectsInChain);
-    bool disableForInputChannel(const ChannelHandle& inputHandle);
+    bool disableForInputChannel(const ChannelHandle* inputHandle);
 
     // Gets or creates a ChannelStatus entry in m_channelStatus for the provided
     // handle.

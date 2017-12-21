@@ -451,6 +451,7 @@ void EffectsManager::collectGarbage(const EffectsRequest* pRequest) {
         delete pRequest->RemoveEffectRack.pRack;
     } else if (pRequest->type == EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL) {
         //qDebug() << debugString() << "deleting states for input channel" << pRequest->channel << "for EngineEffectChain" << pRequest->pTargetChain;
-        pRequest->pTargetChain->deleteStatesForInputChannel(pRequest->channel);
+        pRequest->pTargetChain->deleteStatesForInputChannel(
+                pRequest->DisableInputChannelForChain.pChannelHandle);
     }
 }

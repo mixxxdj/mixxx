@@ -35,9 +35,9 @@ class EngineEffect : public EffectsRequestHandler {
 
     EffectState* createState(const mixxx::EngineParameters& bufferParameters);
 
-    void loadStatesForInputChannel(const ChannelHandle& inputChannel,
+    void loadStatesForInputChannel(const ChannelHandle* inputChannel,
       EffectStatesMap* pStatesMap);
-    void deleteStatesForInputChannel(const ChannelHandle& inputChannel);
+    void deleteStatesForInputChannel(const ChannelHandle* inputChannel);
 
     bool processEffectsRequest(
         EffectsRequest& message,

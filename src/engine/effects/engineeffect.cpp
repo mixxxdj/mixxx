@@ -60,17 +60,17 @@ EffectState* EngineEffect::createState(const mixxx::EngineParameters& bufferPara
     return m_pProcessor->createState(bufferParameters);
 }
 
-void EngineEffect::loadStatesForInputChannel(const ChannelHandle& inputChannel,
+void EngineEffect::loadStatesForInputChannel(const ChannelHandle* inputChannel,
     EffectStatesMap* pStatesMap) {
     if (kEffectDebugOutput) {
         qDebug() << "EngineEffect::loadStatesForInputChannel" << this
-                 << "loading states for input" << inputChannel;
+                 << "loading states for input" << *inputChannel;
     }
     m_pProcessor->loadStatesForInputChannel(inputChannel, pStatesMap);
 }
 
 // Called from the main thread for garbage collection after an input channel is disabled
-void EngineEffect::deleteStatesForInputChannel(const ChannelHandle& inputChannel) {
+void EngineEffect::deleteStatesForInputChannel(const ChannelHandle* inputChannel) {
     m_pProcessor->deleteStatesForInputChannel(inputChannel);
 }
 
