@@ -14,14 +14,14 @@
       <attribute config_key="[Library],show_library">1</attribute>
 
       <!--Skin settings-->
-      <attribute persist="true" config_key="[Deere],show_parallel_waveforms">0</attribute>
+      <attribute persist="true" config_key="[Deere],show_parallel_waveforms">1</attribute>
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
 
       <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Master],show_4effectunits">0</attribute>
-      <attribute persist="true" config_key="[Master],show_coverart">0</attribute>
-      <attribute persist="true" config_key="[Master],show_spinnies">1</attribute>
+      <attribute persist="true" config_key="[Master],show_coverart">1</attribute>
+      <attribute persist="true" config_key="[Master],show_spinnies">0</attribute>
       <attribute persist="true" config_key="[Deere],show_starrating">0</attribute>
       <attribute persist="true" config_key="[Deere],show_track_info">1</attribute>
       <attribute persist="true" config_key="[Deere],show_bpm_info">1</attribute>
@@ -30,7 +30,7 @@
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
       <attribute persist="true" config_key="[Deere],show_crossfader">1</attribute>
       <attribute persist="true" config_key="[Master],show_eqs">1</attribute>
-      <attribute persist="true" config_key="[Master],show_killswitches">1</attribute>
+      <attribute persist="true" config_key="[Master],show_killswitches">0</attribute>
       <attribute persist="true" config_key="[Master],show_faders">1</attribute>
       <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
 
@@ -174,6 +174,7 @@
           <ObjectName>WaveformSplitter</ObjectName>
           <Orientation>vertical</Orientation>
           <SplitSizesConfigKey>[Deere],StackedWaveformSplitter</SplitSizesConfigKey>
+          <SplitSizes>90,540</SplitSizes>
           <Size>-1me,-1me</Size>
           <Connection>
             <ConfigKey>[Master],maximize_library</ConfigKey>
