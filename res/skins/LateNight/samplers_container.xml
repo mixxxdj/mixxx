@@ -1,0 +1,29 @@
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+
+      <Template src="skin:sampler.xml">
+        <SetVariable name="samplernum">1</SetVariable>
+      </Template>
+
+      <Template src="skin:sampler.xml">
+        <SetVariable name="samplernum">2</SetVariable>
+      </Template>
+
+      <Template src="skin:sampler.xml">
+        <SetVariable name="samplernum">3</SetVariable>
+      </Template>
+
+      <Template src="skin:sampler.xml">
+        <SetVariable name="samplernum">4</SetVariable>
+      </Template>
+
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>
