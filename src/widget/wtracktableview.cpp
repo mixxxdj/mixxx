@@ -1739,7 +1739,7 @@ void WTrackTableView::slotClearMainCue() {
     for (const QModelIndex& index : indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            pTrack->removeMainCue();
+            pTrack->removeCuesOfType(Cue::LOAD);
         }
     }
 }
@@ -1755,7 +1755,7 @@ void WTrackTableView::slotClearHotCues() {
     for (const QModelIndex& index : indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            pTrack->removeHotCues();
+            pTrack->removeCuesOfType(Cue::CUE);
         }
     }
 }
@@ -1771,7 +1771,7 @@ void WTrackTableView::slotClearLoop() {
     for (const QModelIndex& index : indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            pTrack->removeLoopCues();
+            pTrack->removeCuesOfType(Cue::LOOP);
         }
     }
 }

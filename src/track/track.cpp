@@ -767,40 +767,23 @@ void Track::removeCue(const CuePointer& pCue) {
     emit(cuesUpdated());
 }
 
-void Track::removeMainCue() {
+void Track::removeCuesOfType(Cue::CueType type) {
     QMutexLocker lock(&m_qMutex);
-    for (const CuePointer& pCue : m_cuePoints) {
-        if (pCue->getType() == Cue::LOAD) {
+    bool dirty = false;
+    QMutableListIterator<CuePointer> it(m_cuePoints);
+    while (it.hasNext()) {
+        CuePointer pCue = it.next();
+        // FIXME: Why does this only work for the CUE CueType?
+        if (pCue->getType() == type) {
             disconnect(pCue.get(), 0, this, 0);
-            m_cuePoints.removeOne(pCue);
+            it.remove();
+            dirty = true;
         }
     }
-    markDirtyAndUnlock(&lock);
-    emit(cuesUpdated());
-}
-
-void Track::removeHotCues() {
-    QMutexLocker lock(&m_qMutex);
-    for (const CuePointer& pCue : m_cuePoints) {
-        if (pCue->getType() == Cue::CUE) {
-            disconnect(pCue.get(), 0, this, 0);
-            m_cuePoints.removeOne(pCue);
-        }
+    if (dirty) {
+        markDirtyAndUnlock(&lock);
+        emit(cuesUpdated());
     }
-    markDirtyAndUnlock(&lock);
-    emit(cuesUpdated());
-}
-
-void Track::removeLoopCues() {
-    QMutexLocker lock(&m_qMutex);
-    for (const CuePointer& pCue : m_cuePoints) {
-        if (pCue->getType() == Cue::LOOP) {
-            disconnect(pCue.get(), 0, this, 0);
-            m_cuePoints.removeOne(pCue);
-        }
-    }
-    markDirtyAndUnlock(&lock);
-    emit(cuesUpdated());
 }
 
 QList<CuePointer> Track::getCuePoints() const {
