@@ -58,8 +58,8 @@
       <!-- Set skin defaults. -->
       <attribute config_key="[Master],num_decks">4</attribute>
       <!-- First setting to choose between 16 or 64 samplers -->
-      <attribute config_key="[Master],num_samplers">16</attribute>
-      <!--attribute config_key="[Master],num_samplers">64</attribute-->
+      <attribute config_key="[Master],num_samplers">64</attribute>
+      <!--attribute config_key="[Master],num_samplers">16</attribute-->
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
       <attribute persist="true" config_key="[Master],show_eqs">1</attribute>
       <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
@@ -207,8 +207,8 @@
     <SingletonDefinition>
       <ObjectName>SamplerRowsButton_Singleton</ObjectName>
       <Children>
-        <Template src="skin:skin_settings_sampler_rows_16.xml"/>
-        <!--Template src="skin:skin_settings_sampler_rows_64.xml"/-->
+        <Template src="skin:skin_settings_sampler_rows_64.xml"/>
+        <!--Template src="skin:skin_settings_sampler_rows_16.xml"/-->
       </Children>
     </SingletonDefinition>
 
@@ -319,8 +319,8 @@
                           </Connection>
                         </WidgetGroup>
 
-                        <Template src="skin:sample_decks_16.xml"/>
-                        <!--Template src="skin:sample_decks_64.xml"/-->
+                        <Template src="skin:sample_decks_64.xml"/>
+                        <!--Template src="skin:sample_decks_16.xml"/-->
 
                         <Template src="skin:mic_aux.xml"/>
 
