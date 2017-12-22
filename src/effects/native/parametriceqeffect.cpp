@@ -41,6 +41,7 @@ EffectManifest ParametricEQEffect::getManifest() {
     EffectManifestParameter* q1 = manifest.addParameter();
     q1->setId("q1");
     q1->setName(QObject::tr("Q 1"));
+    q1->setShortName(QObject::tr("Q 1"));
     q1->setDescription(QObject::tr(
             "Controls the bandwidth of Filter 1.\n"
             "A lower Q affects a wider band of frequencies,\n"
@@ -56,6 +57,7 @@ EffectManifest ParametricEQEffect::getManifest() {
     EffectManifestParameter* center1 = manifest.addParameter();
     center1->setId("center1");
     center1->setName(QObject::tr("Center 1"));
+    center1->setShortName(QObject::tr("Center 1"));
     center1->setDescription(QObject::tr("Center frequency for Filter 1, from 100 Hz to 14 kHz"));
     center1->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     center1->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
@@ -68,6 +70,7 @@ EffectManifest ParametricEQEffect::getManifest() {
     EffectManifestParameter* gain2 = manifest.addParameter();
     gain2->setId("gain2");
     gain2->setName(QObject::tr("Gain 2"));
+    gain2->setShortName(QObject::tr("Gain 2"));
     gain2->setDescription(QObject::tr("Gain for Filter 2"));
     gain2->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     gain2->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
@@ -80,6 +83,7 @@ EffectManifest ParametricEQEffect::getManifest() {
     EffectManifestParameter* q2 = manifest.addParameter();
     q2->setId("q2");
     q2->setName(QObject::tr("Q 2"));
+    q2->setShortName(QObject::tr("Q 2"));
     q2->setDescription(QObject::tr(
             "Controls the bandwidth of Filter 2.\n"
             "A lower Q affects a wider band of frequencies,\n"
@@ -95,6 +99,7 @@ EffectManifest ParametricEQEffect::getManifest() {
     EffectManifestParameter* center2 = manifest.addParameter();
     center2->setId("center2");
     center2->setName(QObject::tr("Center 2"));
+    center2->setShortName(QObject::tr("Center 2"));
     center2->setDescription(QObject::tr("Center frequency for Filter 2, from 100 Hz to 14 kHz"));
     center2->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     center2->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);

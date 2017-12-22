@@ -17,7 +17,8 @@ QString BalanceEffect::getId() {
 EffectManifest BalanceEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
-    manifest.setName(QObject::tr("Balance"));
+    manifest.setName(QObject::tr("Stereo Balance"));
+    manifest.setShortName(QObject::tr("Balance"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr("Adjust the left/right balance and stereo width"));
@@ -26,6 +27,7 @@ EffectManifest BalanceEffect::getManifest() {
     EffectManifestParameter* balance = manifest.addParameter();
     balance->setId("balance");
     balance->setName(QObject::tr("Balance"));
+    balance->setShortName(QObject::tr("Balance"));
     balance->setDescription(QObject::tr("Adjust balance between left and right channels"));
     balance->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     balance->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
@@ -38,6 +40,7 @@ EffectManifest BalanceEffect::getManifest() {
     EffectManifestParameter* midSide = manifest.addParameter();
     midSide->setId("midSide");
     midSide->setName(QObject::tr("Mid/Side"));
+    midSide->setShortName(QObject::tr("Mid/Side"));
     midSide->setDescription(QObject::tr("Adjust stereo width by changing balance between middle and side of the signal.\n"
         "Fully left is mono, fully right is only side ambiance, and centered does not change the original signal."));
     midSide->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
@@ -50,8 +53,8 @@ EffectManifest BalanceEffect::getManifest() {
 
     EffectManifestParameter* midLowPass = manifest.addParameter();
     midLowPass->setId("bypassFreq");
-    midLowPass->setShortName(QObject::tr("Bypass Fr."));
     midLowPass->setName(QObject::tr("Bypass Frequency"));
+    midLowPass->setShortName(QObject::tr("Bypass Fr."));
     midLowPass->setDescription(QObject::tr("Frequencies below this cutoff are not adjusted in the stereo field"));
     midLowPass->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     midLowPass->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);

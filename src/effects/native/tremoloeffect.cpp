@@ -3,8 +3,6 @@
 namespace {
 //  Used to avoid gain discontinuities when changing parameters too fast
 constexpr double kMaxGainIncrement = 0.001;
-
-constexpr int kNumberOfChannels = 2;
 }
 
 // static
@@ -20,13 +18,13 @@ EffectManifest TremoloEffect::getManifest() {
     manifest.setShortName(QObject::tr("Tremolo"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
-    manifest.setDescription("An amplitude modulation effect");
+    manifest.setDescription(QObject::tr("Cycles the volume up and down"));
 
     EffectManifestParameter* depth = manifest.addParameter();
     depth->setId("depth");
-    depth->setName("Depth");
-    depth->setShortName("Depth");
-    depth->setDescription("How much the effect changes the volume");
+    depth->setName(QObject::tr("Depth"));
+    depth->setShortName(QObject::tr("Depth"));
+    depth->setDescription(QObject::tr("How much the effect changes the volume"));
     depth->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     depth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -39,7 +37,7 @@ EffectManifest TremoloEffect::getManifest() {
     rate->setId("rate");
     rate->setName(QObject::tr("Rate"));
     rate->setShortName(QObject::tr("Rate"));
-    rate->setDescription(QObject::tr("Controls the rate of the effect\n"
+    rate->setDescription(QObject::tr("Rate of the volume changes\n"
     "4 beats - 1/8 beat if tempo is detected (decks and samplers) \n"
     "1/4 Hz - 8 Hz if no tempo is detected (mic & aux inputs, master mix)"));
     rate->setControlHint(
@@ -54,7 +52,7 @@ EffectManifest TremoloEffect::getManifest() {
     width->setId("width");
     width->setName(QObject::tr("Width"));
     width->setShortName(QObject::tr("Width"));
-    width->setDescription(QObject::tr("Sets the width of the volume peak\n"
+    width->setDescription(QObject::tr("Width of the volume peak\n"
     "10% - 90% of the effect period"));
     width->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     width->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
@@ -67,7 +65,7 @@ EffectManifest TremoloEffect::getManifest() {
     waveform->setId("waveform");
     waveform->setName(QObject::tr("Waveform"));
     waveform->setShortName(QObject::tr("Waveform"));
-    waveform->setDescription(QObject::tr("Sets the shape of the modulation\n"
+    waveform->setDescription(QObject::tr("Shape of the volume modulation wave\n"
     "Fully left - Square wave\n"
     "Fully right - Sine wave"));
     waveform->setControlHint(
@@ -80,9 +78,9 @@ EffectManifest TremoloEffect::getManifest() {
 
     EffectManifestParameter *phase = manifest.addParameter();
     phase->setId("phase");
-    phase->setName("Phase");
+    phase->setName(QObject::tr("Phase"));
     phase->setShortName(QObject::tr("Phase"));
-    phase->setDescription("Shifts the position of the volume peak\n"
+    phase->setDescription("Shifts the position of the volume peak within the period\n"
     "Fully left - beginning of the effect period\n"
     "Fully right - end of the effect period");
     phase->setControlHint(
@@ -95,10 +93,10 @@ EffectManifest TremoloEffect::getManifest() {
 
     EffectManifestParameter* quantize = manifest.addParameter();
     quantize->setId("quantize");
-    quantize->setName("Quantize");
-    quantize->setShortName("Quantize");
-    quantize->setDescription(
-        "Round the Rate parameter to the nearest whole division of a beat.");
+    quantize->setName(QObject::tr("Quantize"));
+    quantize->setShortName(QObject::tr("Quantize"));
+    quantize->setDescription(QObject::tr(
+        "Round the Rate parameter to the nearest whole division of a beat."));
     quantize->setControlHint(
         EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     quantize->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
@@ -109,10 +107,10 @@ EffectManifest TremoloEffect::getManifest() {
 
     EffectManifestParameter* triplet = manifest.addParameter();
     triplet->setId("triplet");
-    triplet->setName("Triplets");
+    triplet->setName(QObject::tr("Triplets"));
     triplet->setShortName(QObject::tr("Triplet"));
-    triplet->setDescription("When the Quantize parameter is enabled, divide "
-                            "the effect period by 3.");
+    triplet->setDescription(QObject::tr("When the Quantize parameter is enabled, divide "
+                            "the effect period by 3."));
     triplet->setControlHint(
         EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);

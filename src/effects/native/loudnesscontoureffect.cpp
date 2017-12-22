@@ -34,6 +34,7 @@ EffectManifest LoudnessContourEffect::getManifest() {
     EffectManifestParameter* loudness = manifest.addParameter();
     loudness->setId("loudness");
     loudness->setName(QObject::tr("Loudness"));
+    loudness->setShortName(QObject::tr("Loudness"));
     loudness->setDescription(
             QObject::tr("Set the gain of the applied loudness contour"));
     loudness->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
@@ -48,6 +49,7 @@ EffectManifest LoudnessContourEffect::getManifest() {
     EffectManifestParameter* useGain = manifest.addParameter();
     useGain->setId("useGain");
     useGain->setName(QObject::tr("Use Gain"));
+    useGain->setShortName(QObject::tr("Use Gain"));
     useGain->setDescription(QObject::tr("Follow Gain Knob"));
     useGain->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     useGain->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);

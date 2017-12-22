@@ -16,16 +16,17 @@ EffectManifest FilterEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
     manifest.setName(QObject::tr("Filter"));
+    manifest.setShortName(QObject::tr("Filter"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr("The filter changes the tone of the "
-                                        "music by allowing only high or low "
-                                        "frequencies to pass through."));
+    manifest.setDescription(QObject::tr("Allow only high or low "
+                                        "frequencies to play."));
     manifest.setEffectRampsFromDry(true);
 
     EffectManifestParameter* lpf = manifest.addParameter();
     lpf->setId("lpf");
-    lpf->setName(QObject::tr("LPF"));
+    lpf->setName(QObject::tr("Low Pass Filter Cutoff"));
+    lpf->setShortName(QObject::tr("LPF"));
     lpf->setDescription(QObject::tr("Corner frequency ratio of the low pass filter"));
     lpf->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     lpf->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
@@ -50,7 +51,8 @@ EffectManifest FilterEffect::getManifest() {
 
     EffectManifestParameter* hpf = manifest.addParameter();
     hpf->setId("hpf");
-    hpf->setName(QObject::tr("HPF"));
+    hpf->setName(QObject::tr("High Pass Filter Cutoff"));
+    hpf->setShortName(QObject::tr("HPF"));
     hpf->setDescription(QObject::tr("Corner frequency ratio of the high pass filter"));
     hpf->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     hpf->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
