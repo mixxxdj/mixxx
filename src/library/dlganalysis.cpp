@@ -161,6 +161,8 @@ void DlgAnalysis::slotAnalysisProgress(
             progressPercent = QString::number(
                     (math_min(currentTrackProgress, kAnalysisProgressDone) - kAnalysisProgressNone) /
                     (kAnalysisProgressDone - kAnalysisProgressNone));
+        } else {
+            progressPercent = "--";
         }
         QString progressText = tr("Analyzing %1/%2 %3%").arg(
                 QString::number(currentTrack),
