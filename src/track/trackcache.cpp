@@ -2,11 +2,25 @@
 
 #include "util/assert.h"
 #include "util/logger.h"
+#include "util/stat.h"
 
 
 namespace {
 
 const mixxx::Logger kLogger("TrackCache");
+
+const Stat::ComputeFlags kStatCounterFlags = Stat::experimentFlags(
+    Stat::COUNT | Stat::SUM | Stat::AVERAGE |
+    Stat::SAMPLE_VARIANCE |Stat::SAMPLE_MEDIAN |
+    Stat::MIN | Stat::MAX);
+
+const QString kInsertByIdCounter("TrackCache::insertById");
+const QString kEraseByIdCounter("TrackCache::eraseById");
+
+const QString kInsertByCanonicalLocationCounter("TrackCache::insertByCanonicalLocation");
+const QString kEraseByCanonicalLocationCounter("TrackCache::eraseByCanonicalLocation");
+
+const QString kEvictCounter("TrackCache::evict");
 
 inline
 TrackRef createTrackRef(const Track& track) {
@@ -379,11 +393,13 @@ TrackCacheResolver TrackCache::resolve(
         m_tracksById.insert(
                 trackRef.getId(),
                 item);
+        Stat::track(kInsertByIdCounter, Stat::COUNTER, kStatCounterFlags, 1);
     }
     if (trackRef.hasCanonicalLocation()) {
         m_tracksByCanonicalLocation.insert(
                 trackRef.getCanonicalLocation(),
                 item);
+        Stat::track(kInsertByCanonicalLocationCounter, Stat::COUNTER, kStatCounterFlags, 1);
     }
     return TrackCacheResolver(
             std::move(cacheResolver),
@@ -437,6 +453,7 @@ TrackCache::Item TrackCache::purgeInternal(
         if (m_tracksById.end() != trackById) {
             purgedItem = *trackById;
             m_tracksById.erase(trackById);
+            Stat::track(kEraseByIdCounter, Stat::COUNTER, kStatCounterFlags, 1);
         }
     }
     DEBUG_ASSERT(
@@ -467,6 +484,7 @@ TrackCache::Item TrackCache::purgeInternal(
             }
         }
         m_tracksByCanonicalLocation.erase(trackByCanonicalLocation);
+        Stat::track(kEraseByCanonicalLocationCounter, Stat::COUNTER, kStatCounterFlags, 1);
     }
     return purgedItem;
 }
@@ -495,6 +513,7 @@ Track* TrackCache::evictInternal(
         m_pEvictor->onEvictingTrackFromCache(
                 pCacheLocker,
                 purgedItem.plainPtr);
+        Stat::track(kEvictCounter, Stat::COUNTER, kStatCounterFlags, 1);
         // At this point the cache might have been unlocked already
     } else {
         kLogger.debug()
