@@ -13,59 +13,59 @@ Variables passed through from fx_unit:
     <Children>
 
       <Template src="skin:fx_parameter_knob.xml">
-        <SetVariable name="parameter">1</SetVariable>
+        <SetVariable name="FxParameter">1</SetVariable>
       </Template>
       <Template src="skin:fx_parameter_button.xml">
-        <SetVariable name="parameter">1</SetVariable>
+        <SetVariable name="FxParameter">1</SetVariable>
       </Template>
 
       <Template src="skin:fx_parameter_knob.xml">
-        <SetVariable name="parameter">2</SetVariable>
+        <SetVariable name="FxParameter">2</SetVariable>
       </Template>
       <Template src="skin:fx_parameter_button.xml">
-        <SetVariable name="parameter">2</SetVariable>
+        <SetVariable name="FxParameter">2</SetVariable>
       </Template>
 
       <Template src="skin:fx_parameter_knob.xml">
-        <SetVariable name="parameter">3</SetVariable>
+        <SetVariable name="FxParameter">3</SetVariable>
       </Template>
       <Template src="skin:fx_parameter_button.xml">
-        <SetVariable name="parameter">3</SetVariable>
+        <SetVariable name="FxParameter">3</SetVariable>
       </Template>
 
       <Template src="skin:fx_parameter_knob.xml">
-        <SetVariable name="parameter">4</SetVariable>
+        <SetVariable name="FxParameter">4</SetVariable>
       </Template>
       <Template src="skin:fx_parameter_button.xml">
-        <SetVariable name="parameter">4</SetVariable>
+        <SetVariable name="FxParameter">4</SetVariable>
       </Template>
 
       <Template src="skin:fx_parameter_knob.xml">
-        <SetVariable name="parameter">5</SetVariable>
+        <SetVariable name="FxParameter">5</SetVariable>
       </Template>
       <Template src="skin:fx_parameter_button.xml">
-        <SetVariable name="parameter">5</SetVariable>
+        <SetVariable name="FxParameter">5</SetVariable>
       </Template>
 
       <Template src="skin:fx_parameter_knob.xml">
-        <SetVariable name="parameter">6</SetVariable>
+        <SetVariable name="FxParameter">6</SetVariable>
       </Template>
       <Template src="skin:fx_parameter_button.xml">
-        <SetVariable name="parameter">6</SetVariable>
+        <SetVariable name="FxParameter">6</SetVariable>
       </Template>
 
       <Template src="skin:fx_parameter_knob.xml">
-        <SetVariable name="parameter">7</SetVariable>
+        <SetVariable name="FxParameter">7</SetVariable>
       </Template>
       <Template src="skin:fx_parameter_button.xml">
-        <SetVariable name="parameter">7</SetVariable>
+        <SetVariable name="FxParameter">7</SetVariable>
       </Template>
 
       <Template src="skin:fx_parameter_knob.xml">
-        <SetVariable name="parameter">8</SetVariable>
+        <SetVariable name="FxParameter">8</SetVariable>
       </Template>
       <Template src="skin:fx_parameter_button.xml">
-        <SetVariable name="parameter">8</SetVariable>
+        <SetVariable name="FxParameter">8</SetVariable>
       </Template>
 
     </Children>

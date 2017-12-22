@@ -30,7 +30,7 @@ Variables:
       <Unpressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="labelOn"/>.svg</Unpressed>
     </State>
     <Connection>
-      <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,<Variable name="parameter"/></ConfigKey>
+      <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,<Variable name="FxParameter"/></ConfigKey>
       <ButtonState>LeftButton</ButtonState>
     </Connection>
   </EffectPushButton>

@@ -23,7 +23,7 @@ Variables:
       <Template src="skin:fx_button.xml">
         <SetVariable name="ObjectName">FxParameterButtonOverlay</SetVariable>
         <SetVariable name="Size">51f,18f</SetVariable>
-        <SetVariable name="parameter">button_parameter<Variable name="parameter"/></SetVariable>
+        <SetVariable name="FxParameter">button_parameter<Variable name="FxParameter"/></SetVariable>
       </Template>
 
       <!-- Name of effect parameter when inactive-->
@@ -38,13 +38,13 @@ Variables:
             <EffectRack><Variable name="FxRack"/></EffectRack>
             <EffectUnit><Variable name="FxUnit"/></EffectUnit>
             <Effect><Variable name="FxNum"/></Effect>
-            <EffectButtonParameter><Variable name="parameter"/></EffectButtonParameter>
+            <EffectButtonParameter><Variable name="FxParameter"/></EffectButtonParameter>
             <Alignment>center</Alignment>
           </EffectButtonParameterName>
           <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,button_parameter<Variable name="parameter"/></ConfigKey>
+          <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,button_parameter<Variable name="FxParameter"/></ConfigKey>
           <Transform><IsEqual>0</IsEqual></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
@@ -62,13 +62,13 @@ Variables:
             <EffectRack><Variable name="FxRack"/></EffectRack>
             <EffectUnit><Variable name="FxUnit"/></EffectUnit>
             <Effect><Variable name="FxNum"/></Effect>
-            <EffectButtonParameter><Variable name="parameter"/></EffectButtonParameter>
+            <EffectButtonParameter><Variable name="FxParameter"/></EffectButtonParameter>
             <Alignment>center</Alignment>
           </EffectButtonParameterName>
           <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,button_parameter<Variable name="parameter"/></ConfigKey>
+          <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,button_parameter<Variable name="FxParameter"/></ConfigKey>
           <Transform><IsEqual>1</IsEqual></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
@@ -78,12 +78,12 @@ Variables:
       <Template src="skin:fx_button.xml">
         <SetVariable name="ObjectName">FxParameterButtonUnderlay</SetVariable>
         <SetVariable name="Size">51f,18f</SetVariable>
-        <SetVariable name="parameter">button_parameter<Variable name="parameter"/></SetVariable>
+        <SetVariable name="FxParameter">button_parameter<Variable name="FxParameter"/></SetVariable>
       </Template>
     </Children>
     <!-- show only if button parameter is loaded -->
     <Connection>
-      <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,button_parameter<Variable name="parameter"/>_loaded</ConfigKey>
+      <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,button_parameter<Variable name="FxParameter"/>_loaded</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

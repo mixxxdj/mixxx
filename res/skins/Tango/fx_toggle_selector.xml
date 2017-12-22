@@ -13,6 +13,7 @@ Variables:
 -->
 <Template>
   <SetVariable name="FxRack_FxUnit_FxNum">[<Variable name="FxRack_FxUnit"/>_Effect<Variable name="FxNum"/>]</SetVariable>
+
   <WidgetGroup>
     <ObjectName>FxToggleSelector</ObjectName>
     <Layout>stacked</Layout>
