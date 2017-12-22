@@ -265,6 +265,19 @@ void Tooltips::addStandardTooltips() {
             << tr("Hold-to-talk or short click for latching to")
             << tr("mix microphone input into the master output.");
 
+    add("talkover_duck_mode")
+            << tr("Microphone Talkover Mode")
+            << tr("Off: Do not reduce music volume")
+            << tr("Auto: Automatically reduce music volume when microphones are in use. Adjust the amount the music volume is reduced with the Strength knob.")
+            << tr("Manual: Reduce music volume by a fixed amount set by the Strength knob.");
+
+    add("talkover_duck_strength")
+            << tr("Microphone Talkover Ducking Stength")
+            << tr("Behavior depends on Microphone Talkover Mode:")
+            << tr("Off: Does nothing")
+            << tr("Auto: Sets how much to reduce the music volume when microphones are in use.")
+            << tr("Manual: Sets how much to reduce the music volume, regardless of volume of microphone inputs.");
+
     QString changeAmount = tr("Change the step-size in the Preferences -> Interface menu.");
     add("rate_perm_up_rate_perm_up_small")
             << tr("Raise Pitch")
@@ -852,4 +865,8 @@ void Tooltips::addStandardTooltips() {
             << tr("Equalizer Parameter Kill")
             << tr("Holds the gain of the EQ to zero while active.")
             << eqKillLatch;
+
+    add("skin_settings")
+            << tr("Skin Settings Menu")
+            << tr("Show/hide skin settings menu");
 }
