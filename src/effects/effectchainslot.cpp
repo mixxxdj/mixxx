@@ -207,8 +207,8 @@ void EffectChainSlot::loadEffectChainToSlot(EffectChainPointer pEffectChain) {
                 this, SLOT(slotChainEnabledChanged(bool)));
         connect(m_pEffectChain.data(), SIGNAL(mixChanged(double)),
                 this, SLOT(slotChainMixChanged(double)));
-        connect(m_pEffectChain.data(), SIGNAL(insertionTypeChanged(EffectChain::InsertionType)),
-                this, SLOT(slotChainInsertionTypeChanged(EffectChain::InsertionType)));
+        connect(m_pEffectChain.data(), SIGNAL(insertionTypeChanged(EffectChainInsertionType)),
+                this, SLOT(slotChainInsertionTypeChanged(EffectChainInsertionType)));
         connect(m_pEffectChain.data(), SIGNAL(channelStatusChanged(const QString&, bool)),
                 this, SLOT(slotChainChannelStatusChanged(const QString&, bool)));
 

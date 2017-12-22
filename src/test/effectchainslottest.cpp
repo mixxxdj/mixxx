@@ -64,12 +64,13 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain) {
     ControlObject::set(ConfigKey(group, "mix"), 0.5);
     EXPECT_DOUBLE_EQ(0.5, pChain->mix());
 
-    pChain->setInsertionType(EffectChain::SEND);
-    EXPECT_DOUBLE_EQ(pChain->insertionType(),
+    pChain->setInsertionType(EffectChainInsertionType::Send);
+    EXPECT_DOUBLE_EQ(static_cast<double>(pChain->insertionType()),
                      ControlObject::get(ConfigKey(group, "insertion_type")));
 
-    ControlObject::set(ConfigKey(group, "insertion_type"), EffectChain::INSERT);
-    EXPECT_DOUBLE_EQ(EffectChain::INSERT, pChain->insertionType());
+    ControlObject::set(ConfigKey(group, "insertion_type"),
+                       static_cast<double>(EffectChainInsertionType::Insert));
+    EXPECT_EQ(EffectChainInsertionType::Insert, pChain->insertionType());
 
     EXPECT_FALSE(pChain->enabledForChannel(m_master));
     EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(group, "group_[Master]_enable")));
