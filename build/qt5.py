@@ -550,9 +550,9 @@ def _find_qtdirs(qt5dir, module):
                 else:
                     module5 = module
                 if not os.path.isdir(QT5LIBDIR):
-                    QT5LIBDIR = subprocess.Popen(["pkg-config", "--variable=libdir", module5], stdout = subprocess.PIPE).communicate()[0].rstrip()
+                    QT5LIBDIR = subprocess.Popen(["pkg-config", "--variable=libdir", module5], stdout = subprocess.PIPE).communicate()[0].rstrip().decode()
                 if not os.path.isdir(QT5INCDIR):
-                    QT5INCDIR = subprocess.Popen(["pkg-config", "--variable=includedir", module5], stdout = subprocess.PIPE).communicate()[0].rstrip()
+                    QT5INCDIR = subprocess.Popen(["pkg-config", "--variable=includedir", module5], stdout = subprocess.PIPE).communicate()[0].rstrip().decode()
             finally:
                 pass
     return QT5LIBDIR, QT5INCDIR, os.path.join(QT5INCDIR,module)
