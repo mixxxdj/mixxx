@@ -32,7 +32,7 @@ void Tooltips::addStandardTooltips() {
     QString scrollWheel = tr("Scroll-wheel");
     QString loopActive = "(" + tr("loop active") + ")";
     QString loopInactive = "(" + tr("loop inactive") + ")";
-    QString effectsWithinChain = tr("Effects within the chain must be enabled to hear them.");
+    QString effectsWithinUnit = tr("Effects within the chain must be enabled to hear them.");
 
     add("waveform_overview")
             << tr("Waveform Overview")
@@ -241,8 +241,8 @@ void Tooltips::addStandardTooltips() {
             << tr("Show or hide the track library.");
 
     add("show_effects")
-            << tr("Show Effect Rack")
-            << tr("Show or hide the effect rack.");
+            << tr("Show Effects")
+            << tr("Show or hide the effects.");
 
     add("maximize_library")
             << tr("Maximize Library")
@@ -705,24 +705,24 @@ void Tooltips::addStandardTooltips() {
 
     // Effect Unit Controls
     add("EffectUnit_clear")
-            << tr("Clear Chain")
-            << tr("Clear effect chain.");
+            << tr("Clear Unit")
+            << tr("Clear effect unit.");
 
     add("EffectUnit_show_parameters")
             << tr("Show Effect Parameters")
-            << tr("Show/hide parameters for effects in this chain.");
+            << tr("Show/hide parameters for effects in this unit.");
 
     add("EffectUnit_enabled")
-            << tr("Toggle Chain")
-            << tr("Enable or disable this whole effect chain.");
+            << tr("Toggle Unit")
+            << tr("Enable or disable this whole effect unit.");
     add("EffectUnit_mix")
             << tr("Dry/Wet")
-            << tr("Adjust the balance between the original (dry) and processed (wet) signal for the whole effect chain.")
+            << tr("Adjust the balance between the original (dry) and processed (wet) signal for the whole effect unit.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("EffectUnit_super1")
             << tr("Super Knob")
-            << tr("Controls the Meta Knob of all effects in this chain together.")
+            << tr("Controls the Meta Knob of all effects in this unit together.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("EffectUnit_insertion_type")
@@ -731,50 +731,50 @@ void Tooltips::addStandardTooltips() {
 
     add("EffectUnit_next_chain")
             << tr("Next Chain")
-            << tr("Next effect chain preset.");
+            << tr("Load next effect chain preset into this effect unit.");
 
     add("EffectUnit_prev_chain")
             << tr("Previous Chain")
-            << tr("Previous effect chain preset.");
+            << tr("Load previous effect chain preset into this effect unit.");
 
     add("EffectUnit_chain_selector")
             << tr("Next/Previous Chain")
-            << tr("Next or previous effect chain preset.");
+            << tr("Load next or previous effect chain preset into this effect unit.");
 
     add("EffectUnit_group_enabled")
-            << tr("Assign Effect Chain")
-            << tr("Assign this effect chain to the channel output.")
-            << effectsWithinChain;
+            << tr("Assign Effect Unit")
+            << tr("Assign this effect unit to the channel output.")
+            << effectsWithinUnit;
 
     add("EffectUnit_headphones_enabled")
-            << tr("Assign Effect Chain")
-            << tr("Route the headphone channel through this effect chain.")
-            << effectsWithinChain;
+            << tr("Assign Effect Unit")
+            << tr("Route the headphone channel through this effect unit.")
+            << effectsWithinUnit;
 
     add("EffectUnit_master_enabled")
-            << tr("Assign Effect Chain")
-            << tr("Route the master mix through this effect chain.")
-            << effectsWithinChain;
+            << tr("Assign Effect Unit")
+            << tr("Route the master mix through this effect unit.")
+            << effectsWithinUnit;
 
     add("EffectUnit_deck_enabled")
-            << tr("Assign Effect Chain")
-            << tr("Route this deck through the indicated effect chain.")
-            << effectsWithinChain;
+            << tr("Assign Effect Unit")
+            << tr("Route this deck through the indicated effect unit.")
+            << effectsWithinUnit;
 
     add("EffectUnit_sampler_enabled")
-            << tr("Assign Effect Chain")
-            << tr("Route this sampler through the indicated effect chain.")
-            << effectsWithinChain;
+            << tr("Assign Effect Unit")
+            << tr("Route this sampler through the indicated effect unit.")
+            << effectsWithinUnit;
 
     add("EffectUnit_microphone_enabled")
-            << tr("Assign Effect Chain")
-            << tr("Route this microphone through the indicated effect chain.")
-            << effectsWithinChain;
+            << tr("Assign Effect Unit")
+            << tr("Route this microphone through the indicated effect unit.")
+            << effectsWithinUnit;
 
     add("EffectUnit_auxiliary_enabled")
-            << tr("Assign Effect Chain")
-            << tr("Route this auxiliary input through the indicated effect chain.")
-            << effectsWithinChain;
+            << tr("Assign Effect Unit")
+            << tr("Route this auxiliary input through the indicated effect unit.")
+            << effectsWithinUnit;
 
     // Effect Slot Controls
     add("EffectSlot_clear")
@@ -783,7 +783,7 @@ void Tooltips::addStandardTooltips() {
 
     add("EffectSlot_enabled")
             << tr("Enable Effect")
-            << tr("This effect chain must also be assigned to a deck or other sound source to hear the effect.");
+            << tr("This effect unit must also be assigned to a deck or other sound source to hear the effect.");
 
     add("EffectSlot_next_effect")
             << tr("Next")
