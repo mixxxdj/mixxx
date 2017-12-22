@@ -365,7 +365,7 @@ Description:
                             <SizePolicy>me,f</SizePolicy>
                             <Text>!</Text>
                             <Connection>
-                              <ConfigKey persist="true">[Master],show_mixerr</ConfigKey>
+                              <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
                               <BindProperty>visible</BindProperty>
                             </Connection>
                           </Label>
@@ -432,7 +432,7 @@ Description:
                     <MaximumSize>182,17</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
                     <Connection>
-                      <ConfigKey persist="true">[Master],show_mixerr</ConfigKey>
+                      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
@@ -527,7 +527,7 @@ Description:
                           <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
                         </Children>
                         <Connection>
-                          <ConfigKey persist="true">[Master],show_mixerr</ConfigKey>
+                          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
                       </WidgetGroup><!-- /hint: enforced small cover/spinny with mixer-->

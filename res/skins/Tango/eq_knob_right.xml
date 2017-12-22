@@ -26,7 +26,7 @@ Variables:
           <Template src="skin:fx_button.xml">
             <SetVariable name="ObjectName">EQKillButton</SetVariable>
             <SetVariable name="Size">12f,30f</SetVariable>
-            <SetVariable name="parameter">button_parameter<Variable name="parameter"/></SetVariable>
+            <SetVariable name="FxParameter">button_parameter<Variable name="FxParameter"/></SetVariable>
           </Template>
 
           <!-- EQ knob + Kill indicator underneath -->
@@ -41,14 +41,14 @@ Variables:
                 <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                 <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
                 <Connection>
-                  <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="parameter"/></ConfigKey>
+                  <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/></ConfigKey>
                 </Connection>
               </EffectParameterKnobComposed>
 
               <Template src="skin:fx_button.xml">
                 <SetVariable name="ObjectName">EQKillUnderlayRight</SetVariable>
                 <SetVariable name="Size">30f,30f</SetVariable>
-                <SetVariable name="parameter">button_parameter<Variable name="parameter"/></SetVariable>
+                <SetVariable name="FxParameter">button_parameter<Variable name="FxParameter"/></SetVariable>
               </Template>
             </Children>
           </WidgetGroup><!-- /EQ knob + Kill indicator underneath -->
