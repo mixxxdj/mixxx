@@ -37,7 +37,7 @@ void Tooltips::addStandardTooltips() {
     add("waveform_overview")
             << tr("Waveform Overview")
             << tr("Shows information about the track currently loaded in this channel.")
-            << tr("Jump around in the track by clicking somewhere on the waveform.")
+            << tr("Jump around in the track by clicking anywhere on the waveform.")
             << dropTracksHere;
 
     QString scratchMouse = tr("Use the mouse to scratch, spin-back or throw tracks.");
@@ -195,7 +195,7 @@ void Tooltips::addStandardTooltips() {
 
     add("headMix")
             << tr("Headphone Mix")
-            << tr("Controls what you hear on the headphone output.")
+            << tr("Crossfades the headphone output between the master mix and cueing (PFL or Pre-Fader Listening) signal.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("headSplit")
@@ -204,12 +204,10 @@ void Tooltips::addStandardTooltips() {
                   "plays in the left channel.")
             << tr("Adjust the Headphone Mix so in the left channel is not the pure cueing signal.");
 
-    // Note, this is used for samplers and microphone only currently (that's why
-    // center is the default).
     add("orientation")
-            << tr("Mix Orientation")
-            << tr("Set the channel's mix orientation.")
-            << tr("Either to the left side of crossfader, to the right side or to the center (default).");
+            << tr("Crossfader Orientation")
+            << tr("Set the channel's crossfader orientation.")
+            << tr("Either to the left side of crossfader, to the right side or to the center (unaffected by crossfader)");
 
     add("show_microphone")
             << tr("Microphone")
