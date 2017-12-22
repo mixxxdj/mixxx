@@ -80,6 +80,7 @@
       <attribute persist="true" config_key="[SamplerRow7],expanded">0</attribute>
       <attribute persist="true" config_key="[SamplerRow8],expanded">0</attribute>
       <!-- [Tango] specific defaults -->
+      <attribute persist="true" config_key="[Tango],master_mixer">1</attribute>
       <attribute persist="true" config_key="[Tango],4_FxUnits">0</attribute>
       <!--attribute persist="true" config_key="[Tango],sampler_fx_buttons">1</attribute-->
       <attribute persist="true" config_key="[Tango],beatgrid_buttons">0</attribute>
