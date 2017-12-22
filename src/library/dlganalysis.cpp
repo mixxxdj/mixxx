@@ -49,8 +49,6 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
     // started up. Accounts for 0.2% of skin creation time. Get rid of this!
     radioButtonRecentlyAdded->click();
 
-    labelProgress->setText("");
-    pushButtonAnalyze->setEnabled(false);
     connect(pushButtonAnalyze, SIGNAL(clicked()),
             this, SLOT(analyze()));
 
@@ -61,6 +59,8 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
             SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection&)),
             this,
             SLOT(tableSelectionChanged(const QItemSelection &, const QItemSelection&)));
+
+    slotAnalysisActive(m_bAnalysisActive);
 }
 
 void DlgAnalysis::onShow() {
