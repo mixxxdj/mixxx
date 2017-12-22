@@ -47,6 +47,8 @@ bool WaveformRendererEndOfTrack::init() {
             m_waveformRenderer->getGroup(), "play");
     m_pLoopControl = new ControlProxy(
             m_waveformRenderer->getGroup(), "loop_enabled");
+    m_pTimeRemainingControl = new ControlProxy(
+            m_waveformRenderer->getGroup(), "time_remaining");
     return true;
 }
 
@@ -94,9 +96,7 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
         return;
     }
 
-    const double dPlaypos = m_waveformRenderer->getPlayPos();
-    const double remainingFrames = (1.0 - dPlaypos) * 0.5 * trackSamples;
-    const double remainingTime = remainingFrames / sampleRate;
+    const double remainingTime = m_pTimeRemainingControl->get();
 
     if (remainingTime > m_remainingTimeTriggerSeconds) {
         if (m_endOfTrackEnabled) {

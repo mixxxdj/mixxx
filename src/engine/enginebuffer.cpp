@@ -63,6 +63,7 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
           m_pReader(NULL),
           m_filepos_play(0.),
           m_speed_old(0),
+          m_tempo_ratio_old(1.),
           m_scratching_old(false),
           m_reverse_old(false),
           m_pitch_old(0),
@@ -154,6 +155,9 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
     // BPM to display in the UI (updated more slowly than the actual bpm)
     m_visualBpm = new ControlObject(ConfigKey(m_group, "visual_bpm"));
     m_visualKey = new ControlObject(ConfigKey(m_group, "visual_key"));
+
+    m_timeElapsed = new ControlObject(ConfigKey(m_group, "time_elapsed"));
+    m_timeRemaining = new ControlObject(ConfigKey(m_group, "time_remaining"));
 
     m_playposSlider = new ControlLinPotmeter(
         ConfigKey(m_group, "playposition"), 0.0, 1.0, 0, 0, true);
@@ -283,6 +287,9 @@ EngineBuffer::~EngineBuffer() {
     delete m_playButton;
     delete m_playStartButton;
     delete m_stopStartButton;
+
+    delete m_timeElapsed;
+    delete m_timeRemaining;
 
     delete m_startButton;
     delete m_endButton;
@@ -900,7 +907,8 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // scaler. Also, if we have changed scalers then we need to update the
         // scaler.
         if (baserate != m_baserate_old || speed != m_speed_old ||
-                pitchRatio != m_pitch_old || m_bScalerChanged) {
+                pitchRatio != m_pitch_old || tempoRatio != m_tempo_ratio_old ||
+                m_bScalerChanged) {
             // The rate returned by the scale object can be different from the
             // wanted rate!  Make sure new scaler has proper position. This also
             // crossfades between the old scaler and new scaler to prevent
@@ -923,6 +931,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             m_baserate_old = baserate;
             m_speed_old = speed;
             m_pitch_old = pitchRatio;
+            m_tempo_ratio_old = tempoRatio;
             m_reverse_old = is_reverse;
 
             // Now we need to update the scaler with the master sample rate, the
@@ -1216,6 +1225,11 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
     // Update indicators that are only updated after every
     // sampleRate/kiUpdateRate samples processed.  (e.g. playposSlider)
     if (m_iSamplesCalculated > (m_pSampleRate->get() / kiPlaypositionUpdateRate)) {
+        const double samplePositionToSeconds = 1.0 / m_iSampleRate
+                / kSamplesPerFrame / m_tempo_ratio_old;
+        m_timeElapsed->set(m_filepos_play * samplePositionToSeconds);
+        m_timeRemaining->set(std::max(m_trackSamplesOld - m_filepos_play, 0.0) *
+                samplePositionToSeconds);
         m_playposSlider->set(fFractionalPlaypos);
         m_pCueControl->updateIndicators();
 

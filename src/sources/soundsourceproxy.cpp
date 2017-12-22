@@ -304,7 +304,14 @@ SoundSourceProxy::exportTrackMetadataBeforeSaving(Track* pTrack) {
     DEBUG_ASSERT(pTrack);
     mixxx::MetadataSourcePointer pMetadataSource =
             SoundSourceProxy(pTrack).m_pSoundSource;
-    return pTrack->exportMetadata(pMetadataSource);
+    if (pMetadataSource) {
+        return pTrack->exportMetadata(pMetadataSource);
+    } else {
+        kLogger.warning()
+                << "Unable to export track metadata into file"
+                << pTrack->getLocation();
+        return Track::ExportMetadataResult::Skipped;
+    }
 }
 
 SoundSourceProxy::SoundSourceProxy(

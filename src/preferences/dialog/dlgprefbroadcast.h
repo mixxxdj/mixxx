@@ -30,8 +30,7 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     void checkBoxEnableReconnectChanged(int value);
     void checkBoxLimitReconnectsChanged(int value);
     void enableCustomMetadataChanged(int value);
-    void profileListItemSelected(const QModelIndex& selected,
-            const QModelIndex& deselected);
+    void connectionListItemSelected(const QModelIndex& selected);
 
   signals:
     void apply(const QString &);
