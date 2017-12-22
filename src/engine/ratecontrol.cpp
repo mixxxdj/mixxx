@@ -23,7 +23,7 @@ double RateControl::m_dTemporaryRateChangeFine;
 double RateControl::m_dPermanentRateChangeCoarse;
 double RateControl::m_dPermanentRateChangeFine;
 int RateControl::m_iRateRampSensitivity;
-enum RateControl::RampMode RateControl::m_eRateRampMode;
+RateControl::RampMode RateControl::m_eRateRampMode;
 
 const double RateControl::kWheelMultiplier = 40.0;
 const double RateControl::kPausedJogMultiplier = 18.0;
