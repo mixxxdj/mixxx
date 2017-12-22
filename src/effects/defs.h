@@ -1,6 +1,7 @@
 #pragma once
 #include "util/memory.h"
 #include "engine/channelhandle.h"
+#include <array>
 
 enum class EffectEnableState {
     Disabled,
