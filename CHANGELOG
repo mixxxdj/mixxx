@@ -11,8 +11,8 @@ Here is a quick summary of what is new in Mixxx 2.1:
   * Effects are synchronized to the tempo
   * Effects are processed post-fader and post-crossfader and can be previewed
 in headphones
-  * One metaknob per effect with customizable parameter control, allowing
-for intuitive use of effect chains
+  * One metaknob per effect with customizable parameter control for intuitive
+use of effect chains
   * Nine new effects: Autopan, Biquad Equalizer, Biquad Full Kill Equalizer,
 Loudness Contour, Metronome, Parametric Equalizer, Phaser, Stereo Balance,
 Tremolo
