@@ -1006,8 +1006,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pMetadataMenu->addMenu(m_pCoverMenu);
     }
 
-    m_pMetadataMenu->addMenu(m_pClearMetadataMenu);
     m_pMenu->addMenu(m_pMetadataMenu);
+    m_pMenu->addMenu(m_pClearMetadataMenu);
 
     // REMOVE and HIDE should not be at the first menu position to avoid accidental clicks
     m_pMenu->addSeparator();
