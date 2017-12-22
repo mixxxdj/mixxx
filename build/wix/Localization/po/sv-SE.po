@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2017-07-15 15:06+0000\n"
-"Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
+"PO-Revision-Date: 2017-12-22 20:22+0000\n"
+"Last-Translator: Henrik Mattsson-Mårn <h@reglage.net>\n"
 "Language-Team: Swedish (Sweden) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/sv_SE/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -165,7 +165,7 @@ msgstr ""
 
 msgctxt "Title"
 msgid "[WixBundleName]"
-msgstr ""
+msgstr "[WixBundleName]"
 
 msgctxt "ConfirmCancelMessage"
 msgid "Are you sure you want to cancel?"
@@ -173,7 +173,7 @@ msgstr ""
 
 msgctxt "ExecuteUpgradeRelatedBundleMessage"
 msgid "Previous version"
-msgstr ""
+msgstr "Föregående version"
 
 msgctxt "HelpHeader"
 msgid "Setup Help"
@@ -199,7 +199,7 @@ msgstr ""
 
 msgctxt "InstallHeader"
 msgid "Welcome"
-msgstr ""
+msgstr "Välkommen"
 
 msgctxt "InstallMessage"
 msgid ""
@@ -210,7 +210,7 @@ msgstr ""
 
 msgctxt "InstallVersion"
 msgid "Version [WixBundleVersion]"
-msgstr ""
+msgstr "Version [WixBundleVersion]"
 
 msgctxt "InstallOptionsButton"
 msgid "&Options"
@@ -218,7 +218,7 @@ msgstr ""
 
 msgctxt "InstallInstallButton"
 msgid "&Install"
-msgstr ""
+msgstr "&Installera"
 
 msgctxt "InstallCloseButton"
 msgid "&Close"
@@ -234,11 +234,11 @@ msgstr ""
 
 msgctxt "OptionsBrowseButton"
 msgid "&Browse"
-msgstr ""
+msgstr "&Bläddra"
 
 msgctxt "OptionsOkButton"
 msgid "&OK"
-msgstr ""
+msgstr "&OK"
 
 msgctxt "OptionsCancelButton"
 msgid "&Cancel"
@@ -262,7 +262,7 @@ msgstr ""
 
 msgctxt "FilesInUseOkButton"
 msgid "&OK"
-msgstr ""
+msgstr "&OK"
 
 msgctxt "FilesInUseCancelButton"
 msgid "&Cancel"
@@ -274,7 +274,7 @@ msgstr ""
 
 msgctxt "ProgressLabel"
 msgid "Processing:"
-msgstr ""
+msgstr "Bearbetar:"
 
 msgctxt "OverallProgressPackageText"
 msgid "Initializing..."
@@ -290,7 +290,7 @@ msgstr ""
 
 msgctxt "ModifyRepairButton"
 msgid "&Repair"
-msgstr ""
+msgstr "&Reparera"
 
 msgctxt "ModifyUninstallButton"
 msgid "&Uninstall"
