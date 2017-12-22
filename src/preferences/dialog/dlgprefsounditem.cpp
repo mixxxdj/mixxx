@@ -18,6 +18,7 @@
 #include "preferences/dialog/dlgprefsounditem.h"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanagerconfig.h"
+#include "util/compatibility.h"
 
 /**
  * Constructs a new preferences sound item, representing an AudioPath and SoundDevice
@@ -64,7 +65,7 @@ void DlgPrefSoundItem::refreshDevices(const QList<SoundDevicePointer>& devices) 
     while (deviceComboBox->count() > 1) {
         deviceComboBox->removeItem(deviceComboBox->count() - 1);
     }
-    for (const auto& pDevice: m_devices) {
+    for (const auto& pDevice: qAsConst(m_devices)) {
         if (!hasSufficientChannels(pDevice.data())) continue;
         deviceComboBox->addItem(pDevice->getDisplayName(), pDevice->getInternalName());
     }
@@ -85,7 +86,7 @@ void DlgPrefSoundItem::deviceChanged(int index) {
     if (selection == "None") {
         goto emitAndReturn;
     } else {
-        for (const auto& pDevice: m_devices) {
+        for (const auto& pDevice: qAsConst(m_devices)) {
             if (pDevice->getInternalName() == selection) {
                 if (m_isInput) {
                     numChannels = pDevice->getNumInputChannels();
@@ -240,7 +241,7 @@ SoundDevicePointer DlgPrefSoundItem::getDevice() const {
     if (selection == "None") {
         return SoundDevicePointer();
     }
-    for (const auto& pDevice: m_devices) {
+    for (const auto& pDevice: qAsConst(m_devices)) {
         qDebug() << "1" << pDevice->getDisplayName();
         qDebug() << "2" << pDevice->getInternalName();
         if (selection == pDevice->getInternalName()) {

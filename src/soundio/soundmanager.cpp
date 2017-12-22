@@ -166,7 +166,7 @@ void SoundManager::closeDevices(bool sleepAfterClosing) {
     //qDebug() << "SoundManager::closeDevices()";
 
     bool closed = false;
-    for (const auto& pDevice: m_devices) {
+    for (const auto& pDevice: qAsConst(m_devices)) {
         if (pDevice->isOpen()) {
             // NOTE(rryan): As of 2009 (?) it has been safe to close() a SoundDevice
             // while callbacks are active.
@@ -186,7 +186,7 @@ void SoundManager::closeDevices(bool sleepAfterClosing) {
     // TODO(rryan): Should we do this before SoundDevice::close()? No! Because
     // then the callback may be running when we call
     // onInputDisconnected/onOutputDisconnected.
-    for (const auto& pDevice: m_devices) {
+    for (const auto& pDevice: qAsConst(m_devices)) {
         for (const auto& in: pDevice->inputs()) {
             // Need to tell all registered AudioDestinations for this AudioInput
             // that the input was disconnected.
@@ -371,7 +371,7 @@ SoundDeviceError SoundManager::setupDevices() {
     QList<DeviceMode> toOpen;
     bool haveOutput = false;
     // loop over all available devices
-    for (const auto& pDevice: m_devices) {
+    for (const auto& pDevice: qAsConst(m_devices)) {
         DeviceMode mode = {pDevice, false, false};
         pDevice->clearInputs();
         pDevice->clearOutputs();
