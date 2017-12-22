@@ -199,6 +199,12 @@ class EffectProcessorImpl : public EffectProcessor {
                        << "input" << *inputChannel;
           }
 
+          // NOTE: ChannelHandleMap is like a map in that it associates an
+          // object with a ChannelHandle key, but it actually backed by a
+          // QVarLengthArray, not a QMap. So it is okay that
+          // m_channelStateMatrix may be accessed concurrently in the main
+          // thread in deleteStatesForInputChannel.
+
           // Can't directly cast a ChannelHandleMap from containing the base
           // EffectState* type to EffectSpecificState* type, so iterate through
           // pStatesMap to build a new ChannelHandleMap with
@@ -240,6 +246,13 @@ class EffectProcessorImpl : public EffectProcessor {
               qDebug() << "EffectProcessorImpl::deleteStatesForInputChannel"
                        << this << *inputChannel;
           }
+
+          // NOTE: ChannelHandleMap is like a map in that it associates an
+          // object with a ChannelHandle key, but it actually backed by a
+          // QVarLengthArray, not a QMap. So it is okay that
+          // m_channelStateMatrix may be accessed concurrently in the audio
+          // engine thread in loadStatesForInputChannel.
+
           ChannelHandleMap<EffectSpecificState*>& stateMap =
                   m_channelStateMatrix[*inputChannel];
           for (EffectSpecificState* pState : stateMap) {
