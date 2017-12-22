@@ -125,7 +125,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 
     // Only record stats in developer mode.
     if (m_cmdLineArgs.getDeveloper()) {
-        StatsManager::create();
+        StatsManager::createInstance();
     }
 
     m_pSettingsManager = new SettingsManager(this, args.getSettingsPath());
@@ -268,7 +268,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     delete pModplugPrefs; // not needed anymore
 #endif
 
-    CoverArtCache::create();
+    CoverArtCache::createInstance();
 
     m_pDbConnectionPool = MixxxDb(pConfig).connectionPool();
     if (!m_pDbConnectionPool) {
@@ -329,7 +329,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     launchProgress(47);
 
-    WaveformWidgetFactory::create(); // takes a long time
+    WaveformWidgetFactory::createInstance(); // takes a long time
     WaveformWidgetFactory::instance()->startVSync(m_pGuiTick);
     WaveformWidgetFactory::instance()->setConfig(pConfig);
 
@@ -374,13 +374,13 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     // Load skin to a QWidget that we set as the central widget. Assignment
     // intentional in next line.
-    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(this, m_pKeyboard,
-                                                           m_pPlayerManager,
-                                                           m_pControllerManager,
-                                                           m_pLibrary,
-                                                           m_pVCManager,
-                                                           m_pEffectsManager,
-                                                           m_pRecordingManager))) {
+    if (!(m_pWidgetParent = m_pSkinLoader->loadConfiguredSkin(this, m_pKeyboard,
+                                                              m_pPlayerManager,
+                                                              m_pControllerManager,
+                                                              m_pLibrary,
+                                                              m_pVCManager,
+                                                              m_pEffectsManager,
+                                                              m_pRecordingManager))) {
         reportCriticalErrorAndQuit(
                 "default skin cannot be loaded see <b>mixxx</b> trace for more information.");
 
@@ -1227,14 +1227,14 @@ void MixxxMainWindow::rebootMixxxView() {
 
     // Load skin to a QWidget that we set as the central widget. Assignment
     // intentional in next line.
-    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(this,
-                                                           m_pKeyboard,
-                                                           m_pPlayerManager,
-                                                           m_pControllerManager,
-                                                           m_pLibrary,
-                                                           m_pVCManager,
-                                                           m_pEffectsManager,
-                                                           m_pRecordingManager))) {
+    if (!(m_pWidgetParent = m_pSkinLoader->loadConfiguredSkin(this,
+                                                              m_pKeyboard,
+                                                              m_pPlayerManager,
+                                                              m_pControllerManager,
+                                                              m_pLibrary,
+                                                              m_pVCManager,
+                                                              m_pEffectsManager,
+                                                              m_pRecordingManager))) {
 
         QMessageBox::critical(this,
                               tr("Error in skin file"),

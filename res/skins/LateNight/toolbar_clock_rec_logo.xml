@@ -1,0 +1,126 @@
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup><!-- Recording button & recording duration label -->
+        <ObjectName>RecBox</ObjectName>
+        <Layout>stacked</Layout>
+        <Size>76f,24f</Size>
+        <!-- minus 2px margin, minus 1px border
+            = 70x18 available for text -->
+        <Children>
+          <!-- invisible Rec button -->
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="ObjectName">RecButton</SetVariable>
+            <SetVariable name="TooltipId">toggle_recording</SetVariable>
+            <SetVariable name="Size">70f,18f</SetVariable>
+            <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
+          </Template>
+
+          <WidgetGroup><!-- Rec dot + RecDuration -->
+            <Layout>horizontal</Layout>
+            <Size>70f,18f</Size>
+            <Children>
+              <Label>
+                <ObjectName>RecDot</ObjectName>
+                <Size>15f,18f</Size>
+              </Label>  
+
+              <RecordingDuration>
+                <ObjectName>RecDuration</ObjectName>
+                <Size>55f,18f</Size>
+                <InactiveText>REC</InactiveText>
+                <Alignment>center</Alignment>
+              </RecordingDuration>
+            </Children>
+          </WidgetGroup><!-- /Rec dot + RecDuration -->
+
+          <!-- invisible Rec button -->
+          <Template src="skin:button_3state_display.xml">
+            <SetVariable name="ObjectName">RecFeedback</SetVariable>
+            <SetVariable name="TooltipId">toggle_recording</SetVariable>
+            <SetVariable name="Size">70f,18f</SetVariable>
+            <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
+            <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup><!-- /Recording button & recording duration label -->
+
+      <WidgetGroup> <!-- Spacer -->
+        <Layout>horizontal</Layout>
+        <Size>5f,min</Size>
+        <Children/>
+      </WidgetGroup>
+
+      <Label>
+        <ObjectName>ToolbarLogo</ObjectName>
+        <Size>78f,24f</Size>
+      </Label>
+
+      <WidgetGroup> <!-- Spacer -->
+        <Layout>horizontal</Layout>
+        <Size>5f,min</Size>
+        <Children/>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>ClockWidget</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Time>
+            <TooltipId>time</TooltipId>
+            <Style>QLabel { font: bold 13px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+                      background-color: transparent; color: #EECE33;}
+            </Style>
+            <ShowSeconds>false</ShowSeconds>
+          </Time>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup> <!-- Spacer -->
+        <Layout>horizontal</Layout>
+        <Size>5f,min</Size>
+        <Children/>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>ToolbarDivider</ObjectName>
+        <Size>3f,9min</Size>
+      </WidgetGroup>
+
+      <WidgetGroup> <!-- Spacer -->
+        <Layout>horizontal</Layout>
+        <Size>5f,min</Size>
+        <Children/>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>LatencyLabel</ObjectName>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Label>
+                <Style>QLabel { font: bold 10px/10px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+                          background-color: transparent; color: #EECE33;}
+                </Style>
+                <Text>CPU</Text>
+              </Label>
+            </Children>
+          </WidgetGroup>
+          <Template src="skin:vumeter_latency.xml">
+            <SetVariable name="TooltipId">audio_latency_usage</SetVariable>
+            <SetVariable name="group">[Master]</SetVariable>
+            <SetVariable name="control">audio_latency_usage</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>
