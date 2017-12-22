@@ -336,6 +336,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeCurrentTrack(
 
     QTime progressUpdateInhibitTimer;
     progressUpdateInhibitTimer.start();
+    int currentTrackProgress = kAnalysisProgressUnknown;
 
     mixxx::AudioSourceStereoProxy audioSourceProxy(
             pAudioSource,
@@ -392,15 +393,17 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeCurrentTrack(
         const double frameProgress =
                 double(pAudioSource->frameLength() - remainingFrames.length()) /
                 double(pAudioSource->frameLength());
-        int progressPromille = frameProgress * kAnalysisProgressFinalizing;
-
-        if ((m_progressUpdate.currentTrackProgress() != progressPromille) ||
+        const int newTrackProgress = frameProgress * kAnalysisProgressFinalizing;
+        if ((currentTrackProgress != newTrackProgress) ||
                 !m_previousTracksWithProgress.empty()) {
+            // The progress for the current track has changed or there
+            // are pending progress updates from a previous analysis
             if (progressUpdateInhibitTimer.elapsed() > kProgressUpdateInhibitMillis) {
-                emitProgressUpdate(progressPromille);
+                emitProgressUpdate(newTrackProgress);
                 progressUpdateInhibitTimer.start();
             }
         }
+        currentTrackProgress = newTrackProgress;
 
         if (m_stop) {
             result = AnalysisResult::Cancelled;
