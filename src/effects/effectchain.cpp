@@ -3,6 +3,7 @@
 #include "engine/engine.h"
 #include "effects/effectchainmanager.h"
 #include "effects/effectsmanager.h"
+#include "effects/effectprocessor.h"
 #include "effects/effectxmlelements.h"
 #include "engine/effects/engineeffectchain.h"
 #include "engine/effects/engineeffectrack.h"
@@ -19,7 +20,7 @@ EffectChain::EffectChain(EffectsManager* pEffectsManager, const QString& id,
           m_bEnabled(true),
           m_id(id),
           m_name(""),
-          m_insertionType(EffectChain::INSERT),
+          m_insertionType(EffectChainInsertionType::Insert),
           m_dMix(0),
           m_pEngineEffectChain(nullptr),
           m_bAddedToEngine(false) {
@@ -239,11 +240,11 @@ void EffectChain::setMix(const double& dMix) {
     emit(mixChanged(dMix));
 }
 
-EffectChain::InsertionType EffectChain::insertionType() const {
+EffectChainInsertionType EffectChain::insertionType() const {
     return m_insertionType;
 }
 
-void EffectChain::setInsertionType(InsertionType insertionType) {
+void EffectChain::setInsertionType(EffectChainInsertionType insertionType) {
     m_insertionType = insertionType;
     sendParameterUpdate();
     emit(insertionTypeChanged(insertionType));
@@ -345,8 +346,8 @@ EffectChainPointer EffectChain::createFromXml(EffectsManager* pEffectsManager,
     EffectChainPointer pChain(new EffectChain(pEffectsManager, id));
     pChain->setName(name);
     pChain->setDescription(description);
-    InsertionType insertionType = insertionTypeFromString(insertionTypeStr);
-    if (insertionType != NUM_INSERTION_TYPES) {
+    EffectChainInsertionType insertionType = insertionTypeFromString(insertionTypeStr);
+    if (insertionType != EffectChainInsertionType::Num_Insertion_Types) {
         pChain->setInsertionType(insertionType);
     }
 

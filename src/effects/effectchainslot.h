@@ -102,7 +102,7 @@ class EffectChainSlot : public QObject {
     void slotChainNameChanged(const QString& name);
     void slotChainEnabledChanged(bool enabled);
     void slotChainMixChanged(double mix);
-    void slotChainInsertionTypeChanged(EffectChain::InsertionType type);
+    void slotChainInsertionTypeChanged(EffectChainInsertionType type);
     void slotChainChannelStatusChanged(const QString& group, bool enabled);
 
     void slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber);

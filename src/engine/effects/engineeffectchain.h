@@ -70,7 +70,7 @@ class EngineEffectChain : public EffectsRequestHandler {
 
     QString m_id;
     EffectEnableState m_enableState;
-    EffectChain::InsertionType m_insertionType;
+    EffectChainInsertionType m_insertionType;
     CSAMPLE m_dMix;
     QList<EngineEffect*> m_effects;
     mixxx::SampleBuffer m_buffer1;

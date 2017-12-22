@@ -8,7 +8,6 @@
 #include "util/fifo.h"
 #include "util/memory.h"
 #include "effects/defs.h"
-#include "effects/effectchain.h"
 #include "engine/channelhandle.h"
 
 // NOTE: Setting this to true will enable string manipulation and calls to
@@ -128,7 +127,7 @@ struct EffectsRequest {
         } RemoveEffectFromChain;
         struct {
             bool enabled;
-            EffectChain::InsertionType insertion_type;
+            EffectChainInsertionType insertion_type;
             double mix;
         } SetEffectChainParameters;
         struct {

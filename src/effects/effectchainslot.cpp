@@ -49,7 +49,7 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
 
     m_pControlChainInsertionType = new ControlPushButton(ConfigKey(m_group, "insertion_type"));
     m_pControlChainInsertionType->setButtonMode(ControlPushButton::TOGGLE);
-    m_pControlChainInsertionType->setStates(EffectChain::NUM_INSERTION_TYPES);
+    m_pControlChainInsertionType->setStates(static_cast<double>(EffectChainInsertionType::Num_Insertion_Types));
     connect(m_pControlChainInsertionType, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainInsertionType(double)));
 
@@ -146,7 +146,7 @@ void EffectChainSlot::slotChainMixChanged(double mix) {
     emit(updated());
 }
 
-void EffectChainSlot::slotChainInsertionTypeChanged(EffectChain::InsertionType type) {
+void EffectChainSlot::slotChainInsertionTypeChanged(EffectChainInsertionType type) {
     m_pControlChainInsertionType->set(static_cast<double>(type));
     emit(updated());
 }
@@ -213,7 +213,8 @@ void EffectChainSlot::loadEffectChainToSlot(EffectChainPointer pEffectChain) {
                 this, SLOT(slotChainChannelStatusChanged(const QString&, bool)));
 
         m_pControlChainLoaded->forceSet(true);
-        m_pControlChainInsertionType->set(m_pEffectChain->insertionType());
+        m_pControlChainInsertionType->set(
+                static_cast<double>(m_pEffectChain->insertionType()));
 
         // Mix and enabled channels are persistent properties of the chain slot,
         // not of the chain. Propagate the current settings to the chain.
@@ -275,7 +276,8 @@ void EffectChainSlot::clear() {
     }
     m_pControlNumEffects->forceSet(0.0);
     m_pControlChainLoaded->forceSet(0.0);
-    m_pControlChainInsertionType->set(EffectChain::INSERT);
+    m_pControlChainInsertionType->set(
+            static_cast<double>(EffectChainInsertionType::Insert));
     emit(updated());
 }
 
@@ -391,10 +393,9 @@ void EffectChainSlot::slotControlChainSuperParameter(double v, bool force) {
 
 void EffectChainSlot::slotControlChainInsertionType(double v) {
     // Intermediate cast to integer is needed for VC++.
-    EffectChain::InsertionType type = static_cast<EffectChain::InsertionType>(int(v));
+    EffectChainInsertionType type = static_cast<EffectChainInsertionType>(int(v));
     (void)v; // this avoids a false warning with g++ 4.8.1
-    if (m_pEffectChain && type >= 0 &&
-            type < EffectChain::NUM_INSERTION_TYPES) {
+    if (m_pEffectChain && type < EffectChainInsertionType::Num_Insertion_Types) {
         m_pEffectChain->setInsertionType(type);
     }
 }
@@ -455,7 +456,7 @@ QDomElement EffectChainSlot::toXml(QDomDocument* doc) const {
             m_pEffectChain->description());
     XmlParse::addElement(*doc, chainElement, EffectXml::ChainInsertionType,
             EffectChain::insertionTypeToString(
-                    static_cast<EffectChain::InsertionType>(
+                    static_cast<EffectChainInsertionType>(
                             static_cast<int>(m_pControlChainInsertionType->get()))));
     XmlParse::addElement(*doc, chainElement, EffectXml::ChainSuperParameter,
             QString::number(m_pControlChainSuperParameter->get()));

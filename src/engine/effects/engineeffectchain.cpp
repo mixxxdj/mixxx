@@ -9,7 +9,7 @@ EngineEffectChain::EngineEffectChain(const QString& id,
                                      const QSet<ChannelHandleAndGroup>& registeredOutputChannels)
         : m_id(id),
           m_enableState(EffectEnableState::Enabled),
-          m_insertionType(EffectChain::INSERT),
+          m_insertionType(EffectChainInsertionType::Insert),
           m_dMix(0),
           m_buffer1(MAX_BUFFER_LEN),
           m_buffer2(MAX_BUFFER_LEN) {
@@ -266,7 +266,7 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
         if (processingOccured) {
             // pIntermediateInput is the output of the last processed effect. It would be the
             // intermediate input of the next effect if there was one.
-            if (m_insertionType == EffectChain::INSERT) {
+            if (m_insertionType == EffectChainInsertionType::Insert) {
                 // INSERT mode: output = input * (1-wet) + effect(input) * wet
                 SampleUtil::copy2WithRampingGain(
                         pOut,
