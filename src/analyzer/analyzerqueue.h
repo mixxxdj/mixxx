@@ -5,17 +5,20 @@
 #include "analyzer/analyzerthread.h"
 
 
+// forward declaration(s)
+class Library;
+
 class AnalyzerQueue : public QObject {
     Q_OBJECT
 
   public:
     AnalyzerQueue(
-            mixxx::DbConnectionPoolPtr pDbConnectionPool,
+            Library* library,
             UserSettingsPointer pConfig,
             AnalyzerMode mode = AnalyzerMode::Default);
     ~AnalyzerQueue() override = default;
 
-    int enqueueTrack(TrackPointer track);
+    int enqueueTrack(TrackId trackId);
 
     // After adding tracks the analysis must be resumed.
     // This function returns the number of tracks that
@@ -25,8 +28,7 @@ class AnalyzerQueue : public QObject {
     void cancelAnalysis();
 
   signals:
-    void trackProgress(int progress);
-    void trackFinished(int queueSize);
+    void analysisProgress(int currentTrackProgress, int dequeuedSize, int enqueuedSize);
     void threadIdle();
 
   public slots:
@@ -37,7 +39,14 @@ class AnalyzerQueue : public QObject {
     void slotThreadIdle();
 
   private:
-    QQueue<TrackPointer> m_queuedTracks;
+    TrackPointer loadTrack(TrackId trackId);
+    void emitAnalysisProgress(int currentTrackProgress = kAnalysisProgressUnknown);
+
+    Library* m_library;
+
+    int m_dequeuedSize;
+
+    QQueue<TrackId> m_queuedTrackIds;
 
     AnalyzerThread m_thread;
 };

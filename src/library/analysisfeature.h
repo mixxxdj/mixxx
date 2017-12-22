@@ -16,7 +16,7 @@
 #include "library/dlganalysis.h"
 #include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
-#include "util/db/dbconnectionpool.h"
+#include "util/memory.h"
 
 class Library;
 class TrackCollection;
@@ -26,8 +26,7 @@ class AnalysisFeature : public LibraryFeature {
     Q_OBJECT
   public:
     AnalysisFeature(Library* parent,
-                    UserSettingsPointer pConfig,
-                    TrackCollection* pTrackCollection);
+                    UserSettingsPointer pConfig);
     virtual ~AnalysisFeature();
 
     QVariant title();
@@ -43,14 +42,13 @@ class AnalysisFeature : public LibraryFeature {
 
   signals:
     void analysisActive(bool bActive);
-    void trackAnalysisStarted(int size);
 
   public slots:
     void activate();
     void analyzeTracks(QList<TrackId> trackIds);
 
   private slots:
-    void slotProgressUpdate(int num_left);
+    void slotAnalysisProgress(int currentTrackProgress, int dequeuedSize, int enqueuedSize);
     void stopAnalysis();
     void cleanupAnalyzer();
 
@@ -62,12 +60,12 @@ class AnalysisFeature : public LibraryFeature {
     // Sets the title of this feature to the default name followed by (x / y)
     // where x is the current track being analyzed and y is the total number of
     // tracks in the job
-    void setTitleProgress(int trackNum, int totalNum);
+    void setTitleProgress(int currentTrack, int totalTracks);
+
+    Library* m_library;
 
     UserSettingsPointer m_pConfig;
-    mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
-    TrackCollection* m_pTrackCollection;
-    AnalyzerQueue* m_pAnalyzerQueue;
+    std::unique_ptr<AnalyzerQueue> m_pAnalyzerQueue;
     // Used to temporarily enable BPM detection in the prefs before we analyse
     int m_iOldBpmEnabled;
     // The title returned by title()

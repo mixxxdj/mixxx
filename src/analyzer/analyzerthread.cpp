@@ -317,8 +317,11 @@ void AnalyzerThread::waitForCurrentTrack() {
 
     QMutexLocker locked(&m_nextTrackMutex);
     while (!(m_currentTrack = std::move(m_nextTrack))) {
+        DEBUG_ASSERT(!m_nextTrack);
         if (m_stop.load()) {
             return;
+        } else {
+            emit(idle());
         }
         kLogger.debug() << "Suspending";
         m_nextTrackWaitCond.wait(&m_nextTrackMutex);

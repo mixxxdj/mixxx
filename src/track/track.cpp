@@ -7,7 +7,7 @@
 #include "track/trackref.h"
 #include "track/beatfactory.h"
 
-#include "analyzer/analyzerqueue.h"
+#include "analyzer/analysisprogress.h"
 
 #include "util/assert.h"
 #include "util/logger.h"

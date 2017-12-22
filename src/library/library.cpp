@@ -124,7 +124,7 @@ Library::Library(
     addFeature(browseFeature);
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, pRecordingManager));
     addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
-    m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection);
+    m_pAnalysisFeature = new AnalysisFeature(this, pConfig);
     connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
             m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
     connect(m_pCrateFeature, SIGNAL(analyzeTracks(QList<TrackId>)),

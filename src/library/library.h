@@ -56,6 +56,11 @@ class Library: public QObject,
         return m_pDbConnectionPool;
     }
 
+    TrackCollection& trackCollection() {
+        DEBUG_ASSERT(m_pTrackCollection);
+        return *m_pTrackCollection;
+    }
+
     void bindWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* pKeyboard);
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);

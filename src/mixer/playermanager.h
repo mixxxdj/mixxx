@@ -11,6 +11,7 @@
 
 #include "preferences/usersettings.h"
 #include "track/track.h"
+#include "util/memory.h"
 
 class AnalyzerQueue;
 class Auxiliary;
@@ -133,8 +134,8 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Get the auxiliary by its number. Auxiliaries are numbered starting with 1.
     Auxiliary* getAuxiliary(unsigned int auxiliary) const;
 
-    // Binds signals between PlayerManager and Library. Does not store a pointer
-    // to the Library.
+    // Binds signals between PlayerManager and Library. The library
+    // must exist at least for the lifetime of this instance.
     void bindToLibrary(Library* pLibrary);
 
     // Returns the group for the ith sampler where i is zero indexed
@@ -236,7 +237,6 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     EffectsManager* m_pEffectsManager;
     EngineMaster* m_pEngine;
     SamplerBank* m_pSamplerBank;
-    AnalyzerQueue* m_pAnalyzerQueue;
     ControlObject* m_pCONumDecks;
     ControlObject* m_pCONumSamplers;
     ControlObject* m_pCOSamplerBankLoad;
@@ -244,6 +244,8 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     ControlObject* m_pCONumPreviewDecks;
     ControlObject* m_pCONumMicrophones;
     ControlObject* m_pCONumAuxiliaries;
+
+    std::unique_ptr<AnalyzerQueue> m_pAnalyzerQueue;
 
     QList<Deck*> m_decks;
     QList<Sampler*> m_samplers;

@@ -26,7 +26,7 @@
 #include "wskincolor.h"
 #include "widget/controlwidgetconnection.h"
 #include "track/track.h"
-#include "analyzer/analyzerqueue.h"
+#include "analyzer/analysisprogress.h"
 #include "util/math.h"
 #include "util/timer.h"
 #include "util/dnd.h"

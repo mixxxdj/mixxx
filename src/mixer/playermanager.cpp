@@ -34,7 +34,6 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         m_pEngine(pEngine),
         // NOTE(XXX) LegacySkinParser relies on these controls being Controls
         // and not ControlProxies.
-        m_pAnalyzerQueue(nullptr),
         m_pCONumDecks(new ControlObject(
             ConfigKey("[Master]", "num_decks"), true, true)),
         m_pCONumSamplers(new ControlObject(
@@ -98,9 +97,6 @@ PlayerManager::~PlayerManager() {
     delete m_pCONumPreviewDecks;
     delete m_pCONumMicrophones;
     delete m_pCONumAuxiliaries;
-    if (m_pAnalyzerQueue) {
-        delete m_pAnalyzerQueue;
-    }
 }
 
 void PlayerManager::bindToLibrary(Library* pLibrary) {
@@ -112,27 +108,28 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
     connect(this, SIGNAL(loadLocationToPlayer(QString, QString)),
             pLibrary, SLOT(slotLoadLocationToPlayer(QString, QString)));
 
-    m_pAnalyzerQueue = new AnalyzerQueue(pLibrary->dbConnectionPool(), m_pConfig);
+    DEBUG_ASSERT(!m_pAnalyzerQueue);
+    m_pAnalyzerQueue = std::make_unique<AnalyzerQueue>(pLibrary, m_pConfig);
 
     // Connect the player to the analyzer queue so that loaded tracks are
     // analysed.
     foreach(Deck* pDeck, m_decks) {
         connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
+                m_pAnalyzerQueue.get(), SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
     // Connect the player to the analyzer queue so that loaded tracks are
     // analysed.
     foreach(Sampler* pSampler, m_samplers) {
         connect(pSampler, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
+                m_pAnalyzerQueue.get(), SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
     // Connect the player to the analyzer queue so that loaded tracks are
     // analysed.
     foreach(PreviewDeck* pPreviewDeck, m_preview_decks) {
         connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
+                m_pAnalyzerQueue.get(), SLOT(slotAnalyseTrack(TrackPointer)));
     }
 }
 
@@ -351,7 +348,7 @@ void PlayerManager::addDeckInner() {
 
     if (m_pAnalyzerQueue) {
         connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
+                m_pAnalyzerQueue.get(), SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
     m_players[group] = pDeck;
@@ -412,7 +409,7 @@ void PlayerManager::addSamplerInner() {
                                     m_pEffectsManager, orientation, group);
     if (m_pAnalyzerQueue) {
         connect(pSampler, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
+                m_pAnalyzerQueue.get(), SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
     m_players[group] = pSampler;
@@ -440,7 +437,7 @@ void PlayerManager::addPreviewDeckInner() {
                                                 group);
     if (m_pAnalyzerQueue) {
         connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
+                m_pAnalyzerQueue.get(), SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
     m_players[group] = pPreviewDeck;

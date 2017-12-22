@@ -20,14 +20,12 @@
 
 const QString AnalysisFeature::m_sAnalysisViewName = QString("Analysis");
 
-AnalysisFeature::AnalysisFeature(Library* parent,
-                               UserSettingsPointer pConfig,
-                               TrackCollection* pTrackCollection) :
+AnalysisFeature::AnalysisFeature(
+        Library* parent,
+        UserSettingsPointer pConfig) :
         LibraryFeature(parent),
+        m_library(parent),
         m_pConfig(pConfig),
-        m_pDbConnectionPool(parent->dbConnectionPool()),
-        m_pTrackCollection(pTrackCollection),
-        m_pAnalyzerQueue(nullptr),
         m_iOldBpmEnabled(0),
         m_analysisTitleName(tr("Analyze")),
         m_pAnalysisView(nullptr) {
@@ -46,11 +44,11 @@ void AnalysisFeature::setTitleDefault() {
     emit(featureIsLoading(this, false));
 }
 
-void AnalysisFeature::setTitleProgress(int trackNum, int totalNum) {
+void AnalysisFeature::setTitleProgress(int currentTrack, int totalTracks) {
     m_Title = QString("%1 (%2 / %3)")
             .arg(m_analysisTitleName)
-            .arg(QString::number(trackNum))
-            .arg(QString::number(totalNum));
+            .arg(QString::number(currentTrack))
+            .arg(QString::number(totalTracks));
     emit(featureIsLoading(this, false));
 }
 
@@ -66,7 +64,7 @@ void AnalysisFeature::bindWidget(WLibrary* libraryWidget,
                                  KeyboardEventFilter* keyboard) {
     m_pAnalysisView = new DlgAnalysis(libraryWidget,
                                       m_pConfig,
-                                      m_pTrackCollection);
+                                      &m_library->trackCollection());
     connect(m_pAnalysisView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
     connect(m_pAnalysisView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
@@ -80,15 +78,12 @@ void AnalysisFeature::bindWidget(WLibrary* libraryWidget,
             this, SIGNAL(trackSelected(TrackPointer)));
 
     connect(this, SIGNAL(analysisActive(bool)),
-            m_pAnalysisView, SLOT(analysisActive(bool)));
-    connect(this, SIGNAL(trackAnalysisStarted(int)),
-            m_pAnalysisView, SLOT(trackAnalysisStarted(int)));
+            m_pAnalysisView, SLOT(slotAnalysisActive(bool)));
 
     m_pAnalysisView->installEventFilter(keyboard);
 
     // Let the DlgAnalysis know whether or not analysis is active.
-    bool bAnalysisActive = m_pAnalyzerQueue != NULL;
-    emit(analysisActive(bAnalysisActive));
+    emit(analysisActive(static_cast<bool>(m_pAnalyzerQueue)));
 
     libraryWidget->registerView(m_sAnalysisViewName, m_pAnalysisView);
 }
@@ -132,42 +127,39 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
         m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(1));
         // Note: this sucks... we should refactor the prefs/analyzer to fix this hacky bit ^^^^.
 
-        m_pAnalyzerQueue = new AnalyzerQueue(
-                m_pDbConnectionPool,
+        m_pAnalyzerQueue = std::make_unique<AnalyzerQueue>(
+                m_library,
                 m_pConfig,
                 getAnalyzerMode(m_pConfig));
 
-        connect(m_pAnalyzerQueue, SIGNAL(trackProgress(int)),
-                m_pAnalysisView, SLOT(trackAnalysisProgress(int)));
-        connect(m_pAnalyzerQueue, SIGNAL(trackFinished(int)),
-                this, SLOT(slotProgressUpdate(int)));
-        connect(m_pAnalyzerQueue, SIGNAL(trackFinished(int)),
-                m_pAnalysisView, SLOT(trackAnalysisFinished(int)));
-
-        connect(m_pAnalyzerQueue, SIGNAL(threadIdle()),
+        connect(m_pAnalyzerQueue.get(), SIGNAL(analysisProgress(int, int, int)),
+                m_pAnalysisView, SLOT(slotAnalysisProgress(int, int, int)));
+        connect(m_pAnalyzerQueue.get(), SIGNAL(analysisProgress(int, int, int)),
+                this, SLOT(slotAnalysisProgress(int, int, int)));
+        connect(m_pAnalyzerQueue.get(), SIGNAL(threadIdle()),
                 this, SLOT(cleanupAnalyzer()));
+
         emit(analysisActive(true));
     }
 
-    int queueSize = 0;
     for (const auto& trackId: trackIds) {
-        TrackPointer pTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
-        if (pTrack) {
-            queueSize = m_pAnalyzerQueue->enqueueTrack(pTrack);
+        if (trackId.isValid()) {
+            m_pAnalyzerQueue->enqueueTrack(trackId);
         }
     }
-    if (queueSize > 0) {
-        setTitleProgress(0, queueSize);
-    }
     m_pAnalyzerQueue->resumeAnalysis();
-    emit(trackAnalysisStarted(queueSize));
 }
 
-void AnalysisFeature::slotProgressUpdate(int num_left) {
-    int num_tracks = m_pAnalysisView->getNumTracks();
-    if (num_left > 0) {
-        int currentTrack = num_tracks - num_left + 1;
-        setTitleProgress(currentTrack, num_tracks);
+void AnalysisFeature::slotAnalysisProgress(
+        int /*currentTrackProgress*/,
+        int dequeuedSize,
+        int enqueuedSize) {
+    const int currentTrack = dequeuedSize;
+    const int totalTracks = dequeuedSize + enqueuedSize;
+    if (totalTracks > 0) {
+        setTitleProgress(currentTrack, totalTracks);
+    } else {
+        setTitleDefault();
     }
 }
 
@@ -179,22 +171,23 @@ void AnalysisFeature::stopAnalysis() {
 }
 
 void AnalysisFeature::cleanupAnalyzer() {
-    setTitleDefault();
-    emit(analysisActive(false));
     if (m_pAnalyzerQueue) {
         m_pAnalyzerQueue->cancelAnalysis();
         m_pAnalyzerQueue->deleteLater();
-        m_pAnalyzerQueue = nullptr;
+        m_pAnalyzerQueue.release();
+        DEBUG_ASSERT(!m_pAnalyzerQueue);
         // Restore old BPM detection setting for preferences...
         m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(m_iOldBpmEnabled));
     }
+    setTitleDefault();
+    emit(analysisActive(false));
 }
 
 bool AnalysisFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     Q_UNUSED(pSource);
     QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
     // Adds track, does not insert duplicates, handles unremoving logic.
-    QList<TrackId> trackIds = m_pTrackCollection->getTrackDAO().addMultipleTracks(files, true);
+    QList<TrackId> trackIds = m_library->trackCollection().getTrackDAO().addMultipleTracks(files, true);
     analyzeTracks(trackIds);
     return trackIds.size() > 0;
 }

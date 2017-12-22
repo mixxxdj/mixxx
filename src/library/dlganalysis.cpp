@@ -3,6 +3,7 @@
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
 #include "widget/wanalysislibrarytableview.h"
+#include "analyzer/analysisprogress.h"
 #include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
 #include "library/dlganalysis.h"
@@ -14,9 +15,7 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
         : QWidget(parent),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
-          m_bAnalysisActive(false),
-          m_tracksInQueue(0),
-          m_currentTrack(0) {
+          m_bAnalysisActive(false) {
     setupUi(this);
     m_songsButtonGroup.addButton(radioButtonRecentlyAdded);
     m_songsButtonGroup.addButton(radioButtonAllSongs);
@@ -62,9 +61,6 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
             SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection&)),
             this,
             SLOT(tableSelectionChanged(const QItemSelection &, const QItemSelection&)));
-}
-
-DlgAnalysis::~DlgAnalysis() {
 }
 
 void DlgAnalysis::onShow() {
@@ -134,13 +130,12 @@ void DlgAnalysis::analyze() {
                 trackIds.append(trackId);
             }
         }
-        m_currentTrack = 1;
         emit(analyzeTracks(trackIds));
     }
 }
 
-void DlgAnalysis::analysisActive(bool bActive) {
-    qDebug() << this << "analysisActive" << bActive;
+void DlgAnalysis::slotAnalysisActive(bool bActive) {
+    //qDebug() << this << "slotAnalysisActive" << bActive;
     m_bAnalysisActive = bActive;
     if (bActive) {
         pushButtonAnalyze->setEnabled(true);
@@ -153,31 +148,26 @@ void DlgAnalysis::analysisActive(bool bActive) {
     }
 }
 
-// slot
-void DlgAnalysis::trackAnalysisFinished(int size) {
-    qDebug() << "Analysis finished" << size << "tracks left";
-    if (size > 0) {
-        m_currentTrack = m_tracksInQueue - size + 1;
+void DlgAnalysis::slotAnalysisProgress(
+        int currentTrackProgress,
+        int dequeuedSize,
+        int enqueuedSize) {
+    //qDebug() << this << "slotAnalysisProgress" << currentTrackProgress << dequeuedSize << enqueuedSize;
+    if (labelProgress->isEnabled()) {
+        const int currentTrack = dequeuedSize;
+        const int totalTracks = dequeuedSize + enqueuedSize;
+        QString progressPercent;
+        if (currentTrackProgress >= kAnalysisProgressNone) {
+            progressPercent = QString::number(
+                    (math_min(currentTrackProgress, kAnalysisProgressDone) - kAnalysisProgressNone) /
+                    (kAnalysisProgressDone - kAnalysisProgressNone));
+        }
+        QString progressText = tr("Analyzing %1/%2 %3%").arg(
+                QString::number(currentTrack),
+                QString::number(totalTracks),
+                progressPercent);
+        labelProgress->setText(progressText);
     }
-}
-
-// slot
-void DlgAnalysis::trackAnalysisProgress(int progress) {
-    if (m_bAnalysisActive) {
-        QString text = tr("Analyzing %1/%2 %3%").arg(
-                QString::number(m_currentTrack),
-                QString::number(m_tracksInQueue),
-                QString::number(progress));
-        labelProgress->setText(text);
-    }
-}
-
-int DlgAnalysis::getNumTracks() {
-    return m_tracksInQueue;
-}
-
-void DlgAnalysis::trackAnalysisStarted(int size) {
-    m_tracksInQueue = size;
 }
 
 void DlgAnalysis::showRecentSongs() {

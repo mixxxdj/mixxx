@@ -7,6 +7,7 @@
 #include <atomic>
 #include <vector>
 
+#include "analyzer/analysisprogress.h"
 #include "preferences/usersettings.h"
 #include "sources/audiosource.h"
 #include "track/track.h"
@@ -15,12 +16,6 @@
 #include "util/samplebuffer.h"
 #include "util/memory.h"
 
-
-// Measured in 0.1%, i.e. promille
-constexpr int kAnalysisProgressUnknown = -1;
-constexpr int kAnalysisProgressNone = 0; // 0.0 %
-constexpr int kAnalysisProgressFinalizing = 950; // 95.0 %
-constexpr int kAnalysisProgressDone = 1000; // 100.0%
 
 enum class AnalyzerMode {
     WithWaveform,
