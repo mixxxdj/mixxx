@@ -220,8 +220,15 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     // (60 seconds per minute) * (1000 milliseconds per second) / (X millis per
     // beat) = Y beats/minute
     double averageBpm = 60.0 * 1000.0 / averageLength;
-    double dRate = calcRateRatio();
-    m_pFileBpm->set(averageBpm / dRate);
+
+    double rateScale = m_pRateDir->get() * m_pRateRange->get();
+    double localBpm = m_pLocalBpm->get();
+    if (localBpm == 0.0 || rateScale == 0.0) {
+        return;
+    }
+    double dRateSlider = (averageBpm / localBpm - 1.0) / rateScale;
+    m_pRateSlider->set(dRateSlider);
+
     slotUpdateEngineBpm();
 }
 
