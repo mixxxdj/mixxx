@@ -794,7 +794,7 @@ void Tooltips::addStandardTooltips() {
 
     add("EffectSlot_enabled")
             << tr("Enable Effect")
-            << tr("This effect unit must also be assigned to a deck or other sound source to hear the effect.");
+            << tr("The effect unit must also be assigned to a deck or other sound source to hear the effect.");
 
     add("EffectSlot_next_effect")
             << tr("Next")
