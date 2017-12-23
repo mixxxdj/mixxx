@@ -272,7 +272,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Manual: Reduce music volume by a fixed amount set by the Strength knob.");
 
     add("talkover_duck_strength")
-            << tr("Microphone Talkover Ducking Stength")
+            << tr("Microphone Talkover Ducking Strength")
             << tr("Behavior depends on Microphone Talkover Mode:")
             << tr("Off: Does nothing")
             << tr("Auto: Sets how much to reduce the music volume when microphones are in use.")
