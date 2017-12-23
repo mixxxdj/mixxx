@@ -145,16 +145,18 @@ void BaseTrackCache::setSearchColumns(const QStringList& columns) {
 }
 
 TrackPointer BaseTrackCache::lookupCachedTrack(TrackId trackId) const {
-    TrackCacheLocker cacheLocker(
-            TrackCache::instance().lookupById(trackId));
-    auto pTrack = cacheLocker.getTrack();
-    if (pTrack && pTrack->isDirty()) {
-        m_dirtyTracks.insert(trackId);
-        return pTrack;
-    } else {
-        m_dirtyTracks.remove(trackId);
-        return TrackPointer();
+    TrackPointer pTrack;
+    if (m_bIsCaching) {
+        pTrack = TrackCache::instance().lookupById(trackId).getTrack();
+        // After obtaining a strong reference of the Track object the lock
+        // on TrackCache has been released instantly to reduce lock contention!
+        if (pTrack && pTrack->isDirty()) {
+            m_dirtyTracks.insert(trackId);
+        } else {
+            m_dirtyTracks.remove(trackId);
+        }
     }
+    return pTrack;
 }
 
 bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
