@@ -3,6 +3,7 @@
 
 #include <QAtomicInt>
 #include <QStringList>
+#include <QApplication>
 
 #include <QLocale>
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)

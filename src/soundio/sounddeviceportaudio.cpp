@@ -867,7 +867,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
     // Turn on TimeCritical priority for the callback thread. If we are running
     // in Linux userland, for example, this will have no effect.
     if (!m_bSetThreadPriority) {
-        QThread::currentThread()->setPriority(QThread::TimeCriticalPriority);
+//        QThread::currentThread()->setPriority(QThread::TimeCriticalPriority);
         m_bSetThreadPriority = true;
 
 
