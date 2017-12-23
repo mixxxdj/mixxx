@@ -830,7 +830,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Inactive: parameter not linked")
             << tr("Active: parameter moves with Meta Knob")
             << tr("Left side active: parameter moves with left half of Meta Knob turn")
-            << tr("Right side active: parameter moves with right half of Meta Knob turn ")
+            << tr("Right side active: parameter moves with right half of Meta Knob turn")
             << tr("Left and right side active: parameter moves across range with half of Meta Knob turn and back with the other half");
 
     add("EffectSlot_parameter_inversion")
