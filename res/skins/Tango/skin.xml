@@ -28,6 +28,16 @@
           U	    U   P P P
             U	U	    P        to mixxx devs for their work over the past years!!
 
+
+    Note - Number of samplers:
+    To set the number of available sample decks, three numbers need to be changed
+    * how many samplers are instantiated in the engine
+      line 61:  <attribute config_key="[Master],num_samplers">XX</attribute>
+    * how many sample decks are loaded in the skin
+      line 322:  <Template src="skin:sample_decks_XX.xml"/>
+    * the selection button insied the skin menu (instantiated here as Singleton)
+      line 210:  <Template src="skin:skin_settings_sampler_rows_16.xml"/
+
 -->
 
 <skin>
@@ -35,7 +45,8 @@
     <title>Tango</title>
     <author>ronso0</author>
     <version>2.1.6</version>
-    <description>A flat nightime skin. Almost all controls can be hidden with Skin Settings menu.</description>
+    <description>A controller-focused nightime skin. Almost all controls can be hidden with skin menu.
+    This version features 16 sample decks only, to shorten Mixxx shut down duration.</description>
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
 
@@ -46,13 +57,15 @@
     <attributes>
       <!-- Set skin defaults. -->
       <attribute config_key="[Master],num_decks">4</attribute>
+      <!-- First setting to choose between 16 or 64 samplers -->
       <attribute config_key="[Master],num_samplers">64</attribute>
+      <!--attribute config_key="[Master],num_samplers">16</attribute-->
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
+      <attribute persist="true" config_key="[Master],show_eqs">1</attribute>
       <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Master],maximize_library">0</attribute>
       <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
       <attribute persist="true" config_key="[Library],show_library">1</attribute>
-      <attribute persist="true" config_key="[EffectRack1],show">1</attribute>
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
       <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
@@ -67,22 +80,20 @@
       <attribute persist="true" config_key="[SamplerRow7],expanded">0</attribute>
       <attribute persist="true" config_key="[SamplerRow8],expanded">0</attribute>
       <!-- [Tango] specific defaults -->
-      <attribute persist="true" config_key="[Tango],4_fx_units">0</attribute>
-      <attribute persist="true" config_key="[Tango],fx_super_knob">0</attribute>
+      <attribute persist="true" config_key="[Tango],master_mixer">1</attribute>
+      <attribute persist="true" config_key="[Tango],4_FxUnits">0</attribute>
       <!--attribute persist="true" config_key="[Tango],sampler_fx_buttons">1</attribute-->
       <attribute persist="true" config_key="[Tango],beatgrid_buttons">0</attribute>
       <attribute persist="true" config_key="[Tango],deck_controls_expanded">0</attribute>
       <attribute persist="true" config_key="[Tango],colorLogo">0</attribute>
       <attribute persist="true" config_key="[Tango],crossfader">1</attribute>
-      <attribute persist="true" config_key="[Tango],deck_controls">1</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_keylock">1</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_eject">0</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_slipMode">1</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_repeat">0</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_orientation">0</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_quantize">1</attribute>
-      <attribute persist="true" config_key="[Tango],[Tango],separate_cue_button">1</attribute>
-      <attribute persist="true" config_key="[Tango],eq_knobs">1</attribute>
+      <attribute persist="true" config_key="[Tango],separate_cue_button">1</attribute>
       <attribute persist="true" config_key="[Tango],hotcues">1</attribute>
       <attribute persist="true" config_key="[Tango],8_hotcues">0</attribute>
       <attribute persist="true" config_key="[Tango],key_controls">1</attribute>
@@ -150,7 +161,7 @@
      ###############################################################
       Put these variable definitions at the beginning in order to have
       have all variables available for SingletonDefinitions -->
-        
+
 <!--  Knob range in degrees, 0-360
       Initially I was trying to match the responsive area on Reloop TerminalMix 2,
       but tweak to your liking.
@@ -181,6 +192,24 @@
       <ObjectName>Library_Singleton</ObjectName>
       <Children>
         <Template src="skin:library.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+    <!-- FX units 1 & 2 show up at different places, depending on the number
+    of units enabled (2 or 4). -->
+    <SingletonDefinition>
+      <ObjectName>FxUnits_12_Singleton</ObjectName>
+      <Children>
+        <Template src="skin:fx_units_12.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+    <!-- Here we can choose between 16 or 64 sample decks -->
+    <SingletonDefinition>
+      <ObjectName>SamplerRowsButton_Singleton</ObjectName>
+      <Children>
+        <Template src="skin:skin_settings_sampler_rows_64.xml"/>
+        <!--Template src="skin:skin_settings_sampler_rows_16.xml"/-->
       </Children>
     </SingletonDefinition>
 
@@ -253,10 +282,12 @@
                           <Layout>vertical</Layout>
                           <SizePolicy>me,min</SizePolicy>
                           <Children>
-                            <Template src="skin:fx_units_12.xml"/>
+                            <SingletonContainer>
+                              <ObjectName>FxUnits_12_Singleton</ObjectName>
+                            </SingletonContainer>
                           </Children>
                           <Connection>
-                            <ConfigKey persist="true">[Tango],2or4_FxUnits</ConfigKey>
+                            <ConfigKey persist="true">[Tango],4_FxUnits</ConfigKey>
                             <BindProperty>visible</BindProperty>
                           </Connection>
                         </WidgetGroup>
@@ -270,7 +301,7 @@
                             <Template src="skin:fx_units_34.xml"/>
                           </Children>
                           <Connection>
-                            <ConfigKey persist="true">[Tango],2or4_FxUnits</ConfigKey>
+                            <ConfigKey persist="true">[Tango],4_FxUnits</ConfigKey>
                             <BindProperty>visible</BindProperty>
                           </Connection>
                         </WidgetGroup>
@@ -278,16 +309,19 @@
                         <WidgetGroup>
                           <Layout>vertical</Layout>
                           <Children>
-                            <Template src="skin:fx_units_12.xml"/>
+                            <SingletonContainer>
+                              <ObjectName>FxUnits_12_Singleton</ObjectName>
+                            </SingletonContainer>
                           </Children>
                           <Connection>
-                            <ConfigKey persist="true">[Tango],2or4_FxUnits</ConfigKey>
+                            <ConfigKey persist="true">[Tango],4_FxUnits</ConfigKey>
                             <Transform><Not/></Transform>
                             <BindProperty>visible</BindProperty>
                           </Connection>
                         </WidgetGroup>
 
-                        <Template src="skin:sample_decks.xml"/>
+                        <Template src="skin:sample_decks_64.xml"/>
+                        <!--Template src="skin:sample_decks_16.xml"/-->
 
                         <Template src="skin:mic_aux.xml"/>
 
@@ -327,10 +361,12 @@
           </Children>
         </WidgetGroup><!-- /All skin elements + Skin menu -->
 
-        <!-- Detect if screen (window) size is netbook-like -->
+        <!-- Detect if screen (window) size is netbook-like.
+            Center spacer in top bar will adapt to size. -->
         <Template src="skin:size_detector_screen.xml"/>
 
-        <!-- Detect if Star rating fits into deck buttons row -->
+        <!-- Detect if Star rating fits into deck buttons row.
+            Do this here, so it doesn't interfere with expanded skin menu -->
         <Template src="skin:size_detector_stars.xml"/>
 
       </Children>

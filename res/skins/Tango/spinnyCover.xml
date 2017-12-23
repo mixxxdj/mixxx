@@ -7,14 +7,14 @@ Variables:
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>SpinnyCover</ObjectName>
+    <ObjectName>SpinnyCover_Container</ObjectName>
     <SizePolicy>max,me</SizePolicy>
     <Layout>vertical</Layout>
     <Children>
 
       <!-- spinny -->
       <WidgetGroup>
-        <ObjectName>SpinnyCover_Container</ObjectName>
+        <ObjectName>SpinnyCover</ObjectName>
         <Size>111f,111f</Size>
         <Layout>vertical</Layout>
         <Children>
@@ -69,27 +69,21 @@ Variables:
       </CoverArt>
 
       <WidgetGroup>
-        <MinimumSize>0,0</MinimumSize>
-        <MaximumSize>-1,3</MaximumSize>
-        <SizePolicy>me,me</SizePolicy>
+        <Size>0me,1f</Size>
       </WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>RoundFiller25</ObjectName>
-        <Size>0me,22f</Size>
+        <Size>0me,24f</Size>
       </WidgetGroup>
 
       <WidgetGroup>
         <Layout>vertical</Layout>
-        <Size>0me,25min</Size>
+        <SizePolicy>me,i</SizePolicy>
         <Children>
           <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0me,3f</Size></WidgetGroup>
           <WidgetGroup><ObjectName>RoundFiller25</ObjectName><Size>0me,22me</Size></WidgetGroup>
         </Children>
-        <Connection>
-          <ConfigKey>[Tango],loop_beatjump_controls</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
       </WidgetGroup>
 
     </Children>

@@ -82,5 +82,9 @@ Description:
         </Children>
       </WidgetGroup><!-- /actual headphone controls -->
     </Children>
+    <Connection>
+      <ConfigKey>[Tango],master_mixer</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
   </WidgetGroup><!-- /Headphone Mixer -->
 </Template>
