@@ -21,14 +21,16 @@ EffectManifest BalanceEffect::getManifest() {
     manifest.setShortName(QObject::tr("Balance"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr("Adjust the left/right balance and stereo width"));
+    manifest.setDescription(QObject::tr(
+        "Adjust the left/right balance and stereo width"));
     manifest.setEffectRampsFromDry(true);
 
     EffectManifestParameter* balance = manifest.addParameter();
     balance->setId("balance");
     balance->setName(QObject::tr("Balance"));
     balance->setShortName(QObject::tr("Balance"));
-    balance->setDescription(QObject::tr("Adjust balance between left and right channels"));
+    balance->setDescription(QObject::tr(
+        "Adjust balance between left and right channels"));
     balance->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     balance->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     balance->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -41,8 +43,11 @@ EffectManifest BalanceEffect::getManifest() {
     midSide->setId("midSide");
     midSide->setName(QObject::tr("Mid/Side"));
     midSide->setShortName(QObject::tr("Mid/Side"));
-    midSide->setDescription(QObject::tr("Adjust stereo width by changing balance between middle and side of the signal.\n"
-        "Fully left is mono, fully right is only side ambiance, and centered does not change the original signal."));
+    midSide->setDescription(QObject::tr(
+        "Adjust stereo width by changing balance between middle and side of the signal.\n"
+        "Fully left: mono\n"
+        "Fully right: only side ambiance\n"
+        "Center: does not change the original signal."));
     midSide->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     midSide->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     midSide->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -55,7 +60,8 @@ EffectManifest BalanceEffect::getManifest() {
     midLowPass->setId("bypassFreq");
     midLowPass->setName(QObject::tr("Bypass Frequency"));
     midLowPass->setShortName(QObject::tr("Bypass Fr."));
-    midLowPass->setDescription(QObject::tr("Frequencies below this cutoff are not adjusted in the stereo field"));
+    midLowPass->setDescription(QObject::tr(
+        "Frequencies below this cutoff are not adjusted in the stereo field"));
     midLowPass->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     midLowPass->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     midLowPass->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);

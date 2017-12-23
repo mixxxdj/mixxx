@@ -22,17 +22,18 @@ EffectManifest AutoPanEffect::getManifest() {
     manifest.setShortName(QObject::tr("Autopan"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr("Bounce the sound left and right "
-        "across the stereo field"));
+    manifest.setDescription(QObject::tr(
+        "Bounce the sound left and right across the stereo field"));
 
     // Period
     EffectManifestParameter* period = manifest.addParameter();
     period->setId("period");
     period->setName(QObject::tr("Period"));
     period->setShortName(QObject::tr("Period"));
-    period->setDescription(QObject::tr("How fast the sound goes from one side to another\n"
-            "1/4 - 4 beats rounded to 1/2 beat if tempo is detected\n"
-            "1/4 - 4 seconds if no tempo is detected"));
+    period->setDescription(QObject::tr(
+        "How fast the sound goes from one side to another\n"
+        "1/4 - 4 beats rounded to 1/2 beat if tempo is detected\n"
+        "1/4 - 4 seconds if no tempo is detected"));
     period->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -46,8 +47,8 @@ EffectManifest AutoPanEffect::getManifest() {
     smoothing->setId("smoothing");
     smoothing->setName(QObject::tr("Smoothing"));
     smoothing->setShortName(QObject::tr("Smooth"));
-    smoothing->setDescription(
-            QObject::tr("How smoothly the signal goes from one side to the other"));
+    smoothing->setDescription(QObject::tr(
+        "How smoothly the signal goes from one side to the other"));
     smoothing->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     smoothing->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     smoothing->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -63,7 +64,8 @@ EffectManifest AutoPanEffect::getManifest() {
     width->setId("width");
     width->setName(QObject::tr("Width"));
     width->setShortName(QObject::tr("Width"));
-    width->setDescription(QObject::tr("How far the signal goes to each side"));
+    width->setDescription(QObject::tr(
+        "How far the signal goes to each side"));
     width->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     width->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     width->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);

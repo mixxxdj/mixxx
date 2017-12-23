@@ -32,14 +32,15 @@ EffectManifest EchoEffect::getManifest() {
     manifest.setShortName(QObject::tr("Echo"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr("Stores the input signal in a temporary buffer "
-        "and outputs it after a short time"));
+    manifest.setDescription(QObject::tr(
+      "Stores the input signal in a temporary buffer and outputs it after a short time"));
 
     EffectManifestParameter* delay = manifest.addParameter();
     delay->setId("delay_time");
     delay->setName(QObject::tr("Time"));
     delay->setShortName(QObject::tr("Time"));
-    delay->setDescription(QObject::tr("Delay time\n"
+    delay->setDescription(QObject::tr(
+        "Delay time\n"
         "1/8 - 2 beats if tempo is detected\n"
         "1/8 - 2 seconds if no tempo is detected"));
     delay->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
@@ -53,8 +54,8 @@ EffectManifest EchoEffect::getManifest() {
     feedback->setId("feedback_amount");
     feedback->setName(QObject::tr("Feedback"));
     feedback->setShortName(QObject::tr("Feedback"));
-    feedback->setDescription(
-            QObject::tr("Amount the echo fades each time it loops"));
+    feedback->setDescription(QObject::tr(
+        "Amount the echo fades each time it loops"));
     feedback->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     feedback->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     feedback->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -66,9 +67,8 @@ EffectManifest EchoEffect::getManifest() {
     pingpong->setId("pingpong_amount");
     pingpong->setName(QObject::tr("Ping Pong"));
     pingpong->setShortName(QObject::tr("Ping Pong"));
-    pingpong->setDescription(
-            QObject::tr("How much the echoed sound bounces between the "
-            "left and right sides of the stereo field"));
+    pingpong->setDescription(QObject::tr(
+        "How much the echoed sound bounces between the left and right sides of the stereo field"));
     pingpong->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     pingpong->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     pingpong->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -80,8 +80,8 @@ EffectManifest EchoEffect::getManifest() {
     send->setId("send_amount");
     send->setName(QObject::tr("Send"));
     send->setShortName(QObject::tr("Send"));
-    send->setDescription(
-            QObject::tr("How much of the signal to send into the delay buffer"));
+    send->setDescription(QObject::tr(
+        "How much of the signal to send into the delay buffer"));
     send->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     send->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     send->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -94,7 +94,8 @@ EffectManifest EchoEffect::getManifest() {
     quantize->setId("quantize");
     quantize->setName(QObject::tr("Quantize"));
     quantize->setShortName(QObject::tr("Quantize"));
-    quantize->setDescription(QObject::tr("Round the Time parameter to the nearest 1/4 beat."));
+    quantize->setDescription(QObject::tr(
+        "Round the Time parameter to the nearest 1/4 beat."));
     quantize->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     quantize->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     quantize->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -106,7 +107,8 @@ EffectManifest EchoEffect::getManifest() {
     triplet->setId("triplet");
     triplet->setName(QObject::tr("Triplets"));
     triplet->setShortName(QObject::tr("Triplets"));
-    triplet->setDescription(QObject::tr("When the Quantize parameter is enabled, divide rounded 1/4 beats of Time parameter by 3."));
+    triplet->setDescription(QObject::tr(
+        "When the Quantize parameter is enabled, divide rounded 1/4 beats of Time parameter by 3."));
     triplet->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);

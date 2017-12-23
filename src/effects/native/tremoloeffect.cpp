@@ -18,13 +18,15 @@ EffectManifest TremoloEffect::getManifest() {
     manifest.setShortName(QObject::tr("Tremolo"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr("Cycles the volume up and down"));
+    manifest.setDescription(QObject::tr(
+        "Cycles the volume up and down"));
 
     EffectManifestParameter* depth = manifest.addParameter();
     depth->setId("depth");
     depth->setName(QObject::tr("Depth"));
     depth->setShortName(QObject::tr("Depth"));
-    depth->setDescription(QObject::tr("How much the effect changes the volume"));
+    depth->setDescription(QObject::tr(
+        "How much the effect changes the volume"));
     depth->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     depth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -37,9 +39,10 @@ EffectManifest TremoloEffect::getManifest() {
     rate->setId("rate");
     rate->setName(QObject::tr("Rate"));
     rate->setShortName(QObject::tr("Rate"));
-    rate->setDescription(QObject::tr("Rate of the volume changes\n"
-    "4 beats - 1/8 beat if tempo is detected\n"
-    "1/4 Hz - 8 Hz if no tempo is detected"));
+    rate->setDescription(QObject::tr(
+        "Rate of the volume changes\n"
+        "4 beats - 1/8 beat if tempo is detected\n"
+        "1/4 Hz - 8 Hz if no tempo is detected"));
     rate->setControlHint(
         EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     rate->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
@@ -52,8 +55,9 @@ EffectManifest TremoloEffect::getManifest() {
     width->setId("width");
     width->setName(QObject::tr("Width"));
     width->setShortName(QObject::tr("Width"));
-    width->setDescription(QObject::tr("Width of the volume peak\n"
-    "10% - 90% of the effect period"));
+    width->setDescription(QObject::tr(
+        "Width of the volume peak\n"
+        "10% - 90% of the effect period"));
     width->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     width->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     width->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -65,9 +69,10 @@ EffectManifest TremoloEffect::getManifest() {
     waveform->setId("waveform");
     waveform->setName(QObject::tr("Waveform"));
     waveform->setShortName(QObject::tr("Waveform"));
-    waveform->setDescription(QObject::tr("Shape of the volume modulation wave\n"
-    "Fully left: Square wave\n"
-    "Fully right: Sine wave"));
+    waveform->setDescription(QObject::tr(
+        "Shape of the volume modulation wave\n"
+        "Fully left: Square wave\n"
+        "Fully right: Sine wave"));
     waveform->setControlHint(
         EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     waveform->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
@@ -80,9 +85,10 @@ EffectManifest TremoloEffect::getManifest() {
     phase->setId("phase");
     phase->setName(QObject::tr("Phase"));
     phase->setShortName(QObject::tr("Phase"));
-    phase->setDescription("Shifts the position of the volume peak within the period\n"
-    "Fully left: beginning of the effect period\n"
-    "Fully right: end of the effect period");
+    phase->setDescription(QObject::tr(
+        "Shifts the position of the volume peak within the period\n"
+        "Fully left: beginning of the effect period\n"
+        "Fully right: end of the effect period"));
     phase->setControlHint(
         EffectManifestParameter::ControlHint::KNOB_LINEAR);
     phase->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
@@ -109,8 +115,8 @@ EffectManifest TremoloEffect::getManifest() {
     triplet->setId("triplet");
     triplet->setName(QObject::tr("Triplets"));
     triplet->setShortName(QObject::tr("Triplet"));
-    triplet->setDescription(QObject::tr("When the Quantize parameter is enabled, divide "
-                            "the effect period by 3."));
+    triplet->setDescription(QObject::tr(
+        "When the Quantize parameter is enabled, divide the effect period by 3."));
     triplet->setControlHint(
         EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
