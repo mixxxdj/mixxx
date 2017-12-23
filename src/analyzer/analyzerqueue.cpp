@@ -20,79 +20,60 @@ AnalyzerQueue::AnalyzerQueue(
         AnalyzerMode mode)
         : m_library(library),
           m_dequeuedSize(0),
-          m_thread(
+          m_workerThread(
                   library->dbConnectionPool(),
                   std::move(pConfig),
                   mode) {
 
-    connect(&m_thread, SIGNAL(progressUpdate()),
-            this, SLOT(slotThreadProgressUpdate()));
-    connect(&m_thread, SIGNAL(idle()),
-            this, SLOT(slotThreadIdle()));
+    connect(&m_workerThread, SIGNAL(progress()),
+            this, SLOT(slotWorkerThreadProgress()));
+    connect(&m_workerThread, SIGNAL(idle()),
+            this, SLOT(slotWorkerThreadIdle()));
+    connect(&m_workerThread, SIGNAL(exit()),
+            this, SLOT(slotWorkerThreadExit()));
 
-    m_thread.start(kThreadPriority);
+    m_workerThread.start(kThreadPriority);
 }
 
-void AnalyzerQueue::resumeAnalysis() {
-    m_thread.wake();
+void AnalyzerQueue::emitProgress(int currentTrackProgress) {
+    emit(progress(currentTrackProgress, m_dequeuedSize, m_queuedTrackIds.size()));
 }
 
-void AnalyzerQueue::cancelAnalysis() {
-    m_queuedTrackIds.clear();
-    m_thread.stop();
+void AnalyzerQueue::slotWorkerThreadProgress() {
+    readWorkerThreadProgress();
 }
 
-void AnalyzerQueue::emitAnalysisProgress(int currentTrackProgress) {
-    emit(analysisProgress(currentTrackProgress, m_dequeuedSize, m_queuedTrackIds.size()));
-}
-
-void AnalyzerQueue::slotThreadProgressUpdate() {
-    const auto readScope = m_thread.readProgressUpdate();
-    if (readScope) {
-        for (const auto trackWithProgress: readScope.tracksWithProgress()) {
-            if (trackWithProgress.second != kAnalysisProgressUnknown) {
-                trackWithProgress.first->setAnalysisProgress(trackWithProgress.second);
-            }
-        }
-        emitAnalysisProgress(readScope.currentTrackProgress());
-    }
-}
-
-void AnalyzerQueue::slotThreadIdle() {
-    if (m_queuedTrackIds.empty()) {
-        m_dequeuedSize = 0;
-        emitAnalysisProgress();
-        emit(threadIdle());
-    } else {
-        while (!m_queuedTrackIds.empty()) {
-            emit(analysisProgress(kAnalysisProgressUnknown, m_dequeuedSize, m_queuedTrackIds.size()));
-            TrackId nextTrackId = m_queuedTrackIds.head();
-            DEBUG_ASSERT(nextTrackId.isValid());
-            TrackPointer nextTrack = loadTrack(nextTrackId);
-            if (!nextTrack) {
-                // Skip unloadable track
-                m_queuedTrackIds.dequeue();
-                ++m_dequeuedSize;
-                continue;
-            }
-            if (!m_thread.wake(nextTrack)) {
-                // Try again later
-                return;
-            }
+void AnalyzerQueue::slotWorkerThreadIdle() {
+    // Consume any pending progress updates first
+    readWorkerThreadProgress();
+    while (!m_queuedTrackIds.empty()) {
+        emit(progress(kAnalysisProgressUnknown, m_dequeuedSize, m_queuedTrackIds.size()));
+        TrackId nextTrackId = m_queuedTrackIds.head();
+        DEBUG_ASSERT(nextTrackId.isValid());
+        TrackPointer nextTrack = loadTrackById(nextTrackId);
+        if (!nextTrack) {
+            // Skip unloadable track
             m_queuedTrackIds.dequeue();
             ++m_dequeuedSize;
-            kLogger.debug()
-                    << "Continuing analysis with next track"
-                    << nextTrack->getLocation();
-            // Exit loop and function to continue with analysis
+            continue;
+        }
+        if (!m_workerThread.wake(nextTrack)) {
+            // Try again later
             return;
         }
-        // Wake the thread up one last time and wait for confirmation,
-        // i.e. another idle signal while the queue stays empty. This
-        // is necessary to avoid a race condition when analyzing the
-        // last track from the queue.
-        m_thread.wake();
+        m_queuedTrackIds.dequeue();
+        ++m_dequeuedSize;
+        kLogger.debug()
+                << "Continuing analysis with next track"
+                << nextTrack->getLocation();
+        // Exit loop and function to continue with analysis
+        return;
     }
+    m_workerThread.stop();
+}
+
+void AnalyzerQueue::slotWorkerThreadExit() {
+    emit(done());
 }
 
 void AnalyzerQueue::slotAnalyseTrack(TrackPointer track) {
@@ -100,11 +81,11 @@ void AnalyzerQueue::slotAnalyseTrack(TrackPointer track) {
     VERIFY_OR_DEBUG_ASSERT(track) {
         return;
     }
-    enqueueTrack(track->getId());
-    resumeAnalysis();
+    enqueueTrackId(track->getId());
+    resume();
 }
 
-int AnalyzerQueue::enqueueTrack(TrackId trackId) {
+int AnalyzerQueue::enqueueTrackId(TrackId trackId) {
     VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
         qWarning()
                 << "Cannot enqueue track with invalid id"
@@ -121,7 +102,20 @@ int AnalyzerQueue::enqueueTrack(TrackId trackId) {
     return m_queuedTrackIds.size();
 }
 
-TrackPointer AnalyzerQueue::loadTrack(TrackId trackId) {
+void AnalyzerQueue::resume() {
+    if (m_workerThread) {
+        m_workerThread.wake();
+    } else {
+        qWarning()
+                << "No worker thread";
+    }
+}
+
+void AnalyzerQueue::cancel() {
+    m_workerThread.stop();
+}
+
+TrackPointer AnalyzerQueue::loadTrackById(TrackId trackId) {
     VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
         return TrackPointer();
     }
@@ -133,4 +127,22 @@ TrackPointer AnalyzerQueue::loadTrack(TrackId trackId) {
                 << trackId;
     }
     return track;
+}
+
+bool AnalyzerQueue::readWorkerThreadProgress() {
+    const auto readScope = m_workerThread.readProgress();
+    if (readScope) {
+        for (const auto trackWithProgress: readScope.tracksWithProgress()) {
+            if (trackWithProgress.second != kAnalysisProgressUnknown) {
+                trackWithProgress.first->setAnalysisProgress(trackWithProgress.second);
+            }
+        }
+        emitProgress(readScope.currentTrackProgress());
+        return true;
+    } else {
+        // Check if all pending updates have been consumed so far
+        // for deciding whether it is safe to signal idleness of
+        // the queue.
+        return readScope.empty();
+    }
 }

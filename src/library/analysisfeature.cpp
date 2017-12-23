@@ -132,11 +132,11 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
                 m_pConfig,
                 getAnalyzerMode(m_pConfig));
 
-        connect(m_pAnalyzerQueue.get(), SIGNAL(analysisProgress(int, int, int)),
-                m_pAnalysisView, SLOT(slotAnalysisProgress(int, int, int)));
-        connect(m_pAnalyzerQueue.get(), SIGNAL(analysisProgress(int, int, int)),
-                this, SLOT(slotAnalysisProgress(int, int, int)));
-        connect(m_pAnalyzerQueue.get(), SIGNAL(threadIdle()),
+        connect(m_pAnalyzerQueue.get(), SIGNAL(progress(int, int, int)),
+                m_pAnalysisView, SLOT(slotAnalyzerQueueProgress(int, int, int)));
+        connect(m_pAnalyzerQueue.get(), SIGNAL(progress(int, int, int)),
+                this, SLOT(slotAnalyzerQueueProgress(int, int, int)));
+        connect(m_pAnalyzerQueue.get(), SIGNAL(done()),
                 this, SLOT(cleanupAnalyzer()));
 
         emit(analysisActive(true));
@@ -144,13 +144,13 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
 
     for (const auto& trackId: trackIds) {
         if (trackId.isValid()) {
-            m_pAnalyzerQueue->enqueueTrack(trackId);
+            m_pAnalyzerQueue->enqueueTrackId(trackId);
         }
     }
-    m_pAnalyzerQueue->resumeAnalysis();
+    m_pAnalyzerQueue->resume();
 }
 
-void AnalysisFeature::slotAnalysisProgress(
+void AnalysisFeature::slotAnalyzerQueueProgress(
         int /*currentTrackProgress*/,
         int dequeuedSize,
         int enqueuedSize) {
@@ -166,14 +166,16 @@ void AnalysisFeature::slotAnalysisProgress(
 void AnalysisFeature::stopAnalysis() {
     //qDebug() << this << "stopAnalysis()";
     if (m_pAnalyzerQueue) {
-        m_pAnalyzerQueue->cancelAnalysis();
+        m_pAnalyzerQueue->cancel();
     }
 }
 
 void AnalysisFeature::cleanupAnalyzer() {
+    //qDebug() << this << "cleanupAnalyzer()";
     if (m_pAnalyzerQueue) {
-        m_pAnalyzerQueue->cancelAnalysis();
+        m_pAnalyzerQueue->cancel();
         m_pAnalyzerQueue->deleteLater();
+        // Release ownership
         m_pAnalyzerQueue.release();
         DEBUG_ASSERT(!m_pAnalyzerQueue);
         // Restore old BPM detection setting for preferences...

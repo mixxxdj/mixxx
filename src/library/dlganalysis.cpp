@@ -148,11 +148,11 @@ void DlgAnalysis::slotAnalysisActive(bool bActive) {
     }
 }
 
-void DlgAnalysis::slotAnalysisProgress(
+void DlgAnalysis::slotAnalyzerQueueProgress(
         int currentTrackProgress,
         int dequeuedSize,
         int enqueuedSize) {
-    //qDebug() << this << "slotAnalysisProgress" << currentTrackProgress << dequeuedSize << enqueuedSize;
+    //qDebug() << this << "slotAnalyzerQueueProgress" << currentTrackProgress << dequeuedSize << enqueuedSize;
     if (labelProgress->isEnabled()) {
         const int currentTrack = dequeuedSize;
         const int totalTracks = dequeuedSize + enqueuedSize;

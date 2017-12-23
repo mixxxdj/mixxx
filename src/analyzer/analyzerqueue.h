@@ -18,29 +18,31 @@ class AnalyzerQueue : public QObject {
             AnalyzerMode mode = AnalyzerMode::Default);
     ~AnalyzerQueue() override = default;
 
-    int enqueueTrack(TrackId trackId);
+    int enqueueTrackId(TrackId trackId);
 
-    // After adding tracks the analysis must be resumed.
-    // This function returns the number of tracks that
-    // are currently queued for analysis.
-    void resumeAnalysis();
+    // After adding tracks the analysis must be resumed once.
+    // This function returns the number of tracks that are
+    // currently queued for analysis.
+    void resume();
 
-    void cancelAnalysis();
+    void cancel();
 
   signals:
-    void analysisProgress(int currentTrackProgress, int dequeuedSize, int enqueuedSize);
-    void threadIdle();
+    void progress(int currentTrackProgress, int dequeuedSize, int enqueuedSize);
+    void done();
 
   public slots:
     void slotAnalyseTrack(TrackPointer track);
 
   private slots:
-    void slotThreadProgressUpdate();
-    void slotThreadIdle();
+    void slotWorkerThreadProgress();
+    void slotWorkerThreadIdle();
+    void slotWorkerThreadExit();
 
   private:
-    TrackPointer loadTrack(TrackId trackId);
-    void emitAnalysisProgress(int currentTrackProgress = kAnalysisProgressUnknown);
+    TrackPointer loadTrackById(TrackId trackId);
+    bool readWorkerThreadProgress();
+    void emitProgress(int currentTrackProgress = kAnalysisProgressUnknown);
 
     Library* m_library;
 
@@ -48,5 +50,5 @@ class AnalyzerQueue : public QObject {
 
     QQueue<TrackId> m_queuedTrackIds;
 
-    AnalyzerThread m_thread;
+    AnalyzerThread m_workerThread;
 };

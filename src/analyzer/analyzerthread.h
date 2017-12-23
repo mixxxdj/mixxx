@@ -33,15 +33,19 @@ class AnalyzerThread : public QThread {
             AnalyzerMode mode = AnalyzerMode::Default);
     ~AnalyzerThread() override;
 
+    operator bool() const {
+        return m_run.load();
+    }
+
     bool wake(const TrackPointer& nextTrack = TrackPointer());
 
     void stop();
 
     typedef std::map<TrackPointer, int> TracksWithProgress;
 
-    class ProgressUpdate {
+    class Progress {
       public:
-        ProgressUpdate();
+        Progress();
 
         // Returns true if this was the first successful write
         // operation while idling. If false is returned the
@@ -60,37 +64,49 @@ class AnalyzerThread : public QThread {
           public:
             ReadScope(const ReadScope&) = delete;
             ReadScope(ReadScope&& that)
-                : m_progressUpdate(that.m_progressUpdate) {
-                that.m_progressUpdate = nullptr;
+                : m_progress(that.m_progress),
+                  m_empty(that.m_empty) {
+                that.m_progress = nullptr;
             }
             ~ReadScope();
 
             ReadScope& operator=(const ReadScope&) = delete;
             ReadScope& operator=(const ReadScope&&) = delete;
 
-            operator const ProgressUpdate*() const {
-                return m_progressUpdate;
+            operator const Progress*() const {
+                return m_progress;
+            }
+
+            // Returns false if the shared progress update is currently
+            // unreadable and we cannot determine if it actually is empty,
+            // False positives must strictly be avoided to avoid race
+            // conditions. A result of true indicates that an idle
+            // analyzer thread can be stopped and destroyed safely
+            // without losing the final progress update(s).
+            bool empty() const {
+                return m_empty;
             }
 
             const TracksWithProgress& tracksWithProgress() const {
-                DEBUG_ASSERT(m_progressUpdate);
-                return m_progressUpdate->m_tracksWithProgress;
+                DEBUG_ASSERT(m_progress);
+                return m_progress->m_tracksWithProgress;
             }
 
             const TrackPointer& currentTrack() const {
-                DEBUG_ASSERT(m_progressUpdate);
-                return m_progressUpdate->m_currentTrack;
+                DEBUG_ASSERT(m_progress);
+                return m_progress->m_currentTrack;
             }
 
             int currentTrackProgress() const {
-                DEBUG_ASSERT(m_progressUpdate);
-                return m_progressUpdate->currentTrackProgress();
+                DEBUG_ASSERT(m_progress);
+                return m_progress->currentTrackProgress();
             }
 
           private:
-            friend class ProgressUpdate;
-            explicit ReadScope(ProgressUpdate* progressUpdate);
-            ProgressUpdate* m_progressUpdate;
+            friend class Progress;
+            explicit ReadScope(Progress* progress);
+            Progress* m_progress;
+            bool m_empty;
         };
 
         ReadScope read() {
@@ -116,13 +132,17 @@ class AnalyzerThread : public QThread {
         TrackPointer m_currentTrack;
     };
 
-    ProgressUpdate::ReadScope readProgressUpdate() {
-        return m_progressUpdate.read();
+    Progress::ReadScope readProgress() {
+        return m_progress.read();
     }
 
   signals:
-    void progressUpdate();
+    // Ask for more work
     void idle();
+    // Report progress
+    void progress();
+    // Notify about imminent death just before exiting (last signal)
+    void exit();
 
   protected:
     void run() override;
@@ -138,14 +158,14 @@ class AnalyzerThread : public QThread {
     /////////////////////////////////////////////////////////////////////////
     // Thread shared
 
-    std::atomic<bool> m_stop;
+    std::atomic<bool> m_run;
 
     mutable QMutex m_nextTrackMutex;
     QWaitCondition m_nextTrackWaitCond;
 
     TrackPointer m_nextTrack;
 
-    ProgressUpdate m_progressUpdate;
+    Progress m_progress;
 
     /////////////////////////////////////////////////////////////////////////
     // Thread local
@@ -174,5 +194,5 @@ class AnalyzerThread : public QThread {
 
     void finishCurrentTrack(int currentTrackProgress = kAnalysisProgressUnknown);
 
-    void emitProgressUpdate(int currentTrackProgress = kAnalysisProgressUnknown);
+    void emitProgress(int currentTrackProgress = kAnalysisProgressUnknown);
 };
