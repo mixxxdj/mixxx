@@ -222,7 +222,7 @@ void AnalyzerThread::exec() {
     mixxx::AudioSource::OpenParams openParams;
     openParams.setChannelCount(kAnalysisChannels);
 
-    while (!m_stop) {
+    while (!m_stop.load()) {
         emitProgressUpdate();
         waitForCurrentTrack();
         if (!m_currentTrack) {
@@ -285,7 +285,7 @@ void AnalyzerThread::exec() {
         // the database within the low-prio analysis thread!
         DEBUG_ASSERT(!m_currentTrack);
     }
-    DEBUG_ASSERT(m_stop);
+    DEBUG_ASSERT(m_stop.load());
 
     emitProgressUpdate();
     emit(idle());
@@ -405,7 +405,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeCurrentTrack(
         }
         currentTrackProgress = newTrackProgress;
 
-        if (m_stop) {
+        if (m_stop.load()) {
             result = AnalysisResult::Cancelled;
         }
 
@@ -420,7 +420,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeCurrentTrack(
 
 // This is called from the AnalyzerThread thread
 void AnalyzerThread::emitProgressUpdate(int currentTrackProgress) {
-    if (m_stop) {
+    if (m_stop.load()) {
         return;
     }
     if (m_progressUpdate.tryWrite(
