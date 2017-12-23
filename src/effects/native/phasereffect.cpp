@@ -78,7 +78,7 @@ EffectManifest PhaserEffect::getManifest() {
     depth->setId("depth");
     depth->setName(QObject::tr("Depth"));
     depth->setShortName(QObject::tr("Depth"));
-    depth->setDescription("Intensity of the effect");
+    depth->setDescription(QObject::tr("Intensity of the effect"));
     depth->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     depth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -91,7 +91,7 @@ EffectManifest PhaserEffect::getManifest() {
     triplet->setId("triplet");
     triplet->setName(QObject::tr("Triplets"));
     triplet->setShortName(QObject::tr("Triplets"));
-    triplet->setDescription(QObject::tr("Divide rounded 1/2 beats of the Period parameter by 3."));
+    triplet->setDescription(QObject::tr("Divides rounded 1/2 beats of the Period parameter by 3"));
     triplet->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -103,7 +103,7 @@ EffectManifest PhaserEffect::getManifest() {
     stereo->setId("stereo");
     stereo->setName(QObject::tr("Stereo"));
     stereo->setShortName(QObject::tr("Stereo"));
-    stereo->setDescription(QObject::tr("Enables/disables stereo")); // stereo what?
+    stereo->setDescription(QObject::tr("Sets the LFOs (low frequency oscillators) for the left and right channels out of phase with each others"));
     stereo->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     stereo->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     stereo->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);

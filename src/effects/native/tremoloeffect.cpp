@@ -38,8 +38,8 @@ EffectManifest TremoloEffect::getManifest() {
     rate->setName(QObject::tr("Rate"));
     rate->setShortName(QObject::tr("Rate"));
     rate->setDescription(QObject::tr("Rate of the volume changes\n"
-    "4 beats - 1/8 beat if tempo is detected (decks and samplers) \n"
-    "1/4 Hz - 8 Hz if no tempo is detected (mic & aux inputs, master mix)"));
+    "4 beats - 1/8 beat if tempo is detected\n"
+    "1/4 Hz - 8 Hz if no tempo is detected"));
     rate->setControlHint(
         EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     rate->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
@@ -66,8 +66,8 @@ EffectManifest TremoloEffect::getManifest() {
     waveform->setName(QObject::tr("Waveform"));
     waveform->setShortName(QObject::tr("Waveform"));
     waveform->setDescription(QObject::tr("Shape of the volume modulation wave\n"
-    "Fully left - Square wave\n"
-    "Fully right - Sine wave"));
+    "Fully left: Square wave\n"
+    "Fully right: Sine wave"));
     waveform->setControlHint(
         EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     waveform->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
@@ -81,8 +81,8 @@ EffectManifest TremoloEffect::getManifest() {
     phase->setName(QObject::tr("Phase"));
     phase->setShortName(QObject::tr("Phase"));
     phase->setDescription("Shifts the position of the volume peak within the period\n"
-    "Fully left - beginning of the effect period\n"
-    "Fully right - end of the effect period");
+    "Fully left: beginning of the effect period\n"
+    "Fully right: end of the effect period");
     phase->setControlHint(
         EffectManifestParameter::ControlHint::KNOB_LINEAR);
     phase->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);

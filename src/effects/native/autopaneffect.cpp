@@ -63,7 +63,7 @@ EffectManifest AutoPanEffect::getManifest() {
     width->setId("width");
     width->setName(QObject::tr("Width"));
     width->setShortName(QObject::tr("Width"));
-    width->setDescription("How far the signal goes to each side");
+    width->setDescription(QObject::tr("How far the signal goes to each side"));
     width->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     width->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     width->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);

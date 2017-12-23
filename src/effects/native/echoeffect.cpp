@@ -32,7 +32,7 @@ EffectManifest EchoEffect::getManifest() {
     manifest.setShortName(QObject::tr("Echo"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr("Stores the input signal in a temporary buffer"
+    manifest.setDescription(QObject::tr("Stores the input signal in a temporary buffer "
         "and outputs it after a short time"));
 
     EffectManifestParameter* delay = manifest.addParameter();
@@ -92,9 +92,9 @@ EffectManifest EchoEffect::getManifest() {
 
     EffectManifestParameter* quantize = manifest.addParameter();
     quantize->setId("quantize");
-    quantize->setName("Quantize");
-    quantize->setShortName("Quantize");
-    quantize->setDescription("Round the Time parameter to the nearest 1/4 beat.");
+    quantize->setName(QObject::tr("Quantize"));
+    quantize->setShortName(QObject::tr("Quantize"));
+    quantize->setDescription(QObject::tr("Round the Time parameter to the nearest 1/4 beat."));
     quantize->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     quantize->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     quantize->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -104,9 +104,9 @@ EffectManifest EchoEffect::getManifest() {
 
     EffectManifestParameter* triplet = manifest.addParameter();
     triplet->setId("triplet");
-    triplet->setName("Triplets");
-    triplet->setShortName("Triplets");
-    triplet->setDescription("When the Quantize parameter is enabled, divide rounded 1/4 beats of Time parameter by 3.");
+    triplet->setName(QObject::tr("Triplets"));
+    triplet->setShortName(QObject::tr("Triplets"));
+    triplet->setDescription(QObject::tr("When the Quantize parameter is enabled, divide rounded 1/4 beats of Time parameter by 3."));
     triplet->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);

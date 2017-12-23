@@ -62,7 +62,7 @@ EffectManifest FlangerEffect::getManifest() {
     manual->setName(QObject::tr("Manual"));
     manual->setShortName(QObject::tr("Manual"));
     manual->setDescription(QObject::tr("Delay offset of the LFO (low frequency oscillator).\n"
-            "With width at zero, it allows for manually sweeping over the entire delay range."));
+            "With width at zero, this allows for manually sweeping over the entire delay range."));
     manual->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     manual->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     manual->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -97,9 +97,9 @@ EffectManifest FlangerEffect::getManifest() {
 
     EffectManifestParameter* triplet = manifest.addParameter();
     triplet->setId("triplet");
-    triplet->setName("Triplets");
-    triplet->setShortName("Triplets");
-    triplet->setDescription("Divide rounded 1/2 beats of the Period parameter by 3.");
+    triplet->setName(QObject::tr("Triplets"));
+    triplet->setShortName(QObject::tr("Triplets"));
+    triplet->setDescription(QObject::tr("Divide rounded 1/2 beats of the Period parameter by 3."));
     triplet->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);

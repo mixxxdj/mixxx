@@ -19,7 +19,7 @@ EffectManifest FilterEffect::getManifest() {
     manifest.setShortName(QObject::tr("Filter"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr("Allow only high or low "
+    manifest.setDescription(QObject::tr("Allows only high or low "
                                         "frequencies to play."));
     manifest.setEffectRampsFromDry(true);
 
@@ -41,7 +41,8 @@ EffectManifest FilterEffect::getManifest() {
     q->setId("q");
     q->setName(QObject::tr("Resonance"));
     q->setShortName(QObject::tr("Q"));
-    q->setDescription(QObject::tr("Resonance of the filters, default = Flat top"));
+    q->setDescription(QObject::tr("Resonance of the filters\n
+        "Default: flat top")); // What does this mean?
     q->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     q->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     q->setUnitsHint(EffectManifestParameter::UnitsHint::SAMPLERATE);

@@ -22,7 +22,7 @@ EffectManifest ReverbEffect::getManifest() {
     decay->setId("decay");
     decay->setName(QObject::tr("Decay"));
     decay->setShortName(QObject::tr("Decay"));
-    decay->setDescription(QObject::tr("Lower decay values cause reverberations to die out more quickly."));
+    decay->setDescription(QObject::tr("Lower decay values cause reverberations to fade out more quickly."));
     decay->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     decay->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     decay->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
