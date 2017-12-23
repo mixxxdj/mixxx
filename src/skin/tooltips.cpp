@@ -272,7 +272,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Manual: Reduce music volume by a fixed amount set by the Strength knob.");
 
     add("talkover_duck_strength")
-            << tr("Microphone Talkover Ducking Stength")
+            << tr("Microphone Talkover Ducking Strength")
             << tr("Behavior depends on Microphone Talkover Mode:")
             << tr("Off: Does nothing")
             << tr("Auto: Sets how much to reduce the music volume when microphones are in use.")
@@ -830,7 +830,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Inactive: parameter not linked")
             << tr("Active: parameter moves with Meta Knob")
             << tr("Left side active: parameter moves with left half of Meta Knob turn")
-            << tr("Right side active: parameter moves with right half of Meta Knob turn ")
+            << tr("Right side active: parameter moves with right half of Meta Knob turn")
             << tr("Left and right side active: parameter moves across range with half of Meta Knob turn and back with the other half");
 
     add("EffectSlot_parameter_inversion")

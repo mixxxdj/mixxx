@@ -227,7 +227,7 @@ void RecordingManager::slotIsRecording(bool isRecordingActive, bool error) {
         props->setTitle(tr("Recording"));
         props->setText("<html>"+tr("Could not create audio file for recording!")
                        +"<p>"+tr("Ensure there is enough free disk space and you have write permission for the Recordings folder.")
-                       +"<p>"+tr("You can change the location of the Recordings folder in Preferences > Recording.")
+                       +"<p>"+tr("You can change the location of the Recordings folder in Preferences -> Recording.")
                        +"</p></html>");
         ErrorDialogHandler::instance()->requestErrorDialog(props);
     }
