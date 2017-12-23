@@ -29,16 +29,20 @@ EffectManifest EchoEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
     manifest.setName(QObject::tr("Echo"));
+    manifest.setShortName(QObject::tr("Echo"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr("Simple Echo with pingpong"));
+    manifest.setDescription(QObject::tr(
+      "Stores the input signal in a temporary buffer and outputs it after a short time"));
 
     EffectManifestParameter* delay = manifest.addParameter();
     delay->setId("delay_time");
     delay->setName(QObject::tr("Time"));
-    delay->setDescription(QObject::tr("Delay time\n"
-        "1/8 - 2 beats if tempo is detected (decks and samplers) \n"
-        "1/8 - 2 seconds if no tempo is detected (mic & aux inputs, master mix)"));
+    delay->setShortName(QObject::tr("Time"));
+    delay->setDescription(QObject::tr(
+        "Delay time\n"
+        "1/8 - 2 beats if tempo is detected\n"
+        "1/8 - 2 seconds if no tempo is detected"));
     delay->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     delay->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     delay->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
@@ -49,8 +53,9 @@ EffectManifest EchoEffect::getManifest() {
     EffectManifestParameter* feedback = manifest.addParameter();
     feedback->setId("feedback_amount");
     feedback->setName(QObject::tr("Feedback"));
-    feedback->setDescription(
-            QObject::tr("Amount the echo fades each time it loops"));
+    feedback->setShortName(QObject::tr("Feedback"));
+    feedback->setDescription(QObject::tr(
+        "Amount the echo fades each time it loops"));
     feedback->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     feedback->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     feedback->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -61,10 +66,9 @@ EffectManifest EchoEffect::getManifest() {
     EffectManifestParameter* pingpong = manifest.addParameter();
     pingpong->setId("pingpong_amount");
     pingpong->setName(QObject::tr("Ping Pong"));
-    pingpong->setDescription(
-            QObject::tr("As the ping pong amount increases, increasing amounts "
-                        "of the echoed signal is bounced between the left and "
-                        "right speakers."));
+    pingpong->setShortName(QObject::tr("Ping Pong"));
+    pingpong->setDescription(QObject::tr(
+        "How much the echoed sound bounces between the left and right sides of the stereo field"));
     pingpong->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     pingpong->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     pingpong->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -75,8 +79,9 @@ EffectManifest EchoEffect::getManifest() {
     EffectManifestParameter* send = manifest.addParameter();
     send->setId("send_amount");
     send->setName(QObject::tr("Send"));
-    send->setDescription(
-            QObject::tr("How much of the signal to send into the delay buffer"));
+    send->setShortName(QObject::tr("Send"));
+    send->setDescription(QObject::tr(
+        "How much of the signal to send into the delay buffer"));
     send->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     send->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     send->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -87,9 +92,10 @@ EffectManifest EchoEffect::getManifest() {
 
     EffectManifestParameter* quantize = manifest.addParameter();
     quantize->setId("quantize");
-    quantize->setName("Quantize");
-    quantize->setShortName("Quantize");
-    quantize->setDescription("Round the Time parameter to the nearest 1/4 beat.");
+    quantize->setName(QObject::tr("Quantize"));
+    quantize->setShortName(QObject::tr("Quantize"));
+    quantize->setDescription(QObject::tr(
+        "Round the Time parameter to the nearest 1/4 beat."));
     quantize->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     quantize->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     quantize->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -99,8 +105,10 @@ EffectManifest EchoEffect::getManifest() {
 
     EffectManifestParameter* triplet = manifest.addParameter();
     triplet->setId("triplet");
-    triplet->setName("Triplets");
-    triplet->setDescription("When the Quantize parameter is enabled, divide rounded 1/4 beats of Time parameter by 3.");
+    triplet->setName(QObject::tr("Triplets"));
+    triplet->setShortName(QObject::tr("Triplets"));
+    triplet->setDescription(QObject::tr(
+        "When the Quantize parameter is enabled, divide rounded 1/4 beats of Time parameter by 3."));
     triplet->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);

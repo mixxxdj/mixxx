@@ -16,19 +16,22 @@ EffectManifest PhaserEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
     manifest.setName(QObject::tr("Phaser"));
+    manifest.setShortName(QObject::tr("Phaser"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-                "A more complex sound effect obtained by mixing the input signal"
-                " with a copy passed through a series of all-pass filters."));
+        "Mixes the input signal with a copy passed through a series of "
+        "all-pass filters to create comb filtering"));
     manifest.setEffectRampsFromDry(true);
 
     EffectManifestParameter* period = manifest.addParameter();
     period->setId("lfo_period");
     period->setName(QObject::tr("Period"));
-    period->setDescription(QObject::tr("Controls the period of the LFO (low frequency oscillator)\n"
-        "1/4 - 4 beats rounded to 1/2 beat if tempo is detected (decks and samplers) \n"
-        "1/4 - 4 seconds if no tempo is detected (mic & aux inputs, master mix)"));
+    period->setShortName(QObject::tr("Period"));
+    period->setDescription(QObject::tr(
+        "Period of the LFO (low frequency oscillator)\n"
+        "1/4 - 4 beats rounded to 1/2 beat if tempo is detected\n"
+        "1/4 - 4 seconds if no tempo is detected"));
     period->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
@@ -39,7 +42,9 @@ EffectManifest PhaserEffect::getManifest() {
     EffectManifestParameter* fb = manifest.addParameter();
     fb->setId("feedback");
     fb->setName(QObject::tr("Feedback"));
-    fb->setDescription(QObject::tr("Controls how much of the output signal is looped"));
+    fb->setShortName(QObject::tr("Feedback"));
+    fb->setDescription(QObject::tr(
+        "Controls how much of the output signal is looped"));
     fb->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     fb->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     fb->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -50,7 +55,9 @@ EffectManifest PhaserEffect::getManifest() {
     EffectManifestParameter* range = manifest.addParameter();
     range->setId("range");
     range->setName(QObject::tr("Range"));
-    range->setDescription(QObject::tr("Controls the frequency range across which the notches sweep."));
+    range->setShortName(QObject::tr("Range"));
+    range->setDescription(QObject::tr(
+        "Controls the frequency range across which the notches sweep."));
     range->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     range->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     range->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -61,7 +68,9 @@ EffectManifest PhaserEffect::getManifest() {
     EffectManifestParameter* stages = manifest.addParameter();
     stages->setId("stages");
     stages->setName(QObject::tr("Stages"));
-    stages->setDescription(QObject::tr("Sets number of stages."));
+    stages->setShortName(QObject::tr("Stages"));
+    stages->setDescription(QObject::tr(
+        "Number of stages")); // stages of what?
     stages->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     stages->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     stages->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -72,7 +81,9 @@ EffectManifest PhaserEffect::getManifest() {
     EffectManifestParameter* depth = manifest.addParameter();
     depth->setId("depth");
     depth->setName(QObject::tr("Depth"));
-    depth->setDescription("Controls the intensity of the effect.");
+    depth->setShortName(QObject::tr("Depth"));
+    depth->setDescription(QObject::tr(
+        "Intensity of the effect"));
     depth->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     depth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -83,8 +94,10 @@ EffectManifest PhaserEffect::getManifest() {
 
     EffectManifestParameter* triplet = manifest.addParameter();
     triplet->setId("triplet");
-    triplet->setName("Triplets");
-    triplet->setDescription("Divide rounded 1/2 beats of the Period parameter by 3.");
+    triplet->setName(QObject::tr("Triplets"));
+    triplet->setShortName(QObject::tr("Triplets"));
+    triplet->setDescription(QObject::tr(
+        "Divides rounded 1/2 beats of the Period parameter by 3"));
     triplet->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -95,7 +108,9 @@ EffectManifest PhaserEffect::getManifest() {
     EffectManifestParameter* stereo = manifest.addParameter();
     stereo->setId("stereo");
     stereo->setName(QObject::tr("Stereo"));
-    stereo->setDescription(QObject::tr("Enables/disables stereo"));
+    stereo->setShortName(QObject::tr("Stereo"));
+    stereo->setDescription(QObject::tr(
+        "Sets the LFOs (low frequency oscillators) for the left and right channels out of phase with each others"));
     stereo->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     stereo->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     stereo->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);

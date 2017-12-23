@@ -28,7 +28,9 @@ EffectManifest GraphicEQEffect::getManifest() {
     EffectManifestParameter* low = manifest.addParameter();
     low->setId(QString("low"));
     low->setName(QString("%1 Hz").arg(centerFrequencies[0]));
-    low->setDescription(QObject::tr("Gain for Low Filter"));
+    low->setShortName(QString("%1 Hz").arg(centerFrequencies[0]));
+    low->setDescription(QObject::tr(
+        "Gain for Low Filter"));
     low->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     low->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     low->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -48,7 +50,9 @@ EffectManifest GraphicEQEffect::getManifest() {
         EffectManifestParameter* mid = manifest.addParameter();
         mid->setId(QString("mid%1").arg(i));
         mid->setName(paramName);
-        mid->setDescription(QObject::tr("Gain for Band Filter %1").arg(i + 1));
+        mid->setShortName(paramName);
+        mid->setDescription(QObject::tr(
+            "Gain for Band Filter %1").arg(i + 1));
         mid->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
         mid->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
         mid->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -61,7 +65,8 @@ EffectManifest GraphicEQEffect::getManifest() {
     EffectManifestParameter* high = manifest.addParameter();
     high->setId(QString("high"));
     high->setName(QString("%1 kHz").arg(centerFrequencies[7] / 1000));
-    high->setDescription(QObject::tr("Gain for High Filter"));
+    high->setDescription(QObject::tr(
+        "Gain for High Filter"));
     high->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     high->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     high->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
