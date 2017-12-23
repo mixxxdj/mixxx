@@ -368,6 +368,8 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Behringer-BCD3000-scripts.js"
   Delete "$INSTDIR\controllers\Behringer CMD Micro.midi.xml"
   Delete "$INSTDIR\controllers\Behringer-CMD-Micro-scripts.js"
+  Delete "$INSTDIR\controllers\Behringer CMD MM-1.midi.xml"
+  Delete "$INSTDIR\controllers\Behringer-CMD-MM-1-scripts.js"
   Delete "$INSTDIR\controllers\Behringer-CMDStudio4a-scripts.js"
   Delete "$INSTDIR\controllers\common-bulk-midi.js"
   Delete "$INSTDIR\controllers\common-controller-scripts.js"
@@ -572,6 +574,7 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Wireless-DJ-scripts.js"
   Delete "$INSTDIR\controllers\Xone K2.midi.xml"
   Delete "$INSTDIR\controllers\Xone-K2-scripts.js"
+
 
 
   ;Delete $INSTDIR\controllers\*.* ; Avoid this since it will delete customized files too
