@@ -5,6 +5,10 @@
 #include <QSharedPointer>
 #include <QThread>
 
+#ifdef __LINUX__
+#include <pthread.h>
+#endif
+
 #include "util/performancetimer.h"
 #include "util/memory.h"
 #include "soundio/sounddevice.h"
@@ -85,6 +89,15 @@ class SoundDeviceNetworkThread : public QThread {
 
   private:
     void run() {
+
+#ifdef __LINUX__
+        struct sched_param spm = { 0 };
+        spm.sched_priority = 1;
+        if(pthread_setschedparam(pthread_self(), SCHED_FIFO, &spm) {
+            qWarning() << "SoundDeviceNetworkThread: Failed bumping priority";
+        }
+#endif
+
         while(!m_stop) {
             m_pParent->callbackProcessClkRef();
         }
