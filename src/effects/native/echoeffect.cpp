@@ -6,7 +6,6 @@
 #include "util/math.h"
 
 constexpr int EchoGroupState::kMaxDelaySeconds;
-constexpr mixxx::AudioSignal::ChannelCount EchoGroupState::kChannelCount;
 
 namespace {
 
@@ -122,18 +121,14 @@ EchoEffect::EchoEffect(EngineEffect* pEffect, const EffectManifest& manifest)
     Q_UNUSED(manifest);
 }
 
-EchoEffect::~EchoEffect() {
-}
-
 void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGroupState,
                                 const CSAMPLE* pInput,
-                                CSAMPLE* pOutput, const unsigned int numSamples,
-                                const unsigned int sampleRate,
-                                const EffectProcessor::EnableState enableState,
+                                CSAMPLE* pOutput,
+                                const mixxx::EngineParameters& bufferParameters,
+                                const EffectEnableState enableState,
                                 const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
 
-    DEBUG_ASSERT(0 == (numSamples % EchoGroupState::kChannelCount));
     EchoGroupState& gs = *pGroupState;
     // The minimum of the parameter is zero so the exact center of the knob is 1 beat.
     double period = m_pDelayParameter->value();
@@ -152,17 +147,17 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         } else if (period < 1/8.0) {
             period = 1/8.0;
         }
-        delay_frames = period * groupFeatures.beat_length_sec * sampleRate;
+        delay_frames = period * groupFeatures.beat_length_sec * bufferParameters.sampleRate();
     } else {
         // period is a number of seconds
         period = std::max(period, 1/8.0);
-        delay_frames = period * sampleRate;
+        delay_frames = period * bufferParameters.sampleRate();
     }
     VERIFY_OR_DEBUG_ASSERT(delay_frames > 0) {
         delay_frames = 1;
     }
 
-    int delay_samples = delay_frames * EchoGroupState::kChannelCount;
+    int delay_samples = delay_frames * bufferParameters.channelCount();
     VERIFY_OR_DEBUG_ASSERT(delay_samples <= gs.delay_buf.size()) {
         delay_samples = gs.delay_buf.size();
     }
@@ -174,31 +169,35 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
 
     // Feedback the delay buffer and then add the new input.
     const CSAMPLE_GAIN send_delta = (send_amount - gs.prev_send) /
-            (numSamples / EchoGroupState::kChannelCount);
+            bufferParameters.framesPerBuffer();
     const CSAMPLE_GAIN send_start = gs.prev_send + send_delta;
 
     const CSAMPLE_GAIN feedback_delta = (feedback_amount - gs.prev_feedback) /
-            (numSamples / EchoGroupState::kChannelCount);
+            bufferParameters.framesPerBuffer();
     const CSAMPLE_GAIN feedback_start = gs.prev_feedback + feedback_delta;
 
-    for (unsigned int i = 0; i < numSamples; i += EchoGroupState::kChannelCount) {
+    //TODO: rewrite to remove assumption of stereo buffer
+    for (unsigned int i = 0;
+            i < bufferParameters.samplesPerBuffer();
+            i += bufferParameters.channelCount()) {
         CSAMPLE_GAIN send_ramped = send_start
-                + send_delta * i / EchoGroupState::kChannelCount;
+                + send_delta * i / bufferParameters.channelCount();
         CSAMPLE_GAIN feedback_ramped = feedback_start
-                + feedback_delta * i / EchoGroupState::kChannelCount;
+                + feedback_delta * i / bufferParameters.channelCount();
 
         CSAMPLE bufferedSampleLeft = gs.delay_buf[read_position];
         CSAMPLE bufferedSampleRight = gs.delay_buf[read_position + 1];
         if (read_position != prev_read_position) {
-            double frac = static_cast<double>(i) / numSamples;
+            double frac = static_cast<double>(i)
+                / bufferParameters.samplesPerBuffer();
             bufferedSampleLeft *= frac;
             bufferedSampleRight *= frac;
             bufferedSampleLeft += gs.delay_buf[prev_read_position] * (1 - frac);
             bufferedSampleRight += gs.delay_buf[prev_read_position + 1] * (1 - frac);
-            incrementRing(&prev_read_position, EchoGroupState::kChannelCount,
+            incrementRing(&prev_read_position, bufferParameters.channelCount(),
                     gs.delay_buf.size());
         }
-        incrementRing(&read_position, EchoGroupState::kChannelCount,
+        incrementRing(&read_position, bufferParameters.channelCount(),
                 gs.delay_buf.size());
 
         // Actual delays distort and saturate, so clamp the buffer here.
@@ -231,7 +230,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
                     (1 + pingpong_frac));
         }
 
-        incrementRing(&gs.write_position, EchoGroupState::kChannelCount,
+        incrementRing(&gs.write_position, bufferParameters.channelCount(),
                 gs.delay_buf.size());
 
         ++gs.ping_pong;
@@ -240,7 +239,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         }
     }
 
-    if (enableState == EffectProcessor::DISABLING) {
+    if (enableState == EffectEnableState::Disabling) {
         gs.delay_buf.clear();
     }
 

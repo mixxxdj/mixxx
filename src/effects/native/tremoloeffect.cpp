@@ -136,15 +136,11 @@ TremoloEffect::TremoloEffect(EngineEffect* pEffect,
     Q_UNUSED(manifest);
 }
 
-TremoloEffect::~TremoloEffect() {
-}
-
 void TremoloEffect::processChannel(const ChannelHandle& handle,
-                                   TremoloGroupState* pState,
+                                   TremoloState* pState,
                                    const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                   const unsigned int numSamples,
-                                   const unsigned int sampleRate,
-                                   const EffectProcessor::EnableState enableState,
+                                   const mixxx::EngineParameters& bufferParameters,
+                                   const EffectEnableState enableState,
                                    const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
 
@@ -162,11 +158,11 @@ void TremoloEffect::processChannel(const ChannelHandle& handle,
     bool tripletDisabling = pState->tripletEnabled
                           && !m_pTripletParameter->toBool();
 
-    if (enableState == EffectProcessor::ENABLING
+    if (enableState == EffectEnableState::Enabling
      || quantizeEnabling
      || tripletDisabling) {
         if (gf.has_beat_length_sec && gf.has_beat_fraction) {
-            currentFrame = gf.beat_fraction * gf.beat_length_sec * sampleRate;
+            currentFrame = gf.beat_fraction * gf.beat_length_sec * bufferParameters.sampleRate();
         } else {
             currentFrame = 0;
         }
@@ -184,16 +180,18 @@ void TremoloEffect::processChannel(const ChannelHandle& handle,
                 rate *= 3.0;
             }
         }
-        int framePerBeat = gf.beat_length_sec * sampleRate;
+        int framePerBeat = gf.beat_length_sec * bufferParameters.sampleRate();
         framePerPeriod = framePerBeat / rate;
     } else {
-        framePerPeriod = sampleRate / rate;
+        framePerPeriod = bufferParameters.sampleRate() / rate;
     }
 
     unsigned int phaseOffsetFrame = m_pPhaseParameter->value() * framePerPeriod;
     currentFrame = currentFrame % framePerPeriod;
 
-    for (unsigned int i = 0; i < numSamples; i+=kNumberOfChannels) {
+    for (unsigned int i = 0;
+            i < bufferParameters.samplesPerBuffer();
+            i += bufferParameters.channelCount()) {
         unsigned int positionFrame = (currentFrame - phaseOffsetFrame);
         positionFrame = positionFrame % framePerPeriod;
 
@@ -224,7 +222,7 @@ void TremoloEffect::processChannel(const ChannelHandle& handle,
             gain = gainTarget;
         }
 
-        for (int channel = 0; channel < kNumberOfChannels; channel++) {
+        for (int channel = 0; channel < bufferParameters.channelCount(); channel++) {
             pOutput[i+channel] = gain * pInput[i+channel];
         }
 

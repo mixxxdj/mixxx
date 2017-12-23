@@ -18,15 +18,16 @@
 #ifndef ENGINECHANNEL_H
 #define ENGINECHANNEL_H
 
+#include "control/controlproxy.h"
+#include "effects/effectsmanager.h"
 #include "engine/engineobject.h"
 #include "engine/channelhandle.h"
+#include "engine/enginevumeter.h"
 #include "preferences/usersettings.h"
 
 class ControlObject;
 class EngineBuffer;
-class EnginePregain;
 class EngineFilterBlock;
-class EngineVuMeter;
 class ControlPushButton;
 
 class EngineChannel : public EngineObject {
@@ -40,6 +41,7 @@ class EngineChannel : public EngineObject {
 
     EngineChannel(const ChannelHandleAndGroup& handle_group,
                   ChannelOrientation defaultOrientation = CENTER,
+                  EffectsManager* pEffectsManager = nullptr,
                   bool isTalkoverChannel = false);
     virtual ~EngineChannel();
 
@@ -63,6 +65,7 @@ class EngineChannel : public EngineObject {
     inline bool isTalkoverChannel() { return m_bIsTalkoverChannel; };
 
     virtual void process(CSAMPLE* pOut, const int iBufferSize) = 0;
+    virtual void collectFeatures(GroupFeatureState* pGroupFeatures) const = 0;
     virtual void postProcess(const int iBuffersize) = 0;
 
     // TODO(XXX) This hack needs to be removed.
@@ -70,13 +73,20 @@ class EngineChannel : public EngineObject {
         return NULL;
     }
 
+  protected:
+    const ChannelHandleAndGroup m_group;
+    EffectsManager* m_pEffectsManager;
+
+    EngineVuMeter m_vuMeter;
+    ControlProxy* m_pSampleRate;
+    const CSAMPLE* volatile m_sampleBuffer;
+
   private slots:
     void slotOrientationLeft(double v);
     void slotOrientationRight(double v);
     void slotOrientationCenter(double v);
 
   private:
-    const ChannelHandleAndGroup m_group;
     ControlPushButton* m_pMaster;
     ControlPushButton* m_pPFL;
     ControlPushButton* m_pOrientation;

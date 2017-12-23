@@ -89,9 +89,8 @@ ReverbEffect::~ReverbEffect() {
 void ReverbEffect::processChannel(const ChannelHandle& handle,
                                 ReverbGroupState* pState,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                const unsigned int numSamples,
-                                const unsigned int sampleRate,
-                                const EffectProcessor::EnableState enableState,
+                                const mixxx::EngineParameters& bufferParameters,
+                                const EffectEnableState enableState,
                                 const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
@@ -109,10 +108,12 @@ void ReverbEffect::processChannel(const ChannelHandle& handle,
     // Reinitialize the effect when turning it on to prevent replaying the old buffer
     // from the last time the effect was enabled.
     // Also, update the sample rate if it has changed.
-    if (enableState == EffectProcessor::ENABLING
-        || pState->sampleRate != sampleRate) {
-        pState->reverb.init(sampleRate);
-        pState->sampleRate = sampleRate;
+    if (enableState == EffectEnableState::Enabling
+        || pState->sampleRate != bufferParameters.sampleRate()) {
+        pState->reverb.init(bufferParameters.sampleRate());
+        pState->sampleRate = bufferParameters.sampleRate();
     }
-    pState->reverb.processBuffer(pInput, pOutput, numSamples, bandwidth, decay, damping, send);
+    pState->reverb.processBuffer(pInput, pOutput,
+                                 bufferParameters.samplesPerBuffer(),
+                                 bandwidth, decay, damping, send);
 }

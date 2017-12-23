@@ -107,7 +107,9 @@ EffectManifest ParametricEQEffect::getManifest() {
     return manifest;
 }
 
-ParametricEQEffectGroupState::ParametricEQEffectGroupState() {
+ParametricEQEffectGroupState::ParametricEQEffectGroupState(
+      const mixxx::EngineParameters& bufferParameters)
+      : EffectState(bufferParameters) {
     for (int i = 0; i < kBandCount; i++) {
         m_oldGain.append(1.0);
         m_oldQ.append(1.75);
@@ -119,7 +121,7 @@ ParametricEQEffectGroupState::ParametricEQEffectGroupState() {
     // Initialize the filters with default parameters
     for (int i = 0; i < kBandCount; i++) {
         m_bands.push_back(std::make_unique<EngineFilterBiquad1Peaking>(
-                44100, m_oldCenter[i], m_oldQ[i]));
+                bufferParameters.sampleRate(), m_oldCenter[i], m_oldQ[i]));
     }
 }
 
@@ -148,18 +150,17 @@ ParametricEQEffect::~ParametricEQEffect() {
 void ParametricEQEffect::processChannel(const ChannelHandle& handle,
                                      ParametricEQEffectGroupState* pState,
                                      const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                     const unsigned int numSamples,
-                                     const unsigned int sampleRate,
-                                     const EffectProcessor::EnableState enableState,
+                                     const mixxx::EngineParameters& bufferParameters,
+                                     const EffectEnableState enableState,
                                      const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
 
     // If the sample rate has changed, initialize the filters using the new
     // sample rate
-    if (m_oldSampleRate != sampleRate) {
-        m_oldSampleRate = sampleRate;
-        pState->setFilters(sampleRate);
+    if (m_oldSampleRate != bufferParameters.sampleRate()) {
+        m_oldSampleRate = bufferParameters.sampleRate();
+        pState->setFilters(bufferParameters.sampleRate());
     }
 
     CSAMPLE_GAIN fGain[2];
@@ -167,7 +168,7 @@ void ParametricEQEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE_GAIN fCenter[2];
 
     for (int i = 0; i < kBandCount; i++) {
-        if (enableState == EffectProcessor::DISABLING) {
+        if (enableState == EffectEnableState::Disabling) {
             // Ramp to dry, when disabling, this will ramp from dry when enabling as well
             fGain[i] = 1.0;
         } else {
@@ -179,24 +180,24 @@ void ParametricEQEffect::processChannel(const ChannelHandle& handle,
                 fQ[i] != pState->m_oldQ[i] ||
                 fCenter[i] != pState->m_oldCenter[i]) {
             pState->m_bands[i]->setFrequencyCorners(
-                    sampleRate, fCenter[i], fQ[i], fGain[i]);
+                    bufferParameters.sampleRate(), fCenter[i], fQ[i], fGain[i]);
         }
     }
 
     if (fGain[0]) {
-        pState->m_bands[0]->process(pInput, pOutput, numSamples);
+        pState->m_bands[0]->process(pInput, pOutput, bufferParameters.samplesPerBuffer());
         if (fGain[1]) {
-            pState->m_bands[1]->process(pOutput, pOutput, numSamples);
+            pState->m_bands[1]->process(pOutput, pOutput, bufferParameters.samplesPerBuffer());
         } else {
             pState->m_bands[1]->pauseFilter();
         }
     } else {
         pState->m_bands[0]->pauseFilter();
         if (fGain[1]) {
-            pState->m_bands[1]->process(pInput, pOutput, numSamples);
+            pState->m_bands[1]->process(pInput, pOutput, bufferParameters.samplesPerBuffer());
         } else {
             pState->m_bands[1]->pauseFilter();
-            SampleUtil::copy(pOutput, pInput, numSamples);
+            SampleUtil::copy(pOutput, pInput, bufferParameters.samplesPerBuffer());
         }
     }
 
@@ -206,7 +207,7 @@ void ParametricEQEffect::processChannel(const ChannelHandle& handle,
         pState->m_oldCenter[i] = fCenter[i];
     }
 
-    if (enableState == EffectProcessor::DISABLING) {
+    if (enableState == EffectEnableState::Disabling) {
         for (int i = 0; i < kBandCount; i++) {
             pState->m_bands[i]->pauseFilter();
         }

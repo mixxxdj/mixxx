@@ -125,21 +125,17 @@ PhaserEffect::~PhaserEffect() {
 void PhaserEffect::processChannel(const ChannelHandle& handle,
                                   PhaserGroupState* pState,
                                   const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                  const unsigned int numSamples,
-                                  const unsigned int sampleRate,
-                                  const EffectProcessor::EnableState enableState,
+                                  const mixxx::EngineParameters& bufferParameters,
+                                  const EffectEnableState enableState,
                                   const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
 
-    // TODO: remove assumption of stereo signal
-    const int kChannels = 2;
-
-    if (enableState == EffectProcessor::ENABLING) {
-        pState->init();
+    if (enableState == EffectEnableState::Enabling) {
+        pState->clear();
     }
 
     CSAMPLE depth = 0;
-    if (enableState != EffectProcessor::DISABLING) {
+    if (enableState != EffectEnableState::Disabling) {
         depth = m_pDepthParameter->value();
     }
 
@@ -151,10 +147,10 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
         if (m_pTripletParameter->toBool()) {
             periodParameter /= 3.0;
         }
-        periodSamples = periodParameter * groupFeatures.beat_length_sec * sampleRate;
+        periodSamples = periodParameter * groupFeatures.beat_length_sec * bufferParameters.sampleRate();
     } else {
         // periodParameter is a number of seconds
-        periodSamples = std::max(periodParameter, 1/4.0) * sampleRate;
+        periodSamples = std::max(periodParameter, 1/4.0) * bufferParameters.sampleRate();
     }
     // freqSkip is used to calculate the phase independently for each channel,
     // so do not multiply periodSamples by the number of channels.
@@ -177,13 +173,15 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
 
     CSAMPLE_GAIN oldDepth = pState->oldDepth;
     const CSAMPLE_GAIN depthDelta = (depth - oldDepth)
-            / CSAMPLE_GAIN(numSamples / 2);
+            / bufferParameters.framesPerBuffer();
     const CSAMPLE_GAIN depthStart = oldDepth + depthDelta;
 
     int stereoCheck = m_pStereoParameter->value();
     int counter = 0;
 
-    for (unsigned int i = 0; i < numSamples; i += kChannels) {
+    for (unsigned int i = 0;
+            i < bufferParameters.samplesPerBuffer();
+            i += bufferParameters.channelCount()) {
         left = pInput[i] + tanh(left * feedback);
         right = pInput[i + 1] + tanh(right * feedback);
 
@@ -212,7 +210,7 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
         left = processSample(left, oldInLeft, oldOutLeft, filterCoefLeft, stages);
         right = processSample(right, oldInRight, oldOutRight, filterCoefRight, stages);
 
-        const CSAMPLE_GAIN depth = depthStart + depthDelta * (i / kChannels);
+        const CSAMPLE_GAIN depth = depthStart + depthDelta * (i / bufferParameters.channelCount());
 
         // Computing output combining the original and processed sample
         pOutput[i] = pInput[i] * (1.0 - 0.5 * depth) + left * depth * 0.5;

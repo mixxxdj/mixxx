@@ -64,17 +64,22 @@ EffectManifest FilterEffect::getManifest() {
     return manifest;
 }
 
-FilterGroupState::FilterGroupState()
-        : m_loFreq(kMaxCorner / 44100),
+FilterGroupState::FilterGroupState(const mixxx::EngineParameters& bufferParameters)
+        : EffectState(bufferParameters),
+          m_loFreq(kMaxCorner / bufferParameters.sampleRate()),
           m_q(0.707106781),
-          m_hiFreq(kMinCorner / 44100) {
-    m_pBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
+          m_hiFreq(kMinCorner / bufferParameters.sampleRate()) {
+    engineParametersChanged(bufferParameters);
     m_pLowFilter = new EngineFilterBiquad1Low(1, m_loFreq, m_q, true);
     m_pHighFilter = new EngineFilterBiquad1High(1, m_hiFreq, m_q, true);
 }
 
+void FilterGroupState::engineParametersChanged(const mixxx::EngineParameters& bufferParameters) {
+    m_pBuf = SampleUtil::alloc(bufferParameters.samplesPerBuffer());
+}
+
 FilterGroupState::~FilterGroupState() {
-    SampleUtil::free(m_pBuf);
+    delete m_pBuf;
     delete m_pLowFilter;
     delete m_pHighFilter;
 }
@@ -94,28 +99,26 @@ FilterEffect::~FilterEffect() {
 void FilterEffect::processChannel(const ChannelHandle& handle,
                                   FilterGroupState* pState,
                                   const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                  const unsigned int numSamples,
-                                  const unsigned int sampleRate,
-                                  const EffectProcessor::EnableState enableState,
+                                  const mixxx::EngineParameters& bufferParameters,
+                                  const EffectEnableState enableState,
                                   const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
-    Q_UNUSED(sampleRate);
 
     double hpf;
     double lpf;
     double q = m_pQ->value();
 
-    const double minCornerNormalized = kMinCorner / sampleRate;
-    const double maxCornerNormalized = kMaxCorner / sampleRate;
+    const double minCornerNormalized = kMinCorner / bufferParameters.sampleRate();
+    const double maxCornerNormalized = kMaxCorner / bufferParameters.sampleRate();
 
-    if (enableState == EffectProcessor::DISABLING) {
+    if (enableState == EffectEnableState::Disabling) {
         // Ramp to dry, when disabling, this will ramp from dry when enabling as well
         hpf = minCornerNormalized;
         lpf = maxCornerNormalized;
     } else {
-        hpf = m_pHPF->value() / sampleRate;
-        lpf = m_pLPF->value() / sampleRate;
+        hpf = m_pHPF->value() / bufferParameters.sampleRate();
+        lpf = m_pLPF->value() / bufferParameters.sampleRate();
     }
 
     if ((pState->m_loFreq != lpf) ||
@@ -150,11 +153,11 @@ void FilterEffect::processChannel(const ChannelHandle& handle,
 
     if (hpf > minCornerNormalized) {
         // hpf enabled, fade-in is handled in the filter when starting from pause
-        pState->m_pHighFilter->process(pInput, pHpfOutput, numSamples);
+        pState->m_pHighFilter->process(pInput, pHpfOutput, bufferParameters.samplesPerBuffer());
     } else if (pState->m_hiFreq > minCornerNormalized) {
             // hpf disabling
             pState->m_pHighFilter->processAndPauseFilter(pInput,
-                    pHpfOutput, numSamples);
+                    pHpfOutput, bufferParameters.samplesPerBuffer());
     } else {
         // paused LP uses input directly
         pLpfInput = pInput;
@@ -162,16 +165,16 @@ void FilterEffect::processChannel(const ChannelHandle& handle,
 
     if (lpf < maxCornerNormalized) {
         // lpf enabled, fade-in is handled in the filter when starting from pause
-        pState->m_pLowFilter->process(pLpfInput, pOutput, numSamples);
+        pState->m_pLowFilter->process(pLpfInput, pOutput, bufferParameters.samplesPerBuffer());
     } else if (pState->m_loFreq < maxCornerNormalized) {
         // hpf disabling
         pState->m_pLowFilter->processAndPauseFilter(pLpfInput,
-                pOutput, numSamples);
+                pOutput, bufferParameters.samplesPerBuffer());
     } else if (pLpfInput == pInput) {
         // Both disabled
         if (pOutput != pInput) {
             // We need to copy pInput pOutput
-            SampleUtil::copy(pOutput, pInput, numSamples);
+            SampleUtil::copy(pOutput, pInput, bufferParameters.samplesPerBuffer());
         }
     }
 

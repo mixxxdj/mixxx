@@ -368,9 +368,10 @@ void PlayerManager::addDeckInner() {
 
     // Setup equalizer rack for this deck.
     EqualizerRackPointer pEqRack = m_pEffectsManager->getEqualizerRack(0);
-    if (pEqRack) {
-        pEqRack->addEffectChainSlotForGroup(group);
+    VERIFY_OR_DEBUG_ASSERT(pEqRack) {
+        return;
     }
+    pEqRack->setupForGroup(group);
 
     // BaseTrackPlayer needs to delay until we have setup the equalizer rack for
     // this deck to fetch the legacy EQ controls.
@@ -379,9 +380,10 @@ void PlayerManager::addDeckInner() {
 
     // Setup quick effect rack for this deck.
     QuickEffectRackPointer pQuickEffectRack = m_pEffectsManager->getQuickEffectRack(0);
-    if (pQuickEffectRack) {
-        pQuickEffectRack->addEffectChainSlotForGroup(group);
+    VERIFY_OR_DEBUG_ASSERT(pQuickEffectRack) {
+        return;
     }
+    pQuickEffectRack->setupForGroup(group);
 }
 
 void PlayerManager::loadSamplers() {

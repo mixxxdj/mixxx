@@ -6,9 +6,13 @@
 #include <QtGlobal>
 
 #include "util/fifo.h"
-#include "effects/effectchain.h"
+#include "util/memory.h"
+#include "effects/defs.h"
 #include "engine/channelhandle.h"
 
+// NOTE: Setting this to true will enable string manipulation and calls to
+// qDebug() in the audio engine thread. That may cause audio dropouts, so only
+// enable this when debugging the effects system.
 const bool kEffectDebugOutput = false;
 
 class EngineEffectRack;
@@ -29,8 +33,10 @@ struct EffectsRequest {
         SET_EFFECT_CHAIN_PARAMETERS,
         ADD_EFFECT_TO_CHAIN,
         REMOVE_EFFECT_FROM_CHAIN,
-        ENABLE_EFFECT_CHAIN_FOR_CHANNEL,
-        DISABLE_EFFECT_CHAIN_FOR_CHANNEL,
+        // Effects cannot currently be toggled for output channels;
+        // the outputs that effects are applied to are hardwired in EngineMaster
+        ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL,
+        DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL,
 
         // Messages for EngineEffect
         SET_EFFECT_PARAMETERS,
@@ -47,14 +53,16 @@ struct EffectsRequest {
               maximum(0.0),
               default_value(0.0),
               value(0.0) {
-        pTargetRack = NULL;
-        pTargetChain = NULL;
-        pTargetEffect = NULL;
+        pTargetRack = nullptr;
+        pTargetChain = nullptr;
+        pTargetEffect = nullptr;
 #define CLEAR_STRUCT(x) memset(&x, 0, sizeof(x));
         CLEAR_STRUCT(AddEffectRack);
         CLEAR_STRUCT(RemoveEffectRack);
         CLEAR_STRUCT(AddChainToRack);
         CLEAR_STRUCT(RemoveChainFromRack);
+        CLEAR_STRUCT(EnableInputChannelForChain);
+        CLEAR_STRUCT(DisableInputChannelForChain);
         CLEAR_STRUCT(AddEffectToChain);
         CLEAR_STRUCT(RemoveEffectFromChain);
         CLEAR_STRUCT(SetEffectChainParameters);
@@ -76,8 +84,8 @@ struct EffectsRequest {
         // - ADD_EFFECT_TO_CHAIN
         // - REMOVE_EFFECT_FROM_CHAIN
         // - SET_EFFECT_CHAIN_PARAMETERS
-        // - ENABLE_EFFECT_CHAIN_FOR_CHANNEL
-        // - DISABLE_EFFECT_CHAIN_FOR_CHANNEL
+        // - ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL
+        // - DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL
         EngineEffectChain* pTargetChain;
         // Used by:
         // - SET_EFFECT_PARAMETER
@@ -88,9 +96,11 @@ struct EffectsRequest {
     union {
         struct {
             EngineEffectRack* pRack;
+            SignalProcessingStage signalProcessingStage;
         } AddEffectRack;
         struct {
             EngineEffectRack* pRack;
+            SignalProcessingStage signalProcessingStage;
         } RemoveEffectRack;
         struct {
             EngineEffectChain* pChain;
@@ -101,6 +111,13 @@ struct EffectsRequest {
             int iIndex;
         } RemoveChainFromRack;
         struct {
+            EffectStatesMapArray* pEffectStatesMapArray;
+            const ChannelHandle* pChannelHandle;
+        } EnableInputChannelForChain;
+        struct {
+            const ChannelHandle* pChannelHandle;
+        } DisableInputChannelForChain;
+        struct {
             EngineEffect* pEffect;
             int iIndex;
         } AddEffectToChain;
@@ -110,7 +127,7 @@ struct EffectsRequest {
         } RemoveEffectFromChain;
         struct {
             bool enabled;
-            EffectChain::InsertionType insertion_type;
+            EffectChainInsertionType insertion_type;
             double mix;
         } SetEffectChainParameters;
         struct {
@@ -120,13 +137,6 @@ struct EffectsRequest {
             int iParameter;
         } SetParameterParameters;
     };
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Message-specific, non-POD values that can't be part of the above union.
-    ////////////////////////////////////////////////////////////////////////////
-
-    // Used by ENABLE_EFFECT_CHAIN_FOR_CHANNEL and DISABLE_EFFECT_CHAIN_FOR_CHANNEL.
-    ChannelHandle channel;
 
     // Used by SET_EFFECT_PARAMETER.
     double minimum;
@@ -175,7 +185,7 @@ typedef MessagePipe<EffectsResponse, EffectsRequest*> EffectsResponsePipe;
 class EffectsRequestHandler {
   public:
     virtual bool processEffectsRequest(
-        const EffectsRequest& message,
+        EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe) = 0;
 };
 

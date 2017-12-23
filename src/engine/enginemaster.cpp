@@ -32,35 +32,39 @@
 EngineMaster::EngineMaster(UserSettingsPointer pConfig,
                            const char* group,
                            EffectsManager* pEffectsManager,
-                           bool bEnableSidechain,
-                           bool bRampingGain)
-        : m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
-          m_bRampingGain(bRampingGain),
+                           ChannelHandleFactory* pChannelHandleFactory,
+                           bool bEnableSidechain)
+        : m_pChannelHandleFactory(pChannelHandleFactory),
+          m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
           m_masterGainOld(0.0),
           m_boothGainOld(0.0),
           m_headphoneMasterGainOld(0.0),
           m_headphoneGainOld(1.0),
           m_balleftOld(1.0),
           m_balrightOld(1.0),
-          m_masterHandle(registerChannelGroup("[Master]")),
+          m_masterHandle(registerChannelGroup(group)),
           m_headphoneHandle(registerChannelGroup("[Headphone]")),
-          m_busLeftHandle(registerChannelGroup("[BusLeft]")),
-          m_busCenterHandle(registerChannelGroup("[BusCenter]")),
-          m_busRightHandle(registerChannelGroup("[BusRight]")) {
+          m_masterOutputHandle(registerChannelGroup("[MasterOutput]")),
+          m_busTalkoverHandle(registerChannelGroup("[BusTalkover]")),
+          m_busCrossfaderLeftHandle(registerChannelGroup("[BusLeft]")),
+          m_busCrossfaderCenterHandle(registerChannelGroup("[BusCenter]")),
+          m_busCrossfaderRightHandle(registerChannelGroup("[BusRight]")) {
+    pEffectsManager->registerInputChannel(m_masterHandle);
+    pEffectsManager->registerInputChannel(m_headphoneHandle);
+    pEffectsManager->registerOutputChannel(m_masterHandle);
+    pEffectsManager->registerOutputChannel(m_headphoneHandle);
+
+    pEffectsManager->registerInputChannel(m_masterOutputHandle);
+    pEffectsManager->registerInputChannel(m_busTalkoverHandle);
+    pEffectsManager->registerInputChannel(m_busCrossfaderLeftHandle);
+    pEffectsManager->registerInputChannel(m_busCrossfaderCenterHandle);
+    pEffectsManager->registerInputChannel(m_busCrossfaderRightHandle);
     m_bBusOutputConnected[EngineChannel::LEFT] = false;
     m_bBusOutputConnected[EngineChannel::CENTER] = false;
     m_bBusOutputConnected[EngineChannel::RIGHT] = false;
     m_bExternalRecordBroadcastInputConnected = false;
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
     m_pWorkerScheduler->start(QThread::HighPriority);
-
-    if (pEffectsManager) {
-        pEffectsManager->registerChannel(m_masterHandle);
-        pEffectsManager->registerChannel(m_headphoneHandle);
-        pEffectsManager->registerChannel(m_busLeftHandle);
-        pEffectsManager->registerChannel(m_busCenterHandle);
-        pEffectsManager->registerChannel(m_busRightHandle);
-    }
 
     // Master sample rate
     m_pMasterSampleRate = new ControlObject(ConfigKey(group, "samplerate"), true, true);
@@ -147,8 +151,6 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
         m_pOutputBusBuffers[o] = SampleUtil::alloc(MAX_BUFFER_LEN);
         SampleUtil::clear(m_pOutputBusBuffers[o], MAX_BUFFER_LEN);
     }
-
-    m_ppSidechainOutput = &m_pMaster;
 
     // Starts a thread for recording and broadcast
     m_pEngineSideChain = bEnableSidechain ? new EngineSideChain(pConfig) : NULL;
@@ -260,7 +262,7 @@ const CSAMPLE* EngineMaster::getHeadphoneBuffer() const {
 }
 
 const CSAMPLE* EngineMaster::getSidechainBuffer() const {
-    return *m_ppSidechainOutput;
+    return m_pSidechainMix;
 }
 
 void EngineMaster::processChannels(int iBufferSize) {
@@ -348,6 +350,13 @@ void EngineMaster::processChannels(int iBufferSize) {
         ChannelInfo* pChannelInfo = m_activeChannels[i];
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
         pChannel->process(pChannelInfo->m_pBuffer, iBufferSize);
+
+        // Collect metadata for effects
+        if (m_pEngineEffectsManager) {
+            GroupFeatureState features;
+            pChannel->collectFeatures(&features);
+            pChannelInfo->m_features = features;
+        }
     }
 
     // After all the engines have been processed, trigger post-processing
@@ -372,76 +381,92 @@ void EngineMaster::process(const int iBufferSize) {
     bool boothEnabled = m_pBoothEnabled->get();
     bool headphoneEnabled = m_pHeadphoneEnabled->get();
 
+    m_iSampleRate = static_cast<int>(m_pMasterSampleRate->get());
+    m_iBufferSize = iBufferSize;
     // TODO: remove assumption of stereo buffer
     const unsigned int kChannels = 2;
     const unsigned int iFrames = iBufferSize / kChannels;
-    unsigned int iSampleRate = static_cast<int>(m_pMasterSampleRate->get());
+
     if (m_pEngineEffectsManager) {
         m_pEngineEffectsManager->onCallbackStart();
     }
 
     // Update internal master sync rate.
-    m_pMasterSync->onCallbackStart(iSampleRate, iBufferSize);
+    m_pMasterSync->onCallbackStart(m_iSampleRate, m_iBufferSize);
     // Prepare each channel for output
-    processChannels(iBufferSize);
+    processChannels(m_iBufferSize);
     // Do internal master sync post-processing
-    m_pMasterSync->onCallbackEnd(iSampleRate, iBufferSize);
+    m_pMasterSync->onCallbackEnd(m_iSampleRate, m_iBufferSize);
 
     // Compute headphone mix
     // Head phone left/right mix
-    CSAMPLE chead_gain = 1;
-    CSAMPLE cmaster_gain = 0;
+    CSAMPLE pflMixGainInHeadphones = 1;
+    CSAMPLE masterMixGainInHeadphones = 0;
     if (masterEnabled) {
         CSAMPLE cf_val = m_pHeadMix->get();
-        chead_gain = 0.5 * (-cf_val + 1.);
-        cmaster_gain = 0.5 * (cf_val + 1.);
+        pflMixGainInHeadphones = 0.5 * (-cf_val + 1.);
+        masterMixGainInHeadphones = 0.5 * (cf_val + 1.);
         // qDebug() << "head val " << cf_val << ", head " << chead_gain
         //          << ", master " << cmaster_gain;
     }
 
     // Mix all the PFL enabled channels together.
-    m_headphoneGain.setGain(chead_gain);
+    m_headphoneGain.setGain(pflMixGainInHeadphones);
 
     if (headphoneEnabled) {
-        if (m_bRampingGain) {
-            ChannelMixer::mixChannelsRamping(
-                    m_headphoneGain, &m_activeHeadphoneChannels,
-                    &m_channelHeadphoneGainCache,
-                    m_pHead, iBufferSize);
-        } else {
-            ChannelMixer::mixChannels(
-                    m_headphoneGain, &m_activeHeadphoneChannels,
-                    &m_channelHeadphoneGainCache,
-                    m_pHead, iBufferSize);
-        }
+        // Process effects and mix PFL channels together for the headphones.
+        // Effects will be reprocessed post-fader for the crossfader busses
+        // and master mix, so the channel input buffers cannot be modified here.
+        ChannelMixer::applyEffectsAndMixChannels(
+            m_headphoneGain, &m_activeHeadphoneChannels,
+            &m_channelHeadphoneGainCache,
+            m_pHead, m_headphoneHandle.handle(),
+            m_iBufferSize, m_iSampleRate,
+            m_pEngineEffectsManager);
 
         // Process headphone channel effects
         if (m_pEngineEffectsManager) {
             GroupFeatureState headphoneFeatures;
-            m_pEngineEffectsManager->process(m_headphoneHandle.handle(),
-                                             m_pHead,
-                                             iBufferSize, iSampleRate,
-                                             headphoneFeatures);
+            // If there is only one channel in the headphone mix, use its features
+            // for effects processing. This allows for previewing how an effect will
+            // sound on a playing deck before turning up the dry/wet knob to make it
+            // audible on the master mix. Without this, the effect would sound different
+            // in headphones than how it would sound if it was enabled on the deck,
+            // for example with tempo synced effects.
+            if (m_activeHeadphoneChannels.size() == 1) {
+                headphoneFeatures = m_activeHeadphoneChannels.at(0)->m_features;
+            }
+            m_pEngineEffectsManager->processPostFaderInPlace(
+                m_headphoneHandle.handle(),
+                m_headphoneHandle.handle(),
+                m_pHead,
+                m_iBufferSize, m_iSampleRate,
+                headphoneFeatures);
         }
     }
 
     // Mix all the talkover enabled channels together.
-    if (m_bRampingGain) {
-        ChannelMixer::mixChannelsRamping(
-                m_talkoverGain, &m_activeTalkoverChannels,
-                &m_channelTalkoverGainCache,
-                m_pTalkover, iBufferSize);
-    } else {
-        ChannelMixer::mixChannels(
-                m_talkoverGain, &m_activeTalkoverChannels,
-                &m_channelTalkoverGainCache,
-                m_pTalkover, iBufferSize);
-    }
+    // Effects processing is done in place to avoid unnecessary buffer copying.
+    ChannelMixer::applyEffectsInPlaceAndMixChannels(
+        m_talkoverGain, &m_activeTalkoverChannels,
+        &m_channelTalkoverGainCache,
+        m_pTalkover, m_masterHandle.handle(),
+        m_iBufferSize, m_iSampleRate, m_pEngineEffectsManager);
+
+    // Process effects on all microphones mixed together
+    // We have no metadata for mixed effect buses, so use an empty GroupFeatureState.
+    GroupFeatureState busFeatures;
+    m_pEngineEffectsManager->processPostFaderInPlace(
+            m_busTalkoverHandle.handle(),
+            m_masterHandle.handle(),
+            m_pTalkover,
+            m_iBufferSize, m_iSampleRate, busFeatures);
+
 
     // Clear talkover compressor for the next round of gain calculation.
     m_pTalkoverDucking->clearKeys();
     if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF) {
-        m_pTalkoverDucking->processKey(m_pTalkover, iBufferSize);
+        m_pTalkoverDucking->processKey(m_pTalkover, m_iBufferSize);
     }
 
     // Calculate the crossfader gains for left and right side of the crossfader
@@ -452,41 +477,39 @@ void EngineMaster::process(const int iBufferSize) {
                                 m_pXFaderReverse->toBool(),
                                 &crossfaderLeftGain, &crossfaderRightGain);
 
-    m_masterGain.setGains(crossfaderLeftGain, 1.0, crossfaderRightGain,
-                            m_pTalkoverDucking->getGain(iBufferSize / 2));
-
     // Make the mix for each crossfader orientation output bus.
     // m_masterGain takes care of applying the attenuation from
     // channel volume faders, crossfader, and talkover ducking.
     // Talkover is mixed in later according to the configured MicMonitorMode
+    m_masterGain.setGains(crossfaderLeftGain, 1.0, crossfaderRightGain,
+                            m_pTalkoverDucking->getGain(m_iBufferSize / 2));
+
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
-        if (m_bRampingGain) {
-            ChannelMixer::mixChannelsRamping(
-                    m_masterGain,
-                    &m_activeBusChannels[o],
-                    &m_channelMasterGainCache, // no [o] because the old gain follows an orientation switch
-                    m_pOutputBusBuffers[o], iBufferSize);
-        } else {
-            ChannelMixer::mixChannels(
-                    m_masterGain,
-                    &m_activeBusChannels[o],
-                    &m_channelMasterGainCache,
-                    m_pOutputBusBuffers[o], iBufferSize);
-        }
+        ChannelMixer::applyEffectsInPlaceAndMixChannels(
+            m_masterGain,
+            &m_activeBusChannels[o],
+            &m_channelMasterGainCache, // no [o] because the old gain follows an orientation switch
+            m_pOutputBusBuffers[o], m_masterHandle.handle(),
+            m_iBufferSize, m_iSampleRate, m_pEngineEffectsManager);
     }
 
     // Process crossfader orientation bus channel effects
     if (m_pEngineEffectsManager) {
-        GroupFeatureState busFeatures;
-        m_pEngineEffectsManager->process(m_busLeftHandle.handle(),
-                                         m_pOutputBusBuffers[EngineChannel::LEFT],
-                                         iBufferSize, iSampleRate, busFeatures);
-        m_pEngineEffectsManager->process(m_busCenterHandle.handle(),
-                                         m_pOutputBusBuffers[EngineChannel::CENTER],
-                                         iBufferSize, iSampleRate, busFeatures);
-        m_pEngineEffectsManager->process(m_busRightHandle.handle(),
-                                         m_pOutputBusBuffers[EngineChannel::RIGHT],
-                                         iBufferSize, iSampleRate, busFeatures);
+        m_pEngineEffectsManager->processPostFaderInPlace(
+            m_busCrossfaderLeftHandle.handle(),
+            m_masterHandle.handle(),
+            m_pOutputBusBuffers[EngineChannel::LEFT],
+            m_iBufferSize, m_iSampleRate, busFeatures);
+        m_pEngineEffectsManager->processPostFaderInPlace(
+            m_busCrossfaderCenterHandle.handle(),
+            m_masterHandle.handle(),
+            m_pOutputBusBuffers[EngineChannel::CENTER],
+            m_iBufferSize, m_iSampleRate, busFeatures);
+        m_pEngineEffectsManager->processPostFaderInPlace(
+            m_busCrossfaderRightHandle.handle(),
+            m_masterHandle.handle(),
+            m_pOutputBusBuffers[EngineChannel::RIGHT],
+            m_iBufferSize, m_iSampleRate, busFeatures);
     }
 
     if (masterEnabled) {
@@ -495,7 +518,7 @@ void EngineMaster::process(const int iBufferSize) {
             m_pOutputBusBuffers[EngineChannel::LEFT], 1.0,
             m_pOutputBusBuffers[EngineChannel::CENTER], 1.0,
             m_pOutputBusBuffers[EngineChannel::RIGHT], 1.0,
-            iBufferSize);
+            m_iBufferSize);
 
         MicMonitorMode configuredMicMonitorMode = static_cast<MicMonitorMode>(
             static_cast<int>(m_pMicMonitorMode->get()));
@@ -509,19 +532,19 @@ void EngineMaster::process(const int iBufferSize) {
             // to both the master and booth in that case will require refactoring
             // the effects system to be able to process the same effects on multiple
             // buffers within the same callback.
-            applyMasterEffects(iBufferSize, iSampleRate);
+            applyMasterEffects();
+
+            if (headphoneEnabled) {
+                processHeadphones(masterMixGainInHeadphones);
+            }
 
             // Copy master mix to booth output with booth gain before mixing
             // talkover with master mix
             if (boothEnabled) {
                 CSAMPLE boothGain = m_pBoothGain->get();
-                if (m_bRampingGain) {
-                    SampleUtil::copy1WithRampingGain(m_pBooth, m_pMaster,
-                        m_boothGainOld, boothGain, iBufferSize);
-                } else {
-                    SampleUtil::copy1WithGain(m_pBooth, m_pMaster,
-                        boothGain, iBufferSize);
-                }
+                SampleUtil::copyWithRampingGain(m_pBooth, m_pMaster,
+                                                m_boothGainOld, boothGain,
+                                                m_iBufferSize);
                 m_boothGainOld = boothGain;
             }
 
@@ -530,23 +553,19 @@ void EngineMaster::process(const int iBufferSize) {
                 SampleUtil::copy2WithGain(m_pMaster,
                     m_pMaster, 1.0,
                     m_pTalkover, 1.0,
-                    iBufferSize);
+                    m_iBufferSize);
             }
 
             // Apply master gain
-            // TODO(Be): make this not affect the headphones. Refer to
-            // https://bugs.launchpad.net/mixxx/+bug/1458213
             CSAMPLE master_gain = m_pMasterGain->get();
-            if (m_bRampingGain) {
-                SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld, master_gain,
-                                             iBufferSize);
-            } else {
-                SampleUtil::applyGain(m_pMaster, master_gain, iBufferSize);
-            }
+            SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld,
+                                         master_gain, m_iBufferSize);
             m_masterGainOld = master_gain;
 
             // Record/broadcast signal is the same as the master output
-            m_ppSidechainOutput = &m_pMaster;
+            if (!m_bExternalRecordBroadcastInputConnected) {
+                SampleUtil::copy(m_pSidechainMix, m_pMaster, m_iBufferSize);
+            }
         } else if (configuredMicMonitorMode == MicMonitorMode::MASTER_AND_BOOTH) {
             // Process master channel effects
             // TODO(Be): Move this after mixing in talkover. For the MASTER only
@@ -554,43 +573,39 @@ void EngineMaster::process(const int iBufferSize) {
             // to be able to process the same effects on different buffers
             // within the same callback. For consistency between the MicMonitorModes,
             // process master effects here before mixing in talkover.
-            applyMasterEffects(iBufferSize, iSampleRate);
+            applyMasterEffects();
+
+            if (headphoneEnabled) {
+                processHeadphones(masterMixGainInHeadphones);
+            }
 
             // Mix talkover with master
             if (m_pNumMicsConfigured->get() > 0) {
                 SampleUtil::copy2WithGain(m_pMaster,
                     m_pMaster, 1.0,
                     m_pTalkover, 1.0,
-                    iBufferSize);
+                    m_iBufferSize);
             }
 
             // Copy master mix (with talkover mixed in) to booth output with booth gain
             if (boothEnabled) {
                 CSAMPLE boothGain = m_pBoothGain->get();
-                if (m_bRampingGain) {
-                    SampleUtil::copy1WithRampingGain(m_pBooth, m_pMaster,
-                        m_boothGainOld, boothGain, iBufferSize);
-                } else {
-                    SampleUtil::copy1WithGain(m_pBooth, m_pMaster,
-                        boothGain, iBufferSize);
-                }
+                SampleUtil::copyWithRampingGain(m_pBooth, m_pMaster,
+                                                m_boothGainOld, boothGain,
+                                                m_iBufferSize);
                 m_boothGainOld = boothGain;
             }
 
             // Apply master gain
-            // TODO(Be): make this not affect the headphones. Refer to
-            // https://bugs.launchpad.net/mixxx/+bug/1458213
             CSAMPLE master_gain = m_pMasterGain->get();
-            if (m_bRampingGain) {
-                SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld, master_gain,
-                                             iBufferSize);
-            } else {
-                SampleUtil::applyGain(m_pMaster, master_gain, iBufferSize);
-            }
+            SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld,
+                                         master_gain, m_iBufferSize);
             m_masterGainOld = master_gain;
 
             // Record/broadcast signal is the same as the master output
-            m_ppSidechainOutput = &m_pMaster;
+            if (!m_bExternalRecordBroadcastInputConnected) {
+                SampleUtil::copy(m_pSidechainMix, m_pMaster, m_iBufferSize);
+            }
         } else if (configuredMicMonitorMode == MicMonitorMode::DIRECT_MONITOR) {
             // Skip mixing talkover with the master and booth outputs
             // if using direct monitoring because it is being mixed in hardware
@@ -600,13 +615,9 @@ void EngineMaster::process(const int iBufferSize) {
             // Copy master mix to booth output with booth gain
             if (boothEnabled) {
                 CSAMPLE boothGain = m_pBoothGain->get();
-                if (m_bRampingGain) {
-                    SampleUtil::copy1WithRampingGain(m_pBooth, m_pMaster,
-                        m_boothGainOld, boothGain, iBufferSize);
-                } else {
-                    SampleUtil::copy1WithGain(m_pBooth, m_pMaster,
-                        boothGain, iBufferSize);
-                }
+                SampleUtil::copyWithRampingGain(m_pBooth, m_pMaster,
+                                                m_boothGainOld, boothGain,
+                                                m_iBufferSize);
                 m_boothGainOld = boothGain;
             }
 
@@ -614,19 +625,20 @@ void EngineMaster::process(const int iBufferSize) {
             // NOTE(Be): This should occur before mixing in talkover for the
             // record/broadcast signal so the record/broadcast signal is the same
             // as what is heard on the master & booth outputs.
-            applyMasterEffects(iBufferSize, iSampleRate);
+            applyMasterEffects();
+
+            if (headphoneEnabled) {
+                processHeadphones(masterMixGainInHeadphones);
+            }
 
             // Apply master gain
-            // TODO(Be): make this not affect the headphones. Refer to
-            // https://bugs.launchpad.net/mixxx/+bug/1458213
             CSAMPLE master_gain = m_pMasterGain->get();
-            if (m_bRampingGain) {
-                SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld, master_gain,
-                                             iBufferSize);
-            } else {
-                SampleUtil::applyGain(m_pMaster, master_gain, iBufferSize);
-            }
+            SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld,
+                                         master_gain, m_iBufferSize);
             m_masterGainOld = master_gain;
+            if (!m_bExternalRecordBroadcastInputConnected) {
+                SampleUtil::copy(m_pSidechainMix, m_pMaster, m_iBufferSize);
+            }
 
             // The talkover signal Mixxx receives is delayed by the round trip latency.
             // There is an output latency between the time Mixxx processes the audio
@@ -647,15 +659,11 @@ void EngineMaster::process(const int iBufferSize) {
                 && !m_bExternalRecordBroadcastInputConnected) {
                 // Copy the master mix to a separate buffer before delaying it
                 // to avoid delaying the master output.
-                SampleUtil::copy(m_pSidechainMix, m_pMaster, iBufferSize);
-                m_pLatencyCompensationDelay->process(m_pSidechainMix, iBufferSize);
+                m_pLatencyCompensationDelay->process(m_pSidechainMix, m_iBufferSize);
                 SampleUtil::copy2WithGain(m_pSidechainMix,
                                           m_pSidechainMix, 1.0,
                                           m_pTalkover, 1.0,
-                                          iBufferSize);
-                m_ppSidechainOutput = &m_pSidechainMix;
-            } else {
-                m_ppSidechainOutput = &m_pMaster;
+                                          m_iBufferSize);
             }
         }
 
@@ -666,7 +674,21 @@ void EngineMaster::process(const int iBufferSize) {
         // so skip sending a buffer to m_pSidechain here.
         if (!m_bExternalRecordBroadcastInputConnected
             && m_pEngineSideChain != nullptr) {
-            m_pEngineSideChain->writeSamples(*m_ppSidechainOutput, iFrames);
+            m_pEngineSideChain->writeSamples(m_pSidechainMix, iFrames);
+        }
+
+        // Process effects that apply to master hardware output only but not
+        // record/broadcast signal
+        if (m_pEngineEffectsManager) {
+            GroupFeatureState masterFeatures;
+            masterFeatures.has_gain = true;
+            masterFeatures.gain = m_pMasterGain->get();
+            m_pEngineEffectsManager->processPostFaderInPlace(
+                    m_masterOutputHandle.handle(),
+                    m_masterHandle.handle(),
+                    m_pMaster,
+                    m_iBufferSize, m_iSampleRate,
+                    masterFeatures);
         }
 
         // Balance values
@@ -688,70 +710,25 @@ void EngineMaster::process(const int iBufferSize) {
 
         // Update VU meter (it does not return anything). Needs to be here so that
         // master balance and talkover is reflected in the VU meter.
-        if (m_pVumeter != NULL) {
-            m_pVumeter->process(m_pMaster, iBufferSize);
-        }
-
-        // Add master to headphone with appropriate gain
-        if (headphoneEnabled) {
-            if (m_bRampingGain) {
-                SampleUtil::addWithRampingGain(m_pHead, m_pMaster,
-                                               m_headphoneMasterGainOld,
-                                               cmaster_gain, iBufferSize);
-            } else {
-                SampleUtil::addWithGain(m_pHead, m_pMaster, cmaster_gain, iBufferSize);
-            }
-            m_headphoneMasterGainOld = cmaster_gain;
-        }
-    }
-
-    if (headphoneEnabled) {
-        // Process headphone channel effects
-        if (m_pEngineEffectsManager) {
-            GroupFeatureState headphoneFeatures;
-            m_pEngineEffectsManager->process(m_headphoneHandle.handle(),
-                                             m_pHead,
-                                             iBufferSize, iSampleRate,
-                                             headphoneFeatures);
-        }
-        // Head volume
-        CSAMPLE headphoneGain = m_pHeadGain->get();
-        if (m_bRampingGain) {
-            SampleUtil::applyRampingGain(m_pHead, m_headphoneGainOld,
-                                         headphoneGain, iBufferSize);
-        } else {
-            SampleUtil::applyGain(m_pHead, headphoneGain, iBufferSize);
-        }
-        m_headphoneGainOld = headphoneGain;
-    }
-
-    if (masterEnabled && headphoneEnabled) {
-        // If Head Split is enabled, replace the left channel of the pfl buffer
-        // with a mono mix of the headphone buffer, and the right channel of the pfl
-        // buffer with a mono mix of the master output buffer.
-        if (m_pHeadSplitEnabled->get()) {
-            // note: NOT VECTORIZED because of in place copy
-            for (int i = 0; i + 1 < iBufferSize; i += 2) {
-                m_pHead[i] = (m_pHead[i] + m_pHead[i + 1]) / 2;
-                m_pHead[i + 1] = (m_pMaster[i] + m_pMaster[i + 1]) / 2;
-            }
+        if (m_pVumeter != nullptr) {
+            m_pVumeter->process(m_pMaster, m_iBufferSize);
         }
     }
 
     if (m_pMasterMonoMixdown->get()) {
-        SampleUtil::mixStereoToMono(m_pMaster, m_pMaster, iBufferSize);
+        SampleUtil::mixStereoToMono(m_pMaster, m_pMaster, m_iBufferSize);
     }
 
     if (masterEnabled) {
-        m_pMasterDelay->process(m_pMaster, iBufferSize);
+        m_pMasterDelay->process(m_pMaster, m_iBufferSize);
     } else {
-        SampleUtil::clear(m_pMaster, iBufferSize);
+        SampleUtil::clear(m_pMaster, m_iBufferSize);
     }
     if (headphoneEnabled) {
-        m_pHeadDelay->process(m_pHead, iBufferSize);
+        m_pHeadDelay->process(m_pHead, m_iBufferSize);
     }
     if (boothEnabled) {
-        m_pBoothDelay->process(m_pBooth, iBufferSize);
+        m_pBoothDelay->process(m_pBooth, m_iBufferSize);
     }
 
     // We're close to the end of the callback. Wake up the engine worker
@@ -759,22 +736,50 @@ void EngineMaster::process(const int iBufferSize) {
     m_pWorkerScheduler->runWorkers();
 }
 
-void EngineMaster::applyMasterEffects(const int iBufferSize, const int iSampleRate) {
+void EngineMaster::applyMasterEffects() {
+    // Apply master effects
     if (m_pEngineEffectsManager) {
         GroupFeatureState masterFeatures;
         masterFeatures.has_gain = true;
         masterFeatures.gain = m_pMasterGain->get();
-        m_pEngineEffectsManager->process(m_masterHandle.handle(), m_pMaster,
-                                        iBufferSize, iSampleRate,
-                                        masterFeatures);
+        m_pEngineEffectsManager->processPostFaderInPlace(m_masterHandle.handle(),
+                                                         m_masterHandle.handle(),
+                                                         m_pMaster,
+                                                         m_iBufferSize, m_iSampleRate,
+                                                         masterFeatures);
     }
+}
+
+void EngineMaster::processHeadphones(const double masterMixGainInHeadphones) {
+    // Add master mix to headphones
+    SampleUtil::addWithRampingGain(m_pHead, m_pMaster,
+                                   m_headphoneMasterGainOld,
+                                   masterMixGainInHeadphones, m_iBufferSize);
+    m_headphoneMasterGainOld = masterMixGainInHeadphones;
+
+    // If Head Split is enabled, replace the left channel of the pfl buffer
+    // with a mono mix of the headphone buffer, and the right channel of the pfl
+    // buffer with a mono mix of the master output buffer.
+    if (m_pHeadSplitEnabled->get()) {
+        // note: NOT VECTORIZED because of in place copy
+        for (unsigned int i = 0; i + 1 < m_iBufferSize; i += 2) {
+            m_pHead[i] = (m_pHead[i] + m_pHead[i + 1]) / 2;
+            m_pHead[i + 1] = (m_pMaster[i] + m_pMaster[i + 1]) / 2;
+        }
+    }
+
+    // Apply headphone gain
+    CSAMPLE headphoneGain = m_pHeadGain->get();
+    SampleUtil::applyRampingGain(m_pHead, m_headphoneGainOld,
+                                headphoneGain, m_iBufferSize);
+    m_headphoneGainOld = headphoneGain;
 }
 
 void EngineMaster::addChannel(EngineChannel* pChannel) {
     ChannelInfo* pChannelInfo = new ChannelInfo(m_channels.size());
     pChannelInfo->m_pChannel = pChannel;
     const QString& group = pChannel->getGroup();
-    pChannelInfo->m_handle = m_channelHandleFactory.getOrCreateHandle(group);
+    pChannelInfo->m_handle = m_pChannelHandleFactory->getOrCreateHandle(group);
     pChannelInfo->m_pVolumeControl = new ControlAudioTaperPot(
             ConfigKey(group, "volume"), -20, 0, 1);
     pChannelInfo->m_pVolumeControl->setDefaultValue(1.0);
