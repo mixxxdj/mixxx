@@ -47,7 +47,7 @@ void AnalyzerQueue::slotWorkerThreadIdle() {
     // Consume any pending progress updates first
     readWorkerThreadProgress();
     while (!m_queuedTrackIds.empty()) {
-        emit(progress(kAnalysisProgressUnknown, m_dequeuedSize, m_queuedTrackIds.size()));
+        emit(progress(kAnalyzerProgressUnknown, m_dequeuedSize, m_queuedTrackIds.size()));
         TrackId nextTrackId = m_queuedTrackIds.head();
         DEBUG_ASSERT(nextTrackId.isValid());
         TrackPointer nextTrack = loadTrackById(nextTrackId);
@@ -77,7 +77,7 @@ void AnalyzerQueue::slotWorkerThreadExit() {
     emit(done());
 }
 
-void AnalyzerQueue::slotAnalyseTrack(TrackPointer track) {
+void AnalyzerQueue::slotAnalyzeTrack(TrackPointer track) {
     // This slot is called from the decks and and samplers when the track was loaded.
     VERIFY_OR_DEBUG_ASSERT(track) {
         return;
@@ -138,8 +138,8 @@ void AnalyzerQueue::readWorkerThreadProgress() {
     const auto readScope = m_workerThread.readProgress();
     if (readScope) {
         for (const auto trackWithProgress: readScope.tracksWithProgress()) {
-            if (trackWithProgress.second != kAnalysisProgressUnknown) {
-                trackWithProgress.first->setAnalysisProgress(trackWithProgress.second);
+            if (trackWithProgress.second != kAnalyzerProgressUnknown) {
+                trackWithProgress.first->setAnalyzerProgress(trackWithProgress.second);
             }
         }
         emitProgress(readScope.currentTrackProgress());

@@ -33,7 +33,7 @@ class AnalyzerQueue : public QObject {
     void done();
 
   public slots:
-    void slotAnalyseTrack(TrackPointer track);
+    void slotAnalyzeTrack(TrackPointer track);
 
   private slots:
     void slotWorkerThreadProgress();
@@ -43,7 +43,7 @@ class AnalyzerQueue : public QObject {
   private:
     TrackPointer loadTrackById(TrackId trackId);
     void readWorkerThreadProgress();
-    void emitProgress(int currentTrackProgress = kAnalysisProgressUnknown);
+    void emitProgress(int currentTrackProgress = kAnalyzerProgressUnknown);
 
     Library* m_library;
 

@@ -26,7 +26,7 @@
 #include "wskincolor.h"
 #include "widget/controlwidgetconnection.h"
 #include "track/track.h"
-#include "analyzer/analysisprogress.h"
+#include "analyzer/analyzerprogress.h"
 #include "util/math.h"
 #include "util/timer.h"
 #include "util/dnd.h"
@@ -187,9 +187,9 @@ void WOverview::slotAnalyzerProgress(int progress) {
         return;
     }
 
-    double analyzerProgress = analysisProgressValid(progress)
-            ? analysisProgressDouble(progress) : 0.0;
-    bool finalizing = progress == kAnalysisProgressFinalizing;
+    double analyzerProgress = analyzerProgressValid(progress)
+            ? analyzerProgressDouble(progress) : 0.0;
+    bool finalizing = progress == kAnalyzerProgressFinalizing;
 
     bool updateNeeded = drawNextPixmapPart();
     if (updateNeeded || (m_dAnalyzerProgress != analyzerProgress)) {
@@ -232,7 +232,7 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
         connect(pNewTrack.get(), SIGNAL(analyzerProgress(int)),
                 this, SLOT(slotAnalyzerProgress(int)));
 
-        slotAnalyzerProgress(pNewTrack->getAnalysisProgress());
+        slotAnalyzerProgress(pNewTrack->getAnalyzerProgress());
     } else {
         m_pCurrentTrack.reset();
         m_pWaveform.clear();

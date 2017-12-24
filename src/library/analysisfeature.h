@@ -66,7 +66,7 @@ class AnalysisFeature : public LibraryFeature {
 
     UserSettingsPointer m_pConfig;
     std::unique_ptr<AnalyzerQueue> m_pAnalyzerQueue;
-    // Used to temporarily enable BPM detection in the prefs before we analyse
+    // Used to temporarily enable BPM detection in the prefs before we analyze
     int m_iOldBpmEnabled;
     // The title returned by title()
     QVariant m_Title;

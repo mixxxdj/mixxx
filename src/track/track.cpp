@@ -7,7 +7,7 @@
 #include "track/trackref.h"
 #include "track/beatfactory.h"
 
-#include "analyzer/analysisprogress.h"
+#include "analyzer/analyzerprogress.h"
 
 #include "util/assert.h"
 #include "util/logger.h"
@@ -65,7 +65,7 @@ Track::Track(
           m_record(trackId),
           m_bDirty(false),
           m_bMarkedForMetadataExport(false),
-          m_analysisProgress(kAnalysisProgressUnknown) {
+          m_analyzerProgress(kAnalyzerProgressUnknown) {
 }
 
 //static
@@ -677,17 +677,17 @@ void Track::setWaveformSummary(ConstWaveformPointer pWaveform) {
     emit(waveformSummaryUpdated());
 }
 
-void Track::setAnalysisProgress(int progress) {
+void Track::setAnalyzerProgress(int progress) {
     // progress in 0 .. 1000. QAtomicInt so no need for lock.
-    int oldProgress = m_analysisProgress.fetchAndStoreAcquire(progress);
+    int oldProgress = m_analyzerProgress.fetchAndStoreAcquire(progress);
     if (progress != oldProgress) {
         emit(analyzerProgress(progress));
     }
 }
 
-int Track::getAnalysisProgress() const {
+int Track::getAnalyzerProgress() const {
     // QAtomicInt so no need for lock.
-    return load_atomic(m_analysisProgress);
+    return load_atomic(m_analyzerProgress);
 }
 
 void Track::setCuePoint(double cue) {

@@ -8,7 +8,7 @@
 #include <atomic>
 #include <vector>
 
-#include "analyzer/analysisprogress.h"
+#include "analyzer/analyzerprogress.h"
 #include "preferences/usersettings.h"
 #include "sources/audiosource.h"
 #include "track/track.h"
@@ -116,7 +116,7 @@ class AnalyzerThread : public QThread {
                         != m_tracksWithProgress.end());
                 return m_tracksWithProgress.find(m_currentTrack)->second;
             } else {
-                return kAnalysisProgressUnknown;
+                return kAnalyzerProgressUnknown;
             }
         }
 
@@ -188,7 +188,7 @@ class AnalyzerThread : public QThread {
 
     void waitForCurrentTrack();
 
-    void finishCurrentTrack(int currentTrackProgress = kAnalysisProgressUnknown);
+    void finishCurrentTrack(int currentTrackProgress = kAnalyzerProgressUnknown);
 
-    void emitProgress(int currentTrackProgress = kAnalysisProgressUnknown);
+    void emitProgress(int currentTrackProgress = kAnalyzerProgressUnknown);
 };

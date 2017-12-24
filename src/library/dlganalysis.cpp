@@ -3,7 +3,7 @@
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
 #include "widget/wanalysislibrarytableview.h"
-#include "analyzer/analysisprogress.h"
+#include "analyzer/analyzerprogress.h"
 #include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
 #include "library/dlganalysis.h"
@@ -157,9 +157,9 @@ void DlgAnalysis::slotAnalyzerQueueProgress(
         const int currentTrack = dequeuedSize;
         const int totalTracks = dequeuedSize + enqueuedSize;
         QString progressPercent;
-        if (analysisProgressValid(currentTrackProgress)) {
+        if (analyzerProgressValid(currentTrackProgress)) {
             progressPercent = QString::number(
-                    analysisProgressPercent(currentTrackProgress));
+                    analyzerProgressPercent(currentTrackProgress));
         } else {
             progressPercent = "--";
         }

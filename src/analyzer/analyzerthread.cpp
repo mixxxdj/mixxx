@@ -211,7 +211,7 @@ void AnalyzerThread::exec() {
     }
 
     // pAnalysisDao remains null if no analyzer needs database access.
-    // Currently only waveform analyses makes use of it.
+    // Currently only the waveform analyzer makes use of it.
     if (pAnalysisDao) {
         dbConnectionPooler = mixxx::DbConnectionPooler(m_pDbConnectionPool); // move assignment
         if (!dbConnectionPooler.isPooling()) {
@@ -259,7 +259,7 @@ void AnalyzerThread::exec() {
         }
 
         if (processTrack) {
-            emitProgress(kAnalysisProgressNone);
+            emitProgress(kAnalyzerProgressNone);
             const auto analysisResult = analyzeCurrentTrack(pAudioSource);
             DEBUG_ASSERT(analysisResult != AnalysisResult::Pending);
             if ((analysisResult == AnalysisResult::Complete) ||
@@ -270,21 +270,21 @@ void AnalyzerThread::exec() {
                 // session. A partial analysis would otherwise be repeated again
                 // and again, because it is very unlikely that the error vanishes
                 // suddenly.
-                emitProgress(kAnalysisProgressFinalizing);
+                emitProgress(kAnalyzerProgressFinalizing);
                 // This takes around 3 sec on a Atom Netbook
                 for (auto const& pAnalyzer: m_analyzers) {
                     pAnalyzer->finalize(m_currentTrack);
                 }
-                finishCurrentTrack(kAnalysisProgressDone);
+                finishCurrentTrack(kAnalyzerProgressDone);
             } else {
                 for (auto const& pAnalyzer: m_analyzers) {
                     pAnalyzer->cleanup(m_currentTrack);
                 }
-                finishCurrentTrack(kAnalysisProgressNone);
+                finishCurrentTrack(kAnalyzerProgressNone);
             }
         } else {
             kLogger.debug() << "Skipping track analysis because no analyzer initialized.";
-            finishCurrentTrack(kAnalysisProgressDone);
+            finishCurrentTrack(kAnalyzerProgressDone);
         }
         // All references to the track object within the analysis thread
         // should have been released to avoid exporting metadata or updating
@@ -341,7 +341,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeCurrentTrack(
             kAnalysisFramesPerBlock);
     DEBUG_ASSERT(audioSourceProxy.channelCount() == kAnalysisChannels);
 
-    emitProgress(kAnalysisProgressNone);
+    emitProgress(kAnalyzerProgressNone);
 
     mixxx::IndexRange remainingFrames = pAudioSource->frameIndexRange();
     auto result = remainingFrames.empty() ? AnalysisResult::Complete : AnalysisResult::Pending;
@@ -401,7 +401,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeCurrentTrack(
         const double frameProgress =
                 double(pAudioSource->frameLength() - remainingFrames.length()) /
                 double(pAudioSource->frameLength());
-        const int trackProgress = frameProgress * kAnalysisProgressFinalizing;
+        const int trackProgress = frameProgress * kAnalyzerProgressFinalizing;
         emitProgress(trackProgress);
     }
 
