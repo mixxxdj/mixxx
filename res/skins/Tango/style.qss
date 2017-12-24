@@ -688,12 +688,6 @@ padding-left: 2px;
     text-align: left;
     background-color: #333;
     }
-  WLabel#DeckFxIndicator {
-    font-weight: bold;
-    color: #ff8f00;
-    padding-top: 1px;
-    background-color: #333;
-  }
 
 #ArtistTitleTime {
   qproperty-layoutAlignment: 'AlignVCenter';
@@ -1278,10 +1272,21 @@ decks, samplers, mic, aux */
 ######  Effects  ###############################################
 ##############################################################*/
 
-#FxUnitLabel {
-  font-size: 14px/14px;
+#FxUnitLabel,
+#FxUnitLabel1,
+#FxUnitLabel2,
+#FxUnitLabel3,
+#FxUnitLabel4 {
+  font-size: 14px/12px;
   font-weight: bold;
   color: #888;
+}
+
+#FxUnitLabel1, #FxUnitLabel3 {
+  qproperty-alignment: right;
+}
+#FxUnitLabel2, #FxUnitLabel4 {
+  qproperty-alignment: left;
 }
 
 #FxUnitMixerLeft,
@@ -1697,6 +1702,9 @@ decks, samplers, mic, aux */
   border-radius: 2px;
   background-color: #333;
   }
+#MixerbarSection WPushButton {
+  font-size: 11px/13px;
+  }
   #FxAssignButton[displayValue="0"] {
     color: #888;
     }
@@ -1936,7 +1944,7 @@ QToolTip {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
 }
 #AlignRight {
-qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
 }
 #AlignRightCenter {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
