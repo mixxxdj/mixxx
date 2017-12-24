@@ -69,7 +69,8 @@ void AnalyzerQueue::slotWorkerThreadIdle() {
         // Exit loop and function to continue with analysis
         return;
     }
-    m_workerThread.stop();
+    readWorkerThreadProgress();
+    emit(empty());
 }
 
 void AnalyzerQueue::slotWorkerThreadExit() {
@@ -86,6 +87,11 @@ void AnalyzerQueue::slotAnalyseTrack(TrackPointer track) {
 }
 
 int AnalyzerQueue::enqueueTrackId(TrackId trackId) {
+    VERIFY_OR_DEBUG_ASSERT(m_workerThread) {
+        qWarning()
+                << "No worker thread";
+        return m_queuedTrackIds.size();
+    }
     VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
         qWarning()
                 << "Cannot enqueue track with invalid id"
@@ -103,12 +109,11 @@ int AnalyzerQueue::enqueueTrackId(TrackId trackId) {
 }
 
 void AnalyzerQueue::resume() {
-    if (m_workerThread) {
-        m_workerThread.wake();
-    } else {
+    VERIFY_OR_DEBUG_ASSERT(m_workerThread) {
         qWarning()
                 << "No worker thread";
     }
+    m_workerThread.wake();
 }
 
 void AnalyzerQueue::cancel() {
@@ -129,7 +134,7 @@ TrackPointer AnalyzerQueue::loadTrackById(TrackId trackId) {
     return track;
 }
 
-bool AnalyzerQueue::readWorkerThreadProgress() {
+void AnalyzerQueue::readWorkerThreadProgress() {
     const auto readScope = m_workerThread.readProgress();
     if (readScope) {
         for (const auto trackWithProgress: readScope.tracksWithProgress()) {
@@ -138,11 +143,5 @@ bool AnalyzerQueue::readWorkerThreadProgress() {
             }
         }
         emitProgress(readScope.currentTrackProgress());
-        return true;
-    } else {
-        // Check if all pending updates have been consumed so far
-        // for deciding whether it is safe to signal idleness of
-        // the queue.
-        return readScope.empty();
     }
 }

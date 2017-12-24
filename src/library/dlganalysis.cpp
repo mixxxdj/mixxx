@@ -157,10 +157,9 @@ void DlgAnalysis::slotAnalyzerQueueProgress(
         const int currentTrack = dequeuedSize;
         const int totalTracks = dequeuedSize + enqueuedSize;
         QString progressPercent;
-        if (currentTrackProgress >= kAnalysisProgressNone) {
+        if (analysisProgressValid(currentTrackProgress)) {
             progressPercent = QString::number(
-                    (math_min(currentTrackProgress, kAnalysisProgressDone) - kAnalysisProgressNone) /
-                    (kAnalysisProgressDone - kAnalysisProgressNone));
+                    analysisProgressPercent(currentTrackProgress));
         } else {
             progressPercent = "--";
         }

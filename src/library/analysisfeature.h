@@ -49,8 +49,8 @@ class AnalysisFeature : public LibraryFeature {
 
   private slots:
     void slotAnalyzerQueueProgress(int currentTrackProgress, int dequeuedSize, int enqueuedSize);
+    void slotAnalyzerQueueEmptyOrDone();
     void stopAnalysis();
-    void cleanupAnalyzer();
 
   private:
     // Sets the title of this feature to the default name, given by

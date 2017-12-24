@@ -29,6 +29,7 @@ class AnalyzerQueue : public QObject {
 
   signals:
     void progress(int currentTrackProgress, int dequeuedSize, int enqueuedSize);
+    void empty();
     void done();
 
   public slots:
@@ -41,7 +42,7 @@ class AnalyzerQueue : public QObject {
 
   private:
     TrackPointer loadTrackById(TrackId trackId);
-    bool readWorkerThreadProgress();
+    void readWorkerThreadProgress();
     void emitProgress(int currentTrackProgress = kAnalysisProgressUnknown);
 
     Library* m_library;

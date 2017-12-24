@@ -35,9 +35,7 @@ AnalysisFeature::AnalysisFeature(
 AnalysisFeature::~AnalysisFeature() {
     // TODO(XXX) delete these
     //delete m_pLibraryTableModel;
-    cleanupAnalyzer();
 }
-
 
 void AnalysisFeature::setTitleDefault() {
     m_Title = m_analysisTitleName;
@@ -136,8 +134,10 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
                 m_pAnalysisView, SLOT(slotAnalyzerQueueProgress(int, int, int)));
         connect(m_pAnalyzerQueue.get(), SIGNAL(progress(int, int, int)),
                 this, SLOT(slotAnalyzerQueueProgress(int, int, int)));
+        connect(m_pAnalyzerQueue.get(), SIGNAL(empty()),
+                this, SLOT(slotAnalyzerQueueEmptyOrDone()));
         connect(m_pAnalyzerQueue.get(), SIGNAL(done()),
-                this, SLOT(cleanupAnalyzer()));
+                this, SLOT(slotAnalyzerQueueEmptyOrDone()));
 
         emit(analysisActive(true));
     }
@@ -163,15 +163,7 @@ void AnalysisFeature::slotAnalyzerQueueProgress(
     }
 }
 
-void AnalysisFeature::stopAnalysis() {
-    //qDebug() << this << "stopAnalysis()";
-    if (m_pAnalyzerQueue) {
-        m_pAnalyzerQueue->cancel();
-    }
-}
-
-void AnalysisFeature::cleanupAnalyzer() {
-    //qDebug() << this << "cleanupAnalyzer()";
+void AnalysisFeature::slotAnalyzerQueueEmptyOrDone() {
     if (m_pAnalyzerQueue) {
         m_pAnalyzerQueue->cancel();
         m_pAnalyzerQueue->deleteLater();
@@ -183,6 +175,13 @@ void AnalysisFeature::cleanupAnalyzer() {
     }
     setTitleDefault();
     emit(analysisActive(false));
+}
+
+void AnalysisFeature::stopAnalysis() {
+    //qDebug() << this << "stopAnalysis()";
+    if (m_pAnalyzerQueue) {
+        m_pAnalyzerQueue->cancel();
+    }
 }
 
 bool AnalysisFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {

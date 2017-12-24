@@ -3,6 +3,7 @@
 #include <QThread>
 #include <QMutex>
 #include <QWaitCondition>
+#include <QElapsedTimer>
 
 #include <atomic>
 #include <vector>
@@ -46,18 +47,6 @@ class AnalyzerThread : public QThread {
     class Progress {
       public:
         Progress();
-
-        // Returns true if this was the first successful write
-        // operation while idling. If false is returned the
-        // write operation has either been rejected because
-        // a read operation is in progress or the write operation
-        // has succeeded and updated the results of a previous
-        // write operation that has not been read yet. Only a
-        // result of true requires further action.
-        bool tryWrite(
-                TracksWithProgress* previousTracksWithProgress,
-                TrackPointer /*nullable*/ currentTrack,
-                int currenTrackProgress);
 
         friend class ReadScope;
         class ReadScope final {
@@ -115,6 +104,11 @@ class AnalyzerThread : public QThread {
 
       private:
         void reset();
+
+        bool tryWrite(
+                TracksWithProgress* previousTracksWithProgress,
+                TrackPointer /*nullable*/ currentTrack,
+                int currenTrackProgress);
 
         int currentTrackProgress() const {
             if (m_currentTrack) {
@@ -178,6 +172,8 @@ class AnalyzerThread : public QThread {
     TracksWithProgress m_previousTracksWithProgress;
 
     TrackPointer m_currentTrack;
+
+    QElapsedTimer m_lastProgressElapsedTimer;
 
     enum class AnalysisResult {
         Pending,

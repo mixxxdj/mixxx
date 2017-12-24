@@ -35,7 +35,7 @@ const SINT kAnalysisSamplesPerBlock =
         kAnalysisFramesPerBlock * kAnalysisChannels;
 
 // Maximum frequency of progress updates
-constexpr int kProgressStateInhibitMillis = 100;
+constexpr quint64 kProgressInhibitMillis = 100;
 
 // Progress states
 constexpr int kProgressStateEmpty   = 0;
@@ -56,7 +56,6 @@ bool AnalyzerThread::Progress::tryWrite(
         TrackPointer currentTrack,
         int currentTrackProgress) {
     DEBUG_ASSERT(previousTracksWithProgress);
-    bool progressChanged = false;
     int stateEmpty = kProgressStateEmpty;
     bool wasEmpty = m_state.compare_exchange_strong(
             stateEmpty,
@@ -78,35 +77,28 @@ bool AnalyzerThread::Progress::tryWrite(
                 }
             }
             previousTracksWithProgress->clear();
-            // Simply assume that something must have changed.
-            // It is just too tedious to check for individual
-            // changes.
-            progressChanged = true;
         }
+        bool currentTrackModified = m_currentTrack != currentTrack;
         if (currentTrack) {
             DEBUG_ASSERT(!m_currentTrack ||
                     (m_tracksWithProgress.find(m_currentTrack) != m_tracksWithProgress.end()));
             const auto i = m_tracksWithProgress.find(currentTrack);
             if (i == m_tracksWithProgress.end()) {
                 m_tracksWithProgress[currentTrack] = currentTrackProgress;
-                progressChanged = true;
-            } else if (i->second != currentTrackProgress) {
+            } else {
                 i->second = currentTrackProgress;
-                progressChanged = true;
             }
             m_currentTrack = currentTrack;
         } else {
-            if (m_currentTrack) {
-                m_currentTrack.reset();
-                progressChanged = true;
-            }
+            m_currentTrack.reset();
         }
-        if (wasEmpty && !progressChanged) {
-            // Still empty, nothing to do
-            m_state.store(kProgressStateEmpty);
-        } else {
+        if (currentTrackModified || !m_tracksWithProgress.empty()) {
             // Allow the main thread to consume progress info updates
             m_state.store(kProgressStateReady);
+            return true;
+        } else {
+            // Empty, nothing to read
+            m_state.store(kProgressStateEmpty);
         }
     } else {
         // Ensure that track references are not dropped within the
@@ -116,7 +108,7 @@ bool AnalyzerThread::Progress::tryWrite(
             (*previousTracksWithProgress)[currentTrack] = currentTrackProgress;
         }
     }
-    return wasEmpty && progressChanged;
+    return false;
 }
 
 void AnalyzerThread::Progress::reset() {
@@ -344,14 +336,12 @@ void AnalyzerThread::waitForCurrentTrack() {
 AnalyzerThread::AnalysisResult AnalyzerThread::analyzeCurrentTrack(
         mixxx::AudioSourcePointer pAudioSource) {
 
-    QTime progressInhibitTimer;
-    progressInhibitTimer.start();
-    int currentTrackProgress = kAnalysisProgressUnknown;
-
     mixxx::AudioSourceStereoProxy audioSourceProxy(
             pAudioSource,
             kAnalysisFramesPerBlock);
     DEBUG_ASSERT(audioSourceProxy.channelCount() == kAnalysisChannels);
+
+    emitProgress(kAnalysisProgressNone);
 
     mixxx::IndexRange remainingFrames = pAudioSource->frameIndexRange();
     auto result = remainingFrames.empty() ? AnalysisResult::Complete : AnalysisResult::Pending;
@@ -411,17 +401,8 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeCurrentTrack(
         const double frameProgress =
                 double(pAudioSource->frameLength() - remainingFrames.length()) /
                 double(pAudioSource->frameLength());
-        const int newTrackProgressState = frameProgress * kAnalysisProgressFinalizing;
-        if ((currentTrackProgress != newTrackProgressState) ||
-                !m_previousTracksWithProgress.empty()) {
-            // The progress for the current track has changed or there
-            // are pending progress updates from a previous analysis
-            if (progressInhibitTimer.elapsed() > kProgressStateInhibitMillis) {
-                emitProgress(newTrackProgressState);
-                progressInhibitTimer.start();
-            }
-        }
-        currentTrackProgress = newTrackProgressState;
+        const int trackProgress = frameProgress * kAnalysisProgressFinalizing;
+        emitProgress(trackProgress);
     }
 
     return result;
@@ -433,7 +414,18 @@ void AnalyzerThread::emitProgress(int currentTrackProgress) {
             &m_previousTracksWithProgress,
             m_currentTrack,
             currentTrackProgress)) {
-        emit(progress());
+        quint64 elapsedMillis;
+        if (m_lastProgressElapsedTimer.isValid()) {
+            elapsedMillis = m_lastProgressElapsedTimer.elapsed();
+            if (elapsedMillis >= kProgressInhibitMillis) {
+                m_lastProgressElapsedTimer.restart();
+                emit(progress());
+            }
+        } else {
+            // 1st signal
+            m_lastProgressElapsedTimer.start();
+            emit(progress());
+        }
     }
 }
 

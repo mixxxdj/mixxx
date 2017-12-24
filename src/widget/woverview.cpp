@@ -187,7 +187,8 @@ void WOverview::slotAnalyzerProgress(int progress) {
         return;
     }
 
-    double analyzerProgress = progress / double(kAnalysisProgressDone);
+    double analyzerProgress = analysisProgressValid(progress)
+            ? analysisProgressDouble(progress) : 0.0;
     bool finalizing = progress == kAnalysisProgressFinalizing;
 
     bool updateNeeded = drawNextPixmapPart();
