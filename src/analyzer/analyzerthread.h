@@ -29,6 +29,7 @@ class AnalyzerThread : public QThread {
 
   public:
     AnalyzerThread(
+            int id,
             mixxx::DbConnectionPoolPtr pDbConnectionPool,
             UserSettingsPointer pConfig,
             AnalyzerMode mode = AnalyzerMode::Default);
@@ -132,11 +133,11 @@ class AnalyzerThread : public QThread {
 
   signals:
     // Ask for more work
-    void idle();
+    void idle(int id);
     // Report progress
-    void progress();
+    void progress(int id);
     // Notify about imminent death just before exiting (last signal)
-    void exit();
+    void exit(int id);
 
   protected:
     void run() override;
@@ -144,6 +145,8 @@ class AnalyzerThread : public QThread {
   private:
     /////////////////////////////////////////////////////////////////////////
     // Immutable
+
+    const int m_id;
 
     const mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
     const UserSettingsPointer m_pConfig;

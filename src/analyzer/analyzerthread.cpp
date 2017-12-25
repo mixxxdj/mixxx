@@ -150,10 +150,12 @@ AnalyzerThread::Progress::ReadScope::~ReadScope() {
 }
 
 AnalyzerThread::AnalyzerThread(
+        int id,
         mixxx::DbConnectionPoolPtr pDbConnectionPool,
         UserSettingsPointer pConfig,
         AnalyzerMode mode)
-        : m_pDbConnectionPool(std::move(pDbConnectionPool)),
+        : m_id(id),
+          m_pDbConnectionPool(std::move(pDbConnectionPool)),
           m_pConfig(std::move(pConfig)),
           m_mode(mode),
           m_run(true),
@@ -183,7 +185,7 @@ void AnalyzerThread::run() {
     kLogger.debug() << "Exiting";
 
     m_run.store(false);
-    emit(exit());
+    emit(exit(m_id));
 }
 
 void AnalyzerThread::exec() {
@@ -327,7 +329,7 @@ void AnalyzerThread::waitForCurrentTrack() {
             return;
         }
         kLogger.debug() << "Suspending";
-        emit(idle());
+        emit(idle(m_id));
         m_nextTrackWaitCond.wait(locked);
         kLogger.debug() << "Resuming";
     }
@@ -419,7 +421,7 @@ void AnalyzerThread::emitProgress(int currentTrackProgress) {
         const auto now = Clock::now();
         if (now >= (m_lastProgressEmittedAt + kProgressInhibitDuration)) {
             m_lastProgressEmittedAt = now;
-            emit(progress());
+            emit(progress(m_id));
         }
     }
 }
