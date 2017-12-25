@@ -48,12 +48,12 @@ void AnalyzerQueue::slotWorkerThreadIdle() {
     readWorkerThreadProgress();
     while (!m_queuedTrackIds.empty()) {
         emit(progress(kAnalyzerProgressUnknown, m_dequeuedSize, m_queuedTrackIds.size()));
-        TrackId nextTrackId = m_queuedTrackIds.head();
+        TrackId nextTrackId = m_queuedTrackIds.front();
         DEBUG_ASSERT(nextTrackId.isValid());
         TrackPointer nextTrack = loadTrackById(nextTrackId);
         if (!nextTrack) {
             // Skip unloadable track
-            m_queuedTrackIds.dequeue();
+            m_queuedTrackIds.pop_front();
             ++m_dequeuedSize;
             continue;
         }
@@ -61,7 +61,7 @@ void AnalyzerQueue::slotWorkerThreadIdle() {
             // Try again later
             return;
         }
-        m_queuedTrackIds.dequeue();
+        m_queuedTrackIds.pop_front();
         ++m_dequeuedSize;
         kLogger.debug()
                 << "Continuing analysis with next track"
@@ -101,7 +101,7 @@ int AnalyzerQueue::enqueueTrackId(TrackId trackId) {
     kLogger.debug()
             << "Enqueuing track with id"
             << trackId;
-    m_queuedTrackIds.enqueue(trackId);
+    m_queuedTrackIds.push_back(trackId);
     // Don't wake up the paused thread now to avoid race conditions
     // if multiple threads are added in a row. The caller is
     // responsible to finish the enqueuing of tracks with resumeThread().

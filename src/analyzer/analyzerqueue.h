@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QQueue>
+#include <deque>
 
 #include "analyzer/analyzerthread.h"
 
@@ -49,7 +49,7 @@ class AnalyzerQueue : public QObject {
 
     int m_dequeuedSize;
 
-    QQueue<TrackId> m_queuedTrackIds;
+    std::deque<TrackId> m_queuedTrackIds;
 
     AnalyzerThread m_workerThread;
 };
