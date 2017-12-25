@@ -81,11 +81,10 @@ FilterGroupState::FilterGroupState(const mixxx::EngineParameters& bufferParamete
 }
 
 void FilterGroupState::engineParametersChanged(const mixxx::EngineParameters& bufferParameters) {
-    m_pBuf = SampleUtil::alloc(bufferParameters.samplesPerBuffer());
+    m_buffer = mixxx::SampleBuffer(bufferParameters.samplesPerBuffer());
 }
 
 FilterGroupState::~FilterGroupState() {
-    delete m_pBuf;
     delete m_pLowFilter;
     delete m_pHighFilter;
 }
@@ -149,8 +148,8 @@ void FilterEffect::processChannel(const ChannelHandle& handle,
         pState->m_pHighFilter->setFrequencyCorners(1, hpf, clampedQ);
     }
 
-    const CSAMPLE* pLpfInput = pState->m_pBuf;
-    CSAMPLE* pHpfOutput = pState->m_pBuf;
+    const CSAMPLE* pLpfInput = pState->m_buffer.data();
+    CSAMPLE* pHpfOutput = pState->m_buffer.data();
     if (lpf >= maxCornerNormalized && pState->m_loFreq >= maxCornerNormalized) {
         // Lpf disabled Hpf can write directly to output
         pHpfOutput = pOutput;
