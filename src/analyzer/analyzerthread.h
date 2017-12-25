@@ -1,11 +1,11 @@
 #pragma once
 
 #include <QThread>
-#include <QMutex>
-#include <QWaitCondition>
 #include <QElapsedTimer>
 
 #include <atomic>
+#include <condition_variable>
+#include <mutex>
 #include <vector>
 
 #include "analyzer/analyzerprogress.h"
@@ -154,8 +154,8 @@ class AnalyzerThread : public QThread {
 
     std::atomic<bool> m_run;
 
-    mutable QMutex m_nextTrackMutex;
-    QWaitCondition m_nextTrackWaitCond;
+    std::mutex m_nextTrackMutex;
+    std::condition_variable m_nextTrackWaitCond;
 
     TrackPointer m_nextTrack;
 

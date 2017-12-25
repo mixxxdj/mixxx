@@ -297,12 +297,12 @@ void AnalyzerThread::exec() {
 }
 
 bool AnalyzerThread::wake(const TrackPointer& nextTrack) {
-    QMutexLocker locked(&m_nextTrackMutex);
+    std::lock_guard<std::mutex> locked(m_nextTrackMutex);
     if (!m_nextTrack) {
         m_nextTrack = nextTrack;
     }
     if (!nextTrack || (m_nextTrack == nextTrack)) {
-        m_nextTrackWaitCond.wakeOne();
+        m_nextTrackWaitCond.notify_one();
         return true;
     } else {
         return false;
@@ -311,13 +311,13 @@ bool AnalyzerThread::wake(const TrackPointer& nextTrack) {
 
 void AnalyzerThread::stop() {
     m_run.store(false);
-    m_nextTrackWaitCond.wakeOne();
+    m_nextTrackWaitCond.notify_one();
 }
 
 void AnalyzerThread::waitForCurrentTrack() {
     DEBUG_ASSERT(!m_currentTrack);
 
-    QMutexLocker locked(&m_nextTrackMutex);
+    std::unique_lock<std::mutex> locked(m_nextTrackMutex);
     while (!(m_currentTrack = std::move(m_nextTrack))) {
         DEBUG_ASSERT(!m_currentTrack);
         DEBUG_ASSERT(!m_nextTrack);
@@ -326,7 +326,7 @@ void AnalyzerThread::waitForCurrentTrack() {
         }
         kLogger.debug() << "Suspending";
         emit(idle());
-        m_nextTrackWaitCond.wait(&m_nextTrackMutex);
+        m_nextTrackWaitCond.wait(locked);
         kLogger.debug() << "Resuming";
     }
     DEBUG_ASSERT(m_currentTrack);
