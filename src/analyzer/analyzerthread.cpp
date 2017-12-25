@@ -35,7 +35,7 @@ const SINT kAnalysisSamplesPerBlock =
         kAnalysisFramesPerBlock * kAnalysisChannels;
 
 // Maximum frequency of progress updates
-constexpr quint64 kProgressInhibitMillis = 100;
+constexpr std::chrono::milliseconds kProgressInhibitDuration(100);
 
 // Progress states
 constexpr int kProgressStateEmpty   = 0;
@@ -157,7 +157,9 @@ AnalyzerThread::AnalyzerThread(
           m_pConfig(std::move(pConfig)),
           m_mode(mode),
           m_run(true),
-          m_sampleBuffer(kAnalysisSamplesPerBlock) {
+          m_sampleBuffer(kAnalysisSamplesPerBlock),
+          // The first signal should always be emitted
+          m_lastProgressEmittedAt(Clock::now() - kProgressInhibitDuration) {
 }
 
 AnalyzerThread::~AnalyzerThread() {
@@ -414,16 +416,9 @@ void AnalyzerThread::emitProgress(int currentTrackProgress) {
             &m_previousTracksWithProgress,
             m_currentTrack,
             currentTrackProgress)) {
-        quint64 elapsedMillis;
-        if (m_lastProgressElapsedTimer.isValid()) {
-            elapsedMillis = m_lastProgressElapsedTimer.elapsed();
-            if (elapsedMillis >= kProgressInhibitMillis) {
-                m_lastProgressElapsedTimer.restart();
-                emit(progress());
-            }
-        } else {
-            // 1st signal
-            m_lastProgressElapsedTimer.start();
+        const auto now = Clock::now();
+        if (now >= (m_lastProgressEmittedAt + kProgressInhibitDuration)) {
+            m_lastProgressEmittedAt = now;
             emit(progress());
         }
     }

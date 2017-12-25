@@ -1,9 +1,9 @@
 #pragma once
 
 #include <QThread>
-#include <QElapsedTimer>
 
 #include <atomic>
+#include <chrono>
 #include <condition_variable>
 #include <mutex>
 #include <vector>
@@ -173,7 +173,8 @@ class AnalyzerThread : public QThread {
 
     TrackPointer m_currentTrack;
 
-    QElapsedTimer m_lastProgressElapsedTimer;
+    typedef std::chrono::steady_clock Clock;
+    Clock::time_point m_lastProgressEmittedAt;
 
     enum class AnalysisResult {
         Pending,
