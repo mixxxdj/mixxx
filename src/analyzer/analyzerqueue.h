@@ -16,7 +16,6 @@ class AnalyzerQueue : public QObject {
 
   public:
     // TODO: Use multiple worker threads
-    // NOTE(uklotzde, 2017-12-25): VampPluginLpoader is NOT thread-safe!!!
     static constexpr int kWorkerThreadCount = 1;
 
     AnalyzerQueue(

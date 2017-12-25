@@ -27,6 +27,8 @@ Vamp::HostExt::PluginLoader* s_pPluginLoader = nullptr;
 
 std::once_flag s_initPluginLoaderOnceFlag;
 
+std::mutex s_mutex;
+
 inline
 QString toNativeEnvPath(const QDir& dir) {
     return QDir::toNativeSeparators(dir.absolutePath());
@@ -150,22 +152,26 @@ VampPluginLoader::VampPluginLoader() {
 
 Vamp::HostExt::PluginLoader::PluginKey VampPluginLoader::composePluginKey(
     std::string libraryName, std::string identifier) {
+    std::lock_guard<std::mutex> locked(s_mutex);
     return s_pPluginLoader->composePluginKey(
         libraryName, identifier);
 }
 
 Vamp::HostExt::PluginLoader::PluginCategoryHierarchy VampPluginLoader::getPluginCategory(
     Vamp::HostExt::PluginLoader::PluginKey plugin) {
+    std::lock_guard<std::mutex> locked(s_mutex);
     return s_pPluginLoader->getPluginCategory(plugin);
 }
 
 Vamp::HostExt::PluginLoader::PluginKeyList VampPluginLoader::listPlugins() {
+    std::lock_guard<std::mutex> locked(s_mutex);
     return s_pPluginLoader->listPlugins();
 }
 
 Vamp::Plugin* VampPluginLoader::loadPlugin(
     Vamp::HostExt::PluginLoader::PluginKey key,
     float inputSampleRate, int adapterFlags) {
+    std::lock_guard<std::mutex> locked(s_mutex);
     return s_pPluginLoader->loadPlugin(
         key, inputSampleRate, adapterFlags);
 }
