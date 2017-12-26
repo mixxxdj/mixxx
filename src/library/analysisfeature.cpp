@@ -20,6 +20,22 @@
 
 const QString AnalysisFeature::m_sAnalysisViewName = QString("Analysis");
 
+namespace {
+
+constexpr int kNumberOfAnalyzerThreads = 1;
+
+inline
+AnalyzerMode getAnalyzerMode(
+        const UserSettingsPointer& pConfig) {
+    if (pConfig->getValue<bool>(ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"), true)) {
+        return AnalyzerMode::WithWaveform;
+    } else {
+        return AnalyzerMode::WithoutWaveform;
+    }
+}
+
+} // anonymous namespace
+
 AnalysisFeature::AnalysisFeature(
         Library* parent,
         UserSettingsPointer pConfig) :
@@ -105,18 +121,6 @@ void AnalysisFeature::activate() {
     emit(enableCoverArtDisplay(true));
 }
 
-namespace {
-    inline
-    AnalyzerMode getAnalyzerMode(
-            const UserSettingsPointer& pConfig) {
-        if (pConfig->getValue<bool>(ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"), true)) {
-            return AnalyzerMode::WithWaveform;
-        } else {
-            return AnalyzerMode::WithoutWaveform;
-        }
-    }
-} // anonymous namespace
-
 void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
     if (!m_pAnalyzerQueue) {
         // Save the old BPM detection prefs setting (on or off)
@@ -127,6 +131,7 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
 
         m_pAnalyzerQueue = std::make_unique<AnalyzerQueue>(
                 m_library,
+                kNumberOfAnalyzerThreads,
                 m_pConfig,
                 getAnalyzerMode(m_pConfig));
 

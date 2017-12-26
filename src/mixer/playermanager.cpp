@@ -23,6 +23,13 @@
 #include "util/stat.h"
 #include "util/sleepableqthread.h"
 
+
+namespace {
+
+constexpr int kNumberOfAnalyzerThreads = 1;
+
+} // anonymous namespace
+
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                              SoundManager* pSoundManager,
                              EffectsManager* pEffectsManager,
@@ -109,7 +116,7 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
             pLibrary, SLOT(slotLoadLocationToPlayer(QString, QString)));
 
     DEBUG_ASSERT(!m_pAnalyzerQueue);
-    m_pAnalyzerQueue = std::make_unique<AnalyzerQueue>(pLibrary, m_pConfig);
+    m_pAnalyzerQueue = std::make_unique<AnalyzerQueue>(pLibrary, kNumberOfAnalyzerThreads, m_pConfig);
 
     // Connect the player to the analyzer queue so that loaded tracks are
     // analyzed.

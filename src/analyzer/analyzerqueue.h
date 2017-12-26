@@ -1,7 +1,7 @@
 #pragma once
 
-#include <array>
 #include <deque>
+#include <vector>
 
 #include "analyzer/analyzerthread.h"
 
@@ -15,11 +15,9 @@ class AnalyzerQueue : public QObject {
     Q_OBJECT
 
   public:
-    // TODO: Use multiple worker threads
-    static constexpr int kWorkerThreadCount = 1;
-
     AnalyzerQueue(
             Library* library,
+            int numWorkerThreads,
             UserSettingsPointer pConfig,
             AnalyzerMode mode = AnalyzerMode::Default);
     ~AnalyzerQueue() override = default;
@@ -34,7 +32,7 @@ class AnalyzerQueue : public QObject {
     void cancel();
 
   signals:
-    void progress(int currentTrackProgress, int dequeuedSize, int enqueuedSize);
+    void progress(int avgCurrentTrackProgress, int dequeuedSize, int enqueuedSize);
     void empty();
     void done();
 
@@ -48,14 +46,17 @@ class AnalyzerQueue : public QObject {
 
   private:
     TrackPointer loadTrackById(TrackId trackId);
-    void readWorkerThreadProgress(int threadId);
-    void emitProgress(int threadId, int currentTrackProgress = kAnalyzerProgressUnknown);
+    void updateProgress(AnalyzerThread& workerThread);
+    void emitProgress();
 
     Library* m_library;
 
     int m_dequeuedSize;
 
+    typedef std::chrono::steady_clock Clock;
+    Clock::time_point m_lastProgressEmittedAt;
+
     std::deque<TrackId> m_queuedTrackIds;
 
-    std::array<std::unique_ptr<AnalyzerThread>, kWorkerThreadCount> m_workerThreads;
+    std::vector<std::unique_ptr<AnalyzerThread>> m_workerThreads;
 };

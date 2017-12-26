@@ -158,8 +158,10 @@ AnalyzerThread::AnalyzerThread(
           m_pDbConnectionPool(std::move(pDbConnectionPool)),
           m_pConfig(std::move(pConfig)),
           m_mode(mode),
+          m_currentTrackProgress(kAnalyzerProgressUnknown),
           m_run(true),
           m_sampleBuffer(kAnalysisSamplesPerBlock),
+          m_idling(false),
           // The first signal should always be emitted
           m_lastProgressEmittedAt(Clock::now() - kProgressInhibitDuration) {
 }
@@ -178,11 +180,11 @@ void AnalyzerThread::run() {
     const int instanceId = s_instanceCounter.fetch_add(1) + 1;
     QThread::currentThread()->setObjectName(QString("AnalyzerThread %1").arg(instanceId));
 
-    kLogger.debug() << "Running";
+    kLogger.debug() << "Running" << m_id;
 
     exec();
 
-    kLogger.debug() << "Exiting";
+    kLogger.debug() << "Exiting" << m_id;
 
     m_run.store(false);
     emit(exit(m_id));
@@ -328,13 +330,17 @@ void AnalyzerThread::waitForCurrentTrack() {
         if (!m_run.load()) {
             return;
         }
-        kLogger.debug() << "Suspending";
-        emit(idle(m_id));
+        kLogger.debug() << "Suspending" << m_id;
+        if (!m_idling) {
+            emit(idle(m_id));
+            m_idling = true;
+        }
         m_nextTrackWaitCond.wait(locked);
-        kLogger.debug() << "Resuming";
+        kLogger.debug() << "Resuming" << m_id;
     }
     DEBUG_ASSERT(m_currentTrack);
     DEBUG_ASSERT(!m_nextTrack);
+    m_idling = false;
 }
 
 AnalyzerThread::AnalysisResult AnalyzerThread::analyzeCurrentTrack(
@@ -419,10 +425,12 @@ void AnalyzerThread::emitProgress(int currentTrackProgress) {
             m_currentTrack,
             currentTrackProgress)) {
         const auto now = Clock::now();
-        if (now >= (m_lastProgressEmittedAt + kProgressInhibitDuration)) {
-            m_lastProgressEmittedAt = now;
-            emit(progress(m_id));
+        if (now < (m_lastProgressEmittedAt + kProgressInhibitDuration)) {
+            // Don't emit progress update signal
+            return;
         }
+        m_lastProgressEmittedAt = now;
+        emit(progress(m_id));
     }
 }
 

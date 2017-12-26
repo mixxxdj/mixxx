@@ -41,6 +41,18 @@ class AnalyzerThread : public QThread {
 
     bool wake(const TrackPointer& nextTrack = TrackPointer());
 
+    void setCurrentTrackProgress(int currentTrackProgress) {
+        m_currentTrackProgress = currentTrackProgress;
+    }
+
+    bool hasCurrentTrackProgress() const {
+        return analyzerProgressValid(m_currentTrackProgress);
+    }
+
+    int getCurrentTrackProgress() const {
+        return m_currentTrackProgress;
+    }
+
     void stop();
 
     typedef std::map<TrackPointer, int> TracksWithProgress;
@@ -112,13 +124,10 @@ class AnalyzerThread : public QThread {
                 int currenTrackProgress);
 
         int currentTrackProgress() const {
-            if (m_currentTrack) {
-                DEBUG_ASSERT(m_tracksWithProgress.find(m_currentTrack)
-                        != m_tracksWithProgress.end());
-                return m_tracksWithProgress.find(m_currentTrack)->second;
-            } else {
-                return kAnalyzerProgressUnknown;
-            }
+            DEBUG_ASSERT(m_currentTrack);
+            DEBUG_ASSERT(m_tracksWithProgress.find(m_currentTrack)
+                    != m_tracksWithProgress.end());
+            return m_tracksWithProgress.find(m_currentTrack)->second;
         }
 
         friend class AnalyzerThread;
@@ -153,6 +162,13 @@ class AnalyzerThread : public QThread {
     const AnalyzerMode m_mode;
 
     /////////////////////////////////////////////////////////////////////////
+    // Housekeeping of AnalyzerQueue
+
+    // Only accessed by the AnalyzerQueue for keeping track of the current
+    // progress received from this thread.
+    int m_currentTrackProgress;
+
+    /////////////////////////////////////////////////////////////////////////
     // Thread shared
 
     std::atomic<bool> m_run;
@@ -175,6 +191,9 @@ class AnalyzerThread : public QThread {
     TracksWithProgress m_previousTracksWithProgress;
 
     TrackPointer m_currentTrack;
+
+    // Prevent re-emitting idle signals
+    bool m_idling;
 
     typedef std::chrono::steady_clock Clock;
     Clock::time_point m_lastProgressEmittedAt;
