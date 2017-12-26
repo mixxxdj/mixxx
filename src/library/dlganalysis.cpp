@@ -149,23 +149,19 @@ void DlgAnalysis::slotAnalysisActive(bool bActive) {
 }
 
 void DlgAnalysis::slotAnalyzerQueueProgress(
-        int currentTrackProgress,
-        int dequeuedSize,
-        int enqueuedSize) {
-    //qDebug() << this << "slotAnalyzerQueueProgress" << currentTrackProgress << dequeuedSize << enqueuedSize;
+        int currentProgress, int finishedSize, int totalSize) {
+    //qDebug() << this << "slotAnalyzerQueueProgress" << currentProgress << finishedSize << totalSize;
     if (labelProgress->isEnabled()) {
-        const int currentTrack = dequeuedSize;
-        const int totalTracks = dequeuedSize + enqueuedSize;
         QString progressPercent;
-        if (analyzerProgressValid(currentTrackProgress)) {
+        if (analyzerProgressValid(currentProgress)) {
             progressPercent = QString::number(
-                    analyzerProgressPercent(currentTrackProgress));
+                    analyzerProgressPercent(currentProgress));
         } else {
             progressPercent = "--";
         }
         QString progressText = tr("Analyzing %1/%2 %3%").arg(
-                QString::number(currentTrack),
-                QString::number(totalTracks),
+                QString::number(finishedSize),
+                QString::number(totalSize),
                 progressPercent);
         labelProgress->setText(progressText);
     }

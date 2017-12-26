@@ -32,7 +32,7 @@ class AnalyzerQueue : public QObject {
     void cancel();
 
   signals:
-    void progress(int avgCurrentTrackProgress, int dequeuedSize, int enqueuedSize);
+    void progress(int avgCurrentTrackProgress, int finishedSize, int totalSize);
     void empty();
     void done();
 

@@ -60,27 +60,24 @@ void AnalyzerQueue::emitProgress() {
         }
     }
     if (currentTrackProgressCount > 0) {
-        int currentTrackProgressCompensated =
+        int currentProgress =
                 kAnalyzerProgressNone +
                 (currentTrackProgressAmount % (kAnalyzerProgressDone - kAnalyzerProgressNone));
-        int dequedSizeCompensated =
+        int finishedSize =
                 m_dequeuedSize -
                 (currentTrackProgressCount -
                 (currentTrackProgressAmount / (kAnalyzerProgressDone - kAnalyzerProgressNone)));
-        DEBUG_ASSERT(dequedSizeCompensated >= 0);
-        DEBUG_ASSERT(dequedSizeCompensated <= m_dequeuedSize);
-        int enqueuedSizeCompensated =
-                m_queuedTrackIds.size() +
-                (m_dequeuedSize - dequedSizeCompensated);
+        DEBUG_ASSERT(finishedSize >= 0);
+        DEBUG_ASSERT(finishedSize <= m_dequeuedSize);
         emit(progress(
-                currentTrackProgressCompensated,
-                dequedSizeCompensated,
-                enqueuedSizeCompensated));
+                currentProgress,
+                finishedSize,
+                m_dequeuedSize + m_queuedTrackIds.size()));
     } else {
         emit(progress(
                 kAnalyzerProgressUnknown,
                 m_dequeuedSize,
-                m_queuedTrackIds.size()));
+                m_dequeuedSize + m_queuedTrackIds.size()));
     }
 }
 

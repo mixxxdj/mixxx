@@ -156,13 +156,11 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
 }
 
 void AnalysisFeature::slotAnalyzerQueueProgress(
-        int /*currentTrackProgress*/,
-        int dequeuedSize,
-        int enqueuedSize) {
-    const int currentTrack = dequeuedSize;
-    const int totalTracks = dequeuedSize + enqueuedSize;
-    if (totalTracks > 0) {
-        setTitleProgress(currentTrack, totalTracks);
+        int /*currentProgress*/,
+        int finishedSize,
+        int totalSize) {
+    if (totalSize > 0) {
+        setTitleProgress(finishedSize, totalSize);
     } else {
         setTitleDefault();
     }

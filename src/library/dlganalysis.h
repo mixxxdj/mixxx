@@ -39,7 +39,7 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     void selectAll();
     void analyze();
     void slotAnalysisActive(bool bActive);
-    void slotAnalyzerQueueProgress(int currentTrackProgress, int dequeuedSize, int enqueuedSize);
+    void slotAnalyzerQueueProgress(int currentProgress, int finishedSize, int totalSize);
     void showRecentSongs();
     void showAllSongs();
     void installEventFilter(QObject* pFilter);
