@@ -26,7 +26,8 @@
 
 namespace {
 
-constexpr int kNumberOfAnalyzerThreads = 1;
+// Utilize half of the available cores for adhoc analysis of tracks
+const int kNumberOfAnalyzerThreads = math_max(1, QThread::idealThreadCount() / 2);
 
 } // anonymous namespace
 

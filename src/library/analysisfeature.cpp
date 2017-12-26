@@ -22,7 +22,8 @@ const QString AnalysisFeature::m_sAnalysisViewName = QString("Analysis");
 
 namespace {
 
-constexpr int kNumberOfAnalyzerThreads = 1;
+// Utilize all available cores for batch analysis of tracks
+const int kNumberOfAnalyzerThreads = math_max(1, QThread::idealThreadCount());
 
 inline
 AnalyzerMode getAnalyzerMode(
