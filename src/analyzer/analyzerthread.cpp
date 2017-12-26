@@ -284,7 +284,7 @@ void AnalyzerThread::exec() {
                 for (auto const& pAnalyzer: m_analyzers) {
                     pAnalyzer->cleanup(m_currentTrack);
                 }
-                finishCurrentTrack(kAnalyzerProgressNone);
+                finishCurrentTrack();
             }
         } else {
             kLogger.debug() << "Skipping track analysis because no analyzer initialized.";
