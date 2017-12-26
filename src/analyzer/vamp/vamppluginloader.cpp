@@ -176,4 +176,11 @@ Vamp::Plugin* VampPluginLoader::loadPlugin(
         key, inputSampleRate, adapterFlags);
 }
 
+void VampPluginLoader::unloadPlugin(Vamp::Plugin** ppPlugin) {
+    DEBUG_ASSERT(ppPlugin);
+    std::lock_guard<std::mutex> locked(s_mutex);
+    delete *ppPlugin;
+    *ppPlugin = nullptr;
+}
+
 } // namespace mixxx

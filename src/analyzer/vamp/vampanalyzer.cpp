@@ -24,8 +24,9 @@ VampAnalyzer::VampAnalyzer()
 }
 
 VampAnalyzer::~VampAnalyzer() {
+    mixxx::VampPluginLoader pluginLoader;
+    pluginLoader.unloadPlugin(&m_plugin);
     delete[] m_pluginbuf;
-    delete m_plugin;
 }
 
 bool VampAnalyzer::Init(const QString pluginlibrary, const QString pluginid,
@@ -43,10 +44,11 @@ bool VampAnalyzer::Init(const QString pluginlibrary, const QString pluginid,
         return false;
     }
 
-    if (m_plugin != NULL) {
-        delete m_plugin;
-        m_plugin = NULL;
+    mixxx::VampPluginLoader pluginLoader;
+
+    if (m_plugin) {
         qDebug() << "VampAnalyzer: kill plugin";
+        pluginLoader.unloadPlugin(&m_plugin);
     }
 
     QStringList pluginlist = pluginid.split(":");
@@ -63,7 +65,6 @@ bool VampAnalyzer::Init(const QString pluginlibrary, const QString pluginid,
     }
 
     QString plugin = pluginlist.at(0);
-    mixxx::VampPluginLoader pluginLoader;
     m_key = pluginLoader.composePluginKey(pluginlibrary.toStdString(),
                                      plugin.toStdString());
     m_plugin = pluginLoader.loadPlugin(m_key, m_rate,

@@ -17,6 +17,8 @@ class VampPluginLoader final {
                                              std::string identifier);
     Vamp::HostExt::PluginLoader::PluginCategoryHierarchy getPluginCategory(
         Vamp::HostExt::PluginLoader::PluginKey plugin);
+
+    void unloadPlugin(Vamp::Plugin** ppPlugin);
 };
 
 } // namespace mixxx
