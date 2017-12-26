@@ -33,15 +33,15 @@ class AnalyzerQueue : public QObject {
 
   signals:
     void progress(int avgCurrentTrackProgress, int finishedSize, int totalSize);
-    void empty();
+    void empty(int dequeuedSize);
     void done();
 
   public slots:
     void slotAnalyzeTrack(TrackPointer track);
 
   private slots:
-    void slotWorkerThreadProgress(int threadId);
     void slotWorkerThreadIdle(int threadId);
+    void slotWorkerThreadProgress(int threadId);
     void slotWorkerThreadExit(int threadId);
 
   private:
@@ -52,6 +52,8 @@ class AnalyzerQueue : public QObject {
     Library* m_library;
 
     int m_dequeuedSize;
+
+    int m_finishedSize;
 
     typedef std::chrono::steady_clock Clock;
     Clock::time_point m_lastProgressEmittedAt;

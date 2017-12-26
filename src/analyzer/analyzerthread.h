@@ -41,14 +41,15 @@ class AnalyzerThread : public QThread {
 
     bool wake(const TrackPointer& nextTrack = TrackPointer());
 
+    // Temporary storage of AnalyzerQueue, not accessed by the worker thread!
+    // TODO(XXX): Get rid of this member if a simpler and cleaner solution
+    // exists.
     void setCurrentTrackProgress(int currentTrackProgress) {
         m_currentTrackProgress = currentTrackProgress;
     }
-
     bool hasCurrentTrackProgress() const {
         return analyzerProgressValid(m_currentTrackProgress);
     }
-
     int getCurrentTrackProgress() const {
         return m_currentTrackProgress;
     }
@@ -104,6 +105,11 @@ class AnalyzerThread : public QThread {
                 return m_progress->currentTrackProgress();
             }
 
+            int finishedCount() const {
+                DEBUG_ASSERT(m_progress);
+                return m_progress->m_finishedCount;
+            }
+
           private:
             friend class Progress;
             explicit ReadScope(Progress* progress);
@@ -120,6 +126,7 @@ class AnalyzerThread : public QThread {
 
         bool tryWrite(
                 TracksWithProgress* previousTracksWithProgress,
+                int* finishedCount,
                 TrackPointer /*nullable*/ currentTrack,
                 int currenTrackProgress);
 
@@ -133,6 +140,7 @@ class AnalyzerThread : public QThread {
         friend class AnalyzerThread;
         std::atomic<int> m_state;
         TracksWithProgress m_tracksWithProgress;
+        int m_finishedCount;
         TrackPointer m_currentTrack;
     };
 
@@ -141,9 +149,9 @@ class AnalyzerThread : public QThread {
     }
 
   signals:
-    // Ask for more work
+    // Ask for next track
     void idle(int id);
-    // Report progress
+    // Report progress (shared memory)
     void progress(int id);
     // Notify about imminent death just before exiting (last signal)
     void exit(int id);
@@ -162,10 +170,10 @@ class AnalyzerThread : public QThread {
     const AnalyzerMode m_mode;
 
     /////////////////////////////////////////////////////////////////////////
-    // Housekeeping of AnalyzerQueue
+    // Temporary storage of AnalyzerQueue, not accessed by the worker thread!
+    // TODO(XXX): Get rid of this member if a simpler and cleaner solution
+    // exists.
 
-    // Only accessed by the AnalyzerQueue for keeping track of the current
-    // progress received from this thread.
     int m_currentTrackProgress;
 
     /////////////////////////////////////////////////////////////////////////
@@ -190,10 +198,9 @@ class AnalyzerThread : public QThread {
 
     TracksWithProgress m_previousTracksWithProgress;
 
-    TrackPointer m_currentTrack;
+    int m_finishedCount;
 
-    // Prevent re-emitting idle signals
-    bool m_idling;
+    TrackPointer m_currentTrack;
 
     typedef std::chrono::steady_clock Clock;
     Clock::time_point m_lastProgressEmittedAt;
@@ -213,5 +220,5 @@ class AnalyzerThread : public QThread {
 
     void finishCurrentTrack(int currentTrackProgress = kAnalyzerProgressUnknown);
 
-    void emitProgress(int currentTrackProgress = kAnalyzerProgressUnknown);
+    void emitProgress(bool finished, int currentTrackProgress = kAnalyzerProgressUnknown);
 };

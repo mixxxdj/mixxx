@@ -49,7 +49,8 @@ class AnalysisFeature : public LibraryFeature {
 
   private slots:
     void slotAnalyzerQueueProgress(int currentProgress, int finishedSize, int totalSize);
-    void slotAnalyzerQueueEmptyOrDone();
+    void slotAnalyzerQueueEmpty(int dequeuedSize);
+    void slotAnalyzerQueueDone();
     void stopAnalysis();
 
   private:

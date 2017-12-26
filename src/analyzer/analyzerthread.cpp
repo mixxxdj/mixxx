@@ -48,11 +48,13 @@ std::atomic<int> s_instanceCounter(0);
 } // anonymous namespace
 
 AnalyzerThread::Progress::Progress()
-    : m_state(kProgressStateEmpty) {
+    : m_state(kProgressStateEmpty),
+      m_finishedCount(0) {
 }
 
 bool AnalyzerThread::Progress::tryWrite(
         TracksWithProgress* previousTracksWithProgress,
+        int* finishedCount,
         TrackPointer currentTrack,
         int currentTrackProgress) {
     DEBUG_ASSERT(previousTracksWithProgress);
@@ -78,6 +80,8 @@ bool AnalyzerThread::Progress::tryWrite(
             }
             previousTracksWithProgress->clear();
         }
+        m_finishedCount += *finishedCount;
+        *finishedCount = 0;
         bool currentTrackModified = m_currentTrack != currentTrack;
         if (currentTrack) {
             DEBUG_ASSERT(!m_currentTrack ||
@@ -114,6 +118,7 @@ bool AnalyzerThread::Progress::tryWrite(
 void AnalyzerThread::Progress::reset() {
     m_tracksWithProgress.clear();
     m_currentTrack.reset();
+    m_finishedCount = 0;
 }
 
 AnalyzerThread::Progress::ReadScope::ReadScope(Progress* progress)
@@ -161,7 +166,7 @@ AnalyzerThread::AnalyzerThread(
           m_currentTrackProgress(kAnalyzerProgressUnknown),
           m_run(true),
           m_sampleBuffer(kAnalysisSamplesPerBlock),
-          m_idling(false),
+          m_finishedCount(0),
           // The first signal should always be emitted
           m_lastProgressEmittedAt(Clock::now() - kProgressInhibitDuration) {
 }
@@ -235,7 +240,7 @@ void AnalyzerThread::exec() {
     openParams.setChannelCount(kAnalysisChannels);
 
     while (m_run.load()) {
-        emitProgress();
+        emitProgress(false);
         waitForCurrentTrack();
         if (!m_currentTrack) {
             break;
@@ -265,7 +270,7 @@ void AnalyzerThread::exec() {
         }
 
         if (processTrack) {
-            emitProgress(kAnalyzerProgressNone);
+            emitProgress(false, kAnalyzerProgressNone);
             const auto analysisResult = analyzeCurrentTrack(pAudioSource);
             DEBUG_ASSERT(analysisResult != AnalysisResult::Pending);
             if ((analysisResult == AnalysisResult::Complete) ||
@@ -276,7 +281,7 @@ void AnalyzerThread::exec() {
                 // session. A partial analysis would otherwise be repeated again
                 // and again, because it is very unlikely that the error vanishes
                 // suddenly.
-                emitProgress(kAnalyzerProgressFinalizing);
+                emitProgress(false, kAnalyzerProgressFinalizing);
                 // This takes around 3 sec on a Atom Netbook
                 for (auto const& pAnalyzer: m_analyzers) {
                     pAnalyzer->finalize(m_currentTrack);
@@ -324,23 +329,22 @@ void AnalyzerThread::waitForCurrentTrack() {
     DEBUG_ASSERT(!m_currentTrack);
 
     std::unique_lock<std::mutex> locked(m_nextTrackMutex);
-    while (!(m_currentTrack = std::move(m_nextTrack))) {
-        DEBUG_ASSERT(!m_currentTrack);
-        DEBUG_ASSERT(!m_nextTrack);
+    m_nextTrack.reset();
+    do {
         if (!m_run.load()) {
             return;
         }
         kLogger.debug() << "Suspending" << m_id;
-        if (!m_idling) {
-            emit(idle(m_id));
-            m_idling = true;
-        }
+        emit(idle(m_id));
         m_nextTrackWaitCond.wait(locked);
         kLogger.debug() << "Resuming" << m_id;
-    }
-    DEBUG_ASSERT(m_currentTrack);
-    DEBUG_ASSERT(!m_nextTrack);
-    m_idling = false;
+        if (!m_run.load()) {
+            return;
+        }
+        m_currentTrack = m_nextTrack;
+    } while (!m_currentTrack);
+    // Keep m_nextTrack occupied to avoid accepting another track
+    // during an ongoing analysis.
 }
 
 AnalyzerThread::AnalysisResult AnalyzerThread::analyzeCurrentTrack(
@@ -351,7 +355,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeCurrentTrack(
             kAnalysisFramesPerBlock);
     DEBUG_ASSERT(audioSourceProxy.channelCount() == kAnalysisChannels);
 
-    emitProgress(kAnalyzerProgressNone);
+    emitProgress(false, kAnalyzerProgressNone);
 
     mixxx::IndexRange remainingFrames = pAudioSource->frameIndexRange();
     auto result = remainingFrames.empty() ? AnalysisResult::Complete : AnalysisResult::Pending;
@@ -412,16 +416,20 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeCurrentTrack(
                 double(pAudioSource->frameLength() - remainingFrames.length()) /
                 double(pAudioSource->frameLength());
         const int trackProgress = frameProgress * kAnalyzerProgressFinalizing;
-        emitProgress(trackProgress);
+        emitProgress(false, trackProgress);
     }
 
     return result;
 }
 
 // This is called from the AnalyzerThread thread
-void AnalyzerThread::emitProgress(int currentTrackProgress) {
+void AnalyzerThread::emitProgress(bool finished, int currentTrackProgress) {
+    if (finished) {
+        ++m_finishedCount;
+    }
     if (m_progress.tryWrite(
             &m_previousTracksWithProgress,
+            &m_finishedCount,
             m_currentTrack,
             currentTrackProgress)) {
         const auto now = Clock::now();
@@ -435,7 +443,9 @@ void AnalyzerThread::emitProgress(int currentTrackProgress) {
 }
 
 void AnalyzerThread::finishCurrentTrack(int currentTrackProgress) {
-    emitProgress(currentTrackProgress);
+    DEBUG_ASSERT(m_currentTrack);
+    // Report last progress for current track
+    emitProgress(true, currentTrackProgress);
     // Reset the current thread AFTER emitting the final progress update
     m_currentTrack.reset();
 }

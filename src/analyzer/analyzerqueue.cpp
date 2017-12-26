@@ -24,8 +24,20 @@ AnalyzerQueue::AnalyzerQueue(
         AnalyzerMode mode)
         : m_library(library),
           m_dequeuedSize(0),
+          m_finishedSize(0),
           // The first signal should always be emitted
           m_lastProgressEmittedAt(Clock::now() - kProgressInhibitDuration) {
+    VERIFY_OR_DEBUG_ASSERT(numWorkerThreads > 0) {
+            kLogger.warning()
+                    << "Invalid number of worker threads:"
+                    << numWorkerThreads;
+    } else {
+        kLogger.info()
+                << "Starting"
+                << numWorkerThreads
+                << "worker threads";
+    }
+    // 1st pass: Create worker threads
     m_workerThreads.reserve(numWorkerThreads);
     for (int threadId = 0; threadId < numWorkerThreads; ++threadId) {
         m_workerThreads.push_back(std::make_unique<AnalyzerThread>(
@@ -33,13 +45,16 @@ AnalyzerQueue::AnalyzerQueue(
                 library->dbConnectionPool(),
                 std::move(pConfig),
                 mode));
-        connect(m_workerThreads.back().get(), SIGNAL(progress(int)),
-            this, SLOT(slotWorkerThreadProgress(int)));
         connect(m_workerThreads.back().get(), SIGNAL(idle(int)),
             this, SLOT(slotWorkerThreadIdle(int)));
+        connect(m_workerThreads.back().get(), SIGNAL(progress(int)),
+            this, SLOT(slotWorkerThreadProgress(int)));
         connect(m_workerThreads.back().get(), SIGNAL(exit(int)),
             this, SLOT(slotWorkerThreadExit(int)));
-        m_workerThreads.back()->start(kWorkerThreadPriority);
+    }
+    // 2nd pass: Start worker threads
+    for (const auto& workerThread: m_workerThreads) {
+        workerThread->start(kWorkerThreadPriority);
     }
 }
 
@@ -51,34 +66,38 @@ void AnalyzerQueue::emitProgress() {
     }
     m_lastProgressEmittedAt = now;
 
-    int currentTrackProgressAmount = 0;
-    int currentTrackProgressCount = 0;
+    int partialTrackProgressAmount = 0;
+    int partialTrackProgressCount = 0;
     for (const auto& workerThread: m_workerThreads) {
         if (workerThread && workerThread->hasCurrentTrackProgress()) {
-            currentTrackProgressAmount += math_min(workerThread->getCurrentTrackProgress(), kAnalyzerProgressDone) - kAnalyzerProgressNone;
-            ++currentTrackProgressCount;
+            int currentTrackProgress = workerThread->getCurrentTrackProgress();
+            // Sum only the amount from worker threads with partial progress
+            if (currentTrackProgress < kAnalyzerProgressDone) {
+                partialTrackProgressAmount += currentTrackProgress - kAnalyzerProgressNone;
+                ++partialTrackProgressCount;
+            }
         }
     }
-    if (currentTrackProgressCount > 0) {
-        int currentProgress =
+    DEBUG_ASSERT((m_finishedSize + partialTrackProgressCount) <= m_dequeuedSize);
+    int currentProgress;
+    int finishedSize;
+    if (partialTrackProgressCount > 0) {
+        currentProgress =
                 kAnalyzerProgressNone +
-                (currentTrackProgressAmount % (kAnalyzerProgressDone - kAnalyzerProgressNone));
-        int finishedSize =
-                m_dequeuedSize -
-                (currentTrackProgressCount -
-                (currentTrackProgressAmount / (kAnalyzerProgressDone - kAnalyzerProgressNone)));
+                (partialTrackProgressAmount % (kAnalyzerProgressDone - kAnalyzerProgressNone));
+        finishedSize =
+                m_finishedSize +
+                (partialTrackProgressAmount / (kAnalyzerProgressDone - kAnalyzerProgressNone));
         DEBUG_ASSERT(finishedSize >= 0);
         DEBUG_ASSERT(finishedSize <= m_dequeuedSize);
-        emit(progress(
-                currentProgress,
-                finishedSize,
-                m_dequeuedSize + m_queuedTrackIds.size()));
     } else {
-        emit(progress(
-                kAnalyzerProgressUnknown,
-                m_dequeuedSize,
-                m_dequeuedSize + m_queuedTrackIds.size()));
+        currentProgress = kAnalyzerProgressUnknown;
+        finishedSize = m_finishedSize;
     }
+    emit(progress(
+            currentProgress,
+            finishedSize,
+            m_dequeuedSize + m_queuedTrackIds.size()));
 }
 
 void AnalyzerQueue::slotWorkerThreadProgress(int threadId) {
@@ -91,7 +110,7 @@ void AnalyzerQueue::slotWorkerThreadProgress(int threadId) {
 }
 
 void AnalyzerQueue::slotWorkerThreadIdle(int threadId) {
-    kLogger.debug() << "slotWorkerThreadIdle" << threadId;
+    //kLogger.debug() << "slotWorkerThreadIdle" << threadId;
     const auto& workerThread = m_workerThreads.at(threadId);
     VERIFY_OR_DEBUG_ASSERT(workerThread) {
         return;
@@ -106,9 +125,10 @@ void AnalyzerQueue::slotWorkerThreadIdle(int threadId) {
             // Skip unloadable track
             m_queuedTrackIds.pop_front();
             ++m_dequeuedSize;
+            ++m_finishedSize;
             continue;
         }
-        VERIFY_OR_DEBUG_ASSERT(workerThread->wake(nextTrack)) {
+        if (!workerThread->wake(nextTrack)) {
             // Try again later
             emitProgress();
             return;
@@ -121,13 +141,10 @@ void AnalyzerQueue::slotWorkerThreadIdle(int threadId) {
         return;
     }
     emitProgress();
-    for (const auto& workerThread: m_workerThreads) {
-        if (workerThread && workerThread->hasCurrentTrackProgress()) {
-            // Not finished yet, although the queue is already empty
-            return;
-        }
+    DEBUG_ASSERT(m_finishedSize <= m_dequeuedSize);
+    if (m_finishedSize == m_dequeuedSize) {
+        emit(empty(m_dequeuedSize));
     }
-    emit(empty());
 }
 
 void AnalyzerQueue::slotWorkerThreadExit(int threadId) {
@@ -163,9 +180,6 @@ int AnalyzerQueue::enqueueTrackId(TrackId trackId) {
                 << trackId;
         return m_queuedTrackIds.size();
     }
-    kLogger.debug()
-            << "Enqueuing track with id"
-            << trackId;
     m_queuedTrackIds.push_back(trackId);
     // Don't wake up the paused thread now to avoid race conditions
     // if multiple threads are added in a row. The caller is
@@ -209,12 +223,13 @@ void AnalyzerQueue::updateProgress(AnalyzerThread& workerThread) {
     const auto readScope = workerThread.readProgress();
     if (readScope) {
         for (const auto trackWithProgress: readScope.tracksWithProgress()) {
-            if (analyzerProgressValid(trackWithProgress.second)) {
-                trackWithProgress.first->setAnalyzerProgress(trackWithProgress.second);
-            }
+            trackWithProgress.first->setAnalyzerProgress(trackWithProgress.second);
         }
+        m_finishedSize += readScope.finishedCount();
         if (readScope.currentTrack()) {
             workerThread.setCurrentTrackProgress(readScope.currentTrackProgress());
+        } else {
+            workerThread.setCurrentTrackProgress(kAnalyzerProgressUnknown);
         }
     }
 }

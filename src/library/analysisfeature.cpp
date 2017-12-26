@@ -139,10 +139,10 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
                 m_pAnalysisView, SLOT(slotAnalyzerQueueProgress(int, int, int)));
         connect(m_pAnalyzerQueue.get(), SIGNAL(progress(int, int, int)),
                 this, SLOT(slotAnalyzerQueueProgress(int, int, int)));
-        connect(m_pAnalyzerQueue.get(), SIGNAL(empty()),
-                this, SLOT(slotAnalyzerQueueEmptyOrDone()));
+        connect(m_pAnalyzerQueue.get(), SIGNAL(empty(int)),
+                this, SLOT(slotAnalyzerQueueEmpty(int)));
         connect(m_pAnalyzerQueue.get(), SIGNAL(done()),
-                this, SLOT(slotAnalyzerQueueEmptyOrDone()));
+                this, SLOT(slotAnalyzerQueueDone()));
 
         emit(analysisActive(true));
     }
@@ -166,7 +166,17 @@ void AnalysisFeature::slotAnalyzerQueueProgress(
     }
 }
 
-void AnalysisFeature::slotAnalyzerQueueEmptyOrDone() {
+void AnalysisFeature::slotAnalyzerQueueEmpty(int dequeuedSize) {
+    // Only abandon the queue after all enqueued tracks have been
+    // dequeued to avoid a race condition when the worker threads
+    // are started and running before all selected tracks have
+    // been enqueued.
+    if (dequeuedSize > 0) {
+        slotAnalyzerQueueDone();
+    }
+}
+
+void AnalysisFeature::slotAnalyzerQueueDone() {
     if (m_pAnalyzerQueue) {
         m_pAnalyzerQueue->cancel();
         m_pAnalyzerQueue->deleteLater();
