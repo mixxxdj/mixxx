@@ -411,7 +411,7 @@ SoundDeviceError SoundManager::setupDevices() {
             }
         }
 
-        for (const auto& out: outputs) {
+        for (const auto& out: qAsConst(outputs)) {
             mode.isOutput = true;
             if (pDevice->getInternalName() != kNetworkDeviceInternalName) {
                 haveOutput = true;
@@ -611,7 +611,7 @@ void SoundManager::pushInputBuffers(const QList<AudioInputBuffer>& inputs,
     }
 }
 
-void SoundManager::writeProcess() {
+void SoundManager::writeProcess() const {
     for (const auto& pDevice: m_devices) {
         if (pDevice) {
             pDevice->writeProcess();
@@ -619,7 +619,7 @@ void SoundManager::writeProcess() {
     }
 }
 
-void SoundManager::readProcess() {
+void SoundManager::readProcess() const {
     for (const auto& pDevice: m_devices) {
         if (pDevice) {
             pDevice->readProcess();

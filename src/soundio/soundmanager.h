@@ -104,8 +104,8 @@ class SoundManager : public QObject {
                           const SINT iFramesPerBuffer);
 
 
-    void writeProcess();
-    void readProcess();
+    void writeProcess() const;
+    void readProcess() const;
 
     void registerOutput(AudioOutput output, AudioSource *src);
     void registerInput(AudioInput input, AudioDestination *dest);
