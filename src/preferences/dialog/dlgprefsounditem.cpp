@@ -66,7 +66,7 @@ void DlgPrefSoundItem::refreshDevices(const QList<SoundDevicePointer>& devices) 
         deviceComboBox->removeItem(deviceComboBox->count() - 1);
     }
     for (const auto& pDevice: qAsConst(m_devices)) {
-        if (!hasSufficientChannels(pDevice.data())) continue;
+        if (!hasSufficientChannels(*pDevice)) continue;
         deviceComboBox->addItem(pDevice->getDisplayName(), pDevice->getInternalName());
     }
     int newIndex = deviceComboBox->findData(oldDev);
@@ -184,7 +184,7 @@ void DlgPrefSoundItem::loadPath(const SoundManagerConfig &config) {
  * record its respective path with the SoundManagerConfig instance at
  * config.
  */
-void DlgPrefSoundItem::writePath(SoundManagerConfig *config) const {
+void DlgPrefSoundItem::writePath(SoundManagerConfig* config) const {
     SoundDevicePointer pDevice = getDevice();
     if (!pDevice) {
         return;
@@ -292,13 +292,12 @@ void DlgPrefSoundItem::setChannel(unsigned int channelBase,
 /**
  * Checks that a given device can act as a source/input for our type.
  */
-int DlgPrefSoundItem::hasSufficientChannels(const SoundDevice* pDevice) const
-{
+int DlgPrefSoundItem::hasSufficientChannels(const SoundDevice& device) const {
     unsigned char needed(AudioPath::minChannelsForType(m_type));
 
     if (m_isInput) {
-        return pDevice->getNumInputChannels() >= needed;
+        return device.getNumInputChannels() >= needed;
     } else {
-        return pDevice->getNumOutputChannels() >= needed;
+        return device.getNumOutputChannels() >= needed;
     }
 }

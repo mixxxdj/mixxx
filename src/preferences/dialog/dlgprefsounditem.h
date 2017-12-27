@@ -47,7 +47,7 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     void refreshDevices(const QList<SoundDevicePointer>& devices);
     void deviceChanged(int index);
     void channelChanged();
-    void loadPath(const SoundManagerConfig &config);
+    void loadPath(const SoundManagerConfig& config);
     void writePath(SoundManagerConfig *config) const;
     void save();
     void reload();
@@ -56,7 +56,7 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     SoundDevicePointer getDevice() const; // if this returns NULL, we don't have a valid AudioPath
     void setDevice(const QString &deviceName);
     void setChannel(unsigned int channelBase, unsigned int channels);
-    int hasSufficientChannels(const SoundDevice* pDevice) const;
+    int hasSufficientChannels(const SoundDevice& device) const;
 
     AudioPathType m_type;
     unsigned int m_index;
