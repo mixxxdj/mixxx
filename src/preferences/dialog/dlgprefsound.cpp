@@ -290,7 +290,7 @@ void DlgPrefSound::addPath(AudioOutput output) {
             m_outputDevices, false);
     }
     connect(this, SIGNAL(refreshOutputDevices(const QList<SoundDevicePointer>&)),
-            toInsert, SLOT(refreshDevices(const QList<QSharedPointer<SoundDevice>>&)));
+            toInsert, SLOT(refreshDevices(const QList<SoundDevicePointer>&)));
     insertItem(toInsert, outputVLayout);
     connectSoundItem(toInsert);
 }
