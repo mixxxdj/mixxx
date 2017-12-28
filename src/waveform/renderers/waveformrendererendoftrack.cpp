@@ -78,15 +78,15 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
              << "m_playControl->get()" << m_playControl->get()
              << "m_loopControl->get()" << m_loopControl->get();*/
 
-    m_endOfTrackEnabled = m_pEndOfTrackControl->get() > 0.5;
+    m_endOfTrackEnabled = m_pEndOfTrackControl->toBool();
     m_remainingTimeTriggerSeconds = WaveformWidgetFactory::instance()->getEndOfTrackWarningTime();
     // special case of track not long enough
     const double trackLength = 0.5 * trackSamples / sampleRate;
 
     if (sampleRate < 0.1 //not ready
             || trackSamples < 0.1 //not ready
-            || m_pPlayControl->get() < 0.5 //not playing
-            || m_pLoopControl->get() > 0.5 //in loop
+            || !m_pPlayControl->toBool() //not playing
+            || m_pLoopControl->toBool() //in loop
             || trackLength <= m_remainingTimeTriggerSeconds //track too short
             ) {
         if (m_endOfTrackEnabled) {
@@ -108,7 +108,7 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
 
     // end of track is on
     if (!m_endOfTrackEnabled) {
-        m_pEndOfTrackControl->slotSet(1.);
+        m_pEndOfTrackControl->set(1.);
         m_endOfTrackEnabled = true;
 
         //qDebug() << "EndOfTrack ON";
