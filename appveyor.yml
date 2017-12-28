@@ -38,9 +38,10 @@ install:
   - call set ENVIRONMENT_NAME=%%ENVIRONMENT_NAME:PLATFORM=%platform%%%
   - call set ENVIRONMENT_NAME=%%ENVIRONMENT_NAME:CONFIGURATION=%configuration%%%
   - cd %TEMP%
-  - echo *** Patching NSIS
-  - cd %APPVEYOR_BUILD_FOLDER%
-  - patch "C:\Program Files (x86)\NSIS\Include\MultiUser.nsh" < build\appveyor\NSIS.patch
+  # Not needed anymore since we switched to wix
+  #- echo *** Patching NSIS
+  #- cd %APPVEYOR_BUILD_FOLDER%
+  #- patch "C:\Program Files (x86)\NSIS\Include\MultiUser.nsh" < build\appveyor\NSIS.patch
   - echo *** Downloading precompiled build environment if not in build-cache
   - cd %APPVEYOR_BUILD_FOLDER%
   - build\windows\install_buildenv.bat %ENVIRONMENTS_URL% %ENVIRONMENT_NAME% %ENVIRONMENTS_PATH%
