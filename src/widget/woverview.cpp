@@ -364,10 +364,10 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
 
         if (m_dAnalyzerProgress <= 0.5) { // remove text after progress by wf is recognizable
             if (m_trackLoaded) {
-                //: Text on waveform overview when file is cached from source
+                //: Text on waveform overview when file is playable but no waveform is visible
                 paintText(tr("Ready to play, analyzing .."), &painter);
             } else {
-                //: Text on waveform overview when file is playable but no waveform is visible
+                //: Text on waveform overview when file is cached from source
                 paintText(tr("Loading track .."), &painter);
             }
         } else if (m_bAnalyzerFinalizing) {
