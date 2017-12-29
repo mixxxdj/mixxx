@@ -97,7 +97,7 @@ EffectManifest PhaserEffect::getManifest() {
     triplet->setName(QObject::tr("Triplets"));
     triplet->setShortName(QObject::tr("Triplets"));
     triplet->setDescription(QObject::tr(
-        "Divides rounded 1/2 beats of the Period parameter by 3"));
+        "Divide rounded 1/2 beats of the Period parameter by 3."));
     triplet->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);

@@ -9,6 +9,7 @@
 #include "util/class.h"
 #include "util/defs.h"
 #include "util/sample.h"
+#include "util/samplebuffer.h"
 #include "util/types.h"
 
 struct FilterGroupState : public EffectState {
@@ -19,7 +20,7 @@ struct FilterGroupState : public EffectState {
 
     void setFilters(int sampleRate, double lowFreq, double highFreq);
 
-    CSAMPLE* m_pBuf;
+    mixxx::SampleBuffer m_buffer;
     EngineFilterBiquad1Low* m_pLowFilter;
     EngineFilterBiquad1High* m_pHighFilter;
 
