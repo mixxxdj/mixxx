@@ -1,3 +1,10 @@
+REM Cleanup things to start again from an empty build root
+rmdir /s /q E:\Jenkins\workspace\2.1-release\architecture\amd64\platform\windows\win32_build
+rmdir /s /q E:\Jenkins\workspace\2.1-release\architecture\amd64\platform\windows\win64_build
+del /q /f E:\Jenkins\workspace\2.1-release\architecture\amd64\platform\windows\.sconsign.dblite
+rmdir /s /q E:\Jenkins\workspace\2.1-release\architecture\amd64\platform\windows\.sconf_temp
+del /q /f E:\Jenkins\workspace\2.1-release\architecture\amd64\platform\windows\config.log
+
 @ECHO OFF
 SETLOCAL
 
