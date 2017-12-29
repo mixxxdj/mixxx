@@ -16,6 +16,7 @@ void EngineWorker::run() {
 
 void EngineWorker::setScheduler(EngineWorkerScheduler* pScheduler) {
     m_pScheduler = pScheduler;
+    pScheduler->addWorker(this);
 }
 
 bool EngineWorker::workReady() {

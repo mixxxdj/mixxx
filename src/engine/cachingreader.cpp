@@ -178,7 +178,8 @@ CachingReaderChunkForOwner* CachingReader::lookupChunkAndFreshen(SINT chunkIndex
 
 void CachingReader::newTrack(TrackPointer pTrack) {
     m_worker.newTrack(pTrack);
-    m_worker.workReady();
+    bool result = m_worker.workReady();
+    DEBUG_ASSERT(result);
 }
 
 void CachingReader::process() {

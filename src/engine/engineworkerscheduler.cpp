@@ -9,16 +9,13 @@
 
 EngineWorkerScheduler::EngineWorkerScheduler(QObject* pParent)
         : m_bWakeScheduler(false),
-          m_scheduleFIFO(MAX_ENGINE_WORKERS),
           m_bQuit(false) {
     Q_UNUSED(pParent);
 }
 
 EngineWorkerScheduler::~EngineWorkerScheduler() {
-    m_mutex.lock();
     m_bQuit = true;
     m_waitCondition.wakeAll();
-    m_mutex.unlock();
     wait();
 }
 
@@ -27,8 +24,14 @@ void EngineWorkerScheduler::workerReady(EngineWorker* pWorker) {
         // If the write fails, we really can't do much since we should not block
         // in this slot. Write the address of the variable pWorker, since it is
         // a 1-element array.
-        m_scheduleFIFO.write(&pWorker, 1);
+        m_workerStates[pWorker] = true;
         m_bWakeScheduler = true;
+    }
+}
+
+void EngineWorkerScheduler::addWorker(EngineWorker* pWorker) {
+    if (pWorker) {
+        m_workerStates.insert(pWorker, false);
     }
 }
 
@@ -45,11 +48,13 @@ void EngineWorkerScheduler::runWorkers() {
 void EngineWorkerScheduler::run() {
     while (!m_bQuit) {
         Event::start("EngineWorkerScheduler");
-        EngineWorker* pWorker = NULL;
-        while (m_scheduleFIFO.read(&pWorker, 1) == 1) {
-            if (pWorker) {
-                pWorker->wake();
+        QHash<EngineWorker*, bool>::iterator i = m_workerStates.begin();
+        while (i != m_workerStates.end()) {
+            if (i.key() && i.value()) {
+                i.key()->wake();
+                i.value() = false;
             }
+            ++i;
         }
         Event::end("EngineWorkerScheduler");
         m_mutex.lock();

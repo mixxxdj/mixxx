@@ -199,15 +199,15 @@ void WOverview::slotAnalyzerProgress(int progress) {
 }
 
 void WOverview::slotTrackLoaded(TrackPointer pTrack) {
-    if (m_pCurrentTrack == pTrack) {
-        m_trackLoaded = true;
-        update();
-    }
+    DEBUG_ASSERT(m_pCurrentTrack == pTrack);
+    m_trackLoaded = true;
+    update();
 }
 
 void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     //qDebug() << this << "WOverview::slotLoadingTrack" << pNewTrack << pOldTrack;
-    if (m_pCurrentTrack != nullptr && pOldTrack == m_pCurrentTrack) {
+    DEBUG_ASSERT(m_pCurrentTrack == pOldTrack);
+    if (m_pCurrentTrack != nullptr) {
         disconnect(m_pCurrentTrack.get(), SIGNAL(waveformSummaryUpdated()),
                    this, SLOT(slotWaveformSummaryUpdated()));
         disconnect(m_pCurrentTrack.get(), SIGNAL(analyzerProgress(int)),
