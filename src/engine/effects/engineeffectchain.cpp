@@ -239,7 +239,6 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
         // after writing to the output buffer. This requires not to use the same buffer
         // for in and output: Also, ChannelMixer::applyEffectsAndMixChannels
         // requires that the input buffer does not get modified.
-        bool processingOccured = false;
         CSAMPLE* pIntermediateInput = pIn;
         CSAMPLE* pIntermediateOutput;
 
