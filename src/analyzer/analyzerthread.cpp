@@ -34,125 +34,12 @@ constexpr SINT kAnalysisFramesPerBlock = 4096;
 const SINT kAnalysisSamplesPerBlock =
         kAnalysisFramesPerBlock * kAnalysisChannels;
 
-// Maximum frequency of progress updates
-constexpr std::chrono::milliseconds kProgressInhibitDuration(100);
-
-// Progress states
-constexpr int kProgressStateEmpty   = 0;
-constexpr int kProgressStateWriting = 1;
-constexpr int kProgressStateReady   = 2;
-constexpr int kProgressStateReading = 3;
+// Maximum frequency of progress updates while busy
+constexpr std::chrono::milliseconds kBusyProgressInhibitDuration(100);
 
 std::atomic<int> s_instanceCounter(0);
 
 } // anonymous namespace
-
-AnalyzerThread::Progress::Progress()
-    : m_state(kProgressStateEmpty),
-      m_finishedCount(0) {
-}
-
-bool AnalyzerThread::Progress::tryWrite(
-        TracksWithProgress* previousTracksWithProgress,
-        int* finishedCount,
-        TrackPointer currentTrack,
-        int currentTrackProgress) {
-    DEBUG_ASSERT(previousTracksWithProgress);
-    int stateEmpty = kProgressStateEmpty;
-    bool wasEmpty = m_state.compare_exchange_strong(
-            stateEmpty,
-            kProgressStateWriting);
-    int stateReady = kProgressStateReady;
-    if (wasEmpty || m_state.compare_exchange_strong(
-            stateReady,
-            kProgressStateWriting)) {
-        DEBUG_ASSERT(m_state.load() == kProgressStateWriting);
-        //kLogger.trace() << "Writing progress info";
-        // Keep all track references alive until the main thread releases
-        // them by moving them into the progress info exchange object!
-        if (!previousTracksWithProgress->empty()) {
-            if (m_tracksWithProgress.empty()) {
-                m_tracksWithProgress.swap(*previousTracksWithProgress);
-            } else {
-                for (const auto trackProgressState: *previousTracksWithProgress) {
-                    m_tracksWithProgress[trackProgressState.first] = trackProgressState.second;
-                }
-            }
-            previousTracksWithProgress->clear();
-        }
-        m_finishedCount += *finishedCount;
-        *finishedCount = 0;
-        bool currentTrackModified = m_currentTrack != currentTrack;
-        if (currentTrack) {
-            DEBUG_ASSERT(!m_currentTrack ||
-                    (m_tracksWithProgress.find(m_currentTrack) != m_tracksWithProgress.end()));
-            const auto i = m_tracksWithProgress.find(currentTrack);
-            if (i == m_tracksWithProgress.end()) {
-                m_tracksWithProgress[currentTrack] = currentTrackProgress;
-            } else {
-                i->second = currentTrackProgress;
-            }
-            m_currentTrack = currentTrack;
-        } else {
-            m_currentTrack.reset();
-        }
-        if (currentTrackModified || !m_tracksWithProgress.empty()) {
-            // Allow the main thread to consume progress info updates
-            m_state.store(kProgressStateReady);
-            return true;
-        } else {
-            // Empty, nothing to read
-            m_state.store(kProgressStateEmpty);
-        }
-    } else {
-        // Ensure that track references are not dropped within the
-        // analysis thread by accumulating progress updates until
-        // the receiver is ready to consume them!
-        if (currentTrack) {
-            (*previousTracksWithProgress)[currentTrack] = currentTrackProgress;
-        }
-    }
-    return false;
-}
-
-void AnalyzerThread::Progress::reset() {
-    m_tracksWithProgress.clear();
-    m_currentTrack.reset();
-    m_finishedCount = 0;
-}
-
-AnalyzerThread::Progress::ReadScope::ReadScope(Progress* progress)
-    : m_progress(nullptr),
-      m_empty(false) {
-    DEBUG_ASSERT(progress);
-    // Defer updates from the analysis thread while the
-    // current progress info is consumed.
-    int stateReady = kProgressStateReady;
-    if (progress->m_state.compare_exchange_strong(
-            stateReady,
-            kProgressStateReading)) {
-        m_progress = progress;
-    } else {
-        // It is safe to check for emptiness here, because only the
-        // reader can set the state back to empty, i.e. we will not
-        // get any false positives if the thread has already modified
-        // m_state meanwhile.
-        m_empty = progress->m_state.load() == kProgressStateEmpty;
-    }
-}
-
-AnalyzerThread::Progress::ReadScope::~ReadScope() {
-    if (m_progress) {
-        DEBUG_ASSERT(m_progress->m_state.load() == kProgressStateReading);
-        // Releasing all track reference here in the main thread might
-        // trigger save actions. This is necessary to avoid that the
-        // last reference is dropped within the analysis thread!
-        m_progress->reset();
-        // Finally allow the analysis thread to write progress info
-        // updates again
-        m_progress->m_state.store(kProgressStateEmpty);
-    }
-}
 
 AnalyzerThread::AnalyzerThread(
         int id,
@@ -163,12 +50,15 @@ AnalyzerThread::AnalyzerThread(
           m_pDbConnectionPool(std::move(pDbConnectionPool)),
           m_pConfig(std::move(pConfig)),
           m_mode(mode),
-          m_currentTrackProgress(kAnalyzerProgressUnknown),
           m_run(true),
           m_sampleBuffer(kAnalysisSamplesPerBlock),
-          m_finishedCount(0),
+          m_emittedState(AnalyzerThreadState::Void),
           // The first signal should always be emitted
-          m_lastProgressEmittedAt(Clock::now() - kProgressInhibitDuration) {
+          m_lastBusyProgressEmittedAt(Clock::now() - kBusyProgressInhibitDuration) {
+    m_nextTrack.setValue(TrackPointer());
+    m_analyzerProgress.setValue(kAnalyzerProgressUnknown);
+    // This type is registered multiple times although once would be sufficient
+    qRegisterMetaType<AnalyzerThreadState>();
 }
 
 AnalyzerThread::~AnalyzerThread() {
@@ -192,7 +82,8 @@ void AnalyzerThread::run() {
     kLogger.debug() << "Exiting" << m_id;
 
     m_run.store(false);
-    emit(exit(m_id));
+
+    emitProgress(AnalyzerThreadState::Void);
 }
 
 void AnalyzerThread::exec() {
@@ -240,38 +131,39 @@ void AnalyzerThread::exec() {
     openParams.setChannelCount(kAnalysisChannels);
 
     while (m_run.load()) {
-        emitProgress(false);
-        waitForCurrentTrack();
-        if (!m_currentTrack) {
+        TrackPointer track = recvNextTrack();
+        if (!track) {
             break;
         }
 
-        kLogger.debug() << "Analyzing" << m_currentTrack->getLocation();
+        kLogger.debug() << "Analyzing" << track->getLocation();
+
+        emitBusyProgress(track, kAnalyzerProgressNone);
 
         // Get the audio
-        auto pAudioSource = SoundSourceProxy(m_currentTrack).openAudioSource(openParams);
-        if (!pAudioSource) {
+        const auto audioSource =
+                SoundSourceProxy(track).openAudioSource(openParams);
+        if (!audioSource) {
             kLogger.warning()
                     << "Failed to open file for analyzing:"
-                    << m_currentTrack->getLocation();
-            finishCurrentTrack();
+                    << track->getLocation();
+            emitDoneProgress(track);
             continue;
         }
 
         bool processTrack = false;
-        for (auto const& pAnalyzer: m_analyzers) {
+        for (auto const& analyzer: m_analyzers) {
             // Make sure not to short-circuit initialize(...)
-            if (pAnalyzer->initialize(
-                    m_currentTrack,
-                    pAudioSource->sampleRate(),
-                    pAudioSource->frameLength() * kAnalysisChannels)) {
+            if (analyzer->initialize(
+                    track,
+                    audioSource->sampleRate(),
+                    audioSource->frameLength() * kAnalysisChannels)) {
                 processTrack = true;
             }
         }
 
         if (processTrack) {
-            emitProgress(false, kAnalyzerProgressNone);
-            const auto analysisResult = analyzeCurrentTrack(pAudioSource);
+            const auto analysisResult = analyzeAudioSource(track, audioSource);
             DEBUG_ASSERT(analysisResult != AnalysisResult::Pending);
             if ((analysisResult == AnalysisResult::Complete) ||
                     (analysisResult == AnalysisResult::Partial)) {
@@ -281,83 +173,72 @@ void AnalyzerThread::exec() {
                 // session. A partial analysis would otherwise be repeated again
                 // and again, because it is very unlikely that the error vanishes
                 // suddenly.
-                emitProgress(false, kAnalyzerProgressFinalizing);
+                emitBusyProgress(track, kAnalyzerProgressFinalizing);
                 // This takes around 3 sec on a Atom Netbook
-                for (auto const& pAnalyzer: m_analyzers) {
-                    pAnalyzer->finalize(m_currentTrack);
+                for (auto const& analyzer: m_analyzers) {
+                    analyzer->finalize(track);
                 }
-                finishCurrentTrack(kAnalyzerProgressDone);
+                emitDoneProgress(track, kAnalyzerProgressDone);
             } else {
-                for (auto const& pAnalyzer: m_analyzers) {
-                    pAnalyzer->cleanup(m_currentTrack);
+                for (auto const& analyzer: m_analyzers) {
+                    analyzer->cleanup(track);
                 }
-                finishCurrentTrack();
+                emitDoneProgress(track);
             }
         } else {
             kLogger.debug() << "Skipping track analysis because no analyzer initialized.";
-            finishCurrentTrack(kAnalyzerProgressDone);
+            emitDoneProgress(track, kAnalyzerProgressDone);
         }
-        // All references to the track object within the analysis thread
-        // should have been released to avoid exporting metadata or updating
-        // the database within the low-prio analysis thread!
-        DEBUG_ASSERT(!m_currentTrack);
     }
     DEBUG_ASSERT(!m_run.load());
 
     m_analyzers.clear();
 }
 
-bool AnalyzerThread::wake(const TrackPointer& nextTrack) {
-    std::lock_guard<std::mutex> locked(m_nextTrackMutex);
-    if (!m_nextTrack) {
-        m_nextTrack = nextTrack;
-    }
-    if (!nextTrack || (m_nextTrack == nextTrack)) {
-        m_nextTrackWaitCond.notify_one();
-        return true;
-    } else {
-        return false;
-    }
-}
-
 void AnalyzerThread::stop() {
     m_run.store(false);
-    m_nextTrackWaitCond.notify_one();
+    m_idleWaitCond.notify_one();
 }
 
-void AnalyzerThread::waitForCurrentTrack() {
-    DEBUG_ASSERT(!m_currentTrack);
+void AnalyzerThread::sendNextTrack(const TrackPointer& nextTrack) {
+    DEBUG_ASSERT(!m_nextTrack.getValue());
+    m_nextTrack.setValue(nextTrack);
+    m_idleWaitCond.notify_one();
+}
 
-    std::unique_lock<std::mutex> locked(m_nextTrackMutex);
-    m_nextTrack.reset();
-    do {
+TrackPointer AnalyzerThread::recvNextTrack() {
+    std::unique_lock<std::mutex> locked(m_idleMutex);
+    while (true) {
         if (!m_run.load()) {
-            return;
+            return TrackPointer();
+        }
+        TrackPointer nextTrack = m_nextTrack.getValue();
+        if (nextTrack) {
+            m_nextTrack.setValue(TrackPointer());
+            return nextTrack;
         }
         kLogger.debug() << "Suspending" << m_id;
-        emit(idle(m_id));
-        m_nextTrackWaitCond.wait(locked);
-        kLogger.debug() << "Resuming" << m_id;
-        if (!m_run.load()) {
-            return;
+        if (m_emittedState != AnalyzerThreadState::Idle) {
+            // Only send the idle signal once when entering the
+            // idle state from another state.
+            emitProgress(AnalyzerThreadState::Idle);
         }
-        m_currentTrack = m_nextTrack;
-    } while (!m_currentTrack);
-    // Keep m_nextTrack occupied to avoid accepting another track
-    // during an ongoing analysis.
+        m_idleWaitCond.wait(locked) ;
+        kLogger.debug() << "Resuming" << m_id;
+    }
+    return TrackPointer();
 }
 
-AnalyzerThread::AnalysisResult AnalyzerThread::analyzeCurrentTrack(
-        mixxx::AudioSourcePointer pAudioSource) {
+AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
+        const TrackPointer& track,
+        const mixxx::AudioSourcePointer& audioSource) {
 
     mixxx::AudioSourceStereoProxy audioSourceProxy(
-            pAudioSource,
+            audioSource,
             kAnalysisFramesPerBlock);
     DEBUG_ASSERT(audioSourceProxy.channelCount() == kAnalysisChannels);
 
-    emitProgress(false, kAnalyzerProgressNone);
-
-    mixxx::IndexRange remainingFrames = pAudioSource->frameIndexRange();
+    mixxx::IndexRange remainingFrames = audioSource->frameIndexRange();
     auto result = remainingFrames.empty() ? AnalysisResult::Complete : AnalysisResult::Pending;
     while (result == AnalysisResult::Pending) {
         if (!m_run.load()) {
@@ -382,8 +263,8 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeCurrentTrack(
         // 2nd: step: Analyze chunk of decoded audio data
         if (readableSampleFrames.frameLength() == kAnalysisFramesPerBlock) {
             // Complete chunk of audio samples has been read for analysis
-            for (auto const& pAnalyzer: m_analyzers) {
-                pAnalyzer->process(
+            for (auto const& analyzer: m_analyzers) {
+                analyzer->process(
                         readableSampleFrames.readableData(),
                         readableSampleFrames.readableLength());
             }
@@ -399,9 +280,8 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeCurrentTrack(
             } else {
                 // EOF not reached -> Maybe a corrupt file?
                 kLogger.warning()
-                        << "Aborting analysis after failed to read sample data from"
-                        << m_currentTrack->getLocation()
-                        << ": expected frames =" << inputFrameIndexRange
+                        << "Aborting analysis after failure to read sample data:"
+                        << "expected frames =" << inputFrameIndexRange
                         << ", actual frames =" << readableSampleFrames.frameIndexRange();
                 result = AnalysisResult::Partial;
             }
@@ -411,41 +291,42 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeCurrentTrack(
             return AnalysisResult::Cancelled;
         }
 
-        // 3rd step: Update progress
+        // 3rd step: Update & emit progress
         const double frameProgress =
-                double(pAudioSource->frameLength() - remainingFrames.length()) /
-                double(pAudioSource->frameLength());
-        const int trackProgress = frameProgress * kAnalyzerProgressFinalizing;
-        emitProgress(false, trackProgress);
+                double(audioSource->frameLength() - remainingFrames.length()) /
+                double(audioSource->frameLength());
+        const int progress =
+                frameProgress *
+                (kAnalyzerProgressFinalizing - kAnalyzerProgressNone);
+        emitBusyProgress(track, progress);
     }
 
     return result;
 }
 
-// This is called from the AnalyzerThread thread
-void AnalyzerThread::emitProgress(bool finished, int currentTrackProgress) {
-    if (finished) {
-        ++m_finishedCount;
+void AnalyzerThread::emitBusyProgress(const TrackPointer& track, int busyProgress) {
+    DEBUG_ASSERT(track);
+    m_analyzerProgress.setValue(busyProgress);
+    const auto now = Clock::now();
+    if ((m_emittedState == AnalyzerThreadState::Busy) &&
+            (now < (m_lastBusyProgressEmittedAt + kBusyProgressInhibitDuration))) {
+        // Don't update analyzer progress of the track
+        // Don't emit progress signal
+        return;
     }
-    if (m_progress.tryWrite(
-            &m_previousTracksWithProgress,
-            &m_finishedCount,
-            m_currentTrack,
-            currentTrackProgress)) {
-        const auto now = Clock::now();
-        if (now < (m_lastProgressEmittedAt + kProgressInhibitDuration)) {
-            // Don't emit progress update signal
-            return;
-        }
-        m_lastProgressEmittedAt = now;
-        emit(progress(m_id));
-    }
+    m_lastBusyProgressEmittedAt = now;
+    emitProgress(AnalyzerThreadState::Busy, track);
 }
 
-void AnalyzerThread::finishCurrentTrack(int currentTrackProgress) {
-    DEBUG_ASSERT(m_currentTrack);
-    // Report last progress for current track
-    emitProgress(true, currentTrackProgress);
-    // Reset the current thread AFTER emitting the final progress update
-    m_currentTrack.reset();
+void AnalyzerThread::emitDoneProgress(const TrackPointer& track, int doneProgress) {
+    DEBUG_ASSERT(track);
+    m_analyzerProgress.setValue(doneProgress);
+    // Don't inhibit the final progress update!
+    m_lastBusyProgressEmittedAt = Clock::now();
+    emitProgress(AnalyzerThreadState::Done, track);
+}
+
+void AnalyzerThread::emitProgress(AnalyzerThreadState state, const TrackPointer& track) {
+    m_emittedState = state;
+    emit(progress(m_id, m_emittedState, track ? track->getId() : TrackId()));
 }

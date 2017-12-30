@@ -9,10 +9,11 @@
 #include <vector>
 
 #include "analyzer/analyzerprogress.h"
+#include "analyzer/analyzer.h"
+#include "control/controlvalue.h"
 #include "preferences/usersettings.h"
 #include "sources/audiosource.h"
 #include "track/track.h"
-#include "analyzer/analyzer.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/samplebuffer.h"
 #include "util/memory.h"
@@ -23,6 +24,16 @@ enum class AnalyzerMode {
     WithoutWaveform,
     Default = WithWaveform,
 };
+
+enum class AnalyzerThreadState {
+    Void,
+    Idle,
+    Busy,
+    Done,
+};
+
+Q_DECLARE_TYPEINFO(AnalyzerThreadState, Q_MOVABLE_TYPE);
+Q_DECLARE_METATYPE(AnalyzerThreadState);
 
 class AnalyzerThread : public QThread {
     Q_OBJECT
@@ -39,122 +50,23 @@ class AnalyzerThread : public QThread {
         return m_run.load();
     }
 
-    bool wake(const TrackPointer& nextTrack = TrackPointer());
-
-    // Temporary storage of AnalyzerQueue, not accessed by the worker thread!
-    // TODO(XXX): Get rid of this member if a simpler and cleaner solution
-    // exists.
-    void setCurrentTrackProgress(int currentTrackProgress) {
-        m_currentTrackProgress = currentTrackProgress;
-    }
-    bool hasCurrentTrackProgress() const {
-        return analyzerProgressValid(m_currentTrackProgress);
-    }
-    int getCurrentTrackProgress() const {
-        return m_currentTrackProgress;
+    int id() const {
+        return m_id;
     }
 
     void stop();
 
-    typedef std::map<TrackPointer, int> TracksWithProgress;
+    void sendNextTrack(const TrackPointer& nextTrack);
 
-    class Progress {
-      public:
-        Progress();
-
-        friend class ReadScope;
-        class ReadScope final {
-          public:
-            ReadScope(const ReadScope&) = delete;
-            ReadScope(ReadScope&& that)
-                : m_progress(that.m_progress),
-                  m_empty(that.m_empty) {
-                that.m_progress = nullptr;
-            }
-            ~ReadScope();
-
-            ReadScope& operator=(const ReadScope&) = delete;
-            ReadScope& operator=(const ReadScope&&) = delete;
-
-            operator const Progress*() const {
-                return m_progress;
-            }
-
-            // Returns false if the shared progress update is currently
-            // unreadable and we cannot determine if it actually is empty,
-            // False positives must strictly be avoided to avoid race
-            // conditions. A result of true indicates that an idle
-            // analyzer thread can be stopped and destroyed safely
-            // without losing the final progress update(s).
-            bool empty() const {
-                return m_empty;
-            }
-
-            const TracksWithProgress& tracksWithProgress() const {
-                DEBUG_ASSERT(m_progress);
-                return m_progress->m_tracksWithProgress;
-            }
-
-            const TrackPointer& currentTrack() const {
-                DEBUG_ASSERT(m_progress);
-                return m_progress->m_currentTrack;
-            }
-
-            int currentTrackProgress() const {
-                DEBUG_ASSERT(m_progress);
-                return m_progress->currentTrackProgress();
-            }
-
-            int finishedCount() const {
-                DEBUG_ASSERT(m_progress);
-                return m_progress->m_finishedCount;
-            }
-
-          private:
-            friend class Progress;
-            explicit ReadScope(Progress* progress);
-            Progress* m_progress;
-            bool m_empty;
-        };
-
-        ReadScope read() {
-            return ReadScope(this);
-        }
-
-      private:
-        void reset();
-
-        bool tryWrite(
-                TracksWithProgress* previousTracksWithProgress,
-                int* finishedCount,
-                TrackPointer /*nullable*/ currentTrack,
-                int currenTrackProgress);
-
-        int currentTrackProgress() const {
-            DEBUG_ASSERT(m_currentTrack);
-            DEBUG_ASSERT(m_tracksWithProgress.find(m_currentTrack)
-                    != m_tracksWithProgress.end());
-            return m_tracksWithProgress.find(m_currentTrack)->second;
-        }
-
-        friend class AnalyzerThread;
-        std::atomic<int> m_state;
-        TracksWithProgress m_tracksWithProgress;
-        int m_finishedCount;
-        TrackPointer m_currentTrack;
-    };
-
-    Progress::ReadScope readProgress() {
-        return m_progress.read();
+    int readAnalyzerProgress() const {
+        return m_analyzerProgress.getValue();
     }
 
   signals:
-    // Ask for next track
-    void idle(int id);
-    // Report progress (shared memory)
-    void progress(int id);
-    // Notify about imminent death just before exiting (last signal)
-    void exit(int id);
+    // Use a single signal for progress updates to ensure that
+    // all signals are queued and received in the same order
+    // as emitted from this thread!
+    void progress(int threadId, AnalyzerThreadState threadState, TrackId trackId);
 
   protected:
     void run() override;
@@ -170,23 +82,16 @@ class AnalyzerThread : public QThread {
     const AnalyzerMode m_mode;
 
     /////////////////////////////////////////////////////////////////////////
-    // Temporary storage of AnalyzerQueue, not accessed by the worker thread!
-    // TODO(XXX): Get rid of this member if a simpler and cleaner solution
-    // exists.
-
-    int m_currentTrackProgress;
-
-    /////////////////////////////////////////////////////////////////////////
     // Thread shared
 
     std::atomic<bool> m_run;
 
-    std::mutex m_nextTrackMutex;
-    std::condition_variable m_nextTrackWaitCond;
+    ControlValueAtomic<TrackPointer> m_nextTrack;
 
-    TrackPointer m_nextTrack;
+    ControlValueAtomic<int> m_analyzerProgress;
 
-    Progress m_progress;
+    std::mutex m_idleMutex;
+    std::condition_variable m_idleWaitCond;
 
     /////////////////////////////////////////////////////////////////////////
     // Thread local
@@ -196,14 +101,10 @@ class AnalyzerThread : public QThread {
 
     mixxx::SampleBuffer m_sampleBuffer;
 
-    TracksWithProgress m_previousTracksWithProgress;
-
-    int m_finishedCount;
-
-    TrackPointer m_currentTrack;
+    AnalyzerThreadState m_emittedState;
 
     typedef std::chrono::steady_clock Clock;
-    Clock::time_point m_lastProgressEmittedAt;
+    Clock::time_point m_lastBusyProgressEmittedAt;
 
     enum class AnalysisResult {
         Pending,
@@ -211,14 +112,19 @@ class AnalyzerThread : public QThread {
         Complete,
         Cancelled,
     };
-    AnalysisResult analyzeCurrentTrack(
-            mixxx::AudioSourcePointer pAudioSource);
+    AnalysisResult analyzeAudioSource(
+            const TrackPointer& track,
+            const mixxx::AudioSourcePointer& audioSource);
 
     void exec();
 
-    void waitForCurrentTrack();
+    TrackPointer recvNextTrack(); // blocking
 
-    void finishCurrentTrack(int currentTrackProgress = kAnalyzerProgressUnknown);
+    // Conditional emitting of progress() signal
+    void emitBusyProgress(const TrackPointer& track, int busyProgress);
 
-    void emitProgress(bool finished, int currentTrackProgress = kAnalyzerProgressUnknown);
+    // Unconditional emitting of progress() signal
+    void emitDoneProgress(const TrackPointer& track, int doneProgress = kAnalyzerProgressUnknown);
+
+    void emitProgress(AnalyzerThreadState state, const TrackPointer& track = TrackPointer());
 };

@@ -48,8 +48,8 @@ class AnalysisFeature : public LibraryFeature {
     void analyzeTracks(QList<TrackId> trackIds);
 
   private slots:
-    void slotAnalyzerQueueProgress(int currentProgress, int finishedSize, int totalSize);
-    void slotAnalyzerQueueEmpty(int dequeuedSize);
+    void slotAnalyzerQueueProgress(int analyzerProgress, int finishedCount, int totalCount);
+    void slotAnalyzerQueueEmpty(int finishedCount);
     void slotAnalyzerQueueDone();
     void stopAnalysis();
 

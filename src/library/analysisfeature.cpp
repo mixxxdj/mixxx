@@ -157,22 +157,22 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
 }
 
 void AnalysisFeature::slotAnalyzerQueueProgress(
-        int /*currentProgress*/,
-        int finishedSize,
-        int totalSize) {
-    if (totalSize > 0) {
-        setTitleProgress(finishedSize, totalSize);
+        int /*analyzerProgress*/,
+        int finishedCount,
+        int totalCount) {
+    if (totalCount > 0) {
+        setTitleProgress(finishedCount, totalCount);
     } else {
         setTitleDefault();
     }
 }
 
-void AnalysisFeature::slotAnalyzerQueueEmpty(int dequeuedSize) {
+void AnalysisFeature::slotAnalyzerQueueEmpty(int finishedCount) {
     // Only abandon the queue after all enqueued tracks have been
     // dequeued to avoid a race condition when the worker threads
     // are started and running before all selected tracks have
     // been enqueued.
-    if (dequeuedSize > 0) {
+    if (finishedCount > 0) {
         slotAnalyzerQueueDone();
     }
 }
