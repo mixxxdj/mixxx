@@ -23,7 +23,7 @@
 				<Size>4,4</Size>
 			</WidgetGroup>
 			<PushButton>
-				<TooltipId></TooltipId>
+				<TooltipId>EffectSlot_enabled</TooltipId>
 				<Style></Style>
 				<NumberStates>2</NumberStates>
 				<State>

@@ -1,13 +1,16 @@
 <Template>
 	<WidgetGroup>
-		<Pos>0,0</Pos>
-		<MinimumSize>508,104</MinimumSize>
-		<MaximumSize>508,104</MaximumSize>
-		<SizePolicy>f,f</SizePolicy>
+		<Size>508e,104f</Size>
+		<Layout>horizontal</Layout>
 		<Children>
 			<WidgetGroup>
-				<Pos>1,0</Pos>
-				<Size>505,100</Size>
+		        <ObjectName>EffectLeftBorder</ObjectName>
+				<Size>5f,100f</Size>
+				<BackPath>style/style_bg_deck_border.png</BackPath>
+				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+			</WidgetGroup>	
+			<WidgetGroup>
+				<Size>495,100</Size>
 				<Style>QGroupBox { 
 					border: 0px solid green;  
 					margin: 0px 0px 0px 0px;
@@ -66,6 +69,23 @@
 						</Connection>
 					</WidgetGroup>	
 				</Children>		
+			</WidgetGroup>
+			<WidgetGroup>
+		        <ObjectName>EffectRightBorder</ObjectName>
+				<Size>0e,100f</Size>
+				<BackPath>style/style_bg_effectunit_right.png</BackPath>
+				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+			</WidgetGroup>
+			<WidgetGroup>
+		        <ObjectName>EffectRightBorder</ObjectName>
+				<Size>5f,100f</Size>
+				<BackPath>style/style_bg_deck_border.png</BackPath>
+				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+			</WidgetGroup>	
+			<WidgetGroup>
+				<ObjectName>EffectRightBorder</ObjectName>
+				<Size>3f,100f</Size>
+				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 			</WidgetGroup>	
 		</Children>		
 	</WidgetGroup>	

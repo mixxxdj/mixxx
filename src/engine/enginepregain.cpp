@@ -17,6 +17,7 @@ ControlObject* EnginePregain::s_pEnableReplayGain = NULL;
 EnginePregain::EnginePregain(QString group)
         : m_dSpeed(1.0),
           m_dOldSpeed(1.0),
+          m_dNonScratchSpeed(1.0),
           m_scratching(false),
           m_fPrevGain(1.0),
           m_bSmoothFade(false) {
@@ -46,12 +47,12 @@ EnginePregain::~EnginePregain() {
     s_pDefaultBoost = NULL;
 }
 
-void EnginePregain::setSpeed(double speed) {
+void EnginePregain::setSpeedAndScratching(double speed, bool scratching) {
     m_dOldSpeed = m_dSpeed;
     m_dSpeed = speed;
-}
-
-void EnginePregain::setScratching(bool scratching) {
+    if (!scratching) {
+        m_dNonScratchSpeed = speed;
+    }
     m_scratching = scratching;
 }
 
@@ -106,20 +107,22 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
     // Clamp gain to within [0, 10.0] to prevent insane gains. This can happen
     // (some corrupt files get really high replay gain values).
     // 10 allows a maximum replay Gain Boost * calculated replay gain of ~2
-    float totalGain = (float)m_pPotmeterPregain->get() *
+    CSAMPLE_GAIN totalGain = (CSAMPLE_GAIN)m_pPotmeterPregain->get() *
             math_clamp(fReplayGainCorrection, 0.0f, 10.0f);
 
     m_pTotalGain->set(totalGain);
 
     // Vinylsoundemu:
-    // As the speed approaches zero, hearing small bursts of sound at full volume
-    // is distracting and doesn't mimic the way that vinyl sounds when played slowly.
-    // Instead, reduce gain to provide a soft rolloff.
-    // This is also applied for for fading from and to pause
-    const float kThresholdSpeed = 0.070; // Scale volume if playback speed is below 7%.
-    if (fabs(m_dSpeed) < kThresholdSpeed) {
-        totalGain *= fabs(m_dSpeed) / kThresholdSpeed;
-    }
+    // Apply Gain change depending on the speed.
+    // We have -Inf dB at x0, -6 dB at x0.3 and 0 dB at x1.
+    // For faster speeds it is hard to measure it, but it looks like we had an
+    // increasing gain there which would lead to undesired clipping.
+    // This is ignored here, to avoid that.
+    // It also turns out that it is physically not possible to scratch faster
+    // then x5 without the needle loosing contact, our threshold for the effect.
+    // So we apply a curve here that emulates the gain change up to x 2.5 natural
+    // to 3.5 dB and then limits the gain towards <= 5.5 dB at am maximum of x5.
+    totalGain *= log10((math_min(fabs(m_dSpeed), 5.0) * 4) + 1) / log10((1 * 4) + 1);
 
     if ((m_dSpeed * m_dOldSpeed < 0) && m_scratching) {
         // direction changed, go though zero if scratching

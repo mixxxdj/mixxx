@@ -95,7 +95,7 @@ AutoPanEffect::AutoPanEffect(EngineEffect* pEffect)
 AutoPanEffect::~AutoPanEffect() {
 }
 
-void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* pGroupState,
+void AutoPanEffect::processChannel(const ChannelHandle& handle, AutoPanGroupState* pGroupState,
                               const CSAMPLE* pInput,
                               CSAMPLE* pOutput, const unsigned int numSamples,
                               const unsigned int sampleRate,
@@ -107,7 +107,7 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         return;
     }
 
-    PanGroupState& gs = *pGroupState;
+    AutoPanGroupState& gs = *pGroupState;
     double width = m_pWidthParameter->value();
     double period = m_pPeriodParameter->value();
     double periodUnit = m_pPeriodUnitParameter->value();

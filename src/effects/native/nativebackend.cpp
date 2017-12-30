@@ -1,4 +1,5 @@
 
+#include <effects/native/balanceeffect.h>
 #include <QtDebug>
 
 #include "effects/native/nativebackend.h"
@@ -36,6 +37,7 @@ NativeBackend::NativeBackend(QObject* pParent)
     registerEffect<FilterEffect>();
     registerEffect<MoogLadder4FilterEffect>();
     registerEffect<BitCrusherEffect>();
+    registerEffect<BalanceEffect>();
     // Fancy effects
     registerEffect<FlangerEffect>();
     registerEffect<EchoEffect>();

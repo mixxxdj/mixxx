@@ -22,7 +22,6 @@ EffectManifestPointer ReverbEffect::getManifest() {
             "(NRev, KipRev) all based on the Chowning/Moorer/Schroeder "
             "reverberators, which use networks of simple allpass and comb"
             "delay filters.");
-    pManifest->setEffectRampsFromDry(true);
 
     EffectManifestParameterPointer decay = pManifest->addParameter();
     decay->setId("decay");
