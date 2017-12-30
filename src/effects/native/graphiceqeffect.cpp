@@ -48,7 +48,7 @@ EffectManifestPointer GraphicEQEffect::getManifest() {
         EffectManifestParameterPointer mid = pManifest->addParameter();
         mid->setId(QString("mid%1").arg(i));
         mid->setName(paramName);
-        mid->setDescription(QObject::tr("Gain for Band Filter %1").arg(i));
+        mid->setDescription(QObject::tr("Gain for Band Filter %1").arg(i + 1));
         mid->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
         mid->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
         mid->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
