@@ -20,6 +20,7 @@
 #include "effects/native/autopaneffect.h"
 #include "effects/native/phasereffect.h"
 #include "effects/native/loudnesscontoureffect.h"
+#include "effects/native/metronomeeffect.h"
 
 NativeBackend::NativeBackend(QObject* pParent)
         : EffectsBackend(pParent, tr("Native")) {
@@ -46,6 +47,7 @@ NativeBackend::NativeBackend(QObject* pParent)
     registerEffect<ReverbEffect>();
 #endif
     registerEffect<PhaserEffect>();
+    registerEffect<MetronomeEffect>();
 }
 
 NativeBackend::~NativeBackend() {

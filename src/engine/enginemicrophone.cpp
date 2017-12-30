@@ -93,9 +93,6 @@ void EngineMicrophone::process(CSAMPLE* pOut, const int iBufferSize) {
     if (m_pEngineEffectsManager != NULL) {
         // Process effects enabled for this channel
         GroupFeatureState features;
-        // This is out of date by a callback but some effects will want the RMS
-        // volume.
-        m_vuMeter.collectFeatures(&features);
         m_pEngineEffectsManager->process(getHandle(), pOut, iBufferSize,
                                          m_pSampleRate->get(), features);
     }
