@@ -592,36 +592,36 @@ padding-left: 2px;
   #VinylTogglerLeft[displayValue="0"],
   #VinylTogglerRightPassthrough[displayValue="1"],
   #VinylTogglerRight[displayValue="1"] {
-    background: transparent url(skin:/buttons/btn_arrow_left.svg) no-repeat top center;
+    background: transparent url(skin:/buttons/btn_vinyl_left.svg) no-repeat top center;
     }
     #VinylTogglerLeft[displayValue="0"]:hover,
     #VinylTogglerRightPassthrough[displayValue="1"]:hover,
     #VinylTogglerRight[displayValue="1"]:hover {
-      background: transparent url(skin:/buttons/btn_arrow_left_hover.svg) no-repeat top center;
+      background: transparent url(skin:/buttons/btn_vinyl_left_hover.svg) no-repeat top center;
     }
   #VinylTogglerLeft[displayValue="1"],
   #VinylTogglerLeftPassthrough[displayValue="1"],
   #VinylTogglerRight[displayValue="0"] {
-    background: transparent url(skin:/buttons/btn_arrow_right.svg) no-repeat top center;
+    background: transparent url(skin:/buttons/btn_vinyl_right.svg) no-repeat top center;
     }
     #VinylTogglerLeft[displayValue="1"]:hover,
     #VinylTogglerLeftPassthrough[displayValue="1"]:hover,
     #VinylTogglerRight[displayValue="0"]:hover {
-      background: transparent url(skin:/buttons/btn_arrow_right_hover.svg) no-repeat top center;
+      background: transparent url(skin:/buttons/btn_vinyl_right_hover.svg) no-repeat top center;
     }
   /* When passthrough is active but Vinyl Controls are hidden,
     yellow background and black arrow indicate passthrough */
   #VinylTogglerLeftPassthrough[displayValue="0"] {
-    background: #ff8f00 url(skin:/buttons/btn_arrow_left_black.svg) no-repeat top center;
+    background: #ff8f00 url(skin:/buttons/btn_vinyl_pass_left.svg) no-repeat top center;
     }
     #VinylTogglerLeftPassthrough[displayValue="0"]:hover {
-      background: #ff8f00 url(skin:/buttons/btn_arrow_left_black_hover.svg) no-repeat top center;
+      background: #ff8f00 url(skin:/buttons/btn_vinyl_pass_left_hover.svg) no-repeat top center;
     }
   #VinylTogglerRightPassthrough[displayValue="0"] {
-    background: #ff8f00 url(skin:/buttons/btn_arrow_right_black.svg) no-repeat top center;
+    background: #ff8f00 url(skin:/buttons/btn_vinyl_pass_right.svg) no-repeat top center;
     }
     #VinylTogglerRightPassthrough[displayValue="0"]:hover {
-      background: #ff8f00 url(skin:/buttons/btn_arrow_right_black_hover.svg) no-repeat top center;
+      background: #ff8f00 url(skin:/buttons/btn_vinyl_pass_right_hover.svg) no-repeat top center;
     }
 
   #VinylControlButton,
