@@ -11,25 +11,27 @@ const QString SchemaManager::SETTINGS_VERSION_STRING = "mixxx.schema.version";
 const QString SchemaManager::SETTINGS_MINCOMPATIBLE_STRING = "mixxx.schema.min_compatible_version";
 
 namespace {
-    mixxx::Logger kLogger("SchemaManager");
 
-    int readCurrentSchemaVersion(SettingsDAO& settings) {
-        QString settingsValue = settings.getValue(SchemaManager::SETTINGS_VERSION_STRING);
-        // May be a null string if the schema has not been created. We default the
-        // startVersion to 0 so that we automatically try to upgrade to revision 1.
-        if (settingsValue.isNull()) {
-            return 0; // initial version
-        } else {
-            bool ok = false;
-            int schemaVersion = settingsValue.toInt(&ok);
-            VERIFY_OR_DEBUG_ASSERT(ok && (schemaVersion >= 0)) {
-                kLogger.critical()
-                        << "Invalid database schema version" << settingsValue;
-            }
-            return schemaVersion;
+mixxx::Logger kLogger("SchemaManager");
+
+int readCurrentSchemaVersion(SettingsDAO& settings) {
+    QString settingsValue = settings.getValue(SchemaManager::SETTINGS_VERSION_STRING);
+    // May be a null string if the schema has not been created. We default the
+    // startVersion to 0 so that we automatically try to upgrade to revision 1.
+    if (settingsValue.isNull()) {
+        return 0; // initial version
+    } else {
+        bool ok = false;
+        int schemaVersion = settingsValue.toInt(&ok);
+        VERIFY_OR_DEBUG_ASSERT(ok && (schemaVersion >= 0)) {
+            kLogger.critical()
+                    << "Invalid database schema version" << settingsValue;
         }
+        return schemaVersion;
     }
 }
+
+} // anonymous namespace
 
 SchemaManager::SchemaManager(const QSqlDatabase& database)
     : m_database(database),
@@ -65,7 +67,7 @@ bool SchemaManager::isBackwardsCompatibleWithVersion(int targetVersion) const {
 }
 
 SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
-        const QString& schemaFilename,
+        const QString& schemaBaseName,
         int targetVersion) {
     VERIFY_OR_DEBUG_ASSERT(m_currentVersion >= 0) {
         return Result::UpgradeFailed;
@@ -99,14 +101,16 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
         }
     }
 
+    const QString schemaMigrationFileName =
+            QString("%1.xml").arg(schemaBaseName);
     kLogger.debug()
             << "Loading database schema migrations from"
-            << schemaFilename;
-    QDomElement schemaRoot = XmlParse::openXMLFile(schemaFilename, "schema");
+            << schemaMigrationFileName;
+    QDomElement schemaRoot = XmlParse::openXMLFile(schemaMigrationFileName, "schema");
     if (schemaRoot.isNull()) {
         kLogger.critical()
                 << "Failed to load database schema migrations from"
-                << schemaFilename;
+                << schemaMigrationFileName;
         return Result::SchemaError;
     }
 
@@ -120,7 +124,7 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
         VERIFY_OR_DEBUG_ASSERT(!version.isNull()) {
             kLogger.critical()
                     << "Failed to parse database schema migrations from"
-                    << schemaFilename;
+                    << schemaMigrationFileName;
             return Result::SchemaError;
         }
         int iVersion = version.toInt();
@@ -158,7 +162,7 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
         VERIFY_OR_DEBUG_ASSERT(!eSql.isNull()) {
             kLogger.critical()
                     << "Failed to parse database schema migrations from"
-                    << schemaFilename;
+                    << schemaMigrationFileName;
             return Result::SchemaError;
         }
 

@@ -35,14 +35,14 @@ TEST_F(SchemaManagerTest, CanUpgradeFreshDatabaseToRequiredVersion) {
     {
         SchemaManager schemaManager(dbConnection());
         SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
-                MixxxDb::kDefaultSchemaFile, MixxxDb::kRequiredSchemaVersion);
+                MixxxDb::kDefaultSchemaBaseName, MixxxDb::kRequiredSchemaVersion);
         EXPECT_EQ(SchemaManager::Result::UpgradeSucceeded, result);
     }
     // Subsequent upgrade(s)
     {
         SchemaManager schemaManager(dbConnection());
         SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
-                MixxxDb::kDefaultSchemaFile, MixxxDb::kRequiredSchemaVersion);
+                MixxxDb::kDefaultSchemaBaseName, MixxxDb::kRequiredSchemaVersion);
         EXPECT_EQ(SchemaManager::Result::CurrentVersion, result);
     }
 }
@@ -60,7 +60,7 @@ TEST_F(SchemaManagerTest, BackwardsCompatibleVersion) {
         // Upgrade to version 1 to get the settings table.
         SchemaManager schemaManager(dbConnection());
         SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
-                MixxxDb::kDefaultSchemaFile, 1);
+                MixxxDb::kDefaultSchemaBaseName, 1);
         EXPECT_EQ(SchemaManager::Result::UpgradeSucceeded, result);
 
         SettingsDAO settings(dbConnection());
@@ -76,7 +76,7 @@ TEST_F(SchemaManagerTest, BackwardsCompatibleVersion) {
 
     SchemaManager schemaManager(dbConnection());
     SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
-            MixxxDb::kDefaultSchemaFile, MixxxDb::kRequiredSchemaVersion);
+            MixxxDb::kDefaultSchemaBaseName, MixxxDb::kRequiredSchemaVersion);
     EXPECT_EQ(SchemaManager::Result::NewerVersionBackwardsCompatible, result);
 }
 
@@ -86,7 +86,7 @@ TEST_F(SchemaManagerTest, BackwardsIncompatibleVersion) {
         // Upgrade to version 1 to get the settings table.
         SchemaManager schemaManager(dbConnection());
         SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
-                MixxxDb::kDefaultSchemaFile, 1);
+                MixxxDb::kDefaultSchemaBaseName, 1);
         EXPECT_EQ(SchemaManager::Result::UpgradeSucceeded, result);
 
         SettingsDAO settings(dbConnection());
@@ -102,7 +102,7 @@ TEST_F(SchemaManagerTest, BackwardsIncompatibleVersion) {
 
     SchemaManager schemaManager(dbConnection());
     SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
-            MixxxDb::kDefaultSchemaFile, MixxxDb::kRequiredSchemaVersion);
+            MixxxDb::kDefaultSchemaBaseName, MixxxDb::kRequiredSchemaVersion);
     EXPECT_EQ(SchemaManager::Result::NewerVersionIncompatible, result);
 }
 
@@ -112,7 +112,7 @@ TEST_F(SchemaManagerTest, FailedUpgrade) {
         // Upgrade to version 3 to get the modern library table.
         SchemaManager schemaManager(dbConnection());
         SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
-                MixxxDb::kDefaultSchemaFile, 3);
+                MixxxDb::kDefaultSchemaBaseName, 3);
         EXPECT_EQ(SchemaManager::Result::UpgradeSucceeded, result);
     }
 
@@ -123,6 +123,6 @@ TEST_F(SchemaManagerTest, FailedUpgrade) {
 
     SchemaManager schemaManager(dbConnection());
     SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
-            MixxxDb::kDefaultSchemaFile, MixxxDb::kRequiredSchemaVersion);
+            MixxxDb::kDefaultSchemaBaseName, MixxxDb::kRequiredSchemaVersion);
     EXPECT_EQ(SchemaManager::Result::UpgradeFailed, result);
 }
