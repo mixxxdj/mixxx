@@ -1281,7 +1281,7 @@ HIDController.prototype.enableScratch = function(group,status) {
 // functions, depending on isScratchEnabled value above (see enableScratch())
 //
 // Since most controllers require value scaling for jog and scratch functions,
-// you  are warned if following scaling function names are not registered:
+// you are warned if following scaling function names are not registered:
 //
 // jog
 //      Scaling function from 'jog_wheel' for rate bend events with mixxx 'jog'

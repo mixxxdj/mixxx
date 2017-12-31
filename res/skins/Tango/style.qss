@@ -1649,7 +1649,7 @@ decks, samplers, mic, aux, fx */
     background-color: #078dcd;
   }
 #FxSuperLinkButton[value="2"] {	/*
-  a simple way to achive a partitioning in thirds	*/
+  a simple way to achieve a partitioning in thirds	*/
   background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
     stop: 0 #006596,
     stop: 0.33 #006596,

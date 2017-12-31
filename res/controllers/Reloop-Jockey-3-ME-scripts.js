@@ -75,7 +75,7 @@ Jockey3ME.LedShowBegin = function () {
   Jockey3ME.LedMeterShowTimer = engine.beginTimer(40,"Jockey3ME.LedMeterShow()");
 }
 
-// Init Script at Programm start
+// Init Script at Program start
 Jockey3ME.init = function () {
   for (var i = 1; i < 120; i++) {
     midi.sendShortMsg(0x90,i,0x7F);
@@ -373,7 +373,7 @@ Jockey3ME.effectSelectPush = function (channel, control, value, status, group) {
 	}
 }
 
-// This is controled by Jogwheel Pitch Bend Mode
+// This is controlled by Jogwheel Pitch Bend Mode
 Jockey3ME.effectSuperKnob = function (channel, control, value, status, group) {
 	var newValue = (value-64);
 	var currentDeck = parseInt(group.substring(23,24));

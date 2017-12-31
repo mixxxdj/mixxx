@@ -280,7 +280,7 @@ HerculesMk4.toglePitchSensivity=function (group,sensivity) {
 }
 
 HerculesMk4.cue = function (midino, control, value, status, group) {
-	// Don't set Cue accidentaly at the end of the song
+	// Don't set Cue accidentally at the end of the song
 
 	if(engine.getValue(group, "playposition") <= 0.97) {
 		engine.setValue(group, "cue_default", value ? 1 : 0);

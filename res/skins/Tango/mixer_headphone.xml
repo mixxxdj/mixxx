@@ -8,7 +8,7 @@ Description:
 	Mixerbar is alsways at bottom edge of screen.
 	It is centered if Library is hidden.
 	With Library visible, it can either show up below tracks table to save
-	space for treeview on the left, or full-width below Libary if many
+	space for treeview on the left, or full-width below Library if many
 	Mics/AUX are enabled.
 -->
 <Template>

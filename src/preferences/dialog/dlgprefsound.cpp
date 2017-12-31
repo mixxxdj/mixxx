@@ -196,7 +196,7 @@ DlgPrefSound::~DlgPrefSound() {
 }
 
 /**
- * Slot called when the preferences dialog  is opened or this pane is
+ * Slot called when the preferences dialog is opened or this pane is
  * selected.
  */
 void DlgPrefSound::slotUpdate() {

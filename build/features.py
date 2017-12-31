@@ -1131,7 +1131,7 @@ class Optimize(Feature):
                 optimize_level = Optimize.LEVEL_PORTABLE
 
             # Common flags to all optimizations.
-            # -ffast-math will pevent a performance penalty by denormals
+            # -ffast-math will prevent a performance penalty by denormals
             # (floating point values almost Zero are treated as Zero)
             # unfortunately that work only on 64 bit CPUs or with sse2 enabled
 

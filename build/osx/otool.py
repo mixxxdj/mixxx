@@ -165,7 +165,7 @@ def embed_dependencies(binary,
 
 		#sometimes the todo list will have redundant items placed on it; in the case that the items are named the same that could be avoided by relying on set() semantics
 		#however there are many equivalent ways to name files in Unix, so we have to check here after getting abspath
-		#proof that this makes the algorithm terminate: we record the absolute path to the file; even if there are multiple abspaths to one file (as can happen with symlinks sometimes) each differnt path means a different symlink file, of which there are only a finite number (since it's a finite disk)
+		#proof that this makes the algorithm terminate: we record the absolute path to the file; even if there are multiple abspaths to one file (as can happen with symlinks sometimes) each different path means a different symlink file, of which there are only a finite number (since it's a finite disk)
 		if p not in done and not any(p.startswith(P) for P in SYSTEM):
 			done.append(p)
 			orig.append(e)

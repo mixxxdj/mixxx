@@ -2074,7 +2074,7 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
 
             if (!directionOptionSet) {
                 // default:
-                // no direction option is explicite set
+                // no direction option is explicit set
                 // Set default flag to allow the widget to change this during setup
                 directionOption |= ControlParameterWidgetConnection::DIR_DEFAULT;
             }

@@ -27,7 +27,7 @@ http://svn.xiph.org/trunk/vorbis/examples/encoder_example.c
 #include "errordialoghandler.h"
 
 // Automatic thresholds for switching the encoder to mono
-// They have been choosen by testing and to keep the same number
+// They have been chosen by testing and to keep the same number
 // of values for the slider.
 // The threshold of bitrate at which the encoder
 // with switch to mono encoding

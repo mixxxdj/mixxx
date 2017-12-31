@@ -886,7 +886,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // and its distance to the original track pitch
         //
         // The Pitch_Adjust knob does not reflect the speedSliderPitchRatio.
-        // So it is is useful for controller mappings, because it is not
+        // So it is useful for controller mappings, because it is not
         // changed by the speed slider or keylock.
 
         // In the second part all other speed changing controls are processed.

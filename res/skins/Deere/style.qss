@@ -1142,7 +1142,7 @@ WNumberRate {
   /* background-color: #911661; */
 }
 
-/* pad 4 deck mixer colums left/right
+/* pad 4 deck mixer columns left/right
 to avoid EQ kill buttons from shifting center of rest of column */
 #4DecksMixerCol2ContainerRight {
   qproperty-layoutAlignment: 'AlignLeft';

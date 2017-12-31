@@ -155,7 +155,7 @@ void SetlogFeature::decorateChild(TreeItem* item, int playlist_id) {
 }
 
 void SetlogFeature::slotGetNewPlaylist() {
-    //qDebug() << "slotGetNewPlaylist() succesfully triggered !";
+    //qDebug() << "slotGetNewPlaylist() successfully triggered !";
 
     // create a new playlist for today
     QString set_log_name_format;

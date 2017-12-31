@@ -125,7 +125,7 @@ TEST_F(EngineBufferTest, SlowRubberBand) {
 }
 
 TEST_F(EngineBufferTest, ScalerNoTransport) {
-    // normaly use the Vinyl scaler
+    // normally use the Vinyl scaler
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     ProcessBuffer();
     EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
