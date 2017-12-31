@@ -84,6 +84,10 @@ WWidgetGroup {
   margin-right: -17px;
 }
 
+#BeatgridButtons {
+  padding-right: 17px;
+}
+
 #WaveformContainer1,
 #WaveformContainer2 {
   background-color: #001D33;
