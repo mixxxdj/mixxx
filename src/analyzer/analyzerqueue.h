@@ -22,23 +22,29 @@ class AnalyzerQueue : public QObject {
             AnalyzerMode mode = AnalyzerMode::Default);
     ~AnalyzerQueue() override = default;
 
-    int enqueueTrackId(TrackId trackId);
-
+    // finishedCount() <= dequeuedCount() <= totalCount()
     int finishedCount() const {
         return m_finishedCount;
     }
-
+    int dequeuedCount() const {
+        return m_dequeuedCount;
+    }
     int totalCount() const {
         return m_dequeuedCount + m_queuedTrackIds.size();
     }
 
-    // After adding tracks the analysis must be resumed once.
+    // Enqueue tracks one by one. After all tracks have been enqueued
+    // the caller must call resume() once.
+    void enqueueTrackId(TrackId trackId);
+
+    // After enqueuing tracks the analysis must be resumed once.
     void resume();
 
+    // Cancels a running analysis and discards all enqueued tracks.
     void cancel();
 
   signals:
-    void progress(int analyzerProgress, int finishedCount, int totalCount);
+    void progress(int analyzerProgress, int dequeuedCount, int totalCount);
     void empty(int finishedCount);
     void done();
 
@@ -125,8 +131,12 @@ class AnalyzerQueue : public QObject {
     };
 
     TrackPointer loadTrackById(TrackId trackId);
-    bool resumeIdleWorker(Worker& worker);
+    bool resumeIdleWorker(Worker* worker);
     void emitProgress();
+
+    bool allEnqueuedTracksFinished() const {
+        return m_queuedTrackIds.empty() && (m_finishedCount == m_dequeuedCount);
+    }
 
     Library* m_library;
 

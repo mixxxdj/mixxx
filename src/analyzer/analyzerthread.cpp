@@ -138,8 +138,6 @@ void AnalyzerThread::exec() {
 
         kLogger.debug() << "Analyzing" << track->getLocation();
 
-        emitBusyProgress(track, kAnalyzerProgressNone);
-
         // Get the audio
         const auto audioSource =
                 SoundSourceProxy(track).openAudioSource(openParams);
@@ -147,7 +145,7 @@ void AnalyzerThread::exec() {
             kLogger.warning()
                     << "Failed to open file for analyzing:"
                     << track->getLocation();
-            emitDoneProgress(track);
+            emitDoneProgress(track, kAnalyzerProgressUnknown);
             continue;
         }
 
@@ -183,7 +181,7 @@ void AnalyzerThread::exec() {
                 for (auto const& analyzer: m_analyzers) {
                     analyzer->cleanup(track);
                 }
-                emitDoneProgress(track);
+                emitDoneProgress(track, kAnalyzerProgressUnknown);
             }
         } else {
             kLogger.debug() << "Skipping track analysis because no analyzer initialized.";
@@ -237,6 +235,9 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
             audioSource,
             kAnalysisFramesPerBlock);
     DEBUG_ASSERT(audioSourceProxy.channelCount() == kAnalysisChannels);
+
+    // Analysis starts now
+    emitBusyProgress(track, kAnalyzerProgressNone);
 
     mixxx::IndexRange remainingFrames = audioSource->frameIndexRange();
     auto result = remainingFrames.empty() ? AnalysisResult::Complete : AnalysisResult::Pending;
@@ -306,7 +307,14 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
 
 void AnalyzerThread::emitBusyProgress(const TrackPointer& track, int busyProgress) {
     DEBUG_ASSERT(track);
+    // The actual progress value is updated always even if the
+    // following signal is inhibited (see below). The value is read
+    // independently of the signal and should always reflect the
+    // actual progress.
     m_analyzerProgress.setValue(busyProgress);
+    // Signals are only sent with the specified maximum frequency
+    // to avoid flooding the signal queue, which might impair the
+    // responsiveness of the ui thread.
     const auto now = Clock::now();
     if ((m_emittedState == AnalyzerThreadState::Busy) &&
             (now < (m_lastBusyProgressEmittedAt + kBusyProgressInhibitDuration))) {

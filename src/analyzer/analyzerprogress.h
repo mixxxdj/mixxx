@@ -9,15 +9,10 @@ constexpr int kAnalyzerProgressNone = 0; // 0.0 %
 constexpr int kAnalyzerProgressFinalizing = 950; // 95.0 %
 constexpr int kAnalyzerProgressDone = 1000; // 100.0%
 
-inline
-bool analyzerProgressValid(int analyzerProgress) {
-    return analyzerProgress >= kAnalyzerProgressNone;
-}
-
 // Integer [0, 100]
 inline
 int analyzerProgressPercent(int analyzerProgress) {
-    DEBUG_ASSERT(analyzerProgressValid(analyzerProgress));
+    DEBUG_ASSERT(analyzerProgress >= kAnalyzerProgressNone);
     return (100 * (math_min(analyzerProgress, kAnalyzerProgressDone) - kAnalyzerProgressNone)) /
             (kAnalyzerProgressDone - kAnalyzerProgressNone);
 }
@@ -25,7 +20,7 @@ int analyzerProgressPercent(int analyzerProgress) {
 // Double [0.0, 1.0]
 inline
 double analyzerProgressDouble(int analyzerProgress) {
-    DEBUG_ASSERT(analyzerProgressValid(analyzerProgress));
+    DEBUG_ASSERT(analyzerProgress >= kAnalyzerProgressNone);
     return double(math_min(analyzerProgress, kAnalyzerProgressDone) - kAnalyzerProgressNone) /
             (kAnalyzerProgressDone - kAnalyzerProgressNone);
 }

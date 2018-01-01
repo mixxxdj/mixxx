@@ -56,8 +56,11 @@ AnalyzerQueue::AnalyzerQueue(
 
 void AnalyzerQueue::emitProgress() {
     const auto now = Clock::now();
-    if ((m_finishedCount < m_dequeuedCount) &&
-            now < (m_lastProgressEmittedAt + kProgressInhibitDuration)) {
+    // If all enqueued tracks have been finished the signal is
+    // emitted independent of the time when the last signal has
+    // been emitted.
+    if (!allEnqueuedTracksFinished() &&
+            (now < (m_lastProgressEmittedAt + kProgressInhibitDuration))) {
         // Don't emit progress update signal
         return;
     }
@@ -66,7 +69,7 @@ void AnalyzerQueue::emitProgress() {
     int analyzerProgressSum = 0;
     int analyzerProgressCount = 0;
     for (const auto& worker: m_workers) {
-        if (analyzerProgressValid(worker.analyzerProgress())) {
+        if (worker.analyzerProgress() >= kAnalyzerProgressNone) {
             analyzerProgressSum += worker.analyzerProgress();
             ++analyzerProgressCount;
         }
@@ -79,7 +82,7 @@ void AnalyzerQueue::emitProgress() {
     }
     emit(progress(
             analyzerProgressAvg,
-            finishedCount(),
+            m_dequeuedCount,
             totalCount()));
 }
 
@@ -88,7 +91,7 @@ void AnalyzerQueue::slotWorkerThreadProgress(int threadId, AnalyzerThreadState t
     switch (threadState) {
     case AnalyzerThreadState::Idle:
         worker.recvThreadIdle();
-        resumeIdleWorker(worker);
+        resumeIdleWorker(&worker);
         return;
     case AnalyzerThreadState::Busy:
         worker.recvAnalyzerProgress(trackId);
@@ -104,7 +107,7 @@ void AnalyzerQueue::slotWorkerThreadProgress(int threadId, AnalyzerThreadState t
         worker.recvThreadExit();
         for (const auto& worker: m_workers) {
             if (worker) {
-                // At least one thread left
+                // At least one thread is left
                 emitProgress();
                 return;
             }
@@ -124,25 +127,25 @@ void AnalyzerQueue::slotAnalyzeTrack(TrackPointer track) {
     resume();
 }
 
-int AnalyzerQueue::enqueueTrackId(TrackId trackId) {
+void AnalyzerQueue::enqueueTrackId(TrackId trackId) {
     VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
         qWarning()
                 << "Cannot enqueue track with invalid id"
                 << trackId;
-        return m_queuedTrackIds.size();
+        return;
     }
     m_queuedTrackIds.push_back(trackId);
     // Don't wake up the paused thread now to avoid race conditions
-    // if multiple threads are added in a row. The caller is
-    // responsible to finish the enqueuing of tracks with resumeThread().
-    return m_queuedTrackIds.size();
+    // if multiple threads are added in a row by calling this function
+    // multiple times. The caller is responsible to finish the enqueuing
+    // of tracks with resume().
 }
 
 void AnalyzerQueue::resume() {
     bool resumedIdleWorker = false;
     for (auto& worker: m_workers) {
         if (worker.threadIdle()) {
-            if (resumeIdleWorker(worker)) {
+            if (resumeIdleWorker(&worker)) {
                 resumedIdleWorker = true;
             } else {
                 break;
@@ -154,8 +157,9 @@ void AnalyzerQueue::resume() {
     }
 }
 
-bool AnalyzerQueue::resumeIdleWorker(Worker& worker) {
-    DEBUG_ASSERT(worker.threadIdle());
+bool AnalyzerQueue::resumeIdleWorker(Worker* worker) {
+    DEBUG_ASSERT(worker);
+    DEBUG_ASSERT(worker->threadIdle());
     while (!m_queuedTrackIds.empty()) {
         TrackId nextTrackId = m_queuedTrackIds.front();
         DEBUG_ASSERT(nextTrackId.isValid());
@@ -167,7 +171,7 @@ bool AnalyzerQueue::resumeIdleWorker(Worker& worker) {
             ++m_finishedCount;
             continue;
         }
-        worker.sendNextTrack(nextTrack);
+        worker->sendNextTrack(nextTrack);
         m_queuedTrackIds.pop_front();
         ++m_dequeuedCount;
         emitProgress();

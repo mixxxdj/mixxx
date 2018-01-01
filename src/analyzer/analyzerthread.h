@@ -124,7 +124,7 @@ class AnalyzerThread : public QThread {
     void emitBusyProgress(const TrackPointer& track, int busyProgress);
 
     // Unconditional emitting of progress() signal
-    void emitDoneProgress(const TrackPointer& track, int doneProgress = kAnalyzerProgressUnknown);
+    void emitDoneProgress(const TrackPointer& track, int doneProgress);
 
     void emitProgress(AnalyzerThreadState state, const TrackPointer& track = TrackPointer());
 };

@@ -158,10 +158,10 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
 
 void AnalysisFeature::slotAnalyzerQueueProgress(
         int /*analyzerProgress*/,
-        int finishedCount,
+        int dequeuedCount,
         int totalCount) {
     if (totalCount > 0) {
-        setTitleProgress(finishedCount, totalCount);
+        setTitleProgress(dequeuedCount, totalCount);
     } else {
         setTitleDefault();
     }

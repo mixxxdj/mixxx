@@ -153,7 +153,7 @@ void DlgAnalysis::slotAnalyzerQueueProgress(
     //qDebug() << this << "slotAnalyzerQueueProgress" << analyzerProgress << finishedCount << totalCount;
     if (labelProgress->isEnabled()) {
         QString progressPercent;
-        if (analyzerProgressValid(analyzerProgress)) {
+        if (analyzerProgress != kAnalyzerProgressUnknown) {
             progressPercent = QString::number(
                     analyzerProgressPercent(analyzerProgress));
         } else {

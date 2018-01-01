@@ -187,7 +187,8 @@ void WOverview::slotAnalyzerProgress(int progress) {
         return;
     }
 
-    double analyzerProgress = analyzerProgressValid(progress)
+    double analyzerProgress =
+            (progress != kAnalyzerProgressUnknown)
             ? analyzerProgressDouble(progress) : 0.0;
     bool finalizing = progress == kAnalyzerProgressFinalizing;
 
