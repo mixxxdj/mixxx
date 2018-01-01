@@ -92,13 +92,13 @@ void AnalyzerQueue::slotWorkerThreadProgress(int threadId, AnalyzerThreadState t
         resumeIdleWorker(&worker);
         return;
     case AnalyzerThreadState::Busy:
-        worker.recvAnalyzerProgress(trackId);
+        emit(trackProgress(trackId, worker.recvAnalyzerProgress(trackId)));
         emitProgress();
         return;
     case AnalyzerThreadState::Done:
         ++m_finishedCount;
         DEBUG_ASSERT(m_finishedCount <= m_dequeuedCount);
-        worker.recvAnalyzerProgress(trackId);
+        emit(trackProgress(trackId, worker.recvAnalyzerProgress(trackId)));
         emitProgress();
         return;
     case AnalyzerThreadState::Void:

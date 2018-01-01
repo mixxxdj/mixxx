@@ -5,7 +5,11 @@
 
 class WOverviewLMH : public WOverview {
   public:
-    WOverviewLMH(const char *pGroup, UserSettingsPointer pConfig, QWidget* parent);
+    WOverviewLMH(
+            const char* group,
+            PlayerManager* pPlayerManager,
+            UserSettingsPointer pConfig,
+            QWidget* parent = nullptr);
 
   private:
     bool drawNextPixmapPart() override;

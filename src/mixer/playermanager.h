@@ -193,6 +193,9 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     void slotNumMicrophonesControlChanged(double v);
     void slotNumAuxiliariesControlChanged(double v);
 
+  private slots:
+    void slotTrackAnalyzerProgress(TrackId trackId, int analyzerProgress);
+
   signals:
     void loadLocationToPlayer(QString location, QString group);
 
@@ -210,6 +213,8 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
     // Emitted when the number of decks changes.
     void numberOfDecksChanged(int decks);
+
+    void trackAnalyzerProgress(TrackId trackId, int analyzerProgress);
 
   private:
     TrackPointer lookupTrack(QString location);

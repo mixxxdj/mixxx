@@ -43,6 +43,8 @@ class AnalyzerQueue : public QObject {
     void cancel();
 
   signals:
+    // Progress for individual tracks is passed-through from the workers
+    void trackProgress(TrackId trackId, int analyzerProgress);
     void progress(int analyzerProgress, int dequeuedCount, int totalCount);
     void empty(int finishedCount);
     void done();
@@ -104,13 +106,12 @@ class AnalyzerQueue : public QObject {
             m_threadIdle = true;
         }
 
-        void recvAnalyzerProgress(TrackId trackId) {
+        int recvAnalyzerProgress(TrackId trackId) {
             DEBUG_ASSERT(m_thread);
             DEBUG_ASSERT(m_track);
             DEBUG_ASSERT(m_track->getId() == trackId);
             DEBUG_ASSERT(!m_threadIdle);
-            m_analyzerProgress = m_thread->readAnalyzerProgress();
-            m_track->setAnalyzerProgress(m_analyzerProgress);
+            return m_analyzerProgress = m_thread->readAnalyzerProgress();
         }
 
         void recvThreadExit() {

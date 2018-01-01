@@ -119,6 +119,10 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
     DEBUG_ASSERT(!m_pAnalyzerQueue);
     m_pAnalyzerQueue = std::make_unique<AnalyzerQueue>(pLibrary, kNumberOfAnalyzerThreads, m_pConfig);
 
+    connect(m_pAnalyzerQueue.get(), SIGNAL(trackProgress(TrackId, int)),
+            this, SLOT(slotTrackAnalyzerProgress(TrackId, int)),
+            Qt::DirectConnection);
+
     // Connect the player to the analyzer queue so that loaded tracks are
     // analyzed.
     foreach(Deck* pDeck, m_decks) {
@@ -607,4 +611,8 @@ void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack) {
         }
         ++it;
     }
+}
+
+void PlayerManager::slotTrackAnalyzerProgress(TrackId trackId, int analyzerProgress) {
+    emit(trackAnalyzerProgress(trackId, analyzerProgress));
 }

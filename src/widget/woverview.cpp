@@ -34,13 +34,17 @@
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 
-WOverview::WOverview(const char *pGroup, UserSettingsPointer pConfig, QWidget* parent) :
+WOverview::WOverview(
+        const char* group,
+        PlayerManager* pPlayerManager,
+        UserSettingsPointer pConfig,
+        QWidget* parent) :
         WWidget(parent),
         m_actualCompletion(0),
         m_pixmapDone(false),
         m_waveformPeak(-1.0),
         m_diffGain(0),
-        m_group(pGroup),
+        m_group(group),
         m_pConfig(pConfig),
         m_endOfTrack(false),
         m_bDrag(false),
@@ -59,6 +63,9 @@ WOverview::WOverview(const char *pGroup, UserSettingsPointer pConfig, QWidget* p
             new ControlProxy(m_group, "track_samples", this);
     m_playControl = new ControlProxy(m_group, "play", this);
     setAcceptDrops(true);
+
+    connect(pPlayerManager, SIGNAL(trackAnalyzerProgress(TrackId, int)),
+            this, SLOT(slotTrackAnalyzerProgress(TrackId, int)));
 }
 
 void WOverview::setup(const QDomNode& node, const SkinContext& context) {
@@ -181,8 +188,8 @@ void WOverview::slotWaveformSummaryUpdated() {
     }
 }
 
-void WOverview::slotAnalyzerProgress(int analyzerProgress) {
-    if (!m_pCurrentTrack) {
+void WOverview::slotTrackAnalyzerProgress(TrackId trackId, int analyzerProgress) {
+    if (!m_pCurrentTrack || (m_pCurrentTrack->getId() != trackId)) {
         return;
     }
 
@@ -205,8 +212,6 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
     if (m_pCurrentTrack != nullptr && pOldTrack == m_pCurrentTrack) {
         disconnect(m_pCurrentTrack.get(), SIGNAL(waveformSummaryUpdated()),
                    this, SLOT(slotWaveformSummaryUpdated()));
-        disconnect(m_pCurrentTrack.get(), SIGNAL(analyzerProgress(int)),
-                   this, SLOT(slotAnalyzerProgress(int)));
     }
 
     m_waveformSourceImage = QImage();
@@ -223,10 +228,6 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
 
         connect(pNewTrack.get(), SIGNAL(waveformSummaryUpdated()),
                 this, SLOT(slotWaveformSummaryUpdated()));
-        connect(pNewTrack.get(), SIGNAL(analyzerProgress(int)),
-                this, SLOT(slotAnalyzerProgress(int)));
-
-        slotAnalyzerProgress(pNewTrack->getAnalyzerProgress());
     } else {
         m_pCurrentTrack.reset();
         m_pWaveform.clear();
