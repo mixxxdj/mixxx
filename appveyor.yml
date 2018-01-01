@@ -88,3 +88,9 @@ notifications:
     on_build_failure: true
     on_build_status_changed: true
     body: "type=stream&to=appveyor&subject={{projectName}} Build {{buildVersion}} {{status}}&content=Build {{buildVersion}} {{status}}{{#isPullRequest}} (PR #{{pullRequestId}}) {{/isPullRequest}}{{#failed}} :cross_mark:{{/failed}}{{#passed}} :heavy_check_mark:{{/passed}} {{buildUrl}}"
+  - provider: Email
+    to:
+      - '{{commitAuthorEmail}}'
+    on_build_status_changed: false  # is usless for us because it is a per project flag 
+    on_build_failure: true
+    on_build_success: false
