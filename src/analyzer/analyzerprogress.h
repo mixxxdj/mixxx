@@ -6,6 +6,7 @@
 // Measured in 0.1%, i.e. promille
 constexpr int kAnalyzerProgressUnknown = -1;
 constexpr int kAnalyzerProgressNone = 0; // 0.0 %
+constexpr int kAnalyzerProgressHalf = 500; // 50.0 %
 constexpr int kAnalyzerProgressFinalizing = 950; // 95.0 %
 constexpr int kAnalyzerProgressDone = 1000; // 100.0%
 

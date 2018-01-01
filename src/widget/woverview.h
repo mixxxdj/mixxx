@@ -129,8 +129,7 @@ class WOverview : public WWidget {
     double m_a;
     double m_b;
 
-    double m_dAnalyzerProgress;
-    bool m_bAnalyzerFinalizing;
+    int m_analyzerProgress;
     bool m_trackLoaded;
     double m_scaleFactor;
 };
