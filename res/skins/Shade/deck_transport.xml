@@ -16,11 +16,229 @@
 		<BackPath>style/style_bg_deck_botom_mid.png</BackPath>
 		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 		<Children>
+		    <!--
+			**********************************************
+			Button- Src
+			**********************************************
+			-->
+			<PushButton>
+				<TooltipId>show_samplers</TooltipId>
+				<Style></Style>
+				<NumberStates>2</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_src_plus.png</Pressed>
+				    <Unpressed>btn_src_plus.png</Unpressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Pressed>btn_src_minus.png</Pressed>
+			        <Unpressed>btn_src_minus.png</Unpressed>
+				</State>
+				<Pos>45,0</Pos>
+				<Connection>
+					<ConfigKey>[Samplers],show_samplers</ConfigKey>
+				</Connection>
+			</PushButton>
+
+			<PushButton>
+				<TooltipId>microphone_talkover</TooltipId>
+				<Style></Style>
+				<NumberStates>2</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_microphone_talkover_overdown.png</Pressed>
+					<Unpressed>btn_microphone_talkover.png</Unpressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Pressed>btn_microphone_talkover_overdown.png</Pressed>
+					<Unpressed>btn_microphone_talkover_over.png</Unpressed>
+				</State>
+				<Pos>45,14</Pos>
+				<Connection>
+					<ConfigKey>[Microphone<Variable name="micnum"/>],talkover</ConfigKey>
+					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+					<ButtonState>LeftButton</ButtonState>
+				</Connection>
+			</PushButton>
+
+			<PushButton>
+				<TooltipId>microphone_talkover</TooltipId>
+				<Style></Style>
+				<NumberStates>2</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_aux_mute_overdown.png</Pressed>
+					<Unpressed>btn_aux_mute.png</Unpressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Pressed>btn_aux_mute_overdown.png</Pressed>
+					<Unpressed>btn_aux_mute_over.png</Unpressed>
+				</State>
+				<Pos>45,35</Pos>
+				<Connection>
+					<ConfigKey>[Microphone<Variable name="micnum"/>],talkover</ConfigKey>
+					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+					<ButtonState>LeftButton</ButtonState>
+				</Connection>
+			</PushButton>
+
+
+		    <!--
+			**********************************************
+			Button- Sampler
+			**********************************************
+			-->
+			<PushButton>
+				<TooltipId>show_samplers</TooltipId>
+				<Style></Style>
+				<NumberStates>2</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_sampler_plus.png</Pressed>
+				    <Unpressed>btn_sampler_plus.png</Unpressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Pressed>btn_sampler_minus.png</Pressed>
+			        <Unpressed>btn_sampler_minus.png</Unpressed>
+				</State>
+				<Pos>93,0</Pos>
+				<Connection>
+					<ConfigKey>[Samplers],show_samplers</ConfigKey>
+				</Connection>
+			</PushButton>
+
+			<PushButton>
+				<TooltipId>play_start</TooltipId>
+				<Style></Style>
+				<NumberStates>2</NumberStates>
+				<RightClickIsPushButton>true</RightClickIsPushButton>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_play_sampler_down.png</Pressed>
+					<Unpressed>btn_play_sampler.png</Unpressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Pressed>btn_play_sampler_overdown.png</Pressed>
+					<Unpressed>btn_play_sampler_over.png</Unpressed>
+				</State>
+				<Pos>93,14</Pos>
+				<Connection>
+	                <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_gotoandplay</ConfigKey>
+	                <ButtonState>LeftButton</ButtonState>
+	            </Connection>
+	            <Connection>
+	                <ConfigKey>[Sampler<Variable name="samplernum"/>],start_stop</ConfigKey>
+	                <ButtonState>RightButton</ButtonState>
+	            </Connection>
+	            <Connection>
+	                <ConfigKey>[Sampler<Variable name="samplernum"/>],play_indicator</ConfigKey>
+	            </Connection>
+			</PushButton>	
+
+			<PushButton>
+				<TooltipId>play_start</TooltipId>
+				<Style></Style>
+				<NumberStates>2</NumberStates>
+				<RightClickIsPushButton>true</RightClickIsPushButton>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_play_sampler_down.png</Pressed>
+					<Unpressed>btn_play_sampler.png</Unpressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Pressed>btn_play_sampler_overdown.png</Pressed>
+					<Unpressed>btn_play_sampler_over.png</Unpressed>
+				</State>
+				<Pos>114,14</Pos>
+				<Connection>
+	                <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_gotoandplay</ConfigKey>
+	                <ButtonState>LeftButton</ButtonState>
+	            </Connection>
+	            <Connection>
+	                <ConfigKey>[Sampler<Variable name="samplernum"/>],start_stop</ConfigKey>
+	                <ButtonState>RightButton</ButtonState>
+	            </Connection>
+	            <Connection>
+	                <ConfigKey>[Sampler<Variable name="samplernum"/>],play_indicator</ConfigKey>
+	            </Connection>
+			</PushButton>	
+
+			<PushButton>
+				<TooltipId>play_start</TooltipId>
+				<Style></Style>
+				<NumberStates>2</NumberStates>
+				<RightClickIsPushButton>true</RightClickIsPushButton>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_play_sampler_down.png</Pressed>
+					<Unpressed>btn_play_sampler.png</Unpressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Pressed>btn_play_sampler_overdown.png</Pressed>
+					<Unpressed>btn_play_sampler_over.png</Unpressed>
+				</State>
+				<Pos>93,35</Pos>
+				<Connection>
+	                <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_gotoandplay</ConfigKey>
+	                <ButtonState>LeftButton</ButtonState>
+	            </Connection>
+	            <Connection>
+	                <ConfigKey>[Sampler<Variable name="samplernum"/>],start_stop</ConfigKey>
+	                <ButtonState>RightButton</ButtonState>
+	            </Connection>
+	            <Connection>
+	                <ConfigKey>[Sampler<Variable name="samplernum"/>],play_indicator</ConfigKey>
+	            </Connection>
+			</PushButton>	
+
+			<PushButton>
+				<TooltipId>play_start</TooltipId>
+				<Style></Style>
+				<NumberStates>2</NumberStates>
+				<RightClickIsPushButton>true</RightClickIsPushButton>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_play_sampler_down.png</Pressed>
+					<Unpressed>btn_play_sampler.png</Unpressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Pressed>btn_play_sampler_overdown.png</Pressed>
+					<Unpressed>btn_play_sampler_over.png</Unpressed>
+				</State>
+				<Pos>114,35</Pos>
+				<Connection>
+	                <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_gotoandplay</ConfigKey>
+	                <ButtonState>LeftButton</ButtonState>
+	            </Connection>
+	            <Connection>
+	                <ConfigKey>[Sampler<Variable name="samplernum"/>],start_stop</ConfigKey>
+	                <ButtonState>RightButton</ButtonState>
+	            </Connection>
+	            <Connection>
+	                <ConfigKey>[Sampler<Variable name="samplernum"/>],play_indicator</ConfigKey>
+	            </Connection>
+			</PushButton>	
+
 			<!--
 			**********************************************
 			Button- Fast forward and rewind
 			**********************************************
 			-->
+	        <WidgetGroup>
+		        <Size>41f,14f</Size>
+		        <BackPath>btn_seek.png</BackPath>
+		        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+				<Pos>141,0</Pos>
+	        </WidgetGroup>
+
 			<PushButton>
 				<TooltipId>fwd_end</TooltipId>
 				<Style></Style>
@@ -30,7 +248,7 @@
 					<Pressed>btn_forward1_overdown.png</Pressed>
 					<Unpressed>btn_forward1.png</Unpressed>
 				</State>
-				<Pos>21,14</Pos>
+				<Pos>162,14</Pos>
 				<Connection>
 					<ConfigKey>[Channel<Variable name="channum"/>],fwd</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -51,7 +269,7 @@
 					<Pressed>btn_rewind1_overdown.png</Pressed>
 					<Unpressed>btn_rewind1.png</Unpressed>
 				</State>
-				<Pos>0,14</Pos>
+				<Pos>141,14</Pos>
 				<Connection>
 					<ConfigKey>[Channel<Variable name="channum"/>],back</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -85,7 +303,7 @@
 					<Pressed>btn_reverse1_overdown.png</Pressed>
 					<Unpressed>btn_reverse1_over.png</Unpressed>
 				</State>
-				<Pos>0,35</Pos>
+				<Pos>141,35</Pos>
 				<Connection>
 					<ConfigKey>[Channel<Variable name="channum"/>],reverse</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -111,166 +329,6 @@
 				<RightClickIsPushButton>true</RightClickIsPushButton>
 				<State>
 					<Number>0</Number>
-					<Pressed>btn_beatloop1_0125_down.png</Pressed>
-					<Unpressed>btn_beatloop1_0125.png</Unpressed>
-				</State>
-				<State>
-					<Number>1</Number>
-					<Pressed>btn_beatloop1_0125_overdown.png</Pressed>
-					<Unpressed>btn_beatloop1_0125_over.png</Unpressed>
-				</State>
-				<Pos>72,14</Pos>
-				<Connection>
-					<ConfigKey>[Channel<Variable name="channum"/>],beatloop_0.125_toggle</ConfigKey>
-					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-					<ButtonState>LeftButton</ButtonState>
-				</Connection>
-				<Connection>
-					<ConfigKey>[Channel<Variable name="channum"/>],beatlooproll_0.125_activate</ConfigKey>
-					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-					<ButtonState>RightButton</ButtonState>
-				</Connection>
-				<Connection>
-					<ConfigKey>[Channel<Variable name="channum"/>],beatloop_0.125_enabled</ConfigKey>
-					<ConnectValueFromWidget>false</ConnectValueFromWidget>
-				</Connection>
-			</PushButton>
-			<PushButton>
-				<TooltipId>beatloop</TooltipId>
-				<Style></Style>
-				<NumberStates>2</NumberStates>
-				<LeftClickIsPushButton>true</LeftClickIsPushButton>
-				<RightClickIsPushButton>true</RightClickIsPushButton>
-				<State>
-					<Number>0</Number>
-					<Pressed>btn_beatloop1_0250_down.png</Pressed>
-					<Unpressed>btn_beatloop1_0250.png</Unpressed>
-				</State>
-				<State>
-					<Number>1</Number>
-					<Pressed>btn_beatloop1_0250_overdown.png</Pressed>
-					<Unpressed>btn_beatloop1_0250_over.png</Unpressed>
-				</State>
-				<Pos>93,14</Pos>
-				<Connection>
-					<ConfigKey>[Channel<Variable name="channum"/>],beatloop_0.25_toggle</ConfigKey>
-					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-					<ButtonState>LeftButton</ButtonState>
-				</Connection>
-				<Connection>
-					<ConfigKey>[Channel<Variable name="channum"/>],beatlooproll_0.25_activate</ConfigKey>
-					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-					<ButtonState>RightButton</ButtonState>
-				</Connection>
-				<Connection>
-					<ConfigKey>[Channel<Variable name="channum"/>],beatloop_0.25_enabled</ConfigKey>
-					<ConnectValueFromWidget>false</ConnectValueFromWidget>
-				</Connection>
-			</PushButton>
-			<PushButton>
-				<TooltipId>beatloop</TooltipId>
-				<Style></Style>
-				<NumberStates>2</NumberStates>
-				<LeftClickIsPushButton>true</LeftClickIsPushButton>
-				<RightClickIsPushButton>true</RightClickIsPushButton>
-				<State>
-					<Number>0</Number>
-					<Pressed>btn_beatloop1_0500_down.png</Pressed>
-					<Unpressed>btn_beatloop1_0500.png</Unpressed>
-				</State>
-				<State>
-					<Number>1</Number>
-					<Pressed>btn_beatloop1_0500_overdown.png</Pressed>
-					<Unpressed>btn_beatloop1_0500_over.png</Unpressed>
-				</State>
-				<Pos>114,14</Pos>
-				<Connection>
-					<ConfigKey>[Channel<Variable name="channum"/>],beatloop_0.5_toggle</ConfigKey>
-					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-					<ButtonState>LeftButton</ButtonState>
-				</Connection>
-				<Connection>
-					<ConfigKey>[Channel<Variable name="channum"/>],beatlooproll_0.5_activate</ConfigKey>
-					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-					<ButtonState>RightButton</ButtonState>
-				</Connection>
-				<Connection>
-					<ConfigKey>[Channel<Variable name="channum"/>],beatloop_0.5_enabled</ConfigKey>
-					<ConnectValueFromWidget>false</ConnectValueFromWidget>
-				</Connection>
-			</PushButton>
-			<PushButton>
-				<TooltipId>beatloop</TooltipId>
-				<Style></Style>
-				<NumberStates>2</NumberStates>
-				<LeftClickIsPushButton>true</LeftClickIsPushButton>
-				<RightClickIsPushButton>true</RightClickIsPushButton>
-				<State>
-					<Number>0</Number>
-					<Pressed>btn_beatloop1_1_down.png</Pressed>
-					<Unpressed>btn_beatloop1_1.png</Unpressed>
-				</State>
-				<State>
-					<Number>1</Number>
-					<Pressed>btn_beatloop1_1_overdown.png</Pressed>
-					<Unpressed>btn_beatloop1_1_over.png</Unpressed>
-				</State>
-				<Pos>135,14</Pos>
-				<Connection>
-					<ConfigKey>[Channel<Variable name="channum"/>],beatloop_1_toggle</ConfigKey>
-					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-					<ButtonState>LeftButton</ButtonState>
-				</Connection>
-				<Connection>
-					<ConfigKey>[Channel<Variable name="channum"/>],beatlooproll_1_activate</ConfigKey>
-					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-					<ButtonState>RightButton</ButtonState>
-				</Connection>
-				<Connection>
-					<ConfigKey>[Channel<Variable name="channum"/>],beatloop_1_enabled</ConfigKey>
-					<ConnectValueFromWidget>false</ConnectValueFromWidget>
-				</Connection>
-			</PushButton>
-			<PushButton>
-				<TooltipId>beatloop</TooltipId>
-				<Style></Style>
-				<NumberStates>2</NumberStates>
-				<LeftClickIsPushButton>true</LeftClickIsPushButton>
-				<RightClickIsPushButton>true</RightClickIsPushButton>
-				<State>
-					<Number>0</Number>
-					<Pressed>btn_beatloop1_2_down.png</Pressed>
-					<Unpressed>btn_beatloop1_2.png</Unpressed>
-				</State>
-				<State>
-					<Number>1</Number>
-					<Pressed>btn_beatloop1_2_overdown.png</Pressed>
-					<Unpressed>btn_beatloop1_2_over.png</Unpressed>
-				</State>
-				<Pos>72,35</Pos>
-				<Connection>
-					<ConfigKey>[Channel<Variable name="channum"/>],beatloop_2_toggle</ConfigKey>
-					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-					<ButtonState>LeftButton</ButtonState>
-				</Connection>
-				<Connection>
-					<ConfigKey>[Channel<Variable name="channum"/>],beatlooproll_2_activate</ConfigKey>
-					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-					<ButtonState>RightButton</ButtonState>
-				</Connection>
-				<Connection>
-					<ConfigKey>[Channel<Variable name="channum"/>],beatloop_2_enabled</ConfigKey>
-					<ConnectValueFromWidget>false</ConnectValueFromWidget>
-				</Connection>
-			</PushButton>
-			<PushButton>
-				<TooltipId>beatloop</TooltipId>
-				<Style></Style>
-				<NumberStates>2</NumberStates>
-				<LeftClickIsPushButton>true</LeftClickIsPushButton>
-				<RightClickIsPushButton>true</RightClickIsPushButton>
-				<State>
-					<Number>0</Number>
 					<Pressed>btn_beatloop1_4_down.png</Pressed>
 					<Unpressed>btn_beatloop1_4.png</Unpressed>
 				</State>
@@ -279,7 +337,7 @@
 					<Pressed>btn_beatloop1_4_overdown.png</Pressed>
 					<Unpressed>btn_beatloop1_4_over.png</Unpressed>
 				</State>
-				<Pos>93,35</Pos>
+				<Pos>189,35</Pos>
 				<Connection>
 					<ConfigKey>[Channel<Variable name="channum"/>],beatloop_4_toggle</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -295,76 +353,34 @@
 					<ConnectValueFromWidget>false</ConnectValueFromWidget>
 				</Connection>
 			</PushButton>
-			<PushButton>
-				<TooltipId>beatloop</TooltipId>
-				<Style></Style>
-				<NumberStates>2</NumberStates>
-				<LeftClickIsPushButton>true</LeftClickIsPushButton>
-				<RightClickIsPushButton>true</RightClickIsPushButton>
-				<State>
-					<Number>0</Number>
-					<Pressed>btn_beatloop1_8_down.png</Pressed>
-					<Unpressed>btn_beatloop1_8.png</Unpressed>
-				</State>
-				<State>
-					<Number>1</Number>
-					<Pressed>btn_beatloop1_8_overdown.png</Pressed>
-					<Unpressed>btn_beatloop1_8_over.png</Unpressed>
-				</State>
-				<Pos>114,35</Pos>
-				<Connection>
-					<ConfigKey>[Channel<Variable name="channum"/>],beatloop_8_toggle</ConfigKey>
-					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-					<ButtonState>LeftButton</ButtonState>
-				</Connection>
-				<Connection>
-					<ConfigKey>[Channel<Variable name="channum"/>],beatlooproll_8_activate</ConfigKey>
-					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-					<ButtonState>RightButton</ButtonState>
-				</Connection>
-				<Connection>
-					<ConfigKey>[Channel<Variable name="channum"/>],beatloop_8_enabled</ConfigKey>
-					<ConnectValueFromWidget>false</ConnectValueFromWidget>
-				</Connection>
-			</PushButton>
-			<PushButton>
-				<TooltipId>beatloop</TooltipId>
-				<Style></Style>
-				<NumberStates>2</NumberStates>
-				<LeftClickIsPushButton>true</LeftClickIsPushButton>
-				<RightClickIsPushButton>true</RightClickIsPushButton>
-				<State>
-					<Number>0</Number>
-					<Pressed>btn_beatloop1_16_down.png</Pressed>
-					<Unpressed>btn_beatloop1_16.png</Unpressed>
-				</State>
-				<State>
-					<Number>1</Number>
-					<Pressed>btn_beatloop1_16_overdown.png</Pressed>
-					<Unpressed>btn_beatloop1_16_over.png</Unpressed>
-				</State>
-				<Pos>135,35</Pos>
-				<Connection>
-					<ConfigKey>[Channel<Variable name="channum"/>],beatloop_16_toggle</ConfigKey>
-					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-					<ButtonState>LeftButton</ButtonState>
-				</Connection>
-				<Connection>
-					<ConfigKey>[Channel<Variable name="channum"/>],beatlooproll_16_activate</ConfigKey>
-					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-					<ButtonState>RightButton</ButtonState>
-				</Connection>
-				<Connection>
-					<ConfigKey>[Channel<Variable name="channum"/>],beatloop_16_enabled</ConfigKey>
-					<ConnectValueFromWidget>false</ConnectValueFromWidget>
-				</Connection>
-			</PushButton>
 
 			<!--
 			**********************************************
-			Button - Beatloop halve/double
+			Button- Looping
 			**********************************************
 			-->
+
+			<PushButton>
+                <!--
+				<TooltipId>show_samplers</TooltipId>
+            	-->
+				<Style></Style>
+				<NumberStates>2</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_loop_plus.png</Pressed>
+					<Unpressed>btn_loop_plus.png</Unpressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Pressed>btn_loop_minus.png</Pressed>
+					<Unpressed>btn_loop_minus.png</Unpressed>
+				</State>
+				<Pos>189,0</Pos>
+				<Connection>
+					<ConfigKey>[Samplers],show_samplers</ConfigKey>
+				</Connection>
+			</PushButton>
 			<PushButton>
 				<TooltipId>loop_halve</TooltipId>
 				<Style></Style>
@@ -374,7 +390,7 @@
 					<Pressed>btn_beatloop1_halve_overdown.png</Pressed>
 					<Unpressed>btn_beatloop1_halve.png</Unpressed>
 				</State>
-				<Pos>50,14</Pos>
+				<Pos>189,14</Pos>
 				<Connection>
 					<ConfigKey>[Channel<Variable name="channum"/>],loop_halve</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -390,7 +406,7 @@
 					<Pressed>btn_beatloop1_double_overdown.png</Pressed>
 					<Unpressed>btn_beatloop1_double.png</Unpressed>
 				</State>
-				<Pos>157,14</Pos>
+				<Pos>210,14</Pos>
 				<Connection>
 					<ConfigKey>[Channel<Variable name="channum"/>],loop_double</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -398,43 +414,6 @@
 				</Connection>
 			</PushButton>
 
-			<!--
-			**********************************************
-			Button- Looping
-			**********************************************
-			-->
-			<PushButton>
-				<TooltipId>loop_in</TooltipId>
-				<Style></Style>
-				<NumberStates>1</NumberStates>
-				<State>
-					<Number>0</Number>
-					<Pressed>btn_loop_in1_overdown.png</Pressed>
-					<Unpressed>btn_loop_in1.png</Unpressed>
-				</State>
-				<Pos>186,14</Pos>
-				<Connection>
-					<ConfigKey>[Channel<Variable name="channum"/>],loop_in</ConfigKey>
-					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-					<ButtonState>LeftButton</ButtonState>
-				</Connection>
-			</PushButton>
-			<PushButton>
-				<TooltipId>loop_out</TooltipId>
-				<Style></Style>
-				<NumberStates>1</NumberStates>
-				<State>
-					<Number>0</Number>
-					<Pressed>btn_loop_out1_overdown.png</Pressed>
-					<Unpressed>btn_loop_out1.png</Unpressed>
-				</State>
-				<Pos>207,14</Pos>
-				<Connection>
-					<ConfigKey>[Channel<Variable name="channum"/>],loop_out</ConfigKey>
-					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-					<ButtonState>LeftButton</ButtonState>
-				</Connection>
-			</PushButton>
 			<PushButton>
 				<TooltipId>reloop_exit</TooltipId>
 				<Style></Style>
@@ -450,7 +429,7 @@
 					<Pressed>btn_reloop1_overdown.png</Pressed>
 					<Unpressed>btn_reloop1_over.png</Unpressed>
 				</State>
-				<Pos>186,35</Pos>
+				<Pos>210,35</Pos>
 				<Connection>
 					<ConfigKey>[Channel<Variable name="channum"/>],reloop_exit</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -468,6 +447,12 @@
 			Button- Hotcue
 			**********************************************
 			-->
+	        <WidgetGroup>
+		        <Size>41f,14f</Size>
+		        <BackPath>btn_hotcues.png</BackPath>
+		        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+				<Pos>237,0</Pos>
+	        </WidgetGroup>
 			<PushButton>
 				<TooltipId>hotcue</TooltipId>
 				<Style></Style>
@@ -484,7 +469,7 @@
 					<Pressed>btn_hotcue1_1_overdown.png</Pressed>
 					<Unpressed>btn_hotcue1_1_over.png</Unpressed>
 				</State>
-				<Pos>236,14</Pos>
+				<Pos>237,14</Pos>
 				<Connection>
 					<ConfigKey>[Channel<Variable name="channum"/>],hotcue_1_activate</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -518,7 +503,7 @@
 					<Pressed>btn_hotcue1_2_overdown.png</Pressed>
 					<Unpressed>btn_hotcue1_2_over.png</Unpressed>
 				</State>
-				<Pos>257,14</Pos>
+				<Pos>258,14</Pos>
 				<Connection>
 					<ConfigKey>[Channel<Variable name="channum"/>],hotcue_2_activate</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -552,7 +537,7 @@
 					<Pressed>btn_hotcue1_3_overdown.png</Pressed>
 					<Unpressed>btn_hotcue1_3_over.png</Unpressed>
 				</State>
-				<Pos>236,35</Pos>
+				<Pos>237,35</Pos>
 				<Connection>
 					<ConfigKey>[Channel<Variable name="channum"/>],hotcue_3_activate</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -586,7 +571,7 @@
 					<Pressed>btn_hotcue1_4_overdown.png</Pressed>
 					<Unpressed>btn_hotcue1_4_over.png</Unpressed>
 				</State>
-				<Pos>257,35</Pos>
+				<Pos>258,35</Pos>
 				<Connection>
 					<ConfigKey>[Channel<Variable name="channum"/>],hotcue_4_activate</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
