@@ -59,6 +59,10 @@ class AnalyzerQueue : public QObject {
         Worker(const Worker&) = delete;
         Worker(Worker&&) = default;
 
+        operator bool() const {
+            return static_cast<bool>(m_thread);
+        }
+
         AnalyzerThread* thread() const {
             DEBUG_ASSERT(m_thread);
             return m_thread.get();

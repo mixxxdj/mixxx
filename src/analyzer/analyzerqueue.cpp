@@ -103,7 +103,7 @@ void AnalyzerQueue::slotWorkerThreadProgress(int threadId, AnalyzerThreadState t
     case AnalyzerThreadState::Void:
         worker.recvThreadExit();
         for (const auto& worker: m_workers) {
-            if (worker.thread()) {
+            if (worker) {
                 // At least one thread left
                 emitProgress();
                 return;
