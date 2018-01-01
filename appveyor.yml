@@ -81,7 +81,7 @@ deploy:
 notifications:
   - provider: Email
     to:
-      - %ZULIP_EMAIL%
+      - '%ZULIP_EMAIL%'
     subject: 'Build {{status}}'                  # optional
     message: "{{message}}, {{commitId}}, ..."    # optional
     on_build_status_changed: true
