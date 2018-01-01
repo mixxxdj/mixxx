@@ -88,3 +88,9 @@ install:
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then gdb --batch -ex run -ex "thread apply all bt full" -ex quit ./mixxx-test ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then lldb ./mixxx-test --batch -o run -o quit -k 'thread backtrace all' -k quit ; fi
+
+notifications:
+  webhooks:
+    - https://mixxx.zulipchat.com/api/v1/external/travis?stream=travis&topic=build-status&api_key=$ZULIP_API_KEY
+
+
