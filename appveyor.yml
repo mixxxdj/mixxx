@@ -22,6 +22,8 @@ configuration:
 #  - release
 #  - debug
 environment:
+  ZULIP_EMAIL:
+    secure: sIPLydvxMgNTxZAUD/Ia97wxEX9phggY3TDPyidvWPgQrCqCPyaaA1iyNHf9J+amgW2mF4EQHgfI/XzfgmsvMg==
   ENVIRONMENTS_URL: https://downloads.mixxx.org/builds/buildserver/2.1.x-windows/
   ENVIRONMENTS_PATH: C:\mixxx-buildserver
   matrix:
@@ -75,3 +77,13 @@ on_finish:
 deploy:
   - provider: Environment
     name: downloads.mixxx.org
+
+notifications:
+  - provider: Email
+    to:
+      - %ZULIP_EMAIL%
+    subject: 'Build {{status}}'                  # optional
+    message: "{{message}}, {{commitId}}, ..."    # optional
+    on_build_status_changed: true
+  #- provider: Webhook  # Not suported by Zulip yet
+
