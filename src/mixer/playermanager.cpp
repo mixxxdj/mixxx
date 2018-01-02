@@ -105,6 +105,14 @@ PlayerManager::~PlayerManager() {
     delete m_pCONumPreviewDecks;
     delete m_pCONumMicrophones;
     delete m_pCONumAuxiliaries;
+
+    if (m_pAnalyzerQueue) {
+        m_pAnalyzerQueue->cancel();
+        // Avoid blocking the event loop on the worker thread's destructors!
+        m_pAnalyzerQueue->deleteLater();
+        // Release ownership
+        m_pAnalyzerQueue.release();
+    }
 }
 
 void PlayerManager::bindToLibrary(Library* pLibrary) {
