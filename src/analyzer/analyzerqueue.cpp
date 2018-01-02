@@ -59,7 +59,7 @@ void AnalyzerQueue::emitProgress() {
     // If all enqueued tracks have been finished the signal is
     // emitted independent of the time when the last signal has
     // been emitted.
-    if (!allEnqueuedTracksFinished() &&
+    if (hasUnfinishedTracks() &&
             (now < (m_lastProgressEmittedAt + kProgressInhibitDuration))) {
         // Don't emit progress update signal
         return;

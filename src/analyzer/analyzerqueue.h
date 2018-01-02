@@ -142,8 +142,8 @@ class AnalyzerQueue : public QObject {
     bool resumeIdleWorker(Worker* worker);
     void emitProgress();
 
-    bool allEnqueuedTracksFinished() const {
-        return m_queuedTrackIds.empty() && (m_finishedCount == m_dequeuedCount);
+    bool hasUnfinishedTracks() const {
+        return !m_queuedTrackIds.empty() || (m_finishedCount < m_dequeuedCount);
     }
 
     Library* m_library;
