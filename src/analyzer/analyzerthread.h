@@ -29,6 +29,21 @@ enum class AnalyzerThreadState {
 Q_DECLARE_TYPEINFO(AnalyzerThreadState, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(AnalyzerThreadState);
 
+// This object lives in the creating thread of the host, i.e. does not
+// run its own event loop. It does not does not use slots for communication
+// with its host which would otherwise still be executed in the host's
+// thread.
+//
+// Signals emitted from the internal worker thread use queued connections.
+// Communication in the opposite direction is accomplished by using
+// lock-free types to avoid locking the host thread through priority
+// inversion. Lock-free types are also used for any shared state (like
+// the current analyzer progress) that is read from the host thread
+// after being notified about changes.
+//
+// The frequency of change notifications is limited to avoid flooding
+// the signal queues between the internal worker thread and the host,
+// which might cause unresponsiveness of the host.
 class AnalyzerThread : public QThread {
     Q_OBJECT
 
@@ -56,9 +71,10 @@ class AnalyzerThread : public QThread {
     }
 
   signals:
-    // Use a single signal for progress updates to ensure that
-    // all signals are queued and received in the same order
-    // as emitted from this thread!
+    // Use a single signal for progress updates to ensure that all signals
+    // are queued and received in the same order as emitted from the internal
+    // worker thread. Different signals would otherwise end up in different
+    // queued connections which are processed in an undefined order!
     void progress(int threadId, AnalyzerThreadState threadState, TrackId trackId);
 
   protected:
