@@ -115,7 +115,10 @@ class AnalyzerQueue : public QObject {
             DEBUG_ASSERT(m_track);
             DEBUG_ASSERT(m_track->getId() == trackId);
             DEBUG_ASSERT(!m_threadIdle);
-            return m_analyzerProgress = m_thread->readAnalyzerProgress();
+            // Read and store the atomic control value...
+            m_analyzerProgress = m_thread->readAnalyzerProgress();
+            // ...and return the result for further processing
+            return m_analyzerProgress;
         }
 
         void recvThreadExit() {
