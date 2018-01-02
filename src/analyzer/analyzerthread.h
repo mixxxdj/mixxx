@@ -19,6 +19,12 @@
 #include "util/memory.h"
 
 
+enum class AnalyzerMode {
+    WithWaveform,
+    WithoutWaveform,
+    Default = WithWaveform,
+};
+
 enum class AnalyzerThreadState {
     Void,
     Idle,
@@ -51,7 +57,8 @@ class AnalyzerThread : public QThread {
     AnalyzerThread(
             int id,
             mixxx::DbConnectionPoolPtr pDbConnectionPool,
-            UserSettingsPointer pConfig);
+            UserSettingsPointer pConfig,
+            AnalyzerMode mode = AnalyzerMode::Default);
     // The destructor must be triggered by calling deleteLater() to
     // ensure that the thread has already finished and is not running!
     ~AnalyzerThread() override;
@@ -90,6 +97,7 @@ class AnalyzerThread : public QThread {
 
     const mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
     const UserSettingsPointer m_pConfig;
+    const AnalyzerMode m_mode;
 
     /////////////////////////////////////////////////////////////////////////
     // Thread shared

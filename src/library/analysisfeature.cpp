@@ -24,6 +24,16 @@ namespace {
 // Utilize all available cores for batch analysis of tracks
 const int kNumberOfAnalyzerThreads = math_max(1, QThread::idealThreadCount());
 
+inline
+AnalyzerMode getAnalyzerMode(
+        const UserSettingsPointer& pConfig) {
+    if (pConfig->getValue<bool>(ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"), true)) {
+        return AnalyzerMode::WithWaveform;
+    } else {
+        return AnalyzerMode::WithoutWaveform;
+    }
+}
+
 } // anonymous namespace
 
 AnalysisFeature::AnalysisFeature(
@@ -122,7 +132,8 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
         m_pAnalyzerQueue = AnalyzerQueuePointer(
                 m_library,
                 kNumberOfAnalyzerThreads,
-                m_pConfig);
+                m_pConfig,
+                getAnalyzerMode(m_pConfig));
 
         connect(m_pAnalyzerQueue, SIGNAL(progress(AnalyzerProgress, int, int)),
                 m_pAnalysisView, SLOT(slotAnalyzerQueueProgress(AnalyzerProgress, int, int)));

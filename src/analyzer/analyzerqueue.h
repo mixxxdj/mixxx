@@ -22,7 +22,8 @@ class AnalyzerQueue : public QObject {
     AnalyzerQueue(
             Library* library,
             int numWorkerThreads,
-            const UserSettingsPointer& pConfig);
+            const UserSettingsPointer& pConfig,
+            AnalyzerMode mode = AnalyzerMode::Default);
     ~AnalyzerQueue() override = default;
 
     // finishedCount() <= dequeuedCount() <= totalCount()
@@ -167,8 +168,9 @@ class AnalyzerQueuePointer final {
     AnalyzerQueuePointer(
             Library* library,
             int numWorkerThreads,
-            const UserSettingsPointer& pConfig)
-      : m_impl(std::make_unique<AnalyzerQueue>(library, numWorkerThreads, pConfig)) {
+            const UserSettingsPointer& pConfig,
+            AnalyzerMode mode = AnalyzerMode::Default)
+          : m_impl(std::make_unique<AnalyzerQueue>(library, numWorkerThreads, pConfig, mode)) {
     }
     AnalyzerQueuePointer(AnalyzerQueuePointer&&) = default;
     AnalyzerQueuePointer(const AnalyzerQueuePointer&) = delete;
