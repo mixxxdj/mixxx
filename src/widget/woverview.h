@@ -20,6 +20,7 @@
 
 #include "track/track.h"
 #include "widget/wwidget.h"
+#include "analyzer/analyzerprogress.h"
 
 #include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/renderers/waveformmarkset.h"
@@ -37,7 +38,7 @@ class WOverview : public WWidget {
     void onConnectedControlChanged(double dParameter, double dValue) override;
     void slotTrackLoaded(TrackPointer pTrack);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
-    void slotTrackAnalyzerProgress(TrackId trackId, int analyzerProgress);
+    void slotTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
 
   signals:
     void trackDropped(QString filename, QString group);
@@ -131,7 +132,7 @@ class WOverview : public WWidget {
     double m_a;
     double m_b;
 
-    int m_analyzerProgress;
+    AnalyzerProgress m_analyzerProgress;
     bool m_trackLoaded;
     double m_scaleFactor;
 };

@@ -122,8 +122,8 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
     DEBUG_ASSERT(!m_pAnalyzerQueue);
     m_pAnalyzerQueue = AnalyzerQueuePointer(pLibrary, kNumberOfAnalyzerThreads, m_pConfig);
 
-    connect(m_pAnalyzerQueue, SIGNAL(trackProgress(TrackId, int)),
-            this, SLOT(slotTrackAnalyzerProgress(TrackId, int)));
+    connect(m_pAnalyzerQueue, SIGNAL(trackProgress(TrackId, AnalyzerProgress)),
+            this, SLOT(slotTrackAnalyzerProgress(TrackId, AnalyzerProgress)));
 
     // Connect the player to the analyzer queue so that loaded tracks are
     // analyzed.
@@ -615,6 +615,6 @@ void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack) {
     }
 }
 
-void PlayerManager::slotTrackAnalyzerProgress(TrackId trackId, int analyzerProgress) {
+void PlayerManager::slotTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress) {
     emit(trackAnalyzerProgress(trackId, analyzerProgress));
 }

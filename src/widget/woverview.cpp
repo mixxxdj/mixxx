@@ -64,8 +64,8 @@ WOverview::WOverview(
     m_playControl = new ControlProxy(m_group, "play", this);
     setAcceptDrops(true);
 
-    connect(pPlayerManager, SIGNAL(trackAnalyzerProgress(TrackId, int)),
-            this, SLOT(slotTrackAnalyzerProgress(TrackId, int)));
+    connect(pPlayerManager, SIGNAL(trackAnalyzerProgress(TrackId, AnalyzerProgress)),
+            this, SLOT(slotTrackAnalyzerProgress(TrackId, AnalyzerProgress)));
 }
 
 void WOverview::setup(const QDomNode& node, const SkinContext& context) {
@@ -188,7 +188,7 @@ void WOverview::slotWaveformSummaryUpdated() {
     }
 }
 
-void WOverview::slotTrackAnalyzerProgress(TrackId trackId, int analyzerProgress) {
+void WOverview::slotTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress) {
     if (!m_pCurrentTrack || (m_pCurrentTrack->getId() != trackId)) {
         return;
     }
@@ -352,14 +352,14 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
             painter.setPen(QPen(m_signalColors.getAxesColor(), 3 * m_scaleFactor));
             if (m_orientation == Qt::Horizontal) {
                 painter.drawLine(
-                        width() * analyzerProgressDouble(m_analyzerProgress),
+                        width() * m_analyzerProgress,
                         height() / 2,
                         width(),
                         height() / 2);
             } else {
                 painter.drawLine(
                         width() / 2,
-                        height() * analyzerProgressDouble(m_analyzerProgress),
+                        height() * m_analyzerProgress,
                         width() / 2,
                         height());
             }

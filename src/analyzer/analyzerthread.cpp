@@ -298,7 +298,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         const double frameProgress =
                 double(audioSource->frameLength() - remainingFrames.length()) /
                 double(audioSource->frameLength());
-        const int progress =
+        const AnalyzerProgress progress =
                 frameProgress *
                 (kAnalyzerProgressFinalizing - kAnalyzerProgressNone);
         emitBusyProgress(track, progress);
@@ -307,7 +307,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
     return result;
 }
 
-void AnalyzerThread::emitBusyProgress(const TrackPointer& track, int busyProgress) {
+void AnalyzerThread::emitBusyProgress(const TrackPointer& track, AnalyzerProgress busyProgress) {
     DEBUG_ASSERT(track);
     // The actual progress value is updated always even if the
     // following signal is inhibited (see below). The value is read
@@ -328,7 +328,7 @@ void AnalyzerThread::emitBusyProgress(const TrackPointer& track, int busyProgres
     emitProgress(AnalyzerThreadState::Busy, track);
 }
 
-void AnalyzerThread::emitDoneProgress(const TrackPointer& track, int doneProgress) {
+void AnalyzerThread::emitDoneProgress(const TrackPointer& track, AnalyzerProgress doneProgress) {
     DEBUG_ASSERT(track);
     m_analyzerProgress.setValue(doneProgress);
     // Don't inhibit the final progress update!

@@ -64,7 +64,7 @@ void AnalyzerQueue::emitProgress() {
     }
     m_lastProgressEmittedAt = now;
 
-    int analyzerProgressSum = 0;
+    AnalyzerProgress analyzerProgressSum = 0;
     int analyzerProgressCount = 0;
     for (const auto& worker: m_workers) {
         if (worker.analyzerProgress() >= kAnalyzerProgressNone) {
@@ -72,7 +72,7 @@ void AnalyzerQueue::emitProgress() {
             ++analyzerProgressCount;
         }
     }
-    int analyzerProgressAvg;
+    AnalyzerProgress analyzerProgressAvg;
     if (analyzerProgressCount > 0) {
         analyzerProgressAvg = analyzerProgressSum / analyzerProgressCount;
     } else {

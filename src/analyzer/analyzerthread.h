@@ -68,7 +68,7 @@ class AnalyzerThread : public QThread {
 
     void sendNextTrack(const TrackPointer& nextTrack);
 
-    int readAnalyzerProgress() const {
+    AnalyzerProgress readAnalyzerProgress() const {
         return m_analyzerProgress.getValue();
     }
 
@@ -98,7 +98,7 @@ class AnalyzerThread : public QThread {
 
     ControlValueAtomic<TrackPointer> m_nextTrack;
 
-    ControlValueAtomic<int> m_analyzerProgress;
+    ControlValueAtomic<AnalyzerProgress> m_analyzerProgress;
 
     std::mutex m_idleMutex;
     std::condition_variable m_idleWaitCond;
@@ -131,10 +131,10 @@ class AnalyzerThread : public QThread {
     TrackPointer recvNextTrack(); // blocking
 
     // Conditional emitting of progress() signal
-    void emitBusyProgress(const TrackPointer& track, int busyProgress);
+    void emitBusyProgress(const TrackPointer& track, AnalyzerProgress busyProgress);
 
     // Unconditional emitting of progress() signal
-    void emitDoneProgress(const TrackPointer& track, int doneProgress);
+    void emitDoneProgress(const TrackPointer& track, AnalyzerProgress doneProgress);
 
     void emitProgress(AnalyzerThreadState state, const TrackPointer& track = TrackPointer());
 };

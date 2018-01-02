@@ -124,10 +124,10 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
                 kNumberOfAnalyzerThreads,
                 m_pConfig);
 
-        connect(m_pAnalyzerQueue, SIGNAL(progress(int, int, int)),
-                m_pAnalysisView, SLOT(slotAnalyzerQueueProgress(int, int, int)));
-        connect(m_pAnalyzerQueue, SIGNAL(progress(int, int, int)),
-                this, SLOT(slotAnalyzerQueueProgress(int, int, int)));
+        connect(m_pAnalyzerQueue, SIGNAL(progress(AnalyzerProgress, int, int)),
+                m_pAnalysisView, SLOT(slotAnalyzerQueueProgress(AnalyzerProgress, int, int)));
+        connect(m_pAnalyzerQueue, SIGNAL(progress(AnalyzerProgress, int, int)),
+                this, SLOT(slotAnalyzerQueueProgress(AnalyzerProgress, int, int)));
         connect(m_pAnalyzerQueue, SIGNAL(empty(int)),
                 this, SLOT(slotAnalyzerQueueEmpty(int)));
         connect(m_pAnalyzerQueue, SIGNAL(done()),
@@ -145,7 +145,7 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
 }
 
 void AnalysisFeature::slotAnalyzerQueueProgress(
-        int /*analyzerProgress*/,
+        AnalyzerProgress /*analyzerProgress*/,
         int dequeuedCount,
         int totalCount) {
     if (totalCount > 0) {

@@ -1,27 +1,22 @@
 #pragma once
 
+#include <limits>
+
 #include "util/math.h"
 
 
-// Measured in 0.1%, i.e. promille
-constexpr int kAnalyzerProgressUnknown = -1;
-constexpr int kAnalyzerProgressNone = 0; // 0.0 %
-constexpr int kAnalyzerProgressHalf = 500; // 50.0 %
-constexpr int kAnalyzerProgressFinalizing = 950; // 95.0 %
-constexpr int kAnalyzerProgressDone = 1000; // 100.0%
+typedef double AnalyzerProgress;
+
+constexpr AnalyzerProgress kAnalyzerProgressUnknown    = std::numeric_limits<AnalyzerProgress>::signaling_NaN();
+constexpr AnalyzerProgress kAnalyzerProgressNone       = 0.0f;  //   0.0 %
+constexpr AnalyzerProgress kAnalyzerProgressHalf       = 0.5f;  //  50.0 %
+constexpr AnalyzerProgress kAnalyzerProgressFinalizing = 0.95f; //  95.0 %
+constexpr AnalyzerProgress kAnalyzerProgressDone       = 1.0f;  // 100.0%
 
 // Integer [0, 100]
 inline
-int analyzerProgressPercent(int analyzerProgress) {
+int analyzerProgressPercent(AnalyzerProgress analyzerProgress) {
     DEBUG_ASSERT(analyzerProgress >= kAnalyzerProgressNone);
-    return (100 * (math_min(analyzerProgress, kAnalyzerProgressDone) - kAnalyzerProgressNone)) /
-            (kAnalyzerProgressDone - kAnalyzerProgressNone);
-}
-
-// Double [0.0, 1.0]
-inline
-double analyzerProgressDouble(int analyzerProgress) {
-    DEBUG_ASSERT(analyzerProgress >= kAnalyzerProgressNone);
-    return double(math_min(analyzerProgress, kAnalyzerProgressDone) - kAnalyzerProgressNone) /
-            (kAnalyzerProgressDone - kAnalyzerProgressNone);
+    return int((100 * (math_min(analyzerProgress, kAnalyzerProgressDone) - kAnalyzerProgressNone)) /
+            (kAnalyzerProgressDone - kAnalyzerProgressNone));
 }

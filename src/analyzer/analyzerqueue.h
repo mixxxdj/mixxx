@@ -48,8 +48,8 @@ class AnalyzerQueue : public QObject {
 
   signals:
     // Progress for individual tracks is passed-through from the workers
-    void trackProgress(TrackId trackId, int analyzerProgress);
-    void progress(int analyzerProgress, int dequeuedCount, int totalCount);
+    void trackProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
+    void progress(AnalyzerProgress analyzerProgress, int dequeuedCount, int totalCount);
     void empty(int finishedCount);
     void done();
 
@@ -83,7 +83,7 @@ class AnalyzerQueue : public QObject {
             return m_threadIdle;
         }
 
-        int analyzerProgress() const {
+        AnalyzerProgress analyzerProgress() const {
             return m_analyzerProgress;
         }
 
@@ -110,7 +110,7 @@ class AnalyzerQueue : public QObject {
             m_threadIdle = true;
         }
 
-        int recvAnalyzerProgress(TrackId trackId) {
+        AnalyzerProgress recvAnalyzerProgress(TrackId trackId) {
             DEBUG_ASSERT(m_thread);
             DEBUG_ASSERT(m_track);
             DEBUG_ASSERT(m_track->getId() == trackId);
@@ -130,7 +130,7 @@ class AnalyzerQueue : public QObject {
       private:
         std::unique_ptr<AnalyzerThread> m_thread;
         TrackPointer m_track;
-        int m_analyzerProgress;
+        AnalyzerProgress m_analyzerProgress;
         bool m_threadIdle;
     };
 

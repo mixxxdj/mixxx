@@ -8,6 +8,7 @@
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
 #include "library/ui_dlganalysis.h"
+#include "analyzer/analyzerprogress.h"
 
 class AnalysisLibraryTableModel;
 class WAnalysisLibraryTableView;
@@ -39,7 +40,7 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     void selectAll();
     void analyze();
     void slotAnalysisActive(bool bActive);
-    void slotAnalyzerQueueProgress(int analyzerProgress, int finishedCount, int totalCount);
+    void slotAnalyzerQueueProgress(AnalyzerProgress analyzerProgress, int finishedCount, int totalCount);
     void showRecentSongs();
     void showAllSongs();
     void installEventFilter(QObject* pFilter);
