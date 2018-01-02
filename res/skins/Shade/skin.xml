@@ -185,10 +185,10 @@
 											<BackPath>style/style_bg_deck_border.png</BackPath>
 											<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 										</WidgetGroup>
+				 						<Template src="skin:deck_effect.xml"/>
 				 						<Template src="skin:deck_transport.xml">
 											<SetVariable name="channum">1</SetVariable>
 				  						</Template>
-				 						<Template src="skin:deck_microphone.xml"/>
 										<WidgetGroup>
 											<ObjectName>DeckRightBorder</ObjectName>
 											<Size>5f,64f</Size>
@@ -230,10 +230,11 @@
 											<BackPath>style/style_bg_deck_border.png</BackPath>
 											<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 										</WidgetGroup>
+
+										<Template src="skin:deck_effect.xml"/>
 				 						<Template src="skin:deck_transport.xml">
 											<SetVariable name="channum">1</SetVariable>
 				  						</Template>
-				 	                    <Template src="skin:deck_auxiliary.xml"/>
 										<WidgetGroup>
 											<ObjectName>DeckRightBorder</ObjectName>
 											<Size>5f,64f</Size>

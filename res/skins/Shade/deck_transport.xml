@@ -3,16 +3,9 @@
 		<Size>0e,64f</Size>
 		<BackPath>style/style_bg_deck_botom_mid.png</BackPath>
 		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-		<Connection>
-			<ConfigKey>[Microphone],show_microphone</ConfigKey>
-			<BindProperty>visible</BindProperty>
-			<Transform>
-				<Not/>
-			</Transform>
-		</Connection>
 	</WidgetGroup>
 	<WidgetGroup>
-		<Size>283f,64f</Size>
+		<Size>243f,64f</Size>
 		<BackPath>style/style_bg_deck_botom_mid.png</BackPath>
 		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 		<Children>
@@ -35,7 +28,7 @@
 					<Pressed>btn_src_minus.png</Pressed>
 			        <Unpressed>btn_src_minus.png</Unpressed>
 				</State>
-				<Pos>45,0</Pos>
+				<Pos>5,0</Pos>
 				<Connection>
 					<ConfigKey>[Samplers],show_samplers</ConfigKey>
 				</Connection>
@@ -55,7 +48,7 @@
 					<Pressed>btn_microphone_talkover_overdown.png</Pressed>
 					<Unpressed>btn_microphone_talkover_over.png</Unpressed>
 				</State>
-				<Pos>45,14</Pos>
+				<Pos>5,14</Pos>
 				<Connection>
 					<ConfigKey>[Microphone<Variable name="micnum"/>],talkover</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -77,7 +70,7 @@
 					<Pressed>btn_aux_mute_overdown.png</Pressed>
 					<Unpressed>btn_aux_mute_over.png</Unpressed>
 				</State>
-				<Pos>45,35</Pos>
+				<Pos>5,35</Pos>
 				<Connection>
 					<ConfigKey>[Microphone<Variable name="micnum"/>],talkover</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -105,7 +98,7 @@
 					<Pressed>btn_sampler_minus.png</Pressed>
 			        <Unpressed>btn_sampler_minus.png</Unpressed>
 				</State>
-				<Pos>93,0</Pos>
+				<Pos>53,0</Pos>
 				<Connection>
 					<ConfigKey>[Samplers],show_samplers</ConfigKey>
 				</Connection>
@@ -126,7 +119,7 @@
 					<Pressed>btn_play_sampler_overdown.png</Pressed>
 					<Unpressed>btn_play_sampler_over.png</Unpressed>
 				</State>
-				<Pos>93,14</Pos>
+				<Pos>53,14</Pos>
 				<Connection>
 	                <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_gotoandplay</ConfigKey>
 	                <ButtonState>LeftButton</ButtonState>
@@ -155,7 +148,7 @@
 					<Pressed>btn_play_sampler_overdown.png</Pressed>
 					<Unpressed>btn_play_sampler_over.png</Unpressed>
 				</State>
-				<Pos>114,14</Pos>
+				<Pos>74,14</Pos>
 				<Connection>
 	                <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_gotoandplay</ConfigKey>
 	                <ButtonState>LeftButton</ButtonState>
@@ -184,7 +177,7 @@
 					<Pressed>btn_play_sampler_overdown.png</Pressed>
 					<Unpressed>btn_play_sampler_over.png</Unpressed>
 				</State>
-				<Pos>93,35</Pos>
+				<Pos>53,35</Pos>
 				<Connection>
 	                <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_gotoandplay</ConfigKey>
 	                <ButtonState>LeftButton</ButtonState>
@@ -213,7 +206,7 @@
 					<Pressed>btn_play_sampler_overdown.png</Pressed>
 					<Unpressed>btn_play_sampler_over.png</Unpressed>
 				</State>
-				<Pos>114,35</Pos>
+				<Pos>74,35</Pos>
 				<Connection>
 	                <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_gotoandplay</ConfigKey>
 	                <ButtonState>LeftButton</ButtonState>
@@ -236,7 +229,7 @@
 		        <Size>41f,14f</Size>
 		        <BackPath>btn_seek.png</BackPath>
 		        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-				<Pos>141,0</Pos>
+				<Pos>101,0</Pos>
 	        </WidgetGroup>
 
 			<PushButton>
@@ -248,7 +241,7 @@
 					<Pressed>btn_forward1_overdown.png</Pressed>
 					<Unpressed>btn_forward1.png</Unpressed>
 				</State>
-				<Pos>162,14</Pos>
+				<Pos>122,14</Pos>
 				<Connection>
 					<ConfigKey>[Channel<Variable name="channum"/>],fwd</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -269,7 +262,7 @@
 					<Pressed>btn_rewind1_overdown.png</Pressed>
 					<Unpressed>btn_rewind1.png</Unpressed>
 				</State>
-				<Pos>141,14</Pos>
+				<Pos>101,14</Pos>
 				<Connection>
 					<ConfigKey>[Channel<Variable name="channum"/>],back</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -303,7 +296,7 @@
 					<Pressed>btn_reverse1_overdown.png</Pressed>
 					<Unpressed>btn_reverse1_over.png</Unpressed>
 				</State>
-				<Pos>141,35</Pos>
+				<Pos>101,35</Pos>
 				<Connection>
 					<ConfigKey>[Channel<Variable name="channum"/>],reverse</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -337,7 +330,7 @@
 					<Pressed>btn_beatloop1_4_overdown.png</Pressed>
 					<Unpressed>btn_beatloop1_4_over.png</Unpressed>
 				</State>
-				<Pos>189,35</Pos>
+				<Pos>149,35</Pos>
 				<Connection>
 					<ConfigKey>[Channel<Variable name="channum"/>],beatloop_4_toggle</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -376,7 +369,7 @@
 					<Pressed>btn_loop_minus.png</Pressed>
 					<Unpressed>btn_loop_minus.png</Unpressed>
 				</State>
-				<Pos>189,0</Pos>
+				<Pos>149,0</Pos>
 				<Connection>
 					<ConfigKey>[Samplers],show_samplers</ConfigKey>
 				</Connection>
@@ -390,7 +383,7 @@
 					<Pressed>btn_beatloop1_halve_overdown.png</Pressed>
 					<Unpressed>btn_beatloop1_halve.png</Unpressed>
 				</State>
-				<Pos>189,14</Pos>
+				<Pos>149,14</Pos>
 				<Connection>
 					<ConfigKey>[Channel<Variable name="channum"/>],loop_halve</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -406,7 +399,7 @@
 					<Pressed>btn_beatloop1_double_overdown.png</Pressed>
 					<Unpressed>btn_beatloop1_double.png</Unpressed>
 				</State>
-				<Pos>210,14</Pos>
+				<Pos>170,14</Pos>
 				<Connection>
 					<ConfigKey>[Channel<Variable name="channum"/>],loop_double</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -429,7 +422,7 @@
 					<Pressed>btn_reloop1_overdown.png</Pressed>
 					<Unpressed>btn_reloop1_over.png</Unpressed>
 				</State>
-				<Pos>210,35</Pos>
+				<Pos>170,35</Pos>
 				<Connection>
 					<ConfigKey>[Channel<Variable name="channum"/>],reloop_exit</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -451,7 +444,7 @@
 		        <Size>41f,14f</Size>
 		        <BackPath>btn_hotcues.png</BackPath>
 		        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-				<Pos>237,0</Pos>
+				<Pos>197,0</Pos>
 	        </WidgetGroup>
 			<PushButton>
 				<TooltipId>hotcue</TooltipId>
@@ -469,7 +462,7 @@
 					<Pressed>btn_hotcue1_1_overdown.png</Pressed>
 					<Unpressed>btn_hotcue1_1_over.png</Unpressed>
 				</State>
-				<Pos>237,14</Pos>
+				<Pos>197,14</Pos>
 				<Connection>
 					<ConfigKey>[Channel<Variable name="channum"/>],hotcue_1_activate</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -503,7 +496,7 @@
 					<Pressed>btn_hotcue1_2_overdown.png</Pressed>
 					<Unpressed>btn_hotcue1_2_over.png</Unpressed>
 				</State>
-				<Pos>258,14</Pos>
+				<Pos>218,14</Pos>
 				<Connection>
 					<ConfigKey>[Channel<Variable name="channum"/>],hotcue_2_activate</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -537,7 +530,7 @@
 					<Pressed>btn_hotcue1_3_overdown.png</Pressed>
 					<Unpressed>btn_hotcue1_3_over.png</Unpressed>
 				</State>
-				<Pos>237,35</Pos>
+				<Pos>197,35</Pos>
 				<Connection>
 					<ConfigKey>[Channel<Variable name="channum"/>],hotcue_3_activate</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -571,7 +564,7 @@
 					<Pressed>btn_hotcue1_4_overdown.png</Pressed>
 					<Unpressed>btn_hotcue1_4_over.png</Unpressed>
 				</State>
-				<Pos>258,35</Pos>
+				<Pos>218,35</Pos>
 				<Connection>
 					<ConfigKey>[Channel<Variable name="channum"/>],hotcue_4_activate</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -590,12 +583,5 @@
 				</Connection>
 			</PushButton>
 		</Children>
-		<Connection>
-			<ConfigKey>[Microphone],show_microphone</ConfigKey>
-			<BindProperty>visible</BindProperty>
-			<Transform>
-				<Not/>
-			</Transform>
-		</Connection>
 	</WidgetGroup>
 </Template>
