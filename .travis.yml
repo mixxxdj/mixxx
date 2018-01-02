@@ -74,10 +74,10 @@ install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CXXFLAGS="-isystem /usr/local/include/opus" ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CFLAGS="-isystem /usr/local/include/opus" ; fi
 
-  # NOTE(rryan): 11/15/2016 we are experiencing Travis timeouts for the OSX
+  # NOTE(rryan): 2016-11-15 we are experiencing Travis timeouts for the OSX
   # build.  Turning off optimizations to see if that speeds up compile times. We
   # also need to avoid going over 4MB of output so we turn off verbose mode.
-  # NOTE(rryan): 12/31/2016 Homebrew has dropped qt4 support. Build with qt5.
+  # NOTE(rryan): 2016-12-31 Homebrew has dropped qt4 support. Build with qt5.
   # TODO(rryan): localecompare doesn't work on Travis with qt5 for some reason.
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export EXTRA_FLAGS="optimize=none asan=0 verbose=0 qt5=1 localecompare=0" ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export EXTRA_FLAGS="localecompare=1" ; fi
@@ -87,7 +87,10 @@ install:
   - scons $COMMON $EXTRA_FLAGS
 
 script:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then gdb --batch -ex run -ex "thread apply all bt full" -ex quit ./mixxx-test ; fi
+  # NOTE(sblaisot): 2018-01-02 removing gdb wrapper on linux due to a bug in
+  # return code in order to avoid having a sucessful build when a test fail.
+  # https://bugs.launchpad.net/mixxx/+bug/1699689
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./mixxx-test ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then lldb ./mixxx-test --batch -o run -o quit -k 'thread backtrace all' -k quit ; fi
 
 notifications:
