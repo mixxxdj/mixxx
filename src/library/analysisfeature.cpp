@@ -156,14 +156,8 @@ void AnalysisFeature::slotAnalyzerQueueProgress(
     }
 }
 
-void AnalysisFeature::slotAnalyzerQueueEmpty(int finishedCount) {
-    // Only abandon the queue after all enqueued tracks have been
-    // dequeued to avoid a race condition when the worker threads
-    // are started and running before all selected tracks have
-    // been enqueued.
-    if (finishedCount > 0) {
-        slotAnalyzerQueueDone();
-    }
+void AnalysisFeature::slotAnalyzerQueueEmpty(int /*finishedCount*/) {
+    slotAnalyzerQueueDone();
 }
 
 void AnalysisFeature::slotAnalyzerQueueDone() {
