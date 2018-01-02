@@ -78,7 +78,88 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
                 << "Database schema is up-to-date"
                 << "at version" << m_currentVersion;
         return Result::CurrentVersion;
-    } else if (m_currentVersion < targetVersion) {
+    }
+
+    // New upgrade strategy by applying dedicated .sql files with
+    // source and a target version encoded in the file name. File
+    // lookup starts with the desired target version which is
+    // decremented until the current version is reached and no
+    // applicable file has been found.
+    while (m_currentVersion < targetVersion) {
+        int fromVersion = m_currentVersion;
+        int toVersion = targetVersion;
+        while (fromVersion < toVersion) {
+            const QString schemaMigrationFileName =
+                    QString("%1_v%2-to-v%3.sql").arg(
+                            schemaBaseName,
+                            QString::number(fromVersion),
+                            QString::number(toVersion));
+            QFile schemaMigrationFile(schemaMigrationFileName);
+            if (schemaMigrationFile.exists() && schemaMigrationFile.open(QIODevice::ReadOnly)) {
+                kLogger.info()
+                        << "Upgrading database schema from version"
+                        << fromVersion
+                        << "to"
+                        << toVersion
+                        << "by applying"
+                        << schemaMigrationFileName;
+                QTextStream schemaMigrationStream(&schemaMigrationFile);
+                SqlTransaction transaction(m_database);
+                QString sqlStatement;
+                QString nextLine;
+                while (!(nextLine = schemaMigrationStream.readLine()).isNull()) {
+                    const QString trimmedLine = nextLine.trimmed();
+                    if (trimmedLine.isEmpty() || trimmedLine.startsWith("--")) {
+                        // Skip empty lines and comments
+                        continue;
+                    }
+                    sqlStatement += trimmedLine;
+                    if (sqlStatement.endsWith(QChar(';'))) {
+                        FwdSqlQuery query(m_database, sqlStatement);
+                        if (query.isPrepared() && query.execPrepared()) {
+                            // Continue with next statement
+                            sqlStatement.clear();
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                if (sqlStatement.isEmpty()) {
+                    // Successfully executed all SQL statements
+                    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
+                        kLogger.warning()
+                                << "Failed to commit transaction";
+                        return Result::SchemaError;
+                    }
+                    m_currentVersion = toVersion;
+                    if (m_currentVersion == targetVersion) {
+                        // Done
+                        return Result::UpgradeSucceeded;
+                    } else {
+                        // Exit inner loop for next round of migrations
+                        break;
+                    }
+                } else {
+                    kLogger.warning()
+                            << "Failed to execute SQL statement"
+                            << sqlStatement;
+                    VERIFY_OR_DEBUG_ASSERT(transaction.rollback()) {
+                        kLogger.warning()
+                                << "Failed to rollback transaction";
+                        return Result::SchemaError;
+                    }
+                }
+            }
+            --toVersion;
+        }
+        if (fromVersion == toVersion) {
+            // No file for a direct version upgrade found -> Exit outer loop
+            // and continue with incremental fallback migration (see below)
+            break;
+        }
+    }
+
+    if (m_currentVersion < targetVersion) {
         kLogger.info()
                 << "Upgrading database schema"
                 << "from version" << m_currentVersion
