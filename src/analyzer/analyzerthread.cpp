@@ -105,13 +105,8 @@ void AnalyzerThread::exec() {
     m_analyzers.push_back(std::make_unique<AnalyzerBeats>(m_pConfig));
     m_analyzers.push_back(std::make_unique<AnalyzerKey>(m_pConfig));
 #endif
-    // If there are no analyzers, don't waste time running.
-    if (m_analyzers.empty()) {
-        kLogger.warning() << "No analyzers activated";
-        return;
-    } else {
-        kLogger.info() << "Activated" << m_analyzers.size() << "analyzers";
-    }
+    DEBUG_ASSERT(!m_analyzers.empty());
+    kLogger.debug() << "Activated" << m_analyzers.size() << "analyzers";
 
     // pAnalysisDao remains null if no analyzer needs database access.
     // Currently only the waveform analyzer makes use of it.
