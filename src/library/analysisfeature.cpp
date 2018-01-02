@@ -163,6 +163,7 @@ void AnalysisFeature::slotAnalyzerQueueEmpty(int /*finishedCount*/) {
 void AnalysisFeature::slotAnalyzerQueueDone() {
     if (m_pAnalyzerQueue) {
         m_pAnalyzerQueue->cancel();
+        // Avoid blocking the event loop on the worker thread's destructors!
         m_pAnalyzerQueue->deleteLater();
         // Release ownership
         m_pAnalyzerQueue.release();

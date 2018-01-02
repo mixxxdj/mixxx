@@ -60,9 +60,12 @@ AnalyzerThread::AnalyzerThread(
 }
 
 AnalyzerThread::~AnalyzerThread() {
-    stop();
-    // Wait until thread has actually stopped before proceeding
-    wait();
+    kLogger.debug() << "Destroying" << m_id;
+    VERIFY_OR_DEBUG_ASSERT(isFinished()) {
+        stop();
+        // The following operation will block the host thread!
+        wait();
+    }
 }
 
 void AnalyzerThread::run() {
@@ -192,6 +195,7 @@ void AnalyzerThread::exec() {
 }
 
 void AnalyzerThread::stop() {
+    kLogger.debug() << "Stopping" << m_id;
     m_run.store(false);
     m_idleWaitCond.notify_one();
 }

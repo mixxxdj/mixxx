@@ -52,6 +52,8 @@ class AnalyzerThread : public QThread {
             int id,
             mixxx::DbConnectionPoolPtr pDbConnectionPool,
             UserSettingsPointer pConfig);
+    // The destructor must be triggered by calling deleteLater() to
+    // ensure that the thread has already finished and is not running!
     ~AnalyzerThread() override;
 
     operator bool() const {
