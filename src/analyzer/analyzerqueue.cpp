@@ -202,3 +202,14 @@ TrackPointer AnalyzerQueue::loadTrackById(TrackId trackId) {
     }
     return track;
 }
+
+void AnalyzerQueuePointer::reset() {
+    if (m_impl) {
+        m_impl->cancel();
+        // Avoid blocking the event loop on the worker thread's destructors!
+        m_impl->deleteLater();
+        // Release ownership
+        m_impl.release();
+        DEBUG_ASSERT(!m_impl);
+    }
+}

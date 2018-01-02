@@ -15,12 +15,11 @@
 #include "library/libraryfeature.h"
 #include "library/dlganalysis.h"
 #include "library/treeitemmodel.h"
+#include "analyzer/analyzerqueue.h"
 #include "preferences/usersettings.h"
-#include "util/memory.h"
 
 class Library;
 class TrackCollection;
-class AnalyzerQueue;
 
 class AnalysisFeature : public LibraryFeature {
     Q_OBJECT
@@ -66,7 +65,7 @@ class AnalysisFeature : public LibraryFeature {
     Library* m_library;
 
     UserSettingsPointer m_pConfig;
-    std::unique_ptr<AnalyzerQueue> m_pAnalyzerQueue;
+    AnalyzerQueuePointer m_pAnalyzerQueue;
     // Used to temporarily enable BPM detection in the prefs before we analyze
     int m_iOldBpmEnabled;
     // The title returned by title()

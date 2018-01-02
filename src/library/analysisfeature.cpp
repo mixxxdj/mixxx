@@ -13,7 +13,6 @@
 #include "library/dlganalysis.h"
 #include "widget/wlibrary.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
-#include "analyzer/analyzerqueue.h"
 #include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
 #include "util/debug.h"
@@ -120,18 +119,18 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
         m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(1));
         // Note: this sucks... we should refactor the prefs/analyzer to fix this hacky bit ^^^^.
 
-        m_pAnalyzerQueue = std::make_unique<AnalyzerQueue>(
+        m_pAnalyzerQueue = AnalyzerQueuePointer(
                 m_library,
                 kNumberOfAnalyzerThreads,
                 m_pConfig);
 
-        connect(m_pAnalyzerQueue.get(), SIGNAL(progress(int, int, int)),
+        connect(m_pAnalyzerQueue, SIGNAL(progress(int, int, int)),
                 m_pAnalysisView, SLOT(slotAnalyzerQueueProgress(int, int, int)));
-        connect(m_pAnalyzerQueue.get(), SIGNAL(progress(int, int, int)),
+        connect(m_pAnalyzerQueue, SIGNAL(progress(int, int, int)),
                 this, SLOT(slotAnalyzerQueueProgress(int, int, int)));
-        connect(m_pAnalyzerQueue.get(), SIGNAL(empty(int)),
+        connect(m_pAnalyzerQueue, SIGNAL(empty(int)),
                 this, SLOT(slotAnalyzerQueueEmpty(int)));
-        connect(m_pAnalyzerQueue.get(), SIGNAL(done()),
+        connect(m_pAnalyzerQueue, SIGNAL(done()),
                 this, SLOT(slotAnalyzerQueueDone()));
 
         emit(analysisActive(true));
@@ -162,14 +161,7 @@ void AnalysisFeature::slotAnalyzerQueueEmpty(int /*finishedCount*/) {
 
 void AnalysisFeature::slotAnalyzerQueueDone() {
     if (m_pAnalyzerQueue) {
-        m_pAnalyzerQueue->cancel();
-        // Avoid blocking the event loop on the worker thread's destructors!
-        m_pAnalyzerQueue->deleteLater();
-        // Release ownership
-        m_pAnalyzerQueue.release();
-        DEBUG_ASSERT(!m_pAnalyzerQueue);
-        // Restore old BPM detection setting for preferences...
-        m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(m_iOldBpmEnabled));
+        m_pAnalyzerQueue.reset();
     }
     setTitleDefault();
     emit(analysisActive(false));

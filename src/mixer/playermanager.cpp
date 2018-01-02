@@ -4,7 +4,6 @@
 
 #include <QMutexLocker>
 
-#include "analyzer/analyzerqueue.h"
 #include "control/controlobject.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
@@ -107,11 +106,7 @@ PlayerManager::~PlayerManager() {
     delete m_pCONumAuxiliaries;
 
     if (m_pAnalyzerQueue) {
-        m_pAnalyzerQueue->cancel();
-        // Avoid blocking the event loop on the worker thread's destructors!
-        m_pAnalyzerQueue->deleteLater();
-        // Release ownership
-        m_pAnalyzerQueue.release();
+        m_pAnalyzerQueue.reset();
     }
 }
 
@@ -125,31 +120,30 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
             pLibrary, SLOT(slotLoadLocationToPlayer(QString, QString)));
 
     DEBUG_ASSERT(!m_pAnalyzerQueue);
-    m_pAnalyzerQueue = std::make_unique<AnalyzerQueue>(pLibrary, kNumberOfAnalyzerThreads, m_pConfig);
+    m_pAnalyzerQueue = AnalyzerQueuePointer(pLibrary, kNumberOfAnalyzerThreads, m_pConfig);
 
-    connect(m_pAnalyzerQueue.get(), SIGNAL(trackProgress(TrackId, int)),
-            this, SLOT(slotTrackAnalyzerProgress(TrackId, int)),
-            Qt::DirectConnection);
+    connect(m_pAnalyzerQueue, SIGNAL(trackProgress(TrackId, int)),
+            this, SLOT(slotTrackAnalyzerProgress(TrackId, int)));
 
     // Connect the player to the analyzer queue so that loaded tracks are
     // analyzed.
     foreach(Deck* pDeck, m_decks) {
         connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue.get(), SLOT(slotAnalyzeTrack(TrackPointer)));
+                m_pAnalyzerQueue, SLOT(slotAnalyzeTrack(TrackPointer)));
     }
 
     // Connect the player to the analyzer queue so that loaded tracks are
     // analyzed.
     foreach(Sampler* pSampler, m_samplers) {
         connect(pSampler, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue.get(), SLOT(slotAnalyzeTrack(TrackPointer)));
+                m_pAnalyzerQueue, SLOT(slotAnalyzeTrack(TrackPointer)));
     }
 
     // Connect the player to the analyzer queue so that loaded tracks are
     // analyzed.
     foreach(PreviewDeck* pPreviewDeck, m_preview_decks) {
         connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue.get(), SLOT(slotAnalyzeTrack(TrackPointer)));
+                m_pAnalyzerQueue, SLOT(slotAnalyzeTrack(TrackPointer)));
     }
 }
 
@@ -368,7 +362,7 @@ void PlayerManager::addDeckInner() {
 
     if (m_pAnalyzerQueue) {
         connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue.get(), SLOT(slotAnalyzeTrack(TrackPointer)));
+                m_pAnalyzerQueue, SLOT(slotAnalyzeTrack(TrackPointer)));
     }
 
     m_players[group] = pDeck;
@@ -429,7 +423,7 @@ void PlayerManager::addSamplerInner() {
                                     m_pEffectsManager, orientation, group);
     if (m_pAnalyzerQueue) {
         connect(pSampler, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue.get(), SLOT(slotAnalyzeTrack(TrackPointer)));
+                m_pAnalyzerQueue, SLOT(slotAnalyzeTrack(TrackPointer)));
     }
 
     m_players[group] = pSampler;
@@ -457,7 +451,7 @@ void PlayerManager::addPreviewDeckInner() {
                                                 group);
     if (m_pAnalyzerQueue) {
         connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue.get(), SLOT(slotAnalyzeTrack(TrackPointer)));
+                m_pAnalyzerQueue, SLOT(slotAnalyzeTrack(TrackPointer)));
     }
 
     m_players[group] = pPreviewDeck;

@@ -9,11 +9,10 @@
 #include <QMap>
 #include <QMutex>
 
+#include "analyzer/analyzerqueue.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
-#include "util/memory.h"
 
-class AnalyzerQueue;
 class Auxiliary;
 class BaseTrackPlayer;
 class ControlObject;
@@ -250,7 +249,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     ControlObject* m_pCONumMicrophones;
     ControlObject* m_pCONumAuxiliaries;
 
-    std::unique_ptr<AnalyzerQueue> m_pAnalyzerQueue;
+    AnalyzerQueuePointer m_pAnalyzerQueue;
 
     QList<Deck*> m_decks;
     QList<Sampler*> m_samplers;

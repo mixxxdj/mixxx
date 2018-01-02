@@ -15,6 +15,10 @@ class AnalyzerQueue : public QObject {
     Q_OBJECT
 
   public:
+    // Don't use this constructor which is publicly visible only for technical
+    // reasons! AnalyzerQueue objects should always be allocated dynamically
+    // through AnalyzerQueuePointer (see below) to ensure that all worker threads
+    // have finished running before the corresponding queue is destroyed.
     AnalyzerQueue(
             Library* library,
             int numWorkerThreads,
@@ -150,4 +154,45 @@ class AnalyzerQueue : public QObject {
 
     typedef std::chrono::steady_clock Clock;
     Clock::time_point m_lastProgressEmittedAt;
+};
+
+// A movable pointer for the dynamic allocation AnalyzerQueue instances
+// that accounts for the special destruction semantics.
+class AnalyzerQueuePointer final {
+  public:
+    AnalyzerQueuePointer() = default;
+    AnalyzerQueuePointer(
+            Library* library,
+            int numWorkerThreads,
+            const UserSettingsPointer& pConfig)
+      : m_impl(std::make_unique<AnalyzerQueue>(library, numWorkerThreads, pConfig)) {
+    }
+    AnalyzerQueuePointer(AnalyzerQueuePointer&&) = default;
+    AnalyzerQueuePointer(const AnalyzerQueuePointer&) = delete;
+    ~AnalyzerQueuePointer() {
+        reset();
+    }
+
+    AnalyzerQueuePointer& operator=(AnalyzerQueuePointer&&) = default;
+    AnalyzerQueuePointer& operator=(const AnalyzerQueuePointer&) = delete;
+
+    void reset();
+
+    operator bool() const {
+        return static_cast<bool>(m_impl);
+    }
+    bool operator!() const {
+        return !m_impl;
+    }
+    operator AnalyzerQueue*() const {
+        DEBUG_ASSERT(m_impl.get());
+        return m_impl.get();
+    }
+    AnalyzerQueue* operator->() const {
+        DEBUG_ASSERT(m_impl.get());
+        return m_impl.get();
+    }
+
+  private:
+    std::unique_ptr<AnalyzerQueue> m_impl;
 };
