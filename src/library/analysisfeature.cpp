@@ -156,7 +156,7 @@ void AnalysisFeature::slotAnalyzerQueueProgress(
 }
 
 void AnalysisFeature::slotAnalyzerQueueEmpty(int /*finishedCount*/) {
-    slotAnalyzerQueueDone();
+    m_pAnalyzerQueue->cancel();
 }
 
 void AnalysisFeature::slotAnalyzerQueueDone() {
