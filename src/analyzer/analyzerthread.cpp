@@ -48,7 +48,6 @@ AnalyzerThread::AnalyzerThread(
         : m_id(id),
           m_pDbConnectionPool(std::move(pDbConnectionPool)),
           m_pConfig(std::move(pConfig)),
-          m_withWaveform(m_pConfig->getValue<bool>(ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"), true)),
           m_run(true),
           m_sampleBuffer(kAnalysisSamplesPerBlock),
           m_emittedState(AnalyzerThreadState::Void),
@@ -93,7 +92,7 @@ void AnalyzerThread::exec() {
     mixxx::DbConnectionPooler dbConnectionPooler;
 
     std::unique_ptr<AnalysisDao> pAnalysisDao;
-    if (m_withWaveform) {
+    if (m_pConfig->getValue<bool>(ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"), true)) {
         pAnalysisDao = std::make_unique<AnalysisDao>(m_pConfig);
         m_analyzers.push_back(std::make_unique<AnalyzerWaveform>(pAnalysisDao.get()));
     }

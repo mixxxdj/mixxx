@@ -88,7 +88,6 @@ class AnalyzerThread : public QThread {
 
     const mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
     const UserSettingsPointer m_pConfig;
-    const bool m_withWaveform;
 
     /////////////////////////////////////////////////////////////////////////
     // Thread shared
