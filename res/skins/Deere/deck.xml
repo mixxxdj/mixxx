@@ -24,6 +24,10 @@
           <WidgetGroup>
             <Layout>vertical</Layout>
             <Children>
+              <WidgetGroup>
+                <ObjectName>Spacer22</ObjectName>
+                <Size>0me,1f</Size>
+              </WidgetGroup>
               <SingletonContainer>
                 <ObjectName>DeckVisualRow<Variable name="i" /></ObjectName>
               </SingletonContainer>

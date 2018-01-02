@@ -219,10 +219,8 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
 
     // (60 seconds per minute) * (1000 milliseconds per second) / (X millis per
     // beat) = Y beats/minute
-    double averageBpm = 60.0 * 1000.0 / averageLength;
-    double dRate = calcRateRatio();
-    m_pFileBpm->set(averageBpm / dRate);
-    slotUpdateEngineBpm();
+    double averageBpm = 60.0 * 1000.0 / averageLength / calcRateRatio();
+    m_pBeats->setBpm(averageBpm);
 }
 
 void BpmControl::slotControlBeatSyncPhase(double v) {
