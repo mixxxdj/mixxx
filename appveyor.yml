@@ -22,8 +22,6 @@ configuration:
 #  - release
 #  - debug
 environment:
-  ZULIP_EMAIL:
-    secure: sIPLydvxMgNTxZAUD/Ia97wxEX9phggY3TDPyidvWPgQrCqCPyaaA1iyNHf9J+amgW2mF4EQHgfI/XzfgmsvMg==
   ENVIRONMENTS_URL: https://downloads.mixxx.org/builds/buildserver/2.1.x-windows/
   ENVIRONMENTS_PATH: C:\mixxx-buildserver
   matrix:
@@ -79,11 +77,14 @@ deploy:
     name: downloads.mixxx.org
 
 notifications:
-  - provider: Email
-    to:
-      - '%ZULIP_EMAIL%'
-    subject: 'Build {{status}}'                  # optional
-    message: "{{message}}, {{commitId}}, ..."    # optional
+  - provider: Webhook
+    url: https://mixxx.zulipchat.com/api/v1/messages
+    method: POST
+    content_type: application/x-www-form-urlencoded
+    headers:
+      Authorization:
+        secure: 95cbVBcC4rogjE5VNdhuYm8cnjPF8+7SeQXySqcxAqrFZxK+/Kcn3Q2hRb2iZfUEKZ+EdCYwx7EbpZdSiZc5goAuJT+/QXXT/Ls+fzc+eSy4Sz1Ic5t2BjLhmYZLdnBL3uIVceNSb8GzYPQx0+xy7g==
+    on_build_success: true
+    on_build_failure: true
     on_build_status_changed: true
-  #- provider: Webhook  # Not suported by Zulip yet
-
+    body: "type=stream&to=appveyor&subject={{projectName}} Build {{buildVersion}} {{status}}&content=Build {{buildVersion}} {{status}}{{#failed}} :x:{{/failed}}{{#passed}} :y:{{/passed}} {{buildUrl}}"
