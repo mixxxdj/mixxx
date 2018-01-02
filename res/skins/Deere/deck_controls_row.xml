@@ -9,16 +9,19 @@
   <WidgetGroup>
     <ObjectName>ControlsRow</ObjectName>
     <Layout>horizontal</Layout>
-    <MinimumSize>-1,47</MinimumSize>
-    <SizePolicy>me,min</SizePolicy>
+    <SizePolicy>me,max</SizePolicy>
     <Children>
-      <Template src="skin:hotcue.xml"/>
       <!-- Expanding spacers in between control contexts -->
-      <WidgetGroup><Size>3me,1min</Size><Children/></WidgetGroup>
+      <WidgetGroup><Size>3me,1min</Size></WidgetGroup>
       <Template src="skin:loop.xml"/>
-      <WidgetGroup><Size>3me,1min</Size><Children/></WidgetGroup>
+      <WidgetGroup><Size>3me,1min</Size></WidgetGroup>
       <Template src="skin:beatjump.xml"/>
-      <WidgetGroup><Size>3me,1min</Size><Children/></WidgetGroup>
+      <WidgetGroup><Size>3me,1min</Size></WidgetGroup>
+      <Template src="skin:hotcue.xml"/>
+      <WidgetGroup>
+        <Size>3me,1min</Size>
+        <MaximumSize>12,-1</MaximumSize>
+      </WidgetGroup>
 
       <WidgetGroup>
         <Layout>vertical</Layout>
