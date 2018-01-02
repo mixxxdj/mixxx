@@ -20,8 +20,7 @@ constexpr std::chrono::milliseconds kProgressInhibitDuration(100);
 AnalyzerQueue::AnalyzerQueue(
         Library* library,
         int numWorkerThreads,
-        const UserSettingsPointer& pConfig,
-        AnalyzerMode mode)
+        const UserSettingsPointer& pConfig)
         : m_library(library),
           m_dequeuedCount(0),
           m_finishedCount(0),
@@ -43,8 +42,7 @@ AnalyzerQueue::AnalyzerQueue(
         m_workers.emplace_back(std::make_unique<AnalyzerThread>(
                 threadId,
                 library->dbConnectionPool(),
-                pConfig,
-                mode));
+                pConfig));
         connect(m_workers.back().thread(), SIGNAL(progress(int, AnalyzerThreadState, TrackId)),
             this, SLOT(slotWorkerThreadProgress(int, AnalyzerThreadState, TrackId)));
     }

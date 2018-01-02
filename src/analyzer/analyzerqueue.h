@@ -18,8 +18,7 @@ class AnalyzerQueue : public QObject {
     AnalyzerQueue(
             Library* library,
             int numWorkerThreads,
-            const UserSettingsPointer& pConfig,
-            AnalyzerMode mode = AnalyzerMode::Default);
+            const UserSettingsPointer& pConfig);
     ~AnalyzerQueue() override = default;
 
     // finishedCount() <= dequeuedCount() <= totalCount()

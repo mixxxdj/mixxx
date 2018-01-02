@@ -19,12 +19,6 @@
 #include "util/memory.h"
 
 
-enum class AnalyzerMode {
-    WithWaveform,
-    WithoutWaveform,
-    Default = WithWaveform,
-};
-
 enum class AnalyzerThreadState {
     Void,
     Idle,
@@ -42,8 +36,7 @@ class AnalyzerThread : public QThread {
     AnalyzerThread(
             int id,
             mixxx::DbConnectionPoolPtr pDbConnectionPool,
-            UserSettingsPointer pConfig,
-            AnalyzerMode mode = AnalyzerMode::Default);
+            UserSettingsPointer pConfig);
     ~AnalyzerThread() override;
 
     operator bool() const {
@@ -79,7 +72,7 @@ class AnalyzerThread : public QThread {
 
     const mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
     const UserSettingsPointer m_pConfig;
-    const AnalyzerMode m_mode;
+    const bool m_withWaveform;
 
     /////////////////////////////////////////////////////////////////////////
     // Thread shared
