@@ -28,9 +28,9 @@ inline
 AnalyzerMode getAnalyzerMode(
         const UserSettingsPointer& pConfig) {
     if (pConfig->getValue<bool>(ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"), true)) {
-        return AnalyzerMode::WithWaveform;
+        return AnalyzerMode::WithBeats;
     } else {
-        return AnalyzerMode::WithoutWaveform;
+        return AnalyzerMode::WithBeatsWithoutWaveform;
     }
 }
 
@@ -42,7 +42,6 @@ AnalysisFeature::AnalysisFeature(
         LibraryFeature(parent),
         m_library(parent),
         m_pConfig(pConfig),
-        m_iOldBpmEnabled(0),
         m_analysisTitleName(tr("Analyze")),
         m_pAnalysisView(nullptr) {
     setTitleDefault();
@@ -123,12 +122,6 @@ void AnalysisFeature::activate() {
 
 void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
     if (!m_pAnalyzerQueue) {
-        // Save the old BPM detection prefs setting (on or off)
-        m_iOldBpmEnabled = m_pConfig->getValueString(ConfigKey("[BPM]","BPMDetectionEnabled")).toInt();
-        // Force BPM detection to be on.
-        m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(1));
-        // Note: this sucks... we should refactor the prefs/analyzer to fix this hacky bit ^^^^.
-
         m_pAnalyzerQueue = AnalyzerQueuePointer(
                 m_library,
                 kNumberOfAnalyzerThreads,
@@ -189,8 +182,6 @@ void AnalysisFeature::stopAnalysis() {
     //qDebug() << this << "stopAnalysis()";
     if (m_pAnalyzerQueue) {
         m_pAnalyzerQueue.reset();
-        // Restore old BPM detection setting for preferences...
-        m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(m_iOldBpmEnabled));
     }
     setTitleDefault();
     emit(analysisActive(false));

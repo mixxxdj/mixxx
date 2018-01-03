@@ -100,14 +100,15 @@ void AnalyzerThread::exec() {
     mixxx::DbConnectionPooler dbConnectionPooler;
 
     std::unique_ptr<AnalysisDao> pAnalysisDao;
-    if (m_mode != AnalyzerMode::WithoutWaveform) {
+    if (m_mode != AnalyzerMode::WithBeatsWithoutWaveform) {
         pAnalysisDao = std::make_unique<AnalysisDao>(m_pConfig);
         m_analyzers.push_back(std::make_unique<AnalyzerWaveform>(pAnalysisDao.get()));
     }
     m_analyzers.push_back(std::make_unique<AnalyzerGain>(m_pConfig));
     m_analyzers.push_back(std::make_unique<AnalyzerEbur128>(m_pConfig));
 #ifdef __VAMP__
-    m_analyzers.push_back(std::make_unique<AnalyzerBeats>(m_pConfig));
+    const bool enforceBpmDetection = m_mode != AnalyzerMode::Default;
+    m_analyzers.push_back(std::make_unique<AnalyzerBeats>(m_pConfig, enforceBpmDetection));
     m_analyzers.push_back(std::make_unique<AnalyzerKey>(m_pConfig));
 #endif
     DEBUG_ASSERT(!m_analyzers.empty());

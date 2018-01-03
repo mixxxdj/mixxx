@@ -20,9 +20,9 @@
 
 
 enum class AnalyzerMode {
-    WithWaveform,
-    WithoutWaveform,
-    Default = WithWaveform,
+    Default,
+    WithBeats,
+    WithBeatsWithoutWaveform,
 };
 
 enum class AnalyzerThreadState {
