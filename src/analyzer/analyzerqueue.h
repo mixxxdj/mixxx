@@ -42,7 +42,10 @@ class AnalyzerQueue : public QObject {
     void enqueueTrackId(TrackId trackId);
 
     // After enqueuing tracks the analysis must be resumed once.
+    // Resume must also be called after pausing the analysis.
     void resume();
+
+    void pause();
 
     // Cancels a running analysis and discards all enqueued tracks.
     void cancel();
@@ -92,6 +95,18 @@ class AnalyzerQueue : public QObject {
             m_track = std::move(track);
             m_threadIdle = false;
             m_thread->sendNextTrack(m_track);
+        }
+
+        void pauseThread() {
+            if (m_thread) {
+                m_thread->pause();
+            }
+        }
+
+        void resumeThread() {
+            if (m_thread) {
+                m_thread->resume();
+            }
         }
 
         void stopThread() {

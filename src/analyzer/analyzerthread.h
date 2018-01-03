@@ -71,6 +71,9 @@ class AnalyzerThread : public QThread {
         return m_id;
     }
 
+    void pause();
+    void resume();
+
     void stop();
 
     void sendNextTrack(const TrackPointer& nextTrack);
@@ -103,13 +106,14 @@ class AnalyzerThread : public QThread {
     // Thread shared
 
     std::atomic<bool> m_run;
+    std::atomic<bool> m_pause;
 
     ControlValueAtomic<TrackPointer> m_nextTrack;
 
     ControlValueAtomic<AnalyzerProgress> m_analyzerProgress;
 
-    std::mutex m_idleMutex;
-    std::condition_variable m_idleWaitCond;
+    std::mutex m_sleepMutex;
+    std::condition_variable m_sleepWaitCond;
 
     /////////////////////////////////////////////////////////////////////////
     // Thread local

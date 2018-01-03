@@ -51,6 +51,7 @@ AnalyzerThread::AnalyzerThread(
           m_pConfig(std::move(pConfig)),
           m_mode(mode),
           m_run(true),
+          m_pause(false),
           m_sampleBuffer(kAnalysisSamplesPerBlock),
           m_emittedState(AnalyzerThreadState::Void),
           // The first signal should always be emitted
@@ -199,20 +200,50 @@ void AnalyzerThread::exec() {
     m_analyzers.clear();
 }
 
+void AnalyzerThread::pause() {
+    kLogger.debug() << "Pause" << m_id;
+    m_pause.store(true);
+}
+
+void AnalyzerThread::resume() {
+    bool paused = true;
+    // Reset value: true -> false
+    if (m_pause.compare_exchange_strong(paused, false)) {
+        kLogger.debug() << "Resume" << m_id;
+        // The thread might just be preparing to pause after
+        // reading detecting that m_pause was true. To avoid
+        // a race condition we need to acquire the mutex that
+        // is associated with the wait condition, before
+        // signalling the condition. Otherwise the signal
+        // of the wait condition might arrive before the
+        // thread actually got suspended.
+        std::unique_lock<std::mutex> locked(m_sleepMutex);
+        m_sleepWaitCond.notify_one();
+    } else {
+        // Just in case, wake up the thread even if it wasn't
+        // explicitly paused without locking the mutex. The
+        // thread will suspend itself if it is idle.
+        m_sleepWaitCond.notify_one();
+    }
+}
+
 void AnalyzerThread::stop() {
-    kLogger.debug() << "Stopping" << m_id;
+    kLogger.debug() << "Stop" << m_id;
     m_run.store(false);
-    m_idleWaitCond.notify_one();
+    // Wake up the thread to make sure that the stop flag
+    // is detected and the thread commits suicide by exiting
+    // the run loop.
+    resume();
 }
 
 void AnalyzerThread::sendNextTrack(const TrackPointer& nextTrack) {
     DEBUG_ASSERT(!m_nextTrack.getValue());
     m_nextTrack.setValue(nextTrack);
-    m_idleWaitCond.notify_one();
+    m_sleepWaitCond.notify_one();
 }
 
 TrackPointer AnalyzerThread::recvNextTrack() {
-    std::unique_lock<std::mutex> locked(m_idleMutex);
+    std::unique_lock<std::mutex> locked(m_sleepMutex);
     while (true) {
         if (!m_run.load()) {
             return TrackPointer();
@@ -222,14 +253,14 @@ TrackPointer AnalyzerThread::recvNextTrack() {
             m_nextTrack.setValue(TrackPointer());
             return nextTrack;
         }
-        kLogger.debug() << "Suspending" << m_id;
+        kLogger.debug() << "Suspending while idle" << m_id;
         if (m_emittedState != AnalyzerThreadState::Idle) {
             // Only send the idle signal once when entering the
             // idle state from another state.
             emitProgress(AnalyzerThreadState::Idle);
         }
-        m_idleWaitCond.wait(locked) ;
-        kLogger.debug() << "Resuming" << m_id;
+        m_sleepWaitCond.wait(locked) ;
+        kLogger.debug() << "Resuming after idle" << m_id;
     }
     return TrackPointer();
 }
@@ -266,6 +297,18 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
 
         if (!m_run.load()) {
             return AnalysisResult::Cancelled;
+        }
+        while (m_pause.load()) {
+            std::unique_lock<std::mutex> locked(m_sleepMutex);
+            // To avoid a race condition we need to check the value
+            // of m_pause again after locking and just before suspending
+            // this thread. The atomic value might have been reset to
+            // to false in the meantime!
+            if (m_pause.load()) {
+                kLogger.debug() << "Suspending while paused" << m_id;
+                m_sleepWaitCond.wait(locked) ;
+                kLogger.debug() << "Resuming after paused" << m_id;
+            }
         }
 
         // 2nd: step: Analyze chunk of decoded audio data

@@ -144,15 +144,21 @@ void AnalyzerQueue::enqueueTrackId(TrackId trackId) {
     // of tracks with resume().
 }
 
+void AnalyzerQueue::pause() {
+    for (auto& worker: m_workers) {
+        worker.pauseThread();
+    }
+}
+
 void AnalyzerQueue::resume() {
     bool resumedIdleWorker = false;
     for (auto& worker: m_workers) {
         if (worker.threadIdle()) {
             if (resumeIdleWorker(&worker)) {
                 resumedIdleWorker = true;
-            } else {
-                break;
             }
+        } else {
+            worker.resumeThread();
         }
     }
     if (!resumedIdleWorker) {
