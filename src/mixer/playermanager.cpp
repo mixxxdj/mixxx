@@ -129,21 +129,21 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
     // analyzed.
     foreach(Deck* pDeck, m_decks) {
         connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue, SLOT(slotAnalyzeTrack(TrackPointer)));
+                this, SLOT(slotAnalyzeTrack(TrackPointer)));
     }
 
     // Connect the player to the analyzer queue so that loaded tracks are
     // analyzed.
     foreach(Sampler* pSampler, m_samplers) {
         connect(pSampler, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue, SLOT(slotAnalyzeTrack(TrackPointer)));
+                this, SLOT(slotAnalyzeTrack(TrackPointer)));
     }
 
     // Connect the player to the analyzer queue so that loaded tracks are
     // analyzed.
     foreach(PreviewDeck* pPreviewDeck, m_preview_decks) {
         connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue, SLOT(slotAnalyzeTrack(TrackPointer)));
+                this, SLOT(slotAnalyzeTrack(TrackPointer)));
     }
 }
 
@@ -362,7 +362,7 @@ void PlayerManager::addDeckInner() {
 
     if (m_pAnalyzerQueue) {
         connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue, SLOT(slotAnalyzeTrack(TrackPointer)));
+                this, SLOT(slotAnalyzeTrack(TrackPointer)));
     }
 
     m_players[group] = pDeck;
@@ -423,7 +423,7 @@ void PlayerManager::addSamplerInner() {
                                     m_pEffectsManager, orientation, group);
     if (m_pAnalyzerQueue) {
         connect(pSampler, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue, SLOT(slotAnalyzeTrack(TrackPointer)));
+                this, SLOT(slotAnalyzeTrack(TrackPointer)));
     }
 
     m_players[group] = pSampler;
@@ -451,7 +451,7 @@ void PlayerManager::addPreviewDeckInner() {
                                                 group);
     if (m_pAnalyzerQueue) {
         connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue, SLOT(slotAnalyzeTrack(TrackPointer)));
+                this, SLOT(slotAnalyzeTrack(TrackPointer)));
     }
 
     m_players[group] = pPreviewDeck;
@@ -612,6 +612,16 @@ void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack) {
             return;
         }
         ++it;
+    }
+}
+
+void PlayerManager::slotAnalyzeTrack(TrackPointer track) {
+    VERIFY_OR_DEBUG_ASSERT(track) {
+        return;
+    }
+    if (m_pAnalyzerQueue) {
+        m_pAnalyzerQueue->enqueueTrackId(track->getId());
+        m_pAnalyzerQueue->resume();
     }
 }
 

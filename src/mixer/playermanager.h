@@ -193,6 +193,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     void slotNumAuxiliariesControlChanged(double v);
 
   private slots:
+    void slotAnalyzeTrack(TrackPointer track);
     void slotTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
 
   signals:

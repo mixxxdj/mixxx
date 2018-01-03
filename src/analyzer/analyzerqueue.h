@@ -54,9 +54,6 @@ class AnalyzerQueue : public QObject {
     void empty(int finishedCount);
     void done();
 
-  public slots:
-    void slotAnalyzeTrack(TrackPointer track);
-
   private slots:
     void slotWorkerThreadProgress(int threadId, AnalyzerThreadState threadState, TrackId trackId);
 

@@ -130,15 +130,6 @@ void AnalyzerQueue::slotWorkerThreadProgress(int threadId, AnalyzerThreadState t
     DEBUG_ASSERT(!"Unhandled signal from worker thread");
 }
 
-void AnalyzerQueue::slotAnalyzeTrack(TrackPointer track) {
-    // This slot is called from the decks and and samplers when the track was loaded.
-    VERIFY_OR_DEBUG_ASSERT(track) {
-        return;
-    }
-    enqueueTrackId(track->getId());
-    resume();
-}
-
 void AnalyzerQueue::enqueueTrackId(TrackId trackId) {
     VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
         qWarning()
