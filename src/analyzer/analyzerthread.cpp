@@ -64,19 +64,13 @@ AnalyzerThread::AnalyzerThread(
 
 AnalyzerThread::~AnalyzerThread() {
     kLogger.debug() << "Destroying" << m_id;
-    if (!isFinished()) {
-        // NOTE(uklotzde, 2018-01-03): I was able to trigger the destruction
-        // of an unfinished worker thread once by starting and stopping batch
-        // analysis repeatedly while clicking the corresponding button in the
-        // analysis view at high frequency. Just log a warning message and see
-        // how often this will actually happen when not consciously abusing
-        // features.
+    VERIFY_OR_DEBUG_ASSERT(isFinished()) {
         kLogger.warning() << "Waiting for thread" << m_id << "to finish";
         stop();
         // The following operation will block the host thread!
         wait();
+        DEBUG_ASSERT(isFinished());
     }
-    DEBUG_ASSERT(isFinished());
 }
 
 void AnalyzerThread::run() {

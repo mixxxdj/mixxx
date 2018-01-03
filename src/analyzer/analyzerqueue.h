@@ -50,23 +50,26 @@ class AnalyzerQueue : public QObject {
     class Worker {
       public:
         explicit Worker(std::unique_ptr<AnalyzerThread> thread = std::unique_ptr<AnalyzerThread>())
-            : m_thread(std::move(thread)),
+            : m_thread(thread.get()),
               m_analyzerProgress(kAnalyzerProgressUnknown),
               m_threadIdle(false) {
+            connect(m_thread, SIGNAL(finished()), m_thread, SLOT(deleteLater()));
+            thread.release();
         }
         Worker(const Worker&) = delete;
         Worker(Worker&&) = default;
 
         operator bool() const {
-            return static_cast<bool>(m_thread);
+            return m_thread != nullptr;
         }
 
         AnalyzerThread* thread() const {
             DEBUG_ASSERT(m_thread);
-            return m_thread.get();
+            return m_thread;
         }
 
         bool threadIdle() const {
+            DEBUG_ASSERT(m_thread);
             return m_threadIdle;
         }
 
@@ -122,15 +125,13 @@ class AnalyzerQueue : public QObject {
 
         void recvThreadExit() {
             DEBUG_ASSERT(m_thread);
-            m_thread->deleteLater();
-            m_thread.release();
-            DEBUG_ASSERT(!m_thread);
+            m_thread = nullptr;
             m_analyzerProgress = kAnalyzerProgressUnknown;
             m_threadIdle = false;
         }
 
       private:
-        std::unique_ptr<AnalyzerThread> m_thread;
+        AnalyzerThread* m_thread;
         TrackPointer m_track;
         AnalyzerProgress m_analyzerProgress;
         bool m_threadIdle;
