@@ -34,7 +34,7 @@ class PlaylistFeature;
 class CrateFeature;
 class LibraryControl;
 class KeyboardEventFilter;
-class PlayerManagerInterface;
+class PlayerManager;
 
 class Library: public QObject,
     public virtual /*implements*/ TrackCacheEvictor {
@@ -48,7 +48,7 @@ class Library: public QObject,
     Library(QObject* parent,
             UserSettingsPointer pConfig,
             mixxx::DbConnectionPoolPtr pDbConnectionPool,
-            PlayerManagerInterface* pPlayerManager,
+            PlayerManager* pPlayerManager,
             RecordingManager* pRecordingManager);
     ~Library() override;
 

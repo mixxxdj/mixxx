@@ -26,17 +26,6 @@ class AnalyzerQueue : public QObject {
             AnalyzerMode mode = AnalyzerMode::Default);
     ~AnalyzerQueue() override = default;
 
-    // finishedCount() <= dequeuedCount() <= totalCount()
-    int finishedCount() const {
-        return m_finishedCount;
-    }
-    int dequeuedCount() const {
-        return m_dequeuedCount;
-    }
-    int totalCount() const {
-        return m_dequeuedCount + m_queuedTrackIds.size();
-    }
-
     // Enqueue tracks one by one. After all tracks have been enqueued
     // the caller must call resume() once.
     void enqueueTrackId(TrackId trackId);
@@ -54,7 +43,7 @@ class AnalyzerQueue : public QObject {
     // Progress for individual tracks is passed-through from the workers
     void trackProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
     void progress(AnalyzerProgress analyzerProgress, int currentCount, int totalCount);
-    void empty(int finishedCount);
+    void empty();
     void done();
 
   private slots:

@@ -123,7 +123,9 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
     m_pAnalyzerQueue = AnalyzerQueuePointer(pLibrary, kNumberOfAnalyzerThreads, m_pConfig);
 
     connect(m_pAnalyzerQueue, SIGNAL(trackProgress(TrackId, AnalyzerProgress)),
-            this, SLOT(slotTrackAnalyzerProgress(TrackId, AnalyzerProgress)));
+            this, SLOT(slotAnalyzerQueueTrackProgress(TrackId, AnalyzerProgress)));
+    connect(m_pAnalyzerQueue, SIGNAL(empty()),
+            this, SLOT(slotAnalyzerQueueEmpty()));
 
     // Connect the player to the analyzer queue so that loaded tracks are
     // analyzed.
@@ -622,9 +624,17 @@ void PlayerManager::slotAnalyzeTrack(TrackPointer track) {
     if (m_pAnalyzerQueue) {
         m_pAnalyzerQueue->enqueueTrackId(track->getId());
         m_pAnalyzerQueue->resume();
+        // The first progress signal will suspend a running batch analysis
+        // until all loaded tracks have been analyzed. Emit it once before
+        // any signals from the analyzer queue arrive.
+        emit trackAnalyzerProgress(track->getId(), kAnalyzerProgressUnknown);
     }
 }
 
-void PlayerManager::slotTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress) {
-    emit(trackAnalyzerProgress(trackId, analyzerProgress));
+void PlayerManager::slotAnalyzerQueueTrackProgress(TrackId trackId, AnalyzerProgress analyzerProgress) {
+    emit trackAnalyzerProgress(trackId, analyzerProgress);
+}
+
+void PlayerManager::slotAnalyzerQueueEmpty() {
+    emit trackAnalyzerIdle();
 }

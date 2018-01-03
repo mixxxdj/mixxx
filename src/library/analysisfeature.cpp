@@ -139,8 +139,8 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
                 m_pAnalysisView, SLOT(slotAnalyzerQueueProgress(AnalyzerProgress, int, int)));
         connect(m_pAnalyzerQueue, SIGNAL(progress(AnalyzerProgress, int, int)),
                 this, SLOT(slotAnalyzerQueueProgress(AnalyzerProgress, int, int)));
-        connect(m_pAnalyzerQueue, SIGNAL(empty(int)),
-                this, SLOT(slotAnalyzerQueueEmpty(int)));
+        connect(m_pAnalyzerQueue, SIGNAL(empty()),
+                this, SLOT(slotAnalyzerQueueEmpty()));
         connect(m_pAnalyzerQueue, SIGNAL(done()),
                 this, SLOT(slotAnalyzerQueueDone()));
 
@@ -166,7 +166,7 @@ void AnalysisFeature::slotAnalyzerQueueProgress(
     }
 }
 
-void AnalysisFeature::slotAnalyzerQueueEmpty(int /*finishedCount*/) {
+void AnalysisFeature::slotAnalyzerQueueEmpty() {
     m_pAnalyzerQueue->cancel();
 }
 
@@ -176,6 +176,18 @@ void AnalysisFeature::slotAnalyzerQueueDone() {
     }
     setTitleDefault();
     emit(analysisActive(false));
+}
+
+void AnalysisFeature::slotPauseAnalysis() {
+    if (m_pAnalyzerQueue) {
+        m_pAnalyzerQueue->pause();
+    }
+}
+
+void AnalysisFeature::slotResumeAnalysis() {
+    if (m_pAnalyzerQueue) {
+        m_pAnalyzerQueue->resume();
+    }
 }
 
 void AnalysisFeature::stopAnalysis() {

@@ -89,13 +89,18 @@ void AnalyzerQueue::emitProgress() {
         inProgressCount = 0;
         analyzerProgress = kAnalyzerProgressUnknown;
     }
-    emit(progress(
+    // (m_finishedCount + inProgressCount) might exceed m_dequeuedCount
+    // in some situations due to race conditions! The minimum of those
+    // values is an appropriate choice for displaying progress.
+    const int currentCount =
+            math_min(m_finishedCount + inProgressCount, m_dequeuedCount);
+    const int totalCount =
+            m_dequeuedCount + m_queuedTrackIds.size();
+    DEBUG_ASSERT(currentCount <= totalCount);
+    emit progress(
             analyzerProgress,
-            // (m_finishedCount + inProgressCount) might exceed m_dequeuedCount
-            // in some situations due to race conditions! The minimum of those
-            // values is an appropriate choice for displaying progress.
-            math_min(m_finishedCount + inProgressCount, m_dequeuedCount),
-            totalCount()));
+            currentCount,
+            totalCount);
 }
 
 void AnalyzerQueue::slotWorkerThreadProgress(int threadId, AnalyzerThreadState threadState, TrackId trackId) {
@@ -106,13 +111,13 @@ void AnalyzerQueue::slotWorkerThreadProgress(int threadId, AnalyzerThreadState t
         resumeIdleWorker(&worker);
         return;
     case AnalyzerThreadState::Busy:
-        emit(trackProgress(trackId, worker.recvAnalyzerProgress(trackId)));
+        emit trackProgress(trackId, worker.recvAnalyzerProgress(trackId));
         emitProgress();
         return;
     case AnalyzerThreadState::Done:
         ++m_finishedCount;
         DEBUG_ASSERT(m_finishedCount <= m_dequeuedCount);
-        emit(trackProgress(trackId, worker.recvAnalyzerProgress(trackId)));
+        emit trackProgress(trackId, worker.recvAnalyzerProgress(trackId));
         emitProgress();
         return;
     case AnalyzerThreadState::Void:
@@ -124,7 +129,7 @@ void AnalyzerQueue::slotWorkerThreadProgress(int threadId, AnalyzerThreadState t
                 return;
             }
         }
-        emit(done());
+        emit done();
         return;
     }
     DEBUG_ASSERT(!"Unhandled signal from worker thread");
@@ -189,7 +194,7 @@ bool AnalyzerQueue::resumeIdleWorker(Worker* worker) {
     emitProgress();
     DEBUG_ASSERT(m_finishedCount <= m_dequeuedCount);
     if (m_finishedCount == m_dequeuedCount) {
-        emit(empty(m_finishedCount));
+        emit empty();
     }
     return false;
 }

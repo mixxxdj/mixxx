@@ -194,7 +194,9 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
   private slots:
     void slotAnalyzeTrack(TrackPointer track);
-    void slotTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
+
+    void slotAnalyzerQueueTrackProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
+    void slotAnalyzerQueueEmpty();
 
   signals:
     void loadLocationToPlayer(QString location, QString group);
@@ -215,6 +217,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     void numberOfDecksChanged(int decks);
 
     void trackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
+    void trackAnalyzerIdle();
 
   private:
     TrackPointer lookupTrack(QString location);
