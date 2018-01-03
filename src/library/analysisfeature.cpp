@@ -171,6 +171,11 @@ void AnalysisFeature::slotAnalyzerQueueEmpty() {
 }
 
 void AnalysisFeature::slotAnalyzerQueueDone() {
+    // Free resources by abandoning the queue after the batch analyis
+    // has completed. Batch analysis are not started very frequently
+    // during a session and should be avoided while performing live.
+    // If the user decides to start a new batch analysis the setup costs
+    // for creating the queue with its worker threads are acceptable.
     if (m_pAnalyzerQueue) {
         m_pAnalyzerQueue.reset();
     }
