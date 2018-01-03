@@ -54,6 +54,10 @@ AnalyzerQueue::AnalyzerQueue(
     }
 }
 
+AnalyzerQueue::~AnalyzerQueue() {
+    kLogger.debug() << "Destroying";
+}
+
 void AnalyzerQueue::emitProgress() {
     const auto now = Clock::now();
     // If all enqueued tracks have been finished the signal is
@@ -106,6 +110,8 @@ void AnalyzerQueue::emitProgress() {
 void AnalyzerQueue::slotWorkerThreadProgress(int threadId, AnalyzerThreadState threadState, TrackId trackId) {
     auto& worker = m_workers.at(threadId);
     switch (threadState) {
+    case AnalyzerThreadState::Void:
+        break;
     case AnalyzerThreadState::Idle:
         worker.recvThreadIdle();
         resumeIdleWorker(&worker);
@@ -120,16 +126,16 @@ void AnalyzerQueue::slotWorkerThreadProgress(int threadId, AnalyzerThreadState t
         emit trackProgress(trackId, worker.recvAnalyzerProgress(trackId));
         emitProgress();
         return;
-    case AnalyzerThreadState::Void:
+    case AnalyzerThreadState::Exit:
         worker.recvThreadExit();
+        DEBUG_ASSERT(!worker);
         for (const auto& worker: m_workers) {
             if (worker) {
-                // At least one thread is left
+                // At least one thread has not exited yet
                 emitProgress();
                 return;
             }
         }
-        emit done();
         return;
     }
     DEBUG_ASSERT(!"Unhandled signal from worker thread");
@@ -199,7 +205,7 @@ bool AnalyzerQueue::resumeIdleWorker(Worker* worker) {
     return false;
 }
 
-void AnalyzerQueue::cancel() {
+void AnalyzerQueue::stop() {
     for (auto& worker: m_workers) {
         worker.stopThread();
     }
@@ -221,11 +227,10 @@ TrackPointer AnalyzerQueue::loadTrackById(TrackId trackId) {
 
 void AnalyzerQueuePointer::reset() {
     if (m_impl) {
-        m_impl->cancel();
-        // Avoid blocking the event loop on the worker thread's destructors!
-        m_impl->deleteLater();
-        // Release ownership
-        m_impl.release();
+        // Trigger stop
+        m_impl->stop();
+        // Release ownership and let Qt delete the queue later
+        m_impl.release()->deleteLater();
         DEBUG_ASSERT(!m_impl);
     }
 }

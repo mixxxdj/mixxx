@@ -30,6 +30,7 @@ enum class AnalyzerThreadState {
     Idle,
     Busy,
     Done,
+    Exit,
 };
 
 Q_DECLARE_TYPEINFO(AnalyzerThreadState, Q_MOVABLE_TYPE);

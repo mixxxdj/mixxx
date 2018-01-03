@@ -95,7 +95,7 @@ void AnalyzerThread::run() {
 
     m_run.store(false);
 
-    emitProgress(AnalyzerThreadState::Void);
+    emitProgress(AnalyzerThreadState::Exit);
 }
 
 void AnalyzerThread::exec() {

@@ -141,8 +141,6 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
                 this, SLOT(slotAnalyzerQueueProgress(AnalyzerProgress, int, int)));
         connect(m_pAnalyzerQueue, SIGNAL(empty()),
                 this, SLOT(slotAnalyzerQueueEmpty()));
-        connect(m_pAnalyzerQueue, SIGNAL(done()),
-                this, SLOT(slotAnalyzerQueueDone()));
 
         emit(analysisActive(true));
     }
@@ -167,20 +165,12 @@ void AnalysisFeature::slotAnalyzerQueueProgress(
 }
 
 void AnalysisFeature::slotAnalyzerQueueEmpty() {
-    m_pAnalyzerQueue->cancel();
-}
-
-void AnalysisFeature::slotAnalyzerQueueDone() {
     // Free resources by abandoning the queue after the batch analyis
     // has completed. Batch analysis are not started very frequently
     // during a session and should be avoided while performing live.
     // If the user decides to start a new batch analysis the setup costs
     // for creating the queue with its worker threads are acceptable.
-    if (m_pAnalyzerQueue) {
-        m_pAnalyzerQueue.reset();
-    }
-    setTitleDefault();
-    emit(analysisActive(false));
+    stopAnalysis();
 }
 
 void AnalysisFeature::slotPauseAnalysis() {
@@ -198,8 +188,10 @@ void AnalysisFeature::slotResumeAnalysis() {
 void AnalysisFeature::stopAnalysis() {
     //qDebug() << this << "stopAnalysis()";
     if (m_pAnalyzerQueue) {
-        m_pAnalyzerQueue->cancel();
+        m_pAnalyzerQueue.reset();
     }
+    setTitleDefault();
+    emit(analysisActive(false));
 }
 
 bool AnalysisFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {

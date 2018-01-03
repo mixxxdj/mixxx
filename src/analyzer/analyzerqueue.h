@@ -10,6 +10,7 @@
 
 // forward declaration(s)
 class Library;
+class AnalyzerQueuePointer;
 
 class AnalyzerQueue : public QObject {
     Q_OBJECT
@@ -24,7 +25,7 @@ class AnalyzerQueue : public QObject {
             int numWorkerThreads,
             const UserSettingsPointer& pConfig,
             AnalyzerMode mode = AnalyzerMode::Default);
-    ~AnalyzerQueue() override = default;
+    ~AnalyzerQueue() override;
 
     // Enqueue tracks one by one. After all tracks have been enqueued
     // the caller must call resume() once.
@@ -36,15 +37,11 @@ class AnalyzerQueue : public QObject {
 
     void pause();
 
-    // Cancels a running analysis and discards all enqueued tracks.
-    void cancel();
-
   signals:
     // Progress for individual tracks is passed-through from the workers
     void trackProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
     void progress(AnalyzerProgress analyzerProgress, int currentCount, int totalCount);
     void empty();
-    void done();
 
   private slots:
     void slotWorkerThreadProgress(int threadId, AnalyzerThreadState threadState, TrackId trackId);
@@ -146,6 +143,10 @@ class AnalyzerQueue : public QObject {
     bool hasUnfinishedTracks() const {
         return !m_queuedTrackIds.empty() || (m_finishedCount < m_dequeuedCount);
     }
+
+    // Stops a running analysis and discards all enqueued tracks.
+    friend class AnalyzerQueuePointer;
+    void stop();
 
     Library* m_library;
 
