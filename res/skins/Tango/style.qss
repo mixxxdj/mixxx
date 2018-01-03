@@ -2161,19 +2161,22 @@ QScrollBar:horizontal {
 /* splitters between treeview and library table */
 #LibrarySplitter::handle:horizontal {
   image: url(skin:/graphics/splitterHori_handle.png);
-  width: 4px;
+  width: 6px;
   }
   #LibrarySplitter::handle:horizontal:hover,
   #LibrarySplitter::handle:horizontal:pressed {
     image: url(skin:/graphics/splitterHori_handle_pressed.png);
   }
   /* splitter between coverArt and tree view */
-  #LibrarySplitter::handle:vertical {
-    height: 4px;
+  #LibrarySplitter::handle:vertical,
+  #WaveformSplitter::handle:vertical {
+    height: 6px;
     image: url(skin:/graphics/splitterVert_handle.png);
     }
     #LibrarySplitter::handle:vertical:hover,
-    #LibrarySplitter::handle:vertical:pressed {
+    #LibrarySplitter::handle:vertical:pressed,
+    #WaveformSplitter::handle:vertical:hover,
+    #WaveformSplitter::handle:vertical:pressed {
       image: url(skin:/graphics/splitterVert_handle_pressed.png);
     }
 
