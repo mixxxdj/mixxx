@@ -189,6 +189,8 @@ void AnalysisFeature::stopAnalysis() {
     //qDebug() << this << "stopAnalysis()";
     if (m_pAnalyzerQueue) {
         m_pAnalyzerQueue.reset();
+        // Restore old BPM detection setting for preferences...
+        m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(m_iOldBpmEnabled));
     }
     setTitleDefault();
     emit(analysisActive(false));
