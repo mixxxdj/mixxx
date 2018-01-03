@@ -50,7 +50,7 @@ class AnalyzerQueue : public QObject {
   signals:
     // Progress for individual tracks is passed-through from the workers
     void trackProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
-    void progress(AnalyzerProgress analyzerProgress, int dequeuedCount, int totalCount);
+    void progress(AnalyzerProgress analyzerProgress, int currentCount, int totalCount);
     void empty(int finishedCount);
     void done();
 

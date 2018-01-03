@@ -74,15 +74,27 @@ void AnalyzerQueue::emitProgress() {
             ++analyzerProgressCount;
         }
     }
-    AnalyzerProgress analyzerProgressAvg;
+    // The following algorithm/heuristic shows the user a simple and
+    // almost linear progress display when multiple threads are running
+    // in parallel. It also covers the expected behavior for the single-
+    // threaded case.
+    int inProgressCount;
+    AnalyzerProgress analyzerProgress;
     if (analyzerProgressCount > 0) {
-        analyzerProgressAvg = analyzerProgressSum / analyzerProgressCount;
+        DEBUG_ASSERT(kAnalyzerProgressNone == 0);
+        DEBUG_ASSERT(kAnalyzerProgressDone == 1);
+        inProgressCount = math_max(1, int(std::ceil(analyzerProgressSum)));
+        analyzerProgress = analyzerProgressSum - std::floor(analyzerProgressSum);
     } else {
-        analyzerProgressAvg = kAnalyzerProgressUnknown;
+        inProgressCount = 0;
+        analyzerProgress = kAnalyzerProgressUnknown;
     }
     emit(progress(
-            analyzerProgressAvg,
-            m_dequeuedCount,
+            analyzerProgress,
+            // (m_finishedCount + inProgressCount) might exceed m_dequeuedCount
+            // in some situations due to race conditions! The minimum of those
+            // values is an appropriate choice for displaying progress.
+            math_min(m_finishedCount + inProgressCount, m_dequeuedCount),
             totalCount()));
 }
 
