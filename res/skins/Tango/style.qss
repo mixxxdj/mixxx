@@ -1181,19 +1181,19 @@ WBeatSpinBox {
   }
 
 #QuickFxEnableButton {
-  margin: 5px 0px 5px 0px;
+  margin: 5px 0px;
+  background-color: #585858;
   }
   #QuickFxEnableButton[displayValue="0"] {
-    background-color: #585858;
     }
   #QuickFxEnableButton[displayValue="0"]:hover {
     border: 1px solid #ff8f00;
     }
   #QuickFxEnableButton[displayValue="1"] {
-    background-color: #ff8f00;
+    border: 1px solid #ff8f00;
     }
   #QuickFxEnableButton[displayValue="1"]:hover {
-    border: 1px solid #fff;
+    border: 1px solid #eeeeee;
   }
 
   #QuickFxEnableUnderlay[displayValue="0"] {
