@@ -50,8 +50,8 @@ AnalyzerThread::AnalyzerThread(
           m_pDbConnectionPool(std::move(pDbConnectionPool)),
           m_pConfig(std::move(pConfig)),
           m_mode(mode),
-          m_run(true),
           m_pause(false),
+          m_stop(false),
           m_sampleBuffer(kAnalysisSamplesPerBlock),
           m_emittedState(AnalyzerThreadState::Void),
           // The first signal should always be emitted
@@ -80,7 +80,7 @@ AnalyzerThread::~AnalyzerThread() {
 }
 
 void AnalyzerThread::run() {
-    if (!m_run.load()) {
+    if (readStopped()) {
         return;
     }
 
@@ -93,7 +93,7 @@ void AnalyzerThread::run() {
 
     kLogger.debug() << "Exiting" << m_id;
 
-    m_run.store(false);
+    m_stop.store(true);
 
     emitProgress(AnalyzerThreadState::Exit);
 }
@@ -137,7 +137,7 @@ void AnalyzerThread::exec() {
     mixxx::AudioSource::OpenParams openParams;
     openParams.setChannelCount(kAnalysisChannels);
 
-    while (m_run.load()) {
+    while (!readStopped()) {
         TrackPointer track = recvNextTrack();
         if (!track) {
             break;
@@ -195,7 +195,7 @@ void AnalyzerThread::exec() {
             emitDoneProgress(track, kAnalyzerProgressDone);
         }
     }
-    DEBUG_ASSERT(!m_run.load());
+    DEBUG_ASSERT(readStopped());
 
     m_analyzers.clear();
 }
@@ -229,7 +229,7 @@ void AnalyzerThread::resume() {
 
 void AnalyzerThread::stop() {
     kLogger.debug() << "Stop" << m_id;
-    m_run.store(false);
+    m_stop.store(true);
     // Wake up the thread to make sure that the stop flag
     // is detected and the thread commits suicide by exiting
     // the run loop.
@@ -245,7 +245,7 @@ void AnalyzerThread::sendNextTrack(const TrackPointer& nextTrack) {
 TrackPointer AnalyzerThread::recvNextTrack() {
     std::unique_lock<std::mutex> locked(m_sleepMutex);
     while (true) {
-        if (!m_run.load()) {
+        if (readStopped()) {
             return TrackPointer();
         }
         TrackPointer nextTrack = m_nextTrack.getValue();
@@ -265,6 +265,21 @@ TrackPointer AnalyzerThread::recvNextTrack() {
     return TrackPointer();
 }
 
+void AnalyzerThread::recvPaused() {
+    while (m_pause.load()) {
+        std::unique_lock<std::mutex> locked(m_sleepMutex);
+        // To avoid a race condition we need to check the value
+        // of m_pause again after locking and just before suspending
+        // this thread. The atomic value might have been reset to
+        // to false in the meantime!
+        if (m_pause.load()) {
+            kLogger.debug() << "Suspending while paused" << m_id;
+            m_sleepWaitCond.wait(locked) ;
+            kLogger.debug() << "Resuming after paused" << m_id;
+        }
+    }
+}
+
 AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         const TrackPointer& track,
         const mixxx::AudioSourcePointer& audioSource) {
@@ -280,8 +295,10 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
     mixxx::IndexRange remainingFrames = audioSource->frameIndexRange();
     auto result = remainingFrames.empty() ? AnalysisResult::Complete : AnalysisResult::Pending;
     while (result == AnalysisResult::Pending) {
-        if (!m_run.load()) {
+        if (readStopped()) {
             return AnalysisResult::Cancelled;
+        } else {
+            recvPaused();
         }
 
         // 1st step: Decode next chunk of audio data
@@ -295,20 +312,10 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
                                 inputFrameIndexRange,
                                 mixxx::SampleBuffer::WritableSlice(m_sampleBuffer)));
 
-        if (!m_run.load()) {
+        if (readStopped()) {
             return AnalysisResult::Cancelled;
-        }
-        while (m_pause.load()) {
-            std::unique_lock<std::mutex> locked(m_sleepMutex);
-            // To avoid a race condition we need to check the value
-            // of m_pause again after locking and just before suspending
-            // this thread. The atomic value might have been reset to
-            // to false in the meantime!
-            if (m_pause.load()) {
-                kLogger.debug() << "Suspending while paused" << m_id;
-                m_sleepWaitCond.wait(locked) ;
-                kLogger.debug() << "Resuming after paused" << m_id;
-            }
+        } else {
+            recvPaused();
         }
 
         // 2nd: step: Analyze chunk of decoded audio data
@@ -336,10 +343,6 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
                         << ", actual frames =" << readableSampleFrames.frameIndexRange();
                 result = AnalysisResult::Partial;
             }
-        }
-
-        if (!m_run.load()) {
-            return AnalysisResult::Cancelled;
         }
 
         // 3rd step: Update & emit progress

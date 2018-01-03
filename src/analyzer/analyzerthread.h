@@ -65,7 +65,7 @@ class AnalyzerThread : public QThread {
     ~AnalyzerThread() override;
 
     operator bool() const {
-        return m_run.load();
+        return !readStopped();
     }
 
     int id() const {
@@ -106,8 +106,8 @@ class AnalyzerThread : public QThread {
     /////////////////////////////////////////////////////////////////////////
     // Thread shared
 
-    std::atomic<bool> m_run;
     std::atomic<bool> m_pause;
+    std::atomic<bool> m_stop;
 
     ControlValueAtomic<TrackPointer> m_nextTrack;
 
@@ -142,6 +142,11 @@ class AnalyzerThread : public QThread {
     void exec();
 
     TrackPointer recvNextTrack(); // blocking
+    void recvPaused(); // blocking
+
+    bool readStopped() const {
+        return m_stop.load();
+    }
 
     // Conditional emitting of progress() signal
     void emitBusyProgress(const TrackPointer& track, AnalyzerProgress busyProgress);
