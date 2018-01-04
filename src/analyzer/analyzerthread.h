@@ -77,8 +77,14 @@ class AnalyzerThread : public QThread {
 
     void stop();
 
+    // Transmits the next track to the worker thread without
+    // blocking. This is only allowed after a progress() signal
+    // with state Idle has been received to avoid overwriting
+    // a previously sent track that has not been received by the
+    // worker thread, yet.
     void sendNextTrack(const TrackPointer& nextTrack);
 
+    // Non-blocking atomic read of the current analyzer progress
     AnalyzerProgress readAnalyzerProgress() const {
         return m_analyzerProgress.getValue();
     }
@@ -95,7 +101,7 @@ class AnalyzerThread : public QThread {
 
   private:
     /////////////////////////////////////////////////////////////////////////
-    // Immutable
+    // Immutable values and pointers (objects are thread-safe)
 
     const int m_id;
 
@@ -104,7 +110,8 @@ class AnalyzerThread : public QThread {
     const AnalyzerMode m_mode;
 
     /////////////////////////////////////////////////////////////////////////
-    // Thread shared
+    // Thread-safe atomic values and synchronization primitives that
+    // control execution of the internal event loop in exec()
 
     std::atomic<bool> m_pause;
     std::atomic<bool> m_stop;
@@ -117,7 +124,8 @@ class AnalyzerThread : public QThread {
     std::condition_variable m_sleepWaitCond;
 
     /////////////////////////////////////////////////////////////////////////
-    // Thread local
+    // Thread local: Only used in the constructor/destructor and within
+    // run() by the worker thread.
 
     typedef std::unique_ptr<Analyzer> AnalyzerPtr;
     std::vector<AnalyzerPtr> m_analyzers;
@@ -139,20 +147,27 @@ class AnalyzerThread : public QThread {
             const TrackPointer& track,
             const mixxx::AudioSourcePointer& audioSource);
 
+    // The internal event loop. Not to be confused with the
+    // Qt event loop since the worker thread doesn't has one!
     void exec();
 
-    TrackPointer recvNextTrack(); // blocking
-    void recvPaused(); // blocking
+    // Blocks the worker thread until a next track becomes available
+    TrackPointer receiveNextTrack();
 
+    // Blocks the worker thread while the pause flag is set
+    void receivePaused();
+
+    // Non-blocking atomic read of the stop flag
     bool readStopped() const {
         return m_stop.load();
     }
 
-    // Conditional emitting of progress() signal
+    // Conditionally emit a progress() signal while busy (frequency is limited)
     void emitBusyProgress(const TrackPointer& track, AnalyzerProgress busyProgress);
 
-    // Unconditional emitting of progress() signal
+    // Unconditionally emits a progress() signal when done
     void emitDoneProgress(const TrackPointer& track, AnalyzerProgress doneProgress);
 
+    // Unconditionally emits any kind of progress() signal
     void emitProgress(AnalyzerThreadState state, const TrackPointer& track = TrackPointer());
 };

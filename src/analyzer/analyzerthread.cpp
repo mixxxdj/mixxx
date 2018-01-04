@@ -133,7 +133,7 @@ void AnalyzerThread::exec() {
     openParams.setChannelCount(kAnalysisChannels);
 
     while (!readStopped()) {
-        TrackPointer track = recvNextTrack();
+        TrackPointer track = receiveNextTrack();
         if (!track) {
             break;
         }
@@ -237,7 +237,7 @@ void AnalyzerThread::sendNextTrack(const TrackPointer& nextTrack) {
     m_sleepWaitCond.notify_one();
 }
 
-TrackPointer AnalyzerThread::recvNextTrack() {
+TrackPointer AnalyzerThread::receiveNextTrack() {
     std::unique_lock<std::mutex> locked(m_sleepMutex);
     while (true) {
         if (readStopped()) {
@@ -260,7 +260,7 @@ TrackPointer AnalyzerThread::recvNextTrack() {
     return TrackPointer();
 }
 
-void AnalyzerThread::recvPaused() {
+void AnalyzerThread::receivePaused() {
     while (m_pause.load()) {
         std::unique_lock<std::mutex> locked(m_sleepMutex);
         // To avoid a race condition we need to check the value
@@ -293,7 +293,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         if (readStopped()) {
             return AnalysisResult::Cancelled;
         } else {
-            recvPaused();
+            receivePaused();
         }
 
         // 1st step: Decode next chunk of audio data
@@ -310,7 +310,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         if (readStopped()) {
             return AnalysisResult::Cancelled;
         } else {
-            recvPaused();
+            receivePaused();
         }
 
         // 2nd: step: Analyze chunk of decoded audio data

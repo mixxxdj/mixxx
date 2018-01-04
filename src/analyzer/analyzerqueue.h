@@ -104,7 +104,7 @@ class AnalyzerQueue : public QObject {
             }
         }
 
-        void recvThreadIdle() {
+        void receiveThreadIdle() {
             DEBUG_ASSERT(m_thread);
             DEBUG_ASSERT(!m_threadIdle);
             m_track.reset();
@@ -112,7 +112,7 @@ class AnalyzerQueue : public QObject {
             m_threadIdle = true;
         }
 
-        AnalyzerProgress recvAnalyzerProgress(TrackId trackId) {
+        AnalyzerProgress receiveAnalyzerProgress(TrackId trackId) {
             DEBUG_ASSERT(m_thread);
             DEBUG_ASSERT(m_track);
             DEBUG_ASSERT(m_track->getId() == trackId);
@@ -123,7 +123,7 @@ class AnalyzerQueue : public QObject {
             return m_analyzerProgress;
         }
 
-        void recvThreadExit() {
+        void receiveThreadExit() {
             DEBUG_ASSERT(m_thread);
             m_thread = nullptr;
             m_analyzerProgress = kAnalyzerProgressUnknown;

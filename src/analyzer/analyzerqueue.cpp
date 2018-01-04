@@ -113,21 +113,21 @@ void AnalyzerQueue::slotWorkerThreadProgress(int threadId, AnalyzerThreadState t
     case AnalyzerThreadState::Void:
         break;
     case AnalyzerThreadState::Idle:
-        worker.recvThreadIdle();
+        worker.receiveThreadIdle();
         resumeIdleWorker(&worker);
         return;
     case AnalyzerThreadState::Busy:
-        emit trackProgress(trackId, worker.recvAnalyzerProgress(trackId));
+        emit trackProgress(trackId, worker.receiveAnalyzerProgress(trackId));
         emitProgress();
         return;
     case AnalyzerThreadState::Done:
         ++m_finishedCount;
         DEBUG_ASSERT(m_finishedCount <= m_dequeuedCount);
-        emit trackProgress(trackId, worker.recvAnalyzerProgress(trackId));
+        emit trackProgress(trackId, worker.receiveAnalyzerProgress(trackId));
         emitProgress();
         return;
     case AnalyzerThreadState::Exit:
-        worker.recvThreadExit();
+        worker.receiveThreadExit();
         DEBUG_ASSERT(!worker);
         for (const auto& worker: m_workers) {
             if (worker) {
