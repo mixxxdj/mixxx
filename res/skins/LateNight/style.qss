@@ -1072,7 +1072,7 @@ border: 0px;
 
 #SamplerVU {
   padding: 0px 5px 0px 5px;
-  qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+  qproperty-layoutAlignment: 'AlignCenter';
   border: 1px solid #585858;
   border-top: 0px;
   border-bottom: 0px;
@@ -1080,7 +1080,7 @@ border: 0px;
 }
 
 #SamplerPitch {
-  padding: 0px 5px 0px 5px;
+  padding: 0px 3px 1px 3px;
   qproperty-layoutAlignment: 'AlignRight | AlignBottom';
 }
 
@@ -1096,7 +1096,7 @@ border: 0px;
 }
 
 #SamplerButtons {
-  padding: 5px;
+  padding: 3px 1px 0px 3px;
   qproperty-layoutAlignment: 'AlignCenter';
 }
 
