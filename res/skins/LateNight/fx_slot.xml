@@ -10,7 +10,7 @@
   <SetVariable name="FxRack_FxUnit">[EffectRack1_EffectUnit<Variable name="FxUnit"/>]</SetVariable>
 
   <WidgetGroup>
-    <SizePolicy>me,me</SizePolicy>
+    <Size>-1me,52f</Size>
     <Layout>stacked</Layout>
     <Children>
 
