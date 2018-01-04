@@ -136,7 +136,7 @@
 						                <ButtonState>LeftButton</ButtonState>
 						            </Connection>
 						            <Connection>
-						                <ConfigKey>[Sampler<Variable name="samplernum"/>],start_stop</ConfigKey>
+						                <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_default</ConfigKey>
 						                <ButtonState>RightButton</ButtonState>
 						            </Connection>
 						            <Connection>

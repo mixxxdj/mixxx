@@ -56,28 +56,26 @@
 				</Connection>
 			</PushButton>
 
-			<PushButton>
-				<TooltipId>microphone_talkover</TooltipId>
-				<Style></Style>
-				<NumberStates>2</NumberStates>
+           <PushButton>
+			    <TooltipId></TooltipId>
+			    <Style></Style>
+			    <NumberStates>2</NumberStates>
 				<State>
 					<Number>0</Number>
 					<Pressed>btn_aux_mute_overdown.png</Pressed>
-					<Unpressed>btn_aux_mute.png</Unpressed>
-				</State>
+					<Unpressed>btn_aux_mute_over.png</Unpressed>
+				</State>				
 				<State>
 					<Number>1</Number>
 					<Pressed>btn_aux_mute_overdown.png</Pressed>
-					<Unpressed>btn_aux_mute_over.png</Unpressed>
+					<Unpressed>btn_aux_mute.png</Unpressed>
 				</State>
 				<Pos>5,35</Pos>
-				<Connection>
-					<ConfigKey>[Microphone<Variable name="micnum"/>],talkover</ConfigKey>
-					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-					<ButtonState>LeftButton</ButtonState>
-				</Connection>
-			</PushButton>
-
+			    <Connection>
+				    <ConfigKey>[Auxiliary<Variable name="auxnum"/>],mute</ConfigKey>
+				    <ButtonState>LeftButton</ButtonState>
+			    </Connection>
+		    </PushButton>
 
 		    <!--
 			**********************************************
@@ -121,15 +119,15 @@
 				</State>
 				<Pos>53,14</Pos>
 				<Connection>
-	                <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_gotoandplay</ConfigKey>
+	                <ConfigKey>[Sampler<Variable name="samplernum1"/>],cue_gotoandplay</ConfigKey>
 	                <ButtonState>LeftButton</ButtonState>
 	            </Connection>
 	            <Connection>
-	                <ConfigKey>[Sampler<Variable name="samplernum"/>],start_stop</ConfigKey>
+	                <ConfigKey>[Sampler<Variable name="samplernum1"/>],cue_default</ConfigKey>
 	                <ButtonState>RightButton</ButtonState>
 	            </Connection>
 	            <Connection>
-	                <ConfigKey>[Sampler<Variable name="samplernum"/>],play_indicator</ConfigKey>
+	                <ConfigKey>[Sampler<Variable name="samplernum1"/>],play_indicator</ConfigKey>
 	            </Connection>
 			</PushButton>	
 
@@ -150,15 +148,15 @@
 				</State>
 				<Pos>74,14</Pos>
 				<Connection>
-	                <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_gotoandplay</ConfigKey>
+	                <ConfigKey>[Sampler<Variable name="samplernum2"/>],cue_gotoandplay</ConfigKey>
 	                <ButtonState>LeftButton</ButtonState>
 	            </Connection>
 	            <Connection>
-	                <ConfigKey>[Sampler<Variable name="samplernum"/>],start_stop</ConfigKey>
+	                <ConfigKey>[Sampler<Variable name="samplernum2"/>],cue_default</ConfigKey>
 	                <ButtonState>RightButton</ButtonState>
 	            </Connection>
 	            <Connection>
-	                <ConfigKey>[Sampler<Variable name="samplernum"/>],play_indicator</ConfigKey>
+	                <ConfigKey>[Sampler<Variable name="samplernum2"/>],play_indicator</ConfigKey>
 	            </Connection>
 			</PushButton>	
 
@@ -179,15 +177,15 @@
 				</State>
 				<Pos>53,35</Pos>
 				<Connection>
-	                <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_gotoandplay</ConfigKey>
+	                <ConfigKey>[Sampler<Variable name="samplernum3"/>],cue_gotoandplay</ConfigKey>
 	                <ButtonState>LeftButton</ButtonState>
 	            </Connection>
 	            <Connection>
-	                <ConfigKey>[Sampler<Variable name="samplernum"/>],start_stop</ConfigKey>
+	                <ConfigKey>[Sampler<Variable name="samplernum3"/>],cue_default</ConfigKey>
 	                <ButtonState>RightButton</ButtonState>
 	            </Connection>
 	            <Connection>
-	                <ConfigKey>[Sampler<Variable name="samplernum"/>],play_indicator</ConfigKey>
+	                <ConfigKey>[Sampler<Variable name="samplernum3"/>],play_indicator</ConfigKey>
 	            </Connection>
 			</PushButton>	
 
@@ -208,15 +206,15 @@
 				</State>
 				<Pos>74,35</Pos>
 				<Connection>
-	                <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_gotoandplay</ConfigKey>
+	                <ConfigKey>[Sampler<Variable name="samplernum4"/>],cue_gotoandplay</ConfigKey>
 	                <ButtonState>LeftButton</ButtonState>
 	            </Connection>
 	            <Connection>
-	                <ConfigKey>[Sampler<Variable name="samplernum"/>],start_stop</ConfigKey>
+	                <ConfigKey>[Sampler<Variable name="samplernum4"/>],cue_default</ConfigKey>
 	                <ButtonState>RightButton</ButtonState>
 	            </Connection>
 	            <Connection>
-	                <ConfigKey>[Sampler<Variable name="samplernum"/>],play_indicator</ConfigKey>
+	                <ConfigKey>[Sampler<Variable name="samplernum4"/>],play_indicator</ConfigKey>
 	            </Connection>
 			</PushButton>	
 
