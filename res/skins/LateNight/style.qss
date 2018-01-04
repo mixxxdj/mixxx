@@ -1075,8 +1075,8 @@ border: 0px;
   qproperty-layoutAlignment: 'AlignCenter';
   border: 1px solid #585858;
   border-top: 0px;
-  border-bottom: 0px;
   border-left: 0px;
+  border-bottom: 0px;
 }
 
 #SamplerPitch {
@@ -1089,15 +1089,16 @@ border: 0px;
 }
 
 #SamplerMainControls {
-  border: 1px solid #585858;
-  border-top: 0px;
-  border-left: 0px;
-  border-bottom: 0px;
 }
 
 #SamplerButtons {
   padding: 3px 1px 0px 3px;
   qproperty-layoutAlignment: 'AlignCenter';
+  border: 1px solid #585858;
+  border-top: 0px;
+  border-left: 0px;
+  border-bottom: 0px;
+  background: transparent url(skin:background_tile.png);
 }
 
 #SamplerRowTwo {
@@ -1109,6 +1110,10 @@ border: 0px;
 #SamplerText {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   padding: 3px;
+  border: 1px solid #585858;
+  border-top: 0px;
+  border-left: 0px;
+  border-bottom: 0px;
 }
 
 #SamplerHotcues {

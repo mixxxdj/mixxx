@@ -197,7 +197,6 @@
           <WidgetGroup>
               <Layout>horizontal</Layout>
               <SizePolicy>me,me</SizePolicy>
-              <BackPath>background_tile.png</BackPath>
               <ObjectName>SamplerButtons</ObjectName>
               <Children>
                 <WidgetGroup>
@@ -376,7 +375,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <ObjectName>SamplerVU</ObjectName>
-        <MinimumSize>22,</MinimumSize>
+        <MinimumSize>20,</MinimumSize>
         <Children>
           <StatusLight>
             <TooltipId>sampler_PeakIndicator</TooltipId>
