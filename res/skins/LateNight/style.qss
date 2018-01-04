@@ -1303,8 +1303,10 @@ WEffectSelector {
     is inherited.
     On Windows, it must be defined here */
     color: #cfb32c;
-    border: 0px;
+    border: 1px solid #666;
     border-radius: 2px;
+    padding: 0px;
+    margin: 0px;
   }
   /* selected item */
   WEffectSelector::checked {
@@ -1324,10 +1326,10 @@ WEffectSelector {
   WEffectSelector::indicator {
   /* This is sufficient to completely hide the tick mark, but
     this alone would show an empty, shadowed box instead of tick mark
-    background-color: transparent;
-    This should decrease the tick mark's left & right margin but is not respected */
-    margin: 0px -4px 0px -4px;
-    background-color: transparent;
+    background-color: transparent;*/
+  /* This should decrease the tick mark's left & right margin but is not respected */
+    margin: 0px;
+    padding: 0px;
   }
 
 /* this is now inline in the pushbutton so we can change styles */
