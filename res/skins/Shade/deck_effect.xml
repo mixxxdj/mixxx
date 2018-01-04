@@ -36,13 +36,13 @@
 				<RightClickIsPushButton>true</RightClickIsPushButton>
 				<State>
 					<Number>0</Number>
-					<Pressed>btn_play_sampler_down.png</Pressed>
-					<Unpressed>btn_play_sampler.png</Unpressed>
+					<Pressed>btn_effect_enable_down.png</Pressed>
+					<Unpressed>btn_effect_enable.png</Unpressed>
 				</State>
 				<State>
 					<Number>1</Number>
-					<Pressed>btn_play_sampler_overdown.png</Pressed>
-					<Unpressed>btn_play_sampler_over.png</Unpressed>
+					<Pressed>btn_effect_enable_overdown.png</Pressed>
+					<Unpressed>btn_effect_enable_over.png</Unpressed>
 				</State>
 				<Pos>4,14</Pos>
 				<Connection>
