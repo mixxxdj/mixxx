@@ -80,7 +80,7 @@ void BaseSqlTableModel::initHeaderData() {
                         tr("Year"), 40);
     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE,
                         tr("Type"), 50);
-    setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_LOCATION,
+    setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION,
                         tr("Location"), 100);
     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT,
                         tr("Comment"), 250);
@@ -183,7 +183,7 @@ bool BaseSqlTableModel::isColumnHiddenByDefault(int column) {
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING)) ||
-            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOCATION)) ||
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN))) {
         return true;
@@ -797,7 +797,7 @@ Qt::ItemFlags BaseSqlTableModel::readWriteFlags(
     int column = index.column();
 
     if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOCATION) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) ||
@@ -858,8 +858,11 @@ QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
     if (!index.isValid()) {
         return "";
     }
-    QString location = index.sibling(
-        index.row(), fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOCATION)).data().toString();
+    QString nativeLocation =
+            index.sibling(index.row(),
+                    fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION))
+                            .data().toString();
+    QString location = QDir::fromNativeSeparators(nativeLocation);
     return location;
 }
 

@@ -19,27 +19,24 @@ struct EchoGroupState {
     static constexpr int kMaxDelaySeconds = 3;
     // TODO(XXX): When we move from stereo to multi-channel this needs updating.
     static constexpr int kChannelCount = mixxx::AudioSignal::kChannelCountStereo;
-    // Ramp length in samples when we are at the start of an echo.
-    // TODO(XXX): make this samplerate independent
-    static constexpr int kRampLength = 500;
 
     EchoGroupState()
             : delay_buf(mixxx::AudioSignal::kSamplingRateMax * kMaxDelaySeconds *
                         kChannelCount) {
         delay_buf.clear();
-        prev_period = 0.0;
-        prev_send = 0.0;
+        prev_send = 0.0f;
+        prev_feedback= 0.0f;
         prev_delay_samples = 0;
         write_position = 0;
-        ping_pong_left = true;
+        ping_pong = 0;
     }
 
     SampleBuffer delay_buf;
-    double prev_period;
     CSAMPLE_GAIN prev_send;
+    CSAMPLE_GAIN prev_feedback;
     int prev_delay_samples;
     int write_position;
-    bool ping_pong_left;
+    int ping_pong;
 };
 
 class EchoEffect : public PerChannelEffectProcessor<EchoGroupState> {
