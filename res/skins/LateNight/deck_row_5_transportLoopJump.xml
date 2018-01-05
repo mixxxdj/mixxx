@@ -1,10 +1,10 @@
 <Template>
-	<WidgetGroup>
-		<ObjectName>DeckButtons</ObjectName>
-		<SizePolicy>min,min</SizePolicy>
-		<BackPath>background_tile.png</BackPath>
-		<Layout>horizontal</Layout>
-		<Children>
+  <WidgetGroup>
+    <ObjectName>DeckButtons</ObjectName>
+    <SizePolicy>min,min</SizePolicy>
+    <BackPath>background_tile.png</BackPath>
+    <Layout>horizontal</Layout>
+    <Children>
 
       <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
 
@@ -130,10 +130,10 @@
         <ObjectName></ObjectName>
         <Layout>vertical</Layout>
         <Children>
-			    <WidgetGroup><!-- HotCues, Cue -->
-				    <ObjectName>PlayCue</ObjectName>
-				    <Layout>horizontal</Layout>
-				    <Children>
+          <WidgetGroup><!-- HotCues, Cue -->
+            <ObjectName>PlayCue</ObjectName>
+            <Layout>horizontal</Layout>
+            <Children>
               <PushButton><!-- HotCue 1 -->
                 <TooltipId>hotcue</TooltipId>
                 <NumberStates>2</NumberStates>
@@ -246,38 +246,38 @@
                 </Connection>
               </PushButton>
 
-					    <PushButton><!-- Cue -->
+              <PushButton><!-- Cue -->
                 <ObjectName>CueToggleButton</ObjectName>
                 <Size>52,26</Size>
-						    <TooltipId>cue_default_cue_gotoandstop</TooltipId>
-						    <NumberStates>2</NumberStates>
-						    <State>
-							    <Number>0</Number>
-							    <Text>CUE</Text>
-						    </State>
-						    <State>
-							    <Number>1</Number>
-							    <Text>CUE</Text>
-						    </State>
-						    <Connection>
-							    <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
-							    <ButtonState>LeftButton</ButtonState>
-						    </Connection>
-						    <Connection>
-							    <ConfigKey><Variable name="group"/>,cue_gotoandstop</ConfigKey>
-							    <ButtonState>RightButton</ButtonState>
-						    </Connection>
-						    <Connection>
-							    <ConfigKey><Variable name="group"/>,cue_indicator</ConfigKey>
-						    </Connection>
-					    </PushButton>
-				    </Children>
-			    </WidgetGroup><!-- /HotCues, Cue -->
+                <TooltipId>cue_default_cue_gotoandstop</TooltipId>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Text>CUE</Text>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Text>CUE</Text>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,cue_gotoandstop</ConfigKey>
+                  <ButtonState>RightButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,cue_indicator</ConfigKey>
+                </Connection>
+              </PushButton>
+            </Children>
+          </WidgetGroup><!-- /HotCues, Cue -->
 
-			    <WidgetGroup><!-- /rew, fwd, rev, Play -->
-				    <ObjectName>PlayCue</ObjectName>
-				    <Layout>horizontal</Layout>
-				    <Children>
+          <WidgetGroup><!-- /rew, fwd, rev, Play -->
+            <ObjectName>PlayCue</ObjectName>
+            <Layout>horizontal</Layout>
+            <Children>
 
               <PushButton><!-- Rewind -->
                 <TooltipId>back_start</TooltipId>
@@ -334,32 +334,32 @@
                 </Connection>
               </PushButton>
 
-					    <PushButton><!-- Play -->
-						    <TooltipId>play_cue_set</TooltipId>
-						    <NumberStates>2</NumberStates>
-						    <RightClickIsPushButton>true</RightClickIsPushButton>
-						    <State>
-							    <Number>0</Number>
-							    <Pressed>buttons/btn_play1_down.png</Pressed>
-							    <Unpressed>buttons/btn_play1.png</Unpressed>
-						    </State>
-						    <State>
-							    <Number>1</Number>
-							    <Pressed>buttons/btn_play1_overdown.png</Pressed>
-							    <Unpressed>buttons/btn_play1_over.png</Unpressed>
-						    </State>
-						    <Connection>
-							    <ConfigKey><Variable name="group"/>,play</ConfigKey>
-							    <ButtonState>LeftButton</ButtonState>
-						    </Connection>
-						    <Connection>
-							    <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>
-						    </Connection>
-					    </PushButton>
-				    </Children>
-			    </WidgetGroup><!-- /rew, fwd, rev, Play -->
-				</Children>
-			</WidgetGroup>
-		</Children>
-	</WidgetGroup>
+              <PushButton><!-- Play -->
+                <TooltipId>play_cue_set</TooltipId>
+                <NumberStates>2</NumberStates>
+                <RightClickIsPushButton>true</RightClickIsPushButton>
+                <State>
+                  <Number>0</Number>
+                  <Pressed>buttons/btn_play1_down.png</Pressed>
+                  <Unpressed>buttons/btn_play1.png</Unpressed>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Pressed>buttons/btn_play1_overdown.png</Pressed>
+                  <Unpressed>buttons/btn_play1_over.png</Unpressed>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,play</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>
+                </Connection>
+              </PushButton>
+            </Children>
+          </WidgetGroup><!-- /rew, fwd, rev, Play -->
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
 </Template>
