@@ -1170,6 +1170,7 @@ class MixxxCore(Feature):
                    "util/screensaver.cpp",
                    "util/indexrange.cpp",
                    "util/workerthread.cpp",
+                   "util/workerthreadscheduler.cpp",
 
                    '#res/mixxx.qrc'
                    ]
