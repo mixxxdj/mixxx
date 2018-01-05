@@ -232,9 +232,14 @@
   padding-top: 3px;
 }
 
-#VuMeter {
+#VuMeter4Decks {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-  padding-right: 4px;
+  padding: 0px 4px 2px 0px;
+}
+
+#VolumeGain2Decks {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  padding: 0px 0px 0px 0px;
 }
 
 #MasterSync {
@@ -931,7 +936,7 @@ border: 0px;
 
 #PFLVUMeterBox {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  padding: 7px 0px 7px 0px;
+  padding: 4px 0px 5px 0px;
 }
 
 #VUMeterBox {

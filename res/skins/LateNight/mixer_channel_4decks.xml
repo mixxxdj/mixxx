@@ -98,7 +98,7 @@
         <Layout>horizontal</Layout>
         <Children>
           <WidgetGroup>
-            <ObjectName>VuMeter</ObjectName>
+            <ObjectName>VuMeter4Decks</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>min,max</SizePolicy>
             <Size>26,0</Size>
