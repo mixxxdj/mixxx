@@ -2,15 +2,13 @@
   <!-- This outer widget group makes the PreviewDeck borders work correctly -->
   <WidgetGroup>
     <Layout>vertical</Layout>
-    <SizePolicy>me,min</SizePolicy>
+    <SizePolicy>me,max</SizePolicy>
     <Children>
 
       <WidgetGroup>
         <ObjectName>PreviewDeck</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>min, min</SizePolicy>
-        <MinimumSize>100,40</MinimumSize>
-        <MaximumSize>,60</MaximumSize>
+        <Size>-1min,61f</Size>
         <Children>
           <!-- Preview Deck Column 1 Row 1 -->
           <WidgetGroup>

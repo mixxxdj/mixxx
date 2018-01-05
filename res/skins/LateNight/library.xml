@@ -24,6 +24,7 @@
             <SplitSizesConfigKey>[LateNight],LibrarySidebarSplitSize</SplitSizesConfigKey>
 						<Children>
 							<WidgetGroup>
+							  <ObjectName>LibrarySidebar_X</ObjectName>
 								<Layout>vertical</Layout>
 								<Children>
 
