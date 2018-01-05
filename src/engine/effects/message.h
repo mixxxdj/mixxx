@@ -71,6 +71,18 @@ struct EffectsRequest {
 #undef CLEAR_STRUCT
     }
 
+    ~EffectsRequest() {
+        if (type == ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL) {
+            VERIFY_OR_DEBUG_ASSERT(EnableInputChannelForChain.pEffectStatesMapArray != nullptr) {
+                return;
+            }
+            // This only deletes the container used to passed the EffectStates
+            // to EffectProcessorImpl. The EffectStates are managed by
+            // EffectProcessorImpl.
+            delete EnableInputChannelForChain.pEffectStatesMapArray;
+        }
+    }
+
     MessageType type;
     qint64 request_id;
 
