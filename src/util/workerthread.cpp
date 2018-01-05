@@ -3,6 +3,17 @@
 
 namespace {
 
+// Enable trace logging only temporary for debugging purposes
+// during development!
+constexpr bool kEnableTraceLogging = false;
+
+inline
+void logTrace(const mixxx::Logger& log, const char* msg) {
+    if (kEnableTraceLogging) {
+        log.trace() << (msg);
+    }
+}
+
 std::atomic<int> s_threadCounter(0);
 
 } // anonymous namespace
@@ -46,7 +57,7 @@ void WorkerThread::run() {
 }
 
 void WorkerThread::pause() {
-    m_logger.debug() << "Pause";
+    logTrace(m_logger, "Pause");
     m_pause.store(true);
 }
 
@@ -54,7 +65,7 @@ void WorkerThread::resume() {
     bool paused = true;
     // Reset value: true -> false
     if (m_pause.compare_exchange_strong(paused, false)) {
-        m_logger.debug() << "Resume";
+        logTrace(m_logger, "Resume");
         // The thread might just be preparing to pause after
         // reading detecting that m_pause was true. To avoid
         // a race condition we need to acquire the mutex that
@@ -92,9 +103,9 @@ void WorkerThread::whilePaused() {
         // this thread. The atomic value might have been reset to
         // to false in the meantime!
         if (m_pause.load()) {
-            m_logger.debug() << "Suspending while paused";
+            logTrace(m_logger, "Suspending while paused");
             m_sleepWaitCond.wait(locked) ;
-            m_logger.debug() << "Resuming after paused";
+            logTrace(m_logger, "Resuming after paused");
         }
     }
 }
@@ -111,9 +122,9 @@ bool WorkerThread::whileIdleAndNotStopped() {
             // Don't suspend when stopped
             return false;
         }
-        m_logger.debug() << "Suspending while idle";
+        logTrace(m_logger, "Suspending while idle");
         m_sleepWaitCond.wait(locked) ;
-        m_logger.debug() << "Resuming after idle";
+        logTrace(m_logger, "Resuming after idle");
     }
     // No longer idle
     return true;
