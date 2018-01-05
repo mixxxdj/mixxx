@@ -37,8 +37,6 @@ const SINT kAnalysisSamplesPerBlock =
 // Maximum frequency of progress updates while busy
 constexpr std::chrono::milliseconds kBusyProgressInhibitDuration(100);
 
-std::atomic<int> s_instanceCounter(0);
-
 } // anonymous namespace
 
 AnalyzerThread::AnalyzerThread(
@@ -46,12 +44,11 @@ AnalyzerThread::AnalyzerThread(
         mixxx::DbConnectionPoolPtr pDbConnectionPool,
         UserSettingsPointer pConfig,
         AnalyzerMode mode)
-        : m_id(id),
+        : WorkerThread(QString("AnalyzerThread %1").arg(id)),
+          m_id(id),
           m_pDbConnectionPool(std::move(pDbConnectionPool)),
           m_pConfig(std::move(pConfig)),
           m_mode(mode),
-          m_pause(false),
-          m_stop(false),
           m_sampleBuffer(kAnalysisSamplesPerBlock),
           m_emittedState(AnalyzerThreadState::Void),
           // The first signal should always be emitted
@@ -60,36 +57,6 @@ AnalyzerThread::AnalyzerThread(
     m_analyzerProgress.setValue(kAnalyzerProgressUnknown);
     // This type is registered multiple times although once would be sufficient
     qRegisterMetaType<AnalyzerThreadState>();
-}
-
-AnalyzerThread::~AnalyzerThread() {
-    kLogger.debug() << "Destroying" << m_id;
-    VERIFY_OR_DEBUG_ASSERT(isFinished()) {
-        kLogger.warning() << "Waiting for thread" << m_id << "to finish";
-        stop();
-        // The following operation will block the host thread!
-        wait();
-        DEBUG_ASSERT(isFinished());
-    }
-}
-
-void AnalyzerThread::run() {
-    if (readStopped()) {
-        return;
-    }
-
-    const int instanceId = s_instanceCounter.fetch_add(1) + 1;
-    QThread::currentThread()->setObjectName(QString("AnalyzerThread %1").arg(instanceId));
-
-    kLogger.debug() << "Running" << m_id;
-
-    exec();
-
-    kLogger.debug() << "Exiting" << m_id;
-
-    m_stop.store(true);
-
-    emitProgress(AnalyzerThreadState::Exit);
 }
 
 void AnalyzerThread::exec() {
@@ -132,22 +99,20 @@ void AnalyzerThread::exec() {
     mixxx::AudioSource::OpenParams openParams;
     openParams.setChannelCount(kAnalysisChannels);
 
-    while (!readStopped()) {
-        TrackPointer track = receiveNextTrack();
-        if (!track) {
-            break;
-        }
-
-        kLogger.debug() << "Analyzing" << track->getLocation();
+    // Don't shortcut the loop condition, because the current track
+    // is obtained by a side effect in whileIdleAndNotStopped()
+    while (whileIdleAndNotStopped() && m_currentTrack) {
+        kLogger.debug() << "Analyzing" << m_currentTrack->getLocation();
 
         // Get the audio
         const auto audioSource =
-                SoundSourceProxy(track).openAudioSource(openParams);
+                SoundSourceProxy(m_currentTrack).openAudioSource(openParams);
         if (!audioSource) {
             kLogger.warning()
                     << "Failed to open file for analyzing:"
-                    << track->getLocation();
-            emitDoneProgress(track, kAnalyzerProgressUnknown);
+                    << m_currentTrack->getLocation();
+            emitDoneProgress(kAnalyzerProgressUnknown);
+            m_currentTrack.reset();
             continue;
         }
 
@@ -155,7 +120,7 @@ void AnalyzerThread::exec() {
         for (auto const& analyzer: m_analyzers) {
             // Make sure not to short-circuit initialize(...)
             if (analyzer->initialize(
-                    track,
+                    m_currentTrack,
                     audioSource->sampleRate(),
                     audioSource->frameLength() * kAnalysisChannels)) {
                 processTrack = true;
@@ -163,7 +128,7 @@ void AnalyzerThread::exec() {
         }
 
         if (processTrack) {
-            const auto analysisResult = analyzeAudioSource(track, audioSource);
+            const auto analysisResult = analyzeAudioSource(audioSource);
             DEBUG_ASSERT(analysisResult != AnalysisResult::Pending);
             if ((analysisResult == AnalysisResult::Complete) ||
                     (analysisResult == AnalysisResult::Partial)) {
@@ -173,111 +138,58 @@ void AnalyzerThread::exec() {
                 // session. A partial analysis would otherwise be repeated again
                 // and again, because it is very unlikely that the error vanishes
                 // suddenly.
-                emitBusyProgress(track, kAnalyzerProgressFinalizing);
+                emitBusyProgress(kAnalyzerProgressFinalizing);
                 // This takes around 3 sec on a Atom Netbook
                 for (auto const& analyzer: m_analyzers) {
-                    analyzer->finalize(track);
+                    analyzer->finalize(m_currentTrack);
                 }
-                emitDoneProgress(track, kAnalyzerProgressDone);
+                emitDoneProgress(kAnalyzerProgressDone);
             } else {
                 for (auto const& analyzer: m_analyzers) {
-                    analyzer->cleanup(track);
+                    analyzer->cleanup(m_currentTrack);
                 }
-                emitDoneProgress(track, kAnalyzerProgressUnknown);
+                emitDoneProgress(kAnalyzerProgressUnknown);
             }
         } else {
             kLogger.debug() << "Skipping track analysis because no analyzer initialized.";
-            emitDoneProgress(track, kAnalyzerProgressDone);
+            emitDoneProgress(kAnalyzerProgressDone);
         }
+
+        m_currentTrack.reset();
     }
     DEBUG_ASSERT(readStopped());
 
     m_analyzers.clear();
-}
 
-void AnalyzerThread::pause() {
-    kLogger.debug() << "Pause" << m_id;
-    m_pause.store(true);
-}
-
-void AnalyzerThread::resume() {
-    bool paused = true;
-    // Reset value: true -> false
-    if (m_pause.compare_exchange_strong(paused, false)) {
-        kLogger.debug() << "Resume" << m_id;
-        // The thread might just be preparing to pause after
-        // reading detecting that m_pause was true. To avoid
-        // a race condition we need to acquire the mutex that
-        // is associated with the wait condition, before
-        // signalling the condition. Otherwise the signal
-        // of the wait condition might arrive before the
-        // thread actually got suspended.
-        std::unique_lock<std::mutex> locked(m_sleepMutex);
-        m_sleepWaitCond.notify_one();
-    } else {
-        // Just in case, wake up the thread even if it wasn't
-        // explicitly paused without locking the mutex. The
-        // thread will suspend itself if it is idle.
-        m_sleepWaitCond.notify_one();
-    }
-}
-
-void AnalyzerThread::stop() {
-    kLogger.debug() << "Stop" << m_id;
-    m_stop.store(true);
-    // Wake up the thread to make sure that the stop flag
-    // is detected and the thread commits suicide by exiting
-    // the run loop.
-    resume();
+    emitProgress(AnalyzerThreadState::Exit);
 }
 
 void AnalyzerThread::sendNextTrack(const TrackPointer& nextTrack) {
     DEBUG_ASSERT(!m_nextTrack.getValue());
     m_nextTrack.setValue(nextTrack);
-    m_sleepWaitCond.notify_one();
+    wake();
 }
 
-TrackPointer AnalyzerThread::receiveNextTrack() {
-    std::unique_lock<std::mutex> locked(m_sleepMutex);
-    while (true) {
-        if (readStopped()) {
-            return TrackPointer();
-        }
-        TrackPointer nextTrack = m_nextTrack.getValue();
-        if (nextTrack) {
-            m_nextTrack.setValue(TrackPointer());
-            return nextTrack;
-        }
-        kLogger.debug() << "Suspending while idle" << m_id;
+bool AnalyzerThread::readIdle() {
+    DEBUG_ASSERT(!m_currentTrack);
+    TrackPointer nextTrack = m_nextTrack.getValue();
+    if (nextTrack) {
+        m_nextTrack.setValue(TrackPointer());
+        m_currentTrack = std::move(nextTrack);
+        return false;
+    } else {
         if (m_emittedState != AnalyzerThreadState::Idle) {
             // Only send the idle signal once when entering the
             // idle state from another state.
             emitProgress(AnalyzerThreadState::Idle);
         }
-        m_sleepWaitCond.wait(locked) ;
-        kLogger.debug() << "Resuming after idle" << m_id;
-    }
-    return TrackPointer();
-}
-
-void AnalyzerThread::receivePaused() {
-    while (m_pause.load()) {
-        std::unique_lock<std::mutex> locked(m_sleepMutex);
-        // To avoid a race condition we need to check the value
-        // of m_pause again after locking and just before suspending
-        // this thread. The atomic value might have been reset to
-        // to false in the meantime!
-        if (m_pause.load()) {
-            kLogger.debug() << "Suspending while paused" << m_id;
-            m_sleepWaitCond.wait(locked) ;
-            kLogger.debug() << "Resuming after paused" << m_id;
-        }
+        return true;
     }
 }
 
 AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
-        const TrackPointer& track,
         const mixxx::AudioSourcePointer& audioSource) {
+    DEBUG_ASSERT(m_currentTrack);
 
     mixxx::AudioSourceStereoProxy audioSourceProxy(
             audioSource,
@@ -285,15 +197,14 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
     DEBUG_ASSERT(audioSourceProxy.channelCount() == kAnalysisChannels);
 
     // Analysis starts now
-    emitBusyProgress(track, kAnalyzerProgressNone);
+    emitBusyProgress(kAnalyzerProgressNone);
 
     mixxx::IndexRange remainingFrames = audioSource->frameIndexRange();
     auto result = remainingFrames.empty() ? AnalysisResult::Complete : AnalysisResult::Pending;
     while (result == AnalysisResult::Pending) {
+        whilePaused();
         if (readStopped()) {
             return AnalysisResult::Cancelled;
-        } else {
-            receivePaused();
         }
 
         // 1st step: Decode next chunk of audio data
@@ -307,10 +218,9 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
                                 inputFrameIndexRange,
                                 mixxx::SampleBuffer::WritableSlice(m_sampleBuffer)));
 
+        whilePaused();
         if (readStopped()) {
             return AnalysisResult::Cancelled;
-        } else {
-            receivePaused();
         }
 
         // 2nd: step: Analyze chunk of decoded audio data
@@ -340,6 +250,9 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
             }
         }
 
+        // Don't check again for paused/stopped and simply finish the
+        // current iteration by emitting progress.
+
         // 3rd step: Update & emit progress
         const double frameProgress =
                 double(audioSource->frameLength() - remainingFrames.length()) /
@@ -347,14 +260,14 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         const AnalyzerProgress progress =
                 frameProgress *
                 (kAnalyzerProgressFinalizing - kAnalyzerProgressNone);
-        emitBusyProgress(track, progress);
+        emitBusyProgress(progress);
     }
 
     return result;
 }
 
-void AnalyzerThread::emitBusyProgress(const TrackPointer& track, AnalyzerProgress busyProgress) {
-    DEBUG_ASSERT(track);
+void AnalyzerThread::emitBusyProgress(AnalyzerProgress busyProgress) {
+    DEBUG_ASSERT(m_currentTrack);
     // The actual progress value is updated always even if the
     // following signal is inhibited (see below). The value is read
     // independently of the signal and should always reflect the
@@ -371,18 +284,18 @@ void AnalyzerThread::emitBusyProgress(const TrackPointer& track, AnalyzerProgres
         return;
     }
     m_lastBusyProgressEmittedAt = now;
-    emitProgress(AnalyzerThreadState::Busy, track);
+    emitProgress(AnalyzerThreadState::Busy);
 }
 
-void AnalyzerThread::emitDoneProgress(const TrackPointer& track, AnalyzerProgress doneProgress) {
-    DEBUG_ASSERT(track);
+void AnalyzerThread::emitDoneProgress(AnalyzerProgress doneProgress) {
+    DEBUG_ASSERT(m_currentTrack);
     m_analyzerProgress.setValue(doneProgress);
     // Don't inhibit the final progress update!
     m_lastBusyProgressEmittedAt = Clock::now();
-    emitProgress(AnalyzerThreadState::Done, track);
+    emitProgress(AnalyzerThreadState::Done);
 }
 
-void AnalyzerThread::emitProgress(AnalyzerThreadState state, const TrackPointer& track) {
+void AnalyzerThread::emitProgress(AnalyzerThreadState state) {
     m_emittedState = state;
-    emit(progress(m_id, m_emittedState, track ? track->getId() : TrackId()));
+    emit(progress(m_id, m_emittedState, m_currentTrack ? m_currentTrack->getId() : TrackId()));
 }

@@ -1169,6 +1169,7 @@ class MixxxCore(Feature):
                    "util/autohidpi.cpp",
                    "util/screensaver.cpp",
                    "util/indexrange.cpp",
+                   "util/workerthread.cpp",
 
                    '#res/mixxx.qrc'
                    ]

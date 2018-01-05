@@ -1,12 +1,9 @@
 #pragma once
 
-#include <QThread>
-
-#include <atomic>
 #include <chrono>
-#include <condition_variable>
-#include <mutex>
 #include <vector>
+
+#include "util/workerthread.h"
 
 #include "analyzer/analyzerprogress.h"
 #include "analyzer/analyzer.h"
@@ -36,22 +33,15 @@ enum class AnalyzerThreadState {
 Q_DECLARE_TYPEINFO(AnalyzerThreadState, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(AnalyzerThreadState);
 
-// This object lives in the creating thread of the host, i.e. does not
-// run its own event loop. It does not does not use slots for communication
-// with its host which would otherwise still be executed in the host's
-// thread.
+// Atomic control values are used for transferring data between the
+// host and the worker thread, e.g. the next track to be analyzed or
+// the current analyzer progress that can be read independent of any
+// progress signal
 //
-// Signals emitted from the internal worker thread use queued connections.
-// Communication in the opposite direction is accomplished by using
-// lock-free types to avoid locking the host thread through priority
-// inversion. Lock-free types are also used for any shared state (like
-// the current analyzer progress) that is read from the host thread
-// after being notified about changes.
-//
-// The frequency of change notifications is limited to avoid flooding
-// the signal queues between the internal worker thread and the host,
-// which might cause unresponsiveness of the host.
-class AnalyzerThread : public QThread {
+// The frequency of progress signal is limited to avoid flooding the
+// signal queued connection between the internal worker thread and
+// the host, which might otherwise cause unresponsiveness of the host.
+class AnalyzerThread : public WorkerThread {
     Q_OBJECT
 
   public:
@@ -60,22 +50,11 @@ class AnalyzerThread : public QThread {
             mixxx::DbConnectionPoolPtr pDbConnectionPool,
             UserSettingsPointer pConfig,
             AnalyzerMode mode = AnalyzerMode::Default);
-    // The destructor must be triggered by calling deleteLater() to
-    // ensure that the thread has already finished and is not running!
-    ~AnalyzerThread() override;
-
-    operator bool() const {
-        return !readStopped();
-    }
+    ~AnalyzerThread() override = default;
 
     int id() const {
         return m_id;
     }
-
-    void pause();
-    void resume();
-
-    void stop();
 
     // Transmits the next track to the worker thread without
     // blocking. This is only allowed after a progress() signal
@@ -97,7 +76,9 @@ class AnalyzerThread : public QThread {
     void progress(int threadId, AnalyzerThreadState threadState, TrackId trackId);
 
   protected:
-    void run() override;
+    void exec() override;
+
+    bool readIdle() override;
 
   private:
     /////////////////////////////////////////////////////////////////////////
@@ -110,18 +91,11 @@ class AnalyzerThread : public QThread {
     const AnalyzerMode m_mode;
 
     /////////////////////////////////////////////////////////////////////////
-    // Thread-safe atomic values and synchronization primitives that
-    // control execution of the internal event loop in exec()
-
-    std::atomic<bool> m_pause;
-    std::atomic<bool> m_stop;
+    // Thread-safe atomic values
 
     ControlValueAtomic<TrackPointer> m_nextTrack;
 
     ControlValueAtomic<AnalyzerProgress> m_analyzerProgress;
-
-    std::mutex m_sleepMutex;
-    std::condition_variable m_sleepWaitCond;
 
     /////////////////////////////////////////////////////////////////////////
     // Thread local: Only used in the constructor/destructor and within
@@ -131,6 +105,8 @@ class AnalyzerThread : public QThread {
     std::vector<AnalyzerPtr> m_analyzers;
 
     mixxx::SampleBuffer m_sampleBuffer;
+
+    TrackPointer m_currentTrack;
 
     AnalyzerThreadState m_emittedState;
 
@@ -144,30 +120,17 @@ class AnalyzerThread : public QThread {
         Cancelled,
     };
     AnalysisResult analyzeAudioSource(
-            const TrackPointer& track,
             const mixxx::AudioSourcePointer& audioSource);
-
-    // The internal event loop. Not to be confused with the
-    // Qt event loop since the worker thread doesn't has one!
-    void exec();
 
     // Blocks the worker thread until a next track becomes available
     TrackPointer receiveNextTrack();
 
-    // Blocks the worker thread while the pause flag is set
-    void receivePaused();
-
-    // Non-blocking atomic read of the stop flag
-    bool readStopped() const {
-        return m_stop.load();
-    }
-
     // Conditionally emit a progress() signal while busy (frequency is limited)
-    void emitBusyProgress(const TrackPointer& track, AnalyzerProgress busyProgress);
+    void emitBusyProgress(AnalyzerProgress busyProgress);
 
     // Unconditionally emits a progress() signal when done
-    void emitDoneProgress(const TrackPointer& track, AnalyzerProgress doneProgress);
+    void emitDoneProgress(AnalyzerProgress doneProgress);
 
     // Unconditionally emits any kind of progress() signal
-    void emitProgress(AnalyzerThreadState state, const TrackPointer& track = TrackPointer());
+    void emitProgress(AnalyzerThreadState state);
 };
