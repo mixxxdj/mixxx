@@ -71,6 +71,8 @@ struct EffectsRequest {
 #undef CLEAR_STRUCT
     }
 
+    // This is called from the main thread by EffectsManager after receiving a
+    // response from EngineEffectsManager in the audio engine thread.
     ~EffectsRequest() {
         if (type == ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL) {
             VERIFY_OR_DEBUG_ASSERT(EnableInputChannelForChain.pEffectStatesMapArray != nullptr) {
