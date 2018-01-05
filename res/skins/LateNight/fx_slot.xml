@@ -17,7 +17,7 @@
       <WidgetGroup>
         <ObjectName>EffectSlot<Variable name="FxNum"/></ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>max,me</SizePolicy>
+        <SizePolicy>min,me</SizePolicy>
         <Children>
           <WidgetGroup>
             <Layout>horizontal</Layout>
@@ -83,10 +83,10 @@
             <Layout>horizontal</Layout>
             <MinimumSize>72,26</MinimumSize>
             <MaximumSize>120,-1</MaximumSize>
-            <SizePolicy>min,me</SizePolicy>
+            <SizePolicy>me,me</SizePolicy>
             <Children>
               <EffectSelector>
-                <Size>72min,26p</Size>
+                <Size>72me,26p</Size>
                 <EffectRack><Variable name="FxRack"/></EffectRack>
                 <EffectUnit><Variable name="FxUnit"/></EffectUnit>
                 <Effect><Variable name="FxNum"/></Effect>
