@@ -361,7 +361,7 @@
 }
 
 #KeyText {
-  qproperty-alignment: 'AlignCenter';
+  qproperty-alignment: 'AlignLeft';
   font-size: 13px/16px;
   font-weight: bold;
   font-family: Lucida Grande, Lucida Sans Unicode, Segoe UI, Arial, Verdana, sans-serif;
@@ -531,7 +531,8 @@
     background-color: #eece33;
 }
 
-#VinylToggleButtonLL[displayValue="0"] {
+#VinylToggleButtonLL[displayValue="0"],
+#VinylCueButton[displayValue="0"] {
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
@@ -561,16 +562,6 @@
     font: bold 10px/12px;
     color: #eece33;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
-}
-
-#VinylCueButton[displayValue="0"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    margin: 1px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #ddd;
-    background-color: #0e0e0e;
 }
 
 #VinylCueButton[displayValue="1"] {

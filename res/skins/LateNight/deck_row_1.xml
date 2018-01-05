@@ -62,7 +62,9 @@
                 <ObjectName>KeyText</ObjectName>
                 <TooltipId>track_key</TooltipId>
                 <Group><Variable name="group"/></Group>
-                <Size>44f,20f</Size>
+                <Size>50f,20f</Size>
+                <!-- has no effect, only 'qproperty-alignment' in style.qss works
+                <Alignment>left</Alignment-->
                 <Connection>
                   <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
                 </Connection>
