@@ -1137,7 +1137,7 @@ border: 0px;
   color: #09B2AE;
 }
 
-#TitleGutter WLabel, #EffectUnitNameContainer WLabel {
+#TitleGutter WLabel {
   font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
   font: bold 16px/19px;
   text-transform: none;
@@ -1152,19 +1152,7 @@ border: 0px;
 #EffectUnit1, #EffectUnit2, #EffectUnit3, #EffectUnit4 {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
   border: 1px solid #585858;
-  margin-top: 5px;
-}
-
-#EffectUnit1,
-#EffectUnit3 {
-  border-left: none;
-  margin-right: 2px;
-}
-
-#EffectUnit2,
-#EffectUnit4 {
-  border-right: none;
-  margin-left: 2px;
+  margin: 5px 2px 0px 2px;
 }
 
 #EffectRows {
