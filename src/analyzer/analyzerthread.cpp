@@ -99,7 +99,7 @@ void AnalyzerThread::exec() {
     mixxx::AudioSource::OpenParams openParams;
     openParams.setChannelCount(kAnalysisChannels);
 
-    while (whileIdleAndNotStopped()) {
+    while (fetchWorkBlocking()) {
         DEBUG_ASSERT(m_currentTrack);
         kLogger.debug() << "Analyzing" << m_currentTrack->getLocation();
 
@@ -169,20 +169,20 @@ void AnalyzerThread::sendNextTrack(const TrackPointer& nextTrack) {
     wake();
 }
 
-bool AnalyzerThread::readIdle() {
+WorkerThread::FetchWorkResult AnalyzerThread::fetchWork() {
     DEBUG_ASSERT(!m_currentTrack);
     TrackPointer nextTrack = m_nextTrack.getValue();
     if (nextTrack) {
         m_nextTrack.setValue(TrackPointer());
         m_currentTrack = std::move(nextTrack);
-        return false;
+        return FetchWorkResult::Ready;
     } else {
         if (m_emittedState != AnalyzerThreadState::Idle) {
             // Only send the idle signal once when entering the
             // idle state from another state.
             emitProgress(AnalyzerThreadState::Idle);
         }
-        return true;
+        return FetchWorkResult::Idle;
     }
 }
 

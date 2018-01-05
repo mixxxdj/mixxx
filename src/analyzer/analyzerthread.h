@@ -78,7 +78,7 @@ class AnalyzerThread : public WorkerThread {
   protected:
     void exec() override;
 
-    bool readIdle() override;
+    FetchWorkResult fetchWork() override;
 
   private:
     /////////////////////////////////////////////////////////////////////////

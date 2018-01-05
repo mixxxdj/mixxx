@@ -94,38 +94,48 @@ void WorkerThread::stop() {
 }
 
 void WorkerThread::whilePaused() {
+    DEBUG_ASSERT(QThread::currentThread() == this);
     // The pause flag is always reset after the stop flag has been set,
     // so we don't need to check it separately here.
+    if (!m_pause.load()) {
+        // Early exit without locking the mutex
+        return;
+    }
+    std::unique_lock<std::mutex> locked(m_sleepMutex);
+    whilePaused(&locked);
+}
+
+void WorkerThread::whilePaused(std::unique_lock<std::mutex>* locked) {
+    DEBUG_ASSERT(locked);
     while (m_pause.load()) {
-        std::unique_lock<std::mutex> locked(m_sleepMutex);
-        // To avoid a race condition we need to check the value
-        // of m_pause again after locking and just before suspending
-        // this thread. The atomic value might have been reset to
-        // to false in the meantime!
-        if (m_pause.load()) {
-            logTrace(m_logger, "Suspending while paused");
-            m_sleepWaitCond.wait(locked) ;
-            logTrace(m_logger, "Resuming after paused");
-        }
+        logTrace(m_logger, "Suspending while paused");
+        m_sleepWaitCond.wait(*locked) ;
+        logTrace(m_logger, "Resuming after paused");
     }
 }
 
-bool WorkerThread::whileIdleAndNotStopped() {
+bool WorkerThread::fetchWorkBlocking() {
     if (readStopped()) {
         // Early exit without locking the mutex
         return false;
     }
-    // Keep the mutex locked while idle
+    // Keep the mutex locked while idle or paused
     std::unique_lock<std::mutex> locked(m_sleepMutex);
-    while (readIdle()) {
-        if (readStopped()) {
-            // Don't suspend when stopped
-            return false;
+    while (!readStopped()) {
+        FetchWorkResult fetchWorkResult = fetchWork();
+        switch (fetchWorkResult) {
+        case FetchWorkResult::Ready:
+            return true;
+        case FetchWorkResult::Idle:
+            logTrace(m_logger, "Suspending while idle");
+            m_sleepWaitCond.wait(locked) ;
+            logTrace(m_logger, "Resuming after idle");
+            break;
+        case FetchWorkResult::Pause:
+            m_pause.store(true);
+            whilePaused(&locked);
+            break;
         }
-        logTrace(m_logger, "Suspending while idle");
-        m_sleepWaitCond.wait(locked) ;
-        logTrace(m_logger, "Resuming after idle");
     }
-    // No longer idle
-    return true;
+    return false;
 }

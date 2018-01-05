@@ -54,19 +54,27 @@ class WorkerThread : public QThread {
     // Qt event loop since the worker thread doesn't has one!
     virtual void exec() = 0;
 
+    enum class FetchWorkResult {
+        Ready,
+        Idle,
+        Pause,
+    };
+
     // Non-blocking function that determines whether the worker thread
     // is idle (i.e. no new tasks have been scheduled) and should be
     // suspended until resumed or woken up. Returns true as long as the
     // thread should be kept suspended because no work is available.
     // The stop flag does not have to be taken into account here.
-    virtual bool readIdle() = 0;
+    virtual FetchWorkResult fetchWork() = 0;
 
     // Blocks while idle and not stopped. Returns true when the thread
     // should continue processing and false when stopped and the thread
     // should exit asap.
-    bool whileIdleAndNotStopped();
+    bool fetchWorkBlocking();
 
-    // Blocks the worker thread while the pause flag is set
+    // Blocks the worker thread while the pause flag is set.
+    // This function must not be called while idle which could
+    // block on the non-recursive mutex twice!
     void whilePaused();
 
     void wake() {
@@ -81,6 +89,8 @@ class WorkerThread : public QThread {
     std::mutex m_sleepMutex;
 
   private:
+    void whilePaused(std::unique_lock<std::mutex>* locked);
+
     const QString m_name;
 
     const mixxx::Logger m_logger;
