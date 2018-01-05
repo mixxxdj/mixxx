@@ -99,9 +99,8 @@ void AnalyzerThread::exec() {
     mixxx::AudioSource::OpenParams openParams;
     openParams.setChannelCount(kAnalysisChannels);
 
-    // Don't shortcut the loop condition, because the current track
-    // is obtained by a side effect in whileIdleAndNotStopped()
-    while (whileIdleAndNotStopped() && m_currentTrack) {
+    while (whileIdleAndNotStopped()) {
+        DEBUG_ASSERT(m_currentTrack);
         kLogger.debug() << "Analyzing" << m_currentTrack->getLocation();
 
         // Get the audio
