@@ -108,17 +108,23 @@ class EffectProcessorImpl : public EffectProcessor {
         if (kEffectDebugOutput) {
             qDebug() << "~EffectProcessorImpl" << this;
         }
+        int inputChannelHandleNumber = 0;
         for (ChannelHandleMap<EffectSpecificState*>& outputsMap : m_channelStateMatrix) {
+            int outputChannelHandleNumber = 0;
             for (EffectSpecificState* pState : outputsMap) {
                 VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
                     continue;
                 }
                 if (kEffectDebugOutput) {
-                    qDebug() << "~EffectProcessorImpl deleting state" << pState;
+                    qDebug() << "~EffectProcessorImpl deleting EffectState" << pState
+                             << "for input ChannelHandle(" << inputChannelHandleNumber << ")"
+                             << "and output ChannelHandle(" << outputChannelHandleNumber << ")";
                 }
                 delete pState;
+                outputChannelHandleNumber++;
             }
             outputsMap.clear();
+            inputChannelHandleNumber++;
         }
         m_channelStateMatrix.clear();
     };
