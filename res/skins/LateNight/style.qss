@@ -465,15 +465,7 @@
   background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
 }
 
-#GuiToggleButton[displayValue="1"] {
-  border: 1px solid #585858;
-  border-radius: 2px;
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 10px/12px;
-  color: #0e0e0e;
-  background-color: #eece33;
-}
-
+#GuiToggleButton[displayValue="1"],
 #GuiToggleButton[displayValue="2"] {
   border: 1px solid #585858;
   border-radius: 2px;
@@ -481,26 +473,9 @@
   font: bold 10px/12px;
   color: #0e0e0e;
   background-color: #eece33;
-}
-
-#GuiToggleButtonInverted[displayValue="0"] {
-  border: 1px solid #585858;
-  border-radius: 2px;
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 10px/12px;
-  color: #0e0e0e;
-  background-color: #eece33;
-}
-
-#GuiToggleButtonInverted[displayValue="1"] {
-  border: 1px solid #585858;
-  border-radius: 2px;
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 10px/12px;
-  color: #ddd;
   background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                  stop:0 #282828,
-                                  stop:1 #0e0e0e);
+                                    stop:0 #B69700,
+                                    stop:1 #eece33);
 }
 
 #VinylStatus {
@@ -522,46 +497,50 @@
 
 #VinylToggleButtonUL[displayValue="1"],
 #FxAssignButton[displayValue="1"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    margin: 1px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #0e0e0e;
-    background-color: #eece33;
+  border: 1px solid #585858;
+  border-radius: 2px;
+  margin: 1px;
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
+  font: bold 10px/12px;
+  color: #0e0e0e;
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                    stop:0 #B69700,
+                                    stop:1 #eece33);
 }
 
 #VinylToggleButtonLL[displayValue="0"],
 #VinylCueButton[displayValue="0"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    margin: 1px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #ddd;
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                    stop:0 #282828,
-                                    stop:1 #0e0e0e);
+  border: 1px solid #585858;
+  border-radius: 2px;
+  margin: 1px;
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
+  font: bold 10px/12px;
+  color: #ddd;
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                  stop:0 #282828,
+                                  stop:1 #0e0e0e);
 }
 
 #VinylToggleButtonLL[displayValue="1"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    margin: 1px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #0e0e0e;
-    background-color: #eece33;
+  border: 1px solid #585858;
+  border-radius: 2px;
+  margin: 1px;
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
+  font: bold 10px/12px;
+  color: #0e0e0e;
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                    stop:0 #B69700,
+                                    stop:1 #eece33);
 }
 
 #TristateButton {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    margin: 1px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #eece33;
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+  border: 1px solid #585858;
+  border-radius: 2px;
+  margin: 1px;
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
+  font: bold 10px/12px;
+  color: #eece33;
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
 }
 
 #VinylCueButton[displayValue="1"] {
