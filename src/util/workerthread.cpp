@@ -132,7 +132,7 @@ bool WorkerThread::fetchWorkBlocking() {
             logTrace(m_logger, "Resuming after idle");
             break;
         case FetchWorkResult::Pause:
-            m_pause.store(true);
+            pause();
             whilePaused(&locked);
             break;
         }
