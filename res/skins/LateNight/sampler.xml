@@ -379,8 +379,8 @@
         <Children>
           <StatusLight>
             <TooltipId>sampler_PeakIndicator</TooltipId>
-            <PathStatusLight>buttons/btn_clipping_sampler_over.png</PathStatusLight>
-            <PathBack>buttons/btn_clipping_sampler.png</PathBack>
+            <PathStatusLight>buttons/btn_clipping1_over.png</PathStatusLight>
+            <PathBack>buttons/btn_clipping1.png</PathBack>
             <Connection>
               <ConfigKey>[Sampler<Variable name="samplernum"/>],PeakIndicator</ConfigKey>
             </Connection>
