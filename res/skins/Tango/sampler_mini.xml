@@ -31,7 +31,6 @@ Variables:
             <SetVariable name="TooltipId">play_cue_set</SetVariable>
             <SetVariable name="state_0_pressed">sampler_paused.png</SetVariable>
             <SetVariable name="state_0_unpressed">sampler_paused.png</SetVariable>
-            <SetVariable name="state_0_pressed">sampler_paused.png</SetVariable>
             <SetVariable name="state_1_pressed">sampler_playing.svg</SetVariable>
             <SetVariable name="state_1_unpressed">sampler_playing.svg</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,cue_gotoandplay</SetVariable>
@@ -43,7 +42,7 @@ Variables:
             <ObjectName>SamplerCover</ObjectName>
             <Size>34f,34f</Size>
             <Group><Variable name="group"/></Group>
-            <DefaultCover>skin:/buttons/btn_.svg</DefaultCover>
+            <DefaultCover>skin:/graphics/blank_1x1.svg</DefaultCover>
           </CoverArt>
       <!-- Background turns Orange when playing preview from HotCue.
           Only visible when play_indicator=0 and no CoverArt loaded -->
@@ -74,7 +73,7 @@ Variables:
             <Size>82me,20f</Size>
             <Children>
 
-              <WidgetGroup><Size>2f,1min</Size><Children/></WidgetGroup>
+              <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
 
               <Template src="skin:knob_textless.xml">
                 <SetVariable name="TooltipId">pregain</SetVariable>
@@ -99,16 +98,16 @@ Variables:
                 <SetVariable name="TooltipId">orientation</SetVariable>
                 <SetVariable name="ObjectName">SamplerButton</SetVariable>
                 <SetVariable name="Size">16f,16f</SetVariable>
-                <SetVariable name="state_0_pressed">sampler_cf_left_white.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">sampler_cf_left_white.svg</SetVariable>
-                <SetVariable name="state_1_pressed">sampler_cf_center.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">sampler_cf_center.svg</SetVariable>
-                <SetVariable name="state_2_pressed">sampler_cf_right_white.svg</SetVariable>
-                <SetVariable name="state_2_unpressed">sampler_cf_right_white.svg</SetVariable>
+                <SetVariable name="state_0_pressed">sampler_xfader_left_white.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">sampler_xfader_left_white.svg</SetVariable>
+                <SetVariable name="state_1_pressed">sampler_xfader_center.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">sampler_xfader_center.svg</SetVariable>
+                <SetVariable name="state_2_pressed">sampler_xfader_right_white.svg</SetVariable>
+                <SetVariable name="state_2_unpressed">sampler_xfader_right_white.svg</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
               </Template>
 
-              <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
               <Template src="skin:button_1state_right.xml">
                 <SetVariable name="TooltipId">beatsync_beatsync_tempo</SetVariable>
@@ -120,7 +119,7 @@ Variables:
                 <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatsync_tempo</SetVariable>
               </Template>
 
-              <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
             </Children>
           </WidgetGroup><!-- Sync, CF assign, Volume -->
 

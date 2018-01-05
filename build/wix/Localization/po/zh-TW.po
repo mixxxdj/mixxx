@@ -2,12 +2,13 @@
 # Translators:
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
+# 羅廷中 <timloo0710@gmail.com>, 2017
 # 鬼迪 陳 <Hank_10702@yahoo.com.tw>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2017-07-15 15:06+0000\n"
-"Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
+"PO-Revision-Date: 2017-10-25 02:25+0000\n"
+"Last-Translator: 羅廷中 <timloo0710@gmail.com>\n"
 "Language-Team: Chinese (Taiwan) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/zh_TW/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -97,7 +98,7 @@ msgid ""
 "Installer was not able to find Microsoft Visual C++ 2015 Redistributable on "
 "this system. This is likely an installer bug that should be reported to "
 "Mixxx developers."
-msgstr ""
+msgstr "安裝程式在作業系統裏找不到Microsoft Visual C++ 2015 Redistributable。有可能是安裝程式的錯誤，請回報給Mixxx開發者。 "
 
 #.  Custom Warning Dialog
 msgctxt "WarningDlgTitle"
@@ -107,7 +108,7 @@ msgstr "{\\WixUI_Font_Title}警告"
 #.  Custom exit dialog
 msgctxt "StartOnExit"
 msgid "Launch Mixxx when setup exits."
-msgstr ""
+msgstr "當離開設定時，請登入Mixxx. "
 
 #.  Features translations
 msgctxt "FeatureCompleteDescription"
@@ -124,13 +125,13 @@ msgstr "核心 Mixxx 應用程式包括控制器預設。"
 
 msgctxt "FeaturePDBTitle"
 msgid "PDB debug files"
-msgstr ""
+msgstr "PDB 除錯訊息檔"
 
 msgctxt "FeaturePDBDescription"
 msgid ""
 "Install Mixxx PDB files to use with a debugger. This is useful to debug "
 "Mixxx and provide readable backtraces to the development team."
-msgstr ""
+msgstr "安裝Mixxx PDB 檔好讓除錯器使用。這工具對於除錯及提供開發團隊可讀性的追蹤報告非常有幫助。"
 
 msgctxt "FeatureDesktopShortcutTitle"
 msgid "Desktop Shortcut"
@@ -148,22 +149,22 @@ msgctxt "FeatureManualDescription"
 msgid ""
 "The Mixxx user manual in PDF form, also available at "
 "http://mixxx.org/manual/"
-msgstr ""
+msgstr "MIxxx使用者操作手冊採PDF格式，在官網http://mixxx.org/manual/上也有放。"
 
 msgctxt "FeatureTranslationsTitle"
 msgid "Translations"
-msgstr ""
+msgstr "翻譯"
 
 msgctxt "FeatureTranslationsDescription"
 msgid ""
 "Resource files that allow Mixxx to display in alternate languages, other "
 "than US english"
-msgstr ""
+msgstr "資源檔可允許Mixxx呈現其他的語言，有別於US 英文"
 
 #.  Bootstrapper
 msgctxt "Caption"
 msgid "[WixBundleName] Setup"
-msgstr ""
+msgstr "[WixBundleName] 設定"
 
 msgctxt "Title"
 msgid "[WixBundleName]"
@@ -171,15 +172,15 @@ msgstr ""
 
 msgctxt "ConfirmCancelMessage"
 msgid "Are you sure you want to cancel?"
-msgstr ""
+msgstr "你確定將要取消嗎?"
 
 msgctxt "ExecuteUpgradeRelatedBundleMessage"
 msgid "Previous version"
-msgstr ""
+msgstr "之前的版本"
 
 msgctxt "HelpHeader"
 msgid "Setup Help"
-msgstr ""
+msgstr "設定的輔助說明"
 
 msgctxt "HelpText"
 msgid ""
@@ -197,7 +198,7 @@ msgstr ""
 
 msgctxt "HelpCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&關閉"
 
 msgctxt "InstallHeader"
 msgid "Welcome"
@@ -216,7 +217,7 @@ msgstr ""
 
 msgctxt "InstallOptionsButton"
 msgid "&Options"
-msgstr ""
+msgstr "&選項"
 
 msgctxt "InstallInstallButton"
 msgid "&Install"
@@ -224,7 +225,7 @@ msgstr ""
 
 msgctxt "InstallCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&關閉"
 
 msgctxt "OptionsHeader"
 msgid "Setup Options"
@@ -236,15 +237,15 @@ msgstr ""
 
 msgctxt "OptionsBrowseButton"
 msgid "&Browse"
-msgstr ""
+msgstr "&瀏灠"
 
 msgctxt "OptionsOkButton"
 msgid "&OK"
-msgstr ""
+msgstr "&OK"
 
 msgctxt "OptionsCancelButton"
 msgid "&Cancel"
-msgstr ""
+msgstr "&取消"
 
 msgctxt "FilesInUseHeader"
 msgid "Files In Use"
@@ -264,11 +265,11 @@ msgstr ""
 
 msgctxt "FilesInUseOkButton"
 msgid "&OK"
-msgstr ""
+msgstr "&OK"
 
 msgctxt "FilesInUseCancelButton"
 msgid "&Cancel"
-msgstr ""
+msgstr "&取消"
 
 msgctxt "ProgressHeader"
 msgid "Setup Progress"
@@ -284,7 +285,7 @@ msgstr ""
 
 msgctxt "ProgressCancelButton"
 msgid "&Cancel"
-msgstr ""
+msgstr "&取消"
 
 msgctxt "ModifyHeader"
 msgid "Modify Setup"
@@ -292,15 +293,15 @@ msgstr ""
 
 msgctxt "ModifyRepairButton"
 msgid "&Repair"
-msgstr ""
+msgstr "&修復"
 
 msgctxt "ModifyUninstallButton"
 msgid "&Uninstall"
-msgstr ""
+msgstr "&解除安裝"
 
 msgctxt "ModifyCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&關閉"
 
 msgctxt "SuccessHeader"
 msgid "Setup Successful"
@@ -320,7 +321,7 @@ msgstr ""
 
 msgctxt "SuccessLaunchButton"
 msgid "&Launch"
-msgstr ""
+msgstr "&登入程式"
 
 msgctxt "SuccessRestartText"
 msgid "You must restart your computer before you can use the software."
@@ -328,11 +329,11 @@ msgstr ""
 
 msgctxt "SuccessRestartButton"
 msgid "&Restart"
-msgstr ""
+msgstr "&重新啟動"
 
 msgctxt "SuccessCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&關閉"
 
 msgctxt "FailureHeader"
 msgid "Setup Failed"
@@ -363,8 +364,8 @@ msgstr ""
 
 msgctxt "FailureRestartButton"
 msgid "&Restart"
-msgstr ""
+msgstr "&重新啟動"
 
 msgctxt "FailureCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&關閉"
