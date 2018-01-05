@@ -2,7 +2,7 @@
   <!-- This outer widget group makes the PreviewDeck borders work correctly -->
   <WidgetGroup>
     <Layout>vertical</Layout>
-    <SizePolicy>me,max</SizePolicy>
+    <SizePolicy>me,min</SizePolicy>
     <Children>
 
       <WidgetGroup>
