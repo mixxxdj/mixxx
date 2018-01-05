@@ -46,7 +46,7 @@
 				</State>
 				<Pos>4,14</Pos>
 				<Connection>
-					<ConfigKey>[EffectRack1_EffectUnit2],group_[BusRight]_enable</ConfigKey>
+					<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],group_<Variable name="group"/>_enable</ConfigKey>
 					<ButtonState>LeftButton</ButtonState>
 				</Connection>
 			</PushButton>	
@@ -67,7 +67,7 @@
 				</State>
 			    <Pos>4,35</Pos>
 				<Connection>
-					<ConfigKey>[EffectRack1_EffectUnit2],group_[Headphone]_enable</ConfigKey>
+					<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],group_[Headphone]_enable</ConfigKey>
 					<ButtonState>LeftButton</ButtonState>
 				</Connection>
 			</PushButton>
@@ -86,7 +86,7 @@
 				<Path>knobs/knob_rotary_s%1.png</Path>
 				<Pos>32,29</Pos>
 				<Connection>
-					<ConfigKey>[EffectRack1_EffectUnit1],mix</ConfigKey>
+					<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],mix</ConfigKey>
 				</Connection>
 			</Knob>
 
@@ -104,7 +104,7 @@
 				<Path>knobs/knob_rotary_s%1.png</Path>
 				<Pos>65,29</Pos>
 				<Connection>
-					<ConfigKey>[EffectRack1_EffectUnit1],super1</ConfigKey>
+					<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],super1</ConfigKey>
 				</Connection>
 			</Knob>
 		</Children>
