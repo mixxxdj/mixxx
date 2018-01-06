@@ -45,7 +45,7 @@ Variables:
                 <ObjectName>PlayPosition</ObjectName>
                 <TooltipId>track_time</TooltipId>
                 <Size>90min,22f</Size>
-                <Alignment>right</Alignment>
+                <Alignment>left</Alignment>
                 <Channel><Variable name="chanNum"/></Channel>
                 <!-- Not respected, see https://answers.launchpad.net/mixxx/+question/635872
                 <NumberOfDigits>1</NumberOfDigits>-->
@@ -64,7 +64,7 @@ Variables:
                 <ObjectName>PlayPosition</ObjectName>
                 <TooltipId>track_time</TooltipId>
                 <Size>175min,22f</Size>
-                <Alignment>right</Alignment>
+                <Alignment>left</Alignment>
                 <Channel><Variable name="chanNum"/></Channel>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,playposition</ConfigKey>

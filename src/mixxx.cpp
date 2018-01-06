@@ -184,12 +184,14 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     setAttribute(Qt::WA_AcceptTouchEvents);
     m_pTouchShift = new ControlPushButton(ConfigKey("[Controls]", "touch_shift"));
 
+    m_pChannelHandleFactory = new ChannelHandleFactory();
+
     // Create the Effects subsystem.
-    m_pEffectsManager = new EffectsManager(this, pConfig);
+    m_pEffectsManager = new EffectsManager(this, pConfig, m_pChannelHandleFactory);
 
     // Starting the master (mixing of the channels and effects):
     m_pEngine = new EngineMaster(pConfig, "[Master]", m_pEffectsManager,
-                                 true, true);
+                                 m_pChannelHandleFactory, true);
 
     // Create effect backends. We do this after creating EngineMaster to allow
     // effect backends to refer to controls that are produced by the engine.
@@ -252,6 +254,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     launchProgress(30);
 
+    m_pEffectsManager->loadEffectChains();
+
 #ifdef __VINYLCONTROL__
     m_pVCManager->init();
 #endif
@@ -286,10 +290,16 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             m_pDbConnectionPool,
             m_pPlayerManager,
             m_pRecordingManager);
-    m_pPlayerManager->bindToLibrary(m_pLibrary);
-
-    // Create the singular TrackCache instance
+    // Create the singular TrackCache instance immediately after
+    // the Library has been created and BEFORE binding the
+    // PlayerManager to it!
     TrackCache::createInstance(m_pLibrary);
+
+    // Binding the PlayManager to the Library may already trigger
+    // loading of tracks which requires that the TrackCache has
+    // been created. Otherwise Mixxx might hang when accessing
+    // the uninitialized singleton instance!
+    m_pPlayerManager->bindToLibrary(m_pLibrary);
 
     launchProgress(40);
 

@@ -154,17 +154,16 @@ void BrowseThread::populateModel() {
 
         const QString filepath = fileIt.next();
         {
-            TrackCacheLocker cacheLocker(
-                    TrackCache::instance().lookupOrCreateTemporaryForFile(
-                            filepath, thisPath.token()));
-            auto pTrack = cacheLocker.getTrack();
-            if (!pTrack) {
-                qWarning() << "Skipping inaccessible file"
-                        << filepath;
-                continue;
-            }
+            TrackPointer pTrack =
+                TrackCache::instance().resolve(
+                        filepath, thisPath.token()).getTrack();
+            // The TrackCache is unlocked instantly even if a new track object
+            // has been created and inserted into the cache. Newly created track
+            // objects will only contain a reference of the corresponding file,
+            // but not any metadata, yet. This reduces lock contention on the
+            // global track cache.
 
-            // Import metadata from file
+            // Update the track object by (re-)importing metadata from the file
             SoundSourceProxy(pTrack).updateTrackFromSource();
 
             item = new QStandardItem(pTrack->getFileName());

@@ -66,11 +66,11 @@ Help to spread Mixxx with translations into more languages, as well as to update
 Mixxx is a vibrant community of hackers, DJs and artists. To keep track of
 development and community news:
 
+- Chat with us on [Zulip][zulip].
 - Follow us on [Twitter], [Facebook], and [G+].
 - Subscribe to the [Mixxx Development Blog][blog].
 - Join the developer [mailing list].
 - Post on the [Mixxx forums][forums].
-- Join our [#mixxx on Freenode IRC][irc channel] to chat with us.
 
 ## License
 
@@ -105,3 +105,4 @@ license.
 [Mixxx localization forum]: http://mixxx.org/forums/viewforum.php?f=10
 [Mixxx glossary]: https://www.transifex.com/projects/p/mixxxdj/glossary/l/en/
 [hardware compatibility]: http://mixxx.org/wiki/doku.php/hardware_compatibility
+[zulip]: https://mixxx.zulipchat.com/

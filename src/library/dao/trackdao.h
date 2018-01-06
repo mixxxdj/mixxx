@@ -20,6 +20,7 @@ class AnalysisDao;
 class CueDAO;
 class LibraryHashDAO;
 class TrackCollection;
+class TrackCacheLocker;
 class TrackCacheResolver;
 
 
@@ -133,7 +134,7 @@ class TrackDAO : public QObject, public virtual DAO {
     TrackPointer getTrackFromDB(TrackId trackId) const;
 
     friend class TrackCollection;
-    void saveTrack(Track* pTrack);
+    void saveTrack(TrackCacheLocker* pCacheLocker, Track* pTrack);
     bool updateTrack(Track* pTrack);
 
     QSqlDatabase m_database;

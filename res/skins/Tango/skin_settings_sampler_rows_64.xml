@@ -1,9 +1,5 @@
 <!--
 Description:
-  The skin settings menu, floating on top of main skin window.
-
-  Bug: qss 'qproperty-layoutAlignment' is not respected for stacked layout.
-  No way to push SkinSettings to the right edge while keeping the area underneath clickable.
 -->
 <Template>
   <WidgetStack currentpage="[Tango],sampler_rows" persist="true">

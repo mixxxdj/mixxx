@@ -3,8 +3,6 @@
 namespace {
 //  Used to avoid gain discontinuities when changing parameters too fast
 constexpr double kMaxGainIncrement = 0.001;
-
-constexpr int kNumberOfChannels = 2;
 }
 
 // static
@@ -20,13 +18,15 @@ EffectManifest TremoloEffect::getManifest() {
     manifest.setShortName(QObject::tr("Tremolo"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
-    manifest.setDescription("An amplitude modulation effect");
+    manifest.setDescription(QObject::tr(
+        "Cycles the volume up and down"));
 
     EffectManifestParameter* depth = manifest.addParameter();
     depth->setId("depth");
-    depth->setName("Depth");
-    depth->setShortName("Depth");
-    depth->setDescription("How much the effect changes the volume");
+    depth->setName(QObject::tr("Depth"));
+    depth->setShortName(QObject::tr("Depth"));
+    depth->setDescription(QObject::tr(
+        "How much the effect changes the volume"));
     depth->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     depth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -39,9 +39,10 @@ EffectManifest TremoloEffect::getManifest() {
     rate->setId("rate");
     rate->setName(QObject::tr("Rate"));
     rate->setShortName(QObject::tr("Rate"));
-    rate->setDescription(QObject::tr("Controls the rate of the effect\n"
-    "4 beats - 1/8 beat if tempo is detected (decks and samplers) \n"
-    "1/4 Hz - 8 Hz if no tempo is detected (mic & aux inputs, master mix)"));
+    rate->setDescription(QObject::tr(
+        "Rate of the volume changes\n"
+        "4 beats - 1/8 beat if tempo is detected\n"
+        "1/4 Hz - 8 Hz if no tempo is detected"));
     rate->setControlHint(
         EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     rate->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
@@ -54,8 +55,9 @@ EffectManifest TremoloEffect::getManifest() {
     width->setId("width");
     width->setName(QObject::tr("Width"));
     width->setShortName(QObject::tr("Width"));
-    width->setDescription(QObject::tr("Sets the width of the volume peak\n"
-    "10% - 90% of the effect period"));
+    width->setDescription(QObject::tr(
+        "Width of the volume peak\n"
+        "10% - 90% of the effect period"));
     width->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     width->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     width->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -67,9 +69,10 @@ EffectManifest TremoloEffect::getManifest() {
     waveform->setId("waveform");
     waveform->setName(QObject::tr("Waveform"));
     waveform->setShortName(QObject::tr("Waveform"));
-    waveform->setDescription(QObject::tr("Sets the shape of the modulation\n"
-    "Fully left - Square wave\n"
-    "Fully right - Sine wave"));
+    waveform->setDescription(QObject::tr(
+        "Shape of the volume modulation wave\n"
+        "Fully left: Square wave\n"
+        "Fully right: Sine wave"));
     waveform->setControlHint(
         EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     waveform->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
@@ -80,11 +83,12 @@ EffectManifest TremoloEffect::getManifest() {
 
     EffectManifestParameter *phase = manifest.addParameter();
     phase->setId("phase");
-    phase->setName("Phase");
+    phase->setName(QObject::tr("Phase"));
     phase->setShortName(QObject::tr("Phase"));
-    phase->setDescription("Shifts the position of the volume peak\n"
-    "Fully left - beginning of the effect period\n"
-    "Fully right - end of the effect period");
+    phase->setDescription(QObject::tr(
+        "Shifts the position of the volume peak within the period\n"
+        "Fully left: beginning of the effect period\n"
+        "Fully right: end of the effect period"));
     phase->setControlHint(
         EffectManifestParameter::ControlHint::KNOB_LINEAR);
     phase->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
@@ -95,10 +99,10 @@ EffectManifest TremoloEffect::getManifest() {
 
     EffectManifestParameter* quantize = manifest.addParameter();
     quantize->setId("quantize");
-    quantize->setName("Quantize");
-    quantize->setShortName("Quantize");
-    quantize->setDescription(
-        "Round the Rate parameter to the nearest whole division of a beat.");
+    quantize->setName(QObject::tr("Quantize"));
+    quantize->setShortName(QObject::tr("Quantize"));
+    quantize->setDescription(QObject::tr(
+        "Round the Rate parameter to the nearest whole division of a beat."));
     quantize->setControlHint(
         EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     quantize->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
@@ -109,10 +113,10 @@ EffectManifest TremoloEffect::getManifest() {
 
     EffectManifestParameter* triplet = manifest.addParameter();
     triplet->setId("triplet");
-    triplet->setName("Triplets");
+    triplet->setName(QObject::tr("Triplets"));
     triplet->setShortName(QObject::tr("Triplet"));
-    triplet->setDescription("When the Quantize parameter is enabled, divide "
-                            "the effect period by 3.");
+    triplet->setDescription(QObject::tr(
+        "When the Quantize parameter is enabled, divide the effect period by 3."));
     triplet->setControlHint(
         EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
@@ -136,15 +140,11 @@ TremoloEffect::TremoloEffect(EngineEffect* pEffect,
     Q_UNUSED(manifest);
 }
 
-TremoloEffect::~TremoloEffect() {
-}
-
 void TremoloEffect::processChannel(const ChannelHandle& handle,
-                                   TremoloGroupState* pState,
+                                   TremoloState* pState,
                                    const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                   const unsigned int numSamples,
-                                   const unsigned int sampleRate,
-                                   const EffectProcessor::EnableState enableState,
+                                   const mixxx::EngineParameters& bufferParameters,
+                                   const EffectEnableState enableState,
                                    const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
 
@@ -162,11 +162,11 @@ void TremoloEffect::processChannel(const ChannelHandle& handle,
     bool tripletDisabling = pState->tripletEnabled
                           && !m_pTripletParameter->toBool();
 
-    if (enableState == EffectProcessor::ENABLING
+    if (enableState == EffectEnableState::Enabling
      || quantizeEnabling
      || tripletDisabling) {
         if (gf.has_beat_length_sec && gf.has_beat_fraction) {
-            currentFrame = gf.beat_fraction * gf.beat_length_sec * sampleRate;
+            currentFrame = gf.beat_fraction * gf.beat_length_sec * bufferParameters.sampleRate();
         } else {
             currentFrame = 0;
         }
@@ -184,16 +184,18 @@ void TremoloEffect::processChannel(const ChannelHandle& handle,
                 rate *= 3.0;
             }
         }
-        int framePerBeat = gf.beat_length_sec * sampleRate;
+        int framePerBeat = gf.beat_length_sec * bufferParameters.sampleRate();
         framePerPeriod = framePerBeat / rate;
     } else {
-        framePerPeriod = sampleRate / rate;
+        framePerPeriod = bufferParameters.sampleRate() / rate;
     }
 
     unsigned int phaseOffsetFrame = m_pPhaseParameter->value() * framePerPeriod;
     currentFrame = currentFrame % framePerPeriod;
 
-    for (unsigned int i = 0; i < numSamples; i+=kNumberOfChannels) {
+    for (unsigned int i = 0;
+            i < bufferParameters.samplesPerBuffer();
+            i += bufferParameters.channelCount()) {
         unsigned int positionFrame = (currentFrame - phaseOffsetFrame);
         positionFrame = positionFrame % framePerPeriod;
 
@@ -224,7 +226,7 @@ void TremoloEffect::processChannel(const ChannelHandle& handle,
             gain = gainTarget;
         }
 
-        for (int channel = 0; channel < kNumberOfChannels; channel++) {
+        for (int channel = 0; channel < bufferParameters.channelCount(); channel++) {
             pOutput[i+channel] = gain * pInput[i+channel];
         }
 

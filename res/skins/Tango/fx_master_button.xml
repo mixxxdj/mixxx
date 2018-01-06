@@ -14,16 +14,16 @@ Variables:
     <RightClickIsPushButton>false</RightClickIsPushButton>
     <State>
       <Number>0</Number>
-      <Text>FX<Variable name="FxUnitNum"/></Text>
+      <Text>FX<Variable name="FxUnit"/></Text>
       <Alignment>center</Alignment>
     </State>
     <State>
       <Number>1</Number>
-      <Text>FX<Variable name="FxUnitNum"/></Text>
+      <Text>FX<Variable name="FxUnit"/></Text>
       <Alignment>center</Alignment>
     </State>
     <Connection>
-      <ConfigKey>[EffectRack1_EffectUnit<Variable name="FxUnitNum"/>],group_[Master]_enable</ConfigKey>
+      <ConfigKey>[EffectRack1_EffectUnit<Variable name="FxUnit"/>],group_[Master]_enable</ConfigKey>
       <ButtonState>LeftButton</ButtonState>
     </Connection>
   </PushButton>

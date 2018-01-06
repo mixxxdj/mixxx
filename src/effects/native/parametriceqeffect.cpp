@@ -29,7 +29,9 @@ EffectManifest ParametricEQEffect::getManifest() {
     EffectManifestParameter* gain1 = manifest.addParameter();
     gain1->setId("gain1");
     gain1->setName(QObject::tr("Gain 1"));
-    gain1->setDescription(QObject::tr("Gain for Filter 1"));
+    gain1->setShortName(QObject::tr("Gain 1"));
+    gain1->setDescription(QObject::tr(
+        "Gain for Filter 1"));
     gain1->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     gain1->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     gain1->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -41,10 +43,11 @@ EffectManifest ParametricEQEffect::getManifest() {
     EffectManifestParameter* q1 = manifest.addParameter();
     q1->setId("q1");
     q1->setName(QObject::tr("Q 1"));
+    q1->setShortName(QObject::tr("Q 1"));
     q1->setDescription(QObject::tr(
-            "Controls the bandwidth of Filter 1.\n"
-            "A lower Q affects a wider band of frequencies,\n"
-            "a higher Q affects a narrower band of frequencies."));
+        "Controls the bandwidth of Filter 1.\n"
+        "A lower Q affects a wider band of frequencies,\n"
+        "a higher Q affects a narrower band of frequencies."));
     q1->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     q1->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     q1->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -56,7 +59,9 @@ EffectManifest ParametricEQEffect::getManifest() {
     EffectManifestParameter* center1 = manifest.addParameter();
     center1->setId("center1");
     center1->setName(QObject::tr("Center 1"));
-    center1->setDescription(QObject::tr("Center frequency for Filter 1, from 100 Hz to 14 kHz"));
+    center1->setShortName(QObject::tr("Center 1"));
+    center1->setDescription(QObject::tr(
+        "Center frequency for Filter 1, from 100 Hz to 14 kHz"));
     center1->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     center1->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     center1->setUnitsHint(EffectManifestParameter::UnitsHint::HERTZ);
@@ -68,7 +73,9 @@ EffectManifest ParametricEQEffect::getManifest() {
     EffectManifestParameter* gain2 = manifest.addParameter();
     gain2->setId("gain2");
     gain2->setName(QObject::tr("Gain 2"));
-    gain2->setDescription(QObject::tr("Gain for Filter 2"));
+    gain2->setShortName(QObject::tr("Gain 2"));
+    gain2->setDescription(QObject::tr(
+        "Gain for Filter 2"));
     gain2->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     gain2->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     gain2->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -80,10 +87,11 @@ EffectManifest ParametricEQEffect::getManifest() {
     EffectManifestParameter* q2 = manifest.addParameter();
     q2->setId("q2");
     q2->setName(QObject::tr("Q 2"));
+    q2->setShortName(QObject::tr("Q 2"));
     q2->setDescription(QObject::tr(
-            "Controls the bandwidth of Filter 2.\n"
-            "A lower Q affects a wider band of frequencies,\n"
-            "a higher Q affects a narrower band of frequencies."));
+        "Controls the bandwidth of Filter 2.\n"
+        "A lower Q affects a wider band of frequencies,\n"
+        "a higher Q affects a narrower band of frequencies."));
     q2->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     q2->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     q2->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -95,7 +103,9 @@ EffectManifest ParametricEQEffect::getManifest() {
     EffectManifestParameter* center2 = manifest.addParameter();
     center2->setId("center2");
     center2->setName(QObject::tr("Center 2"));
-    center2->setDescription(QObject::tr("Center frequency for Filter 2, from 100 Hz to 14 kHz"));
+    center2->setShortName(QObject::tr("Center 2"));
+    center2->setDescription(QObject::tr(
+        "Center frequency for Filter 2, from 100 Hz to 14 kHz"));
     center2->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     center2->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     center2->setUnitsHint(EffectManifestParameter::UnitsHint::HERTZ);
@@ -107,7 +117,9 @@ EffectManifest ParametricEQEffect::getManifest() {
     return manifest;
 }
 
-ParametricEQEffectGroupState::ParametricEQEffectGroupState() {
+ParametricEQEffectGroupState::ParametricEQEffectGroupState(
+      const mixxx::EngineParameters& bufferParameters)
+      : EffectState(bufferParameters) {
     for (int i = 0; i < kBandCount; i++) {
         m_oldGain.append(1.0);
         m_oldQ.append(1.75);
@@ -119,7 +131,7 @@ ParametricEQEffectGroupState::ParametricEQEffectGroupState() {
     // Initialize the filters with default parameters
     for (int i = 0; i < kBandCount; i++) {
         m_bands.push_back(std::make_unique<EngineFilterBiquad1Peaking>(
-                44100, m_oldCenter[i], m_oldQ[i]));
+                bufferParameters.sampleRate(), m_oldCenter[i], m_oldQ[i]));
     }
 }
 
@@ -148,18 +160,17 @@ ParametricEQEffect::~ParametricEQEffect() {
 void ParametricEQEffect::processChannel(const ChannelHandle& handle,
                                      ParametricEQEffectGroupState* pState,
                                      const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                     const unsigned int numSamples,
-                                     const unsigned int sampleRate,
-                                     const EffectProcessor::EnableState enableState,
+                                     const mixxx::EngineParameters& bufferParameters,
+                                     const EffectEnableState enableState,
                                      const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
 
     // If the sample rate has changed, initialize the filters using the new
     // sample rate
-    if (m_oldSampleRate != sampleRate) {
-        m_oldSampleRate = sampleRate;
-        pState->setFilters(sampleRate);
+    if (m_oldSampleRate != bufferParameters.sampleRate()) {
+        m_oldSampleRate = bufferParameters.sampleRate();
+        pState->setFilters(bufferParameters.sampleRate());
     }
 
     CSAMPLE_GAIN fGain[2];
@@ -167,7 +178,7 @@ void ParametricEQEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE_GAIN fCenter[2];
 
     for (int i = 0; i < kBandCount; i++) {
-        if (enableState == EffectProcessor::DISABLING) {
+        if (enableState == EffectEnableState::Disabling) {
             // Ramp to dry, when disabling, this will ramp from dry when enabling as well
             fGain[i] = 1.0;
         } else {
@@ -179,24 +190,24 @@ void ParametricEQEffect::processChannel(const ChannelHandle& handle,
                 fQ[i] != pState->m_oldQ[i] ||
                 fCenter[i] != pState->m_oldCenter[i]) {
             pState->m_bands[i]->setFrequencyCorners(
-                    sampleRate, fCenter[i], fQ[i], fGain[i]);
+                    bufferParameters.sampleRate(), fCenter[i], fQ[i], fGain[i]);
         }
     }
 
     if (fGain[0]) {
-        pState->m_bands[0]->process(pInput, pOutput, numSamples);
+        pState->m_bands[0]->process(pInput, pOutput, bufferParameters.samplesPerBuffer());
         if (fGain[1]) {
-            pState->m_bands[1]->process(pOutput, pOutput, numSamples);
+            pState->m_bands[1]->process(pOutput, pOutput, bufferParameters.samplesPerBuffer());
         } else {
             pState->m_bands[1]->pauseFilter();
         }
     } else {
         pState->m_bands[0]->pauseFilter();
         if (fGain[1]) {
-            pState->m_bands[1]->process(pInput, pOutput, numSamples);
+            pState->m_bands[1]->process(pInput, pOutput, bufferParameters.samplesPerBuffer());
         } else {
             pState->m_bands[1]->pauseFilter();
-            SampleUtil::copy(pOutput, pInput, numSamples);
+            SampleUtil::copy(pOutput, pInput, bufferParameters.samplesPerBuffer());
         }
     }
 
@@ -206,7 +217,7 @@ void ParametricEQEffect::processChannel(const ChannelHandle& handle,
         pState->m_oldCenter[i] = fCenter[i];
     }
 
-    if (enableState == EffectProcessor::DISABLING) {
+    if (enableState == EffectEnableState::Disabling) {
         for (int i = 0; i < kBandCount; i++) {
             pState->m_bands[i]->pauseFilter();
         }

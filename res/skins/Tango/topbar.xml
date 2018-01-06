@@ -56,6 +56,29 @@ Description:
                 </Connection>
               </PushButton>
 
+              <WidgetGroup><!-- Master & Headphone mixer -->
+                <Size>28f,28f</Size>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Label>
+                    <Size>28f,28f</Size>
+                    <ObjectName>MasterHeadMixerLabel</ObjectName>
+                  </Label>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Tango],master_mixer</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <Template src="skin:button_2state_persist.xml">
+                <SetVariable name="ObjectName">MasterHeadMixerToggle</SetVariable>
+                <!-- Size needs to be changed in size_detector_stars.xml, too -->
+                <SetVariable name="Size">15f,28f</SetVariable>
+                <SetVariable name="ConfigKey">[Tango],master_mixer</SetVariable>
+              </Template>
+
               <WidgetGroup><Size>0min,1min</Size></WidgetGroup>
 
               <Template src="skin:mixer_master_booth.xml"/>

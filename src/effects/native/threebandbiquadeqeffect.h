@@ -14,9 +14,9 @@
 #include "util/memory.h"
 #include "util/samplebuffer.h"
 
-class ThreeBandBiquadEQEffectGroupState final {
+class ThreeBandBiquadEQEffectGroupState final : public EffectState {
   public:
-    ThreeBandBiquadEQEffectGroupState();
+    ThreeBandBiquadEQEffectGroupState(const mixxx::EngineParameters& bufferParameters);
     ~ThreeBandBiquadEQEffectGroupState();
 
     void setFilters(
@@ -42,10 +42,10 @@ class ThreeBandBiquadEQEffectGroupState final {
     unsigned int m_oldSampleRate;
 };
 
-class ThreeBandBiquadEQEffect : public PerChannelEffectProcessor<ThreeBandBiquadEQEffectGroupState> {
+class ThreeBandBiquadEQEffect : public EffectProcessorImpl<ThreeBandBiquadEQEffectGroupState> {
   public:
     ThreeBandBiquadEQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
-    ~ThreeBandBiquadEQEffect() override;
+    ~ThreeBandBiquadEQEffect();
 
     static QString getId();
     static EffectManifest getManifest();
@@ -56,9 +56,8 @@ class ThreeBandBiquadEQEffect : public PerChannelEffectProcessor<ThreeBandBiquad
     void processChannel(const ChannelHandle& handle,
                         ThreeBandBiquadEQEffectGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
-                        const unsigned int numSamples,
-                        const unsigned int sampleRate,
-                        const EffectProcessor::EnableState enableState,
+                        const mixxx::EngineParameters& bufferParameters,
+                        const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatureState);
 
   private:

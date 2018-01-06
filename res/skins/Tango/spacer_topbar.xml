@@ -82,7 +82,7 @@ Description:
                 <Layout>horizontal</Layout>
                 <Size>96f,0f</Size>
                 <Connection>
-                  <ConfigKey persist="true">[Tango],eq_knobs</ConfigKey>
+                  <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>

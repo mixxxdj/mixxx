@@ -746,6 +746,25 @@ void Track::removeCue(const CuePointer& pCue) {
     emit(cuesUpdated());
 }
 
+void Track::removeCuesOfType(Cue::CueType type) {
+    QMutexLocker lock(&m_qMutex);
+    bool dirty = false;
+    QMutableListIterator<CuePointer> it(m_cuePoints);
+    while (it.hasNext()) {
+        CuePointer pCue = it.next();
+        // FIXME: Why does this only work for the CUE CueType?
+        if (pCue->getType() == type) {
+            disconnect(pCue.get(), 0, this, 0);
+            it.remove();
+            dirty = true;
+        }
+    }
+    if (dirty) {
+        markDirtyAndUnlock(&lock);
+        emit(cuesUpdated());
+    }
+}
+
 QList<CuePointer> Track::getCuePoints() const {
     QMutexLocker lock(&m_qMutex);
     return m_cuePoints;

@@ -21,14 +21,17 @@
 #include <QString>
 #include <QList>
 
-#include "soundio/soundmanager.h"
+#include "util/types.h"
+#include "preferences/usersettings.h"
 #include "soundio/sounddeviceerror.h"
+#include "soundio/sounddevice.h"
 
-//Forward declarations
 class SoundDevice;
 class SoundManager;
 class AudioOutput;
 class AudioInput;
+class AudioOutputBuffer;
+class AudioInputBuffer;
 
 const QString kNetworkDeviceInternalName = "Network stream";
 
@@ -104,5 +107,7 @@ class SoundDevice {
     QList<AudioOutputBuffer> m_audioOutputs;
     QList<AudioInputBuffer> m_audioInputs;
 };
+
+typedef QSharedPointer<SoundDevice> SoundDevicePointer;
 
 #endif

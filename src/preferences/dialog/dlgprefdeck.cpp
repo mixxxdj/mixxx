@@ -456,7 +456,7 @@ void DlgPrefDeck::slotSetTrackTimeDisplay(QAbstractButton* b) {
 }
 
 void DlgPrefDeck::slotSetTrackTimeDisplay(double v) {
-    m_timeDisplayMode = static_cast<TrackTime::DisplayMode>(v);
+    m_timeDisplayMode = static_cast<TrackTime::DisplayMode>(static_cast<int>(v));
     m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(v));
     if (m_timeDisplayMode == TrackTime::DisplayMode::Remaining) {
         radioButtonRemaining->setChecked(true);

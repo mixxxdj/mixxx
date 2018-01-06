@@ -10,12 +10,15 @@
 #include "library/treeitem.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "widget/wtracktableview.h"
+#include "widget/wlibrary.h"
 
 SetlogFeature::SetlogFeature(QObject* parent,
                              UserSettingsPointer pConfig,
                              TrackCollection* pTrackCollection)
         : BasePlaylistFeature(parent, pConfig, pTrackCollection, "SETLOGHOME"),
-          m_playlistId(-1) {
+          m_playlistId(-1),
+          m_libraryWidget(nullptr) {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.setlog",
                                                    true); //show all tracks
@@ -60,6 +63,8 @@ void SetlogFeature::bindWidget(WLibrary* libraryWidget,
                                     keyboard);
     connect(&PlayerInfo::instance(), SIGNAL(currentPlayingTrackChanged(TrackPointer)),
             this, SLOT(slotPlayingTrackChanged(TrackPointer)));
+    m_libraryWidget = libraryWidget;
+
 }
 
 void SetlogFeature::onRightClick(const QPoint& globalPos) {
@@ -268,7 +273,19 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
 
     if (m_pPlaylistTableModel->getPlaylist() == m_playlistId) {
         // View needs a refresh
-        m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);
+
+        WTrackTableView* view = dynamic_cast<WTrackTableView*>(m_libraryWidget->getActiveView());
+        if (view != nullptr) {
+            // We have a active view on the history. The user may have some
+            // important active selection. For example putting track into crates
+            // while the song changes trough autodj. The selection is then lost
+            // and dataloss occures
+            const QList<TrackId> trackIds = view->getSelectedTrackIds();
+            m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);
+            view->setSelectedTracks(trackIds);
+        } else {
+            m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);
+        }
     } else {
         // TODO(XXX): Care whether the append succeeded.
         m_playlistDao.appendTrackToPlaylist(currentPlayingTrackId,

@@ -329,6 +329,6 @@ bool TrackCollection::updateAutoDjCrate(
     return updateCrate(crate);
 }
 
-void TrackCollection::saveTrack(Track* pTrack) {
-    m_trackDao.saveTrack(pTrack);
+void TrackCollection::saveTrack(TrackCacheLocker* pCacheLocker, Track* pTrack) {
+    m_trackDao.saveTrack(pCacheLocker, pTrack);
 }

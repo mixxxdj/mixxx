@@ -484,43 +484,19 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
                     std::min(writableSampleFrames.writableLength(), frames2samples(numberOfFrames))));
 }
 
-//-------------------------------------------------------------------
-// configureAudioStream
-//
-// Selects an audio stream from the source file, and configures the
-// stream to deliver decoded PCM audio.
-//-------------------------------------------------------------------
+namespace {
 
-/** Cobbled together from:
- http://msdn.microsoft.com/en-us/library/dd757929(v=vs.85).aspx
- and http://msdn.microsoft.com/en-us/library/dd317928(VS.85).aspx
- -- Albert
- If anything in here fails, just bail. I'm not going to decode HRESULTS.
- -- Bill
- */
-bool SoundSourceMediaFoundation::configureAudioStream(const OpenParams& params) {
+bool configureMediaType(
+        IMFSourceReader* pSourceReader,
+        SINT *pBitrate,
+        const AudioSource::OpenParams& params = AudioSource::OpenParams()) {
+    DEBUG_ASSERT(pSourceReader);
+    DEBUG_ASSERT(pBitrate);
+
     HRESULT hr;
 
-    // deselect all streams, we only want the first
-    hr = m_pSourceReader->SetStreamSelection(
-            MF_SOURCE_READER_ALL_STREAMS, false);
-    if (FAILED(hr)) {
-        kLogger.warning() << hr
-                << "failed to deselect all streams";
-        return false;
-    }
-
-    hr = m_pSourceReader->SetStreamSelection(
-            kStreamIndex, true);
-    if (FAILED(hr)) {
-        kLogger.warning() << hr
-                << "failed to select first audio stream";
-        return false;
-    }
-
     IMFMediaType* pAudioType = nullptr;
-
-    hr = m_pSourceReader->GetCurrentMediaType(
+    hr = pSourceReader->GetCurrentMediaType(
             kStreamIndex, &pAudioType);
     if (FAILED(hr)) {
         kLogger.warning() << hr
@@ -530,16 +506,14 @@ bool SoundSourceMediaFoundation::configureAudioStream(const OpenParams& params) 
 
     //------ Get bitrate from the file, before we change it to get uncompressed audio
     UINT32 avgBytesPerSecond;
-
     hr = pAudioType->GetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND, &avgBytesPerSecond);
     if (FAILED(hr)) {
         kLogger.warning() << hr
                 << "error getting MF_MT_AUDIO_AVG_BYTES_PER_SECOND";
+        safeRelease(&pAudioType);
         return false;
     }
-
-    initBitrateOnce( (avgBytesPerSecond * 8) / 1000);
-    //------
+    *pBitrate = (avgBytesPerSecond * 8) / 1000;
 
     hr = pAudioType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
     if (FAILED(hr)) {
@@ -600,10 +574,10 @@ bool SoundSourceMediaFoundation::configureAudioStream(const OpenParams& params) 
     if (FAILED(hr)) {
         kLogger.warning() << hr
                 << "failed to get actual number of channels";
+        safeRelease(&pAudioType);
         return false;
-    } else {
-        qDebug() << "Number of channels in input stream" << numChannels;
     }
+    kLogger.debug() << "Number of channels in input stream" << numChannels;
     if (params.channelCount().valid()) {
         numChannels = params.channelCount();
         hr = pAudioType->SetUINT32(
@@ -615,7 +589,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const OpenParams& params) 
             safeRelease(&pAudioType);
             return false;
         }
-        qDebug() << "Requested number of channels" << numChannels;
+        kLogger.debug() << "Requested number of channels" << numChannels;
     }
 
     UINT32 samplesPerSecond;
@@ -624,10 +598,10 @@ bool SoundSourceMediaFoundation::configureAudioStream(const OpenParams& params) 
     if (FAILED(hr)) {
         kLogger.warning() << hr
                 << "failed to get samples per second";
+        safeRelease(&pAudioType);
         return false;
-    } else {
-        qDebug() << "Samples per second in input stream" << samplesPerSecond;
     }
+    kLogger.debug() << "Samples per second in input stream" << samplesPerSecond;
     if (params.sampleRate().valid()) {
         samplesPerSecond = params.sampleRate();
         hr = pAudioType->SetUINT32(
@@ -639,12 +613,12 @@ bool SoundSourceMediaFoundation::configureAudioStream(const OpenParams& params) 
             safeRelease(&pAudioType);
             return false;
         }
-        qDebug() << "Requested samples per second" << samplesPerSecond;
+        kLogger.debug() << "Requested samples per second" << samplesPerSecond;
     }
 
     // Set this type on the source reader. The source reader will
     // load the necessary decoder.
-    hr = m_pSourceReader->SetCurrentMediaType(
+    hr = pSourceReader->SetCurrentMediaType(
             kStreamIndex, nullptr, pAudioType);
     if (FAILED(hr)) {
         kLogger.warning() << hr
@@ -653,15 +627,64 @@ bool SoundSourceMediaFoundation::configureAudioStream(const OpenParams& params) 
         return false;
     }
 
-    // Finally release the reference before reusing the pointer
     safeRelease(&pAudioType);
+    return true;
+}
+
+} // anonymous namespace
+
+//-------------------------------------------------------------------
+// configureAudioStream
+//
+// Selects an audio stream from the source file, and configures the
+// stream to deliver decoded PCM audio.
+//-------------------------------------------------------------------
+
+/** Cobbled together from:
+ http://msdn.microsoft.com/en-us/library/dd757929(v=vs.85).aspx
+ and http://msdn.microsoft.com/en-us/library/dd317928(VS.85).aspx
+ -- Albert
+ If anything in here fails, just bail. I'm not going to decode HRESULTS.
+ -- Bill
+ */
+bool SoundSourceMediaFoundation::configureAudioStream(const OpenParams& openParams) {
+    HRESULT hr;
+
+    // deselect all streams, we only want the first
+    hr = m_pSourceReader->SetStreamSelection(
+            MF_SOURCE_READER_ALL_STREAMS, false);
+    if (FAILED(hr)) {
+        kLogger.warning() << hr
+                << "failed to deselect all streams";
+        return false;
+    }
+
+    hr = m_pSourceReader->SetStreamSelection(
+            kStreamIndex, true);
+    if (FAILED(hr)) {
+        kLogger.warning() << hr
+                << "failed to select first audio stream";
+        return false;
+    }
+
+    SINT bitrate;
+    if (!configureMediaType(m_pSourceReader, &bitrate, openParams)) {
+        // Fallback: Ignore custom params
+        if (!configureMediaType(m_pSourceReader, &bitrate)) {
+            kLogger.warning() << "Unsupported media type";
+            return false;
+        }
+    }
+    initBitrateOnce(bitrate);
 
     // Get the resulting output format.
+    IMFMediaType* pAudioType = nullptr;
     hr = m_pSourceReader->GetCurrentMediaType(
             kStreamIndex, &pAudioType);
     if (FAILED(hr)) {
         kLogger.warning() << hr
                 << "failed to retrieve completed media type";
+        safeRelease(&pAudioType);
         return false;
     }
 
@@ -671,23 +694,28 @@ bool SoundSourceMediaFoundation::configureAudioStream(const OpenParams& params) 
     if (FAILED(hr)) {
         kLogger.warning() << hr
                 << "failed to select first audio stream (again)";
+        safeRelease(&pAudioType);
         return false;
     }
 
+    UINT32 numChannels;
     hr = pAudioType->GetUINT32(
             MF_MT_AUDIO_NUM_CHANNELS, &numChannels);
     if (FAILED(hr)) {
         kLogger.warning() << hr
                 << "failed to get actual number of channels";
+        safeRelease(&pAudioType);
         return false;
     }
     setChannelCount(numChannels);
 
+    UINT32 samplesPerSecond;
     hr = pAudioType->GetUINT32(
             MF_MT_AUDIO_SAMPLES_PER_SECOND, &samplesPerSecond);
     if (FAILED(hr)) {
         kLogger.warning() << hr
                 << "failed to get the actual sample rate";
+        safeRelease(&pAudioType);
         return false;
     }
     setSampleRate(samplesPerSecond);
@@ -697,6 +725,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const OpenParams& params) 
     if (FAILED(hr)) {
         kLogger.warning() << hr
                 << "failed to get sample buffer size (in bytes)";
+        safeRelease(&pAudioType);
         return false;
     }
     DEBUG_ASSERT((leftoverBufferSizeInBytes % kBytesPerSample) == 0);
@@ -709,11 +738,8 @@ bool SoundSourceMediaFoundation::configureAudioStream(const OpenParams& params) 
     kLogger.debug()
             << "Sample buffer capacity"
             << m_sampleBuffer.capacity();
-
             
-    // Finally release the reference
     safeRelease(&pAudioType);
-
     return true;
 }
 

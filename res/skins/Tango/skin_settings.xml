@@ -365,7 +365,7 @@ Description:
                             <SizePolicy>me,f</SizePolicy>
                             <Text>!</Text>
                             <Connection>
-                              <ConfigKey persist="true">[Master],show_mixerr</ConfigKey>
+                              <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
                               <BindProperty>visible</BindProperty>
                             </Connection>
                           </Label>
@@ -401,7 +401,7 @@ Description:
                     <MaximumSize>182,17</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
                     <Connection>
-                      <ConfigKey persist="true">[Master],show_mixerr</ConfigKey>
+                      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
                       <Transform><Not/></Transform>
                       <BindProperty>visible</BindProperty>
                     </Connection>
@@ -410,7 +410,7 @@ Description:
                   <Template src="skin:skin_settings_button_2state.xml">
                     <SetVariable name="state_0_text">      EQ Knobs</SetVariable>
                     <SetVariable name="state_1_text"> &#10004; EQ Knobs</SetVariable>
-                    <SetVariable name="Setting">[Tango],eq_knobs</SetVariable>
+                    <SetVariable name="Setting">[Master],show_eqs</SetVariable>
                   </Template>
 
                 </Children>
@@ -432,7 +432,7 @@ Description:
                     <MaximumSize>182,17</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
                     <Connection>
-                      <ConfigKey persist="true">[Master],show_mixerr</ConfigKey>
+                      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
@@ -527,7 +527,7 @@ Description:
                           <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
                         </Children>
                         <Connection>
-                          <ConfigKey persist="true">[Master],show_mixerr</ConfigKey>
+                          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
                       </WidgetGroup><!-- /hint: enforced small cover/spinny with mixer-->
@@ -700,13 +700,13 @@ Description:
                             <SetVariable name="state_x_text"> [ 2 ] </SetVariable>
                             <SetVariable name="width">26</SetVariable>
                             <SetVariable name="stateX">0</SetVariable>
-                            <SetVariable name="Setting">[Tango],4_fx_units</SetVariable>
+                            <SetVariable name="Setting">[Tango],4_FxUnits</SetVariable>
                           </Template>
                           <Template src="skin:skin_settings_button_multi.xml">
                             <SetVariable name="state_x_text"> [ 4 ] </SetVariable>
                             <SetVariable name="width">26</SetVariable>
                             <SetVariable name="stateX">1</SetVariable>
-                            <SetVariable name="Setting">[Tango],4_fx_units</SetVariable>
+                            <SetVariable name="Setting">[Tango],4_FxUnits</SetVariable>
                           </Template>
                           <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
                         </Children>
@@ -739,7 +739,7 @@ Description:
                   <Template src="skin:skin_settings_button_2state.xml">
                     <SetVariable name="state_0_text">      Super Knobs</SetVariable>
                     <SetVariable name="state_1_text"> &#10004; Super Knobs</SetVariable>
-                    <SetVariable name="Setting">[Tango],fx_super_knob</SetVariable>
+                    <SetVariable name="Setting">[Master],show_superknobs</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup><!-- /Super Knobs -->
@@ -810,13 +810,17 @@ Description:
                         </Connection>
                       </WidgetGroup>
 
-                      <Template src="skin:skin_settings_sampler_rows.xml"/>
+                      <!--Template src="skin:skin_settings_sampler_rows.xml"/-->
+
+                      <SingletonContainer>
+                        <ObjectName>SamplerRowsButton_Singleton</ObjectName>
+                      </SingletonContainer>
 
                     </Children>
                   </WidgetGroup><!-- /Sampler row buttons -->
                 </Children>
               </WidgetGroup><!-- /Sampler rows -->
-          
+
               <WidgetGroup><!-- Load/Save Sampler Bank -->
                 <ObjectName>AlignLeft</ObjectName>
                 <Layout>horizontal</Layout>
