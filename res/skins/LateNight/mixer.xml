@@ -183,16 +183,16 @@
 
           <WidgetGroup>
             <ObjectName>MasterControls</ObjectName>
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>max,min</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
 
               <WidgetGroup><!-- FX buttons 1/2 -->
                 <Layout>horizontal</Layout>
-                <SizePolicy>min,min</SizePolicy>
+                <SizePolicy>me,min</SizePolicy>
                 <Children>
                   <PushButton>
-                    <Size>35f,22f</Size>
+                    <Size>35me,22f</Size>
                     <TooltipId>EffectUnit_master_enabled</TooltipId>
                     <ObjectName>FxAssignButton</ObjectName>
                     <NumberStates>2</NumberStates>
@@ -211,7 +211,7 @@
                   </PushButton>
 
                   <PushButton>
-                    <Size>35f,22f</Size>
+                    <Size>35me,22f</Size>
                     <TooltipId>EffectUnit_master_enabled</TooltipId>
                     <ObjectName>FxAssignButton</ObjectName>
                     <NumberStates>2</NumberStates>
@@ -231,12 +231,13 @@
                 </Children>
               </WidgetGroup><!-- /FX buttons 1/2 -->
 
-              <!-- FX buttons 3/4<WidgetGroup>
+              <!-- FX buttons 3/4 --><!-- 
+              <WidgetGroup>
                 <Layout>horizontal</Layout>
-                <SizePolicy>min,min</SizePolicy>
+                <SizePolicy>me,min</SizePolicy>
                 <Children>
                   <PushButton>
-                    <Size>35f,22f</Size>
+                    <Size>35me,22f</Size>
                     <TooltipId>EffectUnit_master_enabled</TooltipId>
                     <ObjectName>FxAssignButton</ObjectName>
                     <NumberStates>2</NumberStates>
@@ -255,7 +256,7 @@
                   </PushButton>
 
                   <PushButton>
-                    <Size>35f,22f</Size>
+                    <Size>35me,22f</Size>
                     <TooltipId>EffectUnit_master_enabled</TooltipId>
                     <ObjectName>FxAssignButton</ObjectName>
                     <NumberStates>2</NumberStates>
@@ -273,24 +274,50 @@
                     </Connection>
                   </PushButton>
                 </Children>
-              </WidgetGroup> --><!-- /FX buttons 3/4 -->
+              </WidgetGroup>/FX buttons 3/4 -->
 
-              <WidgetGroup><Size>0min,1f</Size></WidgetGroup>
+              <WidgetGroup><Size>0min,1me</Size></WidgetGroup>
 
-              <Template src="skin:knob.xml">
-                <SetVariable name="Size">36f,30f</SetVariable>
-                <SetVariable name="TooltipId">master_gain</SetVariable>
-                <SetVariable name="group">[Master]</SetVariable>
-                <SetVariable name="control">gain</SetVariable>
-                <SetVariable name="label">Master</SetVariable>
-              </Template>
-              <Template src="skin:knob.xml">
-                <SetVariable name="Size">36f,30f</SetVariable>
-                <SetVariable name="TooltipId">balance</SetVariable>
-                <SetVariable name="group">[Master]</SetVariable>
-                <SetVariable name="control">balance</SetVariable>
-                <SetVariable name="label">Balance</SetVariable>
-              </Template>
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Template src="skin:knob.xml">
+                    <SetVariable name="Size">36f,30f</SetVariable>
+                    <SetVariable name="TooltipId">master_gain</SetVariable>
+                    <SetVariable name="group">[Master]</SetVariable>
+                    <SetVariable name="control">gain</SetVariable>
+                    <SetVariable name="label">Master</SetVariable>
+                  </Template>
+                  <Template src="skin:knob.xml">
+                    <SetVariable name="Size">36f,30f</SetVariable>
+                    <SetVariable name="TooltipId">balance</SetVariable>
+                    <SetVariable name="group">[Master]</SetVariable>
+                    <SetVariable name="control">balance</SetVariable>
+                    <SetVariable name="label">L / R</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup><Size>0min,1me</Size></WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Template src="skin:knob.xml">
+                    <SetVariable name="Size">36f,30f</SetVariable>
+                    <SetVariable name="TooltipId">master_gain</SetVariable>
+                    <SetVariable name="group">[Booth]</SetVariable>
+                    <SetVariable name="control">gain</SetVariable>
+                    <SetVariable name="label">Booth</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Master],booth_enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
 
               <WidgetGroup><Size>0min,1me</Size></WidgetGroup>
 
@@ -373,20 +400,56 @@
 
               <WidgetGroup><Size>0min,1me</Size></WidgetGroup>
 
-              <Template src="skin:knob.xml">
-                <SetVariable name="Size">36f,30f</SetVariable>
-                <SetVariable name="TooltipId">headphone_gain</SetVariable>
-                <SetVariable name="group">[Master]</SetVariable>
-                <SetVariable name="control">headGain</SetVariable>
-                <SetVariable name="label">Head Gain</SetVariable>
-              </Template>
-              <Template src="skin:knob.xml">
-                <SetVariable name="Size">36f,30f</SetVariable>
-                <SetVariable name="TooltipId">headMix</SetVariable>
-                <SetVariable name="group">[Master]</SetVariable>
-                <SetVariable name="control">headMix</SetVariable>
-                <SetVariable name="label">Pre/Main</SetVariable>
-              </Template>
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Template src="skin:knob.xml">
+                    <SetVariable name="Size">36f,30f</SetVariable>
+                    <SetVariable name="TooltipId">headphone_gain</SetVariable>
+                    <SetVariable name="group">[Master]</SetVariable>
+                    <SetVariable name="control">headGain</SetVariable>
+                    <SetVariable name="label">Head</SetVariable>
+                  </Template>
+                  <Template src="skin:knob.xml">
+                    <SetVariable name="Size">36f,30f</SetVariable>
+                    <SetVariable name="TooltipId">headMix</SetVariable>
+                    <SetVariable name="group">[Master]</SetVariable>
+                    <SetVariable name="control">headMix</SetVariable>
+                    <SetVariable name="label">Pre/MST</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Master],booth_enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Template src="skin:knob.xml">
+                    <SetVariable name="Size">36f,30f</SetVariable>
+                    <SetVariable name="TooltipId">headphone_gain</SetVariable>
+                    <SetVariable name="group">[Master]</SetVariable>
+                    <SetVariable name="control">headGain</SetVariable>
+                    <SetVariable name="label">Head</SetVariable>
+                  </Template>
+                  <Template src="skin:knob.xml">
+                    <SetVariable name="Size">36f,30f</SetVariable>
+                    <SetVariable name="TooltipId">headMix</SetVariable>
+                    <SetVariable name="group">[Master]</SetVariable>
+                    <SetVariable name="control">headMix</SetVariable>
+                    <SetVariable name="label">Pre/MST</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Master],booth_enabled</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
 
               <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
             </Children>
