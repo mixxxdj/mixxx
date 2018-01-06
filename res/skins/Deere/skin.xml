@@ -168,12 +168,8 @@
           <Size>-1me,-1me</Size>
           <Children>
             <WidgetGroup>
-              <Connection>
-                <ConfigKey>[Master],maximize_library</ConfigKey>
-                <BindProperty>visible</BindProperty>
-                <Transform><Not/></Transform>
-              </Connection>
               <Layout>vertical</Layout>
+              <SizePolicy>min,max</SizePolicy>
               <Children>
 
                 <Template src="skin:main_decks.xml"/>
@@ -182,6 +178,11 @@
                 <Template src="skin:microphone_rack.xml"/>
 
               </Children>
+              <Connection>
+                <ConfigKey>[Master],maximize_library</ConfigKey>
+                <BindProperty>visible</BindProperty>
+                <Transform><Not/></Transform>
+              </Connection>
             </WidgetGroup>
 
             <Template src="skin:library.xml"/>

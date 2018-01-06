@@ -6,7 +6,7 @@
 <Template>
   <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
   <WidgetGroup>
-    <ObjectName>DeckMixer<Variable name="i"/></ObjectName>
+    <ObjectName>DeckMixer</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>min,me</SizePolicy>
     <Children>
@@ -19,11 +19,11 @@
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:mixer_controls_col3.xml"/>
-              <Template src="skin:mixer_controls_col2.xml"/>
+              <Template src="skin:mixer_column_gain_levels.xml"/>
+              <Template src="skin:mixer_column_volume.xml"/>
             </Children>
           </WidgetGroup>
-          <Template src="skin:mixer_controls_col1_right.xml"/>
+          <Template src="skin:mixer_column_eq_right.xml"/>
         </Children>
         <Connection>
           <ConfigKey>[Master],show_4decks</ConfigKey>
@@ -39,13 +39,13 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:mixer_controls_col1_right.xml"/>
+          <Template src="skin:mixer_column_eq_right.xml"/>
           <WidgetGroup>
             <Layout>vertical</Layout>
             <ObjectName>4DecksMixerCol2ContainerRight</ObjectName>
             <Children>
-              <Template src="skin:mixer_controls_col3.xml"/>
-              <Template src="skin:mixer_controls_col2.xml"/>
+              <Template src="skin:mixer_column_gain_levels.xml"/>
+              <Template src="skin:mixer_column_volume.xml"/>
             </Children>
           </WidgetGroup>
         </Children>

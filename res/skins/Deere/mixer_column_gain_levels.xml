@@ -6,7 +6,7 @@
 <Template>
   <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
   <WidgetGroup>
-    <ObjectName>DeckMixer<Variable name="i"/>_Column3</ObjectName>
+    <ObjectName>DeckMixer_Column3</ObjectName>
     <Layout>vertical</Layout>
     <Size>40f,-1me</Size>
     <Children>
@@ -61,13 +61,14 @@
       </WidgetGroup>
 
       <WidgetGroup>
-        <Size>22me,110me</Size>
+        <ObjectName>Channel_VU_Container</ObjectName>
+        <Size>22me,90me</Size>
         <Layout>horizontal</Layout>
         <Children>
           <WidgetGroup>
             <ObjectName>channel_VuMeter_Group</ObjectName>
             <Layout>horizontal</Layout>
-            <MaximumSize>22,130</MaximumSize>
+            <MaximumSize>22,150</MaximumSize>
             <Children>
               <Template src="skin:vumeter_v.xml">
                 <SetVariable name="group"><Variable name="group"/></SetVariable>
