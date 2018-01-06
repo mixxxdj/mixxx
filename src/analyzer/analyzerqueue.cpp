@@ -45,8 +45,8 @@ AnalyzerQueue::AnalyzerQueue(
                 library->dbConnectionPool(),
                 pConfig,
                 mode));
-        connect(m_workers.back().thread(), SIGNAL(progress(int, AnalyzerThreadState, TrackId)),
-            this, SLOT(slotWorkerThreadProgress(int, AnalyzerThreadState, TrackId)));
+        connect(m_workers.back().thread(), SIGNAL(progress(int, AnalyzerThreadState, TrackId, AnalyzerProgress)),
+            this, SLOT(slotWorkerThreadProgress(int, AnalyzerThreadState, TrackId, AnalyzerProgress)));
     }
     // 2nd pass: Start worker threads
     for (const auto& worker: m_workers) {
@@ -73,12 +73,12 @@ void AnalyzerQueue::emitProgressOrFinished() {
     }
     m_lastProgressEmittedAt = now;
 
-    AnalyzerProgress analyzerProgressSum = 0;
-    int analyzerProgressCount = 0;
+    AnalyzerProgress trackProgressSum = 0;
+    int trackProgressCount = 0;
     for (const auto& worker: m_workers) {
-        if (worker.analyzerProgress() >= kAnalyzerProgressNone) {
-            analyzerProgressSum += worker.analyzerProgress();
-            ++analyzerProgressCount;
+        if (worker.trackProgress() >= kAnalyzerProgressNone) {
+            trackProgressSum += worker.trackProgress();
+            ++trackProgressCount;
         }
     }
     // The following algorithm/heuristic shows the user a simple and
@@ -87,11 +87,11 @@ void AnalyzerQueue::emitProgressOrFinished() {
     // threaded case.
     int inProgressCount;
     AnalyzerProgress analyzerProgress;
-    if (analyzerProgressCount > 0) {
+    if (trackProgressCount > 0) {
         DEBUG_ASSERT(kAnalyzerProgressNone == 0);
         DEBUG_ASSERT(kAnalyzerProgressDone == 1);
-        inProgressCount = math_max(1, int(std::ceil(analyzerProgressSum)));
-        analyzerProgress = analyzerProgressSum - std::floor(analyzerProgressSum);
+        inProgressCount = math_max(1, int(std::ceil(trackProgressSum)));
+        analyzerProgress = trackProgressSum - std::floor(trackProgressSum);
     } else {
         inProgressCount = 0;
         analyzerProgress = kAnalyzerProgressUnknown;
@@ -110,7 +110,7 @@ void AnalyzerQueue::emitProgressOrFinished() {
             totalCount);
 }
 
-void AnalyzerQueue::slotWorkerThreadProgress(int threadId, AnalyzerThreadState threadState, TrackId trackId) {
+void AnalyzerQueue::slotWorkerThreadProgress(int threadId, AnalyzerThreadState threadState, TrackId trackId, AnalyzerProgress analyzerProgress) {
     auto& worker = m_workers.at(threadId);
     switch (threadState) {
     case AnalyzerThreadState::Void:
@@ -120,10 +120,12 @@ void AnalyzerQueue::slotWorkerThreadProgress(int threadId, AnalyzerThreadState t
         submitNextTrack(&worker);
         break;
     case AnalyzerThreadState::Busy:
-        emit trackProgress(trackId, worker.receiveAnalyzerProgress(trackId));
+        worker.receiveTrackProgress(trackId, analyzerProgress);
+        emit trackProgress(trackId, analyzerProgress);
         break;
     case AnalyzerThreadState::Done:
-        emit trackProgress(trackId, worker.receiveAnalyzerProgress(trackId));
+        worker.receiveTrackProgress(trackId, analyzerProgress);
+        emit trackProgress(trackId, analyzerProgress);
         ++m_finishedCount;
         DEBUG_ASSERT(m_finishedCount <= m_dequeuedCount);
         break;
@@ -181,7 +183,7 @@ bool AnalyzerQueue::submitNextTrack(Worker* worker) {
             ++m_finishedCount;
             continue;
         }
-        worker->writeNextTrack(std::move(nextTrack));
+        worker->submitNextTrack(std::move(nextTrack));
         m_queuedTrackIds.pop_front();
         ++m_dequeuedCount;
         worker->wakeThread();

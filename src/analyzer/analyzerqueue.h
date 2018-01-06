@@ -44,14 +44,14 @@ class AnalyzerQueue : public QObject {
     void finished();
 
   private slots:
-    void slotWorkerThreadProgress(int threadId, AnalyzerThreadState threadState, TrackId trackId);
+    void slotWorkerThreadProgress(int threadId, AnalyzerThreadState threadState, TrackId trackId, AnalyzerProgress analyzerProgress);
 
   private:
     class Worker {
       public:
         explicit Worker(std::unique_ptr<AnalyzerThread> thread = std::unique_ptr<AnalyzerThread>())
             : m_thread(thread.get()),
-              m_analyzerProgress(kAnalyzerProgressUnknown),
+              m_trackProgress(kAnalyzerProgressUnknown),
               m_threadIdle(false) {
             thread.release()->deleteAfterFinished();
         }
@@ -72,17 +72,17 @@ class AnalyzerQueue : public QObject {
             return m_threadIdle;
         }
 
-        AnalyzerProgress analyzerProgress() const {
-            return m_analyzerProgress;
+        AnalyzerProgress trackProgress() const {
+            return m_trackProgress;
         }
 
-        void writeNextTrack(TrackPointer track) {
+        void submitNextTrack(TrackPointer track) {
             DEBUG_ASSERT(track);
             DEBUG_ASSERT(m_thread);
             DEBUG_ASSERT(m_threadIdle);
             m_track = std::move(track);
             m_threadIdle = false;
-            m_thread->writeNextTrack(m_track);
+            m_thread->submitNextTrack(m_track);
         }
 
         void wakeThread() {
@@ -113,33 +113,30 @@ class AnalyzerQueue : public QObject {
             DEBUG_ASSERT(m_thread);
             DEBUG_ASSERT(!m_threadIdle);
             m_track.reset();
-            m_analyzerProgress = kAnalyzerProgressUnknown;
+            m_trackProgress = kAnalyzerProgressUnknown;
             m_threadIdle = true;
         }
 
-        AnalyzerProgress receiveAnalyzerProgress(TrackId trackId) {
+        void receiveTrackProgress(TrackId trackId, AnalyzerProgress trackProgress) {
             DEBUG_ASSERT(m_thread);
             DEBUG_ASSERT(m_track);
             DEBUG_ASSERT(m_track->getId() == trackId);
             DEBUG_ASSERT(!m_threadIdle);
-            // Read and store the atomic control value...
-            m_analyzerProgress = m_thread->readAnalyzerProgress();
-            // ...and return the result for further processing
-            return m_analyzerProgress;
+            m_trackProgress = trackProgress;
         }
 
         void receiveThreadExit() {
             DEBUG_ASSERT(m_thread);
             m_thread = nullptr;
             m_track.reset();
-            m_analyzerProgress = kAnalyzerProgressUnknown;
+            m_trackProgress = kAnalyzerProgressUnknown;
             m_threadIdle = false;
         }
 
       private:
         AnalyzerThread* m_thread;
         TrackPointer m_track;
-        AnalyzerProgress m_analyzerProgress;
+        AnalyzerProgress m_trackProgress;
         bool m_threadIdle;
     };
 

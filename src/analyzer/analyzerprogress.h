@@ -1,17 +1,17 @@
 #pragma once
 
-#include <limits>
-
 #include "util/math.h"
 
 
 typedef double AnalyzerProgress;
 
-constexpr AnalyzerProgress kAnalyzerProgressUnknown    = std::numeric_limits<AnalyzerProgress>::signaling_NaN();
-constexpr AnalyzerProgress kAnalyzerProgressNone       = 0.0f;  //   0.0 %
-constexpr AnalyzerProgress kAnalyzerProgressHalf       = 0.5f;  //  50.0 %
-constexpr AnalyzerProgress kAnalyzerProgressFinalizing = 0.95f; //  95.0 %
-constexpr AnalyzerProgress kAnalyzerProgressDone       = 1.0f;  // 100.0%
+constexpr AnalyzerProgress kAnalyzerProgressUnknown    = -1.0;
+constexpr AnalyzerProgress kAnalyzerProgressNone       =  0.0;  //   0.0 %
+constexpr AnalyzerProgress kAnalyzerProgressHalf       =  0.5;  //  50.0 %
+constexpr AnalyzerProgress kAnalyzerProgressFinalizing =  0.95; //  95.0 %
+constexpr AnalyzerProgress kAnalyzerProgressDone       =  1.0;  // 100.0%
+
+Q_DECLARE_METATYPE(AnalyzerProgress);
 
 // Integer [0, 100]
 inline

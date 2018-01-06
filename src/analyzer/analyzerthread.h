@@ -56,24 +56,21 @@ class AnalyzerThread : public WorkerThread {
         return m_id;
     }
 
-    // Transmits the next track to the worker thread without
+    // Submits the next track to the worker thread without
     // blocking. This is only allowed after a progress() signal
     // with state Idle has been received to avoid overwriting
     // a previously sent track that has not been received by the
     // worker thread, yet.
-    void writeNextTrack(const TrackPointer& nextTrack);
-
-    // Non-blocking atomic read of the current analyzer progress
-    AnalyzerProgress readAnalyzerProgress() const {
-        return m_analyzerProgress.getValue();
-    }
+    void submitNextTrack(TrackPointer nextTrack);
 
   signals:
     // Use a single signal for progress updates to ensure that all signals
     // are queued and received in the same order as emitted from the internal
     // worker thread. Different signals would otherwise end up in different
     // queued connections which are processed in an undefined order!
-    void progress(int threadId, AnalyzerThreadState threadState, TrackId trackId);
+    // TODO(uklotzde): Encapsulate all signal parameters into an
+    // AnalyzerThreadProgress object and register it as a new meta type.
+    void progress(int threadId, AnalyzerThreadState threadState, TrackId trackId, AnalyzerProgress trackProgress);
 
   protected:
     void exec() override;
@@ -92,8 +89,6 @@ class AnalyzerThread : public WorkerThread {
     // Thread-safe atomic values
 
     ControlValueAtomic<TrackPointer> m_nextTrack;
-
-    ControlValueAtomic<AnalyzerProgress> m_analyzerProgress;
 
     /////////////////////////////////////////////////////////////////////////
     // Thread local: Only used in the constructor/destructor and within
@@ -129,6 +124,9 @@ class AnalyzerThread : public WorkerThread {
     // Unconditionally emits a progress() signal when done
     void emitDoneProgress(AnalyzerProgress doneProgress);
 
+    // Unconditionally emits any kind of progress() signal if not current track is present
+    void emitProgress(AnalyzerThreadState state);
+
     // Unconditionally emits any kind of progress() signal
-    void emitProgress(AnalyzerThreadState state, TrackId trackId = TrackId());
+    void emitProgress(AnalyzerThreadState state, TrackId trackId, AnalyzerProgress trackProgress);
 };

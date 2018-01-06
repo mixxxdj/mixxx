@@ -54,9 +54,11 @@ AnalyzerThread::AnalyzerThread(
           // The first signal should always be emitted
           m_lastBusyProgressEmittedAt(Clock::now() - kBusyProgressInhibitDuration) {
     m_nextTrack.setValue(TrackPointer());
-    m_analyzerProgress.setValue(kAnalyzerProgressUnknown);
-    // This type is registered multiple times although once would be sufficient
+    // The types are registered multiple times although once would be sufficient
     qRegisterMetaType<AnalyzerThreadState>();
+    // AnalyzerProgress is just an alias/typedef and must be registered explicitly
+    // by name!
+    qRegisterMetaType<AnalyzerProgress>("AnalyzerProgress");
 }
 
 void AnalyzerThread::exec() {
@@ -160,9 +162,9 @@ void AnalyzerThread::exec() {
     emitProgress(AnalyzerThreadState::Exit);
 }
 
-void AnalyzerThread::writeNextTrack(const TrackPointer& nextTrack) {
+void AnalyzerThread::submitNextTrack(TrackPointer nextTrack) {
     DEBUG_ASSERT(!m_nextTrack.getValue());
-    m_nextTrack.setValue(nextTrack);
+    m_nextTrack.setValue(std::move(nextTrack));
 }
 
 WorkerThread::FetchWorkResult AnalyzerThread::fetchWork() {
@@ -262,11 +264,6 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
 
 void AnalyzerThread::emitBusyProgress(AnalyzerProgress busyProgress) {
     DEBUG_ASSERT(m_currentTrack);
-    // The actual progress value is updated always even if the following
-    // signal might be inhibited (see below). The value could be read
-    // independently of the signal and should always reflect the current
-    // progress.
-    m_analyzerProgress.setValue(busyProgress);
     // Signals are only sent with the specified maximum frequency
     // to avoid flooding the signal queue, which might impair the
     // responsiveness of the ui thread.
@@ -278,24 +275,29 @@ void AnalyzerThread::emitBusyProgress(AnalyzerProgress busyProgress) {
         return;
     }
     m_lastBusyProgressEmittedAt = now;
-    emitProgress(AnalyzerThreadState::Busy, m_currentTrack->getId());
+    emitProgress(AnalyzerThreadState::Busy, m_currentTrack->getId(), busyProgress);
 }
 
 void AnalyzerThread::emitDoneProgress(AnalyzerProgress doneProgress) {
     DEBUG_ASSERT(m_currentTrack);
-    m_analyzerProgress.setValue(doneProgress);
     // Release all references of the track before emitting the signal
     // to ensure that the last reference is not dropped in this worker
     // thread that might trigger database actions! The AnalyzerQueue
     // must store a TrackPointer until receiving the Done signal.
     TrackId trackId = m_currentTrack->getId();
     m_currentTrack.reset();
-    emitProgress(AnalyzerThreadState::Done, trackId);
+    emitProgress(AnalyzerThreadState::Done, trackId, doneProgress);
 }
 
-void AnalyzerThread::emitProgress(AnalyzerThreadState state, TrackId trackId) {
+void AnalyzerThread::emitProgress(AnalyzerThreadState state) {
+    DEBUG_ASSERT(!m_currentTrack);
+    emitProgress(state, TrackId(), kAnalyzerProgressUnknown);
+}
+
+void AnalyzerThread::emitProgress(AnalyzerThreadState state, TrackId trackId, AnalyzerProgress trackProgress) {
     DEBUG_ASSERT(!m_currentTrack || (state == AnalyzerThreadState::Busy));
     DEBUG_ASSERT(!m_currentTrack || (m_currentTrack->getId() == trackId));
+    DEBUG_ASSERT(trackId.isValid() || (trackProgress == kAnalyzerProgressUnknown));
     m_emittedState = state;
-    emit(progress(m_id, m_emittedState, trackId));
+    emit progress(m_id, m_emittedState, trackId, trackProgress);
 }
