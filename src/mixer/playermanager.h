@@ -9,7 +9,7 @@
 #include <QMap>
 #include <QMutex>
 
-#include "analyzer/analyzerqueue.h"
+#include "analyzer/trackanalysisscheduler.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
 
@@ -253,7 +253,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     ControlObject* m_pCONumMicrophones;
     ControlObject* m_pCONumAuxiliaries;
 
-    AnalyzerQueuePointer m_pAnalyzerQueue;
+    TrackAnalysisSchedulerPointer m_pTrackAnalysisScheduler;
 
     QList<Deck*> m_decks;
     QList<Sampler*> m_samplers;

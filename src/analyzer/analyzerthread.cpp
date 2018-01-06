@@ -282,7 +282,7 @@ void AnalyzerThread::emitDoneProgress(AnalyzerProgress doneProgress) {
     DEBUG_ASSERT(m_currentTrack);
     // Release all references of the track before emitting the signal
     // to ensure that the last reference is not dropped in this worker
-    // thread that might trigger database actions! The AnalyzerQueue
+    // thread that might trigger database actions! The TrackAnalysisScheduler
     // must store a TrackPointer until receiving the Done signal.
     TrackId trackId = m_currentTrack->getId();
     m_currentTrack.reset();

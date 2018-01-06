@@ -148,9 +148,9 @@ void DlgAnalysis::slotAnalysisActive(bool bActive) {
     }
 }
 
-void DlgAnalysis::slotAnalyzerQueueProgress(
+void DlgAnalysis::slotTrackAnalysisSchedulerProgress(
         AnalyzerProgress analyzerProgress, int finishedCount, int totalCount) {
-    //qDebug() << this << "slotAnalyzerQueueProgress" << analyzerProgress << finishedCount << totalCount;
+    //qDebug() << this << "slotTrackAnalysisSchedulerProgress" << analyzerProgress << finishedCount << totalCount;
     if (labelProgress->isEnabled()) {
         QString progressText;
         if (analyzerProgress >= kAnalyzerProgressNone) {

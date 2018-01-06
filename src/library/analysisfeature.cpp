@@ -96,7 +96,7 @@ void AnalysisFeature::bindWidget(WLibrary* libraryWidget,
     m_pAnalysisView->installEventFilter(keyboard);
 
     // Let the DlgAnalysis know whether or not analysis is active.
-    emit(analysisActive(static_cast<bool>(m_pAnalyzerQueue)));
+    emit(analysisActive(static_cast<bool>(m_pTrackAnalysisScheduler)));
 
     libraryWidget->registerView(m_sAnalysisViewName, m_pAnalysisView);
 }
@@ -121,18 +121,18 @@ void AnalysisFeature::activate() {
 }
 
 void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
-    if (!m_pAnalyzerQueue) {
-        m_pAnalyzerQueue = AnalyzerQueuePointer(
+    if (!m_pTrackAnalysisScheduler) {
+        m_pTrackAnalysisScheduler = TrackAnalysisSchedulerPointer(
                 m_library,
                 kNumberOfAnalyzerThreads,
                 m_pConfig,
                 getAnalyzerMode(m_pConfig));
 
-        connect(m_pAnalyzerQueue, SIGNAL(progress(AnalyzerProgress, int, int)),
-                m_pAnalysisView, SLOT(slotAnalyzerQueueProgress(AnalyzerProgress, int, int)));
-        connect(m_pAnalyzerQueue, SIGNAL(progress(AnalyzerProgress, int, int)),
-                this, SLOT(slotAnalyzerQueueProgress(AnalyzerProgress, int, int)));
-        connect(m_pAnalyzerQueue, SIGNAL(finished()),
+        connect(m_pTrackAnalysisScheduler, SIGNAL(progress(AnalyzerProgress, int, int)),
+                m_pAnalysisView, SLOT(slotTrackAnalysisSchedulerProgress(AnalyzerProgress, int, int)));
+        connect(m_pTrackAnalysisScheduler, SIGNAL(progress(AnalyzerProgress, int, int)),
+                this, SLOT(slotTrackAnalysisSchedulerProgress(AnalyzerProgress, int, int)));
+        connect(m_pTrackAnalysisScheduler, SIGNAL(finished()),
                 this, SLOT(onTrackAnalysisFinished()));
 
         emit(analysisActive(true));
@@ -140,13 +140,13 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
 
     for (const auto& trackId: trackIds) {
         if (trackId.isValid()) {
-            m_pAnalyzerQueue->scheduleTrackId(trackId);
+            m_pTrackAnalysisScheduler->scheduleTrackById(trackId);
         }
     }
-    m_pAnalyzerQueue->resume();
+    m_pTrackAnalysisScheduler->resume();
 }
 
-void AnalysisFeature::slotAnalyzerQueueProgress(
+void AnalysisFeature::slotTrackAnalysisSchedulerProgress(
         AnalyzerProgress /*analyzerProgress*/,
         int currentCount,
         int totalCount) {
@@ -168,22 +168,22 @@ void AnalysisFeature::onTrackAnalysisFinished() {
 
 void AnalysisFeature::suspendAnalysis() {
     //qDebug() << this << "suspendAnalysis";
-    if (m_pAnalyzerQueue) {
-        m_pAnalyzerQueue->suspend();
+    if (m_pTrackAnalysisScheduler) {
+        m_pTrackAnalysisScheduler->suspend();
     }
 }
 
 void AnalysisFeature::resumeAnalysis() {
     //qDebug() << this << "resumeAnalysis";
-    if (m_pAnalyzerQueue) {
-        m_pAnalyzerQueue->resume();
+    if (m_pTrackAnalysisScheduler) {
+        m_pTrackAnalysisScheduler->resume();
     }
 }
 
 void AnalysisFeature::stopAnalysis() {
     //qDebug() << this << "stopAnalysis()";
-    if (m_pAnalyzerQueue) {
-        m_pAnalyzerQueue.reset();
+    if (m_pTrackAnalysisScheduler) {
+        m_pTrackAnalysisScheduler.reset();
     }
     setTitleDefault();
     emit(analysisActive(false));

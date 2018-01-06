@@ -110,7 +110,7 @@ PlayerManager::~PlayerManager() {
     delete m_pCONumMicrophones;
     delete m_pCONumAuxiliaries;
 
-    m_pAnalyzerQueue.reset();
+    m_pTrackAnalysisScheduler.reset();
 }
 
 void PlayerManager::bindToLibrary(Library* pLibrary) {
@@ -122,12 +122,12 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
     connect(this, SIGNAL(loadLocationToPlayer(QString, QString)),
             pLibrary, SLOT(slotLoadLocationToPlayer(QString, QString)));
 
-    DEBUG_ASSERT(!m_pAnalyzerQueue);
-    m_pAnalyzerQueue = AnalyzerQueuePointer(pLibrary, kNumberOfAnalyzerThreads, m_pConfig);
+    DEBUG_ASSERT(!m_pTrackAnalysisScheduler);
+    m_pTrackAnalysisScheduler = TrackAnalysisSchedulerPointer(pLibrary, kNumberOfAnalyzerThreads, m_pConfig);
 
-    connect(m_pAnalyzerQueue, SIGNAL(trackProgress(TrackId, AnalyzerProgress)),
+    connect(m_pTrackAnalysisScheduler, SIGNAL(trackProgress(TrackId, AnalyzerProgress)),
             this, SLOT(onTrackAnalysisProgress(TrackId, AnalyzerProgress)));
-    connect(m_pAnalyzerQueue, SIGNAL(finished()),
+    connect(m_pTrackAnalysisScheduler, SIGNAL(finished()),
             this, SLOT(onTrackAnalysisFinished()));
 
     // Connect the player to the analyzer queue so that loaded tracks are
@@ -365,7 +365,7 @@ void PlayerManager::addDeckInner() {
     connect(pDeck, SIGNAL(noVinylControlInputConfigured()),
             this, SIGNAL(noVinylControlInputConfigured()));
 
-    if (m_pAnalyzerQueue) {
+    if (m_pTrackAnalysisScheduler) {
         connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
                 this, SLOT(slotAnalyzeTrack(TrackPointer)));
     }
@@ -426,7 +426,7 @@ void PlayerManager::addSamplerInner() {
 
     Sampler* pSampler = new Sampler(this, m_pConfig, m_pEngine,
                                     m_pEffectsManager, orientation, group);
-    if (m_pAnalyzerQueue) {
+    if (m_pTrackAnalysisScheduler) {
         connect(pSampler, SIGNAL(newTrackLoaded(TrackPointer)),
                 this, SLOT(slotAnalyzeTrack(TrackPointer)));
     }
@@ -454,7 +454,7 @@ void PlayerManager::addPreviewDeckInner() {
     PreviewDeck* pPreviewDeck = new PreviewDeck(this, m_pConfig, m_pEngine,
                                                 m_pEffectsManager, orientation,
                                                 group);
-    if (m_pAnalyzerQueue) {
+    if (m_pTrackAnalysisScheduler) {
         connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
                 this, SLOT(slotAnalyzeTrack(TrackPointer)));
     }
@@ -624,9 +624,9 @@ void PlayerManager::slotAnalyzeTrack(TrackPointer track) {
     VERIFY_OR_DEBUG_ASSERT(track) {
         return;
     }
-    if (m_pAnalyzerQueue) {
-        m_pAnalyzerQueue->scheduleTrackId(track->getId());
-        m_pAnalyzerQueue->resume();
+    if (m_pTrackAnalysisScheduler) {
+        m_pTrackAnalysisScheduler->scheduleTrackById(track->getId());
+        m_pTrackAnalysisScheduler->resume();
         // The first progress signal will suspend a running batch analysis
         // until all loaded tracks have been analyzed. Emit it once just now
         // before any signals from the analyzer queue arrive.

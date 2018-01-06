@@ -10,31 +10,31 @@
 
 // forward declaration(s)
 class Library;
-class AnalyzerQueuePointer;
+class TrackAnalysisSchedulerPointer;
 
-class AnalyzerQueue : public QObject {
+class TrackAnalysisScheduler : public QObject {
     Q_OBJECT
 
   public:
     // Don't use this constructor which is publicly visible only for technical
-    // reasons! AnalyzerQueue objects should always be allocated dynamically
-    // through AnalyzerQueuePointer (see below) to ensure that all worker threads
+    // reasons! TrackAnalysisScheduler objects should always be allocated dynamically
+    // through TrackAnalysisSchedulerPointer (see below) to ensure that all worker threads
     // have finished running before the corresponding queue is destroyed.
-    AnalyzerQueue(
+    TrackAnalysisScheduler(
             Library* library,
             int numWorkerThreads,
             const UserSettingsPointer& pConfig,
             AnalyzerMode mode = AnalyzerMode::Default);
-    ~AnalyzerQueue() override;
+    ~TrackAnalysisScheduler() override;
 
   public slots:
     // Schedule tracks one by one. After all tracks have been scheduled
     // the caller must invoke resume() once.
-    void scheduleTrackId(TrackId trackId);
+    void scheduleTrackById(TrackId trackId);
 
     void suspend();
 
-    // After enqueuing tracks the analysis must be resumed once.
+    // After scheduling tracks the analysis must be resumed once.
     // Resume must also be called after suspending the analysis.
     void resume();
 
@@ -152,7 +152,7 @@ class AnalyzerQueue : public QObject {
     }
 
     // Stops a running analysis and discards all enqueued tracks.
-    friend class AnalyzerQueuePointer;
+    friend class TrackAnalysisSchedulerPointer;
     void stop();
 
     Library* m_library;
@@ -169,26 +169,26 @@ class AnalyzerQueue : public QObject {
     Clock::time_point m_lastProgressEmittedAt;
 };
 
-// A movable pointer for the dynamic allocation AnalyzerQueue instances
+// A movable pointer for the dynamic allocation TrackAnalysisScheduler instances
 // that accounts for the special destruction semantics.
-class AnalyzerQueuePointer final {
+class TrackAnalysisSchedulerPointer final {
   public:
-    AnalyzerQueuePointer() = default;
-    AnalyzerQueuePointer(
+    TrackAnalysisSchedulerPointer() = default;
+    TrackAnalysisSchedulerPointer(
             Library* library,
             int numWorkerThreads,
             const UserSettingsPointer& pConfig,
             AnalyzerMode mode = AnalyzerMode::Default)
-          : m_impl(std::make_unique<AnalyzerQueue>(library, numWorkerThreads, pConfig, mode)) {
+          : m_impl(std::make_unique<TrackAnalysisScheduler>(library, numWorkerThreads, pConfig, mode)) {
     }
-    AnalyzerQueuePointer(AnalyzerQueuePointer&&) = default;
-    AnalyzerQueuePointer(const AnalyzerQueuePointer&) = delete;
-    ~AnalyzerQueuePointer() {
+    TrackAnalysisSchedulerPointer(TrackAnalysisSchedulerPointer&&) = default;
+    TrackAnalysisSchedulerPointer(const TrackAnalysisSchedulerPointer&) = delete;
+    ~TrackAnalysisSchedulerPointer() {
         reset();
     }
 
-    AnalyzerQueuePointer& operator=(AnalyzerQueuePointer&&) = default;
-    AnalyzerQueuePointer& operator=(const AnalyzerQueuePointer&) = delete;
+    TrackAnalysisSchedulerPointer& operator=(TrackAnalysisSchedulerPointer&&) = default;
+    TrackAnalysisSchedulerPointer& operator=(const TrackAnalysisSchedulerPointer&) = delete;
 
     void reset();
 
@@ -198,15 +198,15 @@ class AnalyzerQueuePointer final {
     bool operator!() const {
         return !m_impl;
     }
-    operator AnalyzerQueue*() const {
+    operator TrackAnalysisScheduler*() const {
         DEBUG_ASSERT(m_impl.get());
         return m_impl.get();
     }
-    AnalyzerQueue* operator->() const {
+    TrackAnalysisScheduler* operator->() const {
         DEBUG_ASSERT(m_impl.get());
         return m_impl.get();
     }
 
   private:
-    std::unique_ptr<AnalyzerQueue> m_impl;
+    std::unique_ptr<TrackAnalysisScheduler> m_impl;
 };

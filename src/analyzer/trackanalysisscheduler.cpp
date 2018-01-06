@@ -1,4 +1,4 @@
-#include "analyzer/analyzerqueue.h"
+#include "analyzer/trackanalysisscheduler.h"
 
 #include "library/library.h"
 #include "library/trackcollection.h"
@@ -8,7 +8,7 @@
 
 namespace {
 
-mixxx::Logger kLogger("AnalyzerQueue");
+mixxx::Logger kLogger("TrackAnalysisScheduler");
 
 constexpr QThread::Priority kWorkerThreadPriority = QThread::LowPriority;
 
@@ -17,7 +17,7 @@ constexpr std::chrono::milliseconds kProgressInhibitDuration(100);
 
 } // anonymous namespace
 
-AnalyzerQueue::AnalyzerQueue(
+TrackAnalysisScheduler::TrackAnalysisScheduler(
         Library* library,
         int numWorkerThreads,
         const UserSettingsPointer& pConfig,
@@ -55,11 +55,11 @@ AnalyzerQueue::AnalyzerQueue(
     }
 }
 
-AnalyzerQueue::~AnalyzerQueue() {
+TrackAnalysisScheduler::~TrackAnalysisScheduler() {
     kLogger.debug() << "Destroying";
 }
 
-void AnalyzerQueue::emitProgressOrFinished() {
+void TrackAnalysisScheduler::emitProgressOrFinished() {
     // The finished() signal is emitted regardless of when the last
     // signal has been emitted
     if (isFinished()) {
@@ -112,7 +112,7 @@ void AnalyzerQueue::emitProgressOrFinished() {
             totalCount);
 }
 
-void AnalyzerQueue::onWorkerThreadProgress(int threadId, AnalyzerThreadState threadState, TrackId trackId, AnalyzerProgress analyzerProgress) {
+void TrackAnalysisScheduler::onWorkerThreadProgress(int threadId, AnalyzerThreadState threadState, TrackId trackId, AnalyzerProgress analyzerProgress) {
     auto& worker = m_workers.at(threadId);
     switch (threadState) {
     case AnalyzerThreadState::Void:
@@ -141,28 +141,28 @@ void AnalyzerQueue::onWorkerThreadProgress(int threadId, AnalyzerThreadState thr
     emitProgressOrFinished();
 }
 
-void AnalyzerQueue::scheduleTrackId(TrackId trackId) {
+void TrackAnalysisScheduler::scheduleTrackById(TrackId trackId) {
     VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
         qWarning()
-                << "Cannot enqueue track with invalid id"
+                << "Cannot schedule track with invalid id"
                 << trackId;
         return;
     }
     m_queuedTrackIds.push_back(trackId);
     // Don't wake up the suspended thread now to avoid race conditions
     // if multiple threads are added in a row by calling this function
-    // multiple times. The caller is responsible to finish the enqueuing
-    // of tracks with resume().
+    // multiple times. The caller is responsible to finish the scheduling
+    // of multiple tracks with resume().
 }
 
-void AnalyzerQueue::suspend() {
+void TrackAnalysisScheduler::suspend() {
     kLogger.debug() << "Suspending";
     for (auto& worker: m_workers) {
         worker.suspendThread();
     }
 }
 
-void AnalyzerQueue::resume() {
+void TrackAnalysisScheduler::resume() {
     kLogger.debug() << "Resuming";
     for (auto& worker: m_workers) {
         if (worker.threadIdle()) {
@@ -172,7 +172,7 @@ void AnalyzerQueue::resume() {
     }
 }
 
-bool AnalyzerQueue::submitNextTrack(Worker* worker) {
+bool TrackAnalysisScheduler::submitNextTrack(Worker* worker) {
     DEBUG_ASSERT(worker);
     while (!m_queuedTrackIds.empty()) {
         TrackId nextTrackId = m_queuedTrackIds.front();
@@ -195,14 +195,14 @@ bool AnalyzerQueue::submitNextTrack(Worker* worker) {
     return false;
 }
 
-void AnalyzerQueue::stop() {
+void TrackAnalysisScheduler::stop() {
     kLogger.debug() << "Stopping";
     for (auto& worker: m_workers) {
         worker.stopThread();
     }
 }
 
-TrackPointer AnalyzerQueue::loadTrackById(TrackId trackId) {
+TrackPointer TrackAnalysisScheduler::loadTrackById(TrackId trackId) {
     VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
         return TrackPointer();
     }
@@ -216,7 +216,7 @@ TrackPointer AnalyzerQueue::loadTrackById(TrackId trackId) {
     return track;
 }
 
-void AnalyzerQueuePointer::reset() {
+void TrackAnalysisSchedulerPointer::reset() {
     if (m_impl) {
         // Trigger stop
         m_impl->stop();

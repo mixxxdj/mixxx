@@ -15,7 +15,7 @@
 #include "library/libraryfeature.h"
 #include "library/dlganalysis.h"
 #include "library/treeitemmodel.h"
-#include "analyzer/analyzerqueue.h"
+#include "analyzer/trackanalysisscheduler.h"
 #include "preferences/usersettings.h"
 
 class Library;
@@ -50,7 +50,7 @@ class AnalysisFeature : public LibraryFeature {
     void resumeAnalysis();
 
   private slots:
-    void slotAnalyzerQueueProgress(AnalyzerProgress analyzerProgress, int currentCount, int totalCount);
+    void slotTrackAnalysisSchedulerProgress(AnalyzerProgress analyzerProgress, int currentCount, int totalCount);
     void onTrackAnalysisFinished();
     void stopAnalysis();
 
@@ -67,7 +67,7 @@ class AnalysisFeature : public LibraryFeature {
     Library* m_library;
 
     UserSettingsPointer m_pConfig;
-    AnalyzerQueuePointer m_pAnalyzerQueue;
+    TrackAnalysisSchedulerPointer m_pTrackAnalysisScheduler;
 
     // The title returned by title()
     QVariant m_Title;
