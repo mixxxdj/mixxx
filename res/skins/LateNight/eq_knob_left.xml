@@ -17,7 +17,7 @@
             <ObjectName>KillButtonLeft</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
-            <MinimumSize>26,30</MinimumSize>
+            <MinimumSize>22,30</MinimumSize>
             <Children>
               <Template src="skin:fx_button.xml">
                 <SetVariable name="icon">kill</SetVariable>

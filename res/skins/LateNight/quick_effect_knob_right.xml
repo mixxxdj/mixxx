@@ -29,7 +29,7 @@
             <ObjectName>KillButtonRight</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
-            <MinimumSize>26,30</MinimumSize>
+            <MinimumSize>22,30</MinimumSize>
             <Children>
               <PushButton>
                 <TooltipId>QuickEffectRack_enabled</TooltipId>
@@ -67,7 +67,10 @@
         <Children>
           <EffectName>
             <ObjectName>KnobLabel</ObjectName>
-            <Size>40min,12f</Size>
+            <MinimumSize>40,12</MinimumSize>
+            <MaximumSize>62,12</MaximumSize>
+            <SizePolicy>me,f</SizePolicy>
+            <Elide>right</Elide>
             <EffectRackGroup>[QuickEffectRack1]</EffectRackGroup>
             <EffectUnitGroup><Variable name="QuickEffectGroup"/></EffectUnitGroup>
             <Effect>1</Effect>
