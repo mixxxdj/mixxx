@@ -28,6 +28,12 @@ enum IIRPass {
 class EngineFilterIIRBase : public EngineObjectConstIn {
   public:
     virtual void assumeSettled() = 0;
+
+    // Thread-safe wrappers for thread-unsafe fidlib functions
+    static FidFilter *fid_design(const char *spec, double rate, double freq0, double freq1,
+                     int f_adj, char **descp);
+    static double fid_design_coef(double *coef, int n_coef, const char *spec,
+                      double rate, double freq0, double freq1, int adj);
 };
 
 
