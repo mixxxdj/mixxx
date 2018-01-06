@@ -732,7 +732,7 @@ TEST_F(SearchQueryParserTest, ShortCrateFilter) {
 
     // Create new crate and add it to the collection
     Crate testCrate;
-    testCrate.setName(searchTerm);
+    testCrate.setName(crateName);
     CrateId testCrateId;
     collection()->insertCrate(testCrate, &testCrateId);
 

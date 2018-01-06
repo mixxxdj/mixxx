@@ -111,8 +111,10 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                                     QStringList searchColumns,
                                     AndNode* pQuery) const {
     // we need to create a filtered columns list that are handled differently
-    QStringList(queryColumns);
-    for (const auto& column: searchColumns) {
+    auto queryColumns = QStringList();
+    queryColumns.reserve(searchColumns.count());
+
+    for (const auto& column: qAsConst(searchColumns)) {
         if (m_ignoredColumns.contains(column)) {
             continue;
         }
