@@ -48,8 +48,9 @@ AnalyzerQueue::AnalyzerQueue(
         connect(m_workers.back().thread(), SIGNAL(progress(int, AnalyzerThreadState, TrackId, AnalyzerProgress)),
             this, SLOT(slotWorkerThreadProgress(int, AnalyzerThreadState, TrackId, AnalyzerProgress)));
     }
-    // 2nd pass: Start worker threads
+    // 2nd pass: Start worker threads in a suspended state
     for (const auto& worker: m_workers) {
+        worker.thread()->suspend();
         worker.thread()->start(kWorkerThreadPriority);
     }
 }
