@@ -6,7 +6,7 @@
 <Template>
   <WidgetGroup>
     <Layout>horizontal</Layout>
-    <SizePolicy>me,min</SizePolicy>
+    <SizePolicy>me,max</SizePolicy>
     <Children>
       <Template src="skin:left_gutter.xml"/>
       <Template src="skin:mixer.xml"/>

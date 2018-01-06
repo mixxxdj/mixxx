@@ -1,6 +1,7 @@
 <Template>
   <WidgetGroup>
     <ObjectName>SamplerRow</ObjectName>
+    <SizePolicy>min,min</SizePolicy>
     <Layout>horizontal</Layout>
     <Children>
 
@@ -10,7 +11,7 @@
         <Size>20f,-1me</Size>
         <Children>
           <Template src="skin:spacer_vx.xml">
-            <SetVariable name="height">4</SetVariable>
+            <SetVariable name="height">3</SetVariable>
           </Template>
 
           <Template src="skin:hide_show_button.xml">
@@ -38,7 +39,7 @@
 
       <WidgetGroup>
         <ObjectName>SamplerMiddleSpacer</ObjectName>
-        <Size>-1me,-1max</Size>
+        <SizePolicy>me,min</SizePolicy>
       </WidgetGroup>
 
       <Template src="skin:sampler.xml">

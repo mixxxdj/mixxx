@@ -68,12 +68,13 @@
   border-top: 1px solid #222;
   background-color: transparent;
   margin: 0;
-  padding: 0 4px 0 0;
+  padding: 0 3px 0 0;
 }
 
 #ControlsRow {
   border-top: 1px solid #222;
-  padding: 4px;
+  padding: 3px;
+  qproperty-layoutAlignment: 'AlignBottom';
 }
 
 #MixerBorder {
@@ -112,7 +113,7 @@
   /* FIXME */
   border-style: solid;
   border-color: #222;
-  border-width: 1px 0px;
+  border-width: 0px 2px;
 }
 
 #Spacer22 {
@@ -131,6 +132,15 @@ TEST1 {
   qproperty-layoutAlignment: 'AlignRight';
 }
 
+#SampleDecksContainer {
+  border-color: #222;
+  border-style: solid;
+  border-width: 1px 0px 2px 0px;
+}
+
+#SamplerRows {
+}
+
 #SamplerRow1,
 #SamplerRow2,
 #SamplerRow3,
@@ -138,11 +148,15 @@ TEST1 {
 #SamplerRow6,
 #SamplerRow7,
 #SamplerRow8 {
-  border-top: 1px solid #222;
+  border-color: #222;
+  border-style: solid;
+  border-width: 0px 0px 1px 0px;
 }
 
 #SamplerRow5 {
-  border-top: 2px solid #222;
+  border-color: #222;
+  border-style: solid;
+  border-width: 1px 0px 1px 0px;
 }
 
 /*******************************************************************************
@@ -179,6 +193,17 @@ QTableView::item:selected:!active,
 QTreeView::item:selected:!active {
   color: #d2d2d2;
   background-color: #0d4866;
+}
+
+/* Colors aren't applied to selected items, define them manually */
+QTableView::item:selected,
+QTreeView::item:selected,
+#LibraryBPMButton::item:selected,
+QTreeView::branch:selected,
+/* This won't style the Preview button */
+#LibraryPreviewButton::item:selected {
+  color: #D6D6D6;
+  background-color: #006596;
 }
 
 /* checkbox in library "Played" column */
@@ -320,16 +345,17 @@ WBaseLibrary QLabel {
 QPushButton#LibraryPreviewButton {
   width: 23px;
   height: 12px;
-  background: transparent;
   border: none;
 }
 
 QPushButton#LibraryPreviewButton:!checked {
   image: url(skin:/image/style_library_preview_play.png);
+  background-color: #1A1A1A;
 }
 
 QPushButton#LibraryPreviewButton:checked {
   image: url(skin:/image/style_library_preview_pause.png);
+  background-color: #006596;
 }
 
 
@@ -551,7 +577,6 @@ WBaseLibrary QPushButton {
   margin: 2px 3px 2px 3px;
   padding: 2px;
   color: #D2D2D2;
-
   background-color: #4B4B4B;
   border: 1px solid #4B4B4B;
   border-radius: 2px;
@@ -567,6 +592,7 @@ WBaseLibrary QPushButton:!enabled {
      by default QT palette, so style accordingly */
   color: #808080; /* Default #A3A3A3 -90L HSL*/
   background-color: rgba(95, 95, 95, 127);
+                                    /* 50% #5F5F5F = RGBA#5F5F5F7F */
   border: 0px solid #5F5F5F;
 }
 
@@ -717,7 +743,7 @@ WWidget {
 /* Start spacing for Deck overview row (small waveform, option grid) */
 #OptionGrid, #ButtonGrid {
   background-color: #333333;
-  padding: 1px;
+  /*padding: 1px;*/
   qproperty-layoutSpacing: 2;
 }
 
@@ -754,11 +780,6 @@ WWidget {
 
 
 /* Start spacing for Deck controls row (transport, beatgrid, looping, hotcue, vinylcontrol) */
-
-#FullControlsRow {
-  qproperty-layoutSpacing: 3;
-  qproperty-layoutAlignment: 'AlignBottom';
-}
 
 #HotcueGrid, #HotcueGridExtended,
 #VinylControlsContainer {
@@ -957,8 +978,11 @@ WBeatSpinBox {
 
 #EffectUnit1, #EffectUnit2, #EffectUnit3, #EffectUnit4 {
   qproperty-layoutAlignment: 'AlignTop';
+}
+
+#EffectUnitFiller {
   border: 1px solid #222;
-  border-left:none;
+  border-width: 1px 0px 0px 0px;
 }
 
 #EffectButtonControls {
@@ -979,10 +1003,6 @@ WBeatSpinBox {
   font: 10px;
 }
 
-#EffectUnit1 {
-  border-left: 1px solid #222;
-}
-
 #EffectUnitNameContainer {
   padding: 2px;
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
@@ -990,6 +1010,11 @@ WBeatSpinBox {
 
 #EffectMetaKnobControls > WPushButton {
   qproperty-alignment: 'AlignHCenter';
+}
+
+#EffectUnitGroupControls {
+  border: 1px solid #222222;
+  border-width: 0px 0px 1px 0px;
 }
 
 #EffectUnitGroupControlsLeft {
@@ -1114,27 +1139,15 @@ WEffectSelector {
 }
 
 #MainDecks, #MainDeckContainer {
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                    stop: 0 #333333,
-                                    stop: 1.0 #333333);
+  background-color: #333333;
 }
 
 #LeftGutter, #RightGutter {
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                    stop: 0 #222222,
-                                    stop: 1.0 #222222);
+  background-color: #222222;
 }
 
-#Deck1, #Deck2 {
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                    stop: 0 #333333,
-                                    stop: 1.0 #333333);
-}
-
-#Deck3, #Deck4 {
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                    stop: 0 #333333,
-                                    stop: 1.0 #333333);
+#Deck1, #Deck2, #Deck3, #Deck4 {
+  background-color: #333333;
 }
 
 WWidget, WLabel {
@@ -1281,19 +1294,17 @@ WStarRating {
 }
 
 #SampleDecksContainer {
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                    stop: 0 #333333,
-                                    stop: 1.0 #333333);
+  background-color: #333333;
 }
 
 #MicrophonesContainer {
 }
 
-#MicrophoneRackExpanded {
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                    stop: 0 #333333,
-                                    stop: 1.0 #333333);
-  qproperty-layoutSpacing: 6;
+#MicAuxRack {
+  background-color: #333333;
+  qproperty-layoutSpacing: 3;
+  padding-left: 2px;
+  border-bottom: 2px solid #222222;
 }
 
 #MicLabelContainer,
@@ -1302,9 +1313,22 @@ WStarRating {
 }
 
 #MicrophoneContainer, #MicDuckingContainer, #AuxiliaryContainer {
-  padding: 2px 5px;
-  margin: 2px 0px;
+  padding: 4px 4px;
+  margin: 0px;
+}
+
+#MicrophoneContainer, #MicDuckingContainer {
   border: 3px solid #222222;
+  border-width: 0px 3px 0px 0px;
+}
+
+#MicDuckingContainer {
+  qproperty-layoutSpacing: 2;
+}
+
+#AuxiliaryContainer {
+  border: 3px solid #222222;
+  border-width: 0px 0px 0px 3px;
 }
 
 #MicrophoneContainer, #AuxiliaryContainer,
@@ -1317,23 +1341,31 @@ WStarRating {
   qproperty-layoutSpacing: 4;
 }
 
+#AuxLabel, #MicLabel, #DuckingLabel {
+  font-weight: bold;
+}
+
 #MicrophoneButtonsAndMeter, #AuxiliaryButtonsAndMeter {
   qproperty-layoutSpacing: 3;
 }
 
 #LibraryContainer {
-  background-color: #222;
-  padding-top: 4px;
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+  background-color: #222222;
+  padding-top: 2px;
 }
 
-#LibraryExpanded, #LibraryCollapsed {
-  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+#LibrarySplitter {
+  background-color: #222222;
 }
 
 #EffectRackContainer {
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                    stop: 0 #333333,
-                                    stop: 1.0 #333333);
+  background-color: #333333;
+}
+
+#EffectUnitsRow {
+  border: 1px solid #222222;
+  border-width: 0px 0px 3px 0px;
 }
 
 #EffectUnitNoParameters {
@@ -1372,16 +1404,7 @@ WStarRating {
   font-size: 15px;
 }
 
-#EffectUnit1, #EffectUnit2 {
-  /*border-bottom: none;*/
-}
-
 #SampleDecksContainer {
-}
-
-#SamplerBankContainer {
-  padding: 4px;
-  qproperty-layoutSpacing: 2;
 }
 
 #SamplerTopRowOuter {
@@ -1389,10 +1412,6 @@ WStarRating {
 }
 
 #SamplerTopRowInner {
-  qproperty-layoutSpacing: 2;
-}
-
-#SamplerBankGrid {
   qproperty-layoutSpacing: 2;
 }
 
@@ -1702,9 +1721,7 @@ WRecordingDuration {
 
 #SampleDeckToggle[value="1"], #LibraryToggle[value="1"], #EffectRackToggle[value="1"] {
     color: #D2D2D2;
-    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                      stop: 0 #4B4B4B,
-                                      stop: 1 #4B4B4B);
+    background-color: #4B4B4B;
     border: 1px solid #4B4B4B;
     border-radius: 2px;
     outline: none;
@@ -1712,9 +1729,7 @@ WRecordingDuration {
 
 #SampleDeckToggle[value="1"]:hover, #LibraryToggle[value="1"]:hover, #EffectRackToggle[value="1"]:hover {
     color: #D2D2D2;
-    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
-                                      stop: 0 #5F5F5F,
-                                      stop: 1 #5F5F5F);
+    background-color: #5F5F5F;
     border: 0px solid #5F5F5F;
 }
 
