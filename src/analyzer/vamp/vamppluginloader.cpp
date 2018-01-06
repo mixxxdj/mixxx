@@ -21,11 +21,9 @@ namespace mixxx {
 
 namespace {
 
-Logger kLogger("VampPluginLoader");
+const Logger kLogger("VampPluginLoader");
 
 Vamp::HostExt::PluginLoader* s_pPluginLoader = nullptr;
-
-std::once_flag s_initPluginLoaderOnceFlag;
 
 std::mutex s_mutex;
 
@@ -139,15 +137,18 @@ void initPluginPaths() {
 #endif
 }
 
-void initPluginLoader() {
-    initPluginPaths();
-    s_pPluginLoader = Vamp::HostExt::PluginLoader::getInstance();
-}
-
 } // anonymous namespace
 
 VampPluginLoader::VampPluginLoader() {
-    std::call_once(s_initPluginLoaderOnceFlag, initPluginLoader);
+    std::lock_guard<std::mutex> locked(s_mutex);
+    if (!s_pPluginLoader) {
+        initPluginPaths();
+        s_pPluginLoader = Vamp::HostExt::PluginLoader::getInstance();
+        VERIFY_OR_DEBUG_ASSERT(s_pPluginLoader) {
+            kLogger.critical()
+                    << "Failed to get instance of Vamp::HostExt::PluginLoader";
+        }
+    }
 }
 
 Vamp::HostExt::PluginLoader::PluginKey VampPluginLoader::composePluginKey(
