@@ -46,7 +46,7 @@ AnalyzerQueue::AnalyzerQueue(
                 pConfig,
                 mode));
         connect(m_workers.back().thread(), SIGNAL(progress(int, AnalyzerThreadState, TrackId, AnalyzerProgress)),
-            this, SLOT(slotWorkerThreadProgress(int, AnalyzerThreadState, TrackId, AnalyzerProgress)));
+            this, SLOT(onWorkerThreadProgress(int, AnalyzerThreadState, TrackId, AnalyzerProgress)));
     }
     // 2nd pass: Start worker threads in a suspended state
     for (const auto& worker: m_workers) {
@@ -74,28 +74,29 @@ void AnalyzerQueue::emitProgressOrFinished() {
     }
     m_lastProgressEmittedAt = now;
 
-    AnalyzerProgress trackProgressSum = 0;
-    int trackProgressCount = 0;
+    AnalyzerProgress workerProgressSum = 0;
+    int workerProgressCount = 0;
     for (const auto& worker: m_workers) {
-        if (worker.trackProgress() >= kAnalyzerProgressNone) {
-            trackProgressSum += worker.trackProgress();
-            ++trackProgressCount;
+        if (worker.analyzerProgress() >= kAnalyzerProgressNone) {
+            workerProgressSum += worker.analyzerProgress();
+            ++workerProgressCount;
         }
     }
     // The following algorithm/heuristic shows the user a simple and
     // almost linear progress display when multiple threads are running
     // in parallel. It also covers the expected behavior for the single-
-    // threaded case.
+    // threaded case. The observer does not need to know how many threads
+    // are actually processing tracks concurrently behind the scenes.
     int inProgressCount;
-    AnalyzerProgress analyzerProgress;
-    if (trackProgressCount > 0) {
+    AnalyzerProgress currentProgress;
+    if (workerProgressCount > 0) {
         DEBUG_ASSERT(kAnalyzerProgressNone == 0);
         DEBUG_ASSERT(kAnalyzerProgressDone == 1);
-        inProgressCount = math_max(1, int(std::ceil(trackProgressSum)));
-        analyzerProgress = trackProgressSum - std::floor(trackProgressSum);
+        inProgressCount = math_max(1, int(std::ceil(workerProgressSum)));
+        currentProgress = workerProgressSum - std::floor(workerProgressSum);
     } else {
         inProgressCount = 0;
-        analyzerProgress = kAnalyzerProgressUnknown;
+        currentProgress = kAnalyzerProgressUnknown;
     }
     // (m_finishedCount + inProgressCount) might exceed m_dequeuedCount
     // in some situations due to race conditions! The minimum of those
@@ -106,12 +107,12 @@ void AnalyzerQueue::emitProgressOrFinished() {
             m_dequeuedCount + m_queuedTrackIds.size();
     DEBUG_ASSERT(currentCount <= totalCount);
     emit progress(
-            analyzerProgress,
+            currentProgress,
             currentCount,
             totalCount);
 }
 
-void AnalyzerQueue::slotWorkerThreadProgress(int threadId, AnalyzerThreadState threadState, TrackId trackId, AnalyzerProgress analyzerProgress) {
+void AnalyzerQueue::onWorkerThreadProgress(int threadId, AnalyzerThreadState threadState, TrackId trackId, AnalyzerProgress analyzerProgress) {
     auto& worker = m_workers.at(threadId);
     switch (threadState) {
     case AnalyzerThreadState::Void:
@@ -121,11 +122,11 @@ void AnalyzerQueue::slotWorkerThreadProgress(int threadId, AnalyzerThreadState t
         submitNextTrack(&worker);
         break;
     case AnalyzerThreadState::Busy:
-        worker.receiveTrackProgress(trackId, analyzerProgress);
+        worker.receiveAnalyzerProgress(trackId, analyzerProgress);
         emit trackProgress(trackId, analyzerProgress);
         break;
     case AnalyzerThreadState::Done:
-        worker.receiveTrackProgress(trackId, analyzerProgress);
+        worker.receiveAnalyzerProgress(trackId, analyzerProgress);
         emit trackProgress(trackId, analyzerProgress);
         ++m_finishedCount;
         DEBUG_ASSERT(m_finishedCount <= m_dequeuedCount);
@@ -140,7 +141,7 @@ void AnalyzerQueue::slotWorkerThreadProgress(int threadId, AnalyzerThreadState t
     emitProgressOrFinished();
 }
 
-void AnalyzerQueue::enqueueTrackId(TrackId trackId) {
+void AnalyzerQueue::scheduleTrackId(TrackId trackId) {
     VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
         qWarning()
                 << "Cannot enqueue track with invalid id"

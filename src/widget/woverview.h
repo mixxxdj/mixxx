@@ -38,7 +38,7 @@ class WOverview : public WWidget {
     void onConnectedControlChanged(double dParameter, double dValue) override;
     void slotTrackLoaded(TrackPointer pTrack);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
-    void slotTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
+    void onTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
 
   signals:
     void trackDropped(QString filename, QString group);

@@ -133,14 +133,14 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
         connect(m_pAnalyzerQueue, SIGNAL(progress(AnalyzerProgress, int, int)),
                 this, SLOT(slotAnalyzerQueueProgress(AnalyzerProgress, int, int)));
         connect(m_pAnalyzerQueue, SIGNAL(finished()),
-                this, SLOT(slotAnalyzerQueueFinished()));
+                this, SLOT(onTrackAnalysisFinished()));
 
         emit(analysisActive(true));
     }
 
     for (const auto& trackId: trackIds) {
         if (trackId.isValid()) {
-            m_pAnalyzerQueue->enqueueTrackId(trackId);
+            m_pAnalyzerQueue->scheduleTrackId(trackId);
         }
     }
     m_pAnalyzerQueue->resume();
@@ -157,7 +157,7 @@ void AnalysisFeature::slotAnalyzerQueueProgress(
     }
 }
 
-void AnalysisFeature::slotAnalyzerQueueFinished() {
+void AnalysisFeature::onTrackAnalysisFinished() {
     // Free resources by abandoning the queue after the batch analyis
     // has completed. Batch analysis are not started very frequently
     // during a session and should be avoided while performing live.

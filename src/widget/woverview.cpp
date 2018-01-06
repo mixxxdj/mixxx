@@ -65,7 +65,7 @@ WOverview::WOverview(
     setAcceptDrops(true);
 
     connect(pPlayerManager, SIGNAL(trackAnalyzerProgress(TrackId, AnalyzerProgress)),
-            this, SLOT(slotTrackAnalyzerProgress(TrackId, AnalyzerProgress)));
+            this, SLOT(onTrackAnalyzerProgress(TrackId, AnalyzerProgress)));
 }
 
 void WOverview::setup(const QDomNode& node, const SkinContext& context) {
@@ -188,7 +188,7 @@ void WOverview::slotWaveformSummaryUpdated() {
     }
 }
 
-void WOverview::slotTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress) {
+void WOverview::onTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress) {
     if (!m_pCurrentTrack || (m_pCurrentTrack->getId() != trackId)) {
         return;
     }

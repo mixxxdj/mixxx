@@ -27,31 +27,33 @@ class AnalyzerQueue : public QObject {
             AnalyzerMode mode = AnalyzerMode::Default);
     ~AnalyzerQueue() override;
 
-    // Enqueue tracks one by one. After all tracks have been enqueued
-    // the caller must call resume() once.
-    void enqueueTrackId(TrackId trackId);
+  public slots:
+    // Schedule tracks one by one. After all tracks have been scheduled
+    // the caller must invoke resume() once.
+    void scheduleTrackId(TrackId trackId);
 
     void suspend();
 
     // After enqueuing tracks the analysis must be resumed once.
-    // Resume must also be called after pausing the analysis.
+    // Resume must also be called after suspending the analysis.
     void resume();
 
   signals:
     // Progress for individual tracks is passed-through from the workers
     void trackProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
-    void progress(AnalyzerProgress analyzerProgress, int currentCount, int totalCount);
+    // Current average progress for all scheduled tracks and from all workers
+    void progress(AnalyzerProgress currentProgress, int currentCount, int totalCount);
     void finished();
 
   private slots:
-    void slotWorkerThreadProgress(int threadId, AnalyzerThreadState threadState, TrackId trackId, AnalyzerProgress analyzerProgress);
+    void onWorkerThreadProgress(int threadId, AnalyzerThreadState threadState, TrackId trackId, AnalyzerProgress analyzerProgress);
 
   private:
     class Worker {
       public:
         explicit Worker(std::unique_ptr<AnalyzerThread> thread = std::unique_ptr<AnalyzerThread>())
             : m_thread(thread.get()),
-              m_trackProgress(kAnalyzerProgressUnknown),
+              m_analyzerProgress(kAnalyzerProgressUnknown),
               m_threadIdle(false) {
             thread.release()->deleteAfterFinished();
         }
@@ -72,8 +74,8 @@ class AnalyzerQueue : public QObject {
             return m_threadIdle;
         }
 
-        AnalyzerProgress trackProgress() const {
-            return m_trackProgress;
+        AnalyzerProgress analyzerProgress() const {
+            return m_analyzerProgress;
         }
 
         void submitNextTrack(TrackPointer track) {
@@ -113,30 +115,30 @@ class AnalyzerQueue : public QObject {
             DEBUG_ASSERT(m_thread);
             DEBUG_ASSERT(!m_threadIdle);
             m_track.reset();
-            m_trackProgress = kAnalyzerProgressUnknown;
+            m_analyzerProgress = kAnalyzerProgressUnknown;
             m_threadIdle = true;
         }
 
-        void receiveTrackProgress(TrackId trackId, AnalyzerProgress trackProgress) {
+        void receiveAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress) {
             DEBUG_ASSERT(m_thread);
             DEBUG_ASSERT(m_track);
             DEBUG_ASSERT(m_track->getId() == trackId);
             DEBUG_ASSERT(!m_threadIdle);
-            m_trackProgress = trackProgress;
+            m_analyzerProgress = analyzerProgress;
         }
 
         void receiveThreadExit() {
             DEBUG_ASSERT(m_thread);
             m_thread = nullptr;
             m_track.reset();
-            m_trackProgress = kAnalyzerProgressUnknown;
+            m_analyzerProgress = kAnalyzerProgressUnknown;
             m_threadIdle = false;
         }
 
       private:
         AnalyzerThread* m_thread;
         TrackPointer m_track;
-        AnalyzerProgress m_trackProgress;
+        AnalyzerProgress m_analyzerProgress;
         bool m_threadIdle;
     };
 
