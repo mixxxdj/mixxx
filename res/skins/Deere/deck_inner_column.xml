@@ -64,13 +64,6 @@
           </WidgetGroup>
 
         </Children>
-        <Connection>
-          <ConfigKey>[Deere],show_minimal_deck_controls</ConfigKey>
-          <BindProperty>visible</BindProperty>
-          <Transform>
-            <Not/>
-          </Transform>
-        </Connection>
       </WidgetGroup>
 
       <WidgetGroup>
@@ -154,13 +147,6 @@
             <SetVariable name="display_connection_control"><Variable name="group"/>,play_indicator</SetVariable>
           </Template>
         </Children>
-        <Connection>
-          <ConfigKey>[Deere],show_minimal_deck_controls</ConfigKey>
-          <BindProperty>visible</BindProperty>
-          <Transform>
-            <Not/>
-          </Transform>
-        </Connection>
       </WidgetGroup>
 
     </Children>

@@ -43,6 +43,10 @@
             <ObjectName>HeadphoneControls</ObjectName>
             <SizePolicy>me,min</SizePolicy>
             <Layout>horizontal</Layout>
+            <Connection>
+              <ConfigKey>[Master],headEnabled</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
             <Children>
 
               <Template src="skin:knob_toolbar.xml">
@@ -58,7 +62,7 @@
                 <SetVariable name="group">[Master]</SetVariable>
                 <SetVariable name="control">headGain</SetVariable>
                 <SetVariable name="color">red</SetVariable>
-                <SetVariable name="label">Head Gain</SetVariable>
+                <SetVariable name="label">Head</SetVariable>
               </Template>
 
               <Template src="skin:left_2state_button.xml">
@@ -72,12 +76,12 @@
                 <SetVariable name="left_connection_control">[Master],headSplit</SetVariable>
               </Template>
 
+            <Template src="skin:spacer_hx.xml">
+              <SetVariable name="width">15</SetVariable>
+            </Template>
+
             </Children>
           </WidgetGroup>
-
-          <Template src="skin:spacer_hx.xml">
-            <SetVariable name="width">15</SetVariable>
-          </Template>
 
           <WidgetGroup>
             <ObjectName>MasterControls</ObjectName>
@@ -97,9 +101,31 @@
                 <SetVariable name="group">[Master]</SetVariable>
                 <SetVariable name="control">gain</SetVariable>
                 <SetVariable name="color">red</SetVariable>
-                <SetVariable name="label">Gain</SetVariable>
+                <SetVariable name="label">Master</SetVariable>
               </Template>
 
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>BoothControls</ObjectName>
+            <Layout>horizontal</Layout>
+            <Connection>
+              <ConfigKey>[Master],booth_enabled</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+            <Children>
+              <Template src="skin:spacer_hx.xml">
+                <SetVariable name="width">15</SetVariable>
+              </Template>
+
+              <Template src="skin:knob_toolbar.xml">
+                <SetVariable name="TooltipId">booth_gain</SetVariable>
+                <SetVariable name="group">[Master]</SetVariable>
+                <SetVariable name="control">booth_gain</SetVariable>
+                <SetVariable name="color">red</SetVariable>
+                <SetVariable name="label">Booth</SetVariable>
+              </Template>
             </Children>
           </WidgetGroup>
 

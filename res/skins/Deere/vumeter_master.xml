@@ -12,16 +12,14 @@
 
           <!-- Spacer to align with bottom of mixer-->
           <WidgetGroup>
-            <Size>-1,-1me</Size>
-            <MaximumSize>-1,15</MaximumSize>
+            <Size>-1,34f</Size>
             <Layout>vertical</Layout>
             <Children/>
           </WidgetGroup>
 
           <WidgetGroup>
             <ObjectName>master_VuMeter_Group</ObjectName>
-            <Size>22min,-1me</Size>
-            <MaximumSize>-1,160</MaximumSize>
+            <Size>28f,-1me</Size>
             <Layout>horizontal</Layout>
             <Children>
               <Template src="skin:vumeter_v.xml">

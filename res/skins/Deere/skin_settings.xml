@@ -222,24 +222,6 @@
             </Connection>
           </PushButton>
 
-          <PushButton>
-            <TooltipId>toggle_deck_controls</TooltipId>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9898; Minimal Controls</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9899; Minimal Controls</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey>[Deere],show_minimal_deck_controls</ConfigKey>
-            </Connection>
-          </PushButton>
         </Children>
       </WidgetGroup>
 
@@ -288,6 +270,25 @@
             </State>
             <Connection>
               <ConfigKey>[Master],show_eqs</ConfigKey>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <TooltipId>show_killswitches</TooltipId>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9898; Kill Switches</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9899; Kill Switches</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey>[Master],show_killswitches</ConfigKey>
             </Connection>
           </PushButton>
 

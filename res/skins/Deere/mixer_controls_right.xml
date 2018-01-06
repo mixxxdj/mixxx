@@ -16,14 +16,14 @@
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:deck_mixer_controls_col1_left.xml"/>
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:deck_mixer_controls_col2.xml"/>
-              <Template src="skin:deck_mixer_controls_col3.xml"/>
+              <Template src="skin:mixer_controls_col3.xml"/>
+              <Template src="skin:mixer_controls_col2.xml"/>
             </Children>
           </WidgetGroup>
+          <Template src="skin:mixer_controls_col1_right.xml"/>
         </Children>
         <Connection>
           <ConfigKey>[Master],show_4decks</ConfigKey>
@@ -37,14 +37,15 @@
       <!-- In 4 deck mode, we show all controls in one column per deck. -->
       <WidgetGroup>
         <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:deck_mixer_controls_col1_left.xml"/>
+          <Template src="skin:mixer_controls_col1_right.xml"/>
           <WidgetGroup>
             <Layout>vertical</Layout>
-            <ObjectName>4DecksMixerCol2ContainerLeft</ObjectName>
+            <ObjectName>4DecksMixerCol2ContainerRight</ObjectName>
             <Children>
-              <Template src="skin:deck_mixer_controls_col3.xml"/>
-              <Template src="skin:deck_mixer_controls_col2.xml"/>
+              <Template src="skin:mixer_controls_col3.xml"/>
+              <Template src="skin:mixer_controls_col2.xml"/>
             </Children>
           </WidgetGroup>
         </Children>

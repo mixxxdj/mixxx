@@ -4,12 +4,12 @@ Description: Spacer.
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>Spacer</ObjectName>
+    <ObjectName>Spacer<Variable name="color"/></ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Size><Variable name="width"/></Size>
-    <MinimumSize><Variable name="width"/></MinimumSize>
-    <MaximumSize><Variable name="width"/></MaximumSize>
+    <MinimumSize><Variable name="width"/>,-1</MinimumSize>
+    <MaximumSize><Variable name="width"/>,-1</MaximumSize>
     <Children>
     </Children>
   </WidgetGroup>

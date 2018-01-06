@@ -8,7 +8,7 @@
   <WidgetGroup>
     <ObjectName>DeckMixer<Variable name="i"/>_Column3</ObjectName>
     <Layout>vertical</Layout>
-    <Size>40f,160me</Size>
+    <Size>40f,-1me</Size>
     <Children>
       <!--In 4 deck mode with EQs showing, hide the gain knob here and show it above the EQs.-->
       <WidgetGroup>
@@ -17,11 +17,10 @@
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:knob_with_label.xml">
+              <Template src="skin:knob.xml">
                 <SetVariable name="TooltipId">pregain</SetVariable>
                 <SetVariable name="control">pregain</SetVariable>
                 <SetVariable name="color">red</SetVariable>
-                <SetVariable name="label">Gain</SetVariable>
               </Template>
             </Children>
             <Connection>
@@ -46,11 +45,10 @@
         <MinimumSize>40,34</MinimumSize>
         <MaximumSize>40,46</MaximumSize>
         <Children>
-          <Template src="skin:knob_with_label.xml">
+          <Template src="skin:knob.xml">
             <SetVariable name="TooltipId">pregain</SetVariable>
             <SetVariable name="control">pregain</SetVariable>
             <SetVariable name="color">red</SetVariable>
-            <SetVariable name="label">Gain</SetVariable>
           </Template>
         </Children>
         <Connection>
@@ -63,7 +61,7 @@
       </WidgetGroup>
 
       <WidgetGroup>
-        <Size>22min,100me</Size>
+        <Size>22me,110me</Size>
         <Layout>horizontal</Layout>
         <Children>
           <WidgetGroup>

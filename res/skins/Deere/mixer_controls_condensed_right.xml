@@ -14,7 +14,7 @@
         <Layout>vertical</Layout>
         <Children>
 
-          <Template src="skin:deck_mixer_controls_col1_right.xml" />
+          <Template src="skin:mixer_controls_col1_right.xml" />
 
         </Children>
         <Connection>
@@ -78,7 +78,6 @@
                 <Children>
                   <Template src="skin:vumeter_v.xml">
                     <SetVariable name="group"><Variable name="group"/></SetVariable>
-                    <SetVariable name="side">L</SetVariable>
                     <SetVariable name="tooltip_meter">channel_VuMeter</SetVariable>
                     <SetVariable name="tooltip_clip">channel_PeakIndicator</SetVariable>
                   </Template>
@@ -131,25 +130,17 @@
           <WidgetGroup>
             <ObjectName>CondensedButtonContainerRight</ObjectName>
             <Size>-1me,25f</Size>
-            <Layout>horizontal</Layout>
+            <Layout>vertical</Layout>
             <Children>
-              <Template src="skin:left_3state_button.xml">
-                <SetVariable name="TooltipId">orientation</SetVariable>
-                <SetVariable name="ObjectName">OrientationButton</SetVariable>
-                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-                <SetVariable name="state_0_text"></SetVariable>
-                <SetVariable name="state_0_pressed">icon/ic_orientation_left_48px.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">icon/ic_orientation_left_48px.svg</SetVariable>
-                <SetVariable name="state_1_text"></SetVariable>
-                <SetVariable name="state_1_pressed">icon/ic_orientation_48px.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">icon/ic_orientation_48px.svg</SetVariable>
-                <SetVariable name="state_2_text"></SetVariable>
-                <SetVariable name="state_2_pressed">icon/ic_orientation_right_48px.svg</SetVariable>
-                <SetVariable name="state_2_unpressed">icon/ic_orientation_right_48px.svg</SetVariable>
-                <SetVariable name="left_connection_control"><Variable name="group"/>,orientation</SetVariable>
+
+              <Template src="skin:spacer_vx.xml">
+                <SetVariable name="height">2</SetVariable>
               </Template>
+
+              <Template src="skin:crossfader_orientation_button.xml">
+                <SetVariable name="Unit">Deck<Variable name="i"/></SetVariable>
+              </Template>
+
             </Children>
           </WidgetGroup>
 
