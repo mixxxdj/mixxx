@@ -1152,7 +1152,14 @@ border: 0px;
 #EffectUnit1, #EffectUnit2, #EffectUnit3, #EffectUnit4 {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
   border: 1px solid #585858;
-  margin: 5px 2px 0px 2px;
+}
+
+#EffectUnit1, #EffectUnit3 {
+  margin: 5px 3px 0px 2px;
+}
+
+#EffectUnit2, #EffectUnit4 {
+  margin: 5px 2px 0px 3px;
 }
 
 #EffectRows {
