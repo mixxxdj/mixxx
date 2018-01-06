@@ -19,11 +19,14 @@
 #include "soundio/soundmanager.h"
 #include "track/track.h"
 #include "util/assert.h"
+#include "util/logger.h"
 #include "util/stat.h"
 #include "util/sleepableqthread.h"
 
 
 namespace {
+
+const mixxx::Logger kLogger("PlayerManager");
 
 // Utilize half of the available cores for adhoc analysis of tracks
 const int kNumberOfAnalyzerThreads = math_max(1, QThread::idealThreadCount() / 2);
@@ -87,6 +90,8 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
 }
 
 PlayerManager::~PlayerManager() {
+    kLogger.debug() << "Destroying";
+
     QMutexLocker locker(&m_mutex);
 
     m_pSamplerBank->saveSamplerBankToPath(
@@ -105,9 +110,7 @@ PlayerManager::~PlayerManager() {
     delete m_pCONumMicrophones;
     delete m_pCONumAuxiliaries;
 
-    if (m_pAnalyzerQueue) {
-        m_pAnalyzerQueue.reset();
-    }
+    m_pAnalyzerQueue.reset();
 }
 
 void PlayerManager::bindToLibrary(Library* pLibrary) {
@@ -257,7 +260,7 @@ void PlayerManager::slotNumDecksControlChanged(double v) {
     if (num < m_decks.size()) {
         // The request was invalid -- reset the value.
         m_pCONumDecks->set(m_decks.size());
-        qDebug() << "Ignoring request to reduce the number of decks to" << num;
+        kLogger.debug() << "Ignoring request to reduce the number of decks to" << num;
         return;
     }
 
@@ -272,7 +275,7 @@ void PlayerManager::slotNumSamplersControlChanged(double v) {
     if (num < m_samplers.size()) {
         // The request was invalid -- reset the value.
         m_pCONumSamplers->set(m_samplers.size());
-        qDebug() << "Ignoring request to reduce the number of samplers to" << num;
+        kLogger.debug() << "Ignoring request to reduce the number of samplers to" << num;
         return;
     }
 
@@ -287,7 +290,7 @@ void PlayerManager::slotNumPreviewDecksControlChanged(double v) {
     if (num < m_preview_decks.size()) {
         // The request was invalid -- reset the value.
         m_pCONumPreviewDecks->set(m_preview_decks.size());
-        qDebug() << "Ignoring request to reduce the number of preview decks to" << num;
+        kLogger.debug() << "Ignoring request to reduce the number of preview decks to" << num;
         return;
     }
 
@@ -302,7 +305,7 @@ void PlayerManager::slotNumMicrophonesControlChanged(double v) {
     if (num < m_microphones.size()) {
         // The request was invalid -- reset the value.
         m_pCONumMicrophones->set(m_microphones.size());
-        qDebug() << "Ignoring request to reduce the number of microphones to" << num;
+        kLogger.debug() << "Ignoring request to reduce the number of microphones to" << num;
         return;
     }
 
@@ -317,7 +320,7 @@ void PlayerManager::slotNumAuxiliariesControlChanged(double v) {
     if (num < m_auxiliaries.size()) {
         // The request was invalid -- reset the value.
         m_pCONumAuxiliaries->set(m_auxiliaries.size());
-        qDebug() << "Ignoring request to reduce the number of auxiliaries to" << num;
+        kLogger.debug() << "Ignoring request to reduce the number of auxiliaries to" << num;
         return;
     }
 
@@ -504,7 +507,7 @@ BaseTrackPlayer* PlayerManager::getPlayer(QString group) const {
 Deck* PlayerManager::getDeck(unsigned int deck) const {
     QMutexLocker locker(&m_mutex);
     if (deck < 1 || deck > numDecks()) {
-        qWarning() << "Warning PlayerManager::getDeck() called with invalid index: "
+        kLogger.warning() << "Warning getDeck() called with invalid index: "
                    << deck;
         return NULL;
     }
@@ -514,7 +517,7 @@ Deck* PlayerManager::getDeck(unsigned int deck) const {
 PreviewDeck* PlayerManager::getPreviewDeck(unsigned int libPreviewPlayer) const {
     QMutexLocker locker(&m_mutex);
     if (libPreviewPlayer < 1 || libPreviewPlayer > numPreviewDecks()) {
-        qWarning() << "Warning PlayerManager::getPreviewDeck() called with invalid index: "
+        kLogger.warning() << "Warning getPreviewDeck() called with invalid index: "
                    << libPreviewPlayer;
         return NULL;
     }
@@ -524,7 +527,7 @@ PreviewDeck* PlayerManager::getPreviewDeck(unsigned int libPreviewPlayer) const 
 Sampler* PlayerManager::getSampler(unsigned int sampler) const {
     QMutexLocker locker(&m_mutex);
     if (sampler < 1 || sampler > numSamplers()) {
-        qWarning() << "Warning PlayerManager::getSampler() called with invalid index: "
+        kLogger.warning() << "Warning getSampler() called with invalid index: "
                    << sampler;
         return NULL;
     }
@@ -534,7 +537,7 @@ Sampler* PlayerManager::getSampler(unsigned int sampler) const {
 Microphone* PlayerManager::getMicrophone(unsigned int microphone) const {
     QMutexLocker locker(&m_mutex);
     if (microphone < 1 || microphone >= static_cast<unsigned int>(m_microphones.size())) {
-        qWarning() << "Warning PlayerManager::getMicrophone() called with invalid index: "
+        kLogger.warning() << "Warning getMicrophone() called with invalid index: "
                    << microphone;
         return NULL;
     }
@@ -544,7 +547,7 @@ Microphone* PlayerManager::getMicrophone(unsigned int microphone) const {
 Auxiliary* PlayerManager::getAuxiliary(unsigned int auxiliary) const {
     QMutexLocker locker(&m_mutex);
     if (auxiliary < 1 || auxiliary > static_cast<unsigned int>(m_auxiliaries.size())) {
-        qWarning() << "Warning PlayerManager::getAuxiliary() called with invalid index: "
+        kLogger.warning() << "Warning getAuxiliary() called with invalid index: "
                    << auxiliary;
         return NULL;
     }
@@ -557,7 +560,7 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bo
     BaseTrackPlayer* pPlayer = getPlayer(group);
 
     if (pPlayer == NULL) {
-        qWarning() << "Invalid group argument " << group << " to slotLoadTrackToPlayer.";
+        kLogger.warning() << "Invalid group argument " << group << " to slotLoadTrackToPlayer.";
         return;
     }
 
