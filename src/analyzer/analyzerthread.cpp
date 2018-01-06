@@ -160,10 +160,9 @@ void AnalyzerThread::exec() {
     emitProgress(AnalyzerThreadState::Exit);
 }
 
-void AnalyzerThread::sendNextTrack(const TrackPointer& nextTrack) {
+void AnalyzerThread::writeNextTrack(const TrackPointer& nextTrack) {
     DEBUG_ASSERT(!m_nextTrack.getValue());
     m_nextTrack.setValue(nextTrack);
-    wake();
 }
 
 WorkerThread::FetchWorkResult AnalyzerThread::fetchWork() {
@@ -197,7 +196,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
     mixxx::IndexRange remainingFrames = audioSource->frameIndexRange();
     auto result = remainingFrames.empty() ? AnalysisResult::Complete : AnalysisResult::Pending;
     while (result == AnalysisResult::Pending) {
-        whilePaused();
+        whileSuspended();
         if (readStopped()) {
             return AnalysisResult::Cancelled;
         }
@@ -213,7 +212,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
                                 inputFrameIndexRange,
                                 mixxx::SampleBuffer::WritableSlice(m_sampleBuffer)));
 
-        whilePaused();
+        whileSuspended();
         if (readStopped()) {
             return AnalysisResult::Cancelled;
         }
@@ -263,10 +262,10 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
 
 void AnalyzerThread::emitBusyProgress(AnalyzerProgress busyProgress) {
     DEBUG_ASSERT(m_currentTrack);
-    // The actual progress value is updated always even if the
-    // following signal is inhibited (see below). The value is read
-    // independently of the signal and should always reflect the
-    // actual progress.
+    // The actual progress value is updated always even if the following
+    // signal might be inhibited (see below). The value could be read
+    // independently of the signal and should always reflect the current
+    // progress.
     m_analyzerProgress.setValue(busyProgress);
     // Signals are only sent with the specified maximum frequency
     // to avoid flooding the signal queue, which might impair the
@@ -285,8 +284,6 @@ void AnalyzerThread::emitBusyProgress(AnalyzerProgress busyProgress) {
 void AnalyzerThread::emitDoneProgress(AnalyzerProgress doneProgress) {
     DEBUG_ASSERT(m_currentTrack);
     m_analyzerProgress.setValue(doneProgress);
-    // Don't inhibit the final progress update!
-    m_lastBusyProgressEmittedAt = Clock::now();
     // Release all references of the track before emitting the signal
     // to ensure that the last reference is not dropped in this worker
     // thread that might trigger database actions! The AnalyzerQueue

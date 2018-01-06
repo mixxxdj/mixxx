@@ -46,12 +46,12 @@ class AnalysisFeature : public LibraryFeature {
     void activate();
     void analyzeTracks(QList<TrackId> trackIds);
 
-    void slotPauseAnalysis();
-    void slotResumeAnalysis();
+    void suspendAnalysis();
+    void resumeAnalysis();
 
   private slots:
     void slotAnalyzerQueueProgress(AnalyzerProgress analyzerProgress, int currentCount, int totalCount);
-    void slotAnalyzerQueueEmpty();
+    void slotAnalyzerQueueFinished();
     void stopAnalysis();
 
   private:

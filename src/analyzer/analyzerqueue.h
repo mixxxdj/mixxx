@@ -31,17 +31,17 @@ class AnalyzerQueue : public QObject {
     // the caller must call resume() once.
     void enqueueTrackId(TrackId trackId);
 
+    void suspend();
+
     // After enqueuing tracks the analysis must be resumed once.
     // Resume must also be called after pausing the analysis.
     void resume();
-
-    void pause();
 
   signals:
     // Progress for individual tracks is passed-through from the workers
     void trackProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
     void progress(AnalyzerProgress analyzerProgress, int currentCount, int totalCount);
-    void empty();
+    void finished();
 
   private slots:
     void slotWorkerThreadProgress(int threadId, AnalyzerThreadState threadState, TrackId trackId);
@@ -53,8 +53,7 @@ class AnalyzerQueue : public QObject {
             : m_thread(thread.get()),
               m_analyzerProgress(kAnalyzerProgressUnknown),
               m_threadIdle(false) {
-            connect(m_thread, SIGNAL(finished()), m_thread, SLOT(deleteLater()));
-            thread.release();
+            thread.release()->deleteAfterFinished();
         }
         Worker(const Worker&) = delete;
         Worker(Worker&&) = default;
@@ -77,18 +76,24 @@ class AnalyzerQueue : public QObject {
             return m_analyzerProgress;
         }
 
-        void sendNextTrack(TrackPointer track) {
+        void writeNextTrack(TrackPointer track) {
             DEBUG_ASSERT(track);
             DEBUG_ASSERT(m_thread);
             DEBUG_ASSERT(m_threadIdle);
             m_track = std::move(track);
             m_threadIdle = false;
-            m_thread->sendNextTrack(m_track);
+            m_thread->writeNextTrack(m_track);
         }
 
-        void pauseThread() {
+        void wakeThread() {
             if (m_thread) {
-                m_thread->pause();
+                m_thread->wake();
+            }
+        }
+
+        void suspendThread() {
+            if (m_thread) {
+                m_thread->suspend();
             }
         }
 
@@ -126,6 +131,7 @@ class AnalyzerQueue : public QObject {
         void receiveThreadExit() {
             DEBUG_ASSERT(m_thread);
             m_thread = nullptr;
+            m_track.reset();
             m_analyzerProgress = kAnalyzerProgressUnknown;
             m_threadIdle = false;
         }
@@ -138,11 +144,12 @@ class AnalyzerQueue : public QObject {
     };
 
     TrackPointer loadTrackById(TrackId trackId);
-    bool resumeIdleWorker(Worker* worker);
-    void emitProgress();
+    bool submitNextTrack(Worker* worker);
+    void emitProgressOrFinished();
 
-    bool hasUnfinishedTracks() const {
-        return !m_queuedTrackIds.empty() || (m_finishedCount < m_dequeuedCount);
+    bool isFinished() const {
+        DEBUG_ASSERT(m_finishedCount <= m_dequeuedCount);
+        return m_queuedTrackIds.empty() && (m_finishedCount == m_dequeuedCount);
     }
 
     // Stops a running analysis and discards all enqueued tracks.

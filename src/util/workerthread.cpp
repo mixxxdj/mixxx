@@ -22,18 +22,29 @@ WorkerThread::WorkerThread(
         const QString& name)
         : m_name(name),
           m_logger(m_name.isEmpty() ? "WorkerThread" : m_name.toLatin1().constData()),
-          m_pause(false),
+          m_suspend(false),
           m_stop(false) {
 }
 
 WorkerThread::~WorkerThread() {
     m_logger.debug() << "Destroying";
     VERIFY_OR_DEBUG_ASSERT(isFinished()) {
-        m_logger.warning() << "Waiting for thread to finish";
         stop();
-        // The following operation will block the host thread!
+        m_logger.warning() << "Waiting until finished";
+        // The following operation will block the calling thread!
         wait();
         DEBUG_ASSERT(isFinished());
+    }
+}
+
+void WorkerThread::deleteAfterFinished() {
+    if (!isFinished()) {
+        connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
+    }
+    if (isFinished()) {
+        // Already finished or just finished in the meantime. Calling
+        // deleteLater() twice is safe, though.
+        deleteLater();
     }
 }
 
@@ -56,18 +67,18 @@ void WorkerThread::run() {
     m_stop.store(true);
 }
 
-void WorkerThread::pause() {
-    logTrace(m_logger, "Pause");
-    m_pause.store(true);
+void WorkerThread::suspend() {
+    logTrace(m_logger, "Suspending");
+    m_suspend.store(true);
 }
 
 void WorkerThread::resume() {
-    bool paused = true;
+    bool suspended = true;
     // Reset value: true -> false
-    if (m_pause.compare_exchange_strong(paused, false)) {
-        logTrace(m_logger, "Resume");
-        // The thread might just be preparing to pause after
-        // reading detecting that m_pause was true. To avoid
+    if (m_suspend.compare_exchange_strong(suspended, false)) {
+        logTrace(m_logger, "Resuming");
+        // The thread might just be preparing to suspend after
+        // reading detecting that m_suspend was true. To avoid
         // a race condition we need to acquire the mutex that
         // is associated with the wait condition, before
         // signalling the condition. Otherwise the signal
@@ -77,40 +88,45 @@ void WorkerThread::resume() {
         wake();
     } else {
         // Just in case, wake up the thread even if it wasn't
-        // explicitly paused without locking the mutex. The
+        // explicitly suspendd without locking the mutex. The
         // thread will suspend itself if it is idle.
         wake();
     }
 }
 
+void WorkerThread::wake() {
+    m_logger.debug() << "Waking up";
+    m_sleepWaitCond.notify_one();
+}
+
 void WorkerThread::stop() {
-    m_logger.debug() << "Stop";
+    m_logger.debug() << "Stopping";
     m_stop.store(true);
     // Wake up the thread to make sure that the stop flag is
     // detected and the thread commits suicide by exiting the
-    // run loop in exec(). Resuming will reset the pause flag
-    // to wake up not only an idle but also a paused thread!
+    // run loop in exec(). Resuming will reset the suspend flag
+    // to wake up not only an idle but also a suspendd thread!
     resume();
 }
 
-void WorkerThread::whilePaused() {
+void WorkerThread::whileSuspended() {
     DEBUG_ASSERT(QThread::currentThread() == this);
-    // The pause flag is always reset after the stop flag has been set,
+    // The suspend flag is always reset after the stop flag has been set,
     // so we don't need to check it separately here.
-    if (!m_pause.load()) {
+    if (!m_suspend.load()) {
         // Early exit without locking the mutex
         return;
     }
     std::unique_lock<std::mutex> locked(m_sleepMutex);
-    whilePaused(&locked);
+    whileSuspended(&locked);
 }
 
-void WorkerThread::whilePaused(std::unique_lock<std::mutex>* locked) {
+void WorkerThread::whileSuspended(std::unique_lock<std::mutex>* locked) {
     DEBUG_ASSERT(locked);
-    while (m_pause.load()) {
-        logTrace(m_logger, "Suspending while paused");
+    while (m_suspend.load()) {
+        logTrace(m_logger, "Sleeping while suspended");
         m_sleepWaitCond.wait(*locked) ;
-        logTrace(m_logger, "Resuming after paused");
+        logTrace(m_logger, "Continuing after sleeping while suspended");
     }
 }
 
@@ -119,7 +135,7 @@ bool WorkerThread::fetchWorkBlocking() {
         // Early exit without locking the mutex
         return false;
     }
-    // Keep the mutex locked while idle or paused
+    // Keep the mutex locked while idle or suspendd
     std::unique_lock<std::mutex> locked(m_sleepMutex);
     while (!readStopped()) {
         FetchWorkResult fetchWorkResult = fetchWork();
@@ -127,13 +143,13 @@ bool WorkerThread::fetchWorkBlocking() {
         case FetchWorkResult::Ready:
             return true;
         case FetchWorkResult::Idle:
-            logTrace(m_logger, "Suspending while idle");
+            logTrace(m_logger, "Sleeping while idle");
             m_sleepWaitCond.wait(locked) ;
-            logTrace(m_logger, "Resuming after idle");
+            logTrace(m_logger, "Continuing after sleeping while idle");
             break;
-        case FetchWorkResult::Pause:
-            pause();
-            whilePaused(&locked);
+        case FetchWorkResult::Suspend:
+            suspend();
+            whileSuspended(&locked);
             break;
         }
     }

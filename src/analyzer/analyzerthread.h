@@ -61,7 +61,7 @@ class AnalyzerThread : public WorkerThread {
     // with state Idle has been received to avoid overwriting
     // a previously sent track that has not been received by the
     // worker thread, yet.
-    void sendNextTrack(const TrackPointer& nextTrack);
+    void writeNextTrack(const TrackPointer& nextTrack);
 
     // Non-blocking atomic read of the current analyzer progress
     AnalyzerProgress readAnalyzerProgress() const {
@@ -83,9 +83,7 @@ class AnalyzerThread : public WorkerThread {
   private:
     /////////////////////////////////////////////////////////////////////////
     // Immutable values and pointers (objects are thread-safe)
-
     const int m_id;
-
     const mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
     const UserSettingsPointer m_pConfig;
     const AnalyzerMode m_mode;

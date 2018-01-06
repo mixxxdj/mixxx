@@ -196,7 +196,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     void slotAnalyzeTrack(TrackPointer track);
 
     void slotAnalyzerQueueTrackProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
-    void slotAnalyzerQueueEmpty();
+    void slotAnalyzerQueueFinished();
 
   signals:
     void loadLocationToPlayer(QString location, QString group);

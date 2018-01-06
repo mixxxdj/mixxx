@@ -26,13 +26,19 @@
 // Derived classes or their owners are responsible to start the thread
 // with the desired priority.
 class WorkerThread : public QThread {
+    Q_OBJECT
+
   public:
     explicit WorkerThread(
             const QString& name = QString());
     // The destructor must be triggered by calling deleteLater() to
     // ensure that the thread has already finished and is not running
-    // while destroyed!
+    // while destroyed! Connect finished() to deleteAfter() and then
+    // call stop() on the running worker thread explicitly to trigger
+    // the destruction. Use destroy() for this purpose (see below).
     ~WorkerThread() override;
+
+    void deleteAfterFinished();
 
     operator bool() const {
         return !readStopped();
@@ -42,9 +48,18 @@ class WorkerThread : public QThread {
         return m_name;
     }
 
-    void pause();
+    // Commands the thread to suspend itself asap.
+    void suspend();
+
+    // Resumes a suspended thread by waking it up.
     void resume();
 
+    // Wakes up a sleeping thread. If the thread has been suspended
+    // it will fall asleep again. A suspended thread needs to be
+    // resumed.
+    void wake();
+
+    // Commands the thread to stop asap.
     void stop();
 
   protected:
@@ -57,7 +72,7 @@ class WorkerThread : public QThread {
     enum class FetchWorkResult {
         Ready,
         Idle,
-        Pause,
+        Suspend,
     };
 
     // Non-blocking function that determines whether the worker thread
@@ -72,31 +87,26 @@ class WorkerThread : public QThread {
     // should exit asap.
     bool fetchWorkBlocking();
 
-    // Blocks the worker thread while the pause flag is set.
+    // Blocks the worker thread while the suspend flag is set.
     // This function must not be called while idle which could
     // block on the non-recursive mutex twice!
-    void whilePaused();
-
-    void wake() {
-        m_sleepWaitCond.notify_one();
-    }
+    void whileSuspended();
 
     // Non-blocking atomic read of the stop flag
     bool readStopped() const {
         return m_stop.load();
     }
 
-    std::mutex m_sleepMutex;
-
   private:
-    void whilePaused(std::unique_lock<std::mutex>* locked);
+    void whileSuspended(std::unique_lock<std::mutex>* locked);
 
     const QString m_name;
 
     const mixxx::Logger m_logger;
 
-    std::atomic<bool> m_pause;
+    std::atomic<bool> m_suspend;
     std::atomic<bool> m_stop;
 
+    std::mutex m_sleepMutex;
     std::condition_variable m_sleepWaitCond;
 };

@@ -134,9 +134,9 @@ Library::Library(
     // Suspend a batch analysis while an ad-hoc analysis of
     // loaded tracks is in progress and resume it afterwards.
     connect(pPlayerManager, SIGNAL(trackAnalyzerProgress(TrackId, AnalyzerProgress)),
-            m_pAnalysisFeature, SLOT(slotPauseAnalysis()));
+            m_pAnalysisFeature, SLOT(suspendAnalysis()));
     connect(pPlayerManager, SIGNAL(trackAnalyzerIdle()),
-            m_pAnalysisFeature, SLOT(slotResumeAnalysis()));
+            m_pAnalysisFeature, SLOT(resumeAnalysis()));
 
     //iTunes and Rhythmbox should be last until we no longer have an obnoxious
     //messagebox popup when you select them. (This forces you to reach for your

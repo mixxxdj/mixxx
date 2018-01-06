@@ -58,14 +58,17 @@ AnalyzerQueue::~AnalyzerQueue() {
     kLogger.debug() << "Destroying";
 }
 
-void AnalyzerQueue::emitProgress() {
+void AnalyzerQueue::emitProgressOrFinished() {
+    // The finished() signal is emitted regardless of when the last
+    // signal has been emitted
+    if (isFinished()) {
+        emit finished();
+        return;
+    }
+
     const auto now = Clock::now();
-    // If all enqueued tracks have been finished the signal is
-    // emitted independent of the time when the last signal has
-    // been emitted.
-    if (hasUnfinishedTracks() &&
-            (now < (m_lastProgressEmittedAt + kProgressInhibitDuration))) {
-        // Don't emit progress update signal
+    if (now < (m_lastProgressEmittedAt + kProgressInhibitDuration)) {
+        // Inhibit signal
         return;
     }
     m_lastProgressEmittedAt = now;
@@ -114,31 +117,24 @@ void AnalyzerQueue::slotWorkerThreadProgress(int threadId, AnalyzerThreadState t
         break;
     case AnalyzerThreadState::Idle:
         worker.receiveThreadIdle();
-        resumeIdleWorker(&worker);
-        return;
+        submitNextTrack(&worker);
+        break;
     case AnalyzerThreadState::Busy:
         emit trackProgress(trackId, worker.receiveAnalyzerProgress(trackId));
-        emitProgress();
-        return;
+        break;
     case AnalyzerThreadState::Done:
+        emit trackProgress(trackId, worker.receiveAnalyzerProgress(trackId));
         ++m_finishedCount;
         DEBUG_ASSERT(m_finishedCount <= m_dequeuedCount);
-        emit trackProgress(trackId, worker.receiveAnalyzerProgress(trackId));
-        emitProgress();
-        return;
+        break;
     case AnalyzerThreadState::Exit:
         worker.receiveThreadExit();
         DEBUG_ASSERT(!worker);
-        for (const auto& worker: m_workers) {
-            if (worker) {
-                // At least one thread has not exited yet
-                emitProgress();
-                return;
-            }
-        }
-        return;
+        break;
+    default:
+        DEBUG_ASSERT(!"Unhandled signal from worker thread");
     }
-    DEBUG_ASSERT(!"Unhandled signal from worker thread");
+    emitProgressOrFinished();
 }
 
 void AnalyzerQueue::enqueueTrackId(TrackId trackId) {
@@ -149,37 +145,31 @@ void AnalyzerQueue::enqueueTrackId(TrackId trackId) {
         return;
     }
     m_queuedTrackIds.push_back(trackId);
-    // Don't wake up the paused thread now to avoid race conditions
+    // Don't wake up the suspended thread now to avoid race conditions
     // if multiple threads are added in a row by calling this function
     // multiple times. The caller is responsible to finish the enqueuing
     // of tracks with resume().
 }
 
-void AnalyzerQueue::pause() {
+void AnalyzerQueue::suspend() {
+    kLogger.debug() << "Suspending";
     for (auto& worker: m_workers) {
-        worker.pauseThread();
+        worker.suspendThread();
     }
 }
 
 void AnalyzerQueue::resume() {
-    bool resumedIdleWorker = false;
+    kLogger.debug() << "Resuming";
     for (auto& worker: m_workers) {
         if (worker.threadIdle()) {
-            if (resumeIdleWorker(&worker)) {
-                resumedIdleWorker = true;
-            }
-        } else {
-            worker.resumeThread();
+            submitNextTrack(&worker);
         }
-    }
-    if (!resumedIdleWorker) {
-        emitProgress();
+        worker.resumeThread();
     }
 }
 
-bool AnalyzerQueue::resumeIdleWorker(Worker* worker) {
+bool AnalyzerQueue::submitNextTrack(Worker* worker) {
     DEBUG_ASSERT(worker);
-    DEBUG_ASSERT(worker->threadIdle());
     while (!m_queuedTrackIds.empty()) {
         TrackId nextTrackId = m_queuedTrackIds.front();
         DEBUG_ASSERT(nextTrackId.isValid());
@@ -191,21 +181,18 @@ bool AnalyzerQueue::resumeIdleWorker(Worker* worker) {
             ++m_finishedCount;
             continue;
         }
-        worker->sendNextTrack(nextTrack);
+        worker->writeNextTrack(std::move(nextTrack));
         m_queuedTrackIds.pop_front();
         ++m_dequeuedCount;
-        emitProgress();
+        worker->wakeThread();
         return true;
     }
-    emitProgress();
     DEBUG_ASSERT(m_finishedCount <= m_dequeuedCount);
-    if (m_finishedCount == m_dequeuedCount) {
-        emit empty();
-    }
     return false;
 }
 
 void AnalyzerQueue::stop() {
+    kLogger.debug() << "Stopping";
     for (auto& worker: m_workers) {
         worker.stopThread();
     }
