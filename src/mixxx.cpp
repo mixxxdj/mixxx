@@ -292,6 +292,9 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             QKeySequence(tr("Ctrl+F", "Search|Focus")),
             this, SLOT(slotFocusSearch()));
 
+    // Create the singular TrackCache instance
+    TrackCache::createInstance(m_pLibrary);
+
     launchProgress(40);
 
     // Get Music dir
@@ -571,11 +574,20 @@ void MixxxMainWindow::finalize() {
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting PlayerManager";
     delete m_pPlayerManager;
 
+    // Evict all remaining tracks from the cache to trigger
+    // updating of modified tracks.
+    TrackCache::instance().evictAll();
+
     // Delete the library after the view so there are no dangling pointers to
     // the data models.
     // Depends on RecordingManager and PlayerManager
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting Library";
     delete m_pLibrary;
+
+    // The TrackCache singleton must be destroyed immediately
+    // after the library has been destroyed!
+    qDebug() << "Destroying TrackCache" << t.elapsed(false);
+    TrackCache::destroyInstance();
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "closing database connection(s)";
     m_pDbConnectionPool->destroyThreadLocalConnection();

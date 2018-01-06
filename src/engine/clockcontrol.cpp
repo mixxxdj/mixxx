@@ -46,7 +46,7 @@ void ClockControl::slotBeatsUpdated() {
     }
 }
 
-double ClockControl::process(const double dRate,
+void ClockControl::process(const double dRate,
                              const double currentSample,
                              const double totalSamples,
                              const int iBuffersize) {
@@ -66,6 +66,4 @@ double ClockControl::process(const double dRate,
         double distanceToClosestBeat = fabs(currentSample - closestBeat);
         m_pCOBeatActive->set(distanceToClosestBeat < blinkIntervalSamples / 2.0);
     }
-
-    return kNoTrigger;
 }

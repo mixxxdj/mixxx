@@ -840,3 +840,7 @@ void Library::focusSearch() {
     }
 }
 
+
+void Library::onEvictingTrackFromCache(Track* pTrack) {
+    m_pTrackCollection->saveTrack(pTrack);
+}

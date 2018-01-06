@@ -934,6 +934,8 @@ class MixxxCore(Feature):
                    "library/dlgtrackinfo.cpp",
                    "library/dao/savedqueriesdao.cpp",
 
+                   "library/dlgtrackmetadataexport.cpp",
+
                    "library/export/trackexportdlg.cpp",
                    "library/export/trackexportwizard.cpp",
                    "library/export/trackexportworker.cpp",
@@ -1098,6 +1100,7 @@ class MixxxCore(Feature):
                    "track/beatgrid.cpp",
                    "track/beatmap.cpp",
                    "track/beatutils.cpp",
+                   "track/beats.cpp",
                    "track/bpm.cpp",
                    "track/keyfactory.cpp",
                    "track/keys.cpp",
@@ -1105,12 +1108,14 @@ class MixxxCore(Feature):
                    "track/playcounter.cpp",
                    "track/replaygain.cpp",
                    "track/track.cpp",
+                   "track/trackcache.cpp",
                    "track/trackmetadata.cpp",
                    "track/trackmetadatataglib.cpp",
                    "track/tracknumbers.cpp",
                    "track/albuminfo.cpp",
                    "track/trackinfo.cpp",
                    "track/trackrecord.cpp",
+                   "track/trackref.cpp",
 
                    "mixer/auxiliary.cpp",
                    "mixer/baseplayer.cpp",

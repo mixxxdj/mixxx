@@ -16,9 +16,11 @@
 #include "library/librarytablemodel.h"
 #include "library/features/crates/cratefeaturehelper.h"
 #include "library/dao/trackschema.h"
+#include "library/dlgtrackmetadataexport.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "track/track.h"
+#include "track/trackref.h"
 #include "sources/soundsourceproxy.h"
 #include "mixer/playermanager.h"
 #include "preferences/dialog/dlgpreflibrary.h"
@@ -113,6 +115,7 @@ WTrackTableView::~WTrackTableView() {
 
     delete m_pImportMetadataFromFileAct;
     delete m_pImportMetadataFromMusicBrainzAct;
+    delete m_pExportMetadataAct;
     delete m_pAddToPreviewDeck;
     delete m_pAutoDJBottomAct;
     delete m_pAutoDJTopAct;
@@ -408,11 +411,15 @@ void WTrackTableView::createActions() {
 
     m_pImportMetadataFromFileAct = new QAction(tr("Import Metadata from File"), this);
     connect(m_pImportMetadataFromFileAct, SIGNAL(triggered()),
-            this, SLOT(slotImportTrackMetadata()));
+            this, SLOT(slotImportTrackMetadataFromFileTags()));
 
     m_pImportMetadataFromMusicBrainzAct = new QAction(tr("Import Metadata from MusicBrainz"),this);
     connect(m_pImportMetadataFromMusicBrainzAct, SIGNAL(triggered()),
             this, SLOT(slotShowDlgTagFetcher()));
+
+    m_pExportMetadataAct = new QAction(tr("Export Metadata into File"), this);
+    connect(m_pExportMetadataAct, SIGNAL(triggered()),
+            this, SLOT(slotExportTrackMetadataIntoFileTags()));
 
     m_pAddToPreviewDeck = new QAction(tr("Load to Preview Deck"), this);
     // currently there is only one preview deck so just map it here.
@@ -954,6 +961,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pMenu->addAction(m_pImportMetadataFromFileAct);
         m_pImportMetadataFromMusicBrainzAct->setEnabled(oneSongSelected);
         m_pMenu->addAction(m_pImportMetadataFromMusicBrainzAct);
+        m_pMenu->addAction(m_pExportMetadataAct);
     }
 
     // Cover art menu only applies if at least one track is selected.
@@ -1128,9 +1136,56 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
             return;
         }
     } else { // Drag and drop inside Mixxx is only for few rows, bulks happen here
-        if (!insert(event->mimeData(), destIndex)) {
-            event->ignore();
-            return;
+        // Reset the selected tracks (if you had any tracks highlighted, it
+        // clears them)
+        this->selectionModel()->clear();
+
+        // Add all the dropped URLs/tracks to the track model (playlist/crate)
+        QList<QFileInfo> fileList = DragAndDropHelper::supportedTracksFromUrls(
+            event->mimeData()->urls(), false, true);
+
+        QList<QString> fileLocationList;
+        for (const QFileInfo& fileInfo : fileList) {
+            fileLocationList.append(TrackRef::location(fileInfo));
+        }
+
+        // Drag-and-drop from an external application
+        // eg. dragging a track from Windows Explorer onto the track table.
+        int numNewRows = fileLocationList.count();
+
+        // Have to do this here because the index is invalid after
+        // addTrack
+        int selectionStartRow = destIndex.row();
+
+        // Make a new selection starting from where the first track was
+        // dropped, and select all the dropped tracks
+
+        // If the track was dropped into an empty playlist, start at row
+        // 0 not -1 :)
+        if ((destIndex.row() == -1) && (model()->rowCount() == 0)) {
+            selectionStartRow = 0;
+        } else if ((destIndex.row() == -1) && (model()->rowCount() > 0)) {
+            // If the track was dropped beyond the end of a playlist, then
+            // we need to fudge the destination a bit...
+            //qDebug() << "Beyond end of playlist";
+            //qDebug() << "rowcount is:" << model()->rowCount();
+            selectionStartRow = model()->rowCount();
+        }
+
+        // calling the addTracks returns number of failed additions
+        int tracksAdded = getTrackModel()->addTracks(destIndex, fileLocationList);
+
+        // Decrement # of rows to select if some were skipped
+        numNewRows -= (fileLocationList.size() - tracksAdded);
+
+        // Create the selection, but only if the track model supports
+        // reordering. (eg. crates don't support reordering/indexes)
+        if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
+            for (int i = selectionStartRow; i < selectionStartRow + numNewRows; i++) {
+                this->selectionModel()->select(model()->index(i, 0),
+                                               QItemSelectionModel::Select |
+                                               QItemSelectionModel::Rows);
+            }
         }
     }
 
@@ -1338,7 +1393,7 @@ void WTrackTableView::sendToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     playlistDao.sendToAutoDJ(trackIds, loc);
 }
 
-void WTrackTableView::slotImportTrackMetadata() {
+void WTrackTableView::slotImportTrackMetadataFromFileTags() {
     if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_IMPORTMETADATA)) {
         return;
     }
@@ -1355,10 +1410,39 @@ void WTrackTableView::slotImportTrackMetadata() {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
             // The user has explicitly requested to reload metadata from the file
-            // to override the information within Mixxx! Cover art is reloaded
-            // separately.
+            // to override the information within Mixxx! Custom cover art must be
+            // reloaded separately.
             SoundSourceProxy(pTrack).updateTrackFromSource(
                     SoundSourceProxy::ImportTrackMetadataMode::Again);
+        }
+    }
+}
+
+void WTrackTableView::slotExportTrackMetadataIntoFileTags() {
+    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_IMPORTMETADATA)) {
+        return;
+    }
+
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
+        return;
+    }
+
+    QModelIndexList indices = selectionModel()->selectedRows();
+    if (indices.isEmpty()) {
+        return;
+    }
+
+    mixxx::DlgTrackMetadataExport::showMessageBoxOncePerSession();
+
+    for (const QModelIndex& index : indices) {
+        TrackPointer pTrack = pTrackModel->getTrack(index);
+        if (pTrack) {
+            // Export of metadata is deferred until all references to the
+            // corresponding track object have been dropped. Otherwise
+            // writing to files that are still used for playback might
+            // cause crashes or at least audible glitches!
+            pTrack->markForMetadataExport();
         }
     }
 }
