@@ -132,5 +132,5 @@ class AnalyzerThread : public WorkerThread {
     void emitDoneProgress(AnalyzerProgress doneProgress);
 
     // Unconditionally emits any kind of progress() signal
-    void emitProgress(AnalyzerThreadState state);
+    void emitProgress(AnalyzerThreadState state, TrackId trackId = TrackId());
 };

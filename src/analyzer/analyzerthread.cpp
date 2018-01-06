@@ -111,7 +111,6 @@ void AnalyzerThread::exec() {
                     << "Failed to open file for analyzing:"
                     << m_currentTrack->getLocation();
             emitDoneProgress(kAnalyzerProgressUnknown);
-            m_currentTrack.reset();
             continue;
         }
 
@@ -153,8 +152,6 @@ void AnalyzerThread::exec() {
             kLogger.debug() << "Skipping track analysis because no analyzer initialized.";
             emitDoneProgress(kAnalyzerProgressDone);
         }
-
-        m_currentTrack.reset();
     }
     DEBUG_ASSERT(readStopped());
 
@@ -171,10 +168,9 @@ void AnalyzerThread::sendNextTrack(const TrackPointer& nextTrack) {
 
 WorkerThread::FetchWorkResult AnalyzerThread::fetchWork() {
     DEBUG_ASSERT(!m_currentTrack);
-    TrackPointer nextTrack = m_nextTrack.getValue();
-    if (nextTrack) {
+    m_currentTrack = m_nextTrack.getValue();
+    if (m_currentTrack) {
         m_nextTrack.setValue(TrackPointer());
-        m_currentTrack = std::move(nextTrack);
         return FetchWorkResult::Ready;
     } else {
         if (m_emittedState != AnalyzerThreadState::Idle) {
@@ -283,7 +279,7 @@ void AnalyzerThread::emitBusyProgress(AnalyzerProgress busyProgress) {
         return;
     }
     m_lastBusyProgressEmittedAt = now;
-    emitProgress(AnalyzerThreadState::Busy);
+    emitProgress(AnalyzerThreadState::Busy, m_currentTrack->getId());
 }
 
 void AnalyzerThread::emitDoneProgress(AnalyzerProgress doneProgress) {
@@ -291,10 +287,18 @@ void AnalyzerThread::emitDoneProgress(AnalyzerProgress doneProgress) {
     m_analyzerProgress.setValue(doneProgress);
     // Don't inhibit the final progress update!
     m_lastBusyProgressEmittedAt = Clock::now();
-    emitProgress(AnalyzerThreadState::Done);
+    // Release all references of the track before emitting the signal
+    // to ensure that the last reference is not dropped in this worker
+    // thread that might trigger database actions! The AnalyzerQueue
+    // must store a TrackPointer until receiving the Done signal.
+    TrackId trackId = m_currentTrack->getId();
+    m_currentTrack.reset();
+    emitProgress(AnalyzerThreadState::Done, trackId);
 }
 
-void AnalyzerThread::emitProgress(AnalyzerThreadState state) {
+void AnalyzerThread::emitProgress(AnalyzerThreadState state, TrackId trackId) {
+    DEBUG_ASSERT(!m_currentTrack || (state == AnalyzerThreadState::Busy));
+    DEBUG_ASSERT(!m_currentTrack || (m_currentTrack->getId() == trackId));
     m_emittedState = state;
-    emit(progress(m_id, m_emittedState, m_currentTrack ? m_currentTrack->getId() : TrackId()));
+    emit(progress(m_id, m_emittedState, trackId));
 }
