@@ -2,7 +2,7 @@
   <WidgetGroup>
     <ObjectName>VinylControls</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>min,min</SizePolicy>
+    <SizePolicy>max,min</SizePolicy>
     <Children>
 
       <WidgetGroup>
@@ -101,7 +101,7 @@
 
       <PushButton>
         <Size>42f,22f</Size>
-        <ObjectName>VinylToggleButtonLL</ObjectName>
+        <ObjectName>VinylToggleButtonUL</ObjectName>
         <TooltipId>passthrough_enabled</TooltipId>
         <NumberStates>2</NumberStates>
         <State>

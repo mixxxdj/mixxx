@@ -74,7 +74,7 @@
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   border-bottom: 1px solid #585858;
   background-color: #1e1e1e;
-  padding: 1px 0px 1px 2px;
+  padding: 1px;
 }
 
 #DeckRowTwoThreeFour {
@@ -179,7 +179,7 @@
 
 #MasterControls {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
-  padding: 2px;
+  padding: 2px 2px 1px 2px;
   /* this wouldn't work:
   border-left: 1px solid #585858;
   border-width: 0px 0px 0px 1px; */
@@ -216,10 +216,6 @@
   border: 1px solid #585858;
   border-top: 0px;
   background-color: #1e1e1e;
-}
-
-#MasterKnobs {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
 #MasterKnobCol {
@@ -658,17 +654,7 @@
 #CrossFadeContainer {
 qproperty-layoutAlignment: 'AlignCenter';
 background-color: #1e1e1e;
-padding-top: 5px;
-}
-
-#GuiToggleContainer {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding: 2px;
-  border: 0px solid #585858;
-  border-left:0px;
-  border-right:0px;
-  border-bottom:0px;
-  background-color: transparent;
+padding-top: 2px;
 }
 
 #GuiToggleContainerPadLeft {
