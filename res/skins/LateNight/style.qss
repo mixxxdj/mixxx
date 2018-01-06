@@ -1170,7 +1170,7 @@ border: 0px;
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   background-color: #1e1e1e;
   border-left: 1px solid #585858;
-  padding: 1px 0px 2px 1px;
+  padding: 0px;
 }
 
 #FxUnit1_ExpandCollapseButton,
@@ -1190,7 +1190,7 @@ border: 0px;
 #EffectSlot2,
 #EffectSlot3 {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-  padding: 2px 4px 2px 4px;
+  padding: 2px 2px 2px 5px;
 }
 
 #EffectSlot_focused {/*
