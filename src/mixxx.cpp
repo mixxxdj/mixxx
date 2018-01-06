@@ -211,7 +211,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
 
 #ifdef __BROADCAST__
-    m_pBroadcastManager = new BroadcastManager(pConfig, m_pSoundManager);
+    m_pBroadcastManager = new BroadcastManager(m_pSettingsManager,
+                                               m_pSoundManager);
 #endif
 
     launchProgress(11);
@@ -348,7 +349,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
                                     m_pControllerManager, m_pVCManager, m_pEffectsManager,
-                                    pConfig, m_pLibrary);
+                                    m_pSettingsManager, m_pLibrary);
     m_pPrefDlg->setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
     m_pPrefDlg->setHidden(true);
 
@@ -651,7 +652,6 @@ void MixxxMainWindow::finalize() {
     Sandbox::shutdown();
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting SettingsManager";
-    delete m_pSettingsManager;
 
     delete m_pKeyboard;
     delete m_pKbdConfig;

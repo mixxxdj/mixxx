@@ -12,7 +12,7 @@ import shutil
 import SCons
 from SCons import Script
 
-import util
+from . import util
 
 
 class MixxxBuild(object):
@@ -145,7 +145,7 @@ class MixxxBuild(object):
         tools = ['default']
         toolpath = ['#build/']
         extra_arguments = {}
-        import depends
+        from . import depends
         if int(Script.ARGUMENTS.get('qt5', 0)):
             tools.append('qt5')
             if self.machine_is_64bit:
@@ -263,9 +263,9 @@ class MixxxBuild(object):
         # Should cover {Net,Open,Free,DragonFly}BSD, but only tested on OpenBSD
         if 'bsd' in sys.platform:
             return 'bsd'
-        if sys.platform in ['linux2', 'linux3']:
+        if sys.platform.startswith('linux'):
             return 'linux'
-        if sys.platform == 'darwin':
+        if sys.platform.startswith('darwin'):
             return 'osx'
         logging.error("Couldn't determine platform. os.name: %s sys.platform: %s"
                       % (os.name, sys.platform))
@@ -395,11 +395,11 @@ class MixxxBuild(object):
 
         # Allow installation directories to be specified.
         prefix = Script.ARGUMENTS.get('prefix', '/usr/local')
-        if os.environ.has_key('LIBDIR'):
+        if 'LIBDIR' in os.environ:
             self.env['LIBDIR'] = os.path.relpath(os.environ['LIBDIR'], prefix)
-        if os.environ.has_key('BINDIR'):
+        if 'BINDIR' in os.environ:
             self.env['BINDIR'] = os.path.relpath(os.environ['BINDIR'], prefix)
-        if os.environ.has_key('SHAREDIR'):
+        if 'SHAREDIR' in os.environ:
             self.env['SHAREDIR'] = \
                 os.path.relpath(os.environ['SHAREDIR'], prefix)
 

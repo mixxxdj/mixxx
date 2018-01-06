@@ -10,7 +10,9 @@ class EffectManifestParameter {
     enum class ControlHint {
         UNKNOWN = 0,
         KNOB_LINEAR,
+        KNOB_LINEAR_INVERSE,
         KNOB_LOGARITHMIC,
+        KNOB_LOGARITHMIC_INVERSE,
         KNOB_STEPPING,   // A step rotary, steps given by m_steps
                          // are arranged with equal distance on scale
         TOGGLE_STEPPING  // For button and enum controls, not accessible
