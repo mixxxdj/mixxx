@@ -152,17 +152,20 @@ void DlgAnalysis::slotAnalyzerQueueProgress(
         AnalyzerProgress analyzerProgress, int finishedCount, int totalCount) {
     //qDebug() << this << "slotAnalyzerQueueProgress" << analyzerProgress << finishedCount << totalCount;
     if (labelProgress->isEnabled()) {
-        QString progressPercent;
-        if (analyzerProgress != kAnalyzerProgressUnknown) {
-            progressPercent = QString::number(
+        QString progressText;
+        if (analyzerProgress >= kAnalyzerProgressNone) {
+            QString progressPercent = QString::number(
                     analyzerProgressPercent(analyzerProgress));
+            progressText = tr("Analyzing %1% %2/%3").arg(
+                    progressPercent,
+                    QString::number(finishedCount),
+                    QString::number(totalCount));
         } else {
-            progressPercent = "--";
+            // Omit to display any percentage
+            progressText = tr("Analyzing %1/%2").arg(
+                    QString::number(finishedCount),
+                    QString::number(totalCount));
         }
-        QString progressText = tr("Analyzing %1/%2 %3%").arg(
-                QString::number(finishedCount),
-                QString::number(totalCount),
-                progressPercent);
         labelProgress->setText(progressText);
     }
 }
