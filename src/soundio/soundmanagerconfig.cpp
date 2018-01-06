@@ -384,15 +384,15 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
     if (flags & SoundManagerConfig::DEVICES) {
         clearOutputs();
         clearInputs();
-        QList<SoundDevice*> outputDevices = soundManager->getDeviceList(m_api, true, false);
+        QList<SoundDevicePointer> outputDevices = soundManager->getDeviceList(m_api, true, false);
         if (!outputDevices.isEmpty()) {
-            foreach (SoundDevice *device, outputDevices) {
-                if (device->getNumOutputChannels() < 2) {
+            for (const auto& pDevice: outputDevices) {
+                if (pDevice->getNumOutputChannels() < 2) {
                     continue;
                 }
                 AudioOutput masterOut(AudioPath::MASTER, 0, 2, 0);
-                addOutput(device->getInternalName(), masterOut);
-                defaultSampleRate = device->getDefaultSampleRate();
+                addOutput(pDevice->getInternalName(), masterOut);
+                defaultSampleRate = pDevice->getDefaultSampleRate();
                 break;
             }
         }
