@@ -246,6 +246,7 @@ class CoreAudio(Feature):
 
     def sources(self, build):
         return ['sources/soundsourcecoreaudio.cpp',
+                'sources/v1/legacyaudiosourceadapter.cpp',
                 '#lib/apple/CAStreamBasicDescription.cpp']
 
 

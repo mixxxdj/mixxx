@@ -43,6 +43,9 @@ class WTrackTableView : public WLibraryTableView {
     void restoreQuery(const SavedSearchQuery& query) override;
     SavedSearchQuery saveQuery(SavedSearchQuery query = SavedSearchQuery()) const override;
 
+    void saveCurrentVScrollBarPos();
+    void restoreCurrentVScrollBarPos();
+
   public slots:
     void loadTrackModel(QAbstractItemModel* model);
     void slotMouseDoubleClicked(const QModelIndex &);
@@ -68,7 +71,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotPrevTrackInfo();
     void slotPrevDlgTagFetcher();
     void slotShowTrackInTagFetcher(TrackPointer track);
-    void slotReloadTrackMetadata();
+    void slotImportTrackMetadata();
     void slotResetPlayed();
     void addSelectionToPlaylist(int iPlaylistId);
     void addSelectionToCrate(int iCrateId);
@@ -142,8 +145,8 @@ class WTrackTableView : public WLibraryTableView {
     QSignalMapper m_playlistMapper, m_crateMapper, m_deckMapper, m_samplerMapper;
 
     // Reload Track Metadata Action:
-    QAction *m_pReloadMetadataAct;
-    QAction *m_pReloadMetadataFromMusicBrainzAct;
+    QAction *m_pImportMetadataFromFileAct;
+    QAction *m_pImportMetadataFromMusicBrainzAct;
 
     // Load Track to PreviewDeck
     QAction* m_pAddToPreviewDeck;
