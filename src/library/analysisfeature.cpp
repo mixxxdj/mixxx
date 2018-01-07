@@ -150,10 +150,14 @@ void AnalysisFeature::onTrackAnalysisSchedulerProgress(
         AnalyzerProgress /*analyzerProgress*/,
         int currentCount,
         int totalCount) {
-    if (totalCount > 0) {
-        setTitleProgress(currentCount, totalCount);
-    } else {
-        setTitleDefault();
+    // Ignore any delayed progress updates after the analysis
+    // has already been stopped.
+    if (m_pTrackAnalysisScheduler) {
+        if (totalCount > 0) {
+            setTitleProgress(currentCount, totalCount);
+        } else {
+            setTitleDefault();
+        }
     }
 }
 
