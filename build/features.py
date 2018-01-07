@@ -372,7 +372,7 @@ class VinylControl(Feature):
 
 class Vamp(Feature):
     INTERNAL_LINK = False
-    INTERNAL_VAMP_PATH = '#lib/vamp-2.6'
+    INTERNAL_VAMP_PATH = '#lib/vamp'
 
     def description(self):
         return "Vamp Analyzer support"
