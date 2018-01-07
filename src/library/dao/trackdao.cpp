@@ -188,10 +188,12 @@ bool TrackDAO::trackExistsInDatabase(const QString& absoluteFilePath) {
     return getTrackId(absoluteFilePath).isValid();
 }
 
-void TrackDAO::saveTrack(Track* pTrack) {
-    DEBUG_ASSERT(nullptr != pTrack);
+void TrackDAO::saveTrack(TrackCacheLocker* pCacheLocker, Track* pTrack) {
+    DEBUG_ASSERT(pTrack);
 
     if (pTrack->isDirty()) {
+        qDebug() << "TrackDAO: Saving track" << pTrack->getLocation();
+
         // Write audio meta data, if enabled in the preferences.
         //
         // This must be done before updating the database, because
@@ -200,6 +202,18 @@ void TrackDAO::saveTrack(Track* pTrack) {
         // stamp on the track object!
         if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","SyncTrackMetadataExport")).toInt() == 1) {
             SoundSourceProxy::exportTrackMetadataBeforeSaving(pTrack);
+        }
+
+        // The track cache can safely be unlocked now that the metadata has
+        // been exported to the file. Updating the database is thread-safe
+        // an we accept this very small chance of a race condition here.
+        // Exporting metadata to a file cannot be rolled back if updating
+        // the database fails, so we have to account for inconsistencies
+        // in any case!
+        // Unlocking the cache now reduces lock contention and keeps the
+        // UI as responsive as possible.
+        if (pCacheLocker) {
+            pCacheLocker->unlockCache();
         }
 
         // Only update the database if the track has already been added!
@@ -635,15 +649,24 @@ TrackPointer TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove
 
     TrackCacheResolver cacheResolver(
             TrackCache::instance().resolve(fileInfo));
-    TrackPointer pTrack(cacheResolver.getTrack());
+    const TrackPointer pTrack = cacheResolver.getTrack();
     if (!pTrack) {
         qWarning() << "TrackDAO::addTracksAddFile:"
                 << "File not found"
                 << TrackRef::location(fileInfo);
         return TrackPointer();
     }
+    const TrackId trackId = pTrack->getId();
+    if (trackId.isValid()) {
+        qDebug() << "TrackDAO::addTracksAddFile:"
+                << "Track has already been added to the database"
+                << trackId;
+        return TrackPointer();
+    }
+    // Keep the TrackCache locked until the id of the Track
+    // object is known and has been updated in the cache.
 
-    // Initially load the metadata for the newly created track
+    // Initially (re-)import the metadata for the newly created track
     // from the file.
     SoundSourceProxy(pTrack).updateTrackFromSource();
     if (!pTrack->isMetadataSynchronized()) {
@@ -1241,10 +1264,16 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         return pTrack;
     }
     if (cacheResolver.getTrackCacheLookupResult() == TrackCacheLookupResult::HIT) {
-        // Must not reload cached tracks from database!
+        // Due to race conditions the track might have been reloaded
+        // from the database. In this case we abort the operation and
+        // simply return the cached Track object.
         return pTrack;
     }
     DEBUG_ASSERT(cacheResolver.getTrackCacheLookupResult() == TrackCacheLookupResult::MISS);
+    DEBUG_ASSERT(pTrack->getId() == trackId);
+    // After the Track object has been cached with an id we can safely
+    // release the lock the cache. This is needed to reduce lock contention.
+    cacheResolver.unlockCache();
 
     // For every column run its populator to fill the track in with the data.
     bool shouldDirty = false;
@@ -1313,10 +1342,6 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
             this, SLOT(slotTrackChanged(Track*)),
             Qt::DirectConnection);
 
-    // Finish the caching operation to release all locks before
-    // emitting any signals.
-    cacheResolver.unlockCache();
-
     // BaseTrackCache cares about track trackDirty/trackClean notifications
     // from TrackDAO that are triggered by the track itself. But the preceding
     // track modifications above have been sent before the TrackDAO has been
@@ -1333,9 +1358,12 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
 TrackPointer TrackDAO::getTrack(TrackId trackId) const {
     //qDebug() << "TrackDAO::getTrack" << QThread::currentThread() << m_database.connectionName();
 
-    TrackCacheLocker cacheLocker(
-            TrackCache::instance().lookupById(trackId));
-    TrackPointer pTrack = cacheLocker.getTrack();
+    // The TrackCache is only locked while executing the following line.
+    TrackPointer pTrack = TrackCache::instance().lookupById(trackId).getTrack();
+    // Accessing the database is a time consuming operation that should
+    // not be executed with a lock on the TrackCache. The TrackCache will
+    // be locked again after the query has been executed and potential
+    // race conditions will be resolved in getTrackFromDB()
     return pTrack ? pTrack : getTrackFromDB(trackId);
 }
 

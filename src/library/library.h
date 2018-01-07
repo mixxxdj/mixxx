@@ -106,7 +106,7 @@ public:
 
     void focusSearch();
 
-    void onEvictingTrackFromCache(Track* pTrack) override;
+    void onEvictingTrackFromCache(TrackCacheLocker* pCacheLocker, Track* pTrack) override;
 
   public slots:
 

@@ -78,8 +78,8 @@ WWidgetGroup {
 #WaveformContainer3,
 #WaveformContainer4 {
 /* waveform play position should stay centered, so we shift the waveform
-  containers right to compensate for (inactive) beatgrid button toggle */
-  padding-right: 17px;
+  containers right to compensate for (inactive) beatgrid button toggle
+  padding-right: 17px; */
 /* Also add respective padding at the right, so all beatgrid buttons are shown */
   margin-right: -17px;
 }
@@ -239,14 +239,17 @@ WWidgetGroup {
     background-color: #0f0f0f;
   }
 
-#MasterMixerLabel {
-  image: url(skin:/buttons/btn_master.svg) no-repeat center center;
-}
+#MasterHeadMixerLabel {
+  image: url(skin:/buttons/btn_master_head_mixer.svg) no-repeat center center;
+  }
+  #MasterMixerLabel {
+    image: url(skin:/buttons/btn_master.svg) no-repeat center center;
+  }
+  #HeadphoneMixerLabel {
+    image: url(skin:/buttons/btn_head.svg) no-repeat center center;
+  }
 #BoothMixerLabel {
   image: url(skin:/buttons/btn_booth.svg) no-repeat center center;
-}
-#HeadphoneMixerLabel {
-  image: url(skin:/buttons/btn_head.svg) no-repeat center center;
 }
 
 #MixerbarButton,
@@ -749,21 +752,27 @@ padding-left: 2px;
   #DeckButtonExpanded:hover {
     background-color: #000;
   }
-  #DeckControlsToggler_Left[displayValue="0"] {
+  #DeckControlsToggler_Left[displayValue="0"],
+  #MasterHeadMixerToggle[displayValue="0"] {
     background: transparent url(skin:/buttons/btn_arrow_right.svg) no-repeat center center;
     }
-    #DeckControlsToggler_Left[displayValue="0"]:hover {
+    #DeckControlsToggler_Left[displayValue="0"]:hover,
+    #MasterHeadMixerToggle[displayValue="0"]:hover {
       background: #151515 url(skin:/buttons/btn_arrow_right_hover.svg) no-repeat center center;
     }
-    #DeckControlsToggler_Left[displayValue="1"] {
+    #DeckControlsToggler_Left[displayValue="1"],
+    #MasterHeadMixerToggle[displayValue="1"] {
       background: transparent url(skin:/buttons/btn_arrow_left.svg) no-repeat center center;
+    }
+    #DeckControlsToggler_Left[displayValue="1"] {
       border-color: #0f0f0f;
       border-style: solid;
       border-top-right-radius: 0px;
       border-bottom-right-radius: 0px;
       border-width: 1px 0px 1px 1px;
     }
-    #DeckControlsToggler_Left[displayValue="1"]:hover {
+    #DeckControlsToggler_Left[displayValue="1"]:hover,
+    #MasterHeadMixerToggle[displayValue="1"]:hover {
       background: #000 url(skin:/buttons/btn_arrow_left_hover.svg) no-repeat center center;
     }
 
@@ -1260,12 +1269,6 @@ decks, samplers, mic, aux */
   padding: 0px 2px 0px 1px;
 }
 
-#VUMeterMasterContainer {
-  margin: 0px 1px 0px 1px;
-  background-color: #252525;
-  border-radius: 3px;
-}
-
 #VUMeterMasterLabel {
   image: url(skin:/buttons/btn_master_vu_label.svg) no-repeat center center;
 }
@@ -1597,8 +1600,8 @@ decks, samplers, mic, aux */
   #FxParameterButtonUnderlay[displayValue="1"] {
     background-color: #006596;
   }
-  #FxParameterButtonName_0,
-  #FxParameterButtonName_1 {
+  #FxParameterButtonName_inactive,
+  #FxParameterButtonName_active {
     font-size: 10px/10px;
     font-weight: bold;
     qproperty-alignment: 'AlignLeft | AlignVCenter';
@@ -1837,9 +1840,10 @@ WTrackProperty#SamplerTitle_mini {
  ######  Spinnies  ##############################################
 ##############################################################*/
 
-#SpinnyContainer {
+#SpinnyCover_Container {
   margin: 0px;
   padding: 0px;
+  background-color: #1e1e1e;
 }
 
 #SpinnyMini {

@@ -31,6 +31,7 @@
 #include "util/db/dbconnectionpool.h"
 #include "soundio/sounddeviceerror.h"
 
+class ChannelHandleFactory;
 class ControlPushButton;
 class ControllerManager;
 class DlgDeveloperTools;
@@ -142,6 +143,8 @@ class MixxxMainWindow : public QMainWindow {
     LaunchImage* m_pLaunchImage;
 
     SettingsManager* m_pSettingsManager;
+
+    ChannelHandleFactory* m_pChannelHandleFactory;
 
     // The effects processing system
     EffectsManager* m_pEffectsManager;

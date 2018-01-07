@@ -122,14 +122,10 @@ FlangerEffect::~FlangerEffect() {
 void FlangerEffect::processChannel(const ChannelHandle& handle,
                                    FlangerGroupState* pState,
                                    const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                   const unsigned int numSamples,
-                                   const unsigned int sampleRate,
-                                   const EffectProcessor::EnableState enableState,
+                                   const mixxx::EngineParameters& bufferParameters,
+                                   const EffectEnableState enableState,
                                    const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
-
-    // TODO: remove assumption of stereo signal
-    const int kChannels = 2;
 
     double lfoPeriodParameter = m_pSpeedParameter->value();
     double lfoPeriodFrames;
@@ -139,10 +135,12 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
         if (m_pTripletParameter->toBool()) {
             lfoPeriodParameter /= 3.0;
         }
-        lfoPeriodFrames = lfoPeriodParameter * groupFeatures.beat_length_sec * sampleRate;
+        lfoPeriodFrames = lfoPeriodParameter * groupFeatures.beat_length_sec
+                * bufferParameters.sampleRate();
     } else {
         // lfoPeriodParameter is a number of seconds
-        lfoPeriodFrames = std::max(lfoPeriodParameter, kMinLfoBeats) * sampleRate;
+        lfoPeriodFrames = std::max(lfoPeriodParameter, kMinLfoBeats)
+                * bufferParameters.sampleRate();
     }
 
     // When the period is changed, the position of the sound shouldn't
@@ -159,12 +157,12 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
 
     CSAMPLE_GAIN mix = m_pMixParameter->value();
     RampingValue<CSAMPLE_GAIN> mixRamped(
-            pState->prev_mix, mix, numSamples / kChannels);
+            pState->prev_mix, mix, bufferParameters.framesPerBuffer());
     pState->prev_mix = mix;
 
     CSAMPLE_GAIN regen = m_pRegenParameter->value();
     RampingValue<CSAMPLE_GAIN> regenRamped(
-            pState->prev_regen, regen, numSamples / kChannels);
+            pState->prev_regen, regen, bufferParameters.framesPerBuffer());
     pState->prev_regen = regen;
 
     // With and Manual is limited by amount of amplitude that remains from width
@@ -176,17 +174,19 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
     manual = math_clamp(manual, minManual, maxManual);
 
     RampingValue<double> widthRamped(
-            pState->prev_width, width, numSamples / kChannels);
+            pState->prev_width, width, bufferParameters.framesPerBuffer());
     pState->prev_width = width;
 
     RampingValue<double> manualRamped(
-            pState->prev_manual, manual, numSamples / kChannels);
+            pState->prev_manual, manual, bufferParameters.framesPerBuffer());
     pState->prev_manual = manual;
 
     CSAMPLE* delayLeft = pState->delayLeft;
     CSAMPLE* delayRight = pState->delayRight;
 
-   for (unsigned int i = 0; i < numSamples; i += kChannels) {
+   for (unsigned int i = 0;
+          i < bufferParameters.samplesPerBuffer();
+          i += bufferParameters.channelCount()) {
 
         CSAMPLE_GAIN mix_ramped = mixRamped.getNext();
         CSAMPLE_GAIN regen_ramped = regenRamped.getNext();
@@ -200,7 +200,7 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
 
         float periodFraction = static_cast<float>(pState->lfoFrames) / lfoPeriodFrames;
         double delayMs = manual_ramped + width_ramped / 2 * sin(M_PI * 2.0f * periodFraction);
-        double delayFrames = delayMs * sampleRate / 1000;
+        double delayFrames = delayMs * bufferParameters.sampleRate() / 1000;
 
         SINT framePrev = (pState->delayPos - static_cast<SINT>(floor(delayFrames))
                 + kBufferLenth) % kBufferLenth;
@@ -226,7 +226,7 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
         pOutput[i + 1] = (pInput[i + 1] + mix_ramped * delayedSampleRight) / gain;
     }
 
-    if (enableState == EffectProcessor::DISABLING) {
+    if (enableState == EffectEnableState::Disabling) {
         SampleUtil::clear(delayLeft, kBufferLenth);
         SampleUtil::clear(delayRight, kBufferLenth);
         pState->previousPeriodFrames = -1;

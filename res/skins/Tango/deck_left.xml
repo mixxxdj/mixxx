@@ -102,15 +102,11 @@ Variables:
 
           <WidgetGroup>
             <Layout>vertical</Layout>
-            <Size>1me,25min</Size>
+            <SizePolicy>me,i</SizePolicy>
             <Children>
               <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,3f</Size></WidgetGroup>
               <WidgetGroup><ObjectName>RoundFiller25</ObjectName><Size>1me,22me</Size></WidgetGroup>
             </Children>
-            <Connection>
-              <ConfigKey persist="true">[Tango],loop_beatjump_controls</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
           </WidgetGroup>
         </Children>
         <Connection>

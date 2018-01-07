@@ -10,6 +10,7 @@ Variables:
 <Template>
   <SetVariable name="sourceType">auxiliary</SetVariable>
   <SetVariable name="group">[Auxiliary<Variable name="auxNum"/>]</SetVariable>
+  <SetVariable name="FxRack">1</SetVariable>
   <WidgetGroup>
     <ObjectName>AlignCenter</ObjectName>
     <Layout>horizontal</Layout>
@@ -128,12 +129,12 @@ Variables:
                 <Children>
                   <Template src="skin:fx_assign_button.xml">
                     <SetVariable name="Size">26f,16f</SetVariable>
-                    <SetVariable name="FxUnitNum">1</SetVariable>
+                    <SetVariable name="FxUnit">1</SetVariable>
                   </Template>
                     <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
                   <Template src="skin:fx_assign_button.xml">
                     <SetVariable name="Size">26f,16f</SetVariable>
-                    <SetVariable name="FxUnitNum">3</SetVariable>
+                    <SetVariable name="FxUnit">3</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup>
@@ -146,12 +147,12 @@ Variables:
                 <Children>
                   <Template src="skin:fx_assign_button.xml">
                     <SetVariable name="Size">26f,16f</SetVariable>
-                    <SetVariable name="FxUnitNum">2</SetVariable>
+                    <SetVariable name="FxUnit">2</SetVariable>
                   </Template>
                     <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
                   <Template src="skin:fx_assign_button.xml">
                     <SetVariable name="Size">26f,16f</SetVariable>
-                    <SetVariable name="FxUnitNum">4</SetVariable>
+                    <SetVariable name="FxUnit">4</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup>
