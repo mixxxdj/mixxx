@@ -12,13 +12,15 @@
 #include "widget/wlibrarysidebar.h"
 
 #include "library/features/history/historyfeature.h"
+#include "widget/wtracktableview.h"
 
 HistoryFeature::HistoryFeature(UserSettingsPointer pConfig,
                              Library* pLibrary,
                              QObject* parent,
                              TrackCollection* pTrackCollection)
-        : BasePlaylistFeature(pConfig, pLibrary, parent, pTrackCollection),
-          m_playlistId(-1) {
+    : BasePlaylistFeature(pConfig, pLibrary, parent, pTrackCollection),
+    m_pLibrary(nullptr),
+    m_playlistId(-1) {
     m_pJoinWithNextAction = make_parented<QAction>(tr("Join with next"), this);
     connect(m_pJoinWithNextAction.get(), SIGNAL(triggered()),
             this, SLOT(slotJoinWithNext()));
@@ -313,7 +315,19 @@ void HistoryFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
 
     if (m_pPlaylistTableModel->getPlaylist() == m_playlistId) {
         // View needs a refresh
-        m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);
+
+        WTrackTableView* view = dynamic_cast<WTrackTableView*>(m_pLibrary->getActiveView());
+        if (view != nullptr) {
+            // We have a active view on the history. The user may have some
+            // important active selection. For example putting track into crates
+            // while the song changes trough autodj. The selection is then lost
+            // and dataloss occures
+            const QList<TrackId> trackIds = view->getSelectedTrackIds();
+            m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);
+            view->setSelectedTracks(trackIds);
+        } else {
+            m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);
+        }
     } else {
         // TODO(XXX): Care whether the append succeeded.
         m_playlistDao.appendTrackToPlaylist(currentPlayingTrackId,

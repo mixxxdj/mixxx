@@ -22,7 +22,7 @@ void WCoverArtMenu::createActions() {
     connect(m_pChange, SIGNAL(triggered()), this, SLOT(slotChange()));
     addAction(m_pChange);
 
-    m_pUnset = new QAction(tr("Unset cover",
+    m_pUnset = new QAction(tr("Clear cover",
             "clears the set cover art -- does not touch files on disk"), this);
     connect(m_pUnset, SIGNAL(triggered()), this, SLOT(slotUnset()));
     addAction(m_pUnset);
