@@ -11,18 +11,20 @@ QString BitCrusherEffect::getId() {
 EffectManifest BitCrusherEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
-    manifest.setName(QObject::tr("BitCrusher"));
+    manifest.setName(QObject::tr("Bitcrusher"));
+    manifest.setShortName(QObject::tr("Bitcrusher"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-        "The BitCrusher is an effect that adds quantisation noise to the signal "
-        "by the reduction of the resolution or bandwidth of the samples."));
+        "Adds noise by the reducing the bit depth and sample rate"));
     manifest.setEffectRampsFromDry(true);
 
     EffectManifestParameter* depth = manifest.addParameter();
     depth->setId("bit_depth");
     depth->setName(QObject::tr("Bit Depth"));
-    depth->setDescription(QObject::tr("Adjusts the bit depth of the samples."));
+    depth->setShortName(QObject::tr("Bit Depth"));
+    depth->setDescription(QObject::tr(
+        "The bit depth of the samples"));
     depth->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     depth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -39,7 +41,8 @@ EffectManifest BitCrusherEffect::getManifest() {
     frequency->setId("downsample");
     frequency->setName(QObject::tr("Downsampling"));
     frequency->setShortName(QObject::tr("Down"));
-    frequency->setDescription(QObject::tr("Adjusts the sample rate, to which the signal is downsampled."));
+    frequency->setDescription(QObject::tr(
+        "The sample rate to which the signal is downsampled"));
     frequency->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     frequency->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     frequency->setUnitsHint(EffectManifestParameter::UnitsHint::SAMPLERATE);

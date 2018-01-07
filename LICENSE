@@ -1,5 +1,5 @@
-Mixxx version 2.1, Digital DJ'ing software.
-Copyright (C) 2001-2017 Mixxx Development Team
+Mixxx version 2.2, Digital DJ'ing software.
+Copyright (C) 2001-2018 Mixxx Development Team
 
 Promotional tracks are copyright their respective owners and
 distributed with permission.
@@ -16,8 +16,8 @@ available at http://www.steinberg.net/en/company/developer.html .
 
 On Windows you may receive a copy of the Microsoft Visual Studio runtime
 libraries. These are distributed only for the purpose of allowing
-Mixxx to run as per the license agreement for Visual Studio 2005/2008 and
-are copyright of Microsoft.
+Mixxx to run as per the license agreement for Visual Studio and are copyright
+of Microsoft.
 
 This distribution of Mixxx may include skins that are licensed under a
 Creative Commons license. Full licensing information is available

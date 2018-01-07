@@ -28,14 +28,15 @@ EffectManifest LoudnessContourEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-            "Amplifies low and high frequencies at low volumes to compensate for reduced sensitivity of the human ear."));
+        "Amplifies low and high frequencies at low volumes to compensate for reduced sensitivity of the human ear."));
     manifest.setEffectRampsFromDry(true);
 
     EffectManifestParameter* loudness = manifest.addParameter();
     loudness->setId("loudness");
     loudness->setName(QObject::tr("Loudness"));
-    loudness->setDescription(
-            QObject::tr("Set the gain of the applied loudness contour"));
+    loudness->setShortName(QObject::tr("Loudness"));
+    loudness->setDescription(QObject::tr(
+        "Set the gain of the applied loudness contour"));
     loudness->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     loudness->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     loudness->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -48,7 +49,9 @@ EffectManifest LoudnessContourEffect::getManifest() {
     EffectManifestParameter* useGain = manifest.addParameter();
     useGain->setId("useGain");
     useGain->setName(QObject::tr("Use Gain"));
-    useGain->setDescription(QObject::tr("Follow Gain Knob"));
+    useGain->setShortName(QObject::tr("Use Gain"));
+    useGain->setDescription(QObject::tr(
+        "Follow Gain Knob"));
     useGain->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     useGain->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     useGain->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);

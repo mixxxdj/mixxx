@@ -1283,7 +1283,7 @@ void ControllerEngine::scratchProcess(int timerId) {
         // Once this code path is run, latch so it always runs until reset
         //m_lastMovement[deck] += mixxx::Duration::fromSeconds(1);
     } else if (m_softStartActive[deck]) {
-        // pretend we have moved by (finalRate*default distance)
+        // pretend we have moved by (desired rate*default distance)
         filter->observation(m_rampTo[deck]*kAlphaBetaDt);
     } else {
         // This will (and should) be 0 if no net ticks have been accumulated
@@ -1303,13 +1303,14 @@ void ControllerEngine::scratchProcess(int timerId) {
     // Reset accumulator
     m_intervalAccumulator[deck] = 0;
 
-    // If we're ramping and the current rate is really close to the rampTo value
-    // or we're in brake or softStart mode and have crossed over the desired value,
-    // end scratching
+    // End scratching if we're ramping and the current rate is really close to the rampTo value
     if ((m_ramp[deck] && fabs(m_rampTo[deck] - newRate) <= 0.00001) ||
+        // or if we brake or softStart and have crossed over the desired value,
         ((m_brakeActive[deck] || m_softStartActive[deck]) && (
             (oldRate > m_rampTo[deck] && newRate < m_rampTo[deck]) ||
-            (oldRate < m_rampTo[deck] && newRate > m_rampTo[deck])))) {
+            (oldRate < m_rampTo[deck] && newRate > m_rampTo[deck]))) ||
+        // or if the deck was stopped manually during brake or softStart
+        ((m_brakeActive[deck] || m_softStartActive[deck]) && (!isDeckPlaying(group)))) {
         // Not ramping no mo'
         m_ramp[deck] = false;
 
@@ -1456,12 +1457,14 @@ void ControllerEngine::brake(int deck, bool activate, double factor, double rate
 
     if (activate) {
         // store the new values for this spinback/brake effect
-        m_rampTo[deck] = 0.0;
         if (initRate == 1.0) {// then rate is really 1.0 or was set to default
-            // so check for real value taking pitch into account
+            // in /res/common-controller-scripts.js so check for real value,
+            // taking pitch into account
             initRate = getDeckRate(group);
         }
-        // if softStart()ing, stop it
+        // stop ramping at a rate which doesn't produce any audible output anymore
+        m_rampTo[deck] = 0.01;
+        // if we are currently softStart()ing, stop it
         if (m_softStartActive[deck]) {
             m_softStartActive[deck] = false;
             AlphaBetaFilter* filter = m_scratchFilters[deck];
@@ -1498,11 +1501,10 @@ void ControllerEngine::brake(int deck, bool activate, double factor, double rate
 
 /*  -------- ------------------------------------------------------
     Purpose: [En/dis]ables softStart effect for the channel
-    Input:   deck, activate/deactivate, factor (optional),
-             rate (optiona)
+    Input:   deck, activate/deactivate, factor (optional)
     Output:  -
     -------- ------------------------------------------------------ */
-void ControllerEngine::softStart(int deck, bool activate, double factor, double finalRate) {
+void ControllerEngine::softStart(int deck, bool activate, double factor) {
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
 
@@ -1522,12 +1524,8 @@ void ControllerEngine::softStart(int deck, bool activate, double factor, double 
     double initRate = 0.0;
 
     if (activate) {
-        // store the new values for this spinback/brake effect
-        if (finalRate == 1.0) {// then rate is really 1.0 or was set to default
-            // so check for real value taking pitch into account
-            finalRate = getDeckRate(group);
-        }
-        m_rampTo[deck] = finalRate;
+        // aquire deck rate
+        m_rampTo[deck] = getDeckRate(group);
 
         // if brake()ing, get current rate from filter
         if (m_brakeActive[deck]) {

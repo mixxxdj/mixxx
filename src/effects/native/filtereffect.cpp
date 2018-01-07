@@ -16,17 +16,19 @@ EffectManifest FilterEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
     manifest.setName(QObject::tr("Filter"));
+    manifest.setShortName(QObject::tr("Filter"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr("The filter changes the tone of the "
-                                        "music by allowing only high or low "
-                                        "frequencies to pass through."));
+    manifest.setDescription(QObject::tr(
+        "Allows only high or low frequencies to play."));
     manifest.setEffectRampsFromDry(true);
 
     EffectManifestParameter* lpf = manifest.addParameter();
     lpf->setId("lpf");
-    lpf->setName(QObject::tr("LPF"));
-    lpf->setDescription(QObject::tr("Corner frequency ratio of the low pass filter"));
+    lpf->setName(QObject::tr("Low Pass Filter Cutoff"));
+    lpf->setShortName(QObject::tr("LPF"));
+    lpf->setDescription(QObject::tr(
+        "Corner frequency ratio of the low pass filter"));
     lpf->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     lpf->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     lpf->setUnitsHint(EffectManifestParameter::UnitsHint::HERTZ);
@@ -40,7 +42,9 @@ EffectManifest FilterEffect::getManifest() {
     q->setId("q");
     q->setName(QObject::tr("Resonance"));
     q->setShortName(QObject::tr("Q"));
-    q->setDescription(QObject::tr("Resonance of the filters, default = Flat top"));
+    q->setDescription(QObject::tr(
+        "Resonance of the filters\n"
+        "Default: flat top")); // What does this mean?
     q->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     q->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     q->setUnitsHint(EffectManifestParameter::UnitsHint::SAMPLERATE);
@@ -50,8 +54,10 @@ EffectManifest FilterEffect::getManifest() {
 
     EffectManifestParameter* hpf = manifest.addParameter();
     hpf->setId("hpf");
-    hpf->setName(QObject::tr("HPF"));
-    hpf->setDescription(QObject::tr("Corner frequency ratio of the high pass filter"));
+    hpf->setName(QObject::tr("High Pass Filter Cutoff"));
+    hpf->setShortName(QObject::tr("HPF"));
+    hpf->setDescription(QObject::tr(
+        "Corner frequency ratio of the high pass filter"));
     hpf->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     hpf->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     hpf->setUnitsHint(EffectManifestParameter::UnitsHint::HERTZ);
@@ -75,11 +81,10 @@ FilterGroupState::FilterGroupState(const mixxx::EngineParameters& bufferParamete
 }
 
 void FilterGroupState::engineParametersChanged(const mixxx::EngineParameters& bufferParameters) {
-    m_pBuf = SampleUtil::alloc(bufferParameters.samplesPerBuffer());
+    m_buffer = mixxx::SampleBuffer(bufferParameters.samplesPerBuffer());
 }
 
 FilterGroupState::~FilterGroupState() {
-    delete m_pBuf;
     delete m_pLowFilter;
     delete m_pHighFilter;
 }
@@ -143,8 +148,8 @@ void FilterEffect::processChannel(const ChannelHandle& handle,
         pState->m_pHighFilter->setFrequencyCorners(1, hpf, clampedQ);
     }
 
-    const CSAMPLE* pLpfInput = pState->m_pBuf;
-    CSAMPLE* pHpfOutput = pState->m_pBuf;
+    const CSAMPLE* pLpfInput = pState->m_buffer.data();
+    CSAMPLE* pHpfOutput = pState->m_buffer.data();
     if (lpf >= maxCornerNormalized && pState->m_loFreq >= maxCornerNormalized) {
         // Lpf disabled Hpf can write directly to output
         pHpfOutput = pOutput;
