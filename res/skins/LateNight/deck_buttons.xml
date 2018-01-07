@@ -1,480 +1,363 @@
 <Template>
 	<WidgetGroup>
 		<ObjectName>DeckButtons</ObjectName>
-		<SizePolicy>me,me</SizePolicy>
+		<SizePolicy>min,min</SizePolicy>
 		<BackPath>background_tile.png</BackPath>
 		<Layout>horizontal</Layout>
-		<MinimumSize>200,-1</MinimumSize>
 		<Children>
-			<WidgetGroup>
-				<Layout>horizontal</Layout>
-				<ObjectName>LoopSizeButtons</ObjectName>
-				<SizePolicy>me,min</SizePolicy>
-				<Children>
-					<PushButton>
-						<TooltipId>loop_halve</TooltipId>
-						<NumberStates>1</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Pressed>btn_beatloop2_halve_overdown.png</Pressed>
-							<Unpressed>btn_beatloop2_halve.png</Unpressed>
-						</State>
-						<Connection>
-							<ConfigKey>[Channel<Variable name="channum" />],loop_halve</ConfigKey>
-							<ButtonState>LeftButton</ButtonState>
-						</Connection>
-						<Connection>
-							<ConfigKey>[Channel<Variable name="channum" />],loop_move_1_backward</ConfigKey>
-							<ButtonState>RightButton</ButtonState>
-						</Connection>
-					</PushButton>
-					<WidgetGroup>
-						<Layout>vertical</Layout>
-						<ObjectName>BeatLoopRows</ObjectName>
-						<Children>
-							<WidgetGroup>
-								<Layout>horizontal</Layout>
-								<SizePolicy>me,min</SizePolicy>
-								<Children>
-									<PushButton>
-										<TooltipId>beatloop</TooltipId>
-										<NumberStates>2</NumberStates>
-										<LeftClickIsPushButton>true</LeftClickIsPushButton>
-										<RightClickIsPushButton>true</RightClickIsPushButton>
-										<State>
-											<Number>0</Number>
-											<Pressed>btn_beatloop2_0125_down.png</Pressed>
-											<Unpressed>btn_beatloop2_0125.png</Unpressed>
-										</State>
-										<State>
-											<Number>1</Number>
-											<Pressed>btn_beatloop2_0125_overdown.png</Pressed>
-											<Unpressed>btn_beatloop2_0125_over.png</Unpressed>
-										</State>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum" />],beatloop_0.125_toggle</ConfigKey>
-											<ButtonState>LeftButton</ButtonState>
-										</Connection>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum" />],beatlooproll_0.125_activate</ConfigKey>
-											<ButtonState>RightButton</ButtonState>
-										</Connection>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum" />],beatloop_0.125_enabled</ConfigKey>
-										</Connection>
-									</PushButton>
-									<PushButton>
-										<TooltipId>beatloop</TooltipId>
-										<NumberStates>2</NumberStates>
-										<LeftClickIsPushButton>true</LeftClickIsPushButton>
-										<RightClickIsPushButton>true</RightClickIsPushButton>
-										<State>
-											<Number>0</Number>
-											<Pressed>btn_beatloop2_0250_down.png</Pressed>
-											<Unpressed>btn_beatloop2_0250.png</Unpressed>
-										</State>
-										<State>
-											<Number>1</Number>
-											<Pressed>btn_beatloop2_0250_overdown.png</Pressed>
-											<Unpressed>btn_beatloop2_0250_over.png</Unpressed>
-										</State>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum" />],beatloop_0.25_toggle</ConfigKey>
-											<ButtonState>LeftButton</ButtonState>
-										</Connection>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum" />],beatlooproll_0.25_activate</ConfigKey>
-											<ButtonState>RightButton</ButtonState>
-										</Connection>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum" />],beatloop_0.25_enabled</ConfigKey>
-										</Connection>
-									</PushButton>
-									<PushButton>
-										<TooltipId>beatloop</TooltipId>
-										<NumberStates>2</NumberStates>
-										<LeftClickIsPushButton>true</LeftClickIsPushButton>
-										<RightClickIsPushButton>true</RightClickIsPushButton>
-										<State>
-											<Number>0</Number>
-											<Pressed>btn_beatloop2_0500_down.png</Pressed>
-											<Unpressed>btn_beatloop2_0500.png</Unpressed>
-										</State>
-										<State>
-											<Number>1</Number>
-											<Pressed>btn_beatloop2_0500_overdown.png</Pressed>
-											<Unpressed>btn_beatloop2_0500_over.png</Unpressed>
-										</State>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum" />],beatloop_0.5_toggle</ConfigKey>
-											<ButtonState>LeftButton</ButtonState>
-										</Connection>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum" />],beatlooproll_0.5_activate</ConfigKey>
-											<ButtonState>RightButton</ButtonState>
-										</Connection>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum" />],beatloop_0.5_enabled</ConfigKey>
-										</Connection>
-									</PushButton>
-									<PushButton>
-										<TooltipId>beatloop</TooltipId>
-										<NumberStates>2</NumberStates>
-										<LeftClickIsPushButton>true</LeftClickIsPushButton>
-										<RightClickIsPushButton>true</RightClickIsPushButton>
-										<State>
-											<Number>0</Number>
-											<Pressed>btn_beatloop2_1_down.png</Pressed>
-											<Unpressed>btn_beatloop2_1.png</Unpressed>
-										</State>
-										<State>
-											<Number>1</Number>
-											<Pressed>btn_beatloop2_1_overdown.png</Pressed>
-											<Unpressed>btn_beatloop2_1_over.png</Unpressed>
-										</State>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum" />],beatloop_1_toggle</ConfigKey>
-											<ButtonState>LeftButton</ButtonState>
-										</Connection>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum" />],beatlooproll_1_activate</ConfigKey>
-											<ButtonState>RightButton</ButtonState>
-										</Connection>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum" />],beatloop_1_enabled</ConfigKey>
-										</Connection>
-									</PushButton>
-								</Children>
-							</WidgetGroup>
-							<WidgetGroup>
-								<Layout>horizontal</Layout>
-								<SizePolicy>me,min</SizePolicy>
-								<Children>
-									<PushButton>
-										<TooltipId>beatloop</TooltipId>
-										<NumberStates>2</NumberStates>
-										<LeftClickIsPushButton>true</LeftClickIsPushButton>
-										<RightClickIsPushButton>true</RightClickIsPushButton>
-										<State>
-											<Number>0</Number>
-											<Pressed>btn_beatloop2_2_down.png</Pressed>
-											<Unpressed>btn_beatloop2_2.png</Unpressed>
-										</State>
-										<State>
-											<Number>1</Number>
-											<Pressed>btn_beatloop2_2_overdown.png</Pressed>
-											<Unpressed>btn_beatloop2_2_over.png</Unpressed>
-										</State>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum" />],beatloop_2_toggle</ConfigKey>
-											<ButtonState>LeftButton</ButtonState>
-										</Connection>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum" />],beatlooproll_2_activate</ConfigKey>
-											<ButtonState>RightButton</ButtonState>
-										</Connection>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum" />],beatloop_2_enabled</ConfigKey>
-										</Connection>
-									</PushButton>
-									<PushButton>
-										<TooltipId>beatloop</TooltipId>
-										<NumberStates>2</NumberStates>
-										<LeftClickIsPushButton>true</LeftClickIsPushButton>
-										<RightClickIsPushButton>true</RightClickIsPushButton>
-										<State>
-											<Number>0</Number>
-											<Pressed>btn_beatloop2_4_down.png</Pressed>
-											<Unpressed>btn_beatloop2_4.png</Unpressed>
-										</State>
-										<State>
-											<Number>1</Number>
-											<Pressed>btn_beatloop2_4_overdown.png</Pressed>
-											<Unpressed>btn_beatloop2_4_over.png</Unpressed>
-										</State>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum" />],beatloop_4_toggle</ConfigKey>
-											<ButtonState>LeftButton</ButtonState>
-										</Connection>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum" />],beatlooproll_4_activate</ConfigKey>
-											<ButtonState>RightButton</ButtonState>
-										</Connection>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum" />],beatloop_4_enabled</ConfigKey>
-										</Connection>
-									</PushButton>
-									<PushButton>
-										<TooltipId>beatloop</TooltipId>
-										<NumberStates>2</NumberStates>
-										<LeftClickIsPushButton>true</LeftClickIsPushButton>
-										<RightClickIsPushButton>true</RightClickIsPushButton>
-										<State>
-											<Number>0</Number>
-											<Pressed>btn_beatloop2_8_down.png</Pressed>
-											<Unpressed>btn_beatloop2_8.png</Unpressed>
-										</State>
-										<State>
-											<Number>1</Number>
-											<Pressed>btn_beatloop2_8_overdown.png</Pressed>
-											<Unpressed>btn_beatloop2_8_over.png</Unpressed>
-										</State>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum" />],beatloop_8_toggle</ConfigKey>
-											<ButtonState>LeftButton</ButtonState>
-										</Connection>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum" />],beatlooproll_8_activate</ConfigKey>
-											<ButtonState>RightButton</ButtonState>
-										</Connection>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum" />],beatloop_8_enabled</ConfigKey>
-										</Connection>
-									</PushButton>
-									<PushButton>
-										<TooltipId>beatloop</TooltipId>
-										<NumberStates>2</NumberStates>
-										<LeftClickIsPushButton>true</LeftClickIsPushButton>
-										<RightClickIsPushButton>true</RightClickIsPushButton>
-										<State>
-											<Number>0</Number>
-											<Pressed>btn_beatloop2_16_down.png</Pressed>
-											<Unpressed>btn_beatloop2_16.png</Unpressed>
-										</State>
-										<State>
-											<Number>1</Number>
-											<Pressed>btn_beatloop2_16_overdown.png</Pressed>
-											<Unpressed>btn_beatloop2_16_over.png</Unpressed>
-										</State>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum" />],beatloop_16_toggle</ConfigKey>
-											<ButtonState>LeftButton</ButtonState>
-										</Connection>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum" />],beatlooproll_16_activate</ConfigKey>
-											<ButtonState>RightButton</ButtonState>
-										</Connection>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum" />],beatloop_16_enabled</ConfigKey>
-										</Connection>
-									</PushButton>
-								</Children>
-							</WidgetGroup>
-						</Children>
-					</WidgetGroup>
 
-					<PushButton>
-						<TooltipId>loop_double</TooltipId>
-						<NumberStates>1</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Pressed>btn_beatloop2_double_overdown.png</Pressed>
-							<Unpressed>btn_beatloop2_double.png</Unpressed>
-						</State>
-						<Connection>
-							<ConfigKey>[Channel<Variable name="channum" />],loop_double</ConfigKey>
-							<ButtonState>LeftButton</ButtonState>
-						</Connection>
-						<Connection>
-							<ConfigKey>[Channel<Variable name="channum" />],loop_move_1_forward</ConfigKey>
-							<ButtonState>RightButton</ButtonState>
-						</Connection>
-					</PushButton>
-				</Children>
-			</WidgetGroup>
-			<WidgetGroup>
-				<Layout>vertical</Layout>
-				<ObjectName>LoopInOut</ObjectName>
-				<Children>
-					<WidgetGroup>
-						<Layout>horizontal</Layout>
-						<ObjectName>LoopInOut</ObjectName>
-						<SizePolicy>me,min</SizePolicy>
-						<Children>
-							<PushButton>
-								<TooltipId>loop_in</TooltipId>
-								<NumberStates>1</NumberStates>
-								<State>
-									<Number>0</Number>
-									<Pressed>btn_loop_in2_overdown.png</Pressed>
-									<Unpressed>btn_loop_in2.png</Unpressed>
-								</State>
-								<Connection>
-									<ConfigKey>[Channel<Variable name="channum" />],loop_in</ConfigKey>
-									<ButtonState>LeftButton</ButtonState>
-								</Connection>
-							</PushButton>
-							<PushButton>
-								<TooltipId>loop_out</TooltipId>
-								<NumberStates>1</NumberStates>
-								<State>
-									<Number>0</Number>
-									<Pressed>btn_loop_out2_overdown.png</Pressed>
-									<Unpressed>btn_loop_out2.png</Unpressed>
-								</State>
-								<Connection>
-									<ConfigKey>[Channel<Variable name="channum" />],loop_out</ConfigKey>
-									<ButtonState>LeftButton</ButtonState>
-								</Connection>
-							</PushButton>
-						</Children>
-					</WidgetGroup>
-					<WidgetGroup>
-						<Layout>horizontal</Layout>
-						<ObjectName>LoopInOut</ObjectName>
-						<Children>
-							<PushButton>
-								<Size>52,24</Size>
-								<ObjectName>LoopToggleButton</ObjectName>
-								<TooltipId>reloop_exit</TooltipId>
-								<NumberStates>2</NumberStates>
-								<LeftClickIsPushButton>true</LeftClickIsPushButton>
-								<State>
-									<Number>0</Number>
-									<Text>LOOP</Text>
-								</State>
-								<State>
-									<Number>1</Number>
-									<Text>LOOP</Text>
-								</State>
-								<Connection>
-									<ConfigKey>[Channel<Variable name="channum" />],reloop_exit</ConfigKey>
-									<ButtonState>LeftButton</ButtonState>
-								</Connection>
-								<Connection>
-									<ConfigKey>[Channel<Variable name="channum" />],loop_enabled</ConfigKey>
-								</Connection>
-							</PushButton>
-						</Children>
-					</WidgetGroup>
-				</Children>
-			</WidgetGroup>
+      <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
 
-			<WidgetGroup>
-                <ObjectName>FFRew</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>me,min</SizePolicy>
-                <Children>
-                    <WidgetGroup>
-                        <ObjectName>FFRew</ObjectName>
-                        <Layout>horizontal</Layout>
-                        <SizePolicy>me,min</SizePolicy>
-                        <Children>
-                            <PushButton>
-                                <TooltipId>back_start</TooltipId>
-                                <NumberStates>1</NumberStates>
-                                <State>
-                                    <Number>0</Number>
-                                    <Pressed>btn_rewind2_overdown.png</Pressed>
-                                    <Unpressed>btn_rewind2.png</Unpressed>
-                                </State>
-                                <Connection>
-                                    <ConfigKey>[Channel<Variable name="channum" />],back</ConfigKey>
-                                    <ButtonState>LeftButton</ButtonState>
-                                </Connection>
-                                <Connection>
-                                    <ConfigKey>[Channel<Variable name="channum" />],start</ConfigKey>
-                                    <ButtonState>RightButton</ButtonState>
-                                </Connection>
-                            </PushButton>
-                            <PushButton>
-                                <TooltipId>fwd_end</TooltipId>
-                                <NumberStates>1</NumberStates>
-                                <State>
-                                    <Number>0</Number>
-                                    <Pressed>btn_forward2_overdown.png</Pressed>
-                                    <Unpressed>btn_forward2.png</Unpressed>
-                                </State>
-                                <Connection>
-                                    <ConfigKey>[Channel<Variable name="channum" />],fwd</ConfigKey>
-                                    <ButtonState>LeftButton</ButtonState>
-                                </Connection>
-                                <Connection>
-                                    <ConfigKey>[Channel<Variable name="channum" />],end</ConfigKey>
-                                    <ButtonState>RightButton</ButtonState>
-                                </Connection>
-                            </PushButton>
-                        </Children>
-                    </WidgetGroup>
-                    <WidgetGroup>
-                        <Layout>horizontal</Layout>
-                        <ObjectName>FFRew</ObjectName>
-                        <SizePolicy>me,min</SizePolicy>
-                        <Children>
-                            <PushButton>
-                                <TooltipId>reverse</TooltipId>
-                                <NumberStates>1</NumberStates>
-                                <RightClickIsPushButton>true</RightClickIsPushButton>
-                                <State>
-                                    <Number>0</Number>
-                                    <Pressed>btn_reverse2_overdown.png</Pressed>
-                                    <Unpressed>btn_reverse2.png</Unpressed>
-                                </State>
-                                <Connection>
-                                    <ConfigKey>[Channel<Variable name="channum" />],reverse</ConfigKey>
-                                    <ButtonState>LeftButton</ButtonState>
-                                </Connection>
-                                <Connection>
-                                    <ConfigKey>[Channel<Variable name="channum" />],reverseroll</ConfigKey>
-                                    <ButtonState>RightButton</ButtonState>
-                                </Connection>
-                            </PushButton>
-                        </Children>
-                    </WidgetGroup>
-                </Children>
-            </WidgetGroup>
+      <WidgetGroup><!-- Loop buttons + beatloop size spinbox -->
+        <ObjectName>AlignLeftTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,max</SizePolicy>
+        <Children>
+          <WidgetGroup><!-- loop enable + beatloop size -->
+            <ObjectName>AlignLeftTop</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,max</SizePolicy>
+            <Children>
+              <Template src="skin:button_2state_right.xml">
+                <SetVariable name="TooltipId">beatloop_activate</SetVariable>
+                <SetVariable name="Size">26f,26f</SetVariable>
+                <SetVariable name="state_0_pressed">loop_down.png</SetVariable>
+                <SetVariable name="state_0_unpressed">loop.png</SetVariable>
+                <SetVariable name="state_1_pressed">loop_overdown.png</SetVariable>
+                <SetVariable name="state_1_unpressed">loop_over.png</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,beatloop_activate</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatlooproll_activate</SetVariable>
+              </Template>
 
-			<WidgetGroup>
-				<ObjectName>PlayCue</ObjectName>
-				<Layout>vertical</Layout>
-				<Children>
-					<PushButton>
-								<ObjectName>CueToggleButton</ObjectName>
-								<Size>52,26</Size>
-						<TooltipId>cue_default_cue_gotoandstop</TooltipId>
-						<NumberStates>2</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Text>CUE</Text>
-						</State>
-						<State>
-							<Number>1</Number>
-							<Text>CUE</Text>
-						</State>
-						<Connection>
-							<ConfigKey>[Channel<Variable name="channum" />],cue_default</ConfigKey>
-							<ButtonState>LeftButton</ButtonState>
-						</Connection>
-						<Connection>
-							<ConfigKey>[Channel<Variable name="channum" />],cue_gotoandstop</ConfigKey>
-							<ButtonState>RightButton</ButtonState>
-						</Connection>
-						<Connection>
-							<ConfigKey>[Channel<Variable name="channum" />],cue_indicator</ConfigKey>
-						</Connection>
-					</PushButton>
-					<PushButton>
-						<TooltipId>play_cue_set</TooltipId>
-						<NumberStates>2</NumberStates>
-						<RightClickIsPushButton>true</RightClickIsPushButton>
-						<State>
-							<Number>0</Number>
-							<Pressed>btn_play1_down.png</Pressed>
-							<Unpressed>btn_play1.png</Unpressed>
-						</State>
-						<State>
-							<Number>1</Number>
-							<Pressed>btn_play1_overdown.png</Pressed>
-							<Unpressed>btn_play1_over.png</Unpressed>
-						</State>
-						<Connection>
-							<ConfigKey>[Channel<Variable name="channum" />],play</ConfigKey>
-							<ButtonState>LeftButton</ButtonState>
-						</Connection>
-						<Connection>
-							<ConfigKey>[Channel<Variable name="channum" />],play_indicator</ConfigKey>
-						</Connection>
-					</PushButton>
+              <BeatSpinBox>
+                <TooltipId>beatloop_size</TooltipId>
+                <Value><Variable name="group"/>,beatloop_size</Value>
+              </BeatSpinBox>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup>
+            <ObjectName>AlignLeftTop</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,max</SizePolicy>
+            <Children>
+              <Template src="skin:button_2state_right_display.xml">
+                <SetVariable name="TooltipId">reloop_toggle</SetVariable>
+                <SetVariable name="Size">26f,26f</SetVariable>
+                <SetVariable name="state_0_pressed">reloop_down.png</SetVariable>
+                <SetVariable name="state_0_unpressed">reloop.png</SetVariable>
+                <SetVariable name="state_1_pressed">reloop_overdown.png</SetVariable>
+                <SetVariable name="state_1_unpressed">reloop_over.png</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,reloop_toggle</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reloop_andstop</SetVariable>
+                <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,loop_enabled</SetVariable>
+              </Template>
+
+              <Template src="skin:button_1state_right.xml">
+                <SetVariable name="TooltipId">loop_in</SetVariable>
+                <SetVariable name="Size">26f,26f</SetVariable>
+                <SetVariable name="state_0_pressed">loop_in_overdown.png</SetVariable>
+                <SetVariable name="state_0_unpressed">loop_in.png</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,loop_in</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,loop_in_goto</SetVariable>
+              </Template>
+
+              <Template src="skin:button_1state_right.xml">
+                <SetVariable name="TooltipId">loop_out</SetVariable>
+                <SetVariable name="Size">26f,26f</SetVariable>
+                <SetVariable name="state_0_pressed">loop_out_overdown.png</SetVariable>
+                <SetVariable name="state_0_unpressed">loop_out.png</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,loop_out</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,loop_out_goto</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup><!-- /Loop buttons + beatloop size spinbox -->
+
+      <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
+
+      <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
+
+      <WidgetGroup><!-- Jump buttons + beatjump size spinbox -->
+        <ObjectName>AlignLeftTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <WidgetGroup><!-- beatjump size -->
+            <ObjectName>AlignLeftTop</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>26f,min</SizePolicy>
+            <Children>
+              <!-- put this spacer here so BeatSpinBox expands whith HiDPI scaling -->
+              <WidgetGroup><Size>0f,26f</Size></WidgetGroup>
+              <BeatSpinBox>
+                <TooltipId>beatjump_size</TooltipId>
+                <Value><Variable name="group"/>,beatjump_size</Value>
+              </BeatSpinBox>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup>
+            <ObjectName>AlignLeftTop</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,max</SizePolicy>
+            <Children>
+
+              <Template src="skin:button_1state_right.xml">
+                <SetVariable name="TooltipId">beatjump_backward</SetVariable>
+                <SetVariable name="Size">26f,26f</SetVariable>
+                <SetVariable name="state_0_pressed">nudge_down1_overdown.png</SetVariable>
+                <SetVariable name="state_0_unpressed">nudge_down1.png</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,beatjump_backward</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatjump_1_backward</SetVariable>
+              </Template>
+
+              <Template src="skin:button_1state_right.xml">
+                <SetVariable name="TooltipId">beatjump_forward</SetVariable>
+                <SetVariable name="Size">26f,26f</SetVariable>
+                <SetVariable name="state_0_pressed">nudge_up1_overdown.png</SetVariable>
+                <SetVariable name="state_0_unpressed">nudge_up1.png</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,beatjump_forward</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatjump_1_forward</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup><!-- /Jump buttons + beatjump size spinbox -->
+
+      <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName></ObjectName>
+        <Layout>vertical</Layout>
+        <Children>
+			    <WidgetGroup><!-- HotCues, Cue -->
+				    <ObjectName>PlayCue</ObjectName>
+				    <Layout>horizontal</Layout>
+				    <Children>
+              <PushButton><!-- HotCue 1 -->
+                <TooltipId>hotcue</TooltipId>
+                <NumberStates>2</NumberStates>
+                <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                <RightClickIsPushButton>true</RightClickIsPushButton>
+                <State>
+                  <Number>0</Number>
+                  <Pressed>buttons/btn_hotcue2_1_down.png</Pressed>
+                  <Unpressed>buttons/btn_hotcue2_1.png</Unpressed>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Pressed>buttons/btn_hotcue2_1_overdown.png</Pressed>
+                  <Unpressed>buttons/btn_hotcue2_1_over.png</Unpressed>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,hotcue_1_activate</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,hotcue_1_clear</ConfigKey>
+                  <ButtonState>RightButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,hotcue_1_enabled</ConfigKey>
+                </Connection>
+              </PushButton>
+
+              <PushButton><!-- HotCue 2 -->
+                <TooltipId>hotcue</TooltipId>
+                <NumberStates>2</NumberStates>
+                <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                <RightClickIsPushButton>true</RightClickIsPushButton>
+                <State>
+                  <Number>0</Number>
+                  <Pressed>buttons/btn_hotcue2_2_down.png</Pressed>
+                  <Unpressed>buttons/btn_hotcue2_2.png</Unpressed>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Pressed>buttons/btn_hotcue2_2_overdown.png</Pressed>
+                  <Unpressed>buttons/btn_hotcue2_2_over.png</Unpressed>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,hotcue_2_activate</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,hotcue_2_clear</ConfigKey>
+                  <ButtonState>RightButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,hotcue_2_enabled</ConfigKey>
+                </Connection>
+              </PushButton>
+
+              <PushButton><!-- HotCue 3 -->
+                <TooltipId>hotcue</TooltipId>
+                <NumberStates>2</NumberStates>
+                <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                <RightClickIsPushButton>true</RightClickIsPushButton>
+                <State>
+                  <Number>0</Number>
+                  <Pressed>buttons/btn_hotcue2_3_down.png</Pressed>
+                  <Unpressed>buttons/btn_hotcue2_3.png</Unpressed>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Pressed>buttons/btn_hotcue2_3_overdown.png</Pressed>
+                  <Unpressed>buttons/btn_hotcue2_3_over.png</Unpressed>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,hotcue_3_activate</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,hotcue_3_clear</ConfigKey>
+                  <ButtonState>RightButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,hotcue_3_enabled</ConfigKey>
+                </Connection>
+              </PushButton>
+
+              <PushButton><!-- HotCue 4 -->
+                <TooltipId>hotcue</TooltipId>
+                <NumberStates>2</NumberStates>
+                <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                <RightClickIsPushButton>true</RightClickIsPushButton>
+                <State>
+                  <Number>0</Number>
+                  <Pressed>buttons/btn_hotcue2_4_down.png</Pressed>
+                  <Unpressed>buttons/btn_hotcue2_4.png</Unpressed>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Pressed>buttons/btn_hotcue2_4_overdown.png</Pressed>
+                  <Unpressed>buttons/btn_hotcue2_4_over.png</Unpressed>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,hotcue_4_activate</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,hotcue_4_clear</ConfigKey>
+                  <ButtonState>RightButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,hotcue_4_enabled</ConfigKey>
+                </Connection>
+              </PushButton>
+
+					    <PushButton><!-- Cue -->
+                <ObjectName>CueToggleButton</ObjectName>
+                <Size>52,26</Size>
+						    <TooltipId>cue_default_cue_gotoandstop</TooltipId>
+						    <NumberStates>2</NumberStates>
+						    <State>
+							    <Number>0</Number>
+							    <Text>CUE</Text>
+						    </State>
+						    <State>
+							    <Number>1</Number>
+							    <Text>CUE</Text>
+						    </State>
+						    <Connection>
+							    <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
+							    <ButtonState>LeftButton</ButtonState>
+						    </Connection>
+						    <Connection>
+							    <ConfigKey><Variable name="group"/>,cue_gotoandstop</ConfigKey>
+							    <ButtonState>RightButton</ButtonState>
+						    </Connection>
+						    <Connection>
+							    <ConfigKey><Variable name="group"/>,cue_indicator</ConfigKey>
+						    </Connection>
+					    </PushButton>
+				    </Children>
+			    </WidgetGroup><!-- /HotCues, Cue -->
+
+			    <WidgetGroup><!-- /rew, fwd, rev, Play -->
+				    <ObjectName>PlayCue</ObjectName>
+				    <Layout>horizontal</Layout>
+				    <Children>
+
+              <PushButton><!-- Rewind -->
+                <TooltipId>back_start</TooltipId>
+                <NumberStates>1</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Pressed>buttons/btn_rewind2_overdown.png</Pressed>
+                  <Unpressed>buttons/btn_rewind2.png</Unpressed>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,back</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,start</ConfigKey>
+                  <ButtonState>RightButton</ButtonState>
+                </Connection>
+              </PushButton>
+
+              <PushButton><!-- Forward -->
+                <TooltipId>fwd_end</TooltipId>
+                <NumberStates>1</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Pressed>buttons/btn_forward2_overdown.png</Pressed>
+                  <Unpressed>buttons/btn_forward2.png</Unpressed>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,fwd</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,end</ConfigKey>
+                  <ButtonState>RightButton</ButtonState>
+                </Connection>
+              </PushButton>
+
+              <PushButton><!-- Reverse -->
+                <TooltipId>reverse</TooltipId>
+                <NumberStates>1</NumberStates>
+                <RightClickIsPushButton>true</RightClickIsPushButton>
+                <State>
+                  <Number>0</Number>
+                  <Pressed>buttons/btn_reverse2_overdown.png</Pressed>
+                  <Unpressed>buttons/btn_reverse2.png</Unpressed>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,reverse</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,reverseroll</ConfigKey>
+                  <ButtonState>RightButton</ButtonState>
+                </Connection>
+              </PushButton>
+
+					    <PushButton><!-- Play -->
+						    <TooltipId>play_cue_set</TooltipId>
+						    <NumberStates>2</NumberStates>
+						    <RightClickIsPushButton>true</RightClickIsPushButton>
+						    <State>
+							    <Number>0</Number>
+							    <Pressed>buttons/btn_play1_down.png</Pressed>
+							    <Unpressed>buttons/btn_play1.png</Unpressed>
+						    </State>
+						    <State>
+							    <Number>1</Number>
+							    <Pressed>buttons/btn_play1_overdown.png</Pressed>
+							    <Unpressed>buttons/btn_play1_over.png</Unpressed>
+						    </State>
+						    <Connection>
+							    <ConfigKey><Variable name="group"/>,play</ConfigKey>
+							    <ButtonState>LeftButton</ButtonState>
+						    </Connection>
+						    <Connection>
+							    <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>
+						    </Connection>
+					    </PushButton>
+				    </Children>
+			    </WidgetGroup><!-- /rew, fwd, rev, Play -->
 				</Children>
 			</WidgetGroup>
 		</Children>

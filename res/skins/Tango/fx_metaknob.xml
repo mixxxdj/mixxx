@@ -11,7 +11,7 @@ Variables:
   <SetVariable name="FxGroup_FxNum">[<Variable name="FxGroup"/>_Effect<Variable name="FxNum"/>]</SetVariable>
   <KnobComposed>
     <TooltipId>EffectSlot_metaknob</TooltipId>
-    <ObjectName>FxSlot_metaknob</ObjectName>
+    <ObjectName>FxMetaknob</ObjectName>
     <Size>30f,30f</Size>
     <Knob>skin:/knobs_sliders/knob_blue.svg</Knob>
     <BackPath>skin:/knobs_sliders/knob_bg.svg</BackPath>

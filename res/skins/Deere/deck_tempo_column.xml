@@ -88,7 +88,7 @@
             <Size>40f,-1me</Size>
             <MaximumSize>40,200</MaximumSize>
             <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
-            <Handle scalemode="STRETCH_ASPECT">handle-vertical.svg</Handle>
+            <Handle scalemode="STRETCH_ASPECT">handle-vertical-blue.svg</Handle>
             <Connection>
               <ConfigKey><Variable name="group"/>,rate</ConfigKey>
             </Connection>

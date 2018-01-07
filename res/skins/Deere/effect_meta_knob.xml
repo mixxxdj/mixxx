@@ -17,7 +17,7 @@
         <SetVariable name="TooltipId">EffectSlot_metaknob</SetVariable>
         <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>]</SetVariable>
         <SetVariable name="control">meta</SetVariable>
-        <SetVariable name="color">yellow</SetVariable>
+        <SetVariable name="color">blue</SetVariable>
       </Template>
     </Children>
   </WidgetGroup>

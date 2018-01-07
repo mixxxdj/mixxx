@@ -783,7 +783,7 @@ WWidget {
 
 #HotcueGrid, #HotcueGridExtended,
 #VinylControlsContainer {
-  background-color: #333333;
+  background-color: #333;
   padding: 1px;
   qproperty-layoutSpacing: 2;
 }

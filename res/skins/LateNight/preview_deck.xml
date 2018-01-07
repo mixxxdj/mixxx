@@ -2,9 +2,9 @@
   <!-- This outer widget group makes the PreviewDeck borders work correctly -->
   <WidgetGroup>
     <Layout>vertical</Layout>
-    <SizePolicy>me,min</SizePolicy>
-    <MaximumSize>,80</MaximumSize>
+    <SizePolicy>me,max</SizePolicy>
     <Children>
+
       <WidgetGroup>
         <ObjectName>PreviewDeck</ObjectName>
         <Layout>horizontal</Layout>
@@ -60,8 +60,8 @@
                         <NumberStates>1</NumberStates>
                         <State>
                           <Number>0</Number>
-                          <Pressed>btn_eject1_over.png</Pressed>
-                          <Unpressed>btn_eject1.png</Unpressed>
+                          <Pressed>buttons/btn_eject1_over.png</Pressed>
+                          <Unpressed>buttons/btn_eject1.png</Unpressed>
                         </State>
                         <Connection>
                           <ConfigKey>[PreviewDeck1],eject</ConfigKey>
@@ -84,13 +84,13 @@
                     <RightClickIsPushButton>true</RightClickIsPushButton>
                     <State>
                       <Number>0</Number>
-                      <Pressed>btn_play_sampler_down.png</Pressed>
-                      <Unpressed>btn_play_sampler.png</Unpressed>
+                      <Pressed>buttons/btn_play_sampler_down.png</Pressed>
+                      <Unpressed>buttons/btn_play_sampler.png</Unpressed>
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Pressed>btn_play_sampler_overdown.png</Pressed>
-                      <Unpressed>btn_play_sampler_over.png</Unpressed>
+                      <Pressed>buttons/btn_play_sampler_overdown.png</Pressed>
+                      <Unpressed>buttons/btn_play_sampler_over.png</Unpressed>
                     </State>
                     <Connection>
                       <ConfigKey>[PreviewDeck1],play</ConfigKey>
@@ -144,8 +144,8 @@
                 <Children>
                   <StatusLight>
                     <TooltipId>preview_PeakIndicator</TooltipId>
-                    <PathStatusLight>btn_clipping_previewdeck_over.png</PathStatusLight>
-                    <PathBack>btn_clipping_previewdeck.png</PathBack>
+                    <PathStatusLight>buttons/btn_clipping_previewdeck_over.png</PathStatusLight>
+                    <PathBack>buttons/btn_clipping_previewdeck.png</PathBack>
                     <Connection>
                       <ConfigKey>[PreviewDeck1],PeakIndicator</ConfigKey>
                     </Connection>
@@ -153,8 +153,8 @@
 
                   <VuMeter>
                     <TooltipId>preview_VuMeter</TooltipId>
-                    <PathVu>btn_volume_display_previewdeck_over.png</PathVu>
-                    <PathBack>btn_volume_display_previewdeck.png</PathBack>
+                    <PathVu>buttons/btn_volume_display_previewdeck_over.png</PathVu>
+                    <PathBack>buttons/btn_volume_display_previewdeck.png</PathBack>
                     <Horizontal>false</Horizontal>
                     <PeakHoldSize>3</PeakHoldSize>
                     <PeakHoldTime>250</PeakHoldTime>
@@ -180,6 +180,7 @@
           </WidgetGroup>
         </Children>
       </WidgetGroup>
+
     </Children>
     <Connection>
       <ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>

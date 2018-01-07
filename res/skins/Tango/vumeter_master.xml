@@ -2,36 +2,34 @@
 Description:
   The master level meter.
   This template is embedded in vumeter_master_container.xml
-  whic controls visibility for various configurations.
-Variables:
-  group : [ChannelXY]
+  which controls visibility for various configurations.
 -->
 <Template>
-  <WidgetGroup>
+  <WidgetGroup><!-- Master VU incl. Label, + spacer -->
     <ObjectName>VUMeterMasterContainer</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>min,max</SizePolicy>
     <Children>
-      <WidgetGroup><!-- Left + Right VU -->
+      <WidgetGroup><!-- VU -->
+        <ObjectName>VUMeterFloating</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>min,max</SizePolicy>
         <Children>
-          <WidgetGroup><!-- Left VU -->
-            <ObjectName>VUMeterFloating</ObjectName>
+          <WidgetGroup><!-- VU Left -->
             <Layout>stacked</Layout>
             <Size>4f,-1min</Size>
             <Children>
               <StatusLight>
                 <TooltipId>master_VuMeterL</TooltipId>
-                <PathStatusLight>skin:/graphics/vumeter_master_clipping_over.png</PathStatusLight>
-                <PathBack>skin:/graphics/vumeter_master_clipping.png</PathBack>
+                <PathStatusLight>skin:/graphics/vumeter_floating_clipping_over.png</PathStatusLight>
+                <PathBack>skin:/graphics/vumeter_floating_clipping.png</PathBack>
                 <Connection>
                   <ConfigKey>[Master],PeakIndicatorL</ConfigKey>
                 </Connection>
               </StatusLight>
               <VuMeter>
-                <PathVu>skin:/graphics/vumeter_master_over.png</PathVu>
-                <PathBack>skin:/graphics/vumeter_master.png</PathBack>
+                <PathVu>skin:/graphics/vumeter_floating_over.png</PathVu>
+                <PathBack>skin:/graphics/vumeter_floating.png</PathBack>
                 <Horizontal>false</Horizontal>
                 <PeakHoldSize>5</PeakHoldSize>
                 <PeakHoldTime>500</PeakHoldTime>
@@ -42,24 +40,23 @@ Variables:
                 </Connection>
               </VuMeter>
             </Children>
-          </WidgetGroup><!-- /Left VU -->
-                  
-          <WidgetGroup><!-- Right VU -->
-            <ObjectName>VUMeterFloating</ObjectName>
+          </WidgetGroup><!-- /VU Left VU -->
+
+          <WidgetGroup><!-- Right -->
             <Layout>stacked</Layout>
             <Size>4f,-1min</Size>
             <Children>
               <StatusLight>
                 <TooltipId>master_VuMeterR</TooltipId>
-                <PathStatusLight>skin:/graphics/vumeter_master_clipping_over.png</PathStatusLight>
-                <PathBack>skin:/graphics/vumeter_master_clipping.png</PathBack>
+                <PathStatusLight>skin:/graphics/vumeter_floating_clipping_over.png</PathStatusLight>
+                <PathBack>skin:/graphics/vumeter_floating_clipping.png</PathBack>
                 <Connection>
                   <ConfigKey>[Master],PeakIndicatorR</ConfigKey>
                 </Connection>
               </StatusLight>
               <VuMeter>
-                <PathVu>skin:/graphics/vumeter_master_over.png</PathVu>
-                <PathBack>skin:/graphics/vumeter_master.png</PathBack>
+                <PathVu>skin:/graphics/vumeter_floating_over.png</PathVu>
+                <PathBack>skin:/graphics/vumeter_floating.png</PathBack>
                 <Horizontal>false</Horizontal>
                 <PeakHoldSize>5</PeakHoldSize>
                 <PeakHoldTime>500</PeakHoldTime>
@@ -70,9 +67,9 @@ Variables:
                 </Connection>
               </VuMeter>
             </Children>
-          </WidgetGroup><!-- /Right VU -->
+          </WidgetGroup><!-- /VU Right -->
         </Children>
-      </WidgetGroup><!-- /Left + Right VU -->
+      </WidgetGroup><!-- /VU -->
 
       <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
 
@@ -81,7 +78,7 @@ Variables:
         <Size>16f,20f</Size>
       </WidgetGroup>
 
-      <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
+      <WidgetGroup><Size>0min,3f</Size></WidgetGroup>
     </Children>
-  </WidgetGroup>
+  </WidgetGroup><!-- /Master meter incl. Label, + spacer -->
 </Template>
