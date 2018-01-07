@@ -15,8 +15,9 @@
 
 #include "library/scanner/libraryscanner.h"
 #include "preferences/usersettings.h"
-#include "recording/recordingmanager.h"
 #include "track/track.h"
+#include "track/trackcache.h"
+#include "recording/recordingmanager.h"
 #include "util/parented_ptr.h"
 #include "util/memory.h"
 #include "util/db/dbconnectionpool.h"
@@ -41,7 +42,8 @@ class WButtonBar;
 class WSearchLineEdit;
 class TreeItem;
 
-class Library : public QObject {
+class Library: public QObject,
+    public virtual /*implements*/ TrackCacheEvictor {
     Q_OBJECT
 public:
     enum RemovalType {
@@ -103,6 +105,8 @@ public:
     int getPreselectedPaneId();
 
     void focusSearch();
+
+    void onEvictingTrackFromCache(TrackCacheLocker* pCacheLocker, Track* pTrack) override;
 
   public slots:
 

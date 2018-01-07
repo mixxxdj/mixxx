@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 #include <QtDebug>
 #include <QDir>
-#include <QTemporaryFile>
 
 #include "test/librarytest.h"
 

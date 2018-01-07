@@ -1,4 +1,4 @@
-#ifndef PANEFFECT_H
+#ifndef BALANCEEFFECT_H
 #define BALANCEEFFECT_H
 
 #include "effects/effectprocessor.h"
@@ -8,10 +8,9 @@
 #include "util/samplebuffer.h"
 #include "util/memory.h"
 
-// This effect does not need to store any state.
-class BalanceGroupState final {
+class BalanceGroupState : public EffectState {
   public:
-    BalanceGroupState();
+    BalanceGroupState(const mixxx::EngineParameters& bufferParameters);
     ~BalanceGroupState();
 
     void setFilters(int sampleRate, int freq);
@@ -19,7 +18,7 @@ class BalanceGroupState final {
     std::unique_ptr<EngineFilterLinkwitzRiley4Low> m_low;
     std::unique_ptr<EngineFilterLinkwitzRiley4High> m_high;
 
-    SampleBuffer m_pHighBuf;
+    mixxx::SampleBuffer m_pHighBuf;
 
     unsigned int m_oldSampleRate;
     int m_freq;
@@ -28,7 +27,7 @@ class BalanceGroupState final {
     CSAMPLE m_oldMidSide;
 };
 
-class BalanceEffect : public PerChannelEffectProcessor<BalanceGroupState> {
+class BalanceEffect : public EffectProcessorImpl<BalanceGroupState> {
   public:
     BalanceEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~BalanceEffect();
@@ -36,13 +35,11 @@ class BalanceEffect : public PerChannelEffectProcessor<BalanceGroupState> {
     static QString getId();
     static EffectManifest getManifest();
 
-    // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,
                         BalanceGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE* pOutput,
-                        const unsigned int numSamples,
-                        const unsigned int sampleRate,
-                        const EffectProcessor::EnableState enableState,
+                        const mixxx::EngineParameters& bufferParameters,
+                        const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatures);
 
   private:

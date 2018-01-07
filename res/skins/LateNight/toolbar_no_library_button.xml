@@ -1,0 +1,270 @@
+<Template>
+  <WidgetGroup>
+    <ObjectName>ToolBar</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>e,min</SizePolicy>
+    <Children>
+
+      <PushButton>
+        <Size>84f,24f</Size>
+        <TooltipId>maximize_library</TooltipId>
+        <ObjectName>GuiToggleButton</ObjectName>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>BIG LIBRARY</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>BIG LIBRARY</Text>
+        </State>
+        <Connection>
+          <ConfigKey>[Master],maximize_library</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey>[Master],maximize_library</ConfigKey>
+        </Connection>
+      </PushButton>
+
+      <WidgetGroup> <!-- Spacer -->
+        <Layout>horizontal</Layout>
+        <Size>5f,min</Size>
+        <Children/>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>ToolbarDivider</ObjectName>
+        <Size>3f,9min</Size>
+      </WidgetGroup>
+
+      <WidgetGroup> <!-- Spacer -->
+        <Layout>horizontal</Layout>
+        <Size>5f,min</Size>
+        <Children/>
+      </WidgetGroup>
+
+      <PushButton>
+        <Size>54f,24f</Size>
+        <TooltipId>toggle_4decks</TooltipId>
+        <ObjectName>GuiToggleButton</ObjectName>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>4 DECKS</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>4 DECKS</Text>
+        </State>
+        <Connection>
+          <ConfigKey>[Master],show_4decks</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey>[Master],show_4decks</ConfigKey>
+        </Connection>
+      </PushButton>
+
+      <PushButton>
+        <Size>44f,24f</Size>
+        <TooltipId>toggle_4decks</TooltipId>
+        <ObjectName>GuiToggleButton</ObjectName>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>MIXER</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>MIXER</Text>
+        </State>
+        <Connection>
+          <ConfigKey>[Master],show_mixer</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey>[Master],show_mixer</ConfigKey>
+        </Connection>
+      </PushButton>
+
+      <PushButton>
+        <Size>44f,24f</Size>
+        <ObjectName>GuiToggleButton</ObjectName>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>EQ</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>EQ</Text>
+        </State>
+        <Connection>
+          <ConfigKey>[Master],show_eqs</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey>[Master],show_eqs</ConfigKey>
+        </Connection>
+      </PushButton>
+
+      <PushButton>
+        <Size>59f,24f</Size>
+        <ObjectName>GuiToggleButton</ObjectName>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>PREVIEW</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>PREVIEW</Text>
+        </State>
+        <Connection>
+          <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
+        </Connection>
+      </PushButton>
+
+      <PushButton>
+        <Size>59f,24f</Size>
+        <ObjectName>GuiToggleButton</ObjectName>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>SPINNIES</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>SPINNIES</Text>
+        </State>
+        <Connection>
+          <ConfigKey persist="true">[Spinny],show_spinnies</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey persist="true">[Spinny],show_spinnies</ConfigKey>
+        </Connection>
+      </PushButton>
+
+      <PushButton>
+        <Size>44f,24f</Size>
+        <ObjectName>GuiToggleButton</ObjectName>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>VINYL</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>VINYL</Text>
+        </State>
+        <Connection>
+          <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>
+        </Connection>
+      </PushButton>
+
+      <WidgetGroup> <!-- Spacer -->
+        <Layout>horizontal</Layout>
+        <Size>5f,min</Size>
+        <Children/>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>ToolbarDivider</ObjectName>
+        <Size>3f,9min</Size>
+      </WidgetGroup>
+
+      <WidgetGroup> <!-- Spacer -->
+        <Layout>horizontal</Layout>
+        <Size>5f,min</Size>
+        <Children/>
+      </WidgetGroup>
+
+      <PushButton>
+        <Size>59f,24f</Size>
+        <TooltipId>show_effects</TooltipId>
+        <ObjectName>GuiToggleButton</ObjectName>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>EFFECTS</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>EFFECTS</Text>
+        </State>
+        <Connection>
+          <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+        </Connection>
+      </PushButton>
+
+      <PushButton>
+        <Size>59f,24f</Size>
+        <ObjectName>GuiToggleButton</ObjectName>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>MIC/AUX</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>MIC/AUX</Text>
+        </State>
+        <Connection>
+          <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
+        </Connection>
+      </PushButton>
+
+      <PushButton>
+        <Size>66f,24f</Size>
+        <TooltipId>show_samplers</TooltipId>
+        <ObjectName>GuiToggleButton</ObjectName>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>SAMPLERS</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>SAMPLERS</Text>
+        </State>
+        <Connection>
+          <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+        </Connection>
+      </PushButton>
+
+      <!-- Spacer -->
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Size>me,min</Size>
+        <Children/>
+      </WidgetGroup>
+
+      <SingletonContainer>
+        <ObjectName>ClockRecLogo</ObjectName>
+      </SingletonContainer>
+
+    </Children>
+  </WidgetGroup>
+</Template>

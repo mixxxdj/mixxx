@@ -17,9 +17,13 @@
 
 class Bessel4LVMixEQEffectGroupState :
         public LVMixEQEffectGroupState<EngineFilterBessel4Low> {
+  public:
+      Bessel4LVMixEQEffectGroupState(const mixxx::EngineParameters& bufferParameters)
+          : LVMixEQEffectGroupState<EngineFilterBessel4Low>(bufferParameters) {
+      }
 };
 
-class Bessel4LVMixEQEffect : public PerChannelEffectProcessor<Bessel4LVMixEQEffectGroupState> {
+class Bessel4LVMixEQEffect : public EffectProcessorImpl<Bessel4LVMixEQEffectGroupState> {
   public:
     Bessel4LVMixEQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~Bessel4LVMixEQEffect();
@@ -31,9 +35,8 @@ class Bessel4LVMixEQEffect : public PerChannelEffectProcessor<Bessel4LVMixEQEffe
     void processChannel(const ChannelHandle& handle,
                         Bessel4LVMixEQEffectGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE* pOutput,
-                        const unsigned int numSamples,
-                        const unsigned int sampleRate,
-                        const EffectProcessor::EnableState enableState,
+                        const mixxx::EngineParameters& bufferParameters,
+                        const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatureState);
 
   private:

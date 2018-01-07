@@ -4,9 +4,9 @@
 #include <QSharedPointer>
 
 #include "effects/effectmanifest.h"
-#include "effects/effectprocessor.h"
 
 class EngineEffect;
+class EffectProcessor;
 
 class EffectInstantiator {
   public:

@@ -18,21 +18,22 @@ QString AutoPanEffect::getId() {
 EffectManifest AutoPanEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
-    manifest.setName(QObject::tr("AutoPan"));
+    manifest.setName(QObject::tr("Autopan"));
+    manifest.setShortName(QObject::tr("Autopan"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr("Bounce the sound from a channel "
-            "to another, roughly or softly, fully or partially, fastly or slowly.\n"
-            "A delay, inversed on each side, is added to increase the "
-            "spatial move and the period can be synced with the BPM."));
+    manifest.setDescription(QObject::tr(
+        "Bounce the sound left and right across the stereo field"));
 
     // Period
     EffectManifestParameter* period = manifest.addParameter();
     period->setId("period");
     period->setName(QObject::tr("Period"));
-    period->setDescription(QObject::tr("How fast the sound goes from a side to another\n"
-            "1/4 - 4 beats rounded to 1/2 beat if tempo is detected (decks and samplers)\n"
-            "1/4 - 4 seconds if no tempo is detected (mic & aux inputs, master mix)"));
+    period->setShortName(QObject::tr("Period"));
+    period->setDescription(QObject::tr(
+        "How fast the sound goes from one side to another\n"
+        "1/4 - 4 beats rounded to 1/2 beat if tempo is detected\n"
+        "1/4 - 4 seconds if no tempo is detected"));
     period->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -46,8 +47,8 @@ EffectManifest AutoPanEffect::getManifest() {
     smoothing->setId("smoothing");
     smoothing->setName(QObject::tr("Smoothing"));
     smoothing->setShortName(QObject::tr("Smooth"));
-    smoothing->setDescription(
-            QObject::tr("How smoothly the signal goes from one side to the other"));
+    smoothing->setDescription(QObject::tr(
+        "How smoothly the signal goes from one side to the other"));
     smoothing->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     smoothing->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     smoothing->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -62,7 +63,9 @@ EffectManifest AutoPanEffect::getManifest() {
     EffectManifestParameter* width = manifest.addParameter();
     width->setId("width");
     width->setName(QObject::tr("Width"));
-    width->setDescription("How far the signal goes to each side");
+    width->setShortName(QObject::tr("Width"));
+    width->setDescription(QObject::tr(
+        "How far the signal goes to each side"));
     width->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     width->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     width->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -84,15 +87,15 @@ AutoPanEffect::AutoPanEffect(EngineEffect* pEffect, const EffectManifest& manife
 AutoPanEffect::~AutoPanEffect() {
 }
 
-void AutoPanEffect::processChannel(const ChannelHandle& handle, AutoPanGroupState* pGroupState,
-                              const CSAMPLE* pInput,
-                              CSAMPLE* pOutput, const unsigned int numSamples,
-                              const unsigned int sampleRate,
-                              const EffectProcessor::EnableState enableState,
-                              const GroupFeatureState& groupFeatures) {
+void AutoPanEffect::processChannel(
+          const ChannelHandle& handle, AutoPanGroupState* pGroupState,
+          const CSAMPLE* pInput, CSAMPLE* pOutput,
+          const mixxx::EngineParameters& bufferParameters,
+          const EffectEnableState enableState,
+          const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
 
-    if (enableState == EffectProcessor::DISABLED) {
+    if (enableState == EffectEnableState::Disabled) {
         return;
     }
 
@@ -104,14 +107,14 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, AutoPanGroupStat
     if (groupFeatures.has_beat_length_sec) {
         // period is a number of beats
         double beats = std::max(roundToFraction(period, 2), 0.25);
-        period = beats * groupFeatures.beat_length_sec * sampleRate;
+        period = beats * groupFeatures.beat_length_sec * bufferParameters.sampleRate();
 
         // TODO(xxx) sync phase
         //if (groupFeatures.has_beat_fraction) {
 
     } else {
         // period is a number of seconds
-        period = std::max(period, 0.25) * sampleRate;
+        period = std::max(period, 0.25) * bufferParameters.sampleRate();
     }
 
     // When the period is changed, the position of the sound shouldn't
@@ -123,7 +126,7 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, AutoPanGroupStat
 
     gs.m_dPreviousPeriod = period;
 
-    if (gs.time >= period || enableState == EffectProcessor::ENABLING) {
+    if (gs.time >= period || enableState == EffectEnableState::Enabling) {
         gs.time = 0;
     }
 
@@ -145,7 +148,7 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, AutoPanGroupStat
     double sinusoid = 0;
 
     // NOTE: Assuming engine is working in stereo.
-    for (unsigned int i = 0; i + 1 < numSamples; i += 2) {
+    for (unsigned int i = 0; i + 1 < bufferParameters.samplesPerBuffer(); i += 2) {
 
         CSAMPLE periodFraction = CSAMPLE(gs.time) / period;
 
@@ -177,7 +180,7 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, AutoPanGroupStat
 
         // apply the delay
         gs.delay->process(&pInput[i], &pOutput[i],
-                -0.005 * math_clamp(((gs.frac * 2.0) - 1.0f), -1.0, 1.0) * sampleRate);
+                -0.005 * math_clamp(((gs.frac * 2.0) - 1.0f), -1.0, 1.0) * bufferParameters.sampleRate());
 
         double lawCoef = computeLawCoefficient(sinusoid);
         pOutput[i] *= gs.frac * lawCoef;

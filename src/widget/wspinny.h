@@ -7,11 +7,14 @@
 #include <QHideEvent>
 #include <QEvent>
 
+#include "library/dlgcoverartfullsize.h"
+#include "mixer/basetrackplayer.h"
 #include "preferences/usersettings.h"
 #include "skin/skincontext.h"
 #include "track/track.h"
 #include "vinylcontrol/vinylsignalquality.h"
 #include "widget/wbasewidget.h"
+#include "widget/wcoverartmenu.h"
 #include "widget/wwidget.h"
 
 class ControlProxy;
@@ -23,7 +26,8 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
   public:
     WSpinny(QWidget* parent, const QString& group,
             UserSettingsPointer pConfig,
-            VinylControlManager* pVCMan);
+            VinylControlManager* pVCMan,
+            BaseTrackPlayer* pPlayer);
     ~WSpinny() override;
 
     void onVinylSignalQualityUpdate(const VinylSignalQualityReport& report) override;
@@ -44,6 +48,8 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     void maybeUpdate();
     void slotCoverFound(const QObject* pRequestor,
                         const CoverInfo& info, QPixmap pixmap, bool fromCache);
+    void slotCoverInfoSelected(const CoverInfo& coverInfo);
+    void slotReloadCoverArt();
     void slotTrackCoverArtUpdated();
 
 
@@ -119,6 +125,10 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     bool m_bClampFailedWarning;
     bool m_bGhostPlayback;
     bool m_bWidgetDirty;
+
+    BaseTrackPlayer* m_pPlayer;
+    DlgCoverArtFullSize* m_pDlgCoverArt;
+    WCoverArtMenu* m_pCoverMenu;
 };
 
 #endif //_WSPINNY_H

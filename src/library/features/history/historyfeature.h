@@ -6,6 +6,7 @@
 #include <QLinkedList>
 
 #include "library/features/baseplaylist/baseplaylistfeature.h"
+#include "library/library.h"
 
 class TrackCollection;
 class TreeItem;
@@ -52,6 +53,7 @@ public:
   private:
     QString getRootViewHtml() const override;
 
+    Library *m_pLibrary;
     QPointer<WLibrarySidebar> m_pSidebar;
     QLinkedList<TrackId> m_recentTracks;
     parented_ptr<QAction> m_pJoinWithNextAction;

@@ -1,0 +1,48 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An effect parameter knob.
+  Variables:
+    EffectRack: the rack
+    EffectUnit: the unit
+    Effect: the effect
+    EffectParameter: the parameter
+-->
+<Template>
+  <SetVariable name="FxRack_FxUnit_FxNum">[EffectRack1_EffectUnit<Variable name="FxUnit"/>_Effect<Variable name="FxNum"/>]</SetVariable>
+
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <Size>60f,42f</Size>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>EffectButton</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>40me,25f</Size>
+        <Children>
+          <Template src="skin:fx_button.xml">
+            <SetVariable name="icon">fxButton</SetVariable>
+            <SetVariable name="Size">40f,20f</SetVariable>
+            <SetVariable name="FxParameter">button_parameter<Variable name="FxParameter"/></SetVariable>
+          </Template>
+	     </Children>
+      </WidgetGroup>
+
+      <EffectButtonParameterName>
+        <Size>1min,14f</Size>
+        <ObjectName>KnobLabel</ObjectName>
+        <EffectRack><Variable name="FxRack"/></EffectRack>
+        <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+        <Effect><Variable name="FxNum"/></Effect>
+        <EffectButtonParameter><Variable name="FxParameter"/></EffectButtonParameter>
+        <Alignment>center</Alignment>
+      </EffectButtonParameterName>
+
+    </Children>
+    <Connection>
+      <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,button_parameter<Variable name="FxParameter"/>_loaded</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

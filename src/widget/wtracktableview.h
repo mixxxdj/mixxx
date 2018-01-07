@@ -42,6 +42,10 @@ class WTrackTableView : public WLibraryTableView {
     void setScrollBar(WMiniViewScrollBar* pScrollbar);
     void restoreQuery(const SavedSearchQuery& query) override;
     SavedSearchQuery saveQuery(SavedSearchQuery query = SavedSearchQuery()) const override;
+    QList<TrackId> getSelectedTrackIds() const;
+    void setSelectedTracks(const QList<TrackId>& tracks);
+    void saveCurrentVScrollBarPos();
+    void restoreCurrentVScrollBarPos();
 
   public slots:
     void loadTrackModel(QAbstractItemModel* model);
@@ -68,18 +72,28 @@ class WTrackTableView : public WLibraryTableView {
     void slotPrevTrackInfo();
     void slotPrevDlgTagFetcher();
     void slotShowTrackInTagFetcher(TrackPointer track);
-    void slotReloadTrackMetadata();
-    void slotResetPlayed();
+    void slotImportTrackMetadataFromFileTags();
+    void slotExportTrackMetadataIntoFileTags();
+    void slotPopulatePlaylistMenu();
     void addSelectionToPlaylist(int iPlaylistId);
-    void addSelectionToCrate(int iCrateId);
+    void updateSelectionCrates(QWidget* qc);
+    void slotPopulateCrateMenu();
+    void addSelectionToNewCrate();
     void loadSelectionToGroup(QString group, bool play = false);
     void doSortByColumn(int headerSection);
     void slotLockBpm();
     void slotUnlockBpm();
     void slotScaleBpm(int);
+
     void slotClearBeats();
+    void slotClearPlayCount();
+    void slotClearMainCue();
+    void slotClearHotCues();
+    void slotClearLoop();
+    void slotClearReplayGain();
     void slotClearWaveform();
-    void slotReplayGainReset();
+    void slotClearAllMetadata();
+
     // Signalled 20 times per second (every 50ms) by GuiTick.
     void slotGuiTick50ms(double);
     void slotScrollValueChanged(int);
@@ -116,11 +130,8 @@ class WTrackTableView : public WLibraryTableView {
     TrackModel* getTrackModel() const;
     bool modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) const;
 
-    QList<TrackId> getSelectedTrackIds() const;
-
     bool insert(const QMimeData* pMimeData, const QModelIndex& destIndex);
     bool move(const QMimeData* pMimeData, const QModelIndex& destIndex);
-
     UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;
 
@@ -137,13 +148,28 @@ class WTrackTableView : public WLibraryTableView {
     ControlProxy* m_pNumPreviewDecks;
 
     // Context menu machinery
-    QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateMenu, *m_pSamplerMenu, *m_pBPMMenu;
+    QMenu *m_pMenu;
+
+    QMenu *m_pLoadToMenu;
+    QMenu *m_pDeckMenu;
+    QMenu *m_pSamplerMenu;
+
+    QMenu *m_pPlaylistMenu;
+    QMenu *m_pCrateMenu;
+    QMenu *m_pMetadataMenu;
+    QMenu *m_pClearMetadataMenu;
+    QMenu *m_pBPMMenu;
+
+
     WCoverArtMenu* m_pCoverMenu;
     QSignalMapper m_playlistMapper, m_crateMapper, m_deckMapper, m_samplerMapper;
 
     // Reload Track Metadata Action:
-    QAction *m_pReloadMetadataAct;
-    QAction *m_pReloadMetadataFromMusicBrainzAct;
+    QAction *m_pImportMetadataFromFileAct;
+    QAction *m_pImportMetadataFromMusicBrainzAct;
+
+    // Save Track Metadata Action:
+    QAction *m_pExportMetadataAct;
 
     // Load Track to PreviewDeck
     QAction* m_pAddToPreviewDeck;
@@ -158,9 +184,6 @@ class WTrackTableView : public WLibraryTableView {
     QAction *m_pHideAct;
     QAction *m_pUnhideAct;
     QAction *m_pPurgeAct;
-
-    // Reset the played count of selected track or tracks
-    QAction* m_pResetPlayedAct;
 
     // Show track-editor action
     QAction *m_pPropertiesAct;
@@ -177,15 +200,19 @@ class WTrackTableView : public WLibraryTableView {
     QAction *m_pBpmFourThirdsAction;
     QAction *m_pBpmThreeHalvesAction;
 
-    // Clear track beats
+    // Clear track metadata actions
     QAction* m_pClearBeatsAction;
-
-    // Clear track waveform
+    QAction* m_pClearPlayCountAction;
+    QAction* m_pClearMainCueAction;
+    QAction* m_pClearHotCuesAction;
+    QAction* m_pClearLoopAction;
     QAction* m_pClearWaveformAction;
 
-    // Replay Gain feature
-    QAction *m_pReplayGainResetAction;
     QPointer<WMiniViewScrollBar> m_pScrollBar;
+    // Replay Gain feature
+    QAction* m_pReplayGainResetAction;
+    QAction* m_pClearReplayGainAction;
+    QAction* m_pClearAllMetadataAction;
 
     bool m_sorting;
 
@@ -201,6 +228,8 @@ class WTrackTableView : public WLibraryTableView {
     mixxx::Duration m_lastUserAction;
     bool m_selectionChangedSinceLastGuiTick;
     bool m_loadCachedOnly;
+    bool m_bPlaylistMenuLoaded;
+    bool m_bCrateMenuLoaded;
     ControlProxy* m_pCOTGuiTick;
 };
 

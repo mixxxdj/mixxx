@@ -10,6 +10,7 @@
 #include "library/searchqueryparser.h"
 #include "library/queryutil.h"
 #include "track/keyutils.h"
+#include "track/trackcache.h"
 #include "util/performancetimer.h"
 
 namespace {
@@ -144,12 +145,18 @@ void BaseTrackCache::setSearchColumns(const QStringList& columns) {
 }
 
 TrackPointer BaseTrackCache::lookupCachedTrack(TrackId trackId) const {
-    // Only get the track from the TrackDAO if it's in the cache and marked as
-    // dirty.
-    if (m_bIsCaching && m_dirtyTracks.contains(trackId)) {
-        return m_trackDAO.getTrack(trackId, true);
+    TrackPointer pTrack;
+    if (m_bIsCaching) {
+        pTrack = TrackCache::instance().lookupById(trackId).getTrack();
+        // After obtaining a strong reference of the Track object the lock
+        // on TrackCache has been released instantly to reduce lock contention!
+        if (pTrack && pTrack->isDirty()) {
+            m_dirtyTracks.insert(trackId);
+        } else {
+            m_dirtyTracks.remove(trackId);
+        }
     }
-    return TrackPointer();
+    return pTrack;
 }
 
 bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {

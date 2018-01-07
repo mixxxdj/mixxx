@@ -83,6 +83,8 @@ class TrackCollection : public QObject,
 
     bool updateAutoDjCrate(CrateId crateId, bool isAutoDjSource);
 
+    void saveTrack(TrackCacheLocker* pCacheLocker, Track* pTrack);
+
   signals:
     void crateInserted(CrateId id);
     void crateUpdated(CrateId id);

@@ -16,10 +16,10 @@ class ClockControl: public EngineControl {
     ClockControl(QString group,
                  UserSettingsPointer pConfig);
 
-    virtual ~ClockControl();
+    ~ClockControl() override;
 
-    double process(const double dRate, const double currentSample,
-                   const double totalSamples, const int iBufferSize);
+    void process(const double dRate, const double currentSample,
+                   const double totalSamples, const int iBufferSize) override;
 
   public slots:
     void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
