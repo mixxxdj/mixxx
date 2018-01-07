@@ -71,21 +71,6 @@ void EngineEffect::loadStatesForInputChannel(const ChannelHandle* inputChannel,
 
 // Called from the main thread for garbage collection after an input channel is disabled
 void EngineEffect::deleteStatesForInputChannel(const ChannelHandle* inputChannel) {
-    // If an output channel is not presently being processed, for example when
-    // PFL is not active, then EngineEffect::process cannot be relied upon to
-    // set the EffectEnableState from Disabling to Disabled. This must be done
-    // before the next time EngineEffect::process is called for that output
-    // channel, otherwise the EffectEnableState will still be in the intermediate
-    // Disabling state and EffectProcessorImpl::processChannel will try to run
-    // with an EffectState that has already been deleted and cause a crash.
-    // Refer to https://bugs.launchpad.net/mixxx/+bug/1741213
-    // NOTE: ChannelHandleMap is like a map in that it associates an object with
-    // a ChannelHandle key, but it actually backed by a QVarLengthArray, not a
-    // QMap. So it is okay that m_effectEnableStateForChannelMatrix may be
-    // accessed concurrently in the audio engine thread in EngineEffect::process.
-    for (EffectEnableState& effectState : m_effectEnableStateForChannelMatrix[*inputChannel]) {
-        effectState = EffectEnableState::Disabled;
-    }
     m_pProcessor->deleteStatesForInputChannel(inputChannel);
 }
 
