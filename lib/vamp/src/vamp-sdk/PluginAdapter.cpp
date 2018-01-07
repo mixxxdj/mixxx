@@ -39,7 +39,7 @@
 #include <cstring>
 #include <cstdlib>
 
-#if ( VAMP_SDK_MAJOR_VERSION != 2 || VAMP_SDK_MINOR_VERSION != 6 )
+#if ( VAMP_SDK_MAJOR_VERSION != 2 || VAMP_SDK_MINOR_VERSION != 7 )
 #error Unexpected version of Vamp SDK header included
 #endif
 
@@ -166,7 +166,7 @@ PluginAdapterBase::Impl::getDescriptor()
 #endif
 
     if (m_populated) return &m_descriptor;
-
+    
     Plugin *plugin = m_base->createPlugin(48000);
   
     if (!plugin) {
@@ -298,6 +298,7 @@ PluginAdapterBase::Impl::~Impl()
             }
             free((void *)desc->valueNames);
         }
+        free((void *)desc);
     }
     free((void *)m_descriptor.parameters);
 
@@ -603,6 +604,9 @@ PluginAdapterBase::Impl::cleanup(Plugin *plugin)
         if (m_pluginOutputs[plugin]) {
             outputCount = m_pluginOutputs[plugin]->size();
         }
+#ifdef DEBUG_PLUGIN_ADAPTER
+        std::cerr << "PluginAdapterBase::Impl::cleanup: " << outputCount << " output(s)" << std::endl;
+#endif
         VampFeatureList *list = m_fs[plugin];
         for (unsigned int i = 0; i < outputCount; ++i) {
             for (unsigned int j = 0; j < m_fsizes[plugin][i]; ++j) {
@@ -615,6 +619,7 @@ PluginAdapterBase::Impl::cleanup(Plugin *plugin)
             }
             if (list[i].features) free(list[i].features);
         }
+        if (list) free((void *)list);
         m_fs.erase(plugin);
         m_fsizes.erase(plugin);
         m_fvsizes.erase(plugin);
@@ -849,12 +854,16 @@ PluginAdapterBase::Impl::convertFeatures(Plugin *plugin,
 void
 PluginAdapterBase::Impl::resizeFS(Plugin *plugin, int n)
 {
-//    std::cerr << "PluginAdapterBase::Impl::resizeFS(" << plugin << ", " << n << ")" << std::endl;
+#ifdef DEBUG_PLUGIN_ADAPTER
+    std::cerr << "PluginAdapterBase::Impl::resizeFS(" << plugin << ", " << n << ")" << std::endl;
+#endif
 
     int i = m_fsizes[plugin].size();
     if (i >= n) return;
 
-//    std::cerr << "resizing from " << i << std::endl;
+#ifdef DEBUG_PLUGIN_ADAPTER
+    std::cerr << "resizing from " << i << std::endl;
+#endif
 
     m_fs[plugin] = (VampFeatureList *)realloc
         (m_fs[plugin], n * sizeof(VampFeatureList));
@@ -871,13 +880,17 @@ PluginAdapterBase::Impl::resizeFS(Plugin *plugin, int n)
 void
 PluginAdapterBase::Impl::resizeFL(Plugin *plugin, int n, size_t sz)
 {
-//    std::cerr << "PluginAdapterBase::Impl::resizeFL(" << plugin << ", " << n << ", "
-//              << sz << ")" << std::endl;
-
+#ifdef DEBUG_PLUGIN_ADAPTER
+    std::cerr << "PluginAdapterBase::Impl::resizeFL(" << plugin << ", " << n << ", "
+              << sz << ")" << std::endl;
+#endif
+    
     size_t i = m_fsizes[plugin][n];
     if (i >= sz) return;
 
-//    std::cerr << "resizing from " << i << std::endl;
+#ifdef DEBUG_PLUGIN_ADAPTER
+    std::cerr << "resizing from " << i << std::endl;
+#endif
 
     m_fs[plugin][n].features = (VampFeatureUnion *)realloc
         (m_fs[plugin][n].features, 2 * sz * sizeof(VampFeatureUnion));
@@ -896,14 +909,18 @@ PluginAdapterBase::Impl::resizeFL(Plugin *plugin, int n, size_t sz)
 void
 PluginAdapterBase::Impl::resizeFV(Plugin *plugin, int n, int j, size_t sz)
 {
-//    std::cerr << "PluginAdapterBase::Impl::resizeFV(" << plugin << ", " << n << ", "
-//              << j << ", " << sz << ")" << std::endl;
-
+#ifdef DEBUG_PLUGIN_ADAPTER
+    std::cerr << "PluginAdapterBase::Impl::resizeFV(" << plugin << ", " << n << ", "
+              << j << ", " << sz << ")" << std::endl;
+#endif
+    
     size_t i = m_fvsizes[plugin][n][j];
     if (i >= sz) return;
 
-//    std::cerr << "resizing from " << i << std::endl;
-
+#ifdef DEBUG_PLUGIN_ADAPTER
+    std::cerr << "resizing from " << i << std::endl;
+#endif
+    
     m_fs[plugin][n].features[j].v1.values = (float *)realloc
         (m_fs[plugin][n].features[j].v1.values, sz * sizeof(float));
 

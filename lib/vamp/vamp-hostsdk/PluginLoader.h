@@ -128,6 +128,34 @@ public:
     PluginKeyList listPlugins();
 
     /**
+     * Search for available Vamp plugins in libraries with the given
+     * library names, and return a list of them in the order in which
+     * they were found. Do not attempt to load any plugin libraries
+     * other than those named.
+     *
+     * The library names should be supplied without path or
+     * suffix. For example, use "vamp-example-plugins" to find plugins
+     * in /install/path/of/vamp-example-plugins.dll (or .so etc). This
+     * is the same concept of "library name" as appears in the plugin
+     * key: \see composePluginKey().
+     */
+    PluginKeyList listPluginsIn(std::vector<std::string> libraryNames);
+
+    /**
+     * Search for available Vamp plugins in libraries other than those
+     * with the given library names, and return a list of them in the
+     * order in which they were found. Do not attempt to load any of
+     * the libraries named.
+     *
+     * The library names should be supplied without path or
+     * suffix. For example, use "vamp-example-plugins" to find plugins
+     * not appearing in /install/path/of/vamp-example-plugins.dll (or
+     * .so etc). This is the same concept of "library name" as appears
+     * in the plugin key: \see composePluginKey().
+     */
+    PluginKeyList listPluginsNotIn(std::vector<std::string> libraryNames);
+
+    /**
      * AdapterFlags contains a set of values that may be OR'd together
      * to indicate in which circumstances PluginLoader should use a
      * plugin adapter to make a plugin easier to use for a host that
@@ -200,7 +228,7 @@ public:
     Plugin *loadPlugin(PluginKey key,
                        float inputSampleRate,
                        int adapterFlags = 0);
-
+    
     /**
      * Given a Vamp plugin library name and plugin identifier, return
      * the corresponding plugin key in a form suitable for passing in to

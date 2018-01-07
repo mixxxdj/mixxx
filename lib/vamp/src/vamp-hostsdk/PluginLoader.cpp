@@ -6,7 +6,7 @@
     An API for audio analysis and feature extraction plugins.
 
     Centre for Digital Music, Queen Mary, University of London.
-    Copyright 2006-2009 Chris Cannam and QMUL.
+    Copyright 2006-2016 Chris Cannam and QMUL.
   
     Permission is hereby granted, free of charge, to any person
     obtaining a copy of this software and associated documentation
@@ -61,11 +61,13 @@ public:
     virtual ~Impl();
 
     PluginKeyList listPlugins();
+    PluginKeyList listPluginsIn(vector<string>);
+    PluginKeyList listPluginsNotIn(vector<string>);
 
     Plugin *loadPlugin(PluginKey key,
                        float inputSampleRate,
                        int adapterFlags);
-
+    
     PluginKey composePluginKey(string libraryName, string identifier);
 
     PluginCategoryHierarchy getPluginCategory(PluginKey key);
@@ -96,7 +98,18 @@ protected:
 
     map<PluginKey, string> m_pluginLibraryNameMap;
     bool m_allPluginsEnumerated;
-    void enumeratePlugins(PluginKey forPlugin = "");
+
+    struct Enumeration {
+        enum { All, SinglePlugin, InLibraries, NotInLibraries } type;
+        PluginKey key;
+        vector<string> libraryNames;
+        Enumeration() : type(All) { }
+    };
+    vector<string> listLibraryFilesFor(Enumeration);
+
+    /// Populate m_pluginLibraryNameMap and return a list of the keys
+    /// that were added to it
+    vector<PluginKey> enumeratePlugins(Enumeration);
 
     map<PluginKey, PluginCategoryHierarchy> m_taxonomy;
     void generateTaxonomy();
@@ -138,10 +151,22 @@ PluginLoader::getInstance()
     return m_instance;
 }
 
-vector<PluginLoader::PluginKey>
+PluginLoader::PluginKeyList
 PluginLoader::listPlugins() 
 {
     return m_impl->listPlugins();
+}
+
+PluginLoader::PluginKeyList
+PluginLoader::listPluginsIn(vector<string> libs) 
+{
+    return m_impl->listPluginsIn(libs);
+}
+
+PluginLoader::PluginKeyList
+PluginLoader::listPluginsNotIn(vector<string> libs) 
+{
+    return m_impl->listPluginsNotIn(libs);
 }
 
 Plugin *
@@ -185,37 +210,95 @@ PluginLoader::Impl::setInstanceToClean(PluginLoader *instance)
     m_cleaner.setInstance(instance);
 }
 
-vector<PluginLoader::PluginKey>
+PluginLoader::PluginKeyList
 PluginLoader::Impl::listPlugins() 
 {
-    if (!m_allPluginsEnumerated) enumeratePlugins();
+    if (!m_allPluginsEnumerated) enumeratePlugins(Enumeration());
 
     vector<PluginKey> plugins;
-    for (map<PluginKey, string>::iterator mi = m_pluginLibraryNameMap.begin();
-         mi != m_pluginLibraryNameMap.end(); ++mi) {
-        plugins.push_back(mi->first);
+    for (map<PluginKey, string>::const_iterator i =
+             m_pluginLibraryNameMap.begin();
+         i != m_pluginLibraryNameMap.end(); ++i) {
+        plugins.push_back(i->first);
     }
 
     return plugins;
 }
 
-void
-PluginLoader::Impl::enumeratePlugins(PluginKey forPlugin)
+PluginLoader::PluginKeyList
+PluginLoader::Impl::listPluginsIn(vector<string> libs) 
 {
-    string libraryName, identifier;
-    vector<string> fullPaths;
+    Enumeration enumeration;
+    enumeration.type = Enumeration::InLibraries;
+    enumeration.libraryNames = libs;
+    return enumeratePlugins(enumeration);
+}
+
+PluginLoader::PluginKeyList
+PluginLoader::Impl::listPluginsNotIn(vector<string> libs) 
+{
+    Enumeration enumeration;
+    enumeration.type = Enumeration::NotInLibraries;
+    enumeration.libraryNames = libs;
+    return enumeratePlugins(enumeration);
+}
+
+vector<string>
+PluginLoader::Impl::listLibraryFilesFor(Enumeration enumeration)
+{
+    Files::Filter filter;
     
-    if (forPlugin != "") {
-        if (!decomposePluginKey(forPlugin, libraryName, identifier)) {
-            std::cerr << "WARNING: Vamp::HostExt::PluginLoader: Invalid plugin key \""
-                      << forPlugin << "\" in enumerate" << std::endl;
-            return;
+    switch (enumeration.type) {
+
+    case Enumeration::All:
+        filter.type = Files::Filter::All;
+        break;
+
+    case Enumeration::SinglePlugin:
+    {
+        string libraryName, identifier;
+        if (!decomposePluginKey(enumeration.key, libraryName, identifier)) {
+            std::cerr << "WARNING: Vamp::HostExt::PluginLoader: "
+                      << "Invalid plugin key \"" << enumeration.key
+                      << "\" in enumerate" << std::endl;
+            return vector<string>();
         }
-        fullPaths = Files::listLibraryFilesMatching(libraryName);
-    } else {
-        fullPaths = Files::listLibraryFiles();
+        filter.type = Files::Filter::Matching;
+        filter.libraryNames.clear();
+        filter.libraryNames.push_back(libraryName);
+        break;
     }
 
+    case Enumeration::InLibraries:
+        filter.type = Files::Filter::Matching;
+        filter.libraryNames = enumeration.libraryNames;
+        break;
+
+    case Enumeration::NotInLibraries:
+        filter.type = Files::Filter::NotMatching;
+        filter.libraryNames = enumeration.libraryNames;
+        break;
+    }
+        
+    return Files::listLibraryFilesMatching(filter);
+}
+
+vector<PluginLoader::PluginKey>
+PluginLoader::Impl::enumeratePlugins(Enumeration enumeration)
+{
+    string libraryName, identifier;
+    if (enumeration.type == Enumeration::SinglePlugin) {
+        decomposePluginKey(enumeration.key, libraryName, identifier);
+    }
+    
+    vector<string> fullPaths = listLibraryFilesFor(enumeration);
+
+    // For these we should warn if a plugin can be loaded from a library
+    bool specific = (enumeration.type == Enumeration::SinglePlugin ||
+                     enumeration.type == Enumeration::InLibraries);
+
+    vector<PluginKey> added;
+    
     for (size_t i = 0; i < fullPaths.size(); ++i) {
 
         string fullPath = fullPaths[i];
@@ -227,8 +310,9 @@ PluginLoader::Impl::enumeratePlugins(PluginKey forPlugin)
             (handle, "vampGetPluginDescriptor");
             
         if (!fn) {
-            if (forPlugin != "") {
-                cerr << "Vamp::HostExt::PluginLoader: No vampGetPluginDescriptor function found in library \""
+            if (specific) {
+                cerr << "Vamp::HostExt::PluginLoader: "
+                    << "No vampGetPluginDescriptor function found in library \""
                      << fullPath << "\"" << endl;
             }
             Files::unloadLibrary(handle);
@@ -242,18 +326,20 @@ PluginLoader::Impl::enumeratePlugins(PluginKey forPlugin)
         while ((descriptor = fn(VAMP_API_VERSION, index))) {
             ++index;
             if (identifier != "") {
-                if (descriptor->identifier != identifier) continue;
+                if (descriptor->identifier != identifier) {
+                    continue;
+                }
             }
             found = true;
             PluginKey key = composePluginKey(fullPath, descriptor->identifier);
-//                std::cerr << "enumerate: " << key << " (path: " << fullPath << ")" << std::endl;
             if (m_pluginLibraryNameMap.find(key) ==
                 m_pluginLibraryNameMap.end()) {
                 m_pluginLibraryNameMap[key] = fullPath;
             }
+            added.push_back(key);
         }
 
-        if (!found && forPlugin != "") {
+        if (!found && specific) {
             cerr << "Vamp::HostExt::PluginLoader: Plugin \""
                  << identifier << "\" not found in library \""
                  << fullPath << "\"" << endl;
@@ -262,7 +348,11 @@ PluginLoader::Impl::enumeratePlugins(PluginKey forPlugin)
         Files::unloadLibrary(handle);
     }
 
-    if (forPlugin == "") m_allPluginsEnumerated = true;
+    if (enumeration.type == Enumeration::All) {
+        m_allPluginsEnumerated = true;
+    }
+
+    return added;
 }
 
 PluginLoader::PluginKey
@@ -302,7 +392,10 @@ PluginLoader::Impl::getLibraryPathForPlugin(PluginKey plugin)
 {
     if (m_pluginLibraryNameMap.find(plugin) == m_pluginLibraryNameMap.end()) {
         if (m_allPluginsEnumerated) return "";
-        enumeratePlugins(plugin);
+        Enumeration enumeration;
+        enumeration.type = Enumeration::SinglePlugin;
+        enumeration.key = plugin;
+        enumeratePlugins(enumeration);
     }
     if (m_pluginLibraryNameMap.find(plugin) == m_pluginLibraryNameMap.end()) {
         return "";

@@ -43,39 +43,15 @@
 
 #include "Window.h"
 
-
-/**
- * If you want to compile using FFTW instead of the built-in FFT
- * implementation for the PluginInputDomainAdapter, define HAVE_FFTW3
- * in the Makefile.
- *
- * Be aware that FFTW is licensed under the GPL -- unlike this SDK,
- * which is provided under a more liberal BSD license in order to
- * permit use in closed source applications.  The use of FFTW would
- * mean that your code would need to be licensed under the GPL as
- * well.  Do not define this symbol unless you understand and accept
- * the implications of this.
- *
- * Parties such as Linux distribution packagers who redistribute this
- * SDK for use in other programs should _not_ define this symbol, as
- * it would change the effective licensing terms under which the SDK
- * was available to third party developers.
- *
- * The default is not to use FFTW, and to use the built-in FFT instead.
- * 
- * Note: The FFTW code uses FFTW_MEASURE, and so will perform badly on
- * its first invocation unless the host has saved and restored FFTW
- * wisdom (see the FFTW documentation).
- */
-#ifdef HAVE_FFTW3
-#include <fftw3.h>
-#warning "Compiling with FFTW3 support will result in a GPL binary"
-#else
-#include "../vamp-sdk/FFTimpl.cpp"
-#endif
-
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+#include <string.h>
+#include <limits.h>
 
 _VAMP_SDK_HOSTSPACE_BEGIN(PluginInputDomainAdapter.cpp)
+
+#include "../vamp-sdk/FFTimpl.cpp"
 
 namespace Vamp {
 
@@ -110,30 +86,25 @@ protected:
     int m_stepSize;
     int m_blockSize;
     float **m_freqbuf;
-
-    double *m_ri;
+    Kiss::kiss_fft_scalar *m_ri;
 
     WindowType m_windowType;
-    Window<double> *m_window;
+    typedef Window<Kiss::kiss_fft_scalar> W;
+    W *m_window;
 
     ProcessTimestampMethod m_method;
     int m_processCount;
     float **m_shiftBuffers;
 
-#ifdef HAVE_FFTW3
-    fftw_plan m_plan;
-    fftw_complex *m_cbuf;
-#else
-    double *m_ro;
-    double *m_io;
-#endif
+    Kiss::kiss_fftr_cfg m_cfg;
+    Kiss::kiss_fft_cpx *m_cbuf;
 
     FeatureSet processShiftingTimestamp(const float *const *inputBuffers, RealTime timestamp);
     FeatureSet processShiftingData(const float *const *inputBuffers, RealTime timestamp);
 
     size_t makeBlockSizeAcceptable(size_t) const;
     
-    Window<double>::WindowType convertType(WindowType t) const;
+    W::WindowType convertType(WindowType t) const;
 };
 
 PluginInputDomainAdapter::PluginInputDomainAdapter(Plugin *plugin) :
@@ -227,13 +198,8 @@ PluginInputDomainAdapter::Impl::Impl(Plugin *plugin, float inputSampleRate) :
     m_method(ShiftTimestamp),
     m_processCount(0),
     m_shiftBuffers(0),
-#ifdef HAVE_FFTW3
-    m_plan(0),
+    m_cfg(0),
     m_cbuf(0)
-#else
-    m_ro(0),
-    m_io(0)
-#endif
 {
 }
 
@@ -253,19 +219,13 @@ PluginInputDomainAdapter::Impl::~Impl()
             delete[] m_freqbuf[c];
         }
         delete[] m_freqbuf;
-#ifdef HAVE_FFTW3
-        if (m_plan) {
-            fftw_destroy_plan(m_plan);
-            fftw_free(m_ri);
-            fftw_free(m_cbuf);
-            m_plan = 0;
-        }
-#else
         delete[] m_ri;
-        delete[] m_ro;
-        delete[] m_io;
-#endif
-
+        if (m_cfg) {
+            Kiss::kiss_fftr_free(m_cfg);
+            m_cfg = 0;
+            delete[] m_cbuf;
+            m_cbuf = 0;
+        }
         delete m_window;
     }
 }
@@ -292,30 +252,23 @@ PluginInputDomainAdapter::Impl::initialise(size_t channels, size_t stepSize, siz
         return false;
     }                
         
-#ifndef HAVE_FFTW3
-    if (blockSize & (blockSize-1)) {
-        std::cerr << "ERROR: PluginInputDomainAdapter::initialise: non-power-of-two\nblocksize " << blockSize << " not supported" << std::endl;
+    if (blockSize % 2) {
+        std::cerr << "ERROR: PluginInputDomainAdapter::initialise: odd blocksize " << blockSize << " not supported" << std::endl;
         return false;
     }
-#endif
 
     if (m_channels > 0) {
         for (int c = 0; c < m_channels; ++c) {
             delete[] m_freqbuf[c];
         }
         delete[] m_freqbuf;
-#ifdef HAVE_FFTW3
-        if (m_plan) {
-            fftw_destroy_plan(m_plan);
-            fftw_free(m_ri);
-            fftw_free(m_cbuf);
-            m_plan = 0;
-        }
-#else
         delete[] m_ri;
-        delete[] m_ro;
-        delete[] m_io;
-#endif
+        if (m_cfg) {
+            Kiss::kiss_fftr_free(m_cfg);
+            m_cfg = 0;
+            delete[] m_cbuf;
+            m_cbuf = 0;
+        }
         delete m_window;
     }
 
@@ -327,22 +280,16 @@ PluginInputDomainAdapter::Impl::initialise(size_t channels, size_t stepSize, siz
     for (int c = 0; c < m_channels; ++c) {
         m_freqbuf[c] = new float[m_blockSize + 2];
     }
+    m_ri = new Kiss::kiss_fft_scalar[m_blockSize];
 
-    m_window = new Window<double>(convertType(m_windowType), m_blockSize);
+    m_window = new W(convertType(m_windowType), m_blockSize);
 
-#ifdef HAVE_FFTW3
-    m_ri = (double *)fftw_malloc(blockSize * sizeof(double));
-    m_cbuf = (fftw_complex *)fftw_malloc((blockSize/2 + 1) * sizeof(fftw_complex));
-    m_plan = fftw_plan_dft_r2c_1d(blockSize, m_ri, m_cbuf, FFTW_MEASURE);
-#else
-    m_ri = new double[m_blockSize];
-    m_ro = new double[m_blockSize];
-    m_io = new double[m_blockSize];
-#endif
+    m_cfg = Kiss::kiss_fftr_alloc(m_blockSize, false, 0, 0);
+    m_cbuf = new Kiss::kiss_fft_cpx[m_blockSize/2+1];
 
     m_processCount = 0;
 
-    return m_plugin->initialise(channels, stepSize, blockSize);
+    return m_plugin->initialise(channels, stepSize, m_blockSize);
 }
 
 void
@@ -388,36 +335,12 @@ PluginInputDomainAdapter::Impl::makeBlockSizeAcceptable(size_t blockSize) const
         std::cerr << "WARNING: PluginInputDomainAdapter::initialise: blocksize < 2 not" << std::endl
                   << "supported, increasing from " << blockSize << " to 2" << std::endl;
         blockSize = 2;
-        
-    } else if (blockSize & (blockSize-1)) {
-            
-#ifdef HAVE_FFTW3
-        // not an issue with FFTW
-#else
 
-        // not a power of two, can't handle that with our built-in FFT
-        // implementation
-
-        size_t nearest = blockSize;
-        size_t power = 0;
-        while (nearest > 1) {
-            nearest >>= 1;
-            ++power;
-        }
-        nearest = 1;
-        while (power) {
-            nearest <<= 1;
-            --power;
-        }
+    } else if (blockSize % 2) {
         
-        if (blockSize - nearest > (nearest*2) - blockSize) {
-            nearest = nearest*2;
-        }
-        
-        std::cerr << "WARNING: PluginInputDomainAdapter::initialise: non-power-of-two\nblocksize " << blockSize << " not supported, using blocksize " << nearest << " instead" << std::endl;
-        blockSize = nearest;
-
-#endif
+        std::cerr << "WARNING: PluginInputDomainAdapter::initialise: odd blocksize not" << std::endl
+                  << "supported, increasing from " << blockSize << " to " << (blockSize+1) << std::endl;
+        blockSize = blockSize+1;
     }
 
     return blockSize;
@@ -455,7 +378,7 @@ PluginInputDomainAdapter::Impl::setWindowType(WindowType t)
     m_windowType = t;
     if (m_window) {
         delete m_window;
-        m_window = new Window<double>(convertType(m_windowType), m_blockSize);
+        m_window = new W(convertType(m_windowType), m_blockSize);
     }
 }
 
@@ -465,26 +388,26 @@ PluginInputDomainAdapter::Impl::getWindowType() const
     return m_windowType;
 }
 
-Window<double>::WindowType
+PluginInputDomainAdapter::Impl::W::WindowType
 PluginInputDomainAdapter::Impl::convertType(WindowType t) const
 {
     switch (t) {
     case RectangularWindow:
-        return Window<double>::RectangularWindow;
+        return W::RectangularWindow;
     case BartlettWindow:
-        return Window<double>::BartlettWindow;
+        return W::BartlettWindow;
     case HammingWindow:
-        return Window<double>::HammingWindow;
+        return W::HammingWindow;
     case HanningWindow:
-        return Window<double>::HanningWindow;
+        return W::HanningWindow;
     case BlackmanWindow:
-        return Window<double>::BlackmanWindow;
+        return W::BlackmanWindow;
     case NuttallWindow:
-        return Window<double>::NuttallWindow;
+        return W::NuttallWindow;
     case BlackmanHarrisWindow:
-        return Window<double>::BlackmanHarrisWindow;
+        return W::BlackmanHarrisWindow;
     default:
-	return Window<double>::HanningWindow;
+	return W::HanningWindow;
     }
 }
 
@@ -507,13 +430,18 @@ Plugin::FeatureSet
 PluginInputDomainAdapter::Impl::processShiftingTimestamp(const float *const *inputBuffers,
                                                          RealTime timestamp)
 {
+    unsigned int roundedRate = 1;
+    if (m_inputSampleRate > 0.f) {
+        roundedRate = (unsigned int)round(m_inputSampleRate);
+    }
+    
     if (m_method == ShiftTimestamp) {
         // we may need to add one nsec if timestamp +
         // getTimestampAdjustment() rounds down
         timestamp = timestamp + getTimestampAdjustment();
         RealTime nsec(0, 1);
-        if (RealTime::realTime2Frame(timestamp, m_inputSampleRate) <
-            RealTime::realTime2Frame(timestamp + nsec, m_inputSampleRate)) {
+        if (RealTime::realTime2Frame(timestamp, roundedRate) <
+            RealTime::realTime2Frame(timestamp + nsec, roundedRate)) {
             timestamp = timestamp + nsec;
         }
     }
@@ -524,26 +452,17 @@ PluginInputDomainAdapter::Impl::processShiftingTimestamp(const float *const *inp
 
         for (int i = 0; i < m_blockSize/2; ++i) {
             // FFT shift
-            double value = m_ri[i];
+            Kiss::kiss_fft_scalar value = m_ri[i];
             m_ri[i] = m_ri[i + m_blockSize/2];
             m_ri[i + m_blockSize/2] = value;
         }
 
-#ifdef HAVE_FFTW3
-        fftw_execute(m_plan);
-
+        Kiss::kiss_fftr(m_cfg, m_ri, m_cbuf);
+        
         for (int i = 0; i <= m_blockSize/2; ++i) {
-            m_freqbuf[c][i * 2] = float(m_cbuf[i][0]);
-            m_freqbuf[c][i * 2 + 1] = float(m_cbuf[i][1]);
+            m_freqbuf[c][i * 2] = float(m_cbuf[i].r);
+            m_freqbuf[c][i * 2 + 1] = float(m_cbuf[i].i);
         }
-#else
-        fft(m_blockSize, false, m_ri, 0, m_ro, m_io);
-
-        for (int i = 0; i <= m_blockSize/2; ++i) {
-            m_freqbuf[c][i * 2] = float(m_ro[i]);
-            m_freqbuf[c][i * 2 + 1] = float(m_io[i]);
-        }
-#endif
     }
 
     return m_plugin->process(m_freqbuf, timestamp);
@@ -582,36 +501,23 @@ PluginInputDomainAdapter::Impl::processShiftingData(const float *const *inputBuf
 
         for (int i = 0; i < m_blockSize/2; ++i) {
             // FFT shift
-            double value = m_ri[i];
+            Kiss::kiss_fft_scalar value = m_ri[i];
             m_ri[i] = m_ri[i + m_blockSize/2];
             m_ri[i + m_blockSize/2] = value;
         }
 
-#ifdef HAVE_FFTW3
-        fftw_execute(m_plan);
-
+        Kiss::kiss_fftr(m_cfg, m_ri, m_cbuf);
+        
         for (int i = 0; i <= m_blockSize/2; ++i) {
-            m_freqbuf[c][i * 2] = float(m_cbuf[i][0]);
-            m_freqbuf[c][i * 2 + 1] = float(m_cbuf[i][1]);
+            m_freqbuf[c][i * 2] = float(m_cbuf[i].r);
+            m_freqbuf[c][i * 2 + 1] = float(m_cbuf[i].i);
         }
-#else
-        fft(m_blockSize, false, m_ri, 0, m_ro, m_io);
-
-        for (int i = 0; i <= m_blockSize/2; ++i) {
-            m_freqbuf[c][i * 2] = float(m_ro[i]);
-            m_freqbuf[c][i * 2 + 1] = float(m_io[i]);
-        }
-#endif
     }
 
     ++m_processCount;
 
     return m_plugin->process(m_freqbuf, timestamp);
 }
-
-#ifndef HAVE_FFTW3
-
-#endif
 
 }
         

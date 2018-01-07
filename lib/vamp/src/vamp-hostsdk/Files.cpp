@@ -66,18 +66,26 @@ using namespace std;
 vector<string>
 Files::listLibraryFiles()
 {
-    return listLibraryFilesMatching("");
+    return listLibraryFilesMatching(Filter());
 }
 
 vector<string>
-Files::listLibraryFilesMatching(string libraryName)
+Files::listLibraryFilesMatching(Filter filter)
 {
     vector<string> path = Vamp::PluginHostAdapter::getPluginPath();
     vector<string> libraryFiles;
 
-    // we match case-insensitively
-    for (size_t i = 0; i < libraryName.length(); ++i) {
-	libraryName[i] = tolower(libraryName[i]);
+    // we match case-insensitively, but only with ascii range
+    // characters (input strings are expected to be utf-8)
+    vector<string> libraryNames;
+    for (int j = 0; j < int(filter.libraryNames.size()); ++j) {
+        string n = filter.libraryNames[j];
+        for (size_t i = 0; i < n.length(); ++i) {
+            if (!(n[i] & 0x80)) {
+                n[i] = char(tolower(n[i]));
+            }
+        }
+        libraryNames.push_back(n);
     }
 
     for (size_t i = 0; i < path.size(); ++i) {
@@ -86,23 +94,53 @@ Files::listLibraryFilesMatching(string libraryName)
 
         for (vector<string>::iterator fi = files.begin();
              fi != files.end(); ++fi) {
-            
-            if (libraryName != "") {
-		// we match case-insensitively
-                string temp = *fi;
-                for (size_t i = 0; i < temp.length(); ++i) {
-                    temp[i] = tolower(temp[i]);
-                }
-                // libraryName should be lacking an extension, as it
-                // is supposed to have come from the plugin key
-                string::size_type pi = temp.find('.');
-                if (pi == string::npos) {
-                    if (libraryName != temp) continue;
-                } else {
-                    if (libraryName != temp.substr(0, pi)) continue;
+
+            // we match case-insensitively, but only with ascii range
+            // characters (this string is expected to be utf-8)
+            string cleaned = *fi;
+            for (size_t j = 0; j < cleaned.length(); ++j) {
+                if (!(cleaned[j] & 0x80)) {
+                    cleaned[j] = char(tolower(cleaned[j]));
                 }
             }
 
+            // libraryName should be lacking an extension, as it is
+            // supposed to have come from the plugin key
+            string::size_type pi = cleaned.find('.');
+            if (pi != string::npos) {
+                cleaned = cleaned.substr(0, pi);
+            }
+            
+            bool matched = false;
+
+            switch (filter.type) {
+
+            case Filter::All:
+                matched = true;
+                break;
+
+            case Filter::Matching:
+                for (int j = 0; j < int(libraryNames.size()); ++j) {
+                    if (cleaned == libraryNames[j]) {
+                        matched = true;
+                        break;
+                    }
+                }
+                break;
+
+            case Filter::NotMatching:
+                matched = true;
+                for (int j = 0; j < int(libraryNames.size()); ++j) {
+                    if (cleaned == libraryNames[j]) {
+                        matched = false;
+                        break;
+                    }
+                }
+                break;
+            }
+
+            if (!matched) continue;
+            
             string fullPath = path[i];
             fullPath = splicePath(fullPath, *fi);
 	    libraryFiles.push_back(fullPath);
@@ -118,15 +156,15 @@ Files::loadLibrary(string path)
     void *handle = 0;
 #ifdef _WIN32
 #ifdef UNICODE
-    int len = path.length() + 1; // cannot be more wchars than length in bytes of utf8 string
-    wchar_t *buffer = new wchar_t[len];
-    int rv = MultiByteToWideChar(CP_UTF8, 0, path.c_str(), len, buffer, len);
-    if (rv <= 0) {
+    int wlen = MultiByteToWideChar(CP_UTF8, 0, path.c_str(), path.length(), 0, 0);
+    if (wlen < 0) {
         cerr << "Vamp::HostExt: Unable to convert library path \""
              << path << "\" to wide characters " << endl;
-        delete[] buffer;
         return handle;
     }
+    wchar_t *buffer = new wchar_t[wlen+1];
+    (void)MultiByteToWideChar(CP_UTF8, 0, path.c_str(), path.length(), buffer, wlen);
+    buffer[wlen] = L'\0';
     handle = LoadLibrary(buffer);
     delete[] buffer;
 #else
@@ -182,8 +220,12 @@ Files::lcBasename(string path)
     li = basename.find('.');
     if (li != string::npos) basename = basename.substr(0, li);
 
+    // case-insensitive, but only with ascii range characters (this
+    // string is expected to be utf-8)
     for (size_t i = 0; i < basename.length(); ++i) {
-        basename[i] = tolower(basename[i]);
+        if (!(basename[i] & 0x80)) {
+            basename[i] = char(tolower(basename[i]));
+        }
     }
 
     return basename;
@@ -207,15 +249,15 @@ Files::listFiles(string dir, string extension)
 #ifdef _WIN32
     string expression = dir + "\\*." + extension;
 #ifdef UNICODE
-    int len = expression.length() + 1; // cannot be more wchars than length in bytes of utf8 string
-    wchar_t *buffer = new wchar_t[len];
-    int rv = MultiByteToWideChar(CP_UTF8, 0, expression.c_str(), len, buffer, len);
-    if (rv <= 0) {
+    int wlen = MultiByteToWideChar(CP_UTF8, 0, expression.c_str(), expression.length(), 0, 0);
+    if (wlen < 0) {
         cerr << "Vamp::HostExt: Unable to convert wildcard path \""
              << expression << "\" to wide characters" << endl;
-        delete[] buffer;
         return files;
     }
+    wchar_t *buffer = new wchar_t[wlen+1];
+    (void)MultiByteToWideChar(CP_UTF8, 0, expression.c_str(), expression.length(), buffer, wlen);
+    buffer[wlen] = L'\0';
     WIN32_FIND_DATA data;
     HANDLE fh = FindFirstFile(buffer, &data);
     if (fh == INVALID_HANDLE_VALUE) {
@@ -226,11 +268,16 @@ Files::listFiles(string dir, string extension)
     bool ok = true;
     while (ok) {
         wchar_t *fn = data.cFileName;
-        int wlen = wcslen(fn) + 1;
-        int maxlen = wlen * 6;
-        char *conv = new char[maxlen];
-        int rv = WideCharToMultiByte(CP_UTF8, 0, fn, wlen, conv, maxlen, 0, 0);
-        if (rv > 0) {
+        int wlen = wcslen(fn);
+        int len = WideCharToMultiByte(CP_UTF8, 0, fn, wlen, 0, 0, 0, 0);
+        if (len < 0) {
+            cerr << "Vamp::HostExt: Unable to convert wide char filename to utf-8" << endl;
+            break;
+        }
+        char *conv = new char[len+1];
+        (void)WideCharToMultiByte(CP_UTF8, 0, fn, wlen, conv, len, 0, 0);
+        conv[len] = '\0';
+        if (len > 0) {
             files.push_back(conv);
         }
         delete[] conv;
