@@ -51,7 +51,6 @@ class AnalysisFeature : public LibraryFeature {
 
   private slots:
     void slotTrackAnalysisSchedulerProgress(AnalyzerProgress analyzerProgress, int currentCount, int totalCount);
-    void onTrackAnalysisFinished();
     void stopAnalysis();
 
   private:

@@ -133,7 +133,7 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
         connect(m_pTrackAnalysisScheduler, SIGNAL(progress(AnalyzerProgress, int, int)),
                 this, SLOT(slotTrackAnalysisSchedulerProgress(AnalyzerProgress, int, int)));
         connect(m_pTrackAnalysisScheduler, SIGNAL(finished()),
-                this, SLOT(onTrackAnalysisFinished()));
+                this, SLOT(stopAnalysis()));
 
         emit(analysisActive(true));
     }
@@ -157,15 +157,6 @@ void AnalysisFeature::slotTrackAnalysisSchedulerProgress(
     }
 }
 
-void AnalysisFeature::onTrackAnalysisFinished() {
-    // Free resources by abandoning the queue after the batch analyis
-    // has completed. Batch analysis are not started very frequently
-    // during a session and should be avoided while performing live.
-    // If the user decides to start a new batch analysis the setup costs
-    // for creating the queue with its worker threads are acceptable.
-    stopAnalysis();
-}
-
 void AnalysisFeature::suspendAnalysis() {
     //qDebug() << this << "suspendAnalysis";
     if (m_pTrackAnalysisScheduler) {
@@ -183,6 +174,11 @@ void AnalysisFeature::resumeAnalysis() {
 void AnalysisFeature::stopAnalysis() {
     //qDebug() << this << "stopAnalysis()";
     if (m_pTrackAnalysisScheduler) {
+        // Free resources by abandoning the queue after the batch analysis
+        // has completed. Batch analysis are not started very frequently
+        // during a session and should be avoided while performing live.
+        // If the user decides to start a new batch analysis the setup costs
+        // for creating the queue with its worker threads are acceptable.
         m_pTrackAnalysisScheduler.reset();
     }
     setTitleDefault();
