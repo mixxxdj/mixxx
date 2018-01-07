@@ -4,6 +4,9 @@
 #include <QUrl>
 #include <QDrag>
 #include <QClipboard>
+#include <QShortcut>
+#include <QWidgetAction>
+#include <QCheckBox>
 
 #include "widget/wtracktableview.h"
 
@@ -28,6 +31,7 @@
 #include "util/dnd.h"
 #include "util/time.h"
 #include "util/assert.h"
+#include "util/parented_ptr.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  UserSettingsPointer pConfig,
@@ -70,7 +74,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pPlaylistMenu = new QMenu(this);
     m_pPlaylistMenu->setTitle(tr("Add to Playlist"));
     m_pCrateMenu = new QMenu(this);
-    m_pCrateMenu->setTitle(tr("Add to Crate"));
+    m_pCrateMenu->setTitle(tr("Crates"));
     m_pBPMMenu = new QMenu(this);
     m_pBPMMenu->setTitle(tr("BPM Options"));
     m_pCoverMenu = new WCoverArtMenu(this);
@@ -93,8 +97,9 @@ WTrackTableView::WTrackTableView(QWidget * parent,
 
     connect(&m_playlistMapper, SIGNAL(mapped(int)),
             this, SLOT(addSelectionToPlaylist(int)));
-    connect(&m_crateMapper, SIGNAL(mapped(int)),
-            this, SLOT(addSelectionToCrate(int)));
+
+    connect(&m_crateMapper, SIGNAL(mapped(QWidget *)),
+            this, SLOT(addRemoveSelectionInCrate(QWidget *)));
 
     m_pCOTGuiTick = new ControlProxy("[Master]", "guiTick50ms", this);
     m_pCOTGuiTick->connectValueChanged(SLOT(slotGuiTick50ms(double)));
@@ -843,21 +848,44 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOCRATE)) {
         m_pCrateMenu->clear();
-        CrateSelectResult allCrates(m_pTrackCollection->crates().selectCrates());
-        Crate crate;
+        const QList<TrackId> trackIds = getSelectedTrackIds();
+
+        CrateSummarySelectResult allCrates(m_pTrackCollection->crates().selectCratesWithTrackCount(trackIds));
+
+        CrateSummary crate;
         while (allCrates.populateNext(&crate)) {
-            auto pAction = std::make_unique<QAction>(crate.getName(), m_pCrateMenu);
+            auto pAction = make_parented<QWidgetAction>(m_pCrateMenu);
+            auto pCheckBox = make_parented<QCheckBox>(m_pCrateMenu);
+
+            pCheckBox->setText(crate.getName());
+            pCheckBox->setProperty("crateId",
+                                   QVariant::fromValue(crate.getId()));
+            pCheckBox->setEnabled(!crate.isLocked());
             pAction->setEnabled(!crate.isLocked());
-            m_crateMapper.setMapping(pAction.get(), crate.getId().toInt());
-            connect(pAction.get(), SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
+            pAction->setDefaultWidget(pCheckBox.get());
+
+            if(crate.getTrackCount() == 0) {
+                pCheckBox->setChecked(false);
+            } else if(crate.getTrackCount() == (uint)trackIds.length()) {
+                pCheckBox->setChecked(true);
+            } else {
+                pCheckBox->setTristate(true);
+                pCheckBox->setCheckState(Qt::PartiallyChecked);
+            }
+
+            m_crateMapper.setMapping(pAction.get(), pCheckBox.get());
+            m_crateMapper.setMapping(pCheckBox.get(), pCheckBox.get());
             m_pCrateMenu->addAction(pAction.get());
-            pAction.release();
+            connect(pAction.get(), SIGNAL(triggered()),
+                    &m_crateMapper, SLOT(map()));
+            connect(pCheckBox.get(), SIGNAL(stateChanged(int)),
+                    &m_crateMapper, SLOT(map()));
+
         }
         m_pCrateMenu->addSeparator();
         QAction* newCrateAction = new QAction(tr("Create New Crate"), m_pCrateMenu);
         m_pCrateMenu->addAction(newCrateAction);
-        m_crateMapper.setMapping(newCrateAction, CrateId().toInt());// invalid crate id for new crate
-        connect(newCrateAction, SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
+        connect(newCrateAction, SIGNAL(triggered()), this, SLOT(addSelectionToNewCrate()));
 
         m_pMenu->addMenu(m_pCrateMenu);
     }
@@ -1517,22 +1545,55 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
     playlistDao.appendTracksToPlaylist(trackIds, iPlaylistId);
 }
 
-void WTrackTableView::addSelectionToCrate(int iCrateId) {
+void WTrackTableView::addRemoveSelectionInCrate(QWidget* pWidget) {
+    auto pCheckBox = qobject_cast<QCheckBox*>(pWidget);
+    VERIFY_OR_DEBUG_ASSERT(pCheckBox) {
+        qWarning() << "crateId is not ef CrateId type";
+        return;
+    }
+    CrateId crateId = pCheckBox->property("crateId").value<CrateId>();
+
     const QList<TrackId> trackIds = getSelectedTrackIds();
+
     if (trackIds.isEmpty()) {
         qWarning() << "No tracks selected for crate";
         return;
     }
 
-    CrateId crateId(iCrateId);
-    if (!crateId.isValid()) { // i.e. a new crate is suppose to be created
-        crateId = CrateFeatureHelper(
-                m_pTrackCollection, m_pConfig).createEmptyCrate();
+    // we need to disable tristate again as the mixed state will now be gone and can't be brought back
+    pCheckBox->setTristate(false);
+    if(!pCheckBox->isChecked()) {
+        if (crateId.isValid()) {
+            m_pTrackCollection->removeCrateTracks(crateId, trackIds);
+        }
+    } else {
+        if (!crateId.isValid()) { // i.e. a new crate is suppose to be created
+            crateId = CrateFeatureHelper(
+                    m_pTrackCollection, m_pConfig).createEmptyCrate();
+        }
+        if (crateId.isValid()) {
+            m_pTrackCollection->unhideTracks(trackIds);
+            m_pTrackCollection->addCrateTracks(crateId, trackIds);
+        }
     }
+}
+
+void WTrackTableView::addSelectionToNewCrate() {
+    const QList<TrackId> trackIds = getSelectedTrackIds();
+
+    if (trackIds.isEmpty()) {
+        qWarning() << "No tracks selected for crate";
+        return;
+    }
+
+    CrateId crateId = CrateFeatureHelper(
+            m_pTrackCollection, m_pConfig).createEmptyCrate();
+
     if (crateId.isValid()) {
         m_pTrackCollection->unhideTracks(trackIds);
         m_pTrackCollection->addCrateTracks(crateId, trackIds);
     }
+
 }
 
 void WTrackTableView::doSortByColumn(int headerSection) {

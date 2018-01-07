@@ -276,6 +276,8 @@ class CrateStorage: public virtual /*implements*/ SqlStorage {
             CrateId crateId) const;
     CrateTrackSelectResult selectTrackCratesSorted(
             TrackId trackId) const;
+    CrateSummarySelectResult selectCratesWithTrackCount(
+            const QList<TrackId>& trackIds) const;
     CrateTrackSelectResult selectTracksSortedByCrateNameLike(
             const QString& crateNameLike) const;
 
@@ -283,7 +285,6 @@ class CrateStorage: public virtual /*implements*/ SqlStorage {
     // provided track ids.
     QSet<CrateId> collectCrateIdsOfTracks(
             const QList<TrackId>& trackIds) const;
-
 
     /////////////////////////////////////////////////////////////////////////
     // CrateSummary view operations (read-only, const)
