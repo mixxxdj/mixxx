@@ -11,14 +11,20 @@ class VampPluginLoader final {
     VampPluginLoader();
 
     Vamp::HostExt::PluginLoader::PluginKeyList listPlugins();
-    Vamp::Plugin *loadPlugin(Vamp::HostExt::PluginLoader::PluginKey,
-                             float inputSampleRate, int adapterFlags = 0);
     Vamp::HostExt::PluginLoader::PluginKey composePluginKey(std::string libraryName,
                                              std::string identifier);
     Vamp::HostExt::PluginLoader::PluginCategoryHierarchy getPluginCategory(
         Vamp::HostExt::PluginLoader::PluginKey plugin);
 
+    Vamp::Plugin *loadPlugin(Vamp::HostExt::PluginLoader::PluginKey,
+                             float inputSampleRate, int adapterFlags = 0);
     void unloadPlugin(Vamp::Plugin** ppPlugin);
+
+    bool initialisePlugin(
+            Vamp::Plugin* pPlugin,
+            size_t inputChannels,
+            size_t stepSize,
+            size_t blockSize);
 };
 
 } // namespace mixxx

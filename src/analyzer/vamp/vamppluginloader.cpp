@@ -184,4 +184,13 @@ void VampPluginLoader::unloadPlugin(Vamp::Plugin** ppPlugin) {
     *ppPlugin = nullptr;
 }
 
+bool VampPluginLoader::initialisePlugin(
+        Vamp::Plugin* pPlugin,
+        size_t inputChannels,
+        size_t stepSize,
+        size_t blockSize) {
+    std::lock_guard<std::mutex> locked(s_mutex);
+    return pPlugin->initialise(inputChannels, stepSize, blockSize);
+}
+
 } // namespace mixxx

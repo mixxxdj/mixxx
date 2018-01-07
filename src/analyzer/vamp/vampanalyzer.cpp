@@ -110,7 +110,7 @@ bool VampAnalyzer::Init(const QString pluginlibrary, const QString pluginid,
         qDebug() << "Vampanalyzer: setting m_iStepSize to" << m_iStepSize;
     }
 
-    if (!m_plugin->initialise(2, m_iStepSize, m_iBlockSize)) {
+    if (!pluginLoader.initialisePlugin(m_plugin, 2, m_iStepSize, m_iBlockSize)) {
         qDebug() << "VampAnalyzer: Cannot initialize plugin";
         return false;
     }
