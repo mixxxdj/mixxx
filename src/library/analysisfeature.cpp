@@ -129,9 +129,9 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
                 getAnalyzerMode(m_pConfig));
 
         connect(m_pTrackAnalysisScheduler, SIGNAL(progress(AnalyzerProgress, int, int)),
-                m_pAnalysisView, SLOT(slotTrackAnalysisSchedulerProgress(AnalyzerProgress, int, int)));
+                m_pAnalysisView, SLOT(onTrackAnalysisSchedulerProgress(AnalyzerProgress, int, int)));
         connect(m_pTrackAnalysisScheduler, SIGNAL(progress(AnalyzerProgress, int, int)),
-                this, SLOT(slotTrackAnalysisSchedulerProgress(AnalyzerProgress, int, int)));
+                this, SLOT(onTrackAnalysisSchedulerProgress(AnalyzerProgress, int, int)));
         connect(m_pTrackAnalysisScheduler, SIGNAL(finished()),
                 this, SLOT(stopAnalysis()));
 
@@ -146,7 +146,7 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
     m_pTrackAnalysisScheduler->resume();
 }
 
-void AnalysisFeature::slotTrackAnalysisSchedulerProgress(
+void AnalysisFeature::onTrackAnalysisSchedulerProgress(
         AnalyzerProgress /*analyzerProgress*/,
         int currentCount,
         int totalCount) {
