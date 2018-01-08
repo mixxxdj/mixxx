@@ -9,7 +9,6 @@
 #define ANALYZER_VAMP_VAMPANALYZER_H
 
 #include <QString>
-#include <QList>
 #include <QVector>
 
 #include <vamp-hostsdk/vamp-hostsdk.h>
@@ -17,13 +16,19 @@
 #include "preferences/usersettings.h"
 #include "util/sample.h"
 
+namespace mixxx {
+
+class VampPluginLoader;
+
+}
+
 class VampAnalyzer {
   public:
     VampAnalyzer();
     virtual ~VampAnalyzer();
 
     bool Init(const QString pluginlibrary, const QString pluginid,
-              const int samplerate, const int TotalSamples, bool bFastAnalysis);
+              const int samplerate, const int totalSamples, bool bFastAnalysis);
     bool Process(const CSAMPLE *pIn, const int iLen);
     bool End();
     bool SetParameter(const QString parameter, const double value);
@@ -34,20 +39,23 @@ class VampAnalyzer {
     QVector<double> GetFirstValuesVector();
     QVector<double> GetLastValuesVector();
 
-    void SelectOutput(const int outputnumber);
-
   private:
+    friend class mixxx::VampPluginLoader;
     Vamp::HostExt::PluginLoader::PluginKey m_key;
-    int m_iSampleCount, m_iOUT, m_iRemainingSamples,
-        m_iBlockSize, m_iStepSize, m_rate, m_iOutput;
-    CSAMPLE ** m_pluginbuf;
     Vamp::Plugin *m_plugin;
-    Vamp::Plugin::ParameterList mParameters;
-    Vamp::Plugin::FeatureList m_Results;
+    int m_iOutput;
+    int m_iBlockSize;
+    int m_iStepSize;
+
+    int m_iSampleCount, m_iOUT, m_iRemainingSamples,
+        m_rate;
+    CSAMPLE* m_pluginbuf[2];
 
     bool m_bDoNotAnalyseMoreSamples;
     bool m_FastAnalysisEnabled;
     int m_iMaxSamplesToAnalyse;
+
+    Vamp::Plugin::FeatureList m_results;
 };
 
 #endif /* ANALYZER_VAMP_VAMPANALYZER_H */

@@ -3,6 +3,12 @@
 
 #include <vamp-hostsdk/vamp-hostsdk.h>
 
+#include <QString>
+
+#include "util/types.h"
+
+
+class VampAnalyzer;
 
 namespace mixxx {
 
@@ -11,20 +17,19 @@ class VampPluginLoader final {
     VampPluginLoader();
 
     Vamp::HostExt::PluginLoader::PluginKeyList listPlugins();
-    Vamp::HostExt::PluginLoader::PluginKey composePluginKey(std::string libraryName,
-                                             std::string identifier);
-    Vamp::HostExt::PluginLoader::PluginCategoryHierarchy getPluginCategory(
-        Vamp::HostExt::PluginLoader::PluginKey plugin);
-
     Vamp::Plugin *loadPlugin(Vamp::HostExt::PluginLoader::PluginKey,
                              float inputSampleRate, int adapterFlags = 0);
     void unloadPlugin(Vamp::Plugin** ppPlugin);
 
-    bool initialisePlugin(
-            Vamp::Plugin* pPlugin,
-            size_t inputChannels,
-            size_t stepSize,
-            size_t blockSize);
+    bool loadAnalyzerPlugin(
+            VampAnalyzer* pAnalyzer,
+            const QString& pluginLib,
+            const QString& pluginId,
+            SINT inputChannels,
+            SINT inputSampleRate);
+
+    void unloadAnalyzerPlugin(
+            VampAnalyzer* pAnalyzer);
 };
 
 } // namespace mixxx

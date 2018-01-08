@@ -6,7 +6,9 @@
 #include <QDesktopServices>
 #include <QDir>
 #include <QStringBuilder>
+#include <QStringList>
 
+#include "analyzer/vamp/vampanalyzer.h"
 #include "util/logger.h"
 
 #ifdef __WINDOWS__
@@ -151,19 +153,6 @@ VampPluginLoader::VampPluginLoader() {
     }
 }
 
-Vamp::HostExt::PluginLoader::PluginKey VampPluginLoader::composePluginKey(
-    std::string libraryName, std::string identifier) {
-    std::lock_guard<std::mutex> locked(s_mutex);
-    return s_pPluginLoader->composePluginKey(
-        libraryName, identifier);
-}
-
-Vamp::HostExt::PluginLoader::PluginCategoryHierarchy VampPluginLoader::getPluginCategory(
-    Vamp::HostExt::PluginLoader::PluginKey plugin) {
-    std::lock_guard<std::mutex> locked(s_mutex);
-    return s_pPluginLoader->getPluginCategory(plugin);
-}
-
 Vamp::HostExt::PluginLoader::PluginKeyList VampPluginLoader::listPlugins() {
     std::lock_guard<std::mutex> locked(s_mutex);
     return s_pPluginLoader->listPlugins();
@@ -184,13 +173,96 @@ void VampPluginLoader::unloadPlugin(Vamp::Plugin** ppPlugin) {
     *ppPlugin = nullptr;
 }
 
-bool VampPluginLoader::initialisePlugin(
-        Vamp::Plugin* pPlugin,
-        size_t inputChannels,
-        size_t stepSize,
-        size_t blockSize) {
-    std::lock_guard<std::mutex> locked(s_mutex);
-    return pPlugin->initialise(inputChannels, stepSize, blockSize);
+bool VampPluginLoader::loadAnalyzerPlugin(
+        VampAnalyzer* pAnalyzer,
+        const QString& pluginLib,
+        const QString& pluginId,
+        SINT inputChannels,
+        SINT inputSampleRate) {
+    QStringList pluginList = pluginId.split(":");
+    if (pluginList.size() != 2) {
+        qDebug() << "VampAnalyzer: got malformed pluginId: " << pluginId;
+        return false;
+    }
+
+    bool isOutputNumber = false;
+    int outputNumber = pluginList.at(1).toInt(&isOutputNumber);
+    if (!isOutputNumber) {
+        qDebug() << "VampAnalyzer: got malformed pluginId: " << pluginId;
+        return false;
+    }
+
+    Vamp::HostExt::PluginLoader::PluginKey pluginKey =
+            s_pPluginLoader->composePluginKey(
+                    pluginLib.toStdString(),
+                    pluginList.at(0).toStdString());
+
+    if (pAnalyzer->m_plugin) {
+        qDebug() << "VampAnalyzer: kill plugin";
+        delete pAnalyzer->m_plugin;
+        pAnalyzer->m_plugin = nullptr;
+    }
+    pAnalyzer->m_plugin = s_pPluginLoader->loadPlugin(
+            pluginKey,
+            inputSampleRate,
+            Vamp::HostExt::PluginLoader::ADAPT_ALL_SAFE);
+    if (!pAnalyzer->m_plugin) {
+        qDebug() << "VampAnalyzer: Cannot load Vamp Plug-in.";
+        qDebug() << "Please copy libmixxxminimal.so from build dir to one of the following:";
+        std::vector<std::string> path = Vamp::PluginHostAdapter::getPluginPath();
+        for (unsigned int i = 0; i < path.size(); i++) {
+            qDebug() << QString::fromStdString(path[i]);
+        }
+        return false;
+    }
+
+    Vamp::Plugin::OutputList outputs = pAnalyzer->m_plugin->getOutputDescriptors();
+    if (outputs.empty()) {
+        qDebug() << "VampAnalyzer: Plugin has no outputs!";
+        return false;
+    }
+    if (outputNumber >= 0 && outputNumber < int(outputs.size())) {
+        pAnalyzer->m_iOutput = outputNumber;
+    } else {
+        qDebug() << "VampAnalyzer: Invalid output number!";
+        return false;
+    }
+
+    pAnalyzer->m_iBlockSize = pAnalyzer->m_plugin->getPreferredBlockSize();
+    qDebug() << "Vampanalyzer BlockSize: " << pAnalyzer->m_iBlockSize;
+    if (pAnalyzer->m_iBlockSize == 0) {
+        // A plugin that can handle any block size may return 0. The final block
+        // size will be set in the initialize() call. Since 0 means it is
+        // accepting any size, 1024 should be good
+        pAnalyzer->m_iBlockSize = 1024;
+        qDebug() << "Vampanalyzer: setting pAnalyzer->m_iBlockSize to 1024";
+    }
+
+    pAnalyzer->m_iStepSize = pAnalyzer->m_plugin->getPreferredStepSize();
+    qDebug() << "Vampanalyzer StepSize: " << pAnalyzer->m_iStepSize;
+    if (pAnalyzer->m_iStepSize == 0 || pAnalyzer->m_iStepSize > pAnalyzer->m_iBlockSize) {
+        // A plugin may return 0 if it has no particular interest in the step
+        // size. In this case, the host should make the step size equal to the
+        // block size if the plugin is accepting input in the time domain. If
+        // the plugin is accepting input in the frequency domain, the host may
+        // use any step size. The final step size will be set in the
+        // initialize() call.
+        pAnalyzer->m_iStepSize = pAnalyzer->m_iBlockSize;
+        qDebug() << "Vampanalyzer: setting pAnalyzer->m_iStepSize to" << pAnalyzer->m_iStepSize;
+    }
+
+    if (!pAnalyzer->m_plugin->initialise(inputChannels, pAnalyzer->m_iStepSize, pAnalyzer->m_iBlockSize)) {
+        qDebug() << "VampAnalyzer: Cannot initialize plugin";
+        return false;
+    }
+
+    return true;
+}
+
+void VampPluginLoader::unloadAnalyzerPlugin(
+        VampAnalyzer* pAnalyzer) {
+    DEBUG_ASSERT(pAnalyzer);
+    unloadPlugin(&pAnalyzer->m_plugin);
 }
 
 } // namespace mixxx
