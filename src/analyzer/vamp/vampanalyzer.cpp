@@ -1,16 +1,8 @@
-/*
- * vampanalyzer.cpp
- *
- *  Created on: 14/mar/2011
- *      Author: Vittorio Colao
- */
 #include "analyzer/vamp/vampanalyzer.h"
 
-#include "analyzer/vamp/vamppluginloader.h"
 
 VampAnalyzer::VampAnalyzer()
-    : m_plugin(nullptr),
-      m_iOutput(0),
+    : m_iOutput(0),
       m_iBlockSize(0),
       m_iStepSize(0),
       m_iSampleCount(0),
@@ -25,29 +17,90 @@ VampAnalyzer::VampAnalyzer()
 }
 
 VampAnalyzer::~VampAnalyzer() {
-    mixxx::VampPluginLoader().unloadAnalyzerPlugin(this);
     delete[] m_pluginbuf[0];
     delete[] m_pluginbuf[1];
 }
 
-bool VampAnalyzer::Init(const QString pluginlibrary, const QString pluginid,
+bool VampAnalyzer::Init(const QString pluginlibrary, const QString pluginId,
                         const int samplerate, const int totalSamples, bool bFastAnalysis) {
     if (samplerate <= 0.0) {
-        qDebug() << "VampAnalyzer: Track has non-positive samplerate";
+        qWarning() << "VampAnalyzer: Track has non-positive samplerate" << samplerate;
         return false;
     }
 
     if (totalSamples <= 0) {
-        qDebug() << "VampAnalyzer: Track has non-positive # of samples";
+        qWarning() << "VampAnalyzer: Track has non-positive # of samples" << totalSamples;
         return false;
     }
 
-    if (!mixxx::VampPluginLoader().loadAnalyzerPlugin(
-            this,
-            pluginlibrary,
-            pluginid,
-            2,
-            samplerate)) {
+    QStringList pluginList = pluginId.split(":");
+    if (pluginList.size() != 2) {
+        qWarning() << "VampAnalyzer: got malformed pluginId: " << pluginId;
+        return false;
+    }
+
+    bool isOutputNumber = false;
+    int outputNumber = pluginList.at(1).toInt(&isOutputNumber);
+    if (!isOutputNumber) {
+        qWarning() << "VampAnalyzer: got malformed pluginId: " << pluginId;
+        return false;
+    }
+
+    const auto pluginKey =
+            mixxx::VampPluginAdapter::composePluginKey(
+                    pluginlibrary.toStdString(),
+                    pluginList.at(0).toStdString());
+    m_pluginAdapter.reload(
+            pluginKey,
+            samplerate,
+            Vamp::HostExt::PluginLoader::ADAPT_ALL_SAFE);
+    if (!m_pluginAdapter) {
+        qWarning() << "VampAnalyzer: Cannot load Vamp Plug-in.";
+        qWarning() << "Please copy libmixxxminimal.so from build dir to one of the following:";
+        std::vector<std::string> path = Vamp::PluginHostAdapter::getPluginPath();
+        for (unsigned int i = 0; i < path.size(); i++) {
+            qWarning() << QString::fromStdString(path[i]);
+        }
+        return false;
+    }
+
+    const auto outputs = m_pluginAdapter.getOutputDescriptors();
+    if (outputs.empty()) {
+        qWarning() << "VampAnalyzer: Plugin has no outputs!";
+        return false;
+    }
+    if (outputNumber >= 0 && outputNumber < int(outputs.size())) {
+        m_iOutput = outputNumber;
+    } else {
+        qWarning() << "VampAnalyzer: Invalid output number!";
+        return false;
+    }
+
+    m_iBlockSize = m_pluginAdapter.getPreferredBlockSize();
+    qDebug() << "VampAnalyzer BlockSize: " << m_iBlockSize;
+    if (m_iBlockSize == 0) {
+        // A plugin that can handle any block size may return 0. The final block
+        // size will be set in the initialize() call. Since 0 means it is
+        // accepting any size, 1024 should be good
+        m_iBlockSize = 1024;
+        qDebug() << "VampAnalyzer: setting block size to" << m_iBlockSize;
+    }
+
+    m_iStepSize = m_pluginAdapter.getPreferredStepSize();
+    qDebug() << "VampAnalyzer StepSize: " << m_iStepSize;
+    if (m_iStepSize == 0 || m_iStepSize > m_iBlockSize) {
+        // A plugin may return 0 if it has no particular interest in the step
+        // size. In this case, the host should make the step size equal to the
+        // block size if the plugin is accepting input in the time domain. If
+        // the plugin is accepting input in the frequency domain, the host may
+        // use any step size. The final step size will be set in the
+        // initialize() call.
+        m_iStepSize = m_iBlockSize;
+        qDebug() << "VampAnalyzer: setting step size to" << m_iStepSize;
+    }
+
+    if (!m_pluginAdapter.initialise(2, m_iStepSize, m_iBlockSize)) {
+        qWarning() << "VampAnalyzer: Cannot initialize plugin";
         return false;
     }
 
@@ -70,13 +123,13 @@ bool VampAnalyzer::Init(const QString pluginlibrary, const QString pluginid,
 }
 
 bool VampAnalyzer::Process(const CSAMPLE *pIn, const int iLen) {
-    if (!m_plugin) {
-        qDebug() << "VampAnalyzer: Plugin not loaded";
+    if (!m_pluginAdapter) {
+        qWarning() << "VampAnalyzer: Plugin not loaded";
         return false;
     }
 
     if (m_pluginbuf[0] == NULL || m_pluginbuf[1] == NULL) {
-        qDebug() << "VampAnalyzer: Buffer points to NULL";
+        qWarning() << "VampAnalyzer: Buffer points to NULL";
         return false;
     }
 
@@ -88,7 +141,6 @@ bool VampAnalyzer::Process(const CSAMPLE *pIn, const int iLen) {
     bool lastsamples = false;
     m_iRemainingSamples -= iLen;
 
-    const mixxx::VampPluginLoader pluginLoader;
     while (iIN < iLen / 2) { //4096
         m_pluginbuf[0][m_iOUT] = pIn[2 * iIN]; //* 32767;
         m_pluginbuf[1][m_iOUT] = pIn[2 * iIN + 1]; //* 32767;
@@ -123,14 +175,14 @@ bool VampAnalyzer::Process(const CSAMPLE *pIn, const int iLen) {
                     Vamp::RealTime::frame2RealTime(m_iSampleCount, m_rate);
 
             Vamp::Plugin::FeatureSet features =
-                    pluginLoader.process(m_plugin, m_pluginbuf, timestamp);
+                    m_pluginAdapter.process(m_pluginbuf, timestamp);
 
             m_results.insert(m_results.end(), features[m_iOutput].begin(),
                              features[m_iOutput].end());
 
             if (lastsamples) {
                 Vamp::Plugin::FeatureSet features =
-                        pluginLoader.getRemainingFeatures(m_plugin);
+                        m_pluginAdapter.getRemainingFeatures();
                 m_results.insert(m_results.end(), features[m_iOutput].begin(),
                                  features[m_iOutput].end());
             }
@@ -164,9 +216,8 @@ bool VampAnalyzer::Process(const CSAMPLE *pIn, const int iLen) {
 bool VampAnalyzer::End() {
     // If the total number of samples has been estimated incorrectly
     if (m_iRemainingSamples > 0) {
-        const mixxx::VampPluginLoader pluginLoader;
         Vamp::Plugin::FeatureSet features =
-                pluginLoader.getRemainingFeatures(m_plugin);
+                m_pluginAdapter.getRemainingFeatures();
         m_results.insert(m_results.end(), features[m_iOutput].begin(),
                          features[m_iOutput].end());
     }
