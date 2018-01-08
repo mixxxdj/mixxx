@@ -24,13 +24,13 @@
             <Number>0</Number>
             <Pressed>skin:/buttons/btn_fxExpand.png</Pressed>
             <Unpressed>skin:/buttons/btn_fxExpand.png</Unpressed>
-            <Text>FX1</Text>
+            <Text>FX&#8202;1</Text>
           </State>
           <State>
             <Number>1</Number>
             <Pressed>skin:/buttons/btn_fxCollapse.png</Pressed>
             <Unpressed>skin:/buttons/btn_fxCollapse.png</Unpressed>
-            <Text>FX1</Text>
+            <Text>FX&#8202;1</Text>
           </State>
           <Connection>
             <ConfigKey>[EffectRack1_EffectUnit1],show_parameters</ConfigKey>
@@ -58,13 +58,13 @@
             <Number>0</Number>
             <Pressed>skin:/buttons/btn_fxExpand.png</Pressed>
             <Unpressed>skin:/buttons/btn_fxExpand.png</Unpressed>
-            <Text>FX2</Text>
+            <Text>FX&#8202;2</Text>
           </State>
           <State>
             <Number>1</Number>
             <Pressed>skin:/buttons/btn_fxCollapse.png</Pressed>
             <Unpressed>skin:/buttons/btn_fxCollapse.png</Unpressed>
-            <Text>FX2</Text>
+            <Text>FX&#8202;2</Text>
           </State>
           <Connection>
             <ConfigKey>[EffectRack1_EffectUnit2],show_parameters</ConfigKey>

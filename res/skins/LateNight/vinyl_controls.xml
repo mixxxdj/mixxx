@@ -26,9 +26,9 @@
       </WidgetGroup>
 
       <PushButton>
-        <Size>42f,22f</Size>
+        <Size>44f,22f</Size>
         <TooltipId>vinylcontrol_enabled</TooltipId>
-        <ObjectName>VinylToggleButtonUL</ObjectName>
+        <ObjectName>VinylButton</ObjectName>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
@@ -48,7 +48,7 @@
       </PushButton>
 
       <PushButton>
-        <Size>42f,22f</Size>
+        <Size>46f,22f</Size>
         <TooltipId>vinylcontrol_mode</TooltipId>
         <ObjectName>TristateButton</ObjectName>
         <NumberStates>3</NumberStates>
@@ -76,7 +76,7 @@
       <PushButton>
         <Size>30f,22f</Size>
         <TooltipId>vinylcontrol_cueing</TooltipId>
-        <ObjectName>VinylCueButton</ObjectName>
+        <ObjectName>VinylButton</ObjectName>
         <NumberStates>3</NumberStates>
         <State>
           <Number>0</Number>
@@ -100,8 +100,8 @@
       </PushButton>
 
       <PushButton>
-        <Size>42f,22f</Size>
-        <ObjectName>VinylToggleButtonUL</ObjectName>
+        <Size>38f,22f</Size>
+        <ObjectName>VinylButton</ObjectName>
         <TooltipId>passthrough_enabled</TooltipId>
         <NumberStates>2</NumberStates>
         <State>

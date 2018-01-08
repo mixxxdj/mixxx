@@ -29,21 +29,13 @@
                     <Text>Preview</Text>
                   </Label>
                   <WidgetGroup>
-                    <ObjectName>PreviewDeckText</ObjectName>
+                    <ObjectName>PreviewDeckTextRow</ObjectName>
                     <Layout>horizontal</Layout>
                     <SizePolicy>me,min</SizePolicy>
                     <Children>
                       <Text>
                         <TooltipId>text</TooltipId>
-                        <Style>QLabel {
-                          font: 13px/14px "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-                          background-color: transparent;
-                          font-weight:bold;
-                          color: #cfb32c;
-                          text-align: left;
-                          margin: 3px;
-                          }
-                        </Style>
+                        <ObjectName>PreviewTitle</ObjectName>
                         <Group>[PreviewDeck1]</Group>
                       </Text>
                     </Children>

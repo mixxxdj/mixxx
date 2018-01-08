@@ -4,6 +4,24 @@
     background-color: #fff;
 }
 
+#Mixxx, WWidget,
+WLabel, QLabel,
+WPushButton, QPushButton,
+WEffect, WEffectSelector,
+WBeatSpinBox {/**/
+  font-family: Ubuntu;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+QToolTip {/*
+  font-family: Ubuntu;*/
+}
+
+WPushButton, QPushButton {
+  font-size: 11px/12px;
+}
+
 #ToolBar {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   background-color: #1e1e1e;
@@ -357,10 +375,9 @@
 }
 
 #KeyText {
+  font-family: "Open Sans";
   qproperty-alignment: 'AlignLeft';
-  font-size: 13px/16px;
-  font-weight: bold;
-  font-family: Lucida Grande, Lucida Sans Unicode, Segoe UI, Arial, Verdana, sans-serif;
+  font-size: 13px/13px;
   background-color: #0f0f0f;
   border: 1px solid #585858;
   border-radius: 3px;
@@ -372,14 +389,10 @@
 #TitleText,
 #PlayPositionText {
  font-size: 18px/21px;
- font-weight: bold;
- font-family: Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 }
 
 #DurationText {
   font-size: 13px/15px;
-  font-weight: bold;
-  font-family: Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 }
 
 #VinylControls {
@@ -387,23 +400,20 @@
 }
 
 #KnobLabel {
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
   font: bold 10px/8px;
-  text-transform: uppercase;
   color: #585858;
   text-align: center;
   qproperty-alignment: 'AlignCenter | AlignBottom';
-  padding-top: -2px;
+  padding-top: -1px;
 }
 
 #FxKnobLabel {
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
   font: bold 10px/8px;
   text-transform: uppercase;
   color: #585858;
   text-align: center;
   qproperty-alignment: 'AlignCenter | AlignBottom';
-  padding-top: 26px;
+  padding-top: 24px;
 }
 
 #FxKnobContainer {
@@ -442,89 +452,49 @@
 }
 
 #RecDuration {
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #ddd;
-}
-
-#GuiToggleButton,
-#GuiToggleButtonInverted {
-  margin: 2px;
-}
-
-#GuiToggleButton[displayValue="0"] {
-  border: 1px solid #585858;
-  border-radius: 2px;
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 10px/12px;
+  font-size: 10px/12px;
   color: #ddd;
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
-}
-
-#GuiToggleButton[displayValue="1"],
-#GuiToggleButton[displayValue="2"] {
-  border: 1px solid #585858;
-  border-radius: 2px;
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 10px/12px;
-  color: #0e0e0e;
-  background-color: #eece33;
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                    stop:0 #B69700,
-                                    stop:1 #eece33);
 }
 
 #VinylStatus {
   border-radius: 5px;
 }
 
-#VinylToggleButtonUL[displayValue="0"],
-#FxAssignButton[displayValue="0"] {
+#VinylButton,
+#FxAssignButton,
+#GuiToggleButton {
   border: 1px solid #585858;
   border-radius: 2px;
-  margin: 1px;
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 10px/12px;
+  }
+
+  #GuiToggleButton {
+    margin: 2px;
+  }
+
+  #VinylButton,
+  #FxAssignButton {
+    margin: 1px;
+  }
+
+#VinylButton[displayValue="0"],
+#GuiToggleButton[displayValue="0"],
+#FxAssignButton[displayValue="0"] {
   color: #ddd;
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                   stop:0 #282828,
                                   stop:1 #0e0e0e);
 }
 
-#VinylToggleButtonUL[displayValue="1"],
+#VinylButton[displayValue="1"],
+#VinylButton[displayValue="2"],
+#GuiToggleButton[displayValue="1"],
+#GuiToggleButton[displayValue="2"],
 #FxAssignButton[displayValue="1"] {
   border: 1px solid #585858;
   border-radius: 2px;
   margin: 1px;
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 10px/12px;
   color: #0e0e0e;
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                    stop:0 #B69700,
-                                    stop:1 #eece33);
-}
-
-#VinylToggleButtonLL[displayValue="0"],
-#VinylCueButton[displayValue="0"] {
-  border: 1px solid #585858;
-  border-radius: 2px;
-  margin: 1px;
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 10px/12px;
-  color: #ddd;
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                  stop:0 #282828,
-                                  stop:1 #0e0e0e);
-}
-
-#VinylToggleButtonLL[displayValue="1"] {
-  border: 1px solid #585858;
-  border-radius: 2px;
-  margin: 1px;
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 10px/12px;
-  color: #0e0e0e;
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                     stop:0 #B69700,
                                     stop:1 #eece33);
 }
@@ -533,55 +503,28 @@
   border: 1px solid #585858;
   border-radius: 2px;
   margin: 1px;
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 10px/12px;
   color: #eece33;
   background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
 }
 
-#VinylCueButton[displayValue="1"] {
+#PitchTweakButton {
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #0e0e0e;
-    background-color: #eece33;
-}
+  }
 
-#VinylCueButton[displayValue="2"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    margin: 1px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #0e0e0e;
-    background-color: #eece33;
-}
+  #PitchTweakButton[displayValue="0"] {
+      color: #ddd;
+      background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+  }
 
-#PitchTweakButton[displayValue="0"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px;
-    color: #ddd;
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
-    margin: 1px;
-}
-
-#PitchTweakButton[displayValue="1"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px;
-    color: #ddd;
-    background-color: #c00a09;
-    margin: 1px;
-}
+  #PitchTweakButton[displayValue="1"] {
+      color: #ddd;
+      background-color: #c00a09;
+  }
 
 #PitchLabel {
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 12px/14px;
+  font-size: 12px/14px;
   color: #585858;
   text-align: center;
   qproperty-alignment: 'AlignHCenter | AlignBottom';
@@ -589,31 +532,26 @@
   margin: 2px;
 }
 
-#SyncToggleButton[displayValue="0"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #ddd;
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
-    margin-right: 3px;
+#SyncToggleButton[displayValue="0"] {/*
+  border: 1px solid #585858;
+  border-radius: 2px;
+  font-size: 12px/12px;
+  color: #ddd;
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+  margin-right: 3px;*/
 }
 
-#SyncToggleButton[displayValue="1"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #c0c0c0;
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #d80000, stop:1 #910000);
-    margin-right: 3px;
+#SyncToggleButton[displayValue="1"] {/*
+  border: 1px solid #585858;
+  border-radius: 2px;
+  color: #c0c0c0;
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #d80000, stop:1 #910000);
+  margin-right: 3px;*/
 }
 
 #LoopToggleButton[displayValue="0"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
     color: #ddd;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
     margin-right: 2px;
@@ -622,39 +560,34 @@
 #LoopToggleButton[displayValue="1"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
     color: #c0c0c0;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #d80000, stop:1 #910000);
     margin-right: 2px;
 }
+/*
+#CueToggleButton {
+  qproperty-alignment: 'AlignHCenter | AlignTop';
+  border: 1px solid #585858;
+  border-radius: 2px;
+  font-size: 13px/10px;
+  margin-right: 2px;
+  margin-top: 2px;
+  }
 
-#CueToggleButton[displayValue="0"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
+  #CueToggleButton[displayValue="0"] {
     color: #ddd;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
-    margin-right: 2px;
-    margin-bottom: 2px;
-}
+  }
 
-#CueToggleButton[displayValue="1"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
+  #CueToggleButton[displayValue="1"] {
     color: #c0c0c0;
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #d80000, stop:1 #910000);
-    margin-right: 2px;
-    margin-bottom: 2px;
-}
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #910000, stop:1 #d80000);
+  }*/
 
 #CrossFadeContainer {
-qproperty-layoutAlignment: 'AlignCenter';
-background-color: #1e1e1e;
-padding-top: 2px;
+  qproperty-layoutAlignment: 'AlignCenter';
+  background-color: #1e1e1e;
+  padding-top: 2px;
 }
 
 #GuiToggleContainerPadLeft {
@@ -777,9 +710,8 @@ WBeatSpinBox {
   margin-bottom: 5px;
 }
 
-#PreviewDeckText {
+#PreviewDeckTextRow {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
   font-size: 10px/11px;
   padding: 0px;
   color: #cfb32c;
@@ -788,15 +720,22 @@ WBeatSpinBox {
 
 #PreviewLabel {
   qproperty-alignment: 'AlignVCenter | AlignHCenter';
-  font: 13px/14px "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
   background-color: #1e1e1e;
-  font-weight:bold;
+  font-weight: bold;
   text-transform: uppercase;
   border-right: 1px solid #585858;
   color: #eece33;
   text-align: center;
   padding-top: 3px;
   padding-bottom: 3px;
+}
+
+#PreviewTitle {
+  font: bold 13px/14px;
+  color: #cfb32c;
+  text-align: left;
+  margin: 3px;
+  background-color: transparent;
 }
 
 #PreviewDeckMargin {
@@ -828,26 +767,6 @@ border: 0px;
 
 #PreviewPlayOverview {
   padding: 3px;
-}
-
-#PreviewDeckExpanded {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-}
-
-#HideShowButton {
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: 14px/18px;
-  padding:0px;
-  margin:0px;
-  text-align:left;
-  color: #eece33;
-}
-
-#CollapseButton {
-  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-  padding-top: 0px;
-  padding-bottom:3px;
-  text-align:left;
 }
 
 #AlignLeftTop {
@@ -930,9 +849,8 @@ border: 0px;
 
 #BpmText {
   qproperty-alignment: 'AlignCenter';
-  font-size: 16px/18px;
+  font-size: 18px/18px;
   font-weight: bold;
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
   background-color: transparent;
   text-align: center;
   padding: 0px;
@@ -943,7 +861,6 @@ border: 0px;
   qproperty-alignment: 'AlignCenter';
   font-size: 12px/13px;
   font-weight: bold;
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
   background-color: transparent;
   text-align: center;
   padding: 0px;
@@ -1124,8 +1041,7 @@ border: 0px;
 }
 
 #TitleGutter WLabel {
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 16px/19px;
+  font-size: 16px/19px;
   text-transform: none;
   text-align: left;
 }
@@ -1296,7 +1212,7 @@ WEffectSelector {
 /* this is now inline in the pushbutton so we can change styles */
 /*#EffectUnitGroupControlButton {
   font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 11px/13px;
+  font-size: 11px/13px;
   text-transform: uppercase;
   color: #eece33;
   text-transform: none;
@@ -1383,8 +1299,7 @@ WEffectSelector {
   }
 
 #EffectUnitGroupControlButton[displayValue="0"] {
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 9px/11px;
+    font-size: 9px/11px;
     text-transform: uppercase;
     color: #585858;
     background-color: #0e0e0e;
@@ -1395,8 +1310,7 @@ WEffectSelector {
 }
 
 #EffectUnitGroupControlButton[displayValue="1"] {
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 9px/11px;
+    font-size: 9px/11px;
     text-transform: uppercase;
     color: #0e0e0e;
     background-color: #eece33;
@@ -1408,8 +1322,7 @@ WEffectSelector {
 
 #EffectToggleButton[displayValue="0"] {
     border: 1px solid #585858;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
+    font-size: 10px/12px;
     color: #585858;
     background-color: #0e0e0e;
     margin-right: 1px;
@@ -1417,8 +1330,7 @@ WEffectSelector {
 
 #EffectToggleButton[displayValue="1"] {
     border: 1px solid #585858;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
+    font-size: 10px/12px;
     color: #0e0e0e;
     background-color: #eece33;
     margin-right: 1px;
@@ -1428,7 +1340,7 @@ WEffectSelector {
 
 QTableView, QTextBrowser, QTreeView {
   border: 1px solid #585858;
-  /*font: 15px/18px;*/
+  /*font-size: 15px/18px;*/
   color: #cfb32c;
   background-color: #0f0f0f;
   alternate-background-color: #1a1a1a;
@@ -1469,7 +1381,7 @@ QPushButton#LibraryPreviewButton:!checked{ image: url(skin:/style/style_library_
 QPushButton#LibraryPreviewButton:checked{ image: url(skin:/style/style_library_preview_pause.png); }
 
 QHeaderView {
-  font: 13px/15px;
+  font-size: 13px/15px;
   color: #cfb32c;
   background-color: #0f0f0f;
 }

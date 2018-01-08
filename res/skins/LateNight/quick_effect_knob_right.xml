@@ -77,7 +77,7 @@
           </EffectName>
 
           <WidgetGroup>
-            <Size>0me,0min</Size>
+            <Size>0min,0min</Size>
             <Children/>
           </WidgetGroup>
         </Children>
