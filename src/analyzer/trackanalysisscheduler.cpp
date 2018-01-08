@@ -76,48 +76,56 @@ void TrackAnalysisScheduler::emitProgressOrFinished() {
     }
     m_lastProgressEmittedAt = now;
 
-    AnalyzerProgress workerProgressSum = 0;
-    int workerProgressCount = 0;
-    for (const auto& worker: m_workers) {
-        if (worker.analyzerProgress() >= kAnalyzerProgressNone) {
-            workerProgressSum += worker.analyzerProgress();
-            ++workerProgressCount;
-        }
-    }
-    // The following algorithm/heuristic shows the user a simple and
-    // almost linear progress display when multiple threads are running
-    // in parallel. It also covers the expected behavior for the single-
-    // threaded case. The observer does not need to know how many threads
-    // are actually processing tracks concurrently behind the scenes. We
-    // are actually reporting a "fake" progress, but one that fulfills
-    // its purpose very well.
-    if (workerProgressCount > 0) {
-        DEBUG_ASSERT(kAnalyzerProgressNone == 0);
-        DEBUG_ASSERT(kAnalyzerProgressDone == 1);
-        const int inProgressCount =
-                math_max(1, int(std::ceil(workerProgressSum)));
-        const AnalyzerProgress currentProgress =
-                workerProgressSum - std::floor(workerProgressSum);
-        // (m_finishedCount + inProgressCount) might exceed m_dequeuedCount
-        // in some situations due to race conditions! The minimum of those
-        // values is an appropriate choice for reporting progress.
-        const int currentCount =
-                math_min(m_finishedCount + inProgressCount, m_dequeuedCount);
-        // The combination of the values current count (primary) and current
-        // progress (secondary) should never decrease to avoid confusion
-        if (m_currentCount <= currentCount) {
-            m_currentCount = currentCount;
-            if ((m_currentCount == currentCount) &&
-                    (m_currentProgress >= kAnalyzerProgressNone)) {
-                // Percentage should not decrease if the count didn't change
-                m_currentProgress = math_max(m_currentProgress, currentProgress);
-            } else {
-                m_currentProgress = currentProgress;
+    if (isFinished()) {
+        m_currentProgress = kAnalyzerProgressDone;
+    } else {
+        AnalyzerProgress workerProgressSum = 0;
+        int workerProgressCount = 0;
+        for (const auto& worker: m_workers) {
+            if (worker.analyzerProgress() >= kAnalyzerProgressNone) {
+                workerProgressSum += worker.analyzerProgress();
+                ++workerProgressCount;
             }
         }
-    } else {
-        if (m_currentCount < m_finishedCount) {
-            m_currentCount = m_finishedCount;
+        // The following algorithm/heuristic shows the user a simple and
+        // almost linear progress display when multiple threads are running
+        // in parallel. It also covers the expected behavior for the single-
+        // threaded case. The observer does not need to know how many threads
+        // are actually processing tracks concurrently behind the scenes. We
+        // are actually reporting a "fake" progress, but one that fulfills
+        // its purpose very well.
+        if (workerProgressCount > 0) {
+            DEBUG_ASSERT(kAnalyzerProgressNone == 0);
+            DEBUG_ASSERT(kAnalyzerProgressDone == 1);
+            const int inProgressCount =
+                    math_max(1, int(std::ceil(workerProgressSum)));
+            const AnalyzerProgress currentProgress =
+                    workerProgressSum - std::floor(workerProgressSum);
+            // (m_finishedCount + inProgressCount) might exceed m_dequeuedCount
+            // in some situations due to race conditions! The minimum of those
+            // values is an appropriate choice for reporting progress.
+            const int currentCount =
+                    math_min(m_finishedCount + inProgressCount, m_dequeuedCount);
+            // The combination of the values current count (primary) and current
+            // progress (secondary) should never decrease to avoid confusion
+            if (m_currentCount < currentCount) {
+                m_currentCount = currentCount;
+                // Unconditional progress update
+                m_currentProgress = currentProgress;
+            } else if (m_currentCount == currentCount) {
+                // Conditional progress update if current count didn't change
+                if (m_currentProgress >= kAnalyzerProgressNone) {
+                    // Current progress should not decrease while the count is constant
+                    m_currentProgress = math_max(m_currentProgress, currentProgress);
+                } else {
+                    // Initialize current progress
+                    m_currentProgress = currentProgress;
+                }
+            }
+        } else {
+            if (m_currentCount < m_finishedCount) {
+                m_currentCount = m_finishedCount;
+            }
         }
     }
     const int totalCount =
