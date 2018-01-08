@@ -192,6 +192,8 @@ bool VampPluginLoader::loadAnalyzerPlugin(
         return false;
     }
 
+    std::lock_guard<std::mutex> locked(s_mutex);
+
     Vamp::HostExt::PluginLoader::PluginKey pluginKey =
             s_pPluginLoader->composePluginKey(
                     pluginLib.toStdString(),
