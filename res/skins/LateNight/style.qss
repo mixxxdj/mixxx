@@ -651,7 +651,7 @@ WBeatSpinBox {
   /* size of spinbox: 54x22px
   incl. up/down button: 70x22px */
   border-radius: 2px;
-  color: #aaaaaa;
+  color: #cfb32c;
   background-color: #0f0f0f;
   selection-color: #0f0f0f;
   selection-background-color: #d2d2d2;
