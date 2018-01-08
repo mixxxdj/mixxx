@@ -56,8 +56,9 @@
         <TooltipId>track_key</TooltipId>
         <Group><Variable name="group"/></Group>
         <MinimumSize>30,20</MinimumSize>
-        <MaximumSize>55,20</MaximumSize>
+        <MaximumSize>65,20</MaximumSize>
         <SizePolicy>me,f</SizePolicy>
+        <Elide>right</Elide>
         <!-- has no effect, only 'qproperty-alignment' in style.qss works
         <Alignment>left</Alignment-->
         <Connection>

@@ -376,12 +376,12 @@ WPushButton, QPushButton {
 
 #KeyText {
   font-family: "Open Sans";
-  qproperty-alignment: 'AlignLeft';
+  qproperty-alignment: 'AlignCenter';
   font-size: 13px/13px;
   background-color: #0f0f0f;
   border: 1px solid #585858;
   border-radius: 3px;
-  padding: 0px;
+  padding-right: -0px;
   margin: 0px 1px;
 }
 
