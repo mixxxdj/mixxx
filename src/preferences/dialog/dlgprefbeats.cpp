@@ -250,8 +250,7 @@ void DlgPrefBeats::populate() {
                     plugincombo->addItem(displaynametext, displayname);
                 }
             }
-            delete plugin;
-            plugin = 0;
+            vampPluginLoader.unloadPlugin(&plugin);
         }
     }
 }
