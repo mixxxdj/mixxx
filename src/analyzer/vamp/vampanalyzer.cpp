@@ -88,6 +88,7 @@ bool VampAnalyzer::Process(const CSAMPLE *pIn, const int iLen) {
     bool lastsamples = false;
     m_iRemainingSamples -= iLen;
 
+    const mixxx::VampPluginLoader pluginLoader;
     while (iIN < iLen / 2) { //4096
         m_pluginbuf[0][m_iOUT] = pIn[2 * iIN]; //* 32767;
         m_pluginbuf[1][m_iOUT] = pIn[2 * iIN + 1]; //* 32767;
@@ -122,14 +123,14 @@ bool VampAnalyzer::Process(const CSAMPLE *pIn, const int iLen) {
                     Vamp::RealTime::frame2RealTime(m_iSampleCount, m_rate);
 
             Vamp::Plugin::FeatureSet features =
-                    m_plugin->process(m_pluginbuf, timestamp);
+                    pluginLoader.process(m_plugin, m_pluginbuf, timestamp);
 
             m_results.insert(m_results.end(), features[m_iOutput].begin(),
                              features[m_iOutput].end());
 
             if (lastsamples) {
                 Vamp::Plugin::FeatureSet features =
-                        m_plugin->getRemainingFeatures();
+                        pluginLoader.getRemainingFeatures(m_plugin);
                 m_results.insert(m_results.end(), features[m_iOutput].begin(),
                                  features[m_iOutput].end());
             }
@@ -163,7 +164,9 @@ bool VampAnalyzer::Process(const CSAMPLE *pIn, const int iLen) {
 bool VampAnalyzer::End() {
     // If the total number of samples has been estimated incorrectly
     if (m_iRemainingSamples > 0) {
-        Vamp::Plugin::FeatureSet features = m_plugin->getRemainingFeatures();
+        const mixxx::VampPluginLoader pluginLoader;
+        Vamp::Plugin::FeatureSet features =
+                pluginLoader.getRemainingFeatures(m_plugin);
         m_results.insert(m_results.end(), features[m_iOutput].begin(),
                          features[m_iOutput].end());
     }

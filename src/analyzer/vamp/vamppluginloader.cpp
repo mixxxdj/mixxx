@@ -153,20 +153,20 @@ VampPluginLoader::VampPluginLoader() {
     }
 }
 
-Vamp::HostExt::PluginLoader::PluginKeyList VampPluginLoader::listPlugins() {
+Vamp::HostExt::PluginLoader::PluginKeyList VampPluginLoader::listPlugins() const {
     std::lock_guard<std::mutex> locked(s_mutex);
     return s_pPluginLoader->listPlugins();
 }
 
 Vamp::Plugin* VampPluginLoader::loadPlugin(
     Vamp::HostExt::PluginLoader::PluginKey key,
-    float inputSampleRate, int adapterFlags) {
+    float inputSampleRate, int adapterFlags) const {
     std::lock_guard<std::mutex> locked(s_mutex);
     return s_pPluginLoader->loadPlugin(
         key, inputSampleRate, adapterFlags);
 }
 
-void VampPluginLoader::unloadPlugin(Vamp::Plugin** ppPlugin) {
+void VampPluginLoader::unloadPlugin(Vamp::Plugin** ppPlugin) const {
     DEBUG_ASSERT(ppPlugin);
     std::lock_guard<std::mutex> locked(s_mutex);
     delete *ppPlugin;
@@ -178,7 +178,7 @@ bool VampPluginLoader::loadAnalyzerPlugin(
         const QString& pluginLib,
         const QString& pluginId,
         SINT inputChannels,
-        SINT inputSampleRate) {
+        SINT inputSampleRate) const {
     QStringList pluginList = pluginId.split(":");
     if (pluginList.size() != 2) {
         qDebug() << "VampAnalyzer: got malformed pluginId: " << pluginId;
@@ -260,9 +260,25 @@ bool VampPluginLoader::loadAnalyzerPlugin(
 }
 
 void VampPluginLoader::unloadAnalyzerPlugin(
-        VampAnalyzer* pAnalyzer) {
+        VampAnalyzer* pAnalyzer) const {
     DEBUG_ASSERT(pAnalyzer);
     unloadPlugin(&pAnalyzer->m_plugin);
+}
+
+Vamp::Plugin::FeatureSet VampPluginLoader::process(
+        Vamp::Plugin* pPlugin,
+        const float *const *inputBuffers,
+        Vamp::RealTime timestamp) const {
+    DEBUG_ASSERT(pPlugin);
+    std::lock_guard<std::mutex> locked(s_mutex);
+    return pPlugin->process(inputBuffers, timestamp);
+}
+
+Vamp::Plugin::FeatureSet VampPluginLoader::getRemainingFeatures(
+        Vamp::Plugin* pPlugin) const {
+    DEBUG_ASSERT(pPlugin);
+    std::lock_guard<std::mutex> locked(s_mutex);
+    return pPlugin->getRemainingFeatures();
 }
 
 } // namespace mixxx

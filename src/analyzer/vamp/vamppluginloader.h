@@ -16,20 +16,28 @@ class VampPluginLoader final {
   public:
     VampPluginLoader();
 
-    Vamp::HostExt::PluginLoader::PluginKeyList listPlugins();
+    Vamp::HostExt::PluginLoader::PluginKeyList listPlugins() const;
+
     Vamp::Plugin *loadPlugin(Vamp::HostExt::PluginLoader::PluginKey,
-                             float inputSampleRate, int adapterFlags = 0);
-    void unloadPlugin(Vamp::Plugin** ppPlugin);
+                             float inputSampleRate, int adapterFlags = 0) const;
+    void unloadPlugin(Vamp::Plugin** ppPlugin) const;
 
     bool loadAnalyzerPlugin(
             VampAnalyzer* pAnalyzer,
             const QString& pluginLib,
             const QString& pluginId,
             SINT inputChannels,
-            SINT inputSampleRate);
+            SINT inputSampleRate) const;
 
     void unloadAnalyzerPlugin(
-            VampAnalyzer* pAnalyzer);
+            VampAnalyzer* pAnalyzer) const;
+
+    Vamp::Plugin::FeatureSet process(
+            Vamp::Plugin* pPlugin,
+            const float *const *inputBuffers,
+            Vamp::RealTime timestamp) const;
+    Vamp::Plugin::FeatureSet getRemainingFeatures(
+            Vamp::Plugin* pPlugin) const;
 };
 
 } // namespace mixxx
