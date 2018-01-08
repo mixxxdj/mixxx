@@ -268,11 +268,13 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Text>SYNC</Text>
+                  <Pressed>buttons/btn_sync_over.png</Pressed>
+                  <Unpressed>buttons/btn_sync.png</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Text>SYNC</Text>
+                  <Pressed>buttons/btn_sync_overdown.png</Pressed>
+                  <Unpressed>buttons/btn_sync_over.png</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,sync_enabled</ConfigKey>

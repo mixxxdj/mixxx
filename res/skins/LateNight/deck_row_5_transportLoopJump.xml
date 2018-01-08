@@ -253,11 +253,13 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Text>CUE</Text>
+                  <Pressed>buttons/btn_cue_over.png</Pressed>
+                  <Unpressed>buttons/btn_cue.png</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Text>CUE</Text>
+                  <Pressed>buttons/btn_cue_overdown.png</Pressed>
+                  <Unpressed>buttons/btn_cue_over.png</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>

@@ -209,8 +209,8 @@
                       <NumberStates>1</NumberStates>
                       <State>
                         <Number>0</Number>
-                        <Pressed>buttons/btn_sync_sampler_overdown.png</Pressed>
-                        <Unpressed>buttons/btn_sync_sampler.png</Unpressed>
+                        <Pressed>buttons/btn_sync_overdown.png</Pressed>
+                        <Unpressed>buttons/btn_sync.png</Unpressed>
                       </State>
                       <Connection>
                         <ConfigKey>[Sampler<Variable name="samplernum"/>],beatsync</ConfigKey>
