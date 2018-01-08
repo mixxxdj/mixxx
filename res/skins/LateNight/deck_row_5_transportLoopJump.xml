@@ -253,7 +253,7 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>buttons/btn_cue_over.png</Pressed>
+                  <Pressed>buttons/btn_cue_down.png</Pressed>
                   <Unpressed>buttons/btn_cue.png</Unpressed>
                 </State>
                 <State>
