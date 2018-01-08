@@ -115,6 +115,10 @@ void TrackAnalysisScheduler::emitProgressOrFinished() {
                 m_currentProgress = currentProgress;
             }
         }
+    } else {
+        if (m_currentCount < m_finishedCount) {
+            m_currentCount = m_finishedCount;
+        }
     }
     const int totalCount =
             m_dequeuedCount + m_queuedTrackIds.size();
