@@ -79,7 +79,7 @@ vertical layout and a side-by-side layout for two-deck mode -->
               </Template>
 
               <!-- Spacer -->
-              <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
+              <WidgetGroup><Size>1min,4me</Size></WidgetGroup>
 
               <SliderComposed>   <!-- Volume -->
                 <TooltipId>channel_volume</TooltipId>
