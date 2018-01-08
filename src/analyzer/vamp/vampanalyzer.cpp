@@ -26,8 +26,8 @@ VampAnalyzer::VampAnalyzer()
 
 VampAnalyzer::~VampAnalyzer() {
     mixxx::VampPluginLoader().unloadAnalyzerPlugin(this);
-    delete m_pluginbuf[0];
-    delete m_pluginbuf[1];
+    delete[] m_pluginbuf[0];
+    delete[] m_pluginbuf[1];
 }
 
 bool VampAnalyzer::Init(const QString pluginlibrary, const QString pluginid,
