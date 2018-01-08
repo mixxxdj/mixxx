@@ -23,8 +23,10 @@ TrackAnalysisScheduler::TrackAnalysisScheduler(
         const UserSettingsPointer& pConfig,
         AnalyzerMode mode)
         : m_library(library),
-          m_dequeuedCount(0),
+          m_currentProgress(kAnalyzerProgressUnknown),
+          m_currentCount(0),
           m_finishedCount(0),
+          m_dequeuedCount(0),
           // The first signal should always be emitted
           m_lastProgressEmittedAt(Clock::now() - kProgressInhibitDuration) {
     VERIFY_OR_DEBUG_ASSERT(numWorkerThreads > 0) {
@@ -86,29 +88,42 @@ void TrackAnalysisScheduler::emitProgressOrFinished() {
     // almost linear progress display when multiple threads are running
     // in parallel. It also covers the expected behavior for the single-
     // threaded case. The observer does not need to know how many threads
-    // are actually processing tracks concurrently behind the scenes.
-    int inProgressCount;
-    AnalyzerProgress currentProgress;
+    // are actually processing tracks concurrently behind the scenes. We
+    // are actually reporting a "fake" progress, but one that fulfills
+    // its purpose very well.
     if (workerProgressCount > 0) {
         DEBUG_ASSERT(kAnalyzerProgressNone == 0);
         DEBUG_ASSERT(kAnalyzerProgressDone == 1);
-        inProgressCount = math_max(1, int(std::ceil(workerProgressSum)));
-        currentProgress = workerProgressSum - std::floor(workerProgressSum);
-    } else {
-        inProgressCount = 0;
-        currentProgress = kAnalyzerProgressUnknown;
+        const int inProgressCount =
+                math_max(1, int(std::ceil(workerProgressSum)));
+        const AnalyzerProgress currentProgress =
+                workerProgressSum - std::floor(workerProgressSum);
+        // (m_finishedCount + inProgressCount) might exceed m_dequeuedCount
+        // in some situations due to race conditions! The minimum of those
+        // values is an appropriate choice for reporting progress.
+        const int currentCount =
+                math_min(m_finishedCount + inProgressCount, m_dequeuedCount);
+        // The combination of the values current count (primary) and current
+        // progress (secondary) should never decrease to avoid confusion
+        if (m_currentCount <= currentCount) {
+            m_currentCount = currentCount;
+            if ((m_currentCount == currentCount) &&
+                    (m_currentProgress >= kAnalyzerProgressNone)) {
+                // Percentage should not decrease if the count didn't change
+                m_currentProgress = math_max(m_currentProgress, currentProgress);
+            } else {
+                m_currentProgress = currentProgress;
+            }
+        }
     }
-    // (m_finishedCount + inProgressCount) might exceed m_dequeuedCount
-    // in some situations due to race conditions! The minimum of those
-    // values is an appropriate choice for displaying progress.
-    const int currentCount =
-            math_min(m_finishedCount + inProgressCount, m_dequeuedCount);
     const int totalCount =
             m_dequeuedCount + m_queuedTrackIds.size();
-    DEBUG_ASSERT(currentCount <= totalCount);
+    DEBUG_ASSERT(m_finishedCount <= m_currentCount);
+    DEBUG_ASSERT(m_currentCount <= m_dequeuedCount);
+    DEBUG_ASSERT(m_dequeuedCount <= totalCount);
     emit progress(
-            currentProgress,
-            currentCount,
+            m_currentProgress,
+            m_currentCount,
             totalCount);
 }
 

@@ -161,9 +161,13 @@ class TrackAnalysisScheduler : public QObject {
 
     std::deque<TrackId> m_queuedTrackIds;
 
-    int m_dequeuedCount;
+    AnalyzerProgress m_currentProgress;
+
+    int m_currentCount;
 
     int m_finishedCount;
+
+    int m_dequeuedCount;
 
     typedef std::chrono::steady_clock Clock;
     Clock::time_point m_lastProgressEmittedAt;
