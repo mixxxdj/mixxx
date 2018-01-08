@@ -55,7 +55,9 @@ class TrackAnalysisScheduler : public QObject {
             : m_thread(thread.get()),
               m_analyzerProgress(kAnalyzerProgressUnknown),
               m_threadIdle(false) {
-            thread.release()->deleteAfterFinished();
+            if (thread) {
+                thread.release()->deleteAfterFinished();
+            }
         }
         Worker(const Worker&) = delete;
         Worker(Worker&&) = default;
