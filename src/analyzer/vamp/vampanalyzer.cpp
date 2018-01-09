@@ -50,7 +50,7 @@ bool VampAnalyzer::Init(const QString pluginlibrary, const QString pluginId,
             mixxx::VampPluginAdapter::composePluginKey(
                     pluginlibrary.toStdString(),
                     pluginList.at(0).toStdString());
-    m_pluginAdapter.reload(
+    m_pluginAdapter.loadPlugin(
             pluginKey,
             samplerate,
             Vamp::HostExt::PluginLoader::ADAPT_ALL_SAFE);

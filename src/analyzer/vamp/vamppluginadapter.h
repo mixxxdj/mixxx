@@ -32,7 +32,7 @@ class VampPluginAdapter {
         return m_plugin != nullptr;
     }
 
-    void reload(
+    void loadPlugin(
             Vamp::HostExt::PluginLoader::PluginKey key,
             float inputSampleRate,
             int adapterFlags = 0);

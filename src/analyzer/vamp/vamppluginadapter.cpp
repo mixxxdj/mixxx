@@ -211,7 +211,7 @@ VampPluginAdapter::VampPluginAdapter(
         : m_plugin(nullptr),
           m_preferredBlockSize(0),
           m_preferredStepSize(0) {
-    reload(key, inputSampleRate, adapterFlags);
+    loadPlugin(key, inputSampleRate, adapterFlags);
 }
 
 VampPluginAdapter::~VampPluginAdapter() {
@@ -219,13 +219,13 @@ VampPluginAdapter::~VampPluginAdapter() {
     m_plugin.reset();
 }
 
-void VampPluginAdapter::reload(
+void VampPluginAdapter::loadPlugin(
         Vamp::HostExt::PluginLoader::PluginKey key,
         float inputSampleRate,
         int adapterFlags) {
     std::lock_guard<std::mutex> locked(s_mutex);
     m_plugin.reset();
-    m_plugin.reset(loadPlugin(locked, key, inputSampleRate, adapterFlags));
+    m_plugin.reset(mixxx::loadPlugin(locked, key, inputSampleRate, adapterFlags));
     if (m_plugin) {
         m_identifier = m_plugin->getIdentifier();
         m_name = m_plugin->getName();
