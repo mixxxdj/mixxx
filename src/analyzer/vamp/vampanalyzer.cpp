@@ -50,7 +50,7 @@ bool VampAnalyzer::Init(const QString pluginlibrary, const QString pluginId,
             mixxx::VampPluginAdapter::composePluginKey(
                     pluginlibrary.toStdString(),
                     pluginList.at(0).toStdString());
-    m_pluginAdapter.reload(
+    m_pluginAdapter.loadPlugin(
             pluginKey,
             samplerate,
             Vamp::HostExt::PluginLoader::ADAPT_ALL_SAFE);
@@ -64,7 +64,7 @@ bool VampAnalyzer::Init(const QString pluginlibrary, const QString pluginId,
         return false;
     }
 
-    const auto outputs = m_pluginAdapter.getOutputDescriptors();
+    const auto outputs = m_pluginAdapter->getOutputDescriptors();
     if (outputs.empty()) {
         qWarning() << "VampAnalyzer: Plugin has no outputs!";
         return false;
@@ -76,7 +76,7 @@ bool VampAnalyzer::Init(const QString pluginlibrary, const QString pluginId,
         return false;
     }
 
-    m_iBlockSize = m_pluginAdapter.getPreferredBlockSize();
+    m_iBlockSize = m_pluginAdapter->getPreferredBlockSize();
     qDebug() << "VampAnalyzer BlockSize: " << m_iBlockSize;
     if (m_iBlockSize == 0) {
         // A plugin that can handle any block size may return 0. The final block
@@ -86,7 +86,7 @@ bool VampAnalyzer::Init(const QString pluginlibrary, const QString pluginId,
         qDebug() << "VampAnalyzer: setting block size to" << m_iBlockSize;
     }
 
-    m_iStepSize = m_pluginAdapter.getPreferredStepSize();
+    m_iStepSize = m_pluginAdapter->getPreferredStepSize();
     qDebug() << "VampAnalyzer StepSize: " << m_iStepSize;
     if (m_iStepSize == 0 || m_iStepSize > m_iBlockSize) {
         // A plugin may return 0 if it has no particular interest in the step
@@ -99,7 +99,7 @@ bool VampAnalyzer::Init(const QString pluginlibrary, const QString pluginId,
         qDebug() << "VampAnalyzer: setting step size to" << m_iStepSize;
     }
 
-    if (!m_pluginAdapter.initialise(2, m_iStepSize, m_iBlockSize)) {
+    if (!m_pluginAdapter->initialise(2, m_iStepSize, m_iBlockSize)) {
         qWarning() << "VampAnalyzer: Cannot initialize plugin";
         return false;
     }
@@ -175,14 +175,14 @@ bool VampAnalyzer::Process(const CSAMPLE *pIn, const int iLen) {
                     Vamp::RealTime::frame2RealTime(m_iSampleCount, m_rate);
 
             Vamp::Plugin::FeatureSet features =
-                    m_pluginAdapter.process(m_pluginbuf, timestamp);
+                    m_pluginAdapter->process(m_pluginbuf, timestamp);
 
             m_results.insert(m_results.end(), features[m_iOutput].begin(),
                              features[m_iOutput].end());
 
             if (lastsamples) {
                 Vamp::Plugin::FeatureSet features =
-                        m_pluginAdapter.getRemainingFeatures();
+                        m_pluginAdapter->getRemainingFeatures();
                 m_results.insert(m_results.end(), features[m_iOutput].begin(),
                                  features[m_iOutput].end());
             }
@@ -217,7 +217,7 @@ bool VampAnalyzer::End() {
     // If the total number of samples has been estimated incorrectly
     if (m_iRemainingSamples > 0) {
         Vamp::Plugin::FeatureSet features =
-                m_pluginAdapter.getRemainingFeatures();
+                m_pluginAdapter->getRemainingFeatures();
         m_results.insert(m_results.end(), features[m_iOutput].begin(),
                          features[m_iOutput].end());
     }

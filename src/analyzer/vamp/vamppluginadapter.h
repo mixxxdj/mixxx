@@ -8,7 +8,8 @@
 
 namespace mixxx {
 
-// Thread-safe adapter/decorator for the thread-unsafe Vamp plugin C++ API
+// Thread-safe adapter/decorator for the partially thread-unsafe
+// PluginLoader/Plugin couple
 class VampPluginAdapter {
   public:
     static Vamp::HostExt::PluginLoader::PluginKeyList listPlugins();
@@ -17,7 +18,7 @@ class VampPluginAdapter {
             std::string libraryName,
             std::string identifier);
 
-    VampPluginAdapter();
+    VampPluginAdapter() = default;
     VampPluginAdapter(
             Vamp::HostExt::PluginLoader::PluginKey key,
             float inputSampleRate,
@@ -28,60 +29,37 @@ class VampPluginAdapter {
     VampPluginAdapter& operator=(VampPluginAdapter&&) = delete;
     VampPluginAdapter& operator=(const VampPluginAdapter&) = delete;
 
-    operator bool() const {
-        return m_plugin != nullptr;
-    }
-
-    void reload(
+    void loadPlugin(
             Vamp::HostExt::PluginLoader::PluginKey key,
             float inputSampleRate,
             int adapterFlags = 0);
 
-    const std::string& getIdentifier() const {
-        DEBUG_ASSERT(m_plugin);
-        return m_identifier;
+    operator bool() const {
+        return m_plugin != nullptr;
     }
 
-    const std::string& getName() const {
+    Vamp::Plugin* operator->() {
         DEBUG_ASSERT(m_plugin);
-        return m_name;
+        return m_plugin.get();
+    }
+    const Vamp::Plugin* operator->() const {
+        DEBUG_ASSERT(m_plugin);
+        return m_plugin.get();
     }
 
-    const Vamp::Plugin::OutputList& getOutputDescriptors() const {
+    Vamp::Plugin& operator*() {
         DEBUG_ASSERT(m_plugin);
-        return m_outputDescriptors;
+        return *m_plugin.get();
     }
-
-    size_t getPreferredBlockSize() const {
+    const Vamp::Plugin& operator*() const {
         DEBUG_ASSERT(m_plugin);
-        return m_preferredBlockSize;
+        return *m_plugin.get();
     }
-
-    size_t getPreferredStepSize() const {
-        DEBUG_ASSERT(m_plugin);
-        return m_preferredStepSize;
-    }
-
-    bool initialise(
-            size_t inputChannels,
-            size_t stepSize,
-            size_t blockSize);
-
-    Vamp::Plugin::FeatureSet process(
-            const float* const* inputBuffers,
-            Vamp::RealTime timestamp);
-    Vamp::Plugin::FeatureSet getRemainingFeatures();
 
   private:
     // This pointer must never be deleted implicitly to avoid race conditions!
     // It is only needed for utilizing the default move constructor.
     std::unique_ptr<Vamp::Plugin> m_plugin;
-
-    std::string m_identifier;
-    std::string m_name;
-    Vamp::Plugin::OutputList m_outputDescriptors;
-    size_t m_preferredBlockSize;
-    size_t m_preferredStepSize;
 };
 
 } // namespace mixxx

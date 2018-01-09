@@ -198,20 +198,16 @@ Vamp::HostExt::PluginLoader::PluginKey VampPluginAdapter::composePluginKey(
     }
 }
 
-VampPluginAdapter::VampPluginAdapter()
-        : m_plugin(nullptr),
-          m_preferredBlockSize(0),
-          m_preferredStepSize(0) {
-}
-
 VampPluginAdapter::VampPluginAdapter(
         Vamp::HostExt::PluginLoader::PluginKey key,
         float inputSampleRate,
-        int adapterFlags)
-        : m_plugin(nullptr),
-          m_preferredBlockSize(0),
-          m_preferredStepSize(0) {
-    reload(key, inputSampleRate, adapterFlags);
+        int adapterFlags) {
+    std::lock_guard<std::mutex> locked(s_mutex);
+    m_plugin.reset(mixxx::loadPlugin(
+            locked,
+            key,
+            inputSampleRate,
+            adapterFlags));
 }
 
 VampPluginAdapter::~VampPluginAdapter() {
@@ -219,48 +215,17 @@ VampPluginAdapter::~VampPluginAdapter() {
     m_plugin.reset();
 }
 
-void VampPluginAdapter::reload(
+void VampPluginAdapter::loadPlugin(
         Vamp::HostExt::PluginLoader::PluginKey key,
         float inputSampleRate,
         int adapterFlags) {
     std::lock_guard<std::mutex> locked(s_mutex);
     m_plugin.reset();
-    m_plugin.reset(loadPlugin(locked, key, inputSampleRate, adapterFlags));
-    if (m_plugin) {
-        m_identifier = m_plugin->getIdentifier();
-        m_name = m_plugin->getName();
-        m_outputDescriptors = m_plugin->getOutputDescriptors();
-        m_preferredBlockSize = m_plugin->getPreferredBlockSize();
-        m_preferredStepSize = m_plugin->getPreferredStepSize();
-    }
-}
-
-bool VampPluginAdapter::initialise(
-            size_t inputChannels,
-            size_t stepSize,
-            size_t blockSize) {
-    DEBUG_ASSERT(m_plugin);
-    std::lock_guard<std::mutex> locked(s_mutex);
-    return m_plugin->initialise(
-            inputChannels,
-            stepSize,
-            blockSize);
-}
-
-Vamp::Plugin::FeatureSet VampPluginAdapter::process(
-        const float* const* inputBuffers,
-        Vamp::RealTime timestamp) {
-    DEBUG_ASSERT(m_plugin);
-    std::lock_guard<std::mutex> locked(s_mutex);
-    return m_plugin->process(
-            inputBuffers,
-            timestamp);
-}
-
-Vamp::Plugin::FeatureSet VampPluginAdapter::getRemainingFeatures() {
-    DEBUG_ASSERT(m_plugin);
-    std::lock_guard<std::mutex> locked(s_mutex);
-    return m_plugin->getRemainingFeatures();
+    m_plugin.reset(mixxx::loadPlugin(
+            locked,
+            key,
+            inputSampleRate,
+            adapterFlags));
 }
 
 } // namespace mixxx

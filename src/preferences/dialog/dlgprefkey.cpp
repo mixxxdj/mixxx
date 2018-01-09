@@ -287,11 +287,11 @@ void DlgPrefKey::populate() {
        mixxx::VampPluginAdapter pluginAdapter(plugins[iplugin], 48000);
        //TODO(XXX): find a general way to add key detectors only
        if (pluginAdapter) {
-           const Plugin::OutputList& outputs = pluginAdapter.getOutputDescriptors();
+           const Plugin::OutputList& outputs = pluginAdapter->getOutputDescriptors();
            for (unsigned int ioutput=0; ioutput < outputs.size(); ioutput++) {
-               QString displayname = QString::fromStdString(pluginAdapter.getIdentifier()) + ":"
+               QString displayname = QString::fromStdString(pluginAdapter->getIdentifier()) + ":"
                                            + QString::number(ioutput);
-               QString displaynametext = QString::fromStdString(pluginAdapter.getName());
+               QString displaynametext = QString::fromStdString(pluginAdapter->getName());
                qDebug() << "Plugin output displayname:" << displayname << displaynametext;
                bool goodones = displayname.contains(VAMP_ANALYZER_KEY_DEFAULT_PLUGIN_ID);
 
@@ -299,7 +299,7 @@ void DlgPrefKey::populate() {
                    m_listName << displaynametext;
                    QString pluginlibrary = QString::fromStdString(plugins[iplugin]).section(":",0,0);
                    m_listLibrary << pluginlibrary;
-                   QString displayname = QString::fromStdString(pluginAdapter.getIdentifier()) + ":"
+                   QString displayname = QString::fromStdString(pluginAdapter->getIdentifier()) + ":"
                            + QString::number(ioutput);
                    m_listIdentifier << displayname;
                    plugincombo->addItem(displaynametext, displayname);
