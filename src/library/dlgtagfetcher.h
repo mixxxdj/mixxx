@@ -18,7 +18,7 @@ class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
     void init();
 
     enum networkError {
-        NO_ERROR,
+        NONETWORKERROR,
         HTTPERROR,
         FTWERROR
     };
