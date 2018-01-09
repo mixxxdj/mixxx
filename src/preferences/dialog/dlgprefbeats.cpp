@@ -225,11 +225,11 @@ void DlgPrefBeats::populate() {
         mixxx::VampPluginAdapter pluginAdapter(plugins[iplugin], 48000);
         //TODO: find a way to add beat trackers only
         if (pluginAdapter) {
-            const Plugin::OutputList& outputs = pluginAdapter->getOutputDescriptors();
+            const Plugin::OutputList& outputs = pluginAdapter.getOutputDescriptors();
             for (unsigned int ioutput=0; ioutput < outputs.size(); ioutput++) {
-                QString displayname = QString::fromStdString(pluginAdapter->getIdentifier()) + ":"
+                QString displayname = QString::fromStdString(pluginAdapter.getIdentifier()) + ":"
                                             + QString::number(ioutput);
-                QString displaynametext = QString::fromStdString(pluginAdapter->getName());
+                QString displaynametext = QString::fromStdString(pluginAdapter.getName());
                 qDebug() << "Plugin output displayname:" << displayname << displaynametext;
                 bool goodones = ((displayname.contains("mixxxbpmdetection")||
                                   displayname.contains("qm-tempotracker:0"))||
@@ -240,7 +240,7 @@ void DlgPrefBeats::populate() {
                     m_listName << displaynametext;
                     QString pluginlibrary = QString::fromStdString(plugins[iplugin]).section(":",0,0);
                     m_listLibrary << pluginlibrary;
-                    QString displayname = QString::fromStdString(pluginAdapter->getIdentifier()) + ":"
+                    QString displayname = QString::fromStdString(pluginAdapter.getIdentifier()) + ":"
                             + QString::number(ioutput);
                     m_listIdentifier << displayname;
                     plugincombo->addItem(displaynametext, displayname);
