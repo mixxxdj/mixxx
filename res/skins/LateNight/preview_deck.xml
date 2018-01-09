@@ -31,19 +31,21 @@
                   <WidgetGroup>
                     <ObjectName>PreviewDeckTextRow</ObjectName>
                     <Layout>horizontal</Layout>
-                    <SizePolicy>me,min</SizePolicy>
+                    <SizePolicy>i,min</SizePolicy>
                     <Children>
                       <Text>
                         <TooltipId>text</TooltipId>
+                        <SizePolicy>me,min</SizePolicy>
                         <ObjectName>PreviewTitle</ObjectName>
                         <Group>[PreviewDeck1]</Group>
+                        <Elide>right</Elide>
                       </Text>
                     </Children>
                   </WidgetGroup>
                   <WidgetGroup>
                     <ObjectName>AlignRightCenter</ObjectName>
                     <Layout>horizontal</Layout>
-                    <SizePolicy>me,min</SizePolicy>
+                    <SizePolicy>min,min</SizePolicy>
                     <Children>
                       <PushButton>
                         <TooltipId>eject</TooltipId>
@@ -102,6 +104,7 @@
                     <SignalMidColor>#EECE33</SignalMidColor>
                     <SignalLowColor>#E4C739</SignalLowColor>
                     <PlayPosColor>#00FF00</PlayPosColor>
+                    <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
                     <DefaultMark>
                       <Align>bottom</Align>
                       <Color>#FFFFFF</Color>

@@ -19,6 +19,7 @@
         <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
         <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
         <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
+        <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
         <PlayPosColor>#00FF00</PlayPosColor>
         <EndOfTrackColor>#EA0000</EndOfTrackColor>
         <DefaultMark>

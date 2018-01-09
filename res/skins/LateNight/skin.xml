@@ -71,6 +71,7 @@
   <Children>
     <SetVariable name="PotiMinAngle">-135</SetVariable>
     <SetVariable name="PotiMaxAngle">135</SetVariable>
+    <SetVariable name="PlayedOverlayColor">#bb000000</SetVariable>
     <!-- Define singletons as early in the skin as possible.  Note that the
     library doesn't actually appear here, it's just instantiated and configured.
     -->

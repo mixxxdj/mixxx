@@ -73,6 +73,7 @@
                 <SignalHighColor></SignalHighColor>
                 <SignalMidColor></SignalMidColor>
                 <SignalLowColor></SignalLowColor>
+                <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
                 <SignalColor>#EECE33</SignalColor>
                 <MarkerColor>#00FF00</MarkerColor>
                 <DefaultMark>
