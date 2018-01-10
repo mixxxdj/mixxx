@@ -329,6 +329,10 @@ TEST_F(EngineBufferE2ETest, DISABLED_RubberbandToggleTest) {
 TEST_F(EngineBufferE2ETest, KeylockReverseTest) {
     // Confirm that when toggling reverse while keylock is on, interpolation
     // is smooth.
+    ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
+                       static_cast<double>(EngineBuffer::SOUNDTOUCH));
+    ControlObject::set(ConfigKey(m_sGroup1, "keylockMode"),
+                       0.0);
     ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.5);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 1.0);
