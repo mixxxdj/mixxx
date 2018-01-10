@@ -472,7 +472,7 @@ void SoundSourceProxy::updateTrackFromSource(
             m_pSoundSource->importTrackMetadataAndCoverImage(
                     &trackMetadata, pCoverImg);
     if (metadataImported.first != mixxx::MetadataSource::ImportResult::Succeeded) {
-        kLogger.warning() << "Failed to parse track metadata and/or cover art from file"
+        kLogger.debug() << "Failed to parse track metadata and/or cover art from file"
                    << getUrl().toString();
         return; // abort
     }

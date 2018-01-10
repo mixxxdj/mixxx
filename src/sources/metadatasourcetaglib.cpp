@@ -319,7 +319,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         return MetadataSource::importTrackMetadataAndCoverImage(pTrackMetadata, pCoverImage);
     }
 
-    kLogger.warning()
+    kLogger.debug()
             << "No track metadata or cover art found"
             << "in file" << m_fileName
             << "with type" << m_fileType;
