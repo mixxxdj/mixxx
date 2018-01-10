@@ -11,9 +11,10 @@
 #include "util/sample.h"
 
 namespace {
-    constexpr double speedGainMultiplyer = 4.0; // Bends the speed to gain curve for a natural vinyl sound
-    constexpr double maxTotalGainBySpeed = 0.9; // -1 dB to not risk any clipping even for lossy track that may
-                                                // have samples above 1.0
+    constexpr double kSpeedGainMultiplyer = 4.0; // Bends the speed to gain curve for a natural vinyl sound
+    constexpr double kMaxTotalGainBySpeed = 0.9; // -1 dB to not risk any clipping even for lossy track that may
+                                                 // have samples above 1.0
+    const double kSpeedOneDiv = log10((1 * kSpeedGainMultiplyer) + 1); // value to normalize gain to 1 at speed one
 } // anonymous namespace
 
 ControlPotmeter* EnginePregain::s_pReplayGainBoost = NULL;
@@ -130,15 +131,14 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
     // we do not add more gain then we found in the original track.
     // This compensates a negative ReplayGain or PreGain setting.
 
-    constexpr double speedOneDiv = log10((1 * speedGainMultiplyer) + 1);
-    double speedGain = log10((fabs(m_dSpeed) * speedGainMultiplyer) + 1) / speedOneDiv;
+    double speedGain = log10((fabs(m_dSpeed) * kSpeedGainMultiplyer) + 1) / kSpeedOneDiv;
     // Limit speed Gain to 0 dB if totalGain is already > 0.9 or Limit the
     // resulting totalGain to 0.9 for all other cases. This should avoid clipping even
     // if the source track has some samples above 1.0 due to lossy codecs.
-    if (totalGain > maxTotalGainBySpeed) {
+    if (totalGain > kMaxTotalGainBySpeed) {
         speedGain = math_min(1.0, speedGain);
     } else {
-        speedGain = math_min(maxTotalGainBySpeed / totalGain, speedGain);
+        speedGain = math_min(kMaxTotalGainBySpeed / totalGain, speedGain);
     }
     totalGain *= speedGain;
 
