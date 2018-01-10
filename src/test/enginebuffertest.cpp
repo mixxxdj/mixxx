@@ -326,7 +326,12 @@ TEST_F(EngineBufferE2ETest, DISABLED_RubberbandToggleTest) {
                                 kProcessBufferSize, "RubberbandTestRegular");
 }
 
-TEST_F(EngineBufferE2ETest, KeylockReverseTest) {
+// DISABLED: This test is too dependent on the sound touch library version.
+// NOTE(uklotzde, 2018-01-10): We have also seen spurious failures on the
+// Linux build server under high load. These failures might by caused by
+// delayed asynchronous reads from CachingReader. The corresponding chunks
+// will be filled with 0-samples by the engine buffer scaler.
+TEST_F(EngineBufferE2ETest, DISABLED_KeylockReverseTest) {
     // Confirm that when toggling reverse while keylock is on, interpolation
     // is smooth.
     ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
