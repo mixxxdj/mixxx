@@ -141,13 +141,13 @@
                 <RightClickIsPushButton>true</RightClickIsPushButton>
                 <State>
                   <Number>0</Number>
-                  <Pressed>buttons/btn_hotcue2_1_down.png</Pressed>
-                  <Unpressed>buttons/btn_hotcue2_1.png</Unpressed>
+                  <Pressed>buttons/btn_hotcue_1_down.svg</Pressed>
+                  <Unpressed>buttons/btn_hotcue_1.svg</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>buttons/btn_hotcue2_1_overdown.png</Pressed>
-                  <Unpressed>buttons/btn_hotcue2_1_over.png</Unpressed>
+                  <Pressed>buttons/btn_hotcue_1_overdown.svg</Pressed>
+                  <Unpressed>buttons/btn_hotcue_1_over.svg</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,hotcue_1_activate</ConfigKey>
@@ -169,13 +169,13 @@
                 <RightClickIsPushButton>true</RightClickIsPushButton>
                 <State>
                   <Number>0</Number>
-                  <Pressed>buttons/btn_hotcue2_2_down.png</Pressed>
-                  <Unpressed>buttons/btn_hotcue2_2.png</Unpressed>
+                  <Pressed>buttons/btn_hotcue_2_down.svg</Pressed>
+                  <Unpressed>buttons/btn_hotcue_2.svg</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>buttons/btn_hotcue2_2_overdown.png</Pressed>
-                  <Unpressed>buttons/btn_hotcue2_2_over.png</Unpressed>
+                  <Pressed>buttons/btn_hotcue_2_overdown.svg</Pressed>
+                  <Unpressed>buttons/btn_hotcue_2_over.svg</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,hotcue_2_activate</ConfigKey>
@@ -197,13 +197,13 @@
                 <RightClickIsPushButton>true</RightClickIsPushButton>
                 <State>
                   <Number>0</Number>
-                  <Pressed>buttons/btn_hotcue2_3_down.png</Pressed>
-                  <Unpressed>buttons/btn_hotcue2_3.png</Unpressed>
+                  <Pressed>buttons/btn_hotcue_3_down.svg</Pressed>
+                  <Unpressed>buttons/btn_hotcue_3.svg</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>buttons/btn_hotcue2_3_overdown.png</Pressed>
-                  <Unpressed>buttons/btn_hotcue2_3_over.png</Unpressed>
+                  <Pressed>buttons/btn_hotcue_3_overdown.svg</Pressed>
+                  <Unpressed>buttons/btn_hotcue_3_over.svg</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,hotcue_3_activate</ConfigKey>
@@ -225,13 +225,13 @@
                 <RightClickIsPushButton>true</RightClickIsPushButton>
                 <State>
                   <Number>0</Number>
-                  <Pressed>buttons/btn_hotcue2_4_down.png</Pressed>
-                  <Unpressed>buttons/btn_hotcue2_4.png</Unpressed>
+                  <Pressed>buttons/btn_hotcue_4_down.svg</Pressed>
+                  <Unpressed>buttons/btn_hotcue_4.svg</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>buttons/btn_hotcue2_4_overdown.png</Pressed>
-                  <Unpressed>buttons/btn_hotcue2_4_over.png</Unpressed>
+                  <Pressed>buttons/btn_hotcue_4_overdown.svg</Pressed>
+                  <Unpressed>buttons/btn_hotcue_4_over.svg</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,hotcue_4_activate</ConfigKey>
