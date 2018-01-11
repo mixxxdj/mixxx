@@ -1072,13 +1072,14 @@ void importTrackMetadataFromTag(
     }
 }
 
-void importTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
+void importTrackMetadataFromID3v2Tag(
+        TrackMetadata* pTrackMetadata,
         const TagLib::ID3v2::Tag& tag) {
     if (!pTrackMetadata) {
         return; // nothing to do
     }
 
-    importTrackMetadataFromTag(pTrackMetadata, tag);
+    importTrackMetadataFromTag(pTrackMetadata, tag, READ_TAG_OMIT_COMMENT);
 
     TagLib::ID3v2::CommentsFrame* pCommentsFrame =
             findFirstCommentsFrame(tag);
@@ -1394,13 +1395,14 @@ void importTrackMetadataFromAPETag(TrackMetadata* pTrackMetadata, const TagLib::
     }
 }
 
-void importTrackMetadataFromVorbisCommentTag(TrackMetadata* pTrackMetadata,
+void importTrackMetadataFromVorbisCommentTag(
+        TrackMetadata* pTrackMetadata,
         const TagLib::Ogg::XiphComment& tag) {
     if (!pTrackMetadata) {
         return; // nothing to do
     }
 
-    importTrackMetadataFromTag(pTrackMetadata, tag);
+    importTrackMetadataFromTag(pTrackMetadata, tag, READ_TAG_OMIT_COMMENT);
 
     // The original specification only defines a "DESCRIPTION" field,
     // while MusicBrainz recommends to use "COMMENT". Mixxx follows
