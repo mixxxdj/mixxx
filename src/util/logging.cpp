@@ -37,7 +37,7 @@ bool g_debugAssertBreak = false;
 inline void writeToLog(const QByteArray& message, bool shouldPrint,
                        bool shouldFlush) {
     if (shouldPrint) {
-        fwrite(message.constData(), sizeof(char), message.size() + 1, stderr);
+        fwrite(message.constData(), sizeof(char), message.size(), stderr);
     }
 
     QMutexLocker locker(&g_mutexLogfile);
