@@ -1044,16 +1044,22 @@ void importCoverImageFromMP4Tag(QImage* pCoverArt, const TagLib::MP4::Tag& tag) 
     }
 }
 
-void importTrackMetadataFromTag(TrackMetadata* pTrackMetadata, const TagLib::Tag& tag) {
+void importTrackMetadataFromTag(
+        TrackMetadata* pTrackMetadata,
+        const TagLib::Tag& tag,
+        int readMask) {
     if (!pTrackMetadata) {
         return; // nothing to do
     }
 
     pTrackMetadata->refTrackInfo().setTitle(toQString(tag.title()));
     pTrackMetadata->refTrackInfo().setArtist(toQString(tag.artist()));
-    pTrackMetadata->refTrackInfo().setComment(toQString(tag.comment()));
     pTrackMetadata->refTrackInfo().setGenre(toQString(tag.genre()));
     pTrackMetadata->refAlbumInfo().setTitle(toQString(tag.album()));
+
+    if ((readMask & READ_TAG_OMIT_COMMENT) == 0) {
+        pTrackMetadata->refTrackInfo().setComment(toQString(tag.comment()));
+    }
 
     int iYear = tag.year();
     if (iYear > 0) {
