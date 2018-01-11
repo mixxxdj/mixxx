@@ -1695,25 +1695,8 @@ void importTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::
 }
 
 void importTrackMetadataFromRIFFTag(TrackMetadata* pTrackMetadata, const TagLib::RIFF::Info::Tag& tag) {
-    if (!pTrackMetadata) {
-        return; // nothing to do
-    }
-
-    pTrackMetadata->refTrackInfo().setTitle(toQString(tag.title()));
-    pTrackMetadata->refTrackInfo().setArtist(toQString(tag.artist()));
-    pTrackMetadata->refAlbumInfo().setTitle(toQString(tag.album()));
-    pTrackMetadata->refTrackInfo().setComment(toQString(tag.comment()));
-    pTrackMetadata->refTrackInfo().setGenre(toQString(tag.genre()));
-
-    int iYear = tag.year();
-    if (iYear > 0) {
-        pTrackMetadata->refTrackInfo().setYear(QString::number(iYear));
-    }
-
-    int iTrack = tag.track();
-    if (iTrack > 0) {
-        pTrackMetadata->refTrackInfo().setTrackNumber(QString::number(iTrack));
-    }
+    // Just delegate to the common import function
+    importTrackMetadataFromTag(pTrackMetadata, tag);
 }
 
 void exportTrackMetadataIntoTag(
