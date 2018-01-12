@@ -23,7 +23,7 @@
         <PlayPosColor>#00FF00</PlayPosColor>
         <EndOfTrackColor>#EA0000</EndOfTrackColor>
         <DefaultMark>
-          <Align>bottom</Align>
+          <Align>bottom|right</Align>
           <Color>#00FF00</Color>
           <TextColor>#FFFFFF</TextColor>
           <Text> %1 </Text>
@@ -36,9 +36,23 @@
           <DisabledColor>#FFFFFF</DisabledColor>
         </MarkRange>
         <Mark>
+          <Control>loop_start_position</Control>
+          <Text>IN</Text>
+          <Align>bottom|right</Align>
+          <Color>#00FF00</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <Mark>
+          <Control>loop_end_position</Control>
+          <Text>OUT</Text>
+          <Align>bottom|right</Align>
+          <Color>#00FF00</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <Mark>
           <Control>cue_point</Control>
           <Text>C</Text>
-          <Align>top</Align>
+          <Align>top|right</Align>
           <Color>#FF001C</Color>
           <TextColor>#FFFFFF</TextColor>
         </Mark>
