@@ -421,6 +421,10 @@ WPushButton, QPushButton {
   background-color: #113397;*/
 }
 
+#FxUnit1_PflButton, #FxUnit2_PflButton {
+  margin-left: 2px;
+}
+
 #SyncControls {
   qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
   padding-right: 0px;

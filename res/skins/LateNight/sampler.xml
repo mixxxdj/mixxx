@@ -356,16 +356,16 @@
                     <NumberStates>2</NumberStates>
                     <State>
                       <Number>0</Number>
-                      <Pressed>buttons/btn_pfl_sampler_down.png</Pressed>
-                      <Unpressed>buttons/btn_pfl_sampler.png</Unpressed>
+                      <Pressed>buttons/btn_pfl_down.svg</Pressed>
+                      <Unpressed>buttons/btn_pfl.svg</Unpressed>
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Pressed>buttons/btn_pfl_sampler_overdown.png</Pressed>
-                      <Unpressed>buttons/btn_pfl_sampler_over.png</Unpressed>
+                      <Pressed>buttons/btn_pfl_overdown.svg</Pressed>
+                      <Unpressed>buttons/btn_pfl_over.svg</Unpressed>
                     </State>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],pfl</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,pfl</ConfigKey>
                     </Connection>
                   </PushButton>
                 </Children>
