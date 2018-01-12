@@ -1,4 +1,5 @@
 <Template>
+  <SetVariable name="group">[Auxiliary<Variable name="auxnum"/>]</SetVariable>
   <WidgetGroup>
     <ObjectName>MicBorder</ObjectName>
     <Layout>horizontal</Layout>
@@ -25,7 +26,6 @@
                 <SetVariable name="TooltipId">pregain</SetVariable>
                 <SetVariable name="width">28</SetVariable>
                 <SetVariable name="height">24</SetVariable>
-                <SetVariable name="group">[Auxiliary<Variable name="auxnum"/>]</SetVariable>
                 <SetVariable name="control">pregain</SetVariable>
               </Template>
               <WidgetGroup>
@@ -47,7 +47,7 @@
                       <Text>MUTE</Text>
                     </State>
                     <Connection>
-                      <ConfigKey>[Auxiliary<Variable name="auxnum"/>],mute</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,mute</ConfigKey>
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                   </PushButton>
@@ -72,7 +72,7 @@
                       <Unpressed>buttons/btn_pfl_over.svg</Unpressed>
                     </State>
                     <Connection>
-                      <ConfigKey>[Auxiliary<Variable name="auxnum"/>],pfl</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,pfl</ConfigKey>
                     </Connection>
                   </PushButton>
 
@@ -97,7 +97,7 @@
                 <PeakFallTime>50</PeakFallTime>
                 <PeakFallStep>2</PeakFallStep>
                 <Connection>
-                  <ConfigKey>[Auxiliary<Variable name="auxnum"/>],VuMeter</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
                 </Connection>
               </VuMeter>
               <PushButton>
@@ -120,7 +120,7 @@
                   <Unpressed>buttons/btn_orientation_microphone_right_over.png</Unpressed>
                 </State>
                 <Connection>
-                  <ConfigKey>[Auxiliary<Variable name="auxnum"/>],orientation</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,orientation</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
               </PushButton>

@@ -1,4 +1,5 @@
 <Template>
+  <SetVariable name="group">[Microphone<Variable name="micnum"/>]</SetVariable>
   <WidgetGroup>
     <ObjectName>MicBorder</ObjectName>
     <Layout>horizontal</Layout>
@@ -26,7 +27,7 @@
                 <SetVariable name="TooltipId">pregain</SetVariable>
                 <SetVariable name="width">28</SetVariable>
                 <SetVariable name="height">24</SetVariable>
-                <SetVariable name="group">[Microphone<Variable name="micnum"/>]</SetVariable>
+                <SetVariable name="group"><Variable name="group"/></SetVariable>
                 <SetVariable name="control">pregain</SetVariable>
               </Template>
 
@@ -49,7 +50,7 @@
                       <Text>TALK</Text>
                     </State>
                     <Connection>
-                      <ConfigKey>[Microphone<Variable name="micnum"/>],talkover</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,talkover</ConfigKey>
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                   </PushButton>
@@ -75,7 +76,7 @@
                       <Unpressed>buttons/btn_pfl_over.svg</Unpressed>
                     </State>
                     <Connection>
-                      <ConfigKey>[Microphone<Variable name="micnum"/>],pfl</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,pfl</ConfigKey>
                     </Connection>
                   </PushButton>
                 </Children>
@@ -100,7 +101,7 @@
                 <PeakFallTime>50</PeakFallTime>
                 <PeakFallStep>2</PeakFallStep>
                 <Connection>
-                  <ConfigKey>[Microphone<Variable name="micnum"/>],VuMeter</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
                 </Connection>
               </VuMeter>
               <PushButton>
@@ -123,7 +124,7 @@
                   <Unpressed>buttons/btn_orientation_microphone_right_over.png</Unpressed>
                 </State>
                 <Connection>
-                  <ConfigKey>[Microphone<Variable name="micnum"/>],orientation</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,orientation</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
               </PushButton>

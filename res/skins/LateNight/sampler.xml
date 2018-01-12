@@ -1,4 +1,5 @@
 <Template>
+  <SetVariable name="group">[Sampler<Variable name="samplernum"/>]</SetVariable>
   <WidgetGroup>
     <ObjectName>SamplerDeck</ObjectName>
     <Layout>horizontal</Layout>
@@ -21,7 +22,7 @@
                 <Style>QLabel { font: bold 16px/19px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
                 background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
                 </Style>
-                <Group>[Sampler<Variable name="samplernum"/>]</Group>
+                <Group><Variable name="group"/></Group>
               </Text>
             </Children>
           </WidgetGroup>
@@ -30,7 +31,7 @@
           <WidgetGroup>
             <ObjectName>SamplerRowTwo</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>me,min</SizePolicy>
+            <SizePolicy>me,me</SizePolicy>
             <Children>
               <WidgetGroup>
                 <ObjectName>SamplerPlay</ObjectName>
@@ -52,15 +53,15 @@
                       <Unpressed>buttons/btn_play_sampler_over.png</Unpressed>
                     </State>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_gotoandplay</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,cue_gotoandplay</ConfigKey>
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],start_stop</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,start_stop</ConfigKey>
                       <ButtonState>RightButton</ButtonState>
                     </Connection>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],play_indicator</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>
                     </Connection>
                   </PushButton>
                 </Children>
@@ -69,7 +70,7 @@
               <Overview>
                 <TooltipId>waveform_overview</TooltipId>
                 <SizePolicy>me,min</SizePolicy>
-                <Group>[Sampler<Variable name="samplernum"/>]</Group>
+                <Group><Variable name="group"/></Group>
                 <BgColor></BgColor>
                 <SignalHighColor></SignalHighColor>
                 <SignalMidColor></SignalMidColor>
@@ -84,7 +85,7 @@
                   <Text> %1 </Text>
                 </DefaultMark>
                 <Connection>
-                  <ConfigKey>[Sampler<Variable name="samplernum"/>],playposition</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
                 </Connection>
               </Overview>
               <!-- Sampler controls -->
@@ -111,7 +112,7 @@
                           <Unpressed>buttons/btn_repeat_sampler_over.png</Unpressed>
                         </State>
                         <Connection>
-                          <ConfigKey>[Sampler<Variable name="samplernum"/>],repeat</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,repeat</ConfigKey>
                         </Connection>
                       </PushButton>
                       <PushButton>
@@ -123,7 +124,7 @@
                           <Unpressed>buttons/btn_eject_sampler.png</Unpressed>
                         </State>
                         <Connection>
-                          <ConfigKey>[Sampler<Variable name="samplernum"/>],eject</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,eject</ConfigKey>
                           <ButtonState>LeftButton</ButtonState>
                         </Connection>
                       </PushButton>
@@ -153,7 +154,7 @@
                           <Unpressed>buttons/btn_orientation_sampler_right_over.png</Unpressed>
                         </State>
                         <Connection>
-                          <ConfigKey>[Sampler<Variable name="samplernum"/>],orientation</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,orientation</ConfigKey>
                           <ButtonState>LeftButton</ButtonState>
                         </Connection>
                       </PushButton>
@@ -171,7 +172,7 @@
                           <Unpressed>buttons/btn_keylock_sampler_over.png</Unpressed>
                         </State>
                         <Connection>
-                          <ConfigKey>[Sampler<Variable name="samplernum"/>],keylock</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,keylock</ConfigKey>
                         </Connection>
                       </PushButton>
                     </Children>
@@ -187,7 +188,7 @@
                   <Template src="skin:knob_sm_textless.xml">
                     <SetVariable name="TooltipId">pregain</SetVariable>
                     <SetVariable name="Size">25f,25f</SetVariable>
-                    <SetVariable name="group">[Sampler<Variable name="samplernum"/>]</SetVariable>
+                    <SetVariable name="group"><Variable name="group"/></SetVariable>
                     <SetVariable name="control">pregain</SetVariable>
                   </Template>
                 </Children>
@@ -199,9 +200,11 @@
           <!-- Third Row: SamplerButtons -->
           <WidgetGroup>
             <ObjectName>SamplerButtons</ObjectName>
+            <BackPath>background_tile.png</BackPath>
             <Layout>horizontal</Layout>
-            <SizePolicy>me,me</SizePolicy>
+            <SizePolicy>me,min</SizePolicy>
             <Children>
+
               <WidgetGroup>
                 <ObjectName>SamplerSyncButton</ObjectName>
                 <Layout>horizontal</Layout>
@@ -216,11 +219,11 @@
                       <Unpressed>buttons/btn_sync.svg</Unpressed>
                     </State>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],beatsync</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,beatsync</ConfigKey>
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],beatsync_tempo</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,beatsync_tempo</ConfigKey>
                       <ButtonState>RightButton</ButtonState>
                     </Connection>
                   </PushButton>
@@ -228,7 +231,7 @@
               </WidgetGroup>
 
               <WidgetGroup>
-                <ObjectNAme>SamplerHotcues</ObjectNAme>
+                <ObjectName>SamplerHotcues</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
@@ -248,15 +251,15 @@
                       <Unpressed>buttons/btn_hotcue_1_over.svg</Unpressed>
                     </State>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_1_activate</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,hotcue_1_activate</ConfigKey>
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_1_clear</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,hotcue_1_clear</ConfigKey>
                       <ButtonState>RightButton</ButtonState>
                     </Connection>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_1_enabled</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,hotcue_1_enabled</ConfigKey>
                     </Connection>
                   </PushButton>
 
@@ -276,15 +279,15 @@
                       <Unpressed>buttons/btn_hotcue_2_over.svg</Unpressed>
                     </State>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_2_activate</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,hotcue_2_activate</ConfigKey>
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_2_clear</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,hotcue_2_clear</ConfigKey>
                       <ButtonState>RightButton</ButtonState>
                     </Connection>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_2_enabled</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,hotcue_2_enabled</ConfigKey>
                     </Connection>
                   </PushButton>
 
@@ -304,15 +307,15 @@
                       <Unpressed>buttons/btn_hotcue_3_over.svg</Unpressed>
                     </State>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_3_activate</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,hotcue_3_activate</ConfigKey>
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_3_clear</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,hotcue_3_clear</ConfigKey>
                       <ButtonState>RightButton</ButtonState>
                     </Connection>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_3_enabled</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,hotcue_3_enabled</ConfigKey>
                     </Connection>
                   </PushButton>
 
@@ -332,15 +335,15 @@
                       <Unpressed>buttons/btn_hotcue_4_over.svg</Unpressed>
                     </State>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_4_activate</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,hotcue_4_activate</ConfigKey>
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_4_clear</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,hotcue_4_clear</ConfigKey>
                       <ButtonState>RightButton</ButtonState>
                     </Connection>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_4_enabled</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,hotcue_4_enabled</ConfigKey>
                     </Connection>
                   </PushButton>
                 </Children>
@@ -370,6 +373,14 @@
                   </PushButton>
                 </Children>
               </WidgetGroup><!-- /SamplerPfl -->
+
+              <!-- fixed spacer since right border won't show up
+                  if BackPath is defined in xml -->
+              <WidgetGroup>
+                <ObjectName>Spacer58</ObjectName>
+                <Size>1f,1me</Size>
+              </WidgetGroup>
+
             </Children>
           </WidgetGroup><!-- /SamplerButtons -->
         </Children>
@@ -387,7 +398,7 @@
             <PathStatusLight>buttons/btn_clipping1_over.png</PathStatusLight>
             <PathBack>buttons/btn_clipping1.png</PathBack>
             <Connection>
-              <ConfigKey>[Sampler<Variable name="samplernum"/>],PeakIndicator</ConfigKey>
+              <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
             </Connection>
           </StatusLight>
           <VuMeter>
@@ -400,7 +411,7 @@
             <PeakFallTime>50</PeakFallTime>
             <PeakFallStep>2</PeakFallStep>
             <Connection>
-              <ConfigKey>[Sampler<Variable name="samplernum"/>],VuMeter</ConfigKey>
+              <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
             </Connection>
           </VuMeter>
         </Children>
@@ -419,7 +430,7 @@
             <Slider>slider_pitch_sampler.png</Slider>
             <Horizontal>false</Horizontal>
             <Connection>
-              <ConfigKey>[Sampler<Variable name="samplernum"/>],rate</ConfigKey>
+              <ConfigKey><Variable name="group"/>,rate</ConfigKey>
             </Connection>
           </SliderComposed>
         </Children>
