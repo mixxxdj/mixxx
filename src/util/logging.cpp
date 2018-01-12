@@ -240,4 +240,12 @@ void Logging::shutdown() {
     }
 }
 
+// static
+void Logging::flushLogFile() {
+    QMutexLocker locker(&g_mutexLogfile);
+    if (g_logfile.isOpen()) {
+        g_logfile.flush();
+    }
+}
+
 }  // namespace mixxx

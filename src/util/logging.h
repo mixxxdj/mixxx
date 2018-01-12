@@ -23,6 +23,8 @@ class Logging {
                            bool debugAssertBreak);
     static void shutdown();
 
+    static void flushLogFile();
+
     // Query the current log level
     static LogLevel logLevel() {
         return s_logLevel;
