@@ -253,13 +253,13 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>buttons/btn_cue_down.png</Pressed>
-                  <Unpressed>buttons/btn_cue.png</Unpressed>
+                  <Pressed>buttons/btn_cue_down.svg</Pressed>
+                  <Unpressed>buttons/btn_cue.svg</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>buttons/btn_cue_overdown.png</Pressed>
-                  <Unpressed>buttons/btn_cue_over.png</Unpressed>
+                  <Pressed>buttons/btn_cue_overdown.svg</Pressed>
+                  <Unpressed>buttons/btn_cue_over.svg</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
@@ -323,8 +323,8 @@
                 <RightClickIsPushButton>true</RightClickIsPushButton>
                 <State>
                   <Number>0</Number>
-                  <Pressed>buttons/btn_reverse2_overdown.png</Pressed>
-                  <Unpressed>buttons/btn_reverse2.png</Unpressed>
+                  <Pressed>buttons/btn_reverse_overdown.svg</Pressed>
+                  <Unpressed>buttons/btn_reverse.svg</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,reverse</ConfigKey>
@@ -342,13 +342,13 @@
                 <RightClickIsPushButton>true</RightClickIsPushButton>
                 <State>
                   <Number>0</Number>
-                  <Pressed>buttons/btn_play1_down.png</Pressed>
-                  <Unpressed>buttons/btn_play1.png</Unpressed>
+                  <Pressed>buttons/btn_play_down.svg</Pressed>
+                  <Unpressed>buttons/btn_play.svg</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>buttons/btn_play1_overdown.png</Pressed>
-                  <Unpressed>buttons/btn_play1_over.png</Unpressed>
+                  <Pressed>buttons/btn_play_overdown.svg</Pressed>
+                  <Unpressed>buttons/btn_play_over.svg</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,play</ConfigKey>
