@@ -10,11 +10,6 @@
 #include "effects/defs.h"
 #include "engine/channelhandle.h"
 
-// NOTE: Setting this to true will enable string manipulation and calls to
-// qDebug() in the audio engine thread. That may cause audio dropouts, so only
-// enable this when debugging the effects system.
-const bool kEffectDebugOutput = false;
-
 class EngineEffectRack;
 class EngineEffectChain;
 class EngineEffect;
@@ -69,6 +64,20 @@ struct EffectsRequest {
         CLEAR_STRUCT(SetEffectParameters);
         CLEAR_STRUCT(SetParameterParameters);
 #undef CLEAR_STRUCT
+    }
+
+    // This is called from the main thread by EffectsManager after receiving a
+    // response from EngineEffectsManager in the audio engine thread.
+    ~EffectsRequest() {
+        if (type == ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL) {
+            VERIFY_OR_DEBUG_ASSERT(EnableInputChannelForChain.pEffectStatesMapArray != nullptr) {
+                return;
+            }
+            // This only deletes the container used to passed the EffectStates
+            // to EffectProcessorImpl. The EffectStates are managed by
+            // EffectProcessorImpl.
+            delete EnableInputChannelForChain.pEffectStatesMapArray;
+        }
     }
 
     MessageType type;
