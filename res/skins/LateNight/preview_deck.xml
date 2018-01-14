@@ -22,12 +22,22 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <Label>
-                    <Size>68f,15e</Size>
-                    <ObjectName>PreviewLabel</ObjectName>
-                    <TooltipId>text</TooltipId>
-                    <Text>Preview</Text>
-                  </Label>
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <Label>
+                        <ObjectName>PreviewLabel</ObjectName>
+                        <TooltipId>text</TooltipId>
+                        <Size>68f,15e</Size>
+                        <Text>Preview</Text>
+                      </Label>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[PreviewDeck1],track_loaded</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
                   <WidgetGroup>
                     <ObjectName>PreviewDeckTextRow</ObjectName>
                     <Layout>horizontal</Layout>
