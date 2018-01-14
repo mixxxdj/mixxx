@@ -22,7 +22,7 @@
             <SizePolicy>me,me</SizePolicy>
             <SplitSizes>1,10</SplitSizes>
             <SplitSizesConfigKey>[LateNight],LibrarySidebarSplitSize</SplitSizesConfigKey>
-            <Collapsible>0,0</Collapsible>
+            <Collapsible>1,0</Collapsible>
             <Children>
               <WidgetGroup>
                 <ObjectName>LibrarySidebar_X</ObjectName>
