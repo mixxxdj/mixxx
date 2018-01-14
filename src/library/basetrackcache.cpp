@@ -15,7 +15,7 @@
 
 namespace {
 
-const bool sDebug = false;
+constexpr bool sDebug = false;
 
 }  // namespace
 
@@ -101,6 +101,7 @@ void BaseTrackCache::slotTracksRemoved(QSet<TrackId> trackIds) {
     }
     for (const auto& trackId : trackIds) {
         m_trackInfo.remove(trackId);
+        m_dirtyTracks.remove(trackId);
     }
 }
 
@@ -145,18 +146,59 @@ void BaseTrackCache::setSearchColumns(const QStringList& columns) {
 }
 
 TrackPointer BaseTrackCache::lookupCachedTrack(TrackId trackId) const {
-    TrackPointer pTrack;
-    if (m_bIsCaching) {
-        pTrack = TrackCache::instance().lookupById(trackId).getTrack();
-        // After obtaining a strong reference of the Track object the lock
-        // on TrackCache has been released instantly to reduce lock contention!
-        if (pTrack && pTrack->isDirty()) {
-            m_dirtyTracks.insert(trackId);
-        } else {
-            m_dirtyTracks.remove(trackId);
-        }
+    DEBUG_ASSERT(m_bIsCaching);
+    if (m_cachedTrackId != trackId) {
+        refreshCachedTrack(std::move(trackId));
     }
-    return pTrack;
+    return m_cachedTrackPtr;
+}
+
+void BaseTrackCache::refreshCachedTrack(TrackId trackId) const {
+    DEBUG_ASSERT(m_bIsCaching);
+    if (trackId.isValid()) {
+        refreshCachedTrack(
+                std::move(trackId),
+                TrackCache::instance().lookupById(trackId).getTrack());
+    } else {
+        resetCachedTrack();
+    }
+}
+
+void BaseTrackCache::refreshCachedTrack(TrackPointer pTrack) const {
+    DEBUG_ASSERT(m_bIsCaching);
+    DEBUG_ASSERT(pTrack);
+    // Temporary needed, because std::move invalidates the smart pointer
+    auto trackId = pTrack->getId();
+    refreshCachedTrack(std::move(trackId), std::move(pTrack));
+}
+
+void BaseTrackCache::refreshCachedTrack(TrackId trackId, TrackPointer pTrack) const {
+    DEBUG_ASSERT(m_bIsCaching);
+    m_cachedTrackId = std::move(trackId);
+    if (m_cachedTrackId.isValid()) {
+        if (pTrack) {
+            DEBUG_ASSERT(m_cachedTrackId == pTrack->getId());
+            m_cachedTrackPtr = std::move(pTrack);
+            if (m_cachedTrackPtr->isDirty()) {
+                m_dirtyTracks.insert(m_cachedTrackId);
+            } else {
+                m_dirtyTracks.remove(m_cachedTrackId);
+            }
+        } else {
+            // The track cannot be dirty if it is not present
+            m_cachedTrackPtr.reset();
+            m_dirtyTracks.remove(m_cachedTrackId);
+        }
+    } else {
+        DEBUG_ASSERT(!pTrack);
+        m_cachedTrackPtr.reset();
+    }
+}
+
+void BaseTrackCache::resetCachedTrack() const {
+    DEBUG_ASSERT(m_bIsCaching);
+    m_cachedTrackId = TrackId();
+    m_cachedTrackPtr.reset();
 }
 
 bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
@@ -180,6 +222,13 @@ bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
         for (int i = 0; i < numColumns; ++i) {
             getTrackValueForColumn(pTrack, i, record[i]);
         }
+        if (m_bIsCaching) {
+            refreshCachedTrack(std::move(trackId), std::move(pTrack));
+        }
+    } else {
+        if (m_bIsCaching) {
+            resetCachedTrack();
+        }
     }
     return true;
 }
@@ -190,6 +239,10 @@ bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
 
     if (sDebug) {
         qDebug() << "updateIndexWithQuery issuing query:" << queryString;
+    }
+
+    if (m_bIsCaching) {
+        resetCachedTrack();
     }
 
     QSqlQuery query(m_database);
@@ -292,6 +345,10 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
         return;
     }
 
+    if (m_bIsCaching) {
+        refreshCachedTrack(pTrack);
+    }
+
     // TODO(XXX) Qt properties could really help here.
     // TODO(rryan) this is all TrackDAO specific. What about iTunes/RB/etc.?
     if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST) == column) {
@@ -362,9 +419,11 @@ QVariant BaseTrackCache::data(TrackId trackId, int column) const {
         return result;
     }
 
-    TrackPointer pTrack = lookupCachedTrack(trackId);
-    if (pTrack) {
-        getTrackValueForColumn(pTrack, column, result);
+    if (m_bIsCaching) {
+        TrackPointer pTrack = lookupCachedTrack(trackId);
+        if (pTrack) {
+            getTrackValueForColumn(pTrack, column, result);
+        }
     }
 
     // If the track lookup failed (could happen for track properties we don't
@@ -466,7 +525,7 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
     // membership of tracks in either set, we must then insertion-sort the
     // missing tracks into the resulting index list.
 
-    if (dirtyTracks.size() == 0) {
+    if (!m_bIsCaching || dirtyTracks.isEmpty()) {
         return;
     }
 

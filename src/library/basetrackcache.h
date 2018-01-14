@@ -89,6 +89,11 @@ class BaseTrackCache : public QObject {
 
   private:
     TrackPointer lookupCachedTrack(TrackId trackId) const;
+    void refreshCachedTrack(TrackId trackId) const;
+    void refreshCachedTrack(TrackPointer pTrack) const;
+    void refreshCachedTrack(TrackId trackId, TrackPointer pTrack) const;
+    void resetCachedTrack() const;
+
     bool updateIndexWithQuery(const QString& query);
     bool updateIndexWithTrackpointer(TrackPointer pTrack);
     void updateTrackInIndex(TrackId trackId);
@@ -125,6 +130,12 @@ class BaseTrackCache : public QObject {
     // Temporary storage for filterAndSort()
 
     QVector<TrackId> m_trackOrder;
+
+    // Remember key and value of the most recent cache lookup to avoid querying
+    // the global track cache again and again while populating the columns
+    // of a single row. These members serve as a single-valued private cache.
+    mutable TrackId m_cachedTrackId;
+    mutable TrackPointer m_cachedTrackPtr;
 
     // This set is updated by signals from the Track object. It might contain
     // false positives, i.e. track ids of tracks that are neither cached nor
