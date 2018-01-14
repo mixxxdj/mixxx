@@ -15,7 +15,7 @@
 			**********************************************
 			-->
 			<PushButton>
-				<TooltipId>show_samplers</TooltipId>
+				<TooltipId></TooltipId>
 				<Style></Style>
 				<NumberStates>2</NumberStates>
 				<State>
@@ -30,7 +30,7 @@
 				</State>
 				<Pos>5,0</Pos>
 				<Connection>
-					<ConfigKey>[Samplers],show_samplers</ConfigKey>
+					<ConfigKey>[Microphone],show_microphone</ConfigKey>
 				</Connection>
 			</PushButton>
 
@@ -352,9 +352,6 @@
 			-->
 
 			<PushButton>
-                <!--
-				<TooltipId>show_samplers</TooltipId>
-            	-->
 				<Style></Style>
 				<NumberStates>2</NumberStates>
 				<State>
@@ -369,7 +366,7 @@
 				</State>
 				<Pos>149,0</Pos>
 				<Connection>
-					<ConfigKey>[Samplers],show_samplers</ConfigKey>
+					<ConfigKey>[Shade],looping</ConfigKey>
 				</Connection>
 			</PushButton>
 			<PushButton>
