@@ -432,9 +432,7 @@ void SoundSourceProxy::updateTrackFromSource(
         return; // abort
     }
 
-    // Initialize or update the file/format as reported by the associated
-    // SoundSource. This operation might already set the dirty flag of the
-    // track object, but we don't care.
+    // The SoundSource provides the actual type of the corresponding file
     m_pTrack->setType(m_pSoundSource->getType());
 
     // Use the existing track metadata as default values. Otherwise
@@ -517,7 +515,6 @@ void SoundSourceProxy::updateTrackFromSource(
     // Fallback: If artist or title fields are blank then try to populate
     // them from the file name. This might happen if tags are unavailable,
     // unreadable, or partially/completely missing.
-    // TODO(rryan): Should we re-visit this decision?
     if (trackMetadata.getTrackInfo().getArtist().isEmpty() ||
             trackMetadata.getTrackInfo().getTitle().isEmpty()) {
         kLogger.info()
