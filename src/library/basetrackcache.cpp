@@ -10,7 +10,7 @@
 #include "library/searchqueryparser.h"
 #include "library/queryutil.h"
 #include "track/keyutils.h"
-#include "track/trackcache.h"
+#include "track/globaltrackcache.h"
 #include "util/performancetimer.h"
 
 namespace {
@@ -158,7 +158,7 @@ void BaseTrackCache::refreshCachedTrack(TrackId trackId) const {
     if (trackId.isValid()) {
         refreshCachedTrack(
                 std::move(trackId),
-                TrackCache::instance().lookupById(trackId).getTrack());
+                GlobalTrackCache::instance().lookupById(trackId).getTrack());
     } else {
         resetCachedTrack();
     }

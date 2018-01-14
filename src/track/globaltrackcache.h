@@ -1,5 +1,4 @@
-#ifndef TRACKCACHE_H_
-#define TRACKCACHE_H_
+#pragma once
 
 
 #include <QObject>
@@ -11,19 +10,19 @@
 #include "track/trackref.h"
 
 
-enum class TrackCacheLookupResult {
+enum class GlobalTrackCacheLookupResult {
     NONE,
     HIT,
     MISS
 };
 
-class TrackCacheLocker {
+class GlobalTrackCacheLocker {
 public:
-    TrackCacheLocker(const TrackCacheLocker&) = delete;
-    TrackCacheLocker(TrackCacheLocker&& moveable);
-    virtual ~TrackCacheLocker();
+    GlobalTrackCacheLocker(const GlobalTrackCacheLocker&) = delete;
+    GlobalTrackCacheLocker(GlobalTrackCacheLocker&& moveable);
+    virtual ~GlobalTrackCacheLocker();
 
-    TrackCacheLookupResult getTrackCacheLookupResult() const {
+    GlobalTrackCacheLookupResult getGlobalTrackCacheLookupResult() const {
         return m_lookupResult;
     }
 
@@ -39,68 +38,68 @@ public:
 
     void unlockCache();
 
-    TrackCacheLocker& operator=(const TrackCacheLocker&) = delete;
+    GlobalTrackCacheLocker& operator=(const GlobalTrackCacheLocker&) = delete;
 
 private:
-    friend class TrackCache;
+    friend class GlobalTrackCache;
 
     void lockCache();
 
 protected:
-    TrackCacheLocker();
-    TrackCacheLocker(
-            TrackCacheLocker&& moveable,
-            TrackCacheLookupResult lookupResult,
+    GlobalTrackCacheLocker();
+    GlobalTrackCacheLocker(
+            GlobalTrackCacheLocker&& moveable,
+            GlobalTrackCacheLookupResult lookupResult,
             TrackRef trackRef,
             TrackPointer pTrack);
 
-    TrackCacheLocker& operator=(TrackCacheLocker&&);
+    GlobalTrackCacheLocker& operator=(GlobalTrackCacheLocker&&);
 
     QMutex* m_pCacheMutex;
 
-    TrackCacheLookupResult m_lookupResult;
+    GlobalTrackCacheLookupResult m_lookupResult;
 
     TrackRef m_trackRef;
     TrackPointer m_pTrack;
 };
 
-class TrackCacheResolver final: public TrackCacheLocker {
+class GlobalTrackCacheResolver final: public GlobalTrackCacheLocker {
 public:
-    TrackCacheResolver(const TrackCacheResolver&) = delete;
+    GlobalTrackCacheResolver(const GlobalTrackCacheResolver&) = delete;
 #if defined(_MSC_VER) && (_MSC_VER <= 1900)
     // Visual Studio 2015 does not support default generated move constructors
-    TrackCacheResolver(TrackCacheResolver&& moveable)
-        : TrackCacheLocker(std::move(moveable)) {
+    GlobalTrackCacheResolver(GlobalTrackCacheResolver&& moveable)
+        : GlobalTrackCacheLocker(std::move(moveable)) {
     }
 #else
-    TrackCacheResolver(TrackCacheResolver&&) = default;
+    GlobalTrackCacheResolver(GlobalTrackCacheResolver&&) = default;
 #endif
 
     void updateTrackId(TrackId trackId);
 
-    TrackCacheResolver& operator=(const TrackCacheResolver&) = delete;
+    GlobalTrackCacheResolver& operator=(const GlobalTrackCacheResolver&) = delete;
 
 private:
-    friend class TrackCache;
-    TrackCacheResolver();
-    TrackCacheResolver(
-            TrackCacheResolver&& moveable,
-            TrackCacheLookupResult lookupResult,
+    friend class GlobalTrackCache;
+    GlobalTrackCacheResolver();
+    GlobalTrackCacheResolver(
+            GlobalTrackCacheResolver&& moveable,
+            GlobalTrackCacheLookupResult lookupResult,
             TrackRef trackRef,
             TrackPointer pTrack);
 
 #if defined(_MSC_VER) && (_MSC_VER <= 1900)
     // Visual Studio 2015 does not support default generated move assignment operators
-    TrackCacheResolver& operator=(TrackCacheResolver&& moveable) {
-        TrackCacheLocker::operator=(std::move(moveable));
+    GlobalTrackCacheResolver& operator=(GlobalTrackCacheResolver&& moveable) {
+        GlobalTrackCacheLocker::operator=(std::move(moveable));
         return *this;
     }
 #else
-    TrackCacheResolver& operator=(TrackCacheResolver&&) = default;
+    GlobalTrackCacheResolver& operator=(GlobalTrackCacheResolver&&) = default;
 #endif
 };
 
-class /*interface*/ TrackCacheEvictor {
+class /*interface*/ GlobalTrackCacheEvictor {
 public:
     /**
      * This function will be called when evicting a track from the
@@ -114,45 +113,45 @@ public:
      * and valid even if after the cache has been unlocked.
      */
     virtual void onEvictingTrackFromCache(
-            TrackCacheLocker* /*nullable*/ pCacheLocker,
+            GlobalTrackCacheLocker* /*nullable*/ pCacheLocker,
             Track* pTrack) = 0; // not null
 
 protected:
-    virtual ~TrackCacheEvictor() {}
+    virtual ~GlobalTrackCacheEvictor() {}
 };
 
-class TrackCache {
+class GlobalTrackCache {
 public:
-    static void createInstance(TrackCacheEvictor* pEvictor);
+    static void createInstance(GlobalTrackCacheEvictor* pEvictor);
     static void destroyInstance();
 
     // Access the singular instance (singleton)
-    static TrackCache& instance() {
+    static GlobalTrackCache& instance() {
         DEBUG_ASSERT(s_pInstance != nullptr);
         return *s_pInstance;
     }
 
     // Lookup an existing Track object in the cache.
     //
-    // NOTE: The TrackCache is locked during the lifetime of the
+    // NOTE: The GlobalTrackCache is locked during the lifetime of the
     // result object. It should be destroyed ASAP to reduce lock
     // contention!
-    TrackCacheLocker lookupById(
+    GlobalTrackCacheLocker lookupById(
             const TrackId& trackId) const;
 
     QList<TrackPointer> lookupAll() const;
 
     // Lookup an existing or create a new Track object.
     //
-    // NOTE: The TrackCache is locked during the lifetime of the
+    // NOTE: The GlobalTrackCache is locked during the lifetime of the
     // result object. It should be destroyed ASAP to reduce lock
     // contention!
-    TrackCacheResolver resolve(
+    GlobalTrackCacheResolver resolve(
             const QFileInfo& fileInfo,
             const SecurityTokenPointer& pSecurityToken = SecurityTokenPointer()) {
         return resolve(TrackId(), fileInfo, pSecurityToken);
     }
-    TrackCacheResolver resolve(
+    GlobalTrackCacheResolver resolve(
             const TrackId& trackId,
             const QFileInfo& fileInfo,
             const SecurityTokenPointer& pSecurityToken = SecurityTokenPointer());
@@ -160,10 +159,10 @@ public:
     void evictAll();
 
 private:
-    friend class TrackCacheLocker;
-    friend class TrackCacheResolver;
+    friend class GlobalTrackCacheLocker;
+    friend class GlobalTrackCacheResolver;
 
-    static TrackCache* volatile s_pInstance;
+    static GlobalTrackCache* volatile s_pInstance;
 
     static void deleter(Track* pTrack);
 
@@ -202,8 +201,8 @@ private:
         Track* plainPtr;
     };
 
-    explicit TrackCache(TrackCacheEvictor* pEvictor);
-    ~TrackCache();
+    explicit GlobalTrackCache(GlobalTrackCacheEvictor* pEvictor);
+    ~GlobalTrackCache();
 
     // This function should only be called DEBUG_ASSERT statements
     // to verify the class invariants during development.
@@ -215,7 +214,7 @@ private:
             const TrackRef& trackRef) const;
 
     bool resolveInternal(
-            TrackCacheResolver* pCacheResolver,
+            GlobalTrackCacheResolver* pCacheResolver,
             TrackRef* pTrackRef,
             const TrackId& trackId,
             const QFileInfo& fileInfo);
@@ -231,10 +230,10 @@ private:
     void evict(
             Track* pTrack);
     Track* evictInternal(
-            TrackCacheLocker* /*nullable*/ pCacheLocker,
+            GlobalTrackCacheLocker* /*nullable*/ pCacheLocker,
             const TrackRef& trackRef);
 
-    TrackCacheEvictor* m_pEvictor;
+    GlobalTrackCacheEvictor* m_pEvictor;
 
     mutable QMutex m_mutex;
 
@@ -243,6 +242,3 @@ private:
     typedef QMap<QString, Item> TracksByCanonicalLocation;
     TracksByCanonicalLocation m_tracksByCanonicalLocation;
 };
-
-
-#endif // TRACKCACHE_H_
