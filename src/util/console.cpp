@@ -7,8 +7,10 @@
 #ifdef __WINDOWS__
 #include <windows.h>
 #include <io.h> // Debug Console
-typedef BOOL(WINAPI* pfSetCurrentConsoleFontEx)(HANDLE, BOOL, PCONSOLE_FONT_INFOEX);
+#include <string.h>
 
+typedef BOOL(WINAPI* pfGetCurrentConsoleFontEx)(HANDLE, BOOL, PCONSOLE_FONT_INFOEX);
+typedef BOOL(WINAPI* pfSetCurrentConsoleFontEx)(HANDLE, BOOL, PCONSOLE_FONT_INFOEX);
 
 Console::Console() {
 
@@ -72,24 +74,44 @@ Console::Console() {
         m_oldCodePage = GetConsoleOutputCP();
         m_shouldResetCodePage = true;
 
+        // Verify using the unicode font "Consolas"
         HMODULE kernel32_dll = LoadLibraryW(L"kernel32.dll");
         if (kernel32_dll && hStdOut != INVALID_HANDLE_VALUE) {
-            pfSetCurrentConsoleFontEx pfSCCFX = (pfSetCurrentConsoleFontEx)GetProcAddress(kernel32_dll, "SetCurrentConsoleFontEx");
-            if (pfSCCFX) {
-                // Use a unicode font
-                CONSOLE_FONT_INFOEX newFont;
-                newFont.cbSize = sizeof newFont;
-                newFont.nFont = 0;
-                newFont.dwFontSize.X = 0;
-                newFont.dwFontSize.Y = 14;
-                newFont.FontFamily = FF_DONTCARE;
-                newFont.FontWeight = FW_NORMAL;
-                wcscpy_s(newFont.FaceName, L"Consolas");
-                pfSCCFX(hStdOut, FALSE, &newFont);
-            } else {
-                // This happens on Windows XP
-                qWarning() << "The console font may not support non ANSI characters." <<
-                              "In case of character issues switch to font \"Lucida Console\"";
+            pfGetCurrentConsoleFontEx pfGCCFX =
+                    (pfGetCurrentConsoleFontEx) GetProcAddress(kernel32_dll,
+                            "GetCurrentConsoleFontEx");
+            pfSetCurrentConsoleFontEx pfSCCFX =
+                    (pfSetCurrentConsoleFontEx) GetProcAddress(kernel32_dll,
+                            "SetCurrentConsoleFontEx");
+
+            bool setFont = true;
+            if (pfGCCFX) {
+                CONSOLE_FONT_INFOEX font;
+                if (pfGCCFX(hStdOut, FALSE, &font)) {
+                    if (wcsncmp(font.FaceName, L"Consolas", 8) == 0) {
+                        // Nothing to do
+                        setFont = false;
+                    }
+                }
+            }
+
+            if (setFont) {
+                if (pfSCCFX) {
+                    // Use a unicode font
+                    CONSOLE_FONT_INFOEX newFont;
+                    newFont.cbSize = sizeof newFont;
+                    newFont.nFont = 0;
+                    newFont.dwFontSize.X = 0;
+                    newFont.dwFontSize.Y = 14;
+                    newFont.FontFamily = FF_DONTCARE;
+                    newFont.FontWeight = FW_NORMAL;
+                    wcscpy_s(newFont.FaceName, L"Consolas");
+                    pfSCCFX(hStdOut, FALSE, &newFont);
+                } else {
+                    // This happens on Windows XP
+                    qWarning() << "The console font may not support non ANSI characters." <<
+                                  "In case of character issues switch to font \"Lucida Console\"";
+                }
             }
         }
 
