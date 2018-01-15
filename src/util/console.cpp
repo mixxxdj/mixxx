@@ -30,44 +30,28 @@ Console::Console() {
     m_shouldResetCodePage = false;
     if (AttachConsole(ATTACH_PARENT_PROCESS)) {
         // we are started from a console porcess
-        HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-        if (hStdOut != INVALID_HANDLE_VALUE) {
-            int fd = _open_osfhandle((intptr_t)hStdOut, 0);
-            if (fd != -1) {
-                FILE* fp = _fdopen(fd, "w");
-                if (fp != nullptr) {
-                    *stdout = *fp;
-                    if (setvbuf(stdout, NULL, _IONBF, 0) != 0) {
-                        qWarning() << "Setting no buffer for stdout failed.";
-                    }
-                } else {
-                    qWarning() << "Could not open stdout fd:" << fd;
-                }
-            } else {
-                qWarning() << "Could not convert stdout handle to an FD handle." << hStdOut;
-            }
-        } else {
-            qWarning() << "Could not get stdout handle. Error code:" << GetLastError();
+
+        FILE* pStdin = stdin;
+        if (freopen_s(&pStdin, "CONIN$", "r", stdin)) {
+            qWarning() << "Could not open stdout. Error code:" << GetLastError();
         }
 
-        HANDLE hStdErr = GetStdHandle(STD_ERROR_HANDLE);
-        if (hStdOut != INVALID_HANDLE_VALUE) {
-            int fd = _open_osfhandle((intptr_t)hStdErr, 0);
-            if (fd != -1) {
-                FILE* fp = _fdopen(fd, "w");
-                if (fp != nullptr) {
-                    *stderr = *fp;
-                    if (setvbuf(stderr, NULL, _IONBF, 0) != 0) {
-                        qWarning() << "Setting no buffer for stderr failed.";
-                    }
-                } else {
-                    qWarning() << "Could not open stderr fd:" << fd;
-                }
-            } else {
-                qWarning() << "Could not convert stderr handle to an FD handle." << hStdOut;
-            }
+        FILE* pStdout = stdout;
+        if (freopen_s(&pStdout, "CONOUT$", "w", stdout)) {
+            qWarning() << "Could not open stdout. Error code:" << GetLastError();
         } else {
-            qWarning() << "Could not get stderr handle. Error code:" << GetLastError();
+            if (setvbuf(stdout, NULL, _IONBF, 0) != 0) {
+                qWarning() << "Setting no buffer for stdout failed.";
+            }
+        }
+
+        FILE* pStderr = stderr;
+        if (freopen_s(&pStderr, "CONOUT$", "w", stderr)) {
+            qWarning() << "Could not open stdout. Error code:" << GetLastError();
+        } else {
+            if (setvbuf(stdout, NULL, _IONBF, 0) != 0) {
+                qWarning() << "Setting no buffer for stdout failed.";
+            }
         }
 
         // Save current code page
@@ -76,6 +60,7 @@ Console::Console() {
 
         // Verify using the unicode font "Consolas"
         HMODULE kernel32_dll = LoadLibraryW(L"kernel32.dll");
+        HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
         if (kernel32_dll && hStdOut != INVALID_HANDLE_VALUE) {
             pfGetCurrentConsoleFontEx pfGCCFX =
                     (pfGetCurrentConsoleFontEx) GetProcAddress(kernel32_dll,
@@ -138,6 +123,7 @@ Console::~Console() {
     if (m_shouldResetCodePage) {
         SetConsoleOutputCP(m_oldCodePage);
     }
+    FreeConsole();
 }
 
 #else // __WINDOWS__
