@@ -646,10 +646,12 @@ WPushButton, QPushButton {
 WBeatSpinBox {
   /* make it 2px smaller in each dimension,
     border is added for final size */
-  min-width: 47px;
-  max-width: 47px;
+  min-width: 55px;
+  max-width: 55px;
+  width: 55px;
   min-height: 22px;
   max-height: 22px;
+  height: 22px;
   border: 1px solid #666;
   /* size of spinbox: 54x22px
   incl. up/down button: 70x22px */
@@ -660,39 +662,42 @@ WBeatSpinBox {
   selection-background-color: #d2d2d2;
   font-size: 13px/13px;
   padding: 0px;
-  padding-left: 3px;
-  margin: 0 26px 2px 0;
+  padding: 0px 2px 0px 1px;
+  margin: 0px -1px 2px 0px;
 }
   WBeatSpinBox:hover {
     border-color: #888;
   }
   WBeatSpinBox:focus {
     border-color: #d2d2d2;
-    color: #ccc;
+    color: #cfb32c;
   }
 
   WBeatSpinBox::up-button, WBeatSpinBox::down-button {
-    subcontrol-origin: margin;
+    subcontrol-origin: padding;
     position: relative;
     /* as with spinbox: border is added to size.
       define it with same width as hover border, otherwise size jumps */
-    min-width: 17px;
-    min-height: 24px;
-    margin: 0px 0px 2px 0px;
+    min-width: 18px;
+    max-width: 18px;
+    min-height: 12px;
+    max-height: 12px;
+    margin: 0px 0px 0px 0px;
     padding: 0px;
     border: 0px;
     }
 
   WBeatSpinBox::up-button {
-    subcontrol-position: center right;
+    subcontrol-position: top right;
+    margin-top: -1px;
     image: url(skin:/buttons/btn_beatbox_double.svg) no-repeat;
     }
     WBeatSpinBox::up-button:pressed {
       image: url(skin:/buttons/btn_beatbox_double_pressed.svg) no-repeat;
     }
   WBeatSpinBox::down-button {
-    subcontrol-position: center right;
-    left: -18px;
+    subcontrol-position: bottom right;
+    margin-bottom: -2px;
     image: url(skin:/buttons/btn_beatbox_halve.svg) no-repeat;
     }
     WBeatSpinBox::down-button:pressed {

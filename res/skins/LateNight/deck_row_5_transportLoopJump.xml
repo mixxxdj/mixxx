@@ -6,8 +6,6 @@
     <Layout>horizontal</Layout>
     <Children>
 
-      <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
-
       <WidgetGroup><!-- Loop buttons + beatloop size spinbox -->
         <ObjectName>AlignLeftTop</ObjectName>
         <Layout>vertical</Layout>
