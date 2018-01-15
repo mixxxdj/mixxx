@@ -5,9 +5,10 @@
 #include <QtDebug>
 
 #ifdef __WINDOWS__
-#include <windows.h>
 #include <io.h> // Debug Console
 #include <string.h>
+#include <conio.h>
+#include <strsafe.h>
 
 typedef BOOL(WINAPI* pfGetCurrentConsoleFontEx)(HANDLE, BOOL, PCONSOLE_FONT_INFOEX);
 typedef BOOL(WINAPI* pfSetCurrentConsoleFontEx)(HANDLE, BOOL, PCONSOLE_FONT_INFOEX);
@@ -64,11 +65,10 @@ Console::Console() {
         if (kernel32_dll && hStdOut != INVALID_HANDLE_VALUE) {
             pfGetCurrentConsoleFontEx pfGCCFX =
                     (pfGetCurrentConsoleFontEx) GetProcAddress(kernel32_dll,
-                            "GetCurrentConsoleFontEx");
+                            "GetCurrentConsoleFontEx"); // Supported from Windows Vista
             pfSetCurrentConsoleFontEx pfSCCFX =
                     (pfSetCurrentConsoleFontEx) GetProcAddress(kernel32_dll,
-                            "SetCurrentConsoleFontEx");
-
+                            "SetCurrentConsoleFontEx"); // Supported from Windows Vista
             bool setFont = true;
             if (pfGCCFX) {
                 CONSOLE_FONT_INFOEX font;
@@ -98,6 +98,18 @@ Console::Console() {
                                   "In case of character issues switch to font \"Lucida Console\"";
                 }
             }
+
+            TCHAR szNewTitle[MAX_PATH];
+            // Save current console title.
+            if (GetConsoleTitle(m_oldTitle, MAX_PATH)) {
+                // Build new console title string.
+                StringCchPrintf(szNewTitle, MAX_PATH, TEXT("%s : Mixxx"), m_oldTitle);
+
+                // Set console title to new title
+                if (!SetConsoleTitle(szNewTitle)) {
+                    qWarning() << "SetConsoleTitle failed" << GetLastError();
+                }
+            }
         }
 
         // set console to the default ANSI Code Page
@@ -122,6 +134,9 @@ Console::~Console() {
     // changing back will destroy the console history
     if (m_shouldResetCodePage) {
         SetConsoleOutputCP(m_oldCodePage);
+    }
+    if (!SetConsoleTitle(m_oldTitle)) {
+        qWarning() << "SetConsoleTitle failed" << GetLastError();
     }
     FreeConsole();
 }

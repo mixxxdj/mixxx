@@ -2,6 +2,11 @@
 #ifndef CONSOLE_H_
 #define CONSOLE_H_
 
+#ifdef __WINDOWS__
+#include <windows.h>
+#include <tchar.h>
+#endif
+
 class Console {
   public:
     Console();
@@ -11,6 +16,7 @@ class Console {
 #ifdef __WINDOWS__
     unsigned int m_oldCodePage;
     bool m_shouldResetCodePage;
+    TCHAR m_oldTitle[MAX_PATH];
 #endif
 };
 
