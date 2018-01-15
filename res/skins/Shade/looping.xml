@@ -114,6 +114,20 @@
 									  padding: 0px;
 									  font: 13px;
 									}
+									WBeatSpinBox::up-button{
+										height: 9px;
+										border-style: solid;
+										border-color: #060613;
+										border-width: 0px 0px 0px 1px;
+										image: url(skin:/btn_spin_up.png) no-repeat;
+									}
+ 									WBeatSpinBox::down-button {
+										height: 9px;										
+										border-style: solid;
+										border-color: #060613;
+										border-width: 0px 0px 0px 1px;
+										image: url(skin:/btn_spin_down.png) no-repeat;
+								    }
                                 </Style>
 					            <Size>52f,20f</Size>
 								<ObjectName>BeatloopSizeSpinBox</ObjectName>
@@ -424,6 +438,20 @@
 									  padding: 0px;
 									  font: 13px;
 									}
+									WBeatSpinBox::up-button{
+										height: 9px;
+										border-style: solid;
+										border-color: #060613;
+										border-width: 0px 0px 0px 1px;
+										image: url(skin:/btn_spin_up.png) no-repeat;
+									}
+ 									WBeatSpinBox::down-button {
+										height: 9px;										
+										border-style: solid;
+										border-color: #060613;
+										border-width: 0px 0px 0px 1px;
+										image: url(skin:/btn_spin_down.png) no-repeat;
+								    }
                                 </Style>
 					            <Size>52f,20f</Size>
 								<ObjectName>BeatjumpSizeSpinBox</ObjectName>
