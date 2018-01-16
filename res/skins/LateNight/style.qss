@@ -960,44 +960,7 @@ border: 0px;
   background-color: #1e1e1e;
 }
 
-#SamplerVU {
-  padding: 0px 5px 0px 5px;
-  qproperty-layoutAlignment: 'AlignCenter';
-  border: 1px solid #585858;
-  border-top: 0px;
-  border-left: 0px;
-  border-bottom: 0px;
-}
-
-#SamplerPitch {
-  padding: 0px 3px 1px 3px;
-  qproperty-layoutAlignment: 'AlignRight | AlignBottom';
-}
-
 #SamplerMainControls {
-}
-
-#SamplerButtons {
-  qproperty-layoutAlignment: 'AlignVCenter';
-}
-
-#SamplerSyncButton {
-  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-  margin: 2px 0px 0px 3px;
-}
-
-#SamplerHotcues {
-  margin-top: 2px;
-}
-
-#SamplerPfl {
-  margin: 2px 1px 0px 5px;
-}
-
-#SamplerRowTwo {
-  border: 1px solid #585858;
-  border-left: 0px;
-  border-right: 0px;
 }
 
 #SamplerText {
@@ -1006,28 +969,63 @@ border: 0px;
   border: 1px solid #585858;
   border-top: 0px;
   border-left: 0px;
+}
+
+#SamplerRowTwo {
+  border: 1px solid #585858;
+  border-top: 0px;
+  border-right: 0px;
+  border-left: 0px;
+}
+
+#SamplerButtons {
+  qproperty-layoutAlignment: 'AlignVCenter';
+}
+
+#SamplerPlay {
+  padding: 3px 1px 1px 3px;
+  border: 1px solid #585858;
+  border-top: 0px;
+  border-left: 0px;
   border-bottom: 0px;
 }
 
-#SamplerHotcues {
-  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+#SamplerSyncButton {
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+  margin: 2px 0px 0px 3px;
 }
 
 #SamplerButtonGrid {
   border: 1px solid #585858;
   border-top: 0px;
-  border-right: 0px;
   border-bottom: 0px;
 }
 
-#SamplerPlay {
-  padding: 5px;
-  padding-top: 2px;
-  padding-bottom: 2px;
+#SamplerPfl {
+  margin: 2px 1px 0px 5px;
+}
+
+#SamplerHotcues {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+  margin-top: 2px;
+}
+
+#SamplerGain {
+  padding: 0px 0px 0px 2px;
+}
+
+#SamplerVU {
+  padding: 0px 3px;
+  qproperty-layoutAlignment: 'AlignCenter';
   border: 1px solid #585858;
   border-top: 0px;
   border-left: 0px;
   border-bottom: 0px;
+}
+
+#SamplerPitch {
+  padding: 0px 1px 1px 3px;
+  qproperty-layoutAlignment: 'AlignRight | AlignBottom';
 }
 
 #SamplerVol {
