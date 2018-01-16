@@ -472,7 +472,7 @@
 
       <WidgetGroup>
         <ObjectName>NoMixer12</ObjectName>
-        <Size>6f,-1me</Size>
+        <Size>8f,-1me</Size>
         <Layout>horizontal</Layout>
         <Connection>
           <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
@@ -483,7 +483,7 @@
 
       <WidgetGroup>
         <Layout>horizontal</Layout>
-        <Size>6f,-1min</Size>
+        <Size>8f,-1min</Size>
         <Children>
           <WidgetGroup>
             <ObjectName>NoMixer34</ObjectName>
