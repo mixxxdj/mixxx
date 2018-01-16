@@ -270,6 +270,10 @@
                 <Connection>
                   <ConfigKey><Variable name="group"/>,hotcue_5_enabled</ConfigKey>
                 </Connection>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],8_hotcues</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
               </PushButton>
 
               <PushButton><!-- Cue -->
@@ -333,6 +337,10 @@
                 <Connection>
                   <ConfigKey><Variable name="group"/>,hotcue_6_enabled</ConfigKey>
                 </Connection>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],8_hotcues</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
               </PushButton>
 
               <PushButton><!-- HotCue 7 -->
@@ -361,6 +369,10 @@
                 <Connection>
                   <ConfigKey><Variable name="group"/>,hotcue_7_enabled</ConfigKey>
                 </Connection>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],8_hotcues</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
               </PushButton>
 
               <PushButton><!-- HotCue 8 -->
@@ -388,6 +400,10 @@
                 </Connection>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,hotcue_8_enabled</ConfigKey>
+                </Connection>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],8_hotcues</ConfigKey>
+                  <BindProperty>visible</BindProperty>
                 </Connection>
               </PushButton>
 

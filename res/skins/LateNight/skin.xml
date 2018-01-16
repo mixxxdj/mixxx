@@ -56,6 +56,7 @@
       <attribute persist="true" config_key="[Library],show_library">1</attribute>
       <attribute persist="true" config_key="[Master],show_xfader">1</attribute>
       <attribute config_key="[Master],maximize_library">0</attribute>
+      <attribute persist="true" config_key="[Skin],8_hotcues">0</attribute>
     </attributes>
   </manifest>
 
