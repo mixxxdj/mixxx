@@ -22,7 +22,7 @@ namespace mixxx {
 
 // Initialize the log level with the default value
 LogLevel Logging::s_logLevel = kLogLevelDefault;
-LogLevel Logging::s_flushLevel = kFlushLevelDefault;
+LogLevel Logging::s_logFlushLevel = kLogFlushLevelDefault;
 
 namespace {
 
@@ -182,7 +182,7 @@ void MessageHandler(QtMsgType type,
 // static
 void Logging::initialize(const QDir& settingsDir,
                          LogLevel logLevel,
-                         LogLevel flushLevel,
+                         LogLevel logFlushLevel,
                          bool debugAssertBreak) {
     VERIFY_OR_DEBUG_ASSERT(!g_logfile.isOpen()) {
         // Somebody already called Logging::initialize.
@@ -190,7 +190,7 @@ void Logging::initialize(const QDir& settingsDir,
     }
 
     s_logLevel = logLevel;
-    s_flushLevel = flushLevel;
+    s_logFlushLevel = logFlushLevel;
 
     QString logFileName;
 
