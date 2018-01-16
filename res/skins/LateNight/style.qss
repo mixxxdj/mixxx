@@ -26,10 +26,6 @@ WPushButton, QPushButton {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   background-color: #1e1e1e;
   padding-top: 1px;
-  border: 1px solid #585858;
-  border-right: 0px;
-  border-left: 0px;
-  border-bottom: 0px;
 }
 
 #UIButtonMargin {
