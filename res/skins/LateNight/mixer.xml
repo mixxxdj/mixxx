@@ -289,14 +289,14 @@
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
                       <Template src="skin:knob.xml">
-                        <SetVariable name="Size">36f,30f</SetVariable>
+                        <SetVariable name="Size">35f,30f</SetVariable>
                         <SetVariable name="TooltipId">master_gain</SetVariable>
                         <SetVariable name="group">[Master]</SetVariable>
                         <SetVariable name="control">gain</SetVariable>
                         <SetVariable name="label">Master</SetVariable>
                       </Template>
                       <Template src="skin:knob.xml">
-                        <SetVariable name="Size">36f,30f</SetVariable>
+                        <SetVariable name="Size">35f,30f</SetVariable>
                         <SetVariable name="TooltipId">balance</SetVariable>
                         <SetVariable name="group">[Master]</SetVariable>
                         <SetVariable name="control">balance</SetVariable>
@@ -312,7 +312,7 @@
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
                       <Template src="skin:knob.xml">
-                        <SetVariable name="Size">36f,30f</SetVariable>
+                        <SetVariable name="Size">35f,30f</SetVariable>
                         <SetVariable name="TooltipId">master_gain</SetVariable>
                         <SetVariable name="group">[Booth]</SetVariable>
                         <SetVariable name="control">gain</SetVariable>
@@ -411,14 +411,14 @@
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
                       <Template src="skin:knob.xml">
-                        <SetVariable name="Size">36f,30f</SetVariable>
+                        <SetVariable name="Size">35f,30f</SetVariable>
                         <SetVariable name="TooltipId">headphone_gain</SetVariable>
                         <SetVariable name="group">[Master]</SetVariable>
                         <SetVariable name="control">headGain</SetVariable>
                         <SetVariable name="label">Head</SetVariable>
                       </Template>
                       <Template src="skin:knob.xml">
-                        <SetVariable name="Size">36f,30f</SetVariable>
+                        <SetVariable name="Size">35f,30f</SetVariable>
                         <SetVariable name="TooltipId">headMix</SetVariable>
                         <SetVariable name="group">[Master]</SetVariable>
                         <SetVariable name="control">headMix</SetVariable>
@@ -436,14 +436,14 @@
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
                       <Template src="skin:knob.xml">
-                        <SetVariable name="Size">36f,30f</SetVariable>
+                        <SetVariable name="Size">35f,30f</SetVariable>
                         <SetVariable name="TooltipId">headphone_gain</SetVariable>
                         <SetVariable name="group">[Master]</SetVariable>
                         <SetVariable name="control">headGain</SetVariable>
                         <SetVariable name="label">Head</SetVariable>
                       </Template>
                       <Template src="skin:knob.xml">
-                        <SetVariable name="Size">36f,30f</SetVariable>
+                        <SetVariable name="Size">35f,30f</SetVariable>
                         <SetVariable name="TooltipId">headMix</SetVariable>
                         <SetVariable name="group">[Master]</SetVariable>
                         <SetVariable name="control">headMix</SetVariable>

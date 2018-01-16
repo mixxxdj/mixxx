@@ -144,7 +144,7 @@
         <Layout>vertical</Layout>
         <Children>
           <Template src="skin:knob.xml">
-            <SetVariable name="Size">36f,30f</SetVariable>
+            <SetVariable name="Size">35f,30f</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
             <SetVariable name="group">[EffectRack1_EffectUnit1]</SetVariable>
             <SetVariable name="control">super1</SetVariable>
@@ -163,7 +163,7 @@
         <Layout>vertical</Layout>
         <Children>
           <Template src="skin:knob.xml">
-            <SetVariable name="Size">36f,30f</SetVariable>
+            <SetVariable name="Size">35f,30f</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
             <SetVariable name="group">[EffectRack1_EffectUnit2]</SetVariable>
             <SetVariable name="control">super1</SetVariable>
@@ -182,7 +182,7 @@
         <Layout>vertical</Layout>
         <Children>
           <Template src="skin:knob.xml">
-            <SetVariable name="Size">36f,30f</SetVariable>
+            <SetVariable name="Size">35f,30f</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
             <SetVariable name="group">[EffectRack1_EffectUnit1]</SetVariable>
             <SetVariable name="control">mix</SetVariable>
@@ -201,7 +201,7 @@
         <Layout>vertical</Layout>
         <Children>
           <Template src="skin:knob.xml">
-            <SetVariable name="Size">36f,30f</SetVariable>
+            <SetVariable name="Size">35f,30f</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
             <SetVariable name="group">[EffectRack1_EffectUnit2]</SetVariable>
             <SetVariable name="control">mix</SetVariable>
