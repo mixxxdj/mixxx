@@ -167,8 +167,8 @@ void CmdlineArgs::printUsage() {
                         debug    - Above + Debug/Developer messages\n\
                         trace    - Above + Profiling messages\n\
 \n\
---logFlushLevel LEVEL   Defines which messages level causes flushing all\n\
-                        messages to mixxx.log. LEVEL is one of the values\n\
+--logFlushLevel LEVEL   Sets the the logging level at which the log buffer\n\
+                        is flushed to mixxx.log. LEVEL is one of the values\n\
                         defined at --logLevel above.\n\
 \n"
 #ifdef MIXXX_BUILD_DEBUG
