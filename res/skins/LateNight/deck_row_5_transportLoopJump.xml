@@ -6,10 +6,14 @@
     <Layout>horizontal</Layout>
     <Children>
 
+      <WidgetGroup>
+        <Size>0min,0min</Size>
+      </WidgetGroup>
+
       <WidgetGroup><!-- Loop buttons + beatloop size spinbox -->
         <ObjectName>AlignLeftTop</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>min,max</SizePolicy>
+        <SizePolicy>f,max</SizePolicy>
         <Children>
           <WidgetGroup><!-- loop enable + beatloop size -->
             <ObjectName>AlignLeftTop</ObjectName>
@@ -33,6 +37,7 @@
               </BeatSpinBox>
             </Children>
           </WidgetGroup>
+
           <WidgetGroup>
             <ObjectName>AlignLeftTop</ObjectName>
             <Layout>horizontal</Layout>
@@ -72,14 +77,15 @@
         </Children>
       </WidgetGroup><!-- /Loop buttons + beatloop size spinbox -->
 
-      <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
-
-      <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
+      <WidgetGroup>
+        <MaximumSize>80,</MaximumSize>
+        <SizePolicy>me,min</SizePolicy>
+      </WidgetGroup>
 
       <WidgetGroup><!-- Jump buttons + beatjump size spinbox -->
         <ObjectName>AlignLeftTop</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>f,min</SizePolicy>
         <Children>
           <WidgetGroup><!-- beatjump size -->
             <ObjectName>AlignLeftTop</ObjectName>
@@ -122,13 +128,16 @@
         </Children>
       </WidgetGroup><!-- /Jump buttons + beatjump size spinbox -->
 
-      <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
-
       <WidgetGroup>
-        <ObjectName></ObjectName>
+        <MaximumSize>80,</MaximumSize>
+        <SizePolicy>me,min</SizePolicy>
+      </WidgetGroup>
+
+      <WidgetGroup><!-- HotCues, Play, Cue, Reverse -->
         <Layout>vertical</Layout>
+        <SizePolicy>f,min</SizePolicy>
         <Children>
-          <WidgetGroup><!-- HotCues, Cue -->
+          <WidgetGroup><!-- HotCues 1-4(5), Cue -->
             <ObjectName>PlayCue</ObjectName>
             <Layout>horizontal</Layout>
             <Children>
@@ -304,9 +313,9 @@
                 </Connection>
               </PushButton>
             </Children>
-          </WidgetGroup><!-- /HotCues, Cue -->
+          </WidgetGroup><!-- /HotCues 1-4(5), Cue -->
 
-          <WidgetGroup><!-- /rew, fwd, rev, Play -->
+          <WidgetGroup><!-- (HotCues 6-8) Reverse, Play -->
             <ObjectName>PlayCue</ObjectName>
             <Layout>horizontal</Layout>
             <Children>
@@ -449,9 +458,9 @@
                 </Connection>
               </PushButton>
             </Children>
-          </WidgetGroup><!-- /rew, fwd, rev, Play -->
+          </WidgetGroup><!-- /(HotCues 6-8) Reverse, Play -->
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- /HotCues, Play, Cue, Reverse -->
     </Children>
   </WidgetGroup>
 </Template>
