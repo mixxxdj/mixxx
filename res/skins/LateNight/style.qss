@@ -729,8 +729,8 @@ WBeatSpinBox {
   border-right: 1px solid #585858;
   color: #eece33;
   text-align: center;
-  padding-top: 3px;
-  padding-bottom: 3px;
+  padding-top: 2px;
+  padding-bottom: 2px;
 }
 
 #PreviewTitle {
@@ -741,11 +741,16 @@ WBeatSpinBox {
   background-color: transparent;
 }
 
-#PreviewDeckMargin {
+#PreviewPlayOverview {
+  border: 1px solid #585858;
+  border-top: 0px;
+  border-left: 0px;
+  border-bottom: 0px;
 }
 
-#PreviewPlayOverview {
-  padding: 3px;
+#PreviewPlay {
+  padding: 3px 1px 1px 3px;
+  border-right: 1px solid #585858;
 }
 
 #NoBorder {
@@ -753,10 +758,6 @@ border: 0px;
 }
 
 #PreviewColumnOne {
-  border: 1px solid #585858;
-  border-top: 0px;
-  border-left: 0px;
-  border-bottom: 0px;
   padding: 0px;
   margin: 0px;
 }
@@ -766,10 +767,6 @@ border: 0px;
   border-top: 0px;
   border-left: 0px;
   border-right: 0px;
-}
-
-#PreviewPlayOverview {
-  padding: 3px;
 }
 
 #AlignLeftTop {
