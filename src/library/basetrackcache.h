@@ -88,11 +88,11 @@ class BaseTrackCache : public QObject {
     void slotDbTrackAdded(TrackPointer pTrack);
 
   private:
-    TrackPointer lookupCachedTrack(TrackId trackId) const;
-    void refreshCachedTrack(TrackId trackId) const;
-    void refreshCachedTrack(TrackPointer pTrack) const;
-    void refreshCachedTrack(TrackId trackId, TrackPointer pTrack) const;
-    void resetCachedTrack() const;
+    TrackPointer getRecentTrack(TrackId trackId) const;
+    void refreshRecentTrack(TrackId trackId) const;
+    void replaceRecentTrack(TrackPointer pTrack) const;
+    void replaceRecentTrack(TrackId trackId, TrackPointer pTrack) const;
+    void resetRecentTrack() const;
 
     bool updateIndexWithQuery(const QString& query);
     bool updateIndexWithTrackpointer(TrackPointer pTrack);
@@ -134,13 +134,13 @@ class BaseTrackCache : public QObject {
     // Remember key and value of the most recent cache lookup to avoid querying
     // the global track cache again and again while populating the columns
     // of a single row. These members serve as a single-valued private cache.
-    mutable TrackId m_cachedTrackId;
-    mutable TrackPointer m_cachedTrackPtr;
+    mutable TrackId m_recentTrackId;
+    mutable TrackPointer m_recentTrackPtr;
 
     // This set is updated by signals from the Track object. It might contain
     // false positives, i.e. track ids of tracks that are neither cached nor
-    // dirty. Each invocation of lookupCachedTrack() will take care of
-    // updating this set by inserting and removing entries as required.
+    // dirty. Each invocation of getRecentTrack() will take care of updating
+    // this set by inserting and removing entries as required.
     mutable QSet<TrackId> m_dirtyTracks;
 
     bool m_bIndexBuilt;

@@ -82,7 +82,7 @@ void BaseTrackCache::slotTracksAdded(QSet<TrackId> trackIds) {
         qDebug() << this << "slotTracksAdded" << trackIds.size();
     }
     QSet<TrackId> updateTrackIds;
-    for (const auto& trackId: trackIds) {
+    for (const auto& trackId: qAsConst(trackIds)) {
         updateTrackIds.insert(trackId);
     }
     updateTracksInIndex(updateTrackIds);
@@ -99,7 +99,7 @@ void BaseTrackCache::slotTracksRemoved(QSet<TrackId> trackIds) {
     if (sDebug) {
         qDebug() << this << "slotTracksRemoved" << trackIds.size();
     }
-    for (const auto& trackId : trackIds) {
+    for (const auto& trackId : qAsConst(trackIds)) {
         m_trackInfo.remove(trackId);
         m_dirtyTracks.remove(trackId);
     }
@@ -145,62 +145,66 @@ void BaseTrackCache::setSearchColumns(const QStringList& columns) {
     m_searchColumns = columns;
 }
 
-TrackPointer BaseTrackCache::lookupCachedTrack(TrackId trackId) const {
+TrackPointer BaseTrackCache::getRecentTrack(TrackId trackId) const {
     DEBUG_ASSERT(m_bIsCaching);
-    if (m_cachedTrackId != trackId) {
-        refreshCachedTrack(std::move(trackId));
+    // Only refresh the recently used track if the identifiers
+    // don't match. Otherwise simply return the corresponding
+    // pointer to avoid accessing and locking the global track
+    // cache excessively.
+    if (m_recentTrackId != trackId) {
+        refreshRecentTrack(std::move(trackId));
     }
-    return m_cachedTrackPtr;
+    return m_recentTrackPtr;
 }
 
-void BaseTrackCache::refreshCachedTrack(TrackId trackId) const {
+void BaseTrackCache::refreshRecentTrack(TrackId trackId) const {
     DEBUG_ASSERT(m_bIsCaching);
     if (trackId.isValid()) {
         auto trackPtr =
                 GlobalTrackCache::instance().lookupById(trackId).getTrack();
-        refreshCachedTrack(
+        replaceRecentTrack(
                 std::move(trackId),
                 std::move(trackPtr));
     } else {
-        resetCachedTrack();
+        resetRecentTrack();
     }
 }
 
-void BaseTrackCache::refreshCachedTrack(TrackPointer pTrack) const {
+void BaseTrackCache::replaceRecentTrack(TrackPointer pTrack) const {
     DEBUG_ASSERT(m_bIsCaching);
     DEBUG_ASSERT(pTrack);
     // Temporary needed, because std::move invalidates the smart pointer
     auto trackId = pTrack->getId();
-    refreshCachedTrack(std::move(trackId), std::move(pTrack));
+    replaceRecentTrack(std::move(trackId), std::move(pTrack));
 }
 
-void BaseTrackCache::refreshCachedTrack(TrackId trackId, TrackPointer pTrack) const {
+void BaseTrackCache::replaceRecentTrack(TrackId trackId, TrackPointer pTrack) const {
     DEBUG_ASSERT(m_bIsCaching);
-    m_cachedTrackId = std::move(trackId);
-    if (m_cachedTrackId.isValid()) {
+    m_recentTrackId = std::move(trackId);
+    if (m_recentTrackId.isValid()) {
         if (pTrack) {
-            DEBUG_ASSERT(m_cachedTrackId == pTrack->getId());
-            m_cachedTrackPtr = std::move(pTrack);
-            if (m_cachedTrackPtr->isDirty()) {
-                m_dirtyTracks.insert(m_cachedTrackId);
+            DEBUG_ASSERT(m_recentTrackId == pTrack->getId());
+            m_recentTrackPtr = std::move(pTrack);
+            if (m_recentTrackPtr->isDirty()) {
+                m_dirtyTracks.insert(m_recentTrackId);
             } else {
-                m_dirtyTracks.remove(m_cachedTrackId);
+                m_dirtyTracks.remove(m_recentTrackId);
             }
         } else {
             // The track cannot be dirty if it is not present
-            m_cachedTrackPtr.reset();
-            m_dirtyTracks.remove(m_cachedTrackId);
+            m_recentTrackPtr.reset();
+            m_dirtyTracks.remove(m_recentTrackId);
         }
     } else {
         DEBUG_ASSERT(!pTrack);
-        m_cachedTrackPtr.reset();
+        m_recentTrackPtr.reset();
     }
 }
 
-void BaseTrackCache::resetCachedTrack() const {
+void BaseTrackCache::resetRecentTrack() const {
     DEBUG_ASSERT(m_bIsCaching);
-    m_cachedTrackId = TrackId();
-    m_cachedTrackPtr.reset();
+    m_recentTrackId = TrackId();
+    m_recentTrackPtr.reset();
 }
 
 bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
@@ -214,7 +218,7 @@ bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
 
     int numColumns = columnCount();
 
-    TrackId trackId(pTrack->getId());
+    TrackId trackId = pTrack->getId();
     if (trackId.isValid()) {
         // m_trackInfo[id] will insert a QVector<QVariant> into the
         // m_trackInfo HashTable with the key "id"
@@ -225,11 +229,11 @@ bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
             getTrackValueForColumn(pTrack, i, record[i]);
         }
         if (m_bIsCaching) {
-            refreshCachedTrack(std::move(trackId), std::move(pTrack));
+            replaceRecentTrack(std::move(trackId), std::move(pTrack));
         }
     } else {
         if (m_bIsCaching) {
-            resetCachedTrack();
+            resetRecentTrack();
         }
     }
     return true;
@@ -244,7 +248,7 @@ bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
     }
 
     if (m_bIsCaching) {
-        resetCachedTrack();
+        resetRecentTrack();
     }
 
     QSqlQuery query(m_database);
@@ -348,7 +352,7 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
     }
 
     if (m_bIsCaching) {
-        refreshCachedTrack(pTrack);
+        replaceRecentTrack(pTrack);
     }
 
     // TODO(XXX) Qt properties could really help here.
@@ -422,7 +426,7 @@ QVariant BaseTrackCache::data(TrackId trackId, int column) const {
     }
 
     if (m_bIsCaching) {
-        TrackPointer pTrack = lookupCachedTrack(trackId);
+        TrackPointer pTrack = getRecentTrack(trackId);
         if (pTrack) {
             getTrackValueForColumn(pTrack, column, result);
         }
@@ -531,9 +535,10 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
         return;
     }
 
-    for (TrackId trackId: dirtyTracks) {
-        // Only get the track if it is in the cache.
-        TrackPointer pTrack = lookupCachedTrack(trackId);
+    for (TrackId trackId: qAsConst(dirtyTracks)) {
+        // Only get the track if it is in the cache. Tracks that
+        // are not cached in memory cannot be dirty.
+        TrackPointer pTrack = getRecentTrack(trackId);
 
         if (!pTrack) {
             continue;
