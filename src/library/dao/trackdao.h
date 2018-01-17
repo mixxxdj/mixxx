@@ -20,8 +20,8 @@ class AnalysisDao;
 class CueDAO;
 class LibraryHashDAO;
 class TrackCollection;
-class TrackCacheLocker;
-class TrackCacheResolver;
+class GlobalTrackCacheLocker;
+class GlobalTrackCacheResolver;
 
 
 class TrackDAO : public QObject, public virtual DAO {
@@ -60,7 +60,7 @@ class TrackDAO : public QObject, public virtual DAO {
 
     void addTracksPrepare();
     TrackPointer addTracksAddFile(const QFileInfo& fileInfo, bool unremove);
-    TrackPointer addTracksAddTrack(TrackCacheResolver&& /*r-value ref*/ cacheResolver, bool unremove);
+    TrackPointer addTracksAddTrack(GlobalTrackCacheResolver&& /*r-value ref*/ cacheResolver, bool unremove);
     TrackId addTracksAddTrack(const TrackPointer& pTrack, bool unremove);
     void addTracksFinish(bool rollback = false);
 
@@ -134,7 +134,7 @@ class TrackDAO : public QObject, public virtual DAO {
     TrackPointer getTrackFromDB(TrackId trackId) const;
 
     friend class TrackCollection;
-    void saveTrack(TrackCacheLocker* pCacheLocker, Track* pTrack);
+    void saveTrack(GlobalTrackCacheLocker* pCacheLocker, Track* pTrack);
     bool updateTrack(Track* pTrack);
 
     QSqlDatabase m_database;
