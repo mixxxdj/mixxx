@@ -156,9 +156,11 @@ TrackPointer BaseTrackCache::lookupCachedTrack(TrackId trackId) const {
 void BaseTrackCache::refreshCachedTrack(TrackId trackId) const {
     DEBUG_ASSERT(m_bIsCaching);
     if (trackId.isValid()) {
+        auto trackPtr =
+                GlobalTrackCache::instance().lookupById(trackId).getTrack();
         refreshCachedTrack(
                 std::move(trackId),
-                GlobalTrackCache::instance().lookupById(trackId).getTrack());
+                std::move(trackPtr));
     } else {
         resetCachedTrack();
     }
