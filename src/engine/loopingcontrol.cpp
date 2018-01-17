@@ -966,17 +966,8 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     }
 
     newloopSamples.end = m_pBeats->findNBeatsFromSample(newloopSamples.start, beats);
-
-    if (newloopSamples.start == newloopSamples.end) {
-        if ((newloopSamples.end + 2) > samples) {
-            newloopSamples.start -= 2;
-        } else {
-            newloopSamples.end += 2;
-        }
-    }
-
-    // Do not allow beat loops to go beyond the end of the track
-    if (newloopSamples.end > samples) {
+    if (newloopSamples.start >= newloopSamples.end // happens when the call above fails
+            || newloopSamples.end > samples) { // Do not allow beat loops to go beyond the end of the track
         // If a track is loaded with beatloop_size larger than
         // the distance between the loop in point and
         // the end of the track, let beatloop_size be set to
