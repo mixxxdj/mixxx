@@ -3,9 +3,6 @@
 
 #include "library/basetrackcache.h"
 
-#include <QScopedPointer>
-
-#include "control/controlproxy.h"
 #include "library/trackcollection.h"
 #include "library/searchqueryparser.h"
 #include "library/queryutil.h"
@@ -44,7 +41,6 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
                     << "title"
                     << "genre";
 
-    m_pKeyNotationCP = new ControlProxy("[Library]", "key_notation", this);
     // Convert all the search column names to their field indexes because we use
     // them a bunch.
     m_searchColumnIndices.resize(m_searchColumns.size());
@@ -704,13 +700,12 @@ int BaseTrackCache::compareColumnValues(int sortColumn, Qt::SortOrder sortOrder,
         else
             result = -1;
     } else if (sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY)) {
-        KeyUtils::KeyNotation notation = KeyUtils::keyNotationFromNumericValue(
-            m_pKeyNotationCP->get());
+        KeyUtils::KeyNotation keyNotation = m_columnCache.keyNotation();
 
         int key1 = KeyUtils::keyToCircleOfFifthsOrder(
-            KeyUtils::guessKeyFromText(val1.toString()), notation);
+            KeyUtils::guessKeyFromText(val1.toString()), keyNotation);
         int key2 = KeyUtils::keyToCircleOfFifthsOrder(
-            KeyUtils::guessKeyFromText(val2.toString()), notation);
+            KeyUtils::guessKeyFromText(val2.toString()), keyNotation);
         if (key1 > key2) {
             result = 1;
         } else if (key1 < key2) {

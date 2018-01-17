@@ -13,7 +13,6 @@
 #include <QSqlDatabase>
 #include <QVector>
 
-#include "control/controlproxy.h"
 #include "library/dao/trackdao.h"
 #include "library/columncache.h"
 #include "track/track.h"
@@ -122,7 +121,7 @@ class BaseTrackCache : public QObject {
     const int m_columnCount;
     const QString m_columnsJoined;
 
-    ColumnCache m_columnCache;
+    const ColumnCache m_columnCache;
 
     QStringList m_searchColumns;
     QVector<int> m_searchColumnIndices;
