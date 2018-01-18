@@ -455,9 +455,7 @@ void SoundSourceProxy::updateTrackFromSource(
         return; // abort
     }
 
-    // Cast away the enriched track location by explicitly slicing the
-    // returned CoverInfo to CoverInfoRelative
-    const CoverInfoRelative coverInfo(m_pTrack->getCoverInfo());
+    const CoverInfoRelative coverInfo = m_pTrack->getCoverInfo();
 
     QImage coverImg;
     DEBUG_ASSERT(coverImg.isNull());
@@ -531,21 +529,21 @@ void SoundSourceProxy::updateTrackFromSource(
     m_pTrack->setTrackMetadata(trackMetadata, metadataImported.second);
 
     if (pCoverImg) {
-        CoverInfoRelative coverInfoRelative;
+        CoverInfoRelative coverInfoNew;
         if (pCoverImg->isNull()) {
             kLogger.info()
                     << "No embedded cover art found in file"
                     << getUrl().toString();
             // Cover art should be (re-)set to none
-            DEBUG_ASSERT(coverInfoRelative.type == CoverInfo::NONE);
+            DEBUG_ASSERT(coverInfoNew.type == CoverInfo::NONE);
         } else {
-            coverInfoRelative.type = CoverInfo::METADATA;
-            coverInfoRelative.source = CoverInfo::GUESSED;
-            DEBUG_ASSERT(coverInfoRelative.coverLocation.isEmpty());
+            coverInfoNew.type = CoverInfo::METADATA;
+            coverInfoNew.source = CoverInfo::GUESSED;
+            DEBUG_ASSERT(coverInfoNew.coverLocation.isEmpty());
             // TODO(XXX) here we may introduce a duplicate hash code
-            coverInfoRelative.hash = CoverArtUtils::calculateHash(coverImg);
+            coverInfoNew.hash = CoverArtUtils::calculateHash(coverImg);
         }
-        m_pTrack->setCoverInfo(coverInfoRelative);
+        m_pTrack->setCoverInfo(coverInfoNew);
     }
 }
 

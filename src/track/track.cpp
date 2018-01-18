@@ -920,7 +920,12 @@ void Track::setCoverInfo(const CoverInfoRelative& coverInfo) {
     }
 }
 
-CoverInfo Track::getCoverInfo() const {
+CoverInfoRelative Track::getCoverInfo() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_record.getCoverInfo();
+}
+
+CoverInfo Track::getCoverInfoWithLocation() const {
     QMutexLocker lock(&m_qMutex);
     return CoverInfo(m_record.getCoverInfo(), m_fileInfo.absoluteFilePath());
 }

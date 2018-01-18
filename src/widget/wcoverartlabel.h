@@ -21,7 +21,7 @@ class WCoverArtLabel : public QLabel {
     void loadTrack(TrackPointer pTrack);
 
   signals:
-    void coverInfoSelected(const CoverInfo& coverInfo);
+    void coverInfoSelected(const CoverInfoRelative& coverInfo);
     void reloadCoverArt();
 
   protected:

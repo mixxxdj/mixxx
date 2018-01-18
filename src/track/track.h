@@ -269,8 +269,8 @@ class Track : public QObject {
     QString getKeyText() const;
 
     void setCoverInfo(const CoverInfoRelative& coverInfo);
-
-    CoverInfo getCoverInfo() const;
+    CoverInfoRelative getCoverInfo() const;
+    CoverInfo getCoverInfoWithLocation() const;
 
     quint16 getCoverHash() const;
 
