@@ -16,7 +16,10 @@
     Mixer
 
     Sampler
-      * make space for 8 HotCues
+      * add cue_default to Play button
+      * make space for 8 HotCues:
+        > shrink Sync
+        > shrink VU meter & push it up 
     
     GENERAL
       * re-order GUI quick toggles: decks, mixer, general
