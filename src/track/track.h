@@ -268,9 +268,7 @@ class Track : public QObject {
     mixxx::track::io::key::ChromaticKey getKey() const;
     QString getKeyText() const;
 
-    void setCoverInfo(const CoverInfoRelative& coverInfoRelative);
-    void setCoverInfo(const CoverInfo& coverInfo);
-    void setCoverInfo(const CoverArt& coverArt);
+    void setCoverInfo(const CoverInfoRelative& coverInfo);
 
     CoverInfo getCoverInfo() const;
 

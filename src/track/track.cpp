@@ -910,26 +910,14 @@ bool Track::isBpmLocked() const {
     return m_record.getBpmLocked();
 }
 
-void Track::setCoverInfo(const CoverInfoRelative& coverInfoRelative) {
+void Track::setCoverInfo(const CoverInfoRelative& coverInfo) {
+    DEBUG_ASSERT((coverInfo.type != CoverInfo::METADATA) || coverInfo.coverLocation.isEmpty());
+    DEBUG_ASSERT((coverInfo.source != CoverInfo::UNKNOWN) || (coverInfo.type == CoverInfo::NONE));
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_record.refCoverInfo(), coverInfoRelative)) {
+    if (compareAndSet(&m_record.refCoverInfo(), coverInfo)) {
         markDirtyAndUnlock(&lock);
         emit(coverArtUpdated());
     }
-}
-
-void Track::setCoverInfo(const CoverInfo& coverInfo) {
-    CoverInfoRelative coverInfoRelative(coverInfo);
-    QMutexLocker lock(&m_qMutex);
-    DEBUG_ASSERT(coverInfo.trackLocation == m_fileInfo.absoluteFilePath());
-    if (compareAndSet(&m_record.refCoverInfo(), coverInfoRelative)) {
-        markDirtyAndUnlock(&lock);
-        emit(coverArtUpdated());
-    }
-}
-
-void Track::setCoverInfo(const CoverArt& coverArt) {
-    setCoverInfo(static_cast<const CoverInfo&>(coverArt));
 }
 
 CoverInfo Track::getCoverInfo() const {
