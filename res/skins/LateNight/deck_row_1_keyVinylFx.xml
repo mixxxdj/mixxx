@@ -38,8 +38,8 @@
         <NumberStates>1</NumberStates>
         <State>
           <Number>0</Number>
-          <Unpressed>buttons/btn_prev.png</Unpressed>
-          <Pressed>buttons/btn_prev_down.png</Pressed>
+          <Unpressed>buttons/btn_prev.svg</Unpressed>
+          <Pressed>buttons/btn_prev_down.svg</Pressed>
         </State>
         <Connection>
           <ConfigKey persist="true"><Variable name="group"/>,pitch_down</ConfigKey>
@@ -73,8 +73,8 @@
         <NumberStates>1</NumberStates>
         <State>
           <Number>0</Number>
-          <Unpressed>buttons/btn_next.png</Unpressed>
-          <Pressed>buttons/btn_next_down.png</Pressed>
+          <Unpressed>buttons/btn_next.svg</Unpressed>
+          <Pressed>buttons/btn_next_down.svg</Pressed>
         </State>
         <Connection>
           <ConfigKey persist="true"><Variable name="group"/>,pitch_up</ConfigKey>
