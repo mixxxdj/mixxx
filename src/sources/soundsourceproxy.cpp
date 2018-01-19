@@ -449,30 +449,36 @@ void SoundSourceProxy::updateTrackFromSource(
     // explicitly from this file.
     if (metadataSynchronized &&
         (importTrackMetadataMode == ImportTrackMetadataMode::Once)) {
-        kLogger.debug()
-                << "Skip importing of track metadata and embedded cover art from file"
-                << getUrl().toString();
+        if (kLogger.debugEnabled()) {
+            kLogger.debug()
+                    << "Skip importing of track metadata and embedded cover art from file"
+                    << getUrl().toString();
+        }
         return; // abort
     }
 
-    const CoverInfoRelative coverInfo = m_pTrack->getCoverInfo();
-
-    QImage coverImg;
-    DEBUG_ASSERT(coverImg.isNull());
-    QImage* pCoverImg; // pointer is also used as a flag
     // Embedded cover art is imported together with the track's metadata.
     // But only if the user has not selected external cover art for this
     // track!
-    if (((coverInfo.type == CoverInfo::METADATA) ||
-            (coverInfo.type == CoverInfo::NONE)) &&
-            (coverInfo.source != CoverInfo::USER_SELECTED)) {
-        // Import embedded cover art
+    QImage coverImg;
+    DEBUG_ASSERT(coverImg.isNull());
+    QImage* pCoverImg; // pointer is also used as a flag
+    const CoverInfoRelative coverInfoOld = m_pTrack->getCoverInfo();
+    // Only re-import cover art if it is save to update, e.g. never
+    // discard a users's custom choice! We are using a whitelisting
+    // filter here that explicitly checks all valid preconditions
+    // when it is permissible to update/replace existing cover art.
+    if (((coverInfoOld.source == CoverInfo::UNKNOWN) || (coverInfoOld.source == CoverInfo::GUESSED)) &&
+            ((coverInfoOld.type == CoverInfo::NONE) || (coverInfoOld.type == CoverInfo::METADATA))) {
+        // Should import and update embedded cover art
         pCoverImg = &coverImg;
     } else {
-        kLogger.debug()
-                << "Skip importing of embedded cover art from file"
-                << getUrl().toString();
-        // Continue with nullptr
+        if (kLogger.debugEnabled()) {
+            kLogger.debug()
+                    << "Skip importing of embedded cover art from file"
+                    << getUrl().toString();
+        }
+        // Skip import of embedded cover art
         pCoverImg = nullptr;
     }
 
@@ -529,19 +535,29 @@ void SoundSourceProxy::updateTrackFromSource(
     m_pTrack->setTrackMetadata(trackMetadata, metadataImported.second);
 
     if (pCoverImg) {
+        // If the pointer is not null then the cover art should be guessed
+        // from the embedded metadata
         CoverInfoRelative coverInfoNew;
+        DEBUG_ASSERT(coverInfoNew.coverLocation.isNull());
         if (pCoverImg->isNull()) {
-            kLogger.info()
-                    << "No embedded cover art found in file"
-                    << getUrl().toString();
-            // Cover art should be (re-)set to none
+            // Cover art will be cleared
+            DEBUG_ASSERT(coverInfoNew.source == CoverInfo::UNKNOWN);
             DEBUG_ASSERT(coverInfoNew.type == CoverInfo::NONE);
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "No embedded cover art found in file"
+                        << getUrl().toString();
+            }
         } else {
-            coverInfoNew.type = CoverInfo::METADATA;
             coverInfoNew.source = CoverInfo::GUESSED;
-            DEBUG_ASSERT(coverInfoNew.coverLocation.isEmpty());
+            coverInfoNew.type = CoverInfo::METADATA;
             // TODO(XXX) here we may introduce a duplicate hash code
             coverInfoNew.hash = CoverArtUtils::calculateHash(coverImg);
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Embedded cover art found in file"
+                        << getUrl().toString();
+            }
         }
         m_pTrack->setCoverInfo(coverInfoNew);
     }
