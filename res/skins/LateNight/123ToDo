@@ -1,0 +1,25 @@
+
+    Decks
+      * introduce another deck row:
+        > Quantize, Keylock, ... Stars
+        > make overview row wider but less tall (square Cover art plus equal margin)
+      * test new (Hot)Cue button color: orange when set, red when pressed/playing from (Hot)Cue
+      
+    Aux
+
+    Mic
+      * add ducking controls
+    
+    Vinyl
+      * merge vinyl toggle & status light
+    
+    Mixer
+
+    Sampler
+      * add cue_default to Play button
+      * make space for 8 HotCues:
+        > shrink Sync
+        > shrink VU meter & push it up 
+    
+    GENERAL
+      * re-order GUI quick toggles: decks, mixer, general

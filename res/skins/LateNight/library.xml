@@ -1,36 +1,40 @@
 <Template>
   <WidgetGroup>
-		<ObjectName>Library</ObjectName>
-		<SizePolicy>me,i</SizePolicy>
-		<MinimumSize>1280,-</MinimumSize>
-		<Layout>vertical</Layout>
-		<Children>
+    <ObjectName>Library</ObjectName>
+    <SizePolicy>me,i</SizePolicy>
+    <MinimumSize>1280,-</MinimumSize>
+    <Layout>vertical</Layout>
+    <Children>
 
       <WidgetGroup><Size>0me,5f</Size></WidgetGroup>
-			<!--
-			**********************************************
-			Library / Preview Deck / Search / Tree view
-			**********************************************
-			-->
-			<WidgetGroup>
-				<Layout>horizontal</Layout>
-				<SizePolicy>me,me</SizePolicy>
-				<Children>
+      <!--
+      **********************************************
+      Library / Preview Deck / Search / Tree view
+      **********************************************
+      -->
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
 
-					<Splitter>
+          <Splitter>
             <ObjectName>LibrarySplitter</ObjectName>
-						<SizePolicy>me,me</SizePolicy>
-						<SplitSizes>1,12</SplitSizes>
+            <SizePolicy>me,me</SizePolicy>
+            <SplitSizes>1,10</SplitSizes>
             <SplitSizesConfigKey>[LateNight],LibrarySidebarSplitSize</SplitSizesConfigKey>
-						<Children>
-							<WidgetGroup>
-								<Layout>vertical</Layout>
-								<Children>
+            <Collapsible>1,0</Collapsible>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>LibrarySidebar_X</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,me</SizePolicy>
+                <MinimumSize>100,-1</MinimumSize>
+                <Children>
 
                   <Template src="skin:preview_deck.xml"/>
 
-									<!--Search Input Field-->
-									<SearchBox></SearchBox>
+                  <!--Search Input Field-->
+                  <SearchBox></SearchBox>
 
                   <Splitter>
                     <ObjectName>CoverArtSplitter</ObjectName>
@@ -61,24 +65,24 @@
                     </Children>
                   </Splitter>
 
-								</Children>
-							</WidgetGroup>
-							<WidgetGroup>
-								<!-- Library Table-->
-								<Style>QGroupBox {}</Style>
-								<Layout>vertical</Layout>
-								<Children>
-									<Library>
-										<BgColor>#585858</BgColor>
-										<FgColor>#eece33</FgColor>
-									</Library>
-								</Children>
-							</WidgetGroup>
-						</Children>
-					</Splitter>
+                </Children>
+              </WidgetGroup>
+              <WidgetGroup>
+                <!-- Library Table-->
+                <Style>QGroupBox {}</Style>
+                <Layout>vertical</Layout>
+                <Children>
+                  <Library>
+                    <BgColor>#585858</BgColor>
+                    <FgColor>#eece33</FgColor>
+                  </Library>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </Splitter>
 
-				</Children>
-			</WidgetGroup>
-		</Children>
-	</WidgetGroup>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
 </Template>

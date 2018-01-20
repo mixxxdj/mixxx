@@ -24,13 +24,13 @@
             <Number>0</Number>
             <Pressed>skin:/buttons/btn_fxExpand.png</Pressed>
             <Unpressed>skin:/buttons/btn_fxExpand.png</Unpressed>
-            <Text>FX1</Text>
+            <Text>FX&#8202;1</Text>
           </State>
           <State>
             <Number>1</Number>
             <Pressed>skin:/buttons/btn_fxCollapse.png</Pressed>
             <Unpressed>skin:/buttons/btn_fxCollapse.png</Unpressed>
-            <Text>FX1</Text>
+            <Text>FX&#8202;1</Text>
           </State>
           <Connection>
             <ConfigKey>[EffectRack1_EffectUnit1],show_parameters</ConfigKey>
@@ -58,13 +58,13 @@
             <Number>0</Number>
             <Pressed>skin:/buttons/btn_fxExpand.png</Pressed>
             <Unpressed>skin:/buttons/btn_fxExpand.png</Unpressed>
-            <Text>FX2</Text>
+            <Text>FX&#8202;2</Text>
           </State>
           <State>
             <Number>1</Number>
             <Pressed>skin:/buttons/btn_fxCollapse.png</Pressed>
             <Unpressed>skin:/buttons/btn_fxCollapse.png</Unpressed>
-            <Text>FX2</Text>
+            <Text>FX&#8202;2</Text>
           </State>
           <Connection>
             <ConfigKey>[EffectRack1_EffectUnit2],show_parameters</ConfigKey>
@@ -89,13 +89,13 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Pressed>buttons/btn_pfl1_down.png</Pressed>
-              <Unpressed>buttons/btn_pfl1.png</Unpressed>
+              <Pressed>buttons/btn_pfl_down.svg</Pressed>
+              <Unpressed>buttons/btn_pfl.svg</Unpressed>
             </State>
             <State>
               <Number>1</Number>
-              <Pressed>buttons/btn_pfl1_overdown.png</Pressed>
-              <Unpressed>buttons/btn_pfl1_over.png</Unpressed>
+              <Pressed>buttons/btn_pfl_overdown.svg</Pressed>
+              <Unpressed>buttons/btn_pfl_over.svg</Unpressed>
             </State>
             <Connection>
               <ConfigKey>[EffectRack1_EffectUnit1],group_[Headphone]_enable</ConfigKey>
@@ -119,13 +119,13 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Pressed>buttons/btn_pfl1_down.png</Pressed>
-              <Unpressed>buttons/btn_pfl1.png</Unpressed>
+              <Pressed>buttons/btn_pfl_down.svg</Pressed>
+              <Unpressed>buttons/btn_pfl.svg</Unpressed>
             </State>
             <State>
               <Number>1</Number>
-              <Pressed>buttons/btn_pfl1_overdown.png</Pressed>
-              <Unpressed>buttons/btn_pfl1_over.png</Unpressed>
+              <Pressed>buttons/btn_pfl_overdown.svg</Pressed>
+              <Unpressed>buttons/btn_pfl_over.svg</Unpressed>
             </State>
             <Connection>
               <ConfigKey>[EffectRack1_EffectUnit2],group_[Headphone]_enable</ConfigKey>
@@ -144,7 +144,7 @@
         <Layout>vertical</Layout>
         <Children>
           <Template src="skin:knob.xml">
-            <SetVariable name="Size">36f,30f</SetVariable>
+            <SetVariable name="Size">35f,30f</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
             <SetVariable name="group">[EffectRack1_EffectUnit1]</SetVariable>
             <SetVariable name="control">super1</SetVariable>
@@ -163,7 +163,7 @@
         <Layout>vertical</Layout>
         <Children>
           <Template src="skin:knob.xml">
-            <SetVariable name="Size">36f,30f</SetVariable>
+            <SetVariable name="Size">35f,30f</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
             <SetVariable name="group">[EffectRack1_EffectUnit2]</SetVariable>
             <SetVariable name="control">super1</SetVariable>
@@ -182,7 +182,7 @@
         <Layout>vertical</Layout>
         <Children>
           <Template src="skin:knob.xml">
-            <SetVariable name="Size">36f,30f</SetVariable>
+            <SetVariable name="Size">35f,30f</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
             <SetVariable name="group">[EffectRack1_EffectUnit1]</SetVariable>
             <SetVariable name="control">mix</SetVariable>
@@ -201,7 +201,7 @@
         <Layout>vertical</Layout>
         <Children>
           <Template src="skin:knob.xml">
-            <SetVariable name="Size">36f,30f</SetVariable>
+            <SetVariable name="Size">35f,30f</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
             <SetVariable name="group">[EffectRack1_EffectUnit2]</SetVariable>
             <SetVariable name="control">mix</SetVariable>
