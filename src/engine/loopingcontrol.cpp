@@ -385,6 +385,22 @@ double LoopingControl::nextTrigger(bool reverse,
                 // should be moved with it
                 *pTarget = seekInsideAdjustedLoop(currentSample,
                         m_oldLoopSamples.start, loopSamples.start, loopSamples.end);
+            } else {
+                bool movedOut = false;
+                // Ceck if we have moved out of the loop, before we could enable it
+                if (reverse) {
+                    if (m_oldLoopSamples.start > currentSample) {
+                        movedOut = true;
+                    }
+                } else {
+                    if (m_oldLoopSamples.end < currentSample) {
+                        movedOut = true;
+                    }
+                }
+                if (movedOut) {
+                    *pTarget = seekInsideAdjustedLoop(currentSample,
+                            loopSamples.start, loopSamples.start, loopSamples.end);
+                }
             }
             m_oldLoopSamples = loopSamples;
             if (*pTarget != kNoTrigger) {
