@@ -389,11 +389,11 @@ double LoopingControl::nextTrigger(bool reverse,
                 bool movedOut = false;
                 // Ceck if we have moved out of the loop, before we could enable it
                 if (reverse) {
-                    if (m_oldLoopSamples.start > currentSample) {
+                    if (loopSamples.start > currentSample) {
                         movedOut = true;
                     }
                 } else {
-                    if (m_oldLoopSamples.end < currentSample) {
+                    if (loopSamples.end < currentSample) {
                         movedOut = true;
                     }
                 }
@@ -406,7 +406,7 @@ double LoopingControl::nextTrigger(bool reverse,
             if (*pTarget != kNoTrigger) {
                 // jump immediately
                 //qDebug() << currentSample <<
-                //        m_oldLoopSamples.start << loopSamples.start << loopSamples.end;
+                //        m_oldLoopSamples.start << loopSamples.start << loopSamples.end << pTarget;
                 return currentSample;
             }
         }
@@ -1135,7 +1135,6 @@ void LoopingControl::slotLoopMove(double beats) {
 int LoopingControl::seekInsideAdjustedLoop(
         double currentSample, double old_loop_in,
         double new_loop_in, double new_loop_out) {
-    // Copy on stack since m_iCurrentSample sample can change under us.
     if (currentSample >= new_loop_in && currentSample <= new_loop_out) {
         // playposition already is inside the loop
         return kNoTrigger;
