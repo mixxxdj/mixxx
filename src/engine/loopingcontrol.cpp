@@ -389,8 +389,8 @@ double LoopingControl::nextTrigger(bool reverse,
             m_oldLoopSamples = loopSamples;
             if (*pTarget != kNoTrigger) {
                 // jump immediately
-                qDebug() << currentSample <<
-                        m_oldLoopSamples.start << loopSamples.start << loopSamples.end;
+                //qDebug() << currentSample <<
+                //        m_oldLoopSamples.start << loopSamples.start << loopSamples.end;
                 return currentSample;
             }
         }
