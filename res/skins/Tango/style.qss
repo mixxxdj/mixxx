@@ -2045,14 +2045,14 @@ QTreeView {
   Don't define top margin here, it won't shift ScrollBar.
   Defined by SearchBox	*/
   margin: 0px;
-}
-QTreeView:focus,
-QTableView:focus { /*
-  New Library navigation COs only work if TreeView or TableView have focus.
-  Clicking on buttons, sliders and visuals elsewhere removes focus from Library.
-  In conjuction with [Library],MoveFocusBackward/..Forward, this helps a lot. */
-  border-color: #dddddd;
-}
+  }
+  QTreeView:focus,
+  QTableView:focus { /*
+    New Library navigation COs only work if TreeView or TableView have focus.
+    Clicking on buttons, sliders and visuals elsewhere removes focus from Library.
+    In conjuction with [Library],MoveFocusBackward/..Forward, this helps a lot. */
+    border-color: #ff6600;
+  }
 
 /*  Closed branch of tree 	*/
 QTreeView::branch:has-children:!has-siblings:closed,
