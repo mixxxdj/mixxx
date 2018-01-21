@@ -390,14 +390,16 @@ namespace {
     // or "artist_-_title.xxx".
     // This function does not overwrite any existing (non-empty) artist
     // and title fields!
-    void parseMetadataFromFileName(mixxx::TrackMetadata* pTrackMetadata, QString fileName) {
+    bool parseMetadataFromFileName(mixxx::TrackMetadata* pTrackMetadata, QString fileName) {
         fileName.replace("_", " ");
         QString titleWithFileType;
+        bool parsed = false;
         if (fileName.count('-') == 1) {
             if (pTrackMetadata->getTrackInfo().getArtist().isEmpty()) {
                 const QString artist(fileName.section('-', 0, 0).trimmed());
                 if (!artist.isEmpty()) {
                     pTrackMetadata->refTrackInfo().setArtist(artist);
+                    parsed = true;
                 }
             }
             titleWithFileType = fileName.section('-', 1, 1).trimmed();
@@ -408,8 +410,10 @@ namespace {
             const QString title(titleWithFileType.section('.', 0, -2).trimmed());
             if (!title.isEmpty()) {
                 pTrackMetadata->refTrackInfo().setTitle(title);
+                parsed = true;
             }
         }
+        return parsed;
     }
 } // anonymous namespace
 
@@ -422,97 +426,116 @@ void SoundSourceProxy::updateTrackFromSource(
         return; // abort
     }
     if (!m_pSoundSource) {
-        kLogger.warning() << "Unable to parse tags from unsupported file type"
-                 << getUrl().toString();
+        kLogger.warning()
+                << "Unable to update track from unsupported file type"
+                << getUrl().toString();
         return; // abort
     }
 
-    // Use the existing trackMetadata as default values. Otherwise
-    // existing values in the library will be overwritten with
-    // empty values if the corresponding file tags are missing.
-    // Depending on the file type some kind of tags might even
-    // not be supported at all and those would get lost!
+    // The SoundSource provides the actual type of the corresponding file
+    m_pTrack->setType(m_pSoundSource->getType());
+
+    // Use the existing track metadata as default values. Otherwise
+    // existing values in the library would be overwritten with empty
+    // values if the corresponding file tags are missing. Depending
+    // on the file type some kind of tags might even not be supported
+    // at all and this information would get lost entirely otherwise!
     mixxx::TrackMetadata trackMetadata;
     bool metadataSynchronized = false;
     m_pTrack->getTrackMetadata(&trackMetadata, &metadataSynchronized);
-    // Cast away the enriched track location by explicitly slicing the
-    // returned CoverInfo to CoverInfoRelative
-    const CoverInfoRelative coverInfo(m_pTrack->getCoverInfo());
-    QImage coverImg;
-    DEBUG_ASSERT(coverImg.isNull());
-    QImage* pCoverImg;
-    // If the file tags have already been parsed once, both track metadata
-    // and cover art should not be updated implicitly.
-    if (metadataSynchronized) {
-        if (importTrackMetadataMode == ImportTrackMetadataMode::Once) {
-            kLogger.info() << "Skip parsing of track metadata and cover art from file"
-                     << getUrl().toString();
-            return; // abort
-        }
-        // Only parse and update cover art from file tags if the track has
-        // no cover art or if cover art has already been loaded from file tags.
-        if (((coverInfo.type == CoverInfo::METADATA) ||
-                (coverInfo.type == CoverInfo::NONE)) &&
-                (coverInfo.source != CoverInfo::USER_SELECTED)) {
-            pCoverImg = &coverImg;
-        } else {
-            pCoverImg = nullptr;
-            kLogger.info() << "Skip parsing of cover art from file"
-                       << getUrl().toString();
-        }
-    } else {
-        // If the file tags have never been parsed before it doesn't matter
-        // if the track is marked as dirty or not. In this case the track
-        // object has just been created.
-        pCoverImg = &coverImg;
-    }
-
-    // Parse the tags stored in the audio file
-    const auto metadataImported =
-            m_pSoundSource->importTrackMetadataAndCoverImage(
-                    &trackMetadata, pCoverImg);
-    if (metadataImported.first != mixxx::MetadataSource::ImportResult::Succeeded) {
-        kLogger.warning() << "Failed to parse track metadata and/or cover art from file"
-                   << getUrl().toString();
+    // If the file tags have already been parsed at least once, the
+    // existing track metadata should not be updated implicitly, i.e.
+    // if the user did not explicitly choose to (re-)import metadata
+    // explicitly from this file.
+    if (metadataSynchronized &&
+        (importTrackMetadataMode == ImportTrackMetadataMode::Once)) {
+        kLogger.debug()
+                << "Skip importing of track metadata and embedded cover art from file"
+                << getUrl().toString();
         return; // abort
     }
 
-    if (!metadataSynchronized &&
-            (trackMetadata.getTrackInfo().getArtist().isEmpty() ||
-                    trackMetadata.getTrackInfo().getTitle().isEmpty())) {
-        // Fallback: If Artist or title fields are blank initially try to parse
-        // them from the file name.
-        // TODO(rryan): Should we re-visit this decision?
-        parseMetadataFromFileName(&trackMetadata, m_pTrack->getFileInfo().fileName());
-    }
+    // Cast away the enriched track location by explicitly slicing the
+    // returned CoverInfo to CoverInfoRelative
+    const CoverInfoRelative coverInfo(m_pTrack->getCoverInfo());
 
-    // Until this point the track object has not been modified.
-    // Now we start updating it...
-
-    // Initialize or update the file/format as reported by the
-    // responsible SoundSource
-    m_pTrack->setType(m_pSoundSource->getType());
-
-    if (metadataSynchronized) {
-        kLogger.info() << "Importing track metadata from file"
-                 << getUrl().toString();
+    QImage coverImg;
+    DEBUG_ASSERT(coverImg.isNull());
+    QImage* pCoverImg; // pointer is also used as a flag
+    // Embedded cover art is imported together with the track's metadata.
+    // But only if the user has not selected external cover art for this
+    // track!
+    if (((coverInfo.type == CoverInfo::METADATA) ||
+            (coverInfo.type == CoverInfo::NONE)) &&
+            (coverInfo.source != CoverInfo::USER_SELECTED)) {
+        // Import embedded cover art
+        pCoverImg = &coverImg;
     } else {
-        kLogger.info() << "Initializing track metadata from file"
-                 << getUrl().toString();
+        kLogger.debug()
+                << "Skip importing of embedded cover art from file"
+                << getUrl().toString();
+        // Continue with nullptr
+        pCoverImg = nullptr;
     }
-    DEBUG_ASSERT(!metadataImported.second.isNull());
+
+    // Parse the tags stored in the audio file
+    auto metadataImported =
+            m_pSoundSource->importTrackMetadataAndCoverImage(
+                    &trackMetadata, pCoverImg);
+    if (metadataImported.first == mixxx::MetadataSource::ImportResult::Failed) {
+        kLogger.warning()
+                << "Failed to import track metadata"
+                << (pCoverImg ? "and embedded cover art" : "")
+                << "from file"
+                << getUrl().toString();
+        // Continue for now, but the abort may follow shortly if the
+        // track already has metadata (see below)
+    }
+    if (metadataSynchronized) {
+        // Metadata has been synchronized successfully at least
+        // once in the past. Only overwrite this information if
+        // new data has actually been imported, otherwise abort
+        // and preserve the existing data!
+        if (metadataImported.first == mixxx::MetadataSource::ImportResult::Succeeded) {
+            kLogger.info()
+                    << "Updating track metadata"
+                    << (pCoverImg ? "and embedded cover art" : "")
+                    << "from file"
+                    << getUrl().toString();
+        } else {
+            return; // abort
+        }
+    } else {
+        DEBUG_ASSERT(pCoverImg);
+        kLogger.info()
+                << "Initializing track metadata and embedded cover art from file"
+                << getUrl().toString();
+    }
+
+    // Fallback: If artist or title fields are blank then try to populate
+    // them from the file name. This might happen if tags are unavailable,
+    // unreadable, or partially/completely missing.
+    if (trackMetadata.getTrackInfo().getArtist().isEmpty() ||
+            trackMetadata.getTrackInfo().getTitle().isEmpty()) {
+        kLogger.info()
+                << "Adding missing artist/title from file name"
+                << getUrl().toString();
+        if (parseMetadataFromFileName(&trackMetadata, m_pTrack->getFileInfo().fileName()) &&
+                metadataImported.second.isNull()) {
+            // Since this is also some kind of metadata import, we mark the
+            // track's metadata as synchronized with the time stamp of the file.
+            metadataImported.second = m_pTrack->getFileInfo().lastModified();
+        }
+    }
+
     m_pTrack->setTrackMetadata(trackMetadata, metadataImported.second);
 
     if (pCoverImg) {
         CoverInfoRelative coverInfoRelative;
         if (pCoverImg->isNull()) {
-            if (coverInfo.type == CoverInfo::NONE) {
-                kLogger.info() << "No cover art found in file"
-                           << getUrl().toString();
-            } else {
-                kLogger.warning() << "Cover art is missing from file"
-                        << getUrl().toString();
-            }
+            kLogger.info()
+                    << "No embedded cover art found in file"
+                    << getUrl().toString();
             // Cover art should be (re-)set to none
             DEBUG_ASSERT(coverInfoRelative.type == CoverInfo::NONE);
         } else {
@@ -521,18 +544,6 @@ void SoundSourceProxy::updateTrackFromSource(
             DEBUG_ASSERT(coverInfoRelative.coverLocation.isEmpty());
             // TODO(XXX) here we may introduce a duplicate hash code
             coverInfoRelative.hash = CoverArtUtils::calculateHash(coverImg);
-        }
-        if (coverInfoRelative.type == CoverInfo::NONE) {
-            kLogger.info() << "Resetting cover art for file"
-                     << getUrl().toString();
-        } else {
-            if (coverInfo.type == CoverInfo::NONE) {
-                kLogger.info() << "Initializing cover art from file"
-                         << getUrl().toString();
-            } else {
-                kLogger.info() << "Updating cover art from file"
-                        << getUrl().toString();
-            }
         }
         m_pTrack->setCoverInfo(coverInfoRelative);
     }

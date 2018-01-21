@@ -84,6 +84,10 @@ WWidgetGroup {
   margin-right: -17px;
 }
 
+#BeatgridButtons {
+  padding-right: 17px;
+}
+
 #WaveformContainer1,
 #WaveformContainer2 {
   background-color: #001D33;
@@ -588,36 +592,36 @@ padding-left: 2px;
   #VinylTogglerLeft[displayValue="0"],
   #VinylTogglerRightPassthrough[displayValue="1"],
   #VinylTogglerRight[displayValue="1"] {
-    background: transparent url(skin:/buttons/btn_arrow_left.svg) no-repeat top center;
+    background: transparent url(skin:/buttons/btn_vinyl_left.svg) no-repeat top center;
     }
     #VinylTogglerLeft[displayValue="0"]:hover,
     #VinylTogglerRightPassthrough[displayValue="1"]:hover,
     #VinylTogglerRight[displayValue="1"]:hover {
-      background: transparent url(skin:/buttons/btn_arrow_left_hover.svg) no-repeat top center;
+      background: transparent url(skin:/buttons/btn_vinyl_left_hover.svg) no-repeat top center;
     }
   #VinylTogglerLeft[displayValue="1"],
   #VinylTogglerLeftPassthrough[displayValue="1"],
   #VinylTogglerRight[displayValue="0"] {
-    background: transparent url(skin:/buttons/btn_arrow_right.svg) no-repeat top center;
+    background: transparent url(skin:/buttons/btn_vinyl_right.svg) no-repeat top center;
     }
     #VinylTogglerLeft[displayValue="1"]:hover,
     #VinylTogglerLeftPassthrough[displayValue="1"]:hover,
     #VinylTogglerRight[displayValue="0"]:hover {
-      background: transparent url(skin:/buttons/btn_arrow_right_hover.svg) no-repeat top center;
+      background: transparent url(skin:/buttons/btn_vinyl_right_hover.svg) no-repeat top center;
     }
   /* When passthrough is active but Vinyl Controls are hidden,
     yellow background and black arrow indicate passthrough */
   #VinylTogglerLeftPassthrough[displayValue="0"] {
-    background: #ff8f00 url(skin:/buttons/btn_arrow_left_black.svg) no-repeat top center;
+    background: #ff8f00 url(skin:/buttons/btn_vinyl_pass_left.svg) no-repeat top center;
     }
     #VinylTogglerLeftPassthrough[displayValue="0"]:hover {
-      background: #ff8f00 url(skin:/buttons/btn_arrow_left_black_hover.svg) no-repeat top center;
+      background: #ff8f00 url(skin:/buttons/btn_vinyl_pass_left_hover.svg) no-repeat top center;
     }
   #VinylTogglerRightPassthrough[displayValue="0"] {
-    background: #ff8f00 url(skin:/buttons/btn_arrow_right_black.svg) no-repeat top center;
+    background: #ff8f00 url(skin:/buttons/btn_vinyl_pass_right.svg) no-repeat top center;
     }
     #VinylTogglerRightPassthrough[displayValue="0"]:hover {
-      background: #ff8f00 url(skin:/buttons/btn_arrow_right_black_hover.svg) no-repeat top center;
+      background: #ff8f00 url(skin:/buttons/btn_vinyl_pass_right_hover.svg) no-repeat top center;
     }
 
   #VinylControlButton,
@@ -688,12 +692,6 @@ padding-left: 2px;
     text-align: left;
     background-color: #333;
     }
-  WLabel#DeckFxIndicator {
-    font-weight: bold;
-    color: #ff8f00;
-    padding-top: 1px;
-    background-color: #333;
-  }
 
 #ArtistTitleTime {
   qproperty-layoutAlignment: 'AlignVCenter';
@@ -1183,19 +1181,19 @@ WBeatSpinBox {
   }
 
 #QuickFxEnableButton {
-  margin: 5px 0px 5px 0px;
+  margin: 5px 0px;
+  background-color: #585858;
   }
   #QuickFxEnableButton[displayValue="0"] {
-    background-color: #585858;
     }
   #QuickFxEnableButton[displayValue="0"]:hover {
     border: 1px solid #ff8f00;
     }
   #QuickFxEnableButton[displayValue="1"] {
-    background-color: #ff8f00;
+    border: 1px solid #ff8f00;
     }
   #QuickFxEnableButton[displayValue="1"]:hover {
-    border: 1px solid #fff;
+    border: 1px solid #eeeeee;
   }
 
   #QuickFxEnableUnderlay[displayValue="0"] {
@@ -1278,10 +1276,21 @@ decks, samplers, mic, aux */
 ######  Effects  ###############################################
 ##############################################################*/
 
-#FxUnitLabel {
-  font-size: 14px/14px;
+#FxUnitLabel,
+#FxUnitLabel1,
+#FxUnitLabel2,
+#FxUnitLabel3,
+#FxUnitLabel4 {
+  font-size: 14px/12px;
   font-weight: bold;
   color: #888;
+}
+
+#FxUnitLabel1, #FxUnitLabel3 {
+  qproperty-alignment: right;
+}
+#FxUnitLabel2, #FxUnitLabel4 {
+  qproperty-alignment: left;
 }
 
 #FxUnitMixerLeft,
@@ -1697,6 +1706,9 @@ decks, samplers, mic, aux */
   border-radius: 2px;
   background-color: #333;
   }
+#MixerbarSection WPushButton {
+  font-size: 11px/13px;
+  }
   #FxAssignButton[displayValue="0"] {
     color: #888;
     }
@@ -1936,7 +1948,7 @@ QToolTip {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
 }
 #AlignRight {
-qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
 }
 #AlignRightCenter {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
@@ -2033,14 +2045,14 @@ QTreeView {
   Don't define top margin here, it won't shift ScrollBar.
   Defined by SearchBox	*/
   margin: 0px;
-}
-QTreeView:focus,
-QTableView:focus { /*
-  New Library navigation COs only work if TreeView or TableView have focus.
-  Clicking on buttons, sliders and visuals elsewhere removes focus from Library.
-  In conjuction with [Library],MoveFocusBackward/..Forward, this helps a lot. */
-  border-color: #dddddd;
-}
+  }
+  QTreeView:focus,
+  QTableView:focus { /*
+    New Library navigation COs only work if TreeView or TableView have focus.
+    Clicking on buttons, sliders and visuals elsewhere removes focus from Library.
+    In conjuction with [Library],MoveFocusBackward/..Forward, this helps a lot. */
+    border-color: #ff6600;
+  }
 
 /*  Closed branch of tree 	*/
 QTreeView::branch:has-children:!has-siblings:closed,
@@ -2149,19 +2161,22 @@ QScrollBar:horizontal {
 /* splitters between treeview and library table */
 #LibrarySplitter::handle:horizontal {
   image: url(skin:/graphics/splitterHori_handle.png);
-  width: 4px;
+  width: 6px;
   }
   #LibrarySplitter::handle:horizontal:hover,
   #LibrarySplitter::handle:horizontal:pressed {
     image: url(skin:/graphics/splitterHori_handle_pressed.png);
   }
   /* splitter between coverArt and tree view */
-  #LibrarySplitter::handle:vertical {
-    height: 4px;
+  #LibrarySplitter::handle:vertical,
+  #WaveformSplitter::handle:vertical {
+    height: 6px;
     image: url(skin:/graphics/splitterVert_handle.png);
     }
     #LibrarySplitter::handle:vertical:hover,
-    #LibrarySplitter::handle:vertical:pressed {
+    #LibrarySplitter::handle:vertical:pressed,
+    #WaveformSplitter::handle:vertical:hover,
+    #WaveformSplitter::handle:vertical:pressed {
       image: url(skin:/graphics/splitterVert_handle_pressed.png);
     }
 
