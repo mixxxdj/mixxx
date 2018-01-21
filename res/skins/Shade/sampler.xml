@@ -54,20 +54,19 @@
 							</TrackProperty>
 							-->
 							<WidgetGroup>
-							 	<Size>42f,24f</Size>
+							 	<Size>35f,24f</Size>
 								<Style>QGroupBox {border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 								<Children>
-									<NumberBpm>
+									<Number>
 										<TooltipId>visual_bpm</TooltipId>
-										<Style>QLabel { font: bold 12px/14px sans-serif;
+										<Style>QLabel { font: bold 9px sans-serif;
 												font-family: "Open Sans";
 												background-color: transparent;
 												color: #191F24;
-												text-align: right;
-												padding-left: 0px;
-												padding-top: 1px;}
+												padding-right: 0;
+												padding-top: 2px;}
 										</Style>
-										<Size>42f,24f</Size>
+										<Size>35f,24f</Size>
 										<Pos>0,2</Pos>
 										<Group>[Sampler<Variable name="samplernum"/>]</Group>
 										<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
@@ -75,7 +74,7 @@
 										<Connection>
 											<ConfigKey>[Sampler<Variable name="samplernum"/>],visual_bpm</ConfigKey>
 										</Connection>
-									</NumberBpm>
+									</Number>
 									<!-- Little trickery here:
 										 BPM tap is transparent png directly over BPM display, so it became BPM and TAP at once,
 										 changed tooltip accordingly

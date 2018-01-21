@@ -97,28 +97,27 @@
 								</Children>
 							</WidgetGroup>
 							<WidgetGroup>
-							 	<Size>42f,40f</Size>
+							 	<Size>35f,40f</Size>
 								<Style>QGroupBox {border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 								<Layout>vertical</Layout>									
 								<Children>
-									<NumberBpm>
+									<Number>
 										<TooltipId>visual_bpm</TooltipId>
 										<Style>QLabel { font: bold 9px sans-serif;
 												font-family: "Open Sans";
 												background-color: transparent;
 												color: #191F24;
-												text-align: right;
-												padding-left: 0px;
-												padding-top: 2px;}
+												padding-right: 0;
+												padding-top: 5px;}
 										</Style>
-										
+										<Size>35f,40f</Size>
 										<Group>[Sampler<Variable name="samplernum"/>]</Group>
 										<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 										<Alignment>right</Alignment>
 										<Connection>
 											<ConfigKey>[Sampler<Variable name="samplernum"/>],visual_bpm</ConfigKey>
 										</Connection>
-									</NumberBpm>
+									</Number>
 								</Children>
 							</WidgetGroup>
 							<WidgetGroup>
