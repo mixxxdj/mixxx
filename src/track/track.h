@@ -24,6 +24,7 @@ class Track : public QObject {
 
   public:
     Track(const Track&) = delete;
+    ~Track() override;
 
     // Creates a new empty temporary instance for fake tracks or for
     // testing purposes. The resulting track will neither be stored

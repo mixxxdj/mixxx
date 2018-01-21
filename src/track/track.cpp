@@ -1,7 +1,8 @@
 #include <QDirIterator>
 #include <QFile>
 #include <QMutexLocker>
-#include <QtDebug>
+
+#include <atomic>
 
 #include "track/track.h"
 #include "track/trackref.h"
@@ -14,7 +15,13 @@
 
 namespace {
 
-mixxx::Logger kLogger("Track");
+const mixxx::Logger kLogger("Track");
+
+constexpr bool kLogStats = false;
+
+// Count the number of currently existing instances for detecting
+// memory leaks.
+std::atomic<int> s_numberOfInstances;
 
 SecurityTokenPointer openSecurityToken(
         const QFileInfo& fileInfo,
@@ -64,6 +71,25 @@ Track::Track(
           m_bDirty(false),
           m_bMarkedForMetadataExport(false),
           m_analyzerProgress(-1) {
+    if (kLogStats && kLogger.debugEnabled()) {
+        long numberOfInstancesBefore = s_numberOfInstances.fetch_add(1);
+        kLogger.debug()
+                << "Creating instance:"
+                << numberOfInstancesBefore
+                << "->"
+                << numberOfInstancesBefore + 1;
+    }
+}
+
+Track::~Track() {
+    if (kLogStats && kLogger.debugEnabled()) {
+        long numberOfInstancesBefore = s_numberOfInstances.fetch_sub(1);
+        kLogger.debug()
+                << "Destroying instance:"
+                << numberOfInstancesBefore
+                << "->"
+                << numberOfInstancesBefore - 1;
+    }
 }
 
 //static
