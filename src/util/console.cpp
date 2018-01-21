@@ -35,26 +35,38 @@ Console::Console()
         // we are started from a console porcess
         m_shouldFreeConsole = true;
 
-        FILE* pStdin = stdin;
-        if (freopen_s(&pStdin, "CONIN$", "r", stdin)) {
-            qWarning() << "Could not open stdout. Error code:" << GetLastError();
-        }
-
-        FILE* pStdout = stdout;
-        if (freopen_s(&pStdout, "CONOUT$", "w", stdout)) {
-            qWarning() << "Could not open stdout. Error code:" << GetLastError();
-        } else {
-            if (setvbuf(stdout, NULL, _IONBF, 0) != 0) {
-                qWarning() << "Setting no buffer for stdout failed.";
+        DWORD typeStdIn = GetFileType(GetStdHandle(STD_INPUT_HANDLE));
+        if (typeStdIn == FILE_TYPE_UNKNOWN) {
+            // the input is not already redirected
+            FILE* pStdin = stdin;
+            if (freopen_s(&pStdin, "CONIN$", "r", stdin)) {
+                qWarning() << "Could not open stdout. Error code:" << GetLastError();
             }
         }
 
-        FILE* pStderr = stderr;
-        if (freopen_s(&pStderr, "CONOUT$", "w", stderr)) {
-            qWarning() << "Could not open stdout. Error code:" << GetLastError();
-        } else {
-            if (setvbuf(stdout, NULL, _IONBF, 0) != 0) {
-                qWarning() << "Setting no buffer for stdout failed.";
+        DWORD typeStdOut = GetFileType(GetStdHandle(STD_OUTPUT_HANDLE));
+        if (typeStdOut == FILE_TYPE_UNKNOWN) {
+            // the output is not already redirected
+            FILE* pStdout = stdout;
+            if (freopen_s(&pStdout, "CONOUT$", "w", stdout)) {
+                qWarning() << "Could not open stdout. Error code:" << GetLastError();
+            } else {
+                if (setvbuf(stdout, NULL, _IONBF, 0) != 0) {
+                    qWarning() << "Setting no buffer for stdout failed.";
+                }
+            }
+        }
+
+        DWORD typeStdErr = GetFileType(GetStdHandle(STD_ERROR_HANDLE));
+        if (typeStdErr == FILE_TYPE_UNKNOWN) {
+            // the error is not already redirected
+            FILE* pStderr = stderr;
+            if (freopen_s(&pStderr, "CONOUT$", "w", stderr)) {
+                qWarning() << "Could not open stdout. Error code:" << GetLastError();
+            } else {
+                if (setvbuf(stdout, NULL, _IONBF, 0) != 0) {
+                    qWarning() << "Setting no buffer for stdout failed.";
+                }
             }
         }
 
