@@ -13,7 +13,10 @@
 typedef BOOL(WINAPI* pfGetCurrentConsoleFontEx)(HANDLE, BOOL, PCONSOLE_FONT_INFOEX);
 typedef BOOL(WINAPI* pfSetCurrentConsoleFontEx)(HANDLE, BOOL, PCONSOLE_FONT_INFOEX);
 
-Console::Console() {
+Console::Console()
+     : m_shouldResetCodePage(false),
+       m_shouldResetConsoleTitle(false),
+       m_shouldFreeConsole(false) {
 
     // Setup Windows console encoding
     // toLocal8Bit() returns the ANSI file encoding format
@@ -28,9 +31,9 @@ Console::Console() {
     // LOCALE_IDEFAULTANSICODEPAGE "1252" // ANSI Codepage used by Qt toLocal8Bit
     // LOCALE_IDEFAULTCODEPAGE "850" // OEM Codepage Console
 
-    m_shouldResetCodePage = false;
     if (AttachConsole(ATTACH_PARENT_PROCESS)) {
         // we are started from a console porcess
+        m_shouldFreeConsole = true;
 
         FILE* pStdin = stdin;
         if (freopen_s(&pStdin, "CONIN$", "r", stdin)) {
@@ -106,7 +109,9 @@ Console::Console() {
                 StringCchPrintf(szNewTitle, MAX_PATH, TEXT("%s : Mixxx"), m_oldTitle);
 
                 // Set console title to new title
-                if (!SetConsoleTitle(szNewTitle)) {
+                if (SetConsoleTitle(szNewTitle)) {
+                    m_shouldResetConsoleTitle = true;
+                } else {
                     qWarning() << "SetConsoleTitle failed" << GetLastError();
                 }
             }
@@ -135,10 +140,14 @@ Console::~Console() {
     if (m_shouldResetCodePage) {
         SetConsoleOutputCP(m_oldCodePage);
     }
-    if (!SetConsoleTitle(m_oldTitle)) {
-        qWarning() << "SetConsoleTitle failed" << GetLastError();
+    if (m_shouldResetConsoleTitle) {
+        if (!SetConsoleTitle(m_oldTitle)) {
+            qWarning() << "SetConsoleTitle failed" << GetLastError();
+        }
     }
-    FreeConsole();
+    if (m_shouldFreeConsole) {
+        FreeConsole();
+    }
 }
 
 #else // __WINDOWS__
