@@ -96,24 +96,19 @@ Track::~Track() {
 TrackPointer Track::newTemporary(
         const QFileInfo& fileInfo,
         const SecurityTokenPointer& pSecurityToken) {
-    Track* pTrack =
-            new Track(
-                    fileInfo,
-                    pSecurityToken,
-                    TrackId());
-    return TrackPointer(pTrack);
+    return TrackPointer::fromShared(std::make_shared<Track>(
+            fileInfo,
+            pSecurityToken));
 }
 
 //static
 TrackPointer Track::newDummy(
         const QFileInfo& fileInfo,
         TrackId trackId) {
-    Track* pTrack =
-            new Track(
-                    fileInfo,
-                    SecurityTokenPointer(),
-                    trackId);
-    return TrackPointer(pTrack);
+    return TrackPointer::fromShared(std::make_shared<Track>(
+            fileInfo,
+            SecurityTokenPointer(),
+            trackId));
 }
 
 void Track::setTrackMetadata(

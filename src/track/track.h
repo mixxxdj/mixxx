@@ -23,6 +23,9 @@ class Track : public QObject {
     Q_OBJECT
 
   public:
+    Track(const QFileInfo& fileInfo,
+          const SecurityTokenPointer& pSecurityToken,
+          TrackId trackId = TrackId());
     Track(const Track&) = delete;
     ~Track() override;
 
@@ -321,10 +324,6 @@ class Track : public QObject {
     void slotBeatsUpdated();
 
   private:
-    Track(const QFileInfo& fileInfo,
-          const SecurityTokenPointer& pSecurityToken,
-          TrackId trackId);
-
     // Set a unique identifier for the track. Only used by
     // GlobalTrackCacheResolver!
     void initId(TrackId id); // write-once
@@ -394,20 +393,44 @@ typedef std::weak_ptr<Track> TrackWeakPointer;
 class TrackPointer: public std::shared_ptr<Track> {
   public:
     TrackPointer() = default;
-    explicit TrackPointer(TrackWeakPointer pTrack)
+    explicit TrackPointer(const TrackWeakPointer& pTrack)
         : std::shared_ptr<Track>(pTrack.lock()) {
-    }
-    explicit TrackPointer(Track* pTrack)
-        : std::shared_ptr<Track>(pTrack, deleteLater) {
     }
     TrackPointer(Track* pTrack, void (*deleter)(Track*))
         : std::shared_ptr<Track>(pTrack, deleter) {
+        // reserved for GlobalTrackCache
+    }
+    TrackPointer(const TrackPointer&) = default;
+#if !defined(_MSC_VER) || _MSC_VER > 1900
+    //TrackPointer(TrackPointer&&) = default;
+    TrackPointer(TrackPointer&& other) = default;
+#else
+    // Workaround for Visual Studio 2015 (and before)
+    TrackPointer(TrackPointer&& other)
+        : std::shared_ptr<Track>(std::move(other)) {
+        DEBUG_ASSERT(!other);
+    }
+#endif
+
+    TrackPointer& operator=(const TrackPointer&) = default;
+#if !defined(_MSC_VER) || _MSC_VER > 1900
+    TrackPointer& operator=(TrackPointer&&) = default;
+#else
+    // Workaround for Visual Studio 2015 (and before)
+    TrackPointer& operator=(TrackPointer&&) = default {
+        std::shared_ptr<Track>::operator=(std::move(other));
+        DEBUG_ASSERT(!other);
+        return *this;
+    }
+#endif
+
+    static TrackPointer fromShared(std::shared_ptr<Track>&& pTrack) {
+        return TrackPointer(std::move(pTrack));
     }
 
   private:
-    static void deleteLater(Track* pTrack) {
-        if (pTrack) {
-            pTrack->deleteLater();
-        }
+    explicit TrackPointer(std::shared_ptr<Track>&& pTrack)
+        : std::shared_ptr<Track>(std::move(pTrack)) {
+        // for temporary (uncached) track objects
     }
 };
