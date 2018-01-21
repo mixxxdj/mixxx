@@ -20,7 +20,6 @@ const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 
 
 DlgTrackInfo::DlgTrackInfo(QWidget* parent)
             : QDialog(parent),
-              m_pLoadedTrack(NULL),
               m_pTapFilter(new TapFilter(this, kFilterLength, kMaxInterval)),
               m_dLastTapedBpm(-1.),
               m_pWCoverArtLabel(new WCoverArtLabel(this)) {
