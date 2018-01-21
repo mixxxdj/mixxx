@@ -264,6 +264,7 @@
 										<SignalColor>#191F24</SignalColor>
 										<PlayPosColor>#00FF00</PlayPosColor>
 										<EndOfTrackColor>#EA0000</EndOfTrackColor>
+										<PlayedOverlayColor>#60000000</PlayedOverlayColor>
 										<DefaultMark>
 											<Align>bottom|right</Align>
 											<Color>#FD0564</Color>
