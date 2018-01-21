@@ -387,7 +387,7 @@ double LoopingControl::nextTrigger(bool reverse,
                         m_oldLoopSamples.start, loopSamples.start, loopSamples.end);
             } else {
                 bool movedOut = false;
-                // Ceck if we have moved out of the loop, before we could enable it
+                // Check if we have moved out of the loop, before we could enable it
                 if (reverse) {
                     if (loopSamples.start > currentSample) {
                         movedOut = true;
@@ -405,8 +405,6 @@ double LoopingControl::nextTrigger(bool reverse,
             m_oldLoopSamples = loopSamples;
             if (*pTarget != kNoTrigger) {
                 // jump immediately
-                //qDebug() << currentSample <<
-                //        m_oldLoopSamples.start << loopSamples.start << loopSamples.end << pTarget;
                 return currentSample;
             }
         }
