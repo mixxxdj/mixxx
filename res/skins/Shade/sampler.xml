@@ -160,6 +160,7 @@
 									<Pos>0,0</Pos>
 									<Size>0e,35f</Size>
 									<BgColor>#8D98A3</BgColor>
+									<PlayedOverlayColor>#60000000</PlayedOverlayColor>
 									<SignalHighColor></SignalHighColor>
 									<SignalMidColor></SignalMidColor>
 									<SignalLowColor></SignalLowColor>
