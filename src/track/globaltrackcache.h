@@ -34,8 +34,6 @@ public:
         return m_pTrack;
     }
 
-    void updateResolvedTrackId(TrackId trackId);
-
     void unlockCache();
 
     GlobalTrackCacheLocker& operator=(const GlobalTrackCacheLocker&) = delete;
