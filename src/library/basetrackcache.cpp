@@ -181,6 +181,7 @@ void BaseTrackCache::replaceRecentTrack(TrackId trackId, TrackPointer pTrack) co
         if (pTrack) {
             DEBUG_ASSERT(m_recentTrackId == pTrack->getId());
             m_recentTrackPtr = std::move(pTrack);
+            DEBUG_ASSERT(m_recentTrackPtr);
             if (m_recentTrackPtr->isDirty()) {
                 m_dirtyTracks.insert(m_recentTrackId);
             } else {
@@ -316,8 +317,8 @@ void BaseTrackCache::updateTrackInIndex(TrackId trackId) {
     updateTracksInIndex(trackIds);
 }
 
-void BaseTrackCache::updateTracksInIndex(QSet<TrackId> trackIds) {
-    if (trackIds.size() == 0) {
+void BaseTrackCache::updateTracksInIndex(const QSet<TrackId>& trackIds) {
+    if (trackIds.isEmpty()) {
         return;
     }
 

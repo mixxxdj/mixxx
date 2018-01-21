@@ -96,7 +96,7 @@ class BaseTrackCache : public QObject {
     bool updateIndexWithQuery(const QString& query);
     bool updateIndexWithTrackpointer(TrackPointer pTrack);
     void updateTrackInIndex(TrackId trackId);
-    void updateTracksInIndex(QSet<TrackId> trackIds);
+    void updateTracksInIndex(const QSet<TrackId>& trackIds);
     void getTrackValueForColumn(TrackPointer pTrack, int column,
                                 QVariant& trackValue) const;
 
