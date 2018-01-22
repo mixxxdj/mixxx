@@ -770,8 +770,16 @@ border: 0px;
   border-right: 0px;
 }
 
+#AlignLeft {
+  qproperty-layoutAlignment: 'AlignLeft';
+}
+
 #AlignLeftTop {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+}
+
+#AlignRight {
+  qproperty-layoutAlignment: 'AlignRight';
 }
 
 #AlignRightTop {
@@ -910,8 +918,7 @@ border: 0px;
 }
 
 #MicInterior {
-  padding-left:5px;
-  padding-right:5px;
+  padding: 0px 5px 1px 3px;
 }
 
 #MicButtonContainer {
@@ -928,10 +935,31 @@ border: 0px;
 }
 
 #MicSubTitle {
-  qproperty-alignment: 'AlignLeft | AlignTop';
+  qproperty-alignment: 'AlignCenter | AlignTop';
   font-size: 12px/13px;
   font-weight: bold;
   color: #eece33;
+  text-align: center;
+}
+
+#MicGainPFlContainer {
+  qproperty-layoutAlignment: 'AlignCenter';
+  padding: 0px;
+  margin-left: 2px;
+}
+
+#MicGainKnob {
+  qproperty-layoutAlignment: 'AlignCenter';
+  margin: 0px 8px 0px 5px;
+}
+
+#MicPflButton {
+  qproperty-layoutAlignment: 'AlignCenter';
+}
+
+#MicVUMeter {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  margin-left: 5px;
 }
 
 

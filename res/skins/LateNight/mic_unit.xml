@@ -7,63 +7,110 @@
       <WidgetGroup>
         <ObjectName>MicInterior</ObjectName>
         <BackPath>background_tile.png</BackPath>
-        <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <MinimumSize>100,-1</MinimumSize>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,max</SizePolicy>
         <Children>
-          <Label>
-            <ObjectName>MicSubTitle</ObjectName>
-            <Text>Mic <Variable name="mic1hack"/><Variable name="micnum"/></Text>
-          </Label>
 
-          <!-- To make each widget centered, we have to put them each in their own
-            widgetgroup. -->
-          <WidgetGroup><!-- Gain, Talk, Pfl -->
-            <Layout>horizontal</Layout>
-            <SizePolicy>min,max</SizePolicy>
-            <MaximumSize>-1, 26</MaximumSize>
+          <WidgetGroup><!-- Label, TALK, orientation -->
+            <ObjectName>AlignCenterTop</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Template src="skin:knob_sized_textless.xml">
-                <SetVariable name="TooltipId">pregain</SetVariable>
-                <SetVariable name="width">28</SetVariable>
-                <SetVariable name="height">24</SetVariable>
-                <SetVariable name="group"><Variable name="group"/></SetVariable>
-                <SetVariable name="control">pregain</SetVariable>
-              </Template>
 
               <WidgetGroup>
-                <ObjectName>GuiToggleContainerPadLeft</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
+                  <Label>
+                    <ObjectName>MicSubTitle</ObjectName>
+                    <Size>,18f</Size>
+                    <Text>Mic <Variable name="mic1hack"/><Variable name="micnum"/></Text>
+                    <Alignment>center</Alignment>
+                  </Label>
+                </Children>
+              </WidgetGroup>
+
+              <PushButton>
+                <Size>40f,24f</Size>
+                <TooltipId>microphone_talkover</TooltipId>
+                <ObjectName>GuiToggleButton</ObjectName>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Text>TALK</Text>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Text>TALK</Text>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,talkover</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton><!-- /TALK -->
+
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,max</SizePolicy>
+                <Children>
                   <PushButton>
-                    <Size>40f,24f</Size>
-                    <TooltipId>microphone_talkover</TooltipId>
-                    <ObjectName>GuiToggleButton</ObjectName>
-                    <NumberStates>2</NumberStates>
+                    <TooltipId>orientation</TooltipId>
+                    <NumberStates>3</NumberStates>
                     <State>
                       <Number>0</Number>
-                      <Text>TALK</Text>
+                      <Pressed>buttons/btn_orientation_microphone_left.png</Pressed>
+                      <Unpressed>buttons/btn_orientation_microphone_left.png</Unpressed>
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Text>TALK</Text>
+                      <Pressed>buttons/btn_orientation_microphone_master.png</Pressed>
+                      <Unpressed>buttons/btn_orientation_microphone_master.png</Unpressed>
+                    </State>
+                    <State>
+                      <Number>2</Number>
+                      <Pressed>buttons/btn_orientation_microphone_right.png</Pressed>
+                      <Unpressed>buttons/btn_orientation_microphone_right.png</Unpressed>
                     </State>
                     <Connection>
-                      <ConfigKey><Variable name="group"/>,talkover</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,orientation</ConfigKey>
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                   </PushButton>
                 </Children>
               </WidgetGroup>
 
-              <WidgetGroup>
-                <ObjectName>GuiToggleContainerPadLeft</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>min,min</SizePolicy>
+            </Children>
+          </WidgetGroup><!-- Label, TALK, orientation -->
+
+          <WidgetGroup><!-- Gain, Pfl, VU meter -->
+            <ObjectName>MicGainPFlContainer</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+
+              <WidgetGroup><!-- Gain, Pfl -->
+                <ObjectName>MicGainPFlContainer</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,me</SizePolicy>
                 <Children>
+                  <WidgetGroup><!-- Gain, Pfl -->
+                    <ObjectName>MicGainKnob</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Children>
+                      <Template src="skin:knob_sized_textless.xml">
+                        <SetVariable name="TooltipId">pregain</SetVariable>
+                        <SetVariable name="width">36</SetVariable>
+                        <SetVariable name="height">30</SetVariable>
+                        <SetVariable name="group"><Variable name="group"/></SetVariable>
+                        <SetVariable name="control">pregain</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+
                   <PushButton>
-                    <TooltipId>pfl</TooltipId>
+                    <TooltipId>pfl</TooltipId><!---->
+                    <ObjectName>MicPflButton</ObjectName>
                     <NumberStates>2</NumberStates>
                     <State>
                       <Number>0</Number>
@@ -79,57 +126,34 @@
                       <ConfigKey><Variable name="group"/>,pfl</ConfigKey>
                     </Connection>
                   </PushButton>
-                </Children>
-              </WidgetGroup>
-            </Children>
-          </WidgetGroup><!-- /Gain, Talk, Pfl -->
 
-          <WidgetGroup><!-- VU meter, xfader orientation -->
-            <Layout>horizontal</Layout>
-            <SizePolicy>min,min</SizePolicy>
-            <Children>
-              <VuMeter>
-                <TooltipId>microphone_VuMeter</TooltipId>
-                <MinimumSize>64,4</MinimumSize>
-                <MaximumSize>64,4</MaximumSize>
-                <PathVu>vumeter_latency_over.png</PathVu>
-                <PathBack>vumeter_latency_bg_solid.png</PathBack>
-                <!-- <PathVu>vumeter_latency.svg</PathVu> -->
-                <Horizontal>true</Horizontal>
-                <PeakHoldSize>5</PeakHoldSize>
-                <PeakHoldTime>500</PeakHoldTime>
-                <PeakFallTime>50</PeakFallTime>
-                <PeakFallStep>2</PeakFallStep>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
-                </Connection>
-              </VuMeter>
-              <PushButton>
-                <TooltipId>orientation</TooltipId>
-                <Style></Style>
-                <NumberStates>3</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Pressed>buttons/btn_orientation_microphone_left_over.png</Pressed>
-                  <Unpressed>buttons/btn_orientation_microphone_left_over.png</Unpressed>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Pressed>buttons/btn_orientation_microphone_master.png</Pressed>
-                  <Unpressed>buttons/btn_orientation_microphone_master.png</Unpressed>
-                </State>
-                <State>
-                  <Number>2</Number>
-                  <Pressed>buttons/btn_orientation_microphone_right_over.png</Pressed>
-                  <Unpressed>buttons/btn_orientation_microphone_right_over.png</Unpressed>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,orientation</ConfigKey>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-              </PushButton>
+                </Children>
+              </WidgetGroup><!-- /Gain, Pfl -->
+
+              <WidgetGroup><!-- VU meter -->
+                <ObjectName>MicVUMeter</ObjectName>
+                <Layout>horizontal</Layout>
+                <Size>,12f</Size>
+                <Children>
+                  <VuMeter>
+                    <TooltipId>microphone_VuMeter</TooltipId>
+                    <Size>64f,4f</Size>
+                    <PathVu>vumeter_latency_over.png</PathVu>
+                    <PathBack>vumeter_latency_bg_solid.png</PathBack>
+                    <!-- <PathVu>vumeter_latency.svg</PathVu> -->
+                    <Horizontal>true</Horizontal>
+                    <PeakHoldSize>5</PeakHoldSize>
+                    <PeakHoldTime>500</PeakHoldTime>
+                    <PeakFallTime>50</PeakFallTime>
+                    <PeakFallStep>2</PeakFallStep>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
+                    </Connection>
+                  </VuMeter>
+                </Children>
+              </WidgetGroup><!-- /VU meter -->
             </Children>
-          </WidgetGroup><!-- VU meter, xfader orientation -->
+          </WidgetGroup><!-- /Gain, Pfl, VU meter -->
 
         </Children>
       </WidgetGroup><!-- /MicInterior -->
