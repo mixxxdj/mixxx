@@ -57,7 +57,7 @@
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                     <Connection>
-                      <ConfigKey><Variable name="group"/>,start_stop</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
                       <ButtonState>RightButton</ButtonState>
                     </Connection>
                     <Connection>
