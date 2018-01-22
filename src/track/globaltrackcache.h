@@ -156,6 +156,8 @@ public:
 
     void evictAll();
 
+    bool isEmpty() const;
+
 private:
     friend class GlobalTrackCacheLocker;
     friend class GlobalTrackCacheResolver;

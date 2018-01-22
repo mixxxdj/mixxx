@@ -593,3 +593,8 @@ void GlobalTrackCache::evictAll() {
         evict(pTrack.get());
     }
 }
+
+bool GlobalTrackCache::isEmpty() const {
+    GlobalTrackCacheLocker cacheLocker;
+    return m_tracksById.isEmpty() && m_tracksByCanonicalLocation.isEmpty();
+}
