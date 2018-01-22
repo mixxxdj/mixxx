@@ -99,12 +99,11 @@ class LoopingControl : public EngineControl {
     void setLoopOutToCurrentPosition();
     void clearActiveBeatLoop();
     void updateBeatLoopingControls();
-    int calculateEndOfBeatloop(int startSample, double beatloopSizeInBeats);
     bool currentLoopMatchesBeatloopSize();
     // When a loop changes size such that the playposition is outside of the loop,
     // we can figure out the best place in the new loop to seek to maintain
     // the beat.  It will even keep multi-bar phrasing correct with 4/4 tracks.
-    int seekInsideAdjustedLoop(double currentSample,
+    double seekInsideAdjustedLoop(double currentSample,
             double old_loop_in, double new_loop_in, double new_loop_out);
 
     ControlPushButton* m_pCOBeatLoopActivate;
