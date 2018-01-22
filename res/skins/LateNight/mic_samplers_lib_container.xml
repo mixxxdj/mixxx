@@ -3,18 +3,16 @@
     <ObjectName>mic_sam_lib_container</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,me</SizePolicy>
-    <MinimumSize>0,0</MinimumSize>
     <Children>
 
-      <WidgetStack currentpage="[Master],view_curpage" persist="true">
+      <WidgetStack currentpage="[Master],mic_lib_sampler_stack" persist="true">
         <SizePolicy>me,me</SizePolicy>
         <Children>
 
           <!-- First page is blank for when the user just wants the library. -->
-          <WidgetGroup on_hide_select="0">
+          <WidgetGroup>
             <Layout>vertical</Layout>
             <SizePolicy>me,max</SizePolicy>
-            <Children/>
           </WidgetGroup>
 
           <WidgetGroup trigger="[Microphone],show_microphone" persist="true" on_hide_select="0">
@@ -34,7 +32,6 @@
           </WidgetGroup>
 
           <WidgetGroup trigger="[Library],show_library" persist="true" on_hide_select="0">
-            <ObjectName>TEST_LibTrigger</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>me,me</SizePolicy>
             <Children>

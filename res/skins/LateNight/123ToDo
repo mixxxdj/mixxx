@@ -1,37 +1,38 @@
 
-    General
-      * vectorize remaining button
-      * vectorize VUs, add path mask, so they are easier to resize
-      * clean up SVGs
-      * move slider/knob graphics to subfolder
-    
-    Toolbar
-      * re-order GUI quick toggles: decks, mixer, extras, general -- rec, clock
+General
+  * fix fonts: OpenSans for all numbers
+  * vectorize remaining buttons
+  * vectorize VUs, add path mask, so they are easier to resize
+  * clean up SVGs
+  * move slider/knob graphics to subfolder
 
-    Decks
-      * star rating:
-        - beside/instead of Vinyl controls (SizeAwareStack)
-        - in between artist and duration
-        - in deck controls grid (layout varies with available height)
-      * don't transform Key display to uppercase 
-      * test new (Hot)Cue button color: orange when set, red when pressed/playing from (Hot)Cue
-      
-    Aux
-      * add cover when a Aux is not configured
+Toolbar
+  * re-order GUI quick toggles: decks, mixer, extras, general -- rec, clock
 
-    Mic
-      * add ducking controls
-      * add cover when a Mic is not configured
-    
-    Vinyl
-      * merge vinyl toggle & status light
-    
-    Mixer
-      * reduce Crossfader margin
+Decks
+  * star rating:
+    - beside/instead of Vinyl controls (SizeAwareStack)
+    - in between artist and duration
+    - in deck controls grid (layout varies with available height)
+  * don't transform Key display to uppercase 
+  * test new (Hot)Cue button color: orange when set, red when pressed/playing from (Hot)Cue
+  
+Aux
 
-    Sampler
-      * make space for 8 HotCues:
-        > shrink Sync
-        > shrink VU meter, put Sync below 
-      
-      
+Mic
+  * add ducking controls
+  * add cover when a Mic is not configured
+    = button bound to [Mic],talkover, so that Preferences will open on click 
+
+Vinyl
+  * merge vinyl toggle & status light
+
+Mixer
+  * reduce Crossfader margin
+
+Sampler
+  * make space for 8 HotCues, window at minimal size:
+    > shrink Sync
+    > shrink VU meter, put Sync below
+  
+  

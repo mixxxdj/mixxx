@@ -1,5 +1,5 @@
 <Template>
-  <SizeAwareStack currentpage="[Master],lower_half_size">
+  <SizeAwareStack>
     <Children>
 
       <WidgetGroup>
