@@ -132,7 +132,6 @@ class LoopingControl : public EngineControl {
     bool m_bAdjustingLoopInOld;
     bool m_bAdjustingLoopOutOld;
     bool m_bLoopOutPressedWhileLoopDisabled;
-    // TODO(DSC) Make the following values double
     ControlValueAtomic<LoopSamples> m_loopSamples;
     LoopSamples m_oldLoopSamples;
     ControlValueAtomic<double> m_currentSample;
