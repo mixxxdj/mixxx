@@ -89,7 +89,7 @@
 			<Name>Dark</Name>
 			<Filters>
 				<HSVTweak>
-					<HConst>90</HConst>
+					<HConst>75</HConst>
 					<SConst>-30</SConst>
 					<VConst>-30</VConst>
 				</HSVTweak>
@@ -103,7 +103,7 @@
 			<Filters>
 				<HSVTweak>
 					<SMin>100</SMin>
-					<VFact>0.7</VFact>
+					<VFact>1.0</VFact>
 					<HFact>0.3</HFact>
 				</HSVTweak>
 				<HSVTweak>
