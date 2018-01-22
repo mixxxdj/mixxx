@@ -1,25 +1,36 @@
 
+    General
+      * vectorize remaining button
+      * vectorize VUs, add path mask, so they are easier to resize
+      * clean up SVGs
+    
+    TOOLBAR
+      * re-order GUI quick toggles: decks, mixer, extras, general -- rec, clock
+
     Decks
-      * introduce another deck row:
-        > Quantize, Keylock, ... Stars
-        > make overview row wider but less tall (square Cover art plus equal margin)
+      * star rating:
+        - beside/instead of Vinyl controls (SizeAwareStack)
+        - in between artist and duration
+        - in deck controls grid (layout varies with available height)
+      * don't transform Key display to uppercase 
       * test new (Hot)Cue button color: orange when set, red when pressed/playing from (Hot)Cue
       
     Aux
 
     Mic
       * add ducking controls
+      * add cover when a Mic is not configured
     
     Vinyl
       * merge vinyl toggle & status light
     
     Mixer
+      * reduce Crossfader margin
 
     Sampler
       * add cue_default to Play button
       * make space for 8 HotCues:
         > shrink Sync
-        > shrink VU meter & push it up 
-    
-    GENERAL
-      * re-order GUI quick toggles: decks, mixer, general
+        > shrink VU meter, put Sync below 
+      
+      
