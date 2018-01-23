@@ -73,7 +73,7 @@ public:
     GlobalTrackCacheResolver(GlobalTrackCacheResolver&&) = default;
 #endif
 
-    void updateTrackId(TrackId trackId);
+    void initTrackId(TrackId trackId);
 
     GlobalTrackCacheResolver& operator=(const GlobalTrackCacheResolver&) = delete;
 
@@ -125,7 +125,7 @@ public:
 
     // Access the singular instance (singleton)
     static GlobalTrackCache& instance() {
-        DEBUG_ASSERT(s_pInstance != nullptr);
+        DEBUG_ASSERT(s_pInstance);
         return *s_pInstance;
     }
 
@@ -135,9 +135,9 @@ public:
     // result object. It should be destroyed ASAP to reduce lock
     // contention!
     GlobalTrackCacheLocker lookupById(
-            const TrackId& trackId) const;
+            const TrackId& trackId);
 
-    QList<TrackPointer> lookupAll() const;
+    QList<TrackPointer> lookupAll();
 
     // Lookup an existing or create a new Track object.
     //
@@ -171,9 +171,9 @@ private:
         Item()
             : plainPtr(nullptr) {
         }
-        Item(const TrackRef trackRef,
+        Item(TrackRef trackRef,
                 const TrackPointer& pTrack)
-            : ref(trackRef),
+            : ref(std::move(trackRef)),
               weakPtr(pTrack),
               plainPtr(pTrack.get()) {
         }
@@ -208,10 +208,13 @@ private:
     // to verify the class invariants during development.
     bool verifyConsistency() const;
 
-    TrackPointer lookupInternal(
-            const TrackId& trackId) const;
-    TrackPointer lookupInternal(
-            const TrackRef& trackRef) const;
+    std::pair<TrackRef, TrackPointer> lookupInternal(
+            const TrackId& trackId);
+    std::pair<TrackRef, TrackPointer> lookupInternal(
+            const TrackRef& trackRef);
+
+    std::pair<TrackRef, TrackPointer> reviveInternal(
+            const Item& item);
 
     bool resolveInternal(
             GlobalTrackCacheResolver* pCacheResolver,
@@ -219,19 +222,22 @@ private:
             const TrackId& trackId,
             const QFileInfo& fileInfo);
 
-    TrackRef updateTrackIdInternal(
+    TrackRef initTrackIdInternal(
             const TrackPointer& pTrack,
             const TrackRef& trackRef,
             TrackId trackId);
 
     Item purgeInternal(
-            const TrackRef& trackRef);
+            const TrackRef& trackRef,
+            bool purgeUnexpired);
 
-    void evict(
-            Track* pTrack);
+    Track* evict(
+            Track* pTrack,
+            bool evictUnexpired = false);
     Track* evictInternal(
             GlobalTrackCacheLocker* /*nullable*/ pCacheLocker,
-            const TrackRef& trackRef);
+            const TrackRef& trackRef,
+            bool evictUnexpired = false);
 
     GlobalTrackCacheEvictor* m_pEvictor;
 

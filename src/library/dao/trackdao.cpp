@@ -617,7 +617,7 @@ TrackPointer TrackDAO::addTracksAddTrack(GlobalTrackCacheResolver&& cacheResolve
 
     const TrackId trackId(addTracksAddTrack(pTrack, unremove));
     if (trackId.isValid()) {
-        cacheResolver.updateTrackId(trackId);
+        cacheResolver.initTrackId(trackId);
         cacheResolver.unlockCache();
         // Only newly inserted tracks must be marked as clean!
         // Existing or unremoved tracks have not been added to
