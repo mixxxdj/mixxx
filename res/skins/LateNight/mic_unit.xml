@@ -30,24 +30,31 @@
                 </Children>
               </WidgetGroup>
 
-              <PushButton>
-                <Size>42f,28f</Size>
-                <TooltipId>microphone_talkover</TooltipId>
+              <WidgetGroup><!-- TALK -->
                 <ObjectName>MicTalkButton</ObjectName>
-                <NumberStates>2</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Text>TALK</Text>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Text>TALK</Text>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,talkover</ConfigKey>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-              </PushButton><!-- /TALK -->
+                <Layout>vertical</Layout>
+                <SizePolicy>min,max</SizePolicy>
+                <Children>
+                  <PushButton>
+                    <TooltipId>microphone_talkover</TooltipId>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>buttons/btn_microphone_talkover_down.svg</Pressed>
+                      <Unpressed>buttons/btn_microphone_talkover.svg</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>buttons/btn_microphone_talkover_overdown.svg</Pressed>
+                      <Unpressed>buttons/btn_microphone_talkover_over.svg</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,talkover</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+                </Children>
+              </WidgetGroup><!-- /TALK -->
 
               <WidgetGroup>
                 <Layout>vertical</Layout>
@@ -83,7 +90,6 @@
           </WidgetGroup><!-- Label, TALK, orientation -->
 
           <WidgetGroup><!-- Gain, Pfl, VU meter -->
-            <ObjectName>MicGainPFlContainer</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>me,min</SizePolicy>
             <Children>

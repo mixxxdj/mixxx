@@ -30,24 +30,32 @@
                 </Children>
               </WidgetGroup>
 
-              <PushButton>
-                <Size>42f,28f</Size>
-                <TooltipId>mute</TooltipId>
+              <WidgetGroup><!-- PLAY -->
                 <ObjectName>AuxMuteButton</ObjectName>
-                <NumberStates>2</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Text>PLAY</Text>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Text>PLAY</Text>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,mute</ConfigKey>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-              </PushButton><!-- /TALK -->
+                <Layout>vertical</Layout>
+                <SizePolicy>min,max</SizePolicy>
+                <Children>
+                  <PushButton>
+                    <TooltipId>mute</TooltipId>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>buttons/btn_aux_play_down.svg</Pressed>
+                      <Unpressed>buttons/btn_aux_play.svg</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>buttons/btn_aux_play_overdown.svg</Pressed>
+                      <Unpressed>buttons/btn_aux_play_over.svg</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,mute</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+                </Children>
+              </WidgetGroup><!-- /PLAY -->
+
 
               <WidgetGroup>
                 <Layout>vertical</Layout>
@@ -89,7 +97,6 @@
             <Children>
 
               <WidgetGroup><!-- Gain, Pfl -->
-                <ObjectName>MicGainPFlContainer</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,me</SizePolicy>
                 <Children>

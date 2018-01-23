@@ -908,7 +908,7 @@ border: 0px;
 }
 
 #MicInterior {
-  padding: 0px 5px 1px 3px;
+  padding: 0px 3px 1px 3px;
 }
 
 #MicButtonContainer {
@@ -954,27 +954,8 @@ border: 0px;
 #MicTalkButton,
 #AuxMuteButton {
   border-radius: 2px;
-  margin: 2px;
-  }
-
-#MicTalkButton[displayValue="0"],
-#AuxMuteButton[displayValue="1"] {
-  border: 1px solid #585858;
-  color: #ddd;
-  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                  stop:0 #282828,
-                                  stop:1 #0e0e0e);
+  margin: 1px 0px 1px 2px;
 }
-
-#MicTalkButton[displayValue="1"],
-#AuxMuteButton[displayValue="0"] {
-  border: 1px solid #d2d2d2;
-  color: #ddd;
-  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                  stop:0 #8F0000,
-                                  stop:1 #CF0C0C);
-}
-
 
 #SamplerDecksContainer {
   background-color: #0e0e0e;
