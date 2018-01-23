@@ -948,7 +948,7 @@ border: 0px;
 
 #MicVUMeter {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  margin-left: 5px;
+  margin-left: 7px;
 }
 
 #MicTalkButton,
