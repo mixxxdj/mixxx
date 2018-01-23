@@ -16,6 +16,7 @@ MixtrackPlatinum.init = function(id, debug) {
     MixtrackPlatinum.decks[4] = new MixtrackPlatinum.Deck(4, 0x03);
 
     MixtrackPlatinum.sampler = new MixtrackPlatinum.Sampler();
+    MixtrackPlatinum.browse = new MixtrackPlatinum.BrowseKnob();
 
     // helper functions
     var loop_led = function(group, key, midi_channel, midino) {
@@ -393,6 +394,39 @@ MixtrackPlatinum.Sampler = function() {
 
 MixtrackPlatinum.Sampler.prototype = new components.ComponentContainer();
 
+MixtrackPlatinum.BrowseKnob = function() {
+    this.knob = new components.Encoder({
+        group: '[Library]',
+        inKey: 'Move',
+        input: function (channel, control, value, status, group) {
+            if (value === 1) {
+                engine.setParameter(this.group, this.inKey + 'Down', 1);
+            } else if (value === 127) {
+                engine.setParameter(this.group, this.inKey + 'Up', 1);
+            }
+        },
+        unshift: function() {
+            this.inKey = 'Move';
+        },
+        shift: function() {
+            this.inKey = 'Scroll';
+        },
+    });
+
+    this.button = new components.Button({
+        group: '[Library]',
+        inKey: 'ChooseItem',
+        unshift: function() {
+            this.inKey = 'ChooseItem';
+        },
+        shift: function() {
+            this.inKey = 'MoveFocusForward';
+        },
+    });
+};
+
+MixtrackPlatinum.BrowseKnob.prototype = new components.ComponentContainer();
+
 MixtrackPlatinum.encodeNum = function(number) {
     var number_array = [
         (number >> 28) & 0x0F,
@@ -700,11 +734,13 @@ MixtrackPlatinum.shiftToggle = function (channel, control, value, status, group)
         MixtrackPlatinum.decks.shift();
         MixtrackPlatinum.sampler.shift();
         MixtrackPlatinum.effects.shift();
+        MixtrackPlatinum.browse.shift();
     }
     else {
         MixtrackPlatinum.decks.unshift();
         MixtrackPlatinum.sampler.unshift();
         MixtrackPlatinum.effects.unshift();
+        MixtrackPlatinum.browse.unshift();
     }
 
     for (i = 1; i <= 4; ++i) {

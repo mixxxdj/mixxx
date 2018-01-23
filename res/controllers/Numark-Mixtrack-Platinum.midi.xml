@@ -2008,12 +2008,21 @@
                 </options>
             </control>
             <control>
-                <group>[Playlist]</group>
-                <key>SelectTrackKnob</key>
+                <group>[Library]</group>
+                <key>MixtrackPlatinum.browse.knob.input</key>
                 <status>0xBF</status>
                 <midino>0x00</midino>
                 <options>
-                    <selectknob/>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>MixtrackPlatinum.browse.button.input</key>
+                <status>0x9F</status>
+                <midino>0x1F</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
         </controls>
