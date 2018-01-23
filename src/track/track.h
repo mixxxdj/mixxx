@@ -415,7 +415,7 @@ class TrackPointer: public std::shared_ptr<Track> {
     TrackPointer& operator=(TrackPointer&&) = default;
 #else
     // Workaround for Visual Studio 2015 (and before)
-    TrackPointer& operator=(TrackPointer&&) = default {
+    TrackPointer& operator=(TrackPointer&& other) {
         std::shared_ptr<Track>::operator=(std::move(other));
         DEBUG_ASSERT(!other);
         return *this;
