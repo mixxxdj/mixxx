@@ -1097,11 +1097,11 @@ border: 0px;
 }
 
 #EffectUnit1, #EffectUnit3 {
-  margin: 5px 3px 0px 2px;
+  margin: 5px 5px 2px 2px;
 }
 
 #EffectUnit2, #EffectUnit4 {
-  margin: 5px 2px 0px 3px;
+  margin: 5px 2px 2px 5px;
 }
 
 #EffectRows {
