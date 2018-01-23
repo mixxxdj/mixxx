@@ -136,7 +136,7 @@
                 <Size>,12f</Size>
                 <Children>
                   <VuMeter>
-                    <TooltipId>microphone_VuMeter</TooltipId>
+                    <TooltipId>channel_VuMeter</TooltipId>
                     <Size>64f,4f</Size>
                     <PathVu>vumeter_latency_over.png</PathVu>
                     <PathBack>vumeter_latency_bg_solid.png</PathBack>

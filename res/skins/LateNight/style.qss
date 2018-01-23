@@ -944,7 +944,6 @@ border: 0px;
 }
 
 #MicPflButton {
-  qproperty-layoutAlignment: 'AlignCenter';
 }
 
 #MicVUMeter {

@@ -24,7 +24,7 @@
                   <Label>
                     <ObjectName>MicSubTitle</ObjectName>
                     <Size>,18f</Size>
-                    <Text>Aux <Variable name="micnum"/></Text>
+                    <Text>Aux <Variable name="auxnum"/></Text>
                     <Alignment>center</Alignment>
                   </Label>
                 </Children>
@@ -136,7 +136,7 @@
                 <Size>,12f</Size>
                 <Children>
                   <VuMeter>
-                    <TooltipId>auxiliary_VuMeter</TooltipId>
+                    <TooltipId>channel_VuMeter</TooltipId>
                     <Size>64f,4f</Size>
                     <PathVu>vumeter_latency_over.png</PathVu>
                     <PathBack>vumeter_latency_bg_solid.png</PathBack>
