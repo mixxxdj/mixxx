@@ -118,7 +118,7 @@ Console::Console()
             // Save current console title.
             if (GetConsoleTitle(m_oldTitle, MAX_PATH)) {
                 // Build new console title string.
-                StringCchPrintf(szNewTitle, MAX_PATH, TEXT("%s : Mixxx"), m_oldTitle);
+                StringCchPrintf(szNewTitle, MAX_PATH, TEXT("%s : Mixxx %d %d"), m_oldTitle, typeStdIn, typeStdErr);
 
                 // Set console title to new title
                 if (SetConsoleTitle(szNewTitle)) {
