@@ -27,25 +27,13 @@
         </Connection>
       </PushButton>
 
-      <WidgetGroup> <!-- Spacer -->
-        <Layout>horizontal</Layout>
-        <Size>5f,min</Size>
-        <Children/>
-      </WidgetGroup>
-
       <WidgetGroup>
         <ObjectName>ToolbarDivider</ObjectName>
-        <Size>3f,9min</Size>
-      </WidgetGroup>
-
-      <WidgetGroup> <!-- Spacer -->
-        <Layout>horizontal</Layout>
-        <Size>5f,min</Size>
-        <Children/>
+        <Size>13f,9min</Size>
       </WidgetGroup>
 
       <PushButton>
-        <Size>54f,24f</Size>
+        <Size>56f,24f</Size>
         <TooltipId>toggle_4decks</TooltipId>
         <ObjectName>GuiToggleButton</ObjectName>
         <NumberStates>2</NumberStates>
@@ -67,7 +55,7 @@
       </PushButton>
 
       <PushButton>
-        <Size>44f,24f</Size>
+        <Size>46f,24f</Size>
         <TooltipId>toggle_4decks</TooltipId>
         <ObjectName>GuiToggleButton</ObjectName>
         <NumberStates>2</NumberStates>
@@ -110,7 +98,7 @@
       </PushButton>
 
       <PushButton>
-        <Size>59f,24f</Size>
+        <Size>61f,24f</Size>
         <ObjectName>GuiToggleButton</ObjectName>
         <NumberStates>2</NumberStates>
         <State>
@@ -131,7 +119,7 @@
       </PushButton>
 
       <PushButton>
-        <Size>59f,24f</Size>
+        <Size>61f,24f</Size>
         <ObjectName>GuiToggleButton</ObjectName>
         <NumberStates>2</NumberStates>
         <State>
@@ -172,21 +160,9 @@
         </Connection>
       </PushButton>
 
-      <WidgetGroup> <!-- Spacer -->
-        <Layout>horizontal</Layout>
-        <Size>5f,min</Size>
-        <Children/>
-      </WidgetGroup>
-
       <WidgetGroup>
         <ObjectName>ToolbarDivider</ObjectName>
-        <Size>3f,9min</Size>
-      </WidgetGroup>
-
-      <WidgetGroup> <!-- Spacer -->
-        <Layout>horizontal</Layout>
-        <Size>5f,min</Size>
-        <Children/>
+        <Size>13f,9min</Size>
       </WidgetGroup>
 
       <PushButton>
@@ -233,7 +209,7 @@
       </PushButton>
 
       <PushButton>
-        <Size>66f,24f</Size>
+        <Size>69f,24f</Size>
         <TooltipId>show_samplers</TooltipId>
         <ObjectName>GuiToggleButton</ObjectName>
         <NumberStates>2</NumberStates>

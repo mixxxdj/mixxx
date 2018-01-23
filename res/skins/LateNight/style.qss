@@ -429,6 +429,7 @@ WPushButton, QPushButton {
 
 #ToolbarDivider {
   background: transparent url(skin:/buttons/toolbar_divider.png) no-repeat center center;
+  margin: 0px 5px;
 }
 
 #RecBox {
