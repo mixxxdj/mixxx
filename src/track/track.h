@@ -302,9 +302,6 @@ class Track : public QObject {
     // files that are still opened for reading.
     void markForMetadataExport();
 
-  public slots:
-    void slotCueUpdated();
-
   signals:
     void waveformUpdated();
     void waveformSummaryUpdated();
@@ -321,6 +318,7 @@ class Track : public QObject {
     void clean(Track* pTrack);
 
   private slots:
+    void slotCueUpdated();
     void slotBeatsUpdated();
 
   private:
