@@ -7,6 +7,7 @@
 
 #include "track/globaltrackcache.h"
 
+
 namespace {
 
 const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));

@@ -1,6 +1,8 @@
 #pragma once
 
 
+#include <set>
+
 #include <QObject>
 #include <QHash>
 #include <QList>
@@ -137,8 +139,6 @@ public:
     GlobalTrackCacheLocker lookupById(
             const TrackId& trackId);
 
-    QList<TrackPointer> lookupAll();
-
     // Lookup an existing or create a new Track object.
     //
     // NOTE: The GlobalTrackCache is locked during the lifetime of the
@@ -223,25 +223,25 @@ private:
             const QFileInfo& fileInfo);
 
     TrackRef initTrackIdInternal(
-            const TrackPointer& pTrack,
+            TrackPointer pTrack,
             const TrackRef& trackRef,
             TrackId trackId);
 
-    Item purgeInternal(
+    Track* evictInternal(
             const TrackRef& trackRef,
-            bool purgeUnexpired);
+            Track* pTrack,
+            bool evictUnexpired);
 
     Track* evict(
             Track* pTrack,
-            bool evictUnexpired = false);
-    Track* evictInternal(
-            GlobalTrackCacheLocker* /*nullable*/ pCacheLocker,
-            const TrackRef& trackRef,
             bool evictUnexpired = false);
 
     GlobalTrackCacheEvictor* m_pEvictor;
 
     mutable QMutex m_mutex;
+
+    typedef std::set<Track*> CachedTracks;
+    CachedTracks m_cachedTracks;
 
     typedef QHash<TrackId, Item> TracksById;
     TracksById m_tracksById;

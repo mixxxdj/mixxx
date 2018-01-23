@@ -8,7 +8,14 @@ namespace {
 
 const mixxx::Logger kLogger("GlobalTrackCache");
 
-constexpr bool kLogStats = false;
+// Enforce logging during tests
+constexpr bool kLogEnabled = false;
+
+inline bool debugLogEnabled() {
+    return kLogEnabled || kLogger.debugEnabled();
+}
+
+constexpr bool kLogStats = true;
 
 inline
 TrackRef createTrackRef(const Track& track) {
@@ -84,7 +91,7 @@ void GlobalTrackCacheLocker::unlockCache() {
         if (kLogger.traceEnabled()) {
             kLogger.trace() << "Unlocking cache";
         }
-        if (kLogStats && kLogger.debugEnabled()) {
+        if (kLogStats && debugLogEnabled()) {
             kLogger.debug()
                     << "#tracksById ="
                     << GlobalTrackCache::s_pInstance->m_tracksById.size()
@@ -120,6 +127,7 @@ void GlobalTrackCacheResolver::initTrackId(TrackId trackId) {
     DEBUG_ASSERT(m_pTrack);
     DEBUG_ASSERT(trackId.isValid());
     if (m_trackRef.getId().isValid()) {
+        // Ignore setting the same id twice
         DEBUG_ASSERT(m_trackRef.getId() == trackId);
     } else {
         m_trackRef = GlobalTrackCache::instance().initTrackIdInternal(
@@ -153,8 +161,11 @@ void GlobalTrackCache::destroyInstance() {
 //static
 void GlobalTrackCache::deleter(Track* pTrack) {
     DEBUG_ASSERT(pTrack);
+    // Any access to pTrack is forbidden!! Due to race condition
+    // this pointer might already have been deleted! Only the
+    // cache knows this.
     if (s_pInstance) {
-        delete s_pInstance->evict(pTrack);
+        /*delete*/ s_pInstance->evict(pTrack);
     } else {
         kLogger.warning()
                 << "Deleting uncached track";
@@ -177,6 +188,47 @@ GlobalTrackCache::~GlobalTrackCache() {
 }
 
 bool GlobalTrackCache::verifyConsistency() const {
+    VERIFY_OR_DEBUG_ASSERT(m_cachedTracks.size() >=
+            CachedTracks::size_type(m_tracksById.keys().size())) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_cachedTracks.size() >=
+            CachedTracks::size_type(m_tracksByCanonicalLocation.keys().size())) {
+        return false;
+    }
+    for (CachedTracks::const_iterator i = m_cachedTracks.begin(); i != m_cachedTracks.end(); ++i) {
+        Track* pTrack = *i;
+        VERIFY_OR_DEBUG_ASSERT(*i) {
+            return false;
+        }
+        TrackRef trackRef = createTrackRef(*pTrack);
+        if (trackRef.hasId()) {
+            TracksById::const_iterator trackById =
+                    m_tracksById.find(trackRef.getId());
+            VERIFY_OR_DEBUG_ASSERT(trackById != m_tracksById.end()) {
+                return false;
+            }
+            VERIFY_OR_DEBUG_ASSERT(trackById.value().ref == trackRef) {
+                return false;
+            }
+            VERIFY_OR_DEBUG_ASSERT(trackById.value().plainPtr == pTrack) {
+                return false;
+            }
+        }
+        if (trackRef.hasCanonicalLocation()) {
+            TracksByCanonicalLocation::const_iterator trackByCanonicalLocation =
+                    m_tracksByCanonicalLocation.find(trackRef.getCanonicalLocation());
+            VERIFY_OR_DEBUG_ASSERT(trackByCanonicalLocation != m_tracksByCanonicalLocation.end()) {
+                return false;
+            }
+            VERIFY_OR_DEBUG_ASSERT(trackByCanonicalLocation.value().ref == trackRef) {
+                return false;
+            }
+            VERIFY_OR_DEBUG_ASSERT(trackByCanonicalLocation.value().plainPtr == pTrack) {
+                return false;
+            }
+        }
+    }
     VERIFY_OR_DEBUG_ASSERT(m_tracksById.keys().size() == m_tracksById.uniqueKeys().size()) {
         return false;
     }
@@ -187,9 +239,6 @@ bool GlobalTrackCache::verifyConsistency() const {
             return false;
         }
         VERIFY_OR_DEBUG_ASSERT(i.key() == trackId) {
-            return false;
-        }
-        VERIFY_OR_DEBUG_ASSERT(createTrackRef(*(*i).plainPtr) == trackRef) {
             return false;
         }
         VERIFY_OR_DEBUG_ASSERT(1 == m_tracksById.count(trackId)) {
@@ -219,9 +268,6 @@ bool GlobalTrackCache::verifyConsistency() const {
             return false;
         }
         VERIFY_OR_DEBUG_ASSERT(i.key() == canonicalLocation) {
-            return false;
-        }
-        VERIFY_OR_DEBUG_ASSERT(createTrackRef(*(*i).plainPtr) == trackRef) {
             return false;
         }
         VERIFY_OR_DEBUG_ASSERT(1 == m_tracksByCanonicalLocation.count(canonicalLocation)) {
@@ -305,33 +351,60 @@ std::pair<TrackRef, TrackPointer> GlobalTrackCache::lookupInternal(
 
 std::pair<TrackRef, TrackPointer> GlobalTrackCache::reviveInternal(
         const Item& item) {
+    DEBUG_ASSERT(m_cachedTracks.find(item.plainPtr) != m_cachedTracks.end());
     TrackPointer pTrack(item.weakPtr);
     if (pTrack) {
+        DEBUG_ASSERT(pTrack.get() == item.plainPtr);
+        if (debugLogEnabled()) {
+            kLogger.debug()
+                    << "Found alive track"
+                    << item.ref
+                    << item.plainPtr;
+        }
         return std::make_pair(item.ref, pTrack);
     }
     // Race condition: The deleter for the Track object has not
     // been invoked, but the object is still referenced within
     // the cache. We need to revive it and later the deleter will
     // leave the unexpired object in the cache.
-    if (kLogger.debugEnabled()) {
+    if (debugLogEnabled()) {
         kLogger.debug()
                 << "Reviving zombie track"
-                << item.ref;
+                << item.ref
+                << item.plainPtr;
     }
     DEBUG_ASSERT(item.weakPtr.expired());
     DEBUG_ASSERT(item.plainPtr);
     pTrack = TrackPointer(item.plainPtr, deleter);
     Item revivedItem(item.ref, pTrack);
+    DEBUG_ASSERT(revivedItem.ref == item.ref);
+    DEBUG_ASSERT(revivedItem.plainPtr == pTrack.get());
     DEBUG_ASSERT(!revivedItem.weakPtr.expired());
     if (revivedItem.ref.hasId()) {
-        m_tracksById.insert(
-                revivedItem.ref.getId(),
-                revivedItem);
+        auto i = m_tracksById.find(
+                revivedItem.ref.getId());
+        if (i != m_tracksById.end()) {
+            i.value().weakPtr = revivedItem.weakPtr;
+            // Only the smart pointer should have changed
+            DEBUG_ASSERT(i.value() == revivedItem);
+        } else {
+            m_tracksById.insert(
+                    revivedItem.ref.getId(),
+                    revivedItem);
+        }
     }
     if (revivedItem.ref.hasCanonicalLocation()) {
-        m_tracksByCanonicalLocation.insert(
-                revivedItem.ref.getCanonicalLocation(),
-                revivedItem);
+        auto i = m_tracksByCanonicalLocation.find(
+                revivedItem.ref.getCanonicalLocation());
+        if (i != m_tracksByCanonicalLocation.end()) {
+            i.value().weakPtr = revivedItem.weakPtr;
+            // Only the smart pointer should have changed
+            DEBUG_ASSERT(i.value() == revivedItem);
+        } else {
+            m_tracksByCanonicalLocation.insert(
+                    revivedItem.ref.getCanonicalLocation(),
+                    revivedItem);
+        }
     }
     return std::make_pair(revivedItem.ref, pTrack);
 }
@@ -344,14 +417,14 @@ bool GlobalTrackCache::resolveInternal(
     DEBUG_ASSERT(pCacheResolver);
     // Primary lookup by id (if available)
     if (trackId.isValid()) {
-        if (kLogger.debugEnabled()) {
+        if (debugLogEnabled()) {
             kLogger.debug()
                     << "Resolving track by id"
                     << trackId;
         }
         auto trackRefPointer = lookupInternal(trackId);
         if (trackRefPointer.second) {
-            if (kLogger.debugEnabled()) {
+            if (debugLogEnabled()) {
                 kLogger.debug()
                         << "Cache hit - found track by id"
                         << trackRefPointer.first;
@@ -369,7 +442,7 @@ bool GlobalTrackCache::resolveInternal(
     // avoid calculating the canonical file path if it is not needed.
     TrackRef trackRef(TrackRef::fromFileInfo(fileInfo, trackId));
     if (trackRef.hasCanonicalLocation()) {
-        if (kLogger.debugEnabled()) {
+        if (debugLogEnabled()) {
             kLogger.debug()
                     << "Resolving track by canonical location"
                     << trackRef.getCanonicalLocation();
@@ -377,7 +450,7 @@ bool GlobalTrackCache::resolveInternal(
         auto trackRefPointer = lookupInternal(trackRef);
         if (trackRefPointer.second) {
             // Cache hit
-            if (kLogger.debugEnabled()) {
+            if (debugLogEnabled()) {
                 kLogger.debug()
                         << "Cache hit - found track by canonical location"
                         << trackRefPointer.first;
@@ -413,11 +486,6 @@ GlobalTrackCacheResolver GlobalTrackCache::resolve(
                 << trackRef;
         return cacheResolver;
     }
-    if (kLogger.debugEnabled()) {
-        kLogger.debug()
-                << "Cache miss - inserting new track into cache"
-                << trackRef;
-    }
     auto pTrack = TrackPointer(
             new Track(
                     std::move(fileInfo),
@@ -426,12 +494,26 @@ GlobalTrackCacheResolver GlobalTrackCache::resolve(
             deleter);
     DEBUG_ASSERT(createTrackRef(*pTrack) == trackRef);
     const Item item(trackRef, pTrack);
+    if (debugLogEnabled()) {
+        kLogger.debug()
+                << "Cache miss - inserting new track into cache"
+                << trackRef
+                << item.plainPtr;
+    }
+    DEBUG_ASSERT(m_cachedTracks.find(item.plainPtr) == m_cachedTracks.end());
+    m_cachedTracks.insert(item.plainPtr);
     if (trackRef.hasId()) {
+        // Insert item by id
+        DEBUG_ASSERT(m_tracksById.find(
+                trackRef.getId()) == m_tracksById.end());
         m_tracksById.insert(
                 trackRef.getId(),
                 item);
     }
     if (trackRef.hasCanonicalLocation()) {
+        // Insert item by track location
+        DEBUG_ASSERT(m_tracksByCanonicalLocation.find(
+                trackRef.getCanonicalLocation()) == m_tracksByCanonicalLocation.end());
         m_tracksByCanonicalLocation.insert(
                 trackRef.getCanonicalLocation(),
                 item);
@@ -444,21 +526,28 @@ GlobalTrackCacheResolver GlobalTrackCache::resolve(
 }
 
 TrackRef GlobalTrackCache::initTrackIdInternal(
-        const TrackPointer& pTrack,
+        TrackPointer pTrack,
         const TrackRef& trackRef,
         TrackId trackId) {
-    DEBUG_ASSERT(pTrack);
+
     DEBUG_ASSERT(!trackRef.getId().isValid());
     DEBUG_ASSERT(trackId.isValid());
-    DEBUG_ASSERT(m_tracksById.end() == m_tracksById.find(trackId));
     TrackRef trackRefWithId(trackRef, trackId);
-    Item item(trackRefWithId, pTrack);
+
+    // Insert item by id
+    DEBUG_ASSERT(m_tracksById.find(trackId) == m_tracksById.end());
     m_tracksById.insert(
-            item.ref.getId(),
-            item);
-    m_tracksByCanonicalLocation.insert(
-            item.ref.getCanonicalLocation(),
-            item);
+            trackId,
+            Item(trackRefWithId, std::move(pTrack)));
+
+    // Update item by track location
+    auto i = m_tracksByCanonicalLocation.find(
+            trackRef.getCanonicalLocation());
+    DEBUG_ASSERT(i != m_tracksByCanonicalLocation.end());
+    i.value().ref = trackRefWithId;
+
+    DEBUG_ASSERT(m_tracksById.find(trackId).value() ==
+            m_tracksByCanonicalLocation.find(trackRef.getCanonicalLocation()).value());
     return trackRefWithId;
 }
 
@@ -466,157 +555,135 @@ Track* GlobalTrackCache::evict(
         Track* pTrack,
         bool evictUnexpired) {
     DEBUG_ASSERT(pTrack);
-    const auto trackRef = TrackRef::fromFileInfo(
-            pTrack->m_fileInfo,
-            pTrack->m_record.getId());
     GlobalTrackCacheLocker cacheLocker;
-    Track* pEvictedTrack = evictInternal(
-            &cacheLocker,
-            trackRef,
-            evictUnexpired);
-    // The cache might have been unlocked during the callback!
-    DEBUG_ASSERT(!pEvictedTrack || (pEvictedTrack == pTrack));
-    return pEvictedTrack;
-}
 
-GlobalTrackCache::Item GlobalTrackCache::purgeInternal(
-        const TrackRef& trackRef,
-        bool purgeUnexpired) {
-    if (kLogger.debugEnabled()) {
-        kLogger.debug()
-                << "Purging track"
-                << trackRef;
-    }
-
-    Item purgeItem;
-    DEBUG_ASSERT(!purgeItem.ref.isValid());
-    if (trackRef.hasId()) {
-        const auto trackById = m_tracksById.find(trackRef.getId());
-        if (trackById != m_tracksById.end()) {
-            purgeItem = *trackById;
-            if (purgeUnexpired || purgeItem.weakPtr.expired()) {
-                m_tracksById.erase(trackById);
-            } else {
-                kLogger.debug()
-                    << "Skip purging of unexpired track"
-                    << purgeItem.ref
-                    << ": use_count ="
-                    << purgeItem.weakPtr.use_count();
-                return Item();
-            }
-        }
-    }
-    DEBUG_ASSERT(
-            !trackRef.hasCanonicalLocation() ||
-            !purgeItem.ref.hasCanonicalLocation() ||
-            (trackRef.getCanonicalLocation() == purgeItem.ref.getCanonicalLocation()));
-    const QString canonicalLocation(
-            purgeItem.ref.hasCanonicalLocation() ?
-                    purgeItem.ref.getCanonicalLocation() :
-                    trackRef.getCanonicalLocation());
-    const auto trackByCanonicalLocation(
-            m_tracksByCanonicalLocation.find(canonicalLocation));
-    if (m_tracksByCanonicalLocation.end() != trackByCanonicalLocation) {
-        if (purgeItem.ref.hasCanonicalLocation()) {
-            DEBUG_ASSERT(purgeItem == *trackByCanonicalLocation);
-        } else {
-            purgeItem = *trackByCanonicalLocation;
-        }
-        DEBUG_ASSERT(
-            !trackRef.hasId() ||
-            !purgeItem.ref.hasId() ||
-            (trackRef.getId() == purgeItem.ref.getId()));
-        if (purgeUnexpired || purgeItem.weakPtr.expired()) {
-            // Even if given trackRef does not have an id the found
-            // item might have one. The corresponding entry must be
-            // removed, otherwise we end up with an inconsistent
-            // cache!
-            if (!trackRef.hasId() && purgeItem.ref.hasId()) {
-                m_tracksById.remove(purgeItem.ref.getId());
-            }
-            m_tracksByCanonicalLocation.erase(trackByCanonicalLocation);
-            return purgeItem;
-        } else {
-            // Even if given trackRef does not have an id the found
-            // item might have one. The corresponding entry must be
-            // re-inserted, otherwise we end up with an inconsistent
-            // cache!
-            if (!trackRef.hasId() && purgeItem.ref.hasId()) {
-                m_tracksById.insert(
-                        purgeItem.ref.getId(),
-                        purgeItem);
-            }
+    if (m_cachedTracks.find(pTrack) == m_cachedTracks.end()) {
+        if (debugLogEnabled()) {
             kLogger.debug()
-                << "Skip purging of unexpired track"
-                << purgeItem.ref
-                << ": use_count ="
-                << purgeItem.weakPtr.use_count();
-            return Item();
+                    << "Skip deletion of dead track"
+                    << pTrack;
         }
+        return nullptr;
     }
-    return purgeItem;
-}
-
-Track* GlobalTrackCache::evictInternal(
-        GlobalTrackCacheLocker* pCacheLocker,
-        const TrackRef& trackRef,
-        bool evictUnexpired) {
-    if (kLogger.debugEnabled()) {
+    // Now we know that the pointer has not been deleted before
+    // and we can safely access it!s
+    const auto trackRef = createTrackRef(*pTrack);
+    if (debugLogEnabled()) {
         kLogger.debug()
                 << "Evicting track"
-                << trackRef;
+                << trackRef
+                << pTrack;
     }
 
-    const Item purgedItem = purgeInternal(trackRef, evictUnexpired);
+    Track* pEvictedTrack = evictInternal(trackRef, pTrack, evictUnexpired);
     DEBUG_ASSERT(verifyConsistency());
-    if (purgedItem.plainPtr) {
+    if (pEvictedTrack) {
+        DEBUG_ASSERT(pEvictedTrack == pTrack);
+
         // It can produce dangerous signal loops if the track is still
         // sending signals while being saved! All references to this
         // track have been dropped at this point, so there is no need
         // to send any signals.
-        // See: https://bugs.launchpad.net/mixxx/+bug/1365708
-        purgedItem.plainPtr->blockSignals(true);
+        // See: https://bugs.launchpad.net/mixxx/+bug/136578
+        pEvictedTrack->blockSignals(true);
 
         // Keep the cache locked while evicting the track object!
         // The callback is given the chance to unlock the cache
         // after all operations that rely on managed track ownership
         // have been done, e.g. exporting track metadata into a file.
         m_pEvictor->onEvictingTrackFromCache(
-                pCacheLocker,
-                purgedItem.plainPtr);
-        // At this point the cache might have been unlocked already
+                &cacheLocker,
+                pEvictedTrack);
+        // At this point the cache might have been unlocked by the
+        // callback!!
     } else {
-        if (kLogger.debugEnabled()) {
+        if (debugLogEnabled()) {
             kLogger.debug()
-                    << "Skip evicting of uncached/recached track"
+                    << "Keeping unexpired track"
                     << trackRef;
         }
     }
-    return purgedItem.plainPtr;
+    // If pEvictedTrack == nullptr then pTrack is still referenced
+    // within the cache and must not be deleted!
+    return pEvictedTrack;
 }
 
-QList<TrackPointer> GlobalTrackCache::lookupAll() {
-    QList<TrackPointer> allTracks;
-    GlobalTrackCacheLocker cacheLocker;
-    QList<Item> cacheItems(
-            m_tracksByCanonicalLocation.values());
-    allTracks.reserve(cacheItems.size());
-    for (Item cacheItem : cacheItems) {
-        TrackPointer pTrack = reviveInternal(cacheItem).second;
-        DEBUG_ASSERT(pTrack);
-        allTracks.append(pTrack);
+Track* GlobalTrackCache::evictInternal(
+        const TrackRef& trackRef,
+        Track* pTrack,
+        bool evictUnexpired) {
+    Item evictItem;
+    DEBUG_ASSERT(!evictItem.ref.isValid());
+    if (trackRef.hasId()) {
+        const auto trackById = m_tracksById.find(trackRef.getId());
+        if (trackById != m_tracksById.end()) {
+            evictItem = *trackById;
+            DEBUG_ASSERT(evictItem.plainPtr == pTrack);
+            if (evictUnexpired || evictItem.weakPtr.expired()) {
+                // Evict expired track
+                m_tracksById.erase(trackById);
+            } else {
+                // Keep unexpired track
+                return nullptr;
+            }
+        }
     }
-    return allTracks;
+    DEBUG_ASSERT(
+            !trackRef.hasCanonicalLocation() ||
+            !evictItem.ref.hasCanonicalLocation() ||
+            (trackRef.getCanonicalLocation() == evictItem.ref.getCanonicalLocation()));
+    const QString canonicalLocation(
+            evictItem.ref.hasCanonicalLocation() ?
+                    evictItem.ref.getCanonicalLocation() :
+                    trackRef.getCanonicalLocation());
+    const auto trackByCanonicalLocation(
+            m_tracksByCanonicalLocation.find(canonicalLocation));
+    if (m_tracksByCanonicalLocation.end() != trackByCanonicalLocation) {
+        if (evictItem.ref.hasCanonicalLocation()) {
+            DEBUG_ASSERT(evictItem == *trackByCanonicalLocation);
+        } else {
+            evictItem = *trackByCanonicalLocation;
+            DEBUG_ASSERT(evictItem.plainPtr == pTrack);
+        }
+        DEBUG_ASSERT(
+            !trackRef.hasId() ||
+            !evictItem.ref.hasId() ||
+            (trackRef.getId() == evictItem.ref.getId()));
+        if (evictUnexpired || evictItem.weakPtr.expired()) {
+            // Evict expired track
+            VERIFY_OR_DEBUG_ASSERT(trackRef.hasId() || !evictItem.ref.hasId()) {
+                m_tracksById.remove(
+                        evictItem.ref.getId());
+            }
+            m_tracksByCanonicalLocation.erase(
+                    trackByCanonicalLocation);
+        } else {
+            VERIFY_OR_DEBUG_ASSERT(trackRef.hasId() || !evictItem.ref.hasId()) {
+                m_tracksById.insert(
+                        evictItem.ref.getId(),
+                        evictItem);
+            }
+            // Keep unexpired track
+            return nullptr;
+        }
+    }
+    DEBUG_ASSERT(m_cachedTracks.find(pTrack) != m_cachedTracks.end());
+    m_cachedTracks.erase(pTrack);
+    return pTrack;
 }
 
 void GlobalTrackCache::evictAll() {
-    QList<TrackPointer> allTracks(lookupAll());
-    for (const TrackPointer& pTrack : allTracks) {
-        evict(pTrack.get(), true);
+    GlobalTrackCacheLocker cacheLocker;
+    while (!m_cachedTracks.empty()) {
+        Track* pTrack = *m_cachedTracks.begin();
+        evictInternal(
+                createTrackRef(*pTrack),
+                pTrack,
+                true);
     }
 }
 
 bool GlobalTrackCache::isEmpty() const {
     GlobalTrackCacheLocker cacheLocker;
-    return m_tracksById.isEmpty() && m_tracksByCanonicalLocation.isEmpty();
+    return m_cachedTracks.empty();
 }
