@@ -75,13 +75,13 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>buttons/btn_slip.png</Pressed>
-                  <Unpressed>buttons/btn_slip.png</Unpressed>
+                  <Pressed>buttons/btn_slip.svg</Pressed>
+                  <Unpressed>buttons/btn_slip.svg</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>buttons/btn_slip_over.png</Pressed>
-                  <Unpressed>buttons/btn_slip_over.png</Unpressed>
+                  <Pressed>buttons/btn_slip_over.svg</Pressed>
+                  <Unpressed>buttons/btn_slip_over.svg</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,slip_enabled</ConfigKey>
@@ -93,13 +93,13 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>buttons/btn_repeat2.png</Pressed>
-                  <Unpressed>buttons/btn_repeat2.png</Unpressed>
+                  <Pressed>buttons/btn_repeat.svg</Pressed>
+                  <Unpressed>buttons/btn_repeat.svg</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>buttons/btn_repeat2_over.png</Pressed>
-                  <Unpressed>buttons/btn_repeat2_over.png</Unpressed>
+                  <Pressed>buttons/btn_repeat_over.svg</Pressed>
+                  <Unpressed>buttons/btn_repeat_over.svg</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,repeat</ConfigKey>
@@ -112,8 +112,8 @@
                 <NumberStates>1</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>buttons/btn_eject2_over.png</Pressed>
-                  <Unpressed>buttons/btn_eject2.png</Unpressed>
+                  <Pressed>buttons/btn_eject_over.svg</Pressed>
+                  <Unpressed>buttons/btn_eject.svg</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,eject</ConfigKey>
@@ -133,8 +133,8 @@
                 <RightClickIsPushButton>true</RightClickIsPushButton>
                 <State>
                   <Number>0</Number>
-                  <Pressed>buttons/btn_beat_curpos_over.png</Pressed>
-                  <Unpressed>buttons/btn_beat_curpos.png</Unpressed>
+                  <Pressed>buttons/btn_beat_curpos_over.svg</Pressed>
+                  <Unpressed>buttons/btn_beat_curpos.svg</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,beats_translate_curpos</ConfigKey>
@@ -153,13 +153,13 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>buttons/btn_quantize2.png</Pressed>
-                  <Unpressed>buttons/btn_quantize2.png</Unpressed>
+                  <Pressed>buttons/btn_quantize.svg</Pressed>
+                  <Unpressed>buttons/btn_quantize.svg</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>buttons/btn_quantize2_over.png</Pressed>
-                  <Unpressed>buttons/btn_quantize2_over.png</Unpressed>
+                  <Pressed>buttons/btn_quantize_over.svg</Pressed>
+                  <Unpressed>buttons/btn_quantize_over.svg</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,quantize</ConfigKey>
@@ -172,13 +172,13 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>buttons/btn_keylock2.png</Pressed>
-                  <Unpressed>buttons/btn_keylock2.png</Unpressed>
+                  <Pressed>buttons/btn_keylock.svg</Pressed>
+                  <Unpressed>buttons/btn_keylock.svg</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>buttons/btn_keylock2_over.png</Pressed>
-                  <Unpressed>buttons/btn_keylock2_over.png</Unpressed>
+                  <Pressed>buttons/btn_keylock_over.svg</Pressed>
+                  <Unpressed>buttons/btn_keylock_over.svg</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,keylock</ConfigKey>

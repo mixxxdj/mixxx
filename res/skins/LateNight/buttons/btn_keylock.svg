@@ -27,19 +27,7 @@
   <defs
      id="defs8" />
   <path
-     d="M 4,4 4,14 6,14 6,4 z"
-     id="path3805"
-     style="fill:#585858;fill-opacity:1" />
-  <path
-     d="M 9,4.0000003 9,14 l 2,0 0,-9.9999997 z"
-     id="path3805-6"
-     style="fill:#585858;fill-opacity:1" />
-  <path
-     d="M 14,4.0000002 14,14 l 2,0 0,-9.9999998 z"
-     id="path3805-7"
-     style="fill:#585858;fill-opacity:1" />
-  <path
-     d="M 19,4.0000002 19,14 l 2,0 0,-9.9999998 z"
-     id="path3805-6-5"
-     style="fill:#585858;fill-opacity:1" />
+     d="M 12.5,3 C 10.567003,3 9,4.5670034 9,6.5 L 9,8 7,8 7,15 18,15 18,8 16,8 16,6.5 C 16,4.5670034 14.432997,3 12.5,3 z m 0,2 C 13.328427,5 14,5.6715729 14,6.5 L 14,8 11,8 11,6.5 C 11,5.6715729 11.671573,5 12.5,5 z m -0.5,5 1,0 0,3 -1,0 0,-3 z"
+     id="rect4195"
+     style="color:#000000;fill:#585858;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2.25;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
 </svg>

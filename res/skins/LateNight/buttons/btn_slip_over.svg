@@ -27,19 +27,12 @@
   <defs
      id="defs8" />
   <path
-     d="M 4,4 4,14 6,14 6,4 z"
-     id="path3805"
-     style="fill:#585858;fill-opacity:1" />
+     d="M -3.9999998,12 -10.928203,1.8564049e-7 2.9282031,-1.8564049e-7 z"
+     transform="matrix(0.91413792,0,0,0.91413792,12.989885,4.000345)"
+     id="path5170"
+     style="color:#000000;fill:#55f864;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2.25;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
   <path
-     d="M 9,4.0000003 9,14 l 2,0 0,-9.9999997 z"
-     id="path3805-6"
-     style="fill:#585858;fill-opacity:1" />
-  <path
-     d="M 14,4.0000002 14,14 l 2,0 0,-9.9999998 z"
-     id="path3805-7"
-     style="fill:#585858;fill-opacity:1" />
-  <path
-     d="M 19,4.0000002 19,14 l 2,0 0,-9.9999998 z"
-     id="path3805-6-5"
-     style="fill:#585858;fill-opacity:1" />
+     d="M 9.333333,4.0003449 15.666667,14.964928 22,4.0003449 l -12.666667,0 z m 2.929167,1.7020833 6.808333,0 L 15.666667,11.600344 12.2625,5.7024282 z"
+     id="path5170-9"
+     style="color:#000000;fill:#55f864;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2.25;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
 </svg>

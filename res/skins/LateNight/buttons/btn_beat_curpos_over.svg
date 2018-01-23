@@ -26,20 +26,24 @@
   </metadata>
   <defs
      id="defs8" />
-  <path
-     d="M 4,4 4,14 6,14 6,4 z"
-     id="path3805"
-     style="fill:#585858;fill-opacity:1" />
-  <path
-     d="M 9,4.0000003 9,14 l 2,0 0,-9.9999997 z"
-     id="path3805-6"
-     style="fill:#585858;fill-opacity:1" />
-  <path
-     d="M 14,4.0000002 14,14 l 2,0 0,-9.9999998 z"
-     id="path3805-7"
-     style="fill:#585858;fill-opacity:1" />
-  <path
-     d="M 19,4.0000002 19,14 l 2,0 0,-9.9999998 z"
-     id="path3805-6-5"
-     style="fill:#585858;fill-opacity:1" />
+  <g
+     transform="matrix(1,0,0,0.83333333,0,14.833333)"
+     id="g3166">
+    <path
+       d="m 4,-13 0,12 2,0 0,-12 z"
+       id="path3805-3"
+       style="fill:#55f864;fill-opacity:1" />
+    <path
+       d="m 9,-13 0,12 2,0 0,-12 z"
+       id="path3805-6-56"
+       style="fill:#55f864;fill-opacity:1" />
+    <path
+       d="m 14,-13 0,12 2,0 0,-12 z"
+       id="path3805-7-2"
+       style="fill:#55f864;fill-opacity:1" />
+    <path
+       d="m 19,-13 0,12 2,0 0,-12 z"
+       id="path3805-6-5-9"
+       style="fill:#55f864;fill-opacity:1" />
+  </g>
 </svg>
