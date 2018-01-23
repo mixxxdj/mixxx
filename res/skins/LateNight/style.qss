@@ -589,17 +589,6 @@ WPushButton, QPushButton {
   padding-top: 2px;
 }
 
-#GuiToggleContainerPadLeft {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding: 0px;
-  padding-left: 4px;
-  border: 0px solid #585858;
-  border-left:0px;
-  border-right:0px;
-  border-bottom:0px;
-  background-color: transparent;
-}
-
 /*################################################################
 #######  Loop Controls  ########################################
 ##############################################################*/
@@ -903,11 +892,11 @@ border: 0px;
 }
 
 #MicContainer {
-  margin: 5px 3px 0px 0px;
+  margin: 5px 5px 0px 0px;
 }
 
 #AuxContainer {
-  margin: 5px 0px 0px 3px;
+  margin: 5px 0px 0px 5px;
 }
 
 #MicBorder {
@@ -960,6 +949,30 @@ border: 0px;
 #MicVUMeter {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   margin-left: 5px;
+}
+
+#MicTalkButton,
+#AuxMuteButton {
+  border-radius: 2px;
+  margin: 2px;
+  }
+
+#MicTalkButton[displayValue="0"],
+#AuxMuteButton[displayValue="1"] {
+  border: 1px solid #585858;
+  color: #ddd;
+  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                  stop:0 #282828,
+                                  stop:1 #0e0e0e);
+}
+
+#MicTalkButton[displayValue="1"],
+#AuxMuteButton[displayValue="0"] {
+  border: 1px solid #d2d2d2;
+  color: #ddd;
+  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                  stop:0 #8F0000,
+                                  stop:1 #CF0C0C);
 }
 
 

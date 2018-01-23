@@ -31,9 +31,9 @@
               </WidgetGroup>
 
               <PushButton>
-                <Size>40f,24f</Size>
+                <Size>42f,28f</Size>
                 <TooltipId>microphone_talkover</TooltipId>
-                <ObjectName>GuiToggleButton</ObjectName>
+                <ObjectName>MicTalkButton</ObjectName>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
