@@ -15,7 +15,7 @@ inline bool debugLogEnabled() {
     return kLogEnabled || kLogger.debugEnabled();
 }
 
-constexpr bool kLogStats = true;
+constexpr bool kLogStats = false;
 
 inline
 TrackRef createTrackRef(const Track& track) {
