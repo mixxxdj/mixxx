@@ -70,6 +70,37 @@
 
       <Template src="skin:quick_effect_knob_left.xml"/>
 
+      <WidgetGroup>
+        <ObjectName>CrossfaderSwitch4Decks</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <PushButton>
+            <TooltipId>orientation</TooltipId>
+            <NumberStates>3</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Pressed>buttons/btn_orientation_deck<Variable name="deckSide"/>_left.png</Pressed>
+              <Unpressed>buttons/btn_orientation_deck<Variable name="deckSide"/>_left.png</Unpressed>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Pressed>buttons/btn_orientation_deck_master.png</Pressed>
+              <Unpressed>buttons/btn_orientation_deck_master.png</Unpressed>
+            </State>
+            <State>
+              <Number>2</Number>
+              <Pressed>buttons/btn_orientation_deck<Variable name="deckSide"/>_right.png</Pressed>
+              <Unpressed>buttons/btn_orientation_deck<Variable name="deckSide"/>_right.png</Unpressed>
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,orientation</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+          </PushButton>
+        </Children>
+      </WidgetGroup>
+
       <!-- Spacer when there's no 4th EQ AND no QuickEffect loaded -->
       <WidgetGroup>
         <Layout>horizontal</Layout>

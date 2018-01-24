@@ -212,6 +212,11 @@ WPushButton, QPushButton {
   padding-right: 2px;
 }
 
+#CrossfaderSwitch4Decks {
+  qproperty-layoutAlignment: 'AlignRight';
+  margin: 1px 10px 0px 0px;
+}
+
 #MixerChannelHoriz {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
 }
@@ -238,7 +243,7 @@ WPushButton, QPushButton {
 
 #VuAndSlider {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  padding-top: 3px;
+  padding: 1px 4px 0px 0px;
 }
 
 #VuMeter4Decks {
@@ -693,7 +698,7 @@ WBeatSpinBox {
 #Crossfader {
   qproperty-layoutAlignment: 'AlignCenter';
   /*background-color:#1e1e1e;*/
-  padding: 5px 1px 5px 5px;
+  padding: 3px 1px 1px 5px;
 }
 
 #PreviewDeck {
