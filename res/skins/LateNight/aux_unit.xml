@@ -65,18 +65,18 @@
                     <NumberStates>3</NumberStates>
                     <State>
                       <Number>0</Number>
-                      <Pressed>buttons/btn_orientation_microphone_left.png</Pressed>
-                      <Unpressed>buttons/btn_orientation_microphone_left.png</Unpressed>
+                      <Pressed>buttons/btn_orientation_aux_left.png</Pressed>
+                      <Unpressed>buttons/btn_orientation_aux_left.png</Unpressed>
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Pressed>buttons/btn_orientation_master.png</Pressed>
-                      <Unpressed>buttons/btn_orientation_master.png</Unpressed>
+                      <Pressed>buttons/btn_orientation_aux_master.png</Pressed>
+                      <Unpressed>buttons/btn_orientation_aux_master.png</Unpressed>
                     </State>
                     <State>
                       <Number>2</Number>
-                      <Pressed>buttons/btn_orientation_microphone_right.png</Pressed>
-                      <Unpressed>buttons/btn_orientation_microphone_right.png</Unpressed>
+                      <Pressed>buttons/btn_orientation_aux_right.png</Pressed>
+                      <Unpressed>buttons/btn_orientation_aux_right.png</Unpressed>
                     </State>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,orientation</ConfigKey>
