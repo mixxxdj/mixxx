@@ -166,6 +166,15 @@ void WLibrarySidebar::toggleSelectedItem() {
     }
 }
 
+bool WLibrarySidebar::isLeafNodeSelected() {
+    QModelIndexList selectedIndices = this->selectionModel()->selectedRows();
+    if (selectedIndices.size() > 0) {
+        QModelIndex index = selectedIndices.at(0);
+        return !index.model()->hasChildren(index);
+    }
+    return false;
+}
+
 void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_Return) {
         toggleSelectedItem();
