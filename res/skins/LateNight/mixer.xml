@@ -180,18 +180,18 @@
                                 <NumberStates>3</NumberStates>
                                 <State>
                                   <Number>0</Number>
-                                  <Pressed>buttons/btn_orientation_deckLeft_left.png</Pressed>
-                                  <Unpressed>buttons/btn_orientation_deckLeft_left.png</Unpressed>
+                                  <Pressed>buttons/btn_orientation_deckLeft_left.svg</Pressed>
+                                  <Unpressed>buttons/btn_orientation_deckLeft_left.svg</Unpressed>
                                 </State>
                                 <State>
                                   <Number>1</Number>
-                                  <Pressed>buttons/btn_orientation_deck_master.png</Pressed>
-                                  <Unpressed>buttons/btn_orientation_deck_master.png</Unpressed>
+                                  <Pressed>buttons/btn_orientation_deck_master.svg</Pressed>
+                                  <Unpressed>buttons/btn_orientation_deck_master.svg</Unpressed>
                                 </State>
                                 <State>
                                   <Number>2</Number>
-                                  <Pressed>buttons/btn_orientation_deckLeft_right.png</Pressed>
-                                  <Unpressed>buttons/btn_orientation_deckLeft_right.png</Unpressed>
+                                  <Pressed>buttons/btn_orientation_deckLeft_right.svg</Pressed>
+                                  <Unpressed>buttons/btn_orientation_deckLeft_right.svg</Unpressed>
                                 </State>
                                 <Connection>
                                   <ConfigKey>[Channel1],orientation</ConfigKey>
@@ -253,18 +253,18 @@
                                 <NumberStates>3</NumberStates>
                                 <State>
                                   <Number>0</Number>
-                                  <Pressed>buttons/btn_orientation_deckRight_left.png</Pressed>
-                                  <Unpressed>buttons/btn_orientation_deckRight_left.png</Unpressed>
+                                  <Pressed>buttons/btn_orientation_deckRight_left.svg</Pressed>
+                                  <Unpressed>buttons/btn_orientation_deckRight_left.svg</Unpressed>
                                 </State>
                                 <State>
                                   <Number>1</Number>
-                                  <Pressed>buttons/btn_orientation_deck_master.png</Pressed>
-                                  <Unpressed>buttons/btn_orientation_deck_master.png</Unpressed>
+                                  <Pressed>buttons/btn_orientation_deck_master.svg</Pressed>
+                                  <Unpressed>buttons/btn_orientation_deck_master.svg</Unpressed>
                                 </State>
                                 <State>
                                   <Number>2</Number>
-                                  <Pressed>buttons/btn_orientation_deckRight_right.png</Pressed>
-                                  <Unpressed>buttons/btn_orientation_deckRight_right.png</Unpressed>
+                                  <Pressed>buttons/btn_orientation_deckRight_right.svg</Pressed>
+                                  <Unpressed>buttons/btn_orientation_deckRight_right.svg</Unpressed>
                                 </State>
                                 <Connection>
                                   <ConfigKey>[Channel2],orientation</ConfigKey>
