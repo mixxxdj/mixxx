@@ -773,6 +773,10 @@ border: 0px;
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
 
+#AlignLeftBottom {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+}
+
 #AlignRight {
   qproperty-layoutAlignment: 'AlignRight';
 }
@@ -787,10 +791,6 @@ border: 0px;
 
 #AlignRightCenter {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-}
-
-#AlignLeftBottom {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
 
 #AlignCenter {
