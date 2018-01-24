@@ -81,7 +81,7 @@ class Library: public QObject,
 
     static const int kDefaultRowHeightPx;
 
-    void onEvictingTrackFromCache(GlobalTrackCacheLocker* pCacheLocker, Track* pTrack) override;
+    void afterEvictedTrackFromCache(GlobalTrackCacheLocker* pCacheLocker, Track* pTrack) override;
 
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);

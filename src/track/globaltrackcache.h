@@ -112,7 +112,7 @@ public:
      * should be called on pCacheLocker! The second pointer is accessible
      * and valid even if after the cache has been unlocked.
      */
-    virtual void onEvictingTrackFromCache(
+    virtual void afterEvictedTrackFromCache(
             GlobalTrackCacheLocker* /*nullable*/ pCacheLocker,
             Track* pTrack) = 0; // not null
 

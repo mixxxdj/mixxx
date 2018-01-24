@@ -59,7 +59,7 @@ class TrackTitleThread: public QThread {
 
 class GlobalTrackCacheTest: public MixxxTest, public virtual GlobalTrackCacheEvictor {
   public:
-    void onEvictingTrackFromCache(
+    void afterEvictedTrackFromCache(
         GlobalTrackCacheLocker* /*nullable*/ pCacheLocker,
         Track* pTrack) override {
         if (pCacheLocker) {

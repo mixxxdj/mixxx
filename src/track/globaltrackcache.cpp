@@ -582,7 +582,7 @@ void GlobalTrackCache::afterEvicted(
     // The callback is given the chance to unlock the cache
     // after all operations that rely on managed track ownership
     // have been done, e.g. exporting track metadata into a file.
-    m_pEvictor->onEvictingTrackFromCache(
+    m_pEvictor->afterEvictedTrackFromCache(
             pCacheLocker,
             pEvictedTrack);
 
