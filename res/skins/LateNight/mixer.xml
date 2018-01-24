@@ -159,7 +159,7 @@
                   </WidgetGroup><!-- /Channel controls -->
 
                   <WidgetGroup><!-- Crossfader + Channel1/2 assign switches -->
-                    <ObjectName>AlignTop</ObjectName>
+                    <ObjectName>CrossfaderAndSwitches2Decks</ObjectName>
                     <Layout>horizontal</Layout>
                     <Children>
 

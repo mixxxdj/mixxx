@@ -212,11 +212,6 @@ WPushButton, QPushButton {
   padding-right: 2px;
 }
 
-#CrossfaderSwitch4Decks {
-  qproperty-layoutAlignment: 'AlignRight';
-  margin: 1px 10px 0px 0px;
-}
-
 #MixerChannelHoriz {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
 }
@@ -519,13 +514,13 @@ WPushButton, QPushButton {
   }
 
   #PitchTweakButton[displayValue="0"] {
-      color: #ddd;
-      background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+    color: #ddd;
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
   }
 
   #PitchTweakButton[displayValue="1"] {
-      color: #ddd;
-      background-color: #c00a09;
+    color: #ddd;
+    background-color: #c00a09;
   }
 
 #PitchLabel {
@@ -535,23 +530,6 @@ WPushButton, QPushButton {
   qproperty-alignment: 'AlignHCenter | AlignBottom';
   padding: 2px;
   margin: 2px;
-}
-
-#SyncToggleButton[displayValue="0"] {/*
-  border: 1px solid #585858;
-  border-radius: 2px;
-  font-size: 12px/12px;
-  color: #ddd;
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
-  margin-right: 3px;*/
-}
-
-#SyncToggleButton[displayValue="1"] {/*
-  border: 1px solid #585858;
-  border-radius: 2px;
-  color: #c0c0c0;
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #d80000, stop:1 #910000);
-  margin-right: 3px;*/
 }
 
 #LoopToggleButton[displayValue="0"] {
@@ -568,31 +546,6 @@ WPushButton, QPushButton {
     color: #c0c0c0;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #d80000, stop:1 #910000);
     margin-right: 2px;
-}
-/*
-#CueToggleButton {
-  qproperty-alignment: 'AlignHCenter | AlignTop';
-  border: 1px solid #585858;
-  border-radius: 2px;
-  font-size: 13px/10px;
-  margin-right: 2px;
-  margin-top: 2px;
-  }
-
-  #CueToggleButton[displayValue="0"] {
-    color: #ddd;
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
-  }
-
-  #CueToggleButton[displayValue="1"] {
-    color: #c0c0c0;
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #910000, stop:1 #d80000);
-  }*/
-
-#CrossFadeContainer {
-  qproperty-layoutAlignment: 'AlignCenter';
-  background-color: #1e1e1e;
-  padding-top: 2px;
 }
 
 /*################################################################
@@ -699,6 +652,15 @@ WBeatSpinBox {
   qproperty-layoutAlignment: 'AlignCenter';
   /*background-color:#1e1e1e;*/
   padding: 3px 1px 1px 5px;
+}
+
+#CrossfaderAndSwitches2Decks {
+  padding: 0px 10px 0px 10px;
+}
+
+#CrossfaderSwitch4Decks {
+  qproperty-layoutAlignment: 'AlignRight';
+  margin: 1px 10px 0px 0px;
 }
 
 #PreviewDeck {
