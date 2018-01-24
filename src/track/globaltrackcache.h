@@ -229,14 +229,16 @@ private:
             const TrackRef& trackRef,
             TrackId trackId);
 
-    Track* evictInternal(
-            const TrackRef& trackRef,
-            Track* pTrack,
-            bool evictUnexpired);
-
     void evict(
             Track* pTrack,
             bool evictUnexpired = false);
+
+    typedef std::set<Track*> AllocatedTracks;
+
+    bool evictInternal(
+            const TrackRef& trackRef,
+            AllocatedTracks::iterator ipIndexedTrack,
+            bool evictUnexpired);
 
     void afterEvicted(
             GlobalTrackCacheLocker* /*nullable*/ pCacheLocker,
@@ -246,7 +248,6 @@ private:
 
     mutable QMutex m_mutex;
 
-    typedef std::set<Track*> AllocatedTracks;
     AllocatedTracks m_indexedTracks;
     AllocatedTracks m_unindexedTracks;
 
