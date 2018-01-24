@@ -463,6 +463,14 @@ void LibraryControl::slotChooseItem(double v) {
     }
     // Otherwise toggle the sidebar item expanded state (like a double-click)
     slotToggleSelectedSidebarItem(v);
+
+    // Focus the library if this is a leaf node in the tree
+    if (m_pSidebarWidget && v > 0
+        && m_pSidebarWidget->hasFocus()
+        && m_pSidebarWidget->isLeafNodeSelected())
+    {
+        setLibraryFocus();
+    }
 }
 
 void LibraryControl::slotFontSize(double v) {
