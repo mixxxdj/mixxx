@@ -69,8 +69,8 @@
                               <StatusLight>
                                 <TooltipId>master_PeakIndicator</TooltipId>
                                 <Style></Style>
-                                <PathStatusLight>buttons/btn_clipping1_over.png</PathStatusLight>
-                                <PathBack>buttons/btn_clipping1.png</PathBack>
+                                <PathStatusLight>style/clipping1_over.png</PathStatusLight>
+                                <PathBack>style/clipping1.png</PathBack>
                                 <Connection>
                                   <ConfigKey>[Master],PeakIndicatorL</ConfigKey>
                                 </Connection>
@@ -78,8 +78,8 @@
                               <StatusLight>
                                 <TooltipId>master_PeakIndicator</TooltipId>
                                 <Style></Style>
-                                <PathStatusLight>buttons/btn_clipping1_over.png</PathStatusLight>
-                                <PathBack>buttons/btn_clipping1.png</PathBack>
+                                <PathStatusLight>style/clipping1_over.png</PathStatusLight>
+                                <PathBack>style/clipping1.png</PathBack>
                                 <Connection>
                                   <ConfigKey>[Master],PeakIndicatorR</ConfigKey>
                                 </Connection>
@@ -94,8 +94,8 @@
                               <VuMeter>
                                 <TooltipId>master_VuMeterL</TooltipId>
                                 <Style></Style>
-                                <PathVu>buttons/btn_volume_display1_over.png</PathVu>
-                                <PathBack>buttons/btn_volume_display1.png</PathBack>
+                                <PathVu>style/volume_display1_over.png</PathVu>
+                                <PathBack>style/volume_display1.png</PathBack>
                                 <Horizontal>false</Horizontal>
                                 <PeakHoldSize>5</PeakHoldSize>
                                 <PeakHoldTime>500</PeakHoldTime>
@@ -108,8 +108,8 @@
                               <VuMeter>
                                 <TooltipId>master_VuMeterR</TooltipId>
                                 <Style></Style>
-                                <PathVu>buttons/btn_volume_display1_over.png</PathVu>
-                                <PathBack>buttons/btn_volume_display1.png</PathBack>
+                                <PathVu>style/volume_display1_over.png</PathVu>
+                                <PathBack>style/volume_display1.png</PathBack>
                                 <Horizontal>false</Horizontal>
                                 <PeakHoldSize>5</PeakHoldSize>
                                 <PeakHoldTime>500</PeakHoldTime>
@@ -308,7 +308,7 @@
             <Children>
               <WidgetGroup>
                 <ObjectName>MasterControls</ObjectName>
-                <BackPath>background_tile.png</BackPath>
+                <BackPath>style/background_tile.png</BackPath>
                 <SizePolicy>max,min</SizePolicy>
                 <Layout>vertical</Layout>
                 <Children>
@@ -460,16 +460,16 @@
                         <Children>
                           <StatusLight>
                             <TooltipId>master_PeakIndicator</TooltipId>
-                            <PathStatusLight>buttons/btn_clipping1_over.png</PathStatusLight>
-                            <PathBack>buttons/btn_clipping1.png</PathBack>
+                            <PathStatusLight>style/clipping1_over.png</PathStatusLight>
+                            <PathBack>style/clipping1.png</PathBack>
                             <Connection>
                               <ConfigKey>[Master],PeakIndicatorL</ConfigKey>
                             </Connection>
                           </StatusLight>
                           <StatusLight>
                             <TooltipId>master_PeakIndicator</TooltipId>
-                            <PathStatusLight>buttons/btn_clipping1_over.png</PathStatusLight>
-                            <PathBack>buttons/btn_clipping1.png</PathBack>
+                            <PathStatusLight>style/clipping1_over.png</PathStatusLight>
+                            <PathBack>style/clipping1.png</PathBack>
                             <Connection>
                               <ConfigKey>[Master],PeakIndicatorR</ConfigKey>
                             </Connection>
@@ -484,8 +484,8 @@
                         <Children>
                           <VuMeter>
                             <TooltipId>master_VuMeterL</TooltipId>
-                            <PathVu>buttons/btn_volume_display1_over.png</PathVu>
-                            <PathBack>buttons/btn_volume_display1.png</PathBack>
+                            <PathVu>style/volume_display1_over.png</PathVu>
+                            <PathBack>style/volume_display1.png</PathBack>
                             <Horizontal>false</Horizontal>
                             <PeakHoldSize>5</PeakHoldSize>
                             <PeakHoldTime>500</PeakHoldTime>
@@ -497,8 +497,8 @@
                           </VuMeter>
                           <VuMeter>
                             <TooltipId>master_VuMeterR</TooltipId>
-                            <PathVu>buttons/btn_volume_display1_over.png</PathVu>
-                            <PathBack>buttons/btn_volume_display1.png</PathBack>
+                            <PathVu>style/volume_display1_over.png</PathVu>
+                            <PathBack>style/volume_display1.png</PathBack>
                             <Horizontal>false</Horizontal>
                             <PeakHoldSize>5</PeakHoldSize>
                             <PeakHoldTime>500</PeakHoldTime>

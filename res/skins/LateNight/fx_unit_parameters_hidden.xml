@@ -21,7 +21,7 @@
         <ObjectName>EffectRows</ObjectName>
         <SizePolicy>me,min</SizePolicy>
         <Layout>horizontal</Layout>
-        <BackPath>background_tile.png</BackPath>
+        <BackPath>style/background_tile.png</BackPath>
         <Children>
 
           <WidgetGroup><Size>0min,1me</Size></WidgetGroup>

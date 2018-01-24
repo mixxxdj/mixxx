@@ -2,7 +2,7 @@
   <WidgetGroup>
     <ObjectName>DeckButtons</ObjectName>
     <SizePolicy>min,min</SizePolicy>
-    <BackPath>background_tile.png</BackPath>
+    <BackPath>style/background_tile.png</BackPath>
     <Layout>horizontal</Layout>
     <Children>
 

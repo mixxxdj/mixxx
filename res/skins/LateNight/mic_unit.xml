@@ -6,7 +6,7 @@
     <Children>
       <WidgetGroup>
         <ObjectName>MicInterior</ObjectName>
-        <BackPath>background_tile.png</BackPath>
+        <BackPath>style/background_tile.png</BackPath>
         <Layout>horizontal</Layout>
         <SizePolicy>min,max</SizePolicy>
         <Children>
@@ -118,8 +118,8 @@
                   <VuMeter>
                     <TooltipId>channel_VuMeter</TooltipId>
                     <Size>64f,4f</Size>
-                    <PathVu>vumeter_latency_over.png</PathVu>
-                    <PathBack>vumeter_latency_bg_solid.png</PathBack>
+                    <PathVu>style/vumeter_latency_over.png</PathVu>
+                    <PathBack>style/vumeter_latency_bg_solid.png</PathBack>
                     <!-- <PathVu>vumeter_latency.svg</PathVu> -->
                     <Horizontal>true</Horizontal>
                     <PeakHoldSize>5</PeakHoldSize>
