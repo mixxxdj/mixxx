@@ -418,7 +418,7 @@ WPushButton, QPushButton {
 }
 
 #FxUnit1_PflButton, #FxUnit2_PflButton {
-  margin-left: 2px;
+  margin: 0px 0px 1px 2px;
 }
 
 #SyncControls {
@@ -910,9 +910,6 @@ border: 0px;
   margin: 0px 8px 0px 5px;
 }
 
-#MicPflButton {
-}
-
 #MicVUMeter {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   margin-left: 7px;
@@ -1064,7 +1061,8 @@ border: 0px;
 
 #FxUnit1_ExpandCollapseButton,
 #FxUnit2_ExpandCollapseButton {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  margin: 1px 0px 1px 0px;
 }
 
 #FxUnit1_ExpandCollapseButton WPushButton,

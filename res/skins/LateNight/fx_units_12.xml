@@ -17,19 +17,19 @@
         <Children>
         <PushButton>
           <TooltipId>EffectUnit_show_parameters</TooltipId>
-          <Size>40f,26f</Size>
+          <Size>39f,24f</Size>
           <NumberStates>2</NumberStates>
           <RightClickIsPushButton>true</RightClickIsPushButton>
           <State>
             <Number>0</Number>
-            <Pressed>skin:/buttons/btn_fxExpand.png</Pressed>
-            <Unpressed>skin:/buttons/btn_fxExpand.png</Unpressed>
+            <Pressed>skin:/buttons/btn_fxExpand.svg</Pressed>
+            <Unpressed>skin:/buttons/btn_fxExpand.svg</Unpressed>
             <Text>FX&#8202;1</Text>
           </State>
           <State>
             <Number>1</Number>
-            <Pressed>skin:/buttons/btn_fxCollapse.png</Pressed>
-            <Unpressed>skin:/buttons/btn_fxCollapse.png</Unpressed>
+            <Pressed>skin:/buttons/btn_fxCollapse.svg</Pressed>
+            <Unpressed>skin:/buttons/btn_fxCollapse.svg</Unpressed>
             <Text>FX&#8202;1</Text>
           </State>
           <Connection>
@@ -51,19 +51,19 @@
         <Children>
         <PushButton>
           <TooltipId>EffectUnit_show_parameters</TooltipId>
-          <Size>40f,26f</Size>
+          <Size>39f,24f</Size>
           <NumberStates>2</NumberStates>
           <RightClickIsPushButton>true</RightClickIsPushButton>
           <State>
             <Number>0</Number>
-            <Pressed>skin:/buttons/btn_fxExpand.png</Pressed>
-            <Unpressed>skin:/buttons/btn_fxExpand.png</Unpressed>
+            <Pressed>skin:/buttons/btn_fxExpand.svg</Pressed>
+            <Unpressed>skin:/buttons/btn_fxExpand.svg</Unpressed>
             <Text>FX&#8202;2</Text>
           </State>
           <State>
             <Number>1</Number>
-            <Pressed>skin:/buttons/btn_fxCollapse.png</Pressed>
-            <Unpressed>skin:/buttons/btn_fxCollapse.png</Unpressed>
+            <Pressed>skin:/buttons/btn_fxCollapse.svg</Pressed>
+            <Unpressed>skin:/buttons/btn_fxCollapse.svg</Unpressed>
             <Text>FX&#8202;2</Text>
           </State>
           <Connection>
