@@ -1130,7 +1130,7 @@ void LoopingControl::slotLoopMove(double beats) {
 }
 
 // Must be called from the engine thread only
-int LoopingControl::seekInsideAdjustedLoop(
+double LoopingControl::seekInsideAdjustedLoop(
         double currentSample, double old_loop_in,
         double new_loop_in, double new_loop_out) {
     if (currentSample >= new_loop_in && currentSample <= new_loop_out) {
