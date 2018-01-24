@@ -5,7 +5,7 @@
     <SizePolicy>me,me</SizePolicy>
     <Children>
 
-      <WidgetStack currentpage="[Master],mic_lib_sampler_stack" persist="true">
+      <WidgetStack currentpage="[Master],mic_lib_sampler_stack">
         <SizePolicy>me,me</SizePolicy>
         <Children>
 

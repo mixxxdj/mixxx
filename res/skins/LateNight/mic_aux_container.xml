@@ -131,9 +131,5 @@
       </WidgetGroup><!-- Aux -->
 
     </Children>
-    <Connection>
-      <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
-      <BindProperty>visible</BindProperty>
-    </Connection>
   </WidgetGroup>
 </Template>
