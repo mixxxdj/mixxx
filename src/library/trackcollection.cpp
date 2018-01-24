@@ -67,8 +67,7 @@ void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
     QSet<TrackId> movedIds(
             m_directoryDao.relocateDirectory(oldDir, newDir));
 
-    // Discard all cached tracks
-    GlobalTrackCache::instance().evictAll();
+    GlobalTrackCache::instance().resetIndices();
 
     m_trackDao.databaseTracksMoved(std::move(movedIds), QSet<TrackId>());
 }

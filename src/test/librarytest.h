@@ -29,7 +29,6 @@ class LibraryTest : public MixxxTest,
         GlobalTrackCache::createInstance(this);
     }
     ~LibraryTest() override {
-        GlobalTrackCache::instance().evictAll();
         GlobalTrackCache::destroyInstance();
         m_trackCollection.disconnectDatabase();
     }

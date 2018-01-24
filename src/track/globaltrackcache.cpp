@@ -165,8 +165,10 @@ void GlobalTrackCache::deleter(Track* pTrack) {
     // this pointer might already have been deleted! Only the
     // cache knows this.
     if (s_pInstance) {
-        /*delete*/ s_pInstance->evict(pTrack);
+        s_pInstance->evict(pTrack);
     } else {
+        // Simply delete unreferenced tracks when the cache is
+        // no longer available
         kLogger.warning()
                 << "Deleting uncached track";
         delete pTrack;
@@ -181,22 +183,37 @@ GlobalTrackCache::GlobalTrackCache(GlobalTrackCacheEvictor* pEvictor)
 }
 
 GlobalTrackCache::~GlobalTrackCache() {
+    DEBUG_ASSERT(!s_pInstance);
     DEBUG_ASSERT(verifyConsistency());
+    // Ideally the cache should be empty when destroyed.
+    // But since this is difficult to achieve all remaining
+    // cached tracks will evicted no matter if they are still
+    // refereced or not. This ensures that the eviction
+    // callback is triggered for all modified tracks before
+    // exiting the application.
+    for (auto pTrack: m_indexedTracks) {
+        evictInternal(
+                createTrackRef(*pTrack),
+                pTrack,
+                true);
+    }
+    m_unindexedTracks.clear();
     // Verify that the cache is empty upon destruction
+    DEBUG_ASSERT(m_indexedTracks.empty());
     DEBUG_ASSERT(m_tracksById.empty());
     DEBUG_ASSERT(m_tracksByCanonicalLocation.empty());
 }
 
 bool GlobalTrackCache::verifyConsistency() const {
-    VERIFY_OR_DEBUG_ASSERT(m_cachedTracks.size() >=
-            CachedTracks::size_type(m_tracksById.keys().size())) {
+    VERIFY_OR_DEBUG_ASSERT(m_indexedTracks.size() >=
+            AllocatedTracks::size_type(m_tracksById.keys().size())) {
         return false;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_cachedTracks.size() >=
-            CachedTracks::size_type(m_tracksByCanonicalLocation.keys().size())) {
+    VERIFY_OR_DEBUG_ASSERT(m_indexedTracks.size() >=
+            AllocatedTracks::size_type(m_tracksByCanonicalLocation.keys().size())) {
         return false;
     }
-    for (CachedTracks::const_iterator i = m_cachedTracks.begin(); i != m_cachedTracks.end(); ++i) {
+    for (AllocatedTracks::const_iterator i = m_indexedTracks.begin(); i != m_indexedTracks.end(); ++i) {
         Track* pTrack = *i;
         VERIFY_OR_DEBUG_ASSERT(*i) {
             return false;
@@ -351,7 +368,7 @@ std::pair<TrackRef, TrackPointer> GlobalTrackCache::lookupInternal(
 
 std::pair<TrackRef, TrackPointer> GlobalTrackCache::reviveInternal(
         const Item& item) {
-    DEBUG_ASSERT(m_cachedTracks.find(item.plainPtr) != m_cachedTracks.end());
+    DEBUG_ASSERT(m_indexedTracks.find(item.plainPtr) != m_indexedTracks.end());
     TrackPointer pTrack(item.weakPtr);
     if (pTrack) {
         DEBUG_ASSERT(pTrack.get() == item.plainPtr);
@@ -500,8 +517,8 @@ GlobalTrackCacheResolver GlobalTrackCache::resolve(
                 << trackRef
                 << item.plainPtr;
     }
-    DEBUG_ASSERT(m_cachedTracks.find(item.plainPtr) == m_cachedTracks.end());
-    m_cachedTracks.insert(item.plainPtr);
+    DEBUG_ASSERT(m_indexedTracks.find(item.plainPtr) == m_indexedTracks.end());
+    m_indexedTracks.insert(item.plainPtr);
     if (trackRef.hasId()) {
         // Insert item by id
         DEBUG_ASSERT(m_tracksById.find(
@@ -551,26 +568,65 @@ TrackRef GlobalTrackCache::initTrackIdInternal(
     return trackRefWithId;
 }
 
-Track* GlobalTrackCache::evict(
+void GlobalTrackCache::afterEvicted(
+        GlobalTrackCacheLocker* pCacheLocker,
+        Track* pEvictedTrack) {
+    // It can produce dangerous signal loops if the track is still
+    // sending signals while being saved! All references to this
+    // track have been dropped at this point, so there is no need
+    // to send any signals.
+    // See: https://bugs.launchpad.net/mixxx/+bug/136578
+    pEvictedTrack->blockSignals(true);
+
+    // Keep the cache locked while evicting the track object!
+    // The callback is given the chance to unlock the cache
+    // after all operations that rely on managed track ownership
+    // have been done, e.g. exporting track metadata into a file.
+    m_pEvictor->onEvictingTrackFromCache(
+            pCacheLocker,
+            pEvictedTrack);
+
+    // At this point the cache might have been unlocked by the
+    // callback!!
+}
+
+void GlobalTrackCache::evict(
         Track* pTrack,
         bool evictUnexpired) {
     DEBUG_ASSERT(pTrack);
     GlobalTrackCacheLocker cacheLocker;
 
-    if (m_cachedTracks.find(pTrack) == m_cachedTracks.end()) {
-        if (debugLogEnabled()) {
-            kLogger.debug()
-                    << "Skip deletion of dead track"
-                    << pTrack;
+    if (m_indexedTracks.find(pTrack) == m_indexedTracks.end()) {
+        if (m_unindexedTracks.erase(pTrack)) {
+            // Unindexed tracks are directly deleted without
+            // invoking the post-evict hook! This only happens
+            // while resetting the indices while some tracks
+            // are still cached and indexed.
+            if (debugLogEnabled()) {
+                kLogger.debug()
+                        << "Deleting unindexed track"
+                        << createTrackRef(*pTrack)
+                        << pTrack;
+            }
+            delete pTrack;
+        } else {
+            // Due to a rare but expected race condition the track
+            // has already been deleted and must not be deleted
+            // again!
+            if (debugLogEnabled()) {
+                kLogger.debug()
+                        << "Skip deletion of dead track"
+                        << pTrack;
+            }
+            return;
         }
-        return nullptr;
     }
     // Now we know that the pointer has not been deleted before
     // and we can safely access it!s
     const auto trackRef = createTrackRef(*pTrack);
     if (debugLogEnabled()) {
         kLogger.debug()
-                << "Evicting track"
+                << "Evicting indexed track"
                 << trackRef
                 << pTrack;
     }
@@ -579,33 +635,24 @@ Track* GlobalTrackCache::evict(
     DEBUG_ASSERT(verifyConsistency());
     if (pEvictedTrack) {
         DEBUG_ASSERT(pEvictedTrack == pTrack);
-
-        // It can produce dangerous signal loops if the track is still
-        // sending signals while being saved! All references to this
-        // track have been dropped at this point, so there is no need
-        // to send any signals.
-        // See: https://bugs.launchpad.net/mixxx/+bug/136578
-        pEvictedTrack->blockSignals(true);
-
-        // Keep the cache locked while evicting the track object!
-        // The callback is given the chance to unlock the cache
-        // after all operations that rely on managed track ownership
-        // have been done, e.g. exporting track metadata into a file.
-        m_pEvictor->onEvictingTrackFromCache(
-                &cacheLocker,
-                pEvictedTrack);
-        // At this point the cache might have been unlocked by the
-        // callback!!
-    } else {
+        afterEvicted(&cacheLocker, pEvictedTrack);
         if (debugLogEnabled()) {
             kLogger.debug()
-                    << "Keeping unexpired track"
-                    << trackRef;
+                    << "Deleting evicted track"
+                    << trackRef
+                    << pTrack;
+        }
+        delete pEvictedTrack;
+    } else {
+        // If pEvictedTrack == nullptr then given pTrack is still
+        // referenced within the cache and must not be deleted, yet!
+        if (debugLogEnabled()) {
+            kLogger.debug()
+                    << "Keeping unevicted track"
+                    << trackRef
+                    << pTrack;
         }
     }
-    // If pEvictedTrack == nullptr then pTrack is still referenced
-    // within the cache and must not be deleted!
-    return pEvictedTrack;
 }
 
 Track* GlobalTrackCache::evictInternal(
@@ -667,23 +714,30 @@ Track* GlobalTrackCache::evictInternal(
             return nullptr;
         }
     }
-    DEBUG_ASSERT(m_cachedTracks.find(pTrack) != m_cachedTracks.end());
-    m_cachedTracks.erase(pTrack);
+    DEBUG_ASSERT(m_indexedTracks.find(pTrack) != m_indexedTracks.end());
+    m_indexedTracks.erase(pTrack);
     return pTrack;
-}
-
-void GlobalTrackCache::evictAll() {
-    GlobalTrackCacheLocker cacheLocker;
-    while (!m_cachedTracks.empty()) {
-        Track* pTrack = *m_cachedTracks.begin();
-        evictInternal(
-                createTrackRef(*pTrack),
-                pTrack,
-                true);
-    }
 }
 
 bool GlobalTrackCache::isEmpty() const {
     GlobalTrackCacheLocker cacheLocker;
-    return m_cachedTracks.empty();
+    return m_indexedTracks.empty() && m_unindexedTracks.empty();
+}
+
+void GlobalTrackCache::resetIndices() {
+    GlobalTrackCacheLocker cacheLocker;
+    if (!m_indexedTracks.empty()) {
+        kLogger.warning()
+                << "Resetting indices while"
+                << m_indexedTracks.size()
+                << "tracks are still cached and indexed";
+        if (m_unindexedTracks.empty()) {
+            m_unindexedTracks.swap(m_indexedTracks);
+        } else {
+            m_unindexedTracks.insert(m_indexedTracks.begin(), m_indexedTracks.end());
+            m_indexedTracks.clear();
+        }
+    }
+    m_tracksById.clear();
+    m_tracksByCanonicalLocation.clear();
 }

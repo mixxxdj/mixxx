@@ -581,8 +581,9 @@ void MixxxMainWindow::finalize() {
     delete m_pPlayerManager;
 
     // Evict all remaining tracks from the cache to trigger
-    // updating of modified tracks.
-    GlobalTrackCache::instance().evictAll();
+    // updating of modified tracks. We assume that no other
+    // components are accessing those files at this point.
+    GlobalTrackCache::destroyInstance();
 
     // Delete the library after the view so there are no dangling pointers to
     // the data models.

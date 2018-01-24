@@ -154,9 +154,11 @@ public:
             const QFileInfo& fileInfo,
             const SecurityTokenPointer& pSecurityToken = SecurityTokenPointer());
 
-    void evictAll();
-
     bool isEmpty() const;
+
+    // Reset all indices but keep the currently allocated tracks
+    // to prevent memory leaks.
+    void resetIndices();
 
 private:
     friend class GlobalTrackCacheLocker;
@@ -232,16 +234,21 @@ private:
             Track* pTrack,
             bool evictUnexpired);
 
-    Track* evict(
+    void evict(
             Track* pTrack,
             bool evictUnexpired = false);
+
+    void afterEvicted(
+            GlobalTrackCacheLocker* /*nullable*/ pCacheLocker,
+            Track* pEvictedTrack);
 
     GlobalTrackCacheEvictor* m_pEvictor;
 
     mutable QMutex m_mutex;
 
-    typedef std::set<Track*> CachedTracks;
-    CachedTracks m_cachedTracks;
+    typedef std::set<Track*> AllocatedTracks;
+    AllocatedTracks m_indexedTracks;
+    AllocatedTracks m_unindexedTracks;
 
     typedef QHash<TrackId, Item> TracksById;
     TracksById m_tracksById;
