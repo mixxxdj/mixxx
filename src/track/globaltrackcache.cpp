@@ -15,6 +15,10 @@ inline bool debugLogEnabled() {
     return kLogEnabled || kLogger.debugEnabled();
 }
 
+inline bool traceLogEnabled() {
+    return kLogEnabled || kLogger.traceEnabled();
+}
+
 constexpr bool kLogStats = false;
 
 inline
@@ -74,11 +78,11 @@ GlobalTrackCacheLocker::~GlobalTrackCacheLocker() {
 void GlobalTrackCacheLocker::lockCache() {
     DEBUG_ASSERT(!m_pCacheMutex);
     QMutex* pCacheMutex = &GlobalTrackCache::instance().m_mutex;
-    if (kLogger.traceEnabled()) {
+    if (traceLogEnabled()) {
         kLogger.trace() << "Locking cache";
     }
     pCacheMutex->lock();
-    if (kLogger.traceEnabled()) {
+    if (traceLogEnabled()) {
         kLogger.trace() << "Cache is locked";
     }
     m_pCacheMutex = pCacheMutex;
@@ -88,7 +92,7 @@ void GlobalTrackCacheLocker::unlockCache() {
     if (m_pCacheMutex) {
         // Verify consistency before unlocking the cache
         DEBUG_ASSERT(GlobalTrackCache::instance().verifyConsistency());
-        if (kLogger.traceEnabled()) {
+        if (traceLogEnabled()) {
             kLogger.trace() << "Unlocking cache";
         }
         if (kLogStats && debugLogEnabled()) {
@@ -99,7 +103,7 @@ void GlobalTrackCacheLocker::unlockCache() {
                     << GlobalTrackCache::s_pInstance->m_tracksByCanonicalLocation.size();
         }
         m_pCacheMutex->unlock();
-        if (kLogger.traceEnabled()) {
+        if (traceLogEnabled()) {
             kLogger.trace() << "Cache is unlocked";
         }
         m_pCacheMutex = nullptr;
@@ -323,7 +327,7 @@ std::pair<TrackRef, TrackPointer> GlobalTrackCache::lookupInternal(
     const auto trackById(m_tracksById.find(trackId));
     if (m_tracksById.end() != trackById) {
         // Cache hit
-        if (kLogger.traceEnabled()) {
+        if (traceLogEnabled()) {
             kLogger.trace()
                     << "Cache hit for"
                     << trackId;
@@ -331,7 +335,7 @@ std::pair<TrackRef, TrackPointer> GlobalTrackCache::lookupInternal(
         return reviveInternal(*trackById);
     } else {
         // Cache miss
-        if (kLogger.traceEnabled()) {
+        if (traceLogEnabled()) {
             kLogger.trace()
                     << "Cache miss for"
                     << trackId;
@@ -350,7 +354,7 @@ std::pair<TrackRef, TrackPointer> GlobalTrackCache::lookupInternal(
                 m_tracksByCanonicalLocation.find(canonicalLocation));
         if (m_tracksByCanonicalLocation.end() != trackByCanonicalLocation) {
             // Cache hit
-            if (kLogger.traceEnabled()) {
+            if (traceLogEnabled()) {
                 kLogger.trace()
                         << "Cache hit for"
                         << canonicalLocation;
@@ -358,7 +362,7 @@ std::pair<TrackRef, TrackPointer> GlobalTrackCache::lookupInternal(
             return reviveInternal(*trackByCanonicalLocation);
         } else {
             // Cache miss
-            if (kLogger.traceEnabled()) {
+            if (traceLogEnabled()) {
                 kLogger.trace()
                         << "Cache miss for"
                         << canonicalLocation;
@@ -374,8 +378,8 @@ std::pair<TrackRef, TrackPointer> GlobalTrackCache::reviveInternal(
     TrackPointer pTrack(item.weakPtr);
     if (pTrack) {
         DEBUG_ASSERT(pTrack.get() == item.plainPtr);
-        if (debugLogEnabled()) {
-            kLogger.debug()
+        if (traceLogEnabled()) {
+            kLogger.trace()
                     << "Found alive track"
                     << item.ref
                     << item.plainPtr;
