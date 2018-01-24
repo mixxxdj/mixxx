@@ -11,7 +11,7 @@
         <SizePolicy>min,max</SizePolicy>
         <Children>
 
-          <WidgetGroup><!-- Label, TALK, orientation -->
+          <WidgetGroup><!-- Label, TALK button -->
             <ObjectName>AlignCenterTop</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
@@ -57,37 +57,11 @@
               </WidgetGroup><!-- /TALK -->
 
               <WidgetGroup>
-                <Layout>vertical</Layout>
-                <SizePolicy>min,max</SizePolicy>
-                <Children>
-                  <PushButton>
-                    <TooltipId>orientation</TooltipId>
-                    <NumberStates>3</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Pressed>buttons/btn_orientation_microphone_left.png</Pressed>
-                      <Unpressed>buttons/btn_orientation_microphone_left.png</Unpressed>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Pressed>buttons/btn_orientation_microphone_master.png</Pressed>
-                      <Unpressed>buttons/btn_orientation_microphone_master.png</Unpressed>
-                    </State>
-                    <State>
-                      <Number>2</Number>
-                      <Pressed>buttons/btn_orientation_microphone_right.png</Pressed>
-                      <Unpressed>buttons/btn_orientation_microphone_right.png</Unpressed>
-                    </State>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,orientation</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                  </PushButton>
-                </Children>
+                <Size>-1min,15f</Size>
               </WidgetGroup>
 
             </Children>
-          </WidgetGroup><!-- Label, TALK, orientation -->
+          </WidgetGroup><!-- Label, TALK button -->
 
           <WidgetGroup><!-- Gain, Pfl, VU meter -->
             <Layout>vertical</Layout>
