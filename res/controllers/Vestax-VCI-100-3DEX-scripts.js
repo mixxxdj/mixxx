@@ -476,7 +476,7 @@ midi.sendShortMsg(0x80,0x63,0x7F);// loop out button led off
 midi.sendShortMsg(0x80,0x64,0x7F);// reloop/exit button led off
 
 midi.sendShortMsg(0x80,0x46,0x7F);// left sync button led off
-midi.sendShortMsg(0x80,0x47,0x7F);// rigth sync button led off
+midi.sendShortMsg(0x80,0x47,0x7F);// right sync button led off
 
 /*
 
@@ -599,7 +599,7 @@ midi.sendShortMsg(0x80,0x68,0x7F);// deck+ button led off
 midi.sendShortMsg(0x90,0x68,0x7F);// deck+ button led on
 midi.sendShortMsg(0x80,0x46,0x7F);// left sync button led off
 midi.sendShortMsg(0x90,0x46,0x7F);// left sync button led on
-midi.sendShortMsg(0x80,0x47,0x7F);// rigth sync button led off
+midi.sendShortMsg(0x80,0x47,0x7F);// right sync button led off
 midi.sendShortMsg(0x90,0x47,0x7F);// right sync button led on
 */
 }

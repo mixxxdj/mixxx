@@ -160,7 +160,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 *
 *   Add entries to the IF ladder below if anything needs to change from the
 *   previous to the current version. This allows for incremental upgrades
-*   incase a user upgrades from a few versions prior.
+*   in case a user upgrades from a few versions prior.
 ****************************************************************************/
 
     // Read the config file from home directory
@@ -222,7 +222,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         return config;
     }
 
-    // Allows for incremental upgrades incase someone upgrades from a few versions prior
+    // Allows for incremental upgrades in case someone upgrades from a few versions prior
     // (I wish we could do a switch on a QString.)
     /*
     // Examples, since we didn't store the version number prior to v1.7.0

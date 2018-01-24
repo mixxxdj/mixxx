@@ -528,7 +528,7 @@ Jockey3ME.EQ = function (channel, control, value, status, group) {
       var eqKnob = 1;
       break;
     default:
-      print("Error on EQ chosing");
+      print("Error on EQ choosing");
   }
 	// engine.setParameter("[EqualizerRack1_[Channel" + currentDeck + "]_Effect1]","parameter" + eqKnob, script.absoluteLin(value,0,1,0,127));
 	engine.setValue("[EqualizerRack1_[Channel" + currentDeck + "]_Effect1]","parameter" + eqKnob, script.absoluteLin(value,0,script.absoluteLin(value,0,4,0,127),0,127));

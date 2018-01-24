@@ -1164,7 +1164,7 @@ TrackId AutoDJCratesDAO::getRandomTrackIdFromLibrary(int iPlaylistId) {
             offset = qrand() % (iIgnoreIndex2 - iIgnoreIndex1) + 1;
         }
         offset = beginIndex + offset;
-        // Incase we end up doing a qRand()%1 above
+        // In case we end up doing a qRand()%1 above
         if( offset >= iTotalTracks) {
             offset= 0 ;
         }

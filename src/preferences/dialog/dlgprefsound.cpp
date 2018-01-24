@@ -424,7 +424,7 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
 
 /**
  * Slot called when the user selects a different API, or the
- * software changes it programatically (for instance, when it
+ * software changes it programmatically (for instance, when it
  * loads a value from SoundManager). Refreshes the device lists
  * for the new API and pushes those to the path items.
  */

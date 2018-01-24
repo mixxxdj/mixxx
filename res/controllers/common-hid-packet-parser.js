@@ -424,7 +424,7 @@ HIDPacket.prototype.addControl = function(group,name,offset,pack,bitmask,isEncod
 // Output control bit:
 //    Output with with bitmask, controls Output with a single bit
 //
-// It is recommended to define callbacks after packet creationg with
+// It is recommended to define callbacks after packet creation with
 // setCallback instead of adding it directly here. But you can do it.
 HIDPacket.prototype.addOutput = function(group,name,offset,pack,bitmask,callback) {
     var control_group = this.getGroup(group,true);

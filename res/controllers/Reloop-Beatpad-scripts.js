@@ -268,7 +268,7 @@ ReloopBeatpad.MIDI = {
     // Jog modes
     Vinyl: 0x45,
     iScratch: 0x46,
-    // Pitch+FX switchs
+    // Pitch+FX switches
     Loop: 0x44,
     Loop_size_push: 0x43,
     FX_ON: 0x47,
@@ -1251,7 +1251,7 @@ ReloopBeatpad.rgbLEDs.prototype.loops = function(value) {
     ReloopBeatpad.decks[this.deckID].leds.RimBlue.onOff((activate) ? 0x7F : 0);
 };
 
-// Ligth show n°4 to indicate when a deck is not loaded with a track
+// Light show n°4 to indicate when a deck is not loaded with a track
 ReloopBeatpad.rgbLEDs.prototype.notloaded = function(value) {
     var RGBColor = (value) ? ReloopBeatpad.RGB.red : null;
     this.setshow("show4", RGBColor);

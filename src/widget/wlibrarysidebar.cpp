@@ -206,7 +206,7 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     //    TODO(xxx) decide what todo here instead of in librarycontrol
     }
 
-    // Fall through to deafult handler.
+    // Fall through to default handler.
     QTreeView::keyPressEvent(event);
 }
 

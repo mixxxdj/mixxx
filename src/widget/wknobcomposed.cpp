@@ -108,7 +108,7 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
         m_dCurrentAngle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * getControlParameterDisplay();
         p.rotate(m_dCurrentAngle);
 
-        // Need to convert from QRect to a QRectF to avoid losing precison.
+        // Need to convert from QRect to a QRectF to avoid losing precision.
         QRectF targetRect = rect();
         m_pKnob->drawCentered(transform.mapRect(targetRect), &p,
                               m_pKnob->rect());

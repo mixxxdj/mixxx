@@ -7,7 +7,7 @@ script.xponent
 
 Mixxx script file for the **M-Audio Xponent** controller. The numbers
 in the following picture will be used in the script to describe the
-functionallity of the controls.
+functionality of the controls.
 
   ![Xponent Layout](http://sinusoid.es/mixco/pic/maudio_xponent.png)
 

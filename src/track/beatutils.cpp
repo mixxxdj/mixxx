@@ -18,7 +18,7 @@
 #define BPM_ERROR 0.05
 
 // the raw beatgrid is divided into blocks of size N from which the local bpm is
-// computed. Tweaked from 8 to 12 which improves the BPM accurancy for 'problem songs'.
+// computed. Tweaked from 8 to 12 which improves the BPM accuracy for 'problem songs'.
 #define N 12
 
 static bool sDebug = false;

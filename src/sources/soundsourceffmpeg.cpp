@@ -749,7 +749,7 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
     // Is offset bigger than start of cache
     if (offset >= m_lCacheStartFrame) {
         int l_lTmpLen = 0;
-        // If last pos is (which is shouldn't) use caches end
+        // If last pos is (which it shouldn't) use caches end
         if (m_lCacheLastPos == 0) {
             m_lCacheLastPos = m_SCache.size() - 1;
         }
