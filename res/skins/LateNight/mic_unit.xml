@@ -73,7 +73,7 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,me</SizePolicy>
                 <Children>
-                  <WidgetGroup><!-- Gain, Pfl -->
+                  <WidgetGroup>
                     <ObjectName>MicGainKnob</ObjectName>
                     <Layout>horizontal</Layout>
                     <SizePolicy>me,me</SizePolicy>
@@ -89,7 +89,7 @@
                   </WidgetGroup>
 
                   <PushButton>
-                    <TooltipId>pfl</TooltipId><!---->
+                    <TooltipId>pfl</TooltipId>
                     <ObjectName>MicPflButton</ObjectName>
                     <NumberStates>2</NumberStates>
                     <State>

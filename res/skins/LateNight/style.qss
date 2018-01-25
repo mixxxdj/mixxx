@@ -864,32 +864,17 @@ border: 0px;
 #MicContainer, #AuxContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   border: 1px solid #585858;
-  padding: 3px;
   background-color: #1e1e1e;
 }
 
 #MicContainer {
   margin: 5px 5px 0px 0px;
+  padding: 1px 6px 3px 6px;
 }
 
 #AuxContainer {
   margin: 5px 0px 0px 5px;
-}
-
-#MicBorder {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  border: 1px solid #585858;
-  margin-left: 3px;
-  margin-right: 3px;
-}
-
-#MicInterior {
-  padding: 0px 3px 1px 3px;
-}
-
-#MicButtonContainer {
-  padding: 2px;
-  padding-bottom: 5px;
+  padding: 1px 0px 3px 6px;
 }
 
 #MicTitle {
@@ -900,12 +885,34 @@ border: 0px;
   color: #eece33;
 }
 
+#MicBorder {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  border: 1px solid #585858;
+  margin: 1px 6px 1px 0px;
+}
+
+#MicInterior {
+  padding: 0px 3px 1px 3px;
+}
+
 #MicSubTitle {
   qproperty-alignment: 'AlignCenter | AlignTop';
   font-size: 12px/13px;
   font-weight: bold;
   color: #eece33;
   text-align: center;
+}
+
+#DuckingTitle {
+  qproperty-alignment: 'AlignCenter | AlignTop';
+  font-size: 12px/13px;
+  font-weight: bold;
+  color: #585858;
+  text-align: center;
+}
+
+#MicDuckingContainer {
+  margin: 0px 0px 3px 0px;
 }
 
 #MicGainPFlContainer {
