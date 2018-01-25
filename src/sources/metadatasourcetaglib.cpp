@@ -84,7 +84,7 @@ class AiffFile: public TagLib::RIFF::AIFF::File {
 QDateTime getMetadataSynchronized(QFileInfo fileInfo) {
     const QDateTime metadataSynchronized = fileInfo.lastModified();
     VERIFY_OR_DEBUG_ASSERT(!metadataSynchronized.isNull()) {
-        return QDateTime::currentDateTime();
+        return QDateTime::currentDateTimeUtc();
     }
     return metadataSynchronized;
 }
