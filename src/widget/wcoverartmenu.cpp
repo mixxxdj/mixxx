@@ -69,7 +69,7 @@ void WCoverArtMenu::slotChange() {
 
     // TODO(rryan): Ask if user wants to copy the file.
 
-    CoverInfo coverInfo;
+    CoverInfoRelative coverInfo;
     // Create a security token for the file.
     QFileInfo selectedCover(selectedCoverPath);
     SecurityTokenPointer pToken = Sandbox::openSecurityToken(
@@ -84,7 +84,6 @@ void WCoverArtMenu::slotChange() {
     coverInfo.coverLocation = selectedCoverPath;
     // TODO() here we may introduce a duplicate hash code
     coverInfo.hash = CoverArtUtils::calculateHash(image);
-    coverInfo.trackLocation = m_coverInfo.trackLocation;
     qDebug() << "WCoverArtMenu::slotChange emit" << coverInfo;
     emit(coverInfoSelected(coverInfo));
 }
