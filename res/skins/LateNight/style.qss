@@ -985,24 +985,19 @@ border: 0px;
   border-bottom: 0px;
 }
 
-#SamplerSyncButton {
-  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-  margin: 2px 0px 0px 3px;
-}
-
 #SamplerButtonGrid {
   border: 1px solid #585858;
   border-top: 0px;
   border-bottom: 0px;
 }
 
-#SamplerPfl {
-  margin: 2px 1px 0px 5px;
-}
-
 #SamplerHotcues {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-  margin-top: 2px;
+  margin: 2px 0px 0px 2px;
+}
+
+#SamplerPfl {
+  margin: 2px 1px 0px 0px;
 }
 
 #SamplerGain {
@@ -1019,17 +1014,12 @@ border: 0px;
 }
 
 #SamplerPitch {
-  padding: 0px 1px 1px 3px;
+  padding: 1px 2px 0px 2px;
   qproperty-layoutAlignment: 'AlignRight | AlignBottom';
 }
 
-#SamplerVol {
-  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-  border: 1px solid #585858;
-  border-top: 0px;
-  border-bottom: 0px;
-  border-right: 0px;
-  padding: 2px;
+#SamplerSyncButton {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter'; 
 }
 
 #Deck1 WLabel, Deck2 WLabel {
