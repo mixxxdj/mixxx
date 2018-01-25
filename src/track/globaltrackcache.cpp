@@ -577,12 +577,13 @@ TrackRef GlobalTrackCache::initTrackIdInternal(
 void GlobalTrackCache::afterEvicted(
         GlobalTrackCacheLocker* pCacheLocker,
         Track* pEvictedTrack) {
+    // Disconnect the evicted track from all receivers.
     // It can produce dangerous signal loops if the track is still
     // sending signals while being saved! All references to this
     // track have been dropped at this point, so there is no need
     // to send any signals.
     // See: https://bugs.launchpad.net/mixxx/+bug/136578
-    pEvictedTrack->blockSignals(true);
+    pEvictedTrack->disconnect();
 
     // Keep the cache locked while evicting the track object!
     // The callback is given the chance to unlock the cache
