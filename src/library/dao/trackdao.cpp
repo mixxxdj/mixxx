@@ -597,8 +597,13 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
             return TrackId();
         }
 
-        m_analysisDao.saveTrackAnalyses(*pTrack);
-        m_cueDao.saveTrackCues(trackId, pTrack->getCuePoints());
+        m_analysisDao.saveTrackAnalyses(
+                trackId,
+                pTrack->getWaveform(),
+                pTrack->getWaveformSummary());
+        m_cueDao.saveTrackCues(
+                trackId,
+                pTrack->getCuePoints());
 
         DEBUG_ASSERT(!m_tracksAddedSet.contains(trackId));
         m_tracksAddedSet.insert(trackId);
@@ -1438,8 +1443,12 @@ bool TrackDAO::updateTrack(Track* pTrack) {
 
     //qDebug() << "Update track took : " << time.elapsed().formatMillisWithUnit() << "Now updating cues";
     //time.start();
-    m_analysisDao.saveTrackAnalyses(*pTrack);
-    m_cueDao.saveTrackCues(trackId, pTrack->getCuePoints());
+    m_analysisDao.saveTrackAnalyses(
+            trackId,
+            pTrack->getWaveform(),
+            pTrack->getWaveformSummary());
+    m_cueDao.saveTrackCues(
+            trackId, pTrack->getCuePoints());
     transaction.commit();
 
     //qDebug() << "Update track in database took: " << time.elapsed().formatMillisWithUnit();
