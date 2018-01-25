@@ -203,11 +203,15 @@ GlobalTrackCache::~GlobalTrackCache() {
     for (auto&& ipIndexedTrack = m_indexedTracks.begin();
             ipIndexedTrack != m_indexedTracks.end();
             ++ipIndexedTrack) {
-        evictInternal(
-                createTrackRef(**ipIndexedTrack),
+        evictAndDeleteInternal(
+                nullptr,
                 ipIndexedTrack,
                 true);
     }
+    // The singular cache instance is already unavailable and
+    // all unindexed tracks will simply be deleted when their
+    // shared pointer goes out of scope. Their modifications
+    // will be lost.
     m_unindexedTracks.clear();
     // Verify that the cache is empty upon destruction
     DEBUG_ASSERT(m_indexedTracks.empty());
@@ -636,8 +640,21 @@ bool GlobalTrackCache::evictAndDelete(
             return false;
         }
     }
+
     // Now we know that the pointer has not been deleted before
     // and we can safely access it!
+    return evictAndDeleteInternal(
+            &cacheLocker,
+            ipIndexedTrack,
+            evictUnexpired);
+}
+
+bool GlobalTrackCache::evictAndDeleteInternal(
+        GlobalTrackCacheLocker* pCacheLocker,
+        AllocatedTracks::iterator ipIndexedTrack,
+        bool evictUnexpired) {
+    Track* pTrack = *ipIndexedTrack;
+    DEBUG_ASSERT(pTrack);
     const auto trackRef = createTrackRef(*pTrack);
     if (debugLogEnabled()) {
         kLogger.debug()
@@ -649,7 +666,7 @@ bool GlobalTrackCache::evictAndDelete(
     const bool evicted = evictInternal(trackRef, ipIndexedTrack, evictUnexpired);
     DEBUG_ASSERT(verifyConsistency());
     if (evicted) {
-        afterEvicted(&cacheLocker, pTrack);
+        afterEvicted(pCacheLocker, pTrack);
         // Here the lock might have been released already!
         if (debugLogEnabled()) {
             kLogger.debug()

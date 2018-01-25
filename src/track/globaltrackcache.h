@@ -236,6 +236,10 @@ private:
 
     typedef std::set<Track*> AllocatedTracks;
 
+    bool evictAndDeleteInternal(
+            GlobalTrackCacheLocker* /*nullable*/ pCacheLocker,
+            AllocatedTracks::iterator ipIndexedTrack,
+            bool evictUnexpired);
     bool evictInternal(
             const TrackRef& trackRef,
             AllocatedTracks::iterator ipIndexedTrack,
