@@ -10,7 +10,7 @@
 #include "library/browse/browsetablemodel.h"
 
 #include "sources/soundsourceproxy.h"
-#include "track/trackcache.h"
+#include "track/globaltrackcache.h"
 #include "util/trace.h"
 
 
@@ -155,9 +155,9 @@ void BrowseThread::populateModel() {
         const QString filepath = fileIt.next();
         {
             TrackPointer pTrack =
-                TrackCache::instance().resolve(
+                GlobalTrackCache::instance().resolve(
                         filepath, thisPath.token()).getTrack();
-            // The TrackCache is unlocked instantly even if a new track object
+            // The GlobalTrackCache is unlocked instantly even if a new track object
             // has been created and inserted into the cache. Newly created track
             // objects will only contain a reference of the corresponding file,
             // but not any metadata, yet. This reduces lock contention on the

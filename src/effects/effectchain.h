@@ -123,7 +123,6 @@ class EffectChain : public QObject {
     QList<EffectPointer> m_effects;
     EngineEffectChain* m_pEngineEffectChain;
     bool m_bAddedToEngine;
-    EffectStatesMapArray m_effectStatesMapArray;
 
     DISALLOW_COPY_AND_ASSIGN(EffectChain);
 };

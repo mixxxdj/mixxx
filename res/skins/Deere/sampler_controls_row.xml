@@ -35,6 +35,7 @@
             <Group><Variable name="group"/></Group>
             <SizePolicy>me,me</SizePolicy>
             <BgColor>#333333</BgColor>
+            <PlayedOverlayColor>#88000000</PlayedOverlayColor>
             <SignalHighColor>#FFE300</SignalHighColor>
             <SignalMidColor>#0099FF</SignalMidColor>
             <SignalLowColor>#FF0035</SignalLowColor>

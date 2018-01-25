@@ -26,7 +26,12 @@ enum class EffectChainInsertionType {
     Num_Insertion_Types
 };
 
-const int kNumEffectsPerUnit = 4;
+constexpr int kNumEffectsPerUnit = 4;
+
+// NOTE: Setting this to true will enable string manipulation and calls to
+// qDebug() in the audio engine thread. That may cause audio dropouts, so only
+// enable this when debugging the effects system.
+constexpr bool kEffectDebugOutput = false;
 
 class EffectState;
 // For sending EffectStates along the MessagePipe

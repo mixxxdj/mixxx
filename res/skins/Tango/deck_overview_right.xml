@@ -77,16 +77,16 @@ Variables:
           </WidgetGroup><!-- /[Spinny / Cover / none] -->
 
           <WidgetGroup><!-- Vinyl Controls toggles -->
-            <Size>11f,50f</Size>
+            <Size>15f,50f</Size>
             <Layout>vertical</Layout>
             <Children>
               <WidgetGroup><!-- Vinyl Controls toggle with passthrough -->
-                <Size>11f,50f</Size>
+                <Size>15f,50f</Size>
                 <Layout>horizontal</Layout>
                 <Children>
                   <Template src="skin:button_2state.xml">
                     <SetVariable name="ObjectName">VinylTogglerRightPassthrough</SetVariable>
-                    <SetVariable name="Size">11f,50f</SetVariable>
+                    <SetVariable name="Size">15f,50f</SetVariable>
                     <SetVariable name="ConfigKey">[Tango],vinylControlsDeck<Variable name="chanNum"/></SetVariable>
                   </Template>
                 </Children>
@@ -97,12 +97,12 @@ Variables:
               </WidgetGroup>
 
               <WidgetGroup><!-- Vinyl Controls toggle without passthrough -->
-                <Size>11f,50f</Size>
+                <Size>15f,50f</Size>
                 <Layout>horizontal</Layout>
                 <Children>
                   <Template src="skin:button_2state.xml">
                     <SetVariable name="ObjectName">VinylTogglerRight</SetVariable>
-                    <SetVariable name="Size">11f,50f</SetVariable>
+                    <SetVariable name="Size">15f,50f</SetVariable>
                     <SetVariable name="ConfigKey">[Tango],vinylControlsDeck<Variable name="chanNum"/></SetVariable>
                   </Template>
                 </Children>

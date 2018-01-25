@@ -15,12 +15,12 @@ Variables:
     <RightClickIsPushButton>false</RightClickIsPushButton>
     <State>
       <Number>0</Number>
-      <Text>FX<Variable name="FxUnit"/></Text>
+      <Text>FX&#8202;<Variable name="FxUnit"/></Text>
       <Alignment>center</Alignment>
     </State>
     <State>
       <Number>1</Number>
-      <Text>FX<Variable name="FxUnit"/></Text>
+      <Text>FX&#8202;<Variable name="FxUnit"/></Text>
       <Alignment>center</Alignment>
     </State>
     <Connection>

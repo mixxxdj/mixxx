@@ -13,6 +13,18 @@
           <WidgetGroup> <!-- Vertical spacer-->
             <SizePolicy>me,min</SizePolicy>
           </WidgetGroup>
+
+          <WidgetGroup><!-- top border of toolbar -->
+            <ObjectName>Spacer58</ObjectName>
+            <Size>0me,1f</Size>
+            <Layout>horizontal</Layout>
+            <Connection>
+              <ConfigKey persist="true">[Library],show_library</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
           <Template src="skin:toolbar.xml"/>
         </Children>
       </WidgetGroup>
@@ -25,9 +37,11 @@
         <MaximumSize>-1,300</MaximumSize>
         <Children>
           <Template src="skin:mic_samplers_container.xml"/>
+
           <SingletonContainer>
             <ObjectName>LibrarySingleton</ObjectName>
           </SingletonContainer>
+
           <Template src="skin:toolbar_no_library_button.xml"/>
         </Children>
       </WidgetGroup>
@@ -39,10 +53,13 @@
         <MinimumSize>0,301</MinimumSize>
         <Children>
           <Template src="skin:mic_aux_container.xml"/>
+
           <Template src="skin:samplers_container.xml"/>
+
           <SingletonContainer>
             <ObjectName>LibrarySingleton</ObjectName>
           </SingletonContainer>
+
           <Template src="skin:toolbar_no_library_button.xml"/>
         </Children>
       </WidgetGroup>

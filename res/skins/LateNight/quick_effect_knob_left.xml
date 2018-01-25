@@ -16,7 +16,7 @@
             <ObjectName>KillButtonLeft</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
-            <MinimumSize>26,30</MinimumSize>
+            <MinimumSize>22,30</MinimumSize>
             <Children>
               <PushButton>
                 <TooltipId>QuickEffectRack_enabled</TooltipId>
@@ -24,13 +24,13 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>buttons/btn_kill_down.png</Pressed>
-                  <Unpressed>buttons/btn_kill.png</Unpressed>
+                  <Pressed>buttons/btn_eq_kill_down.svg</Pressed>
+                  <Unpressed>buttons/btn_eq_kill.svg</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>buttons/btn_quickEffect_overdown.png</Pressed>
-                  <Unpressed>buttons/btn_quickEffect_over.png</Unpressed>
+                  <Pressed>buttons/btn_quickEffect_overdown.svg</Pressed>
+                  <Unpressed>buttons/btn_quickEffect_over.svg</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="QuickEffect"/>,enabled</ConfigKey>
@@ -65,13 +65,16 @@
         <!--MaximumSize>64,12</MaximumSize-->
         <Children>
           <WidgetGroup>
-            <Size>0me,0min</Size>
+            <Size>0min,0min</Size>
             <Children/>
           </WidgetGroup>
 
           <EffectName>
             <ObjectName>KnobLabel</ObjectName>
-            <Size>40min,12f</Size>
+            <MinimumSize>40,12</MinimumSize>
+            <MaximumSize>62,12</MaximumSize>
+            <SizePolicy>me,f</SizePolicy>
+            <Elide>right</Elide>
             <EffectRackGroup>[QuickEffectRack1]</EffectRackGroup>
             <EffectUnitGroup><Variable name="QuickEffectGroup"/></EffectUnitGroup>
             <Effect>1</Effect>

@@ -88,8 +88,8 @@ int paV19CallbackClkRef(const void *inputBuffer, void *outputBuffer,
 
 
 SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
-                                           SoundManager *sm,
-                                           const PaDeviceInfo *deviceInfo,
+                                           SoundManager* sm,
+                                           const PaDeviceInfo* deviceInfo,
                                            unsigned int devIndex)
         : SoundDevice(config, sm),
           m_pStream(NULL),

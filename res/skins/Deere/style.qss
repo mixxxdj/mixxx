@@ -131,9 +131,7 @@ TEST1 {
 }
 
 #SampleDecksContainer {
-  border-color: #222;
-  border-style: solid;
-  border-width: 1px 0px 2px 0px;
+  border: 0px;
 }
 
 #SamplerRows {
@@ -633,6 +631,10 @@ QScrollBar::sub-line:horizontal, QScrollBar::sub-line:vertical {
 #Mixxx {
   background-color: black;
   font-family: "Open Sans";
+}
+
+#WaveformSplitter {
+  background-color: #222;
 }
 
 WWidget, QLabel {

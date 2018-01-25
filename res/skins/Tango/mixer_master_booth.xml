@@ -39,8 +39,8 @@ Description:
             </Connection>
           </SliderComposed>
 
-          <WidgetGroup><!-- FX assignment buttons
-            <ObjectName>Spacer0f</ObjectName> -->
+          <WidgetGroup><!-- FX assignment buttons -->
+            <ObjectName>Spacer0f</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
@@ -52,6 +52,7 @@ Description:
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
+                    <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_master_button.xml">
                     <SetVariable name="Size">26f,13f</SetVariable>
                     <SetVariable name="FxUnit">1</SetVariable>
@@ -71,6 +72,7 @@ Description:
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
+                    <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_master_button.xml">
                     <SetVariable name="Size">26f,13f</SetVariable>
                     <SetVariable name="FxUnit">3</SetVariable>
