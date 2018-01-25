@@ -26,6 +26,11 @@ TrackRef createTrackRef(const Track& track) {
     return TrackRef::fromFileInfo(track.getFileInfo(), track.getId());
 }
 
+inline
+void deleteTrack(Track* pTrack) {
+    delete pTrack;
+}
+
 } // anonymous namespace
 
 GlobalTrackCacheLocker::GlobalTrackCacheLocker()
@@ -169,13 +174,13 @@ void GlobalTrackCache::deleter(Track* pTrack) {
     // this pointer might already have been deleted! Only the
     // cache knows this.
     if (s_pInstance) {
-        s_pInstance->evict(pTrack);
+        s_pInstance->evictAndDelete(pTrack);
     } else {
-        // Simply delete unreferenced tracks when the cache is
-        // no longer available
+        // Simply delete unreferenced tracks when the cache is no
+        // longer available. This might but should not happen.
         kLogger.warning()
                 << "Deleting uncached track";
-        delete pTrack;
+        deleteTrack(pTrack);
     }
 }
 
@@ -192,7 +197,7 @@ GlobalTrackCache::~GlobalTrackCache() {
     // Ideally the cache should be empty when destroyed.
     // But since this is difficult to achieve all remaining
     // cached tracks will evicted no matter if they are still
-    // refereced or not. This ensures that the eviction
+    // referenced or not. This ensures that the eviction
     // callback is triggered for all modified tracks before
     // exiting the application.
     for (auto&& ipIndexedTrack = m_indexedTracks.begin();
@@ -597,7 +602,7 @@ void GlobalTrackCache::afterEvicted(
     // callback!!
 }
 
-void GlobalTrackCache::evict(
+bool GlobalTrackCache::evictAndDelete(
         Track* pTrack,
         bool evictUnexpired) {
     DEBUG_ASSERT(pTrack);
@@ -617,7 +622,8 @@ void GlobalTrackCache::evict(
                         << createTrackRef(*pTrack)
                         << pTrack;
             }
-            delete pTrack;
+            deleteTrack(pTrack);
+            return true;
         } else {
             // Due to a rare but expected race condition the track
             // has already been deleted and must not be deleted
@@ -627,7 +633,7 @@ void GlobalTrackCache::evict(
                         << "Skip deletion of already deleted track"
                         << pTrack;
             }
-            return;
+            return false;
         }
     }
     // Now we know that the pointer has not been deleted before
@@ -644,22 +650,25 @@ void GlobalTrackCache::evict(
     DEBUG_ASSERT(verifyConsistency());
     if (evicted) {
         afterEvicted(&cacheLocker, pTrack);
+        // Here the lock might have been released already!
         if (debugLogEnabled()) {
             kLogger.debug()
                     << "Deleting evicted track"
                     << trackRef
                     << pTrack;
         }
-        delete pTrack;
+        deleteTrack(pTrack);
+        return true;
     } else {
-        // If pEvictedTrack == nullptr then given pTrack is still
-        // referenced within the cache and must not be deleted, yet!
+        // ...otherwise the given pTrack is still referenced within
+        // the cache and must not be deleted, yet!
         if (debugLogEnabled()) {
             kLogger.debug()
                     << "Keeping unevicted track"
                     << trackRef
                     << pTrack;
         }
+        return false;
     }
 }
 

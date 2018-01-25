@@ -166,6 +166,7 @@ private:
 
     static GlobalTrackCache* volatile s_pInstance;
 
+    // Callback for the smart-pointer
     static void deleter(Track* pTrack);
 
     class Item final {
@@ -229,7 +230,7 @@ private:
             const TrackRef& trackRef,
             TrackId trackId);
 
-    void evict(
+    bool evictAndDelete(
             Track* pTrack,
             bool evictUnexpired = false);
 
