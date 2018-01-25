@@ -53,7 +53,7 @@
                 <SetVariable name="TooltipId">headMix</SetVariable>
                 <SetVariable name="group">[Master]</SetVariable>
                 <SetVariable name="control">headMix</SetVariable>
-                <SetVariable name="color">blue</SetVariable>
+                <SetVariable name="color">blue_gapless</SetVariable>
                 <SetVariable name="label">Head Mix</SetVariable>
               </Template>
 
