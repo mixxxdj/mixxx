@@ -1,5 +1,8 @@
 #include "track/globaltrackcache.h"
 
+#include <QApplication>
+#include <QThread>
+
 #include "util/assert.h"
 #include "util/logger.h"
 
@@ -26,9 +29,13 @@ TrackRef createTrackRef(const Track& track) {
     return TrackRef::fromFileInfo(track.getFileInfo(), track.getId());
 }
 
-inline
 void deleteTrack(Track* pTrack) {
-    delete pTrack;
+    if (pTrack) {
+        if (traceLogEnabled()) {
+            pTrack->dumpObjectInfo();
+        }
+        pTrack->deleteLater();
+    }
 }
 
 } // anonymous namespace
@@ -155,12 +162,14 @@ GlobalTrackCache* volatile GlobalTrackCache::s_pInstance = nullptr;
 
 //static
 void GlobalTrackCache::createInstance(GlobalTrackCacheEvictor* pEvictor) {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
     DEBUG_ASSERT(!s_pInstance);
     s_pInstance = new GlobalTrackCache(pEvictor);
 }
 
 //static
 void GlobalTrackCache::destroyInstance() {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
     DEBUG_ASSERT(s_pInstance);
     GlobalTrackCache* pInstance = s_pInstance;
     s_pInstance = nullptr;
@@ -525,6 +534,12 @@ GlobalTrackCacheResolver GlobalTrackCache::resolve(
                     std::move(trackId)),
             deleter);
     DEBUG_ASSERT(createTrackRef(*pTrack) == trackRef);
+    // Track objects live together with the cache on the main thread
+    // and will be deleted later within the event loop. But this
+    // function might be called from any thread, even from worker
+    // threads without an event loop. We need to move the newly
+    // created object to the target thread.
+    pTrack->moveToThread(QApplication::instance()->thread());
     const Item item(trackRef, pTrack);
     if (debugLogEnabled()) {
         kLogger.debug()
