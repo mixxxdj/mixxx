@@ -51,7 +51,7 @@
         </Mark>
         <Mark>
           <Control>cue_point</Control>
-          <Text>C</Text>
+          <Text> C </Text>
           <Align>top|right</Align>
           <Color>#FF001C</Color>
           <TextColor>#FFFFFF</TextColor>

@@ -18,6 +18,16 @@ QToolTip {/*
   font-family: Ubuntu;*/
 }
 
+#KeyText,
+#PlayPositionText,
+#DurationText,
+#BpmText,
+#RateText,
+WBeatSpinBox,
+WOverview {
+  font-family: "Open Sans";
+}
+
 WPushButton, QPushButton {
   font-size: 11px/12px;
 }
@@ -297,7 +307,7 @@ WPushButton, QPushButton {
 
 #TimeGutter, #DurationGutter {
   qproperty-layoutAlignment: 'AlignRight | AlignBottom';
-  padding: 3px;
+  padding: 2px;
 }
 
 #RateGutter {
@@ -371,7 +381,6 @@ WPushButton, QPushButton {
 
 #KeyText {
   qproperty-alignment: 'AlignCenter';
-  font-family: "Open Sans";
   font-size: 13px/13px;
   text-transform: none;
   background-color: #0f0f0f;
@@ -384,7 +393,7 @@ WPushButton, QPushButton {
 #ArtistText,
 #TitleText,
 #PlayPositionText {
- font-size: 18px/21px;
+ font-size: 18px/20px;
 }
 
 #DurationText {
@@ -1192,23 +1201,9 @@ WEffectSelector {
     padding: 0px;
   }
 
-/* this is now inline in the pushbutton so we can change styles */
-/*#EffectUnitGroupControlButton {
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font-size: 11px/13px;
-  text-transform: uppercase;
-  color: #eece33;
-  text-transform: none;
-  text-align: center;
-  border: 1px solid #eece33;
-  margin: 1px;
-}*/
-
 #FxSuperLinkButton,
 #FxSuperLinkInvertButton {
-  /* those buttons are 5px tall, that's why they won't accept
-  3px radius which is set for all WPushButtons
-  border-radius: 2px; */
+  border-radius: 1px;
   margin: 0px 5px 0px 5px;
 }
 
