@@ -903,7 +903,7 @@ border: 0px;
   text-align: center;
 }
 
-#DuckingTitle {
+#MicDuckingTitle {
   qproperty-alignment: 'AlignCenter | AlignTop';
   font-size: 12px/13px;
   font-weight: bold;
@@ -914,6 +914,15 @@ border: 0px;
 #MicDuckingContainer {
   margin: 0px 0px 3px 0px;
 }
+
+#MicDuckingButton[displayValue="0"] {
+  color: #ddd;
+  }
+
+  #MicDuckingButton[displayValue="1"],
+  #MicDuckingButton[displayValue="2"] {
+    color: #0e0e0e;
+  }
 
 #MicGainPFlContainer {
   qproperty-layoutAlignment: 'AlignCenter';
