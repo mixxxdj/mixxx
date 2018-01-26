@@ -59,8 +59,8 @@
                         <NumberStates>1</NumberStates>
                         <State>
                           <Number>0</Number>
-                          <Pressed>buttons/btn_eject1_over.png</Pressed>
-                          <Unpressed>buttons/btn_eject1.png</Unpressed>
+                          <Pressed>buttons/btn_eject_over.png</Pressed>
+                          <Unpressed>buttons/btn_eject.png</Unpressed>
                         </State>
                         <Connection>
                           <ConfigKey>[PreviewDeck1],eject</ConfigKey>
