@@ -12,6 +12,47 @@
 #include "track/trackref.h"
 
 
+class TrackRefPtr {
+  public:
+    TrackRefPtr() = default;
+    TrackRefPtr(const TrackRefPtr&) = default;
+#if !defined(_MSC_VER) || _MSC_VER > 1900
+    TrackRefPtr(TrackRefPtr&&) = default;
+#else
+    // Workaround for Visual Studio 2015 (and before)
+    TrackRefPtr(TrackRefPtr&& that)
+        : m_trackRef(std::move(that.m_trackRef)),
+          m_trackPtr(std::move(that.m_trackPtr)) {
+    }
+#endif
+    TrackRefPtr(TrackRef trackRef, TrackPointer trackPtr)
+        : m_trackRef(std::move(trackRef)),
+          m_trackPtr(std::move(trackPtr)) {
+    }
+
+    TrackRefPtr& operator=(const TrackRefPtr&) = default;
+#if !defined(_MSC_VER) || _MSC_VER > 1900
+    TrackRefPtr& operator=(TrackRefPtr&&) = default;
+#else
+    // Workaround for Visual Studio 2015 (and before)
+    TrackRefPtr& operator=(TrackRefPtr&& that) {
+        m_trackRef = std::move(that.m_trackRef);
+        m_trackPtr = std::move(that.m_trackPtr);
+    }
+#endif
+
+    const TrackRef& ref() const {
+        return m_trackRef;
+    }
+    const TrackPointer& ptr() const {
+        return m_trackPtr;
+    }
+
+  private:
+    TrackRef m_trackRef;
+    TrackPointer m_trackPtr;
+};
+
 enum class GlobalTrackCacheLookupResult {
     NONE,
     HIT,
@@ -28,12 +69,16 @@ public:
         return m_lookupResult;
     }
 
-    const TrackRef& getTrackRef() const {
-        return m_trackRef;
+    operator const TrackRefPtr&() const {
+        return m_trackRefPtr;
     }
 
     const TrackPointer& getTrack() const {
-        return m_pTrack;
+        return m_trackRefPtr.ptr();
+    }
+
+    const TrackRef& getTrackRef() const {
+        return m_trackRefPtr.ref();
     }
 
     void unlockCache();
@@ -50,8 +95,7 @@ protected:
     GlobalTrackCacheLocker(
             GlobalTrackCacheLocker&& moveable,
             GlobalTrackCacheLookupResult lookupResult,
-            TrackRef trackRef,
-            TrackPointer pTrack);
+            TrackRefPtr trackRefPtr);
 
     GlobalTrackCacheLocker& operator=(GlobalTrackCacheLocker&&);
 
@@ -59,8 +103,7 @@ protected:
 
     GlobalTrackCacheLookupResult m_lookupResult;
 
-    TrackRef m_trackRef;
-    TrackPointer m_pTrack;
+    TrackRefPtr m_trackRefPtr;
 };
 
 class GlobalTrackCacheResolver final: public GlobalTrackCacheLocker {
@@ -81,12 +124,11 @@ public:
 
 private:
     friend class GlobalTrackCache;
-    GlobalTrackCacheResolver();
+    GlobalTrackCacheResolver() = default;
     GlobalTrackCacheResolver(
             GlobalTrackCacheResolver&& moveable,
             GlobalTrackCacheLookupResult lookupResult,
-            TrackRef trackRef,
-            TrackPointer pTrack);
+            TrackRefPtr trackRefPtr);
 
 #if defined(_MSC_VER) && (_MSC_VER <= 1900)
     // Visual Studio 2015 does not support default generated move assignment operators
@@ -211,12 +253,12 @@ private:
     // to verify the class invariants during development.
     bool verifyConsistency() const;
 
-    std::pair<TrackRef, TrackPointer> lookupInternal(
+    TrackRefPtr lookupByIdInternal(
             const TrackId& trackId);
-    std::pair<TrackRef, TrackPointer> lookupInternal(
+    TrackRefPtr lookupByRefInternal(
             const TrackRef& trackRef);
 
-    std::pair<TrackRef, TrackPointer> reviveInternal(
+    TrackRefPtr reviveInternal(
             const Item& item);
 
     bool resolveInternal(

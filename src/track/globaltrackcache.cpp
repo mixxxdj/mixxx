@@ -52,8 +52,7 @@ GlobalTrackCacheLocker::GlobalTrackCacheLocker(
         GlobalTrackCacheLocker&& moveable)
         : m_pCacheMutex(std::move(moveable.m_pCacheMutex)),
           m_lookupResult(std::move(moveable.m_lookupResult)),
-          m_trackRef(std::move(moveable.m_trackRef)),
-          m_pTrack(std::move(moveable.m_pTrack)) {
+          m_trackRefPtr(std::move(moveable.m_trackRefPtr)) {
     moveable.m_pCacheMutex = nullptr;
 }
 
@@ -63,8 +62,7 @@ GlobalTrackCacheLocker& GlobalTrackCacheLocker::operator=(
         m_pCacheMutex = std::move(moveable.m_pCacheMutex);
         moveable.m_pCacheMutex = nullptr;
         m_lookupResult = std::move(moveable.m_lookupResult);
-        m_trackRef = std::move(moveable.m_trackRef);
-        m_pTrack = std::move(moveable.m_pTrack);
+        m_trackRefPtr = std::move(moveable.m_trackRefPtr);
     }
     return *this;
 }
@@ -72,15 +70,13 @@ GlobalTrackCacheLocker& GlobalTrackCacheLocker::operator=(
 GlobalTrackCacheLocker::GlobalTrackCacheLocker(
         GlobalTrackCacheLocker&& moveable,
         GlobalTrackCacheLookupResult lookupResult,
-        TrackRef trackRef,
-        TrackPointer pTrack)
+        TrackRefPtr trackRefPtr)
         : m_pCacheMutex(moveable.m_pCacheMutex),
           m_lookupResult(lookupResult),
-          m_trackRef(std::move(trackRef)),
-          m_pTrack(std::move(pTrack)) {
+          m_trackRefPtr(std::move(trackRefPtr)) {
     moveable.m_pCacheMutex = nullptr;
     // Class invariants
-    DEBUG_ASSERT((GlobalTrackCacheLookupResult::NONE != m_lookupResult) || !m_pTrack);
+    DEBUG_ASSERT((GlobalTrackCacheLookupResult::NONE != m_lookupResult) || !m_trackRefPtr.ptr());
 }
 
 GlobalTrackCacheLocker::~GlobalTrackCacheLocker() {
@@ -122,38 +118,34 @@ void GlobalTrackCacheLocker::unlockCache() {
     }
 }
 
-GlobalTrackCacheResolver::GlobalTrackCacheResolver() {
-}
-
 GlobalTrackCacheResolver::GlobalTrackCacheResolver(
         GlobalTrackCacheResolver&& moveable,
         GlobalTrackCacheLookupResult lookupResult,
-        TrackRef trackRef,
-        TrackPointer pTrack)
+        TrackRefPtr trackRefPtr)
         : GlobalTrackCacheLocker(
             std::move(moveable),
             std::move(lookupResult),
-            std::move(trackRef),
-            std::move(pTrack)) {
+            std::move(trackRefPtr)) {
 }
 
 void GlobalTrackCacheResolver::initTrackId(TrackId trackId) {
     DEBUG_ASSERT(m_pCacheMutex); // cache is still locked
     DEBUG_ASSERT(GlobalTrackCacheLookupResult::NONE != m_lookupResult);
-    DEBUG_ASSERT(m_pTrack);
+    DEBUG_ASSERT(m_trackRefPtr.ptr());
     DEBUG_ASSERT(trackId.isValid());
-    if (m_trackRef.getId().isValid()) {
+    if (m_trackRefPtr.ref().getId().isValid()) {
         // Ignore setting the same id twice
-        DEBUG_ASSERT(m_trackRef.getId() == trackId);
+        DEBUG_ASSERT(m_trackRefPtr.ref().getId() == trackId);
     } else {
-        m_trackRef = GlobalTrackCache::instance().initTrackIdInternal(
-                m_pTrack,
-                m_trackRef,
+        auto trackRef = GlobalTrackCache::instance().initTrackIdInternal(
+                m_trackRefPtr.ptr(),
+                m_trackRefPtr.ref(),
                 trackId);
-        DEBUG_ASSERT(m_trackRef.getId() == trackId);
-        m_pTrack->initId(trackId);
+        DEBUG_ASSERT(m_trackRefPtr.ref().getId() == trackId);
+        m_trackRefPtr.ptr()->initId(trackId);
+        m_trackRefPtr = TrackRefPtr(std::move(trackRef), m_trackRefPtr.ptr());
     }
-    DEBUG_ASSERT(createTrackRef(*m_pTrack) == m_trackRef);
+    DEBUG_ASSERT(createTrackRef(*m_trackRefPtr.ptr()) == m_trackRefPtr.ref());
 }
 
 
@@ -328,11 +320,10 @@ GlobalTrackCacheLocker GlobalTrackCache::lookupById(
         const TrackId& trackId) {
     GlobalTrackCacheLocker cacheLocker;
     if (trackId.isValid()) {
-        auto trackRefPointer = lookupInternal(trackId);
-        if (trackRefPointer.second) {
+        auto trackRefPtr = lookupByIdInternal(trackId);
+        if (trackRefPtr.ptr()) {
             cacheLocker.m_lookupResult = GlobalTrackCacheLookupResult::HIT;
-            cacheLocker.m_trackRef = std::move(trackRefPointer.first);
-            cacheLocker.m_pTrack = std::move(trackRefPointer.second);
+            cacheLocker.m_trackRefPtr = std::move(trackRefPtr);
         } else {
             cacheLocker.m_lookupResult = GlobalTrackCacheLookupResult::MISS;
         }
@@ -340,7 +331,7 @@ GlobalTrackCacheLocker GlobalTrackCache::lookupById(
     return std::move(cacheLocker);
 }
 
-std::pair<TrackRef, TrackPointer> GlobalTrackCache::lookupInternal(
+TrackRefPtr GlobalTrackCache::lookupByIdInternal(
         const TrackId& trackId) {
     const auto trackById(m_tracksById.find(trackId));
     if (m_tracksById.end() != trackById) {
@@ -358,14 +349,14 @@ std::pair<TrackRef, TrackPointer> GlobalTrackCache::lookupInternal(
                     << "Cache miss for"
                     << trackId;
         }
-        return std::make_pair(TrackRef(), TrackPointer());
+        return TrackRefPtr();
     }
 }
 
-std::pair<TrackRef, TrackPointer> GlobalTrackCache::lookupInternal(
+TrackRefPtr GlobalTrackCache::lookupByRefInternal(
         const TrackRef& trackRef) {
     if (trackRef.hasId()) {
-        return lookupInternal(trackRef.getId());
+        return lookupByIdInternal(trackRef.getId());
     } else {
         const auto canonicalLocation = trackRef.getCanonicalLocation();
         const auto trackByCanonicalLocation(
@@ -385,12 +376,12 @@ std::pair<TrackRef, TrackPointer> GlobalTrackCache::lookupInternal(
                         << "Cache miss for"
                         << canonicalLocation;
             }
-            return std::make_pair(TrackRef(), TrackPointer());
+            return TrackRefPtr();
         }
     }
 }
 
-std::pair<TrackRef, TrackPointer> GlobalTrackCache::reviveInternal(
+TrackRefPtr GlobalTrackCache::reviveInternal(
         const Item& item) {
     DEBUG_ASSERT(m_indexedTracks.find(item.plainPtr) != m_indexedTracks.end());
     TrackPointer pTrack(item.weakPtr);
@@ -402,7 +393,7 @@ std::pair<TrackRef, TrackPointer> GlobalTrackCache::reviveInternal(
                     << item.ref
                     << item.plainPtr;
         }
-        return std::make_pair(item.ref, pTrack);
+        return TrackRefPtr(std::move(item.ref), std::move(pTrack));
     }
     // Race condition: The deleter for the Track object has not
     // been invoked, but the object is still referenced within
@@ -447,7 +438,7 @@ std::pair<TrackRef, TrackPointer> GlobalTrackCache::reviveInternal(
                     revivedItem);
         }
     }
-    return std::make_pair(revivedItem.ref, pTrack);
+    return TrackRefPtr(std::move(revivedItem.ref), std::move(pTrack));
 }
 
 bool GlobalTrackCache::resolveInternal(
@@ -463,18 +454,17 @@ bool GlobalTrackCache::resolveInternal(
                     << "Resolving track by id"
                     << trackId;
         }
-        auto trackRefPointer = lookupInternal(trackId);
-        if (trackRefPointer.second) {
+        auto trackRefPtr = lookupByIdInternal(trackId);
+        if (trackRefPtr.ptr()) {
             if (debugLogEnabled()) {
                 kLogger.debug()
                         << "Cache hit - found track by id"
-                        << trackRefPointer.first;
+                        << trackRefPtr.ref();
             }
             *pCacheResolver = GlobalTrackCacheResolver(
                     std::move(*pCacheResolver),
                     GlobalTrackCacheLookupResult::HIT,
-                    std::move(trackRefPointer.first),
-                    std::move(trackRefPointer.second));
+                    std::move(trackRefPtr));
             return true;
         }
     }
@@ -488,19 +478,18 @@ bool GlobalTrackCache::resolveInternal(
                     << "Resolving track by canonical location"
                     << trackRef.getCanonicalLocation();
         }
-        auto trackRefPointer = lookupInternal(trackRef);
-        if (trackRefPointer.second) {
+        auto trackRefPtr = lookupByRefInternal(trackRef);
+        if (trackRefPtr.ptr()) {
             // Cache hit
             if (debugLogEnabled()) {
                 kLogger.debug()
                         << "Cache hit - found track by canonical location"
-                        << trackRefPointer.first;
+                        << trackRefPtr.ref();
             }
             *pCacheResolver = GlobalTrackCacheResolver(
                     std::move(*pCacheResolver),
                     GlobalTrackCacheLookupResult::HIT,
-                    std::move(trackRefPointer.first),
-                    std::move(trackRefPointer.second));
+                    std::move(trackRefPtr));
             return true;
         }
     }
@@ -568,8 +557,7 @@ GlobalTrackCacheResolver GlobalTrackCache::resolve(
     return GlobalTrackCacheResolver(
             std::move(cacheResolver),
             GlobalTrackCacheLookupResult::MISS,
-            std::move(trackRef),
-            std::move(pTrack));
+            TrackRefPtr(std::move(trackRef), std::move(pTrack)));
 }
 
 TrackRef GlobalTrackCache::initTrackIdInternal(
