@@ -255,10 +255,40 @@
                 </Children>
               </WidgetGroup>
 
+              <WidgetGroup>
+                <MinimumSize>0,3</MinimumSize>
+                <MaximumSize>-1,5</MaximumSize>
+                <SizePolicy>me,min</SizePolicy>
+              </WidgetGroup>
+
+              <WidgetGroup><!-- HeadSplit button -->
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children>
+                  <PushButton>
+                    <Size>68f,22f</Size>
+                    <TooltipId>headSplit</TooltipId>
+                    <ObjectName>FxAssignButton</ObjectName>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Text>Split Cue</Text>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Text>Split Cue</Text>
+                    </State>
+                    <Connection>
+                      <ConfigKey>[Master],headSplit</ConfigKey>
+                    </Connection>
+                  </PushButton>
+                </Children>
+              </WidgetGroup><!-- /HeadSplit button -->
+
             </Children>
           </WidgetGroup><!-- /HeadphoneControls -->
 
-          <WidgetGroup><Size>0min,1me</Size></WidgetGroup>
+          <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
         </Children>
       </WidgetGroup>
     </Children>
