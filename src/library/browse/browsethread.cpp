@@ -10,7 +10,6 @@
 #include "library/browse/browsetablemodel.h"
 
 #include "sources/soundsourceproxy.h"
-#include "track/globaltrackcache.h"
 #include "util/trace.h"
 
 
@@ -154,15 +153,16 @@ void BrowseThread::populateModel() {
 
         const QString filepath = fileIt.next();
         {
-            TrackPointer pTrack =
-                GlobalTrackCache::instance().resolve(
-                        filepath, thisPath.token()).getTrack();
-            // The GlobalTrackCache is unlocked instantly even if a new track object
-            // has been created and inserted into the cache. Newly created track
-            // objects will only contain a reference of the corresponding file,
-            // but not any metadata, yet. This reduces lock contention on the
-            // global track cache.
-
+            // We need to create a temporary track object and cannot
+            // use the GlobalTrackCache, because cached tracks must
+            // live in the main thread. There is a tiny chance that
+            // the file is removed (after exporting metadata) just
+            // in the moment when reading metadata from it.
+            // TODO: Resolve track object through GlobalTrackCache
+            // after multi-threaded library management is in place
+            // to ensure that only a single track object exists for
+            // each file.
+            TrackPointer pTrack = Track::newTemporary(filepath, thisPath.token());
             // Update the track object by (re-)importing metadata from the file
             SoundSourceProxy(pTrack).updateTrackFromSource();
 
