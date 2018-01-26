@@ -38,6 +38,7 @@ class TrackRefPtr {
     TrackRefPtr& operator=(TrackRefPtr&& that) {
         m_trackRef = std::move(that.m_trackRef);
         m_trackPtr = std::move(that.m_trackPtr);
+        return *this;
     }
 #endif
 
