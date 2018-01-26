@@ -15,7 +15,7 @@
           <WidgetGroup>
             <ObjectName>SamplerText</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>me,min</SizePolicy>
+            <SizePolicy>i,min</SizePolicy>
             <Children>
               <TrackProperty>
                 <TooltipId>track_title</TooltipId>
