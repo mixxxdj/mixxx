@@ -827,6 +827,29 @@ border: 0px;
 #Waveform {
 }
 
+#BeatgridButtonsToggle {
+  image: url(skin:/buttons/btn_beatgrid_buttons_toggle.svg) no-repeat center center;
+  border: 1px solid #585858;
+  border-radius: 2px;
+  margin: 1px;
+  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                  stop:0 #282828,
+                                  stop:0.13 #1a1a1a,
+                                  stop:0.87 #1a1a1a,
+                                  stop:1 #0e0e0e);
+}
+
+#BeatCurpos {
+  border: 1px solid #585858;
+  border-radius: 2px;
+  margin: 1px;
+  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                  stop:0 #282828,
+                                  stop:0.25 #1a1a1a,
+                                  stop:0.75 #1a1a1a,
+                                  stop:1 #0e0e0e);
+}
+
 #RateContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   border: 1px solid #585858;
