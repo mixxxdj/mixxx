@@ -594,13 +594,6 @@ void GlobalTrackCache::afterEvicted(
     // See: https://bugs.launchpad.net/mixxx/+bug/136578
     pEvictedTrack->disconnect();
 
-    // The evictor callback should always be called from the main
-    // thread, because the TrackDAO with the database connection
-    // are still bound to the main thread! We have to rethink this
-    // assertion after the multi-threaded database access layer is
-    // ready!
-    // TODO: Finish multi-threaded database access layer
-    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
     // Keep the cache locked while evicting the track object!
     // The callback is given the chance to unlock the cache
     // after all operations that rely on managed track ownership

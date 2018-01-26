@@ -423,5 +423,12 @@ void Library::slotSetTrackTableRowHeight(int rowHeight) {
 }
 
 void Library::afterEvictedTrackFromCache(GlobalTrackCacheLocker* pCacheLocker, Track* pTrack) {
+    // The evictor callback should always be called from the main
+    // thread, because the TrackDAO with the database connection
+    // is still bound to the main thread! We have to rethink this
+    // assertion after the multi-threaded database access layer is
+    // ready!
+    // TODO: Finish multi-threaded database access layer
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
     m_pTrackCollection->saveTrack(pCacheLocker, pTrack);
 }
