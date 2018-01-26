@@ -141,7 +141,7 @@ void GlobalTrackCacheResolver::initTrackId(TrackId trackId) {
                 m_trackRefPtr.ptr(),
                 m_trackRefPtr.ref(),
                 trackId);
-        DEBUG_ASSERT(m_trackRefPtr.ref().getId() == trackId);
+        DEBUG_ASSERT(trackRef.getId() == trackId);
         m_trackRefPtr.ptr()->initId(trackId);
         m_trackRefPtr = TrackRefPtr(std::move(trackRef), m_trackRefPtr.ptr());
     }
