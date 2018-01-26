@@ -109,24 +109,60 @@
 
               <WidgetGroup><Size>0min,3f</Size></WidgetGroup>
 
+              <!-- Master knobs
+                  Labels are separate so knobs are spaced equally -->
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <Template src="skin:knob.xml">
-                    <SetVariable name="Size">35f,30f</SetVariable>
-                    <SetVariable name="TooltipId">master_gain</SetVariable>
-                    <SetVariable name="group">[Master]</SetVariable>
-                    <SetVariable name="control">gain</SetVariable>
-                    <SetVariable name="label">Master</SetVariable>
-                  </Template>
-                  <Template src="skin:knob.xml">
-                    <SetVariable name="Size">35f,30f</SetVariable>
-                    <SetVariable name="TooltipId">balance</SetVariable>
-                    <SetVariable name="group">[Master]</SetVariable>
-                    <SetVariable name="control">balance</SetVariable>
-                    <SetVariable name="label">L / R</SetVariable>
-                  </Template>
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Children>
+                      <Template src="skin:knob_textless.xml">
+                        <SetVariable name="Size">35f,30f</SetVariable>
+                        <SetVariable name="TooltipId">master_gain</SetVariable>
+                        <SetVariable name="group">[Master]</SetVariable>
+                        <SetVariable name="control">gain</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup><!-- Headphone knob labels -->
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Children>
+                      <Template src="skin:knob_textless.xml">
+                        <SetVariable name="Size">35f,30f</SetVariable>
+                        <SetVariable name="TooltipId">balance</SetVariable>
+                        <SetVariable name="group">[Master]</SetVariable>
+                        <SetVariable name="control">balance</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
+
+
+              <!-- Headphone knobs
+                  Labels are separate so knobs are spaced equally -->
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Label>
+                    <ObjectName>KnobLabel</ObjectName>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Alignment>left</Alignment>
+                    <Text>master</Text>
+                  </Label>
+
+                  <Label>
+                    <ObjectName>KnobLabel</ObjectName>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Alignment>right</Alignment>
+                    <Text>l / r</Text>
+                  </Label>
                 </Children>
               </WidgetGroup>
 
@@ -230,28 +266,61 @@
 
           <WidgetGroup>
             <ObjectName>HeadphoneControls</ObjectName>
-            <SizePolicy>max,min</SizePolicy>
+            <SizePolicy>min,min</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
+
+              <!-- Headphone knobs
+                  Labels are separate so knobs are spaced equally -->
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Children>
+                      <Template src="skin:knob_textless.xml">
+                        <SetVariable name="Size">35f,30f</SetVariable>
+                        <SetVariable name="TooltipId">headphone_gain</SetVariable>
+                        <SetVariable name="group">[Master]</SetVariable>
+                        <SetVariable name="control">headGain</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup><!-- Headphone knob labels -->
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Children>
+                      <Template src="skin:knob_textless.xml">
+                        <SetVariable name="Size">35f,30f</SetVariable>
+                        <SetVariable name="TooltipId">headMix</SetVariable>
+                        <SetVariable name="group">[Master]</SetVariable>
+                        <SetVariable name="control">headMix</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
 
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <Template src="skin:knob.xml">
-                    <SetVariable name="Size">35f,30f</SetVariable>
-                    <SetVariable name="TooltipId">headphone_gain</SetVariable>
-                    <SetVariable name="group">[Master]</SetVariable>
-                    <SetVariable name="control">headGain</SetVariable>
-                    <SetVariable name="label">Head</SetVariable>
-                  </Template>
-                  <Template src="skin:knob.xml">
-                    <SetVariable name="Size">35f,30f</SetVariable>
-                    <SetVariable name="TooltipId">headMix</SetVariable>
-                    <SetVariable name="group">[Master]</SetVariable>
-                    <SetVariable name="control">headMix</SetVariable>
-                    <SetVariable name="label">Pre/MST</SetVariable>
-                  </Template>
+                  <Label>
+                    <ObjectName>KnobLabel</ObjectName>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Alignment>left</Alignment>
+                    <Text>Head</Text>
+                  </Label>
+
+                  <Label>
+                    <ObjectName>KnobLabel</ObjectName>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Alignment>right</Alignment>
+                    <Text>Pre/MST</Text>
+                  </Label>
                 </Children>
               </WidgetGroup>
 
