@@ -79,16 +79,9 @@
       </Children>
     </SingletonDefinition>
 
-    <SingletonDefinition>
-      <ObjectName>ClockRecLogo</ObjectName>
-      <Children>
-        <Template src="skin:toolbar_clock_rec_logo.xml"/>
-      </Children>
-    </SingletonDefinition>
-
     <WidgetGroup>
       <ObjectName>SkinContainer</ObjectName>
-      <Layout>horizontal</Layout>
+      <Layout>vertical</Layout>
       <SizePolicy>me,me</SizePolicy>
       <Children>
 
@@ -137,12 +130,13 @@
                 <SingletonContainer>
                   <ObjectName>LibrarySingleton</ObjectName>
                 </SingletonContainer>
-                <Template src="skin:toolbar_big_library.xml"/>
               </Children>
             </WidgetGroup>
 
           </Children>
         </WidgetStack>
+
+        <Template src="skin:toolbar.xml"/>
       </Children>
     </WidgetGroup>
   </Children>

@@ -164,6 +164,12 @@ WPushButton, QPushButton {
   margin-bottom: 2px;
 }
 
+WTime {
+  font-size: 13px/13px;
+  font-weight: bold;
+  color: #eece33;
+}
+
 #LatencyMeter {
   margin: 1px;
   padding-right: 4px;
@@ -172,6 +178,9 @@ WPushButton, QPushButton {
 
 #LatencyLabel {
   padding-bottom: 2px;
+  font-size: 10px/10px;
+  font-weight: bold;
+  color: #eece33;
 }
 
 #Mixer {/*

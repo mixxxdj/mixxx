@@ -14,8 +14,6 @@
           <SingletonContainer>
             <ObjectName>LibrarySingleton</ObjectName>
           </SingletonContainer>
-
-          <Template src="skin:toolbar.xml"/>
         </Children>
       </WidgetGroup>
 
@@ -51,8 +49,6 @@
           <SingletonContainer>
             <ObjectName>LibrarySingleton</ObjectName>
           </SingletonContainer>
-
-          <Template src="skin:toolbar.xml"/>
         </Children>
       </WidgetGroup>
 
