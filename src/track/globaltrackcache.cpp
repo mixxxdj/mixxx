@@ -201,23 +201,20 @@ GlobalTrackCache::~GlobalTrackCache() {
     // referenced or not. This ensures that the eviction
     // callback is triggered for all modified tracks before
     // exiting the application.
-    for (auto&& ipIndexedTrack = m_indexedTracks.begin();
-            ipIndexedTrack != m_indexedTracks.end();
-            ++ipIndexedTrack) {
+    while (!m_indexedTracks.empty()) {
         evictAndDeleteInternal(
                 nullptr,
-                ipIndexedTrack,
+                m_indexedTracks.begin(),
                 true);
     }
+    // Verify that all indexed tracks have been evicted
+    DEBUG_ASSERT(m_tracksById.empty());
+    DEBUG_ASSERT(m_tracksByCanonicalLocation.empty());
     // The singular cache instance is already unavailable and
     // all unindexed tracks will simply be deleted when their
     // shared pointer goes out of scope. Their modifications
     // will be lost.
     m_unindexedTracks.clear();
-    // Verify that the cache is empty upon destruction
-    DEBUG_ASSERT(m_indexedTracks.empty());
-    DEBUG_ASSERT(m_tracksById.empty());
-    DEBUG_ASSERT(m_tracksByCanonicalLocation.empty());
 }
 
 bool GlobalTrackCache::verifyConsistency() const {
