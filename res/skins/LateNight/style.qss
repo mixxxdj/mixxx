@@ -972,10 +972,17 @@ border: 0px;
 
 #SamplerText {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding: 3px;
+  padding: 3px 3px 3px 5px;
   border: 1px solid #585858;
   border-top: 0px;
   border-left: 0px;
+}
+
+#SamplerTitle {
+  font-size: 16px/19px;
+  font-weight: bold;
+  color: #eece33;
+  text-align: left;
 }
 
 #SamplerRowTwo {
