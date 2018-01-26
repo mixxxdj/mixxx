@@ -201,13 +201,15 @@ WPushButton, QPushButton {
     padding-top: 3px;
   }
 
-#MasterControls {
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';
-  padding: 2px 2px 1px 2px;
-  /* this wouldn't work:
-  border-left: 1px solid #585858;
-  border-width: 0px 0px 0px 1px; */
-  border: 1px solid #585858;
+#MasterHeadphoneDivider {
+  background-color: #585858;
+  margin: 5px 0px 5px 0px;
+}
+
+#MasterControls,
+#HeadphoneControls {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  padding: 2px;
 }
 
 #MixerChannel {
@@ -232,6 +234,7 @@ WPushButton, QPushButton {
 
 #MasterVuMeter4ch {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+  margin-top: 5px;
 }
 
 #NoMixerLogo {
