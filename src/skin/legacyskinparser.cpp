@@ -1847,8 +1847,9 @@ void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
     }
 }
 
+//static
 QString LegacySkinParser::getStyleFromNode(const QDomNode& node) {
-    QDomElement styleElement = m_pContext->selectElement(node, "Style");
+    QDomElement styleElement = SkinContext::selectElement(node, "Style");
 
     if (styleElement.isNull()) {
         return QString();
