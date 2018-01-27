@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <QtDebug>
+#include "util/version.h"
 
 #ifdef __WINDOWS__
 #include <io.h> // Debug Console
@@ -116,7 +117,8 @@ Console::Console()
             // Save current console title.
             if (GetConsoleTitle(m_oldTitle, MAX_PATH)) {
                 // Build new console title string.
-                StringCchPrintf(szNewTitle, MAX_PATH, TEXT("%s : Mixxx %d %d"), m_oldTitle, typeStdIn, typeStdErr);
+                StringCchPrintf(szNewTitle, MAX_PATH, TEXT("%s : %s"),
+                        m_oldTitle,  Version::applicationTitle().toLocal8Bit().data());
 
                 // Set console title to new title
                 if (SetConsoleTitle(szNewTitle)) {
