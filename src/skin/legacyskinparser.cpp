@@ -372,7 +372,7 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
         }
     }
 
-    ColorSchemeParser::setupLegacyColorSchemes(skinDocument, m_pConfig);
+    ColorSchemeParser::setupLegacyColorSchemes(skinDocument, m_pConfig, &m_style);
 
     QStringList skinPaths(skinPath);
     QDir::setSearchPaths("skin", skinPaths);
@@ -1966,13 +1966,18 @@ void LegacySkinParser::setupWidget(const QDomNode& node,
     }
     setupSize(node, pWidget);
 
-    QString style = getStyleFromNode(node);
     // Check if we should apply legacy library styling to this node.
     if (m_pContext->selectBool(node, "LegacyTableViewStyle", false)) {
-        style = getLibraryStyle(node);
+        m_style.append(getLibraryStyle(node));
+    } else {
+        // use append here, because we may have already a style from the
+        // color shema.
+        m_style.append(getStyleFromNode(node));
     }
-    if (!style.isEmpty()) {
-        pWidget->setStyleSheet(style);
+
+    if (!m_style.isEmpty()) {
+        pWidget->setStyleSheet(m_style);
+        m_style.clear(); // only apply color scheme to the first widget
     }
 }
 

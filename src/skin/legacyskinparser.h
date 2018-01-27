@@ -147,6 +147,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     RecordingManager* m_pRecordingManager;
     QWidget* m_pParent;
     std::unique_ptr<SkinContext> m_pContext;
+    QString m_style;
     Tooltips m_tooltips;
     QHash<QString, QDomElement> m_templateCache;
     static QList<const char*> s_channelStrs;
