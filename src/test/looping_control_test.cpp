@@ -533,7 +533,9 @@ TEST_F(LoopingControlTest, LoopMoveTest) {
     EXPECT_EQ(0, m_pLoopStartPoint->get());
     EXPECT_NEAR(300, m_pLoopEndPoint->get(), kLoopPositionMaxAbsError);
     ProcessBuffer();
-    EXPECT_EQ(200, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    EXPECT_NEAR(200,
+            m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample(),
+            kLoopPositionMaxAbsError);
 
      // Now repeat the test with looping disabled (should not affect the
     // playhead).
@@ -547,7 +549,9 @@ TEST_F(LoopingControlTest, LoopMoveTest) {
     EXPECT_EQ(44100, m_pLoopStartPoint->get());
     EXPECT_EQ(44400, m_pLoopEndPoint->get());
     // Should not seek inside the moved loop when the loop is disabled
-    EXPECT_EQ(200, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    EXPECT_NEAR(200,
+            m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample(),
+            kLoopPositionMaxAbsError);
 
     // Move backward so that the current position is outside the new location of the loop
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(500, EngineBuffer::SEEK_STANDARD);
@@ -557,7 +561,9 @@ TEST_F(LoopingControlTest, LoopMoveTest) {
     ProcessBuffer();
     EXPECT_EQ(0, m_pLoopStartPoint->get());
     EXPECT_NEAR(300, m_pLoopEndPoint->get(), kLoopPositionMaxAbsError);
-    EXPECT_EQ(500, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    EXPECT_NEAR(500,
+            m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample(),
+            kLoopPositionMaxAbsError);
 }
 
 TEST_F(LoopingControlTest, LoopResizeSeek) {

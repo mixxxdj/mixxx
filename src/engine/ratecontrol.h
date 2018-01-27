@@ -92,7 +92,7 @@ public:
     // Set Rate Ramp Sensitivity
     static void setRateRampSensitivity(int);
     static int getRateRampSensitivity();
-    void notifySeek(double dNewPlaypos) override;
+    void notifySeek(double dNewPlaypos, bool adjustingPhase) override;
 
   public slots:
     void slotReverseRollActivate(double);
