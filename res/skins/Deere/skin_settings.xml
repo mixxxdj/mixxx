@@ -97,6 +97,7 @@
         <Children>
 
           <PushButton>
+            <TooltipId>show_coverart</TooltipId>
             <Size>80me,20f</Size>
             <NumberStates>2</NumberStates>
             <State>
@@ -115,6 +116,7 @@
           </PushButton>
 
           <PushButton>
+            <TooltipId>show_spinny</TooltipId>
             <Size>80me,20f</Size>
             <NumberStates>2</NumberStates>
             <State>
@@ -205,6 +207,7 @@
           </PushButton>
 
           <PushButton>
+            <TooltipId>show_vinylcontrol</TooltipId>
             <Size>80me,20f</Size>
             <NumberStates>2</NumberStates>
             <State>
