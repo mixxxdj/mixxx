@@ -19,64 +19,76 @@
 		}
 		</Style>
 		<Children>
-			<WidgetGroup>
-				<Size>4,4</Size>
-			</WidgetGroup>
 			<PushButton>
 				<TooltipId>EffectSlot_enabled</TooltipId>
 				<Style></Style>
 				<NumberStates>2</NumberStates>
 				<State>
 				<Number>0</Number>
-				<Pressed>btn_kill_down.png</Pressed>
-				<Unpressed>btn_kill.png</Unpressed>
+				<Pressed>btn_hotcue1_<Variable name="effectnum"/>_down.png</Pressed>
+				<Unpressed>btn_hotcue1_<Variable name="effectnum"/>.png</Unpressed>
 				</State>
 				<State>
 					<Number>1</Number>
-					<Pressed>btn_kill_overdown.png</Pressed>
-					<Unpressed>btn_kill_over.png</Unpressed>
+					<Pressed>btn_hotcue1_<Variable name="effectnum"/>_overdown.png</Pressed>
+					<Unpressed>btn_hotcue1_<Variable name="effectnum"/>_over.png</Unpressed>
 				</State>
 				<Connection>
 					<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],enabled</ConfigKey>
 					<ButtonState>LeftButton</ButtonState>
 		 		</Connection>
 			 </PushButton>
-			 <PushButton>
-				 <Size>20f,20f</Size>
-				 <NumberStates>1</NumberStates>
-				 <State>
-					 <Number>0</Number>
-					 <Pressed>btn_previous_over.png</Pressed>
-					 <Unpressed>btn_previous.png</Unpressed>
-				 </State>
-				 <Connection>
-					<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],prev_effect</ConfigKey>
-					<ButtonState>LeftButton</ButtonState>
-				</Connection>
-			</PushButton>
-			<EffectName>
-				<Style>
-					QLabel { qproperty-alignment: AlignCenter; }
-				</Style>
-				<Size>110,e</Size>
-				<EffectRack>1</EffectRack>
-				<EffectUnit><Variable name="effectunitnum"/></EffectUnit>
-				<Effect><Variable name="effectnum"/></Effect>
-				<Elide>middle</Elide>
-			</EffectName>	
-			<PushButton>
-				<Size>20f,20f</Size>
-				<NumberStates>1</NumberStates>
-				<State>
-					<Number>0</Number>
-					<Pressed>btn_next_over.png</Pressed>
-					<Unpressed>btn_next.png</Unpressed>
-				</State>
-				<Connection>
-					<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],next_effect</ConfigKey>
-					<ButtonState>LeftButton</ButtonState>
-				</Connection>
-			</PushButton>
+			<WidgetGroup>
+				<Size>2,2</Size>
+			</WidgetGroup> 
+            <EffectSelector>
+			    <Style>
+    			  WEffectSelector {
+					  color: #060613;
+					  background-color: #aab2b7;
+					  /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
+					  margin-top: 0px;
+					  margin-bottom: 0px;
+					  border: 1px solid #060613;
+					  padding-left: 3px;
+					  font: 13px;
+				  }
+				  WEffectSelector::drop-down {
+					/* This causes the Qt theme's widget style to magically not apply. Go figure. */
+					border: 0;
+				  }
+				  WEffectSelector::down-arrow {
+					height: 20px;
+					border-style: solid;
+					border-color: #060613;
+					border-width: 0px 0px 0px 1px;
+					image: url(skin:/btn_spin_down.png) no-repeat;
+				  }
+			      WEffectSelector QAbstractItemView {
+						border: 2px solid #060613;
+						selection-background-color: lightgray;
+						font: 13px;
+				  }
+				  WEffectSelector:item
+				  {
+						border: 0px;
+						padding-left: 16px;  /* move text right to make room for tick mark */
+						font: 13px;
+						height: 17px; 
+				  }
+
+				  WEffectSelector:item:selected
+				  {
+					  border: 0px;
+					  font: 13px;
+					  background-color: #aab2b7;
+					  height: 20px;
+				  }
+		        </Style>
+		        <EffectRack>1</EffectRack>
+		        <EffectUnit><Variable name="effectunitnum"/></EffectUnit>
+		        <Effect><Variable name="effectnum"/></Effect>
+		     </EffectSelector>
 		</Children>
 	</WidgetGroup>
 </Template>
