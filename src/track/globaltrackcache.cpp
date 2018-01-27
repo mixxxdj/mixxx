@@ -76,7 +76,7 @@ GlobalTrackCacheLocker::GlobalTrackCacheLocker(
           m_trackRefPtr(std::move(trackRefPtr)) {
     moveable.m_pCacheMutex = nullptr;
     // Class invariants
-    DEBUG_ASSERT((GlobalTrackCacheLookupResult::NONE != m_lookupResult) || !m_trackRefPtr.ptr());
+    DEBUG_ASSERT((GlobalTrackCacheLookupResult::NONE != m_lookupResult) || !m_trackRefPtr);
 }
 
 GlobalTrackCacheLocker::~GlobalTrackCacheLocker() {
@@ -131,21 +131,21 @@ GlobalTrackCacheResolver::GlobalTrackCacheResolver(
 void GlobalTrackCacheResolver::initTrackId(TrackId trackId) {
     DEBUG_ASSERT(m_pCacheMutex); // cache is still locked
     DEBUG_ASSERT(GlobalTrackCacheLookupResult::NONE != m_lookupResult);
-    DEBUG_ASSERT(m_trackRefPtr.ptr());
+    DEBUG_ASSERT(m_trackRefPtr);
     DEBUG_ASSERT(trackId.isValid());
     if (m_trackRefPtr.ref().getId().isValid()) {
         // Ignore setting the same id twice
         DEBUG_ASSERT(m_trackRefPtr.ref().getId() == trackId);
     } else {
         auto trackRef = GlobalTrackCache::instance().initTrackIdInternal(
-                m_trackRefPtr.ptr(),
+                m_trackRefPtr,
                 m_trackRefPtr.ref(),
                 trackId);
         DEBUG_ASSERT(trackRef.getId() == trackId);
-        m_trackRefPtr.ptr()->initId(trackId);
-        m_trackRefPtr = TrackRefPtr(std::move(trackRef), m_trackRefPtr.ptr());
+        m_trackRefPtr->initId(trackId);
+        m_trackRefPtr = TrackRefPtr(std::move(m_trackRefPtr), std::move(trackRef));
     }
-    DEBUG_ASSERT(createTrackRef(*m_trackRefPtr.ptr()) == m_trackRefPtr.ref());
+    DEBUG_ASSERT(createTrackRef(*m_trackRefPtr) == m_trackRefPtr.ref());
 }
 
 
@@ -318,7 +318,7 @@ GlobalTrackCacheLocker GlobalTrackCache::lookupById(
     GlobalTrackCacheLocker cacheLocker;
     if (trackId.isValid()) {
         auto trackRefPtr = lookupByIdInternal(trackId);
-        if (trackRefPtr.ptr()) {
+        if (trackRefPtr) {
             cacheLocker.m_lookupResult = GlobalTrackCacheLookupResult::HIT;
             cacheLocker.m_trackRefPtr = std::move(trackRefPtr);
         } else {
@@ -390,7 +390,7 @@ TrackRefPtr GlobalTrackCache::reviveInternal(
                     << item.ref
                     << item.plainPtr;
         }
-        return TrackRefPtr(std::move(item.ref), std::move(pTrack));
+        return TrackRefPtr(std::move(pTrack), std::move(item.ref));
     }
     // Race condition: The deleter for the Track object has not
     // been invoked, but the object is still referenced within
@@ -435,7 +435,7 @@ TrackRefPtr GlobalTrackCache::reviveInternal(
                     revivedItem);
         }
     }
-    return TrackRefPtr(std::move(revivedItem.ref), std::move(pTrack));
+    return TrackRefPtr(std::move(pTrack), std::move(revivedItem.ref));
 }
 
 bool GlobalTrackCache::resolveInternal(
@@ -452,7 +452,7 @@ bool GlobalTrackCache::resolveInternal(
                     << trackId;
         }
         auto trackRefPtr = lookupByIdInternal(trackId);
-        if (trackRefPtr.ptr()) {
+        if (trackRefPtr) {
             if (debugLogEnabled()) {
                 kLogger.debug()
                         << "Cache hit - found track by id"
@@ -476,7 +476,7 @@ bool GlobalTrackCache::resolveInternal(
                     << trackRef.getCanonicalLocation();
         }
         auto trackRefPtr = lookupByRefInternal(trackRef);
-        if (trackRefPtr.ptr()) {
+        if (trackRefPtr) {
             // Cache hit
             if (debugLogEnabled()) {
                 kLogger.debug()
@@ -554,7 +554,7 @@ GlobalTrackCacheResolver GlobalTrackCache::resolve(
     return GlobalTrackCacheResolver(
             std::move(cacheResolver),
             GlobalTrackCacheLookupResult::MISS,
-            TrackRefPtr(std::move(trackRef), std::move(pTrack)));
+            TrackRefPtr(std::move(pTrack), std::move(trackRef)));
 }
 
 TrackRef GlobalTrackCache::initTrackIdInternal(

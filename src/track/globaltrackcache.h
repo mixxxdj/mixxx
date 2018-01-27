@@ -12,7 +12,7 @@
 #include "track/trackref.h"
 
 
-class TrackRefPtr {
+class TrackRefPtr: public TrackPointer {
   public:
     TrackRefPtr() = default;
     TrackRefPtr(const TrackRefPtr&) = default;
@@ -21,13 +21,13 @@ class TrackRefPtr {
 #else
     // Workaround for Visual Studio 2015 (and before)
     TrackRefPtr(TrackRefPtr&& that)
-        : m_trackRef(std::move(that.m_trackRef)),
-          m_trackPtr(std::move(that.m_trackPtr)) {
+        : TrackPointer(std::move(that)),
+          m_ref(std::move(that.m_ref)) {
     }
 #endif
-    TrackRefPtr(TrackRef trackRef, TrackPointer trackPtr)
-        : m_trackRef(std::move(trackRef)),
-          m_trackPtr(std::move(trackPtr)) {
+    TrackRefPtr(TrackPointer ptr, TrackRef ref)
+        : TrackPointer(std::move(ptr)),
+          m_ref(std::move(ref)) {
     }
 
     TrackRefPtr& operator=(const TrackRefPtr&) = default;
@@ -36,22 +36,18 @@ class TrackRefPtr {
 #else
     // Workaround for Visual Studio 2015 (and before)
     TrackRefPtr& operator=(TrackRefPtr&& that) {
-        m_trackRef = std::move(that.m_trackRef);
-        m_trackPtr = std::move(that.m_trackPtr);
+        TrackPointer::operator=(std::move(that));
+        m_ref = std::move(that.m_ref);
         return *this;
     }
 #endif
 
     const TrackRef& ref() const {
-        return m_trackRef;
-    }
-    const TrackPointer& ptr() const {
-        return m_trackPtr;
+        return m_ref;
     }
 
   private:
-    TrackRef m_trackRef;
-    TrackPointer m_trackPtr;
+    TrackRef m_ref;
 };
 
 enum class GlobalTrackCacheLookupResult {
@@ -75,7 +71,7 @@ public:
     }
 
     const TrackPointer& getTrack() const {
-        return m_trackRefPtr.ptr();
+        return m_trackRefPtr;
     }
 
     const TrackRef& getTrackRef() const {
