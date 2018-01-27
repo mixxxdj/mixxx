@@ -23,11 +23,11 @@ Console::Console()
     // applications at the same time.
     //
     // We link Mixxx win with the /subsystem:windows flag, to avoid a new
-    // console popping up when the program is starte by a double-click.
+    // console popping up when the program is started by a double-click.
     // If Mixxx is started from a command line like cmd.exe the output is not
     // shown by defaut.
     // Here we fixing that by detecting the console case and redirect to output
-    // to it is not already redirected.
+    // to it if not already redirected.
 
     // Note: GetFileType needs to be called before AttachConsole(),
     // else it always returns FILE_TYPE_CHAR
@@ -43,7 +43,7 @@ Console::Console()
             // the input is not already redirected
             FILE* pStdin = stdin;
             if (freopen_s(&pStdin, "CONIN$", "r", stdin)) {
-                qWarning() << "Could not open stdout. Error code:" << GetLastError();
+                qWarning() << "Could not open stdin. Error code:" << GetLastError();
             }
         }
 
@@ -63,10 +63,10 @@ Console::Console()
             // the error is not already redirected
             FILE* pStderr = stderr;
             if (freopen_s(&pStderr, "CONOUT$", "w", stderr)) {
-                qWarning() << "Could not open stdout. Error code:" << GetLastError();
+                qWarning() << "Could not open stderr. Error code:" << GetLastError();
             } else {
                 if (setvbuf(stdout, NULL, _IONBF, 0) != 0) {
-                    qWarning() << "Setting no buffer for stdout failed.";
+                    qWarning() << "Setting no buffer for stderr failed.";
                 }
             }
         }
