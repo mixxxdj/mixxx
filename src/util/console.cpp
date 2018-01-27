@@ -119,9 +119,13 @@ Console::Console()
             // Save current console title.
             if (GetConsoleTitle(m_oldTitle, MAX_PATH)) {
                 // Build new console title string.
+#ifdef UNICODE
+                StringCchPrintf(szNewTitle, MAX_PATH, TEXT("%s : %s"),
+                        m_oldTitle,  Version::applicationTitle().utf16());
+#else
                 StringCchPrintf(szNewTitle, MAX_PATH, TEXT("%s : %s"),
                         m_oldTitle,  Version::applicationTitle().toLocal8Bit().data());
-
+#endif
                 // Set console title to new title
                 if (SetConsoleTitle(szNewTitle)) {
                     m_shouldResetConsoleTitle = true;
