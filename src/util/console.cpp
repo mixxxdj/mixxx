@@ -18,6 +18,16 @@ Console::Console()
        m_shouldResetConsoleTitle(false),
        m_shouldFreeConsole(false) {
 
+    // Unlike Linux and MacOS Windows does not support windows and console
+    // applications at the same time.
+    //
+    // We link Mixxx win with the /subsystem:windows flag, to avoid a new
+    // console popping up when the program is starte by a double-click.
+    // If Mixxx is started from a command line like cmd.exe the output is not
+    // shown by defaut.
+    // Here we fixing that by detecting the console case and redirect to output
+    // to it is not already redirected.
+
     DWORD typeStdIn = GetFileType(GetStdHandle(STD_INPUT_HANDLE));
     DWORD typeStdOut = GetFileType(GetStdHandle(STD_OUTPUT_HANDLE));
     DWORD typeStdErr = GetFileType(GetStdHandle(STD_ERROR_HANDLE));
