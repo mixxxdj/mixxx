@@ -29,6 +29,8 @@ Console::Console()
     // Here we fixing that by detecting the console case and redirect to output
     // to it is not already redirected.
 
+    // Note: GetFileType needs to be called before AttachConsole(),
+    // else it always returns FILE_TYPE_CHAR
     DWORD typeStdIn = GetFileType(GetStdHandle(STD_INPUT_HANDLE));
     DWORD typeStdOut = GetFileType(GetStdHandle(STD_OUTPUT_HANDLE));
     DWORD typeStdErr = GetFileType(GetStdHandle(STD_ERROR_HANDLE));
