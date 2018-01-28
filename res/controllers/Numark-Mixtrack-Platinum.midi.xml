@@ -1414,7 +1414,7 @@
                 <status>0x99</status>
                 <midino>0x0B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
