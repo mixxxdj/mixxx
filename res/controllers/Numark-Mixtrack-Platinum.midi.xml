@@ -2025,6 +2025,24 @@
                     <script-binding/>
                 </options>
             </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>MixtrackPlatinum.effects[1].dryWetKnob.input</key>
+                <status>0xB8</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>MixtrackPlatinum.effects[2].dryWetKnob.input</key>
+                <status>0xB9</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
         </controls>
         <outputs>
             <output>

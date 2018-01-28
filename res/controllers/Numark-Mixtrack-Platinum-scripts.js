@@ -84,6 +84,17 @@ MixtrackPlatinum.init = function(id, debug) {
     MixtrackPlatinum.effects = new components.ComponentContainer();
     for (i = 1; i <= 2; ++i) {
         MixtrackPlatinum.effects[i] = new components.EffectUnit([i, i+2]);
+        MixtrackPlatinum.effects[i].dryWetKnob = new components.Encoder({
+            group: this.group,
+            inKey: 'mix',
+            input: function (channel, control, value, status, group) {
+                if (value === 1) {
+                    this.inSetParameter(this.inGetParameter() + 0.05);
+                } else if (value === 127) {
+                    this.inSetParameter(this.inGetParameter() - 0.05);
+                }
+            },
+        });
         for (var j = 1; j <= 3; ++j) {
             MixtrackPlatinum.effects[i].enableButtons[j].midi = [0x97 + i, j - 1];
             MixtrackPlatinum.effects[i].enableButtons[j].off = 0x01;
