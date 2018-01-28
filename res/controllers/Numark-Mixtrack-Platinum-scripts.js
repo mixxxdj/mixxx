@@ -82,45 +82,8 @@ MixtrackPlatinum.init = function(id, debug) {
 
     // effects
     MixtrackPlatinum.effects = new components.ComponentContainer();
-    for (i = 1; i <= 2; ++i) {
-        MixtrackPlatinum.effects[i] = new components.EffectUnit([i, i+2]);
-        MixtrackPlatinum.effects[i].dryWetKnob = new components.Encoder({
-            group: this.group,
-            inKey: 'mix',
-            input: function (channel, control, value, status, group) {
-                if (value === 1) {
-                    this.inSetParameter(this.inGetParameter() + 0.05);
-                } else if (value === 127) {
-                    this.inSetParameter(this.inGetParameter() - 0.05);
-                }
-            },
-        });
-        for (var j = 1; j <= 3; ++j) {
-            MixtrackPlatinum.effects[i].enableButtons[j].midi = [0x97 + i, j - 1];
-            MixtrackPlatinum.effects[i].enableButtons[j].off = 0x01;
-
-            // cycle effects on shift
-            MixtrackPlatinum.effects[i].enableButtons[j].shift = function() {
-                this.inKey = 'next_effect';
-                this.type = components.Button.prototype.types.push;
-            };
-            MixtrackPlatinum.effects[i].enableButtons[j].unshift = function() {
-                this.inKey = 'enabled';
-                this.type = components.Button.prototype.types.powerWindow;
-            };
-
-            var effect = '[EffectRack1_EffectUnit' + i + '_Effect' + j + ']';
-            MixtrackPlatinum.effects[i].knobs[j].disconnect();
-            MixtrackPlatinum.effects[i].knobs[j] = new components.Pot({
-                group: effect,
-                relative: true,
-                inKey: 'meta',
-            });
-        }
-        MixtrackPlatinum.effects[i].init();
-        // this stops soft takover
-        MixtrackPlatinum.effects[i].hasInitialized = false;
-    }
+    MixtrackPlatinum.effects[1] = new MixtrackPlatinum.EffectUnit([1, 3]);
+    MixtrackPlatinum.effects[2] = new MixtrackPlatinum.EffectUnit([2, 4]);
 
     // zero vu meters
     midi.sendShortMsg(0xBF, 0x44, 0);
@@ -238,6 +201,105 @@ MixtrackPlatinum.shutdown = function() {
     var byteArray = [0xF0, 0x00, 0x20, 0x7F, 0x02, 0xF7];
     midi.sendSysexMsg(byteArray, byteArray.length);
 };
+
+MixtrackPlatinum.EffectUnit = function (unitNumbers, allowFocusWhenParametersHidden) {
+    var eu = this;
+
+    this.setCurrentUnit = function (newNumber) {
+        this.currentUnitNumber = newNumber;
+        this.group = '[EffectRack1_EffectUnit' + newNumber + ']';
+        this.reconnectComponents(function (component) {
+            // update [EffectRack1_EffectUnitX] groups
+            var unitMatch = component.group.match(script.effectUnitRegEx);
+            if (unitMatch !== null) {
+                component.group = eu.group;
+            } else {
+                // update [EffectRack1_EffectUnitX_EffectY] groups
+                var effectMatch = component.group.match(script.individualEffectRegEx);
+                if (effectMatch !== null) {
+                    component.group = '[EffectRack1_EffectUnit' +
+                                      eu.currentUnitNumber +
+                                      '_Effect' + effectMatch[2] + ']';
+                }
+            }
+        });
+    };
+
+    if (unitNumbers !== undefined) {
+        if (Array.isArray(unitNumbers)) {
+            this.unitNumbers = unitNumbers;
+            this.setCurrentUnit(unitNumbers[0]);
+        } else if (typeof unitNumbers === 'number' &&
+                  Math.floor(unitNumbers) === unitNumbers &&
+                  isFinite(unitNumbers)) {
+            this.unitNumbers = [unitNumbers];
+            this.setCurrentUnit(unitNumbers);
+        }
+    } else {
+        print('ERROR! new EffectUnit() called without specifying any unit numbers!');
+        return;
+    }
+
+    this.dryWetKnob = new components.Encoder({
+        group: this.group,
+        inKey: 'mix',
+        input: function (channel, control, value, status, group) {
+            if (value === 1) {
+                this.inSetParameter(this.inGetParameter() + 0.05);
+            } else if (value === 127) {
+                this.inSetParameter(this.inGetParameter() - 0.05);
+            }
+        },
+    });
+
+    this.EffectUnitKnob = function (number) {
+        this.number = number;
+        this.group = '[EffectRack1_EffectUnit' + eu.currentUnitNumber + '_Effect' + this.number + ']';
+        components.Pot.call(this);
+    };
+    this.EffectUnitKnob.prototype = new components.Pot({
+        inKey: 'meta',
+        relative: true, // this disables soft takeover
+    });
+
+    this.EffectEnableButton = function (number) {
+        this.number = number;
+        this.group = '[EffectRack1_EffectUnit' + eu.currentUnitNumber +
+                      '_Effect' + this.number + ']';
+        this.midi = [0x97 + eu.currentUnitNumber, this.number - 1];
+        components.Button.call(this);
+    };
+    this.EffectEnableButton.prototype = new components.Button({
+        type: components.Button.prototype.types.powerWindow,
+        key: 'enabled',
+        off: 0x01,
+        shift:  function() {
+            this.inKey = 'next_effect';
+            this.type = components.Button.prototype.types.push;
+        },
+        unshift: function() {
+            this.inKey = 'enabled';
+            this.type = components.Button.prototype.types.powerWindow;
+        },
+    });
+
+    this.knobs = new components.ComponentContainer();
+    this.enableButtons = new components.ComponentContainer();
+    for (var n = 1; n <= 3; n++) {
+        this.knobs[n] = new this.EffectUnitKnob(n);
+        this.enableButtons[n] = new this.EffectEnableButton(n);
+    }
+
+    this.knobs.reconnectComponents();
+    this.enableButtons.reconnectComponents();
+
+    this.forEachComponent(function (component) {
+        if (component.group === undefined) {
+            component.group = eu.group;
+        }
+    });
+};
+MixtrackPlatinum.EffectUnit.prototype = new components.ComponentContainer();
 
 MixtrackPlatinum.Deck = function(deck_nums, midi_chan) {
     components.Deck.call(this, deck_nums);
