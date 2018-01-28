@@ -24,10 +24,11 @@
               <WidgetGroup>
                 <ObjectName>MixerContainer</ObjectName>
                 <Layout>vertical</Layout>
-                <SizePolicy>max,min</SizePolicy>
+                <SizePolicy>min,min</SizePolicy>
                 <Children>
                   <WidgetGroup><!-- Channel controls -->
-                    <SizePolicy>max,min</SizePolicy>
+                    <ObjectName>AlignHCenter</ObjectName>
+                    <SizePolicy>min,min</SizePolicy>
                     <Layout>horizontal</Layout>
                     <Children>
                       <WidgetGroup>
@@ -168,7 +169,7 @@
                       <WidgetGroup>
                         <ObjectName>AlignLeftTop</ObjectName>
                         <Layout>vertical</Layout>
-                        <Size>34me,15me</Size>
+                        <Size>-1min,15me</Size>
                         <Children>
                           <WidgetGroup>
                             <Layout>horizontal</Layout>
@@ -239,7 +240,7 @@
                       <WidgetGroup>
                         <ObjectName>AlignRightTop</ObjectName>
                         <Layout>vertical</Layout>
-                        <Size>34me,15me</Size>
+                        <Size>-1min,15me</Size>
                         <Children>
                           <WidgetGroup>
                             <Layout>horizontal</Layout>
