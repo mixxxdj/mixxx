@@ -19,24 +19,6 @@ MixtrackPlatinum.init = function(id, debug) {
     MixtrackPlatinum.browse = new MixtrackPlatinum.BrowseKnob();
 
     // helper functions
-    var loop_led = function(group, key, midi_channel, midino) {
-        if (engine.getValue(group, key)) {
-            midi.sendShortMsg(0x90 | midi_channel, midino, 0x01);
-        }
-        else {
-            midi.sendShortMsg(0x80 | midi_channel, midino, 0x00);
-        }
-    };
-
-    var loop_start_end_led = function(group, key, midi_channel, midino) {
-        if (engine.getValue(group, key) == -1) {
-            midi.sendShortMsg(0x80 | midi_channel, midino, 0x00);
-        }
-        else {
-            midi.sendShortMsg(0x90 | midi_channel, midino, 0x01);
-        }
-    };
-
     var auto_loop_led = function(group, key, midi_channel, midino) {
         if (engine.getValue(group, key)) {
             midi.sendShortMsg(0x90 | midi_channel, midino, 0x40);
@@ -52,15 +34,6 @@ MixtrackPlatinum.init = function(id, debug) {
         }
         else {
             midi.sendShortMsg(0x80 | midi_channel, midino, 0x00);
-        }
-    };
-
-    var led_dim = function(group, key, midi_channel, midino) {
-        if (engine.getValue(group, key)) {
-            midi.sendShortMsg(0x90 | midi_channel, midino, 0x7F);
-        }
-        else {
-            midi.sendShortMsg(0x90 | midi_channel, midino, 0x01);
         }
     };
 
