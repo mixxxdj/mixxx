@@ -128,7 +128,7 @@
                     </Children>
                   </WidgetGroup>
 
-                  <WidgetGroup><!-- Headphone knob labels -->
+                  <WidgetGroup>
                     <Layout>horizontal</Layout>
                     <SizePolicy>me,min</SizePolicy>
                     <Children>
@@ -144,8 +144,7 @@
               </WidgetGroup>
 
 
-              <!-- Headphone knobs
-                  Labels are separate so knobs are spaced equally -->
+              <!-- Master knob labels -->
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
@@ -289,7 +288,7 @@
                     </Children>
                   </WidgetGroup>
 
-                  <WidgetGroup><!-- Headphone knob labels -->
+                  <WidgetGroup>
                     <Layout>horizontal</Layout>
                     <SizePolicy>me,min</SizePolicy>
                     <Children>
@@ -304,7 +303,7 @@
                 </Children>
               </WidgetGroup>
 
-              <WidgetGroup>
+              <WidgetGroup><!-- Headphone knob labels -->
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
@@ -314,6 +313,8 @@
                     <Alignment>left</Alignment>
                     <Text>Head</Text>
                   </Label>
+
+                  <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
 
                   <Label>
                     <ObjectName>KnobLabel</ObjectName>
