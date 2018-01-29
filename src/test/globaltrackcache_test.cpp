@@ -16,10 +16,8 @@ const QFileInfo kTestFile(kTestDir.absoluteFilePath("cover-test.flac"));
 
 class TrackTitleThread: public QThread {
   public:
-    explicit TrackTitleThread(TrackId trackId)
-        : m_trackId(std::move(trackId)),
-          m_number(0),
-          m_stop(false) {
+    explicit TrackTitleThread()
+        : m_stop(false) {
     }
 
     void stop() {
@@ -29,28 +27,30 @@ class TrackTitleThread: public QThread {
     void run() override {
         int loopCount = 0;
         while (!m_stop.load()) {
-            auto track = GlobalTrackCache::instance().lookupById(m_trackId).getTrack();
+            m_recentTrackPtr.reset();
+            const TrackId trackId(loopCount % 2);
+            auto track = GlobalTrackCache::instance().lookupById(trackId).getTrack();
             if (track) {
-                ASSERT_EQ(m_trackId, track->getId());
+                ASSERT_EQ(trackId, track->getId());
                 // lp1744550: Accessing the track from multiple threads is
                 // required to cause a SIGSEGV
                 if (track->getTitle().isEmpty()) {
                     track->setTitle(
-                            QString("Title %1").arg(QString::number(m_number)));
+                            QString("Title %1").arg(QString::number(loopCount)));
                 } else {
                     track->setTitle(QString());
                 }
                 ASSERT_TRUE(track->isDirty());
             }
+            m_recentTrackPtr = std::move(track);
             ++loopCount;
         }
+        m_recentTrackPtr.reset();
         qDebug() << "Finished" << loopCount << " thread loops";
     }
 
   private:
-    const TrackId m_trackId;
-
-    int m_number;
+    TrackPointer m_recentTrackPtr;
 
     std::atomic<bool> m_stop;
 };
@@ -79,6 +79,8 @@ class GlobalTrackCacheTest: public MixxxTest, public virtual GlobalTrackCacheEvi
     GlobalTrackCache& instance() const {
         return GlobalTrackCache::instance();
     }
+
+    TrackPointer m_recentTrackPtr;
 };
 
 TEST_F(GlobalTrackCacheTest, resolveByFileInfo) {
@@ -133,26 +135,39 @@ TEST_F(GlobalTrackCacheTest, resolveByFileInfo) {
 TEST_F(GlobalTrackCacheTest, concurrentDelete) {
     ASSERT_TRUE(instance().isEmpty());
 
-    const TrackId trackId(1);
-
-    TrackTitleThread workerThread(trackId);
+    TrackTitleThread workerThread;
     workerThread.start();
 
     // lp1744550: A decent number of iterations is needed to reliably
     // reveal potential race conditions while evicting tracks from
     // the cache!
-    for (int i = 0; i < 100000; ++i) {
+    for (int i = 0; i < 250000; ++i) {
+        m_recentTrackPtr.reset();
+
+        TrackId trackId;
+
         TrackPointer track;
         {
             auto resolver = instance().resolve(kTestFile);
             track = resolver.getTrack();
-            resolver.initTrackId(trackId);
+            EXPECT_TRUE(static_cast<bool>(track));
+            trackId = track->getId();
+            if (!trackId.isValid()) {
+                trackId = TrackId(i % 2);
+                resolver.initTrackId(trackId);
+            }
         }
+
         track = instance().lookupById(trackId).getTrack();
+        EXPECT_TRUE(static_cast<bool>(track));
+
         // lp1744550: Accessing the track from multiple threads is
         // required to cause a SIGSEGV
         track->setArtist(track->getTitle());
+
+        m_recentTrackPtr = std::move(track);
     }
+    m_recentTrackPtr.reset();
 
     workerThread.stop();
     workerThread.wait();
