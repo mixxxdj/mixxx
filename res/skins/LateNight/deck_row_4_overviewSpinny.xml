@@ -1,6 +1,6 @@
 <Template>
   <WidgetGroup>
-    <ObjectName>DeckRowFive</ObjectName>
+    <ObjectName>DeckRow_4_OverviewSpinny</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,me</SizePolicy>
     <Children>
@@ -63,7 +63,7 @@
 
       <!-- Deck controls + Star rating -->
       <WidgetGroup>
-        <ObjectName>ToolbarButtons</ObjectName>
+        <ObjectName>DeckControls</ObjectName>
         <Layout>vertical</Layout>
         <Children>
           

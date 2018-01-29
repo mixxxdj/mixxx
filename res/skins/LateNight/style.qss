@@ -30,6 +30,24 @@ WOverview {
 
 WPushButton, QPushButton {
   font-size: 11px/12px;
+} 
+
+#TristateButton,
+#PreviewLabel,
+#RateText,
+#MicTitle,
+#MicSubTitle,
+#SamplerTitle,
+#Deck1 WLabel, #Deck2 WLabel,
+WSearchLineEdit:focus,
+#LatencyLabel,
+WTime {
+  color: #eece33;
+  font-weight: bold;
+}
+WStarRating {
+  color: #f0bb2b;
+  font-weight: bold;
 }
 
 #ToolBar {
@@ -94,22 +112,27 @@ WPushButton, QPushButton {
   /*border-top: 1px solid #585858;*/
 }
 
-#DeckRowOne {
+#DeckRow_1_KeyVinylFx {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   border-bottom: 1px solid #585858;
   background-color: #1e1e1e;
   padding: 1px;
 }
 
-#DeckRowTwoThreeFour {
+#DeckRow_2_3_ArtistTitleTime {
   border-bottom: 1px solid #585858;
   background-color: #1e1e1e;
 }
 
-#DeckRowFive {
+#DeckRow_4_OverviewSpinny {
   border-bottom: 1px solid #585858;
   background-color: #1e1e1e;
   padding: 0px;
+}
+
+#DeckRow_5_LoopCuesTransport {
+  qproperty-layoutAlignment: 'AlignBottom';
+  padding: 3px 1px 1px 3px;
 }
 
 #DecksAndMixer {
@@ -166,8 +189,6 @@ WPushButton, QPushButton {
 
 WTime {
   font-size: 13px/13px;
-  font-weight: bold;
-  color: #eece33;
 }
 
 #LatencyMeter {
@@ -179,8 +200,6 @@ WTime {
 #LatencyLabel {
   padding-bottom: 2px;
   font-size: 10px/10px;
-  font-weight: bold;
-  color: #eece33;
 }
 
 #Mixer {/*
@@ -322,40 +341,7 @@ WTime {
   padding: 2px;
 }
 
-#RateGutter {
-  qproperty-layoutAlignment: 'AlignCenter | AlignBottom';
-  text-align: center;
-  padding-top: 0px;
-}
-
-#ColumnThree {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  padding: 3px;
-  padding-left:10px;
-}
-
-#LoopSizeButtons {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-}
-
-#Hotcues {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-}
-
-#FFRew {
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';
-}
-
-#ColumnFour {
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';
-  padding: 3px;
-}
-
-#LoopInOut {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-}
-
-#PlayCue {
+#PlayCueRevHotCues {
   qproperty-layoutAlignment: 'AlignRight | AlignBottom';
 }
 
@@ -363,26 +349,7 @@ WTime {
   qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
 }
 
-#ColumnOne {
-  qproperty-layoutAlignment: 'AlignLeft';
-}
-
-#ColumnTwo {
-  padding: 3px;
-  padding-left: 10px;
-  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-}
-
-#DeckButtons {
-  qproperty-layoutAlignment: 'AlignBottom';
-  padding: 3px 1px 1px 3px;
-}
-
-#ColumnTwo {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-}
-
-#ToolbarButtons {
+#DeckControls {
   qproperty-layoutAlignment: 'AlignCenter';
   border: 1px solid #585858;
   border-top: 0px;
@@ -398,7 +365,6 @@ WTime {
   background-color: #0f0f0f;
   border: 1px solid #585858;
   border-radius: 3px;
-  padding-right: -0px;
   margin: 0px 1px;
 }
 
@@ -530,7 +496,6 @@ WTime {
   border: 1px solid #585858;
   border-radius: 2px;
   margin: 1px;
-  color: #eece33;
   background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #282828,
     stop:1 #0e0e0e);
@@ -717,10 +682,8 @@ WBeatSpinBox {
 #PreviewLabel {
   qproperty-alignment: 'AlignVCenter | AlignHCenter';
   background-color: #1e1e1e;
-  font-weight: bold;
   text-transform: uppercase;
   border-right: 1px solid #585858;
-  color: #eece33;
   text-align: center;
   padding-top: 2px;
   padding-bottom: 2px;
@@ -888,12 +851,10 @@ border: 0px;
 #RateText {
   qproperty-alignment: 'AlignCenter';
   font-size: 12px/13px;
-  font-weight: bold;
   background-color: transparent;
   text-align: center;
   padding: 0px;
   margin: 0px;
-  color: #eece33;
 }
 
 #RateControls {
@@ -930,8 +891,6 @@ border: 0px;
   qproperty-alignment: 'AlignLeft | AlignTop';
   text-transform: uppercase;
   font-size: 15px/17px;
-  font-weight: bold;
-  color: #eece33;
 }
 
 #MicBorder {
@@ -947,8 +906,6 @@ border: 0px;
 #MicSubTitle {
   qproperty-alignment: 'AlignCenter | AlignTop';
   font-size: 12px/13px;
-  font-weight: bold;
-  color: #eece33;
   text-align: center;
 }
 
@@ -1030,8 +987,6 @@ border: 0px;
 
 #SamplerTitle {
   font-size: 16px/19px;
-  font-weight: bold;
-  color: #eece33;
   text-align: left;
 }
 
@@ -1089,10 +1044,6 @@ border: 0px;
 
 #SamplerSyncButton {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter'; 
-}
-
-#Deck1 WLabel, Deck2 WLabel {
-  color: #eece33;
 }
 
 #Deck3 WLabel, #Deck4 WLabel {
@@ -1342,28 +1293,6 @@ WEffectSelector {
       stop: 1 #CDCDCD);
   }
 
-#EffectUnitGroupControlButton[displayValue="0"] {
-    font-size: 9px/11px;
-    text-transform: uppercase;
-    color: #585858;
-    background-color: #0e0e0e;
-    text-transform: none;
-    text-align: center;
-    border: 1px solid #585858;
-    margin: 1px;
-}
-
-#EffectUnitGroupControlButton[displayValue="1"] {
-    font-size: 9px/11px;
-    text-transform: uppercase;
-    color: #0e0e0e;
-    background-color: #eece33;
-    text-transform: none;
-    text-align: center;
-    border: 1px solid #585858;
-    margin: 1px;
-}
-
 #EffectToggleButton[displayValue="0"] {
     border: 1px solid #585858;
     font-size: 10px/12px;
@@ -1435,12 +1364,14 @@ QPushButton#LibraryPreviewButton:checked{
 QHeaderView {
   font-size: 13px/15px;
   color: #cfb32c;
+  font-weight: bold;
   background-color: #0f0f0f;
 }
 QHeaderView::section {
   height: 18px;
   border: 1px solid #585858;
   border-left: 0px;
+  padding-left: 1px;
   background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #585858,
     stop:1 #0f0f0f);
@@ -1522,7 +1453,6 @@ WSearchLineEdit:focus {
   padding: 2px;
   border: 2px solid #FF6600;
   background: #0f0f0f;
-  color: #eece33;
 }
 
 #SidebarContainer{

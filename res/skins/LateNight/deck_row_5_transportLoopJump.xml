@@ -1,6 +1,6 @@
 <Template>
   <WidgetGroup>
-    <ObjectName>DeckButtons</ObjectName>
+    <ObjectName>DeckRow_5_LoopCuesTransport</ObjectName>
     <SizePolicy>min,min</SizePolicy>
     <BackPath>style/background_tile.png</BackPath>
     <Layout>horizontal</Layout>
@@ -138,7 +138,7 @@
         <SizePolicy>f,min</SizePolicy>
         <Children>
           <WidgetGroup><!-- HotCues 1-4(5), Cue -->
-            <ObjectName>PlayCue</ObjectName>
+            <ObjectName>PlayCueRevHotCues</ObjectName>
             <Layout>horizontal</Layout>
             <Children>
               <PushButton><!-- HotCue 1 -->
@@ -316,7 +316,7 @@
           </WidgetGroup><!-- /HotCues 1-4(5), Cue -->
 
           <WidgetGroup><!-- (HotCues 6-8) Reverse, Play -->
-            <ObjectName>PlayCue</ObjectName>
+            <ObjectName>PlayCueRevHotCues</ObjectName>
             <Layout>horizontal</Layout>
             <Children>
 

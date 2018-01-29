@@ -1,6 +1,6 @@
 <Template>
   <WidgetGroup>
-    <ObjectName>DeckRowTwoThreeFour</ObjectName>
+    <ObjectName>DeckRow_2_3_ArtistTitleTime</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>i,min</SizePolicy>
     <Children>
