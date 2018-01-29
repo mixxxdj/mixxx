@@ -51,7 +51,7 @@ WWidgetGroup {
 }
 
 #WaveformSplitter::handle:vertical {
-  height: 4px;
+  height: 6px;
   image: url(skin:/graphics/splitterVert_handle.png);
   }
   #WaveformSplitter::handle:vertical:hover,
@@ -82,6 +82,10 @@ WWidgetGroup {
   padding-right: 17px; */
 /* Also add respective padding at the right, so all beatgrid buttons are shown */
   margin-right: -17px;
+}
+
+#BeatgridButtons {
+  padding-right: 17px;
 }
 
 #WaveformContainer1,
@@ -588,36 +592,36 @@ padding-left: 2px;
   #VinylTogglerLeft[displayValue="0"],
   #VinylTogglerRightPassthrough[displayValue="1"],
   #VinylTogglerRight[displayValue="1"] {
-    background: transparent url(skin:/buttons/btn_arrow_left.svg) no-repeat top center;
+    background: transparent url(skin:/buttons/btn_vinyl_left.svg) no-repeat top center;
     }
     #VinylTogglerLeft[displayValue="0"]:hover,
     #VinylTogglerRightPassthrough[displayValue="1"]:hover,
     #VinylTogglerRight[displayValue="1"]:hover {
-      background: transparent url(skin:/buttons/btn_arrow_left_hover.svg) no-repeat top center;
+      background: transparent url(skin:/buttons/btn_vinyl_left_hover.svg) no-repeat top center;
     }
   #VinylTogglerLeft[displayValue="1"],
   #VinylTogglerLeftPassthrough[displayValue="1"],
   #VinylTogglerRight[displayValue="0"] {
-    background: transparent url(skin:/buttons/btn_arrow_right.svg) no-repeat top center;
+    background: transparent url(skin:/buttons/btn_vinyl_right.svg) no-repeat top center;
     }
     #VinylTogglerLeft[displayValue="1"]:hover,
     #VinylTogglerLeftPassthrough[displayValue="1"]:hover,
     #VinylTogglerRight[displayValue="0"]:hover {
-      background: transparent url(skin:/buttons/btn_arrow_right_hover.svg) no-repeat top center;
+      background: transparent url(skin:/buttons/btn_vinyl_right_hover.svg) no-repeat top center;
     }
   /* When passthrough is active but Vinyl Controls are hidden,
     yellow background and black arrow indicate passthrough */
   #VinylTogglerLeftPassthrough[displayValue="0"] {
-    background: #ff8f00 url(skin:/buttons/btn_arrow_left_black.svg) no-repeat top center;
+    background: #ff8f00 url(skin:/buttons/btn_vinyl_pass_left.svg) no-repeat top center;
     }
     #VinylTogglerLeftPassthrough[displayValue="0"]:hover {
-      background: #ff8f00 url(skin:/buttons/btn_arrow_left_black_hover.svg) no-repeat top center;
+      background: #ff8f00 url(skin:/buttons/btn_vinyl_pass_left_hover.svg) no-repeat top center;
     }
   #VinylTogglerRightPassthrough[displayValue="0"] {
-    background: #ff8f00 url(skin:/buttons/btn_arrow_right_black.svg) no-repeat top center;
+    background: #ff8f00 url(skin:/buttons/btn_vinyl_pass_right.svg) no-repeat top center;
     }
     #VinylTogglerRightPassthrough[displayValue="0"]:hover {
-      background: #ff8f00 url(skin:/buttons/btn_arrow_right_black_hover.svg) no-repeat top center;
+      background: #ff8f00 url(skin:/buttons/btn_vinyl_pass_right_hover.svg) no-repeat top center;
     }
 
   #VinylControlButton,
@@ -688,12 +692,6 @@ padding-left: 2px;
     text-align: left;
     background-color: #333;
     }
-  WLabel#DeckFxIndicator {
-    font-weight: bold;
-    color: #ff8f00;
-    padding-top: 1px;
-    background-color: #333;
-  }
 
 #ArtistTitleTime {
   qproperty-layoutAlignment: 'AlignVCenter';
@@ -1183,19 +1181,19 @@ WBeatSpinBox {
   }
 
 #QuickFxEnableButton {
-  margin: 5px 0px 5px 0px;
+  margin: 5px 0px;
+  background-color: #585858;
   }
   #QuickFxEnableButton[displayValue="0"] {
-    background-color: #585858;
     }
   #QuickFxEnableButton[displayValue="0"]:hover {
     border: 1px solid #ff8f00;
     }
   #QuickFxEnableButton[displayValue="1"] {
-    background-color: #ff8f00;
+    border: 1px solid #ff8f00;
     }
   #QuickFxEnableButton[displayValue="1"]:hover {
-    border: 1px solid #fff;
+    border: 1px solid #eeeeee;
   }
 
   #QuickFxEnableUnderlay[displayValue="0"] {
@@ -1278,10 +1276,21 @@ decks, samplers, mic, aux */
 ######  Effects  ###############################################
 ##############################################################*/
 
-#FxUnitLabel {
-  font-size: 14px/14px;
+#FxUnitLabel,
+#FxUnitLabel1,
+#FxUnitLabel2,
+#FxUnitLabel3,
+#FxUnitLabel4 {
+  font-size: 14px/12px;
   font-weight: bold;
   color: #888;
+}
+
+#FxUnitLabel1, #FxUnitLabel3 {
+  qproperty-alignment: right;
+}
+#FxUnitLabel2, #FxUnitLabel4 {
+  qproperty-alignment: left;
 }
 
 #FxUnitMixerLeft,
@@ -1697,6 +1706,9 @@ decks, samplers, mic, aux */
   border-radius: 2px;
   background-color: #333;
   }
+#MixerbarSection WPushButton {
+  font-size: 11px/13px;
+  }
   #FxAssignButton[displayValue="0"] {
     color: #888;
     }
@@ -1854,6 +1866,13 @@ WTrackProperty#SamplerTitle_mini {
  ######  Preview Deck  ##########################################
 ##############################################################*/
 
+#PreviewDeckContainer {/*
+  not applied, probably because it's a stacked WidgetGroup.
+  It sometimes shows up if there's a fixed-size conatiner placed below.
+  Therefore disabled
+  margin-bottom: 5px;*/
+}
+
 #PreviewDeck {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   background-color: #0f0f0f;
@@ -1871,7 +1890,7 @@ WTrackProperty#SamplerTitle_mini {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
   #PreviewTitle {
-    padding-left: 1px;
+    padding: 0px 1px 0px 3px;
     margin-right: 1px;
   }
   #PreviewTitle WLabel {
@@ -1936,7 +1955,7 @@ QToolTip {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
 }
 #AlignRight {
-qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
 }
 #AlignRightCenter {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
@@ -1981,35 +2000,218 @@ qproperty-layoutAlignment: 'AlignRight | AlignBottom';
 ############ added styling for AutoDJ & Recording etc ##### */
 
 #LibMiniMaxiButton {
-  margin-bottom: 12px;
+  margin: 5px 3px 10px 3px;/*
+  background-color: #446971;*/
   }
   #LibMiniMaxiButton[displayValue="0"] {
-    image: url(skin:/buttons/btn_lib_maxi.svg) no-repeat center top;
+    image: url(skin:/buttons/btn_arrow_up.svg) no-repeat center top;
     }
     #LibMiniMaxiButton[displayValue="0"]:hover {
-      image: url(skin:/buttons/btn_lib_maxi_hover.svg) no-repeat center top;
+      image: url(skin:/buttons/btn_arrow_up_hover.svg) no-repeat center top;
     }
   #LibMiniMaxiButton[displayValue="1"] {
-    image: url(skin:/buttons/btn_lib_mini.svg) no-repeat center top;
+    image: url(skin:/buttons/btn_arrow_down.svg) no-repeat center top;
     }
     #LibMiniMaxiButton[displayValue="1"]:hover {
-      image: url(skin:/buttons/btn_lib_mini_hover.svg) no-repeat center top;
+      image: url(skin:/buttons/btn_arrow_down_hover.svg) no-repeat center top;
     }
 
 #LibCoverArtButton {
-  margin: 0px 0px 4px 2px;
+  margin: 2px;/*
+  background-color: #446971;*/
   }
-  #LibCoverArtButton[displayValue="0"] {
+  #LibCoverArtButton[displayValue="0"],
+  #LibCoverArtButton[displayValue="1"]:hover {
     image: url(skin:/buttons/btn_lib_cover_off.svg) no-repeat center center;
+  }
+  #LibCoverArtButton[displayValue="1"],
+  #LibCoverArtButton[displayValue="0"]:hover {
+    image: url(skin:/buttons/btn_lib_cover_on.svg) no-repeat center center;
+  }
+
+#LibLabelButton {
+  margin: 2px;/*
+  background-color: #446971;*/
+  }
+  #LibLabelButton[displayValue="0"],
+  #LibLabelButton[displayValue="1"]:hover {
+    image: url(skin:/buttons/btn_lib_sideBar_labels_off.svg) no-repeat center center;
+  }
+  #LibLabelButton[displayValue="1"],
+  #LibLabelButton[displayValue="0"]:hover {
+    image: url(skin:/buttons/btn_lib_sideBar_labels_on.svg) no-repeat center center;
+  }
+
+/* splitters between treeview and library table */
+#LibrarySplitter::handle:horizontal {
+  image: url(skin:/graphics/splitterHori_handle.png);
+  width: 6px;
+  }
+  #LibrarySplitter::handle:horizontal:hover,
+  #LibrarySplitter::handle:horizontal:pressed {
+    image: url(skin:/graphics/splitterHori_handle_pressed.png);
+  }
+  /* splitter between coverArt and tree view */
+  #LibrarySplitter::handle:vertical {
+    height: 6px;
+    image: url(skin:/graphics/splitterVert_handle.png);
     }
-    #LibCoverArtButton[displayValue="1"],
-    #LibCoverArtButton[displayValue="0"]:hover {
-      image: url(skin:/buttons/btn_lib_cover_on.svg) no-repeat center center;
-      background-color: #0f0f0f;
+    #LibrarySplitter::handle:vertical:hover,
+    #LibrarySplitter::handle:vertical:pressed {
+      image: url(skin:/graphics/splitterVert_handle_pressed.png);
     }
-    #LibCoverArtButton[displayValue="1"]:hover {
-      border: 1px solid #d2d2d2;
-    }
+
+#SidebarButtonsContainer {
+  margin-right: 3px;
+}
+
+#LibrarySidebarButtons, WButtonBar {
+  background-color: transparent;
+  border: 0px;
+  margin: 0px 0px 0px 1px;
+}
+
+WLibrarySidebar {
+  background-color: #1e1e1e;
+}
+
+#LibrarySidebarButtons:focus,
+#LibrarySidebarButtons QToolButton:focus,
+#LibrarySidebarExpanded > QWidget:focus,
+#LibrarySidebarExpanded QAbstractScrollArea > QWidget:focus,
+WLibrarySidebar:focus, 
+WLibrary:focus,
+QTableView:focus {
+  border: 1px solid #0080BE;
+}
+
+#LibrarySidebarButtons QToolButton {
+  background: transparent;
+  border: none;
+  padding: 2px 1px 1px 3px;
+  margin: 1px 0px 1px 1px;
+  border-radius: 3px;
+  }
+
+  #LibrarySidebarButtons QToolButton:focus,
+  #LibrarySidebarButtons QToolButton:focus::hover {
+    background-color: #0f0f0f;
+    border: 1px solid #ff6600;
+  }
+
+  #LibrarySidebarButtons QToolButton:hover {
+    background-color: #0f0f0f;
+    border: 1px solid #d2d2d2;
+  }
+
+WBaseLibrary QLabel {
+  min-height: 0px;
+  max-height: 0px;
+  margin: 0px;
+  font-size: 2px;
+  font-weight: bold;
+  color: #B3B3B3;
+}
+
+WLibraryBreadCrumb QLabel {
+  margin: 3px 0px 3px 3px;
+  font-size: 14px/14px;
+  font-weight: bold;
+  color: #B3B3B3;
+}
+
+WLibraryBreadCrumb QToolButton {
+  background: none;
+  border: none;
+}
+
+WLibraryBreadCrumb QToolButton:hover {
+  background: none;
+}
+
+/* library search text box */
+WSearchLineEdit {
+  padding: 2px;
+  border: 1px solid #656565;
+  font-family: Ubuntu;
+  font-weight: normal;
+  font-size: 14px/14px;
+  background: #0f0f0f;
+  color: #cfcfcf;
+  selection-background-color: #d2d2d2;
+  selection-color: #0f0f0f;
+  margin-bottom: 3px;
+  }
+  WSearchLineEdit:focus {
+    border: 2px solid #ff6600;
+    color: #eeeeee;
+    padding: 2px;
+  }
+  /* Clear button next to text field */
+  WSearchLineEdit QToolButton {
+    margin-bottom: 4px;
+  }
+
+/* SpinBox, currently only used for transition time in Auto DJ tab */
+WLibrary QSpinBox {
+  min-height: 20px;
+  max-height: 20px;
+  min-width: 40px;
+  max-width: 40px;
+  }
+  WLibrary QSpinBox:editable {
+    background: transparent;
+    color: #ffa600;
+    selection-background-color: #d2d2d2;
+    selection-color: #0f0f0f;
+  }
+  WLibrary QSpinBox:editable:focus {
+    border: 1px solid #ff6600;
+  }
+
+QLabel,
+QRadioButton {	/*
+  background: transparent;
+  Extra declaration for QRadioButton otherwise it shows up with
+  wrong colors in Linux with Gnome 	*/
+  color: #cfcfcf;
+  }
+
+
+
+
+
+
+/* Pushbuttons, a lot of them...
+Library features and their buttons:
+  Tracks DlgMissing
+    QPushButton#btnSelect
+    QPushButton#btnPurge
+  Tracks DlgHidden
+    QPushButton#btnSelect
+    QPushButton#btnPurge
+    QPushButton#btnUnhide
+    QPushButton#
+  DlgAutoDJ
+    QPushButton#pushButtonShuffle
+    QPushButton#pushButtonAddRandom
+    QPushButton#pushButtonSkipNext
+    QPushButton#pushButtonFadeNow
+    QSpinBox#spinBoxTransition
+    QLabel#labelSelectionInfo
+  DlgAnalysis
+    + some small margin to maximize and cover art button
+    + make radio buttons blue like active keylock button
+    QRadioButton#radioButtonRecentlyAdded
+    QRadioButton#radioButtonAllSongs
+    QLabel#labelProgress
+    QPushButton#pushButtonSelectAll
+    QPushButton#pushButtonAnalyze
+  DlgRecording
+    QLabel#label > "Status: ..."
+    QPushButton#pushButtonRecording > un/checked
+
+  	*/
 
 QTableView,
 QTextBrowser,
@@ -2026,20 +2228,23 @@ QTreeView {
 QTreeView {
   min-height: 90px;
   min-width: 90px;
-  border-width: 1px 1px 1px 0px;
-  border-style: solid;
-  border-color: #585858;
+  border: 1px solid #585858;
   show-decoration-selected: 0;	/*
   Don't define top margin here, it won't shift ScrollBar.
   Defined by SearchBox	*/
   margin: 0px;
 }
 QTreeView:focus,
-QTableView:focus { /*
+QTableView:focus,
+#DlgAutoDJ:focus,
+#DlgAnalysis:focus,
+#DlgHidden:focus,
+#DlgRecording:focus,
+#DlgMissing:focus { /*
   New Library navigation COs only work if TreeView or TableView have focus.
   Clicking on buttons, sliders and visuals elsewhere removes focus from Library.
   In conjuction with [Library],MoveFocusBackward/..Forward, this helps a lot. */
-  border-color: #dddddd;
+  border-color: #ff6600;
 }
 
 /*  Closed branch of tree 	*/
@@ -2098,6 +2303,14 @@ QHeaderView {
     border-radius: 0px;
     }
 
+    QHeaderView::up-arrow {
+      image: url(skin:/image/style_sort_up.svg);
+    }
+
+    QHeaderView::down-arrow {
+      image: url(skin:/image/style_sort_down.svg);
+    }
+
 /* Scroll bars */
 QScrollBar:horizontal {
   min-width: 12px;
@@ -2111,6 +2324,13 @@ QScrollBar:horizontal {
     background: #000;
     border-radius: 2px;
     }
+  WLibrarySidebar QScrollBar:vertical {
+    min-height: 12px;
+    width: 15px;
+    background: #0f0f0f;
+    border-radius: 3px;
+    border: 0px;
+    }
   /* "add-page" and "sub-page" are the gutter of the scrollbar */
   QScrollBar::add-page,
   QScrollBar::sub-page {
@@ -2121,7 +2341,7 @@ QScrollBar:horizontal {
   QScrollBar::handle:horizontal {
     min-width: 25px;
     background: #595959;
-    border-radius:2px;
+    border-radius: 3px;
     }
     QScrollBar::handle:horizontal:hover {
       background: #888;
@@ -2129,7 +2349,12 @@ QScrollBar:horizontal {
   QScrollBar::handle:vertical {
     min-height: 25px;
     background: #595959;
-    border-radius:2px;
+    border-radius: 3px;
+    }
+  WLibrarySidebar QScrollBar::handle:vertical {
+    min-height: 25px;
+    background-color: rgba(125, 125, 125, 180);
+    border-radius: 3px;
     }
     QScrollBar::handle:vertical:hover {
       background: #888;
@@ -2145,56 +2370,6 @@ QScrollBar:horizontal {
     width: 0px;
     height: 0px;
   }
-
-/* splitters between treeview and library table */
-#LibrarySplitter::handle:horizontal {
-  image: url(skin:/graphics/splitterHori_handle.png);
-  width: 4px;
-  }
-  #LibrarySplitter::handle:horizontal:hover,
-  #LibrarySplitter::handle:horizontal:pressed {
-    image: url(skin:/graphics/splitterHori_handle_pressed.png);
-  }
-  /* splitter between coverArt and tree view */
-  #LibrarySplitter::handle:vertical {
-    height: 4px;
-    image: url(skin:/graphics/splitterVert_handle.png);
-    }
-    #LibrarySplitter::handle:vertical:hover,
-    #LibrarySplitter::handle:vertical:pressed {
-      image: url(skin:/graphics/splitterVert_handle_pressed.png);
-    }
-
-/* Pushbuttons, a lot of them...
-Library features and their buttons:
-  Tracks DlgMissing
-    QPushButton#btnSelect
-    QPushButton#btnPurge
-  Tracks DlgHidden
-    QPushButton#btnSelect
-    QPushButton#btnPurge
-    QPushButton#btnUnhide
-    QPushButton#
-  DlgAutoDJ
-    QPushButton#pushButtonShuffle
-    QPushButton#pushButtonAddRandom
-    QPushButton#pushButtonSkipNext
-    QPushButton#pushButtonFadeNow
-    QSpinBox#spinBoxTransition
-    QLabel#labelSelectionInfo
-  DlgAnalysis
-    + some small margin to maximize and cover art button
-    + make radio buttons blue like active keylock button
-    QRadioButton#radioButtonRecentlyAdded
-    QRadioButton#radioButtonAllSongs
-    QLabel#labelProgress
-    QPushButton#pushButtonSelectAll
-    QPushButton#pushButtonAnalyze
-  DlgRecording
-    QLabel#label > "Status: ..."
-    QPushButton#pushButtonRecording > un/checked
-
-  	*/
 QPushButton {
   text-align: center;
   font-family: Ubuntu;
@@ -2299,55 +2474,6 @@ QPushButton {
   QTableView::item:selected {
     color: #fff;
     background-color: #666;
-  }
-
-/* SpinBox, currently only used for transition time in Auto DJ tab */
-WLibrary QSpinBox {
-  min-height: 20px;
-  max-height: 20px;
-  min-width: 40px;
-  max-width: 40px;
-  }
-  WLibrary QSpinBox:editable {
-    background: transparent;
-    color: #ffa600;
-    selection-background-color: #d2d2d2;
-    selection-color: #0f0f0f;
-  }
-  WLibrary QSpinBox:editable:focus {
-    border: 1px solid #ff6600;
-  }
-
-/* library search text box */
-WSearchLineEdit {
-  padding: 2px;
-  border: 1px solid #656565;
-  border-left: 0px;
-  font-family: Ubuntu;
-  font-weight: normal;
-  font-size: 14px/14px;
-  background: #0f0f0f;
-  color: #cfcfcf;
-  selection-background-color: #d2d2d2;
-  selection-color: #0f0f0f;
-  margin-bottom: 5px;
-  }
-  WSearchLineEdit:focus {
-    border: 2px solid #ff6600;
-    color: #eeeeee;
-    padding: 2px;
-  }
-  /* Clear button next to text field */
-  WSearchLineEdit QToolButton {
-    margin-bottom: 4px;
-  }
-
-QLabel,
-QRadioButton {	/*
-  background: transparent;
-  Extra declaration for QRadioButton otherwise it shows up with
-  wrong colors in Linux with Gnome 	*/
-  color: #cfcfcf;
   }
 
 /* Test :: increase font size of WOverview "Ready to play, analyzing..." etc.
