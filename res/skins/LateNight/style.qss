@@ -941,7 +941,7 @@ border: 0px;
 }
 
 #MicInterior {
-  padding: 0px 3px 1px 3px;
+  padding: 0px 3px 2px 3px;
 }
 
 #MicSubTitle {
@@ -981,12 +981,16 @@ border: 0px;
 
 #MicGainKnob {
   qproperty-layoutAlignment: 'AlignCenter';
-  margin: 0px 8px 0px 5px;
+  margin: 0px 8px 0px 3px;
 }
 
 #MicVUMeter {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  margin-left: 7px;
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+  padding: 3px 0px 1px 4px;
+}
+
+#MicFxButtons {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
 }
 
 #MicTalkButton,

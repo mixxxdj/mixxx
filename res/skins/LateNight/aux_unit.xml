@@ -89,17 +89,39 @@
             </Children>
           </WidgetGroup><!-- Label, TALK, orientation -->
 
-          <WidgetGroup><!-- Gain, Pfl, VU meter -->
-            <ObjectName>MicGainPFlContainer</ObjectName>
+          <WidgetGroup><!-- VU meter -->
+            <ObjectName>MicVUMeter</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>max,min</SizePolicy>
+            <Children>
+              <VuMeter>
+                <TooltipId>channel_VuMeter</TooltipId>
+                <Size>7f,59f</Size>
+                <PathVu>style/vumeter_mic_aux_over.png</PathVu>
+                <PathBack>style/vumeter_mic_aux_bg_solid.png</PathBack>
+                <Horizontal>false</Horizontal>
+                <PeakHoldSize>5</PeakHoldSize>
+                <PeakHoldTime>500</PeakHoldTime>
+                <PeakFallTime>50</PeakFallTime>
+                <PeakFallStep>2</PeakFallStep>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
+                </Connection>
+              </VuMeter>
+            </Children>
+          </WidgetGroup><!-- /VU meter -->
+
+          <WidgetGroup><!-- Gain, Pfl, FX buttons -->
             <Layout>vertical</Layout>
-            <SizePolicy>me,min</SizePolicy>
+            <SizePolicy>min,min</SizePolicy>
             <Children>
 
               <WidgetGroup><!-- Gain, Pfl -->
+                <ObjectName>MicGainPFlContainer</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,me</SizePolicy>
                 <Children>
-                  <WidgetGroup><!-- Gain, Pfl -->
+                  <WidgetGroup>
                     <ObjectName>MicGainKnob</ObjectName>
                     <Layout>horizontal</Layout>
                     <SizePolicy>me,me</SizePolicy>
@@ -115,7 +137,7 @@
                   </WidgetGroup>
 
                   <PushButton>
-                    <TooltipId>pfl</TooltipId><!---->
+                    <TooltipId>pfl</TooltipId>
                     <ObjectName>MicPflButton</ObjectName>
                     <NumberStates>2</NumberStates>
                     <State>
@@ -136,30 +158,52 @@
                 </Children>
               </WidgetGroup><!-- /Gain, Pfl -->
 
-              <WidgetGroup><!-- VU meter -->
-                <ObjectName>MicVUMeter</ObjectName>
+              <WidgetGroup>
+                <ObjectName>MicFxButtons</ObjectName>
                 <Layout>horizontal</Layout>
-                <Size>,12f</Size>
+                <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <VuMeter>
-                    <TooltipId>channel_VuMeter</TooltipId>
-                    <Size>64f,4f</Size>
-                    <PathVu>style/vumeter_latency_over.png</PathVu>
-                    <PathBack>style/vumeter_latency_bg_solid.png</PathBack>
-                    <!-- <PathVu>vumeter_latency.svg</PathVu> -->
-                    <Horizontal>true</Horizontal>
-                    <PeakHoldSize>5</PeakHoldSize>
-                    <PeakHoldTime>500</PeakHoldTime>
-                    <PeakFallTime>50</PeakFallTime>
-                    <PeakFallStep>2</PeakFallStep>
+                  <PushButton>
+                    <Size>35f,22f</Size>
+                    <TooltipId>EffectUnit_auxiliary_enabled</TooltipId>
+                    <ObjectName>FxAssignButton</ObjectName>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Text>FX&#8202;1</Text>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Text>FX&#8202;1</Text>
+                    </State>
                     <Connection>
-                      <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
+                      <ConfigKey>[EffectRack1_EffectUnit1],group_<Variable name="group"/>_enable</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
                     </Connection>
-                  </VuMeter>
+                  </PushButton>
+
+                  <PushButton>
+                    <Size>35f,22f</Size>
+                    <TooltipId>EffectUnit_auxiliary_enabled</TooltipId>
+                    <ObjectName>FxAssignButton</ObjectName>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Text>FX&#8202;2</Text>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Text>FX&#8202;2</Text>
+                    </State>
+                    <Connection>
+                      <ConfigKey>[EffectRack1_EffectUnit2],group_<Variable name="group"/>_enable</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
                 </Children>
-              </WidgetGroup><!-- /VU meter -->
+              </WidgetGroup><!-- /FX buttons -->
             </Children>
-          </WidgetGroup><!-- /Gain, Pfl, VU meter -->
+          </WidgetGroup><!-- /Gain, Pfl, FX buttons -->
 
         </Children>
       </WidgetGroup><!-- /MicInterior -->
