@@ -114,22 +114,82 @@
             </Connection>
           </PushButton>
 
+          <WidgetGroup>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <PushButton>
+                <Size>44f,24f</Size>
+                <ObjectName>GuiToggleButton</ObjectName>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Text>EQ</Text>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Text>EQ</Text>
+                </State>
+                <Connection>
+                  <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
+                </Connection>
+              </PushButton>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>ToolbarDivider</ObjectName>
+            <Size>13f,9min</Size>
+          </WidgetGroup>
+
           <PushButton>
-            <Size>44f,24f</Size>
+            <Size>59f,24f</Size>
+            <TooltipId>show_effects</TooltipId>
             <ObjectName>GuiToggleButton</ObjectName>
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>EQ</Text>
+              <Text>EFFECTS</Text>
             </State>
             <State>
               <Number>1</Number>
-              <Text>EQ</Text>
+              <Text>EFFECTS</Text>
             </State>
             <Connection>
-              <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
+              <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
             </Connection>
           </PushButton>
+
+          <WidgetGroup>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <PushButton>
+                <Size>88f,24f</Size>
+                <ObjectName>GuiToggleButton</ObjectName>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Text>Super knobs</Text>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Text>Super knobs</Text>
+                </State>
+                <Connection>
+                  <ConfigKey persist="true">[Master],show_superknobs</ConfigKey>
+                </Connection>
+              </PushButton>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
 
           <WidgetGroup>
             <ObjectName>ToolbarDivider</ObjectName>
@@ -151,24 +211,6 @@
             </State>
             <Connection>
               <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
-            </Connection>
-          </PushButton>
-
-          <PushButton>
-            <Size>59f,24f</Size>
-            <TooltipId>show_effects</TooltipId>
-            <ObjectName>GuiToggleButton</ObjectName>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>EFFECTS</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>EFFECTS</Text>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
             </Connection>
           </PushButton>
 
