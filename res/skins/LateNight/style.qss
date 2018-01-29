@@ -449,7 +449,7 @@ WTime {
 }
 
 #ToolbarDivider {
-  background: transparent url(skin:/buttons/toolbar_divider.png) no-repeat center center;
+  background: transparent url(skin:/style/toolbar_divider.png) no-repeat center center;
   margin: 0px 5px;
 }
 
