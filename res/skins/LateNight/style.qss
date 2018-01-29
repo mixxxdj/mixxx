@@ -455,18 +455,24 @@ WTime {
 
 #RecBox {
   border: 1px solid #585858;
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
   margin: 2px;
   border-radius: 2px;
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #282828,
+    stop:1 #0e0e0e);
 }
 
 #RecFeedback[displayValue="0"] {
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #282828,
+    stop:1 #0e0e0e);
 }
 
 #RecFeedback[displayValue="1"],
 #RecFeedback[displayValue="2"] {
-  background-color: #840600;
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #840600,
+    stop:1 #AD0800);
 }
 
 #RecDot {
@@ -503,8 +509,8 @@ WTime {
 #FxAssignButton[displayValue="0"] {
   color: #ddd;
   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                  stop:0 #282828,
-                                  stop:1 #0e0e0e);
+    stop:0 #282828,
+    stop:1 #0e0e0e);
 }
 
 #VinylButton[displayValue="1"],
@@ -516,8 +522,8 @@ WTime {
   border-radius: 2px;
   color: #0e0e0e;
   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                    stop:0 #B69700,
-                                    stop:1 #eece33);
+    stop:0 #B69700,
+    stop:1 #eece33);
 }
 
 #TristateButton {
@@ -525,7 +531,9 @@ WTime {
   border-radius: 2px;
   margin: 1px;
   color: #eece33;
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #282828,
+    stop:1 #0e0e0e);
 }
 
 #PitchTweakButton {
@@ -536,7 +544,9 @@ WTime {
 
   #PitchTweakButton[displayValue="0"] {
     color: #ddd;
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+      stop:0 #282828,
+      stop:1 #0e0e0e);
   }
 
   #PitchTweakButton[displayValue="1"] {
@@ -557,7 +567,9 @@ WTime {
     border: 1px solid #585858;
     border-radius: 2px;
     color: #ddd;
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+      stop:0 #282828,
+      stop:1 #0e0e0e);
     margin-right: 2px;
 }
 
@@ -565,7 +577,9 @@ WTime {
     border: 1px solid #585858;
     border-radius: 2px;
     color: #c0c0c0;
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #d80000, stop:1 #910000);
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+      stop:0 #d80000,
+      stop:1 #910000);
     margin-right: 2px;
 }
 
@@ -833,10 +847,10 @@ border: 0px;
   border-radius: 2px;
   margin: 1px;
   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                  stop:0 #282828,
-                                  stop:0.13 #1a1a1a,
-                                  stop:0.87 #1a1a1a,
-                                  stop:1 #0e0e0e);
+          stop:0 #282828,
+          stop:0.13 #1a1a1a,
+          stop:0.87 #1a1a1a,
+          stop:1 #0e0e0e);
 }
 
 #BeatCurpos {
@@ -844,10 +858,10 @@ border: 0px;
   border-radius: 2px;
   margin: 1px;
   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                  stop:0 #282828,
-                                  stop:0.25 #1a1a1a,
-                                  stop:0.75 #1a1a1a,
-                                  stop:1 #0e0e0e);
+          stop:0 #282828,
+          stop:0.25 #1a1a1a,
+          stop:0.75 #1a1a1a,
+          stop:1 #0e0e0e);
 }
 
 #RateContainer {
@@ -1385,8 +1399,12 @@ QTableView::item:selected {
 }
 
 /* BPM lock icon in the library "BPM" column. */
-#LibraryBPMButton::indicator:checked { image: url(:/images/library/ic_library_checked.png); }
-#LibraryBPMButton::indicator:unchecked { image: url(:/images/library/ic_library_unchecked.png); }
+#LibraryBPMButton::indicator:checked {
+  image: url(:/images/library/ic_library_checked.png);
+}
+#LibraryBPMButton::indicator:unchecked {
+  image: url(:/images/library/ic_library_unchecked.png);
+}
 #LibraryBPMButton::item:selected {
   color: #cfb32c;
   background-color: #725309;
@@ -1403,8 +1421,12 @@ QPushButton#LibraryPreviewButton {
   background-color: #725309;
 }*/
 
-QPushButton#LibraryPreviewButton:!checked{ image: url(skin:/style/style_library_preview_play.png); }
-QPushButton#LibraryPreviewButton:checked{ image: url(skin:/style/style_library_preview_pause.png); }
+QPushButton#LibraryPreviewButton:!checked{
+  image: url(skin:/style/style_library_preview_play.png);
+}
+QPushButton#LibraryPreviewButton:checked{
+  image: url(skin:/style/style_library_preview_pause.png);
+}
 
 QHeaderView {
   font-size: 13px/15px;
@@ -1415,7 +1437,9 @@ QHeaderView::section {
   height: 18px;
   border: 1px solid #585858;
   border-left: 0px;
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #585858,
+    stop:1 #0f0f0f);
 }
 
 /* QScrollbar styling is even harder */
@@ -1445,15 +1469,19 @@ QScrollBar::add-page, QScrollBar::sub-page {
 }
 QScrollBar::handle:horizontal {
   min-width: 25px;
-  background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #725309, stop:1 #412f05);
   border-radius: 3px;
   border: 1px solid #725309;
+  background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #725309,
+    stop:1 #412f05);
 }
 QScrollBar::handle:vertical {
   min-height: 25px;
-  background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #725309, stop:1 #412f05);
   border-radius: 3px;
   border: 1px solid #725309;
+  background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #725309,
+    stop:1 #412f05);
 }
 /* Turn off buttons */
 QScrollBar::add-line:horizontal, QScrollBar::add-line:vertical {
@@ -1468,19 +1496,40 @@ QScrollBar::sub-line:horizontal, QScrollBar::sub-line:vertical {
 }
 
 /* transition time in Auto DJ tab */
-QSpinBox:editable { background: transparent; color: #cfb32c; }
-QSpinBox { min-height: 20px; max-height: 20px;min-width: 40px; max-width: 40px;}
+QSpinBox:editable {
+  background: transparent;
+  color: #cfb32c;
+}
+QSpinBox {
+  min-height: 20px;
+  max-height: 20px;
+  min-width: 40px;
+  max-width: 40px;
+}
 
 /* library search bar */
-WSearchLineEdit { padding: 2px; border: 1px solid #656565; background: #181818; color: #cfb32c; }
-WSearchLineEdit:focus { padding: 2px; border: 2px solid #FF6600; background: #0f0f0f; color: #eece33;}
+WSearchLineEdit {
+  padding: 2px;
+  border: 1px solid #656565;
+  background: #181818;
+  color: #cfb32c;
+}
+WSearchLineEdit:focus {
+  padding: 2px;
+  border: 2px solid #FF6600;
+  background: #0f0f0f;
+  color: #eece33;
+}
 
 #SidebarContainer{
     margin-top: -5px;
 }
 
 /* cover art */
-WCoverArt { background: transparent; color: #ACACAC; }
+WCoverArt {
+  background: transparent;
+  color: #ACACAC;
+}
 
 /* splitter between treeview and library */
 #LibrarySplitter::handle {
@@ -1549,45 +1598,96 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgHidden > QPushButton,
 #DlgAutoDJ > QPushButton,
 #DlgRecording > QPushButton,
-#DlgAnalysis > QPushButton { margin: 9px 3px 6px 3px; padding: 3px 8px; min-width: 65px; }
+#DlgAnalysis > QPushButton {
+  margin: 5px 3px 5px 3px;
+  padding: 3px 8px;
+  min-width: 65px;
+  border: 1px solid #585858;
+  border-radius: 2px;
+  color: #eeeeee;
+}
 
 /* Additional space for the first QPushButton in the row */
 #DlgMissing > QPushButton#btnPurge,
 #DlgHidden > QPushButton#btnUnhide,
 #DlgAutoDJ > QPushButton#pushButtonAutoDJ,
 #DlgRecording > QPushButton#pushButtonRecording,
-#DlgAnalysis > QPushButton#pushButtonAnalyze { margin: 9px 12px 6px 3px; }
+#DlgAnalysis > QPushButton#pushButtonAnalyze {
+  margin: 5px 12px 5px 3px;
+}
 
 /* Additional space for the last QPushButton in the row */
-#DlgAutoDJ > QPushButton#pushButtonShuffle { margin: 9px 3px 6px 12px; }
+#DlgAutoDJ > QPushButton#pushButtonShuffle {
+  margin: 5px 3px 5px 12px;
+}
+
+#DlgAutoDJ > QPushButton:checked {
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #AD5700,
+    stop:1 #DE7000);
+}
+
+#DlgRecording > QPushButton:checked {
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #840600,
+    stop:1 #AD0800);
+}
+
+#DlgMissing > QPushButton:!checked,
+#DlgHidden > QPushButton:!checked,
+#DlgAutoDJ > QPushButton:!checked,
+#DlgRecording > QPushButton:!checked,
+#DlgAnalysis > QPushButton:!checked {
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #6F7176,
+    stop:1 #626468);
+}
 
 /* Spacing between treeview and searchbar */
-QTreeView { margin: 10px 0px 0px 0px; }
+QTreeView {
+  margin: 10px 0px 0px 0px;
+}
 
 /* triangle for closed/opened branches in treeview */
-QTreeView { show-decoration-selected: 0; background-color: #151515; } /*  Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588 */
+QTreeView {
+  show-decoration-selected: 0;
+  background-color: #151515;
+}
+/*  Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588 */
 QTreeView::branch:has-children:!has-siblings:closed,
-QTreeView::branch:closed:has-children:has-siblings { border-image: none; image: url(skin:/style/style_branch_closed.png);
+QTreeView::branch:closed:has-children:has-siblings {
+  border-image: none;
+  image: url(skin:/style/style_branch_closed.png);
   background-color:#0f0f0f;
 }
 QTreeView::branch:open:has-children:!has-siblings,
-QTreeView::branch:open:has-children:has-siblings { border-image: none; image: url(skin:/style/style_branch_open.png);
+QTreeView::branch:open:has-children:has-siblings {
+  border-image: none;
+  image: url(skin:/style/style_branch_open.png);
   background-color:#0f0f0f;
 }
 QTreeView::branch:has-children:!has-siblings:closed:selected,
-QTreeView::branch:closed:has-children:has-siblings:selected { border-image: none; image: url(skin:/style/style_branch_closed.png);
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
+QTreeView::branch:closed:has-children:has-siblings:selected {
+  border-image: none;
+  image: url(skin:/style/style_branch_closed.png);
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #585858,
+    stop:1 #0f0f0f);
 }
 QTreeView::branch:open:has-children:!has-siblings:selected,
-QTreeView::branch:open:has-children:has-siblings:selected { border-image: none; image: url(skin:/style/style_branch_open.png);
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
+QTreeView::branch:open:has-children:has-siblings:selected {
+  border-image: none;
+  image: url(skin:/style/style_branch_open.png);
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #585858,
+    stop:1 #0f0f0f);
 }
 QTreeView::item:selected {
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
   color: #cfb32c;
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #585858,
+    stop:1 #0f0f0f);
 }
-
-
 
 QToolTip {
   background-color: #0f0f0f;
