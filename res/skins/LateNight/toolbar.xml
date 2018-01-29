@@ -57,7 +57,7 @@
 
           <PushButton>
             <Size>46f,24f</Size>
-            <TooltipId>toggle_4decks</TooltipId>
+            <TooltipId>show_mixer</TooltipId>
             <ObjectName>GuiToggleButton</ObjectName>
             <NumberStates>2</NumberStates>
             <State>
@@ -92,6 +92,7 @@
 
           <PushButton>
             <Size>61f,24f</Size>
+            <TooltipId>show_previewdeck</TooltipId>
             <ObjectName>GuiToggleButton</ObjectName>
             <NumberStates>2</NumberStates>
             <State>
@@ -109,6 +110,7 @@
 
           <PushButton>
             <Size>61f,24f</Size>
+            <TooltipId>show_spinny</TooltipId>
             <ObjectName>GuiToggleButton</ObjectName>
             <NumberStates>2</NumberStates>
             <State>
@@ -126,6 +128,7 @@
 
           <PushButton>
             <Size>44f,24f</Size>
+            <TooltipId>show_vinylcontrol</TooltipId>
             <ObjectName>GuiToggleButton</ObjectName>
             <NumberStates>2</NumberStates>
             <State>
@@ -166,6 +169,7 @@
 
           <PushButton>
             <Size>59f,24f</Size>
+            <TooltipId>show_microphone</TooltipId>
             <ObjectName>GuiToggleButton</ObjectName>
             <NumberStates>2</NumberStates>
             <State>
