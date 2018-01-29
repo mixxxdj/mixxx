@@ -52,7 +52,7 @@
                       </Template>
 
                       <WidgetGroup>
-                        <ObjectName>MasterVuMeter2ch</ObjectName>
+                        <ObjectName>MasterVuMeter_2Decks</ObjectName>
                         <Layout>vertical</Layout>
                         <SizePolicy>max,me</SizePolicy>
                         <Children>

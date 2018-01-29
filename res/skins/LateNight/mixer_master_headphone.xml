@@ -186,7 +186,7 @@
               </WidgetGroup>
 
               <WidgetGroup>
-                <ObjectName>MasterVuMeter4ch</ObjectName>
+                <ObjectName>MasterVuMeter_4Decks</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,me</SizePolicy>
                 <Children>

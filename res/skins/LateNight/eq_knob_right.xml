@@ -43,6 +43,10 @@
                 <SetVariable name="FxParameter">button_parameter<Variable name="FxParameter"/></SetVariable>
               </Template>
             </Children>
+            <Connection>
+              <ConfigKey>[Master],show_eq_kill_buttons</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
 
         </Children>

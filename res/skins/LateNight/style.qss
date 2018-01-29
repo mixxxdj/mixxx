@@ -240,27 +240,29 @@ WTime {
   padding: 2px;
 }
 
-#MixerChannel {
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  padding-left: 2px;
-  padding-right: 2px;
-}
-
-#MixerChannelReversed {
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  padding-left: 2px;
-  padding-right: 2px;
-}
-
-#MixerChannelHoriz {
+#MixerChannel_2Decks {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
 }
 
-#MasterVuMeter2ch {
+#MixerChannel_4Decks {
+  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+}
+
+#MixerChannel_2Decks_Left {
+  qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+  padding: 0px 2px;
+}
+
+#MixerChannel_2Decks_Right {
+  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+  padding: 0px 2px;
+}
+
+#MasterVuMeter_2Decks {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
 }
 
-#MasterVuMeter4ch {
+#MasterVuMeter_4Decks {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   margin-top: 5px;
 }

@@ -142,6 +142,33 @@
           </WidgetGroup>
 
           <WidgetGroup>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <PushButton>
+                <Size>54f,24f</Size>
+                <ObjectName>GuiToggleButton</ObjectName>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Text>EQ KILL</Text>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Text>EQ KILL</Text>
+                </State>
+                <Connection>
+                  <ConfigKey persist="true">[Master],show_eq_kill_buttons</ConfigKey>
+                </Connection>
+              </PushButton>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup>
             <ObjectName>ToolbarDivider</ObjectName>
             <Size>13f,9min</Size>
           </WidgetGroup>

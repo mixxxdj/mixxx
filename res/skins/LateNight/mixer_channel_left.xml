@@ -9,14 +9,14 @@ vertical layout and a side-by-side layout for two-deck mode -->
     <Children>
 
       <WidgetGroup><!--  Channel1 controls side-by-side-->
-        <ObjectName>MixerChannelHoriz</ObjectName>
+        <ObjectName>MixerChannel_2Decks</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
 
           <WidgetGroup><!-- EQs -->
             <Layout>vertical</Layout>
-            <ObjectName>MixerChannel</ObjectName>
+            <ObjectName>MixerChannel_2Decks_Left</ObjectName>
             <SizePolicy>min,min</SizePolicy>
             <Children>
 
