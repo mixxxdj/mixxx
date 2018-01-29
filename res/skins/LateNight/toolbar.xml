@@ -56,59 +56,6 @@
           </PushButton>
 
           <PushButton>
-            <Size>46f,24f</Size>
-            <TooltipId>show_mixer</TooltipId>
-            <ObjectName>GuiToggleButton</ObjectName>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>MIXER</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>MIXER</Text>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
-            </Connection>
-          </PushButton>
-
-          <PushButton>
-            <Size>44f,24f</Size>
-            <ObjectName>GuiToggleButton</ObjectName>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>EQ</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>EQ</Text>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
-            </Connection>
-          </PushButton>
-
-          <PushButton>
-            <Size>61f,24f</Size>
-            <TooltipId>show_previewdeck</TooltipId>
-            <ObjectName>GuiToggleButton</ObjectName>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>PREVIEW</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>PREVIEW</Text>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
-            </Connection>
-          </PushButton>
-
-          <PushButton>
             <Size>61f,24f</Size>
             <TooltipId>show_spinny</TooltipId>
             <ObjectName>GuiToggleButton</ObjectName>
@@ -148,6 +95,64 @@
             <ObjectName>ToolbarDivider</ObjectName>
             <Size>13f,9min</Size>
           </WidgetGroup>
+
+          <PushButton>
+            <Size>46f,24f</Size>
+            <TooltipId>show_mixer</TooltipId>
+            <ObjectName>GuiToggleButton</ObjectName>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>MIXER</Text>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>MIXER</Text>
+            </State>
+            <Connection>
+              <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <Size>44f,24f</Size>
+            <ObjectName>GuiToggleButton</ObjectName>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>EQ</Text>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>EQ</Text>
+            </State>
+            <Connection>
+              <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
+            </Connection>
+          </PushButton>
+
+          <WidgetGroup>
+            <ObjectName>ToolbarDivider</ObjectName>
+            <Size>13f,9min</Size>
+          </WidgetGroup>
+
+          <PushButton>
+            <Size>61f,24f</Size>
+            <TooltipId>show_previewdeck</TooltipId>
+            <ObjectName>GuiToggleButton</ObjectName>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>PREVIEW</Text>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>PREVIEW</Text>
+            </State>
+            <Connection>
+              <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
+            </Connection>
+          </PushButton>
 
           <PushButton>
             <Size>59f,24f</Size>
