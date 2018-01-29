@@ -30,15 +30,19 @@ WOverview {
 
 WPushButton, QPushButton {
   font-size: 11px/12px;
-} 
+}
+
+#Deck3 WLabel, #Deck4 WLabel {
+  color: #09B2AE;
+}
 
 #TristateButton,
 #PreviewLabel,
-#RateText,
 #MicTitle,
 #MicSubTitle,
 #SamplerTitle,
 #Deck1 WLabel, #Deck2 WLabel,
+#Deck3 #KeyText, #Deck4 #KeyText,
 WSearchLineEdit:focus,
 #LatencyLabel,
 WTime {
@@ -1045,11 +1049,7 @@ border: 0px;
 }
 
 #SamplerSyncButton {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter'; 
-}
-
-#Deck3 WLabel, #Deck4 WLabel {
-  color: #09B2AE;
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
 }
 
 #TitleGutter WLabel {

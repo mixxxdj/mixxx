@@ -69,7 +69,6 @@
                             <Children>
                               <StatusLight>
                                 <TooltipId>master_PeakIndicator</TooltipId>
-                                <Style></Style>
                                 <PathStatusLight>style/clipping1_over.png</PathStatusLight>
                                 <PathBack>style/clipping1.png</PathBack>
                                 <Connection>
@@ -78,7 +77,6 @@
                               </StatusLight>
                               <StatusLight>
                                 <TooltipId>master_PeakIndicator</TooltipId>
-                                <Style></Style>
                                 <PathStatusLight>style/clipping1_over.png</PathStatusLight>
                                 <PathBack>style/clipping1.png</PathBack>
                                 <Connection>
@@ -94,7 +92,6 @@
                             <Children>
                               <VuMeter>
                                 <TooltipId>master_VuMeterL</TooltipId>
-                                <Style></Style>
                                 <PathVu>style/volume_display1_over.png</PathVu>
                                 <PathBack>style/volume_display1.png</PathBack>
                                 <Horizontal>false</Horizontal>
@@ -108,7 +105,6 @@
                               </VuMeter>
                               <VuMeter>
                                 <TooltipId>master_VuMeterR</TooltipId>
-                                <Style></Style>
                                 <PathVu>style/volume_display1_over.png</PathVu>
                                 <PathBack>style/volume_display1.png</PathBack>
                                 <Horizontal>false</Horizontal>

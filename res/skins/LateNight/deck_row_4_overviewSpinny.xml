@@ -149,7 +149,6 @@
             <Children>
               <PushButton>
                 <TooltipId>eject</TooltipId>
-                <Style></Style>
                 <NumberStates>1</NumberStates>
                 <State>
                   <Number>0</Number>
