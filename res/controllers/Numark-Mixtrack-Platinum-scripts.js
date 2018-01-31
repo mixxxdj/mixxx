@@ -652,15 +652,15 @@ MixtrackPlatinum.vuCallback = function(value, group, control) {
 // spinning
 MixtrackPlatinum.scratch_timer = [];
 MixtrackPlatinum.scratch_tick = [];
-MixtrackPlatinum.resetScratchTimer = function (deck) {
+MixtrackPlatinum.resetScratchTimer = function (deck, tick) {
     if (!MixtrackPlatinum.scratch_timer[deck]) return;
-    MixtrackPlatinum.scratch_tick[deck] = true;
+    MixtrackPlatinum.scratch_tick[deck] = tick;
 };
 
 MixtrackPlatinum.startScratchTimer = function (deck) {
     if (MixtrackPlatinum.scratch_timer[deck]) return;
 
-    MixtrackPlatinum.scratch_tick[deck] = false;
+    MixtrackPlatinum.scratch_tick[deck] = 0;
     MixtrackPlatinum.scratch_timer[deck] = engine.beginTimer(20, "MixtrackPlatinum.scratchTimer("+deck+")");
 };
 
@@ -673,9 +673,9 @@ MixtrackPlatinum.stopScratchTimer = function (deck) {
 
 MixtrackPlatinum.scratchTimer = function (deck) {
     // check if we saw a tick from this deck
-    if (MixtrackPlatinum.scratch_tick[deck]) {
+    if (Math.abs(MixtrackPlatinum.scratch_tick[deck]) > 2) {
         // reset tick detection
-        MixtrackPlatinum.scratch_tick[deck] = false;
+        MixtrackPlatinum.scratch_tick[deck] = 0;
         return;
     }
 
@@ -749,7 +749,7 @@ MixtrackPlatinum.wheelTurn = function (channel, control, value, status, group) {
     // In either case, register the movement
     if (engine.isScratching(deck)) {
         engine.scratchTick(deck, newValue); // Scratch!
-        MixtrackPlatinum.resetScratchTimer(deck);
+        MixtrackPlatinum.resetScratchTimer(deck, newValue);
     } else {
         engine.setValue(group, 'jog', newValue * 0.1); // Pitch bend
     }
