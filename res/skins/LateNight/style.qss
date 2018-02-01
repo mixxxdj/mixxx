@@ -325,9 +325,9 @@ WTime {
   margin-top: 2px;
 }
 
-#TitleGutter, #AlbumGutter {
+#TitleGutter {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  padding: 1px;
+  padding: 2px 3px 2px 2px;
   border: 1px solid #585858;
   border-top: 0px;
   border-left: 0px;
@@ -336,8 +336,7 @@ WTime {
 
 #ArtistGutter{
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  padding: 1px;/*
-  padding-bottom: 2px;*/
+  padding: 2px;
   border: 0px solid #585858;
 }
 
@@ -377,7 +376,8 @@ WTime {
 #ArtistText,
 #TitleText,
 #PlayPositionText {
- font-size: 18px/20px;
+  font-size: 18px/20px;
+  text-transform: none;
 }
 
 #DurationText {
@@ -994,6 +994,7 @@ border: 0px;
 #SamplerTitle {
   font-size: 16px/19px;
   text-align: left;
+  text-transform: none;
 }
 
 #SamplerRowTwo {
