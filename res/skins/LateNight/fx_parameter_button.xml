@@ -29,15 +29,23 @@
 	     </Children>
       </WidgetGroup>
 
-      <EffectButtonParameterName>
-        <Size>1min,14f</Size>
-        <ObjectName>KnobLabel</ObjectName>
-        <EffectRack><Variable name="FxRack"/></EffectRack>
-        <EffectUnit><Variable name="FxUnit"/></EffectUnit>
-        <Effect><Variable name="FxNum"/></Effect>
-        <EffectButtonParameter><Variable name="FxParameter"/></EffectButtonParameter>
-        <Alignment>center</Alignment>
-      </EffectButtonParameterName>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+          <EffectButtonParameterName>
+            <ObjectName>FxButtonLabel</ObjectName>
+            <EffectRack><Variable name="FxRack"/></EffectRack>
+            <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+            <Effect><Variable name="FxNum"/></Effect>
+            <EffectButtonParameter><Variable name="FxParameter"/></EffectButtonParameter>
+            <Alignment>center</Alignment>
+          </EffectButtonParameterName>
+          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+	     </Children>
+      </WidgetGroup>
+
 
     </Children>
     <Connection>

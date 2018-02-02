@@ -7,6 +7,7 @@
       <!-- This container gives the Master/Headphone
             a continuous background image -->
       <WidgetGroup>
+        <ObjectName>MasterHeadphoneMixer</ObjectName>
         <BackPath>style/background_tile.png</BackPath>
         <SizePolicy>min,min</SizePolicy>
         <Layout>vertical</Layout>
@@ -14,7 +15,7 @@
 
           <WidgetGroup>
             <ObjectName>MasterControls</ObjectName>
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>min,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
 
@@ -153,7 +154,7 @@
                     <ObjectName>KnobLabel</ObjectName>
                     <SizePolicy>min,min</SizePolicy>
                     <Alignment>left</Alignment>
-                    <Text>master</Text>
+                    <Text> master</Text>
                   </Label>
 
                   <Label>
@@ -165,19 +166,25 @@
                 </Children>
               </WidgetGroup>
 
-              <WidgetGroup><Size>0min,3f</Size></WidgetGroup>
+              <WidgetGroup><Size>0min,7f</Size></WidgetGroup>
 
               <WidgetGroup>
-                <Layout>horizontal</Layout>
+                <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <Template src="skin:knob.xml">
+                  <Template src="skin:knob_textless.xml">
                     <SetVariable name="Size">35f,30f</SetVariable>
                     <SetVariable name="TooltipId">master_gain</SetVariable>
                     <SetVariable name="group">[Booth]</SetVariable>
                     <SetVariable name="control">gain</SetVariable>
-                    <SetVariable name="label">Booth</SetVariable>
                   </Template>
+
+                  <Label>
+                    <ObjectName>KnobLabel</ObjectName>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Alignment>right</Alignment>
+                    <Text>Booth</Text>
+                  </Label>
                 </Children>
                 <Connection>
                   <ConfigKey>[Master],booth_enabled</ConfigKey>
@@ -265,7 +272,7 @@
 
           <WidgetGroup>
             <ObjectName>HeadphoneControls</ObjectName>
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>min,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
 
@@ -311,16 +318,14 @@
                     <ObjectName>KnobLabel</ObjectName>
                     <SizePolicy>me,min</SizePolicy>
                     <Alignment>left</Alignment>
-                    <Text>Head</Text>
+                    <Text>  Head   </Text>
                   </Label>
-
-                  <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
 
                   <Label>
                     <ObjectName>KnobLabel</ObjectName>
-                    <SizePolicy>min,min</SizePolicy>
+                    <SizePolicy>me,min</SizePolicy>
                     <Alignment>right</Alignment>
-                    <Text>Pre/MST</Text>
+                    <Text>CUE/MST</Text>
                   </Label>
                 </Children>
               </WidgetGroup>
@@ -356,9 +361,9 @@
               </WidgetGroup><!-- /HeadSplit button -->
 
             </Children>
-          </WidgetGroup><!-- /HeadphoneControls -->
+          </WidgetGroup><!-- /HeadphoneControls
 
-          <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
+          <WidgetGroup><Size>0min,0me</Size></WidgetGroup> -->
         </Children>
       </WidgetGroup>
     </Children>

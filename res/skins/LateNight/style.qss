@@ -233,6 +233,9 @@ WTime {
     padding-top: 3px;
   }
 
+#MasterHeadphoneMixer {
+}
+
 #MasterHeadphoneDivider {
   background-color: #585858;
   margin: 5px 0px 5px 0px;
@@ -388,22 +391,34 @@ WTime {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
 
-#KnobLabel {
-  font: bold 10px/8px;
+#KnobLabel,
+#FxKnobLabel,
+#FxButtonLabel {
+  font: bold 10px/10px;
   color: #585858;
   text-align: center;
   qproperty-alignment: 'AlignCenter | AlignBottom';
   padding-top: -1px;
+  text-transform: uppercase;
 }
 
-#FxKnobLabel {
-  font: bold 10px/8px;
-  text-transform: uppercase;
-  color: #585858;
-  text-align: center;
-  qproperty-alignment: 'AlignCenter | AlignBottom';
-  padding-top: 24px;
-}
+#MasterHeadphoneMixer WLabel,
+/*WEffectParameter,
+WEffectButtonParameter*/
+#FxKnobLabel,
+#FxButtonLabel {
+  background-color: #101010;
+  }
+  #MasterHeadphoneMixer WLabel {
+    padding: 0px;
+  }
+  #FxKnobLabel {
+    padding: 0px;
+  }
+  #FxButtonLabel {
+    padding: 0px;
+    margin: 0px 0px 0px 0px;
+  }
 
 #FxKnobContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';/*
@@ -765,6 +780,10 @@ border: 0px;
 
 #AlignCenterTop {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
+#AlignBottom {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
 }
 /**/
 #TEST {
@@ -1139,7 +1158,7 @@ border: 0px;
 
 #EffectUnitKnob {
   qproperty-layoutAlignment: 'AlignRight';
-  padding:3px;
+  padding: 3px;
 }
 
 WEffectSelector {
@@ -1224,8 +1243,13 @@ WEffectSelector {
 #FxSuperLinkButton,
 #FxSuperLinkInvertButton {
   border-radius: 1px;
-  margin: 0px 5px 0px 5px;
-}
+  }
+  #FxSuperLinkButton {
+    margin: 0px 5px 0px 5px;
+  }
+  #FxSuperLinkInvertButton {
+    margin: 0px 5px 2px 5px;
+  }
 
 #FxSuperLinkButton[value="0"],
 #FxSuperLinkInvertButton[displayValue="0"] {
