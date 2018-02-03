@@ -304,7 +304,9 @@ EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
 
     EffectSlotPointer pSlot(pEffectSlot);
     m_slots.append(pSlot);
-    m_pControlNumEffectSlots->forceSet(m_pControlNumEffectSlots->get() + 1);
+    int numEffectSlots = m_pControlNumEffectSlots->get() + 1;
+    m_pControlNumEffectSlots->forceSet(numEffectSlots);
+    m_pControlChainFocusedEffect->setStates(numEffectSlots);
     return pSlot;
 }
 
