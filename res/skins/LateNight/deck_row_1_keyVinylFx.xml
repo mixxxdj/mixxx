@@ -1,6 +1,6 @@
 <Template>
   <WidgetGroup>
-    <ObjectName>DeckRowOne</ObjectName>
+    <ObjectName>DeckRow_1_KeyVinylFx</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
