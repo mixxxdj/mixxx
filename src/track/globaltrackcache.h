@@ -270,8 +270,7 @@ private:
             TrackId trackId);
 
     bool evictAndDelete(
-            Track* pTrack,
-            bool evictUnexpired = false);
+            Track* pTrack);
 
     typedef std::set<Track*> AllocatedTracks;
 

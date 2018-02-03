@@ -616,8 +616,7 @@ void GlobalTrackCache::afterEvicted(
 }
 
 bool GlobalTrackCache::evictAndDelete(
-        Track* pTrack,
-        bool evictUnexpired) {
+        Track* pTrack) {
     DEBUG_ASSERT(pTrack);
     GlobalTrackCacheLocker cacheLocker;
 
@@ -655,7 +654,7 @@ bool GlobalTrackCache::evictAndDelete(
     return evictAndDeleteInternal(
             &cacheLocker,
             ipIndexedTrack,
-            evictUnexpired);
+            false);
 }
 
 bool GlobalTrackCache::evictAndDeleteInternal(
