@@ -586,13 +586,31 @@ TrackRef GlobalTrackCache::initTrackIdInternal(
 void GlobalTrackCache::afterEvicted(
         GlobalTrackCacheLocker* pCacheLocker,
         Track* pEvictedTrack) {
+    DEBUG_ASSERT(pEvictedTrack);
+
     // Disconnect the evicted track from all receivers.
     // It can produce dangerous signal loops if the track is still
     // sending signals while being saved! All references to this
     // track have been dropped at this point, so there is no need
     // to send any signals.
     // See: https://bugs.launchpad.net/mixxx/+bug/136578
-    pEvictedTrack->disconnect();
+    // NOTE(uklotzde, 2018-02-03): Simply disconnecting all receivers
+    // doesn't seem to work reliably. Emitting the clean() signal from
+    // a track that is about to deleted may cause access violations!!
+    // To be safe we will block all signals before trying to disconnect
+    // all receivers.
+    VERIFY_OR_DEBUG_ASSERT(pEvictedTrack->blockSignals(true)) {
+        kLogger.critical()
+                << "Failed to block emitting signals from evicted track"
+                << createTrackRef(*pEvictedTrack);
+    }
+    // Just in case we are also disconnecting all receivers, even if
+    // this alone doesn't to be sufficient (see above).
+    VERIFY_OR_DEBUG_ASSERT(pEvictedTrack->disconnect()) {
+        kLogger.critical()
+                << "Failed to disconnect all signal receivers from evicted track"
+                << createTrackRef(*pEvictedTrack);
+    }
 
     // Keep the cache locked while evicting the track object!
     // The callback is given the chance to unlock the cache

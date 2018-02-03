@@ -87,7 +87,7 @@ class BaseTrackCache : public QObject {
     void slotDbTrackAdded(TrackPointer pTrack);
 
   private:
-    TrackPointer getRecentTrack(TrackId trackId) const;
+    const TrackPointer& getRecentTrack(TrackId trackId) const;
     void refreshRecentTrack(TrackId trackId) const;
     void replaceRecentTrack(TrackPointer pTrack) const;
     void replaceRecentTrack(TrackId trackId, TrackPointer pTrack) const;

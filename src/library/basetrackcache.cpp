@@ -141,7 +141,7 @@ void BaseTrackCache::setSearchColumns(const QStringList& columns) {
     m_searchColumns = columns;
 }
 
-TrackPointer BaseTrackCache::getRecentTrack(TrackId trackId) const {
+const TrackPointer& BaseTrackCache::getRecentTrack(TrackId trackId) const {
     DEBUG_ASSERT(m_bIsCaching);
     // Only refresh the recently used track if the identifiers
     // don't match. Otherwise simply return the corresponding
