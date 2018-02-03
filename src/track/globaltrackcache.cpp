@@ -172,8 +172,13 @@ void GlobalTrackCache::destroyInstance() {
 void GlobalTrackCache::deleter(Track* pTrack) {
     DEBUG_ASSERT(pTrack);
     // Any access to pTrack is forbidden!! Due to race condition
-    // this pointer might already have been deleted! Only the
-    // cache knows this.
+    // this pointer might already have been deleted! This happens
+    // when a previous invocation is outpaced by a following
+    // invocation that will already delete the object behind the
+    // pointer. Tracks might be revived before being deleted and
+    // as a consequence the reference count might drop to 0 multiple
+    // times. The order in which those competing invocations finally
+    // lock and enter the thread-safe cache is undefined!!!
     if (s_pInstance) {
         s_pInstance->evictAndDelete(pTrack);
     } else {
