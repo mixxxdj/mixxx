@@ -364,7 +364,6 @@ WTime {
 #KeyText {
   qproperty-alignment: 'AlignCenter';
   font-size: 13px/13px;
-  text-transform: none;
   background-color: #0f0f0f;
   border: 1px solid #585858;
   border-radius: 3px;
@@ -375,6 +374,13 @@ WTime {
 #TitleText,
 #PlayPositionText {
   font-size: 18px/20px;
+}
+
+#ArtistText,
+#TitleText,
+#PlayPositionText,
+#KeyText,
+#PreviewTitle {
   text-transform: none;
 }
 
@@ -706,11 +712,10 @@ WBeatSpinBox {
 }
 
 #PreviewTitle {
-  font: bold 13px/14px;
-  color: #cfb32c;
+  font: bold 14px/14px;
   text-align: left;
-  margin: 3px;
-  background-color: transparent;
+  color: #cfb32c;
+  margin: 2px;
 }
 
 #PreviewPlayOverview {
