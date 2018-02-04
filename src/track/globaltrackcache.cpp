@@ -318,7 +318,7 @@ bool GlobalTrackCache::verifyConsistency() const {
     return true;
 }
 
-GlobalTrackCacheLocker GlobalTrackCache::lookupById(
+TrackPointer GlobalTrackCache::lookupById(
         const TrackId& trackId) {
     GlobalTrackCacheLocker cacheLocker;
     if (trackId.isValid()) {
@@ -330,7 +330,9 @@ GlobalTrackCacheLocker GlobalTrackCache::lookupById(
             cacheLocker.m_lookupResult = GlobalTrackCacheLookupResult::MISS;
         }
     }
-    return std::move(cacheLocker);
+    // Move the result out of the cache locker to avoid redundant
+    // reference counting operations.
+    return std::move(cacheLocker.m_trackRefPtr);
 }
 
 TrackRefPtr GlobalTrackCache::lookupByIdInternal(

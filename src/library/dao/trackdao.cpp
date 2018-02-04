@@ -1372,7 +1372,7 @@ TrackPointer TrackDAO::getTrack(TrackId trackId) const {
     //qDebug() << "TrackDAO::getTrack" << QThread::currentThread() << m_database.connectionName();
 
     // The GlobalTrackCache is only locked while executing the following line.
-    TrackPointer pTrack = GlobalTrackCache::instance().lookupById(trackId).getTrack();
+    TrackPointer pTrack = GlobalTrackCache::instance().lookupById(trackId);
     // Accessing the database is a time consuming operation that should
     // not be executed with a lock on the GlobalTrackCache. The GlobalTrackCache will
     // be locked again after the query has been executed and potential

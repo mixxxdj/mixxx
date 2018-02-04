@@ -171,11 +171,7 @@ public:
     }
 
     // Lookup an existing Track object in the cache.
-    //
-    // NOTE: The GlobalTrackCache is locked during the lifetime of the
-    // result object. It should be destroyed ASAP to reduce lock
-    // contention!
-    GlobalTrackCacheLocker lookupById(
+    TrackPointer lookupById(
             const TrackId& trackId);
 
     // Lookup an existing or create a new Track object.

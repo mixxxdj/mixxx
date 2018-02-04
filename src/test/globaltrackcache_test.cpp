@@ -29,7 +29,7 @@ class TrackTitleThread: public QThread {
         while (!m_stop.load()) {
             m_recentTrackPtr.reset();
             const TrackId trackId(loopCount % 2);
-            auto track = GlobalTrackCache::instance().lookupById(trackId).getTrack();
+            auto track = GlobalTrackCache::instance().lookupById(trackId);
             if (track) {
                 ASSERT_EQ(trackId, track->getId());
                 // lp1744550: Accessing the track from multiple threads is
@@ -112,7 +112,7 @@ TEST_F(GlobalTrackCacheTest, resolveByFileInfo) {
     EXPECT_EQ(1, track.use_count());
     EXPECT_EQ(1, trackWeak.use_count());
 
-    auto trackById = instance().lookupById(trackId).getTrack();
+    auto trackById = instance().lookupById(trackId);
     EXPECT_EQ(track, trackById);
     EXPECT_EQ(2, trackById.use_count());
     EXPECT_EQ(2, track.use_count());
@@ -126,7 +126,7 @@ TEST_F(GlobalTrackCacheTest, resolveByFileInfo) {
     EXPECT_EQ(0, trackWeak.use_count());
     EXPECT_EQ(TrackPointer(), TrackPointer(trackWeak));
 
-    trackById = instance().lookupById(trackId).getTrack();
+    trackById = instance().lookupById(trackId);
     EXPECT_EQ(TrackPointer(), trackById);
 
     EXPECT_TRUE(instance().isEmpty());
@@ -158,7 +158,7 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
             }
         }
 
-        track = instance().lookupById(trackId).getTrack();
+        track = instance().lookupById(trackId);
         EXPECT_TRUE(static_cast<bool>(track));
 
         // lp1744550: Accessing the track from multiple threads is
