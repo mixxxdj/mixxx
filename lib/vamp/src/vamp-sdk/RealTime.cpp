@@ -43,7 +43,7 @@
 
 #include <iostream>
 
-#if (__GNUC__ < 3)
+#if (defined(__GNUC__)) && (__GNUC__ < 3)
 #include <strstream>
 #define stringstream strstream
 #else
@@ -82,17 +82,24 @@ RealTime::RealTime(int s, int n) :
 	while (nsec >=  ONE_BILLION) { nsec -= ONE_BILLION; ++sec; }
     } else if (sec < 0) {
 	while (nsec <= -ONE_BILLION) { nsec += ONE_BILLION; --sec; }
-	while (nsec > 0)             { nsec -= ONE_BILLION; ++sec; }
+	while (nsec > 0 && sec < 0)  { nsec -= ONE_BILLION; ++sec; }
     } else { 
 	while (nsec >=  ONE_BILLION) { nsec -= ONE_BILLION; ++sec; }
-	while (nsec < 0)             { nsec += ONE_BILLION; --sec; }
+	while (nsec < 0 && sec > 0)  { nsec += ONE_BILLION; --sec; }
     }
 }
 
 RealTime
 RealTime::fromSeconds(double sec)
 {
-    return RealTime(int(sec), int((sec - int(sec)) * ONE_BILLION + 0.5));
+    if (sec != sec) { // NaN
+        cerr << "ERROR: NaN/Inf passed to Vamp::RealTime::fromSeconds" << endl;
+        return RealTime::zeroTime;
+    } else if (sec >= 0) {
+        return RealTime(int(sec), int((sec - int(sec)) * ONE_BILLION + 0.5));
+    } else {
+        return -fromSeconds(-sec);
+    }
 }
 
 RealTime
@@ -105,7 +112,7 @@ RealTime::fromMilliseconds(int msec)
 RealTime
 RealTime::fromTimeval(const struct timeval &tv)
 {
-    return RealTime(tv.tv_sec, tv.tv_usec * 1000);
+    return RealTime(int(tv.tv_sec), int(tv.tv_usec * 1000));
 }
 #endif
 
@@ -139,10 +146,6 @@ RealTime::toString() const
     std::stringstream out;
     out << *this;
     
-#if (__GNUC__ < 3)
-    out << std::ends;
-#endif
-
     std::string s = out.str();
 
     // remove trailing R
@@ -152,22 +155,24 @@ RealTime::toString() const
 std::string
 RealTime::toText(bool fixedDp) const
 {
-    if (*this < RealTime::zeroTime) return "-" + (-*this).toText();
+    if (*this < RealTime::zeroTime) return "-" + (-*this).toText(fixedDp);
 
     std::stringstream out;
 
     if (sec >= 3600) {
-	out << (sec / 3600) << ":";
+        out << (sec / 3600) << ":";
     }
-
+    
     if (sec >= 60) {
-	out << (sec % 3600) / 60 << ":";
+        int minutes = (sec % 3600) / 60;
+        if (sec >= 3600 && minutes < 10) out << "0";
+        out << minutes << ":";
     }
-
+    
     if (sec >= 10) {
-	out << ((sec % 60) / 10);
+        out << ((sec % 60) / 10);
     }
-
+    
     out << (sec % 10);
     
     int ms = msec();
@@ -191,15 +196,10 @@ RealTime::toText(bool fixedDp) const
 	out << ".000";
     }
 	
-#if (__GNUC__ < 3)
-    out << std::ends;
-#endif
-
     std::string s = out.str();
 
     return s;
 }
-
 
 RealTime
 RealTime::operator/(int d) const
@@ -226,8 +226,8 @@ long
 RealTime::realTime2Frame(const RealTime &time, unsigned int sampleRate)
 {
     if (time < zeroTime) return -realTime2Frame(-time, sampleRate);
-    double s = time.sec + double(time.nsec + 1) / 1000000000.0;
-    return long(s * sampleRate);
+    double s = time.sec + double(time.nsec) / ONE_BILLION;
+    return long(s * sampleRate + 0.5);
 }
 
 RealTime
@@ -235,11 +235,13 @@ RealTime::frame2RealTime(long frame, unsigned int sampleRate)
 {
     if (frame < 0) return -frame2RealTime(-frame, sampleRate);
 
-    RealTime rt;
-    rt.sec = frame / long(sampleRate);
-    frame -= rt.sec * long(sampleRate);
-    rt.nsec = (int)(((double(frame) * 1000000.0) / sampleRate) * 1000.0);
-    return rt;
+    int sec = int(frame / long(sampleRate));
+    frame -= sec * long(sampleRate);
+    int nsec = (int)((double(frame) / double(sampleRate)) * ONE_BILLION + 0.5);
+    // Use ctor here instead of setting data members directly to
+    // ensure nsec > ONE_BILLION is handled properly.  It's extremely
+    // unlikely, but not impossible.
+    return RealTime(sec, nsec);
 }
 
 const RealTime RealTime::zeroTime(0,0);

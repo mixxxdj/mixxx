@@ -248,7 +248,7 @@ PluginChannelAdapter::Impl::process(const float *const *inputBuffers,
                 }
             }
             for (size_t j = 0; j < m_blockSize; ++j) {
-                m_buffer[0][j] /= m_inputChannels;
+                m_buffer[0][j] /= float(m_inputChannels);
             }
             return m_plugin->process(m_buffer, timestamp);
         } else {

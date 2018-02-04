@@ -70,7 +70,7 @@ extern "C" {
 
 typedef struct _VampParameterDescriptor
 {
-    /** Computer-usable name of the parameter. Must not change. [a-zA-Z0-9_] */
+    /** Computer-usable name of the parameter. Must not change. [a-zA-Z0-9_-] */
     const char *identifier;
 
     /** Human-readable name of the parameter. May be translatable. */
@@ -117,7 +117,7 @@ typedef enum
 
 typedef struct _VampOutputDescriptor
 {
-    /** Computer-usable name of the output. Must not change. [a-zA-Z0-9_] */
+    /** Computer-usable name of the output. Must not change. [a-zA-Z0-9_-] */
     const char *identifier;
 
     /** Human-readable name of the output. May be translatable. */
