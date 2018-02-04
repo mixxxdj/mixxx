@@ -672,8 +672,15 @@ MixtrackPlatinum.stopScratchTimer = function (deck) {
 };
 
 MixtrackPlatinum.scratchTimer = function (deck) {
-    // check if we saw a tick from this deck
-    if (Math.abs(MixtrackPlatinum.scratch_tick[deck]) > 2) {
+    // here we see if the platter is still physically moving even though the
+    // platter is not being touched. For forward motion, we stop scratching
+    // before the platter has physically stopped when moving forward and delay
+    // a little longer when moving back. This is to mimic actual vinyl better.
+    if ((MixtrackPlatinum.scratch_direction[deck] // forward
+            && Math.abs(MixtrackPlatinum.scratch_tick[deck]) > 2)
+        || (!MixtrackPlatinum.scratch_direction[deck] // backward
+            && Math.abs(MixtrackPlatinum.scratch_tick[deck]) > 0))
+    {
         // reset tick detection
         MixtrackPlatinum.scratch_tick[deck] = 0;
         return;
@@ -714,7 +721,7 @@ MixtrackPlatinum.wheelTouch = function (channel, control, value, status, group) 
 };
 
 // The wheel that actually controls the scratching
-MixtrackPlatinum.scratch_direction = [];
+MixtrackPlatinum.scratch_direction = []; // true == forward
 MixtrackPlatinum.wheelTurn = function (channel, control, value, status, group) {
     var deck = channel + 1;
     var direction;
