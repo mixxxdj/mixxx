@@ -170,6 +170,11 @@ public:
         return *s_pInstance;
     }
 
+    bool isActive() {
+        return m_pEvictor != nullptr;
+    }
+    void deactivate();
+
     // Lookup an existing Track object in the cache.
     TrackPointer lookupById(
             const TrackId& trackId);
@@ -282,6 +287,10 @@ private:
     void afterEvicted(
             GlobalTrackCacheLocker* /*nullable*/ pCacheLocker,
             Track* pEvictedTrack);
+
+    bool isEmptyInternal() const;
+
+    void deactivateInternal();
 
     GlobalTrackCacheEvictor* m_pEvictor;
 

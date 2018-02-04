@@ -164,7 +164,9 @@ void GlobalTrackCache::destroyInstance() {
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
     DEBUG_ASSERT(s_pInstance);
     GlobalTrackCache* pInstance = s_pInstance;
+    // Reset the static/global pointer before entering the destructor
     s_pInstance = nullptr;
+    // Delete the singular instance
     delete pInstance;
 }
 
@@ -195,10 +197,19 @@ GlobalTrackCache::GlobalTrackCache(GlobalTrackCacheEvictor* pEvictor)
       m_mutex(QMutex::Recursive) {
     DEBUG_ASSERT(m_pEvictor);
     DEBUG_ASSERT(verifyConsistency());
+    DEBUG_ASSERT(isActive());
 }
 
 GlobalTrackCache::~GlobalTrackCache() {
-    DEBUG_ASSERT(!s_pInstance);
+    deactivateInternal();
+}
+
+void GlobalTrackCache::deactivate() {
+    GlobalTrackCacheLocker locker;
+    deactivateInternal();
+}
+
+void GlobalTrackCache::deactivateInternal() {
     DEBUG_ASSERT(verifyConsistency());
     // Ideally the cache should be empty when destroyed.
     // But since this is difficult to achieve all remaining
@@ -220,6 +231,8 @@ GlobalTrackCache::~GlobalTrackCache() {
     // shared pointer goes out of scope. Their modifications
     // will be lost.
     m_unindexedTracks.clear();
+    m_pEvictor = nullptr;
+    DEBUG_ASSERT(!isActive());
 }
 
 bool GlobalTrackCache::verifyConsistency() const {
@@ -520,6 +533,15 @@ GlobalTrackCacheResolver GlobalTrackCache::resolve(
                 << trackRef;
         return cacheResolver;
     }
+    if (!isActive()) {
+        // Do not allocate any new tracks once the cache
+        // has been deactivated
+        DEBUG_ASSERT(isEmptyInternal());
+        kLogger.warning()
+                << "Cache miss - caching has already been deactivated"
+                << trackRef;
+        return cacheResolver;
+    }
     auto pTrack = TrackPointer(
             new Track(
                     std::move(fileInfo),
@@ -768,6 +790,10 @@ bool GlobalTrackCache::evictInternal(
 
 bool GlobalTrackCache::isEmpty() const {
     GlobalTrackCacheLocker cacheLocker;
+    return isEmptyInternal();
+}
+
+bool GlobalTrackCache::isEmptyInternal() const {
     return m_indexedTracks.empty() && m_unindexedTracks.empty();
 }
 
