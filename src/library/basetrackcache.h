@@ -88,7 +88,6 @@ class BaseTrackCache : public QObject {
 
   private:
     const TrackPointer& getRecentTrack(TrackId trackId) const;
-    void refreshRecentTrack(TrackId trackId) const;
     void replaceRecentTrack(TrackPointer pTrack) const;
     void replaceRecentTrack(TrackId trackId, TrackPointer pTrack) const;
     void resetRecentTrack() const;

@@ -148,22 +148,17 @@ const TrackPointer& BaseTrackCache::getRecentTrack(TrackId trackId) const {
     // pointer to avoid accessing and locking the global track
     // cache excessively.
     if (m_recentTrackId != trackId) {
-        refreshRecentTrack(std::move(trackId));
+        if (trackId.isValid()) {
+            TrackPointer trackPtr =
+                    GlobalTrackCache::instance().lookupById(trackId);
+            replaceRecentTrack(
+                    std::move(trackId),
+                    std::move(trackPtr));
+        } else {
+            resetRecentTrack();
+        }
     }
     return m_recentTrackPtr;
-}
-
-void BaseTrackCache::refreshRecentTrack(TrackId trackId) const {
-    DEBUG_ASSERT(m_bIsCaching);
-    if (trackId.isValid()) {
-        auto trackPtr =
-                GlobalTrackCache::instance().lookupById(trackId).getTrack();
-        replaceRecentTrack(
-                std::move(trackId),
-                std::move(trackPtr));
-    } else {
-        resetRecentTrack();
-    }
 }
 
 void BaseTrackCache::replaceRecentTrack(TrackPointer pTrack) const {
