@@ -2363,8 +2363,25 @@ QRadioButton {	/*
   Extra declaration for QRadioButton otherwise it shows up with
   wrong colors in Linux with Gnome 	*/
   color: #cfcfcf;
-  }
+}
 
+WLibrary QRadioButton#radioButtonRecentlyAdded,
+WLibrary QRadioButton#radioButtonAllSongs {
+  padding: 1px 3px 3px 1px;
+  color: #cfcfcf;
+}
+
+WLibrary QRadioButton#radioButtonRecentlyAdded {
+  margin: 0px 3px 0px 5px;
+}
+
+WLibrary QRadioButton::indicator:checked {
+  background: url(skin:/buttons/btn_lib_radio_button_on.svg);
+}
+
+WLibrary QRadioButton::indicator:unchecked {
+  background: url(skin:/buttons/btn_lib_radio_button_off.svg);
+}
 /* Test :: increase font size of WOverview "Ready to play, analyzing..." etc.
 WOverview {
   font-size: 16px/16px;

@@ -1,7 +1,7 @@
 <Template>
   <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
   <WidgetGroup>
-    <ObjectName>MixerChannel</ObjectName>
+    <ObjectName>MixerChannel_4Decks</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
@@ -70,6 +70,37 @@
 
       <Template src="skin:quick_effect_knob_left.xml"/>
 
+      <WidgetGroup>
+        <ObjectName>CrossfaderSwitch4Decks</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <PushButton>
+            <TooltipId>orientation</TooltipId>
+            <NumberStates>3</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Pressed>buttons/btn_orientation_deck<Variable name="deckSide"/>_left.svg</Pressed>
+              <Unpressed>buttons/btn_orientation_deck<Variable name="deckSide"/>_left.svg</Unpressed>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Pressed>buttons/btn_orientation_deck_master.svg</Pressed>
+              <Unpressed>buttons/btn_orientation_deck_master.svg</Unpressed>
+            </State>
+            <State>
+              <Number>2</Number>
+              <Pressed>buttons/btn_orientation_deck<Variable name="deckSide"/>_right.svg</Pressed>
+              <Unpressed>buttons/btn_orientation_deck<Variable name="deckSide"/>_right.svg</Unpressed>
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,orientation</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+          </PushButton>
+        </Children>
+      </WidgetGroup>
+
       <!-- Spacer when there's no 4th EQ AND no QuickEffect loaded -->
       <WidgetGroup>
         <Layout>horizontal</Layout>
@@ -105,16 +136,16 @@
             <Children>
               <StatusLight>
                 <TooltipId>channel_PeakIndicator</TooltipId>
-                <PathStatusLight>buttons/btn_clipping1_over.png</PathStatusLight>
-                <PathBack>buttons/btn_clipping1.png</PathBack>
+                <PathStatusLight>style/clipping1_over.png</PathStatusLight>
+                <PathBack>style/clipping1.png</PathBack>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
                 </Connection>
               </StatusLight>
               <VuMeter>
                 <TooltipId>channel_VuMeter</TooltipId>
-                <PathVu>buttons/btn_volume_display1_over.png</PathVu>
-                <PathBack>buttons/btn_volume_display1.png</PathBack>
+                <PathVu>style/volume_display1_over.png</PathVu>
+                <PathBack>style/volume_display1.png</PathBack>
                 <Horizontal>false</Horizontal>
                 <PeakHoldSize>5</PeakHoldSize>
                 <PeakHoldTime>500</PeakHoldTime>

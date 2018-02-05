@@ -21,7 +21,7 @@
         <ObjectName>EffectRows</ObjectName>
         <SizePolicy>me,min</SizePolicy>
         <Layout>horizontal</Layout>
-        <BackPath>background_tile.png</BackPath>
+        <BackPath>style/background_tile.png</BackPath>
         <Children>
 
           <WidgetGroup><Size>0min,1me</Size></WidgetGroup>
@@ -68,7 +68,7 @@
       <WidgetGroup><!-- Mix / Super -->
         <ObjectName>EffectUnitControls</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>max,max</SizePolicy>
+        <SizePolicy>max,min</SizePolicy>
         <Children>
 
           <WidgetGroup><Size>5f,</Size></WidgetGroup>
@@ -108,6 +108,8 @@
               </SingletonContainer>
             </Children>
           </WidgetGroup>
+
+          <WidgetGroup><Size>1f,</Size></WidgetGroup>
         </Children>
       </WidgetGroup><!-- /Mix / Super -->
 

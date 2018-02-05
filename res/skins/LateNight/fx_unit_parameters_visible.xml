@@ -22,7 +22,7 @@
             <ObjectName>EffectRows</ObjectName>
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
-            <BackPath>background_tile.png</BackPath>
+            <BackPath>style/background_tile.png</BackPath>
             <Children>
               <Template src="skin:fx_slot.xml">
                 <SetVariable name="FxNum">1</SetVariable>
@@ -52,7 +52,7 @@
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_ExpandCollapseButton</ObjectName>
               </SingletonContainer>
 
-              <WidgetGroup><Size>,3me</Size></WidgetGroup>
+              <WidgetGroup><Size>,5f</Size></WidgetGroup>
 
               <SingletonContainer>
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_DryWetKnob</ObjectName>
@@ -62,8 +62,7 @@
                 <Layout>vertical</Layout>
                 <SizePolicy>min,me</SizePolicy>
                 <Children>
-                  <WidgetGroup><Size>,3me</Size></WidgetGroup>
-
+                  <WidgetGroup><Size>,5f</Size></WidgetGroup>
                   <SingletonContainer>
                     <ObjectName>FxUnit<Variable name="FxUnit"/>_SuperKnob</ObjectName>
                   </SingletonContainer>
@@ -74,13 +73,13 @@
                 </Connection>
               </WidgetGroup>
 
-              <WidgetGroup><Size>,3me</Size></WidgetGroup>
+              <WidgetGroup><Size>,7f</Size></WidgetGroup>
 
               <SingletonContainer>
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_PflButton</ObjectName>
               </SingletonContainer>
 
-              <WidgetGroup><Size>,3f</Size></WidgetGroup>
+              <WidgetGroup><Size>,5me</Size></WidgetGroup>
             </Children>
           </WidgetGroup><!-- /Enable + Mix/Super + Pfl -->
         </Children>

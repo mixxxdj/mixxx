@@ -372,7 +372,7 @@ class VinylControl(Feature):
 
 class Vamp(Feature):
     INTERNAL_LINK = False
-    INTERNAL_VAMP_PATH = '#lib/vamp-2.6'
+    INTERNAL_VAMP_PATH = '#lib/vamp'
 
     def description(self):
         return "Vamp Analyzer support"
@@ -393,9 +393,10 @@ class Vamp(Feature):
         build.env.Append(CPPDEFINES='__VAMP__')
         build.env.Append(CPPDEFINES='kiss_fft_scalar=double')
 
-        # If there is no system vamp-hostdk installed, then we'll directly link
-        # the vamp-hostsdk.
-        if not conf.CheckLib(['vamp-hostsdk']):
+        # If there is no system vamp-hostsdk is installed or if the version
+        # of the installed vamp-hostsdk is less than the bundled version,
+        # then we'll directly link the bundled vamp-hostsdk
+        if not conf.CheckLib('vamp-hostsdk') or not conf.CheckForPKG('vamp-plugin-sdk', '2.7.1'):
             # For header includes
             build.env.Append(CPPPATH=[self.INTERNAL_VAMP_PATH])
             self.INTERNAL_LINK = True

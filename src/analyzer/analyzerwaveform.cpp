@@ -310,7 +310,10 @@ void AnalyzerWaveform::finalize(TrackPointer tio) {
     // waveforms (i.e. if the config setting was disabled in a previous scan)
     // and then it is not called. The other analyzers have signals which control
     // the update of their data.
-    m_pAnalysisDao->saveTrackAnalyses(*tio);
+    m_pAnalysisDao->saveTrackAnalyses(
+            tio->getId(),
+            tio->getWaveform(),
+            tio->getWaveformSummary());
 
     kLogger.debug() << "Waveform generation for track" << tio->getId() << "done"
              << m_timer.elapsed().debugSecondsWithUnit();
