@@ -22,7 +22,7 @@
                 <BackPath>skin:knob_bg.svg</BackPath>
                 <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                 <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
-                <KnobCenterYOffset>-1.602</KnobCenterYOffset>
+                <KnobCenterYOffset>1.598</KnobCenterYOffset>
                 <Connection>
                   <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/></ConfigKey>
                 </Connection>
@@ -43,6 +43,10 @@
                 <SetVariable name="FxParameter">button_parameter<Variable name="FxParameter"/></SetVariable>
               </Template>
             </Children>
+            <Connection>
+              <ConfigKey>[Master],show_eq_kill_buttons</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
 
         </Children>

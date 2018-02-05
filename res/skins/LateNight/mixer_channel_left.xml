@@ -9,14 +9,14 @@ vertical layout and a side-by-side layout for two-deck mode -->
     <Children>
 
       <WidgetGroup><!--  Channel1 controls side-by-side-->
-        <ObjectName>MixerChannelHoriz</ObjectName>
+        <ObjectName>MixerChannel_2Decks</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
 
           <WidgetGroup><!-- EQs -->
             <Layout>vertical</Layout>
-            <ObjectName>MixerChannel</ObjectName>
+            <ObjectName>MixerChannel_2Decks_Left</ObjectName>
             <SizePolicy>min,min</SizePolicy>
             <Children>
 
@@ -129,8 +129,8 @@ vertical layout and a side-by-side layout for two-deck mode -->
                 <Children>
                   <StatusLight>
                     <TooltipId>channel_PeakIndicator</TooltipId>
-                    <PathStatusLight>buttons/btn_clipping1_over.png</PathStatusLight>
-                    <PathBack>buttons/btn_clipping1.png</PathBack>
+                    <PathStatusLight>style/clipping1_over.png</PathStatusLight>
+                    <PathBack>style/clipping1.png</PathBack>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
                     </Connection>
@@ -144,8 +144,8 @@ vertical layout and a side-by-side layout for two-deck mode -->
                 <Children>
                   <VuMeter>
                     <TooltipId>channel_VuMeter</TooltipId>
-                    <PathVu>buttons/btn_volume_display1_over.png</PathVu>
-                    <PathBack>buttons/btn_volume_display1.png</PathBack>
+                    <PathVu>style/volume_display1_over.png</PathVu>
+                    <PathBack>style/volume_display1.png</PathBack>
                     <Horizontal>false</Horizontal>
                     <PeakHoldSize>5</PeakHoldSize>
                     <PeakHoldTime>500</PeakHoldTime>

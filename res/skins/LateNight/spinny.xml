@@ -11,7 +11,7 @@
             <TooltipId>coverart</TooltipId>
             <Size>50f,50f</Size>
             <Group><Variable name="group"/></Group>
-            <DefaultCover>skin:/graphics/cover_default.svg</DefaultCover>
+            <DefaultCover>style/cover_default.svg</DefaultCover>
           </CoverArt>
         </Children>
       </WidgetGroup>
@@ -25,10 +25,10 @@
             <TooltipId>spinny</TooltipId>
             <Size>50f,50f</Size>
             <Group><Variable name="group"/></Group>
-            <PathBackground scalemode="STRETCH_ASPECT">spinny_bg.svg</PathBackground>
-            <PathMask scalemode="STRETCH_ASPECT">spinny<Variable name="channum"/>_mask.svg</PathMask>
-            <PathForeground>spinny_indicator.svg</PathForeground>
-            <PathGhost>spinny_indicator_ghost.svg</PathGhost>
+            <PathBackground scalemode="STRETCH_ASPECT">style/spinny_bg.svg</PathBackground>
+            <PathMask scalemode="STRETCH_ASPECT">style/spinny<Variable name="channum"/>_mask.svg</PathMask>
+            <PathForeground>style/spinny_indicator.svg</PathForeground>
+            <PathGhost>style/spinny_indicator_ghost.svg</PathGhost>
             <ShowCover>true</ShowCover>
           </Spinny>
         </Children>

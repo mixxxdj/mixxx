@@ -38,6 +38,10 @@
                 </Connection>
               </PushButton>
             </Children>
+            <Connection>
+              <ConfigKey>[Master],show_eq_kill_buttons</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
 
           <WidgetGroup>
@@ -62,7 +66,6 @@
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <SizePolicy>me,f</SizePolicy>
-        <!--MaximumSize>64,12</MaximumSize-->
         <Children>
           <WidgetGroup>
             <Size>0min,0min</Size>
