@@ -21,12 +21,15 @@
         <ObjectName>EffectRows</ObjectName>
         <SizePolicy>me,min</SizePolicy>
         <Layout>horizontal</Layout>
-        <BackPath>background_tile.png</BackPath>
+        <BackPath>style/background_tile.png</BackPath>
         <Children>
+
+          <WidgetGroup><Size>0min,1me</Size></WidgetGroup>
 
           <WidgetGroup>
             <Layout>horizontal</Layout>
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>me,min</SizePolicy>
+            <MaximumSize>250,-1</MaximumSize>
             <Children>
               <Template src="skin:fx_slot.xml">
                 <SetVariable name="FxNum">1</SetVariable>
@@ -34,13 +37,12 @@
             </Children>
           </WidgetGroup>
 
-
           <WidgetGroup><ObjectName>Spacer58</ObjectName><Size>1f,1me</Size></WidgetGroup>
 
           <WidgetGroup>
             <Layout>horizontal</Layout>
-            <MaximumSize>200,-1</MaximumSize>
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>me,min</SizePolicy>
+            <MaximumSize>250,-1</MaximumSize>
             <Children>
               <Template src="skin:fx_slot.xml">
                 <SetVariable name="FxNum">2</SetVariable>
@@ -52,8 +54,8 @@
 
           <WidgetGroup>
             <Layout>horizontal</Layout>
-            <MaximumSize>200,-1</MaximumSize>
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>me,min</SizePolicy>
+            <MaximumSize>250,-1</MaximumSize>
             <Children>
               <Template src="skin:fx_slot.xml">
                 <SetVariable name="FxNum">3</SetVariable>
@@ -73,7 +75,7 @@
 
           <WidgetGroup><!-- Super knob, optional -->
             <Layout>horizontal</Layout>
-            <SizePolicy>max,min</SizePolicy>
+            <SizePolicy>max,max</SizePolicy>
             <Children>
               <SingletonContainer>
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_SuperKnob</ObjectName>
@@ -94,20 +96,20 @@
           <WidgetGroup><Size>3f,</Size></WidgetGroup>
 
           <WidgetGroup><!-- No parameters -->
-            <SizePolicy>me,min</SizePolicy>
+            <SizePolicy>me,max</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
               <SingletonContainer>
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_ExpandCollapseButton</ObjectName>
               </SingletonContainer>
 
-              <WidgetGroup><Size>3f,</Size></WidgetGroup>
-
               <SingletonContainer>
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_PflButton</ObjectName>
               </SingletonContainer>
             </Children>
           </WidgetGroup>
+
+          <WidgetGroup><Size>1f,</Size></WidgetGroup>
         </Children>
       </WidgetGroup><!-- /Mix / Super -->
 

@@ -87,6 +87,7 @@
                         <Group>[PreviewDeck1]</Group>
                         <Size>me,30f</Size>
                         <BgColor></BgColor>
+                        <PlayedOverlayColor>#88000000</PlayedOverlayColor>
                         <SignalHighColor>#FFE300</SignalHighColor>
                         <SignalMidColor>#0099FF</SignalMidColor>
                         <SignalLowColor>#FF0035</SignalLowColor>

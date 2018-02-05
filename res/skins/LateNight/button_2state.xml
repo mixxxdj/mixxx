@@ -23,15 +23,15 @@ Variables:
       <Number>0</Number>
       <Text><Variable name="state_0_text"/></Text>
       <Alignment><Variable name="Align"/></Alignment>
-      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="icon"/>_down.png</Pressed>
-      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="icon"/>.png</Unpressed>
+      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="icon"/>_down.svg</Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="icon"/>.svg</Unpressed>
     </State>
     <State>
       <Number>1</Number>
       <Text><Variable name="state_1_text"/></Text>
       <Alignment><Variable name="Align"/></Alignment>
-      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="icon"/>_overdown.png</Pressed>
-      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="icon"/>_over.png</Unpressed>
+      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="icon"/>_overdown.svg</Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="icon"/>_over.svg</Unpressed>
     </State>
     <Connection>
       <ConfigKey><Variable name="ConfigKey"/></ConfigKey>

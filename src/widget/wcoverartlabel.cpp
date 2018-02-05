@@ -18,8 +18,8 @@ WCoverArtLabel::WCoverArtLabel(QWidget* parent)
     setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(slotCoverMenu(QPoint)));
-    connect(m_pCoverMenu, SIGNAL(coverInfoSelected(const CoverInfo&)),
-            this, SIGNAL(coverInfoSelected(const CoverInfo&)));
+    connect(m_pCoverMenu, SIGNAL(coverInfoSelected(const CoverInfoRelative&)),
+            this, SIGNAL(coverInfoSelected(const CoverInfoRelative&)));
     connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
             this, SIGNAL(reloadCoverArt()));
 

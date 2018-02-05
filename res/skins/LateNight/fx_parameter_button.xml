@@ -13,7 +13,7 @@
 
   <WidgetGroup>
     <Layout>vertical</Layout>
-    <Size>60f,42f</Size>
+    <Size>60f,35min</Size>
     <Children>
 
       <WidgetGroup>
@@ -22,22 +22,30 @@
         <Size>40me,25f</Size>
         <Children>
           <Template src="skin:fx_button.xml">
-            <SetVariable name="icon">fxButton</SetVariable>
-            <SetVariable name="Size">40f,20f</SetVariable>
+            <SetVariable name="icon">fxParameter</SetVariable>
+            <SetVariable name="Size">40f,17f</SetVariable>
             <SetVariable name="FxParameter">button_parameter<Variable name="FxParameter"/></SetVariable>
           </Template>
 	     </Children>
       </WidgetGroup>
 
-      <EffectButtonParameterName>
-        <Size>1min,14f</Size>
-        <ObjectName>KnobLabel</ObjectName>
-        <EffectRack><Variable name="FxRack"/></EffectRack>
-        <EffectUnit><Variable name="FxUnit"/></EffectUnit>
-        <Effect><Variable name="FxNum"/></Effect>
-        <EffectButtonParameter><Variable name="FxParameter"/></EffectButtonParameter>
-        <Alignment>center</Alignment>
-      </EffectButtonParameterName>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+          <EffectButtonParameterName>
+            <ObjectName>FxButtonLabel</ObjectName>
+            <EffectRack><Variable name="FxRack"/></EffectRack>
+            <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+            <Effect><Variable name="FxNum"/></Effect>
+            <EffectButtonParameter><Variable name="FxParameter"/></EffectButtonParameter>
+            <Alignment>center</Alignment>
+          </EffectButtonParameterName>
+          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+	     </Children>
+      </WidgetGroup>
+
 
     </Children>
     <Connection>

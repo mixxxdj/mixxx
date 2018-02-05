@@ -33,12 +33,12 @@ WCoverArt::WCoverArt(QWidget* parent,
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != nullptr) {
         connect(pCache, SIGNAL(coverFound(const QObject*,
-                                          const CoverInfo&, QPixmap, bool)),
+                                          const CoverInfoRelative&, QPixmap, bool)),
                 this, SLOT(slotCoverFound(const QObject*,
-                                          const CoverInfo&, QPixmap, bool)));
+                                          const CoverInfoRelative&, QPixmap, bool)));
     }
-    connect(m_pMenu, SIGNAL(coverInfoSelected(const CoverInfo&)),
-            this, SLOT(slotCoverInfoSelected(const CoverInfo&)));
+    connect(m_pMenu, SIGNAL(coverInfoSelected(const CoverInfoRelative&)),
+            this, SLOT(slotCoverInfoSelected(const CoverInfoRelative&)));
     connect(m_pMenu, SIGNAL(reloadCoverArt()),
             this, SLOT(slotReloadCoverArt()));
 
@@ -105,7 +105,7 @@ void WCoverArt::slotReloadCoverArt() {
     }
 }
 
-void WCoverArt::slotCoverInfoSelected(const CoverInfo& coverInfo) {
+void WCoverArt::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
     if (m_loadedTrack) {
         // Will trigger slotTrackCoverArtUpdated().
         m_loadedTrack->setCoverInfo(coverInfo);
@@ -147,7 +147,7 @@ void WCoverArt::slotTrackCoverArtUpdated() {
 }
 
 void WCoverArt::slotCoverFound(const QObject* pRequestor,
-                               const CoverInfo& info, QPixmap pixmap,
+                               const CoverInfoRelative& info, QPixmap pixmap,
                                bool fromCache) {
     Q_UNUSED(info);
     Q_UNUSED(fromCache);

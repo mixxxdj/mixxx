@@ -22,7 +22,7 @@
                 <BackPath>skin:knob_bg.svg</BackPath>
                 <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                 <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
-                <KnobCenterYOffset>-1.602</KnobCenterYOffset>
+                <KnobCenterYOffset>1.598</KnobCenterYOffset>
                 <Connection>
                   <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/></ConfigKey>
                 </Connection>
@@ -35,14 +35,18 @@
             <ObjectName>KillButtonRight</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
-            <MinimumSize>26,30</MinimumSize>
+            <MinimumSize>22,30</MinimumSize>
             <Children>
               <Template src="skin:fx_button.xml">
-                <SetVariable name="icon">kill</SetVariable>
+                <SetVariable name="icon">eq_kill</SetVariable>
                 <SetVariable name="Size">18f,18f</SetVariable>
                 <SetVariable name="FxParameter">button_parameter<Variable name="FxParameter"/></SetVariable>
               </Template>
             </Children>
+            <Connection>
+              <ConfigKey>[Master],show_eq_kill_buttons</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
 
         </Children>

@@ -31,7 +31,7 @@ class Track : public QObject {
     // be updated.
     // NOTE(uklotzde): Temporary track objects do not provide any guarantees
     // regarding safe file access, i.e. tags might be written back into the
-    // file whenever the corresponding track is evicted from TrackCache!
+    // file whenever the corresponding track is evicted from GlobalTrackCache!
     static TrackPointer newTemporary(
             const QFileInfo& fileInfo = QFileInfo(),
             const SecurityTokenPointer& pSecurityToken = SecurityTokenPointer());
@@ -268,11 +268,9 @@ class Track : public QObject {
     mixxx::track::io::key::ChromaticKey getKey() const;
     QString getKeyText() const;
 
-    void setCoverInfo(const CoverInfoRelative& coverInfoRelative);
-    void setCoverInfo(const CoverInfo& coverInfo);
-    void setCoverInfo(const CoverArt& coverArt);
-
-    CoverInfo getCoverInfo() const;
+    void setCoverInfo(const CoverInfoRelative& coverInfo);
+    CoverInfoRelative getCoverInfo() const;
+    CoverInfo getCoverInfoWithLocation() const;
 
     quint16 getCoverHash() const;
 
@@ -325,7 +323,7 @@ class Track : public QObject {
           TrackId trackId);
 
     // Set a unique identifier for the track. Only used by
-    // TrackCacheResolver!
+    // GlobalTrackCacheResolver!
     void initId(TrackId id); // write-once
 
     // Set whether the TIO is dirty or not and unlock before emitting
@@ -383,8 +381,8 @@ class Track : public QObject {
     QAtomicInt m_analyzerProgress; // in 0.1%
 
     friend class TrackDAO;
-    friend class TrackCache;
-    friend class TrackCacheResolver;
+    friend class GlobalTrackCache;
+    friend class GlobalTrackCacheResolver;
     friend class SoundSourceProxy;
 };
 

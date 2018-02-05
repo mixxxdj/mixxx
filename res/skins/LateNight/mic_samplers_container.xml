@@ -2,21 +2,19 @@
   <WidgetGroup>
     <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
-    <MinimumSize>0,0</MinimumSize>
     <Children>
 
-      <WidgetStack currentpage="[Master],view_curpage" persist="true">
+      <!--WidgetStack currentpage="[Master],mic_samplers_stack" persist="true"-->
+      <WidgetStack>
         <SizePolicy>me,min</SizePolicy>
         <Children>
 
           <!-- First page is blank for when the user just wants the library. -->
-          <WidgetGroup on_hide_select="0">
-            <Layout>vertical</Layout>
+          <WidgetGroup>
             <SizePolicy>me,min</SizePolicy>
-            <Children/>
           </WidgetGroup>
 
-          <WidgetGroup trigger="[Microphone],show_microphone" on_hide_select="0">
+          <WidgetGroup trigger="[Microphone],show_microphone" persist="true" on_hide_select="0">
             <Layout>vertical</Layout>
             <SizePolicy>me,min</SizePolicy>
             <Children>
@@ -24,7 +22,7 @@
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup trigger="[Samplers],show_samplers" on_hide_select="0">
+          <WidgetGroup trigger="[Samplers],show_samplers" persist="true" on_hide_select="0">
             <Layout>vertical</Layout>
             <SizePolicy>me,min</SizePolicy>
             <Children>
