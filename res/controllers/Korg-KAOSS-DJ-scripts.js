@@ -147,8 +147,7 @@ KAOSSDJ.scratchMode = function(channel, control, value, status, group) {
 // Move beatgrid with shift + wheel + not in scratch mode
 KAOSSDJ.wheelTurnShift = function(channel, control, value, status, group) {
     var deck = KAOSSDJ.getDeckByChannel(channel);  
-    var deckno = deck.decknum;
-    if (engine.isScratching(deckno)) {
+    if (deck.jogWheelsInScratchMode) {
         var newValue = 0;
         if (value < 64) {
             newValue = value;
@@ -156,7 +155,7 @@ KAOSSDJ.wheelTurnShift = function(channel, control, value, status, group) {
             newValue = value - 128;
         }
         newValue = newValue * 4; // multiplier (to speed it up)
-        engine.scratchTick(deckno, newValue); 
+        engine.scratchTick(deck.decknum, newValue); 
     } else {
         if(value === UP){
             engine.setValue(deck.group, 'beats_translate_later', true);
