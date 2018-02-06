@@ -1276,13 +1276,13 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     VERIFY_OR_DEBUG_ASSERT(pTrack) {
         return pTrack;
     }
-    if (cacheResolver.getGlobalTrackCacheLookupResult() == GlobalTrackCacheLookupResult::HIT) {
+    if (cacheResolver.getLookupResult() == GlobalTrackCacheLookupResult::HIT) {
         // Due to race conditions the track might have been reloaded
         // from the database. In this case we abort the operation and
         // simply return the cached Track object.
         return pTrack;
     }
-    DEBUG_ASSERT(cacheResolver.getGlobalTrackCacheLookupResult() == GlobalTrackCacheLookupResult::MISS);
+    DEBUG_ASSERT(cacheResolver.getLookupResult() == GlobalTrackCacheLookupResult::MISS);
     DEBUG_ASSERT(pTrack->getId() == trackId);
     // After the Track object has been cached with an id we can safely
     // release the lock the cache. This is needed to reduce lock contention.

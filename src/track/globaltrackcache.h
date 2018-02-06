@@ -62,7 +62,7 @@ public:
     GlobalTrackCacheLocker(GlobalTrackCacheLocker&& moveable);
     virtual ~GlobalTrackCacheLocker();
 
-    GlobalTrackCacheLookupResult getGlobalTrackCacheLookupResult() const {
+    GlobalTrackCacheLookupResult getLookupResult() const {
         return m_lookupResult;
     }
 

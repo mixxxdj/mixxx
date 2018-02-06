@@ -523,11 +523,11 @@ GlobalTrackCacheResolver GlobalTrackCache::resolve(
     TrackRef trackRef;
     GlobalTrackCacheResolver cacheResolver;
     if (resolveInternal(&cacheResolver, &trackRef, trackId, fileInfo)) {
-        DEBUG_ASSERT(cacheResolver.getGlobalTrackCacheLookupResult() == GlobalTrackCacheLookupResult::HIT);
+        DEBUG_ASSERT(cacheResolver.getLookupResult() == GlobalTrackCacheLookupResult::HIT);
         return cacheResolver;
     }
     if (!trackRef.isValid()) {
-        DEBUG_ASSERT(cacheResolver.getGlobalTrackCacheLookupResult() == GlobalTrackCacheLookupResult::NONE);
+        DEBUG_ASSERT(cacheResolver.getLookupResult() == GlobalTrackCacheLookupResult::NONE);
         kLogger.warning()
                 << "Cache miss - ignoring invalid track"
                 << trackRef;
