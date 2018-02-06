@@ -41,18 +41,13 @@ void deleteTrack(Track* pTrack) {
 } // anonymous namespace
 
 GlobalTrackCacheLocker::GlobalTrackCacheLocker()
-        : m_pCacheMutex(nullptr),
-          m_lookupResult(GlobalTrackCacheLookupResult::NONE) {
+        : m_pCacheMutex(nullptr) {
     lockCache();
-    // Verify consistency after the cache has been locked
-    DEBUG_ASSERT(GlobalTrackCache::instance().verifyConsistency());
 }
 
 GlobalTrackCacheLocker::GlobalTrackCacheLocker(
         GlobalTrackCacheLocker&& moveable)
-        : m_pCacheMutex(std::move(moveable.m_pCacheMutex)),
-          m_lookupResult(std::move(moveable.m_lookupResult)),
-          m_trackRefPtr(std::move(moveable.m_trackRefPtr)) {
+        : m_pCacheMutex(std::move(moveable.m_pCacheMutex)) {
     moveable.m_pCacheMutex = nullptr;
 }
 
@@ -61,22 +56,8 @@ GlobalTrackCacheLocker& GlobalTrackCacheLocker::operator=(
     if (this != &moveable) {
         m_pCacheMutex = std::move(moveable.m_pCacheMutex);
         moveable.m_pCacheMutex = nullptr;
-        m_lookupResult = std::move(moveable.m_lookupResult);
-        m_trackRefPtr = std::move(moveable.m_trackRefPtr);
     }
     return *this;
-}
-
-GlobalTrackCacheLocker::GlobalTrackCacheLocker(
-        GlobalTrackCacheLocker&& moveable,
-        GlobalTrackCacheLookupResult lookupResult,
-        TrackRefPtr trackRefPtr)
-        : m_pCacheMutex(moveable.m_pCacheMutex),
-          m_lookupResult(lookupResult),
-          m_trackRefPtr(std::move(trackRefPtr)) {
-    moveable.m_pCacheMutex = nullptr;
-    // Class invariants
-    DEBUG_ASSERT((GlobalTrackCacheLookupResult::NONE != m_lookupResult) || !m_trackRefPtr);
 }
 
 GlobalTrackCacheLocker::~GlobalTrackCacheLocker() {
@@ -118,17 +99,25 @@ void GlobalTrackCacheLocker::unlockCache() {
     }
 }
 
+GlobalTrackCacheResolver::GlobalTrackCacheResolver()
+        : m_lookupResult(GlobalTrackCacheLookupResult::NONE) {
+    // Verify consistency after the cache has been locked
+    DEBUG_ASSERT(GlobalTrackCache::instance().verifyConsistency());
+}
+
 GlobalTrackCacheResolver::GlobalTrackCacheResolver(
-        GlobalTrackCacheResolver&& moveable,
+        GlobalTrackCacheLocker&& moveable,
         GlobalTrackCacheLookupResult lookupResult,
         TrackRefPtr trackRefPtr)
         : GlobalTrackCacheLocker(
-            std::move(moveable),
-            std::move(lookupResult),
-            std::move(trackRefPtr)) {
+            std::move(moveable)),
+            m_lookupResult(lookupResult),
+            m_trackRefPtr(std::move(trackRefPtr)) {
+    // Class invariants
+    DEBUG_ASSERT((GlobalTrackCacheLookupResult::NONE != m_lookupResult) || !m_trackRefPtr);
 }
 
-void GlobalTrackCacheResolver::initTrackId(TrackId trackId) {
+void GlobalTrackCacheResolver::initTrackIdAndUnlockCache(TrackId trackId) {
     DEBUG_ASSERT(m_pCacheMutex); // cache is still locked
     DEBUG_ASSERT(GlobalTrackCacheLookupResult::NONE != m_lookupResult);
     DEBUG_ASSERT(m_trackRefPtr);
@@ -137,14 +126,11 @@ void GlobalTrackCacheResolver::initTrackId(TrackId trackId) {
         // Ignore setting the same id twice
         DEBUG_ASSERT(m_trackRefPtr.ref().getId() == trackId);
     } else {
-        auto trackRef = GlobalTrackCache::instance().initTrackIdInternal(
+        m_trackRefPtr = GlobalTrackCache::instance().initTrackIdInternal(
                 m_trackRefPtr,
-                m_trackRefPtr.ref(),
                 trackId);
-        DEBUG_ASSERT(trackRef.getId() == trackId);
-        m_trackRefPtr->initId(trackId);
-        m_trackRefPtr = TrackRefPtr(std::move(m_trackRefPtr), std::move(trackRef));
     }
+    unlockCache();
     DEBUG_ASSERT(createTrackRef(*m_trackRefPtr) == m_trackRefPtr.ref());
 }
 
@@ -331,21 +317,14 @@ bool GlobalTrackCache::verifyConsistency() const {
     return true;
 }
 
-TrackPointer GlobalTrackCache::lookupById(
+TrackRefPtr GlobalTrackCache::lookupById(
         const TrackId& trackId) {
-    GlobalTrackCacheLocker cacheLocker;
     if (trackId.isValid()) {
-        auto trackRefPtr = lookupByIdInternal(trackId);
-        if (trackRefPtr) {
-            cacheLocker.m_lookupResult = GlobalTrackCacheLookupResult::HIT;
-            cacheLocker.m_trackRefPtr = std::move(trackRefPtr);
-        } else {
-            cacheLocker.m_lookupResult = GlobalTrackCacheLookupResult::MISS;
-        }
+        GlobalTrackCacheLocker cacheLocker;
+        return lookupByIdInternal(trackId);
+    } else {
+        return TrackRefPtr();
     }
-    // Move the result out of the cache locker to avoid redundant
-    // reference counting operations.
-    return std::move(cacheLocker.m_trackRefPtr);
 }
 
 TrackRefPtr GlobalTrackCache::lookupByIdInternal(
@@ -586,30 +565,31 @@ GlobalTrackCacheResolver GlobalTrackCache::resolve(
             TrackRefPtr(std::move(pTrack), std::move(trackRef)));
 }
 
-TrackRef GlobalTrackCache::initTrackIdInternal(
-        TrackPointer pTrack,
-        const TrackRef& trackRef,
+TrackRefPtr GlobalTrackCache::initTrackIdInternal(
+        TrackRefPtr trackRefPtr,
         TrackId trackId) {
 
-    DEBUG_ASSERT(!trackRef.getId().isValid());
+    DEBUG_ASSERT(!trackRefPtr.ref().getId().isValid());
     DEBUG_ASSERT(trackId.isValid());
-    TrackRef trackRefWithId(trackRef, trackId);
+    TrackRef trackRefWithId(trackRefPtr.ref(), trackId);
 
     // Insert item by id
     DEBUG_ASSERT(m_tracksById.find(trackId) == m_tracksById.end());
     m_tracksById.insert(
             trackId,
-            Item(trackRefWithId, std::move(pTrack)));
+            Item(trackRefWithId, trackRefPtr));
 
-    // Update item by track location
+    // Update item by canonical location
     auto i = m_tracksByCanonicalLocation.find(
-            trackRef.getCanonicalLocation());
+            trackRefWithId.getCanonicalLocation());
     DEBUG_ASSERT(i != m_tracksByCanonicalLocation.end());
     i.value().ref = trackRefWithId;
 
     DEBUG_ASSERT(m_tracksById.find(trackId).value() ==
-            m_tracksByCanonicalLocation.find(trackRef.getCanonicalLocation()).value());
-    return trackRefWithId;
+            m_tracksByCanonicalLocation.find(trackRefWithId.getCanonicalLocation()).value());
+
+    trackRefPtr->initId(trackId);
+    return TrackRefPtr(std::move(trackRefPtr), std::move(trackRefWithId));
 }
 
 void GlobalTrackCache::afterEvicted(

@@ -62,22 +62,6 @@ public:
     GlobalTrackCacheLocker(GlobalTrackCacheLocker&& moveable);
     virtual ~GlobalTrackCacheLocker();
 
-    GlobalTrackCacheLookupResult getLookupResult() const {
-        return m_lookupResult;
-    }
-
-    operator const TrackRefPtr&() const {
-        return m_trackRefPtr;
-    }
-
-    const TrackPointer& getTrack() const {
-        return m_trackRefPtr;
-    }
-
-    const TrackRef& getTrackRef() const {
-        return m_trackRefPtr.ref();
-    }
-
     void unlockCache();
 
     GlobalTrackCacheLocker& operator=(const GlobalTrackCacheLocker&) = delete;
@@ -97,10 +81,6 @@ protected:
     GlobalTrackCacheLocker& operator=(GlobalTrackCacheLocker&&);
 
     QMutex* m_pCacheMutex;
-
-    GlobalTrackCacheLookupResult m_lookupResult;
-
-    TrackRefPtr m_trackRefPtr;
 };
 
 class GlobalTrackCacheResolver final: public GlobalTrackCacheLocker {
@@ -109,21 +89,31 @@ public:
 #if defined(_MSC_VER) && (_MSC_VER <= 1900)
     // Visual Studio 2015 does not support default generated move constructors
     GlobalTrackCacheResolver(GlobalTrackCacheResolver&& moveable)
-        : GlobalTrackCacheLocker(std::move(moveable)) {
+        : GlobalTrackCacheLocker(std::move(moveable)),
+          m_lookupResult(std::move(moveable.m_lookupResult)),
+          m_trackRefPtr(std::move(moveable.m_trackRefPtr)) {
     }
 #else
     GlobalTrackCacheResolver(GlobalTrackCacheResolver&&) = default;
 #endif
 
-    void initTrackId(TrackId trackId);
+    GlobalTrackCacheLookupResult getLookupResult() const {
+        return m_lookupResult;
+    }
+
+    operator const TrackRefPtr&() const {
+        return m_trackRefPtr;
+    }
+
+    void initTrackIdAndUnlockCache(TrackId trackId);
 
     GlobalTrackCacheResolver& operator=(const GlobalTrackCacheResolver&) = delete;
 
 private:
     friend class GlobalTrackCache;
-    GlobalTrackCacheResolver() = default;
+    GlobalTrackCacheResolver();
     GlobalTrackCacheResolver(
-            GlobalTrackCacheResolver&& moveable,
+            GlobalTrackCacheLocker&& moveable,
             GlobalTrackCacheLookupResult lookupResult,
             TrackRefPtr trackRefPtr);
 
@@ -131,11 +121,17 @@ private:
     // Visual Studio 2015 does not support default generated move assignment operators
     GlobalTrackCacheResolver& operator=(GlobalTrackCacheResolver&& moveable) {
         GlobalTrackCacheLocker::operator=(std::move(moveable));
+        m_lookupResult = std::move(moveable.m_lookupResult);
+        m_trackRefPtr = std::move(moveable.m_trackRefPtr);
         return *this;
     }
 #else
     GlobalTrackCacheResolver& operator=(GlobalTrackCacheResolver&&) = default;
 #endif
+
+    GlobalTrackCacheLookupResult m_lookupResult;
+
+    TrackRefPtr m_trackRefPtr;
 };
 
 class /*interface*/ GlobalTrackCacheEvictor {
@@ -176,7 +172,7 @@ public:
     void deactivate();
 
     // Lookup an existing Track object in the cache.
-    TrackPointer lookupById(
+    TrackRefPtr lookupById(
             const TrackId& trackId);
 
     // Lookup an existing or create a new Track object.
@@ -265,9 +261,8 @@ private:
             const TrackId& trackId,
             const QFileInfo& fileInfo);
 
-    TrackRef initTrackIdInternal(
-            TrackPointer pTrack,
-            const TrackRef& trackRef,
+    TrackRefPtr initTrackIdInternal(
+            TrackRefPtr pTrackRef,
             TrackId trackId);
 
     bool evictAndDelete(

@@ -91,12 +91,11 @@ TEST_F(GlobalTrackCacheTest, resolveByFileInfo) {
     TrackPointer track;
     {
         auto resolver = instance().resolve(kTestFile);
-        track = resolver.getTrack();
+        track = resolver;
         EXPECT_TRUE(static_cast<bool>(track));
         EXPECT_EQ(2, track.use_count());
 
-        resolver.initTrackId(trackId);
-        EXPECT_EQ(2, track.use_count());
+        resolver.initTrackIdAndUnlockCache(trackId);
     }
     EXPECT_EQ(1, track.use_count());
 
@@ -149,12 +148,12 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
         TrackPointer track;
         {
             auto resolver = instance().resolve(kTestFile);
-            track = resolver.getTrack();
+            track = resolver;
             EXPECT_TRUE(static_cast<bool>(track));
             trackId = track->getId();
             if (!trackId.isValid()) {
                 trackId = TrackId(i % 2);
-                resolver.initTrackId(trackId);
+                resolver.initTrackIdAndUnlockCache(trackId);
             }
         }
 

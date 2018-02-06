@@ -21,7 +21,6 @@ class CueDAO;
 class LibraryHashDAO;
 class TrackCollection;
 class GlobalTrackCacheLocker;
-class GlobalTrackCacheResolver;
 
 
 class TrackDAO : public QObject, public virtual DAO {
@@ -60,7 +59,6 @@ class TrackDAO : public QObject, public virtual DAO {
 
     void addTracksPrepare();
     TrackPointer addTracksAddFile(const QFileInfo& fileInfo, bool unremove);
-    TrackPointer addTracksAddTrack(GlobalTrackCacheResolver&& /*r-value ref*/ cacheResolver, bool unremove);
     TrackId addTracksAddTrack(const TrackPointer& pTrack, bool unremove);
     void addTracksFinish(bool rollback = false);
 
