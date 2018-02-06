@@ -51,15 +51,6 @@ GlobalTrackCacheLocker::GlobalTrackCacheLocker(
     moveable.m_pCacheMutex = nullptr;
 }
 
-GlobalTrackCacheLocker& GlobalTrackCacheLocker::operator=(
-        GlobalTrackCacheLocker&& moveable) {
-    if (this != &moveable) {
-        m_pCacheMutex = std::move(moveable.m_pCacheMutex);
-        moveable.m_pCacheMutex = nullptr;
-    }
-    return *this;
-}
-
 GlobalTrackCacheLocker::~GlobalTrackCacheLocker() {
     unlockCache();
 }
@@ -105,16 +96,14 @@ GlobalTrackCacheResolver::GlobalTrackCacheResolver()
     DEBUG_ASSERT(GlobalTrackCache::instance().verifyConsistency());
 }
 
-GlobalTrackCacheResolver::GlobalTrackCacheResolver(
-        GlobalTrackCacheLocker&& moveable,
+void GlobalTrackCacheResolver::initLookupResult(
         GlobalTrackCacheLookupResult lookupResult,
-        TrackRefPtr trackRefPtr)
-        : GlobalTrackCacheLocker(
-            std::move(moveable)),
-            m_lookupResult(lookupResult),
-            m_trackRefPtr(std::move(trackRefPtr)) {
-    // Class invariants
-    DEBUG_ASSERT((GlobalTrackCacheLookupResult::NONE != m_lookupResult) || !m_trackRefPtr);
+        TrackRefPtr trackRefPtr) {
+    DEBUG_ASSERT(m_pCacheMutex); // cache is still locked
+    DEBUG_ASSERT(GlobalTrackCacheLookupResult::NONE == m_lookupResult);
+    DEBUG_ASSERT(!m_trackRefPtr);
+    m_lookupResult = lookupResult;
+    m_trackRefPtr = std::move(trackRefPtr);
 }
 
 void GlobalTrackCacheResolver::initTrackIdAndUnlockCache(TrackId trackId) {
@@ -457,8 +446,7 @@ bool GlobalTrackCache::resolveInternal(
                         << "Cache hit - found track by id"
                         << trackRefPtr.ref();
             }
-            *pCacheResolver = GlobalTrackCacheResolver(
-                    std::move(*pCacheResolver),
+            pCacheResolver->initLookupResult(
                     GlobalTrackCacheLookupResult::HIT,
                     std::move(trackRefPtr));
             return true;
@@ -482,8 +470,7 @@ bool GlobalTrackCache::resolveInternal(
                         << "Cache hit - found track by canonical location"
                         << trackRefPtr.ref();
             }
-            *pCacheResolver = GlobalTrackCacheResolver(
-                    std::move(*pCacheResolver),
+            pCacheResolver->initLookupResult(
                     GlobalTrackCacheLookupResult::HIT,
                     std::move(trackRefPtr));
             return true;
@@ -559,10 +546,10 @@ GlobalTrackCacheResolver GlobalTrackCache::resolve(
                 trackRef.getCanonicalLocation(),
                 item);
     }
-    return GlobalTrackCacheResolver(
-            std::move(cacheResolver),
+    cacheResolver.initLookupResult(
             GlobalTrackCacheLookupResult::MISS,
             TrackRefPtr(std::move(pTrack), std::move(trackRef)));
+    return cacheResolver;
 }
 
 TrackRefPtr GlobalTrackCache::initTrackIdInternal(
@@ -667,6 +654,7 @@ bool GlobalTrackCache::evictAndDeleteInternal(
         bool evictUnexpired) {
     Track* pTrack = *ipIndexedTrack;
     DEBUG_ASSERT(pTrack);
+    DEBUG_ASSERT(m_unindexedTracks.find(pTrack) == m_unindexedTracks.end());
     const auto trackRef = createTrackRef(*pTrack);
     if (debugLogEnabled()) {
         kLogger.debug()
@@ -678,8 +666,12 @@ bool GlobalTrackCache::evictAndDeleteInternal(
     const bool evicted = evictInternal(trackRef, ipIndexedTrack, evictUnexpired);
     DEBUG_ASSERT(verifyConsistency());
     if (evicted) {
+        // The evicted entry must not be accessible anymore!
+        DEBUG_ASSERT(m_indexedTracks.find(pTrack) == m_indexedTracks.end());
+        DEBUG_ASSERT(!lookupByRefInternal(trackRef));
         afterEvicted(pCacheLocker, pTrack);
-        // Here the lock might have been released already!
+        // After returning from the callback the lock might have
+        // already been released!
         if (debugLogEnabled()) {
             kLogger.debug()
                     << "Deleting evicted track"
@@ -691,6 +683,7 @@ bool GlobalTrackCache::evictAndDeleteInternal(
     } else {
         // ...otherwise the given pTrack is still referenced within
         // the cache and must not be deleted, yet!
+        DEBUG_ASSERT(m_indexedTracks.find(pTrack) != m_indexedTracks.end());
         if (debugLogEnabled()) {
             kLogger.debug()
                     << "Keeping unevicted track"

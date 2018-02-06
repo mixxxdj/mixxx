@@ -386,15 +386,13 @@ class Track : public QObject {
 
 typedef std::weak_ptr<Track> TrackWeakPointer;
 
+// Inheritance is only needed for customizing and hiding the
+// constructors of std::shared_ptr
 class TrackPointer: public std::shared_ptr<Track> {
   public:
     TrackPointer() = default;
     explicit TrackPointer(const TrackWeakPointer& pTrack)
         : std::shared_ptr<Track>(pTrack.lock()) {
-    }
-    TrackPointer(Track* pTrack, void (*deleter)(Track*))
-        : std::shared_ptr<Track>(pTrack, deleter) {
-        // reserved for GlobalTrackCache
     }
     TrackPointer(const TrackPointer&) = default;
 #if !defined(_MSC_VER) || _MSC_VER > 1900
@@ -428,5 +426,9 @@ class TrackPointer: public std::shared_ptr<Track> {
     explicit TrackPointer(std::shared_ptr<Track>&& pTrack)
         : std::shared_ptr<Track>(std::move(pTrack)) {
         // for temporary (uncached) track objects
+    }
+    friend class GlobalTrackCache;
+    TrackPointer(Track* pTrack, void (*deleter)(Track*))
+        : std::shared_ptr<Track>(pTrack, deleter) {
     }
 };

@@ -59,12 +59,13 @@ enum class GlobalTrackCacheLookupResult {
 class GlobalTrackCacheLocker {
 public:
     GlobalTrackCacheLocker(const GlobalTrackCacheLocker&) = delete;
-    GlobalTrackCacheLocker(GlobalTrackCacheLocker&& moveable);
+    GlobalTrackCacheLocker(GlobalTrackCacheLocker&&);
     virtual ~GlobalTrackCacheLocker();
 
-    void unlockCache();
-
     GlobalTrackCacheLocker& operator=(const GlobalTrackCacheLocker&) = delete;
+    GlobalTrackCacheLocker& operator=(GlobalTrackCacheLocker&&) = delete;
+
+    void unlockCache();
 
 private:
     friend class GlobalTrackCache;
@@ -78,23 +79,21 @@ protected:
             GlobalTrackCacheLookupResult lookupResult,
             TrackRefPtr trackRefPtr);
 
-    GlobalTrackCacheLocker& operator=(GlobalTrackCacheLocker&&);
-
     QMutex* m_pCacheMutex;
 };
 
 class GlobalTrackCacheResolver final: public GlobalTrackCacheLocker {
 public:
     GlobalTrackCacheResolver(const GlobalTrackCacheResolver&) = delete;
-#if defined(_MSC_VER) && (_MSC_VER <= 1900)
+#if !defined(_MSC_VER) && (_MSC_VER > 1900)
+    GlobalTrackCacheResolver(GlobalTrackCacheResolver&&) = default;
+#else
     // Visual Studio 2015 does not support default generated move constructors
     GlobalTrackCacheResolver(GlobalTrackCacheResolver&& moveable)
         : GlobalTrackCacheLocker(std::move(moveable)),
           m_lookupResult(std::move(moveable.m_lookupResult)),
           m_trackRefPtr(std::move(moveable.m_trackRefPtr)) {
     }
-#else
-    GlobalTrackCacheResolver(GlobalTrackCacheResolver&&) = default;
 #endif
 
     GlobalTrackCacheLookupResult getLookupResult() const {
@@ -108,26 +107,15 @@ public:
     void initTrackIdAndUnlockCache(TrackId trackId);
 
     GlobalTrackCacheResolver& operator=(const GlobalTrackCacheResolver&) = delete;
+    GlobalTrackCacheResolver& operator=(GlobalTrackCacheResolver&&) = delete;
 
 private:
     friend class GlobalTrackCache;
     GlobalTrackCacheResolver();
-    GlobalTrackCacheResolver(
-            GlobalTrackCacheLocker&& moveable,
+
+    void initLookupResult(
             GlobalTrackCacheLookupResult lookupResult,
             TrackRefPtr trackRefPtr);
-
-#if defined(_MSC_VER) && (_MSC_VER <= 1900)
-    // Visual Studio 2015 does not support default generated move assignment operators
-    GlobalTrackCacheResolver& operator=(GlobalTrackCacheResolver&& moveable) {
-        GlobalTrackCacheLocker::operator=(std::move(moveable));
-        m_lookupResult = std::move(moveable.m_lookupResult);
-        m_trackRefPtr = std::move(moveable.m_trackRefPtr);
-        return *this;
-    }
-#else
-    GlobalTrackCacheResolver& operator=(GlobalTrackCacheResolver&&) = default;
-#endif
 
     GlobalTrackCacheLookupResult m_lookupResult;
 

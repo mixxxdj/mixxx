@@ -13,6 +13,7 @@ namespace {
 const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
 
 const QFileInfo kTestFile(kTestDir.absoluteFilePath("cover-test.flac"));
+const QFileInfo kTestFile2(kTestDir.absoluteFilePath("cover-test.ogg"));
 
 class TrackTitleThread: public QThread {
   public:
@@ -172,4 +173,19 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
     workerThread.wait();
 
     EXPECT_TRUE(instance().isEmpty());
+}
+
+TEST_F(GlobalTrackCacheTest, evictWhileMoving) {
+    ASSERT_TRUE(instance().isEmpty());
+
+    TrackPointer track1 = instance().resolve(kTestFile);
+    EXPECT_TRUE(static_cast<bool>(track1));
+
+    TrackPointer track2 = instance().resolve(kTestFile2);
+    EXPECT_TRUE(static_cast<bool>(track2));
+
+    track1 = std::move(track2);
+
+    EXPECT_TRUE(static_cast<bool>(track1));
+    EXPECT_FALSE(static_cast<bool>(track2));
 }
