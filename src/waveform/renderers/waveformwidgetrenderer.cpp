@@ -124,7 +124,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     //vRince for the moment only more than one sample per pixel is supported
     //due to the fact we play the visual play pos modulo floor m_visualSamplePerPixel ...
     double visualSamplePerPixel = m_zoomFactor * (1.0 + m_rateAdjust) / m_scaleFactor;
-    m_visualSamplePerPixel = math_max(1.0, visualSamplePerPixel);
+    m_visualSamplePerPixel = math_max(0.5, visualSamplePerPixel);
 
     TrackPointer pTrack(m_pTrack);
     ConstWaveformPointer pWaveform = pTrack ? pTrack->getWaveform() : ConstWaveformPointer();
