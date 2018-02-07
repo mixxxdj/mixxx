@@ -120,11 +120,11 @@ TEST_F(GlobalTrackCacheTest, resolveByFileInfo) {
 
     trackById.reset();
     EXPECT_EQ(1, trackWeak.use_count());
-    EXPECT_EQ(track, TrackPointer(trackWeak));
+    EXPECT_EQ(track, TrackPointer(trackWeak.lock()));
 
     track.reset();
     EXPECT_EQ(0, trackWeak.use_count());
-    EXPECT_EQ(TrackPointer(), TrackPointer(trackWeak));
+    EXPECT_EQ(TrackPointer(), TrackPointer(trackWeak.lock()));
 
     trackById = instance().lookupById(trackId);
     EXPECT_EQ(TrackPointer(), trackById);

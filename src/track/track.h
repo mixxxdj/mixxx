@@ -17,7 +17,10 @@
 
 
 // forward declaration(s)
-class TrackPointer;
+class Track;
+
+typedef std::shared_ptr<Track> TrackPointer;
+typedef std::weak_ptr<Track> TrackWeakPointer;
 
 class Track : public QObject {
     Q_OBJECT
@@ -382,53 +385,4 @@ class Track : public QObject {
     friend class GlobalTrackCache;
     friend class GlobalTrackCacheResolver;
     friend class SoundSourceProxy;
-};
-
-typedef std::weak_ptr<Track> TrackWeakPointer;
-
-// Inheritance is only needed for customizing and hiding the
-// constructors of std::shared_ptr
-class TrackPointer: public std::shared_ptr<Track> {
-  public:
-    TrackPointer() = default;
-    explicit TrackPointer(const TrackWeakPointer& pTrack)
-        : std::shared_ptr<Track>(pTrack.lock()) {
-    }
-    TrackPointer(const TrackPointer&) = default;
-#if !defined(_MSC_VER) || _MSC_VER > 1900
-    //TrackPointer(TrackPointer&&) = default;
-    TrackPointer(TrackPointer&& other) = default;
-#else
-    // Workaround for Visual Studio 2015 (and before)
-    TrackPointer(TrackPointer&& other)
-        : std::shared_ptr<Track>(std::move(other)) {
-        DEBUG_ASSERT(!other);
-    }
-#endif
-
-    TrackPointer& operator=(const TrackPointer&) = default;
-#if !defined(_MSC_VER) || _MSC_VER > 1900
-    TrackPointer& operator=(TrackPointer&&) = default;
-#else
-    // Workaround for Visual Studio 2015 (and before)
-    TrackPointer& operator=(TrackPointer&& other) {
-        std::shared_ptr<Track>::operator=(std::move(other));
-        DEBUG_ASSERT(!other);
-        return *this;
-    }
-#endif
-
-    static TrackPointer fromShared(std::shared_ptr<Track>&& pTrack) {
-        return TrackPointer(std::move(pTrack));
-    }
-
-  private:
-    explicit TrackPointer(std::shared_ptr<Track>&& pTrack)
-        : std::shared_ptr<Track>(std::move(pTrack)) {
-        // for temporary (uncached) track objects
-    }
-    friend class GlobalTrackCache;
-    TrackPointer(Track* pTrack, void (*deleter)(Track*))
-        : std::shared_ptr<Track>(pTrack, deleter) {
-    }
 };

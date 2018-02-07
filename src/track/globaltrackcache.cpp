@@ -369,7 +369,7 @@ TrackRefPtr GlobalTrackCache::lookupByRefInternal(
 TrackRefPtr GlobalTrackCache::reviveInternal(
         const Item& item) {
     DEBUG_ASSERT(m_indexedTracks.find(item.plainPtr) != m_indexedTracks.end());
-    TrackPointer pTrack(item.weakPtr);
+    TrackPointer pTrack = item.weakPtr.lock();
     if (pTrack) {
         DEBUG_ASSERT(pTrack.get() == item.plainPtr);
         if (traceLogEnabled()) {
