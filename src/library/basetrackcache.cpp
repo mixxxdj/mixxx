@@ -175,8 +175,27 @@ void BaseTrackCache::replaceRecentTrack(TrackId trackId, TrackPointer pTrack) co
     if (m_recentTrackId.isValid()) {
         if (pTrack) {
             DEBUG_ASSERT(m_recentTrackId == pTrack->getId());
-            m_recentTrackPtr = std::move(pTrack);
+
+            // NOTE(uklotzde, 2018-02-07, Fedora 27, GCC 7.3.1, optimize=native (-O3), Core i5-6440HQ)
+            // Using the move assignment operator here will sooner or later
+            // store a nullptr in m_recentTrackPtr even if both m_recentTrackPtr
+            // and pTrack contain a valid but different pointer before the
+            // assignment and the custom deleter is invoked on m_recentTrackPtr
+            // during the assignment. The issue does not occur when either
+            // changing the optimization level from 'native' to 'none' or
+            // when replacing the move assignment with a swap operation (see below).
+            //
+            // Fucked up by the optimizer:
+            // m_recentTrackPtr = std::move(pTrack);
+            //
+            // The workaround:
+            m_recentTrackPtr.swap(pTrack);
+            //
+            // The following debug assertion will be triggered eventually
+            // without the workaround in place when browsing and editing
+            // properties of tracks.
             DEBUG_ASSERT(m_recentTrackPtr);
+
             if (m_recentTrackPtr->isDirty()) {
                 m_dirtyTracks.insert(m_recentTrackId);
             } else {

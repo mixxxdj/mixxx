@@ -75,6 +75,7 @@ Track::Track(
         long numberOfInstancesBefore = s_numberOfInstances.fetch_add(1);
         kLogger.debug()
                 << "Creating instance:"
+                << this
                 << numberOfInstancesBefore
                 << "->"
                 << numberOfInstancesBefore + 1;
@@ -86,6 +87,7 @@ Track::~Track() {
         long numberOfInstancesBefore = s_numberOfInstances.fetch_sub(1);
         kLogger.debug()
                 << "Destroying instance:"
+                << this
                 << numberOfInstancesBefore
                 << "->"
                 << numberOfInstancesBefore - 1;
