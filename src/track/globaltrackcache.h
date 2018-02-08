@@ -1,54 +1,12 @@
 #pragma once
 
 
+#include <map>
 #include <set>
-
-#include <QObject>
-#include <QHash>
-#include <QList>
-#include <QMap>
 
 #include "track/track.h"
 #include "track/trackref.h"
 
-
-class TrackRefPtr: public TrackPointer {
-  public:
-    TrackRefPtr() = default;
-    TrackRefPtr(const TrackRefPtr&) = default;
-#if !defined(_MSC_VER) || _MSC_VER > 1900
-    TrackRefPtr(TrackRefPtr&&) = default;
-#else
-    // Workaround for Visual Studio 2015 (and before)
-    TrackRefPtr(TrackRefPtr&& that)
-        : TrackPointer(std::move(that)),
-          m_ref(std::move(that.m_ref)) {
-    }
-#endif
-    TrackRefPtr(TrackPointer ptr, TrackRef ref)
-        : TrackPointer(std::move(ptr)),
-          m_ref(std::move(ref)) {
-    }
-
-    TrackRefPtr& operator=(const TrackRefPtr&) = default;
-#if !defined(_MSC_VER) || _MSC_VER > 1900
-    TrackRefPtr& operator=(TrackRefPtr&&) = default;
-#else
-    // Workaround for Visual Studio 2015 (and before)
-    TrackRefPtr& operator=(TrackRefPtr&& that) {
-        TrackPointer::operator=(std::move(that));
-        m_ref = std::move(that.m_ref);
-        return *this;
-    }
-#endif
-
-    const TrackRef& ref() const {
-        return m_ref;
-    }
-
-  private:
-    TrackRef m_ref;
-};
 
 enum class GlobalTrackCacheLookupResult {
     NONE,
@@ -77,7 +35,8 @@ protected:
     GlobalTrackCacheLocker(
             GlobalTrackCacheLocker&& moveable,
             GlobalTrackCacheLookupResult lookupResult,
-            TrackRefPtr trackRefPtr);
+            TrackPointer&& strongPtr,
+            TrackRef&& trackRef);
 
     QMutex* m_pCacheMutex;
 };
@@ -92,7 +51,8 @@ public:
     GlobalTrackCacheResolver(GlobalTrackCacheResolver&& moveable)
         : GlobalTrackCacheLocker(std::move(moveable)),
           m_lookupResult(std::move(moveable.m_lookupResult)),
-          m_trackRefPtr(std::move(moveable.m_trackRefPtr)) {
+          m_strongPtr(std::move(moveable.m_strongPtr)),
+          m_trackRef(std::move(moveable.m_trackRef)) {
     }
 #endif
 
@@ -100,8 +60,12 @@ public:
         return m_lookupResult;
     }
 
-    operator const TrackRefPtr&() const {
-        return m_trackRefPtr;
+    const TrackPointer& getTrack() const {
+        return m_strongPtr;
+    }
+
+    const TrackRef& getTrackRef() const {
+        return m_trackRef;
     }
 
     void initTrackIdAndUnlockCache(TrackId trackId);
@@ -115,11 +79,14 @@ private:
 
     void initLookupResult(
             GlobalTrackCacheLookupResult lookupResult,
-            TrackRefPtr trackRefPtr);
+            TrackPointer&& strongPtr,
+            TrackRef&& trackRef);
 
     GlobalTrackCacheLookupResult m_lookupResult;
 
-    TrackRefPtr m_trackRefPtr;
+    TrackPointer m_strongPtr;
+
+    TrackRef m_trackRef;
 };
 
 class /*interface*/ GlobalTrackCacheEvictor {
@@ -137,7 +104,7 @@ public:
      */
     virtual void afterEvictedTrackFromCache(
             GlobalTrackCacheLocker* /*nullable*/ pCacheLocker,
-            Track* pTrack) = 0; // not null
+            Track* /*not null*/ plainPtr) = 0;
 
 protected:
     virtual ~GlobalTrackCacheEvictor() {}
@@ -160,7 +127,7 @@ public:
     void deactivate();
 
     // Lookup an existing Track object in the cache.
-    TrackRefPtr lookupById(
+    TrackPointer lookupById(
             const TrackId& trackId);
 
     // Lookup an existing or create a new Track object.
@@ -191,42 +158,7 @@ private:
     static GlobalTrackCache* volatile s_pInstance;
 
     // Callback for the smart-pointer
-    static void deleter(Track* pTrack);
-
-    class Item final {
-    public:
-        Item()
-            : plainPtr(nullptr) {
-        }
-        Item(TrackRef trackRef,
-                const TrackPointer& pTrack)
-            : ref(std::move(trackRef)),
-              weakPtr(pTrack),
-              plainPtr(pTrack.get()) {
-        }
-
-        friend bool operator==(
-            const Item& lhs,
-            const Item& rhs) {
-            return (lhs.ref.getId() == rhs.ref.getId()) &&
-                    (lhs.ref.getCanonicalLocation() == rhs.ref.getCanonicalLocation()) &&
-                    (lhs.plainPtr == rhs.plainPtr) &&
-                    // std::weak_ptr does not provide operator==() so we need
-                    // to implement it in terms of bidirectional owner_before()
-                    // comparisons
-                    !lhs.weakPtr.owner_before(rhs.weakPtr) &&
-                    !rhs.weakPtr.owner_before(lhs.weakPtr);
-        }
-        friend bool operator!=(
-            const Item& lhs,
-            const Item& rhs) {
-            return !(lhs == rhs);
-        }
-
-        TrackRef         ref;
-        TrackWeakPointer weakPtr;
-        Track* plainPtr;
-    };
+    static void deleter(Track* plainPtr);
 
     explicit GlobalTrackCache(GlobalTrackCacheEvictor* pEvictor);
     ~GlobalTrackCache();
@@ -235,41 +167,42 @@ private:
     // to verify the class invariants during development.
     bool verifyConsistency() const;
 
-    TrackRefPtr lookupByIdInternal(
+    TrackPointer lookupByIdInternal(
             const TrackId& trackId);
-    TrackRefPtr lookupByRefInternal(
+    TrackPointer lookupByRefInternal(
             const TrackRef& trackRef);
 
-    TrackRefPtr reviveInternal(
-            const Item& item);
+    TrackPointer reviveInternal(
+            Track* plainPtr);
 
     bool resolveInternal(
-            GlobalTrackCacheResolver* pCacheResolver,
-            TrackRef* pTrackRef,
-            const TrackId& trackId,
-            const QFileInfo& fileInfo);
+            GlobalTrackCacheResolver* /*in/out*/ pCacheResolver,
+            TrackRef* /*out, optional*/ pTrackRef,
+            const TrackId& /*in*/ trackId,
+            const QFileInfo& /*in*/ fileInfo);
 
-    TrackRefPtr initTrackIdInternal(
-            TrackRefPtr pTrackRef,
+    TrackRef initTrackIdInternal(
+            const TrackPointer& strongPtr,
+            TrackRef trackRef,
             TrackId trackId);
 
     bool evictAndDelete(
-            Track* pTrack);
+            Track* plainPtr);
 
-    typedef std::set<Track*> AllocatedTracks;
+    typedef std::map<Track*, TrackWeakPointer> IndexedTracks;
 
     bool evictAndDeleteInternal(
             GlobalTrackCacheLocker* /*nullable*/ pCacheLocker,
-            AllocatedTracks::iterator ipIndexedTrack,
+            IndexedTracks::iterator indexedTrack,
             bool evictUnexpired);
     bool evictInternal(
             const TrackRef& trackRef,
-            AllocatedTracks::iterator ipIndexedTrack,
+            IndexedTracks::iterator indexedTrack,
             bool evictUnexpired);
 
     void afterEvicted(
             GlobalTrackCacheLocker* /*nullable*/ pCacheLocker,
-            Track* pEvictedTrack);
+            Track* plainPtr);
 
     bool isEmptyInternal() const;
 
@@ -279,11 +212,14 @@ private:
 
     mutable QMutex m_mutex;
 
-    AllocatedTracks m_indexedTracks;
-    AllocatedTracks m_unindexedTracks;
+    IndexedTracks m_indexedTracks;
 
-    typedef QHash<TrackId, Item> TracksById;
+    typedef std::set<Track*> UnindexedTracks;
+    UnindexedTracks m_unindexedTracks;
+
+    typedef std::map<TrackId, Track*> TracksById;
     TracksById m_tracksById;
-    typedef QMap<QString, Item> TracksByCanonicalLocation;
+
+    typedef std::map<QString, Track*> TracksByCanonicalLocation;
     TracksByCanonicalLocation m_tracksByCanonicalLocation;
 };

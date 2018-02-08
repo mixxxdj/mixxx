@@ -92,7 +92,7 @@ TEST_F(GlobalTrackCacheTest, resolveByFileInfo) {
     TrackPointer track;
     {
         auto resolver = instance().resolve(kTestFile);
-        track = resolver;
+        track = resolver.getTrack();
         EXPECT_TRUE(static_cast<bool>(track));
         EXPECT_EQ(2, track.use_count());
 
@@ -149,7 +149,7 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
         TrackPointer track;
         {
             auto resolver = instance().resolve(kTestFile);
-            track = resolver;
+            track = resolver.getTrack();
             EXPECT_TRUE(static_cast<bool>(track));
             trackId = track->getId();
             if (!trackId.isValid()) {
@@ -178,10 +178,10 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
 TEST_F(GlobalTrackCacheTest, evictWhileMoving) {
     ASSERT_TRUE(instance().isEmpty());
 
-    TrackPointer track1 = instance().resolve(kTestFile);
+    TrackPointer track1 = instance().resolve(kTestFile).getTrack();
     EXPECT_TRUE(static_cast<bool>(track1));
 
-    TrackPointer track2 = instance().resolve(kTestFile2);
+    TrackPointer track2 = instance().resolve(kTestFile2).getTrack();
     EXPECT_TRUE(static_cast<bool>(track2));
 
     track1 = std::move(track2);
