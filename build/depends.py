@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import os
-import util
-from mixxx import Dependence, Feature
+from . import util
+from .mixxx import Dependence, Feature
 import SCons.Script as SCons
 
 
@@ -215,9 +215,9 @@ class Qt(Dependence):
                 import subprocess
                 try:
                     if qt5:
-                        core = subprocess.Popen(["pkg-config", "--variable=libdir", "Qt5Core"], stdout = subprocess.PIPE).communicate()[0].rstrip()
+                        core = subprocess.Popen(["pkg-config", "--variable=libdir", "Qt5Core"], stdout = subprocess.PIPE).communicate()[0].decode(sys.stdout.encoding).rstrip()
                     else:
-                        core = subprocess.Popen(["pkg-config", "--variable=libdir", "QtCore"], stdout = subprocess.PIPE).communicate()[0].rstrip()
+                        core = subprocess.Popen(["pkg-config", "--variable=libdir", "QtCore"], stdout = subprocess.PIPE).communicate()[0].decode(sys.stdout.encoding).rstrip()
                 finally:
                     if os.path.isdir(core):
                         return core
@@ -632,6 +632,12 @@ class Reverb(Dependence):
     def sources(self, build):
         return ['#lib/reverb/Reverb.cc']
 
+class QtKeychain(Dependence):
+    def configure(self, build, conf):
+        libs = ['qtkeychain']
+        if not conf.CheckLib(libs):
+            raise Exception(
+                "Could not find qtkeychain.")
 
 class MixxxCore(Feature):
 
@@ -680,9 +686,11 @@ class MixxxCore(Feature):
                    "preferences/settingsmanager.cpp",
                    "preferences/replaygainsettings.cpp",
                    "preferences/broadcastsettings.cpp",
+                   "preferences/broadcastsettings_legacy.cpp",
+                   "preferences/broadcastsettingsmodel.cpp",
+                   "preferences/broadcastprofile.cpp",
                    "preferences/upgrade.cpp",
                    "preferences/dlgpreferencepage.cpp",
-
 
                    "effects/effectmanifest.cpp",
                    "effects/effectmanifestparameter.cpp",
@@ -704,6 +712,7 @@ class MixxxCore(Feature):
 
                    "effects/native/nativebackend.cpp",
                    "effects/native/bitcrushereffect.cpp",
+                   "effects/native/balanceeffect.cpp",
                    "effects/native/linkwitzriley8eqeffect.cpp",
                    "effects/native/bessel4lvmixeqeffect.cpp",
                    "effects/native/bessel8lvmixeqeffect.cpp",
@@ -711,6 +720,7 @@ class MixxxCore(Feature):
                    "effects/native/biquadfullkilleqeffect.cpp",
                    "effects/native/loudnesscontoureffect.cpp",
                    "effects/native/graphiceqeffect.cpp",
+                   "effects/native/parametriceqeffect.cpp",
                    "effects/native/flangereffect.cpp",
                    "effects/native/filtereffect.cpp",
                    "effects/native/moogladder4filtereffect.cpp",
@@ -718,6 +728,7 @@ class MixxxCore(Feature):
                    "effects/native/echoeffect.cpp",
                    "effects/native/autopaneffect.cpp",
                    "effects/native/phasereffect.cpp",
+                   "effects/native/metronomeeffect.cpp",
 
                    "engine/effects/engineeffectsmanager.cpp",
                    "engine/effects/engineeffectrack.cpp",
@@ -740,6 +751,7 @@ class MixxxCore(Feature):
                    "engine/enginefilterbessel8.cpp",
                    "engine/enginefilterbutterworth4.cpp",
                    "engine/enginefilterbutterworth8.cpp",
+                   "engine/enginefilterlinkwitzriley2.cpp",
                    "engine/enginefilterlinkwitzriley4.cpp",
                    "engine/enginefilterlinkwitzriley8.cpp",
                    "engine/enginefilter.cpp",
@@ -751,7 +763,8 @@ class MixxxCore(Feature):
                    "engine/enginevumeter.cpp",
                    "engine/enginesidechaincompressor.cpp",
                    "engine/sidechain/enginesidechain.cpp",
-                   "engine/sidechain/networkstreamworker.cpp",
+                   "engine/sidechain/networkoutputstreamworker.cpp",
+                   "engine/sidechain/networkinputstreamworker.cpp",
                    "engine/enginexfader.cpp",
                    "engine/enginemicrophone.cpp",
                    "engine/enginedeck.cpp",
@@ -857,6 +870,8 @@ class MixxxCore(Feature):
                    "widget/weffect.cpp",
                    "widget/weffectselector.cpp",
                    "widget/weffectparameter.cpp",
+                   "widget/weffectparameterknob.cpp",
+                   "widget/weffectparameterknobcomposed.cpp",
                    "widget/weffectbuttonparameter.cpp",
                    "widget/weffectparameterbase.cpp",
                    "widget/wtime.cpp",

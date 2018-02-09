@@ -45,8 +45,7 @@ void WEffect::effectUpdated() {
         if (pEffect) {
             const EffectManifest& manifest = pEffect->getManifest();
             name = manifest.displayName();
-            //: %1 = effect name; %2 = effect description
-            description = tr("%1: %2").arg(manifest.name(), manifest.description());
+            description = QString("%1\n%2").arg(manifest.name(), manifest.description());
         }
     } else {
         name = tr("None");

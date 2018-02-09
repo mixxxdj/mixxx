@@ -492,15 +492,34 @@ void DlgPrefEQ::applySelections() {
             box->setCurrentIndex(firstEffectIndex);
         }
 
-        EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
-        m_pQuickEffectRack->loadEffectToGroup(group, pEffect);
+        // Only apply the effect if it changed -- so first interrogate the
+        // loaded effect if any.
+        bool need_load = true;
+        if (m_pQuickEffectRack->numEffectChainSlots() > deck) {
+            // It's not correct to get a chainslot by index number -- get by
+            // group name instead.
+            EffectChainSlotPointer chainslot =
+                    m_pQuickEffectRack->getGroupEffectChainSlot(group);
+            if (chainslot && chainslot->numSlots()) {
+                EffectPointer effectpointer =
+                        chainslot->getEffectSlot(0)->getEffect();
+                if (effectpointer &&
+                        effectpointer->getManifest().id() == effectId) {
+                    need_load = false;
+                }
+            }
+        }
+        if (need_load) {
+            EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
+            m_pQuickEffectRack->loadEffectToGroup(group, pEffect);
 
-        m_pConfig->set(ConfigKey(kConfigKey, "QuickEffectForGroup_" + group),
-                ConfigValue(effectId));
+            m_pConfig->set(ConfigKey(kConfigKey, "QuickEffectForGroup_" + group),
+                    ConfigValue(effectId));
 
-        // This is required to remove a previous selected effect that does not
-        // fit to the current ShowAllEffects checkbox
-        slotPopulateDeckEffectSelectors();
+            // This is required to remove a previous selected effect that does not
+            // fit to the current ShowAllEffects checkbox
+            slotPopulateDeckEffectSelectors();
+        }
         ++deck;
     }
 }

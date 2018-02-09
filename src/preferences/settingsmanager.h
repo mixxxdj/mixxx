@@ -2,8 +2,10 @@
 #define PREFERENCES_SETTINGSMANAGER_H
 
 #include <QObject>
+#include <QSharedPointer>
 #include <QString>
 
+#include "preferences/broadcastsettings.h"
 #include "preferences/usersettings.h"
 
 class SettingsManager : public QObject {
@@ -14,6 +16,10 @@ class SettingsManager : public QObject {
 
     UserSettingsPointer settings() const {
         return m_pSettings;
+    }
+
+    BroadcastSettingsPointer broadcastSettings() const {
+        return m_pBroadcastSettings;
     }
 
     void save() {
@@ -29,7 +35,7 @@ class SettingsManager : public QObject {
 
     UserSettingsPointer m_pSettings;
     bool m_bShouldRescanLibrary;
+    BroadcastSettingsPointer m_pBroadcastSettings;
 };
-
 
 #endif /* PREFERENCES_SETTINGSMANAGER_H */

@@ -60,7 +60,6 @@ Variables:
                         <SetVariable name="Size">34f,34f</SetVariable>
                         <SetVariable name="state_0_pressed">sampler_paused.png</SetVariable>
                         <SetVariable name="state_0_unpressed">sampler_paused.png</SetVariable>
-                        <SetVariable name="state_0_pressed">sampler_paused.png</SetVariable>
                         <SetVariable name="state_1_pressed">sampler_playing.svg</SetVariable>
                         <SetVariable name="state_1_unpressed">sampler_playing.svg</SetVariable>
                         <SetVariable name="ConfigKey"><Variable name="group"/>,cue_gotoandplay</SetVariable>
@@ -72,7 +71,7 @@ Variables:
                         <ObjectName>SamplerCover</ObjectName>
                         <Size>34f,34f</Size>
                         <Group><Variable name="group"/></Group>
-                        <DefaultCover>skin:/buttons/btn_.svg</DefaultCover>
+                        <DefaultCover>skin:/graphics/blank_1x1.svg</DefaultCover>
                       </CoverArt>
                   <!-- Background turns Orange when playing preview from Cue/HotCue.
                       Only visible when play_indicator=0 -->
@@ -178,29 +177,50 @@ Variables:
             <SetVariable name="Color">tiny_red</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>0me,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
 
-          <Template src="skin:button_2state.xml">
-            <SetVariable name="TooltipId">pfl</SetVariable>
-            <SetVariable name="ObjectName">PflButton</SetVariable>
-            <SetVariable name="Size">16f,16f</SetVariable>
-            <SetVariable name="state_0_pressed">pfl_off.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">pfl_off.svg</SetVariable>
-            <SetVariable name="state_1_pressed">pfl_on.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">pfl_on.svg</SetVariable>
-            <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
-          </Template>
+          <WidgetGroup><!-- Pfl button -->
+            <Size>16f,16f</Size>
+            <Layout>stacked</Layout>
+            <Children>
+              <!-- index 0 due to bug -->
+              <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+              <!-- Greyed out if no headphone device is configured -->
+              <WidgetGroup>
+                <ObjectName>MixerbarCover</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <Connection>
+                  <ConfigKey>[Master],headEnabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                  <Transform><Not/></Transform>
+                </Connection>
+              </WidgetGroup>
+
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="TooltipId">pfl</SetVariable>
+                <SetVariable name="ObjectName">PflButton</SetVariable>
+                <SetVariable name="Size">16f,16f</SetVariable>
+                <SetVariable name="state_0_pressed">pfl_off.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">pfl_off.svg</SetVariable>
+                <SetVariable name="state_1_pressed">pfl_on.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">pfl_on.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- /Pfl button -->
 
           <Template src="skin:button_3state.xml">
             <SetVariable name="TooltipId">orientation</SetVariable>
             <SetVariable name="ObjectName">SamplerButton</SetVariable>
             <SetVariable name="Size">16f,16f</SetVariable>
-            <SetVariable name="state_0_pressed">sampler_cf_left_white.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">sampler_cf_left_white.svg</SetVariable>
-            <SetVariable name="state_1_pressed">sampler_cf_center.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">sampler_cf_center.svg</SetVariable>
-            <SetVariable name="state_2_pressed">sampler_cf_right_white.svg</SetVariable>
-            <SetVariable name="state_2_unpressed">sampler_cf_right_white.svg</SetVariable>
+            <SetVariable name="state_0_pressed">sampler_xfader_left_white.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">sampler_xfader_left_white.svg</SetVariable>
+            <SetVariable name="state_1_pressed">sampler_xfader_center.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">sampler_xfader_center.svg</SetVariable>
+            <SetVariable name="state_2_pressed">sampler_xfader_right_white.svg</SetVariable>
+            <SetVariable name="state_2_unpressed">sampler_xfader_right_white.svg</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
           </Template>
 
@@ -235,7 +255,7 @@ Variables:
             <SetVariable name="ConfigKey"><Variable name="group"/>,keylock</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>1me,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><Size>1me,1min</Size></WidgetGroup>
 
           <Template src="skin:button_1state_right.xml">
             <SetVariable name="TooltipId">beatsync_beatsync_tempo</SetVariable>
@@ -247,14 +267,13 @@ Variables:
             <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatsync_tempo</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
         </Children>
       </WidgetGroup><!-- /Sampler Buttons -->
 
       <WidgetGroup>
         <ObjectName>Spacer0f</ObjectName>
         <Size>-1me,1f</Size>
-        <Children/>
         <Connection>
           <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
           <BindProperty>visible</BindProperty>
@@ -263,13 +282,16 @@ Variables:
 
       <Template src="skin:hotcues_sampler_preview.xml"/>
 
-      <WidgetGroup><!-- Sampler FX assign buttons -->
+      <!-- Sampler FX assign buttons
+      Removed on request due to enormous memory usage when routing
+      many samplers through effect units.
+      <WidgetGroup>
         <ObjectName>Spacer0f</ObjectName>
         <Size>-1me,17f</Size>
         <Layout>vertical</Layout>
         <Children>
 
-          <WidgetGroup><Size>1min,1f</Size><Children/></WidgetGroup>
+          <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
 
           <WidgetGroup>
             <Size>117me,16f</Size>
@@ -277,26 +299,22 @@ Variables:
             <Children>
               <Template src="skin:fx_assign_button.xml">
                 <SetVariable name="Size">28me,16f</SetVariable>
-                <SetVariable name="labelText">FX1</SetVariable>
-                <SetVariable name="fxUnit">1</SetVariable>
+                <SetVariable name="FxUnitNum">1</SetVariable>
               </Template>
-                <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+                <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
               <Template src="skin:fx_assign_button.xml">
                 <SetVariable name="Size">28me,16f</SetVariable>
-                <SetVariable name="labelText">FX2</SetVariable>
-                <SetVariable name="fxUnit">2</SetVariable>
+                <SetVariable name="FxUnitNum">2</SetVariable>
               </Template>
-                <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+                <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
               <Template src="skin:fx_assign_button.xml">
                 <SetVariable name="Size">28me,16f</SetVariable>
-                <SetVariable name="labelText">FX3</SetVariable>
-                <SetVariable name="fxUnit">3</SetVariable>
+                <SetVariable name="FxUnitNum">3</SetVariable>
               </Template>
-                <WidgetGroup><Size>1f,1min</Size><Children/></WidgetGroup>
+                <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
               <Template src="skin:fx_assign_button.xml">
                 <SetVariable name="Size">28me,16f</SetVariable>
-                <SetVariable name="labelText">FX4</SetVariable>
-                <SetVariable name="fxUnit">4</SetVariable>
+                <SetVariable name="FxUnitNum">4</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
@@ -305,7 +323,8 @@ Variables:
           <ConfigKey persist="true">[Tango],sampler_fx_buttons</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- /Sampler FX assign buttons -->
+      </WidgetGroup> -->
+      <!-- /Sampler FX assign buttons -->
 
     </Children>
   </WidgetGroup>

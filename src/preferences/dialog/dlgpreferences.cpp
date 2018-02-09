@@ -62,8 +62,9 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
                                SoundManager * soundman, PlayerManager* pPlayerManager,
                                ControllerManager * controllers, VinylControlManager *pVCManager,
                                EffectsManager* pEffectsManager,
-                               UserSettingsPointer pConfig, Library *pLibrary)
-        : m_pConfig(pConfig),
+                               SettingsManager* pSettingsManager,
+                               Library *pLibrary)
+        : m_pConfig(pSettingsManager->settings()),
           m_pageSizeHint(QSize(0, 0)),
           m_preferencesUpdated(ConfigKey("[Preferences]", "updated"), false) {
     setupUi(this);
@@ -106,8 +107,9 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_wautodj);
     m_weq = new DlgPrefEQ(this, pEffectsManager, m_pConfig);
     addPageWidget(m_weq);
-    m_weffects = new DlgPrefEffects(this, m_pConfig, pEffectsManager);
-    addPageWidget(m_weffects);
+    // TODO: Re-enable the effects preferences pane when it does something useful.
+    //m_weffects = new DlgPrefEffects(this, m_pConfig, pEffectsManager);
+    //addPageWidget(m_weffects);
     m_wcrossfader = new DlgPrefCrossfader(this, m_pConfig);
     addPageWidget(m_wcrossfader);
 
@@ -123,7 +125,8 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     m_wrecord = new DlgPrefRecord(this, m_pConfig);
     addPageWidget(m_wrecord);
 #ifdef __BROADCAST__
-    m_wbroadcast = new DlgPrefBroadcast(this, m_pConfig);
+    m_wbroadcast = new DlgPrefBroadcast(this,
+            pSettingsManager->broadcastSettings());
     addPageWidget(m_wbroadcast);
 #endif
 #ifdef __MODPLUG__
@@ -199,11 +202,12 @@ void DlgPreferences::createIcons() {
     m_pEqButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pEqButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    m_pEffectsButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pEffectsButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_effects.png"));
-    m_pEffectsButton->setText(0, tr("Effects"));
-    m_pEffectsButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
-    m_pEffectsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    // TODO: Re-enable the effects pane when it does something useful.
+    //m_pEffectsButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    //m_pEffectsButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_effects.png"));
+    //m_pEffectsButton->setText(0, tr("Effects"));
+    //m_pEffectsButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    //m_pEffectsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     m_pCrossfaderButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pCrossfaderButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_crossfader.png"));
@@ -292,8 +296,9 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
         switchToPage(m_wautodj);
     } else if (current == m_pEqButton) {
         switchToPage(m_weq);
-    } else if (current == m_pEffectsButton) {
-        switchToPage(m_weffects);
+    // TODO: Re-enable the effects preferences pane when it does something useful.
+    //} else if (current == m_pEffectsButton) {
+    //    switchToPage(m_weffects);
     } else if (current == m_pCrossfaderButton) {
         switchToPage(m_wcrossfader);
     } else if (current == m_pRecordingButton) {

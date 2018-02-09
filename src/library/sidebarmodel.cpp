@@ -28,6 +28,8 @@ void SidebarModel::addLibraryFeature(LibraryFeature* feature) {
 
     QAbstractItemModel* model = feature->getChildModel();
 
+    connect(model, SIGNAL(modelAboutToBeReset()),
+            this, SLOT(slotModelAboutToBeReset()));
     connect(model, SIGNAL(modelReset()),
             this, SLOT(slotModelReset()));
     connect(model, SIGNAL(dataChanged(const QModelIndex&,const QModelIndex&)),
@@ -85,7 +87,13 @@ QModelIndex SidebarModel::index(int row, int column,
             // We have selected an item within the childmodel
             // This item has always an internal pointer of (sub)type TreeItem
             TreeItem* tree_item = (TreeItem*)parent.internalPointer();
-            return createIndex(row, column, (void*) tree_item->child(row));
+            if (row < tree_item->childRows()) {
+                return createIndex(row, column, (void*) tree_item->child(row));
+            } else {
+                // Otherwise this row might have been removed just now
+                // (just a dirty workaround for unmaintainable GUI code)
+                return QModelIndex();
+            }
         }
     }
     return createIndex(row, column, (void*)this);
@@ -375,10 +383,12 @@ void SidebarModel::slotRowsRemoved(const QModelIndex& parent, int start, int end
     endRemoveRows();
 }
 
+void SidebarModel::slotModelAboutToBeReset() {
+    beginResetModel();
+}
+
 void SidebarModel::slotModelReset() {
-    // If a child model is reset, we can't really do anything but reset(). This
-    // will close any open items.
-    reset();
+    endResetModel();
 }
 
 /*

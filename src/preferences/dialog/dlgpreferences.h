@@ -27,6 +27,7 @@
 #include "preferences/usersettings.h"
 #include "control/controlpushbutton.h"
 #include "preferences/dlgpreferencepage.h"
+#include "preferences/settingsmanager.h"
 
 class MixxxMainWindow;
 class SoundManager;
@@ -63,7 +64,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, SoundManager* soundman,
                    PlayerManager* pPlayerManager, ControllerManager* controllers,
                    VinylControlManager* pVCManager, EffectsManager* pEffectsManager,
-                   UserSettingsPointer pConfig, Library *pLibrary);
+                   SettingsManager* pSettingsManager, Library *pLibrary);
     virtual ~DlgPreferences();
 
     void addPageWidget(DlgPreferencePage* pWidget);
@@ -107,7 +108,8 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     DlgPrefWaveform* m_wwaveform;
     DlgPrefAutoDJ* m_wautodj;
     DlgPrefEQ* m_weq;
-    DlgPrefEffects* m_weffects;
+    //TODO: Re-enable the effects pane when it does something useful.
+    //DlgPrefEffects* m_weffects;
     DlgPrefCrossfader* m_wcrossfader;
     DlgPrefRecord* m_wrecord;
     DlgPrefKey* m_wkey;
@@ -126,7 +128,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     QTreeWidgetItem* m_pWaveformButton;
     QTreeWidgetItem* m_pAutoDJButton;
     QTreeWidgetItem* m_pEqButton;
-    QTreeWidgetItem* m_pEffectsButton;
+    //QTreeWidgetItem* m_pEffectsButton;
     QTreeWidgetItem* m_pCrossfaderButton;
     QTreeWidgetItem* m_pRecordingButton;
     QTreeWidgetItem* m_pBeatDetectionButton;

@@ -38,6 +38,14 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addControl("[Master]", "headMix", tr("Headphone Mix"), tr("Headphone mix (pre/main)"), mixerMenu, true);
     addControl("[Master]", "headSplit", tr("Headphone Split Cue"), tr("Toggle headphone split cueing"), mixerMenu);
     addControl("[Master]", "headDelay", tr("Headphone Delay"), tr("Headphone delay"), mixerMenu, true);
+    addDeckAndSamplerControl("orientation", tr("Orientation"),
+                             tr("Mix orientation (e.g. left, right, center)"), mixerMenu);
+    addDeckAndSamplerControl("orientation_left", tr("Orient Left"),
+                             tr("Set mix orientation to left"), mixerMenu);
+    addDeckAndSamplerControl("orientation_center", tr("Orient Center"),
+                             tr("Set mix orientation to center"), mixerMenu);
+    addDeckAndSamplerControl("orientation_right", tr("Orient Right"),
+                             tr("Set mix orientation to right"), mixerMenu);
 
     // Transport
     QMenu* transportMenu = addSubmenu(tr("Transport"));
@@ -58,22 +66,14 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                            tr("Stop playback and jump to start of track"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("end", tr("Jump To End"), tr("Jump to end of track"), transportMenu);
     addDeckAndSamplerControl("volume", tr("Volume"), tr("Volume Fader"), transportMenu, true);
-    addDeckAndSamplerControl("volume_set_one", tr("Full Volume"), tr("Sets volume to full"), transportMenu);
-    addDeckAndSamplerControl("volume_set_zero", tr("Zero Volume"), tr("Sets volume to zero"), transportMenu);
+    addDeckAndSamplerControl("volume_set_one", tr("Full Volume"), tr("Set to full volume"), transportMenu);
+    addDeckAndSamplerControl("volume_set_zero", tr("Zero Volume"), tr("Set to zero volume"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("pregain", tr("Track Gain"), tr("Track Gain knob"), transportMenu, true);
     addDeckAndSamplerControl("mute", tr("Mute"), tr("Mute button"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("eject", tr("Eject"), tr("Eject track"), transportMenu);
     addDeckAndSamplerControl("pfl", tr("Headphone Listen"), tr("Headphone listen (pfl) button"), transportMenu);
     addDeckAndSamplerControl("repeat", tr("Repeat Mode"), tr("Toggle repeat mode"), transportMenu);
     addDeckAndSamplerControl("slip_enabled", tr("Slip Mode"), tr("Toggle slip mode"), transportMenu);
-    addDeckAndSamplerControl("orientation", tr("Orientation"),
-                             tr("Mix orientation (e.g. left, right, center)"), transportMenu);
-    addDeckAndSamplerControl("orientation_left", tr("Orient Left"),
-                             tr("Set mix orientation to left"), transportMenu);
-    addDeckAndSamplerControl("orientation_center", tr("Orient Center"),
-                             tr("Set mix orientation to center"), transportMenu);
-    addDeckAndSamplerControl("orientation_right", tr("Orient Right"),
-                             tr("Set mix orientation to right"), transportMenu);
 
     // BPM & Sync
     QMenu* bpmMenu = addSubmenu(tr("BPM"));
@@ -266,13 +266,22 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // Loops
     QMenu* loopMenu = addSubmenu(tr("Looping"));
+    // add beatloop_activate and beatlooproll_activate to both the
+    // Loop and Beat-Loop menus to make sure users can find them.
+    QString beatloopActivateTitle = tr("Loop Selected Beats");
+    QString beatloopActivateDescription = tr("Create a beat loop of selected beat size");
+    QString beatloopRollActivateTitle = tr("Loop Roll Selected Beats");
+    QString beatloopRollActivateDescription = tr("Create a rolling beat loop of selected beat size");
+
     addDeckControl("loop_in", tr("Loop In"), tr("Loop In button"), loopMenu);
     addDeckControl("loop_out", tr("Loop Out"), tr("Loop Out button"), loopMenu);
     addDeckControl("loop_exit", tr("Loop Exit"), tr("Loop Exit button"), loopMenu);
-    addDeckControl("reloop_exit", tr("Reloop/Exit Loop"), tr("Reloop/Exit button"), loopMenu);
-    addDeckControl("loop_halve", tr("Loop Halve"), tr("Halve the current loop's length"), loopMenu);
-    addDeckControl("loop_double", tr("Loop Double"),
-                   tr("Double the current loop's length"), loopMenu);
+    addDeckControl("reloop_toggle", tr("Reloop/Exit Loop"), tr("Toggle loop on/off and jump to Loop In point if loop is behind play position"), loopMenu);
+    addDeckControl("reloop_andstop", tr("Reloop And Stop"), tr("Enable loop, jump to Loop In point, and stop"), loopMenu);
+    addDeckControl("loop_halve", tr("Loop Halve"), tr("Halve the loop length"), loopMenu);
+    addDeckControl("loop_double", tr("Loop Double"), tr("Double the loop length"), loopMenu);
+    addDeckControl("beatloop_activate", beatloopActivateTitle, beatloopActivateDescription, loopMenu);
+    addDeckControl("beatlooproll_activate", beatloopRollActivateTitle, beatloopRollActivateDescription, loopMenu);
 
     QList<double> beatSizes = LoopingControl::getBeatSizes();
 
@@ -317,6 +326,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     QString beatLoopDescription = tr("Create %1-beat loop");
     QString beatLoopRollDescription = tr("Create temporary %1-beat loop roll");
 
+    addDeckControl("beatloop_activate", beatloopActivateTitle, beatloopActivateDescription, beatLoopMenu);
+    addDeckControl("beatlooproll_activate", beatloopRollActivateTitle, beatloopRollActivateDescription, beatLoopMenu);
     foreach (double beats, beatSizes) {
         QString humanBeats = humanBeatSizes.value(beats, QString::number(beats));
         addDeckControl(QString("beatloop_%1_toggle").arg(beats),
@@ -332,11 +343,13 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     }
 
     // Beat jumping
-    QMenu* beatJumpMenu = addSubmenu(tr("Beat-Jump"));
-    QString beatJumpForwardTitle = tr("Jump Forward %1 Beats");
-    QString beatJumpBackwardTitle = tr("Jump Back %1 Beats");
-    QString beatJumpForwardDescription = tr("Jump forward by %1 beats");
-    QString beatJumpBackwardDescription = tr("Jump backward by %1 beats");
+    QMenu* beatJumpMenu = addSubmenu(tr("Beat Jump / Loop Move"));
+    QString beatJumpForwardTitle = tr("Jump / Move Loop Forward %1 Beats");
+    QString beatJumpBackwardTitle = tr("Jump / Move Loop Backward %1 Beats");
+    QString beatJumpForwardDescription = tr("Jump forward by %1 beats, or if a loop is enabled, move the loop forward %1 beats");
+    QString beatJumpBackwardDescription = tr("Jump backward by %1 beats, or if a loop is enabled, move the loop backward %1 beats");
+    addDeckControl("beatjump_forward", tr("Beat Jump / Loop Move Forward Selected Beats"), tr("Jump forward by the selected number of beats, or if a loop is enabled, move the loop forward by the selected number of beats"), beatJumpMenu);
+    addDeckControl("beatjump_backward", tr("Beat Jump / Loop Move Backward Selected Beats"), tr("Jump backward by the selected number of beats, or if a loop is enabled, move the loop backward by the selected number of beats"), beatJumpMenu);
 
     foreach (double beats, beatSizes) {
         QString humanBeats = humanBeatSizes.value(beats, QString::number(beats));
@@ -410,7 +423,12 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                        tr("Add to Auto DJ Queue (top)"),
                        tr("Prepend selected track to the Auto DJ Queue"),
                        m_libraryStr, libraryMenu);
+    addPrefixedControl("[Library]", "AutoDjAddReplace",
+                       tr("Add to Auto DJ Queue (replace)"),
+                       tr("Replace Auto DJ Queue with selected tracks"),
+                       m_libraryStr, libraryMenu);
 
+            
     // Load track (these can be loaded into any channel)
     addDeckAndSamplerControl("LoadSelectedTrack",
                              tr("Load Track"),
@@ -475,7 +493,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                effectUnitMenu, true);
             addPrefixedControl(effectUnitGroup, "super1",
                                tr("Super Knob"),
-                               tr("Super Knob (control linked effect parameters)"),
+                               tr("Super Knob (control effects' Meta Knobs)"),
                                descriptionPrefix,
                                effectUnitMenu, true);
             addPrefixedControl(effectUnitGroup, "insertion_type",
@@ -494,6 +512,10 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             addPrefixedControl(effectUnitGroup, "chain_selector",
                                tr("Next/Previous Chain"),
                                tr("Next or previous chain preset"), descriptionPrefix,
+                               effectUnitMenu);
+            addPrefixedControl(effectUnitGroup, "show_parameters",
+                               tr("Show Effect Parameters"),
+                               tr("Show Effect Parameters"), descriptionPrefix,
                                effectUnitMenu);
 
             QString enableOn = tr("Toggle Effect Unit");
@@ -592,6 +614,10 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                    tr("Clear"), tr("Clear the current effect"),
                                    slotDescriptionPrefix,
                                    effectSlotMenu);
+                addPrefixedControl(effectSlotGroup, "meta",
+                                   tr("Meta Knob"), tr("Effect Meta Knob (control linked effect parameters)"),
+                                   slotDescriptionPrefix,
+                                   effectSlotMenu);
                 addPrefixedControl(effectSlotGroup, "enabled",
                                    tr("Toggle"), tr("Toggle the current effect"),
                                    slotDescriptionPrefix,
@@ -638,8 +664,13 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                        parameterSlotMenu, true);
 
                     addPrefixedControl(parameterSlotGroup, parameterSlotItemPrefix + "_link_type",
-                                       tr("Super Knob Mode"),
-                                       tr("Set how linked effect parameters change when turning the Super Knob."),
+                                       tr("Meta Knob Mode"),
+                                       tr("Set how linked effect parameters change when turning the Meta Knob."),
+                                       parameterDescriptionPrefix,
+                                       parameterSlotMenu);
+                    addPrefixedControl(parameterSlotGroup, parameterSlotItemPrefix + "_link_inverse",
+                                       tr("Meta Knob Mode Invert"),
+                                       tr("Invert how linked effect parameters change when turning the Meta Knob."),
                                        parameterDescriptionPrefix,
                                        parameterSlotMenu);
 
@@ -677,11 +708,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                tr("Volume Fader"), microphoneMenu,
                                true, true, true);
     addMicrophoneAndAuxControl("volume_set_one",
-                               tr("Volume Full"),
+                               tr("Full Volume"),
                                tr("Set to full volume"), microphoneMenu,
                                true, true);
     addMicrophoneAndAuxControl("volume_set_zero",
-                               tr("Volume Zero"),
+                               tr("Zero Volume"),
                                tr("Set to zero volume"), microphoneMenu,
                                true, true);
     addMicrophoneAndAuxControl("mute",
@@ -714,11 +745,10 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     QMenu* autodjMenu = addSubmenu(tr("Auto DJ"));
     addControl("[AutoDJ]", "shuffle_playlist",
                tr("Auto DJ Shuffle"),
-               tr("Shuffle the content of the Auto DJ playlist"),
-               autodjMenu);
+               tr("Shuffle the content of the Auto DJ queue"), autodjMenu);
     addControl("[AutoDJ]", "skip_next",
                tr("Auto DJ Skip Next"),
-               tr("Skip the next track in the Auto DJ playlist"), autodjMenu);
+               tr("Skip the next track in the Auto DJ queue"), autodjMenu);
     addControl("[AutoDJ]", "fade_now",
                tr("Auto DJ Fade To Next"),
                tr("Trigger the transition to the next track"), autodjMenu);
@@ -740,15 +770,15 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addControl("[PreviewDeck]", "show_previewdeck",
                tr("Preview Deck Show/Hide"),
                tr("Show/hide the preview deck"), guiMenu);
-    addControl("[Master]", "maximize_library",
-               tr("Library Maximize/Restore"),
-               tr("Maximize the track library to take up all the available screen space."), guiMenu);
     addControl("[EffectRack1]", "show",
                tr("Effect Rack Show/Hide"),
                tr("Show/hide the effect rack"), guiMenu);
     addControl("[Library]", "show_coverart",
                tr("Cover Art Show/Hide"),
                tr("Show/hide cover art"), guiMenu);
+    addControl("[Master]", "maximize_library",
+               tr("Library Maximize/Restore"),
+               tr("Maximize the track library to take up all the available screen space."), guiMenu);
 
     QString spinnyTitle = tr("Vinyl Spinner Show/Hide");
     QString spinnyDescription = tr("Show/hide spinning vinyl widget");

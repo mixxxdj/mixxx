@@ -1718,12 +1718,15 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
     }
 
     // Query possible successors
+    // NOTE: Successors are identified by filename and duration (in seconds).
+    // Since duration is stored as double-precision floating-point and since it
+    // is sometimes truncated to nearest integer, tolerance of 1 second is used.
     newTrackQuery.prepare(
             QString("SELECT track_locations.id FROM track_locations "
                     "INNER JOIN library ON track_locations.id=library.location "
                     "WHERE track_locations.location IN (%1) AND "
                     "filename=:filename AND "
-                    "duration=:duration").arg(
+                    "ABS(duration - :duration) < 1").arg(
                             SqlStringFormatter::formatList(m_database, addedTracks)));
 
     QSqlRecord queryRecord = deletedTrackQuery.record();

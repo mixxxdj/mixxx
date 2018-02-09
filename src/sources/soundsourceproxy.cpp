@@ -477,16 +477,7 @@ void SoundSourceProxy::updateTrack(
     } else {
         // If the file tags have never been parsed before it doesn't matter
         // if the track is marked as dirty or not. In this case the track
-        // object has just been created. But better check that those
-        // assumptions are correct.
-        VERIFY_OR_DEBUG_ASSERT(trackMetadata == mixxx::TrackMetadata()) {
-            kLogger.warning() << "Reloading track metadata from file"
-                     << getUrl().toString();
-        }
-        VERIFY_OR_DEBUG_ASSERT(coverInfo == CoverInfo()) {
-            kLogger.warning() << "Reloading cover art from file"
-                     << getUrl().toString();
-        }
+        // object has just been created.
         pCoverImg = &coverImg;
     }
 

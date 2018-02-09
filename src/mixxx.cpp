@@ -201,17 +201,17 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     launchProgress(8);
 
-    // Initialize player device
-    // while this is created here, setupDevices needs to be called sometime
-    // after the players are added to the engine (as is done currently) -- bkgood
-    // (long)
+    // Although m_pSoundManager is created here, m_pSoundManager->setupDevices()
+    // needs to be called after m_pPlayerManager registers sound IO for each EngineChannel.
     m_pSoundManager = new SoundManager(pConfig, m_pEngine);
+    m_pEngine->registerNonEngineChannelSoundIO(m_pSoundManager);
 
     m_pRecordingManager = new RecordingManager(pConfig, m_pEngine);
 
 
 #ifdef __BROADCAST__
-    m_pBroadcastManager = new BroadcastManager(pConfig, m_pSoundManager);
+    m_pBroadcastManager = new BroadcastManager(m_pSettingsManager,
+                                               m_pSoundManager);
 #endif
 
     launchProgress(11);
@@ -345,7 +345,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
                                     m_pControllerManager, m_pVCManager, m_pEffectsManager,
-                                    pConfig, m_pLibrary);
+                                    m_pSettingsManager, m_pLibrary);
     m_pPrefDlg->setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
     m_pPrefDlg->setHidden(true);
 
@@ -648,7 +648,6 @@ void MixxxMainWindow::finalize() {
     Sandbox::shutdown();
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting SettingsManager";
-    delete m_pSettingsManager;
 
     delete m_pKeyboard;
     delete m_pKbdConfig;
@@ -1179,10 +1178,14 @@ void MixxxMainWindow::rebootMixxxView() {
     qDebug() << "Now in rebootMixxxView...";
 
     QPoint initPosition = pos();
-    // this->frameSize()  : Window size including all borders and only if the window manager works.
-    // this->size() : Window without the borders nor title, but including the Menu!
-    // this->centralWidget()->size() : Size of the internal window Widget.
-    QSize initSize = this->centralWidget()->size();
+    // frameSize()  : Window size including all borders and only if the window manager works.
+    // size() : Window without the borders nor title, but including the Menu!
+    // centralWidget()->size() : Size of the internal window Widget.
+    QSize initSize;
+    QWidget* pWidget = centralWidget(); // can be null if previous skin loading fails
+    if (pWidget) {
+        initSize = centralWidget()->size();
+    }
 
     // We need to tell the menu bar that we are about to delete the old skin and
     // create a new one. It holds "visibility" controls (e.g. "Show Samplers")
@@ -1227,7 +1230,7 @@ void MixxxMainWindow::rebootMixxxView() {
 
     if (wasFullScreen) {
         slotViewFullScreen(true);
-    } else {
+    } else if (!initSize.isEmpty()) {
         // Not all OSs and/or window managers keep the window inside of the screen, so force it.
         int newX = initPosition.x() + (initSize.width() - m_pWidgetParent->width()) / 2;
         int newY = initPosition.y() + (initSize.height() - m_pWidgetParent->height()) / 2;
