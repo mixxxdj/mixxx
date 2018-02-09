@@ -188,6 +188,14 @@
      Singleton definitions  #######################################
    ############################################################### -->
     <SingletonDefinition>
+      <ObjectName>Waveforms_Singleton</ObjectName>
+      <Children>
+        <Template src="skin:waveforms_container.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+
+    <SingletonDefinition>
       <ObjectName>Library_Singleton</ObjectName>
       <Children>
         <Template src="skin:library.xml"/>
@@ -262,7 +270,9 @@
                       <Layout>vertical</Layout>
                       <SizePolicy>me,max</SizePolicy>
                       <Children>
-                        <Template src="skin:waveforms_container.xml"/>
+                        <SingletonContainer>
+                          <ObjectName>Waveforms_Singleton</ObjectName>
+                        </SingletonContainer>
                       </Children>
                       <Connection>
                         <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
@@ -276,6 +286,25 @@
                       <Children>
 
                         <Template src="skin:decks_12.xml"/>
+
+                    <!-- Load scrolling waveforms Singleton here if the waveforms
+                        in the waveforms/decks Splitter are collapsed.
+                        Otherwise the end-of-track warning would not show up
+                        in overview waveforms. -->
+                        <WidgetGroup>
+                          <Layout>vertical</Layout>
+                          <Size>0me,0f</Size>
+                          <Children>
+                            <SingletonContainer>
+                              <ObjectName>Waveforms_Singleton</ObjectName>
+                            </SingletonContainer>
+                          </Children>
+                          <Connection>
+                            <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
+                            <Transform><Not/></Transform>
+                            <BindProperty>visible</BindProperty>
+                          </Connection>
+                        </WidgetGroup>
 
                         <WidgetGroup>
                           <Layout>vertical</Layout>
