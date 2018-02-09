@@ -15,7 +15,7 @@ Variables:
   <WidgetGroup>
     <ObjectName>PreviewDeckContainer</ObjectName>
     <Layout>stacked</Layout>
-    <SizePolicy>me,min</SizePolicy>
+    <SizePolicy>me,max</SizePolicy>
     <Children>
       <!-- index 0 due to bug -->
       <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
