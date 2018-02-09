@@ -2087,10 +2087,11 @@ QTableView:focus {
 
 #LibrarySidebarButtons QToolButton {
   background: transparent;
-  border: none;
+  border: 1px solid #1e1e1e;
   padding: 2px 1px 1px 3px;
   margin: 1px 0px 1px 1px;
   border-radius: 3px;
+  color: #b3b3b3;
   }
 
   #LibrarySidebarButtons QToolButton:focus,
