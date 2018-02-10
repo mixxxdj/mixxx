@@ -840,7 +840,6 @@ void Library::focusSearch() {
     }
 }
 
-
-void Library::onEvictingTrackFromCache(TrackCacheLocker* pCacheLocker, Track* pTrack) {
+void Library::onEvictingTrackFromCache(GlobalTrackCacheLocker* pCacheLocker, Track* pTrack) {
     m_pTrackCollection->saveTrack(pCacheLocker, pTrack);
 }

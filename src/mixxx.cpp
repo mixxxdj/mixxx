@@ -295,13 +295,13 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             QKeySequence(tr("Ctrl+F", "Search|Focus")),
             this, SLOT(slotFocusSearch()));
 
-    // Create the singular TrackCache instance immediately after
+    // Create the singular GlobalTrackCache instance immediately after
     // the Library has been created and BEFORE binding the
     // PlayerManager to it!
-    TrackCache::createInstance(m_pLibrary);
+    GlobalTrackCache::createInstance(m_pLibrary);
 
     // Binding the PlayManager to the Library may already trigger
-    // loading of tracks which requires that the TrackCache has
+    // loading of tracks which requires that the GlobalTrackCache has
     // been created. Otherwise Mixxx might hang when accessing
     // the uninitialized singleton instance!
     m_pPlayerManager->bindToLibrary(m_pLibrary);
@@ -587,7 +587,7 @@ void MixxxMainWindow::finalize() {
 
     // Evict all remaining tracks from the cache to trigger
     // updating of modified tracks.
-    TrackCache::instance().evictAll();
+    GlobalTrackCache::instance().evictAll();
 
     // Delete the library after the view so there are no dangling pointers to
     // the data models.
@@ -595,10 +595,10 @@ void MixxxMainWindow::finalize() {
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting Library";
     delete m_pLibrary;
 
-    // The TrackCache singleton must be destroyed immediately
+    // The GlobalTrackCache singleton must be destroyed immediately
     // after the library has been destroyed!
-    qDebug() << "Destroying TrackCache" << t.elapsed(false);
-    TrackCache::destroyInstance();
+    qDebug() << "Destroying GlobalTrackCache" << t.elapsed(false);
+    GlobalTrackCache::destroyInstance();
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "closing database connection(s)";
     m_pDbConnectionPool->destroyThreadLocalConnection();

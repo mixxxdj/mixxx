@@ -15,8 +15,7 @@
 
 #include "library/scanner/libraryscanner.h"
 #include "preferences/usersettings.h"
-#include "track/track.h"
-#include "track/trackcache.h"
+#include "track/globaltrackcache.h"
 #include "recording/recordingmanager.h"
 #include "util/parented_ptr.h"
 #include "util/memory.h"
@@ -43,7 +42,7 @@ class WSearchLineEdit;
 class TreeItem;
 
 class Library: public QObject,
-    public virtual /*implements*/ TrackCacheEvictor {
+    public virtual /*implements*/ GlobalTrackCacheEvictor {
     Q_OBJECT
 public:
     enum RemovalType {
@@ -106,7 +105,7 @@ public:
 
     void focusSearch();
 
-    void onEvictingTrackFromCache(TrackCacheLocker* pCacheLocker, Track* pTrack) override;
+    void onEvictingTrackFromCache(GlobalTrackCacheLocker* pCacheLocker, Track* pTrack) override;
 
   public slots:
 

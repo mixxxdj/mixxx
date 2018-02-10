@@ -2,9 +2,8 @@
 
 #include "library/dao/trackschema.h"
 #include "library/dao/playlistdao.h"
-#include "track/keyutils.h"
 #include "track/key_preferences.h"
-#include "control/controlproxy.h"
+
 
  ColumnCache::ColumnCache(const QStringList& columns) {
     m_pKeyNotationCP = new ControlProxy("[Library]", "key_notation", this);

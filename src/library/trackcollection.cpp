@@ -2,7 +2,7 @@
 
 #include "library/trackcollection.h"
 
-#include "track/trackcache.h"
+#include "track/globaltrackcache.h"
 #include "util/logger.h"
 #include "util/db/sqltransaction.h"
 
@@ -69,7 +69,7 @@ void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
             m_directoryDao.relocateDirectory(oldDir, newDir));
 
     // Discard all cached tracks
-    TrackCache::instance().evictAll();
+    GlobalTrackCache::instance().evictAll();
 
     m_trackDao.databaseTracksMoved(std::move(movedIds), QSet<TrackId>());
 }
@@ -330,6 +330,6 @@ bool TrackCollection::updateAutoDjCrate(
     return updateCrate(crate);
 }
 
-void TrackCollection::saveTrack(TrackCacheLocker* pCacheLocker, Track* pTrack) {
+void TrackCollection::saveTrack(GlobalTrackCacheLocker* pCacheLocker, Track* pTrack) {
     m_trackDao.saveTrack(pCacheLocker, pTrack);
 }
