@@ -2241,19 +2241,14 @@ QTreeView {
   Don't define top margin here, it won't shift ScrollBar.
   Defined by SearchBox	*/
   margin: 0px;
-}
-QTreeView:focus,
-QTableView:focus,
-#DlgAutoDJ:focus,
-#DlgAnalysis:focus,
-#DlgHidden:focus,
-#DlgRecording:focus,
-#DlgMissing:focus { /*
-  New Library navigation COs only work if TreeView or TableView have focus.
-  Clicking on buttons, sliders and visuals elsewhere removes focus from Library.
-  In conjuction with [Library],MoveFocusBackward/..Forward, this helps a lot. */
-  border-color: #ff6600;
-}
+  }
+  QTreeView:focus,
+  QTableView:focus { /*
+    New Library navigation COs only work if TreeView or TableView have focus.
+    Clicking on buttons, sliders and visuals elsewhere removes focus from Library.
+    In conjuction with [Library],MoveFocusBackward/..Forward, this helps a lot. */
+    border-color: #ff6600;
+  }
 
 /*  Closed branch of tree 	*/
 QTreeView::branch:has-children:!has-siblings:closed,
@@ -2379,6 +2374,59 @@ QScrollBar:horizontal {
     width: 0px;
     height: 0px;
   }
+
+/* splitters between treeview and library table */
+#LibrarySplitter::handle:horizontal {
+  image: url(skin:/graphics/splitterHori_handle.png);
+  width: 6px;
+  }
+  #LibrarySplitter::handle:horizontal:hover,
+  #LibrarySplitter::handle:horizontal:pressed {
+    image: url(skin:/graphics/splitterHori_handle_pressed.png);
+  }
+  /* splitter between coverArt and tree view */
+  #LibrarySplitter::handle:vertical,
+  #WaveformSplitter::handle:vertical {
+    height: 6px;
+    image: url(skin:/graphics/splitterVert_handle.png);
+    }
+    #LibrarySplitter::handle:vertical:hover,
+    #LibrarySplitter::handle:vertical:pressed,
+    #WaveformSplitter::handle:vertical:hover,
+    #WaveformSplitter::handle:vertical:pressed {
+      image: url(skin:/graphics/splitterVert_handle_pressed.png);
+    }
+
+/* Pushbuttons, a lot of them...
+Library features and their buttons:
+  Tracks DlgMissing
+    QPushButton#btnSelect
+    QPushButton#btnPurge
+  Tracks DlgHidden
+    QPushButton#btnSelect
+    QPushButton#btnPurge
+    QPushButton#btnUnhide
+    QPushButton#
+  DlgAutoDJ
+    QPushButton#pushButtonShuffle
+    QPushButton#pushButtonAddRandom
+    QPushButton#pushButtonSkipNext
+    QPushButton#pushButtonFadeNow
+    QSpinBox#spinBoxTransition
+    QLabel#labelSelectionInfo
+  DlgAnalysis
+    + some small margin to maximize and cover art button
+    + make radio buttons blue like active keylock button
+    QRadioButton#radioButtonRecentlyAdded
+    QRadioButton#radioButtonAllSongs
+    QLabel#labelProgress
+    QPushButton#pushButtonSelectAll
+    QPushButton#pushButtonAnalyze
+  DlgRecording
+    QLabel#label > "Status: ..."
+    QPushButton#pushButtonRecording > un/checked
+
+  	*/
 QPushButton {
   text-align: center;
   font-family: Ubuntu;
