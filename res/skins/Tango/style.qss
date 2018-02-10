@@ -2328,9 +2328,10 @@ QScrollBar:horizontal {
   WLibrarySidebar QScrollBar:vertical {
     min-height: 12px;
     width: 15px;
-    background: #0f0f0f;
+    background: #000;
     border-radius: 3px;
     border: 0px;
+    color: #b3b3b3
     }
   /* "add-page" and "sub-page" are the gutter of the scrollbar */
   QScrollBar::add-page,
