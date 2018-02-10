@@ -30,7 +30,7 @@ class TrackTitleThread: public QThread {
         while (!m_stop.load()) {
             m_recentTrackPtr.reset();
             const TrackId trackId(loopCount % 2);
-            auto track = GlobalTrackCache::instance().lookupById(trackId);
+            auto track = GlobalTrackCacheLocker().lookupTrackById(trackId);
             if (track) {
                 ASSERT_EQ(trackId, track->getId());
                 // lp1744550: Accessing the track from multiple threads is
@@ -77,21 +77,17 @@ class GlobalTrackCacheTest: public MixxxTest, public virtual GlobalTrackCacheEvi
         GlobalTrackCache::destroyInstance();
     }
 
-    GlobalTrackCache& instance() const {
-        return GlobalTrackCache::instance();
-    }
-
     TrackPointer m_recentTrackPtr;
 };
 
 TEST_F(GlobalTrackCacheTest, resolveByFileInfo) {
-    ASSERT_TRUE(instance().isEmpty());
+    ASSERT_TRUE(GlobalTrackCacheLocker().isEmpty());
 
     const TrackId trackId(1);
 
     TrackPointer track;
     {
-        auto resolver = instance().resolve(kTestFile);
+        GlobalTrackCacheResolver resolver(kTestFile);
         track = resolver.getTrack();
         EXPECT_TRUE(static_cast<bool>(track));
         EXPECT_EQ(2, track.use_count());
@@ -112,7 +108,7 @@ TEST_F(GlobalTrackCacheTest, resolveByFileInfo) {
     EXPECT_EQ(1, track.use_count());
     EXPECT_EQ(1, trackWeak.use_count());
 
-    auto trackById = instance().lookupById(trackId);
+    auto trackById = GlobalTrackCacheLocker().lookupTrackById(trackId);
     EXPECT_EQ(track, trackById);
     EXPECT_EQ(2, trackById.use_count());
     EXPECT_EQ(2, track.use_count());
@@ -126,14 +122,16 @@ TEST_F(GlobalTrackCacheTest, resolveByFileInfo) {
     EXPECT_EQ(0, trackWeak.use_count());
     EXPECT_EQ(TrackPointer(), TrackPointer(trackWeak.lock()));
 
-    trackById = instance().lookupById(trackId);
-    EXPECT_EQ(TrackPointer(), trackById);
-
-    EXPECT_TRUE(instance().isEmpty());
+    {
+        GlobalTrackCacheLocker cacheLocker;
+        trackById = cacheLocker.lookupTrackById(trackId);
+        EXPECT_EQ(TrackPointer(), trackById);
+        EXPECT_TRUE(cacheLocker.isEmpty());
+    }
 }
 
 TEST_F(GlobalTrackCacheTest, concurrentDelete) {
-    ASSERT_TRUE(instance().isEmpty());
+    ASSERT_TRUE(GlobalTrackCacheLocker().isEmpty());
 
     TrackTitleThread workerThread;
     workerThread.start();
@@ -148,7 +146,7 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
 
         TrackPointer track;
         {
-            auto resolver = instance().resolve(kTestFile);
+            GlobalTrackCacheResolver resolver(kTestFile);
             track = resolver.getTrack();
             EXPECT_TRUE(static_cast<bool>(track));
             trackId = track->getId();
@@ -158,7 +156,7 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
             }
         }
 
-        track = instance().lookupById(trackId);
+        track = GlobalTrackCacheLocker().lookupTrackById(trackId);
         EXPECT_TRUE(static_cast<bool>(track));
 
         // lp1744550: Accessing the track from multiple threads is
@@ -172,16 +170,16 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
     workerThread.stop();
     workerThread.wait();
 
-    EXPECT_TRUE(instance().isEmpty());
+    EXPECT_TRUE(GlobalTrackCacheLocker().isEmpty());
 }
 
 TEST_F(GlobalTrackCacheTest, evictWhileMoving) {
-    ASSERT_TRUE(instance().isEmpty());
+    ASSERT_TRUE(GlobalTrackCacheLocker().isEmpty());
 
-    TrackPointer track1 = instance().resolve(kTestFile).getTrack();
+    TrackPointer track1 = GlobalTrackCacheResolver(kTestFile).getTrack();
     EXPECT_TRUE(static_cast<bool>(track1));
 
-    TrackPointer track2 = instance().resolve(kTestFile2).getTrack();
+    TrackPointer track2 = GlobalTrackCacheResolver(kTestFile2).getTrack();
     EXPECT_TRUE(static_cast<bool>(track2));
 
     track1 = std::move(track2);

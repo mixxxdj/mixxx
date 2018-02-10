@@ -8,6 +8,9 @@
 #include "track/trackref.h"
 
 
+// forward declaration(s)
+class GlobalTrackCache;
+
 enum class GlobalTrackCacheLookupResult {
     NONE,
     HIT,
@@ -16,6 +19,7 @@ enum class GlobalTrackCacheLookupResult {
 
 class GlobalTrackCacheLocker {
 public:
+    GlobalTrackCacheLocker();
     GlobalTrackCacheLocker(const GlobalTrackCacheLocker&) = delete;
     GlobalTrackCacheLocker(GlobalTrackCacheLocker&&);
     virtual ~GlobalTrackCacheLocker();
@@ -25,24 +29,46 @@ public:
 
     void unlockCache();
 
+    // Reset all indices but keep the currently allocated tracks
+    // to prevent memory leaks.
+    void resetCache() const;
+
+    // Enforces the eviction of all cached tracks including invocation
+    // of the callback and disables the cache permanently.
+    void deactivateCache() const;
+
+    bool isEmpty() const;
+
+    // Lookup an existing Track object in the cache
+    TrackPointer lookupTrackById(
+            const TrackId& trackId) const;
+    TrackPointer lookupTrackByRef(
+            const TrackRef& trackRef) const;
+
 private:
     friend class GlobalTrackCache;
 
     void lockCache();
 
 protected:
-    GlobalTrackCacheLocker();
     GlobalTrackCacheLocker(
             GlobalTrackCacheLocker&& moveable,
             GlobalTrackCacheLookupResult lookupResult,
             TrackPointer&& strongPtr,
             TrackRef&& trackRef);
 
-    QMutex* m_pCacheMutex;
+    GlobalTrackCache* m_pInstance;
 };
 
 class GlobalTrackCacheResolver final: public GlobalTrackCacheLocker {
 public:
+    GlobalTrackCacheResolver(
+                QFileInfo fileInfo,
+                SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
+    GlobalTrackCacheResolver(
+                QFileInfo fileInfo,
+                TrackId trackId,
+                SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
     GlobalTrackCacheResolver(const GlobalTrackCacheResolver&) = delete;
 #if !defined(_MSC_VER) && (_MSC_VER > 1900)
     GlobalTrackCacheResolver(GlobalTrackCacheResolver&&) = default;
@@ -115,47 +141,9 @@ public:
     static void createInstance(GlobalTrackCacheEvictor* pEvictor);
     static void destroyInstance();
 
-    // Access the singular instance (singleton)
-    static GlobalTrackCache& instance() {
-        DEBUG_ASSERT(s_pInstance);
-        return *s_pInstance;
-    }
-
-    bool isActive() {
-        return m_pEvictor != nullptr;
-    }
-    void deactivate();
-
-    // Lookup an existing Track object in the cache.
-    TrackPointer lookupById(
-            const TrackId& trackId);
-
-    // Lookup an existing or create a new Track object.
-    //
-    // NOTE: The GlobalTrackCache is locked during the lifetime of the
-    // result object. It should be destroyed ASAP to reduce lock
-    // contention!
-    GlobalTrackCacheResolver resolve(
-            const QFileInfo& fileInfo,
-            const SecurityTokenPointer& pSecurityToken = SecurityTokenPointer()) {
-        return resolve(TrackId(), fileInfo, pSecurityToken);
-    }
-    GlobalTrackCacheResolver resolve(
-            const TrackId& trackId,
-            const QFileInfo& fileInfo,
-            const SecurityTokenPointer& pSecurityToken = SecurityTokenPointer());
-
-    bool isEmpty() const;
-
-    // Reset all indices but keep the currently allocated tracks
-    // to prevent memory leaks.
-    void resetIndices();
-
 private:
     friend class GlobalTrackCacheLocker;
     friend class GlobalTrackCacheResolver;
-
-    static GlobalTrackCache* volatile s_pInstance;
 
     // Callback for the smart-pointer
     static void deleter(Track* plainPtr);
@@ -167,21 +155,23 @@ private:
     // to verify the class invariants during development.
     bool verifyConsistency() const;
 
-    TrackPointer lookupByIdInternal(
+    void reset();
+
+    TrackPointer lookupById(
             const TrackId& trackId);
-    TrackPointer lookupByRefInternal(
+    TrackPointer lookupByRef(
             const TrackRef& trackRef);
 
-    TrackPointer reviveInternal(
+    TrackPointer revive(
             Track* plainPtr);
 
-    bool resolveInternal(
+    void resolve(
             GlobalTrackCacheResolver* /*in/out*/ pCacheResolver,
-            TrackRef* /*out, optional*/ pTrackRef,
-            const TrackId& /*in*/ trackId,
-            const QFileInfo& /*in*/ fileInfo);
+            QFileInfo /*in*/ fileInfo,
+            TrackId /*in*/ trackId,
+            SecurityTokenPointer /*in*/ pSecurityToken);
 
-    TrackRef initTrackIdInternal(
+    TrackRef initTrackId(
             const TrackPointer& strongPtr,
             TrackRef trackRef,
             TrackId trackId);
@@ -191,11 +181,11 @@ private:
 
     typedef std::map<Track*, TrackWeakPointer> IndexedTracks;
 
-    bool evictAndDeleteInternal(
+    bool evictAndDelete(
             GlobalTrackCacheLocker* /*nullable*/ pCacheLocker,
             IndexedTracks::iterator indexedTrack,
             bool evictUnexpired);
-    bool evictInternal(
+    bool evict(
             const TrackRef& trackRef,
             IndexedTracks::iterator indexedTrack,
             bool evictUnexpired);
@@ -204,13 +194,14 @@ private:
             GlobalTrackCacheLocker* /*nullable*/ pCacheLocker,
             Track* plainPtr);
 
-    bool isEmptyInternal() const;
+    bool isEmpty() const;
 
-    void deactivateInternal();
+    void deactivate();
+
+    // Managed by GlobalTrackCacheLocker
+    mutable QMutex m_mutex;
 
     GlobalTrackCacheEvictor* m_pEvictor;
-
-    mutable QMutex m_mutex;
 
     IndexedTracks m_indexedTracks;
 

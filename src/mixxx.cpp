@@ -584,7 +584,7 @@ void MixxxMainWindow::finalize() {
     // updating of modified tracks. We assume that no other
     // components are accessing those files at this point.
     qDebug() << t.elapsed(false) << "deactivating GlobalTrackCache";
-    GlobalTrackCache::instance().deactivate();
+    GlobalTrackCacheLocker().deactivateCache();
 
     // Delete the library after the view so there are no dangling pointers to
     // the data models.

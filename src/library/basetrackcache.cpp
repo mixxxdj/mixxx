@@ -150,7 +150,7 @@ const TrackPointer& BaseTrackCache::getRecentTrack(TrackId trackId) const {
     if (m_recentTrackId != trackId) {
         if (trackId.isValid()) {
             TrackPointer trackPtr =
-                    GlobalTrackCache::instance().lookupById(trackId);
+                    GlobalTrackCacheLocker().lookupTrackById(trackId);
             replaceRecentTrack(
                     std::move(trackId),
                     std::move(trackPtr));

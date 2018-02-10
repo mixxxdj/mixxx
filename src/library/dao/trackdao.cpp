@@ -632,8 +632,7 @@ TrackPointer TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove
         return TrackPointer();
     }
 
-    GlobalTrackCacheResolver cacheResolver(
-            GlobalTrackCache::instance().resolve(fileInfo));
+    GlobalTrackCacheResolver cacheResolver(fileInfo);
     TrackPointer pTrack = cacheResolver.getTrack();
     if (!pTrack) {
         qWarning() << "TrackDAO::addTracksAddFile:"
@@ -1256,10 +1255,8 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
 
     // Location is the first column.
     const QString trackLocation(queryRecord.value(0).toString());
-    const QFileInfo fileInfo(trackLocation);
 
-    GlobalTrackCacheResolver cacheResolver =
-            GlobalTrackCache::instance().resolve(trackId, fileInfo);
+    GlobalTrackCacheResolver cacheResolver(QFileInfo(trackLocation), trackId);
     TrackPointer pTrack = cacheResolver.getTrack();
     VERIFY_OR_DEBUG_ASSERT(pTrack) {
         // Just to be safe, but this should never happen!!
@@ -1371,7 +1368,7 @@ TrackPointer TrackDAO::getTrack(TrackId trackId) const {
     //qDebug() << "TrackDAO::getTrack" << QThread::currentThread() << m_database.connectionName();
 
     // The GlobalTrackCache is only locked while executing the following line.
-    TrackPointer pTrack = GlobalTrackCache::instance().lookupById(trackId);
+    TrackPointer pTrack = GlobalTrackCacheLocker().lookupTrackById(trackId);
     // Accessing the database is a time consuming operation that should
     // not be executed with a lock on the GlobalTrackCache. The GlobalTrackCache will
     // be locked again after the query has been executed and potential
