@@ -60,14 +60,6 @@ public:
         return dbid.hash();
     }
 
-    // This function is needed for backward compatibility and
-    // should only be used within legacy code. It can be deleted
-    // after all integer IDs have been replaced by their type-safe
-    // counterparts.
-    int toInt() const {
-        return m_value;
-    }
-
     // This function should be used for value binding in DB queries
     // with bindValue().
     QVariant toVariant() const {
