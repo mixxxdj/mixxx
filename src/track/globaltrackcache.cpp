@@ -9,6 +9,8 @@
 
 namespace {
 
+constexpr std::size_t kUnorderedCollectionMinCapacity = 1024;
+
 const mixxx::Logger kLogger("GlobalTrackCache");
 
 //static
@@ -211,7 +213,10 @@ void GlobalTrackCache::deleter(Track* plainPtr) {
 
 GlobalTrackCache::GlobalTrackCache(GlobalTrackCacheEvictor* pEvictor)
     : m_mutex(QMutex::Recursive),
-      m_pEvictor(pEvictor) {
+      m_pEvictor(pEvictor),
+      m_indexedTracks(kUnorderedCollectionMinCapacity),
+      m_unindexedTracks(kUnorderedCollectionMinCapacity),
+      m_tracksById(kUnorderedCollectionMinCapacity, DbId::hash_fun) {
     DEBUG_ASSERT(m_pEvictor);
     DEBUG_ASSERT(verifyConsistency());
 }

@@ -3,6 +3,8 @@
 
 #include <map>
 #include <set>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "track/track.h"
 #include "track/trackref.h"
@@ -179,7 +181,7 @@ private:
     bool evictAndDelete(
             Track* plainPtr);
 
-    typedef std::map<Track*, TrackWeakPointer> IndexedTracks;
+    typedef std::unordered_map<Track*, TrackWeakPointer> IndexedTracks;
 
     bool evictAndDelete(
             GlobalTrackCacheLocker* /*nullable*/ pCacheLocker,
@@ -205,10 +207,10 @@ private:
 
     IndexedTracks m_indexedTracks;
 
-    typedef std::set<Track*> UnindexedTracks;
+    typedef std::unordered_set<Track*> UnindexedTracks;
     UnindexedTracks m_unindexedTracks;
 
-    typedef std::map<TrackId, Track*> TracksById;
+    typedef std::unordered_map<TrackId, Track*, TrackId::hash_fun_t> TracksById;
     TracksById m_tracksById;
 
     typedef std::map<QString, Track*> TracksByCanonicalLocation;
