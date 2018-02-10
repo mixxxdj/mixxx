@@ -83,7 +83,9 @@ void GlobalTrackCacheLocker::unlockCache() {
                     << "#tracksById ="
                     << m_pInstance->m_tracksById.size()
                     << "/ #tracksByCanonicalLocation ="
-                    << m_pInstance->m_tracksByCanonicalLocation.size();
+                    << m_pInstance->m_tracksByCanonicalLocation.size()
+                    << "/ #indexedTracks ="
+                    << m_pInstance->m_indexedTracks.size();
         }
         m_pInstance->m_mutex.unlock();
         if (traceLogEnabled()) {
@@ -223,9 +225,6 @@ bool GlobalTrackCache::verifyConsistency() const {
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(m_tracksByCanonicalLocation.size() <= m_indexedTracks.size()) {
-        return false;
-    }
-    VERIFY_OR_DEBUG_ASSERT(m_tracksById.size() <= m_tracksByCanonicalLocation.size()) {
         return false;
     }
     for (IndexedTracks::const_iterator i = m_indexedTracks.begin(); i != m_indexedTracks.end(); ++i) {
@@ -584,6 +583,8 @@ TrackRef GlobalTrackCache::initTrackId(
     DEBUG_ASSERT(strongPtr);
     DEBUG_ASSERT(!trackRef.getId().isValid());
     DEBUG_ASSERT(trackId.isValid());
+    DEBUG_ASSERT(m_tracksByCanonicalLocation.find(
+            trackRef.getCanonicalLocation()) != m_tracksByCanonicalLocation.end());
     TrackRef trackRefWithId(trackRef, trackId);
 
     // Insert item by id
@@ -701,7 +702,7 @@ bool GlobalTrackCache::evictAndDelete(
         return true;
     } else {
         // ...otherwise the given plainPtr is still referenced within
-        // the cache and must not be deleted, yet!
+        // the cache and must not be deleted yet!
         DEBUG_ASSERT(m_indexedTracks.find(plainPtr) != m_indexedTracks.end());
         if (debugLogEnabled()) {
             kLogger.debug()
@@ -722,29 +723,23 @@ bool GlobalTrackCache::evict(
     DEBUG_ASSERT(plainPtr);
     DEBUG_ASSERT(m_unindexedTracks.find(plainPtr) == m_unindexedTracks.end());
     TrackWeakPointer weakPtr = (*indexedTrack).second;
+    if (!(evictUnexpired || weakPtr.expired())) {
+        return false;
+    }
     if (trackRef.hasId()) {
         const auto trackById = m_tracksById.find(trackRef.getId());
         if (trackById != m_tracksById.end()) {
             DEBUG_ASSERT((*trackById).second == plainPtr);
-            if (evictUnexpired || weakPtr.expired()) {
-                // Evict expired track
-                m_tracksById.erase(trackById);
-            } else {
-                // Keep unexpired track
-                return false;
-            }
+            m_tracksById.erase(trackById);
         }
     }
-    const auto trackByCanonicalLocation(
-            m_tracksByCanonicalLocation.find(trackRef.getCanonicalLocation()));
-    if (m_tracksByCanonicalLocation.end() != trackByCanonicalLocation) {
-        if (evictUnexpired || weakPtr.expired()) {
-            // Evict expired track
+    if (trackRef.hasCanonicalLocation()) {
+        const auto trackByCanonicalLocation(
+                m_tracksByCanonicalLocation.find(trackRef.getCanonicalLocation()));
+        if (m_tracksByCanonicalLocation.end() != trackByCanonicalLocation) {
+            DEBUG_ASSERT((*trackByCanonicalLocation).second == plainPtr);
             m_tracksByCanonicalLocation.erase(
                     trackByCanonicalLocation);
-        } else {
-            // Keep unexpired track
-            return false;
         }
     }
     m_indexedTracks.erase(indexedTrack);
