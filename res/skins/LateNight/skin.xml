@@ -57,6 +57,7 @@
       <attribute persist="true" config_key="[Library],show_library">1</attribute>
       <attribute persist="true" config_key="[Master],show_xfader">1</attribute>
       <attribute config_key="[Master],maximize_library">0</attribute>
+      <attribute persist="true" config_key="[Skin],8_hotcues">0</attribute>
     </attributes>
   </manifest>
 
@@ -72,6 +73,7 @@
   <Children>
     <SetVariable name="PotiMinAngle">-135</SetVariable>
     <SetVariable name="PotiMaxAngle">135</SetVariable>
+    <SetVariable name="PlayedOverlayColor">#bb000000</SetVariable>
     <!-- Define singletons as early in the skin as possible.  Note that the
     library doesn't actually appear here, it's just instantiated and configured.
     -->

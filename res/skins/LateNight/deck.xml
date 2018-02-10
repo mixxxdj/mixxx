@@ -95,8 +95,8 @@
                         <NumberStates>1</NumberStates>
                         <State>
                           <Number>0</Number>
-                          <Pressed>buttons/btn_pitch_up1_overdown.png</Pressed>
-                          <Unpressed>buttons/btn_pitch_up1.png</Unpressed>
+                          <Pressed>buttons/btn_plus_overdown.svg</Pressed>
+                          <Unpressed>buttons/btn_plus.svg</Unpressed>
                         </State>
                         <Connection>
                           <ConfigKey><Variable name="group"/>,rate_perm_up</ConfigKey>
@@ -113,8 +113,8 @@
                         <NumberStates>1</NumberStates>
                         <State>
                           <Number>0</Number>
-                          <Pressed>buttons/btn_nudge_down1_overdown.png</Pressed>
-                          <Unpressed>buttons/btn_nudge_down1.png</Unpressed>
+                          <Pressed>buttons/btn_arrow_left_overdown.svg</Pressed>
+                          <Unpressed>buttons/btn_arrow_left.svg</Unpressed>
                         </State>
                         <Connection>
                           <ConfigKey><Variable name="group"/>,rate_temp_down</ConfigKey>
@@ -131,8 +131,8 @@
                         <NumberStates>1</NumberStates>
                         <State>
                           <Number>0</Number>
-                          <Pressed>buttons/btn_nudge_up1_overdown.png</Pressed>
-                          <Unpressed>buttons/btn_nudge_up1.png</Unpressed>
+                          <Pressed>buttons/btn_arrow_right_overdown.svg</Pressed>
+                          <Unpressed>buttons/btn_arrow_right.svg</Unpressed>
                         </State>
                         <Connection>
                           <ConfigKey><Variable name="group"/>,rate_temp_up</ConfigKey>
@@ -149,8 +149,8 @@
                         <NumberStates>1</NumberStates>
                         <State>
                           <Number>0</Number>
-                          <Pressed>buttons/btn_pitch_down1_overdown.png</Pressed>
-                          <Unpressed>buttons/btn_pitch_down1.png</Unpressed>
+                          <Pressed>buttons/btn_minus_overdown.svg</Pressed>
+                          <Unpressed>buttons/btn_minus.svg</Unpressed>
                         </State>
                         <Connection>
                           <ConfigKey><Variable name="group"/>,rate_perm_down</ConfigKey>
@@ -178,8 +178,8 @@
                         <NumberStates>1</NumberStates>
                         <State>
                           <Number>0</Number>
-                          <Pressed>buttons/btn_pitch_down1_overdown.png</Pressed>
-                          <Unpressed>buttons/btn_pitch_down1.png</Unpressed>
+                          <Pressed>buttons/btn_minus_overdown.svg</Pressed>
+                          <Unpressed>buttons/btn_minus.svg</Unpressed>
                         </State>
                         <Connection>
                           <ConfigKey><Variable name="group"/>,rate_perm_down</ConfigKey>
@@ -196,8 +196,8 @@
                         <NumberStates>1</NumberStates>
                         <State>
                           <Number>0</Number>
-                          <Pressed>buttons/btn_nudge_down1_overdown.png</Pressed>
-                          <Unpressed>buttons/btn_nudge_down1.png</Unpressed>
+                          <Pressed>buttons/btn_arrow_left_overdown.svg</Pressed>
+                          <Unpressed>buttons/btn_arrow_left.svg</Unpressed>
                         </State>
                         <Connection>
                           <ConfigKey><Variable name="group"/>,rate_temp_down</ConfigKey>
@@ -214,8 +214,8 @@
                         <NumberStates>1</NumberStates>
                         <State>
                           <Number>0</Number>
-                          <Pressed>buttons/btn_nudge_up1_overdown.png</Pressed>
-                          <Unpressed>buttons/btn_nudge_up1.png</Unpressed>
+                          <Pressed>buttons/btn_arrow_right_overdown.svg</Pressed>
+                          <Unpressed>buttons/btn_arrow_right.svg</Unpressed>
                         </State>
                         <Connection>
                           <ConfigKey><Variable name="group"/>,rate_temp_up</ConfigKey>
@@ -232,8 +232,8 @@
                         <NumberStates>1</NumberStates>
                         <State>
                           <Number>0</Number>
-                          <Pressed>buttons/btn_pitch_up1_overdown.png</Pressed>
-                          <Unpressed>buttons/btn_pitch_up1.png</Unpressed>
+                          <Pressed>buttons/btn_plus_overdown.svg</Pressed>
+                          <Unpressed>buttons/btn_plus.svg</Unpressed>
                         </State>
                         <Connection>
                           <ConfigKey><Variable name="group"/>,rate_perm_up</ConfigKey>
@@ -268,11 +268,13 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Text>SYNC</Text>
+                  <Pressed>buttons/btn_sync_over.svg</Pressed>
+                  <Unpressed>buttons/btn_sync.svg</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Text>SYNC</Text>
+                  <Pressed>buttons/btn_sync_overdown.svg</Pressed>
+                  <Unpressed>buttons/btn_sync_over.svg</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,sync_enabled</ConfigKey>
@@ -313,10 +315,10 @@
         <SizePolicy>me,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:deck_row_1.xml" />
-          <Template src="skin:deck_row_2_3_4.xml" />
-          <Template src="skin:deck_row_5.xml" />
-          <Template src="skin:deck_buttons.xml" />
+          <Template src="skin:deck_row_1_keyVinylFx.xml" />
+          <Template src="skin:deck_row_2_3_TitleArtistTime.xml" />
+          <Template src="skin:deck_row_4_overviewSpinny.xml" />
+          <Template src="skin:deck_row_5_transportLoopJump.xml" />
         </Children>
       </WidgetGroup> <!-- /Deck Channel1 -->
     </Children>

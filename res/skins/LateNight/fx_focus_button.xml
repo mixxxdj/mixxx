@@ -11,7 +11,7 @@ Variables:
   <WidgetGroup>
     <ObjectName>EffectFocusButton</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>min,me</SizePolicy>
+    <SizePolicy>f,me</SizePolicy>
     <Children>
       <WidgetGroup><Size>2f,-1min</Size></WidgetGroup>
 
