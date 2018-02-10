@@ -6,52 +6,35 @@ Description:
 -->
 <Template>
   <SingletonDefinition>
-    <ObjectName>Library_BreadCrumb_SearchBox_Row_Singleton</ObjectName>
+    <ObjectName>LibraryBreadCrumbSingleton</ObjectName>
+    <Children>
+      <LibraryBreadCrumb>
+        <ObjectName>LibraryBreadCrumb</ObjectName>
+        <SizePolicy>me,min</SizePolicy>
+        <Id>1</Id>
+      </LibraryBreadCrumb>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>LibrarySearchBoxSingleton</ObjectName>
     <Children>
       <WidgetGroup>
         <SizePolicy>me,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
-          <!-- Show expand toggle if PreviewDeck is hidden,
-              otherwise it shows up above Sidebar buttons -->
-          <WidgetGroup>
-            <ObjectName>AlignHCenter</ObjectName>
-            <Layout>horizontal</Layout>
-            <Size>37f,28min</Size>
-            <Children>
-              <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ObjectName">LibMiniMaxiButton</SetVariable>
-                <SetVariable name="Size">22f,28f</SetVariable>
-                <SetVariable name="ConfigKey">[Master],maximize_library</SetVariable>
-              </Template>
-            </Children>
-            <Connection>
-              <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
-              <Transform><Not/></Transform>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
+
+          <SearchBox>
+            <Id>1</Id>
+          </SearchBox>
 
           <WidgetGroup>
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <LibraryBreadCrumb>
-                <ObjectName>LibraryBreadCrumb</ObjectName>
-                <Id>1</Id>
-              </LibraryBreadCrumb>
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup>
-            <SizePolicy>min,min</SizePolicy>
-            <Layout>horizontal</Layout>
-            <Children>
-              <SearchBox>
-                <Id>1</Id>
-              </SearchBox>
-            </Children>
-          </WidgetGroup>
         </Children>
       </WidgetGroup>
     </Children>
@@ -74,17 +57,6 @@ Description:
         </Connection>
       </WidgetGroup>
 
-      <!-- Library buttons + Breadcrumbs + SearchBox
-          uses full width above Library if PreviewDeck is hidden -->
-      <SingletonContainer>
-        <ObjectName>Library_BreadCrumb_SearchBox_Row_Singleton</ObjectName>
-        <Connection>
-          <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
-          <Transform><Not/></Transform>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </SingletonContainer>
-
       <Splitter><!-- Library -->
         <ObjectName>LibrarySplitter</ObjectName>
         <SizePolicy>me,me</SizePolicy>
@@ -96,96 +68,158 @@ Description:
 
           <!-- SidebarButtons + [Preview + FeaturePane + CoverArt] -->
           <WidgetGroup>
-            <Layout>horizontal</Layout>
+            <Layout>vertical</Layout>
+            <!-- minSize so that 8 Preview HotCues fit nicely, 23+1px each -->
+            <Size>132min,74me</Size>
+            <Children>
+
+              <Template src="skin:library_sidebar_tester.xml"/>
+
+              <Template src="skin:preview_deck.xml"/>
+
+              <WidgetGroup>
+                <Size>0min,5f</Size>
+                <Connection>
+                  <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+
+                  <WidgetGroup>
+                    <ObjectName>SidebarButtonsContainer</ObjectName>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Layout>vertical</Layout>
+                    <Children>
+                      <!-- Show expand toggle above Sidebar buttons
+                      if PreviewDeck is hidden -->
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Children>
+                          <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
+                          <Template src="skin:button_2state_persist.xml">
+                            <SetVariable name="ObjectName">LibMiniMaxiButton</SetVariable>
+                            <SetVariable name="Size">22f,22f</SetVariable>
+                            <SetVariable name="ConfigKey">[Master],maximize_library</SetVariable>
+                          </Template>
+                          <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
+                        </Children>
+                        <Connection>
+                          <ConfigKey>[Tango],lib_sidebar_collapsed</ConfigKey>
+                          <Transform><Not/></Transform>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
+
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Children>
+                          <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
+                          <Template src="skin:button_2state_persist.xml">
+                            <SetVariable name="ObjectName">LibCoverArtButton</SetVariable>
+                            <!-- Icon size is 48x48px (24x24px), margin: left 2px, bottom 4px -->
+                            <SetVariable name="Size">26f,28f</SetVariable>
+                            <SetVariable name="ConfigKey">[Library],show_coverart</SetVariable>
+                          </Template>
+                          <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
+                        </Children>
+                      </WidgetGroup>
+
+                      <LibrarySidebarButtons>
+                        <SizePolicy>min,me</SizePolicy>
+                        <ObjectName>LibrarySidebarButtons</ObjectName>
+                      </LibrarySidebarButtons>
+
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup><!-- Preview + FeaturePane + CoverArt -->
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,me</SizePolicy>
+                    <Children>
+
+                      <SingletonContainer>
+                        <ObjectName>LibraryBreadCrumbSingleton</ObjectName>
+                        <Connection>
+                          <ConfigKey>[Tango],lib_sidebar_collapsed</ConfigKey>
+                          <Transform><Not/></Transform>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </SingletonContainer>
+
+                      <Splitter><!-- Splitter to make CoverArt resizeable -->
+                        <ObjectName>LibrarySplitter</ObjectName>
+                        <SizePolicy>me,me</SizePolicy>
+                        <SplitSizes>1,3</SplitSizes>
+                        <SplitSizesConfigKey>[Tango],splitter__coverArt_tree</SplitSizesConfigKey>
+                        <Orientation>vertical</Orientation>
+                        <Collapsible>0,1</Collapsible>
+                        <Children>
+                          <LibrarySidebarExpanded>
+                            <ObjectName>LibrarySidebarExpanded</ObjectName>
+                            <Id>1</Id>
+                          </LibrarySidebarExpanded>
+
+                          <CoverArt>
+                            <Size>30min,30min</Size>
+                            <Connection>
+                              <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </CoverArt>
+                        </Children>
+                      </Splitter><!-- /Splitter to make CoverArt resizeable -->
+
+                    </Children>
+                  </WidgetGroup><!-- /Preview + FeaturePane + CoverArt -->
+
+                </Children>
+              </WidgetGroup><!-- SidebarButtons + [Preview + FeaturePane + CoverArt] -->
+
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <SizePolicy>me,min</SizePolicy>
+            <Layout>vertical</Layout>
             <Children>
 
               <WidgetGroup>
-                <ObjectName>SidebarButtonsContainer</ObjectName>
+                <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
-                <Layout>vertical</Layout>
                 <Children>
-                  <!-- Show expand toggle above Sidebar buttons
-                  if PreviewDeck is hidden -->
                   <WidgetGroup>
                     <Layout>horizontal</Layout>
+                    <Size>180min,-1min</Size>
                     <Children>
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">LibMiniMaxiButton</SetVariable>
                         <SetVariable name="Size">22f,28f</SetVariable>
                         <SetVariable name="ConfigKey">[Master],maximize_library</SetVariable>
                       </Template>
-                    </Children>
+
+                      <WidgetGroup><Size>5f,0min</Size></WidgetGroup>
+
+                      <SingletonContainer>
+                        <ObjectName>LibraryBreadCrumbSingleton</ObjectName>
+                      </SingletonContainer>
+                    </Children><!-- -->
                     <Connection>
-                      <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
+                      <ConfigKey>[Tango],lib_sidebar_collapsed</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
 
-                  <LibrarySidebarButtons>
-                    <SizePolicy>min,me</SizePolicy>
-                    <ObjectName>LibrarySidebarButtons</ObjectName>
-                  </LibrarySidebarButtons>
+                  <SingletonContainer>
+                    <ObjectName>LibrarySearchBoxSingleton</ObjectName>
+                  </SingletonContainer>
                 </Children>
               </WidgetGroup>
-
-              <WidgetGroup><!-- Preview + FeaturePane + CoverArt -->
-                <Layout>vertical</Layout>
-                <!-- minSize so that 8 Preview HotCues fit nicely, 23+1px each -->
-                <Size>159min,74me</Size>
-                <Children>
-
-                  <Template src="skin:preview_deck.xml"/>
-
-                  <WidgetGroup>
-                    <Size>0min,5f</Size>
-                    <Connection>
-                      <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
-
-                  <Splitter><!-- Splitter to make CoverArt resizeable -->
-                    <ObjectName>LibrarySplitter</ObjectName>
-                    <SizePolicy>me,me</SizePolicy>
-                    <SplitSizes>1,3</SplitSizes>
-                    <SplitSizesConfigKey>[Tango],splitter__coverArt_tree</SplitSizesConfigKey>
-                    <Orientation>vertical</Orientation>
-                    <Collapsible>0,1</Collapsible>
-                    <Children>
-                      <LibrarySidebarExpanded>
-                        <ObjectName>LibrarySidebarExpanded</ObjectName>
-                        <Id>1</Id>
-                      </LibrarySidebarExpanded>
-
-                      <CoverArt>
-                        <Size>30min,30min</Size>
-                        <Connection>
-                          <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
-                          <BindProperty>visible</BindProperty>
-                        </Connection>
-                      </CoverArt>
-                    </Children>
-                  </Splitter><!-- /Splitter to make CoverArt resizeable -->
-
-                </Children>
-              </WidgetGroup><!-- /Preview + FeaturePane + CoverArt -->
-
-            </Children>
-          </WidgetGroup><!-- SidebarButtons + [Preview + FeaturePane + CoverArt] -->
-
-          <WidgetGroup>
-            <SizePolicy>me,min</SizePolicy>
-            <Layout>vertical</Layout>
-            <Children>
-              <!-- Library buttons + Breadcrumbs + SearchBox
-                  above Tracks table if PreviewDeck is visible -->
-              <SingletonContainer>
-                <ObjectName>Library_BreadCrumb_SearchBox_Row_Singleton</ObjectName>
-                <Connection>
-                  <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </SingletonContainer>
 
               <LibraryPane>
                 <BgColor>#585858</BgColor>

@@ -1999,8 +1999,12 @@ QToolTip {
  ################### most of it was LateNight & Deere ##########
 ############ added styling for AutoDJ & Recording etc ##### */
 
+#LibraryBreadCrumbSingleton {
+  margin: 3px -90px 2px 0px;
+}
+
 #LibMiniMaxiButton {
-  margin: 5px 3px 10px 3px;/*
+  margin: 4px 3px 5px 3px;/*
   background-color: #446971;*/
   }
   #LibMiniMaxiButton[displayValue="0"] {
@@ -2115,19 +2119,22 @@ WBaseLibrary QLabel {
 }
 
 WLibraryBreadCrumb QLabel {
-  margin: 3px 0px 3px 3px;
   font-size: 14px/14px;
   font-weight: bold;
   color: #B3B3B3;
+  margin: 3px 0px 3px 3px;
+  padding: 0px;
 }
 
 WLibraryBreadCrumb QToolButton {
   background: none;
   border: none;
+  margin: 0px;
+  padding: 0px;
 }
 
 WLibraryBreadCrumb QToolButton:hover {
-  background: none;
+  background: #669112;
 }
 
 /* library search text box */
