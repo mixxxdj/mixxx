@@ -13,6 +13,7 @@ Variables:
 <Template>	
   <SetVariable name="group">[PreviewDeck1]</SetVariable>
   <WidgetGroup>
+    <ObjectName>PreviewDeckContainer</ObjectName>
     <Layout>stacked</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
@@ -109,7 +110,7 @@ Variables:
                 </DefaultMark>
                 <Mark>
                   <Control>cue_point</Control>
-                  <Text>C</Text>
+                  <Text>Q</Text>
                   <Align>top|right</Align>
                   <Color>#FF0080</Color>
                   <TextColor>#FFFFFF</TextColor>

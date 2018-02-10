@@ -9,7 +9,7 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:xlink="http://www.w3.org/1999/xlink"
    version="1.1"
-   width="28"
+   width="22"
    height="28"
    id="svg2">
   <defs
@@ -749,8 +749,8 @@
      height="18"
      rx="0.5"
      ry="0.44999999"
-     x="-12"
-     y="5"
+     x="-12.000182"
+     y="1.9996359"
      transform="matrix(0,-1,1,0,0,0)"
      id="rect3893"
      style="fill:#888888;fill-opacity:1;stroke:none;display:inline" />
@@ -759,13 +759,13 @@
      height="2"
      rx="1"
      ry="1"
-     x="-16"
-     y="10"
+     x="-16.000183"
+     y="6.9996362"
      transform="matrix(0,-1,1,0,0,0)"
      id="rect3895"
      style="fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline" />
   <g
-     transform="matrix(1.2878787,0,0,1.2878787,-4.0303024,-2.8257567)"
+     transform="matrix(1.2878787,0,0,1.2878787,-7.0306667,-2.8255742)"
      id="g3891">
     <path
        d="m 7.4246207,5.8370504 a 1.5909902,1.5909902 0 1 1 -3.1819803,0 1.5909902,1.5909902 0 1 1 3.1819803,0 z"

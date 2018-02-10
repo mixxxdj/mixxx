@@ -8,11 +8,12 @@
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    version="1.1"
-   width="24"
-   height="24"
-   id="svg5429">
+   width="100%"
+   height="100%"
+   viewBox="0 0 18 18"
+   id="svg2">
   <metadata
-     id="metadata5441">
+     id="metadata12">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
@@ -24,21 +25,9 @@
     </rdf:RDF>
   </metadata>
   <defs
-     id="defs5439" />
+     id="defs10" />
   <path
-     d="M 5,21 H 3 L 3,3 5,3 z"
-     id="path4753-9"
-     style="fill:#888888;fill-opacity:1" />
-  <path
-     d="m 20,9.9999996 -2,0 L 18,13 11,9 l 7,-4 0,3 2,0 z"
-     id="path4753-9-3-7"
-     style="fill:#aaaaaa;fill-opacity:1" />
-  <path
-     d="m 19,21 h 2 l 0,-10 -2,0 z"
-     id="path4753-9-3"
-     style="fill:#888888;fill-opacity:1" />
-  <path
-     d="m 19,7 h 2 l 0,-4 -2,0 z"
-     id="path4753-9-3-5"
-     style="fill:#888888;fill-opacity:1" />
+     d="M 9,2 C 5.1323,2 2,5.1323 2,9 c 0,3.8677 3.1323,7 7,7 3.8677,0 7,-3.1323 7,-7 C 16,5.1323 12.868,2 9,2 z M 9,14.6 C 5.906,14.6 3.4,12.094 3.4,9 3.4,5.906 5.906,3.4 9,3.4 c 3.094,0 5.6,2.506 5.6,5.6 0,3.094 -2.506,5.6 -5.6,5.6 z"
+     id="path4"
+     style="fill:#d2d2d2;fill-opacity:1" />
 </svg>
