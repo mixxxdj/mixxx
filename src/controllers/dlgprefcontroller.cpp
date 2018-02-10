@@ -389,9 +389,6 @@ void DlgPrefController::slotLoadPreset(int chosenIndex) {
         presetPath, ControllerManager::getPresetPaths(m_pConfig));
 
     if (!pPreset) {
-        QMessageBox::warning(
-            this, tr("Action failed"),
-            tr("Failed to parse preset file"));
         return;
     }
 
