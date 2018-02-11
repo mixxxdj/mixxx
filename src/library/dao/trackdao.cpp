@@ -194,13 +194,15 @@ void TrackDAO::saveTrack(GlobalTrackCacheLocker* pCacheLocker, Track* pTrack) {
     if (pTrack->isDirty()) {
         qDebug() << "TrackDAO: Saving track" << pTrack->getLocation();
 
-        // Write audio meta data, if enabled in the preferences.
+        // Write audio meta data, if explicitly requested by the user
+        // for this track or enabled in the preferences for all tracks.
         //
         // This must be done before updating the database, because
         // a timestamp is used to keep track of when metadata has been
         // last synchronized. Exporting metadata will update this time
         // stamp on the track object!
-        if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","SyncTrackMetadataExport")).toInt() == 1) {
+        if (pTrack->isMarkedForMetadataExport() ||
+                (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","SyncTrackMetadataExport")).toInt() == 1)) {
             SoundSourceProxy::exportTrackMetadataBeforeSaving(pTrack);
         }
 

@@ -835,6 +835,11 @@ void Track::markForMetadataExport() {
     }
 }
 
+bool Track::isMarkedForMetadataExport() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_bMarkedForMetadataExport;
+}
+
 int Track::getRating() const {
     QMutexLocker lock(&m_qMutex);
     return m_record.getRating();
