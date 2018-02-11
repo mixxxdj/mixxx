@@ -19,7 +19,7 @@ HistoryFeature::HistoryFeature(UserSettingsPointer pConfig,
                              QObject* parent,
                              TrackCollection* pTrackCollection)
     : BasePlaylistFeature(pConfig, pLibrary, parent, pTrackCollection),
-    m_pLibrary(nullptr),
+    m_pLibrary(pLibrary),
     m_playlistId(-1) {
     m_pJoinWithNextAction = make_parented<QAction>(tr("Join with next"), this);
     connect(m_pJoinWithNextAction.get(), SIGNAL(triggered()),
