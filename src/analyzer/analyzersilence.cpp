@@ -1,8 +1,8 @@
 #include "analyzer/analyzersilence.h"
-#include "util/audiosignal.h"
+#include "engine/engine.h"
 
 namespace {
-    const SINT kChannelCount = mixxx::AudioSignal::kChannelCountStereo;
+    const mixxx::AudioSignal::ChannelCount kChannelCount = mixxx::kEngineChannelCount;
     const float kSilenceThresholdDb = -60.0f;
 }  // anonymous namespace
 

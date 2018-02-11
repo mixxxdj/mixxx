@@ -151,7 +151,7 @@ class AutoDJProcessorTest : public LibraryTest {
     static TrackPointer newTestTrack(TrackId trackId) {
         TrackPointer pTrack(
                 Track::newDummy(kTrackLocationTest, trackId));
-        SoundSourceProxy(pTrack).updateTrack();
+        SoundSourceProxy(pTrack).updateTrackFromSource();
         return pTrack;
     }
 

@@ -258,6 +258,16 @@ void TrackDAO::saveTrack(Track* pTrack) {
     DEBUG_ASSERT(nullptr != pTrack);
 
     if (pTrack->isDirty()) {
+        // Write audio meta data, if enabled in the preferences.
+        //
+        // This must be done before updating the database, because
+        // a timestamp is used to keep track of when metadata has been
+        // last synchronized. Exporting metadata will update this time
+        // stamp on the track object!
+        if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
+            SoundSourceProxy::exportTrackMetadataBeforeSaving(pTrack);
+        }
+
         // Only update the database if the track has already been added!
         const TrackId trackId(pTrack->getId());
         if (trackId.isValid() && updateTrack(pTrack)) {
@@ -267,21 +277,6 @@ void TrackDAO::saveTrack(Track* pTrack) {
             // BaseTrackCache.
             DEBUG_ASSERT(!pTrack->isDirty());
             emit(trackClean(trackId));
-        }
-
-        // Write audio meta data, if enabled in the preferences.
-        //
-        // TODO(XXX): Only write tag if file metadata is dirty.
-        // Currently metadata will also be saved if for example
-        // cue points have been modified, even if this information
-        // is only stored in the database.
-        // TODO(uklotzde): We need to introduce separate flag for
-        // tracking changes of track metadata regarding file tags.
-        // Instead of another flag that needs to be managed we
-        // could alternatively store a second copy of TrackMetadata
-        // in Track.
-        if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
-            SoundSourceProxy::saveTrackMetadata(pTrack);
         }
     }
 }
@@ -475,7 +470,7 @@ namespace {
         pTrackLibraryQuery->bindValue(":replaygain_peak", track.getReplayGain().getPeak());
         pTrackLibraryQuery->bindValue(":channels", track.getChannels());
 
-        pTrackLibraryQuery->bindValue(":header_parsed", track.isHeaderParsed() ? 1 : 0);
+        pTrackLibraryQuery->bindValue(":header_parsed", track.isMetadataSynchronized() ? 1 : 0);
 
         const PlayCounter playCounter(track.getPlayCounter());
         pTrackLibraryQuery->bindValue(":timesplayed", playCounter.getTimesPlayed());
@@ -699,11 +694,8 @@ TrackPointer TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove
 
     // Initially load the metadata for the newly created track
     // from the file.
-    // TODO(uklotzde): Loading of metadata can be skipped if
-    // the track is already in the library. A refactoring is
-    // needed to detect this before calling addTracksAddTrack().
-    SoundSourceProxy(pTrack).updateTrack();
-    if (!pTrack->isHeaderParsed()) {
+    SoundSourceProxy(pTrack).updateTrackFromSource();
+    if (!pTrack->isMetadataSynchronized()) {
         qWarning() << "TrackDAO::addTracksAddFile:"
                 << "Failed to parse track metadata from file"
                 << pTrack->getLocation();
@@ -1163,9 +1155,9 @@ bool setTrackFiletype(const QSqlRecord& record, const int column,
     return false;
 }
 
-bool setTrackHeaderParsed(const QSqlRecord& record, const int column,
+bool setTrackMetadataSynchronized(const QSqlRecord& record, const int column,
                           TrackPointer pTrack) {
-    pTrack->setHeaderParsed(record.value(column).toBool());
+    pTrack->setMetadataSynchronized(record.value(column).toBool());
     return false;
 }
 
@@ -1286,7 +1278,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         { "timesplayed", setTrackTimesPlayed },
         { "played", setTrackPlayed },
         { "datetime_added", setTrackDateAdded },
-        { "header_parsed", setTrackHeaderParsed },
+        { "header_parsed", setTrackMetadataSynchronized },
 
         // Beat detection columns are handled by setTrackBeats. Do not change
         // the ordering of these columns or put other columns in between them!
@@ -1374,22 +1366,11 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         pTrack->markDirty();
     } else {
         pTrack->markClean();
-        // Update both metadata and cover art from file.
-        // This must be done before inserting the track into the recent
-        // tracks cache!
-        SoundSourceProxy(pTrack).updateTrack();
-        // NOTE(uklotz): Loading of metadata from the corresponding file
-        // might have failed when the track has been added to the library.
-        // We could (re-)load the metadata here, but this would risk to
-        // overwrite the metadata that is currently stored in the library.
-        // Instead prefer to log an informational warning for the user.
-        if (!pTrack->isHeaderParsed()) {
-            qWarning() << "Metadata of the track" << pTrack->getLocation()
-                    << "has never been loaded from this file."
-                    << "Please consider reloading it manually if you prefer"
-                    << "to overwrite the metadata that is currently stored"
-                    << "in the library.";
-        }
+        // Synchronize the track's metadata with the corresponding source
+        // file. This import might have never been completed successfully
+        // before, so just check and try for every track that has been
+        // freshly loaded from the database.
+        SoundSourceProxy(pTrack).updateTrackFromSource();
     }
 
     // Data migration: Reload track total from file tags if not initialized
@@ -1404,14 +1385,14 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
                 " to replace the default value introduced with a previous"
                 " schema upgrade";
         mixxx::TrackMetadata trackMetadata;
-        if (SoundSourceProxy(pTrack).parseTrackMetadata(&trackMetadata) == OK) {
+        if (SoundSourceProxy(pTrack).importTrackMetadata(&trackMetadata) == mixxx::MetadataSource::ImportResult::Succeeded) {
             // Copy the track total from the temporary track object
-            pTrack->setTrackTotal(trackMetadata.getTrackTotal());
+            pTrack->setTrackTotal(trackMetadata.getTrackInfo().getTrackTotal());
             // Also set the track number if it is still empty due
             // to insufficient parsing capabilities of Mixxx in
             // previous versions.
-            if (!trackMetadata.getTrackNumber().isEmpty() && pTrack->getTrackNumber().isEmpty()) {
-                pTrack->setTrackNumber(trackMetadata.getTrackNumber());
+            if (!trackMetadata.getTrackInfo().getTrackNumber().isEmpty() && pTrack->getTrackNumber().isEmpty()) {
+                pTrack->setTrackNumber(trackMetadata.getTrackInfo().getTrackNumber());
             }
         } else {
             qWarning() << "Failed to reload value for 'tracktotal' from file tags:"
@@ -1454,19 +1435,6 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         emit(trackDirty(trackId));
     } else {
         emit(trackClean(trackId));
-    }
-
-    // NOTE(uklotz): Loading of metadata from the corresponding file
-    // might have failed when the track has been added to the library.
-    // We could (re-)load the metadata here, but this would risk to
-    // overwrite the metadata that is currently stored in the library.
-    // Instead prefer to log an informational warning for the user.
-    if (!pTrack->isHeaderParsed()) {
-        qWarning() << "Metadata of the track" << pTrack->getLocation()
-                << "has never been loaded from this file."
-                << "Please consider reloading it manually if you prefer"
-                << "to overwrite the metadata that is currently stored"
-                << "in the library.";
     }
 
     return pTrack;

@@ -5,7 +5,7 @@
 #include <QTemporaryFile>
 #include <QtDebug>
 
-#include "track/trackmetadatataglib.h"
+#include "sources/metadatasourcetaglib.h"
 
 namespace {
 
@@ -68,9 +68,12 @@ TEST_F(TagLibTest, WriteID3v2Tag) {
 
     // Write metadata -> only an ID3v2 tag should be added
     mixxx::TrackMetadata trackMetadata;
-    trackMetadata.setTitle("title");
-    ASSERT_EQ(OK, mixxx::taglib::writeTrackMetadataIntoFile(
-            trackMetadata, tmpFileName, mixxx::taglib::FileType::MP3));
+    trackMetadata.refTrackInfo().setTitle("title");
+    const auto exported =
+            mixxx::MetadataSourceTagLib(
+                    tmpFileName, mixxx::taglib::FileType::MP3).exportTrackMetadata(trackMetadata);
+    ASSERT_EQ(mixxx::MetadataSource::ExportResult::Succeeded, exported.first);
+    ASSERT_FALSE(exported.second.isNull());
 
     // Check that the file only has an ID3v2 tag after writing metadata
     {
@@ -82,9 +85,12 @@ TEST_F(TagLibTest, WriteID3v2Tag) {
     }
 
     // Write metadata again -> only the ID3v2 tag should be modified
-    trackMetadata.setTitle("title2");
-    ASSERT_EQ(OK, mixxx::taglib::writeTrackMetadataIntoFile(
-            trackMetadata, tmpFileName, mixxx::taglib::FileType::MP3));
+    trackMetadata.refTrackInfo().setTitle("title2");
+    const auto exported2 =
+            mixxx::MetadataSourceTagLib(
+                    tmpFileName, mixxx::taglib::FileType::MP3).exportTrackMetadata(trackMetadata);
+    ASSERT_EQ(mixxx::MetadataSource::ExportResult::Succeeded, exported.first);
+    ASSERT_FALSE(exported.second.isNull());
 
     // Check that the file (still) only has an ID3v2 tag after writing metadata
     {

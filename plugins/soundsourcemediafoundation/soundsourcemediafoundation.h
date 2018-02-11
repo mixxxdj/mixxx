@@ -6,7 +6,7 @@
 #include <mfreadwrite.h>
 
 #include "sources/soundsourceplugin.h"
-#include "util/singularsamplebuffer.h"
+#include "util/readaheadsamplebuffer.h"
 
 
 namespace mixxx {
@@ -16,11 +16,14 @@ class StreamUnitConverter final {
 
   public:
     StreamUnitConverter()
-        : m_streamUnitsPerFrame(0) {
+        : m_pAudioSource(nullptr),
+          m_streamUnitsPerFrame(0.0),
+          m_toFrameIndexBias(0) {
     }
-    explicit StreamUnitConverter(SINT frameRate)
-        : m_streamUnitsPerFrame(double(kStreamUnitsPerSecond) / double(frameRate)),
-          m_toFrameIndexBias(kStreamUnitsPerSecond / frameRate / 2) {
+    explicit StreamUnitConverter(const AudioSource* pAudioSource)
+        : m_pAudioSource(pAudioSource),
+          m_streamUnitsPerFrame(double(kStreamUnitsPerSecond) / double(pAudioSource->sampleRate())),
+          m_toFrameIndexBias(kStreamUnitsPerSecond / pAudioSource->sampleRate() / 2) {
         // The stream units should actually be much shorter
         // than the frames to minimize jitter. Even a frame
         // at 192 kHz has a length of about 5000 ns >> 100 ns.
@@ -32,36 +35,41 @@ class StreamUnitConverter final {
         // Used for seeking, so we need to round down to hit the
         // corresponding stream unit where the given stream unit
         // starts
-        return floor((frameIndex - AudioSource::getMinFrameIndex()) * m_streamUnitsPerFrame);
+        return floor((frameIndex - m_pAudioSource->frameIndexMin()) * m_streamUnitsPerFrame);
     }
 
     SINT toFrameIndex(LONGLONG streamPos) const {
         // NOTE(uklotzde): Add m_toFrameIndexBias to account for rounding errors
-        return AudioSource::getMinFrameIndex() +
+        return m_pAudioSource->frameIndexMin() +
                 static_cast<SINT>(floor((streamPos + m_toFrameIndexBias) / m_streamUnitsPerFrame));
     }
 
   private:
+    const AudioSource* m_pAudioSource;
     double m_streamUnitsPerFrame;
     SINT m_toFrameIndexBias;
 };
 
-class SoundSourceMediaFoundation : public mixxx::SoundSourcePlugin {
-public:
+class SoundSourceMediaFoundation: public mixxx::SoundSourcePlugin {
+  public:
     explicit SoundSourceMediaFoundation(const QUrl& url);
     ~SoundSourceMediaFoundation() override;
 
     void close() override;
 
-    SINT seekSampleFrame(SINT frameIndex) override;
+  protected:
+    ReadableSampleFrames readSampleFramesClamped(
+            WritableSampleFrames sampleFrames) override;
 
-    SINT readSampleFrames(SINT numberOfFrames, CSAMPLE* sampleBuffer) override;
+  private:
+    OpenResult tryOpen(
+            OpenMode mode,
+            const mixxx::AudioSource::OpenParams& params) override;
 
-private:
-    OpenResult tryOpen(const mixxx::AudioSourceConfig& audioSrcCfg) override;
-
-    bool configureAudioStream(const mixxx::AudioSourceConfig& audioSrcCfg);
+    bool configureAudioStream(const mixxx::AudioSource::OpenParams& params);
     bool readProperties();
+
+    void seekSampleFrame(SINT frameIndex);
 
     HRESULT m_hrCoInitialize;
     HRESULT m_hrMFStartup;
@@ -72,11 +80,11 @@ private:
 
     SINT m_currentFrameIndex;
 
-    SingularSampleBuffer m_sampleBuffer;
+    ReadAheadSampleBuffer m_sampleBuffer;
 };
 
 class SoundSourceProviderMediaFoundation: public SoundSourceProvider {
-public:
+  public:
     QString getName() const override;
 
     QStringList getSupportedFileExtensions() const override;

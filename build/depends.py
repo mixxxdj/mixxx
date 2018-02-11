@@ -826,6 +826,8 @@ class MixxxCore(Feature):
                    "errordialoghandler.cpp",
 
                    "sources/audiosource.cpp",
+                   "sources/audiosourcestereoproxy.cpp",
+                   "sources/metadatasourcetaglib.cpp",
                    "sources/soundsource.cpp",
                    "sources/soundsourceplugin.cpp",
                    "sources/soundsourcepluginlibrary.cpp",
@@ -1083,6 +1085,9 @@ class MixxxCore(Feature):
                    "track/trackmetadata.cpp",
                    "track/trackmetadatataglib.cpp",
                    "track/tracknumbers.cpp",
+                   "track/albuminfo.cpp",
+                   "track/trackinfo.cpp",
+                   "track/trackrecord.cpp",
 
                    "mixer/auxiliary.cpp",
                    "mixer/baseplayer.cpp",
@@ -1148,8 +1153,7 @@ class MixxxCore(Feature):
                    "util/db/sqltransaction.cpp",
                    "util/sample.cpp",
                    "util/samplebuffer.cpp",
-                   "util/singularsamplebuffer.cpp",
-                   "util/circularsamplebuffer.cpp",
+                   "util/readaheadsamplebuffer.cpp",
                    "util/rotary.cpp",
                    "util/logger.cpp",
                    "util/logging.cpp",
@@ -1158,6 +1162,7 @@ class MixxxCore(Feature):
                    "util/widgethider.cpp",
                    "util/autohidpi.cpp",
                    "util/screensaver.cpp",
+                   "util/indexrange.cpp",
 
                    '#res/mixxx.qrc'
                    ]

@@ -3,7 +3,7 @@
 #include "library/trackcollection.h"
 #include "control/controlpushbutton.h"
 #include "control/controlproxy.h"
-#include "util/audiosignal.h"
+#include "engine/engine.h"
 #include "util/math.h"
 #include "mixer/playermanager.h"
 #include "mixer/basetrackplayer.h"
@@ -12,7 +12,7 @@
 const char* kTransitionPreferenceName = "Transition";
 const double kTransitionPreferenceDefault = 10.0;
 
-const SINT kChannelCount = mixxx::AudioSignal::kChannelCountStereo;
+const mixxx::AudioSignal::ChannelCount kChannelCount = mixxx::kEngineChannelCount;
 
 static const bool sDebug = false;
 
