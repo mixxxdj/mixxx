@@ -1496,6 +1496,7 @@ void WTrackTableView::slotExportTrackMetadataIntoFileTags() {
             // corresponding track object have been dropped. Otherwise
             // writing to files that are still used for playback might
             // cause crashes or at least audible glitches!
+            mixxx::DlgTrackMetadataExport::showMessageBoxOncePerSession();
             pTrack->markForMetadataExport();
         }
     }
