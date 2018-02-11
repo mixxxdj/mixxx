@@ -777,7 +777,7 @@ void CrateFeature::htmlLinkClicked(const QUrl& link) {
 }
 
 void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
-    m_pSelectedTrack = pTrack;
+    m_pSelectedTrack = std::move(pTrack);
 
     TreeItem* pRootItem = m_childModel.getRootItem();
     VERIFY_OR_DEBUG_ASSERT(pRootItem != nullptr) {
@@ -786,8 +786,8 @@ void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
 
     TrackId selectedTrackId;
     std::vector<CrateId> sortedTrackCrates;
-    if (pTrack) {
-        selectedTrackId = pTrack->getId();
+    if (m_pSelectedTrack) {
+        selectedTrackId = m_pSelectedTrack->getId();
         CrateTrackSelectResult trackCratesIter(
                 m_pTrackCollection->crates().selectTrackCratesSorted(selectedTrackId));
         while (trackCratesIter.next()) {
