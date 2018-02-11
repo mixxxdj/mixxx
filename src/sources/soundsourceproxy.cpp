@@ -332,7 +332,7 @@ Track::ExportMetadataResult
 SoundSourceProxy::exportTrackMetadataBeforeSaving(Track* pTrack) {
     DEBUG_ASSERT(pTrack);
     mixxx::MetadataSourcePointer pMetadataSource =
-            SoundSourceProxy(pTrack).m_pSoundSource;
+            SoundSourceProxy(getCanonicalUrlForTrack(pTrack)).m_pSoundSource;
     if (pMetadataSource) {
         return pTrack->exportMetadata(pMetadataSource);
     } else {
@@ -353,9 +353,8 @@ SoundSourceProxy::SoundSourceProxy(
 }
 
 SoundSourceProxy::SoundSourceProxy(
-        const Track* pTrack)
-    : m_pTrack(TrackPointer()), // provided track object is about to be destroyed
-      m_url(getCanonicalUrlForTrack(pTrack)),
+        const QUrl& url)
+    : m_url(url),
       m_soundSourceProviderRegistrations(findSoundSourceProviderRegistrations(m_url)),
       m_soundSourceProviderRegistrationIndex(0) {
     initSoundSource();

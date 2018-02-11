@@ -113,10 +113,10 @@ class SoundSourceProxy {
     friend class TrackCollection;
     static Track::ExportMetadataResult exportTrackMetadataBeforeSaving(Track* pTrack);
 
-    // Special case: Construction from a plain TIO pointer is needed
+    // Special case: Construction from a url is needed
     // for writing metadata immediately before the TIO is destroyed.
     explicit SoundSourceProxy(
-            const Track* pTrack);
+            const QUrl& url);
 
     // Parse only the cover image from the file without modifying
     // the referenced track.
