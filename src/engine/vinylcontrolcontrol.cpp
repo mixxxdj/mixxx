@@ -1,7 +1,7 @@
 #include "engine/vinylcontrolcontrol.h"
 
 #include "vinylcontrol/vinylcontrol.h"
-#include "library/dao/cue.h"
+#include "track/cue.h"
 #include "util/math.h"
 
 VinylControlControl::VinylControlControl(QString group, UserSettingsPointer pConfig)

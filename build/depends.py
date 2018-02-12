@@ -985,7 +985,6 @@ class MixxxCore(Feature):
                    "library/scanner/recursivescandirectorytask.cpp",
 
                    "library/dao/cuedao.cpp",
-                   "library/dao/cue.cpp",
                    "library/dao/trackdao.cpp",
                    "library/dao/playlistdao.cpp",
                    "library/dao/libraryhashdao.cpp",
@@ -1080,6 +1079,7 @@ class MixxxCore(Feature):
                    "track/beatutils.cpp",
                    "track/beats.cpp",
                    "track/bpm.cpp",
+                   "track/cue.cpp",
                    "track/keyfactory.cpp",
                    "track/keys.cpp",
                    "track/keyutils.cpp",

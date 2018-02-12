@@ -6,7 +6,7 @@
 #include <QVariant>
 
 #include "library/dao/cuedao.h"
-#include "library/dao/cue.h"
+#include "track/cue.h"
 #include "track/track.h"
 #include "library/queryutil.h"
 #include "util/assert.h"

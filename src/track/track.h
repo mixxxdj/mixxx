@@ -6,8 +6,8 @@
 #include <QMutex>
 #include <QObject>
 
-#include "library/dao/cue.h"
 #include "track/beats.h"
+#include "track/cue.h"
 #include "track/trackrecord.h"
 #include "util/memory.h"
 #include "util/sandbox.h"

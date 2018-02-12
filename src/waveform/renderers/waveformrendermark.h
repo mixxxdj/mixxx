@@ -7,7 +7,7 @@
 #include "util/class.h"
 #include "waveform/renderers/waveformmarkset.h"
 #include "waveform/renderers/waveformrendererabstract.h"
-#include "library/dao/cue.h"
+#include "track/cue.h"
 #include "preferences/configobject.h"
 
 class WaveformRenderMark : public QObject, public WaveformRendererAbstract {

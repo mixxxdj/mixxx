@@ -4,7 +4,7 @@
 #include <QMutexLocker>
 #include <QtDebug>
 
-#include "library/dao/cue.h"
+#include "track/cue.h"
 #include "util/assert.h"
 
 namespace {
