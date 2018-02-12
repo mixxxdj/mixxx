@@ -336,7 +336,7 @@ void CueControl::trackCuesUpdated() {
             seekExact(pLoadCue->getPosition());
         }
     } else {
-        m_pCuePoint->set(-1.0);
+        m_pCuePoint->set(0.0);
     }
 
     if (pStartCue) {
