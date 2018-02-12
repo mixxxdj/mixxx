@@ -10,16 +10,18 @@
     <ObjectName>OverviewRow</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,me</SizePolicy>
-    <MinimumSize>-1,40</MinimumSize>
-    <MaximumSize>-1,65</MaximumSize>
+    <MinimumSize>-1,46</MinimumSize>
+    <MaximumSize>-1,-1</MaximumSize>
     <Children>
       <WidgetGroup>
-        <ObjectName>ButtonGrid</ObjectName>
+        <ObjectName>DeckControlsGrid</ObjectName>
         <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
           <WidgetGroup>
-            <ObjectName>ButtonGrid</ObjectName>
+            <ObjectName>DeckControlsGrid</ObjectName>
             <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
             <Children>
 
               <Template src="skin:left_2state_button.xml">
@@ -52,6 +54,27 @@
                 <SetVariable name="left_connection_control"><Variable name="group"/>,repeat</SetVariable>
               </Template>
 
+              <Template src="skin:left_right_1state_button.xml">
+                <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
+                <SetVariable name="ObjectName">BeatsTranslateCurposButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_beats_translate_curpos_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_beats_translate_curpos_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,beats_translate_curpos</SetVariable>
+                <SetVariable name="right_connection_control"><Variable name="group"/>,beats_translate_match_alignment</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>DeckControlsGrid</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
               <Template src="skin:left_2state_button.xml">
                 <SetVariable name="TooltipId">eject</SetVariable>
                 <SetVariable name="ObjectName">EjectButton</SetVariable>
@@ -65,26 +88,6 @@
                 <SetVariable name="state_1_pressed">icon/ic_eject_48px.svg</SetVariable>
                 <SetVariable name="state_1_unpressed">icon/ic_eject_48px.svg</SetVariable>
                 <SetVariable name="left_connection_control"><Variable name="group"/>,eject</SetVariable>
-              </Template>
-
-            </Children>
-          </WidgetGroup>
-
-          <WidgetGroup>
-            <ObjectName>ButtonGrid</ObjectName>
-            <Layout>horizontal</Layout>
-            <Children>
-              <Template src="skin:left_right_1state_button.xml">
-                <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
-                <SetVariable name="ObjectName">BeatsTranslateCurposButton</SetVariable>
-                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-                <SetVariable name="state_0_text"></SetVariable>
-                <SetVariable name="state_0_pressed">icon/ic_beats_translate_curpos_48px.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">icon/ic_beats_translate_curpos_48px.svg</SetVariable>
-                <SetVariable name="left_connection_control"><Variable name="group"/>,beats_translate_curpos</SetVariable>
-                <SetVariable name="right_connection_control"><Variable name="group"/>,beats_translate_match_alignment</SetVariable>
               </Template>
 
               <Template src="skin:left_2state_button.xml">
@@ -120,17 +123,16 @@
             </Children>
           </WidgetGroup>
         </Children>
-        <Connection>
-          <ConfigKey>[Deere],show_minimal_deck_controls</ConfigKey>
-          <BindProperty>visible</BindProperty>
-          <Transform>
-            <Not/>
-          </Transform>
-        </Connection>
       </WidgetGroup>
+
+      <!-- Can't apply margin & padding to WOverview.
+          Due to qproperty-layoutSpacing, this spacer creates a 5px
+          gap between deck options and overview and FX assignment buttons -->
+      <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
 
       <Overview>
         <TooltipId>waveform_overview</TooltipId>
+        <ObjectName>DeckOverview</ObjectName>
         <Group><Variable name="group"/></Group>
         <SizePolicy>me,me</SizePolicy>
         <BgColor><Variable name="DeckBackgroundColor"/></BgColor>
@@ -169,16 +171,15 @@
         </Connection>
       </Overview>
 
+      <!-- Can't apply margin & padding to WOverview.
+          Due to qproperty-layoutSpacing, this spacer creates a 5px
+          gap between deck options and overview and FX assignment buttons -->
+      <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
+
       <WidgetGroup>
-        <ObjectName>ButtonGrid</ObjectName>
+        <ObjectName>DeckControlsGrid</ObjectName>
         <Layout>vertical</Layout>
-        <Connection>
-          <ConfigKey>[Master],show_4effectunits</ConfigKey>
-          <BindProperty>visible</BindProperty>
-          <Transform>
-            <Not/>
-          </Transform>
-        </Connection>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
           <Template src="skin:fx_unit_group_assignment_button.xml">
             <SetVariable name="EffectUnit">1</SetVariable>
@@ -193,32 +194,17 @@
       </WidgetGroup>
 
       <WidgetGroup>
-        <ObjectName>ButtonGrid</ObjectName>
-        <Layout>vertical</Layout>
+        <Layout>horizontal</Layout>
         <Connection>
           <ConfigKey>[Master],show_4effectunits</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
         <Children>
-          <WidgetGroup>
-            <ObjectName>ButtonGrid</ObjectName>
-            <Layout>horizontal</Layout>
-            <Children>
-              <Template src="skin:fx_unit_group_assignment_button.xml">
-                <SetVariable name="EffectUnit">1</SetVariable>
-                <SetVariable name="SourceType">deck</SetVariable>
-              </Template>
-
-              <Template src="skin:fx_unit_group_assignment_button.xml">
-                <SetVariable name="EffectUnit">2</SetVariable>
-                <SetVariable name="SourceType">deck</SetVariable>
-              </Template>
-            </Children>
-          </WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>ButtonGrid</ObjectName>
-            <Layout>horizontal</Layout>
+            <ObjectName>DeckControlsGrid</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
             <Children>
               <Template src="skin:fx_unit_group_assignment_button.xml">
                 <SetVariable name="EffectUnit">3</SetVariable>

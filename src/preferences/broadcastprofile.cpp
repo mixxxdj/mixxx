@@ -54,7 +54,9 @@ const char* kStreamName = "StreamName";
 const char* kStreamPublic = "StreamPublic";
 const char* kStreamWebsite = "StreamWebsite";
 
+#ifdef __QTKEYCHAIN__
 const char* kKeychainPrefix = "Mixxx - ";
+#endif
 
 const double kDefaultBitrate = 128;
 const int kDefaultChannels = 2;
@@ -296,7 +298,7 @@ bool BroadcastProfile::loadValues(const QString& filename) {
     m_customTitle = XmlParse::selectNodeQString(doc, kCustomTitle);
     m_metadataFormat = XmlParse::selectNodeQString(doc, kMetadataFormat);
     m_oggDynamicUpdate =
-            (bool)XmlParse::selectNodeInt(doc, kMetadataFormat);
+            (bool)XmlParse::selectNodeInt(doc, kOggDynamicUpdate);
 
     return true;
 }
@@ -425,8 +427,11 @@ bool BroadcastProfile::setSecurePassword(QString login, QString password) {
                 writeJob.errorString());
         return false;
     }
-#endif
+#else
+    Q_UNUSED(login);
+    Q_UNUSED(password);
     return false;
+#endif
 }
 
 QString BroadcastProfile::getSecurePassword(QString login) {

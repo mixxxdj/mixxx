@@ -30,43 +30,14 @@
 #include "track/beats.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
+#include "track/globaltrackcache.h"
 #include "track/tracknumbers.h"
 #include "util/assert.h"
 #include "util/file.h"
 #include "util/timer.h"
 #include "util/math.h"
 
-QHash<TrackId, TrackWeakPointer> TrackDAO::m_sTracks;
-QMutex TrackDAO::m_sTracksMutex;
-
 enum { UndefinedRecordIndex = -2 };
-
-RecentTrackCacheItem::RecentTrackCacheItem(
-        const TrackPointer& pTrack)
-        : m_pTrack(pTrack) {
-    DEBUG_ASSERT(m_pTrack);
-}
-
-RecentTrackCacheItem::~RecentTrackCacheItem() {
-    // qDebug() << "~RecentTrackCacheItem" << m_pTrack << "ID"
-    //          << m_pTrack->getId() << m_pTrack->getInfo();
-
-    // Signal to TrackDAO::saveTrack(TrackPointer) to save the track if it is
-    // dirty. Does not drop the strong reference to the track until saveTrack
-    // completes.
-    if (m_pTrack->isDirty()) {
-        emit(saveTrack(m_pTrack));
-    }
-}
-
-// The number of recently used tracks to cache strong references to at
-// once. Once the n+1'th track is created, the TrackDAO's QCache deletes its
-// RecentTrackCacheItem which signals to TrackDAO::saveTrack(TrackPointer) to save the
-// track and drop the strong reference. The recent tracks cache basically
-// functions to prevent repeated getTrack() calls for the same track from
-// repeatedly deserializing / serializing a track to the database since this is
-// expensive.
-const int kRecentTracksCacheSize = 5;
 
 TrackDAO::TrackDAO(CueDAO& cueDao,
                    PlaylistDAO& playlistDao,
@@ -78,7 +49,6 @@ TrackDAO::TrackDAO(CueDAO& cueDao,
           m_analysisDao(analysisDao),
           m_libraryHashDao(libraryHashDao),
           m_pConfig(pConfig),
-          m_recentTracksCache(kRecentTracksCacheSize),
           m_trackLocationIdColumn(UndefinedRecordIndex),
           m_queryLibraryIdColumn(UndefinedRecordIndex),
           m_queryLibraryMixxxDeletedColumn(UndefinedRecordIndex) {
@@ -91,37 +61,7 @@ TrackDAO::~TrackDAO() {
 }
 
 void TrackDAO::finish() {
-    // Save all tracks that haven't been saved yet.
-    QMutexLocker locker(&m_sTracksMutex);
-    QHashIterator<TrackId, TrackWeakPointer> it(m_sTracks);
-    while (it.hasNext()) {
-        it.next();
-        // Cast from TrackWeakPointer to TrackPointer. If the track still exists
-        // then pTrack will be non-nullptr. If the track is dirty then save it.
-        TrackPointer pTrack = TrackPointer(it.value());
-        if (pTrack) {
-            if (pTrack->isDirty()) {
-                saveTrack(pTrack);
-            }
-
-            // When this reference expires, tell the track to delete itself
-            // rather than signalling to TrackDAO.
-            pTrack->setDeleteOnReferenceExpiration(true);
-        }
-    }
-    m_sTracks.clear();
-    locker.unlock();
-
-    // Clear cache, so all cached tracks without other references are deleted.
-    // Will queue a bunch of saveTrack calls for every RecentTrackCacheItem in
-    // m_recentTracksCache. The event loop is already stopped at this point so
-    // the queued signals won't be processed.
-    clearCache();
-
-    // Clearing the cache should queue a bunch of save events for tracks still
-    // in the recent tracks cache. Deliver those events manually since we don't
-    // have an event loop running anymore.
-    QCoreApplication::sendPostedEvents(this, 0);
+    qDebug() << "TrackDAO::finish()";
 
     // clear out played information on exit
     // crash prevention: if mixxx crashes, played information will be maintained
@@ -248,24 +188,32 @@ bool TrackDAO::trackExistsInDatabase(const QString& absoluteFilePath) {
     return getTrackId(absoluteFilePath).isValid();
 }
 
-void TrackDAO::saveTrack(const TrackPointer& pTrack) {
-    if (pTrack) {
-        saveTrack(pTrack.get());
-    }
-}
-
-void TrackDAO::saveTrack(Track* pTrack) {
-    DEBUG_ASSERT(nullptr != pTrack);
+void TrackDAO::saveTrack(GlobalTrackCacheLocker* pCacheLocker, Track* pTrack) {
+    DEBUG_ASSERT(pTrack);
 
     if (pTrack->isDirty()) {
+        qDebug() << "TrackDAO: Saving track" << pTrack->getLocation();
+
         // Write audio meta data, if enabled in the preferences.
         //
         // This must be done before updating the database, because
         // a timestamp is used to keep track of when metadata has been
         // last synchronized. Exporting metadata will update this time
         // stamp on the track object!
-        if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
+        if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","SyncTrackMetadataExport")).toInt() == 1) {
             SoundSourceProxy::exportTrackMetadataBeforeSaving(pTrack);
+        }
+
+        // The track cache can safely be unlocked now that the metadata has
+        // been exported to the file. Updating the database is thread-safe
+        // an we accept this very small chance of a race condition here.
+        // Exporting metadata to a file cannot be rolled back if updating
+        // the database fails, so we have to account for inconsistencies
+        // in any case!
+        // Unlocking the cache now reduces lock contention and keeps the
+        // UI as responsive as possible.
+        if (pCacheLocker) {
+            pCacheLocker->unlockCache();
         }
 
         // Only update the database if the track has already been added!
@@ -655,32 +603,39 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
         DEBUG_ASSERT(!m_tracksAddedSet.contains(trackId));
         m_tracksAddedSet.insert(trackId);
     }
+
+    return trackId;
+}
+
+TrackPointer TrackDAO::addTracksAddTrack(GlobalTrackCacheResolver&& cacheResolver, bool unremove) {
+    const TrackPointer pTrack(cacheResolver.getTrack());
+    if (!pTrack) {
+        qWarning() << "TrackDAO::addTracksAddTrack: Track not found"
+                << cacheResolver.getTrackRef();
+        return TrackPointer();
+    }
+
+    const TrackId trackId(addTracksAddTrack(pTrack, unremove));
     if (trackId.isValid()) {
-        pTrack->initId(trackId);
+        cacheResolver.updateTrackId(trackId);
+        cacheResolver.unlockCache();
+        // Only newly inserted tracks must be marked as clean!
+        // Existing or unremoved tracks have not been added to
+        // m_tracksAddedSet and will keep their dirty flag unchanged.
+        if (m_tracksAddedSet.contains(trackId)) {
+            pTrack->markClean();
+        }
+        return pTrack;
     } else {
         qWarning() << "TrackDAO::addTracksAddTrack:"
                 << "Failed to add track to database"
                 << pTrack->getLocation();
+        // GlobalTrackCache will be unlocked implicitly
+        return TrackPointer();
     }
-    // When exiting this function the trackId obtained from the
-    // database must match the id of the track, no matter if the
-    // track has been inserted or updated. If the trackId is still
-    // invalid adding the track to the library must have failed
-    // and the id of the track should also still be invalid.
-    DEBUG_ASSERT(pTrack->getId() == trackId);
-    // Only newly inserted tracks must be marked as clean!
-    // Existing or unremoved tracks have not been added to
-    // m_tracksAddedSet and will keep their dirty flag unchanged.
-    if (m_tracksAddedSet.contains(trackId)) {
-        pTrack->markClean();
-    }
-    return trackId;
 }
 
 TrackPointer TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove) {
-    // TODO(uklotzde): Resolve Track through TrackCache
-    TrackPointer pTrack(Track::newTemporary(fileInfo));
-
     // Check that track is a supported extension.
     // TODO(uklotzde): The following check can be skipped if
     // the track is already in the library. A refactoring is
@@ -688,11 +643,30 @@ TrackPointer TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove
     if (!SoundSourceProxy::isFileSupported(fileInfo)) {
         qWarning() << "TrackDAO::addTracksAddFile:"
                 << "Unsupported file type"
-                << pTrack->getLocation();
+                << TrackRef::location(fileInfo);
         return TrackPointer();
     }
 
-    // Initially load the metadata for the newly created track
+    GlobalTrackCacheResolver cacheResolver(
+            GlobalTrackCache::instance().resolve(fileInfo));
+    const TrackPointer pTrack = cacheResolver.getTrack();
+    if (!pTrack) {
+        qWarning() << "TrackDAO::addTracksAddFile:"
+                << "File not found"
+                << TrackRef::location(fileInfo);
+        return TrackPointer();
+    }
+    const TrackId trackId = pTrack->getId();
+    if (trackId.isValid()) {
+        qDebug() << "TrackDAO::addTracksAddFile:"
+                << "Track has already been added to the database"
+                << trackId;
+        return TrackPointer();
+    }
+    // Keep the GlobalTrackCache locked until the id of the Track
+    // object is known and has been updated in the cache.
+
+    // Initially (re-)import the metadata for the newly created track
     // from the file.
     SoundSourceProxy(pTrack).updateTrackFromSource();
     if (!pTrack->isMetadataSynchronized()) {
@@ -703,25 +677,13 @@ TrackPointer TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove
         // if parsing the metadata from file succeeded or failed.
     }
 
-    const TrackId trackId(addTracksAddTrack(pTrack, unremove));
-
-    // TODO(uklotzde): Update TrackCache with trackId
-
-    if (trackId.isValid()) {
-        DEBUG_ASSERT(pTrack->getId() == trackId);
-        return pTrack;
-    } else {
-        return TrackPointer();
-    }
+    return addTracksAddTrack(std::move(cacheResolver), unremove);
 }
 
 TrackPointer TrackDAO::addSingleTrack(const QFileInfo& fileInfo, bool unremove) {
     addTracksPrepare();
     TrackPointer pTrack(addTracksAddFile(fileInfo, unremove));
     addTracksFinish(!pTrack);
-    if (pTrack) {
-        cacheRecentTrack(pTrack->getId(), pTrack);
-    }
     return pTrack;
 }
 
@@ -971,33 +933,6 @@ void TrackDAO::afterPurgingTracks(
     emit(forceModelUpdate());
 }
 
-void TrackDAO::slotTrackReferenceExpired(Track* pTrack) {
-    // Should not be possible.
-    VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
-        return;
-    }
-
-    // qDebug() << "TrackDAO::slotTrackReferenceExpired" << pTrack << "ID"
-    //          << pTrack->getId() << pTrack->getInfo();
-    // This is a private slot that is connected to TIO's created by this
-    // TrackDAO. It is a way for the track to notify us once its reference count
-    // has dropped to zero. This is invoked via a QueuedConnection so even
-    // though the track reference count can drop to zero in any thread this
-    // handler runs in the main thread.
-
-    // Save the track if it is dirty.
-    if (pTrack->isDirty()) {
-        saveTrack(pTrack);
-    }
-
-    // Delete Track from weak reference cache
-    m_sTracksMutex.lock();
-    m_sTracks.remove(pTrack->getId());
-    m_sTracksMutex.unlock();
-
-    delete pTrack;
-}
-
 namespace {
 typedef bool (*TrackPopulatorFn)(const QSqlRecord& record,
                                  const int column,
@@ -1227,22 +1162,6 @@ struct ColumnPopulator {
 
 #define ARRAYLENGTH(x) (sizeof(x) / sizeof(*x))
 
-void TrackDAO::cacheRecentTrack(
-        TrackId trackId,
-        const TrackPointer& pTrack) const {
-    std::unique_ptr<RecentTrackCacheItem> pCacheItem =
-            std::make_unique<RecentTrackCacheItem>(pTrack);
-    m_recentTracksCache.insert(trackId, pCacheItem.get());
-    RecentTrackCacheItem* pCachedItem = pCacheItem.release(); // m_recentTracksCache has taken ownership
-
-    // Queued connection. We are not in a rush to process cache
-    // expirations and it can produce dangerous signal loops.
-    // See: https://bugs.launchpad.net/mixxx/+bug/1365708
-    connect(pCachedItem, SIGNAL(saveTrack(TrackPointer)),
-            this, SLOT(saveTrack(TrackPointer)),
-            Qt::QueuedConnection);
-}
-
 TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     if (!trackId.isValid()) {
         return TrackPointer();
@@ -1338,13 +1257,23 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     const QString trackLocation(queryRecord.value(0).toString());
     const QFileInfo fileInfo(trackLocation);
 
-    // TODO(uklotzde): Resolve through TrackCache
-    TrackPointer pTrack(
-            new Track(fileInfo, SecurityTokenPointer(), trackId),
-            Track::onTrackReferenceExpired);
-
-    // TIO already stats the file to see if it exists, what its length is,
-    // etc. So don't bother setting it.
+    GlobalTrackCacheResolver cacheResolver(
+            GlobalTrackCache::instance().resolve(trackId, fileInfo));
+    TrackPointer pTrack(cacheResolver.getTrack());
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
+        return pTrack;
+    }
+    if (cacheResolver.getGlobalTrackCacheLookupResult() == GlobalTrackCacheLookupResult::HIT) {
+        // Due to race conditions the track might have been reloaded
+        // from the database. In this case we abort the operation and
+        // simply return the cached Track object.
+        return pTrack;
+    }
+    DEBUG_ASSERT(cacheResolver.getGlobalTrackCacheLookupResult() == GlobalTrackCacheLookupResult::MISS);
+    DEBUG_ASSERT(pTrack->getId() == trackId);
+    // After the Track object has been cached with an id we can safely
+    // release the lock the cache. This is needed to reduce lock contention.
+    cacheResolver.unlockCache();
 
     // For every column run its populator to fill the track in with the data.
     bool shouldDirty = false;
@@ -1352,7 +1281,9 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         TrackPopulatorFn populator = columns[i].populator;
         if (populator != nullptr) {
             // If any populator says the track should be dirty then we dirty it.
-            shouldDirty = (*populator)(queryRecord, i, pTrack) || shouldDirty;
+            if ((*populator)(queryRecord, i, pTrack)) {
+                shouldDirty = true;
+            }
         }
     }
 
@@ -1410,22 +1341,6 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     connect(pTrack.get(), SIGNAL(changed(Track*)),
             this, SLOT(slotTrackChanged(Track*)),
             Qt::DirectConnection);
-    // Queued connection. We are not in a rush to process reference
-    // count expirations and it can produce dangerous signal loops.
-    // See: https://bugs.launchpad.net/mixxx/+bug/1365708
-    connect(pTrack.get(), SIGNAL(referenceExpired(Track*)),
-            this, SLOT(slotTrackReferenceExpired(Track*)),
-            Qt::QueuedConnection);
-
-    m_sTracksMutex.lock();
-    // Automatic conversion to a weak pointer
-    m_sTracks[trackId] = pTrack;
-    //int trackCount = m_sTracks.count();
-    m_sTracksMutex.unlock();
-    //qDebug() << "TrackDAO::m_sTracks.count() =" << trackCount;
-
-    // Insert the loaded track into the recent tracks cache
-    cacheRecentTrack(trackId, pTrack);
 
     // BaseTrackCache cares about track trackDirty/trackClean notifications
     // from TrackDAO that are triggered by the track itself. But the preceding
@@ -1440,48 +1355,16 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     return pTrack;
 }
 
-TrackPointer TrackDAO::getTrack(TrackId trackId, const bool cacheOnly) const {
+TrackPointer TrackDAO::getTrack(TrackId trackId) const {
     //qDebug() << "TrackDAO::getTrack" << QThread::currentThread() << m_database.connectionName();
 
-    // If the track cache contains the track ID, use it to get a strong
-    // reference to the track. We do this first so that the QCache keeps track
-    // of the least-recently-used track so that it expires them intelligently.
-    RecentTrackCacheItem* pTrackCacheItem = m_recentTracksCache.object(trackId);
-    if (pTrackCacheItem != nullptr) {
-        return pTrackCacheItem->getTrack();
-    }
-
-    TrackPointer pTrack;
-
-    // Next, check the weak-reference cache to see if the track still has a
-    // strong reference somewhere. It's possible that something is currently
-    // using this track so its reference count is non-zero despite it not being
-    // present in the track cache.
-    QMutexLocker locker(&m_sTracksMutex);
-    QHash<TrackId, TrackWeakPointer>::iterator it = m_sTracks.find(trackId);
-    if (it != m_sTracks.end()) {
-        //qDebug() << "Returning cached TIO for track" << id;
-        pTrack = TrackPointer(it.value());
-    }
-    // Unlock the track cache mutex. Otherwise we can deadlock.
-    locker.unlock();
-
-    // If we were able to convert a weak reference to a strong reference then
-    // re-insert it into the recent tracks cache so that its least-recently-used
-    // tracking is accurate.
-    if (pTrack) {
-        // If we were able to convert a weak reference to a strong reference then
-        // re-insert it into the recent tracks cache so that its least-recently-used
-        // tracking is accurate.
-        cacheRecentTrack(trackId, pTrack);
-    } else {
-        // Cache miss
-        if (!cacheOnly) {
-            // Deserialize the track from the database.
-            pTrack = getTrackFromDB(trackId);
-        }
-    }
-    return pTrack;
+    // The GlobalTrackCache is only locked while executing the following line.
+    TrackPointer pTrack = GlobalTrackCache::instance().lookupById(trackId).getTrack();
+    // Accessing the database is a time consuming operation that should
+    // not be executed with a lock on the GlobalTrackCache. The GlobalTrackCache will
+    // be locked again after the query has been executed and potential
+    // race conditions will be resolved in getTrackFromDB()
+    return pTrack ? pTrack : getTrackFromDB(trackId);
 }
 
 // Saves a track's info back to the database
@@ -1799,12 +1682,6 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
         }
     }
     return true;
-}
-
-void TrackDAO::clearCache() {
-    // Triggers a deletion of all the RecentTrackCacheItems which in turn calls
-    // saveTrack(TrackPointer) for all of the tracks in the recent tracks cache.
-    m_recentTracksCache.clear();
 }
 
 void TrackDAO::markTracksAsMixxxDeleted(const QString& dir) {

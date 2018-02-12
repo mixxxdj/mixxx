@@ -10,11 +10,15 @@ Variables:
   parameter     : the parameter
 -->
 <Template>
+  <SetVariable name="FxRack_FxUnit_FxNum">[<Variable name="FxRack_FxUnit"/>_Effect<Variable name="FxNum"/>]</SetVariable>
+
   <WidgetGroup>
     <Layout>vertical</Layout>
     <Size>52f,45f</Size>
     <Children>
-      <WidgetGroup>
+      <WidgetGroup><!-- Parameter knob + parameter name -->
+        <!-- stacked because there was no other way to get knob and
+            name closer together -->
         <Layout>stacked</Layout>
         <Size>52f,34f</Size>
         <Children>
@@ -31,7 +35,7 @@ Variables:
                 <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                 <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
                 <Connection>
-                  <ConfigKey><Variable name="FxGroup_FxNum"/>,parameter<Variable name="parameter"/></ConfigKey>
+                  <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/></ConfigKey>
                 </Connection>
               </EffectParameterKnobComposed>
             </Children>
@@ -41,22 +45,22 @@ Variables:
             <Size>51f,34f</Size>
             <Layout>horizontal</Layout>
             <Children>
-              <!-- To keep text centered it's in an container with spacer on the left/right -->
+              <!-- To keep text centered it's in an container with spacers on the left/right -->
               <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
               <EffectParameterName>
                 <ObjectName>FxParameterKnobName</ObjectName>
                 <Size>-1min,34f</Size>
-                <EffectRack><Variable name="FxRackNum"/></EffectRack>
-                <EffectUnit><Variable name="FxUnitNum"/></EffectUnit>
+                <EffectRack><Variable name="FxRack"/></EffectRack>
+                <EffectUnit><Variable name="FxUnit"/></EffectUnit>
                 <Effect><Variable name="FxNum"/></Effect>
-                <EffectParameter><Variable name="parameter"/></EffectParameter>
+                <EffectParameter><Variable name="FxParameter"/></EffectParameter>
                 <Alignment>left</Alignment>
               </EffectParameterName>
               <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
             </Children>
           </WidgetGroup>
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- Parameter knob + parameter name -->
 
       <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
 
@@ -65,7 +69,7 @@ Variables:
         <SetVariable name="TooltipId">EffectSlot_parameter_link_type</SetVariable>
         <SetVariable name="ObjectName">FxSuperLinkButton</SetVariable>
         <SetVariable name="Size">51f,5f</SetVariable>
-        <SetVariable name="ConfigKey"><Variable name="FxGroup_FxNum"/>,parameter<Variable name="parameter"/>_link_type</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/>_link_type</SetVariable>
       </Template>
 
       <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
@@ -75,13 +79,13 @@ Variables:
         <SetVariable name="TooltipId">EffectSlot_parameter_inversion</SetVariable>
         <SetVariable name="ObjectName">FxSuperLinkInvertButton</SetVariable>
         <SetVariable name="Size">51f,5f</SetVariable>
-        <SetVariable name="ConfigKey"><Variable name="FxGroup_FxNum"/>,parameter<Variable name="parameter"/>_link_inverse</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/>_link_inverse</SetVariable>
       </Template>
 
     </Children>
     <!-- show only if parameter is loaded -->
     <Connection>
-      <ConfigKey><Variable name="FxGroup_FxNum"/>,parameter<Variable name="parameter"/>_loaded</ConfigKey>
+      <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/>_loaded</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

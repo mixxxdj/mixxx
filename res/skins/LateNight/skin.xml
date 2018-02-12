@@ -39,15 +39,11 @@
     <attributes>
       <!-- Set skin defaults. -->
       <attribute config_key="[Master],num_decks">4</attribute>
-      <attribute persist="true" config_key="[Spinny1],show_spinny">1</attribute>
-      <attribute persist="true" config_key="[Spinny2],show_spinny">1</attribute>
-      <attribute persist="true" config_key="[Spinny3],show_spinny">1</attribute>
-      <attribute persist="true" config_key="[Spinny4],show_spinny">1</attribute>
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
       <attribute persist="true" config_key="[MicrophoneRack],show">0</attribute>
       <attribute persist="true" config_key="[EffectRack1],show">0</attribute>
       <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
-      <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
+      <attribute persist="true" config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
       <attribute persist="true" config_key="[Master],show_eqs">1</attribute>
@@ -57,8 +53,10 @@
       <attribute persist="true" config_key="[Library],show_current">1</attribute>
       <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Spinny],show_spinnies">1</attribute>
-      <attribute config_key="[Library],show_library">1</attribute>
+      <attribute persist="true" config_key="[Library],show_library">1</attribute>
+      <attribute persist="true" config_key="[Master],show_xfader">1</attribute>
       <attribute config_key="[Master],maximize_library">0</attribute>
+      <attribute persist="true" config_key="[Skin],8_hotcues">0</attribute>
     </attributes>
   </manifest>
 
@@ -67,59 +65,89 @@
 
   <!-- MinimumSize should not be an exact monitor resolution. There needs
   to be space for the title bar or other chrome at full screen -->
-  <MinimumSize>1280,700</MinimumSize>
+  <MinimumSize>1270,666</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>
 
   <Children>
+    <SetVariable name="PotiMinAngle">-135</SetVariable>
+    <SetVariable name="PotiMaxAngle">135</SetVariable>
+    <SetVariable name="PlayedOverlayColor">#bb000000</SetVariable>
     <!-- Define singletons as early in the skin as possible.  Note that the
     library doesn't actually appear here, it's just instantiated and configured.
     -->
     <SingletonDefinition>
-        <ObjectName>LibrarySingleton</ObjectName>
-        <Children>
-            <Template src="skin:library.xml"/>
-        </Children>
+      <ObjectName>LibrarySingleton</ObjectName>
+      <Children>
+        <Template src="skin:library.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>ClockRecLogo</ObjectName>
+      <Children>
+        <Template src="skin:toolbar_clock_rec_logo.xml"/>
+      </Children>
     </SingletonDefinition>
 
     <WidgetGroup>
-        <ObjectName>SkinContainer</ObjectName>
-        <Layout>horizontal</Layout>
-        <SizePolicy>me,me</SizePolicy>
-        <Children>
-            <!-- Select between either the full UI or the big library -->
-            <WidgetStack currentpage="[Master],maximize_library">
-                <Children>
-                    <WidgetGroup>
-                        <Layout>vertical</Layout>
-                        <SizePolicy>me,me</SizePolicy>
-                        <Children>
-                            <WidgetGroup>
-                                <Layout>horizontal</Layout>
-                                <SizePolicy>i,max</SizePolicy>
-                                <Children>
-                                    <Template src="skin:decks_left.xml"/>
-                                    <Template src="skin:waveform_and_mixer.xml"/>
-                                    <Template src="skin:decks_right.xml"/>
-                                </Children>
-                            </WidgetGroup>
-                            <Template src="skin:lower_half.xml"/>
-                        </Children>
-                    </WidgetGroup>
+      <ObjectName>SkinContainer</ObjectName>
+      <Layout>horizontal</Layout>
+      <SizePolicy>me,me</SizePolicy>
+      <Children>
 
+        <!-- Select between either the full UI or the big library -->
+        <WidgetStack currentpage="[Master],maximize_library">
+          <Children>
+
+            <!-- Decks, Effects ... Library -->
+            <Splitter>
+              <ObjectName>CoverArtSplitter</ObjectName>
+              <Orientation>vertical</Orientation>
+              <SizePolicy>me,min</SizePolicy>
+              <SplitSizes>1,5</SplitSizes>
+              <SplitSizesConfigKey>[LateNight],waveform_splitSize</SplitSizesConfigKey>
+              <Collapsible>1,0</Collapsible>
+              <Children>
+
+                <Template src="skin:waveforms.xml"/>
+
+                <WidgetGroup>
+                  <Layout>vertical</Layout>
+                  <SizePolicy>me,me</SizePolicy>
+                  <Children>
                     <WidgetGroup>
-                        <Layout>vertical</Layout>
-                        <SizePolicy>me,me</SizePolicy>
-                        <Children>
-                            <SingletonContainer>
-                                <ObjectName>LibrarySingleton</ObjectName>
-                            </SingletonContainer>
-                            <Template src="skin:toolbar_big_library.xml"/>
-                        </Children>
+                      <Layout>horizontal</Layout>
+                      <SizePolicy>me,max</SizePolicy>
+                      <Children>
+                        <Template src="skin:decks_left.xml"/>
+                        <Template src="skin:mixer.xml"/>
+                        <Template src="skin:decks_right.xml"/>
+                      </Children>
                     </WidgetGroup>
-                </Children>
-            </WidgetStack>
-        </Children>
+                    <Template src="skin:fx_units_12.xml"/>
+                    <Template src="skin:lower_half.xml"/>
+                  </Children>
+                </WidgetGroup>
+
+              </Children>
+            </Splitter><!-- Decks, Effects ... Library -->
+
+            <!-- MAximized Library -->
+            <WidgetGroup trigger="[Master],maximize_library" on_hide_select="0">
+              <Layout>vertical</Layout>
+              <SizePolicy>me,me</SizePolicy>
+              <Children>
+                <SingletonContainer>
+                  <ObjectName>LibrarySingleton</ObjectName>
+                </SingletonContainer>
+                <Template src="skin:toolbar_big_library.xml"/>
+              </Children>
+            </WidgetGroup>
+
+          </Children>
+        </WidgetStack>
+      </Children>
     </WidgetGroup>
   </Children>
 </skin>

@@ -38,9 +38,6 @@ install:
   - call set ENVIRONMENT_NAME=%%ENVIRONMENT_NAME:PLATFORM=%platform%%%
   - call set ENVIRONMENT_NAME=%%ENVIRONMENT_NAME:CONFIGURATION=%configuration%%%
   - cd %TEMP%
-  - echo *** Patching NSIS
-  - cd %APPVEYOR_BUILD_FOLDER%
-  - patch "C:\Program Files (x86)\NSIS\Include\MultiUser.nsh" < build\appveyor\NSIS.patch
   - echo *** Downloading precompiled build environment if not in build-cache
   - cd %APPVEYOR_BUILD_FOLDER%
   - build\windows\install_buildenv.bat %ENVIRONMENTS_URL% %ENVIRONMENT_NAME% %ENVIRONMENTS_PATH%
@@ -74,3 +71,16 @@ on_finish:
 deploy:
   - provider: Environment
     name: downloads.mixxx.org
+
+notifications:
+  - provider: Webhook
+    url: https://mixxx.zulipchat.com/api/v1/messages
+    method: POST
+    content_type: application/x-www-form-urlencoded
+    headers:
+      Authorization:
+        secure: 95cbVBcC4rogjE5VNdhuYm8cnjPF8+7SeQXySqcxAqrFZxK+/Kcn3Q2hRb2iZfUEKZ+EdCYwx7EbpZdSiZc5goAuJT+/QXXT/Ls+fzc+eSy4Sz1Ic5t2BjLhmYZLdnBL3uIVceNSb8GzYPQx0+xy7g==
+    on_build_success: true
+    on_build_failure: true
+    on_build_status_changed: true
+    body: "type=stream&to=appveyor&subject={{projectName}} Build {{buildVersion}} {{status}}&content=Build {{buildVersion}} {{status}}{{#isPullRequest}} (PR #{{pullRequestId}}) {{/isPullRequest}}{{#failed}} :cross_mark:{{/failed}}{{#passed}} :heavy_check_mark:{{/passed}} {{buildUrl}}"

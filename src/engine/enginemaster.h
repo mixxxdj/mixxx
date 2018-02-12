@@ -58,37 +58,17 @@ class EngineMaster : public QObject, public AudioSource {
     EngineMaster(UserSettingsPointer pConfig,
                  const char* pGroup,
                  EffectsManager* pEffectsManager,
-                 bool bEnableSidechain,
-                 bool bRampingGain);
+                 ChannelHandleFactory* pChannelHandleFactory,
+                 bool bEnableSidechain);
     virtual ~EngineMaster();
 
     // Get access to the sample buffers. None of these are thread safe. Only to
     // be called by SoundManager.
     const CSAMPLE* buffer(AudioOutput output) const;
 
-    inline const QString& getMasterGroup() const {
-        return m_masterHandle.name();
-    }
-
-    inline const QString& getHeadphoneGroup() const {
-        return m_headphoneHandle.name();
-    }
-
-    inline const QString& getBusLeftGroup() const {
-        return m_busLeftHandle.name();
-    }
-
-    inline const QString& getBusCenterGroup() const {
-        return m_busCenterHandle.name();
-    }
-
-    inline const QString& getBusRightGroup() const {
-        return m_busRightHandle.name();
-    }
-
     ChannelHandleAndGroup registerChannelGroup(const QString& group) {
         return ChannelHandleAndGroup(
-                m_channelHandleFactory.getOrCreateHandle(group), group);
+                   m_pChannelHandleFactory->getOrCreateHandle(group), group);
     }
 
     // Register the sound I/O that does not correspond to any EngineChannel object
@@ -156,6 +136,7 @@ class EngineMaster : public QObject, public AudioSource {
         CSAMPLE* m_pBuffer;
         ControlObject* m_pVolumeControl;
         ControlPushButton* m_pMuteControl;
+        GroupFeatureState m_features;
         int m_index;
     };
 
@@ -278,14 +259,11 @@ class EngineMaster : public QObject, public AudioSource {
 
     // ControlObjects for switching off unnecessary processing
     // These are protected so tests can set them
-    ControlObject* m_pHeadphoneEnabled;
     ControlObject* m_pMasterEnabled;
+    ControlObject* m_pHeadphoneEnabled;
     ControlObject* m_pBoothEnabled;
 
   private:
-    void mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
-                     CSAMPLE* pOutput, unsigned int iBufferSize, GainCalculator* pGainCalculator);
-
     // Processes active channels. The master sync channel (if any) is processed
     // first and all others are processed after. Populates m_activeChannels,
     // m_activeBusChannels, m_activeHeadphoneChannels, and
@@ -293,11 +271,11 @@ class EngineMaster : public QObject, public AudioSource {
     // respective output.
     void processChannels(int iBufferSize);
 
-    void applyMasterEffects(const int iBufferSize, const int iSampleRate);
+    ChannelHandleFactory* m_pChannelHandleFactory;
+    void applyMasterEffects();
+    void processHeadphones(const double masterMixGainInHeadphones);
 
-    ChannelHandleFactory m_channelHandleFactory;
     EngineEffectsManager* m_pEngineEffectsManager;
-    bool m_bRampingGain;
 
     // List of channels added to the engine.
     QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_channels;
@@ -314,6 +292,9 @@ class EngineMaster : public QObject, public AudioSource {
     QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeHeadphoneChannels;
     QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeTalkoverChannels;
 
+    unsigned int m_iSampleRate;
+    unsigned int m_iBufferSize;
+
     // Mixing buffers for each output.
     CSAMPLE* m_pOutputBusBuffers[3];
     CSAMPLE* m_pBooth;
@@ -321,7 +302,6 @@ class EngineMaster : public QObject, public AudioSource {
     CSAMPLE* m_pTalkover;
     CSAMPLE* m_pTalkoverHeadphones;
     CSAMPLE* m_pSidechainMix;
-    CSAMPLE** m_ppSidechainOutput;
 
     EngineWorkerScheduler* m_pWorkerScheduler;
     EngineSync* m_pMasterSync;
@@ -366,9 +346,11 @@ class EngineMaster : public QObject, public AudioSource {
     CSAMPLE_GAIN m_balrightOld;
     const ChannelHandleAndGroup m_masterHandle;
     const ChannelHandleAndGroup m_headphoneHandle;
-    const ChannelHandleAndGroup m_busLeftHandle;
-    const ChannelHandleAndGroup m_busCenterHandle;
-    const ChannelHandleAndGroup m_busRightHandle;
+    const ChannelHandleAndGroup m_masterOutputHandle;
+    const ChannelHandleAndGroup m_busTalkoverHandle;
+    const ChannelHandleAndGroup m_busCrossfaderLeftHandle;
+    const ChannelHandleAndGroup m_busCrossfaderCenterHandle;
+    const ChannelHandleAndGroup m_busCrossfaderRightHandle;
 
     // Mix two Mono channels. This is useful for outdoor gigs
     ControlObject* m_pMasterMonoMixdown;

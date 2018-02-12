@@ -219,10 +219,8 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
 
     // (60 seconds per minute) * (1000 milliseconds per second) / (X millis per
     // beat) = Y beats/minute
-    double averageBpm = 60.0 * 1000.0 / averageLength;
-    double dRate = calcRateRatio();
-    m_pFileBpm->set(averageBpm / dRate);
-    slotUpdateEngineBpm();
+    double averageBpm = 60.0 * 1000.0 / averageLength / calcRateRatio();
+    m_pBeats->setBpm(averageBpm);
 }
 
 void BpmControl::slotControlBeatSyncPhase(double v) {
@@ -790,17 +788,6 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
 void BpmControl::setCurrentSample(const double dCurrentSample, const double dTotalSamples) {
     m_dPreviousSample = dCurrentSample;
     EngineControl::setCurrentSample(dCurrentSample, dTotalSamples);
-}
-
-double BpmControl::process(const double dRate,
-                           const double dCurrentSample,
-                           const double dTotalSamples,
-                           const int iBufferSize) {
-    Q_UNUSED(dRate);
-    Q_UNUSED(dCurrentSample);
-    Q_UNUSED(dTotalSamples);
-    Q_UNUSED(iBufferSize);
-    return kNoTrigger;
 }
 
 double BpmControl::updateLocalBpm() {

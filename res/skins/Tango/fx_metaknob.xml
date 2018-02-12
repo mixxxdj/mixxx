@@ -8,17 +8,17 @@ Variables:
   FxNum       : EffectX
 -->
 <Template>
-  <SetVariable name="FxGroup_FxNum">[<Variable name="FxGroup"/>_Effect<Variable name="FxNum"/>]</SetVariable>
+  <SetVariable name="FxRack_FxUnit_FxNum">[<Variable name="FxRack_FxUnit"/>_Effect<Variable name="FxNum"/>]</SetVariable>
   <KnobComposed>
     <TooltipId>EffectSlot_metaknob</TooltipId>
-    <ObjectName>FxSlot_metaknob</ObjectName>
+    <ObjectName>FxMetaknob</ObjectName>
     <Size>30f,30f</Size>
     <Knob>skin:/knobs_sliders/knob_blue.svg</Knob>
     <BackPath>skin:/knobs_sliders/knob_bg.svg</BackPath>
     <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
     <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
     <Connection>
-      <ConfigKey><Variable name="FxGroup_FxNum"/>,meta</ConfigKey>
+      <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,meta</ConfigKey>
     </Connection>
   </KnobComposed>
 </Template>

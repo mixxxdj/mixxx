@@ -5,33 +5,43 @@ Description:
   * mixer with Wet/Dry knob and Super knob (optional)
   * assignment buttons for master & headphone
 Variables:
-  FxUnitNum:   number of effect unit for FX label
+  FxUnit:   number of effect unit for FX label
 -->
 <Template>
-  <SetVariable name="FxGroup">EffectRack1_EffectUnit<Variable name="FxUnitNum"/></SetVariable>
-  <SetVariable name="group">EffectUnit<Variable name="FxUnitNum"/></SetVariable>
+  <SetVariable name="FxRack_FxUnit">EffectRack<Variable name="FxRack"/>_EffectUnit<Variable name="FxUnit"/></SetVariable>
+
   <WidgetGroup>
     <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
 
       <WidgetGroup><!-- FX expand button + FX label -->
+        <ObjectName>AlignLeft</ObjectName>
         <Layout>vertical</Layout>
-        <Size>28f,30f</Size>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
+          <Label>
+            <ObjectName>FxUnitLabel</ObjectName>
+            <Size>28f,12f</Size>
+            <Text>FX&#8202;<Variable name="FxUnit"/></Text>
+            <Alignment>left</Alignment>
+          </Label>
+
+          <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
+
           <WidgetGroup><!-- normal FX expand button -->
             <Layout>vertical</Layout>
-            <Size>28f,14f</Size>
+            <Size>26f,14f</Size>
             <Children>
               <Template src="skin:button_2state_persist.xml">
                 <SetVariable name="ObjectName">FxSamplersMiniMaxi</SetVariable>
                 <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
-                <SetVariable name="Size">28f,14f</SetVariable>
-                <SetVariable name="ConfigKey">[<Variable name="FxGroup"/>],show_parameters</SetVariable>
+                <SetVariable name="Size">26f,14f</SetVariable>
+                <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],show_parameters</SetVariable>
               </Template>
             </Children>
             <Connection>
-              <ConfigKey>[<Variable name="FxGroup"/>],show_focus</ConfigKey>
+              <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
@@ -39,21 +49,21 @@ Variables:
 
           <WidgetGroup><!-- FX expand button when focus is shown -->
             <Layout>vertical</Layout>
-            <Size>28f,14f</Size>
+            <Size>26f,14f</Size>
             <Children>
               <WidgetGroup><!-- when no effect is focused -->
                 <Layout>vertical</Layout>
-                <Size>28f,14f</Size>
+                <Size>26f,14f</Size>
                 <Children>
                   <Template src="skin:button_2state_persist.xml">
                     <SetVariable name="ObjectName">FxSamplersMiniMaxi</SetVariable>
                     <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
-                    <SetVariable name="Size">28f,14f</SetVariable>
-                    <SetVariable name="ConfigKey">[<Variable name="FxGroup"/>],show_parameters</SetVariable>
+                    <SetVariable name="Size">26f,14f</SetVariable>
+                    <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],show_parameters</SetVariable>
                   </Template>
                 </Children>
                 <Connection>
-                  <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
+                  <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
                   <Transform><IsEqual>0</IsEqual></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
@@ -61,126 +71,112 @@ Variables:
 
               <WidgetGroup><!-- when any effect is focused -->
                 <Layout>vertical</Layout>
-                <Size>28f,14f</Size>
+                <Size>26f,14f</Size>
                 <Children>
                   <Template src="skin:button_2state_persist.xml">
                     <SetVariable name="ObjectName">FxSamplersMiniMaxi_Focus</SetVariable>
                     <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
-                    <SetVariable name="Size">28f,14f</SetVariable>
-                    <SetVariable name="ConfigKey">[<Variable name="FxGroup"/>],show_parameters</SetVariable>
+                    <SetVariable name="Size">26f,14f</SetVariable>
+                    <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],show_parameters</SetVariable>
                   </Template>
                 </Children>
                 <Connection>
-                  <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
+                  <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
                   <Transform><IsEqual>0</IsEqual><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
             </Children>
             <Connection>
-              <ConfigKey>[<Variable name="FxGroup"/>],show_focus</ConfigKey>
+              <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /FX expand button when focus is shown -->
 
-          <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
-
-          <Label>
-            <ObjectName>FxUnitLabel</ObjectName>
-            <Size>28f,12f</Size>
-            <Text>FX<Variable name="FxUnitNum"/></Text>
-            <Alignment>center</Alignment>
-          </Label>
+          <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
         </Children>
-      </WidgetGroup><!-- /FX expand button + FX label -->
+      </WidgetGroup><!-- /FX label + FX expand button -->
 
       <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
-      <WidgetGroup>
-        <ObjectName>SuperWetDryContainer</ObjectName>
+      <WidgetGroup><!-- Headphone + Super + Wet/Dry + FX label + expand toggle -->
+        <ObjectName>FxUnitMixerRight_mini</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>max,min</SizePolicy>
         <Children>
+
           <Template src="skin:knob_textless.xml">
-            <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
             <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
+            <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
             <SetVariable name="Size">30f,30f</SetVariable>
-            <SetVariable name="group">[<Variable name="FxGroup"/>]</SetVariable>
+            <SetVariable name="group">[<Variable name="FxRack_FxUnit"/>]</SetVariable>
             <SetVariable name="ConfigKey">mix</SetVariable>
             <SetVariable name="Color">red</SetVariable>
           </Template>
 
           <WidgetGroup>
-            <Size>30f,30f</Size>
+            <SizePolicy>max,min</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
               <Template src="skin:knob_textless.xml">
-                <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
                 <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
+                <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
                 <SetVariable name="Size">30f,30f</SetVariable>
-                <SetVariable name="group">[<Variable name="FxGroup"/>]</SetVariable>
+                <SetVariable name="group">[<Variable name="FxRack_FxUnit"/>]</SetVariable>
                 <SetVariable name="ConfigKey">super1</SetVariable>
                 <SetVariable name="Color">blue</SetVariable>
               </Template>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],fx_super_knob</ConfigKey>
+              <ConfigKey persist="true">[Master],show_superknobs</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
-        </Children>
-      </WidgetGroup><!-- /SuperWetDryContainer -->
 
-      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
-
-      <WidgetGroup><!-- Master, Headphone -->
-        <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <Template src="skin:fx_head_master_button.xml">
-            <SetVariable name="Size">15f,15f</SetVariable>
-            <SetVariable name="sourceType">master</SetVariable>
-            <SetVariable name="labelOff">fx_master_off</SetVariable>
-            <SetVariable name="labelOn">fx_master_on</SetVariable>
-            <SetVariable name="group">[Master]</SetVariable>
-          </Template>
-            <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
           <WidgetGroup><!-- Headphone FX button -->
-            <Size>15f,14f</Size>
-            <Layout>stacked</Layout>
+            <ObjectName>AlignCenter</ObjectName>
+            <SizePolicy>max,min</SizePolicy>
+            <Layout>horizontal</Layout>
             <Children>
-              <!-- index 0 due to bug -->
-              <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
-              <!-- Greyed out if no headphone device is configured -->
               <WidgetGroup>
-                <ObjectName>MixerbarCover</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>me,me</SizePolicy>
-                <Connection>
-                  <ConfigKey>[Master],headEnabled</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                  <Transform><Not/></Transform>
-                </Connection>
+                <SizePolicy>max,max</SizePolicy>
+                <Layout>stacked</Layout>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+        
+                  <!-- Greyed out if no headphone device is configured -->
+                  <WidgetGroup>
+                    <ObjectName>GuiCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,me</SizePolicy>
+                    <Connection>
+                      <ConfigKey>[Master],headEnabled</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                      <Transform><Not/></Transform>
+                    </Connection>
+                  </WidgetGroup>
+        
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="ObjectName">PflButton</SetVariable>
+                    <SetVariable name="TooltipId">EffectUnit_headphones_enabled</SetVariable>
+                    <SetVariable name="Size">20f,20f</SetVariable>
+                    <SetVariable name="state_0_pressed">pfl_off.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">pfl_off.svg</SetVariable>
+                    <SetVariable name="state_1_pressed">pfl_on.svg</SetVariable>
+                    <SetVariable name="state_1_unpressed">pfl_on.svg</SetVariable>
+                    <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],group_[Headphone]_enable</SetVariable>
+                  </Template>
+                </Children>
               </WidgetGroup>
-
-              <Template src="skin:fx_head_master_button.xml">
-                <SetVariable name="Size">15f,14f</SetVariable>
-                <SetVariable name="sourceType">headphones</SetVariable>
-                <SetVariable name="labelOff">fx_head_off</SetVariable>
-                <SetVariable name="labelOn">fx_head_on</SetVariable>
-                <SetVariable name="group">[Headphone]</SetVariable>
-              </Template>
             </Children>
           </WidgetGroup><!-- /Headphone FX button -->
         </Children>
-      </WidgetGroup><!-- /Master, Headphone -->
-
-      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+      </WidgetGroup><!-- /Headphone + Super + Wet/Dry + FX label + expand toggle -->
 
       <WidgetGroup><!-- EffectSlots + Underlays, no focus -->
         <Layout>stacked</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>max,min</SizePolicy>
         <Children>
           <WidgetGroup><!-- EffectSlots, no focus -->
             <Layout>horizontal</Layout>
@@ -241,7 +237,7 @@ Variables:
           </WidgetGroup><!-- /Underlays, no focus -->
         </Children>
         <Connection>
-          <ConfigKey>[<Variable name="FxGroup"/>],show_focus</ConfigKey>
+          <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
@@ -249,7 +245,7 @@ Variables:
 
       <WidgetGroup><!-- EffectSlots + Underlays, with focus -->
         <Layout>stacked</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>max,min</SizePolicy>
         <Children>
           <WidgetGroup><!-- EffectSlots with focus button -->
             <Layout>horizontal</Layout>
@@ -299,7 +295,7 @@ Variables:
                 <ObjectName>FxFlowUnderlay_mini_focus1</ObjectName>
                 <Size>134f,30f</Size>
                 <Connection>
-                  <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
+                  <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
                   <Transform><IsEqual>1</IsEqual></Transform>
                   <BindProperty>highlight</BindProperty>
                 </Connection>
@@ -309,7 +305,7 @@ Variables:
                 <ObjectName>FxFlowUnderlay_mini_focus2</ObjectName>
                 <Size>268f,30f</Size>
                 <Connection>
-                  <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
+                  <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
                   <Transform><IsEqual>2</IsEqual></Transform>
                   <BindProperty>highlight</BindProperty>
                 </Connection>
@@ -319,7 +315,7 @@ Variables:
                 <ObjectName>FxFlowUnderlay_mini_focus3</ObjectName>
                 <Size>402f,30f</Size>
                 <Connection>
-                  <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
+                  <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
                   <Transform><IsEqual>3</IsEqual></Transform>
                   <BindProperty>highlight</BindProperty>
                 </Connection>
@@ -328,7 +324,7 @@ Variables:
           </WidgetGroup><!-- /Underlays with focus -->
         </Children>
         <Connection>
-          <ConfigKey>[<Variable name="FxGroup"/>],show_focus</ConfigKey>
+          <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /EffectSlots + Underlays, with focus -->

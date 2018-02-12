@@ -1007,7 +1007,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
   <tabstop>txtKey</tabstop>
   <tabstop>txtTrackNumber</tabstop>
   <tabstop>btnImportMetadataFromMusicBrainz</tabstop>
-  <tabstop>btnReloadFromFile</tabstop>
+  <tabstop>btnImportMetadataFromFile</tabstop>
   <tabstop>btnOpenFileBrowser</tabstop>
   <tabstop>txtComment</tabstop>
   <tabstop>spinBpm</tabstop>

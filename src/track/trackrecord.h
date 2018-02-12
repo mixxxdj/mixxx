@@ -17,7 +17,11 @@ namespace mixxx {
 class TrackRecord final {
     // Properties that parsed from and (optionally) written back to their
     // source, i.e. the corresponding file
-    PROPERTY_SET_BYVAL_GET_BYREF(TrackMetadata,      metadata,             Metadata)
+    PROPERTY_SET_BYVAL_GET_BYREF(TrackMetadata,  metadata,       Metadata)
+
+    // The unique ID of track. This value is only set once after the track
+    // has been inserted or is loaded from the library DB.
+    PROPERTY_SET_BYVAL_GET_BYREF(TrackId,        id,             Id)
 
     // TODO(uklotz): Change data type from bool to QDateTime
     //
@@ -34,10 +38,6 @@ class TrackRecord final {
     PROPERTY_SET_BYVAL_GET_BYREF(bool /*QDateTime*/, metadataSynchronized, MetadataSynchronized)
 
     PROPERTY_SET_BYVAL_GET_BYREF(CoverInfoRelative,  coverInfo,            CoverInfo)
-
-    // The unique ID of track. This value is only set once after the track
-    // has been inserted or is loaded from the library DB.
-    PROPERTY_SET_BYVAL_GET_BYREF(TrackId,     id,             Id)
 
     PROPERTY_SET_BYVAL_GET_BYREF(QDateTime,   dateAdded,      DateAdded)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,     fileType,       FileType)

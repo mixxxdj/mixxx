@@ -21,19 +21,19 @@ Variables:
         <NumberStates>2</NumberStates>
         <RightClickIsPushButton>true</RightClickIsPushButton>
         <Connection>
-          <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
+          <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
           <EmitOnDownPress>true</EmitOnDownPress>
           <Transform><IsEqual><Variable name="FxNum"/></IsEqual></Transform>
         </Connection>
         <Connection>
-          <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
+          <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
           <ButtonState>RightButton</ButtonState>
           <EmitOnDownPress>true</EmitOnDownPress>
           <Transform><IsEqual><Variable name="FxNum"/></IsEqual><Not/></Transform>
         </Connection>
         <Connection>
-          <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
+          <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
           <Transform><IsEqual><Variable name="FxNum"/></IsEqual><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
@@ -47,24 +47,24 @@ Variables:
         <NumberStates>2</NumberStates>
         <RightClickIsPushButton>true</RightClickIsPushButton>
         <Connection>
-          <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
+          <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
           <EmitOnDownPress>true</EmitOnDownPress>
           <Transform><IsEqual><Variable name="FxNum"/></IsEqual><Not/></Transform>
         </Connection>
         <Connection>
-          <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
+          <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
           <ButtonState>RightButton</ButtonState>
           <EmitOnDownPress>true</EmitOnDownPress>
           <Transform><IsEqual><Variable name="FxNum"/></IsEqual><Not/></Transform>
         </Connection>
         <Connection>
-          <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
+          <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
           <Transform><IsEqual><Variable name="FxNum"/></IsEqual></Transform>
           <ConnectValueFromWidget>false</ConnectValueFromWidget>
         </Connection>
         <Connection>
-          <ConfigKey>[<Variable name="FxGroup"/>],focused_effect</ConfigKey>
+          <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
           <Transform><IsEqual><Variable name="FxNum"/></IsEqual></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>

@@ -129,9 +129,6 @@ mixxx::AudioSourcePointer openAudioSourceForReading(const TrackPointer& pTrack, 
 } // anonymous namespace
 
 void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
-    // Emit that a new track is loading, stops the current track
-    emit(trackLoading());
-
     ReaderStatusUpdate status;
     status.status = TRACK_NOT_LOADED;
 
@@ -142,6 +139,9 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
         m_pReaderStatusFIFO->writeBlocking(&status, 1);
         return;
     }
+
+    // Emit that a new track is loading, stops the current track
+    emit(trackLoading());
 
     QString filename = pTrack->getLocation();
     if (filename.isEmpty() || !pTrack->exists()) {

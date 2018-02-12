@@ -17,14 +17,16 @@
 
 WCoverArt::WCoverArt(QWidget* parent,
                      UserSettingsPointer pConfig,
-                     const QString& group)
+                     const QString& group,
+                     BaseTrackPlayer* pPlayer)
         : QWidget(parent),
           WBaseWidget(this),
           m_group(group),
           m_pConfig(pConfig),
           m_bEnable(true),
           m_pMenu(new WCoverArtMenu(this)),
-          m_pDlgFullSize(new DlgCoverArtFullSize()) {
+          m_pPlayer(pPlayer),
+          m_pDlgFullSize(new DlgCoverArtFullSize(this, pPlayer)) {
     // Accept drops if we have a group to load tracks into.
     setAcceptDrops(!m_group.isEmpty());
 
@@ -39,6 +41,16 @@ WCoverArt::WCoverArt(QWidget* parent,
             this, SLOT(slotCoverInfoSelected(const CoverInfo&)));
     connect(m_pMenu, SIGNAL(reloadCoverArt()),
             this, SLOT(slotReloadCoverArt()));
+
+    if (m_pPlayer != nullptr) {
+        connect(m_pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
+                this, SLOT(slotLoadTrack(TrackPointer)));
+        connect(m_pPlayer, SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
+                this, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
+
+        // just in case a track is already loaded
+        slotLoadTrack(m_pPlayer->getLoadedTrack());
+    }
 }
 
 WCoverArt::~WCoverArt() {
@@ -223,13 +235,9 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
         if (m_pDlgFullSize->isVisible()) {
             m_pDlgFullSize->close();
         } else {
-            m_pDlgFullSize->init(m_loadedCover);
+            m_pDlgFullSize->init(m_loadedTrack);
         }
     }
-}
-
-void WCoverArt::leaveEvent(QEvent* /*unused*/) {
-    m_pDlgFullSize->close();
 }
 
 void WCoverArt::mouseMoveEvent(QMouseEvent* event) {

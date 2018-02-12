@@ -18,9 +18,7 @@ Variables:
         <SetVariable name="SignalColor"><Variable name="SignalColor_1"/></SetVariable>
       </Template>
 
-      <Template src="skin:vumeter_master_container.xml"/>
-
-      <Template src="skin:centerbox_deck12.xml"/>
+      <Template src="skin:vumeter_master.xml"/>
 
       <Template src="skin:deck_right.xml">
         <SetVariable name="chanNum">2</SetVariable>

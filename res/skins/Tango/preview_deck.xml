@@ -21,7 +21,7 @@ Variables:
 
       <!-- Greyed out if no headphone device is configured -->
       <WidgetGroup>
-        <ObjectName>MixerbarCover</ObjectName>
+        <ObjectName>GuiCover</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Connection>
@@ -96,7 +96,7 @@ Variables:
                 <TooltipId>waveform_overview</TooltipId>
                 <Size>1me,34f</Size>
                 <Group><Variable name="group"/></Group>
-                <BgColor>#1a1a1a</BgColor>
+                <BgColor>#151515</BgColor>
                 <SignalColor>#bababa</SignalColor>
                 <PlayPosColor>#FF4300</PlayPosColor>
                 <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
@@ -109,7 +109,7 @@ Variables:
                 </DefaultMark>
                 <Mark>
                   <Control>cue_point</Control>
-                  <Text>C</Text>
+                  <Text>Q</Text>
                   <Align>top|right</Align>
                   <Color>#FF0080</Color>
                   <TextColor>#FFFFFF</TextColor>
@@ -128,8 +128,6 @@ Variables:
               </Template>
             </Children>
           </WidgetGroup><!-- /Play-Overview-Gain -->
-
-          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>0me,1f</Size></WidgetGroup>
 
           <Template src="skin:hotcues_sampler_preview.xml"/>
 

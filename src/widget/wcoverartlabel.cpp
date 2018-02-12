@@ -10,7 +10,7 @@ static const QSize s_labelDisplaySize = QSize(100, 100);
 WCoverArtLabel::WCoverArtLabel(QWidget* parent)
         : QLabel(parent),
           m_pCoverMenu(new WCoverArtMenu(this)),
-          m_pDlgFullSize(new DlgCoverArtFullSize()),
+          m_pDlgFullSize(new DlgCoverArtFullSize(this, nullptr)),
           m_defaultCover(CoverArtUtils::defaultCoverLocation()) {
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     setFrameShape(QFrame::Box);
@@ -59,6 +59,10 @@ void WCoverArtLabel::slotCoverMenu(const QPoint& pos) {
     m_pCoverMenu->popup(mapToGlobal(pos));
 }
 
+void WCoverArtLabel::loadTrack(TrackPointer pTrack) {
+    m_pLoadedTrack = pTrack;
+}
+
 void WCoverArtLabel::mousePressEvent(QMouseEvent* event) {
     if (m_pCoverMenu->isVisible()) {
         return;
@@ -68,11 +72,8 @@ void WCoverArtLabel::mousePressEvent(QMouseEvent* event) {
         if (m_pDlgFullSize->isVisible()) {
             m_pDlgFullSize->close();
         } else {
-            m_pDlgFullSize->init(m_loadedCover);
+            m_pDlgFullSize->init(m_pLoadedTrack);
         }
     }
 }
 
-void WCoverArtLabel::leaveEvent(QEvent* /*unused*/) {
-    m_pDlgFullSize->close();
-}

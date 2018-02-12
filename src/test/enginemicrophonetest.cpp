@@ -2,6 +2,7 @@
 
 #include <QtDebug>
 
+#include "test/signalpathtest.h"
 #include "preferences/usersettings.h"
 #include "control/controlobject.h"
 #include "engine/enginemicrophone.h"
@@ -12,7 +13,7 @@
 
 namespace {
 
-class EngineMicrophoneTest : public testing::Test {
+class EngineMicrophoneTest : public SignalPathTest {
   protected:
     void SetUp() override {
         inputLength = MAX_BUFFER_LEN;
@@ -23,7 +24,7 @@ class EngineMicrophoneTest : public testing::Test {
 
         // No need for a real handle in this test.
         m_pMicrophone = new EngineMicrophone(
-                ChannelHandleAndGroup(ChannelHandle(), "[Microphone]"), NULL);
+                ChannelHandleAndGroup(ChannelHandle(), "[Microphone]"), m_pEffectsManager);
         m_pTalkover = ControlObject::getControl(ConfigKey("[Microphone]", "talkover"));
     }
 

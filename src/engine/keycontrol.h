@@ -25,7 +25,7 @@ class KeyControl : public EngineControl {
     };
 
     KeyControl(QString group, UserSettingsPointer pConfig);
-    virtual ~KeyControl();
+    ~KeyControl() override;
 
     // Returns a struct, with the results of the last pitch and tempo calculations
     KeyControl::PitchTempoRatio getPitchTempoRatio();

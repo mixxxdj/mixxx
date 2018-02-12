@@ -141,13 +141,22 @@
   </SingletonDefinition>
 
   <WidgetGroup>
+    <Connection>
+      <ConfigKey>[Samplers],show_samplers</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
     <Layout>vertical</Layout>
     <!-- I don't now why this works but a WidgetGroup wrapper around a
          WidgetStack with a 'fixed' size policy makes the group track the
          minimum size of the current stack widget. -->
     <SizePolicy>me,f</SizePolicy>
-
     <Children>
+      <!-- Although the minimum size is now tracked correctly, the border
+          applied via qss is not added to child widgets size but substracted
+          from the WidgetStack's usable height.
+          Creating the border with fixed-size WidgetGroups solves this. -->
+      <WidgetGroup><Size>-1me,2f</Size></WidgetGroup>
+
       <WidgetStack currentpage="[Deere],sampler_row_current" persist="true">
         <ObjectName>SampleDecksContainer</ObjectName>
         <NextControl>[Deere],sampler_row_next</NextControl>
@@ -372,6 +381,8 @@
 
         </Children>
       </WidgetStack>
+
+      <WidgetGroup><Size>-1me,2f</Size></WidgetGroup>
 
     </Children>
   </WidgetGroup>

@@ -66,4 +66,25 @@ QString TrackMetadata::reformatYear(QString year) {
     return year.simplified();
 }
 
+bool operator==(const TrackMetadata& lhs, const TrackMetadata& rhs) {
+    return (lhs.getAlbumInfo() == rhs.getAlbumInfo()) &&
+            (lhs.getTrackInfo() == rhs.getTrackInfo()) &&
+            (lhs.getBitrate() == rhs.getBitrate()) &&
+            (lhs.getChannels() == rhs.getChannels()) &&
+            (lhs.getDuration() == rhs.getDuration()) &&
+            (lhs.getSampleRate() == rhs.getSampleRate());
+}
+
+QDebug operator<<(QDebug dbg, const TrackMetadata& arg) {
+    dbg << '{';
+    arg.dbgTrackInfo(dbg);
+    arg.dbgAlbumInfo(dbg);
+    arg.dbgBitrate(dbg);
+    arg.dbgChannels(dbg);
+    arg.dbgDuration(dbg);
+    arg.dbgSampleRate(dbg);
+    dbg << '}';
+    return dbg;
+}
+
 } //namespace mixxx
