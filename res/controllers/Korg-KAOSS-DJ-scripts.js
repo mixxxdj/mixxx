@@ -161,7 +161,7 @@ KAOSSDJ.browseKnob = function(channel, control, value, status, group) {
     engine.setValue(group, "SelectTrackKnob", nval);
 };
 
-KAOSSDJ.leftFx = function(channel, control, value, status, group) {
+KAOSSDJ.leftFxSwitch = function(channel, control, value, status, group) {
     var deck = KAOSSDJ.getDeckByChannel(channel);
     if(value === ON) {
         KAOSSDJ.updateDeckByChannel(channel, 'fx', true);
@@ -170,7 +170,7 @@ KAOSSDJ.leftFx = function(channel, control, value, status, group) {
     }
 };
 
-KAOSSDJ.rightFx = function(channel, control, value, status, group) {
+KAOSSDJ.rightFxSwitch = function(channel, control, value, status, group) {
     if(value === ON) {
         KAOSSDJ.updateDeckByChannel(channel, 'fx', true);
     } else {
@@ -178,7 +178,7 @@ KAOSSDJ.rightFx = function(channel, control, value, status, group) {
     }
 };
 
-KAOSSDJ.controllerFx = function(channel, control, value, status, group) {
+KAOSSDJ.controllerFxTouchMove = function(channel, control, value, status, group) {
     var decks = KAOSSDJ.decks;
     for(key in decks) {
         var deck = decks[key];
@@ -186,4 +186,9 @@ KAOSSDJ.controllerFx = function(channel, control, value, status, group) {
             engine.setValue('[EffectRack1_EffectUnit'+deck.deckNumber +']', 'mix', value / 127);
         }
     }
+};
+
+KAOSSDJ.controllerFxTouchUp = function(channel, control, value, status, group) {
+    var deck = KAOSSDJ.getDeckByChannel(channel);
+    engine.setValue('[EffectRack1_EffectUnit'+deck.deckNumber +']', 'mix', 0);
 };
