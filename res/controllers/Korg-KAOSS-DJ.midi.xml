@@ -8,7 +8,7 @@
     </info>
     <controller id="KAOSS">
         <scriptfiles>
-            <file functionprefix="KAOSSDJ" filename="Korg-KAOSS-DJ-scripts.js"/>
+            <file filename="Korg-KAOSS-DJ-scripts.js" functionprefix="KAOSSDJ"/>
         </scriptfiles>
         <controls>
             <control>
@@ -17,256 +17,6 @@
                 <description>Nudge (pitch-)</description>
                 <status>0x98</status>
                 <midino>0x15</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>pregain</key>
-                <description>Right Gain</description>
-                <status>0xB8</status>
-                <midino>0x1A</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>pregain</key>
-                <description>Right Gain</description>
-                <status>0xB8</status>
-                <midino>0x1A</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>hotcue_3_activate</key>
-                <description>Left HotCue 3</description>
-                <status>0x97</status>
-                <midino>0x14</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>KAOSSDJ.wheelTurnShift</key>
-                <description>Left Jog Wheel Turn Shift</description>
-                <status>0xB7</status>
-                <midino>0x0F</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>rate</key>
-                <description>Left Pitch Bend</description>
-                <status>0xB7</status>
-                <midino>0x19</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>hotcue_3_activate</key>
-                <description>Right HotCue 3</description>
-                <status>0x98</status>
-                <midino>0x14</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>KAOSSDJ.wheelTurnShift</key>
-                <description>Right Jog Wheel Turn Shift</description>
-                <status>0xB8</status>
-                <midino>0x0F</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>rate</key>
-                <description>Right Pitch Bend</description>
-                <status>0xB8</status>
-                <midino>0x19</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>hotcue_2_activate</key>
-                <description>Left HotCue 2</description>
-                <status>0x97</status>
-                <midino>0x13</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>KAOSSDJ.wheelTurn</key>
-                <description>Left Jog Wheel Turn</description>
-                <status>0xB7</status>
-                <midino>0x0E</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>KAOSSDJ.volume</key>
-                <description>left Volume</description>
-                <status>0xB7</status>
-                <midino>0x18</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>hotcue_2_activate</key>
-                <description>Right HotCue 2</description>
-                <status>0x98</status>
-                <midino>0x13</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>KAOSSDJ.wheelTurn</key>
-                <description>Right Jog Wheel Turn</description>
-                <status>0xB8</status>
-                <midino>0x0E</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>KAOSSDJ.volume</key>
-                <description>Right Volume</description>
-                <status>0xB8</status>
-                <midino>0x18</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>hotcue_1_activate</key>
-                <description>Left HotCue 1</description>
-                <status>0x97</status>
-                <midino>0x12</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Master]</group>
-                <key>crossfader</key>
-                <description>X-Fader</description>
-                <status>0xB6</status>
-                <midino>0x17</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>hotcue_1_activate</key>
-                <description>Right HotCue 1</description>
-                <status>0x98</status>
-                <midino>0x12</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>loop_double</key>
-                <description>MIDI Learned from 4 messages.</description>
-                <status>0x97</status>
-                <midino>0x11</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>loop_double</key>
-                <description>MIDI Learned from 8 messages.</description>
-                <status>0x98</status>
-                <midino>0x11</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>reloop_exit</key>
-                <description>MIDI Learned from 2 messages.</description>
-                <status>0x97</status>
-                <midino>0x10</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>playposition</key>
-                <description>Track Seek</description>
-                <status>0xB7</status>
-                <midino>0x21</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>reloop_exit</key>
-                <description>MIDI Learned from 2 messages.</description>
-                <status>0x98</status>
-                <midino>0x10</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>playposition</key>
-                <description>Track Seek</description>
-                <status>0xB8</status>
-                <midino>0x21</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>hotcue_3_clear</key>
-                <description>Left HotCue 3 clear</description>
-                <status>0x97</status>
-                <midino>0x2D</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>hotcue_3_clear</key>
-                <description>Right HotCue 3 clear</description>
-                <status>0x98</status>
-                <midino>0x2D</midino>
                 <options>
                     <normal/>
                 </options>
@@ -283,22 +33,192 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>hotcue_2_clear</key>
-                <description>Left HotCue 2 clear</description>
+                <key>play</key>
+                <description>Left Play</description>
                 <status>0x97</status>
-                <midino>0x2C</midino>
+                <midino>0x1B</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>KAOSSDJ.wheelTurn</key>
-                <description>Right Jog Wheel Turn SCRATCH</description>
-                <status>0xB8</status>
-                <midino>0x10</midino>
+                <key>KAOSSDJ.scratchMode</key>
+                <description>Scratch mode button</description>
+                <status>0x98</status>
+                <midino>0x16</midino>
                 <options>
                     <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>LoadSelectedTrack</key>
+                <description>Load into Deck 1</description>
+                <status>0x97</status>
+                <midino>0x0E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>hotcue_3_activate</key>
+                <description>Left HotCue 3</description>
+                <status>0x97</status>
+                <midino>0x14</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>rate_temp_up</key>
+                <description>Nudge (pitch+)</description>
+                <status>0x98</status>
+                <midino>0x17</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>loop_halve</key>
+                <description>MIDI Learned from 2 messages.</description>
+                <status>0x97</status>
+                <midino>0x0F</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>rate_temp_down</key>
+                <description>Nudge (pitch -)</description>
+                <status>0x97</status>
+                <midino>0x15</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>reloop_exit</key>
+                <description>MIDI Learned from 2 messages.</description>
+                <status>0x98</status>
+                <midino>0x10</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>KAOSSDJ.scratchMode</key>
+                <description>Scratch mode button</description>
+                <status>0x97</status>
+                <midino>0x16</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler1]</group>
+                <key>cue_cdj</key>
+                <description>Sampler 1 Play</description>
+                <status>0x96</status>
+                <midino>0x4A</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>loop_double</key>
+                <description>MIDI Learned from 8 messages.</description>
+                <status>0x98</status>
+                <midino>0x11</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>rate_temp_up</key>
+                <description>Nudge (pitch +)</description>
+                <status>0x97</status>
+                <midino>0x17</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler2]</group>
+                <key>cue_cdj</key>
+                <description>Sampler 2 Play</description>
+                <status>0x96</status>
+                <midino>0x4B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>hotcue_1_activate</key>
+                <description>Right HotCue 1</description>
+                <status>0x98</status>
+                <midino>0x12</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>reloop_exit</key>
+                <description>MIDI Learned from 2 messages.</description>
+                <status>0x97</status>
+                <midino>0x10</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>hotcue_2_activate</key>
+                <description>Right HotCue 2</description>
+                <status>0x98</status>
+                <midino>0x13</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>loop_double</key>
+                <description>MIDI Learned from 4 messages.</description>
+                <status>0x97</status>
+                <midino>0x11</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter2</key>
+                <description>Right Equaliser Mid</description>
+                <status>0xB8</status>
+                <midino>0x1C</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>hotcue_1_activate</key>
+                <description>Left HotCue 1</description>
+                <status>0x97</status>
+                <midino>0x12</midino>
+                <options>
+                    <normal/>
                 </options>
             </control>
             <control>
@@ -312,21 +232,231 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
-                <key>hotcue_1_clear</key>
-                <description>Left HotCue 1 clear</description>
-                <status>0x97</status>
-                <midino>0x2B</midino>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter1</key>
+                <description>Right Equaliser Low</description>
+                <status>0xB8</status>
+                <midino>0x1D</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>KAOSSDJ.wheelTouch</key>
-                <description>Left Jog Wheel Touch</description>
+                <key>hotcue_2_activate</key>
+                <description>Left HotCue 2</description>
                 <status>0x97</status>
-                <midino>0x1F</midino>
+                <midino>0x13</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>hotcue_3_clear</key>
+                <description>Right HotCue 3 clear</description>
+                <status>0x98</status>
+                <midino>0x2D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter2</key>
+                <description>Left Equaliser Mid</description>
+                <status>0xB7</status>
+                <midino>0x1C</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>hotcue_2_clear</key>
+                <description>Left HotCue 2 clear</description>
+                <status>0x97</status>
+                <midino>0x2C</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter1</key>
+                <description>Left Equaliser Low</description>
+                <status>0xB7</status>
+                <midino>0x1D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>volume</key>
+                <description>MIDI Learned from 238 messages.</description>
+                <status>0xB8</status>
+                <midino>0x18</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Playlist]</group>
+                <key>KAOSSDJ.browseKnob</key>
+                <description>Library Browse</description>
+                <status>0xB6</status>
+                <midino>0x1E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>hotcue_3_clear</key>
+                <description>Left HotCue 3 clear</description>
+                <status>0x97</status>
+                <midino>0x2D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>loop_in</key>
+                <description>Right Loop in</description>
+                <status>0x98</status>
+                <midino>0x28</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>rate</key>
+                <description>Right Pitch Bend</description>
+                <status>0xB8</status>
+                <midino>0x19</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>beatloop_activate</key>
+                <description>MIDI Learned from 4 messages.</description>
+                <status>0x98</status>
+                <midino>0x29</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>pregain</key>
+                <description>Right Gain</description>
+                <status>0xB8</status>
+                <midino>0x1A</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>pregain</key>
+                <description>Right Gain</description>
+                <status>0xB8</status>
+                <midino>0x1A</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>sync_enabled</key>
+                <description>Right Sync</description>
+                <status>0x98</status>
+                <midino>0x1D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>volume</key>
+                <description>MIDI Learned from 150 messages.</description>
+                <status>0xB7</status>
+                <midino>0x18</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>KAOSSDJ.controllerFx</key>
+                <description>Fx Control</description>
+                <status>0xB8</status>
+                <midino>0x0D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>loop_out</key>
+                <description>Right Loop out</description>
+                <status>0x98</status>
+                <midino>0x2A</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter3</key>
+                <description>Right Equaliser High</description>
+                <status>0xB8</status>
+                <midino>0x1B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>cue_default</key>
+                <description>Right CUE</description>
+                <status>0x98</status>
+                <midino>0x1E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>loop_in</key>
+                <description>Left Loop in</description>
+                <status>0x97</status>
+                <midino>0x28</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>rate</key>
+                <description>Left Pitch Bend</description>
+                <status>0xB7</status>
+                <midino>0x19</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>KAOSSDJ.wheelTurn</key>
+                <description>Right Jog Wheel Turn</description>
+                <status>0xB8</status>
+                <midino>0x0E</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -353,10 +483,80 @@
             </control>
             <control>
                 <group>[Channel1]</group>
+                <key>beatloop_activate</key>
+                <description>MIDI Learned from 2 messages.</description>
+                <status>0x97</status>
+                <midino>0x29</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>pregain</key>
+                <description>Left Gain</description>
+                <status>0xB7</status>
+                <midino>0x1A</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>playposition</key>
+                <description>Track Seek</description>
+                <status>0xB8</status>
+                <midino>0x21</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>KAOSSDJ.wheelTurnShift</key>
+                <description>Right Jog Wheel Turn Shift</description>
+                <status>0xB8</status>
+                <midino>0x0F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>sync_enabled</key>
+                <description>Left Sync</description>
+                <status>0x97</status>
+                <midino>0x1D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>KAOSSDJ.rightFx</key>
+                <description>Right Fx button</description>
+                <status>0x98</status>
+                <midino>0x18</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
                 <key>loop_out</key>
                 <description>Left Loop out</description>
                 <status>0x97</status>
                 <midino>0x2A</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter3</key>
+                <description>Left Equaliser High</description>
+                <status>0xB7</status>
+                <midino>0x1B</midino>
                 <options>
                     <normal/>
                 </options>
@@ -372,91 +572,91 @@
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>loop_out</key>
-                <description>Right Loop out</description>
-                <status>0x98</status>
-                <midino>0x2A</midino>
+                <group>[Channel1]</group>
+                <key>KAOSSDJ.wheelTurn</key>
+                <description>Left Jog Wheel Turn</description>
+                <status>0xB7</status>
+                <midino>0x0E</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>cue_default</key>
-                <description>Right CUE</description>
+                <key>pfl</key>
+                <description>Right Headphones Button</description>
                 <status>0x98</status>
-                <midino>0x1E</midino>
+                <midino>0x19</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatloop_activate</key>
-                <description>MIDI Learned from 2 messages.</description>
+                <key>hotcue_1_clear</key>
+                <description>Left HotCue 1 clear</description>
                 <status>0x97</status>
-                <midino>0x29</midino>
+                <midino>0x2B</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>sync_enabled</key>
-                <description>Left Sync</description>
+                <key>KAOSSDJ.wheelTouch</key>
+                <description>Left Jog Wheel Touch</description>
                 <status>0x97</status>
-                <midino>0x1D</midino>
+                <midino>0x1F</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>beatloop_activate</key>
-                <description>MIDI Learned from 4 messages.</description>
-                <status>0x98</status>
-                <midino>0x29</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>sync_enabled</key>
-                <description>Right Sync</description>
-                <status>0x98</status>
-                <midino>0x1D</midino>
+                <group>[Channel1]</group>
+                <key>playposition</key>
+                <description>Track Seek</description>
+                <status>0xB7</status>
+                <midino>0x21</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>loop_in</key>
-                <description>Left Loop in</description>
-                <status>0x97</status>
-                <midino>0x28</midino>
+                <key>KAOSSDJ.wheelTurnShift</key>
+                <description>Left Jog Wheel Turn Shift</description>
+                <status>0xB7</status>
+                <midino>0x0F</midino>
                 <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>loop_in</key>
-                <description>Right Loop in</description>
-                <status>0x98</status>
-                <midino>0x28</midino>
-                <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>play</key>
-                <description>Left Play</description>
+                <key>KAOSSDJ.leftFx</key>
+                <description>Left Fx button</description>
                 <status>0x97</status>
-                <midino>0x1B</midino>
+                <midino>0x18</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>KAOSSDJ.wheelTurn</key>
+                <description>Right Jog Wheel Turn SCRATCH</description>
+                <status>0xB8</status>
+                <midino>0x10</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler3]</group>
+                <key>cue_cdj</key>
+                <description>Sampler 3 Play</description>
+                <status>0x96</status>
+                <midino>0x4C</midino>
                 <options>
                     <normal/>
                 </options>
@@ -473,16 +673,6 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>loop_halve</key>
-                <description>MIDI Learned from 2 messages.</description>
-                <status>0x97</status>
-                <midino>0x0F</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
                 <key>pfl</key>
                 <description>Left Headphones Button</description>
                 <status>0x97</status>
@@ -492,61 +682,11 @@
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>loop_halve</key>
-                <description>MIDI Learned from 6 messages.</description>
-                <status>0x98</status>
-                <midino>0x0F</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Playlist]</group>
-                <key>KAOSSDJ.BrowseKnob</key>
-                <description>Library Browse</description>
-                <status>0xB6</status>
-                <midino>0x1E</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
                 <group>[Sampler4]</group>
                 <key>cue_cdj</key>
                 <description>Sampler 4 Play</description>
                 <status>0x96</status>
                 <midino>0x4D</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>pfl</key>
-                <description>Right Headphones Button</description>
-                <status>0x98</status>
-                <midino>0x19</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>LoadSelectedTrack</key>
-                <description>Load into Deck 1</description>
-                <status>0x97</status>
-                <midino>0x0E</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>parameter1</key>
-                <description>Left Equaliser Low</description>
-                <status>0xB7</status>
-                <midino>0x1D</midino>
                 <options>
                     <normal/>
                 </options>
@@ -562,141 +702,31 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler3]</group>
-                <key>cue_cdj</key>
-                <description>Sampler 3 Play</description>
-                <status>0x96</status>
-                <midino>0x4C</midino>
+                <group>[Channel2]</group>
+                <key>hotcue_3_activate</key>
+                <description>Right HotCue 3</description>
+                <status>0x98</status>
+                <midino>0x14</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>parameter1</key>
-                <description>Right Equaliser Low</description>
-                <status>0xB8</status>
-                <midino>0x1D</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>rate_temp_up</key>
-                <description>Nudge (pitch +)</description>
-                <status>0x97</status>
+                <group>[Master]</group>
+                <key>crossfader</key>
+                <description>X-Fader</description>
+                <status>0xB6</status>
                 <midino>0x17</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>parameter2</key>
-                <description>Left Equaliser Mid</description>
-                <status>0xB7</status>
-                <midino>0x1C</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Sampler2]</group>
-                <key>cue_cdj</key>
-                <description>Sampler 2 Play</description>
-                <status>0x96</status>
-                <midino>0x4B</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
                 <group>[Channel2]</group>
-                <key>rate_temp_up</key>
-                <description>Nudge (pitch+)</description>
+                <key>loop_halve</key>
+                <description>MIDI Learned from 6 messages.</description>
                 <status>0x98</status>
-                <midino>0x17</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>parameter2</key>
-                <description>Right Equaliser Mid</description>
-                <status>0xB8</status>
-                <midino>0x1C</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>KAOSSDJ.scratchMode</key>
-                <description>Scratch mode button</description>
-                <status>0x97</status>
-                <midino>0x16</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>parameter3</key>
-                <description>Left Equaliser High</description>
-                <status>0xB7</status>
-                <midino>0x1B</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>KAOSSDJ.scratchMode</key>
-                <description>Scratch mode button</description>
-                <status>0x98</status>
-                <midino>0x16</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Sampler1]</group>
-                <key>cue_cdj</key>
-                <description>Sampler 1 Play</description>
-                <status>0x96</status>
-                <midino>0x4A</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>parameter3</key>
-                <description>Right Equaliser High</description>
-                <status>0xB8</status>
-                <midino>0x1B</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>rate_temp_down</key>
-                <description>Nudge (pitch -)</description>
-                <status>0x97</status>
-                <midino>0x15</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>pregain</key>
-                <description>Left Gain</description>
-                <status>0xB7</status>
-                <midino>0x1A</midino>
+                <midino>0x0F</midino>
                 <options>
                     <normal/>
                 </options>
@@ -731,37 +761,10 @@
                 <maximum>0</maximum>
             </output>
             <output>
-                <group>[Channel1]</group>
-                <key>hotcue_2_enabled</key>
-                <status>0x97</status>
-                <midino>0x13</midino>
-                <on>0x00</on>
-                <off>0x7F</off>
-                <maximum>0</maximum>
-            </output>
-            <output>
                 <group>[Channel2]</group>
                 <key>pfl</key>
                 <status>0x98</status>
                 <midino>0x19</midino>
-                <on>0x00</on>
-                <off>0x7F</off>
-                <maximum>0</maximum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>cue_indicator</key>
-                <status>0x97</status>
-                <midino>0x1E</midino>
-                <on>0x00</on>
-                <off>0x7F</off>
-                <maximum>0</maximum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>play_indicator</key>
-                <status>0x98</status>
-                <midino>0x1B</midino>
                 <on>0x00</on>
                 <off>0x7F</off>
                 <maximum>0</maximum>
@@ -777,8 +780,17 @@
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>cue_indicator</key>
+                <key>hotcue_3_enabled</key>
                 <status>0x98</status>
+                <midino>0x14</midino>
+                <on>0x00</on>
+                <off>0x7F</off>
+                <maximum>0</maximum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>cue_indicator</key>
+                <status>0x97</status>
                 <midino>0x1E</midino>
                 <on>0x00</on>
                 <off>0x7F</off>
@@ -794,10 +806,37 @@
                 <maximum>0</maximum>
             </output>
             <output>
-                <group>[Channel2]</group>
+                <group>[Channel1]</group>
                 <key>hotcue_3_enabled</key>
-                <status>0x98</status>
+                <status>0x97</status>
                 <midino>0x14</midino>
+                <on>0x00</on>
+                <off>0x7F</off>
+                <maximum>0</maximum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_2_enabled</key>
+                <status>0x97</status>
+                <midino>0x13</midino>
+                <on>0x00</on>
+                <off>0x7F</off>
+                <maximum>0</maximum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_1_enabled</key>
+                <status>0x98</status>
+                <midino>0x12</midino>
+                <on>0x00</on>
+                <off>0x7F</off>
+                <maximum>0</maximum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>cue_indicator</key>
+                <status>0x98</status>
+                <midino>0x1E</midino>
                 <on>0x00</on>
                 <off>0x7F</off>
                 <maximum>0</maximum>
@@ -807,15 +846,6 @@
                 <key>hotcue_2_enabled</key>
                 <status>0x98</status>
                 <midino>0x13</midino>
-                <on>0x00</on>
-                <off>0x7F</off>
-                <maximum>0</maximum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>hotcue_3_enabled</key>
-                <status>0x97</status>
-                <midino>0x14</midino>
                 <on>0x00</on>
                 <off>0x7F</off>
                 <maximum>0</maximum>
@@ -831,9 +861,9 @@
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>hotcue_1_enabled</key>
+                <key>play_indicator</key>
                 <status>0x98</status>
-                <midino>0x12</midino>
+                <midino>0x1B</midino>
                 <on>0x00</on>
                 <off>0x7F</off>
                 <maximum>0</maximum>

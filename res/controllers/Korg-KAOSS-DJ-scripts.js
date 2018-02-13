@@ -1,9 +1,8 @@
-function KAOSSDJ() {};
+// Korg KAOSS DJ controller mapping for Mixxx
+// Seb Dooris, Fayaaz Ahmed, Lee Arromba
 
-const config = {
-    'loopSize': 4,
-    'secondaryDecks': false
-}                      
+function KAOSSDJ() {};
+                     
 const ON = 0x7F, 
     OFF = 0x00, 
     UP = 0x01, 
@@ -20,7 +19,7 @@ const led = {
     'sync': 0x1D,
     'play': 0x1B,
     'headphones': 0x19,
-    'fx': 0x18, // warning: something up with this
+    'fx': 0x18, // warning: led is owned by controller
     'stripL': 0x15,
     'stripM': 0x16,
     'stripR': 0x17,
@@ -29,25 +28,20 @@ const led = {
     'loopStripR': 0x11,
 };
 
-KAOSSDJ();
-
-// Not all controls through js so some values not always updated
-KAOSSDJ.deck = function(decknum) {
-    this.decknum = decknum;
-    this.group = "[Channel" + decknum + "]";
-    this.loaded = false;
+// initialise decks
+KAOSSDJ.deck = function(deckNumber) {
+    this.deckNumber = deckNumber;
+    this.group = "[Channel" + deckNumber + "]";
     this.jogWheelsInScratchMode = true;
-    this.shiftKey = false;
-    this.touch = false;
-    this.looping = false;
-    this.loopsize = config['loopSize'];
+    this.fx = false;
 };
 
-// Initialise the 4 deck objects and their properties
-KAOSSDJ.decks = {}
-for (var i = 1; i <= 4; i++) {
-    KAOSSDJ.decks['D' + i] = new KAOSSDJ.deck(i);
+KAOSSDJ.decks = [];
+for (var i = 0; i < 4; i++) { // TODO: currently only 2 decks supported. is 4 possible?
+    KAOSSDJ.decks[i] = new KAOSSDJ.deck(i+1);
 }
+
+// ==== lifecycle ====
 
 KAOSSDJ.init = function(id, debugging) {
     // turn on main led channels
@@ -77,62 +71,81 @@ KAOSSDJ.shutdown = function(id, debugging) {
     }
 };
 
-KAOSSDJ.getDeckNo = function(channel) {
-    var deckno = channel - 6
-    if (config['secondaryDecks']) {
-        return deckno + 2
-    } else {
-        return deckno
-    }
+// ==== helper ====
+
+KAOSSDJ.getDeckIndexFromChannel = function(channel) {
+    return channel - 7
 };
 
 KAOSSDJ.getDeckByChannel = function(channel) {
-    var deckno = KAOSSDJ.getDeckNo(channel);
-    return KAOSSDJ.decks['D' + deckno];
+    var deckIndex = KAOSSDJ.getDeckIndexFromChannel(channel);
+    return KAOSSDJ.decks[deckIndex];
 };
 
 KAOSSDJ.updateDeckByChannel = function(channel, key, value) {
-    var deckno = KAOSSDJ.getDeckNo(channel);
-    KAOSSDJ.decks['D' + deckno][key] = value;
+    var deckIndex = KAOSSDJ.getDeckIndexFromChannel(channel);
+    KAOSSDJ.decks[deckIndex][key] = value;
 };
 
-// Wheel touch. If in scratch mode or not playing enable vinyl-like control
+// ==== mapped functions ====
+
 KAOSSDJ.wheelTouch = function(channel, control, value, status, group) {
     var alpha = 1.0 / 8;
     var beta = alpha / 32;
-    var deck_info = KAOSSDJ.getDeckByChannel(channel);
-    var deckno = deck_info.decknum;
-    var deck_playing = engine.getValue('[Channel' + deckno + ']', 'play_indicator');
+    var deck = KAOSSDJ.getDeckByChannel(channel);
+    var deckNumber = deck.deckNumber;
+    var deck_playing = engine.getValue('[Channel' + deckNumber + ']', 'play_indicator');
 
-    if (deck_info.jogWheelsInScratchMode || !deck_playing ) {
+    // If in scratch mode or not playing enable vinyl-like control
+    if (deck.jogWheelsInScratchMode || !deck_playing ) {
         if (value === ON) {
             // Enable scratching on touch
-            engine.scratchEnable(deckno, 128, 33 + 1 / 3, alpha, beta);
+            engine.scratchEnable(deckNumber, 128, 33 + 1 / 3, alpha, beta);
         } else if (value === OFF) {
             // Disable scratching
-            engine.scratchDisable(deckno);
+            engine.scratchDisable(deckNumber);
         }
     }
 };
 
-// Jog wheel turns
 KAOSSDJ.wheelTurn = function(channel, control, value, status, group) {
     var deck = KAOSSDJ.getDeckByChannel(channel);
-    var deckno = deck.decknum;
+    var deckNumber = deck.deckNumber;
     var newValue = 0;
     if (value < 64) {
         newValue = value;
     } else {
         newValue = value - 128;
     }
-    if (engine.isScratching(deckno)) {
-        engine.scratchTick(deckno, newValue); 
+    if (engine.isScratching(deckNumber)) {
+        engine.scratchTick(deckNumber, newValue); 
     } else {
-        engine.setValue('[Channel' + deckno + ']', 'jog', newValue); // Pitch bend
+        engine.setValue('[Channel' + deckNumber + ']', 'jog', newValue); // Pitch bend
     }
 };
 
-// Scratch mode and indicator
+KAOSSDJ.wheelTurnShift = function(channel, control, value, status, group) {
+    var deck = KAOSSDJ.getDeckByChannel(channel);
+    if (deck.jogWheelsInScratchMode) {
+        // Fast scratch
+        var newValue = 0;
+        if (value < 64) {
+            newValue = value;
+        } else {
+            newValue = value - 128;
+        }
+        newValue = newValue * 4; // multiplier (to speed it up)
+        engine.scratchTick(deck.deckNumber, newValue); 
+    } else {
+        // Move beatgrid 
+        if(value === UP){
+            engine.setValue(deck.group, 'beats_translate_later', true);
+        } else if (value === DOWN){
+            engine.setValue(deck.group, 'beats_translate_earlier', true);
+        }
+    }
+};
+
 KAOSSDJ.scratchMode = function(channel, control, value, status, group) {
     if (value === ON) {
         // Turn scratch mode on jogwheel (LED is red)
@@ -143,36 +156,34 @@ KAOSSDJ.scratchMode = function(channel, control, value, status, group) {
     }
 };
 
-// Fast scratch with shift + wheel + in scratch mode
-// Move beatgrid with shift + wheel + not in scratch mode
-KAOSSDJ.wheelTurnShift = function(channel, control, value, status, group) {
-    var deck = KAOSSDJ.getDeckByChannel(channel);  
-    if (deck.jogWheelsInScratchMode) {
-        var newValue = 0;
-        if (value < 64) {
-            newValue = value;
-        } else {
-            newValue = value - 128;
-        }
-        newValue = newValue * 4; // multiplier (to speed it up)
-        engine.scratchTick(deck.decknum, newValue); 
-    } else {
-        if(value === UP){
-            engine.setValue(deck.group, 'beats_translate_later', true);
-        } else if (value === DOWN){
-            engine.setValue(deck.group, 'beats_translate_earlier', true);
-        }
-    }
-};
-
-// Browse Knob just up and down in the main playlist
-KAOSSDJ.BrowseKnob = function(channel, control, value, status, group) {
+KAOSSDJ.browseKnob = function(channel, control, value, status, group) {
     var nval = (value > 0x40 ? value - 0x80 : value);
     engine.setValue(group, "SelectTrackKnob", nval);
 };
 
-// Line fader volumes
-KAOSSDJ.volume = function(channel, control, value, status, group) {
+KAOSSDJ.leftFx = function(channel, control, value, status, group) {
     var deck = KAOSSDJ.getDeckByChannel(channel);
-    engine.setValue(deck.group, "volume", value / 127);
+    if(value === ON) {
+        KAOSSDJ.updateDeckByChannel(channel, 'fx', true);
+    } else {
+        KAOSSDJ.updateDeckByChannel(channel, 'fx', false);
+    }
+};
+
+KAOSSDJ.rightFx = function(channel, control, value, status, group) {
+    if(value === ON) {
+        KAOSSDJ.updateDeckByChannel(channel, 'fx', true);
+    } else {
+        KAOSSDJ.updateDeckByChannel(channel, 'fx', false);
+    }
+};
+
+KAOSSDJ.controllerFx = function(channel, control, value, status, group) {
+    var decks = KAOSSDJ.decks;
+    for(key in decks) {
+        var deck = decks[key];
+        if(deck.fx) {
+            engine.setValue('[EffectRack1_EffectUnit'+deck.deckNumber +']', 'mix', value / 127);
+        }
+    }
 };
