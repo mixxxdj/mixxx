@@ -99,4 +99,42 @@ TEST_F(AnalyzerSilenceTest, ToneTrackWithSilence) {
     EXPECT_EQ(pEndCue->getPosition(), 3 * nTrackSampleDataLength / 4);
 }
 
+TEST_F(AnalyzerSilenceTest, ToneTrackWithSilenceInTheMiddle) {
+    double omega = 2.0 * M_PI * kTonePitchHz / pTrack->getSampleRate();
+    int oneFifthOfTrackLength = nTrackSampleDataLength / 5;
+
+    // Fill the first fifth with silence
+    for (int i = 0; i < oneFifthOfTrackLength; i++) {
+        pTrackSampleData[i] = 0.0;
+    }
+
+    // Fill the second fifth with 1 kHz tone
+    for (int i = oneFifthOfTrackLength; i < 2 * oneFifthOfTrackLength; i++) {
+        pTrackSampleData[i] = cos(i / kChannelCount * omega);
+    }
+
+    // Fill the third fifth with silence
+    for (int i = 2 * oneFifthOfTrackLength; i < 3 * oneFifthOfTrackLength; i++) {
+        pTrackSampleData[i] = 0.0;
+    }
+
+    // Fill the fourth fifth with 1 kHz tone
+    for (int i = 3 * oneFifthOfTrackLength; i < 4 * oneFifthOfTrackLength; i++) {
+        pTrackSampleData[i] = cos(i / kChannelCount * omega);
+    }
+
+    // Fill the fifth fifth with silence
+    for (int i = 4 * oneFifthOfTrackLength; i < nTrackSampleDataLength; i++) {
+        pTrackSampleData[i] = 0.0;
+    }
+
+    analyzeTrack();
+
+    CuePointer pBeginCue = pTrack->findCueByType(Cue::BEGIN);
+    EXPECT_EQ(pBeginCue->getPosition(), oneFifthOfTrackLength);
+
+    CuePointer pEndCue = pTrack->findCueByType(Cue::END);
+    EXPECT_EQ(pEndCue->getPosition(), 4 * oneFifthOfTrackLength);
+}
+
 }
