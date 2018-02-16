@@ -388,6 +388,10 @@ void DlgPrefController::slotLoadPreset(int chosenIndex) {
     ControllerPresetPointer pPreset = ControllerPresetFileHandler::loadPreset(
         presetPath, ControllerManager::getPresetPaths(m_pConfig));
 
+    if (!pPreset) {
+        return;
+    }
+
     // Import the preset scripts to the user scripts folder.
     for (QList<ControllerPreset::ScriptFileInfo>::iterator it =
                  pPreset->scripts.begin(); it != pPreset->scripts.end(); ++it) {
