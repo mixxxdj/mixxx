@@ -455,7 +455,7 @@ TagLib::String::Type getID3v2StringType(const TagLib::ID3v2::Tag& tag, bool isNu
 // prefer the first with a non-empty content if requested.
 TagLib::ID3v2::CommentsFrame* findFirstCommentsFrame(
         const TagLib::ID3v2::Tag& tag,
-        const QString& description = QString(),
+        const QString& description,
         bool preferNotEmpty = true) {
     TagLib::ID3v2::CommentsFrame* pFirstFrame = nullptr;
     // Bind the const-ref result to avoid a local copy
@@ -485,6 +485,12 @@ TagLib::ID3v2::CommentsFrame* findFirstCommentsFrame(
     }
     // simply return the first matching frame
     return pFirstFrame;
+}
+
+TagLib::ID3v2::CommentsFrame* findFirstCommentsFrameWithoutDescription(
+        const TagLib::ID3v2::Tag& tag,
+        bool preferNotEmpty = true) {
+    return findFirstCommentsFrame(tag, QString(), preferNotEmpty);
 }
 
 // Finds the first text frame that with a matching description (case-insensitive).
@@ -615,7 +621,7 @@ bool writeID3v2TextIdentificationFrameStringIfNotNull(
 void writeID3v2CommentsFrame(
         TagLib::ID3v2::Tag* pTag,
         const QString& text,
-        const QString& description = QString(),
+        const QString& description,
         bool isNumericOrURL = false) {
     TagLib::ID3v2::CommentsFrame* pFrame =
             findFirstCommentsFrame(*pTag, description);
@@ -652,6 +658,13 @@ void writeID3v2CommentsFrame(
         kLogger.warning() << "Removed" << numberOfRemovedCommentFrames
                 << "non-standard ID3v2 TXXX comment frames";
     }
+}
+
+void writeID3v2CommentsFrameWithoutDescription(
+        TagLib::ID3v2::Tag* pTag,
+        const QString& text,
+        bool isNumericOrURL = false) {
+    writeID3v2CommentsFrame(pTag, text, QString(), isNumericOrURL);
 }
 
 void writeID3v2UserTextIdentificationFrame(
@@ -1079,10 +1092,16 @@ void importTrackMetadataFromID3v2Tag(
         return; // nothing to do
     }
 
+    // Omit to read comments with the default implementation provided by
+    // TagLib. We are only interested in a CommentsFrame with an empty
+    // description (see below). If no such CommentsFrame exists TagLib
+    // arbitrarily picks the first one with a description that it finds,
+    // e.g. "iTunNORM" or "iTunPGAP" with unexpected results for the user.
+    // See also: https://bugs.launchpad.net/mixxx/+bug/1742617
     importTrackMetadataFromTag(pTrackMetadata, tag, READ_TAG_OMIT_COMMENT);
 
     TagLib::ID3v2::CommentsFrame* pCommentsFrame =
-            findFirstCommentsFrame(tag);
+            findFirstCommentsFrameWithoutDescription(tag);
     if (pCommentsFrame) {
         pTrackMetadata->refTrackInfo().setComment(toQString(*pCommentsFrame));
     } else {
@@ -1422,6 +1441,9 @@ void importTrackMetadataFromVorbisCommentTag(
         return; // nothing to do
     }
 
+    // Omit to read comments with the default implementation provided
+    // by TagLib. The implementation is inconsistent with the handling
+    // proposed by MusicBrainz (see below).
     importTrackMetadataFromTag(pTrackMetadata, tag, READ_TAG_OMIT_COMMENT);
 
     // The original specification only defines a "DESCRIPTION" field,
@@ -1432,7 +1454,7 @@ void importTrackMetadataFromVorbisCommentTag(
     //
     // We are not relying on  TagLib (1.11.1) with a somehow inconsistent
     // handling. It prefers "DECSCRIPTION" for reading, but adds a "COMMENT"
-    // fields upon writing when no "DESCRIPTION" field exists.
+    // field upon writing when no "DESCRIPTION" field exists.
     QString comment;
     if (!readXiphCommentField(tag, "COMMENT", &comment) || comment.isEmpty()) {
         // Fallback to the the original "DESCRIPTION" field only if the
@@ -1789,7 +1811,7 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
             WRITE_TAG_OMIT_TRACK_NUMBER | WRITE_TAG_OMIT_YEAR | WRITE_TAG_OMIT_COMMENT);
 
     // Writing the common comments frame has been omitted (see above)
-    writeID3v2CommentsFrame(pTag, trackMetadata.getTrackInfo().getComment());
+    writeID3v2CommentsFrameWithoutDescription(pTag, trackMetadata.getTrackInfo().getComment());
 
     writeID3v2TextIdentificationFrame(pTag, "TRCK",
             TrackNumbers::joinStrings(
