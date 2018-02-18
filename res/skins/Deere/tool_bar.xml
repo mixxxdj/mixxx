@@ -313,38 +313,18 @@
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-
-              <WidgetGroup>
-                <Layout>horizontal</Layout>
-                <Children>
-                  <Label>
-                    <ObjectName>KnobLabelH</ObjectName> <!--Hack to make the text a readable size.-->
-                    <Size>80f, 25f</Size>
-                    <Text>SKIN SETTINGS</Text>
-                  </Label>
-                </Children>
-                <Connection>
-                  <ConfigKey>[Deere],show_skin_settings</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                  <Transform>
-                    <Not/>
-                  </Transform>
-                </Connection>
-              </WidgetGroup>
-
               <Template src="skin:left_2state_button.xml">
-                <SetVariable name="TooltipId"></SetVariable>
-                <SetVariable name="Tooltip">Show/hide skin settings</SetVariable>
+                <SetVariable name="TooltipId">skin_settings</SetVariable>
                 <SetVariable name="ObjectName">ShowHideSkinSettingsButton</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
                 <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
                 <SetVariable name="state_0_text"></SetVariable>
-                <SetVariable name="state_0_pressed">icon/ic_menu_48px.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">icon/ic_menu_48px.svg</SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_settings_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_settings_48px.svg</SetVariable>
                 <SetVariable name="state_1_text"></SetVariable>
-                <SetVariable name="state_1_pressed">icon/ic_menu_48px.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">icon/ic_menu_48px.svg</SetVariable>
+                <SetVariable name="state_1_pressed">icon/ic_settings_48px.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">icon/ic_settings_48px.svg</SetVariable>
                 <SetVariable name="left_connection_control">[Deere],show_skin_settings</SetVariable>
               </Template>
             </Children>
