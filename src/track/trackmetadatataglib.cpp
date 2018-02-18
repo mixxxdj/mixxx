@@ -198,7 +198,11 @@ inline QString toQStringFirstNotEmpty(const TagLib::MP4::Item& mp4Item) {
 
 inline TagLib::String toTagLibString(const QString& str) {
     const QByteArray qba(str.toUtf8());
-    return TagLib::String(qba.constData(), TagLib::String::UTF8);
+    if (str.isNull()) {
+        return TagLib::String::null;
+    } else {
+        return TagLib::String(qba.constData(), TagLib::String::UTF8);
+    }
 }
 
 inline QString formatBpm(const TrackMetadata& trackMetadata) {
