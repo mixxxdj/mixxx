@@ -405,31 +405,19 @@
      id="path9817-6-4"
      style="fill:#bfbfbf;fill-opacity:1;stroke:none;display:none" />
   <path
-     d="m 13,6.21875 c -3.5898509,0 -6.4999999,2.910149 -6.4999999,6.5 0,0.04264 -8.17e-4,0.08256 0,0.125 0.310077,-0.215293 0.659368,-0.362276 1.03125,-0.46875 C 7.7098501,9.498673 10.078679,7.21875 13,7.21875 c 3.03757,0 5.5,2.462434 5.5,5.5 0,0.04206 9.4e-4,0.08317 0,0.125 0.35675,0.247699 0.66301,0.546206 0.90625,0.90625 C 19.46041,13.412263 19.5,13.071752 19.5,12.71875 c 0,-3.589851 -2.91015,-6.5 -6.5,-6.5 z"
-     id="path9863-3-5"
-     style="color:#000000;fill:#060606;fill-opacity:1;fill-rule:nonzero;stroke:#060606;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
-  <path
-     d="m 8.5000001,19.21875 c -1.932996,0 -3.5,-1.567003 -3.5,-3.5 0,-1.932996 1.567004,-3.5 3.5,-3.5 z"
-     id="path9842-6-4"
-     style="color:#000000;fill:#060606;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
-  <path
-     d="m 17.5,19.21875 c 1.933,0 3.5,-1.567003 3.5,-3.5 0,-1.932996 -1.567,-3.5 -3.5,-3.5 z"
-     id="path9842-2-0-7"
-     style="color:#000000;fill:#060606;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
-  <path
-     d="m 12,5.21875 c -3.589851,0 -6.5,2.910149 -6.5,6.5 0,0.04264 -8.17e-4,0.08256 0,0.125 C 5.810077,11.628457 6.159368,11.481474 6.53125,11.375 6.70985,8.498673 9.078679,6.21875 12,6.21875 c 3.037566,0 5.5,2.462434 5.5,5.5 0,0.04206 9.39e-4,0.08317 0,0.125 0.35675,0.247699 0.663009,0.546206 0.90625,0.90625 C 18.46041,12.412263 18.5,12.071752 18.5,11.71875 c 0,-3.589851 -2.910149,-6.5 -6.5,-6.5 z"
-     id="path9863-2"
-     style="color:#000000;fill:#bfbfbf;fill-opacity:1;fill-rule:nonzero;stroke:#bfbfbf;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
-  <path
-     d="m 7.5,18.21875 c -1.932996,0 -3.5,-1.567003 -3.5,-3.5 0,-1.932996 1.567004,-3.5 3.5,-3.5 z"
-     id="path9842-5"
-     style="color:#000000;fill:#bfbfbf;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
-  <path
-     d="m 16.5,18.21875 c 1.932996,0 3.5,-1.567003 3.5,-3.5 0,-1.932996 -1.567004,-3.5 -3.5,-3.5 z"
-     id="path9842-2-4"
-     style="color:#000000;fill:#bfbfbf;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
-  <path
      d="M 2,0 C 0.90064862,0 0,0.90064862 0,2 l 0,20 c 0,1.099351 0.90064862,2 2,2 l 20,0 c 1.099351,0 2,-0.900649 2,-2 L 24,2 C 24,0.90064862 23.099351,0 22,0 z M 2.3,1 21.7,1 C 22.262649,1 23,1.7373514 23,2.3 l 0,19.4 C 23,22.262649 22.262649,23 21.7,23 L 2.3,23 C 1.7373514,23 1,22.262649 1,21.7 L 1,2.3 C 1,1.7373514 1.7373514,1 2.3,1 z"
      id="rect3029-96-0"
      style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#585858;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans" />
+  <g
+     transform="translate(-3.309322,-4.707097)"
+     id="g7113">
+    <path
+       d="m 16.309322,10.675847 c -3.724959,0 -6.75,3.024992 -6.75,6.75 0,0.03983 -9.401e-4,0.07667 0,0.125 l 0,0.21875 c -0.7581491,0.642015 -1.25,1.584975 -1.25,2.65625 0,1.933 1.567004,3.5 3.5,3.5 l 0,-7 c -0.241624,0 -0.490908,0.01588 -0.71875,0.0625 0.215665,-2.703106 2.459432,-4.8125 5.21875,-4.8125 2.752956,0 4.993881,2.118251 5.21875,4.8125 -0.227842,-0.04662 -0.477125,-0.0625 -0.71875,-0.0625 l 0,7 c 1.932996,0 3.5,-1.567 3.5,-3.5 0,-1.087312 -0.503385,-2.045549 -1.28125,-2.6875 0.0061,-0.105593 0.03125,-0.203066 0.03125,-0.3125 0,-3.725008 -3.025041,-6.75 -6.75,-6.75 z"
+       id="path9863-1-2-3"
+       style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#060606;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.5;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans" />
+    <path
+       d="m 15.309322,9.6758475 c -3.724959,0 -6.75,3.0249915 -6.75,6.7499995 0,0.03983 -9.401e-4,0.07667 0,0.125 l 0,0.21875 c -0.7581491,0.642015 -1.25,1.584975 -1.25,2.65625 0,1.933 1.567004,3.5 3.5,3.5 l 0,-7 c -0.241624,0 -0.490908,0.01588 -0.71875,0.0625 0.215665,-2.703106 2.459432,-4.8125 5.21875,-4.8125 2.752956,0 4.993881,2.118251 5.21875,4.8125 -0.227842,-0.04662 -0.477125,-0.0625 -0.71875,-0.0625 l 0,7 c 1.932996,0 3.5,-1.567 3.5,-3.5 0,-1.087312 -0.503385,-2.045549 -1.28125,-2.6875 0.0061,-0.105593 0.03125,-0.203066 0.03125,-0.3125 0,-3.725008 -3.025041,-6.7499995 -6.75,-6.7499995 z"
+       id="path9863-1-2"
+       style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#bfbfbf;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.5;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans" />
+  </g>
 </svg>
