@@ -68,7 +68,7 @@
         -->
         <Mark>
           <Control>hotcue_1_position</Control>
-          <Pixmap>image/marker_hotcue_1.png</Pixmap>
+          <Pixmap></Pixmap>
           <Text>1</Text>
           <Align>bottom</Align>
           <Color>#00FF00</Color>
@@ -76,7 +76,7 @@
         </Mark>
         <Mark>
           <Control>hotcue_2_position</Control>
-          <Pixmap>image/marker_hotcue_2.png</Pixmap>
+          <Pixmap></Pixmap>
           <Text>2</Text>
           <Align>bottom</Align>
           <Color>#00FF00</Color>
@@ -84,7 +84,7 @@
         </Mark>
         <Mark>
           <Control>hotcue_3_position</Control>
-          <Pixmap>image/marker_hotcue_3.png</Pixmap>
+          <Pixmap></Pixmap>
           <Text>3</Text>
           <Align>bottom</Align>
           <Color>#00FF00</Color>
@@ -92,7 +92,7 @@
         </Mark>
         <Mark>
           <Control>hotcue_4_position</Control>
-          <Pixmap>image/marker_hotcue_4.png</Pixmap>
+          <Pixmap></Pixmap>
           <Text>4</Text>
           <Align>bottom</Align>
           <Color>#00FF00</Color>
