@@ -442,6 +442,37 @@
             </Children>
           </WidgetStack>
 
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:left_1state_button.xml">
+                <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+                <SetVariable name="TooltipId"></SetVariable>
+                <SetVariable name="ObjectName">SamplerBankLoadButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="HorizontalStretchButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text">Load Bank</SetVariable>
+                <SetVariable name="state_0_pressed"></SetVariable>
+                <SetVariable name="state_0_unpressed"></SetVariable>
+                <SetVariable name="left_connection_control">[Sampler],LoadSamplerBank</SetVariable>
+              </Template>
+
+              <Template src="skin:left_1state_button.xml">
+                <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+                <SetVariable name="TooltipId"></SetVariable>
+                <SetVariable name="ObjectName">SamplerBankSaveButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="HorizontalStretchButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text">Save Bank</SetVariable>
+                <SetVariable name="state_0_pressed"></SetVariable>
+                <SetVariable name="state_0_unpressed"></SetVariable>
+                <SetVariable name="left_connection_control">[Sampler],SaveSamplerBank</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
         </Children>
       </WidgetGroup>
 
