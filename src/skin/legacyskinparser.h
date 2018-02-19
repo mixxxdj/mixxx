@@ -37,10 +37,11 @@ class LegacySkinParser : public QObject, public SkinParser {
                      Library* pLibrary, VinylControlManager* pVCMan,
                      EffectsManager* pEffectsManager,
                      RecordingManager* pRecordingManager);
-    virtual ~LegacySkinParser();
+    ~LegacySkinParser() override;
 
-    virtual bool canParse(const QString& skinPath);
-    virtual QWidget* parseSkin(const QString& skinPath, QWidget* pParent);
+    bool canParse(const QString& skinPath) override;
+    QWidget* parseSkin(const QString& skinPath, QWidget* pParent) override;
+    void setThis(QSharedPointer<LegacySkinParser> me);
 
     LaunchImage* parseLaunchImage(const QString& skinPath, QWidget* pParent);
 
@@ -53,10 +54,10 @@ class LegacySkinParser : public QObject, public SkinParser {
     static Qt::MouseButton parseButtonState(const QDomNode& node,
                                             const SkinContext& context);
 
+    QList<QWidget*> parseNode(const QDomElement& node);
+
   private:
     static QDomElement openSkin(const QString& skinPath);
-
-    QList<QWidget*> parseNode(const QDomElement& node);
 
     // Load the given template from file and return its document element.
     QDomElement loadTemplate(const QString& path);
@@ -148,6 +149,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     std::unique_ptr<SkinContext> m_pContext;
     Tooltips m_tooltips;
     QHash<QString, QDomElement> m_templateCache;
+    QWeakPointer<LegacySkinParser> m_this;
     static QList<const char*> s_channelStrs;
     static QMutex s_safeStringMutex;
 };

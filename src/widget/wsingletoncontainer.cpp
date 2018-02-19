@@ -70,3 +70,72 @@ void SingletonMap::insertSingleton(QString objectName, QWidget* widget) {
 QWidget* SingletonMap::getSingletonWidget(QString objectName) const {
     return m_singletons.value(objectName, nullptr);
 }
+
+#include <QHBoxLayout>
+#include <skin/skincontext.h>
+#include <skin/legacyskinparser.h>
+
+WSingleton::WSingleton(
+        QSharedPointer<LegacySkinParser> pParser,
+        QDomNode childrenNode,
+        QWidget* pParent)
+    : QWidget(pParent),
+      m_pParser(pParser),
+      m_childrenNode(childrenNode) {
+}
+
+void WSingleton::setVisible(bool visible) {
+    if (!m_pWidget && visible) {
+
+
+        // Descend chilren, taking the first valid element.
+        QDomNode child_node;
+        QDomNodeList children = m_childrenNode.childNodes();
+        for (int i = 0; i < children.count(); ++i) {
+            child_node = children.at(i);
+            if (child_node.isElement()) {
+                break;
+            }
+        }
+
+        if (child_node.isNull()) {
+            /*
+            SKIN_WARNING(node, *m_pContext)
+                    << "SingletonDefinition Children node is empty";
+            */
+            return;
+        }
+
+        QDomElement element = child_node.toElement();
+        QList<QWidget*> child_widgets = m_pParser->parseNode(element);
+        if (child_widgets.empty()) {
+            /*
+            SKIN_WARNING(node, *m_pContext)
+                    << "SingletonDefinition child produced no widget.";
+            */
+            return;
+        } else if (child_widgets.size() > 1) {
+            /*
+            SKIN_WARNING(node, *m_pContext)
+                    << "SingletonDefinition child produced multiple widgets."
+                    << "All but the first are ignored.";
+            */
+        }
+
+        m_pWidget = child_widgets[0];
+        if (!m_pWidget) {
+            /*
+            SKIN_WARNING(node, *m_pContext)
+                    << "SingletonDefinition child widget is NULL";
+            */
+            return;
+        }
+
+        m_pWidget->setParent(this);
+        setLayout(new QHBoxLayout(m_pWidget));
+        layout()->setContentsMargins(0, 0, 0, 0);
+        layout()->addWidget(m_pWidget);
+    }
+    QWidget::setVisible(visible);
+}
+
