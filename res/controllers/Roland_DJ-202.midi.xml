@@ -15,6 +15,15 @@
         <controls>
             <control>
                 <group>[Channel1]</group>
+                <key>DJ202.leftDeck.shiftButton</key>
+                <status>0x9F</status>
+                <midino>0x00</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
                 <key>DJ202.leftDeck.play.input</key>
                 <status>0x90</status>
                 <midino>0x00</midino>
@@ -36,6 +45,96 @@
                 <key>DJ202.leftDeck.sync.input</key>
                 <status>0x90</status>
                 <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.leftDeck.sync.input</key>
+                <status>0x90</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.leftDeck.play.input</key>
+                <status>0x90</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.leftDeck.cue.input</key>
+                <status>0x90</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.leftDeck.pregain.input</key>
+                <status>0xB0</status>
+                <midino>0x16</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.leftDeck.eqKnob[3].input</key>
+                <status>0xB0</status>
+                <midino>0x17</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.leftDeck.eqKnob[2].input</key>
+                <status>0xB0</status>
+                <midino>0x18</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.leftDeck.eqKnob[1].input</key>
+                <status>0xB0</status>
+                <midino>0x19</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.leftDeck.filter.input</key>
+                <status>0xB0</status>
+                <midino>0x1A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.leftDeck.pfl.input</key>
+                <status>0x90</status>
+                <midino>0x1B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.leftDeck.volume.input</key>
+                <status>0xB0</status>
+                <midino>0x1C</midino>
                 <options>
                     <script-binding/>
                 </options>
