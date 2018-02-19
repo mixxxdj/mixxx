@@ -103,15 +103,9 @@ void CmdlineArgs::printUsage() {
     fputs(" - Command line options", stdout);
     fputs("\n(These are case-sensitive.)\n\n\
 [FILE]                  Load the specified music file(s) at start-up.\n\
-                        Each must be one of the following file types:\n\
-                        ", stdout);
-
-    fputs(SoundSourceProxy::getSupportedFileNamePatterns().join(" ")
-          .toLocal8Bit().constData(), stdout);
-    fputs("\n\n", stdout);
-    fputs("\
                         Each file you specify will be loaded into the\n\
-                        next virtual deck.\n\
+                        next virtual deck.\n", stdout);
+    fputs("\
 \n\
 --resourcePath PATH     Top-level directory where Mixxx should look\n\
                         for its resource files such as MIDI mappings,\n\

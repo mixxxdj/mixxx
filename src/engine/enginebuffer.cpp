@@ -443,7 +443,7 @@ void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
 
 // WARNING: This method is not thread safe and must not be called from outside
 // the engine callback!
-void EngineBuffer::setNewPlaypos(double newpos) {
+void EngineBuffer::setNewPlaypos(double newpos, bool adjustingPhase) {
     //qDebug() << m_group << "engine new pos " << newpos;
 
     m_filepos_play = newpos;
@@ -464,7 +464,7 @@ void EngineBuffer::setNewPlaypos(double newpos) {
     for (QList<EngineControl*>::iterator it = m_engineControls.begin();
          it != m_engineControls.end(); ++it) {
         EngineControl *pControl = *it;
-        pControl->notifySeek(m_filepos_play);
+        pControl->notifySeek(m_filepos_play, adjustingPhase);
     }
 
     verifyPlay(); // verify or update play button and indicator
@@ -566,6 +566,10 @@ void EngineBuffer::ejectTrack() {
     m_playButton->set(0.0);
     m_visualBpm->set(0.0);
     m_visualKey->set(0.0);
+    m_timeElapsed->set(0);
+    m_timeRemaining->set(0);
+    m_playposSlider->set(0);
+    m_pCueControl->updateIndicators();
     doSeekFractional(0.0, SEEK_EXACT);
     m_pause.unlock();
 
@@ -1157,12 +1161,14 @@ void EngineBuffer::processSeek(bool paused) {
         seekType |= SEEK_PHASE;
     }
 
+    bool adjustingPhase = false;
     switch (seekType) {
         case SEEK_NONE:
             return;
         case SEEK_PHASE:
             // only adjust phase
             position = m_filepos_play;
+            adjustingPhase = true;
             break;
         case SEEK_EXACT:
         case SEEK_STANDARD: // = SEEK_EXACT | SEEK_PHASE
@@ -1176,11 +1182,8 @@ void EngineBuffer::processSeek(bool paused) {
     if ((seekType & SEEK_PHASE) && !paused && m_pQuantize->toBool()) {
         position = m_pBpmControl->getNearestPositionInPhase(position, true, true);
     }
-
-    double newPlayFrame = position / kSamplesPerFrame;
-    position = round(newPlayFrame) * kSamplesPerFrame;
     if (position != m_filepos_play) {
-        setNewPlaypos(position);
+        setNewPlaypos(position, adjustingPhase);
     }
 }
 

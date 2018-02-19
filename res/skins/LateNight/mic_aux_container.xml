@@ -1,8 +1,10 @@
 <Template>
   <WidgetGroup>
     <Layout>horizontal</Layout>
-    <SizePolicy>min,min</SizePolicy>
+    <SizePolicy>me,min</SizePolicy>
     <Children>
+
+      <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>MicContainer</ObjectName>
@@ -17,42 +19,21 @@
                 <ObjectName>MicTitle</ObjectName>
                 <Text>Microphones</Text>
               </Label>
+
               <WidgetGroup>
-                <Layout>vertical</Layout>
                 <SizePolicy>me,min</SizePolicy>
-                <Children/>
               </WidgetGroup>
-              <WidgetGroup>
-                <ObjectName>MicButtonContainer</ObjectName>
-                <Layout>horizontal</Layout>
-                <SizePolicy>f,f</SizePolicy>
-                <Children>
-                  <PushButton>
-                    <Size>65f,15f</Size>
-                    <ObjectName>GuiToggleButton</ObjectName>
-                    <NumberStates>3</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Text>DUCK OFF</Text>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Text>AUTO DUCK</Text>
-                    </State>
-                    <State>
-                      <Number>2</Number>
-                      <Text>MANUAL</Text>
-                    </State>
-                    <Connection>
-                      <ConfigKey>[Master],talkoverDucking</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                  </PushButton>
-                </Children>
-              </WidgetGroup>
+
+              <Label>
+                <ObjectName>DuckingTitle</ObjectName>
+                <Size>65f,17f</Size>
+                <Text>Ducking</Text>
+                <Alignment>center</Alignment>
+              </Label>
             </Children>
           </WidgetGroup>
-          <WidgetGroup>
+
+          <WidgetGroup><!-- Mic units -->
             <Layout>horizontal</Layout>
             <SizePolicy>max,min</SizePolicy>
             <Children>
@@ -68,8 +49,60 @@
               <Template src="skin:mic_unit.xml">
                 <SetVariable name="micnum">4</SetVariable>
               </Template>
+
+              <WidgetGroup><!-- Ducking controls -->
+                <ObjectName>MicDuckingContainer</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <PushButton>
+                    <!--Size>65f,28f</Size-->
+                    <ObjectName>MicDuckingButton</ObjectName>
+                    <TooltipId>talkover_duck_mode</TooltipId>
+                    <NumberStates>3</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>buttons/btn_micDuck.svg</Pressed>
+                      <Unpressed>buttons/btn_micDuck.svg</Unpressed>
+                      <Text>OFF</Text>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>buttons/btn_micDuck_over.svg</Pressed>
+                      <Unpressed>buttons/btn_micDuck_over.svg</Unpressed>
+                      <Text>AUTO</Text>
+                    </State>
+                    <State>
+                      <Number>2</Number>
+                      <Pressed>buttons/btn_micDuck_over.svg</Pressed>
+                      <Unpressed>buttons/btn_micDuck_over.svg</Unpressed>
+                      <Text>MANUAL</Text>
+                    </State>
+                    <Connection>
+                      <ConfigKey>[Master],talkoverDucking</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+
+                  <WidgetGroup>
+                    <ObjectName>MicDuckingStrengthKnob</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Children>
+                      <Template src="skin:knob_sized_textless.xml">
+                        <SetVariable name="TooltipId">talkover_duck_strength</SetVariable>
+                        <SetVariable name="width">40</SetVariable>
+                        <SetVariable name="height">34</SetVariable>
+                        <SetVariable name="group">[Master]</SetVariable>
+                        <SetVariable name="control">duckStrength</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup><!-- /Ducking controls -->
             </Children>
-          </WidgetGroup>
+          </WidgetGroup><!-- /Mic units -->
+
         </Children>
       </WidgetGroup><!-- /Mic -->
       
@@ -81,7 +114,6 @@
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
-            <MinimumSize>0,22</MinimumSize>
             <Children>
               <Label>
                 <ObjectName>MicTitle</ObjectName>
@@ -94,6 +126,7 @@
               </WidgetGroup>
             </Children>
           </WidgetGroup>
+
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <SizePolicy>max,min</SizePolicy>
@@ -115,10 +148,8 @@
         </Children>
       </WidgetGroup><!-- Aux -->
 
+      <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+
     </Children>
-    <Connection>
-      <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
-      <BindProperty>visible</BindProperty>
-    </Connection>
   </WidgetGroup>
 </Template>

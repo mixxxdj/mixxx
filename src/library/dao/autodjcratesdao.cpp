@@ -556,7 +556,7 @@ TrackId AutoDJCratesDAO::getRandomTrackId() {
     // in a while.
     if (m_bUseIgnoreTime) {
         // Get the current time, in UTC (since that's what sqlite uses).
-        QDateTime timeCurrent = QDateTime::currentDateTime().toUTC();
+        QDateTime timeCurrent = QDateTime::currentDateTimeUtc();
 
         // Subtract the replay age.
         QTime timIgnoreTime = (QTime::fromString(m_pConfig->getValue(

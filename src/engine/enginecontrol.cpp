@@ -99,8 +99,9 @@ void EngineControl::seek(double sample) {
     }
 }
 
-void EngineControl::notifySeek(double dNewPlaypos) {
+void EngineControl::notifySeek(double dNewPlaypos, bool adjustingPhase) {
     Q_UNUSED(dNewPlaypos);
+    Q_UNUSED(adjustingPhase);
 }
 
 EngineBuffer* EngineControl::pickSyncTarget() {

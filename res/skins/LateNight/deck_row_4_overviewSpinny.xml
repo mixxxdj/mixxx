@@ -1,6 +1,6 @@
 <Template>
   <WidgetGroup>
-    <ObjectName>DeckRowFive</ObjectName>
+    <ObjectName>DeckRow_4_OverviewSpinny</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,me</SizePolicy>
     <Children>
@@ -51,7 +51,7 @@
         </Mark>
         <Mark>
           <Control>cue_point</Control>
-          <Text>C</Text>
+          <Text> C </Text>
           <Align>top|right</Align>
           <Color>#FF001C</Color>
           <TextColor>#FFFFFF</TextColor>
@@ -61,13 +61,25 @@
         </Connection>
       </Overview>
 
+      <!-- Deck controls + Star rating -->
       <WidgetGroup>
-        <ObjectName>ToolbarButtons</ObjectName>
-        <Layout>horizontal</Layout>
+        <ObjectName>DeckControls</ObjectName>
+        <Layout>vertical</Layout>
         <Children>
+          
+          <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
+
+          <StarRating>
+            <ObjectName>DeckStars</ObjectName>
+            <TooltipId>starrating</TooltipId>
+            <Channel><Variable name="channum"/></Channel>
+          </StarRating>
+          
+          <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
+
+          <!-- Deck controls row 1 -->
           <WidgetGroup>
-            <ObjectName>ToggleRowOne</ObjectName>
-            <Layout>vertical</Layout>
+            <Layout>horizontal</Layout>
             <Children>
 
               <PushButton>
@@ -75,13 +87,13 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>buttons/btn_slip.png</Pressed>
-                  <Unpressed>buttons/btn_slip.png</Unpressed>
+                  <Pressed>buttons/btn_slip.svg</Pressed>
+                  <Unpressed>buttons/btn_slip.svg</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>buttons/btn_slip_over.png</Pressed>
-                  <Unpressed>buttons/btn_slip_over.png</Unpressed>
+                  <Pressed>buttons/btn_slip_over.svg</Pressed>
+                  <Unpressed>buttons/btn_slip_over.svg</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,slip_enabled</ConfigKey>
@@ -89,52 +101,32 @@
               </PushButton>
 
               <PushButton>
-                <TooltipId>repeat</TooltipId>
+                <TooltipId>quantize</TooltipId>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>buttons/btn_repeat2.png</Pressed>
-                  <Unpressed>buttons/btn_repeat2.png</Unpressed>
+                  <Pressed>buttons/btn_quantize.svg</Pressed>
+                  <Unpressed>buttons/btn_quantize.svg</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>buttons/btn_repeat2_over.png</Pressed>
-                  <Unpressed>buttons/btn_repeat2_over.png</Unpressed>
+                  <Pressed>buttons/btn_quantize_over.svg</Pressed>
+                  <Unpressed>buttons/btn_quantize_over.svg</Unpressed>
                 </State>
                 <Connection>
-                  <ConfigKey><Variable name="group"/>,repeat</ConfigKey>
-                </Connection>
-              </PushButton>
-
-              <PushButton>
-                <TooltipId>eject</TooltipId>
-                <Style></Style>
-                <NumberStates>1</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Pressed>buttons/btn_eject2_over.png</Pressed>
-                  <Unpressed>buttons/btn_eject2.png</Unpressed>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,eject</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,quantize</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
               </PushButton>
 
-            </Children>
-          </WidgetGroup>
-
-          <WidgetGroup>
-            <Layout>vertical</Layout>
-            <Children>
               <PushButton>
                 <TooltipId>beats_translate_curpos</TooltipId>
                 <NumberStates>1</NumberStates>
                 <RightClickIsPushButton>true</RightClickIsPushButton>
                 <State>
                   <Number>0</Number>
-                  <Pressed>buttons/btn_beat_curpos_over.png</Pressed>
-                  <Unpressed>buttons/btn_beat_curpos.png</Unpressed>
+                  <Pressed>buttons/btn_beat_curpos_over.svg</Pressed>
+                  <Unpressed>buttons/btn_beat_curpos.svg</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,beats_translate_curpos</ConfigKey>
@@ -148,22 +140,42 @@
                 </Connection>
               </PushButton>
 
+            </Children>
+          </WidgetGroup><!-- Deck controls row 1 -->
+
+          <!-- Deck controls row 2 -->
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
               <PushButton>
-                <TooltipId>quantize</TooltipId>
+                <TooltipId>eject</TooltipId>
+                <NumberStates>1</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Pressed>buttons/btn_eject_over.svg</Pressed>
+                  <Unpressed>buttons/btn_eject.svg</Unpressed>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,eject</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton>
+
+              <PushButton>
+                <TooltipId>repeat</TooltipId>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>buttons/btn_quantize2.png</Pressed>
-                  <Unpressed>buttons/btn_quantize2.png</Unpressed>
+                  <Pressed>buttons/btn_repeat.svg</Pressed>
+                  <Unpressed>buttons/btn_repeat.svg</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>buttons/btn_quantize2_over.png</Pressed>
-                  <Unpressed>buttons/btn_quantize2_over.png</Unpressed>
+                  <Pressed>buttons/btn_repeat_over.svg</Pressed>
+                  <Unpressed>buttons/btn_repeat_over.svg</Unpressed>
                 </State>
                 <Connection>
-                  <ConfigKey><Variable name="group"/>,quantize</ConfigKey>
-                  <ButtonState>LeftButton</ButtonState>
+                  <ConfigKey><Variable name="group"/>,repeat</ConfigKey>
                 </Connection>
               </PushButton>
 
@@ -172,13 +184,13 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>buttons/btn_keylock2.png</Pressed>
-                  <Unpressed>buttons/btn_keylock2.png</Unpressed>
+                  <Pressed>buttons/btn_keylock.svg</Pressed>
+                  <Unpressed>buttons/btn_keylock.svg</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>buttons/btn_keylock2_over.png</Pressed>
-                  <Unpressed>buttons/btn_keylock2_over.png</Unpressed>
+                  <Pressed>buttons/btn_keylock_over.svg</Pressed>
+                  <Unpressed>buttons/btn_keylock_over.svg</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,keylock</ConfigKey>
@@ -186,7 +198,10 @@
               </PushButton>
 
             </Children>
-          </WidgetGroup> <!-- /Channel1 Toggle Buttons -->
+          </WidgetGroup><!-- /Deck controls row 2 -->
+          
+          <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
+          
         </Children>
       </WidgetGroup>
     </Children>

@@ -100,8 +100,8 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pCoverMenu = new WCoverArtMenu(this);
     m_pCoverMenu->setTitle(tr("Cover Art"));
 
-    connect(m_pCoverMenu, SIGNAL(coverInfoSelected(const CoverInfo&)),
-            this, SLOT(slotCoverInfoSelected(const CoverInfo&)));
+    connect(m_pCoverMenu, SIGNAL(coverInfoSelected(const CoverInfoRelative&)),
+            this, SLOT(slotCoverInfoSelected(const CoverInfoRelative&)));
     connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
             this, SLOT(slotReloadCoverArt()));
 
@@ -1915,7 +1915,7 @@ void WTrackTableView::slotClearAllMetadata() {
     slotClearWaveform();
 }
 
-void WTrackTableView::slotCoverInfoSelected(const CoverInfo& coverInfo) {
+void WTrackTableView::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
     TrackModel* trackModel = getTrackModel();
     if (trackModel == nullptr) {
         return;
