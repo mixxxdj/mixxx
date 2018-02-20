@@ -12,23 +12,27 @@ enum class LogLevel {
     Info = 2,
     Debug = 3,
     Trace = 4, // for profiling etc.
-    Default = Warning,
 };
+
+constexpr LogLevel kLogLevelDefault = LogLevel::Warning;
+constexpr LogLevel kLogFlushLevelDefault = LogLevel::Critical;
 
 class Logging {
   public:
     // These are not thread safe. Only call them on Mixxx startup and shutdown.
     static void initialize(const QDir& settingsDir,
                            LogLevel logLevel,
+                           LogLevel logFlushLevel,
                            bool debugAssertBreak);
     static void shutdown();
 
-    // Query the current log level
-    static LogLevel logLevel() {
-        return s_logLevel;
-    }
+    static void flushLogFile();
+
     static bool enabled(LogLevel logLevel) {
         return s_logLevel >= logLevel;
+    }
+    static bool flushing(LogLevel logFlushLevel) {
+        return s_logFlushLevel >= logFlushLevel;
     }
     static bool traceEnabled() {
         return enabled(LogLevel::Trace);
@@ -44,6 +48,7 @@ class Logging {
     Logging() = delete;
 
     static LogLevel s_logLevel;
+    static LogLevel s_logFlushLevel;
 };
 
 }  // namespace mixxx
