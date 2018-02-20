@@ -202,14 +202,11 @@ void GlobalTrackCache::deleteTrack(Track* plainPtr) {
 //static
 void GlobalTrackCache::deleter(Track* plainPtr) {
     DEBUG_ASSERT(plainPtr);
-    // Any access to plainPtr is forbidden!! Due to race condition
-    // this pointer might already have been deleted! This happens
-    // when a previous invocation is outpaced by a following
-    // invocation that will already delete the object behind the
-    // pointer. Tracks might be revived before being deleted and
-    // as a consequence the reference count might drop to 0 multiple
-    // times. The order in which those competing invocations finally
-    // lock and enter the thread-safe cache is undefined!!!
+    // Any access to plainPtr before a validity check inside the
+    // GlobalTrackCacheLocker scope is forbidden!! Due to race
+    // conditions before locking the cache this pointer might
+    // already have been either deleted or reused by a second
+    // shared_ptr.
     if (s_pInstance) {
         s_pInstance->evictAndDelete(plainPtr);
     } else {
