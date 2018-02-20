@@ -117,31 +117,29 @@ private:
     TrackRef m_trackRef;
 };
 
-class /*interface*/ GlobalTrackCacheEvictor {
+// Implementations are responsible for eventually deleting the
+// provided track object by invoking GlobalTrackCache::deleteTrack(),
+// either while the cache is still locked or after the cache has been
+// unlocked. The provided track object is valid until it has been
+// deleted by the callee. The cache will always invoke both functions
+// with the same pointer.
+class /*interface*/ GlobalTrackCacheDeleter {
 public:
-    /**
-     * This function will be called when evicting a track from the
-     * cache to perform operations before the track object is deleted.
-     *
-     * The parameter pCacheLocker is optional and might be null. It
-     * allows the callee to explicitly unlock the cache before performing
-     * any long running operations that don't require that the cache is
-     * kept locked. The unlockCache() operation is the only operation that
-     * should be called on pCacheLocker! The second pointer is accessible
-     * and valid even if after the cache has been unlocked.
-     */
-    virtual void afterEvictedTrackFromCache(
-            GlobalTrackCacheLocker* /*nullable*/ pCacheLocker,
+    virtual void onDeleteTrackBeforeUnlockingCache(
+            Track* /*not null*/ plainPtr) = 0;
+    virtual void onDeleteTrackAfterUnlockingCache(
             Track* /*not null*/ plainPtr) = 0;
 
 protected:
-    virtual ~GlobalTrackCacheEvictor() {}
+    virtual ~GlobalTrackCacheDeleter() {}
 };
 
 class GlobalTrackCache {
 public:
-    static void createInstance(GlobalTrackCacheEvictor* pEvictor);
+    static void createInstance(GlobalTrackCacheDeleter* pDeleter);
     static void destroyInstance();
+
+    static void deleteTrack(Track* plainPtr);
 
 private:
     friend class GlobalTrackCacheLocker;
@@ -150,7 +148,7 @@ private:
     // Callback for the smart-pointer
     static void deleter(Track* plainPtr);
 
-    explicit GlobalTrackCache(GlobalTrackCacheEvictor* pEvictor);
+    explicit GlobalTrackCache(GlobalTrackCacheDeleter* pDeleter);
     ~GlobalTrackCache();
 
     // This function should only be called DEBUG_ASSERT statements
@@ -192,10 +190,6 @@ private:
             IndexedTracks::iterator indexedTrack,
             bool evictUnexpired);
 
-    void afterEvicted(
-            GlobalTrackCacheLocker* /*nullable*/ pCacheLocker,
-            Track* plainPtr);
-
     bool isEmpty() const;
 
     void deactivate();
@@ -203,7 +197,7 @@ private:
     // Managed by GlobalTrackCacheLocker
     mutable QMutex m_mutex;
 
-    GlobalTrackCacheEvictor* m_pEvictor;
+    GlobalTrackCacheDeleter* m_pDeleter;
 
     IndexedTracks m_indexedTracks;
 

@@ -105,7 +105,7 @@ class SoundSourceProxy {
     static QStringList s_supportedFileNamePatterns;
     static QRegExp s_supportedFileNamesRegex;
 
-    friend class TrackDAO;
+    friend class TrackCollection;
     static Track::ExportMetadataResult exportTrackMetadataBeforeSaving(Track* pTrack);
 
     // Special case: Construction from a plain TIO pointer is needed

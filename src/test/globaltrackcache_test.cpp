@@ -58,15 +58,14 @@ class TrackTitleThread: public QThread {
 
 } // anonymous namespace
 
-class GlobalTrackCacheTest: public MixxxTest, public virtual GlobalTrackCacheEvictor {
+class GlobalTrackCacheTest: public MixxxTest, public virtual GlobalTrackCacheDeleter {
   public:
-    void afterEvictedTrackFromCache(
-        GlobalTrackCacheLocker* /*nullable*/ pCacheLocker,
-        Track* pTrack) override {
-        if (pCacheLocker) {
-            pCacheLocker->unlockCache();
-        }
+    void onDeleteTrackBeforeUnlockingCache(Track* pTrack) override {
         ASSERT_FALSE(pTrack == nullptr);
+    }
+    void onDeleteTrackAfterUnlockingCache(Track* pTrack) override {
+        ASSERT_FALSE(pTrack == nullptr);
+        GlobalTrackCache::deleteTrack(pTrack);
     }
 
   protected:
@@ -169,6 +168,9 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
 
     workerThread.stop();
     workerThread.wait();
+
+    // Ensure that all track objects have been deleted
+    QCoreApplication::processEvents();
 
     EXPECT_TRUE(GlobalTrackCacheLocker().isEmpty());
 }

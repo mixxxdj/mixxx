@@ -188,34 +188,8 @@ bool TrackDAO::trackExistsInDatabase(const QString& absoluteFilePath) {
     return getTrackId(absoluteFilePath).isValid();
 }
 
-void TrackDAO::saveTrack(GlobalTrackCacheLocker* pCacheLocker, Track* pTrack) {
+void TrackDAO::saveTrack(Track* pTrack) {
     DEBUG_ASSERT(pTrack);
-
-    // Write audio meta data, if explicitly requested by the user
-    // for individual tracks or enabled in the preferences for all
-    // tracks.
-    //
-    // This must be done before updating the database, because
-    // a timestamp is used to keep track of when metadata has been
-    // last synchronized. Exporting metadata will update this time
-    // stamp on the track object!
-    if (pTrack->isMarkedForMetadataExport() ||
-            (pTrack->isDirty() && m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","SyncTrackMetadataExport")).toInt() == 1)) {
-        SoundSourceProxy::exportTrackMetadataBeforeSaving(pTrack);
-    }
-
-    // The track cache can safely be unlocked now that the metadata has
-    // been exported to the file. Updating the database is thread-safe
-    // an we accept this very small chance of a race condition here.
-    // Exporting metadata to a file cannot be rolled back if updating
-    // the database fails, so we have to account for inconsistencies
-    // in any case!
-    // Unlocking the cache now reduces lock contention and keeps the
-    // UI as responsive as possible.
-    if (pCacheLocker) {
-        pCacheLocker->unlockCache();
-    }
-
     if (pTrack->isDirty()) {
         const TrackId trackId = pTrack->getId();
         // Only update the database if the track has already been added!

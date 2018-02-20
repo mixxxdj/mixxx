@@ -1,7 +1,6 @@
 #include "track/globaltrackcache.h"
 
 #include <QApplication>
-#include <QThread>
 
 #include "util/assert.h"
 #include "util/logger.h"
@@ -32,15 +31,6 @@ constexpr bool kLogStats = false;
 inline
 TrackRef createTrackRef(const Track& track) {
     return TrackRef::fromFileInfo(track.getFileInfo(), track.getId());
-}
-
-void deleteTrack(Track* plainPtr) {
-    if (plainPtr) {
-        if (traceLogEnabled()) {
-            plainPtr->dumpObjectInfo();
-        }
-        plainPtr->deleteLater();
-    }
 }
 
 } // anonymous namespace
@@ -172,21 +162,41 @@ void GlobalTrackCacheResolver::initTrackIdAndUnlockCache(TrackId trackId) {
 }
 
 //static
-void GlobalTrackCache::createInstance(GlobalTrackCacheEvictor* pEvictor) {
-    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+void GlobalTrackCache::createInstance(GlobalTrackCacheDeleter* pDeleter) {
     DEBUG_ASSERT(!s_pInstance);
-    s_pInstance = new GlobalTrackCache(pEvictor);
+    s_pInstance = new GlobalTrackCache(pDeleter);
 }
 
 //static
 void GlobalTrackCache::destroyInstance() {
-    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
     DEBUG_ASSERT(s_pInstance);
     GlobalTrackCache* pInstance = s_pInstance;
     // Reset the static/global pointer before entering the destructor
     s_pInstance = nullptr;
     // Delete the singular instance
     delete pInstance;
+}
+
+void GlobalTrackCache::deleteTrack(Track* plainPtr) {
+    VERIFY_OR_DEBUG_ASSERT(plainPtr) {
+        kLogger.warning()
+                << "Cannot delete null track pointer";
+        return;
+    }
+    if (traceLogEnabled()) {
+        plainPtr->dumpObjectInfo();
+    }
+    // Track object must not be deleted by operator new!
+    // Otherwise the deleted track object might be accessed
+    // when processing cross-thread signals that are delayed
+    // within a queued connection and may arrive after the
+    // object has already been deleted.
+    if (debugLogEnabled()) {
+        kLogger.debug()
+                << "Deleting track"
+                << plainPtr;
+    }
+    plainPtr->deleteLater();
 }
 
 //static
@@ -211,13 +221,13 @@ void GlobalTrackCache::deleter(Track* plainPtr) {
     }
 }
 
-GlobalTrackCache::GlobalTrackCache(GlobalTrackCacheEvictor* pEvictor)
+GlobalTrackCache::GlobalTrackCache(GlobalTrackCacheDeleter* pDeleter)
     : m_mutex(QMutex::Recursive),
-      m_pEvictor(pEvictor),
+      m_pDeleter(pDeleter),
       m_indexedTracks(kUnorderedCollectionMinCapacity),
       m_unindexedTracks(kUnorderedCollectionMinCapacity),
       m_tracksById(kUnorderedCollectionMinCapacity, DbId::hash_fun) {
-    DEBUG_ASSERT(m_pEvictor);
+    DEBUG_ASSERT(m_pDeleter);
     DEBUG_ASSERT(verifyConsistency());
 }
 
@@ -333,7 +343,7 @@ void GlobalTrackCache::deactivate() {
     // shared pointer goes out of scope. Their modifications
     // will be lost.
     m_unindexedTracks.clear();
-    m_pEvictor = nullptr;
+    m_pDeleter = nullptr;
 }
 
 void GlobalTrackCache::reset() {
@@ -521,7 +531,7 @@ void GlobalTrackCache::resolve(
             return;
         }
     }
-    if (!m_pEvictor) {
+    if (!m_pDeleter) {
         // Do not allocate any new tracks once the cache
         // has been deactivated
         DEBUG_ASSERT(isEmpty());
@@ -604,33 +614,6 @@ TrackRef GlobalTrackCache::initTrackId(
     return trackRefWithId;
 }
 
-void GlobalTrackCache::afterEvicted(
-        GlobalTrackCacheLocker* pCacheLocker,
-        Track* pEvictedTrack) {
-    DEBUG_ASSERT(pEvictedTrack);
-
-    // It can produce dangerous signal loops if the track is still
-    // sending signals while being saved! All references to this
-    // track have been dropped at this point, so there is no need
-    // to send any signals.
-    // See: https://bugs.launchpad.net/mixxx/+bug/136578
-    // NOTE(uklotzde, 2018-02-03): Simply disconnecting all receivers
-    // doesn't seem to work reliably. Emitting the clean() signal from
-    // a track that is about to deleted may cause access violations!!
-    pEvictedTrack->blockSignals(true);
-
-    // Keep the cache locked while evicting the track object!
-    // The callback is given the chance to unlock the cache
-    // after all operations that rely on managed track ownership
-    // have been done, e.g. exporting track metadata into a file.
-    m_pEvictor->afterEvictedTrackFromCache(
-            pCacheLocker,
-            pEvictedTrack);
-
-    // At this point the cache might have been unlocked by the
-    // callback!!
-}
-
 bool GlobalTrackCache::evictAndDelete(
         Track* plainPtr) {
     DEBUG_ASSERT(plainPtr);
@@ -694,16 +677,11 @@ bool GlobalTrackCache::evictAndDelete(
         // The evicted entry must not be accessible anymore!
         DEBUG_ASSERT(m_indexedTracks.find(plainPtr) == m_indexedTracks.end());
         DEBUG_ASSERT(!lookupByRef(trackRef));
-        afterEvicted(pCacheLocker, plainPtr);
-        // After returning from the callback the lock might have
-        // already been released!
-        if (debugLogEnabled()) {
-            kLogger.debug()
-                    << "Deleting evicted track"
-                    << trackRef
-                    << plainPtr;
+        m_pDeleter->onDeleteTrackBeforeUnlockingCache(plainPtr);
+        if (pCacheLocker) {
+            pCacheLocker->unlockCache();
         }
-        deleteTrack(plainPtr);
+        m_pDeleter->onDeleteTrackAfterUnlockingCache(plainPtr);
         return true;
     } else {
         // ...otherwise the given plainPtr is still referenced within

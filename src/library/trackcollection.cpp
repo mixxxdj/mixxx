@@ -2,6 +2,7 @@
 
 #include "library/trackcollection.h"
 
+#include "sources/soundsourceproxy.h"
 #include "track/globaltrackcache.h"
 #include "util/logger.h"
 #include "util/db/sqltransaction.h"
@@ -15,7 +16,8 @@ namespace {
 
 TrackCollection::TrackCollection(
         const UserSettingsPointer& pConfig)
-        : m_analysisDao(pConfig),
+        : m_pConfig(pConfig),
+          m_analysisDao(pConfig),
           m_trackDao(m_cueDao, m_playlistDao,
                      m_analysisDao, m_libraryHashDao, pConfig) {
 }
@@ -328,6 +330,23 @@ bool TrackCollection::updateAutoDjCrate(
     return updateCrate(crate);
 }
 
-void TrackCollection::saveTrack(GlobalTrackCacheLocker* pCacheLocker, Track* pTrack) {
-    m_trackDao.saveTrack(pCacheLocker, pTrack);
+void TrackCollection::exportTrackMetadata(Track* pTrack) const {
+    DEBUG_ASSERT(pTrack);
+
+    // Write audio meta data, if explicitly requested by the user
+    // for individual tracks or enabled in the preferences for all
+    // tracks.
+    //
+    // This must be done before updating the database, because
+    // a timestamp is used to keep track of when metadata has been
+    // last synchronized. Exporting metadata will update this time
+    // stamp on the track object!
+    if (pTrack->isMarkedForMetadataExport() ||
+            (pTrack->isDirty() && m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","SyncTrackMetadataExport")).toInt() == 1)) {
+        SoundSourceProxy::exportTrackMetadataBeforeSaving(pTrack);
+    }
+}
+
+void TrackCollection::saveTrack(Track* pTrack) {
+    m_trackDao.saveTrack(pTrack);
 }

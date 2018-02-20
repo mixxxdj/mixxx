@@ -80,7 +80,11 @@ class TrackCollection : public QObject,
 
     bool updateAutoDjCrate(CrateId crateId, bool isAutoDjSource);
 
-    void saveTrack(GlobalTrackCacheLocker* pCacheLocker, Track* pTrack);
+    // Might be called from any thread
+    void exportTrackMetadata(Track* pTrack) const;
+
+    // Must be called from the main thread
+    void saveTrack(Track* pTrack);
 
   signals:
     void crateInserted(CrateId id);
@@ -95,6 +99,8 @@ class TrackCollection : public QObject,
             const QSet<CrateId>& crates);
 
   private:
+    UserSettingsPointer m_pConfig;
+
     QSqlDatabase m_database;
 
     PlaylistDAO m_playlistDao;

@@ -422,13 +422,58 @@ void Library::slotSetTrackTableRowHeight(int rowHeight) {
     emit(setTrackTableRowHeight(rowHeight));
 }
 
-void Library::afterEvictedTrackFromCache(GlobalTrackCacheLocker* pCacheLocker, Track* pTrack) {
-    // The evictor callback should always be called from the main
-    // thread, because the TrackDAO with the database connection
-    // is still bound to the main thread! We have to rethink this
-    // assertion after the multi-threaded database access layer is
-    // ready!
-    // TODO: Finish multi-threaded database access layer
-    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
-    m_pTrackCollection->saveTrack(pCacheLocker, pTrack);
+void Library::onDeleteTrackBeforeUnlockingCache(Track* pTrack) {
+    // It can produce dangerous signal loops if the track is still
+    // sending signals while being saved! All references to this
+    // track have been dropped at this point, so there is no need
+    // to send any signals.
+    // See: https://bugs.launchpad.net/mixxx/+bug/136578
+    // NOTE(uklotzde, 2018-02-03): Simply disconnecting all receivers
+    // doesn't seem to work reliably. Emitting the clean() signal from
+    // a track that is about to deleted may cause access violations!!
+    pTrack->blockSignals(true);
+
+    // The metadata must be exported while the cache is locked to
+    // ensure that we have exclusive (write) access on the file
+    // and not reader or writer is accessing the same file
+    // concurrently.
+    m_pTrackCollection->exportTrackMetadata(pTrack);
+
+    // NOTE(uklotzde, 2018-02-20):
+    // Database updates must be executed in the context of the
+    // main thread. When the deletion is triggered from another
+    // thread the call needs to be dispatched through a queued
+    // connection and is deferred until the event loop of the
+    // receiving thread handles the event. The actual execution
+    // might happen when the cache has already been unlocked after
+    // leaving this function. In order to provide a consistent
+    // behavior database updates are always scheduled after the
+    // cache has been unlocked (see below) instead of here within
+    // the locking scope of the cache.
+    // Race conditions between database readers and writers are
+    // impossible as long as all database actions are executed in
+    // the main thread. We might need to reconsider this decision
+    // after multi-threaded database is possible.
+}
+
+void Library::onDeleteTrackAfterUnlockingCache(Track* pTrack) {
+    // This method might be invoked from a different thread than
+    // the main thread. But database updates are currently only
+    // allowed from the main thread!
+    QMetaObject::invokeMethod(
+            this,
+            "saveAndDeleteTrack",
+            // Qt will choose either a direct or a queued connection
+            // depending on the thread from which this method has
+            // been invoked!
+            Qt::AutoConnection,
+            Q_ARG(Track*, pTrack));
+}
+
+void Library::saveAndDeleteTrack(Track* pTrack) {
+    // Update the database
+    m_pTrackCollection->saveTrack(pTrack);
+
+    // Finally schedule the track for deletion
+    GlobalTrackCache::deleteTrack(pTrack);
 }

@@ -11,11 +11,15 @@
 
 
 class LibraryTest : public MixxxTest,
-    public virtual /*implements*/ GlobalTrackCacheEvictor {
+    public virtual /*implements*/ GlobalTrackCacheDeleter {
 
   public:
-    void afterEvictedTrackFromCache(GlobalTrackCacheLocker* pCacheLocker, Track* pTrack) override {
-        m_trackCollection.saveTrack(pCacheLocker, pTrack);
+    void onDeleteTrackBeforeUnlockingCache(Track* pTrack) override {
+        m_trackCollection.exportTrackMetadata(pTrack);
+    }
+    void onDeleteTrackAfterUnlockingCache(Track* pTrack) override {
+        m_trackCollection.saveTrack(pTrack);
+        GlobalTrackCache::deleteTrack(pTrack);
     }
 
   protected:

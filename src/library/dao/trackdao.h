@@ -19,8 +19,6 @@ class PlaylistDAO;
 class AnalysisDao;
 class CueDAO;
 class LibraryHashDAO;
-class TrackCollection;
-class GlobalTrackCacheLocker;
 
 
 class TrackDAO : public QObject, public virtual DAO {
@@ -107,6 +105,8 @@ class TrackDAO : public QObject, public virtual DAO {
     void detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
                                         QSet<TrackId>* pTracksChanged);
 
+    void saveTrack(Track* pTrack);
+
   signals:
     void trackDirty(TrackId trackId) const;
     void trackClean(TrackId trackId) const;
@@ -131,8 +131,6 @@ class TrackDAO : public QObject, public virtual DAO {
   private:
     TrackPointer getTrackFromDB(TrackId trackId) const;
 
-    friend class TrackCollection;
-    void saveTrack(GlobalTrackCacheLocker* pCacheLocker, Track* pTrack);
     bool updateTrack(Track* pTrack);
 
     QSqlDatabase m_database;
