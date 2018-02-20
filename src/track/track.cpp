@@ -25,7 +25,7 @@ std::atomic<int> s_numberOfInstances;
 
 SecurityTokenPointer openSecurityToken(
         const QFileInfo& fileInfo,
-        const SecurityTokenPointer& pSecurityToken = SecurityTokenPointer()) {
+        SecurityTokenPointer pSecurityToken = SecurityTokenPointer()) {
     if (pSecurityToken.isNull()) {
         return Sandbox::openSecurityToken(fileInfo, true);
     } else {
@@ -61,11 +61,11 @@ mixxx::Bpm getActualBpm(
 } // anonymous namespace
 
 Track::Track(
-        const QFileInfo& fileInfo,
-        const SecurityTokenPointer& pSecurityToken,
+        QFileInfo fileInfo,
+        SecurityTokenPointer pSecurityToken,
         TrackId trackId)
-        : m_fileInfo(fileInfo),
-          m_pSecurityToken(openSecurityToken(m_fileInfo, pSecurityToken)),
+        : m_fileInfo(std::move(fileInfo)),
+          m_pSecurityToken(openSecurityToken(m_fileInfo, std::move(pSecurityToken))),
           m_qMutex(QMutex::Recursive),
           m_record(trackId),
           m_bDirty(false),
@@ -96,19 +96,19 @@ Track::~Track() {
 
 //static
 TrackPointer Track::newTemporary(
-        const QFileInfo& fileInfo,
-        const SecurityTokenPointer& pSecurityToken) {
+        QFileInfo fileInfo,
+        SecurityTokenPointer pSecurityToken) {
     return std::make_shared<Track>(
-            fileInfo,
-            pSecurityToken);
+            std::move(fileInfo),
+            std::move(pSecurityToken));
 }
 
 //static
 TrackPointer Track::newDummy(
-        const QFileInfo& fileInfo,
+        QFileInfo fileInfo,
         TrackId trackId) {
     return std::make_shared<Track>(
-            fileInfo,
+            std::move(fileInfo),
             SecurityTokenPointer(),
             trackId);
 }

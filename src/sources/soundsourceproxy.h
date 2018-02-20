@@ -32,6 +32,15 @@ class SoundSourceProxy {
     static bool isFileNameSupported(const QString& fileName);
     static bool isFileExtensionSupported(const QString& fileExtension);
 
+    // The following import functions ensure that the file will not be
+    // written while reading it!
+    static TrackPointer importTemporaryTrack(
+            QFileInfo fileInfo,
+            SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
+    static QImage importTemporaryCoverImage(
+            QFileInfo fileInfo,
+            SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
+
     explicit SoundSourceProxy(
             TrackPointer pTrack);
 
@@ -88,10 +97,6 @@ class SoundSourceProxy {
     // the referenced track.
     mixxx::MetadataSource::ImportResult importTrackMetadata(mixxx::TrackMetadata* pTrackMetadata) const;
 
-    // Parse only the cover image from the file without modifying
-    // the referenced track.
-    QImage importCoverImage() const;
-
     // Opening the audio source through the proxy will update the
     // audio properties of the corresponding track object. Returns
     // a null pointer on failure.
@@ -112,6 +117,10 @@ class SoundSourceProxy {
     // for writing metadata immediately before the TIO is destroyed.
     explicit SoundSourceProxy(
             const Track* pTrack);
+
+    // Parse only the cover image from the file without modifying
+    // the referenced track.
+    QImage importCoverImage() const;
 
     const TrackPointer m_pTrack;
 

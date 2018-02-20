@@ -26,8 +26,8 @@ class Track : public QObject {
     Q_OBJECT
 
   public:
-    Track(const QFileInfo& fileInfo,
-          const SecurityTokenPointer& pSecurityToken,
+    Track(QFileInfo fileInfo,
+          SecurityTokenPointer pSecurityToken,
           TrackId trackId = TrackId());
     Track(const Track&) = delete;
     ~Track() override;
@@ -36,15 +36,14 @@ class Track : public QObject {
     // testing purposes. The resulting track will neither be stored
     // in the database nor will the metadata of the corresponding file
     // be updated.
-    // NOTE(uklotzde): Temporary track objects do not provide any guarantees
-    // regarding safe file access, i.e. tags might be written back into the
-    // file whenever the corresponding track is evicted from GlobalTrackCache!
+    // Use SoundSourceProxy::importTemporaryTrack() for importing files
+    // to ensure that the file will not be written while reading it!
     static TrackPointer newTemporary(
-            const QFileInfo& fileInfo = QFileInfo(),
-            const SecurityTokenPointer& pSecurityToken = SecurityTokenPointer());
-    // Creates a dummy instance for testing purposes.
+            QFileInfo fileInfo = QFileInfo(),
+            SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
+    // Creates a dummy instance only for testing purposes.
     static TrackPointer newDummy(
-            const QFileInfo& fileInfo,
+            QFileInfo fileInfo,
             TrackId trackId);
 
     Q_PROPERTY(QString artist READ getArtist WRITE setArtist)

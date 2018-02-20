@@ -153,18 +153,10 @@ void BrowseThread::populateModel() {
 
         const QString filepath = fileIt.next();
         {
-            // We need to create a temporary track object and cannot
-            // use the GlobalTrackCache, because cached tracks must
-            // live in the main thread. There is a tiny chance that
-            // the file is removed (after exporting metadata) just
-            // in the moment when reading metadata from it.
-            // TODO: Resolve track object through GlobalTrackCache
-            // after multi-threaded library management is in place
-            // to ensure that only a single track object exists for
-            // each file.
-            TrackPointer pTrack = Track::newTemporary(filepath, thisPath.token());
-            // Update the track object by (re-)importing metadata from the file
-            SoundSourceProxy(pTrack).updateTrackFromSource();
+            const TrackPointer pTrack =
+                    SoundSourceProxy::importTemporaryTrack(
+                            filepath,
+                            thisPath.token());
 
             item = new QStandardItem(pTrack->getFileName());
             item->setToolTip(item->text());

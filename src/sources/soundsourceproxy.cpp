@@ -28,6 +28,7 @@
 
 #include "library/coverartutils.h"
 #include "library/coverartcache.h"
+#include "track/globaltrackcache.h"
 #include "util/cmdlineargs.h"
 #include "util/regex.h"
 #include "util/logger.h"
@@ -296,6 +297,34 @@ SoundSourceProxy::findSoundSourceProviderRegistrations(
     }
 
     return registrationsForFileExtension;
+}
+
+
+//static
+TrackPointer SoundSourceProxy::importTemporaryTrack(
+        QFileInfo fileInfo,
+        SecurityTokenPointer pSecurityToken) {
+    TrackPointer pTrack = Track::newTemporary(std::move(fileInfo), std::move(pSecurityToken));
+    // Lock the track cache while populating the temporary track
+    // object to ensure that no metadata is exported into any file
+    // while reading from this file. Since locking individual files
+    // is not possible and the whole cache is locked.
+    GlobalTrackCacheLocker locker;
+    SoundSourceProxy(pTrack).updateTrackFromSource();
+    return pTrack;
+}
+
+//static
+QImage SoundSourceProxy::importTemporaryCoverImage(
+        QFileInfo fileInfo,
+        SecurityTokenPointer pSecurityToken) {
+    TrackPointer pTrack = Track::newTemporary(std::move(fileInfo), std::move(pSecurityToken));
+    // Lock the track cache while populating the temporary track
+    // object to ensure that no metadata is exported into any file
+    // while reading from this file. Since locking individual files
+    // is not possible and the whole cache is locked.
+    GlobalTrackCacheLocker locker;
+    return SoundSourceProxy(pTrack).importCoverImage();
 }
 
 //static
