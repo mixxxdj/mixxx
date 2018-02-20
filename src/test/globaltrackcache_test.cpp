@@ -60,10 +60,7 @@ class TrackTitleThread: public QThread {
 
 class GlobalTrackCacheTest: public MixxxTest, public virtual GlobalTrackCacheDeleter {
   public:
-    void onDeleteTrackBeforeUnlockingCache(Track* pTrack) override {
-        ASSERT_FALSE(pTrack == nullptr);
-    }
-    void onDeleteTrackAfterUnlockingCache(Track* pTrack) override {
+    void deleteCachedTrack(Track* pTrack) override {
         ASSERT_FALSE(pTrack == nullptr);
         GlobalTrackCache::deleteTrack(pTrack);
     }

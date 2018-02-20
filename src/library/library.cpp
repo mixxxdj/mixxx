@@ -422,7 +422,7 @@ void Library::slotSetTrackTableRowHeight(int rowHeight) {
     emit(setTrackTableRowHeight(rowHeight));
 }
 
-void Library::onDeleteTrackBeforeUnlockingCache(Track* pTrack) {
+void Library::deleteCachedTrack(Track* pTrack) {
     // It can produce dangerous signal loops if the track is still
     // sending signals while being saved! All references to this
     // track have been dropped at this point, so there is no need
@@ -444,19 +444,13 @@ void Library::onDeleteTrackBeforeUnlockingCache(Track* pTrack) {
     // main thread. When the deletion is triggered from another
     // thread the call needs to be dispatched through a queued
     // connection and is deferred until the event loop of the
-    // receiving thread handles the event. The actual execution
-    // might happen when the cache has already been unlocked after
-    // leaving this function. In order to provide a consistent
-    // behavior database updates are always scheduled after the
-    // cache has been unlocked (see below) instead of here within
-    // the locking scope of the cache.
+    // receiving thread that handles the event. The actual
+    // execution might happen when the cache has already been
+    // unlocked after leaving this function.
     // Race conditions between database readers and writers are
     // impossible as long as all database actions are executed in
-    // the main thread. We might need to reconsider this decision
-    // after multi-threaded database is possible.
-}
-
-void Library::onDeleteTrackAfterUnlockingCache(Track* pTrack) {
+    // the main thread and the invocation is submittedt through
+    // a direct connection.
     // This method might be invoked from a different thread than
     // the main thread. But database updates are currently only
     // allowed from the main thread!

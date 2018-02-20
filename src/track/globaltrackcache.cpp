@@ -331,7 +331,6 @@ void GlobalTrackCache::deactivate() {
     // exiting the application.
     while (!m_indexedTracks.empty()) {
         evictAndDelete(
-                nullptr,
                 m_indexedTracks.begin(),
                 true);
     }
@@ -651,13 +650,11 @@ bool GlobalTrackCache::evictAndDelete(
     // Now we know that the pointer has not been deleted before
     // and we can safely access it!
     return evictAndDelete(
-            &cacheLocker,
             indexedTrack,
             false);
 }
 
 bool GlobalTrackCache::evictAndDelete(
-        GlobalTrackCacheLocker* pCacheLocker,
         IndexedTracks::iterator indexedTrack,
         bool evictUnexpired) {
     Track* plainPtr = (*indexedTrack).first;
@@ -677,11 +674,7 @@ bool GlobalTrackCache::evictAndDelete(
         // The evicted entry must not be accessible anymore!
         DEBUG_ASSERT(m_indexedTracks.find(plainPtr) == m_indexedTracks.end());
         DEBUG_ASSERT(!lookupByRef(trackRef));
-        m_pDeleter->onDeleteTrackBeforeUnlockingCache(plainPtr);
-        if (pCacheLocker) {
-            pCacheLocker->unlockCache();
-        }
-        m_pDeleter->onDeleteTrackAfterUnlockingCache(plainPtr);
+        m_pDeleter->deleteCachedTrack(plainPtr);
         return true;
     } else {
         // ...otherwise the given plainPtr is still referenced within

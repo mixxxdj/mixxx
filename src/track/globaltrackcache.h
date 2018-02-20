@@ -118,16 +118,12 @@ private:
 };
 
 // Implementations are responsible for eventually deleting the
-// provided track object by invoking GlobalTrackCache::deleteTrack(),
-// either while the cache is still locked or after the cache has been
-// unlocked. The provided track object is valid until it has been
-// deleted by the callee. The cache will always invoke both functions
-// with the same pointer.
+// provided track object by invoking GlobalTrackCache::deleteTrack().
+// The provided track object is valid until it has been deleted by
+// the callee.
 class /*interface*/ GlobalTrackCacheDeleter {
 public:
-    virtual void onDeleteTrackBeforeUnlockingCache(
-            Track* /*not null*/ plainPtr) = 0;
-    virtual void onDeleteTrackAfterUnlockingCache(
+    virtual void deleteCachedTrack(
             Track* /*not null*/ plainPtr) = 0;
 
 protected:
@@ -182,7 +178,6 @@ private:
     typedef std::unordered_map<Track*, TrackWeakPointer> IndexedTracks;
 
     bool evictAndDelete(
-            GlobalTrackCacheLocker* /*nullable*/ pCacheLocker,
             IndexedTracks::iterator indexedTrack,
             bool evictUnexpired);
     bool evict(
