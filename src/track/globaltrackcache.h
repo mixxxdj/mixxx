@@ -133,6 +133,12 @@ protected:
 class GlobalTrackCache {
 public:
     static void createInstance(GlobalTrackCacheDeleter* pDeleter);
+    // NOTE(uklotzde, 2018-02-20): We decided not to destroy the singular
+    // instance during shutdown, because we are not able to guarantee that
+    // all track references have been released before. Instead the singular
+    // instance is only deactivated. The following function has only been
+    // preserved for completeness.
+    // See also: GlobalTrackCacheLocker::deactivateCache()
     static void destroyInstance();
 
     static void deleteTrack(Track* plainPtr);
