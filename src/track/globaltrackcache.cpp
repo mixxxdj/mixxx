@@ -213,11 +213,17 @@ void GlobalTrackCache::deleter(Track* plainPtr) {
     if (s_pInstance) {
         s_pInstance->evictAndDelete(plainPtr);
     } else {
-        // Simply delete unreferenced tracks when the cache is no
-        // longer available. This might but should not happen.
-        kLogger.warning()
-                << "Deleting uncached track";
-        deleteTrack(plainPtr);
+        // After the singular instance has been destroyed we are
+        // no longer able to decide if the given pointer is still
+        // valid or has already been deleted before!! This should
+        // only happen during an unordered shutdown with pending
+        // references. Those references should have been released
+        // before destroying the cache, otherwise any modifications
+        // and edits will also be lost.
+        kLogger.critical()
+                << "Skipping deletion of"
+                << plainPtr
+                << "after singleton has already been destroyed!";
     }
 }
 
