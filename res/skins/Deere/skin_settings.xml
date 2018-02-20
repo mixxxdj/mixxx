@@ -447,7 +447,7 @@
             <Children>
               <Template src="skin:left_1state_button.xml">
                 <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
-                <SetVariable name="TooltipId"></SetVariable>
+                <SetVariable name="TooltipId">LoadSamplerBank</SetVariable>
                 <SetVariable name="ObjectName">SamplerBankLoadButton</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="HorizontalStretchButtonMaximumSize"/></SetVariable>
@@ -460,7 +460,7 @@
 
               <Template src="skin:left_1state_button.xml">
                 <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
-                <SetVariable name="TooltipId"></SetVariable>
+                <SetVariable name="TooltipId">SaveSamplerBank</SetVariable>
                 <SetVariable name="ObjectName">SamplerBankSaveButton</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="HorizontalStretchButtonMaximumSize"/></SetVariable>
