@@ -302,6 +302,7 @@ class Track : public QObject {
     // export is deferred to prevent race conditions when writing into
     // files that are still opened for reading.
     void markForMetadataExport();
+    bool isMarkedForMetadataExport() const;
 
   signals:
     void waveformUpdated();

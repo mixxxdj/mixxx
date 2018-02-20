@@ -853,9 +853,14 @@ bool Track::isDirty() {
 
 void Track::markForMetadataExport() {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_bMarkedForMetadataExport, true)) {
-        markDirtyAndUnlock(&lock);
-    }
+    m_bMarkedForMetadataExport = true;
+    // No need to mark the track as dirty, because this flag
+    // is transient and not stored in the database.
+}
+
+bool Track::isMarkedForMetadataExport() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_bMarkedForMetadataExport;
 }
 
 int Track::getRating() const {
