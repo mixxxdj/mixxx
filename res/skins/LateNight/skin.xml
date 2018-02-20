@@ -73,6 +73,14 @@
     <!-- Define singletons as early in the skin as possible.  Note that the
     library doesn't actually appear here, it's just instantiated and configured.
     -->
+
+    <SingletonDefinition>
+      <ObjectName>WaveformsSingleton</ObjectName>
+      <Children>
+        <Template src="skin:waveforms_singleton.xml"/>
+      </Children>
+    </SingletonDefinition>
+
     <SingletonDefinition>
       <ObjectName>LibrarySingleton</ObjectName>
       <Children>
