@@ -450,28 +450,6 @@ TrackPointer GlobalTrackCache::revive(
     weakPtr = strongPtr;
     DEBUG_ASSERT(!weakPtr.expired());
     (*i).second = weakPtr;
-    const TrackRef trackRef = createTrackRef(*plainPtr);
-    if (trackRef.hasId()) {
-        auto i = m_tracksById.find(trackRef.getId());
-        if (i != m_tracksById.end()) {
-            (*i).second = plainPtr;
-        } else {
-            m_tracksById.insert(std::make_pair(
-                    trackRef.getId(),
-                    plainPtr));
-        }
-    }
-    if (trackRef.hasCanonicalLocation()) {
-        auto i = m_tracksByCanonicalLocation.find(
-                trackRef.getCanonicalLocation());
-        if (i != m_tracksByCanonicalLocation.end()) {
-            (*i).second = plainPtr;
-        } else {
-            m_tracksByCanonicalLocation.insert(std::make_pair(
-                    trackRef.getCanonicalLocation(),
-                    plainPtr));
-        }
-    }
     return strongPtr;
 }
 
