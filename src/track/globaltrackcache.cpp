@@ -436,10 +436,10 @@ TrackPointer GlobalTrackCache::revive(
         }
         return strongPtr;
     }
-    // Race condition: The deleter for the Track object has not
-    // been invoked, but the object is still referenced within
-    // the cache. We need to revive it and later the deleter will
-    // leave the unexpired object in the cache.
+    // We are here if the an other thread is preampted
+    // during the destructor of the last shared_ptr referencing this
+    // track, after the reference counter drops to zero and before locking
+    // the cache. We need to revive it to abort the deleter in the other thread.
     if (debugLogEnabled()) {
         kLogger.debug()
                 << "Reviving zombie track"
