@@ -202,9 +202,6 @@ private:
 
     IndexedTracks m_indexedTracks;
 
-    typedef std::unordered_set<Track*> UnindexedTracks;
-    UnindexedTracks m_unindexedTracks;
-
     typedef std::unordered_map<TrackId, Track*, TrackId::hash_fun_t> TracksById;
     TracksById m_tracksById;
 

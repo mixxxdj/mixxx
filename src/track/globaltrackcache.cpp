@@ -228,7 +228,6 @@ GlobalTrackCache::GlobalTrackCache(GlobalTrackCacheDeleter* pDeleter)
     : m_mutex(QMutex::Recursive),
       m_pDeleter(pDeleter),
       m_indexedTracks(kUnorderedCollectionMinCapacity),
-      m_unindexedTracks(kUnorderedCollectionMinCapacity),
       m_tracksById(kUnorderedCollectionMinCapacity, DbId::hash_fun) {
     DEBUG_ASSERT(m_pDeleter);
     DEBUG_ASSERT(verifyConsistency());
@@ -344,7 +343,6 @@ void GlobalTrackCache::deactivate() {
     // all unindexed tracks will simply be deleted when their
     // shared pointer goes out of scope. Their modifications
     // will be lost.
-    m_unindexedTracks.clear();
     m_pDeleter = nullptr;
 }
 
@@ -356,7 +354,6 @@ void GlobalTrackCache::reset() {
                 << "tracks are still cached and indexed";
         for (auto i = m_indexedTracks.begin(); i != m_indexedTracks.end(); ++i) {
             Track* plainPtr = (*i).first;
-            DEBUG_ASSERT(m_unindexedTracks.find(plainPtr) == m_unindexedTracks.end());
         }
         m_indexedTracks.clear();
     }
@@ -367,7 +364,7 @@ void GlobalTrackCache::reset() {
 bool GlobalTrackCache::isEmpty() const {
     DEBUG_ASSERT(m_tracksById.size() <= m_indexedTracks.size());
     DEBUG_ASSERT(m_tracksByCanonicalLocation.size() <= m_indexedTracks.size());
-    return m_indexedTracks.empty() && m_unindexedTracks.empty();
+    return m_indexedTracks.empty();
 }
 
 TrackPointer GlobalTrackCache::lookupById(
@@ -566,7 +563,6 @@ void GlobalTrackCache::resolve(
                 << plainPtr;
     }
     DEBUG_ASSERT(m_indexedTracks.find(plainPtr) == m_indexedTracks.end());
-    DEBUG_ASSERT(m_unindexedTracks.find(plainPtr) == m_unindexedTracks.end());
     TrackWeakPointer weakPtr(strongPtr);
     m_indexedTracks.insert(std::make_pair(
             plainPtr,
@@ -619,35 +615,25 @@ TrackRef GlobalTrackCache::initTrackId(
 bool GlobalTrackCache::evictAndDelete(
         Track* plainPtr) {
     DEBUG_ASSERT(plainPtr);
+    if (debugLogEnabled()) {
+        kLogger.debug()
+                << "try to lock in evictAndDelete"
+                << plainPtr;
+    }
     GlobalTrackCacheLocker cacheLocker;
 
     const IndexedTracks::iterator indexedTrack =
             m_indexedTracks.find(plainPtr);
     if (indexedTrack == m_indexedTracks.end()) {
-        if (m_unindexedTracks.erase(plainPtr)) {
-            // Unindexed tracks are directly deleted without
-            // invoking the post-evict hook! This only happens
-            // when resetting the indices while some tracks
-            // are still cached and indexed.
-            if (debugLogEnabled()) {
-                kLogger.debug()
-                        << "Deleting unindexed track"
-                        << createTrackRef(*plainPtr)
-                        << plainPtr;
-            }
-            deleteTrack(plainPtr);
-            return true;
-        } else {
-            // Due to a rare but expected race condition the track
-            // has already been deleted and must not be deleted
-            // again!
-            if (debugLogEnabled()) {
-                kLogger.debug()
-                        << "Skip deletion of already deleted track"
-                        << plainPtr;
-            }
-            return false;
+        // Due to a rare but expected race condition the track
+        // has already been deleted and must not be deleted
+        // again!
+        if (debugLogEnabled()) {
+            kLogger.debug()
+                    << "Skip deletion of already deleted track"
+                    << plainPtr;
         }
+        return false;
     }
 
     // Now we know that the pointer has not been deleted before
@@ -662,7 +648,6 @@ bool GlobalTrackCache::evictAndDelete(
         bool evictUnexpired) {
     Track* plainPtr = (*indexedTrack).first;
     DEBUG_ASSERT(plainPtr);
-    DEBUG_ASSERT(m_unindexedTracks.find(plainPtr) == m_unindexedTracks.end());
     const auto trackRef = createTrackRef(*plainPtr);
     if (debugLogEnabled()) {
         kLogger.debug()
@@ -700,7 +685,6 @@ bool GlobalTrackCache::evict(
     DEBUG_ASSERT(indexedTrack != m_indexedTracks.end());
     Track* plainPtr = (*indexedTrack).first;
     DEBUG_ASSERT(plainPtr);
-    DEBUG_ASSERT(m_unindexedTracks.find(plainPtr) == m_unindexedTracks.end());
     TrackWeakPointer weakPtr = (*indexedTrack).second;
     if (!(evictUnexpired || weakPtr.expired())) {
         return false;
