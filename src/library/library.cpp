@@ -437,12 +437,7 @@ void Library::deleteCachedTrack(Track* pTrack) noexcept {
     // ensure that we have exclusive (write) access on the file
     // and not reader or writer is accessing the same file
     // concurrently.
-    try {
-        m_pTrackCollection->exportTrackMetadata(pTrack);
-    } catch (...) {
-        kLogger.warning()
-                << "Failed to export track metadata before deletion";
-    }
+    m_pTrackCollection->exportTrackMetadata(pTrack);
 
     // NOTE(uklotzde, 2018-02-20):
     // Database updates must be executed in the context of the
@@ -459,19 +454,14 @@ void Library::deleteCachedTrack(Track* pTrack) noexcept {
     // This method might be invoked from a different thread than
     // the main thread. But database updates are currently only
     // allowed from the main thread!
-    try {
-        QMetaObject::invokeMethod(
-                this,
-                "saveAndDeleteTrack",
-                // Qt will choose either a direct or a queued connection
-                // depending on the thread from which this method has
-                // been invoked!
-                Qt::AutoConnection,
-                Q_ARG(Track*, pTrack));
-    } catch (...) {
-        kLogger.warning()
-                << "Failed to update track in database before deletion";
-    }
+    QMetaObject::invokeMethod(
+            this,
+            "saveAndDeleteTrack",
+            // Qt will choose either a direct or a queued connection
+            // depending on the thread from which this method has
+            // been invoked!
+            Qt::AutoConnection,
+            Q_ARG(Track*, pTrack));
 }
 
 void Library::saveAndDeleteTrack(Track* pTrack) {
