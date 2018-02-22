@@ -422,7 +422,7 @@ void Library::slotSetTrackTableRowHeight(int rowHeight) {
     emit(setTrackTableRowHeight(rowHeight));
 }
 
-void Library::deleteCachedTrack(Track* pTrack) throw() {
+void Library::deleteCachedTrack(Track* pTrack) noexcept {
     // It can produce dangerous signal loops if the track is still
     // sending signals while being saved! All references to this
     // track have been dropped at this point, so there is no need

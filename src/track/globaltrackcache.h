@@ -135,7 +135,7 @@ private:
 class /*interface*/ GlobalTrackCacheDeleter {
 public:
     virtual void deleteCachedTrack(
-            Track* /*not null*/ plainPtr) throw() = 0;
+            Track* /*not null*/ plainPtr) noexcept = 0;
 
 protected:
     virtual ~GlobalTrackCacheDeleter() {}

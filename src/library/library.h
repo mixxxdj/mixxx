@@ -81,7 +81,7 @@ class Library: public QObject,
 
     static const int kDefaultRowHeightPx;
 
-    void deleteCachedTrack(Track* pTrack) throw() override;
+    void deleteCachedTrack(Track* pTrack) noexcept override;
 
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);

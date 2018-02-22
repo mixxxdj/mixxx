@@ -14,7 +14,7 @@ class LibraryTest : public MixxxTest,
     public virtual /*implements*/ GlobalTrackCacheDeleter {
 
   public:
-    void deleteCachedTrack(Track* pTrack) throw() override {
+    void deleteCachedTrack(Track* pTrack) noexcept override {
         m_trackCollection.exportTrackMetadata(pTrack);
         m_trackCollection.saveTrack(pTrack);
         GlobalTrackCache::deleteTrack(pTrack);
