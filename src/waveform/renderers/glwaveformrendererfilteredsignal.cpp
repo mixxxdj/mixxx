@@ -99,7 +99,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
         }
         glEnd();
 
-        glLineWidth(1.1);
+        glLineWidth(2.0);
         glEnable(GL_LINE_SMOOTH);
 
         glBegin(GL_LINES); {
@@ -155,7 +155,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
 
         glScalef(1.f,allGain,1.f);
 
-        glLineWidth(1.1);
+        glLineWidth(2.0);
         glEnable(GL_LINE_SMOOTH);
 
         glBegin(GL_LINES); {

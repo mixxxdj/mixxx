@@ -97,7 +97,7 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         }
         glEnd();
 
-        glLineWidth(1.1);
+        glLineWidth(2.0);
         glEnable(GL_LINE_SMOOTH);
 
         glBegin(GL_LINES); {
@@ -138,7 +138,7 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
 
         glScalef(1.f, allGain, 1.f);
 
-        glLineWidth(1.1);
+        glLineWidth(2.0);
         glEnable(GL_LINE_SMOOTH);
 
         glBegin(GL_LINES); {
