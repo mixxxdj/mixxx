@@ -1953,3 +1953,15 @@ TrackPointer TrackDAO::getOrAddTrack(const QString& trackLocation,
 
     return pTrack;
 }
+
+QFileInfo TrackDAO::relocateCachedTrack(
+        TrackId trackId,
+        QFileInfo fileInfo) {
+    QString trackLocation = getTrackLocation(trackId);
+    if (trackLocation.isEmpty()) {
+        // not found
+        return fileInfo;
+    } else {
+        return QFileInfo(trackLocation);
+    }
+}

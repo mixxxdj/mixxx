@@ -422,7 +422,7 @@ void Library::slotSetTrackTableRowHeight(int rowHeight) {
     emit(setTrackTableRowHeight(rowHeight));
 }
 
-void Library::deleteCachedTrack(Track* pTrack) {
+void Library::deleteCachedTrack(Track* pTrack) throw() {
     // It can produce dangerous signal loops if the track is still
     // sending signals while being saved! All references to this
     // track have been dropped at this point, so there is no need
@@ -437,7 +437,12 @@ void Library::deleteCachedTrack(Track* pTrack) {
     // ensure that we have exclusive (write) access on the file
     // and not reader or writer is accessing the same file
     // concurrently.
-    m_pTrackCollection->exportTrackMetadata(pTrack);
+    try {
+        m_pTrackCollection->exportTrackMetadata(pTrack);
+    } catch (...) {
+        kLogger.warning()
+                << "Failed to export track metadata before deletion";
+    }
 
     // NOTE(uklotzde, 2018-02-20):
     // Database updates must be executed in the context of the

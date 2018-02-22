@@ -60,7 +60,7 @@ class TrackTitleThread: public QThread {
 
 class GlobalTrackCacheTest: public MixxxTest, public virtual GlobalTrackCacheDeleter {
   public:
-    void deleteCachedTrack(Track* pTrack) override {
+    void deleteCachedTrack(Track* pTrack) throw() override {
         ASSERT_FALSE(pTrack == nullptr);
         GlobalTrackCache::deleteTrack(pTrack);
     }

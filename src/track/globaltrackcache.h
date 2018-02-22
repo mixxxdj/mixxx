@@ -2,9 +2,7 @@
 
 
 #include <map>
-#include <set>
 #include <unordered_map>
-#include <unordered_set>
 
 #include "track/track.h"
 #include "track/trackref.h"
@@ -124,7 +122,7 @@ private:
 class /*interface*/ GlobalTrackCacheDeleter {
 public:
     virtual void deleteCachedTrack(
-            Track* /*not null*/ plainPtr) = 0;
+            Track* /*not null*/ plainPtr) throw() = 0;
 
 protected:
     virtual ~GlobalTrackCacheDeleter() {}
