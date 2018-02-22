@@ -459,14 +459,19 @@ void Library::deleteCachedTrack(Track* pTrack) throw() {
     // This method might be invoked from a different thread than
     // the main thread. But database updates are currently only
     // allowed from the main thread!
-    QMetaObject::invokeMethod(
-            this,
-            "saveAndDeleteTrack",
-            // Qt will choose either a direct or a queued connection
-            // depending on the thread from which this method has
-            // been invoked!
-            Qt::AutoConnection,
-            Q_ARG(Track*, pTrack));
+    try {
+        QMetaObject::invokeMethod(
+                this,
+                "saveAndDeleteTrack",
+                // Qt will choose either a direct or a queued connection
+                // depending on the thread from which this method has
+                // been invoked!
+                Qt::AutoConnection,
+                Q_ARG(Track*, pTrack));
+    } catch (...) {
+        kLogger.warning()
+                << "Failed to update track in database before deletion";
+    }
 }
 
 void Library::saveAndDeleteTrack(Track* pTrack) {

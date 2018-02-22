@@ -327,6 +327,10 @@ class Track : public QObject {
     // GlobalTrackCacheResolver!
     void initId(TrackId id); // write-once
 
+    void relocate(
+            QFileInfo fileInfo,
+            SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
+
     // Set whether the TIO is dirty or not and unlock before emitting
     // any signals. This must only be called from member functions
     // while the TIO is locked.
@@ -351,13 +355,13 @@ class Track : public QObject {
     ExportMetadataResult exportMetadata(
             mixxx::MetadataSourcePointer pMetadataSource);
 
-    // The file
-    const QFileInfo m_fileInfo;
-
-    const SecurityTokenPointer m_pSecurityToken;
-
     // Mutex protecting access to object
     mutable QMutex m_qMutex;
+
+    // The file
+    QFileInfo m_fileInfo;
+
+    SecurityTokenPointer m_pSecurityToken;
 
     mixxx::TrackRecord m_record;
 

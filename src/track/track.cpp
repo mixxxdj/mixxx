@@ -64,9 +64,9 @@ Track::Track(
         QFileInfo fileInfo,
         SecurityTokenPointer pSecurityToken,
         TrackId trackId)
-        : m_fileInfo(std::move(fileInfo)),
+        : m_qMutex(QMutex::Recursive),
+          m_fileInfo(std::move(fileInfo)),
           m_pSecurityToken(openSecurityToken(m_fileInfo, std::move(pSecurityToken))),
-          m_qMutex(QMutex::Recursive),
           m_record(trackId),
           m_bDirty(false),
           m_bMarkedForMetadataExport(false),
@@ -111,6 +111,17 @@ TrackPointer Track::newDummy(
             std::move(fileInfo),
             SecurityTokenPointer(),
             trackId);
+}
+
+void Track::relocate(
+        QFileInfo fileInfo,
+        SecurityTokenPointer pSecurityToken) {
+    QMutexLocker lock(&m_qMutex);
+    m_fileInfo = fileInfo;
+    m_pSecurityToken = pSecurityToken;
+    // The track does not need to be marked as dirty,
+    // because this function will always be called with
+    // the updated location from the database.
 }
 
 void Track::setTrackMetadata(

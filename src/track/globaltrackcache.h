@@ -17,6 +17,20 @@ enum class GlobalTrackCacheLookupResult {
     MISS
 };
 
+// Find the updated location of a track in the database when
+// the canonical location is no longer valid or accessible.
+class /*interface*/ GlobalTrackCacheRelocator {
+public:
+    // Try to determine and return the relocated file info
+    // or otherwise return just the provided file info.
+    virtual QFileInfo relocateCachedTrack(
+            TrackId trackId,
+            QFileInfo fileInfo) = 0;
+
+protected:
+    virtual ~GlobalTrackCacheRelocator() {}
+};
+
 class GlobalTrackCacheLocker {
 public:
     GlobalTrackCacheLocker();
@@ -29,9 +43,8 @@ public:
 
     void unlockCache();
 
-    // Reset all indices but keep the currently allocated tracks
-    // to prevent memory leaks.
-    void resetCache() const;
+    void relocateCachedTracks(
+            GlobalTrackCacheRelocator* /*nullable*/ pRelocator) const;
 
     // Enforces the eviction of all cached tracks including invocation
     // of the callback and disables the cache permanently.
@@ -155,7 +168,8 @@ private:
     // to verify the class invariants during development.
     bool verifyConsistency() const;
 
-    void reset();
+    void relocateTracks(
+            GlobalTrackCacheRelocator* /*nullable*/ pRelocator);
 
     TrackPointer lookupById(
             const TrackId& trackId);

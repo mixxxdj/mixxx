@@ -10,7 +10,7 @@
 
 #include "preferences/usersettings.h"
 #include "library/dao/dao.h"
-#include "track/track.h"
+#include "track/globaltrackcache.h"
 #include "util/class.h"
 #include "util/memory.h"
 
@@ -21,7 +21,7 @@ class CueDAO;
 class LibraryHashDAO;
 
 
-class TrackDAO : public QObject, public virtual DAO {
+class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackCacheRelocator {
     Q_OBJECT
   public:
     // The 'config object' is necessary because users decide ID3 tags get
@@ -106,6 +106,10 @@ class TrackDAO : public QObject, public virtual DAO {
                                         QSet<TrackId>* pTracksChanged);
 
     void saveTrack(Track* pTrack);
+
+    QFileInfo relocateCachedTrack(
+            TrackId trackId,
+            QFileInfo fileInfo) override;
 
   signals:
     void trackDirty(TrackId trackId) const;

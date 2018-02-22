@@ -87,9 +87,10 @@ void GlobalTrackCacheLocker::unlockCache() {
     }
 }
 
-void GlobalTrackCacheLocker::resetCache() const {
+void GlobalTrackCacheLocker::relocateCachedTracks(
+        GlobalTrackCacheRelocator* pRelocator) const {
     DEBUG_ASSERT(m_pInstance);
-    m_pInstance->reset();
+    m_pInstance->relocateTracks(pRelocator);
 }
 
 void GlobalTrackCacheLocker::deactivateCache() const {
@@ -323,6 +324,63 @@ bool GlobalTrackCache::verifyConsistency() const {
     return true;
 }
 
+void GlobalTrackCache::relocateTracks(
+        GlobalTrackCacheRelocator* pRelocator) {
+    if (debugLogEnabled()) {
+        kLogger.debug()
+                << "Relocating tracks";
+    }
+    TracksByCanonicalLocation relocatedTracksByCanonicalLocation;
+    for (auto&&
+            i = m_tracksByCanonicalLocation.begin();
+            i != m_tracksByCanonicalLocation.end();
+            ++i) {
+        const QString oldCanonicalLocation = (*i).first;
+        Track* plainPtr = (*i).second;
+        QFileInfo fileInfo = plainPtr->getFileInfo();
+        // The file info has to be refreshed, otherwise it might return
+        // a cached and outdated absolute and canonical location!
+        fileInfo.refresh();
+        TrackRef trackRef = TrackRef::fromFileInfo(
+                fileInfo,
+                plainPtr->getId());
+        if (!trackRef.hasCanonicalLocation() && trackRef.hasId() && pRelocator) {
+            fileInfo = pRelocator->relocateCachedTrack(
+                        trackRef.getId(),
+                        fileInfo);
+            if (fileInfo != plainPtr->getFileInfo()) {
+                plainPtr->relocate(fileInfo);
+            }
+            trackRef = TrackRef::fromFileInfo(
+                    fileInfo,
+                    trackRef.getId());
+        }
+        if (!trackRef.hasCanonicalLocation()) {
+            kLogger.warning()
+                    << "Failed to relocate track"
+                    << oldCanonicalLocation
+                    << trackRef;
+            continue;
+        }
+        QString newCanonicalLocation = trackRef.getCanonicalLocation();
+        if (oldCanonicalLocation == newCanonicalLocation) {
+            // Copy the entry unmodified into the new map
+            relocatedTracksByCanonicalLocation.insert(*i);
+            continue;
+        }
+        if (debugLogEnabled()) {
+            kLogger.debug()
+                    << "Relocating track"
+                    << "from" << oldCanonicalLocation
+                    << "to" << newCanonicalLocation;
+        }
+        relocatedTracksByCanonicalLocation.insert(std::make_pair(
+                std::move(newCanonicalLocation),
+                plainPtr));
+    }
+    m_tracksByCanonicalLocation = std::move(relocatedTracksByCanonicalLocation);
+}
+
 void GlobalTrackCache::deactivate() {
     DEBUG_ASSERT(verifyConsistency());
     // Ideally the cache should be empty when destroyed.
@@ -344,21 +402,6 @@ void GlobalTrackCache::deactivate() {
     // shared pointer goes out of scope. Their modifications
     // will be lost.
     m_pDeleter = nullptr;
-}
-
-void GlobalTrackCache::reset() {
-    if (!m_indexedTracks.empty()) {
-        kLogger.warning()
-                << "Resetting indices while"
-                << m_indexedTracks.size()
-                << "tracks are still cached and indexed";
-        for (auto i = m_indexedTracks.begin(); i != m_indexedTracks.end(); ++i) {
-            Track* plainPtr = (*i).first;
-        }
-        m_indexedTracks.clear();
-    }
-    m_tracksById.clear();
-    m_tracksByCanonicalLocation.clear();
 }
 
 bool GlobalTrackCache::isEmpty() const {
@@ -436,10 +479,11 @@ TrackPointer GlobalTrackCache::revive(
         }
         return strongPtr;
     }
-    // We are here if the an other thread is preampted
-    // during the destructor of the last shared_ptr referencing this
-    // track, after the reference counter drops to zero and before locking
-    // the cache. We need to revive it to abort the deleter in the other thread.
+    // We are here if the an other thread is preempted during
+    // the destructor of the last shared_ptr referencing this
+    // track, after the reference counter drops to zero and
+    // before locking the cache. We need to revive it to abort
+    // the deleter in the other thread.
     if (debugLogEnabled()) {
         kLogger.debug()
                 << "Reviving zombie track"
