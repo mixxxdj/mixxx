@@ -134,8 +134,11 @@ private:
 // the callee.
 class /*interface*/ GlobalTrackCacheDeleter {
 public:
+    typedef void (*delete_fun_t)(Track*);
+
     virtual void deleteCachedTrack(
-            Track* /*not null*/ plainPtr) noexcept = 0;
+            Track* /*not null*/ plainPtr,
+            delete_fun_t deleterFn) noexcept = 0;
 
 protected:
     virtual ~GlobalTrackCacheDeleter() {}
@@ -151,8 +154,6 @@ public:
     // preserved for completeness.
     // See also: GlobalTrackCacheLocker::deactivateCache()
     static void destroyInstance();
-
-    static void deleteTrack(Track* plainPtr);
 
 private:
     friend class GlobalTrackCacheLocker;

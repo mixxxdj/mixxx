@@ -81,7 +81,9 @@ class Library: public QObject,
 
     static const int kDefaultRowHeightPx;
 
-    void deleteCachedTrack(Track* pTrack) noexcept override;
+    void deleteCachedTrack(
+            Track* pTrack,
+            delete_fun_t deleteFn) noexcept override;
 
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
@@ -125,7 +127,9 @@ class Library: public QObject,
     void scanFinished();
 
   private:
-    Q_INVOKABLE void saveAndDeleteTrack(Track* pTrack);
+    Q_INVOKABLE void saveAndDeleteTrack(
+            Track* pTrack,
+            GlobalTrackCacheDeleter::delete_fun_t deleteFn);
 
     const UserSettingsPointer m_pConfig;
 

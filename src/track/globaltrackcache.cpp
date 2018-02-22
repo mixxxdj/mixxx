@@ -33,6 +33,36 @@ TrackRef createTrackRef(const Track& track) {
     return TrackRef::fromFileInfo(track.getFileInfo(), track.getId());
 }
 
+void finalDeleter(Track* plainPtr) noexcept {
+    VERIFY_OR_DEBUG_ASSERT(plainPtr) {
+        kLogger.warning()
+                << "Cannot delete null track pointer";
+        return;
+    }
+    if (traceLogEnabled()) {
+        plainPtr->dumpObjectInfo();
+    }
+    // Track object must not be deleted by operator new!
+    // Otherwise the deleted track object might be accessed
+    // when processing cross-thread signals that are delayed
+    // within a queued connection and may arrive after the
+    // object has already been deleted.
+    if (debugLogEnabled()) {
+        kLogger.debug()
+                << "Deleting track"
+                << plainPtr;
+    }
+    plainPtr->deleteLater();
+}
+
+void unexpiredDeleter(Track* plainPtr) noexcept {
+    if (debugLogEnabled()) {
+        kLogger.debug()
+                << "Skipping deletion of track"
+                << plainPtr;
+    }
+}
+
 } // anonymous namespace
 
 GlobalTrackCacheLocker::GlobalTrackCacheLocker()
@@ -176,28 +206,6 @@ void GlobalTrackCache::destroyInstance() {
     s_pInstance = nullptr;
     // Delete the singular instance
     delete pInstance;
-}
-
-void GlobalTrackCache::deleteTrack(Track* plainPtr) {
-    VERIFY_OR_DEBUG_ASSERT(plainPtr) {
-        kLogger.warning()
-                << "Cannot delete null track pointer";
-        return;
-    }
-    if (traceLogEnabled()) {
-        plainPtr->dumpObjectInfo();
-    }
-    // Track object must not be deleted by operator new!
-    // Otherwise the deleted track object might be accessed
-    // when processing cross-thread signals that are delayed
-    // within a queued connection and may arrive after the
-    // object has already been deleted.
-    if (debugLogEnabled()) {
-        kLogger.debug()
-                << "Deleting track"
-                << plainPtr;
-    }
-    plainPtr->deleteLater();
 }
 
 //static
@@ -684,7 +692,9 @@ bool GlobalTrackCache::evictAndDelete(
         // The evicted entry must not be accessible anymore!
         DEBUG_ASSERT(m_indexedTracks.find(plainPtr) == m_indexedTracks.end());
         DEBUG_ASSERT(!lookupByRef(trackRef));
-        m_pDeleter->deleteCachedTrack(plainPtr);
+        m_pDeleter->deleteCachedTrack(
+                plainPtr,
+                evictUnexpired ? unexpiredDeleter : finalDeleter);
         return true;
     } else {
         // ...otherwise the given plainPtr is still referenced within

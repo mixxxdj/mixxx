@@ -422,7 +422,9 @@ void Library::slotSetTrackTableRowHeight(int rowHeight) {
     emit(setTrackTableRowHeight(rowHeight));
 }
 
-void Library::deleteCachedTrack(Track* pTrack) noexcept {
+void Library::deleteCachedTrack(
+        Track* pTrack,
+        delete_fun_t deleteFn) noexcept {
     // It can produce dangerous signal loops if the track is still
     // sending signals while being saved! All references to this
     // track have been dropped at this point, so there is no need
@@ -461,13 +463,16 @@ void Library::deleteCachedTrack(Track* pTrack) noexcept {
             // depending on the thread from which this method has
             // been invoked!
             Qt::AutoConnection,
-            Q_ARG(Track*, pTrack));
+            Q_ARG(Track*, pTrack),
+            Q_ARG(GlobalTrackCacheDeleter::delete_fun_t, deleteFn));
 }
 
-void Library::saveAndDeleteTrack(Track* pTrack) {
+void Library::saveAndDeleteTrack(
+        Track* pTrack,
+        GlobalTrackCacheDeleter::delete_fun_t deleteFn) {
     // Update the database
     m_pTrackCollection->saveTrack(pTrack);
 
     // Finally schedule the track for deletion
-    GlobalTrackCache::deleteTrack(pTrack);
+    deleteFn(pTrack);
 }
