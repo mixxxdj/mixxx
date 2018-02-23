@@ -655,9 +655,8 @@ bool GlobalTrackCache::evictAndDelete(
     const IndexedTracks::iterator indexedTrack =
             m_indexedTracks.find(plainPtr);
     if (indexedTrack == m_indexedTracks.end()) {
-        // Due to a rare but expected race condition the track
-        // has already been deleted and must not be deleted
-        // again!
+        // We have handed out and already delete this track while waiting at
+        // the lock at the beginning of this function.
         if (debugLogEnabled()) {
             kLogger.debug()
                     << "Skip deletion of already deleted track"
