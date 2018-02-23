@@ -49,6 +49,18 @@ DJ202.Deck = function (deckNumbers, channel) {
         },
     });
 
+    this.keylock = new components.Button({
+        midi: [0x90 + channel, 0x0D],
+        type: components.Button.prototype.types.toggle,
+        inKey: 'keylock',
+        outKey: 'keylock',
+    });
+    
+    this.rate = new components.Pot({
+        midi: [0xB0 + channel, 0x09],
+        inKey: 'rate',
+    });
+
     // ============================= TRANSPORT ==================================
     this.play = new components.PlayButton([0x90 + channel, 0x00]); // LED doesn't stay on
     this.cue = new components.CueButton([0x90 + channel, 0x01]);

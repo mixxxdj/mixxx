@@ -78,6 +78,24 @@
             </control>
             <control>
                 <group>[Channel1]</group>
+                <key>DJ202.leftDeck.rate.input</key>
+                <status>0xB0</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.leftDeck.keylock.input</key>
+                <status>0x90</status>
+                <midino>0x0D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
                 <key>DJ202.leftDeck.pregain.input</key>
                 <status>0xB0</status>
                 <midino>0x16</midino>
