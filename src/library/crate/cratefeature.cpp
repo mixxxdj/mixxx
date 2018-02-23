@@ -145,19 +145,14 @@ QString CrateFeature::formatRootViewHtml() const {
     QString html;
     QString createCrateLink = tr("Create New Crate");
     html.append(QString("<h2>%1</h2>").arg(cratesTitle));
-    html.append("<table border=\"0\" cellpadding=\"5\"><tr><td>");
     html.append(QString("<p>%1</p>").arg(cratesSummary));
     html.append(QString("<p>%1</p>").arg(cratesSummary2));
     html.append(QString("<p>%1</p>").arg(cratesSummary3));
-    html.append("</td><td rowspan=\"2\">");
-    html.append("<img src=\"qrc:/images/library/crates_art.png\">");
-    html.append("</td></tr>");
     //Colorize links in lighter blue, instead of QT default dark blue.
     //Links are still different from regular text, but readable on dark/light backgrounds.
     //https://bugs.launchpad.net/mixxx/+bug/1744816
-    html.append(QString("<tr><td><a style=\"color:#0850D0;\" href=\"create\">%1</a>")
+    html.append(QString("<a style=\"color:#0850D0;\" href=\"create\">%1</a>")
                 .arg(createCrateLink));
-    html.append("</td></tr></table>");
     return html;
 }
 
