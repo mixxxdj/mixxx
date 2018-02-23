@@ -66,6 +66,15 @@
         - if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
         - if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
         -->
+        <Mark>
+          <Control>cue_point</Control>
+          <Pixmap>image/marker_cue.png</Pixmap>
+          <Text>CUE</Text>
+          <Align>bottom</Align>
+          <Color>#FF001C</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+
       </Visual>
 
       <WidgetGroup>
