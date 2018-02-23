@@ -9,6 +9,12 @@ DJ202.init = function () {
 DJ202.shutdown = function () {
 };
 
+DJ202.crossfader = new components.Pot({
+    midi: [0xBF, 0x08],
+    group: '[Master]',
+    inKey: 'crossfader',
+});
+
 DJ202.Deck = function (deckNumbers, channel) {
     components.Deck.call(this, deckNumbers);
 
