@@ -37,7 +37,7 @@ class KeyboardEventFilter;
 class PlayerManagerInterface;
 
 class Library: public QObject,
-    public virtual /*implements*/ GlobalTrackCacheDeleter {
+    public virtual /*implements*/ GlobalTrackCacheSaver {
     Q_OBJECT
 
   public:
@@ -81,9 +81,7 @@ class Library: public QObject,
 
     static const int kDefaultRowHeightPx;
 
-    void deleteCachedTrack(
-            Track* pTrack,
-            delete_fun_t deleteFn) noexcept override;
+    void saveCachedTrack(TrackPointer pTrack) noexcept override;
 
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
@@ -127,9 +125,7 @@ class Library: public QObject,
     void scanFinished();
 
   private:
-    Q_INVOKABLE void saveAndDeleteTrack(
-            Track* pTrack,
-            GlobalTrackCacheDeleter::delete_fun_t deleteFn);
+    Q_INVOKABLE void saveTrack(TrackPointer pTrack);
 
     const UserSettingsPointer m_pConfig;
 

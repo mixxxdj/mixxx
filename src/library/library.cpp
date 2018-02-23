@@ -422,14 +422,10 @@ void Library::slotSetTrackTableRowHeight(int rowHeight) {
     emit(setTrackTableRowHeight(rowHeight));
 }
 
-void Library::deleteCachedTrack(
-        Track* pTrack,
-        delete_fun_t deleteFn) noexcept {
+void Library::saveCachedTrack(TrackPointer pTrack) noexcept {
     // It can produce dangerous signal loops if the track is still
-    // sending signals while being saved! All references to this
-    // track have been dropped at this point, so there is no need
-    // to send any signals.
-    // See: https://bugs.launchpad.net/mixxx/+bug/136578
+    // sending signals while being saved!
+    // See: https://bugs.launchpad.net/mixxx/+bug/1365708
     // NOTE(uklotzde, 2018-02-03): Simply disconnecting all receivers
     // doesn't seem to work reliably. Emitting the clean() signal from
     // a track that is about to deleted may cause access violations!!
@@ -439,11 +435,11 @@ void Library::deleteCachedTrack(
     // ensure that we have exclusive (write) access on the file
     // and not reader or writer is accessing the same file
     // concurrently.
-    m_pTrackCollection->exportTrackMetadata(pTrack);
+    m_pTrackCollection->exportTrackMetadata(pTrack.get());
 
     // NOTE(uklotzde, 2018-02-20):
     // Database updates must be executed in the context of the
-    // main thread. When the deletion is triggered from another
+    // main thread. When saving is triggered from another
     // thread the call needs to be dispatched through a queued
     // connection and is deferred until the event loop of the
     // receiving thread that handles the event. The actual
@@ -458,21 +454,15 @@ void Library::deleteCachedTrack(
     // allowed from the main thread!
     QMetaObject::invokeMethod(
             this,
-            "saveAndDeleteTrack",
+            "saveTrack",
             // Qt will choose either a direct or a queued connection
             // depending on the thread from which this method has
             // been invoked!
             Qt::AutoConnection,
-            Q_ARG(Track*, pTrack),
-            Q_ARG(GlobalTrackCacheDeleter::delete_fun_t, deleteFn));
+            Q_ARG(TrackPointer, pTrack));
 }
 
-void Library::saveAndDeleteTrack(
-        Track* pTrack,
-        GlobalTrackCacheDeleter::delete_fun_t deleteFn) {
+void Library::saveTrack(TrackPointer pTrack) {
     // Update the database
-    m_pTrackCollection->saveTrack(pTrack);
-
-    // Finally schedule the track for deletion
-    deleteFn(pTrack);
+    m_pTrackCollection->saveTrack(pTrack.get());
 }

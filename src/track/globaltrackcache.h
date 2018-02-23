@@ -128,25 +128,17 @@ private:
     TrackRef m_trackRef;
 };
 
-// Implementations are responsible for eventually deleting the
-// provided track object by invoking GlobalTrackCache::deleteTrack().
-// The provided track object is valid until it has been deleted by
-// the callee.
-class /*interface*/ GlobalTrackCacheDeleter {
+class /*interface*/ GlobalTrackCacheSaver {
 public:
-    typedef void (*delete_fun_t)(Track*);
-
-    virtual void deleteCachedTrack(
-            Track* /*not null*/ plainPtr,
-            delete_fun_t deleterFn) noexcept = 0;
+    virtual void saveCachedTrack(TrackPointer pTrack) noexcept = 0;
 
 protected:
-    virtual ~GlobalTrackCacheDeleter() {}
+    virtual ~GlobalTrackCacheSaver() {}
 };
 
 class GlobalTrackCache {
 public:
-    static void createInstance(GlobalTrackCacheDeleter* pDeleter);
+    static void createInstance(GlobalTrackCacheSaver* pDeleter);
     // NOTE(uklotzde, 2018-02-20): We decided not to destroy the singular
     // instance during shutdown, because we are not able to guarantee that
     // all track references have been released before. Instead the singular
@@ -162,7 +154,7 @@ private:
     // Callback for the smart-pointer
     static void deleter(Track* plainPtr);
 
-    explicit GlobalTrackCache(GlobalTrackCacheDeleter* pDeleter);
+    explicit GlobalTrackCache(GlobalTrackCacheSaver* pDeleter);
     ~GlobalTrackCache();
 
     // This function should only be called DEBUG_ASSERT statements
@@ -191,18 +183,13 @@ private:
             TrackRef trackRef,
             TrackId trackId);
 
-    bool evictAndDelete(
-            Track* plainPtr);
+    void evictOrDelete(Track* plainPtr);
 
     typedef std::unordered_map<Track*, TrackWeakPointer> IndexedTracks;
 
-    bool evictAndDelete(
-            IndexedTracks::iterator indexedTrack,
-            bool evictUnexpired);
-    bool evict(
-            const TrackRef& trackRef,
-            IndexedTracks::iterator indexedTrack,
-            bool evictUnexpired);
+    bool evictAndSave(TrackPointer strongPtr);
+
+    void evict(TrackPointer strongPtr);
 
     bool isEmpty() const;
 
@@ -211,13 +198,21 @@ private:
     // Managed by GlobalTrackCacheLocker
     mutable QMutex m_mutex;
 
-    GlobalTrackCacheDeleter* m_pDeleter;
+    GlobalTrackCacheSaver* m_pSaver;
 
+    // This is the owner of the Track objects.
+    // The tracks are saved back to database and file metatdta if the first
+    // shared_ptr expires. This time the Track is still cached.
+    // Than the track is cpied into a second shared_ptr used while saving the
+    // track. If this also expires, the track is finally deleted and removed
+    // from the index.
     IndexedTracks m_indexedTracks;
 
+    // This caches the unsaved Tracks by ID
     typedef std::unordered_map<TrackId, Track*, TrackId::hash_fun_t> TracksById;
     TracksById m_tracksById;
 
+    // This caches the unsaved Tracks by location
     typedef std::map<QString, Track*> TracksByCanonicalLocation;
     TracksByCanonicalLocation m_tracksByCanonicalLocation;
 };

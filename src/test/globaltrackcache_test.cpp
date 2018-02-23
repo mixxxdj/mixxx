@@ -58,13 +58,10 @@ class TrackTitleThread: public QThread {
 
 } // anonymous namespace
 
-class GlobalTrackCacheTest: public MixxxTest, public virtual GlobalTrackCacheDeleter {
+class GlobalTrackCacheTest: public MixxxTest, public virtual GlobalTrackCacheSaver {
   public:
-    void deleteCachedTrack(
-            Track* pTrack,
-            delete_fun_t deleteFn) noexcept override {
+    void saveCachedTrack(TrackPointer pTrack) noexcept override {
         ASSERT_FALSE(pTrack == nullptr);
-        deleteFn(pTrack);
     }
 
   protected:

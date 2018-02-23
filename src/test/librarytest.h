@@ -11,15 +11,12 @@
 
 
 class LibraryTest : public MixxxTest,
-    public virtual /*implements*/ GlobalTrackCacheDeleter {
+    public virtual /*implements*/ GlobalTrackCacheSaver {
 
   public:
-    void deleteCachedTrack(
-            Track* pTrack,
-            delete_fun_t deleteFn) noexcept override {
-        m_trackCollection.exportTrackMetadata(pTrack);
-        m_trackCollection.saveTrack(pTrack);
-        deleteFn(pTrack);
+    void saveCachedTrack(TrackPointer pTrack) noexcept override {
+        m_trackCollection.exportTrackMetadata(pTrack.get());
+        m_trackCollection.saveTrack(pTrack.get());
     }
 
   protected:
