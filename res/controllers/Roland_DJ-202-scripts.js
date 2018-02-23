@@ -9,6 +9,19 @@ DJ202.init = function () {
 DJ202.shutdown = function () {
 };
 
+DJ202.browseEncoder = new components.Encoder({
+    midi: [0xBF, 0x00],
+    group: '[Playlist]',
+    inKey: 'SelectTrackKnob',
+    input: function (channel, control, value, status, group) {
+        if (value === 1) {
+            this.inSetParameter(1);
+        } else if (value === 127) {
+            this.inSetParameter(-1);
+        }
+    },
+});
+
 DJ202.crossfader = new components.Pot({
     midi: [0xBF, 0x08],
     group: '[Master]',
@@ -25,6 +38,16 @@ DJ202.Deck = function (deckNumbers, channel) {
             this.unshift();
         }
     };
+
+    this.loadTrack = new components.Button({
+        midi: [0x9F, 0x02 + channel],
+        unshift: function () {
+            this.inKey = 'LoadSelectedTrack';
+        },
+        shift: function () {
+            this.inKey = 'eject';
+        },
+    });
 
     // ============================= TRANSPORT ==================================
     this.play = new components.PlayButton([0x90 + channel, 0x00]); // LED doesn't stay on
