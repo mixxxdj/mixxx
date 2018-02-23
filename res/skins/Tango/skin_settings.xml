@@ -36,6 +36,7 @@ Description:
               <WidgetGroup><Size>1me,1me</Size></WidgetGroup>
 
               <Template src="skin:button_2state.xml">
+                <SetVariable name="TooltipId">skin_settings</SetVariable>
                 <SetVariable name="ObjectName">SkinSettingsClose</SetVariable>
                 <SetVariable name="Size">20f,24f</SetVariable>
                 <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>
