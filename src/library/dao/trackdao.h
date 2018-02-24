@@ -107,10 +107,6 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
 
     void saveTrack(Track* pTrack);
 
-    QFileInfo relocateCachedTrack(
-            TrackId trackId,
-            QFileInfo fileInfo) override;
-
   signals:
     void trackDirty(TrackId trackId) const;
     void trackClean(TrackId trackId) const;
@@ -136,6 +132,11 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     TrackPointer getTrackFromDB(TrackId trackId) const;
 
     bool updateTrack(Track* pTrack);
+
+    // Callback for GlobalTrackCache
+    QFileInfo relocateCachedTrack(
+            TrackId trackId,
+            QFileInfo fileInfo) override;
 
     QSqlDatabase m_database;
 

@@ -20,7 +20,8 @@ enum class GlobalTrackCacheLookupResult {
 // Find the updated location of a track in the database when
 // the canonical location is no longer valid or accessible.
 class /*interface*/ GlobalTrackCacheRelocator {
-public:
+private:
+    friend class GlobalTrackCache;
     // Try to determine and return the relocated file info
     // or otherwise return just the provided file info.
     virtual QFileInfo relocateCachedTrack(
@@ -129,8 +130,10 @@ private:
 };
 
 class /*interface*/ GlobalTrackCacheSaver {
-public:
-    virtual void saveCachedTrack(TrackPointer pTrack) noexcept = 0;
+private:
+    friend class GlobalTrackCache;
+    virtual void saveCachedTrack(
+            TrackPointer pTrack) noexcept = 0;
 
 protected:
     virtual ~GlobalTrackCacheSaver() {}

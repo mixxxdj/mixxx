@@ -81,8 +81,6 @@ class Library: public QObject,
 
     static const int kDefaultRowHeightPx;
 
-    void saveCachedTrack(TrackPointer pTrack) noexcept override;
-
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
@@ -126,6 +124,9 @@ class Library: public QObject,
 
   private:
     Q_INVOKABLE void saveTrack(TrackPointer pTrack);
+
+    // Callback for GlobalTrackCache
+    void saveCachedTrack(TrackPointer pTrack) noexcept override;
 
     const UserSettingsPointer m_pConfig;
 
