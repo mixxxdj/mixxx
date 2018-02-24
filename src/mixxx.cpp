@@ -581,19 +581,16 @@ void MixxxMainWindow::finalize() {
     delete m_pPlayerManager;
 
     // Evict all remaining tracks from the cache to trigger
-    // updating of modified tracks.
-    GlobalTrackCache::instance().evictAll();
+    // updating of modified tracks. We assume that no other
+    // components are accessing those files at this point.
+    qDebug() << t.elapsed(false) << "deactivating GlobalTrackCache";
+    GlobalTrackCacheLocker().deactivateCache();
 
     // Delete the library after the view so there are no dangling pointers to
     // the data models.
     // Depends on RecordingManager and PlayerManager
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting Library";
     delete m_pLibrary;
-
-    // The GlobalTrackCache singleton must be destroyed immediately
-    // after the library has been destroyed!
-    qDebug() << "Destroying GlobalTrackCache" << t.elapsed(false);
-    GlobalTrackCache::destroyInstance();
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "closing database connection(s)";
     m_pDbConnectionPool->destroyThreadLocalConnection();

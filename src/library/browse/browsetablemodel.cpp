@@ -345,10 +345,11 @@ void BrowseTableModel::trackLoaded(QString group, TrackPointer pTrack) {
             }
         }
         if (pTrack) {
+            QString trackLocation = pTrack->getLocation();
             for (int row = 0; row < rowCount(); ++row) {
                 QModelIndex i = index(row, COLUMN_PREVIEW);
                 QString location = getTrackLocation(i);
-                if (location == pTrack->getLocation()) {
+                if (location == trackLocation) {
                     QStandardItem* item = itemFromIndex(i);
                     item->setText("1");
                     break;
