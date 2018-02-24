@@ -33,28 +33,6 @@ TrackRef createTrackRef(const Track& track) {
     return TrackRef::fromFileInfo(track.getFileInfo(), track.getId());
 }
 
-void finalDeleter(Track* plainPtr) noexcept {
-    VERIFY_OR_DEBUG_ASSERT(plainPtr) {
-        kLogger.warning()
-                << "Cannot delete null track pointer";
-        return;
-    }
-    if (traceLogEnabled()) {
-        plainPtr->dumpObjectInfo();
-    }
-    // Track object must not be deleted by operator delete!
-    // Otherwise the deleted track object might be accessed
-    // when processing cross-thread signals that are delayed
-    // within a queued connection and may arrive after the
-    // object has already been deleted.
-    if (debugLogEnabled()) {
-        kLogger.debug()
-                << "Deleting"
-                << plainPtr;
-    }
-    plainPtr->deleteLater();
-}
-
 } // anonymous namespace
 
 GlobalTrackCacheLocker::GlobalTrackCacheLocker()
@@ -362,8 +340,8 @@ void GlobalTrackCache::deactivate() {
     DEBUG_ASSERT(m_tracksById.empty());
     DEBUG_ASSERT(m_tracksByCanonicalLocation.empty());
     // The singular cache instance is already unavailable and
-    // all unindexed tracks will simply be deleted when their
-    // shared pointer goes out of scope. Their modifications
+    // all allocated tracks will simply be deleted when their
+    // shared pointer goes out of scope. Unsaved modifications
     // will be lost.
     m_pSaver = nullptr;
 }
@@ -638,10 +616,22 @@ void GlobalTrackCache::evictOrDelete(
     if (strongPtr) {
         evictAndSave(strongPtr);
     } else {
-        // Track already evicted, we can now savely delete is via the QT
-        // event queue.
+        // Track has already been evicted and can be dropped.
         m_indexedTracks.erase(indexedTrack);
-        finalDeleter(plainPtr);
+        // We safely delete the object via the Qt event queue instead
+        // of using operator delete! Otherwise the deleted track object
+        // might be accessed when processing cross-thread signals that
+        // are delayed within a queued connection and may arrive after
+        // the object has already been deleted.
+        if (traceLogEnabled()) {
+            plainPtr->dumpObjectInfo();
+        }
+        if (debugLogEnabled()) {
+            kLogger.debug()
+                    << "Deleting"
+                    << plainPtr;
+        }
+        plainPtr->deleteLater();
     }
 }
 
@@ -653,6 +643,9 @@ bool GlobalTrackCache::evictAndSave(TrackPointer strongPtr) {
 }
 
 void GlobalTrackCache::evict(TrackPointer strongPtr) {
+    // Make the cached track object invisible to avoid reusing
+    // it before starting to save it. This is achieved by
+    // removing it from both cache indices.
     const auto trackRef = createTrackRef(*strongPtr);
     if (debugLogEnabled()) {
         kLogger.debug()

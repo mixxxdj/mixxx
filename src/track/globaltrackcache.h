@@ -201,9 +201,9 @@ private:
     GlobalTrackCacheSaver* m_pSaver;
 
     // This is the owner of the Track objects.
-    // The tracks are saved back to database and file metatdta if the first
+    // The tracks are saved back to database and file metatdata if the first
     // shared_ptr expires. This time the Track is still cached.
-    // Than the track is cpied into a second shared_ptr used while saving the
+    // Than the track is copied into a second shared_ptr used while saving the
     // track. If this also expires, the track is finally deleted and removed
     // from the index.
     IndexedTracks m_indexedTracks;

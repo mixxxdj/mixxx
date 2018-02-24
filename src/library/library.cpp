@@ -447,7 +447,7 @@ void Library::saveCachedTrack(TrackPointer pTrack) noexcept {
     // unlocked after leaving this function.
     // Race conditions between database readers and writers are
     // impossible as long as all database actions are executed in
-    // the main thread and the invocation is submittedt through
+    // the main thread and the invocation is submitted through
     // a direct connection.
     // This method might be invoked from a different thread than
     // the main thread. But database updates are currently only
