@@ -435,6 +435,9 @@ void Library::saveCachedTrack(TrackPointer pTrack) noexcept {
     // ensure that we have exclusive (write) access on the file
     // and not reader or writer is accessing the same file
     // concurrently.
+    // Pass the track object via a plain pointer to prevent the
+    // creation of any new references from the shared pointer
+    // that will be deleted soon!
     m_pTrackCollection->exportTrackMetadata(pTrack.get());
 
     // NOTE(uklotzde, 2018-02-20):
@@ -464,5 +467,8 @@ void Library::saveCachedTrack(TrackPointer pTrack) noexcept {
 
 void Library::saveTrack(TrackPointer pTrack) {
     // Update the database
+    // Pass the track object via a plain pointer to prevent the
+    // creation of any new references from the shared pointer
+    // that will be deleted soon!
     m_pTrackCollection->saveTrack(pTrack.get());
 }
