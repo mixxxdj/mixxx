@@ -31,7 +31,6 @@ EncoderFfmpegCore::EncoderFfmpegCore(EncoderCallback* pCallback, CodecID codec)
 {
     m_bStreamInitialized = false;
     m_pCallback = pCallback;
-    m_pMetaData = TrackPointer(NULL);
 
     m_pEncodeFormatCtx = NULL;
     m_pEncoderAudioStream = NULL;

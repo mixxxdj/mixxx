@@ -16,27 +16,33 @@
 
 
 // forward declaration(s)
-class TrackPointer;
+class Track;
+
+typedef std::shared_ptr<Track> TrackPointer;
+typedef std::weak_ptr<Track> TrackWeakPointer;
 
 class Track : public QObject {
     Q_OBJECT
 
   public:
+    Track(QFileInfo fileInfo,
+          SecurityTokenPointer pSecurityToken,
+          TrackId trackId = TrackId());
     Track(const Track&) = delete;
+    ~Track() override;
 
     // Creates a new empty temporary instance for fake tracks or for
     // testing purposes. The resulting track will neither be stored
     // in the database nor will the metadata of the corresponding file
     // be updated.
-    // NOTE(uklotzde): Temporary track objects do not provide any guarantees
-    // regarding safe file access, i.e. tags might be written back into the
-    // file whenever the corresponding track is evicted from GlobalTrackCache!
+    // Use SoundSourceProxy::importTemporaryTrack() for importing files
+    // to ensure that the file will not be written while reading it!
     static TrackPointer newTemporary(
-            const QFileInfo& fileInfo = QFileInfo(),
-            const SecurityTokenPointer& pSecurityToken = SecurityTokenPointer());
-    // Creates a dummy instance for testing purposes.
+            QFileInfo fileInfo = QFileInfo(),
+            SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
+    // Creates a dummy instance only for testing purposes.
     static TrackPointer newDummy(
-            const QFileInfo& fileInfo,
+            QFileInfo fileInfo,
             TrackId trackId);
 
     Q_PROPERTY(QString artist READ getArtist WRITE setArtist)
@@ -294,9 +300,7 @@ class Track : public QObject {
     // export is deferred to prevent race conditions when writing into
     // files that are still opened for reading.
     void markForMetadataExport();
-
-  public slots:
-    void slotCueUpdated();
+    bool isMarkedForMetadataExport() const;
 
   signals:
     void waveformUpdated();
@@ -313,16 +317,17 @@ class Track : public QObject {
     void clean(Track* pTrack);
 
   private slots:
+    void slotCueUpdated();
     void slotBeatsUpdated();
 
   private:
-    Track(const QFileInfo& fileInfo,
-          const SecurityTokenPointer& pSecurityToken,
-          TrackId trackId);
-
     // Set a unique identifier for the track. Only used by
     // GlobalTrackCacheResolver!
     void initId(TrackId id); // write-once
+
+    void relocate(
+            QFileInfo fileInfo,
+            SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
 
     // Set whether the TIO is dirty or not and unlock before emitting
     // any signals. This must only be called from member functions
@@ -348,13 +353,13 @@ class Track : public QObject {
     ExportMetadataResult exportMetadata(
             mixxx::MetadataSourcePointer pMetadataSource);
 
-    // The file
-    const QFileInfo m_fileInfo;
-
-    const SecurityTokenPointer m_pSecurityToken;
-
     // Mutex protecting access to object
     mutable QMutex m_qMutex;
+
+    // The file
+    QFileInfo m_fileInfo;
+
+    SecurityTokenPointer m_pSecurityToken;
 
     mixxx::TrackRecord m_record;
 
@@ -380,27 +385,4 @@ class Track : public QObject {
     friend class GlobalTrackCache;
     friend class GlobalTrackCacheResolver;
     friend class SoundSourceProxy;
-};
-
-typedef std::weak_ptr<Track> TrackWeakPointer;
-
-class TrackPointer: public std::shared_ptr<Track> {
-  public:
-    TrackPointer() = default;
-    explicit TrackPointer(TrackWeakPointer pTrack)
-        : std::shared_ptr<Track>(pTrack.lock()) {
-    }
-    explicit TrackPointer(Track* pTrack)
-        : std::shared_ptr<Track>(pTrack, deleteLater) {
-    }
-    TrackPointer(Track* pTrack, void (*deleter)(Track*))
-        : std::shared_ptr<Track>(pTrack, deleter) {
-    }
-
-  private:
-    static void deleteLater(Track* pTrack) {
-        if (pTrack) {
-            pTrack->deleteLater();
-        }
-    }
 };

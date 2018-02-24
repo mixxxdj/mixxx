@@ -27,18 +27,19 @@ QString CoverArtUtils::supportedCoverArtExtensionsRegex() {
 
 //static
 QImage CoverArtUtils::extractEmbeddedCover(
-        const QFileInfo& fileInfo) {
-    SecurityTokenPointer pToken(Sandbox::openSecurityToken(
-        QFileInfo(fileInfo), true));
-    return extractEmbeddedCover(fileInfo, pToken);
+        QFileInfo fileInfo) {
+    SecurityTokenPointer pToken = Sandbox::openSecurityToken(
+            QFileInfo(fileInfo), true);
+    return extractEmbeddedCover(
+            std::move(fileInfo), std::move(pToken));
 }
 
 //static
 QImage CoverArtUtils::extractEmbeddedCover(
-        const QFileInfo& fileInfo,
+        QFileInfo fileInfo,
         SecurityTokenPointer pToken) {
-    auto pTrack = Track::newTemporary(fileInfo, pToken);
-    return SoundSourceProxy(pTrack).importCoverImage();
+    return SoundSourceProxy::importTemporaryCoverImage(
+            std::move(fileInfo), std::move(pToken));
 }
 
 //static

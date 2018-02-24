@@ -11,11 +11,12 @@
 
 
 class LibraryTest : public MixxxTest,
-    public virtual /*implements*/ GlobalTrackCacheEvictor {
+    public virtual /*implements*/ GlobalTrackCacheSaver {
 
   public:
-    void onEvictingTrackFromCache(GlobalTrackCacheLocker* pCacheLocker, Track* pTrack) override {
-        m_trackCollection.saveTrack(pCacheLocker, pTrack);
+    void saveCachedTrack(TrackPointer pTrack) noexcept override {
+        m_trackCollection.exportTrackMetadata(pTrack.get());
+        m_trackCollection.saveTrack(pTrack.get());
     }
 
   protected:
@@ -29,7 +30,6 @@ class LibraryTest : public MixxxTest,
         GlobalTrackCache::createInstance(this);
     }
     ~LibraryTest() override {
-        GlobalTrackCache::instance().evictAll();
         GlobalTrackCache::destroyInstance();
         m_trackCollection.disconnectDatabase();
     }

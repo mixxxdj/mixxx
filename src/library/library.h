@@ -37,7 +37,7 @@ class KeyboardEventFilter;
 class PlayerManager;
 
 class Library: public QObject,
-    public virtual /*implements*/ GlobalTrackCacheEvictor {
+    public virtual /*implements*/ GlobalTrackCacheSaver {
     Q_OBJECT
 
   public:
@@ -86,8 +86,6 @@ class Library: public QObject,
 
     static const int kDefaultRowHeightPx;
 
-    void onEvictingTrackFromCache(GlobalTrackCacheLocker* pCacheLocker, Track* pTrack) override;
-
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
@@ -130,6 +128,11 @@ class Library: public QObject,
     void scanFinished();
 
   private:
+    Q_INVOKABLE void saveTrack(TrackPointer pTrack);
+
+    // Callback for GlobalTrackCache
+    void saveCachedTrack(TrackPointer pTrack) noexcept override;
+
     const UserSettingsPointer m_pConfig;
 
     // The Mixxx database connection pool
