@@ -2533,6 +2533,73 @@ QPushButton {
     background-color: #666;
   }
 
+/* SpinBox, currently only used for transition time in Auto DJ tab */
+WLibrary QSpinBox {
+  min-height: 20px;
+  max-height: 20px;
+  min-width: 40px;
+  max-width: 40px;
+  }
+  WLibrary QSpinBox:editable {
+    background: transparent;
+    color: #ffa600;
+    selection-background-color: #d2d2d2;
+    selection-color: #0f0f0f;
+  }
+  WLibrary QSpinBox:editable:focus {
+    border: 1px solid #ff6600;
+  }
+
+/* library search text box */
+WSearchLineEdit {
+  padding: 2px;
+  border: 1px solid #656565;
+  border-left: 0px;
+  font-family: Ubuntu;
+  font-weight: normal;
+  font-size: 14px/14px;
+  background: #0f0f0f;
+  color: #cfcfcf;
+  selection-background-color: #d2d2d2;
+  selection-color: #0f0f0f;
+  margin-bottom: 5px;
+  }
+  WSearchLineEdit:focus {
+    border: 2px solid #ff6600;
+    color: #eeeeee;
+    padding: 2px;
+  }
+  /* Clear button next to text field */
+  WSearchLineEdit QToolButton {
+    margin-bottom: 4px;
+  }
+
+QLabel,
+QRadioButton {	/*
+  background: transparent;
+  Extra declaration for QRadioButton otherwise it shows up with
+  wrong colors in Linux with Gnome 	*/
+  color: #cfcfcf;
+}
+
+WLibrary QRadioButton#radioButtonRecentlyAdded,
+WLibrary QRadioButton#radioButtonAllSongs {
+  padding: 1px 3px 3px 1px;
+  color: #cfcfcf;
+}
+
+WLibrary QRadioButton#radioButtonRecentlyAdded {
+  margin: 0px 3px 0px 5px;
+}
+
+WLibrary QRadioButton::indicator:checked {
+  background: url(skin:/buttons/btn_lib_radio_button_on.svg);
+}
+
+WLibrary QRadioButton::indicator:unchecked {
+  background: url(skin:/buttons/btn_lib_radio_button_off.svg);
+}
+
 /* Test :: increase font size of WOverview "Ready to play, analyzing..." etc.
 WOverview {
   font-size: 16px/16px;
