@@ -76,8 +76,8 @@ void GlobalTrackCacheLocker::unlockCache() {
                     << m_pInstance->m_tracksById.size()
                     << "/ #tracksByCanonicalLocation ="
                     << m_pInstance->m_tracksByCanonicalLocation.size()
-                    << "/ #indexedTracks ="
-                    << m_pInstance->m_indexedTracks.size();
+                    << "/ #allocatedTracks ="
+                    << m_pInstance->m_allocatedTracks.size();
         }
         m_pInstance->m_mutex.unlock();
         if (traceLogEnabled()) {
@@ -206,7 +206,7 @@ void GlobalTrackCache::deleter(Track* plainPtr) {
 GlobalTrackCache::GlobalTrackCache(GlobalTrackCacheSaver* pSaver)
     : m_mutex(QMutex::Recursive),
       m_pSaver(pSaver),
-      m_indexedTracks(kUnorderedCollectionMinCapacity),
+      m_allocatedTracks(kUnorderedCollectionMinCapacity),
       m_tracksById(kUnorderedCollectionMinCapacity, DbId::hash_fun) {
     DEBUG_ASSERT(m_pSaver);
     DEBUG_ASSERT(verifyConsistency());
@@ -217,7 +217,7 @@ GlobalTrackCache::~GlobalTrackCache() {
 }
 
 bool GlobalTrackCache::verifyConsistency() const {
-    // All cached tracks by ID need to be also listed in m_indexedTracks
+    // All cached tracks by ID need to be also listed in m_allocatedTracks
     for (TracksById::const_iterator i = m_tracksById.begin(); i != m_tracksById.end(); ++i) {
         Track* plainPtr = (*i).second;
         VERIFY_OR_DEBUG_ASSERT(plainPtr) {
@@ -231,8 +231,8 @@ bool GlobalTrackCache::verifyConsistency() const {
             return false;
         }
 
-        const auto j = m_indexedTracks.find(plainPtr);
-        VERIFY_OR_DEBUG_ASSERT(j != m_indexedTracks.end()) {
+        const auto j = m_allocatedTracks.find(plainPtr);
+        VERIFY_OR_DEBUG_ASSERT(j != m_allocatedTracks.end()) {
             return false;
         }
     }
@@ -257,8 +257,8 @@ bool GlobalTrackCache::verifyConsistency() const {
                 (m_tracksById.end() == j) || ((*j).second == plainPtr)) {
             return false;
         }
-        const auto k = m_indexedTracks.find(plainPtr);
-        VERIFY_OR_DEBUG_ASSERT(k != m_indexedTracks.end()) {
+        const auto k = m_allocatedTracks.find(plainPtr);
+        VERIFY_OR_DEBUG_ASSERT(k != m_allocatedTracks.end()) {
             return false;
         }
     }
@@ -330,13 +330,13 @@ void GlobalTrackCache::deactivate() {
     // referenced or not. This ensures that the eviction
     // callback is triggered for all modified tracks before
     // exiting the application.
-    for (const auto& i: m_indexedTracks) {
+    for (const auto& i: m_allocatedTracks) {
         auto strongPtr = i.second.lock();
         if (strongPtr) {
             evictAndSave(strongPtr);
         }
     }
-    // Verify that all indexed tracks have been evicted
+    // Verify that all allocated tracks have been evicted
     DEBUG_ASSERT(m_tracksById.empty());
     DEBUG_ASSERT(m_tracksByCanonicalLocation.empty());
     // The singular cache instance is already unavailable and
@@ -347,9 +347,9 @@ void GlobalTrackCache::deactivate() {
 }
 
 bool GlobalTrackCache::isEmpty() const {
-    DEBUG_ASSERT(m_tracksById.size() <= m_indexedTracks.size());
-    DEBUG_ASSERT(m_tracksByCanonicalLocation.size() <= m_indexedTracks.size());
-    return m_indexedTracks.empty();
+    DEBUG_ASSERT(m_tracksById.size() <= m_allocatedTracks.size());
+    DEBUG_ASSERT(m_tracksByCanonicalLocation.size() <= m_allocatedTracks.size());
+    return m_allocatedTracks.empty();
 }
 
 TrackPointer GlobalTrackCache::lookupById(
@@ -409,8 +409,8 @@ TrackPointer GlobalTrackCache::lookupByRef(
 TrackPointer GlobalTrackCache::revive(
         Track* plainPtr) {
     DEBUG_ASSERT(plainPtr);
-    const auto i = m_indexedTracks.find(plainPtr);
-    DEBUG_ASSERT(i != m_indexedTracks.end());
+    const auto i = m_allocatedTracks.find(plainPtr);
+    DEBUG_ASSERT(i != m_allocatedTracks.end());
     TrackWeakPointer weakPtr = (*i).second;
     TrackPointer strongPtr = weakPtr.lock();
     if (strongPtr) {
@@ -526,9 +526,9 @@ void GlobalTrackCache::resolve(
                 << trackRef
                 << plainPtr;
     }
-    DEBUG_ASSERT(m_indexedTracks.find(plainPtr) == m_indexedTracks.end());
+    DEBUG_ASSERT(m_allocatedTracks.find(plainPtr) == m_allocatedTracks.end());
     TrackWeakPointer weakPtr(strongPtr);
-    m_indexedTracks.insert(std::make_pair(
+    m_allocatedTracks.insert(std::make_pair(
             plainPtr,
             weakPtr));
     if (trackRef.hasId()) {
@@ -581,9 +581,9 @@ void GlobalTrackCache::evictOrDelete(
     DEBUG_ASSERT(plainPtr);
     GlobalTrackCacheLocker cacheLocker;
 
-    const IndexedTracks::iterator indexedTrack =
-            m_indexedTracks.find(plainPtr);
-    if (indexedTrack == m_indexedTracks.end()) {
+    const AllocatedTracks::iterator allocatedTrack =
+            m_allocatedTracks.find(plainPtr);
+    if (allocatedTrack == m_allocatedTracks.end()) {
         // We have handed out and already delete this track while waiting at
         // the lock at the beginning of this function.
         if (debugLogEnabled()) {
@@ -594,7 +594,7 @@ void GlobalTrackCache::evictOrDelete(
         return;
     }
 
-    if (!indexedTrack->second.expired()) {
+    if (!allocatedTrack->second.expired()) {
         // We have handed out this track again while waiting at
         // the lock at the beginning of this function.
         if (debugLogEnabled()) {
@@ -616,8 +616,8 @@ void GlobalTrackCache::evictOrDelete(
     if (strongPtr) {
         evictAndSave(strongPtr);
     } else {
-        // Track has already been evicted and can be dropped.
-        m_indexedTracks.erase(indexedTrack);
+        // Track has already been evicted and can be deallocated now.
+        m_allocatedTracks.erase(allocatedTrack);
         // We safely delete the object via the Qt event queue instead
         // of using operator delete! Otherwise the deleted track object
         // might be accessed when processing cross-thread signals that
@@ -649,7 +649,7 @@ void GlobalTrackCache::evict(TrackPointer strongPtr) {
     const auto trackRef = createTrackRef(*strongPtr);
     if (debugLogEnabled()) {
         kLogger.debug()
-                << "Evicting indexed track"
+                << "Evicting track"
                 << trackRef
                 << strongPtr.get();
     }

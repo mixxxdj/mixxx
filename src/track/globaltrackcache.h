@@ -185,7 +185,7 @@ private:
 
     void evictOrDelete(Track* plainPtr);
 
-    typedef std::unordered_map<Track*, TrackWeakPointer> IndexedTracks;
+    typedef std::unordered_map<Track*, TrackWeakPointer> AllocatedTracks;
 
     bool evictAndSave(TrackPointer strongPtr);
 
@@ -206,7 +206,7 @@ private:
     // Than the track is copied into a second shared_ptr used while saving the
     // track. If this also expires, the track is finally deleted and removed
     // from the index.
-    IndexedTracks m_indexedTracks;
+    AllocatedTracks m_allocatedTracks;
 
     // This caches the unsaved Tracks by ID
     typedef std::unordered_map<TrackId, Track*, TrackId::hash_fun_t> TracksById;
