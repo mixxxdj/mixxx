@@ -47,7 +47,13 @@ class Files
 {
 public:
     static std::vector<std::string> listLibraryFiles();
-    static std::vector<std::string> listLibraryFilesMatching(std::string libname);
+
+    struct Filter {
+        enum { All, Matching, NotMatching } type;
+        std::vector<std::string> libraryNames;
+        Filter() : type(All) { }
+    };
+    static std::vector<std::string> listLibraryFilesMatching(Filter);
 
     static void *loadLibrary(std::string filename);
     static void unloadLibrary(void *);

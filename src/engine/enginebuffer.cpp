@@ -566,6 +566,10 @@ void EngineBuffer::ejectTrack() {
     m_playButton->set(0.0);
     m_visualBpm->set(0.0);
     m_visualKey->set(0.0);
+    m_timeElapsed->set(0);
+    m_timeRemaining->set(0);
+    m_playposSlider->set(0);
+    m_pCueControl->updateIndicators();
     doSeekFractional(0.0, SEEK_EXACT);
     m_pause.unlock();
 
