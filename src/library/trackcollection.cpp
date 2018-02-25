@@ -1,4 +1,5 @@
 #include <QStringBuilder>
+#include <QThread>
 
 #include "library/trackcollection.h"
 
@@ -29,10 +30,14 @@ TrackCollection::~TrackCollection() {
 }
 
 void TrackCollection::repairDatabase(QSqlDatabase database) {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+
     m_crates.repairDatabase(database);
 }
 
 void TrackCollection::connectDatabase(QSqlDatabase database) {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+
     m_database = database;
     m_trackDao.initialize(database);
     m_playlistDao.initialize(database);
@@ -44,12 +49,16 @@ void TrackCollection::connectDatabase(QSqlDatabase database) {
 }
 
 void TrackCollection::disconnectDatabase() {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+
     m_database = QSqlDatabase();
     m_trackDao.finish();
     m_crates.disconnectDatabase();
 }
 
 void TrackCollection::setTrackSource(QSharedPointer<BaseTrackCache> pTrackSource) {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+
     VERIFY_OR_DEBUG_ASSERT(m_pTrackSource.isNull()) {
         return;
     }
@@ -57,6 +66,8 @@ void TrackCollection::setTrackSource(QSharedPointer<BaseTrackCache> pTrackSource
 }
 
 void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+
     // We only call this method if the user has picked a relocated directory via
     // a file dialog. This means the system sandboxer (if we are sandboxed) has
     // granted us permission to this folder. Create a security bookmark while we
@@ -75,6 +86,8 @@ void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
 }
 
 bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+
     // Warn if tracks have a playlist membership
     QSet<int> allPlaylistIds;
     for (const auto& trackId: trackIds) {
@@ -139,6 +152,8 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
 }
 
 bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+
     // Transactional
     SqlTransaction transaction(m_database);
     VERIFY_OR_DEBUG_ASSERT(transaction) {
@@ -167,6 +182,8 @@ bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
 
 bool TrackCollection::purgeTracks(
         const QList<TrackId>& trackIds) {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+
     // Transactional
     SqlTransaction transaction(m_database);
     VERIFY_OR_DEBUG_ASSERT(transaction) {
@@ -211,6 +228,8 @@ bool TrackCollection::purgeTracks(
 bool TrackCollection::insertCrate(
         const Crate& crate,
         CrateId* pCrateId) {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+
     // Transactional
     SqlTransaction transaction(m_database);
     VERIFY_OR_DEBUG_ASSERT(transaction) {
@@ -236,6 +255,8 @@ bool TrackCollection::insertCrate(
 
 bool TrackCollection::updateCrate(
         const Crate& crate) {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+
     // Transactional
     SqlTransaction transaction(m_database);
     VERIFY_OR_DEBUG_ASSERT(transaction) {
@@ -256,6 +277,8 @@ bool TrackCollection::updateCrate(
 
 bool TrackCollection::deleteCrate(
         CrateId crateId) {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+
     // Transactional
     SqlTransaction transaction(m_database);
     VERIFY_OR_DEBUG_ASSERT(transaction) {
@@ -277,6 +300,8 @@ bool TrackCollection::deleteCrate(
 bool TrackCollection::addCrateTracks(
         CrateId crateId,
         const QList<TrackId>& trackIds) {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+
     // Transactional
     SqlTransaction transaction(m_database);
     VERIFY_OR_DEBUG_ASSERT(transaction) {
@@ -298,6 +323,8 @@ bool TrackCollection::addCrateTracks(
 bool TrackCollection::removeCrateTracks(
         CrateId crateId,
         const QList<TrackId>& trackIds) {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+
     // Transactional
     SqlTransaction transaction(m_database);
     VERIFY_OR_DEBUG_ASSERT(transaction) {
@@ -319,6 +346,8 @@ bool TrackCollection::removeCrateTracks(
 bool TrackCollection::updateAutoDjCrate(
         CrateId crateId,
         bool isAutoDjSource) {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+
     Crate crate;
     VERIFY_OR_DEBUG_ASSERT(crates().readCrateById(crateId, &crate)) {
         return false; // inexistent or failure
@@ -348,5 +377,7 @@ void TrackCollection::exportTrackMetadata(Track* pTrack) const {
 }
 
 void TrackCollection::saveTrack(Track* pTrack) {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+
     m_trackDao.saveTrack(pTrack);
 }
