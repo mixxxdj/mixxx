@@ -7,7 +7,6 @@
 #include <QtSql>
 #include <QImage>
 #include <QRegExp>
-#include <QCoreApplication>
 #include <QChar>
 
 #include "sources/soundsourceproxy.h"
@@ -284,9 +283,6 @@ void TrackDAO::slotTrackChanged(Track* pTrack) {
 }
 
 void TrackDAO::addTracksPrepare() {
-    // Violated by the library scanner
-    //DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
-
     if (m_pQueryLibraryInsert || m_pQueryTrackLocationInsert ||
             m_pQueryLibrarySelect || m_pQueryTrackLocationSelect ||
             m_pTransaction) {
@@ -342,9 +338,6 @@ void TrackDAO::addTracksPrepare() {
 }
 
 void TrackDAO::addTracksFinish(bool rollback) {
-    // Violated by the library scanner
-    //DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
-
     if (m_pTransaction) {
         if (rollback) {
             m_pTransaction->rollback();
@@ -486,9 +479,6 @@ namespace {
 } // anonymous namespace
 
 TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
-    // Violated by the library scanner
-    //DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
-
     DEBUG_ASSERT(pTrack);
     VERIFY_OR_DEBUG_ASSERT(m_pQueryLibraryInsert || m_pQueryTrackLocationInsert ||
         m_pQueryLibrarySelect || m_pQueryTrackLocationSelect) {
@@ -1152,7 +1142,6 @@ struct ColumnPopulator {
 #define ARRAYLENGTH(x) (sizeof(x) / sizeof(*x))
 
 TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
-    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
     if (!trackId.isValid()) {
         return TrackPointer();
     }
@@ -1368,7 +1357,6 @@ TrackPointer TrackDAO::getTrack(TrackId trackId) const {
 
 // Saves a track's info back to the database
 bool TrackDAO::updateTrack(Track* pTrack) {
-    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
     const TrackId trackId = pTrack->getId();
     DEBUG_ASSERT(trackId.isValid());
 
