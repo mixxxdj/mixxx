@@ -123,6 +123,8 @@ class Library: public QObject,
     void scanFinished();
 
   private:
+    Q_INVOKABLE void saveTrack(TrackPointer pTrack);
+
     // Callback for GlobalTrackCache
     void saveCachedTrack(TrackPointer pTrack) noexcept override;
 

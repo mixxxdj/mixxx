@@ -455,15 +455,20 @@ void Library::saveCachedTrack(TrackPointer pTrack) noexcept {
     // This method might be invoked from a different thread than
     // the main thread. But database updates are currently only
     // allowed from the main thread!
-    // Pass the track object via a plain pointer to prevent the
-    // creation of any new references from the shared pointer
-    // that will be deleted soon!
     QMetaObject::invokeMethod(
-            m_pTrackCollection,
+            this,
             "saveTrack",
             // Qt will choose either a direct or a queued connection
             // depending on the thread from which this method has
             // been invoked!
             Qt::AutoConnection,
             Q_ARG(TrackPointer, pTrack));
+}
+
+void Library::saveTrack(TrackPointer pTrack) {
+    // Update the database
+    // Pass the track object via a plain pointer to prevent the
+    // creation of any new references from the shared pointer
+    // that will be deleted soon!
+    m_pTrackCollection->saveTrack(pTrack.get());
 }

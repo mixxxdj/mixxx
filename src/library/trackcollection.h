@@ -84,7 +84,7 @@ class TrackCollection : public QObject,
     void exportTrackMetadata(Track* pTrack) const;
 
     // Must be called from the main thread
-    Q_INVOKABLE void saveTrack(Track* pTrack);
+    void saveTrack(Track* pTrack);
 
   signals:
     void crateInserted(CrateId id);
