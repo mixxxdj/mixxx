@@ -170,7 +170,9 @@ void DlgPrefBroadcast::slotApply() {
 
             if (!profileWithSameMountpoint.isNull()
                 && profileWithSameMountpoint->getHost().toLower()
-                    == profile->getHost().toLower()) {
+                    == profile->getHost().toLower()
+                && profileWithSameMountpoint->getPort()
+                    == profile->getPort() ) {
                 QMessageBox::warning(
                     this, tr("Action failed"),
                     tr("'%1' has the same Icecast mountpoint as '%2'.\n"

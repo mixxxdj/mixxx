@@ -1275,18 +1275,28 @@ void importTrackMetadataFromAPETag(TrackMetadata* pTrackMetadata, const TagLib::
 
     importTrackMetadataFromTag(pTrackMetadata, tag);
 
+    // NOTE(uklotzde, 2018-01-28, https://bugs.launchpad.net/mixxx/+bug/1745847)
+    // It turns out that the keys for APEv2 tags are case-sensitive and
+    // some tag editors seem to write UPPERCASE Vorbis keys instead of
+    // the CamelCase APEv2 keys suggested by the Picard Mapping table:
+    // https://picard.musicbrainz.org/docs/mappings/
+
     QString albumArtist;
-    if (readAPEItem(tag, "Album Artist", &albumArtist)) {
+    if (readAPEItem(tag, "Album Artist", &albumArtist) ||
+            readAPEItem(tag, "ALBUM ARTIST", &albumArtist) ||
+            readAPEItem(tag, "ALBUMARTIST", &albumArtist)) {
         pTrackMetadata->refAlbumInfo().setArtist(albumArtist);
     }
 
     QString composer;
-    if (readAPEItem(tag, "Composer", &composer)) {
+    if (readAPEItem(tag, "Composer", &composer) ||
+            readAPEItem(tag, "COMPOSER", &composer)) {
         pTrackMetadata->refTrackInfo().setComposer(composer);
     }
 
     QString grouping;
-    if (readAPEItem(tag, "Grouping", &grouping)) {
+    if (readAPEItem(tag, "Grouping", &grouping) ||
+            readAPEItem(tag, "GROUPING", &grouping)) {
         pTrackMetadata->refTrackInfo().setGrouping(grouping);
     }
 
@@ -1295,12 +1305,14 @@ void importTrackMetadataFromAPETag(TrackMetadata* pTrackMetadata, const TagLib::
     // http://wiki.hydrogenaud.io/index.php?title=APE_date
     // https://picard.musicbrainz.org/docs/mappings
     QString year;
-    if (readAPEItem(tag, "Year", &year)) {
+    if (readAPEItem(tag, "Year", &year) ||
+            readAPEItem(tag, "YEAR", &year)) {
         pTrackMetadata->refTrackInfo().setYear(year);
     }
 
     QString trackNumber;
-    if (readAPEItem(tag, "Track", &trackNumber)) {
+    if (readAPEItem(tag, "Track", &trackNumber) ||
+            readAPEItem(tag, "TRACK", &trackNumber)) {
         QString trackTotal;
         TrackNumbers::splitString(
                 trackNumber,
@@ -1355,7 +1367,8 @@ void importTrackMetadataFromAPETag(TrackMetadata* pTrackMetadata, const TagLib::
     }
 
     QString conductor;
-    if (readAPEItem(tag, "Conductor", &conductor)) {
+    if (readAPEItem(tag, "Conductor", &conductor) ||
+            readAPEItem(tag, "CONDUCTOR", &conductor)) {
         pTrackMetadata->refTrackInfo().setConductor(conductor);
     }
     QString isrc;
@@ -1363,27 +1376,34 @@ void importTrackMetadataFromAPETag(TrackMetadata* pTrackMetadata, const TagLib::
         pTrackMetadata->refTrackInfo().setISRC(isrc);
     }
     QString language;
-    if (readAPEItem(tag, "Language", &language)) {
+    if (readAPEItem(tag, "Language", &language) ||
+            readAPEItem(tag, "LANGUAGE", &language)) {
         pTrackMetadata->refTrackInfo().setLanguage(language);
     }
     QString lyricist;
-    if (readAPEItem(tag, "Lyricist", &lyricist)) {
+    if (readAPEItem(tag, "Lyricist", &lyricist) ||
+            readAPEItem(tag, "LYRICIST", &lyricist)) {
         pTrackMetadata->refTrackInfo().setLyricist(lyricist);
     }
     QString mood;
-    if (readAPEItem(tag, "Mood", &mood)) {
+    if (readAPEItem(tag, "Mood", &mood) ||
+            readAPEItem(tag, "MOOD", &mood)) {
         pTrackMetadata->refTrackInfo().setMood(mood);
     }
     QString remixer;
-    if (readAPEItem(tag, "MixArtist", &remixer)) {
+    if (readAPEItem(tag, "MixArtist", &remixer) ||
+            readAPEItem(tag, "MIXARTIST", &remixer) ||
+            readAPEItem(tag, "REMIXER", &remixer)) {
         pTrackMetadata->refTrackInfo().setRemixer(remixer);
     }
     QString recordLabel;
-    if (readAPEItem(tag, "Label", &recordLabel)) {
+    if (readAPEItem(tag, "Label", &recordLabel) ||
+            readAPEItem(tag, "LABEL", &recordLabel)) {
         pTrackMetadata->refTrackInfo().setRecordLabel(recordLabel);
     }
     QString subtitle;
-    if (readAPEItem(tag, "Subtitle", &subtitle)) {
+    if (readAPEItem(tag, "Subtitle", &subtitle) ||
+            readAPEItem(tag, "SUBTITLE", &subtitle)) {
         pTrackMetadata->refTrackInfo().setSubtitle(subtitle);
     }
 }
