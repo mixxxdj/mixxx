@@ -24,6 +24,7 @@ class WaveformWidgetRenderer {
     static const int s_waveformMinZoom;
     static const int s_waveformMaxZoom;
     static const int s_waveformDefaultZoom;
+    static const double s_DefaultPlayMarkerPosition;
 
   public:
     explicit WaveformWidgetRenderer(const char* group);
@@ -92,6 +93,20 @@ class WaveformWidgetRenderer {
 
     void setTrack(TrackPointer track);
 
+    double getPlayMarkerPosition() {
+        return m_playMarkerPosition;
+    }
+
+    void setPlayMarkerPosition(double newPos) {
+        if(newPos >= 0.1 && newPos <= 0.9) {
+            m_playMarkerPosition = newPos;
+        } 
+        /* else {
+            qDebug() << "Invalid playMarkerPosition. Value must be between 0.1 and 0.9";
+        }
+        */
+    }
+
   protected:
     const char* m_group;
     TrackPointer m_pTrack;
@@ -128,6 +143,9 @@ class WaveformWidgetRenderer {
     ControlProxy* m_pTrackSamplesControlObject;
     int m_trackSamples;
     double m_scaleFactor;
+    ControlProxy* m_pPlayMarkerPositionControlObject;
+    double m_playMarkerPosition;   // 0.0 - left, 0.5 - center, 1.0 - right
+    
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
     PerformanceTimer* m_timer;

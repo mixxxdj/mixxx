@@ -39,6 +39,12 @@
 
       <attribute persist="true" config_key="[EffectRack1],show">1</attribute>
       <attribute persist="true" config_key="[Master],show_superknobs">0</attribute>
+
+      <attribute persist="false" config_key="[Channel1],play_marker_position">0.50</attribute>
+      <attribute persist="false" config_key="[Channel2],play_marker_position">0.50</attribute>
+      <attribute persist="false" config_key="[Channel3],play_marker_position">0.50</attribute>
+      <attribute persist="false" config_key="[Channel4],play_marker_position">0.50</attribute>
+
     </attributes>
   </manifest>
 
@@ -186,7 +192,6 @@
             <WidgetGroup><!-- Parallel Waveforms -->
               <ObjectName>Waveforms</ObjectName>
               <Layout>vertical</Layout>
-              <Size>-1me,4min</Size>
               <Connection>
                 <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
                 <BindProperty>visible</BindProperty>
