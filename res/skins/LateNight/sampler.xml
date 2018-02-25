@@ -15,15 +15,16 @@
           <WidgetGroup>
             <ObjectName>SamplerText</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>me,min</SizePolicy>
+            <SizePolicy>i,min</SizePolicy>
             <Children>
-              <Text>
-                <TooltipId>text</TooltipId>
-                <Style>QLabel { font: bold 16px/19px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-                background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
-                </Style>
+              <TrackProperty>
+                <TooltipId>track_title</TooltipId>
+                <ObjectName>SamplerTitle</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+                <Property>title</Property>
                 <Group><Variable name="group"/></Group>
-              </Text>
+                <Elide>right</Elide>
+              </TrackProperty>
             </Children>
           </WidgetGroup>
 
@@ -57,7 +58,7 @@
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                     <Connection>
-                      <ConfigKey><Variable name="group"/>,start_stop</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
                       <ButtonState>RightButton</ButtonState>
                     </Connection>
                     <Connection>
@@ -104,13 +105,13 @@
                         <NumberStates>2</NumberStates>
                         <State>
                           <Number>0</Number>
-                          <Pressed>buttons/btn_repeat_sampler.png</Pressed>
-                          <Unpressed>buttons/btn_repeat_sampler.png</Unpressed>
+                          <Pressed>buttons/btn_repeat.svg</Pressed>
+                          <Unpressed>buttons/btn_repeat.svg</Unpressed>
                         </State>
                         <State>
                           <Number>1</Number>
-                          <Pressed>buttons/btn_repeat_sampler_over.png</Pressed>
-                          <Unpressed>buttons/btn_repeat_sampler_over.png</Unpressed>
+                          <Pressed>buttons/btn_repeat_over.svg</Pressed>
+                          <Unpressed>buttons/btn_repeat_over.svg</Unpressed>
                         </State>
                         <Connection>
                           <ConfigKey><Variable name="group"/>,repeat</ConfigKey>
@@ -121,8 +122,8 @@
                         <NumberStates>1</NumberStates>
                         <State>
                           <Number>0</Number>
-                          <Pressed>buttons/btn_eject_sampler_over.png</Pressed>
-                          <Unpressed>buttons/btn_eject_sampler.png</Unpressed>
+                          <Pressed>buttons/btn_eject_over.svg</Pressed>
+                          <Unpressed>buttons/btn_eject.svg</Unpressed>
                         </State>
                         <Connection>
                           <ConfigKey><Variable name="group"/>,eject</ConfigKey>
@@ -141,18 +142,18 @@
                         <NumberStates>3</NumberStates>
                         <State>
                           <Number>0</Number>
-                          <Pressed>buttons/btn_orientation_sampler_left_over.png</Pressed>
-                          <Unpressed>buttons/btn_orientation_sampler_left_over.png</Unpressed>
+                          <Pressed>buttons/btn_orientation_sampler_left.svg</Pressed>
+                          <Unpressed>buttons/btn_orientation_sampler_left.svg</Unpressed>
                         </State>
                         <State>
                           <Number>1</Number>
-                          <Pressed>buttons/btn_orientation_sampler_master.png</Pressed>
-                          <Unpressed>buttons/btn_orientation_sampler_master.png</Unpressed>
+                          <Pressed>buttons/btn_orientation_sampler_master.svg</Pressed>
+                          <Unpressed>buttons/btn_orientation_sampler_master.svg</Unpressed>
                         </State>
                         <State>
                           <Number>2</Number>
-                          <Pressed>buttons/btn_orientation_sampler_right_over.png</Pressed>
-                          <Unpressed>buttons/btn_orientation_sampler_right_over.png</Unpressed>
+                          <Pressed>buttons/btn_orientation_sampler_right.svg</Pressed>
+                          <Unpressed>buttons/btn_orientation_sampler_right.svg</Unpressed>
                         </State>
                         <Connection>
                           <ConfigKey><Variable name="group"/>,orientation</ConfigKey>
@@ -164,13 +165,13 @@
                         <NumberStates>2</NumberStates>
                         <State>
                           <Number>0</Number>
-                          <Pressed>buttons/btn_keylock_sampler.png</Pressed>
-                          <Unpressed>buttons/btn_keylock_sampler.png</Unpressed>
+                          <Pressed>buttons/btn_keylock.svg</Pressed>
+                          <Unpressed>buttons/btn_keylock.svg</Unpressed>
                         </State>
                         <State>
                           <Number>1</Number>
-                          <Pressed>buttons/btn_keylock_sampler_over.png</Pressed>
-                          <Unpressed>buttons/btn_keylock_sampler_over.png</Unpressed>
+                          <Pressed>buttons/btn_keylock_over.svg</Pressed>
+                          <Unpressed>buttons/btn_keylock_over.svg</Unpressed>
                         </State>
                         <Connection>
                           <ConfigKey><Variable name="group"/>,keylock</ConfigKey>
@@ -201,35 +202,10 @@
           <!-- Third Row: SamplerButtons -->
           <WidgetGroup>
             <ObjectName>SamplerButtons</ObjectName>
-            <BackPath>background_tile.png</BackPath>
+            <BackPath>style/background_tile.png</BackPath>
             <Layout>horizontal</Layout>
             <SizePolicy>me,min</SizePolicy>
             <Children>
-
-              <WidgetGroup>
-                <ObjectName>SamplerSyncButton</ObjectName>
-                <Layout>horizontal</Layout>
-                <SizePolicy>me,min</SizePolicy>
-                <Children>
-                  <PushButton>
-                    <TooltipId>beatsync_beatsync_tempo</TooltipId>
-                    <NumberStates>1</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Pressed>buttons/btn_sync_overdown.svg</Pressed>
-                      <Unpressed>buttons/btn_sync.svg</Unpressed>
-                    </State>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,beatsync</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,beatsync_tempo</ConfigKey>
-                      <ButtonState>RightButton</ButtonState>
-                    </Connection>
-                  </PushButton>
-                </Children>
-              </WidgetGroup>
 
               <WidgetGroup>
                 <ObjectName>SamplerHotcues</ObjectName>
@@ -479,6 +455,10 @@
               </WidgetGroup>
 
               <WidgetGroup>
+                <SizePolicy>me,min</SizePolicy>
+              </WidgetGroup>
+
+              <WidgetGroup>
                 <ObjectName>SamplerPfl</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
@@ -523,16 +503,16 @@
         <Children>
           <StatusLight>
             <TooltipId>sampler_PeakIndicator</TooltipId>
-            <PathStatusLight>buttons/btn_clipping1_over.png</PathStatusLight>
-            <PathBack>buttons/btn_clipping1.png</PathBack>
+            <PathStatusLight>style/clipping1_over.png</PathStatusLight>
+            <PathBack>style/clipping1.png</PathBack>
             <Connection>
               <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
             </Connection>
           </StatusLight>
           <VuMeter>
             <TooltipId>sampler_VuMeter</TooltipId>
-            <PathVu>buttons/btn_volume_display_sampler_over.png</PathVu>
-            <PathBack>buttons/btn_volume_display_sampler.png</PathBack>
+            <PathVu>style/volume_display_sampler_over.png</PathVu>
+            <PathBack>style/volume_display_sampler.png</PathBack>
             <Horizontal>false</Horizontal>
             <PeakHoldSize>5</PeakHoldSize>
             <PeakHoldTime>500</PeakHoldTime>
@@ -547,19 +527,50 @@
 
       <!-- Pitch Control -->
       <WidgetGroup>
-        <ObjectName>SamplerPitch</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <SliderComposed>
-            <TooltipId>rate</TooltipId>
-            <Handle>knob_pitch_sampler.png</Handle>
-            <Slider>slider_pitch_sampler.png</Slider>
-            <Horizontal>false</Horizontal>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,rate</ConfigKey>
-            </Connection>
-          </SliderComposed>
+          <WidgetGroup>
+            <ObjectName>SamplerPitch</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <SliderComposed>
+                <TooltipId>rate</TooltipId>
+                <Handle>knob_pitch_sampler.png</Handle>
+                <Slider>slider_pitch_sampler.png</Slider>
+                <Horizontal>false</Horizontal>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,rate</ConfigKey>
+                </Connection>
+              </SliderComposed>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>SamplerSyncButton</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <PushButton>
+                <TooltipId>beatsync_beatsync_tempo</TooltipId>
+                <NumberStates>1</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Pressed>buttons/btn_sync_sampler_overdown.svg</Pressed>
+                  <Unpressed>buttons/btn_sync_sampler.svg</Unpressed>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,beatsync</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,beatsync_tempo</ConfigKey>
+                  <ButtonState>RightButton</ButtonState>
+                </Connection>
+              </PushButton>
+            </Children>
+          </WidgetGroup>
         </Children>
       </WidgetGroup>
 
