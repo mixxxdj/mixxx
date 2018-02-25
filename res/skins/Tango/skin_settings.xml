@@ -36,6 +36,7 @@ Description:
               <WidgetGroup><Size>1me,1me</Size></WidgetGroup>
 
               <Template src="skin:button_2state.xml">
+                <SetVariable name="TooltipId">skin_settings</SetVariable>
                 <SetVariable name="ObjectName">SkinSettingsClose</SetVariable>
                 <SetVariable name="Size">20f,24f</SetVariable>
                 <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>
@@ -830,6 +831,7 @@ Description:
                 <Children>
                   <WidgetGroup><Size>14f,13me</Size></WidgetGroup>
                   <Template src="skin:button_1state.xml">
+                    <SetVariable name="TooltipId">LoadSamplerBank</SetVariable>
                     <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
                     <SetVariable name="Size">31f,17f</SetVariable>
                     <SetVariable name="state_0_text"> Load /</SetVariable>
@@ -840,6 +842,7 @@ Description:
                     <Text> / </Text>
                   </Label>
                   <Template src="skin:button_1state.xml">
+                    <SetVariable name="TooltipId">SaveSamplerBank</SetVariable>
                     <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
                     <SetVariable name="Size">110me,17f</SetVariable>
                     <SetVariable name="state_0_text"> Save Sampler Bank</SetVariable>

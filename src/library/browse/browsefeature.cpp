@@ -371,9 +371,7 @@ QString BrowseFeature::getRootViewHtml() const {
 
     QString html;
     html.append(QString("<h2>%1</h2>").arg(browseTitle));
-    html.append("<table border=\"0\" cellpadding=\"5\"><tr><td>");
     html.append(QString("<p>%1</p>").arg(browseSummary));
-    html.append("</td></tr></table>");
     return html;
 }
 
