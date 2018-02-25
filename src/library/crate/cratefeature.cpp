@@ -151,7 +151,7 @@ QString CrateFeature::formatRootViewHtml() const {
     //Colorize links in lighter blue, instead of QT default dark blue.
     //Links are still different from regular text, but readable on dark/light backgrounds.
     //https://bugs.launchpad.net/mixxx/+bug/1744816
-    html.append(QString("<a style=\"color:#0850D0;\" href=\"create\">%1</a>")
+    html.append(QString("<a style=\"color:#0496FF;\" href=\"create\">%1</a>")
                 .arg(createCrateLink));
     return html;
 }
