@@ -243,7 +243,7 @@ QString PlaylistFeature::getRootViewHtml() const {
     html.append(QString("<h2>%1</h2>").arg(playlistsTitle));
     html.append(QString("<p>%1</p>").arg(playlistsSummary));
     html.append(QString("<p>%1</p>").arg(playlistsSummary2));
-    html.append(QString("<p>%1 %2</p>").arg(playlistsSummary3,
+    html.append(QString("<p>%1<br>%2</p>").arg(playlistsSummary3,
                                             playlistsSummary4));
     html.append(QString("<a style=\"color:#0850D0;\" href=\"create\">%1</a>")
                 .arg(createPlaylistLink));
