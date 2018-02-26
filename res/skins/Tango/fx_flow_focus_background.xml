@@ -1,0 +1,18 @@
+<!--
+Description:
+  An expanding filler that appears only if more than XY pixels are available
+Variables:
+  Size  : Size/SizePolicy for the whole container
+  Color : Abbreviated hex color code for the filler, see style.qss
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>FxFlow_focus_background</ObjectName>
+    <Size><Variable name="Size"/></Size>
+    <Connection>
+      <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
+      <Transform><IsEqual><Variable name="FxNum"/></IsEqual></Transform>
+      <BindProperty>highlight</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

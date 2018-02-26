@@ -1304,14 +1304,6 @@ decks, samplers, mic, aux */
   #FxUnitMixerRight {
     padding-bottom: 2px;
   }
-  #FxUnitMixerLeft,
-  #FxUnitMixerLeft_mini {
-    border-left: 1px solid #0f0f0f;
-  }
-  #FxUnitMixerRight,
-  #FxUnitMixerRight_mini {
-    border-right: 1px solid #0f0f0f;
-  }
   #FxUnitMixerLeft_mini {
     padding-left: 2px;
   }
@@ -1319,150 +1311,63 @@ decks, samplers, mic, aux */
     padding-right: 2px;
   }
 
-/* minimal EffectSlots in horizontal layout */
-/* with focus */
-#FxFlowUnderlay_mini_focus1[highlight="0"] {
-  border-image: url(skin:/graphics/fxChainFlow_h_unfocused1.svg) 0px 10px 0px 0px ;
-  border-width: 0px 10px 0px 0px;
-  border-radius: 0px;
-  }
-#FxFlowUnderlay_mini_focus2[highlight="0"] {
-  margin-left: 125px;
-  border-image: url(skin:/graphics/fxChainFlow_h_unfocused2.svg) 0px 10px 0px 10px;
-  border-width: 0px 10px 0px 10px;
-  border-radius: 0px;
-  }
-  #FxFlowUnderlay_mini_focus2[highlight="1"] {
-    margin-left: 125px;
-  border-radius: 0px;
-  }
-#FxFlowUnderlay_mini_focus3[highlight="0"] {
-  margin-left: 259px;
-  border-image: url(skin:/graphics/fxChainFlow_h_unfocused3.svg) 0px 0px 0px 10px;
-  border-width: 0px 0px 0px 10px;
-  border-radius: 0px;
-  }
-  #FxFlowUnderlay_mini_focus3[highlight="1"] {
-    margin-left: 259px;
-  border-radius: 0px;
-  }
-
+/* effect slots backgrounds & separators indicating the effect flow */
 /* no focus */
-#FxFlowUnderlay_mini_noFocus1 {
-  border-image: url(skin:/graphics/fxChainFlow_h_unfocused1.svg) 0px 10px 0px 0px;
-  border-width: 0px 10px 0px 0px;
-  border-radius: 0px;
+#FxFlow_mini_separator {
+  background-color: transparent;
+  image: url(skin:/graphics/fxFlow_mini_noFocus_Fx1-2-3.svg) no-repeat center center;
 }
-#FxFlowUnderlay_mini_noFocus2 {
-  margin-left: 111px;
-  border-image: url(skin:/graphics/fxChainFlow_h_unfocused2.svg) 0px 10px 0px 10px;
-  border-width: 0px 10px 0px 10px;
-  border-radius: 0px;
-}
-#FxFlowUnderlay_mini_noFocus3 {
-  margin-left: 231px;
-  border-image: url(skin:/graphics/fxChainFlow_h_unfocused3.svg) 0px 0px 0px 10px;
-  border-width: 0px 0px 0px 10px;
-  border-radius: 0px;
+#FxFlow_maxi_separator {
+  background-color: transparent;
+  image: url(skin:/graphics/fxFlow_maxi_noFocus_Fx1-2-3.svg) no-repeat right center;
 }
 
-/* maximized EffectSlots in vertical layout */
-/* right-hand FX units, with focus */
-#FxFlowUnderlay_right_focus1[highlight="0"] {
-  border-image: url(skin:/graphics/fxChainFlow_v_unfocused1.svg) 0px 0px 0px 101px ;
-  border-width: 0px 0px 0px 101px;
-  border-radius: 0px;
+#FxFlow_focus_background,
+/* with focus */
+#FxFlow_focus_background[highlight="0"] {
+  background-color: #333;
+  }
+  #FxFlow_focus_background[highlight="1"] {
+    background-color: transparent;
+  }
+/* collapsed effect slots, horizontal layout */
+#FxFlow_mini_focus_separator1-2[highlight="0"],
+#FxFlow_mini_focus_separator1-2[highlight="3"],
+#FxFlow_mini_focus_separator2-3[highlight="0"],
+#FxFlow_mini_focus_separator2-3[highlight="1"] {
+  background-color: transparent;
+  image: url(skin:/graphics/fxFlow_mini_noFocus_Fx1-2-3.svg) no-repeat center center;
+  }
+  #FxFlow_mini_focus_separator1-2[highlight="1"],
+  #FxFlow_mini_focus_separator2-3[highlight="2"] {
+    background-color: transparent;
+    image: url(skin:/graphics/fxFlow_mini_focus_left.svg) no-repeat center center;
+  }
+  #FxFlow_mini_focus_separator1-2[highlight="2"],
+  #FxFlow_mini_focus_separator2-3[highlight="3"] {
+    background-color: transparent;
+    image: url(skin:/graphics/fxFlow_mini_focus_right.svg) no-repeat center center;
   }
 
-#FxFlowUnderlay_right_focus2[highlight="0"] {
-  margin-top: 46px;
-  border-image: url(skin:/graphics/fxChainFlow_v_unfocused2.svg) 0px 0px 0px 101px;
-  border-width: 0px 0px 0px 101px;
-  border-radius: 0px;
+/* expanded effect slots, vertical layout */
+#FxFlow_maxi_focus_separator1-2[highlight="0"],
+#FxFlow_maxi_focus_separator1-2[highlight="3"],
+#FxFlow_maxi_focus_separator2-3[highlight="0"],
+#FxFlow_maxi_focus_separator2-3[highlight="1"] {
+  background-color: transparent;
+  image: url(skin:/graphics/fxFlow_maxi_noFocus_Fx1-2-3.svg) no-repeat center center;
   }
-  #FxFlowUnderlay_right_focus2[highlight="1"] {
-    margin-top: 46px;
-  border-radius: 0px;
+  #FxFlow_maxi_focus_separator1-2[highlight="1"],
+  #FxFlow_maxi_focus_separator2-3[highlight="2"] {
+    background-color: transparent;
+    image: url(skin:/graphics/fxFlow_maxi_focus_top.svg) no-repeat center center;
   }
-
-#FxFlowUnderlay_right_focus3[highlight="0"] {
-  margin-top: 92px;
-  border-image: url(skin:/graphics/fxChainFlow_v_unfocused3.svg) 0px 0px 0px 101px;
-  border-width: 0px 0px 0px 101px;
-  border-radius: 0px;
+  #FxFlow_maxi_focus_separator1-2[highlight="2"],
+  #FxFlow_maxi_focus_separator2-3[highlight="3"] {
+    background-color: transparent;
+    image: url(skin:/graphics/fxFlow_maxi_focus_bottom.svg) no-repeat center center;
   }
-  #FxFlowUnderlay_right_focus3[highlight="1"] {
-    margin-top: 92px;
-  border-radius: 0px;
-  }
-
-/* right-hand FX units, no focus */
-#FxFlowUnderlay_right_noFocus1 {
-  border-image: url(skin:/graphics/fxChainFlow_v_noFocus1.svg) 0px 0px 0px 85px;
-  border-width: 0px 0px 0px 85px;
-  border-radius: 0px;
-}
-#FxFlowUnderlay_right_noFocus2 {
-  margin-top: 46px;
-  border-image: url(skin:/graphics/fxChainFlow_v_noFocus2.svg) 0px 10px 0px 85px;
-  border-width: 0px 0px 0px 85px;
-  border-radius: 0px;
-}
-#FxFlowUnderlay_right_noFocus3 {
-  margin-top: 92px;
-  border-image: url(skin:/graphics/fxChainFlow_v_noFocus3.svg) 0px 0px 0px 85px;
-  border-width: 0px 0px 0px 85px;
-  border-radius: 0px;
-}
-
-/* maximized EffectSlots in vertical layout */
-/* left-hand FX units, with focus */
-#FxFlowUnderlay_left_focus1[highlight="0"] {
-  border-image: url(skin:/graphics/fxChainFlow_v_unfocused1.svg) 0px 111px 0px 0px;
-  border-width: 0px 111px 0px 0px;
-  border-radius: 0px;
-  }
-
-#FxFlowUnderlay_left_focus2[highlight="0"] {
-  margin-top: 46px;
-  border-image: url(skin:/graphics/fxChainFlow_v_unfocused2.svg) 0px 111px 0px 0px;
-  border-width: 0px 111px 0px 0px;
-  border-radius: 0px;
-  }
-  #FxFlowUnderlay_left_focus2[highlight="1"] {
-    margin-top: 46px;
-  border-radius: 0px;
-  }
-
-#FxFlowUnderlay_left_focus3[highlight="0"] {
-  margin-top: 92px;
-  border-image: url(skin:/graphics/fxChainFlow_v_unfocused3.svg) 0px 111px 0px 0px;
-  border-width: 0px 111px 0px 0px;
-  border-radius: 0px;
-  }
-  #FxFlowUnderlay_left_focus3[highlight="1"] {
-    margin-top: 92px;
-  border-radius: 0px;
-  }
-
-/* left-hand FX units, no focus */
-#FxFlowUnderlay_left_noFocus1 {
-  border-image: url(skin:/graphics/fxChainFlow_v_noFocus1.svg) 0px 95px 0px 0px;
-  border-width: 0px 95px 0px 0px;
-  border-radius: 0px;
-}
-#FxFlowUnderlay_left_noFocus2 {
-  margin-top: 46px;
-  border-image: url(skin:/graphics/fxChainFlow_v_noFocus2.svg) 0px 95px 0px 0px;
-  border-width: 0px 95px 0px 0px;
-  border-radius: 0px;
-}
-#FxFlowUnderlay_left_noFocus3 {
-  margin-top: 92px;
-  border-image: url(skin:/graphics/fxChainFlow_v_noFocus3.svg) 0px 95px 0px 0px;
-  border-width: 0px 95px 0px 0px;
-  border-radius: 0px;
-}
+/* /effect slot focus indicators */
 
 #FxFocusButton {
   background-color: transparent;
@@ -1482,8 +1387,8 @@ decks, samplers, mic, aux */
 
 #FxMetaknob {
   /* Should shift Meta knob 2px down.
-  Not working, though it works for Gain knob... */
-  margin: 0px 0px -2px 0px;
+  Not working, though it works for Gain knob...
+  margin: 0px 0px -2px 0px; */
 }
 
 #FxToggleSelector {
@@ -1514,56 +1419,52 @@ decks, samplers, mic, aux */
     }
 
   WEffectSelector {
-    font-family: Ubuntu;
-    font-weight: normal;
     font-size: 13px/13px;
     color: #ccc;
-    background-color: transparent;
     /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
     margin: 0px;
     /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
         names start getting cut off. Adding explicit padding improves this. */
     padding: 0px;
     /* The 3D frame on the combo box becomes flat when you give it a border */
-    border: 0px solid #666;
+    border: 0px solid transparent;
     border-radius: 3px;
+    background-color: #1e1e1e;
+    }
+  WEffectSelector:hover {
+    background-color: #0f0f0f;
     }
     WEffectSelector::drop-down {
-      width: 11px;
-      height: 20px;
-      border: 0;
+      border: 0px;
+      margin: 0px -2px 0px 0px;
+      padding: 0px;
     }
-    WEffectSelector::down-arrow {
+    WEffectSelector::down-arrow { /*
       width: 11px;
       height: 20px;
-      image: url(skin:/buttons/btn_fx_selector_list.svg);
+      background-color: #101010;  */
+      image: url(skin:/buttons/btn_fx_selector_list.svg) no-repeat center center;
       }
       WEffectSelector::down-arrow:hover {
-        width: 11px;
-        height: 20px;
-        image: url(skin:/buttons/btn_fx_selector_list_hover.svg);
+        image: url(skin:/buttons/btn_fx_selector_list_hover.svg) no-repeat center center;
       }
 
     WEffectSelector QAbstractItemView {
-      min-width: 142px;
-      max-width: 142px;
-      background-color: #202020;
-      /* padding-left: 6px; */
-      font-family: Ubuntu;
+      background-color: #202020;/* 
       font-size: 13px/13px;
+      padding-left: 6px; */
       /* On Linux, this is not applied but font color from WEffectSelector
       is inherited.
       On Windows, it must be defined here */
       color: #ccc;
-      border: 0px;
       border-radius: 2px;
+      margin: 0px;
+      padding: 0px;
+      width: 150px;
     }
-    /* selected item */
-    WEffectSelector::checked {
-      /* not applied
-      padding-left: 5px;
-      font-weight: bold;	*/
-      color: #00b4ff;
+    /* items */
+    WEffectSelector::item:!selected {
+      background-color: #202020;
     }
     /* hovered items */
     WEffectSelector::item:selected {
@@ -1572,12 +1473,28 @@ decks, samplers, mic, aux */
       text sits at left border now
       border: 0; */
     }
-    WEffectSelector::indicator {
-    /* This is sufficient to completely hide the tick mark, but
-      this alone would show an empty, shadowed box instead of tick mark
-      background-color: transparent;
-      This should decrease the tick mark's left & right margin but is not respected */
+    /* selected item */
+    WEffectSelector::checked {
+      /* not applied
+      padding-left: 5px;
+      font-weight: bold;	*/
+      color: #00b4ff;
+    }
+    /* tick mark frame */
+    WEffectSelector::indicator:checked {
+    /* This is sufficient to completely hide the tick mark,
+      but this alone would show an empty, shadowed box instead of tick mark:
+      background-color: transparent;  */  /*
+      This should decrease the tick mark's left & right margin but is not respected
       margin: 0px -4px 0px -4px;
+      This draws a border. And eliminates the tick mark...
+      border: 1px solid #999;
+      This is 
+      background-color: #202020;
+      background-color: #101010;
+      height: 10px;
+      width: 10px;
+      image: url(skin:/buttons/btn_tick.svg) no-repeat center center; */
     }
 
 #FxParameterKnob {
@@ -1589,7 +1506,7 @@ decks, samplers, mic, aux */
     font-size: 10px/10px;
     font-weight: bold;
     color: #999999;
-    margin-top: 19px;
+    padding-top: -1px;
   }
 
 #FxParameterButton {
