@@ -45,7 +45,7 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
       m_pTrackSamplesControlObject(NULL),
       m_trackSamples(0.0),
       m_scaleFactor(1.0),
-      m_pPlayMarkerPositionControlObject(NULL),
+      // m_pPlayMarkerPositionControlObject(NULL),
       m_playMarkerPosition(s_DefaultPlayMarkerPosition) {
 
     // qDebug() << "WaveformWidgetRenderer";
@@ -75,7 +75,7 @@ WaveformWidgetRenderer::~WaveformWidgetRenderer() {
     delete m_pRateDirControlObject;
     delete m_pGainControlObject;
     delete m_pTrackSamplesControlObject;
-    delete m_pPlayMarkerPositionControlObject;
+    // delete m_pPlayMarkerPositionControlObject;
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
     delete m_timer;
@@ -98,8 +98,8 @@ bool WaveformWidgetRenderer::init() {
             m_group, "total_gain");
     m_pTrackSamplesControlObject = new ControlProxy(
             m_group, "track_samples");
-    m_pPlayMarkerPositionControlObject = new ControlProxy(
-            m_group, "play_marker_position");
+    //m_pPlayMarkerPositionControlObject = new ControlProxy(
+    //        m_group, "play_marker_position");
 
     // qDebug() << "m_pPlayMarkerPositionControlObject->get()=" << m_pPlayMarkerPositionControlObject->get();
     for (int i = 0; i < m_rendererStack.size(); ++i) {
@@ -123,8 +123,8 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     m_rateRange = m_pRateRangeControlObject->get();
 
     // Make sure the value is within range
-    double playMarkerPosition = m_pPlayMarkerPositionControlObject->get();
-    setPlayMarkerPosition(playMarkerPosition);
+    //double playMarkerPosition = m_pPlayMarkerPositionControlObject->get();
+    //setPlayMarkerPosition(playMarkerPosition);
     // qDebug() << "m_playMarkerPosition=" << m_playMarkerPosition;
 
     // This gain adjustment compensates for an arbitrary /2 gain chop in

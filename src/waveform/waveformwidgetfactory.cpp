@@ -71,7 +71,8 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_vsyncThread(NULL),
         m_frameCnt(0),
         m_actualFrameRate(0),
-        m_vSyncType(0) {
+        m_vSyncType(0),
+        m_playMarkerPosition(50) {
 
     m_visualGain[All] = 1.0;
     m_visualGain[Low] = 1.0;
@@ -252,6 +253,12 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
         m_config->set(ConfigKey("[Waveform]","OverviewNormalized"), ConfigValue(m_overviewNormalized));
     }
 
+    int playMarkerPosition = m_config->getValueString(ConfigKey("[Waveform]","PlayMarkerPosition")).toInt(&ok);
+    if (ok) {
+        setPlayMarkerPosition(playMarkerPosition);
+    } else {
+        m_config->set(ConfigKey("[Waveform]","PlayMarkerPosition"), ConfigValue(m_playMarkerPosition));
+    }
     return true;
 }
 
@@ -467,6 +474,23 @@ void WaveformWidgetFactory::setOverviewNormalized(bool normalize) {
     m_overviewNormalized = normalize;
     if (m_config) {
         m_config->set(ConfigKey("[Waveform]","OverviewNormalized"), ConfigValue(m_overviewNormalized));
+    }
+}
+
+void WaveformWidgetFactory::setPlayMarkerPosition(int position) {
+    // qDebug() << "WaveformWidgetFactory::setPlayMarkerPosition, position=" << position;
+    m_playMarkerPosition = position;
+    if (m_config) {
+        m_config->set(ConfigKey("[Waveform]", "PlayMarkerPosition"), ConfigValue(m_playMarkerPosition));
+    }
+
+    if (m_waveformWidgetHolders.size() == 0) {
+        return;
+    }
+
+    const double dPlayMarkerPosition = static_cast<double>(m_playMarkerPosition) / 100.0;
+    for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
+        m_waveformWidgetHolders[i].m_waveformWidget->setPlayMarkerPosition(dPlayMarkerPosition);
     }
 }
 

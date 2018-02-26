@@ -101,10 +101,9 @@ class WaveformWidgetRenderer {
         if(newPos >= 0.1 && newPos <= 0.9) {
             m_playMarkerPosition = newPos;
         } 
-        /* else {
-            qDebug() << "Invalid playMarkerPosition. Value must be between 0.1 and 0.9";
-        }
-        */
+        // else {
+        //     qDebug() << "Invalid playMarkerPosition. Value must be between 0.1 and 0.9";
+        // }        
     }
 
   protected:
@@ -143,9 +142,7 @@ class WaveformWidgetRenderer {
     ControlProxy* m_pTrackSamplesControlObject;
     int m_trackSamples;
     double m_scaleFactor;
-    ControlProxy* m_pPlayMarkerPositionControlObject;
     double m_playMarkerPosition;   // 0.0 - left, 0.5 - center, 1.0 - right
-    
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
     PerformanceTimer* m_timer;
