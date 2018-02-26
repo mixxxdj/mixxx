@@ -54,6 +54,9 @@ Variables:
                   </Text>
                 </Children>
               </WidgetGroup>
+
+              <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
+
               <Template src="skin:button_1state.xml">
                 <SetVariable name="TooltipId">eject</SetVariable>
                 <SetVariable name="ObjectName">PreviewEject</SetVariable>
@@ -119,13 +122,13 @@ Variables:
                 </Connection>
               </Overview>
 
-              <!-- Wrapping in WidgetGroup enables padding -->
               <Template src="skin:knob_textless.xml">
                 <SetVariable name="ObjectName">PreviewGainKnob</SetVariable>
                 <SetVariable name="Size">22f,22f</SetVariable>
                 <SetVariable name="ConfigKey">pregain</SetVariable>
                 <SetVariable name="Color">tiny_red</SetVariable>
               </Template>
+
             </Children>
           </WidgetGroup><!-- /Play-Overview-Gain -->
 

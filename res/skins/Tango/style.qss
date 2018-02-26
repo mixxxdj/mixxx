@@ -1816,7 +1816,6 @@ WTrackProperty#SamplerTitle_mini {
 }
   #PreviewTitle {
     padding-left: 1px;
-    margin-right: 1px;
   }
   #PreviewTitle WLabel {
     font-size: 14px/14px;
@@ -1832,7 +1831,8 @@ WTrackProperty#SamplerTitle_mini {
     margin-right: 1px;
   }
   #PreviewGainKnob {
-    padding-top: 6px;
+    qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
+    padding: 8px 0px 4px 0px;
   }
 
 
