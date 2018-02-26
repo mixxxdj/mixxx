@@ -629,7 +629,6 @@ padding-left: 2px;
   #VinylModeButton,
   #VinylCueModeButton,
   #PassthroughButton {
-    margin-right: 1px;
     }
   #VinylControlButton[displayValue="0"],
   #VinylModeButton,
