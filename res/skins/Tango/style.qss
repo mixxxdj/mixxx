@@ -1304,7 +1304,7 @@ decks, samplers, mic, aux */
 }
 
 #VUMeterSampler {
-  padding: 0px 2px 0px 1px;
+  padding: 0px 2px 0px 0px;
 }
 
 #VUMeterMasterLabel {
