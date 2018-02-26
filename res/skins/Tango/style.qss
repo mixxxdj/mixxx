@@ -731,7 +731,6 @@ padding-left: 2px;
     }
 
 #DeckButtonsPlay {
-  margin-top: 1px;
   background-color: #0f0f0f;
   }
   #DeckControlsLeft {
@@ -745,12 +744,19 @@ padding-left: 2px;
     background-color: #333;
   }
 
-#DeckControlsExpanded,
-#DeckButton:hover,
-#Keylock[displayValue="0"]:hover,
-#Keylock[displayValue="1"] {
+#DeckControlsExpandedLeft,
+#DeckControlsExpandedRight,
+#DeckButton:hover {
   background-color: #151515;
-  }
+}
+#DeckControlsExpandedLeft {
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+#DeckControlsExpandedRight {
+  border-bottom-left-radius: 3px;
+  border-top-left-radius: 3px;
+}
   /* there's been trouble defining bg-color to several IDs at once,
   so we do it pre ID...yaaawn */
   #DeckButtonExpanded:hover {
