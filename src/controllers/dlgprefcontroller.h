@@ -86,6 +86,7 @@ class DlgPrefController : public DlgPreferencePage {
     void savePreset(QString path);
     void initTableView(QTableView* pTable);
 
+    const QString presetDisplayName(const PresetInfo& info);
     // Reload the mappings in the dropdown dialog
     void enumeratePresets();
 

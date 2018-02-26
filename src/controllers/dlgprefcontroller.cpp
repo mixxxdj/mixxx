@@ -21,26 +21,6 @@
 #include "preferences/usersettings.h"
 #include "util/version.h"
 
-namespace {
-
-QString nameForPreset(const PresetInfo& preset) {
-    QString name = preset.getName();
-    if (name.length() == 0) {
-        QFileInfo file(preset.getPath());
-        name = file.baseName();
-    }
-    return name;
-}
-
-bool presetInfoNameComparator(const PresetInfo &a, const PresetInfo &b) {
-    // the comparison function for PresetInfo objects
-    // this function is used to sort the list of
-    // presets in the combo box
-    return nameForPreset(a) < nameForPreset(b);
-}
-
-} // The anonymous namespace
-
 DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
                                      ControllerManager* controllerManager,
                                      UserSettingsPointer pConfig)
@@ -249,6 +229,15 @@ void DlgPrefController::slotDirty() {
     m_bDirty = true;
 }
 
+const QString DlgPrefController::presetDisplayName(const PresetInfo& info) {
+    if (QFileInfo(info.getPath()).absoluteDir() == userPresetsPath(m_pConfig)) {
+        //: Shown in combobox to select controller mappings to distinguish user-installed mappings from mappings included in Mixxx
+        return info.getName() + " (" + tr("user") + ")";
+    } else {
+        return info.getName();
+    }
+}
+
 void DlgPrefController::enumeratePresets() {
     m_ui.comboBoxPreset->clear();
 
@@ -272,11 +261,10 @@ void DlgPrefController::enumeratePresets() {
     // Making the list of presets in the alphabetical order
     QList<PresetInfo> presets = pie->getPresetsByExtension(
         m_pController->presetExtension());
-    qSort(presets.begin(), presets.end(), presetInfoNameComparator);
 
     PresetInfo match;
     for (const PresetInfo& preset : presets) {
-        m_ui.comboBoxPreset->addItem(nameForPreset(preset), preset.getPath());
+        m_ui.comboBoxPreset->addItem(presetDisplayName(preset), preset.getPath());
         if (m_pController->matchPreset(preset)) {
             match = preset;
         }
@@ -284,7 +272,7 @@ void DlgPrefController::enumeratePresets() {
 
     // Jump to matching device in list if it was found.
     if (match.isValid()) {
-        int index = m_ui.comboBoxPreset->findText(nameForPreset(match));
+        int index = m_ui.comboBoxPreset->findText(presetDisplayName(match));
         if (index != -1) {
             m_ui.comboBoxPreset->setCurrentIndex(index);
         }

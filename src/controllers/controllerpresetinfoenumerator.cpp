@@ -10,6 +10,12 @@
 
 #include "controllers/defs_controllers.h"
 
+namespace {
+bool presetInfoNameComparator(const PresetInfo &a, const PresetInfo &b) {
+    return a.getName() < b.getName();
+}
+}
+
 PresetInfoEnumerator::PresetInfoEnumerator(const QStringList& searchPaths)
         : m_controllerDirPaths(searchPaths) {
     loadSupportedPresets();
@@ -44,6 +50,10 @@ void PresetInfoEnumerator::loadSupportedPresets() {
             }
         }
     }
+
+    qSort(m_midiPresets.begin(), m_midiPresets.end(), presetInfoNameComparator);
+    qSort(m_hidPresets.begin(), m_hidPresets.end(), presetInfoNameComparator);
+    qSort(m_bulkPresets.begin(), m_bulkPresets.end(), presetInfoNameComparator);
 
     qDebug() << "Extension" << MIDI_PRESET_EXTENSION << "total"
              << m_midiPresets.length() << "presets";
