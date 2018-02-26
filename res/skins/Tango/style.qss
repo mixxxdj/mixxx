@@ -51,7 +51,6 @@ WWidgetGroup {
 }
 
 #WaveformSplitter::handle:vertical {
-  height: 4px;
   image: url(skin:/graphics/splitterVert_handle.png);
   }
   #WaveformSplitter::handle:vertical:hover,
@@ -346,7 +345,8 @@ WWidgetGroup {
     #RecButton[displayValue="2"] {
     }
   #RecDot {
-    background: none url(skin:/graphics/rec_dot.svg) no-repeat center center;
+    background: none;
+    image: url(skin:/graphics/rec_dot.svg) no-repeat center center;
     }
   #RecDuration {
     font-weight: bold;
@@ -366,6 +366,8 @@ WWidgetGroup {
 #BroadcastButton,
 #SkinSettingsToggler {
   background-color: transparent;
+  padding: 0px;
+  margin: 0px;
   }
   #BroadcastButton[displayValue="0"] {
     image: url(skin:/buttons/btn_broadcast_off.svg) no-repeat center center;
@@ -393,38 +395,34 @@ WWidgetGroup {
   background-color: transparent;
   }
   #BroadcastButtonNetbook[displayValue="0"] {
-    background: transparent url(skin:/buttons/btn_broadcast_off_netbook.svg) no-repeat center center;
+    image: url(skin:/buttons/btn_broadcast_off_netbook.svg) no-repeat center center;
     }
     #BroadcastButtonNetbook[displayValue="0"]:hover {
       image: url(skin:/buttons/btn_broadcast_off_hover_netbook.svg) no-repeat center center;
       }
   #BroadcastButtonNetbook[displayValue="1"] {
-    background: transparent url(skin:/buttons/btn_broadcast_connecting_netbook.svg) no-repeat center center;
+    image: url(skin:/buttons/btn_broadcast_connecting_netbook.svg) no-repeat center center;
     }
   #BroadcastButtonNetbook[displayValue="2"] {
-    background: transparent url(skin:/buttons/btn_broadcast_connected_netbook.svg) no-repeat center center;
+    image: url(skin:/buttons/btn_broadcast_connected_netbook.svg) no-repeat center center;
     }
   #BroadcastButtonNetbook[displayValue="3"] {
-    background: transparent url(skin:/buttons/btn_broadcast_failure_netbook.svg) no-repeat center center;
+    image: url(skin:/buttons/btn_broadcast_failure_netbook.svg) no-repeat center center;
     }
   #BroadcastButtonNetbook[displayValue="4"] {
-    background: transparent url(skin:/buttons/btn_broadcast_warning_netbook.svg) no-repeat center center;
+    image: url(skin:/buttons/btn_broadcast_warning_netbook.svg) no-repeat center center;
     }
     #BroadcastButtonNetbook:hover {
       background-color: #0f0f0f;
     }
 
 #SkinSettingsToggler[displayValue="0"] {
-  background: transparent url(skin:/buttons/btn_skinsettings_off.svg) no-repeat center center;
+  background: transparent;
+  image: url(skin:/buttons/btn_skinsettings_off.svg) no-repeat center center;
   }
   #SkinSettingsToggler[displayValue="0"]:hover {
-    background: #0f0f0f url(skin:/buttons/btn_skinsettings_on.svg) no-repeat center center;
-  }
-#SkinSettingsToggler[displayValue="1"] {
-  background: #0f0f0f url(skin:/buttons/btn_skinsettings_on.svg) no-repeat center center;
-  }
-  #SkinSettingsToggler[displayValue="1"]:hover {
-    background: #0f0f0f url(skin:/buttons/btn_skinsettings_off.svg) no-repeat center center;
+    background: #0f0f0f;
+    image: url(skin:/buttons/btn_skinsettings_on.svg) no-repeat center center;
   }
 
 
@@ -592,36 +590,44 @@ padding-left: 2px;
   #VinylTogglerLeft[displayValue="0"],
   #VinylTogglerRightPassthrough[displayValue="1"],
   #VinylTogglerRight[displayValue="1"] {
-    background: transparent url(skin:/buttons/btn_vinyl_left.svg) no-repeat top center;
+    background: transparent;
+    image: url(skin:/buttons/btn_vinyl_left.svg) no-repeat top center;
     }
     #VinylTogglerLeft[displayValue="0"]:hover,
     #VinylTogglerRightPassthrough[displayValue="1"]:hover,
     #VinylTogglerRight[displayValue="1"]:hover {
-      background: transparent url(skin:/buttons/btn_vinyl_left_hover.svg) no-repeat top center;
+      background: transparent;
+      image: url(skin:/buttons/btn_vinyl_left_hover.svg) no-repeat top center;
     }
   #VinylTogglerLeft[displayValue="1"],
   #VinylTogglerLeftPassthrough[displayValue="1"],
   #VinylTogglerRight[displayValue="0"] {
-    background: transparent url(skin:/buttons/btn_vinyl_right.svg) no-repeat top center;
+    background: transparent;
+    image: url(skin:/buttons/btn_vinyl_right.svg) no-repeat top center;
     }
     #VinylTogglerLeft[displayValue="1"]:hover,
     #VinylTogglerLeftPassthrough[displayValue="1"]:hover,
     #VinylTogglerRight[displayValue="0"]:hover {
-      background: transparent url(skin:/buttons/btn_vinyl_right_hover.svg) no-repeat top center;
+      background: transparent;
+      image: url(skin:/buttons/btn_vinyl_right_hover.svg) no-repeat top center;
     }
   /* When passthrough is active but Vinyl Controls are hidden,
     yellow background and black arrow indicate passthrough */
   #VinylTogglerLeftPassthrough[displayValue="0"] {
-    background: #ff8f00 url(skin:/buttons/btn_vinyl_pass_left.svg) no-repeat top center;
+    background: #ff8f00;
+    image: url(skin:/buttons/btn_vinyl_pass_left.svg) no-repeat top center;
     }
     #VinylTogglerLeftPassthrough[displayValue="0"]:hover {
-      background: #ff8f00 url(skin:/buttons/btn_vinyl_pass_left_hover.svg) no-repeat top center;
+      background: #ff8f00;
+      image: url(skin:/buttons/btn_vinyl_pass_left_hover.svg) no-repeat top center;
     }
   #VinylTogglerRightPassthrough[displayValue="0"] {
-    background: #ff8f00 url(skin:/buttons/btn_vinyl_pass_right.svg) no-repeat top center;
+    background: #ff8f00;
+    image: url(skin:/buttons/btn_vinyl_pass_right.svg) no-repeat top center;
     }
     #VinylTogglerRightPassthrough[displayValue="0"]:hover {
-      background: #ff8f00 url(skin:/buttons/btn_vinyl_pass_right_hover.svg) no-repeat top center;
+      background: #ff8f00;
+      image: url(skin:/buttons/btn_vinyl_pass_right_hover.svg) no-repeat top center;
     }
 
   #VinylControlButton,
@@ -763,15 +769,18 @@ padding-left: 2px;
   }
   #DeckControlsToggler_Left[displayValue="0"],
   #MasterHeadMixerToggle[displayValue="0"] {
-    background: transparent url(skin:/buttons/btn_arrow_right.svg) no-repeat center center;
+    background: transparent;
+    image: url(skin:/buttons/btn_arrow_right.svg) no-repeat center center;
     }
     #DeckControlsToggler_Left[displayValue="0"]:hover,
     #MasterHeadMixerToggle[displayValue="0"]:hover {
-      background: #151515 url(skin:/buttons/btn_arrow_right_hover.svg) no-repeat center center;
+      background: #151515;
+      image: url(skin:/buttons/btn_arrow_right_hover.svg) no-repeat center center;
     }
     #DeckControlsToggler_Left[displayValue="1"],
     #MasterHeadMixerToggle[displayValue="1"] {
-      background: transparent url(skin:/buttons/btn_arrow_left.svg) no-repeat center center;
+      background: transparent;
+      image: url(skin:/buttons/btn_arrow_left.svg) no-repeat center center;
     }
     #DeckControlsToggler_Left[displayValue="1"] {
       border-color: #0f0f0f;
@@ -782,26 +791,31 @@ padding-left: 2px;
     }
     #DeckControlsToggler_Left[displayValue="1"]:hover,
     #MasterHeadMixerToggle[displayValue="1"]:hover {
-      background: #000 url(skin:/buttons/btn_arrow_left_hover.svg) no-repeat center center;
+      background-color: #000;
+      image: url(skin:/buttons/btn_arrow_left_hover.svg) no-repeat center center;
     }
 
   #DeckControlsToggler_Right[displayValue="0"] {
-    background: transparent url(skin:/buttons/btn_arrow_left.svg) no-repeat center center;
+    background-color: transparent;
+    image: url(skin:/buttons/btn_arrow_left.svg) no-repeat center center;
     }
     #DeckControlsToggler_Right[displayValue="0"]:hover {
-      background: #151515 url(skin:/buttons/btn_arrow_left_hover.svg) no-repeat center center;
+      background-color: #151515;
+      image: url(skin:/buttons/btn_arrow_left_hover.svg) no-repeat center center;
     }
     #DeckControlsToggler_Right[displayValue="1"] {
-      background: transparent url(skin:/buttons/btn_arrow_right.svg) no-repeat center center;
+      background-color: transparent;
+      image: url(skin:/buttons/btn_arrow_right.svg) no-repeat center center;
       border-color: #0f0f0f;
       border-style: solid;
+      border-width: 1px 1px 1px 0px;
       border-top-left-radius: 0px;
       border-bottom-left-radius: 0px;
-      border-width: 1px 1px 1px 0px;
 
     }
     #DeckControlsToggler_Right[displayValue="1"]:hover {
-      background: #000 url(skin:/buttons/btn_arrow_right_hover.svg) no-repeat center center;
+      background-color: #000;
+      image: url(skin:/buttons/btn_arrow_right_hover.svg) no-repeat center center;
     }
 
   #Keylock[displayValue="1"]:hover {
@@ -827,23 +841,35 @@ padding-left: 2px;
 /* Actual Play button. Receives click events, turns red
   when playing regularly, not from Cue or HotCue */
 #PlayCue[displayValue="0"] {
-  background: none url(skin:/buttons/btn_play.svg) no-repeat center center;
+  background-color: transparent;
+  image: url(skin:/buttons/btn_play.svg) no-repeat center center;
   }
   #PlayCue[displayValue="0"]:hover {
-    background: none url(skin:/buttons/btn_play_hover.svg) no-repeat center center;
+    background-color: transparent;
+    image: url(skin:/buttons/btn_play_hover.svg) no-repeat center center;
   }
+
 #SamplerPlayCue[displayValue="0"] {
   /* different than decks' Play button, this has some soft shadow to distinguish
   it better from underlying Cover Art (if available) */
-  background: none url(skin:/buttons/btn_sampler_play.png) no-repeat center center;
+  background-color: transparent;
+  image: url(skin:/buttons/btn_sampler_play.png) no-repeat center center;
   }
+  #SamplerPlayCueUnderlay[displayValue="1"] {
+    background: #a90000;
+  }
+
 #PassthroughPlayCover {
-  background: none url(skin:/buttons/btn_mic_aux_mute.svg) no-repeat center center;
+  background-color: transparent;
+  image: url(skin:/buttons/btn_mic_aux_mute.svg) no-repeat center center;
 }
+
 #MicTalkover,
 #AuxMute {
-  background: none url(skin:/buttons/btn_mic_aux_mute.svg) no-repeat center center;
+  background-color: transparent;
+  image: url(skin:/buttons/btn_mic_aux_mute.svg) no-repeat center center;
 }
+
 #PlayCue[displayValue="0"]:hover,
 #SamplerPlayCue[displayValue="0"]:hover,
 #MicTalkover[displayValue="0"]:hover,
@@ -852,8 +878,7 @@ padding-left: 2px;
   }
   #PlayCue[displayValue="0"]:hover,
   #MicTalkover[displayValue="0"]:hover,
-  #AuxMute[displayValue="1"]:hover {/*
-    background: none url(skin:/buttons/btn_play_hover.svg) no-repeat center center;*/
+  #AuxMute[displayValue="1"]:hover {
     background-color: rgba(255, 128, 0, 100);
   }
   #SamplerPlayCue[displayValue="0"]:hover {
@@ -862,7 +887,7 @@ padding-left: 2px;
 
 #PlayCue[displayValue="1"],
 #SamplerPlayCue[displayValue="1"] {
-  background: none url(skin:/buttons/btn_pause.svg) no-repeat center center;
+  image: url(skin:/buttons/btn_pause.svg) no-repeat center center;
 }
 #PlayCue[displayValue="1"],
 #SamplerPlayCue[displayValue="1"],
@@ -1725,9 +1750,6 @@ decks, samplers, mic, aux */
   #SamplerPlayBox_mini {
     padding: 0px 1px 0px 0px;
     }
-    #SamplerPlayCueUnderlay[displayValue="1"] {
-      background: #a90000;
-      }
   #SamplerCover {
     background-color: #333;
     border-radius: 3px;
@@ -2021,14 +2043,14 @@ QTableView {
 
 QHeaderView {
   font-family: Ubuntu;
-  font-weight: bold;
-  font-size: 13px/13px;
+  font-weight: bold;	/*
+  font-size: 13px/13px;	*/
   color: #CFCFCF;
   background-color: #1e1e1e;
   }
   /*	Library header 'buttons'	*/
-  QHeaderView::section {
-    height: 17px;
+  QHeaderView::section {	/*
+    height: 17px;	*/
     padding-left: 4px;
     padding-top: 1px;
     /*	set right border so that first column header
@@ -2093,7 +2115,6 @@ QScrollBar:horizontal {
 /* splitters between treeview and library table */
 #LibrarySplitter::handle:horizontal {
   image: url(skin:/graphics/splitterHori_handle.png);
-  width: 6px;
   }
   #LibrarySplitter::handle:horizontal:hover,
   #LibrarySplitter::handle:horizontal:pressed {
@@ -2102,7 +2123,6 @@ QScrollBar:horizontal {
   /* splitter between coverArt and tree view */
   #LibrarySplitter::handle:vertical,
   #WaveformSplitter::handle:vertical {
-    height: 6px;
     image: url(skin:/graphics/splitterVert_handle.png);
     }
     #LibrarySplitter::handle:vertical:hover,
@@ -2145,12 +2165,12 @@ Library features and their buttons:
 QPushButton {
   text-align: center;
   font-family: Ubuntu;
-  font-weight: normal;
+  font-weight: normal;	/*
   font-size: 14px/14px;
+  min-height: 22px;
+  max-height: 22px;	*/
   color: #ccc;
   border-radius: 2px;
-  min-height: 22px;
-  max-height: 22px;
   margin: 3px 2px 5px 1px;
   padding: 1px 6px -1px 6px;
   background-color: #333;
@@ -2249,11 +2269,11 @@ QPushButton {
   }
 
 /* SpinBox, currently only used for transition time in Auto DJ tab */
-WLibrary QSpinBox {
+WLibrary QSpinBox {	/*
   min-height: 20px;
   max-height: 20px;
   min-width: 40px;
-  max-width: 40px;
+  max-width: 40px;	*/
   }
   WLibrary QSpinBox:editable {
     background: transparent;
@@ -2272,7 +2292,6 @@ WSearchLineEdit {
   border-left: 0px;
   font-family: Ubuntu;
   font-weight: normal;
-  font-size: 14px/14px;
   background: #0f0f0f;
   color: #cfcfcf;
   selection-background-color: #d2d2d2;
