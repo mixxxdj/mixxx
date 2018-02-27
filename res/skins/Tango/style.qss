@@ -716,7 +716,7 @@ WWidgetGroup {
   #PlayPositionHighlightContainer {
     /* Draw a border to emphasize that play position display can be changed
     to show both elapsed and remaining time */
-    padding: 2px;
+    padding: 0px 1px 0px 1px;
     }
     #PlayPositionHighlightContainer:hover {
       border: 1px solid #ccc;
