@@ -308,6 +308,8 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
 
     viewer->setZoom(m_defaultZoom);
     viewer->setDisplayBeatGrid(m_beatGridEnabled);
+    const double dPlayMarkerPosition = static_cast<double>(m_playMarkerPosition) / 100.0;
+    viewer->setPlayMarkerPosition(dPlayMarkerPosition);
     viewer->update();
 
     qDebug() << "WaveformWidgetFactory::setWaveformWidget - waveform widget added in factory, index" << index;
@@ -478,7 +480,7 @@ void WaveformWidgetFactory::setOverviewNormalized(bool normalize) {
 }
 
 void WaveformWidgetFactory::setPlayMarkerPosition(int position) {
-    // qDebug() << "WaveformWidgetFactory::setPlayMarkerPosition, position=" << position;
+    // qDebug() << "setPlayMarkerPosition, position=" << position;
     m_playMarkerPosition = position;
     if (m_config) {
         m_config->set(ConfigKey("[Waveform]", "PlayMarkerPosition"), ConfigValue(m_playMarkerPosition));
