@@ -48,7 +48,7 @@ Variables:
                   </Template>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Tango],rate_key_buttons</ConfigKey>
+                  <ConfigKey persist="true">[Tango],rate_key_controls</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- /Key adjust buttons -->
@@ -96,7 +96,7 @@ Variables:
               </WidgetGroup><!-- /Key Display/Match -->
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],key_controls</ConfigKey>
+              <ConfigKey persist="true">[Tango],key_display_match</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /Key Display/Match + Key adjust buttons -->
@@ -158,7 +158,7 @@ Variables:
               </WidgetGroup>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],rate_key_buttons</ConfigKey>
+              <ConfigKey persist="true">[Tango],rate_key_controls</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /Rate adjust buttons -->
