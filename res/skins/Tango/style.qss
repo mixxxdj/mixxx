@@ -1,4 +1,4 @@
-/* Tango */
+/* Tango style sheet */
 
 #Mixxx {	/*
   AlignRight just for testing, to attach SkinSettings to right edge.
@@ -70,21 +70,6 @@ WWidgetGroup {
 #Deck3 WLabel, #RateContainer3 WLabel, #RateContainer3 WPushButton,
 #Deck4 WLabel, #RateContainer4 WLabel, #RateContainer4 WPushButton {
   color: #d910f0;
-}
-
-#WaveformContainer1,
-#WaveformContainer2,
-#WaveformContainer3,
-#WaveformContainer4 {
-/* waveform play position should stay centered, so we shift the waveform
-  containers right to compensate for (inactive) beatgrid button toggle
-  padding-right: 17px; */
-/* Also add respective padding at the right, so all beatgrid buttons are shown */
-  margin-right: -17px;
-}
-
-#BeatgridButtons {
-  padding-right: 17px;
 }
 
 #WaveformContainer1,
@@ -288,7 +273,7 @@ WWidgetGroup {
   margin: 0px 0px 0px 0px;
 }
 #MixerbarCover {
-  /* background is #333, so this has to blend in */
+  /* Note(ronso0): background is #333, so this has to blend in */
   background-color: rgba(30, 30, 30, 200);
 }
 
@@ -345,7 +330,7 @@ WWidgetGroup {
     #RecButton[displayValue="2"] {
     }
   #RecDot {
-    background: none;
+    background-color: transparent;
     image: url(skin:/graphics/rec_dot.svg) no-repeat center center;
     }
   #RecDuration {
@@ -417,11 +402,11 @@ WWidgetGroup {
     }
 
 #SkinSettingsToggler[displayValue="0"] {
-  background: transparent;
+  background-color: transparent;
   image: url(skin:/buttons/btn_skinsettings_off.svg) no-repeat center center;
   }
   #SkinSettingsToggler[displayValue="0"]:hover {
-    background: #0f0f0f;
+    background-color: #0f0f0f;
     image: url(skin:/buttons/btn_skinsettings_on.svg) no-repeat center center;
   }
 
@@ -431,15 +416,30 @@ WWidgetGroup {
  ####### Waveforms ##############################################
 ##############################################################*/
 
-/* Also, see color definition above. */
+/* Also, see color definitions above. */
 #WaveformContainer1,
 #WaveformContainer2,
 #WaveformContainer3,
 #WaveformContainer4 {
-/* this will shift waveforms' center position to the left.
+  qproperty-layoutAlignment: 'AlignVCenter';
+/* waveform play position should stay centered, so we shift the waveform
+  containers right to compensate for (inactive) beatgrid button toggle */
+  margin-right: -17px;
+}
+
+#BeatgridButtons {
+/* Those buttons are pushed outside the screen by 17px (see above),
+  so bring them back in */
+  padding-right: 17px;
+}
+#WaveformContainer1,
+#WaveformContainer2,
+#WaveformContainer3,
+#WaveformContainer4 {
+/* Note(ronso0):
+  this will shift waveforms' center position to the left.
   Useful to 'look ahead' further (who cares about history, ha?)
   margin-left: -350px;	*/
-  qproperty-layoutAlignment: 'AlignVCenter';
 }
 
 #BeatgridButtonToggler {
@@ -510,10 +510,10 @@ WWidgetGroup {
   }
 
 #MicUnit, #AuxUnit {
-qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-background-color: #333;
-margin-right: 5px;
-padding-left: 2px;
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+  background-color: #333;
+  margin-right: 5px;
+  padding-left: 2px;
   }
   #MicUnitIcon {
     image: url(skin:/buttons/btn_mic_unit.svg) no-repeat center left;
@@ -522,7 +522,7 @@ padding-left: 2px;
     image: url(skin:/buttons/btn_aux_unit.svg) no-repeat center left;
   }
   #MicUnitLabel, #AuxUnitLabel {
-    /* not apllied
+    /* not applied
     border-left: 1px solid #453117;
     background-color: #456411;
     margin-left: -2px;
@@ -590,29 +590,30 @@ padding-left: 2px;
   #VinylTogglerLeft[displayValue="0"],
   #VinylTogglerRightPassthrough[displayValue="1"],
   #VinylTogglerRight[displayValue="1"] {
-    background: transparent;
+    background-color: transparent;
     image: url(skin:/buttons/btn_vinyl_left.svg) no-repeat top center;
     }
     #VinylTogglerLeft[displayValue="0"]:hover,
     #VinylTogglerRightPassthrough[displayValue="1"]:hover,
     #VinylTogglerRight[displayValue="1"]:hover {
-      background: transparent;
+      background-color: transparent;
       image: url(skin:/buttons/btn_vinyl_left_hover.svg) no-repeat top center;
     }
   #VinylTogglerLeft[displayValue="1"],
   #VinylTogglerLeftPassthrough[displayValue="1"],
   #VinylTogglerRight[displayValue="0"] {
-    background: transparent;
+    background-color: transparent;
     image: url(skin:/buttons/btn_vinyl_right.svg) no-repeat top center;
     }
     #VinylTogglerLeft[displayValue="1"]:hover,
     #VinylTogglerLeftPassthrough[displayValue="1"]:hover,
     #VinylTogglerRight[displayValue="0"]:hover {
-      background: transparent;
+      background-color: transparent;
       image: url(skin:/buttons/btn_vinyl_right_hover.svg) no-repeat top center;
     }
   /* When passthrough is active but Vinyl Controls are hidden,
-    yellow background and black arrow indicate passthrough */
+    yellow background indicates passthrough, similiar to how
+    the FX expand toggle does */
   #VinylTogglerLeftPassthrough[displayValue="0"] {
     background: #ff8f00;
     image: url(skin:/buttons/btn_vinyl_pass_left.svg) no-repeat top center;
@@ -688,10 +689,12 @@ padding-left: 2px;
     background-color: #0f0f0f;
   }
   WLabel#TrackComment {
-  /* defining font-size here breaks top alignment	*/
+    /* Note(ronso0):
+    defining font-size here breaks top alignment	*/
     padding-left: 1px;
-  /* this is necessary to display multi-line comments correctly.
-    Without it, first line would be cut off at the top. */
+    /* Note(ronso0):
+    Somehow this is necessary to display multi-line comments correctly.
+    Without it, first line would be cropped. */
     padding-top: 1px;
     color: #888;
     text-align: left;
@@ -706,20 +709,13 @@ padding-left: 2px;
     font-size: 18px/18px;
     font-weight: bold;
     }
-    WLabel#PlayPosition:hover {
-      /* Emphasize that play position display can be changed
-      to show both elapsed and remaining time
-      border: 1px solid #ccc; */
-    }
   WLabel#Duration, WLabel#TrackBy, WLabel#TrackArtist {
     font-size: 16px/16px;
     font-weight: bold;
   }
-  WLabel#PlayPosition, WLabel#Duration {
-    /* Instead of 1px, this adds 6px padding both left and right...wtf?
-    padding: 0px 1px 0px 1px; */
-  }
   #PlayPositionHighlightContainer {
+    /* Draw a border to emphasize that play position display can be changed
+    to show both elapsed and remaining time */
     padding: 2px;
     }
     #PlayPositionHighlightContainer:hover {
@@ -762,14 +758,13 @@ padding-left: 2px;
   border-bottom-left-radius: 3px;
   border-top-left-radius: 3px;
 }
-  /* there's been trouble defining bg-color to several IDs at once,
-  so we do it pre ID...yaaawn */
-  #DeckButtonExpanded:hover {
-    background-color: #000;
-  }
+#DeckButtonExpanded:hover {
+  background-color: #000;
+}
+
   #DeckControlsToggler_Left[displayValue="0"],
   #MasterHeadMixerToggle[displayValue="0"] {
-    background: transparent;
+    background-color: transparent;
     image: url(skin:/buttons/btn_arrow_right.svg) no-repeat center center;
     }
     #DeckControlsToggler_Left[displayValue="0"]:hover,
@@ -779,7 +774,7 @@ padding-left: 2px;
     }
     #DeckControlsToggler_Left[displayValue="1"],
     #MasterHeadMixerToggle[displayValue="1"] {
-      background: transparent;
+      background-color: transparent;
       image: url(skin:/buttons/btn_arrow_left.svg) no-repeat center center;
     }
     #DeckControlsToggler_Left[displayValue="1"] {
@@ -987,7 +982,7 @@ padding-left: 2px;
     border: 1px solid #888;
   }
   #ReloopButton[displayValue="1"] {
-  /* See also #LoopIndicator near DeckButtons */
+  /* See also #LoopIndicator */
     background-color: #ff8f00;
     }
     #ReloopButton[displayValue="1"]:hover {
@@ -995,8 +990,10 @@ padding-left: 2px;
     }
 
 WBeatSpinBox {
-  /* make it 2px smaller in each dimension,
-    border is added for final size
+  /* Note(ronso0):
+  make it 2px smaller in each dimension,
+  border is added for final size.
+  Disabled since it prevents correct skin scaling
   min-width: 52px;
   max-width: 52px;
   min-height: 20px;
@@ -1008,8 +1005,9 @@ WBeatSpinBox {
   selection-color: #0f0f0f;
   selection-background-color: #d2d2d2;
   font-size: 13px/13px;
-  /* Apparently, a top and bottom padding needs to be set to make
-    the spinbox expand vertically to available 22px */ 
+  /* Note(ronso0):
+  Apparently, a top and bottom padding needs to be set to make
+  the spinbox expand vertically to available 22px */
   padding: 1px 0px 1px 3px;
   margin: 0px 15px 0px 0px;
 }
@@ -1026,10 +1024,11 @@ WBeatSpinBox {
     position: relative;
     background-color: #1e1e1e;
     border: 1px solid #1e1e1e;
-    border-width: 1px 0px 1px 0px;  /*
-    Tis would do weird things when the skin is scaled...
+    border-width: 1px 0px 1px 0px;
+    /* Note(ronso0):
+    This would do weird things when the skin is scaled...
     height: 20%;
-    width: 20%;*/
+    width: 20%; */
     }
     WBeatSpinBox::up-button:hover, WBeatSpinBox::down-button:hover {
       background-color: #0f0f0f;
@@ -1037,10 +1036,11 @@ WBeatSpinBox {
 
   WBeatSpinBox::up-button {
     subcontrol-position: center right;
-    /* Regularly, up/down buttons would be stacked vertically.
-      Here, they're both aligned 'center right' and have the same size
-      so we need to move one of those two buttons out of the way.
-    */
+    /* Note(ronso0):
+    Regularly, up/down buttons would be stacked vertically.
+    Here, they're both aligned 'center right' and have the same size.
+    This would make them overlap so we need to move one of those two
+    buttons out of the way: */
     right: -16px;
     image: url(skin:/buttons/btn_beatbox_up.svg) no-repeat;
     }
@@ -1119,12 +1119,12 @@ WBeatSpinBox {
 
   #RateUp, #RateDown,
   #KeyUp, #KeyDown {
-    border: 1px solid #444;    
+    border: 1px solid #444;
     }
     #RateUp:hover, #RateDown:hover,
     #KeyUp:hover, #KeyDown:hover {
       background-color: #333;
-      border: 1px solid #888;    
+      border: 1px solid #888;
     }
   #RateUp {
     image: url(skin:/buttons/btn_rate_up.svg) no-repeat center center;
@@ -1140,8 +1140,7 @@ WBeatSpinBox {
     }
 
   #KeyDisplay {
-    font-size: 14px/14px;/*
-    font-weight: bold;*/
+    font-size: 14px/14px;
     padding: 0px;
   }
   #KeyMatch {
@@ -1163,7 +1162,6 @@ WBeatSpinBox {
       #KeyDown:hover {
         image: url(skin:/buttons/btn_key_down_hover.svg) no-repeat center center;
       }
-/* */
 
 
 /*################################################################
@@ -1199,16 +1197,21 @@ WBeatSpinBox {
   #EQKillButton[displayValue="0"] {
     background-color: #585858;
     }
-  #EQKillButton[displayValue="0"]:hover {
-    border: 1px solid #ff0000;
+    #EQKillButton[displayValue="0"]:hover {
+      border: 1px solid #ff0000;
     }
   #EQKillButton[displayValue="1"] {
     background-color: #a90000;
     }
-  #EQKillButton[displayValue="1"]:hover {
-    border: 1px solid #aaaaaa;
-  }
+    #EQKillButton[displayValue="1"]:hover {
+      border: 1px solid #aaaaaa;
+    }
 
+/* Kill indicators underneath EQ knobs */
+#EQKillUnderlayLeft[displayValue="0"],
+#EQKillUnderlayRight[displayValue="0"] {
+  background: none;
+}
 #EQKillUnderlayLeft[displayValue="1"] {
   background-color: #585858;
   border-top-left-radius: 15px;
@@ -1242,10 +1245,6 @@ WBeatSpinBox {
     margin: 2px;
   }
 
-#GainKnob {
-  margin: 0px 0px -2px 0px;
-}
-
 /*  This wouldn't scale the image:
 #PflButton[displayValue="0"] {
   background: transparent url(skin:/buttons/btn_pfl_off.svg) no-repeat center center;
@@ -1264,21 +1263,17 @@ WBeatSpinBox {
   }
   #PflBoxLeft {
     border-width: 1px 0px 0px 1px;
-  }
-  #PflBoxRight {
-    border-width: 1px 1px 0px 0px;
-  }
-  #PflBoxLeft {
     border-top-right-radius: 0px;
     border-bottom-left-radius: 0px;
   }
   #PflBoxRight {
+    border-width: 1px 1px 0px 0px;
     border-bottom-right-radius: 0px;
     border-top-left-radius: 0px;
   }
 
-/* this style applies to all Pfl button:
-decks, samplers, mic, aux */
+/* this style is applied to all Pfl buttons in
+decks, samplers, mic, aux, fx */
 #PflButton[displayValue="0"] {
   background-color: #333;
 }
@@ -1427,11 +1422,12 @@ decks, samplers, mic, aux */
 
 #FxMetaknob {
   /* Should shift Meta knob 2px down.
-  Not working, though it works for Gain knob...
+  Not working, although it works for Gain knob...
   margin: 0px 0px -2px 0px; */
 }
 
 #FxToggleSelector {
+  /* stacked layout for toggle, effect name, feedback underlay & EffectSelector */
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
   border-radius: 3px;
   }
@@ -1447,6 +1443,7 @@ decks, samplers, mic, aux */
     #FxToggleButtonUnderlay[displayValue="1"] {
       background-color: #ff8f00;
       }
+
   #FxNameContainer {
     padding: 1px 2px 1px 1px;
     qproperty-layoutAlignment: 'AlignLeft';
@@ -1479,10 +1476,12 @@ decks, samplers, mic, aux */
       margin: 0px -2px 0px 0px;
       padding: 0px;
     }
-    WEffectSelector::down-arrow { /*
+    WEffectSelector::down-arrow {
+      /* When the skin is scaled, bg-color would be applied
+      to the (not scaled) button image only:
+      background-color: #101010;
       width: 11px;
-      height: 20px;
-      background-color: #101010;  */
+      height: 20px; */
       image: url(skin:/buttons/btn_fx_selector_list.svg) no-repeat center center;
       }
       WEffectSelector::down-arrow:hover {
@@ -1490,12 +1489,9 @@ decks, samplers, mic, aux */
       }
 
     WEffectSelector QAbstractItemView {
-      background-color: #202020;/* 
-      font-size: 13px/13px;
-      padding-left: 6px; */
+      background-color: #202020;
       /* On Linux, this is not applied but font color from WEffectSelector
-      is inherited.
-      On Windows, it must be defined here */
+      is inherited. On Windows, it must be defined here explicitely: */
       color: #ccc;
       border-radius: 2px;
       margin: 0px;
@@ -1529,11 +1525,13 @@ decks, samplers, mic, aux */
       margin: 0px -4px 0px -4px;
       This draws a border. And eliminates the tick mark...
       border: 1px solid #999;
-      This is 
+      This has no effect:
       background-color: #202020;
       background-color: #101010;
       height: 10px;
       width: 10px;
+      Image is rendered correctly but size of the tick mark containers
+      won't change:
       image: url(skin:/buttons/btn_tick.svg) no-repeat center center; */
     }
 
@@ -1582,7 +1580,7 @@ decks, samplers, mic, aux */
 
 #FxSuperLinkButton,
 #FxSuperLinkInvertButton {
-  /* those buttons are 5px tall, that's why they won't accept
+  /* those buttons are only 5px tall, that's why they won't accept
   3px radius which is set for all WPushButtons */
   border-radius: 2px;
 }
@@ -1663,9 +1661,6 @@ decks, samplers, mic, aux */
   border-radius: 2px;
   background-color: #333;
   }
-#MixerbarSection WPushButton {
-  font-size: 11px/13px;
-  }
   #FxAssignButton[displayValue="0"] {
     color: #888;
     }
@@ -1680,6 +1675,8 @@ decks, samplers, mic, aux */
       border: 1px solid #fff;
     }
 
+/* Master FX buttons in top bar's mixer section are
+styled differently because of their importance */
 #MasterFxButton {
   font-size: 13px/13px;
   font-weight: bold;
@@ -1813,7 +1810,7 @@ WTrackProperty#SamplerTitle_mini {
 }
 
 #SpinnyMini {
-  background: transparent;
+  background-color: transparent;
 }
 
 /*################################################################
@@ -1841,7 +1838,7 @@ WTrackProperty#SamplerTitle_mini {
   }
   #PreviewTitle WLabel {
     font-size: 14px/14px;
-    font-weight:bold;
+    font-weight: bold;
     text-align: left;
     color: #bababa;
   }
@@ -1995,8 +1992,8 @@ QTreeView {
   border-width: 1px 1px 1px 0px;
   border-style: solid;
   border-color: #585858;
-  show-decoration-selected: 0;	/*
-  Don't define top margin here, it won't shift ScrollBar.
+  show-decoration-selected: 0;
+  /* Don't define top margin here, it won't shift ScrollBar.
   Defined by SearchBox	*/
   margin: 0px;
   }
@@ -2043,7 +2040,9 @@ QTableView {
 
 QHeaderView {
   font-family: Ubuntu;
-  font-weight: bold;	/*
+  font-weight: bold;
+  /* Note(ronso0)
+  Interferes with skin scaling
   font-size: 13px/13px;	*/
   color: #CFCFCF;
   background-color: #1e1e1e;
@@ -2162,13 +2161,17 @@ Library features and their buttons:
     QPushButton#pushButtonRecording > un/checked
 
   	*/
-QPushButton {
+WLibrary QPushButton {
   text-align: center;
   font-family: Ubuntu;
-  font-weight: normal;	/*
+  font-weight: normal;
+  /* Note(ronso0)
+  Interferes with skin scaling, system font size respectively
   font-size: 14px/14px;
+  Setting height/width here will prevent the buttons being scaled properly
   min-height: 22px;
-  max-height: 22px;	*/
+  max-height: 22px;
+  height: 22px;	*/
   color: #ccc;
   border-radius: 2px;
   margin: 3px 2px 5px 1px;
@@ -2234,7 +2237,7 @@ QPushButton {
   QPushButton#LibraryPreviewButton {
     width: 23px;
     height: 12px;
-    background: transparent;
+    background: none;
     border: 0px;
     margin: 0px;
     padding: 0px;
@@ -2269,20 +2272,30 @@ QPushButton {
   }
 
 /* SpinBox, currently only used for transition time in Auto DJ tab */
-WLibrary QSpinBox {	/*
+WLibrary QSpinBox {
+  /* Note(ronso0)
+  Those settings will interfere with skin scaling
   min-height: 20px;
   max-height: 20px;
   min-width: 40px;
-  max-width: 40px;	*/
+  max-width: 40px;
+  height: 20px;
+  width: 40px;	*/
+  background-color: #0f0f0f;
+  border-radius: 2px;
   }
   WLibrary QSpinBox:editable {
-    background: transparent;
+    background: none;
     color: #ffa600;
     selection-background-color: #d2d2d2;
     selection-color: #0f0f0f;
   }
   WLibrary QSpinBox:editable:focus {
     border: 1px solid #ff6600;
+    /* Note(ronso0)
+    This will expand the spinbox bg-color to include up/down buttons,
+    but the buttons are rendered nearly invisible
+    background-color: #fff; */
   }
 
 /* library search text box */
@@ -2310,7 +2323,7 @@ WSearchLineEdit {
 
 QLabel,
 QRadioButton {	/*
-  background: transparent;
+  background: none;
   Extra declaration for QRadioButton otherwise it shows up with
   wrong colors in Linux with Gnome 	*/
   color: #cfcfcf;

@@ -1,9 +1,13 @@
 <!--
 Description:
-  An expanding filler that appears only if more than XY pixels are available
+  An horizontally expanding filler that draws the horizontal border in
+  between two effect slots. It contains an 'arrow' below/above effect toggle
+  that indicates how a signal flows through the effect unit: 1 > 2 > 3
+  It's used for left and right oriented effect units. 
 Variables:
-  Size  : Size/SizePolicy for the whole container
-  Color : Abbreviated hex color code for the filler, see style.qss
+  widthLeft     : distance between arrow and left border 
+  widthRight    : distance between arrow and right border
+  FxRack_FxUnit :
 -->
 <Template>
   <WidgetGroup>

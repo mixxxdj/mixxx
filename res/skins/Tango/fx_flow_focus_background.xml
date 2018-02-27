@@ -1,9 +1,13 @@
 <!--
 Description:
-  An expanding filler that appears only if more than XY pixels are available
+  An expanding filler used as background for effect slots.
+  It is #333 by default and when the respective effect is unfocused,
+  otherwise it turns transparent and the black effect unit background
+  is visible.
 Variables:
-  Size  : Size/SizePolicy for the whole container
-  Color : Abbreviated hex color code for the filler, see style.qss
+  Size          : Size/SizePolicy for the whole container
+  FxRack_FxUnit :
+  FxNum         : Affected effect (slot)
 -->
 <Template>
   <WidgetGroup>

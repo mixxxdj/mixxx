@@ -1,9 +1,19 @@
 <!--
 Description:
-  An expanding filler that appears only if more than XY pixels are available
+  An horizontally expanding filler that draws the horizontal border in
+  between two effect slots. It contains an 'arrow' placed below/above
+  effect toggle that indicates how a signal flows through the effect unit.
+  It's used for left and right oriented effect units.
+  Top and bottom half of this spacer (arrow and straight dividers) change
+  colors depending on if the effect above or below or none is focused.
+  The unfocused effect slot is painted #333. If focused, it turns transparent
+  and the black effect unit background is visible.
 Variables:
-  Size  : Size/SizePolicy for the whole container
-  Color : Abbreviated hex color code for the filler, see style.qss
+  widthLeft     : distance between arrow and left border 
+  widthRight    : distance between arrow and right border
+  FxRack_FxUnit :
+  FxTop         : Effect slot above separator
+  FxBottom      : Effect slot belwo seperator
 -->
 <Template>
   <WidgetGroup>

@@ -51,7 +51,7 @@ Variables:
 
       <WidgetGroup><!-- Play/Cue + Cover-->
         <ObjectName>SamplerPlayBox_mini</ObjectName>
-        <Layout>stacked</Layout>
+        <Layout>horizontal</Layout>
         <Size>35f,34f</Size>
         <Children>
           <SingletonContainer>
