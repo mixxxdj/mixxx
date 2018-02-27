@@ -2170,12 +2170,12 @@ WLibrary QPushButton {
   font-size: 14px/14px;
   Setting height/width here will prevent the buttons being scaled properly
   min-height: 22px;
-  max-height: 22px;
-  height: 22px;	*/
+  max-height: 22px;	*/
+  height: 22px;
   color: #ccc;
   border-radius: 2px;
-  margin: 3px 2px 5px 1px;
-  padding: 1px 6px -1px 6px;
+  margin: 1px 2px 5px 1px;
+  padding: 1px 6px 1px 6px;
   background-color: #333;
   background-position: center;
   }
@@ -2196,16 +2196,15 @@ WLibrary QPushButton {
     }
   /* 'Enable AutoDJ' button	*/
   QPushButton#pushButtonAutoDJ:unchecked:hover {
-    min-width: 112px;
     background-color: #ff7b00;
   }
   /* 'Start/Stop Recording' button	*/
   QPushButton#pushButtonRecording {
-    min-width: 126px;
   }
   QPushButton#pushButtonRecording:unchecked {
     color: #888;
     background-color: #444;
+    border: 1px solid #444;
   }
   QPushButton#pushButtonRecording:unchecked:hover,
   QPushButton#pushButtonRecording:checked {
@@ -2270,33 +2269,17 @@ WLibrary QPushButton {
     color: #fff;
     background-color: #666;
   }
-
-/* SpinBox, currently only used for transition time in Auto DJ tab */
 WLibrary QSpinBox {
-  /* Note(ronso0)
-  Those settings will interfere with skin scaling
-  min-height: 20px;
-  max-height: 20px;
+  min-height: 22px;
+  max-height: 22px;
   min-width: 40px;
   max-width: 40px;
-  height: 20px;
-  width: 40px;	*/
-  background-color: #0f0f0f;
-  border-radius: 2px;
-  }
-  WLibrary QSpinBox:editable {
-    background: none;
-    color: #ffa600;
-    selection-background-color: #d2d2d2;
-    selection-color: #0f0f0f;
-  }
-  WLibrary QSpinBox:editable:focus {
-    border: 1px solid #ff6600;
-    /* Note(ronso0)
-    This will expand the spinbox bg-color to include up/down buttons,
-    but the buttons are rendered nearly invisible
-    background-color: #fff; */
-  }
+}
+
+WLibrary QSpinBox:editable {
+  background: #0f0f0f;
+  color: #ffa600;
+}
 
 /* library search text box */
 WSearchLineEdit {
