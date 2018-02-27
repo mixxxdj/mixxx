@@ -19,7 +19,7 @@ var noPlayOnSyncDoublePress = false;
 // Shift+Filter control behavior
 // true (default) - FX parameter 4 (when the FX is focused)
 // false - Channel Gain
-var ShiftFilterFX4 = false; 
+var ShiftFilterFX4 = true; 
 
 // allow pitch bend with wheel when wheel is not active 
 var PitchBendOnWheelOff = true;
