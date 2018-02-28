@@ -690,6 +690,7 @@ MixtrackPlatinum.scratchTimer = function (deck) {
 };
 
 MixtrackPlatinum.scratchDisable = function (deck) {
+    MixtrackPlatinum.searching[deck] = false;
     MixtrackPlatinum.stopScratchTimer(deck);
     engine.scratchDisable(deck, false);
 };
@@ -704,18 +705,31 @@ MixtrackPlatinum.scratchEnable = function (deck) {
 
 // The button that enables/disables scratching
 MixtrackPlatinum.touching = [];
+MixtrackPlatinum.searching = [];
 MixtrackPlatinum.wheelTouch = function (channel, control, value, status, group) {
     // ignore touch events if not in vinyl mode
-    if (value === 0x7F && !MixtrackPlatinum.wheel[channel]) return;
+    if (!MixtrackPlatinum.shift && value === 0x7F && !MixtrackPlatinum.wheel[channel]) return;
 
     var deck = channel + 1;
     MixtrackPlatinum.touching[deck] = 0x7F == value;
 
 
     // don't start scratching if shift is pressed
-    if (value === 0x7F && !MixtrackPlatinum.shift) {
+    if (value === 0x7F
+        && !MixtrackPlatinum.shift
+        && !MixtrackPlatinum.searching[deck])
+    {
         MixtrackPlatinum.scratchEnable(deck);
-    } else {    // If button up
+    }
+    else if (value === 0x7F
+             && (MixtrackPlatinum.shift
+                || MixtrackPlatinum.searching[deck]))
+    {
+        MixtrackPlatinum.scratchDisable(deck);
+        MixtrackPlatinum.searching[deck] = true;
+        MixtrackPlatinum.stopScratchTimer(deck);
+    }
+    else {    // If button up
         MixtrackPlatinum.startScratchTimer(deck);
     }
 };
@@ -734,9 +748,13 @@ MixtrackPlatinum.wheelTurn = function (channel, control, value, status, group) {
         direction = false;
     }
 
-    // detect shift for searching the track
-    if (MixtrackPlatinum.shift) {
-        engine.setValue(group, 'beatjump', newValue * 0.05);
+    // detect searching the track
+    if (MixtrackPlatinum.searching[deck]) {
+        var position = engine.getValue(group, 'playposition');
+        if (position <= 0) position = 0;
+        if (position >= 1) position = 1;
+        engine.setValue(group, 'playposition', position + newValue * 0.0001);
+        MixtrackPlatinum.resetScratchTimer(deck, newValue);
         return;
     }
 
@@ -794,14 +812,5 @@ MixtrackPlatinum.shiftToggle = function (channel, control, value, status, group)
         MixtrackPlatinum.sampler.unshift();
         MixtrackPlatinum.effects.unshift();
         MixtrackPlatinum.browse.unshift();
-    }
-
-    for (i = 1; i <= 4; ++i) {
-        if (MixtrackPlatinum.touching[i]) {
-            // if shift is pressed while we are scratching, stop scratching
-            if (MixtrackPlatinum.shift) MixtrackPlatinum.scratchDisable(i);
-            // esle if shift is released and we are still scratching, detect that
-            else MixtrackPlatinum.scratchEnable(i);
-        }
     }
 };
