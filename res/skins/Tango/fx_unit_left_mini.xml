@@ -241,27 +241,24 @@ Variables:
       <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
       <WidgetGroup><!-- FX expand button + FX label -->
-        <ObjectName>AlignRight</ObjectName>
+        <ObjectName>FxUnitControlsLeft</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
           <Label>
             <ObjectName>FxUnitLabel</ObjectName>
-            <Size>28f,12f</Size>
+            <Size>28f,15f</Size>
             <Text>FX&#8202;<Variable name="FxUnit"/></Text>
             <Alignment>right</Alignment>
           </Label>
 
-          <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
-
           <WidgetGroup><!-- normal FX expand button -->
             <Layout>vertical</Layout>
-            <Size>26min,14f</Size>
             <Children>
               <Template src="skin:button_2state_persist.xml">
                 <SetVariable name="ObjectName">FxSamplersMiniMaxi</SetVariable>
                 <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
-                <SetVariable name="Size">26min,14f</SetVariable>
+                <SetVariable name="Size">26min,15f</SetVariable>
                 <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],show_parameters</SetVariable>
               </Template>
             </Children>
@@ -274,16 +271,14 @@ Variables:
 
           <WidgetGroup><!-- FX expand button when focus is shown -->
             <Layout>vertical</Layout>
-            <Size>26min,14f</Size>
             <Children>
               <WidgetGroup><!-- when no effect is focused -->
                 <Layout>vertical</Layout>
-                <Size>26min,14f</Size>
                 <Children>
                   <Template src="skin:button_2state_persist.xml">
                     <SetVariable name="ObjectName">FxSamplersMiniMaxi</SetVariable>
                     <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
-                    <SetVariable name="Size">26min,14f</SetVariable>
+                    <SetVariable name="Size">26min,15f</SetVariable>
                     <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],show_parameters</SetVariable>
                   </Template>
                 </Children>
@@ -296,12 +291,11 @@ Variables:
 
               <WidgetGroup><!-- when any effect is focused -->
                 <Layout>vertical</Layout>
-                <Size>26min,14f</Size>
                 <Children>
                   <Template src="skin:button_2state_persist.xml">
                     <SetVariable name="ObjectName">FxSamplersMiniMaxi_Focus</SetVariable>
                     <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
-                    <SetVariable name="Size">26min,14f</SetVariable>
+                    <SetVariable name="Size">26min,15f</SetVariable>
                     <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],show_parameters</SetVariable>
                   </Template>
                 </Children>
@@ -317,8 +311,6 @@ Variables:
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /FX expand button when focus is shown -->
-
-          <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
         </Children>
       </WidgetGroup><!-- /FX label + FX expand button -->
 

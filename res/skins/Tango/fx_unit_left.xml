@@ -173,20 +173,18 @@ Variables:
       </WidgetGroup><!-- /EffectSlots + Underlays -->
 
       <WidgetGroup><!-- FxUnitControls -->
+        <ObjectName>AlignRight</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>max,me</SizePolicy>
         <Children>
           <WidgetGroup><!-- FX label + FX expand button -->
-            <ObjectName>AlignRight</ObjectName>
+            <ObjectName>FxUnitControlsLeft</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
               <Label>
                 <ObjectName>FxUnitLabel</ObjectName>
-                <!-- Pretend it's in the same position like collapsed FX unit:
-                    there, it has a 4px spacer above. here, we need some margin
-                    to FX mixer below. Text is centerd vertically -->
-                <Size>30min,12f</Size>
+                <Size>30f,15f</Size>
                 <Text>FX&#8202;<Variable name="FxUnit"/></Text>
                 <Alignment>right</Alignment>
               </Label>
@@ -196,7 +194,7 @@ Variables:
               <Template src="skin:button_2state_persist.xml">
                 <SetVariable name="ObjectName">FxSamplersMiniMaxi</SetVariable>
                 <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
-                <SetVariable name="Size">26min,14f</SetVariable>
+                <SetVariable name="Size">30f,15f</SetVariable>
                 <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],show_parameters</SetVariable>
               </Template>
 
@@ -204,7 +202,7 @@ Variables:
             </Children>
           </WidgetGroup><!-- /FX label + FX expand button -->
 
-          <WidgetGroup><!-- FxUnitMixer + Master, Headphone -->
+          <WidgetGroup><!-- FxUnitMixer + Pfl button -->
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
@@ -300,7 +298,7 @@ Variables:
               </WidgetGroup><!-- /FxUnitMixer -->
 
             </Children>
-          </WidgetGroup><!-- /FxUnitMixer + Master, Headphone -->
+          </WidgetGroup><!-- /FxUnitMixer + Pfl button -->
         </Children>
       </WidgetGroup><!-- /FxUnitControls -->
     </Children>

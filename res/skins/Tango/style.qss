@@ -338,7 +338,7 @@ WWidgetGroup {
     color: #d2d2d2;
   }
 
-#ClockBox, WTime {
+#ClockBox {
   qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
   }
   #ClockBox WLabel,
@@ -1311,21 +1311,23 @@ decks, samplers, mic, aux, fx */
 ######  Effects  ###############################################
 ##############################################################*/
 
-#FxUnitLabel,
-#FxUnitLabel1,
-#FxUnitLabel2,
-#FxUnitLabel3,
-#FxUnitLabel4 {
-  font-size: 14px/12px;
+#FxUnitLabel {
+  qproperty-alignment: right;
+  font-size: 14px;
   font-weight: bold;
   color: #888;
+  padding: -1px 0px 0px 0px;
+  margin: 0px;
+  border: 0px;
 }
 
-#FxUnitLabel1, #FxUnitLabel3 {
-  qproperty-alignment: right;
+#FxUnitControlsRight {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  background-color: #252525;
 }
-#FxUnitLabel2, #FxUnitLabel4 {
-  qproperty-alignment: left;
+#FxUnitControlsLeft {
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  background-color: #252525;
 }
 
 #FxUnitMixerLeft,
