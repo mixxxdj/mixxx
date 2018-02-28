@@ -12,11 +12,17 @@ struct BeatGridData {
 };
 
 class BeatGridIterator : public BeatIterator {
+  private:
+    int calcBeatIndex(double current, double length) {
+        return round(current / length);
+    }
+
   public:
     BeatGridIterator(double dBeatLength, double dFirstBeat, double dEndSample)
             : m_dBeatLength(dBeatLength),
               m_dCurrentSample(dFirstBeat),
               m_dEndSample(dEndSample) {
+        m_beatIndex = calcBeatIndex(dFirstBeat, dBeatLength);
     }
 
     virtual bool hasNext() const {
@@ -26,13 +32,21 @@ class BeatGridIterator : public BeatIterator {
     virtual double next() {
         double beat = m_dCurrentSample;
         m_dCurrentSample += m_dBeatLength;
+        //qDebug() << "BeatGridIterator::next() beat=" << beat << " m_dBeatLength=" << m_dBeatLength << "beat/m_dBeatLength=" << round(beat / m_dBeatLength);
+        m_beatIndex = calcBeatIndex(beat, m_dBeatLength);
         return beat;
+    }
+
+    virtual int beatIndex() const {
+        //qDebug() << "BeatGridIterator::m_beatIndex" << m_beatIndex;
+        return m_beatIndex;
     }
 
   private:
     double m_dBeatLength;
     double m_dCurrentSample;
     double m_dEndSample;
+    int    m_beatIndex;
 };
 
 BeatGrid::BeatGrid(

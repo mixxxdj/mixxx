@@ -14,6 +14,11 @@
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererAbstract(waveformWidgetRenderer) {
     m_beats.resize(128);
+
+    // TODO(ntmusic): Read from settings
+    m_measureSize = 4;
+    m_phraseSize = 16;
+    m_phraseColor.setRgb(255,0,0);
 }
 
 WaveformRenderBeat::~WaveformRenderBeat() {
@@ -50,9 +55,9 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     const double lastDisplayedPosition =
             m_waveformRenderer->getLastDisplayedPosition();
 
-    // qDebug() << "trackSamples" << trackSamples
-    //          << "firstDisplayedPosition" << firstDisplayedPosition
-    //          << "lastDisplayedPosition" << lastDisplayedPosition;
+    //qDebug() << "trackSamples" << trackSamples
+    //         << "firstDisplayedPosition" << firstDisplayedPosition
+    //         << "lastDisplayedPosition" << lastDisplayedPosition;
 
     std::unique_ptr<BeatIterator> it(trackBeats->findBeats(
             firstDisplayedPosition * trackSamples,
@@ -67,8 +72,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     painter->setRenderHint(QPainter::Antialiasing);
 
     QPen beatPen(m_beatColor);
-    beatPen.setWidthF(std::max(1.0, scaleFactor()));
-    painter->setPen(beatPen);
+    beatPen.setWidthF(std::max(0.5, scaleFactor()));
 
     const Qt::Orientation orientation = m_waveformRenderer->getOrientation();
     const float rendererWidth = m_waveformRenderer->getWidth();
@@ -83,9 +87,27 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
         xBeatPoint = qRound(xBeatPoint);
 
+        int beatIndex = it->beatIndex();
+
         // If we don't have enough space, double the size.
         if (beatCount >= m_beats.size()) {
             m_beats.resize(m_beats.size() * 2);
+        }
+
+        if(beatIndex >= 0) {
+
+            if (orientation == Qt::Horizontal) {
+                QRect rect(xBeatPoint + 2, rendererHeight - 4, 4, 4);
+
+                if((beatIndex % m_phraseSize) == 0) {
+                    painter->fillRect(rect, m_phraseColor);
+                }
+                else if((beatIndex % m_measureSize) == 0) {
+                    painter->fillRect(rect, m_beatColor);
+                }
+            } else {
+                // TODO(ntmusic): Handle Qt::Vertical, test w/ vertical waveform skin
+            }
         }
 
         if (orientation == Qt::Horizontal) {
@@ -96,6 +118,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     }
 
     // Make sure to use constData to prevent detaches!
+    painter->setPen(beatPen);
     painter->drawLines(m_beats.constData(), beatCount);
 
     painter->restore();

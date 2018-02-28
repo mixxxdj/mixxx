@@ -53,6 +53,11 @@ class BeatMapIterator : public BeatIterator {
         return beat;
     }
 
+    virtual int beatIndex() const {
+        // Just a place holder to keep the parent class happy
+        return 0;
+    }
+
   private:
     BeatList::const_iterator m_currentBeat;
     BeatList::const_iterator m_endBeat;
