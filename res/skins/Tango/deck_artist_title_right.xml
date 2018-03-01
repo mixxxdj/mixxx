@@ -128,7 +128,6 @@ Variables:
             <TooltipId>track_artist</TooltipId>
             <ObjectName>TrackArtist</ObjectName>
             <SizePolicy>min,f</SizePolicy>
-            <Property>title</Property>
             <Alignment>right</Alignment>
             <Property>artist</Property>
             <Channel><Variable name="chanNum"/></Channel>

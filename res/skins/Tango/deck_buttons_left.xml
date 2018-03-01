@@ -243,7 +243,7 @@ Variables:
               <!-- Play -->
               <Template src="skin:button_2state_right_display.xml">
                 <SetVariable name="ObjectName">PlayCue</SetVariable>
-                <SetVariable name="TooltipId">play_cue_default</SetVariable>
+                <SetVariable name="TooltipId">play_cue_set</SetVariable>
                 <SetVariable name="Size">50f,24f</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
