@@ -16,27 +16,24 @@ Variables:
     <Children>
 
       <WidgetGroup><!-- FX expand button + FX label -->
-        <ObjectName>AlignLeft</ObjectName>
+        <ObjectName>Spacer25</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
           <Label>
             <ObjectName>FxUnitLabel</ObjectName>
-            <Size>28f,12f</Size>
+            <Size>28f,15f</Size>
             <Text>FX&#8202;<Variable name="FxUnit"/></Text>
-            <Alignment>left</Alignment>
+            <Alignment>right</Alignment>
           </Label>
-
-          <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
 
           <WidgetGroup><!-- normal FX expand button -->
             <Layout>vertical</Layout>
-            <Size>26f,14f</Size>
             <Children>
               <Template src="skin:button_2state_persist.xml">
                 <SetVariable name="ObjectName">FxSamplersMiniMaxi</SetVariable>
                 <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
-                <SetVariable name="Size">26f,14f</SetVariable>
+                <SetVariable name="Size">26min,15f</SetVariable>
                 <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],show_parameters</SetVariable>
               </Template>
             </Children>
@@ -49,16 +46,14 @@ Variables:
 
           <WidgetGroup><!-- FX expand button when focus is shown -->
             <Layout>vertical</Layout>
-            <Size>26f,14f</Size>
             <Children>
               <WidgetGroup><!-- when no effect is focused -->
                 <Layout>vertical</Layout>
-                <Size>26f,14f</Size>
                 <Children>
                   <Template src="skin:button_2state_persist.xml">
                     <SetVariable name="ObjectName">FxSamplersMiniMaxi</SetVariable>
                     <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
-                    <SetVariable name="Size">26f,14f</SetVariable>
+                    <SetVariable name="Size">26min,15f</SetVariable>
                     <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],show_parameters</SetVariable>
                   </Template>
                 </Children>
@@ -71,12 +66,11 @@ Variables:
 
               <WidgetGroup><!-- when any effect is focused -->
                 <Layout>vertical</Layout>
-                <Size>26f,14f</Size>
                 <Children>
                   <Template src="skin:button_2state_persist.xml">
                     <SetVariable name="ObjectName">FxSamplersMiniMaxi_Focus</SetVariable>
                     <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
-                    <SetVariable name="Size">26f,14f</SetVariable>
+                    <SetVariable name="Size">26min,15f</SetVariable>
                     <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],show_parameters</SetVariable>
                   </Template>
                 </Children>
@@ -92,8 +86,6 @@ Variables:
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /FX expand button when focus is shown -->
-
-          <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
         </Children>
       </WidgetGroup><!-- /FX label + FX expand button -->
 
@@ -174,85 +166,21 @@ Variables:
         </Children>
       </WidgetGroup><!-- /Headphone + Super + Wet/Dry + FX label + expand toggle -->
 
-      <WidgetGroup><!-- EffectSlots + Underlays, no focus -->
+      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1me</Size></WidgetGroup>
+
+      <WidgetGroup><!-- EffectSlots + Underlays -->
+        <ObjectName>Spacer0f</ObjectName>
         <Layout>stacked</Layout>
         <SizePolicy>max,min</SizePolicy>
         <Children>
-          <WidgetGroup><!-- EffectSlots, no focus -->
+
+          <WidgetGroup><!-- EffectSlots, optional focus button -->
             <Layout>horizontal</Layout>
-            <SizePolicy>max,min</SizePolicy>
+            <Size>-1max,-1min</Size>
             <Children>
               <WidgetGroup><!-- Effect 1 -->
                 <Layout>horizontal</Layout>
-                <Children>
-                  <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-                  <Template src="skin:fx_toggle_selector.xml"><SetVariable name="FxNum">1</SetVariable></Template>
-                  <Template src="skin:fx_metaknob.xml"><SetVariable name="FxNum">1</SetVariable></Template>
-                  <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-                </Children>
-              </WidgetGroup>
-
-              <WidgetGroup><!-- Effect 2 -->
-                <Layout>horizontal</Layout>
-                <Children>
-                  <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-                  <Template src="skin:fx_toggle_selector.xml"><SetVariable name="FxNum">2</SetVariable></Template>
-                  <Template src="skin:fx_metaknob.xml"><SetVariable name="FxNum">2</SetVariable></Template>
-                  <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-                </Children>
-              </WidgetGroup>
-
-              <WidgetGroup><!-- Effect 3 -->
-                <Layout>horizontal</Layout>
-                <Children>
-                  <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-                  <Template src="skin:fx_toggle_selector.xml"><SetVariable name="FxNum">3</SetVariable></Template>
-                  <Template src="skin:fx_metaknob.xml"><SetVariable name="FxNum">3</SetVariable></Template>
-                  <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-                </Children>
-              </WidgetGroup>
-            </Children>
-          </WidgetGroup><!-- /EffectSlots, no focus -->
-
-          <WidgetGroup><!-- Underlays, no focus -->
-            <ObjectName>Spacer0f</ObjectName>
-            <Layout>stacked</Layout>
-            <SizePolicy>min,min</SizePolicy>
-            <Children>
-              <WidgetGroup><!-- EffectSlot 1 -->
-                <ObjectName>FxFlowUnderlay_mini_noFocus1</ObjectName>
-                <Size>120f,30f</Size>
-              </WidgetGroup>
-
-              <WidgetGroup><!-- EffectSlot 2 -->
-                <ObjectName>FxFlowUnderlay_mini_noFocus2</ObjectName>
-                <Size>240f,30f</Size>
-              </WidgetGroup>
-
-              <WidgetGroup><!-- EffectSlot 3 -->
-                <ObjectName>FxFlowUnderlay_mini_noFocus3</ObjectName>
-                <Size>360f,30f</Size>
-              </WidgetGroup>
-            </Children>
-          </WidgetGroup><!-- /Underlays, no focus -->
-        </Children>
-        <Connection>
-          <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
-          <Transform><Not/></Transform>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup><!-- /EffectSlots + Underlays, no focus -->
-
-      <WidgetGroup><!-- EffectSlots + Underlays, with focus -->
-        <Layout>stacked</Layout>
-        <SizePolicy>max,min</SizePolicy>
-        <Children>
-          <WidgetGroup><!-- EffectSlots with focus button -->
-            <Layout>horizontal</Layout>
-            <SizePolicy>max,min</SizePolicy>
-            <Children>
-              <WidgetGroup><!-- Effect 1 -->
-                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
                 <Children>
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_toggle_selector.xml"><SetVariable name="FxNum">1</SetVariable></Template>
@@ -264,6 +192,7 @@ Variables:
 
               <WidgetGroup><!-- Effect 2 -->
                 <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
                 <Children>
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_toggle_selector.xml"><SetVariable name="FxNum">2</SetVariable></Template>
@@ -275,6 +204,7 @@ Variables:
 
               <WidgetGroup><!-- Effect 3 -->
                 <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
                 <Children>
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_toggle_selector.xml"><SetVariable name="FxNum">3</SetVariable></Template>
@@ -284,50 +214,101 @@ Variables:
                 </Children>
               </WidgetGroup>
             </Children>
-          </WidgetGroup><!-- /EffectSlots with focus button -->
+          </WidgetGroup><!-- /EffectSlots, optional focus button -->
 
-          <WidgetGroup><!-- Underlays with focus -->
-            <ObjectName>Spacer0f</ObjectName>
-            <Layout>stacked</Layout>
+          <WidgetGroup><!-- Underlays, no focus -->
+            <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
               <WidgetGroup><!-- EffectSlot 1 -->
-                <ObjectName>FxFlowUnderlay_mini_focus1</ObjectName>
-                <Size>134f,30f</Size>
-                <Connection>
-                  <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
-                  <Transform><IsEqual>1</IsEqual></Transform>
-                  <BindProperty>highlight</BindProperty>
-                </Connection>
+                <ObjectName>FxFlow_focus_background</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>FxFlow_mini_separator</ObjectName>
+                <Size>11f,30f</Size>
               </WidgetGroup>
 
               <WidgetGroup><!-- EffectSlot 2 -->
-                <ObjectName>FxFlowUnderlay_mini_focus2</ObjectName>
-                <Size>268f,30f</Size>
+                <ObjectName>FxFlow_focus_background</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>FxFlow_mini_separator</ObjectName>
+                <Size>11f,30f</Size>
+              </WidgetGroup>
+
+              <WidgetGroup><!-- EffectSlot 3 -->
+                <ObjectName>FxFlow_focus_background</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>FxFlow_focus_background</ObjectName>
+                <Size>11f,30f</Size>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /Underlays, no focus -->
+
+          <WidgetGroup><!-- Underlays with focus -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <!-- EffectSlot 1 -->
+              <Template src="skin:fx_flow_focus_background.xml">
+                <SetVariable name="Size">-1me,-1min</SetVariable>
+                <SetVariable name="FxNum">1</SetVariable>
+              </Template>
+
+              <WidgetGroup>
+                <ObjectName>FxFlow_mini_focus_separator1-2</ObjectName>
+                <Size>11f,30f</Size>
                 <Connection>
                   <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
-                  <Transform><IsEqual>2</IsEqual></Transform>
                   <BindProperty>highlight</BindProperty>
                 </Connection>
               </WidgetGroup>
 
-              <WidgetGroup><!-- EffectSlot 3 -->
-                <ObjectName>FxFlowUnderlay_mini_focus3</ObjectName>
-                <Size>402f,30f</Size>
+              <!-- EffectSlot 2 -->
+              <Template src="skin:fx_flow_focus_background.xml">
+                <SetVariable name="Size">-1me,-1min</SetVariable>
+                <SetVariable name="FxNum">2</SetVariable>
+              </Template>
+
+              <WidgetGroup>
+                <ObjectName>FxFlow_mini_focus_separator2-3</ObjectName>
+                <Size>11f,30f</Size>
                 <Connection>
                   <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
-                  <Transform><IsEqual>3</IsEqual></Transform>
                   <BindProperty>highlight</BindProperty>
                 </Connection>
               </WidgetGroup>
+
+              <!-- EffectSlot 3 -->
+              <Template src="skin:fx_flow_focus_background.xml">
+                <SetVariable name="Size">-1me,-1min</SetVariable>
+                <SetVariable name="FxNum">3</SetVariable>
+              </Template>
+              <Template src="skin:fx_flow_focus_background.xml">
+                <SetVariable name="Size">11f,30f</SetVariable>
+                <SetVariable name="FxNum">3</SetVariable>
+              </Template>
             </Children>
+            <Connection>
+              <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup><!-- /Underlays with focus -->
+
         </Children>
-        <Connection>
-          <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup><!-- /EffectSlots + Underlays, with focus -->
+      </WidgetGroup><!-- /EffectSlots + Underlays -->
 
       <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 

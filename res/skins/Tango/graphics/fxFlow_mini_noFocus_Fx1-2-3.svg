@@ -7,9 +7,10 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.1"
-   width="26"
-   height="23"
+   width="11"
+   height="30"
    id="svg2">
   <metadata
      id="metadata10">
@@ -24,9 +25,17 @@
     </rdf:RDF>
   </metadata>
   <defs
-     id="defs8" />
+     id="defs8">
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect2995" />
+  </defs>
   <path
-     d="m 7.0135542,18.612 a 8.185561,8.2032124 0 1 1 11.9730808,0"
+     d="M 0,30 9.39494,15 0,0 z"
      id="path4"
-     style="color:#000000;fill:none;stroke:#b4b4b4;stroke-width:1.70000005;stroke-linecap:round;stroke-linejoin:round" />
+     style="fill:#333333" />
+  <path
+     d="M 1.60506,0 11,0 11,30 1.60506,30 11,15 1.60506,0"
+     id="path2993"
+     style="fill:#333333;fill-opacity:1;stroke:none" />
 </svg>

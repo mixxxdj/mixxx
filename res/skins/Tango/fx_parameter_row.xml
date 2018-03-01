@@ -9,7 +9,7 @@ Variables passed through from fx_unit:
   <WidgetGroup>
     <ObjectName>FxParameters</ObjectName>
     <Layout>horizontal</Layout>
-    <Size>max,45f</Size>
+    <Size>max,max</Size>
     <Children>
 
       <Template src="skin:fx_parameter_knob.xml">

@@ -178,14 +178,14 @@ Description:
                         <SetVariable name="state_0_text">      Key/Key Match</SetVariable>
                         <SetVariable name="state_1_text"> &#10004; Key/Key Match</SetVariable>
                         <SetVariable name="width">182</SetVariable>
-                        <SetVariable name="Setting">[Tango],key_controls</SetVariable>
+                        <SetVariable name="Setting">[Tango],key_display_match</SetVariable>
                       </Template>
 
                       <Template src="skin:skin_settings_button_2state.xml">
                         <SetVariable name="state_0_text">      Rate/Key Adjustment Buttons</SetVariable>
                         <SetVariable name="state_1_text"> &#10004; Rate/Key Adjustment Buttons</SetVariable>
                         <SetVariable name="width">182</SetVariable>
-                        <SetVariable name="Setting">[Tango],rate_key_buttons</SetVariable>
+                        <SetVariable name="Setting">[Tango],rate_key_controls</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup>
