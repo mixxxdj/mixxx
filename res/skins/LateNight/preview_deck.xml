@@ -153,8 +153,8 @@
                 <Children>
                   <StatusLight>
                     <TooltipId>preview_PeakIndicator</TooltipId>
-                    <PathStatusLight>style/clipping_previewdeck_over.png</PathStatusLight>
-                    <PathBack>style/clipping_previewdeck.png</PathBack>
+                    <PathStatusLight>style/clipping_previewdeck_over.svg</PathStatusLight>
+                    <PathBack>style/clipping_previewdeck.svg</PathBack>
                     <Connection>
                       <ConfigKey>[PreviewDeck1],PeakIndicator</ConfigKey>
                     </Connection>
@@ -162,8 +162,8 @@
 
                   <VuMeter>
                     <TooltipId>preview_VuMeter</TooltipId>
-                    <PathVu>style/volume_display_previewdeck_over.png</PathVu>
-                    <PathBack>style/volume_display_previewdeck.png</PathBack>
+                    <PathVu>style/volume_display_previewdeck_over.svg</PathVu>
+                    <PathBack>style/volume_display_previewdeck.svg</PathBack>
                     <Horizontal>false</Horizontal>
                     <PeakHoldSize>3</PeakHoldSize>
                     <PeakHoldTime>250</PeakHoldTime>
@@ -178,8 +178,8 @@
 
               <SliderComposed>
                 <TooltipId>pregain</TooltipId>
-                <Handle>knob_volume_previewdeck.png</Handle>
-                <Slider>slider_volume_previewdeck.png</Slider>
+                <Handle>knob_volume_previewdeck.svg</Handle>
+                <Slider>slider_volume_previewdeck.svg</Slider>
                 <Horizontal>false</Horizontal>
                 <Connection>
                   <ConfigKey>[PreviewDeck1],pregain</ConfigKey>
