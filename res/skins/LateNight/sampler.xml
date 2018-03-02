@@ -537,8 +537,8 @@
             <Children>
               <SliderComposed>
                 <TooltipId>rate</TooltipId>
-                <Handle>knob_pitch_sampler.png</Handle>
-                <Slider>slider_pitch_sampler.png</Slider>
+                <Handle>knob_pitch_sampler.svg</Handle>
+                <Slider>slider_pitch_sampler.svg</Slider>
                 <Horizontal>false</Horizontal>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,rate</ConfigKey>

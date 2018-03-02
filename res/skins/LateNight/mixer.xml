@@ -221,8 +221,8 @@
                         <Children>
                           <SliderComposed>
                             <TooltipId>crossfader</TooltipId>
-                            <Handle>knob_crossfader.png</Handle>
-                            <Slider>slider_crossfader.png</Slider>
+                            <Handle>knob_crossfader.svg</Handle>
+                            <Slider>slider_crossfader.svg</Slider>
                             <Horizontal>true</Horizontal>
                             <Connection>
                               <ConfigKey>[Master],crossfader</ConfigKey>
