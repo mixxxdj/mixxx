@@ -67,8 +67,8 @@ Variables:
 
           <!-- Gain knob, centered below Volume slider -->
           <Template src="skin:knob_textless.xml">
-            <SetVariable name="TooltipId">pregain</SetVariable>
             <SetVariable name="ObjectName">GainKnob</SetVariable>
+            <SetVariable name="TooltipId">pregain</SetVariable>
             <SetVariable name="Size">30f,30f</SetVariable>
             <SetVariable name="Color">yellow</SetVariable>
             <SetVariable name="group"><Variable name="group"/></SetVariable>

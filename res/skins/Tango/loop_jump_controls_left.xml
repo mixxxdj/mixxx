@@ -50,12 +50,20 @@ Variables:
 
                   <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
 
-                  <BeatSpinBox>
-                    <TooltipId>beatloop_size</TooltipId>
-                    <Value><Variable name="group"/>,beatloop_size</Value>
-                  </BeatSpinBox>
+                  <WidgetGroup>
+                    <ObjectName>AlignLeft</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <Size>68f,22f</Size>
+                    <Children>
+                      <BeatSpinBox>
+                        <TooltipId>beatloop_size</TooltipId>
+                        <Value><Variable name="group"/>,beatloop_size</Value>
+                      </BeatSpinBox>
+                    </Children>
+                  </WidgetGroup>
 
-                  <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
+
+                  <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
                   <WidgetGroup>
                     <ObjectName>Spacer0f</ObjectName>
@@ -65,7 +73,7 @@ Variables:
                       <Template src="skin:button_2state_right_display.xml">
                         <SetVariable name="TooltipId">reloop_toggle</SetVariable>
                         <SetVariable name="ObjectName">ReloopButton</SetVariable>
-                        <SetVariable name="Size">30f,22f</SetVariable>
+                        <SetVariable name="Size">22f,22f</SetVariable>
                         <SetVariable name="state_0_pressed">reloop_off.svg</SetVariable>
                         <SetVariable name="state_0_unpressed">reloop_off.svg</SetVariable>
                         <SetVariable name="state_1_pressed">reloop_on.svg</SetVariable>
@@ -105,7 +113,7 @@ Variables:
 
                   <Template src="skin:button_2state_persist.xml">
                     <SetVariable name="ObjectName">FxSamplersMiniMaxi</SetVariable>
-                    <SetVariable name="Size">16f,16f</SetVariable>
+                    <SetVariable name="Size">14f,16f</SetVariable>
                     <SetVariable name="ConfigKey">[Tango],loop_sizes</SetVariable>
                   </Template>
                 </Children>
@@ -147,7 +155,7 @@ Variables:
                     <Value><Variable name="group"/>,beatjump_size</Value>
                   </BeatSpinBox>
 
-                  <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
+                  <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
                   <WidgetGroup><!-- Beatjump backw/forw -->
                     <ObjectName>Spacer0f</ObjectName>

@@ -138,7 +138,7 @@ class MockAutoDJProcessor : public AutoDJProcessor {
 class AutoDJProcessorTest : public LibraryTest {
   protected:
     static TrackId nextTrackId(TrackId trackId) {
-        return TrackId(trackId.toInt() + 1);
+        return TrackId(trackId.value() + 1);
     }
     static TrackPointer newTestTrack(TrackId trackId) {
         TrackPointer pTrack(

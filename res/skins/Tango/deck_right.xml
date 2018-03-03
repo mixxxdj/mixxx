@@ -13,6 +13,49 @@ Variables:
 -->
 <Template>
   <SetVariable name="group">[Channel<Variable name="chanNum"/>]</SetVariable>
+
+  <SingletonDefinition>
+    <ObjectName>DeckOverview<Variable name="chanNum"/></ObjectName>
+    <Children>
+      <Template src="skin:deck_overview_right.xml"/>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>DeckArtistTitleTime<Variable name="chanNum"/></ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetGroup><!-- Symmetric Artist + Time -->
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:loop_indicator.xml"/>
+              <Template src="skin:deck_artist_title_right.xml"/>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Tango],symmetric_time</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup><!-- Parallel Artist + Time -->
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:loop_indicator.xml"/>
+              <Template src="skin:deck_artist_title_left.xml"/>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Tango],symmetric_time</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
   <WidgetGroup>
     <ObjectName>DeckContainer</ObjectName>
     <Layout>horizontal</Layout>
@@ -119,25 +162,37 @@ Variables:
             <Size>250me,111f</Size>
             <Children>
 
-              <Template src="skin:deck_overview_right.xml"/>
+              <SingletonContainer>
+                <ObjectName>DeckOverview<Variable name="chanNum"/></ObjectName>
+              </SingletonContainer>
+
               <Template src="skin:deck_comment_right.xml"/>
-              <Template src="skin:deck_artist_title_right.xml"/>
+
+              <SingletonContainer>
+                <ObjectName>DeckArtistTitleTime<Variable name="chanNum"/></ObjectName>
+              </SingletonContainer>
 
             </Children>
             <Connection>
               <ConfigKey persist="true">[Tango],symmetric_overviews</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
-          </WidgetGroup><!-- /Overview, Comment, ArtistTitle -->
+          </WidgetGroup><!-- /Symmetric Overviews, ArtistTitle, Comment -->
 
-          <WidgetGroup><!-- ArtistTitle, Overview, Comment -->
+          <WidgetGroup><!-- Stacked Overviews, ArtistTitle, Comment -->
             <Layout>vertical</Layout>
             <Size>250me,111f</Size>
             <Children>
 
-              <Template src="skin:deck_artist_title_right.xml"/>
+              <SingletonContainer>
+                <ObjectName>DeckArtistTitleTime<Variable name="chanNum"/></ObjectName>
+              </SingletonContainer>
+
               <Template src="skin:deck_comment_right.xml"/>
-              <Template src="skin:deck_overview_right.xml"/>
+
+              <SingletonContainer>
+                <ObjectName>DeckOverview<Variable name="chanNum"/></ObjectName>
+              </SingletonContainer>
 
             </Children>
             <Connection>
@@ -145,7 +200,9 @@ Variables:
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
-          </WidgetGroup><!-- /ArtistTitle, Overview, Comment -->
+          </WidgetGroup><!-- /Stacked Overviews, ArtistTitle, Comment -->
+
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1min,1f</Size></WidgetGroup>
 
           <Template src="skin:deck_buttons_right.xml" />
 

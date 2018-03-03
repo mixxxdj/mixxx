@@ -422,6 +422,53 @@ void Library::slotSetTrackTableRowHeight(int rowHeight) {
     emit(setTrackTableRowHeight(rowHeight));
 }
 
-void Library::onEvictingTrackFromCache(GlobalTrackCacheLocker* pCacheLocker, Track* pTrack) {
-    m_pTrackCollection->saveTrack(pCacheLocker, pTrack);
+void Library::saveCachedTrack(TrackPointer pTrack) noexcept {
+    // It can produce dangerous signal loops if the track is still
+    // sending signals while being saved!
+    // See: https://bugs.launchpad.net/mixxx/+bug/1365708
+    // NOTE(uklotzde, 2018-02-03): Simply disconnecting all receivers
+    // doesn't seem to work reliably. Emitting the clean() signal from
+    // a track that is about to deleted may cause access violations!!
+    pTrack->blockSignals(true);
+
+    // The metadata must be exported while the cache is locked to
+    // ensure that we have exclusive (write) access on the file
+    // and not reader or writer is accessing the same file
+    // concurrently.
+    // Pass the track object via a plain pointer to prevent the
+    // creation of any new references from the shared pointer
+    // that will be deleted soon!
+    m_pTrackCollection->exportTrackMetadata(pTrack.get());
+
+    // NOTE(uklotzde, 2018-02-20):
+    // Database updates must be executed in the context of the
+    // main thread. When saving is triggered from another
+    // thread the call needs to be dispatched through a queued
+    // connection and is deferred until the event loop of the
+    // receiving thread that handles the event. The actual
+    // execution might happen when the cache has already been
+    // unlocked after leaving this function.
+    // Race conditions between database readers and writers are
+    // impossible as long as all database actions are executed in
+    // the main thread and the invocation is submitted through
+    // a direct connection.
+    // This method might be invoked from a different thread than
+    // the main thread. But database updates are currently only
+    // allowed from the main thread!
+    QMetaObject::invokeMethod(
+            this,
+            "saveTrack",
+            // Qt will choose either a direct or a queued connection
+            // depending on the thread from which this method has
+            // been invoked!
+            Qt::AutoConnection,
+            Q_ARG(TrackPointer, pTrack));
+}
+
+void Library::saveTrack(TrackPointer pTrack) {
+    // Update the database
+    // Pass the track object via a plain pointer to prevent the
+    // creation of any new references from the shared pointer
+    // that will be deleted soon!
+    m_pTrackCollection->saveTrack(pTrack.get());
 }

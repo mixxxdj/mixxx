@@ -12,12 +12,13 @@ Variables:
   <WidgetGroup>
     <ObjectName>Spacer0f</ObjectName>
     <Layout>vertical</Layout>
-    <Size>1min,50f</Size>
+    <Size>-1max,50f</Size>
     <Children>
 
+      <!-- Vinyl / Passthrough -->
       <WidgetGroup>
         <Layout>horizontal</Layout>
-        <Size>80f,24f</Size>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
 
           <WidgetGroup><!-- Toggle Vinyl Control, statuslight underneath -->
@@ -42,6 +43,8 @@ Variables:
             </Children>
           </WidgetGroup><!-- /Toggle Vinyl Control, statuslight underneath -->
 
+          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
           <Template src="skin:button_2state.xml">
             <SetVariable name="TooltipId">passthrough_enabled</SetVariable>
             <SetVariable name="ObjectName">PassthroughButton</SetVariable>
@@ -51,14 +54,17 @@ Variables:
             <SetVariable name="ConfigKey"><Variable name="group"/>,passthrough</SetVariable>
           </Template>
 
+          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- Vinyl / Passthrough -->
 
-      <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
+      <WidgetGroup><Size>1f,1f</Size></WidgetGroup>
 
+      <!-- Vinyl mode / Cue mode -->
       <WidgetGroup>
         <Layout>horizontal</Layout>
-        <Size>80f,23min</Size>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
 
           <Template src="skin:button_3state_persist.xml">
@@ -70,6 +76,8 @@ Variables:
             <SetVariable name="state_2_text">CONST</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,vinylcontrol_mode</SetVariable>
           </Template>
+
+          <WidgetGroup><Size>1f,1f</Size></WidgetGroup>
 
           <WidgetGroup><!-- Cue mode button with translucent cover -->
             <Layout>stacked</Layout>
@@ -102,10 +110,12 @@ Variables:
             </Children>
           </WidgetGroup><!-- /Cue mode button with translucent covers -->
 
-        </Children>
-      </WidgetGroup>
+          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
-      <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
+        </Children>
+      </WidgetGroup> <!-- /Vinyl mode / Cue mode -->
+
+      <WidgetGroup><Size>1,1f</Size></WidgetGroup>
 
     </Children>
     <Connection>

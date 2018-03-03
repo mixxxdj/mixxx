@@ -143,7 +143,7 @@ Description:
             <SetVariable name="ConfigKey">[Tango],stacked_waveforms</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+          <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml"><!-- FX -->
             <SetVariable name="TooltipId">show_effects</SetVariable>
@@ -169,7 +169,7 @@ Description:
 
           <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
-          <Template src="skin:button_2state_persist.xml"><!-- Library -->
+          <Template src="skin:button_2state_persist.xml">
             <SetVariable name="TooltipId">show_microphone</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">30f,20f</SetVariable>
@@ -203,19 +203,6 @@ Description:
             <SetVariable name="state_1_unpressed">loop_beatjump_on.svg</SetVariable>
             <SetVariable name="state_1_pressed">loop_beatjump_on.svg</SetVariable>
             <SetVariable name="ConfigKey">[Tango],loop_beatjump_controls</SetVariable>
-          </Template>
-
-          <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
-
-          <Template src="skin:button_2state_persist.xml"><!-- Library -->
-            <SetVariable name="TooltipId">show_library</SetVariable>
-            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">20f,20f</SetVariable>
-            <SetVariable name="state_0_pressed">lib_off.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">lib_off.svg</SetVariable>
-            <SetVariable name="state_1_pressed">lib_on.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">lib_on.svg</SetVariable>
-            <SetVariable name="ConfigKey">[Library],show_library</SetVariable>
           </Template>
 
           <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
@@ -325,6 +312,7 @@ Description:
             <SizePolicy>min,min</SizePolicy>
             <Children>
               <Template src="skin:button_2state.xml">
+                <SetVariable name="TooltipId">skin_settings</SetVariable>
                 <SetVariable name="ObjectName">SkinSettingsToggler</SetVariable>
                 <SetVariable name="Size">24f,24f</SetVariable>
                 <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>

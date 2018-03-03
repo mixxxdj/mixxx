@@ -10,7 +10,7 @@
 
 #include "preferences/usersettings.h"
 #include "library/dao/dao.h"
-#include "track/track.h"
+#include "track/globaltrackcache.h"
 #include "util/class.h"
 #include "util/memory.h"
 
@@ -19,12 +19,9 @@ class PlaylistDAO;
 class AnalysisDao;
 class CueDAO;
 class LibraryHashDAO;
-class TrackCollection;
-class GlobalTrackCacheLocker;
-class GlobalTrackCacheResolver;
 
 
-class TrackDAO : public QObject, public virtual DAO {
+class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackCacheRelocator {
     Q_OBJECT
   public:
     // The 'config object' is necessary because users decide ID3 tags get
@@ -60,7 +57,6 @@ class TrackDAO : public QObject, public virtual DAO {
 
     void addTracksPrepare();
     TrackPointer addTracksAddFile(const QFileInfo& fileInfo, bool unremove);
-    TrackPointer addTracksAddTrack(GlobalTrackCacheResolver&& /*r-value ref*/ cacheResolver, bool unremove);
     TrackId addTracksAddTrack(const TrackPointer& pTrack, bool unremove);
     void addTracksFinish(bool rollback = false);
 
@@ -109,6 +105,8 @@ class TrackDAO : public QObject, public virtual DAO {
     void detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
                                         QSet<TrackId>* pTracksChanged);
 
+    void saveTrack(Track* pTrack);
+
   signals:
     void trackDirty(TrackId trackId) const;
     void trackClean(TrackId trackId) const;
@@ -133,9 +131,12 @@ class TrackDAO : public QObject, public virtual DAO {
   private:
     TrackPointer getTrackFromDB(TrackId trackId) const;
 
-    friend class TrackCollection;
-    void saveTrack(GlobalTrackCacheLocker* pCacheLocker, Track* pTrack);
     bool updateTrack(Track* pTrack);
+
+    // Callback for GlobalTrackCache
+    QFileInfo relocateCachedTrack(
+            TrackId trackId,
+            QFileInfo fileInfo) override;
 
     QSqlDatabase m_database;
 
