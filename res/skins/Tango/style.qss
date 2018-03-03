@@ -131,7 +131,7 @@ WWidgetGroup {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
     border: 1px solid #1e1e1e;
     border-width: 0px 0px 3px 0px;
-}
+  }
   #CategoryLabel {
     font-size: 16px/16px;
     text-align: left;
@@ -181,7 +181,11 @@ WWidgetGroup {
 }
 #SubmenuLabel {
   color: #666666;
-}
+  }
+  #SkinSettingsLabel,
+  #SubmenuLabel {
+    font-size: 12px/12px;
+  }
 #CoverSpinnyHint {
   font-size: 13px/15px;
   font-weight: bold;

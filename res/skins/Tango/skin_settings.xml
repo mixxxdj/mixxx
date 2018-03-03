@@ -200,6 +200,7 @@ Description:
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
                   <Label>
+                    <ObjectName>SkinSettingsLabel</ObjectName>
                     <MinimumSize>182,13</MinimumSize>
                     <MaximumSize>182,17</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
