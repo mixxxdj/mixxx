@@ -1261,8 +1261,13 @@ decks, samplers, mic, aux, fx */
 #FxUnitMixerLeft_mini WPushButton[displayValue="0"],
 #FxUnitMixerRight_mini WPushButton[displayValue="0"],
 #FxUnitMixerLeft WPushButton[displayValue="0"],
-#FxUnitMixerRight WPushButton[displayValue="0"] {
+#FxUnitMixerRight WPushButton[displayValue="0"],
+#SamplerDeck #PflButton {
   border: 1px solid #151515;
+  }
+  #SamplerDeck #PflButton {
+    border-width: 0px 1px 0px 1px;
+    border-radius: 0px;
   }
   #FxUnitMixerLeft_mini WPushButton[displayValue="1"],
   #FxUnitMixerRight_mini WPushButton[displayValue="1"],

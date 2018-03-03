@@ -285,10 +285,8 @@ Variables:
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup><Size>0min,1min</Size></WidgetGroup>
-
           <WidgetGroup><!-- Pfl button -->
-            <Size>18f,18f</Size>
+            <Size>20f,20f</Size>
             <Layout>stacked</Layout>
             <Children>
               <!-- index 0 due to bug -->
@@ -309,13 +307,15 @@ Variables:
               <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">pfl</SetVariable>
                 <SetVariable name="ObjectName">PflButton</SetVariable>
-                <SetVariable name="Size">18f,18f</SetVariable>
+                <SetVariable name="Size">20f,20f</SetVariable>
                 <SetVariable name="state_0_icon">pfl_off.svg</SetVariable>
                 <SetVariable name="state_1_icon">pfl_on.svg</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
               </Template>
             </Children>
           </WidgetGroup><!-- /Pfl button -->
+
+          <WidgetGroup><Size>0min,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state.xml">
             <SetVariable name="TooltipId">repeat</SetVariable>
