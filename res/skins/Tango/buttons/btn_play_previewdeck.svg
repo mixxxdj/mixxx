@@ -9,10 +9,10 @@
    xmlns="http://www.w3.org/2000/svg"
    version="1.1"
    width="24"
-   height="24"
-   id="svg3922">
+   height="34"
+   id="svg3315">
   <metadata
-     id="metadata3932">
+     id="metadata3325">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
@@ -24,13 +24,13 @@
     </rdf:RDF>
   </metadata>
   <defs
-     id="defs3930" />
+     id="defs3323" />
   <path
-     d="m 14,5 h 4 v 14.000001 h -4 z"
-     id="path3939"
-     style="fill:#0f0f0f" />
+     d="M 19.5587,17 7.416788,24.010137 V 9.9898635 z"
+     id="path3317"
+     style="fill:#181818" />
   <path
-     d="m 6,5 h 4 V 19.000001 H 6 z"
-     id="path3926"
-     style="fill:#0f0f0f" />
+     d="M 18.392276,16.999968 8,22.999952 V 10.999985 z"
+     id="path3319"
+     style="fill:#cccccc" />
 </svg>

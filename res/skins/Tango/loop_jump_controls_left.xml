@@ -40,10 +40,8 @@ Variables:
                     <SetVariable name="TooltipId">beatloop_activate</SetVariable>
                     <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
                     <SetVariable name="Size">30f,22f</SetVariable>
-                    <SetVariable name="state_0_pressed">loop_on.svg</SetVariable>
-                    <SetVariable name="state_0_unpressed">loop.svg</SetVariable>
-                    <SetVariable name="state_1_pressed">loop_on.svg</SetVariable>
-                    <SetVariable name="state_1_unpressed">loop_on.svg</SetVariable>
+                    <SetVariable name="state_0_icon">loop_on.svg</SetVariable>
+                    <SetVariable name="state_1_icon">loop_on.svg</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,beatloop_activate</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatlooproll_activate</SetVariable>
                   </Template>
@@ -74,10 +72,8 @@ Variables:
                         <SetVariable name="TooltipId">reloop_toggle</SetVariable>
                         <SetVariable name="ObjectName">ReloopButton</SetVariable>
                         <SetVariable name="Size">22f,22f</SetVariable>
-                        <SetVariable name="state_0_pressed">reloop_off.svg</SetVariable>
-                        <SetVariable name="state_0_unpressed">reloop_off.svg</SetVariable>
-                        <SetVariable name="state_1_pressed">reloop_on.svg</SetVariable>
-                        <SetVariable name="state_1_unpressed">reloop_on.svg</SetVariable>
+                        <SetVariable name="state_0_icon">reloop_off.svg</SetVariable>
+                        <SetVariable name="state_1_icon">reloop_on.svg</SetVariable>
                         <SetVariable name="ConfigKey"><Variable name="group"/>,reloop_toggle</SetVariable>
                         <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reloop_andstop</SetVariable>
                         <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,loop_enabled</SetVariable>

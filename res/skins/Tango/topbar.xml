@@ -136,10 +136,8 @@ Description:
           <Template src="skin:button_2state_persist.xml"><!-- Waveforms -->
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">30f,20f</SetVariable>
-            <SetVariable name="state_0_pressed">wave_off.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">wave_off.svg</SetVariable>
-            <SetVariable name="state_1_pressed">wave_on.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">wave_on.svg</SetVariable>
+            <SetVariable name="state_0_icon">wave_off.svg</SetVariable>
+            <SetVariable name="state_1_icon">wave_on.svg</SetVariable>
             <SetVariable name="ConfigKey">[Tango],stacked_waveforms</SetVariable>
           </Template>
 
@@ -160,10 +158,8 @@ Description:
             <SetVariable name="TooltipId">show_samplers</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">30f,20f</SetVariable>
-            <SetVariable name="state_0_pressed">samplers_off.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">samplers_off.svg</SetVariable>
-            <SetVariable name="state_1_pressed">samplers_on.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">samplers_on.svg</SetVariable>
+            <SetVariable name="state_0_icon">samplers_off.svg</SetVariable>
+            <SetVariable name="state_1_icon">samplers_on.svg</SetVariable>
             <SetVariable name="ConfigKey">[Samplers],show_samplers</SetVariable>
           </Template>
 
@@ -173,10 +169,8 @@ Description:
             <SetVariable name="TooltipId">show_microphone</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">30f,20f</SetVariable>
-            <SetVariable name="state_0_pressed">mic_aux_off.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">mic_aux_off.svg</SetVariable>
-            <SetVariable name="state_1_pressed">mic_aux_on.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">mic_aux_on.svg</SetVariable>
+            <SetVariable name="state_0_icon">mic_aux_off.svg</SetVariable>
+            <SetVariable name="state_1_icon">mic_aux_on.svg</SetVariable>
             <SetVariable name="ConfigKey">[Microphone],show_microphone</SetVariable>
           </Template>
 
@@ -186,10 +180,8 @@ Description:
             <SetVariable name="TooltipId">show_mixer</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">20f,20f</SetVariable>
-            <SetVariable name="state_0_pressed">mixer_off.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">mixer_off.svg</SetVariable>
-            <SetVariable name="state_1_pressed">mixer_on.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">mixer_on.svg</SetVariable>
+            <SetVariable name="state_0_icon">mixer_off.svg</SetVariable>
+            <SetVariable name="state_1_icon">mixer_on.svg</SetVariable>
             <SetVariable name="ConfigKey">[Master],show_mixer</SetVariable>
           </Template>
 
@@ -198,10 +190,8 @@ Description:
           <Template src="skin:button_2state_persist.xml"><!-- Loop/Beatjump -->
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">20f,20f</SetVariable>
-            <SetVariable name="state_0_unpressed">loop_beatjump_off.svg</SetVariable>
-            <SetVariable name="state_0_pressed">loop_beatjump_off.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">loop_beatjump_on.svg</SetVariable>
-            <SetVariable name="state_1_pressed">loop_beatjump_on.svg</SetVariable>
+            <SetVariable name="state_0_icon">loop_beatjump_off.svg</SetVariable>
+            <SetVariable name="state_1_icon">loop_beatjump_on.svg</SetVariable>
             <SetVariable name="ConfigKey">[Tango],loop_beatjump_controls</SetVariable>
           </Template>
 
@@ -211,10 +201,8 @@ Description:
             <SetVariable name="ObjectName">GuiToggleButton2</SetVariable>
             <SetVariable name="Size">20f,20f</SetVariable>
             <SetVariable name="TooltipId">toggle_4decks</SetVariable>
-            <SetVariable name="state_0_pressed">2decks.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">2decks.svg</SetVariable>
-            <SetVariable name="state_1_pressed">4decks.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">4decks.svg</SetVariable>
+            <SetVariable name="state_0_icon">2decks.svg</SetVariable>
+            <SetVariable name="state_1_icon">4decks.svg</SetVariable>
             <SetVariable name="ConfigKey">[Master],show_4decks</SetVariable>
           </Template>
 

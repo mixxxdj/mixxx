@@ -215,60 +215,48 @@ Description:
                       <Template src="skin:button_2state_persist.xml"><!-- Keylock -->
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
-                        <SetVariable name="state_0_pressed">keylock_off.svg</SetVariable>
-                        <SetVariable name="state_0_unpressed">keylock_off.svg</SetVariable>
-                        <SetVariable name="state_1_pressed">keylock_on.svg</SetVariable>
-                        <SetVariable name="state_1_unpressed">keylock_on.svg</SetVariable>
+                        <SetVariable name="state_0_icon">keylock_off.svg</SetVariable>
+                        <SetVariable name="state_1_icon">keylock_on.svg</SetVariable>
                         <SetVariable name="ConfigKey">[Tango],always_visible_keylock</SetVariable>
                       </Template>
 
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
-                        <SetVariable name="state_0_pressed">eject.svg</SetVariable>
-                        <SetVariable name="state_0_unpressed">eject.svg</SetVariable>
-                        <SetVariable name="state_1_pressed">eject_pressed.svg</SetVariable>
-                        <SetVariable name="state_1_unpressed">eject_pressed.svg</SetVariable>
+                        <SetVariable name="state_0_icon">eject.svg</SetVariable>
+                        <SetVariable name="state_1_icon">eject_pressed.svg</SetVariable>
                         <SetVariable name="ConfigKey">[Tango],always_visible_eject</SetVariable>
                       </Template>
 
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
-                        <SetVariable name="state_0_pressed">slipmode_hidden.svg</SetVariable>
-                        <SetVariable name="state_0_unpressed">slipmode_hidden.svg</SetVariable>
-                        <SetVariable name="state_1_pressed">slipmode_visible.svg</SetVariable>
-                        <SetVariable name="state_1_unpressed">slipmode_visible.svg</SetVariable>
+                        <SetVariable name="state_0_icon">slipmode_hidden.svg</SetVariable>
+                        <SetVariable name="state_1_icon">slipmode_visible.svg</SetVariable>
                         <SetVariable name="ConfigKey">[Tango],always_visible_slip_enabled</SetVariable>
                       </Template>
 
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
-                        <SetVariable name="state_0_pressed">repeat_hidden.svg</SetVariable>
-                        <SetVariable name="state_0_unpressed">repeat_hidden.svg</SetVariable>
-                        <SetVariable name="state_1_pressed">repeat_visible.svg</SetVariable>
-                        <SetVariable name="state_1_unpressed">repeat_visible.svg</SetVariable>
+                        <SetVariable name="state_0_icon">repeat_hidden.svg</SetVariable>
+                        <SetVariable name="state_1_icon">repeat_visible.svg</SetVariable>
                         <SetVariable name="ConfigKey">[Tango],always_visible_repeat</SetVariable>
                       </Template>
 
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
-                        <SetVariable name="state_0_pressed">xfader_center.svg</SetVariable>
-                        <SetVariable name="state_0_unpressed">xfader_center.svg</SetVariable>
-                        <SetVariable name="state_1_pressed">xfader_visible.svg</SetVariable>
-                        <SetVariable name="state_1_unpressed">xfader_visible.svg</SetVariable>
+                        <SetVariable name="state_0_icon">xfader_center.svg</SetVariable>
+                        <SetVariable name="state_1_icon">xfader_visible.svg</SetVariable>
                         <SetVariable name="ConfigKey">[Tango],always_visible_orientation</SetVariable>
                       </Template>
 
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
-                        <SetVariable name="state_0_pressed">quantize_hidden.svg</SetVariable>
-                        <SetVariable name="state_0_unpressed">quantize_hidden.svg</SetVariable>
-                        <SetVariable name="state_1_pressed">quantize_visible.svg</SetVariable>
-                        <SetVariable name="state_1_unpressed">quantize_visible.svg</SetVariable>
+                        <SetVariable name="state_0_icon">quantize_hidden.svg</SetVariable>
+                        <SetVariable name="state_1_icon">quantize_visible.svg</SetVariable>
                         <SetVariable name="ConfigKey">[Tango],always_visible_quantize</SetVariable>
                       </Template>
 
@@ -295,10 +283,8 @@ Description:
                           <Template src="skin:button_2state_persist.xml">
                             <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                             <SetVariable name="Size">16f,15f</SetVariable>
-                            <SetVariable name="state_0_pressed">stars_hidden.svg</SetVariable>
-                            <SetVariable name="state_0_unpressed">stars_hidden.svg</SetVariable>
-                            <SetVariable name="state_1_pressed">stars_visible.svg</SetVariable>
-                            <SetVariable name="state_1_unpressed">stars_visible.svg</SetVariable>
+                            <SetVariable name="state_0_icon">stars_hidden.svg</SetVariable>
+                            <SetVariable name="state_1_icon">stars_visible.svg</SetVariable>
                             <SetVariable name="ConfigKey">[Tango],stars</SetVariable>
                           </Template>
                         </Children>

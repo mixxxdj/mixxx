@@ -836,19 +836,19 @@ WWidgetGroup {
 /* Actual Play button. Receives click events, turns red
   when playing regularly, not from Cue or HotCue */
 #PlayCue[displayValue="0"] {
-  background-color: transparent;
-  image: url(skin:/buttons/btn_play.svg) no-repeat center center;
+  background-color: transparent;  /*
+  image: url(skin:/buttons/btn_play.svg) no-repeat center center; */
   }
   #PlayCue[displayValue="0"]:hover {
-    background-color: transparent;
-    image: url(skin:/buttons/btn_play_hover.svg) no-repeat center center;
+    background-color: transparent;  /*
+    image: url(skin:/buttons/btn_play_hover.svg) no-repeat center center; */
   }
 
 #SamplerPlayCue[displayValue="0"] {
   /* different than decks' Play button, this has some soft shadow to distinguish
   it better from underlying Cover Art (if available) */
-  background-color: transparent;
-  image: url(skin:/buttons/btn_sampler_play.png) no-repeat center center;
+  background-color: transparent;  /*
+  image: url(skin:/buttons/btn_sampler_play.png) no-repeat center center; */
   }
   #SamplerPlayCueUnderlay[displayValue="1"] {
     background: #a90000;
@@ -881,8 +881,8 @@ WWidgetGroup {
   }
 
 #PlayCue[displayValue="1"],
-#SamplerPlayCue[displayValue="1"] {
-  image: url(skin:/buttons/btn_pause.svg) no-repeat center center;
+#SamplerPlayCue[displayValue="1"] { /*
+  image: url(skin:/buttons/btn_pause.svg) no-repeat center center;  */
 }
 #PlayCue[displayValue="1"],
 #SamplerPlayCue[displayValue="1"],

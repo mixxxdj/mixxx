@@ -70,10 +70,8 @@ Description:
             <SetVariable name="TooltipId">headSplit</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">32f,24f</SetVariable>
-            <SetVariable name="state_0_unpressed">headSplit_off.svg</SetVariable>
-            <SetVariable name="state_0_pressed">headSplit_off.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">headSplit_on.svg</SetVariable>
-            <SetVariable name="state_1_pressed">headSplit_on.svg</SetVariable>
+            <SetVariable name="state_0_icon">headSplit_off.svg</SetVariable>
+            <SetVariable name="state_1_icon">headSplit_on.svg</SetVariable>
             <SetVariable name="ConfigKey">[Master],headSplit</SetVariable>
           </Template>
 
