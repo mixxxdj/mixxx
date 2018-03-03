@@ -11,7 +11,7 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.1"
    width="10"
-   height="45"
+   height="47"
    id="svg5757">
   <defs
      id="defs5759">
@@ -1555,21 +1555,13 @@
   </metadata>
   <rect
      width="10"
-     height="45"
+     height="47"
      x="0"
-     y="-3.5527137e-15"
+     y="0"
      id="rect12208"
      style="color:#000000;fill:#0f0f0f;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
-  <path
-     d="M 1,45 1,0 0,0 0,45"
-     id="path7278"
-     style="fill:#2d2d2d;fill-opacity:1;stroke:none;display:inline" />
-  <path
-     d="M 10,45 10,0 9,0 9,45"
-     id="path4476"
-     style="fill:#2d2d2d;fill-opacity:1;stroke:none;display:inline" />
   <g
-     transform="translate(0,-1007.3622)"
+     transform="translate(0,-1006.3622)"
      id="g7282"
      style="fill:url(#linearGradient7820);fill-opacity:1">
     <rect
@@ -1727,4 +1719,8 @@
        id="use4562"
        style="color:#000000;fill:url(#linearGradient15412);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
   </g>
+  <path
+     d="M 0,0 0,47 10,47 10,0 0,0 z M 1,1 9,1 9,46 1,46 1,1 z"
+     id="rect11450"
+     style="color:#000000;fill:#2d2d2d;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
 </svg>

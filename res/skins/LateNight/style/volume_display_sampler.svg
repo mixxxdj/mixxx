@@ -1654,6 +1654,13 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
+  <rect
+     width="10"
+     height="72"
+     x="0"
+     y="7.1054274e-15"
+     id="rect12208"
+     style="color:#000000;fill:#0f0f0f;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
   <path
      d="m 1,0 -1,0 0,72.00002 10,0 L 10,0 9,0 l 0,71.00002 -8,0 L 1,0"
      id="path4476"

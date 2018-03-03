@@ -25,54 +25,60 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
+  <rect
+     width="10"
+     height="15"
+     x="0"
+     y="0"
+     id="rect12208"
+     style="color:#000000;fill:#0f0f0f;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
   <g
-     transform="translate(0,-1037.3622)"
-     id="layer1">
+     id="g15157">
     <rect
        width="6"
        height="1"
        x="2"
-       y="1039.3622"
+       y="1.9999826"
        id="rect18271"
        style="color:#000000;fill:#4c1616;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
     <rect
        width="6"
        height="1"
        x="2"
-       y="1041.3622"
+       y="3.9999826"
        id="rect18271-8"
        style="color:#000000;fill:#4c1616;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
     <rect
        width="6"
        height="1"
        x="2"
-       y="1043.3622"
+       y="5.9999828"
        id="rect18271-0"
        style="color:#000000;fill:#4c1616;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
     <rect
        width="6"
        height="1"
        x="2"
-       y="1045.3622"
+       y="7.9999828"
        id="rect18271-8-1"
        style="color:#000000;fill:#4c1616;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
     <rect
        width="6"
        height="1"
        x="2"
-       y="1047.3622"
+       y="9.9999828"
        id="rect18271-0-7"
        style="color:#000000;fill:#4c1616;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
     <rect
        width="6"
        height="1"
        x="2"
-       y="1049.3622"
+       y="11.999983"
        id="rect18271-8-1-9"
        style="color:#000000;fill:#4c1616;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
-    <path
-       d="m 0,1037.3622 0,15 10,0 0,-15 -10,0 z m 1,1 8,0 0,13 -8,0 0,-13 z"
-       id="rect18333"
-       style="color:#000000;fill:#2d2d2d;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
   </g>
+  <path
+     d="M 0,0 0,15 10,15 10,0 0,0 z M 1,1 9,1 9,14 1,14 1,1 z"
+     id="rect18333"
+     style="color:#000000;fill:#2d2d2d;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
 </svg>

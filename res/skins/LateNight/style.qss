@@ -964,7 +964,7 @@ border: 0px;
 #MicGainPFlContainer {
   qproperty-layoutAlignment: 'AlignCenter';
   padding: 0px;
-  margin-left: 2px;
+  margin: 0px;
 }
 
 #MicGainKnob {
