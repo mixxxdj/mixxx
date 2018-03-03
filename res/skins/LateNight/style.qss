@@ -204,12 +204,6 @@ WTime {
   font-size: 13px/13px;
 }
 
-#LatencyMeter {
-  margin: 1px;
-  padding-right: 4px;
-  padding-left: 4px;
-}
-
 #LatencyLabel {
   padding-bottom: 2px;
   font-size: 10px/10px;

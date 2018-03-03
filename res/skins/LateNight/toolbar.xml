@@ -389,13 +389,14 @@
             <Text>CPU</Text>
           </Label>
 
+          <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
+
           <VuMeter>
             <TooltipId>audio_latency_usage</TooltipId>
             <ObjectName>LatencyMeter</ObjectName>
-            <Size>72f,4min</Size>
-            <PathVu>style/vumeter_latency_over.png</PathVu>
-            <PathBack>style/vumeter_latency_bg.png</PathBack>
-            <!-- <PathVu>vumeter_latency.svg</PathVu> -->
+            <Size>63f,7f</Size>
+            <PathBack>style/latency_bg.svg</PathBack>
+            <PathVu>style/latency_over.svg</PathVu>
             <Horizontal>true</Horizontal>
             <PeakHoldSize>5</PeakHoldSize>
             <PeakHoldTime>1000</PeakHoldTime>
@@ -405,6 +406,8 @@
               <ConfigKey>[Master],audio_latency_usage</ConfigKey>
             </Connection>
           </VuMeter>
+
+          <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
         </Children>
       </WidgetGroup>
 
