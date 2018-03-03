@@ -64,7 +64,7 @@ WTime {
     }
 
 #ToolBar {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
   background-color: #1e1e1e;
   padding-top: 1px;
 }
@@ -440,34 +440,36 @@ WEffectButtonParameter*/
 }
 
 #ToolbarDivider {
-  background: transparent url(skin:/style/toolbar_divider.png) no-repeat center center;
+  background: transparent;
+  image: url(skin:/style/toolbar_divider.png) no-repeat center center;
   margin: 0px 5px;
 }
 
 #RecBox {
+  qproperty-layoutAlignment: 'AlignCenter';
   border: 1px solid #585858;
-  margin: 2px;
   border-radius: 2px;
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #282828,
     stop:1 #0e0e0e);
 }
 
 #RecFeedback[displayValue="0"] {
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+  background-color: (x1:0, y1:0, x2:0, y2:1,
     stop:0 #282828,
     stop:1 #0e0e0e);
 }
 
 #RecFeedback[displayValue="1"],
 #RecFeedback[displayValue="2"] {
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #840600,
     stop:1 #AD0800);
 }
 
 #RecDot {
-  background: none url(skin:/buttons/rec_dot.svg) no-repeat center center;
+  background: transparent;
+  image: url(skin:/buttons/rec_dot.svg) no-repeat center center;
 }
 
 #RecDuration {
@@ -822,7 +824,8 @@ border: 0px;
 }
 
 #ToolbarLogo {
-  background: url(skin:style/mixxx_logo_toolbar.png) no-repeat center center;
+  background: transparent;
+  image: url(skin:style/mixxx_logo_toolbar.png) no-repeat center center;
 }
 
 #WaveformMixerContainer {
