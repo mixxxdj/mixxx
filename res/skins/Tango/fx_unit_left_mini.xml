@@ -243,7 +243,7 @@ Variables:
       <WidgetGroup><!-- FX expand button + FX label -->
         <ObjectName>FxUnitControlsLeft</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <Size>30f,30f</Size>
         <Children>
           <Label>
             <ObjectName>FxUnitLabel</ObjectName>
