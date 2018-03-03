@@ -239,33 +239,6 @@ WWidgetGroup {
 #BoothMixerLabel {
   image: url(skin:/buttons/btn_booth.svg) no-repeat center center;
 }
-
-#MixerbarButton,
-#MixerbarPflButton,
-#MixerbarXfaderButton {
-  font-weight: bold;
-  }
-  #MixerbarButton[displayValue="0"],
-  #MixerbarPflButton[displayValue="0"],
-  #MixerbarXfaderButton[displayValue="0"] {
-    background-color: #333;
-    border: 1px solid #333;
-    color: #888;
-    }
-    #MixerbarButton[displayValue="0"]:hover,
-    #MixerbarPflButton:hover,
-    #MixerbarXfaderButton:hover {
-      border: 1px solid #888;
-    }
-  #MixerbarButton[displayValue="1"],
-  #MixerbarButton[displayValue="2"] {
-    background-color: #666;
-    color: #eeeeee;
-    }
-
-#VUMeterMixerbar {
-  margin: 2px 0px 0px 0px;
-}
 #MixerbarKnob {
   margin: 2px 0px 0px 0px;
 }
@@ -1277,7 +1250,6 @@ decks, samplers, mic, aux, fx */
 #PflButton[displayValue="0"] {
   background-color: #333;
 }
-
 #PflButton[displayValue="1"] {
   background-color: #0f0f0f;
 }
@@ -1285,6 +1257,23 @@ decks, samplers, mic, aux, fx */
 #PflButton[displayValue="1"]:hover {
   background-color: #151515;
 }
+
+#FxUnitMixerLeft_mini WPushButton[displayValue="0"],
+#FxUnitMixerRight_mini WPushButton[displayValue="0"],
+#FxUnitMixerLeft WPushButton[displayValue="0"],
+#FxUnitMixerRight WPushButton[displayValue="0"] {
+  border: 1px solid #151515;
+  }
+  #FxUnitMixerLeft_mini WPushButton[displayValue="1"],
+  #FxUnitMixerRight_mini WPushButton[displayValue="1"],
+  #FxUnitMixerLeft WPushButton[displayValue="1"],
+  #FxUnitMixerRight WPushButton[displayValue="1"],
+  #FxUnitMixerLeft_mini WPushButton[displayValue="0"]:hover,
+  #FxUnitMixerRight_mini WPushButton[displayValue="0"]:hover,
+  #FxUnitMixerLeft WPushButton[displayValue="0"]:hover,
+  #FxUnitMixerRight WPushButton[displayValue="0"]:hover {
+    border: 1px solid #151515;
+  }
 
 #VUMeterMixer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
