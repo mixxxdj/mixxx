@@ -1966,18 +1966,18 @@ void LegacySkinParser::setupWidget(const QDomNode& node,
     }
     setupSize(node, pWidget);
 
+    QString style = getStyleFromNode(node);
     // Check if we should apply legacy library styling to this node.
     if (m_pContext->selectBool(node, "LegacyTableViewStyle", false)) {
-        m_style.append(getLibraryStyle(node));
-    } else {
-        // use append here, because we may have already a style from the
-        // color shema.
-        m_style.append(getStyleFromNode(node));
+        style = getLibraryStyle(node);
     }
-
+    // check if we have a style from color schema: 
     if (!m_style.isEmpty()) {
-        pWidget->setStyleSheet(m_style);
+        style.append(m_style);
         m_style.clear(); // only apply color scheme to the first widget
+    }
+    if (!style.isEmpty()) {
+        pWidget->setStyleSheet(style);
     }
 }
 
