@@ -79,20 +79,18 @@ def write_channelmixer_autogen(output, num_channels):
             write('} else if (totalActive == %d) {' % i, depth=1)
             write('ScopedTimer t("EngineMaster::applyEffects%(inplace)sAndMixChannels_%(i)dactive");' %
                   {'inplace': 'InPlace' if inplace else '', 'i': i}, depth=2)
-            write('CSAMPLE_GAIN oldGain[%(i)d];' % {'i': i}, depth=2)
-            write('CSAMPLE_GAIN newGain[%(i)d];' % {'i': i}, depth=2)
             for j in xrange(i):
                 write('EngineMaster::ChannelInfo* pChannel%(j)d = activeChannels->at(%(j)d);' % {'j': j}, depth=2)
                 write('const int channelIndex%(j)d = pChannel%(j)d->m_index;' % {'j': j}, depth=2)
                 write('EngineMaster::GainCache& gainCache%(j)d = (*channelGainCache)[channelIndex%(j)d];' % {'j': j}, depth=2)
-                write('oldGain[%(j)d] = gainCache%(j)d.m_gain;' % {'j': j}, depth=2)
+                write('pChannel%(j)d->m_features.volume_fader_old = gainCache%(j)d.m_gain;' % {'j': j}, depth=2)
                 write('if (gainCache%(j)d.m_fadeout) {' % {'j': j}, depth=2)
-                write('newGain[%(j)d] = 0;' % {'j': j}, depth=3)
+                write('pChannel%(j)d->m_features.volume_fader_new = 0;' % {'j': j}, depth=3)
                 write('gainCache%(j)d.m_fadeout = false;' % {'j': j}, depth=3)
                 write('} else {', depth=2)
-                write('newGain[%(j)d] = gainCalculator.getGain(pChannel%(j)d);' % {'j': j}, depth=3)
+                write('pChannel%(j)d->m_features.volume_fader_new = gainCalculator.getGain(pChannel%(j)d);' % {'j': j}, depth=3)
                 write('}', depth=2)
-                write('gainCache%(j)d.m_gain = newGain[%(j)d];' % {'j': j}, depth=2)
+                write('gainCache%(j)d.m_gain = pChannel%(j)d->m_features.volume_fader_new;' % {'j': j}, depth=2)
                 write('CSAMPLE* pBuffer%(j)d = pChannel%(j)d->m_pBuffer;' % {'j': j}, depth=2)
 
             if inplace:
@@ -101,9 +99,9 @@ def write_channelmixer_autogen(output, num_channels):
                 write('// Process effects for each channel and mix the processed signal into pOutput', depth=2)
             for j in xrange(i):
               if inplace:
-                  write('pEngineEffectsManager->processPostFaderInPlace(pChannel%(j)d->m_handle, outputHandle, pBuffer%(j)d, iBufferSize, iSampleRate, pChannel%(j)d->m_features, oldGain[%(j)d], newGain[%(j)d]);' % {'j': j}, depth=2)
+                  write('pEngineEffectsManager->processPostFaderInPlace(pChannel%(j)d->m_handle, outputHandle, pBuffer%(j)d, iBufferSize, iSampleRate, pChannel%(j)d->m_features);' % {'j': j}, depth=2)
               else:
-                  write('pEngineEffectsManager->processPostFaderAndMix(pChannel%(j)d->m_handle, outputHandle, pBuffer%(j)d, pOutput, iBufferSize, iSampleRate, pChannel%(j)d->m_features, oldGain[%(j)d], newGain[%(j)d]);' % {'j': j}, depth=2)
+                  write('pEngineEffectsManager->processPostFaderAndMix(pChannel%(j)d->m_handle, outputHandle, pBuffer%(j)d, pOutput, iBufferSize, iSampleRate, pChannel%(j)d->m_features);' % {'j': j}, depth=2)
 
             if inplace:
                 write('// Mix the effected channel buffers together to replace the old pOutput from the last engine callback', depth=2)
@@ -123,24 +121,23 @@ def write_channelmixer_autogen(output, num_channels):
 
         write('const int channelIndex = pChannelInfo->m_index;', depth=3)
         write('EngineMaster::GainCache& gainCache = (*channelGainCache)[channelIndex];', depth=3)
-        write('CSAMPLE_GAIN oldGain = gainCache.m_gain;', depth=3)
-        write('CSAMPLE_GAIN newGain;', depth=3)
+        write('pChannelInfo->m_features.volume_fader_old = gainCache.m_gain;', depth=3)
         write('if (gainCache.m_fadeout) {', depth=3)
-        write('newGain = 0;', depth=4)
+        write('pChannelInfo->m_features.volume_fader_new = 0;', depth=4)
         write('gainCache.m_fadeout = false;', depth=4)
         write('} else {', depth=3)
-        write('newGain = gainCalculator.getGain(pChannelInfo);', depth=4)
+        write('pChannelInfo->m_features.volume_fader_new = gainCalculator.getGain(pChannelInfo);', depth=4)
         write('}', depth=3)
-        write('gainCache.m_gain = newGain;', depth=3)
+        write('gainCache.m_gain = pChannelInfo->m_features.volume_fader_new;', depth=3)
 
         write('CSAMPLE* pBuffer = pChannelInfo->m_pBuffer;', depth=3)
         if inplace:
-            write('pEngineEffectsManager->processPostFaderInPlace(pChannelInfo->m_handle, outputHandle, pBuffer, iBufferSize, iSampleRate, pChannelInfo->m_features, oldGain, newGain);' % {'j': j}, depth=3)
+            write('pEngineEffectsManager->processPostFaderInPlace(pChannelInfo->m_handle, outputHandle, pBuffer, iBufferSize, iSampleRate, pChannelInfo->m_features);' % {'j': j}, depth=3)
             write('for (unsigned int i = 0; i < iBufferSize; ++i) {', depth=3)
             write('pOutput[i] += pBuffer[i];', depth=4)
             write('}', depth=3)
         else:
-            write('pEngineEffectsManager->processPostFaderAndMix(pChannelInfo->m_handle, outputHandle, pBuffer, pOutput, iBufferSize, iSampleRate, pChannelInfo->m_features, oldGain, newGain);' % {'j': j}, depth=3)
+            write('pEngineEffectsManager->processPostFaderAndMix(pChannelInfo->m_handle, outputHandle, pBuffer, pOutput, iBufferSize, iSampleRate, pChannelInfo->m_features);' % {'j': j}, depth=3)
 
         write('}', depth=2)
         write('}', depth=1)

@@ -89,17 +89,34 @@ void BitCrusherEffect::processChannel(const ChannelHandle& handle,
     // rarely used, to achieve equal loudness and maximum dynamic
     const CSAMPLE gainCorrection = (17 - bit_depth) / 8;
 
+    // The character of this effect changes with the input level and effects are processed
+    // after the volume fader. So, to preserve the character of the effect as the volume fader
+    // is lowered, undo the attenuation from the volume fader on the input for this effect, then
+    // reapply it on the output.
+    const double faderGainDelta = (groupFeatures.volume_fader_new - groupFeatures.volume_fader_old) /
+            bufferParameters.framesPerBuffer();
+    const double faderStartGain = groupFeatures.volume_fader_old + faderGainDelta;
+
+
     for (unsigned int i = 0;
             i < bufferParameters.samplesPerBuffer();
             i += bufferParameters.channelCount()) {
         pState->accumulator += downsample;
 
+        // Note that this is an attenuation on a 0 - 1 scale, so dividing samples by it undoes
+        // the attenuation.
+        const CSAMPLE_GAIN faderGain = faderStartGain + faderGainDelta
+                * (i / bufferParameters.channelCount());
+        DEBUG_ASSERT(faderGain >= 0.0 && faderGain <= 1.0);
+
         if (pState->accumulator >= 1.0) {
             pState->accumulator -= 1.0;
             if (bit_depth < 16) {
+                CSAMPLE clamped = SampleUtil::clampSample(pInput[i] * gainCorrection / faderGain);
+                pState->hold_l = floorf(clamped * scale + 0.5f) / scale / gainCorrection * faderGain;
 
-                pState->hold_l = floorf(SampleUtil::clampSample(pInput[i] * gainCorrection) * scale + 0.5f) / scale / gainCorrection;
-                pState->hold_r = floorf(SampleUtil::clampSample(pInput[i+1] * gainCorrection) * scale + 0.5f) / scale / gainCorrection;
+                clamped = SampleUtil::clampSample(pInput[i+1] * gainCorrection / faderGain);
+                pState->hold_r = floorf(clamped * scale + 0.5f) / scale / gainCorrection * faderGain;
             } else {
                 // Mixxx float has 24 bit depth, Audio CDs are 16 bit
                 // here we do not change the depth
