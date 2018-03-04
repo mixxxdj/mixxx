@@ -5,6 +5,7 @@
 #include "control/controlpotmeter.h"
 #include "preferences/usersettings.h"
 #include "controllers/controllerengine.h"
+#include "controllers/defs_controllers.h"
 #include "controllers/controllerdebug.h"
 #include "controllers/softtakeover.h"
 #include "test/mixxxtest.h"
@@ -38,9 +39,14 @@ class ControllerEngineTest : public MixxxTest {
 };
 
 TEST_F(ControllerEngineTest, commonScriptHasNoErrors) {
-    QString commonScript = "./res/controllers/common-controller-scripts.js";
-    cEngine->evaluate(commonScript);
-    EXPECT_FALSE(cEngine->hasErrors(commonScript));
+    QString commonScriptFilename = "./res/controllers/";
+    commonScriptFilename.append(REQUIRED_SCRIPT_FILE);
+
+    QFile commonScript(commonScriptFilename);
+    EXPECT_TRUE(commonScript.exists());
+
+    cEngine->evaluate(commonScriptFilename);
+    EXPECT_FALSE(cEngine->hasErrors(commonScriptFilename));
 }
 
 TEST_F(ControllerEngineTest, setValue) {
