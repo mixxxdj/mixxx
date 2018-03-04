@@ -404,7 +404,7 @@ ebur128_state* ebur128_init(unsigned int channels,
                                        sizeof(double));
   CHECK_ERROR(!st->d->audio_data, 0, free_true_peak)
   for (j = 0; j < st->d->audio_data_frames * st->channels; ++j) {
-    st->d->audio_data[i] = 0.0;
+    st->d->audio_data[j] = 0.0;
   }
 
   ebur128_init_filter(st);
@@ -528,7 +528,7 @@ static void ebur128_check_true_peak(ebur128_state* st, size_t frames) {
   }
 }
 
-#if defined(__SSE2_MATH__) || defined(__SSE2__)
+#ifdef __SSE2_MATH__
 #include <xmmintrin.h>
 #define TURN_ON_FTZ \
         unsigned int mxcsr = _mm_getcsr(); \
@@ -955,8 +955,6 @@ static int ebur128_calc_relative_threshold(ebur128_state* st,
                                            double* relative_threshold) {
   struct ebur128_dq_entry* it;
   size_t i;
-  *relative_threshold = 0.0;
-  *above_thresh_counter = 0;
 
   if (st->d->use_histogram) {
     for (i = 0; i < 1000; ++i) {
@@ -969,11 +967,6 @@ static int ebur128_calc_relative_threshold(ebur128_state* st,
       ++*above_thresh_counter;
       *relative_threshold += it->z;
     }
-  }
-
-  if (*above_thresh_counter != 0) {
-    *relative_threshold /= (double) *above_thresh_counter;
-    *relative_threshold *= relative_gate_factor;
   }
 
   return EBUR128_SUCCESS;
@@ -1003,6 +996,9 @@ static int ebur128_gated_loudness(ebur128_state** sts, size_t size,
     *out = -HUGE_VAL;
     return EBUR128_SUCCESS;
   }
+
+  relative_threshold /= (double)above_thresh_counter;
+  relative_threshold *= relative_gate_factor;
 
   above_thresh_counter = 0;
   if (relative_threshold < histogram_energy_boundaries[0]) {
@@ -1042,8 +1038,8 @@ static int ebur128_gated_loudness(ebur128_state** sts, size_t size,
 }
 
 int ebur128_relative_threshold(ebur128_state* st, double* out) {
-  double relative_threshold;
-  size_t above_thresh_counter;
+  double relative_threshold = 0.0;
+  size_t above_thresh_counter = 0;
 
   if ((st->mode & EBUR128_MODE_I) != EBUR128_MODE_I) {
     return EBUR128_ERROR_INVALID_MODE;
@@ -1055,6 +1051,9 @@ int ebur128_relative_threshold(ebur128_state* st, double* out) {
       *out = -70.0;
       return EBUR128_SUCCESS;
   }
+
+  relative_threshold /= (double)above_thresh_counter;
+  relative_threshold *= relative_gate_factor;
 
   *out = ebur128_energy_to_loudness(relative_threshold);
   return EBUR128_SUCCESS;

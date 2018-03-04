@@ -472,7 +472,7 @@ class ReplayGain(Dependence):
 
 
 class Ebur128Mit(Dependence):
-    INTERNAL_PATH = '#lib/libebur128-1.2.3'
+    INTERNAL_PATH = '#lib/libebur128'
     INTERNAL_LINK = False
 
     def sources(self, build):
