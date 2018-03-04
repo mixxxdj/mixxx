@@ -1,9 +1,3 @@
-#QToolTip { 
-	background-color: #191919; 
-	color: #CCCCCC; 
-	border: 1px solid #CCCCCC; 
-}
-
 #Mixxx {
     background-color: #191919;
     background-repeat:no-repeat;
@@ -11,11 +5,30 @@
 	background-position:center top;  
 }
 
-#DecksAndMixer {
-    border: 10px solid #565E6B; 
-    //margin: 100px 100px 100px 100px;
-    //padding: 100px 100px 100px 100px;
+WBeatSpinBox {
+	color: #060613;
+	background-color: #aab2b7;
+	border: 1px solid #060613;
+	padding: 0px;
+	font: 13px;
 }
+
+WBeatSpinBox::up-button{
+	height: 9px;
+	border-style: solid;
+	border-color: #060613;
+	border-width: 0px 0px 0px 1px;
+	image: url(skin:/btn_spin_up.png) no-repeat;
+}
+
+WBeatSpinBox::down-button {
+	height: 9px;										
+	border-style: solid;
+	border-color: #060613;
+	border-width: 0px 0px 0px 1px;
+	image: url(skin:/btn_spin_down.png) no-repeat;
+}
+
 
 
 

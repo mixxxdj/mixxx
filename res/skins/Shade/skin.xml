@@ -97,6 +97,7 @@
 					<Amount>-40</Amount>
 				</Add>
 			</Filters>
+			<Style src="skin:dark.qss"/>
 		</Scheme>
 		<Scheme>
 			<Name>Summer Sunset</Name>
@@ -114,6 +115,7 @@
 					<VConst>-10</VConst>
 				</HSVTweak>
 			</Filters>
+			<Style src="skin:summer_sunset.qss"/>
 		</Scheme>
 	</Schemes>
 
