@@ -49,7 +49,7 @@ void WorkerThread::deleteAfterFinished() {
 }
 
 void WorkerThread::run() {
-    if (readStopped()) {
+    if (isStopping()) {
         return;
     }
 
@@ -88,7 +88,7 @@ void WorkerThread::resume() {
         wake();
     } else {
         // Just in case, wake up the thread even if it wasn't
-        // explicitly suspendd without locking the mutex. The
+        // explicitly suspended without locking the mutex. The
         // thread will suspend itself if it is idle.
         wake();
     }
@@ -105,11 +105,11 @@ void WorkerThread::stop() {
     // Wake up the thread to make sure that the stop flag is
     // detected and the thread commits suicide by exiting the
     // run loop in exec(). Resuming will reset the suspend flag
-    // to wake up not only an idle but also a suspendd thread!
+    // to wake up not only an idle but also a suspended thread!
     resume();
 }
 
-void WorkerThread::whileSuspended() {
+void WorkerThread::sleepWhileSuspended() {
     DEBUG_ASSERT(QThread::currentThread() == this);
     // The suspend flag is always reset after the stop flag has been set,
     // so we don't need to check it separately here.
@@ -118,10 +118,10 @@ void WorkerThread::whileSuspended() {
         return;
     }
     std::unique_lock<std::mutex> locked(m_sleepMutex);
-    whileSuspended(&locked);
+    sleepWhileSuspended(&locked);
 }
 
-void WorkerThread::whileSuspended(std::unique_lock<std::mutex>* locked) {
+void WorkerThread::sleepWhileSuspended(std::unique_lock<std::mutex>* locked) {
     DEBUG_ASSERT(locked);
     while (m_suspend.load()) {
         logTrace(m_logger, "Sleeping while suspended");
@@ -131,13 +131,13 @@ void WorkerThread::whileSuspended(std::unique_lock<std::mutex>* locked) {
 }
 
 bool WorkerThread::fetchWorkBlocking() {
-    if (readStopped()) {
+    if (isStopping()) {
         // Early exit without locking the mutex
         return false;
     }
-    // Keep the mutex locked while idle or suspendd
+    // Keep the mutex locked while idle or suspended
     std::unique_lock<std::mutex> locked(m_sleepMutex);
-    while (!readStopped()) {
+    while (!isStopping()) {
         FetchWorkResult fetchWorkResult = fetchWork();
         switch (fetchWorkResult) {
         case FetchWorkResult::Ready:
@@ -149,7 +149,7 @@ bool WorkerThread::fetchWorkBlocking() {
             break;
         case FetchWorkResult::Suspend:
             suspend();
-            whileSuspended(&locked);
+            sleepWhileSuspended(&locked);
             break;
         }
     }

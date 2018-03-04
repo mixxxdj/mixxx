@@ -40,10 +40,6 @@ class WorkerThread : public QThread {
 
     void deleteAfterFinished();
 
-    operator bool() const {
-        return !readStopped();
-    }
-
     const QString& name() const {
         return m_name;
     }
@@ -59,8 +55,16 @@ class WorkerThread : public QThread {
     // resumed.
     void wake();
 
-    // Commands the thread to stop asap.
+    // Commands the thread to stop asap. This action is irreversible,
+    // i.e. the thread cannot be restarted once it has been stopped.
     void stop();
+
+    // Non-blocking atomic read of the stop flag which indicates that
+    // the thread is stopping, i.e. it will soon exit or already has
+    // exited the run loop.
+    bool isStopping() const {
+        return m_stop.load();
+    }
 
   protected:
     void run() final;
@@ -90,15 +94,10 @@ class WorkerThread : public QThread {
     // Blocks the worker thread while the suspend flag is set.
     // This function must not be called while idle which could
     // block on the non-recursive mutex twice!
-    void whileSuspended();
-
-    // Non-blocking atomic read of the stop flag
-    bool readStopped() const {
-        return m_stop.load();
-    }
+    void sleepWhileSuspended();
 
   private:
-    void whileSuspended(std::unique_lock<std::mutex>* locked);
+    void sleepWhileSuspended(std::unique_lock<std::mutex>* locked);
 
     const QString m_name;
 

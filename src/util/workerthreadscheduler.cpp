@@ -48,5 +48,5 @@ void WorkerThreadScheduler::exec() {
         m_fetchedWorker->resume();
         m_fetchedWorker = nullptr;
     }
-    DEBUG_ASSERT(readStopped());
+    DEBUG_ASSERT(isStopping());
 }

@@ -155,7 +155,7 @@ void AnalyzerThread::exec() {
             emitDoneProgress(kAnalyzerProgressDone);
         }
     }
-    DEBUG_ASSERT(readStopped());
+    DEBUG_ASSERT(isStopping());
 
     m_analyzers.clear();
 
@@ -198,8 +198,8 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
     mixxx::IndexRange remainingFrames = audioSource->frameIndexRange();
     auto result = remainingFrames.empty() ? AnalysisResult::Complete : AnalysisResult::Pending;
     while (result == AnalysisResult::Pending) {
-        whileSuspended();
-        if (readStopped()) {
+        sleepWhileSuspended();
+        if (isStopping()) {
             return AnalysisResult::Cancelled;
         }
 
@@ -214,8 +214,8 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
                                 inputFrameIndexRange,
                                 mixxx::SampleBuffer::WritableSlice(m_sampleBuffer)));
 
-        whileSuspended();
-        if (readStopped()) {
+        sleepWhileSuspended();
+        if (isStopping()) {
             return AnalysisResult::Cancelled;
         }
 
