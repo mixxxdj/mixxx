@@ -297,9 +297,7 @@
 			<!--deactivate the standard
 			<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 			cause push buttons in library will show up with wrong margin/padding -->
-			<Style>QGroupBox { border: 0px solid red; }</Style>
 			<Children>
-
 				<WidgetGroup>
 				  <SizePolicy>me,f</SizePolicy>
 				  <Layout>horizontal</Layout>
@@ -355,9 +353,7 @@
                     <SetVariable name="samplernum4">8</SetVariable>
 				</Template>
 
-		        <Template src="skin:effectrow.xml">
-				</Template>
-			
+		        <Template src="skin:effectrow.xml"/>			
 				<!--
 				**********************************************
 				Library / Preview Deck / Search / Tree view

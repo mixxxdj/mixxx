@@ -8,11 +8,9 @@
 	  <Children>
 		<WidgetGroup>
 		  <Layout>horizontal</Layout>
-		  <Style>QGroupBox { border: 0px solid yellow; margin: 0px;} </Style>
 		  <Children>
 			<WidgetGroup>
 			  <Layout>horizontal</Layout>
-			  <Style>QGroupBox { border: 0px solid yellow; margin: 0px;} </Style>
 			  <Children>
 				<WidgetGroup>
 					<ObjectName>SamplerLeftBorder</ObjectName>

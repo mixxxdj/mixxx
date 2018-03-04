@@ -11,11 +11,6 @@
 			</WidgetGroup>	
 			<WidgetGroup>
 				<Size>0e,40f</Size>
-				<Style>QGroupBox { 
-					border: 0px solid green;  
-					margin: 0px 0px 0px 0px;
-				} 
-				</Style>
 				<BackPath>style/style_bg_looping.png</BackPath>
                 <Layout>horizontal</Layout>
 				<Children>
