@@ -55,7 +55,7 @@ class SkinContext {
     // Updates the SkinContext with 'element', a <SetVariable> node.
     void updateVariable(const QDomElement& element);
 
-    inline QDomNode selectNode(const QDomNode& node, const QString& nodeName) const {
+    static inline QDomNode selectNode(const QDomNode& node, const QString& nodeName) {
         QDomNode child = node.firstChild();
         while (!child.isNull()) {
             if (child.nodeName() == nodeName) {
@@ -66,7 +66,7 @@ class SkinContext {
         return QDomNode();
     }
 
-    inline QDomElement selectElement(const QDomNode& node, const QString& nodeName) const {
+    static inline QDomElement selectElement(const QDomNode& node, const QString& nodeName) {
         QDomNode child = selectNode(node, nodeName);
         return child.toElement();
     }
