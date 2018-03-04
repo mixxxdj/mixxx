@@ -154,8 +154,8 @@ private:
     friend class GlobalTrackCacheLocker;
     friend class GlobalTrackCacheResolver;
 
-    // Callback for the smart-pointer
-    static void deleter(Track* plainPtr);
+    // Deleter callbacks for the smart-pointer
+    static void evictAndSaveCachedTrack(Track* plainPtr);
 
     explicit GlobalTrackCache(GlobalTrackCacheSaver* pDeleter);
     ~GlobalTrackCache();
@@ -186,13 +186,12 @@ private:
             TrackRef trackRef,
             TrackId trackId);
 
-    void evictOrDelete(Track* plainPtr);
+    void evictAndSave(Track* plainPtr);
 
-    typedef std::unordered_map<Track*, TrackWeakPointer> AllocatedTracks;
+    typedef std::unordered_map<Track*, TrackWeakPointer> CachedTracks;
 
-    bool evictAndSave(TrackPointer strongPtr);
-
-    void evict(TrackPointer strongPtr);
+    bool evict(Track* plainPtr);
+    bool isEvicted(Track* plainPtr) const;
 
     bool isEmpty() const;
 
@@ -203,13 +202,7 @@ private:
 
     GlobalTrackCacheSaver* m_pSaver;
 
-    // This is the owner of the Track objects.
-    // The tracks are saved back to database and file metatdata if the first
-    // shared_ptr expires. This time the Track is still cached.
-    // Than the track is copied into a second shared_ptr used while saving the
-    // track. If this also expires, the track is finally deleted and removed
-    // from the index.
-    AllocatedTracks m_allocatedTracks;
+    CachedTracks m_cachedTracks;
 
     // This caches the unsaved Tracks by ID
     typedef std::unordered_map<TrackId, Track*, TrackId::hash_fun_t> TracksById;
