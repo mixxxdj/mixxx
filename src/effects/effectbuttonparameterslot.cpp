@@ -136,7 +136,9 @@ void EffectButtonParameterSlot::loadParameterSlotFromXml(const QDomElement&
                                                   EffectXml::ParameterValue,
                                                   &conversionWorked);
         if (conversionWorked) {
-            m_pControlValue->set(value);
+            // Need to use setParameterFrom(..., nullptr) here to
+            // trigger valueChanged() signal emission and execute slotValueChanged()
+            m_pControlValue->setParameterFrom(value, nullptr);
         }
         // If the conversion failed, the default value is kept.
     }

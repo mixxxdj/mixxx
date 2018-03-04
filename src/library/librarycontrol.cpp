@@ -79,7 +79,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
     // Controls to navigate horizontally within currently selected item (left/right buttons)
     m_pMoveLeft = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveLeft"));
     m_pMoveRight = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveRight"));
-    m_pMoveHorizontal = std::make_unique<ControlObject>(ConfigKey("[Library]", "MoveHorizontal"), false);
+    m_pMoveHorizontal = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveHorizontal"), false);
     connect(m_pMoveLeft.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveLeft(double)));
     connect(m_pMoveRight.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveRight(double)));
     connect(m_pMoveHorizontal.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveHorizontal(double)));
@@ -87,7 +87,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
     // Control to navigate between widgets (tab/shit+tab button)
     m_pMoveFocusForward = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveFocusForward"));
     m_pMoveFocusBackward = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveFocusBackward"));
-    m_pMoveFocus = std::make_unique<ControlObject>(ConfigKey("[Library]", "MoveFocus"), false);
+    m_pMoveFocus = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveFocus"), false);
     connect(m_pMoveFocusForward.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveFocusForward(double)));
     connect(m_pMoveFocusBackward.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveFocusBackward(double)));
     connect(m_pMoveFocus.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveFocus(double)));

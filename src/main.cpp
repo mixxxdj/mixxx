@@ -88,7 +88,9 @@ int main(int argc, char * argv[]) {
     QThread::currentThread()->setObjectName("Main");
 
     mixxx::Logging::initialize(args.getSettingsPath(),
-                               args.getLogLevel(), args.getDebugAssertBreak());
+                               args.getLogLevel(),
+                               args.getLogFlushLevel(),
+                               args.getDebugAssertBreak());
 
     MixxxApplication app(argc, argv);
 

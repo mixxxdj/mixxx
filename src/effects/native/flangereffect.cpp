@@ -25,18 +25,20 @@ EffectManifest FlangerEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
     manifest.setName(QObject::tr("Flanger"));
+    manifest.setShortName(QObject::tr("Flanger"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-        "A simple modulation effect, created by taking the input signal "
-        "and mixing it with a delayed, pitch modulated copy of itself."));
+        "Mixes the input with a delayed, pitch modulated copy of itself to create comb filtering"));
 
     EffectManifestParameter* speed = manifest.addParameter();
     speed->setId("speed");
     speed->setName(QObject::tr("Speed"));
-    speed->setDescription(QObject::tr("Controls the speed of the LFO (low frequency oscillator)\n"
-        "32 - 1/4 beats rounded to 1/2 beat per lfo cycle if tempo is detected (decks and samplers) \n"
-        "1/32 - 4 Hz if no tempo is detected (mic & aux inputs, master mix)"));
+    speed->setShortName(QObject::tr("Speed"));
+    speed->setDescription(QObject::tr(
+        "Speed of the LFO (low frequency oscillator)\n"
+        "32 - 1/4 beats rounded to 1/2 beat per LFO cycle if tempo is detected\n"
+        "1/32 - 4 Hz if no tempo is detected"));
     speed->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC_INVERSE);
     speed->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     speed->setMinimum(kMinLfoBeats);
@@ -46,7 +48,9 @@ EffectManifest FlangerEffect::getManifest() {
     EffectManifestParameter* width = manifest.addParameter();
     width->setId("width");
     width->setName(QObject::tr("Width"));
-    width->setDescription(QObject::tr("Controls the delay amplitude of the LFO (low frequency oscillator)."));
+    width->setShortName(QObject::tr("Width"));
+    width->setDescription(QObject::tr(
+        "Delay amplitude of the LFO (low frequency oscillator)"));
     width->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     width->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     width->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -57,8 +61,10 @@ EffectManifest FlangerEffect::getManifest() {
     EffectManifestParameter* manual = manifest.addParameter();
     manual->setId("manual");
     manual->setName(QObject::tr("Manual"));
-    manual->setDescription(QObject::tr("Controls the delay offset of the LFO (low frequency oscillator).\n"
-            "With width at zero, it allows to manual sweep over the entire delay range."));
+    manual->setShortName(QObject::tr("Manual"));
+    manual->setDescription(QObject::tr(
+        "Delay offset of the LFO (low frequency oscillator).\n"
+        "With width at zero, this allows for manually sweeping over the entire delay range."));
     manual->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     manual->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     manual->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -70,7 +76,8 @@ EffectManifest FlangerEffect::getManifest() {
     regen->setId("regen");
     regen->setName(QObject::tr("Regeneration"));
     regen->setShortName(QObject::tr("Regen"));
-    regen->setDescription(QObject::tr("Controls how much of the delay output is feed back into the input."));
+    regen->setDescription(QObject::tr(
+        "How much of the delay output is feed back into the input"));
     regen->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     regen->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     regen->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -81,7 +88,9 @@ EffectManifest FlangerEffect::getManifest() {
     EffectManifestParameter* mix = manifest.addParameter();
     mix->setId("mix");
     mix->setName(QObject::tr("Mix"));
-    mix->setDescription(QObject::tr("Controls the intensity of the effect."));
+    mix->setShortName(QObject::tr("Mix"));
+    mix->setDescription(QObject::tr(
+        "Intensity of the effect"));
     mix->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     mix->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     mix->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -92,8 +101,10 @@ EffectManifest FlangerEffect::getManifest() {
 
     EffectManifestParameter* triplet = manifest.addParameter();
     triplet->setId("triplet");
-    triplet->setName("Triplets");
-    triplet->setDescription("Divide rounded 1/2 beats of the Period parameter by 3.");
+    triplet->setName(QObject::tr("Triplets"));
+    triplet->setShortName(QObject::tr("Triplets"));
+    triplet->setDescription(QObject::tr(
+        "Divide rounded 1/2 beats of the Period parameter by 3."));
     triplet->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -122,14 +133,10 @@ FlangerEffect::~FlangerEffect() {
 void FlangerEffect::processChannel(const ChannelHandle& handle,
                                    FlangerGroupState* pState,
                                    const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                   const unsigned int numSamples,
-                                   const unsigned int sampleRate,
-                                   const EffectProcessor::EnableState enableState,
+                                   const mixxx::EngineParameters& bufferParameters,
+                                   const EffectEnableState enableState,
                                    const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
-
-    // TODO: remove assumption of stereo signal
-    const int kChannels = 2;
 
     double lfoPeriodParameter = m_pSpeedParameter->value();
     double lfoPeriodFrames;
@@ -139,10 +146,12 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
         if (m_pTripletParameter->toBool()) {
             lfoPeriodParameter /= 3.0;
         }
-        lfoPeriodFrames = lfoPeriodParameter * groupFeatures.beat_length_sec * sampleRate;
+        lfoPeriodFrames = lfoPeriodParameter * groupFeatures.beat_length_sec
+                * bufferParameters.sampleRate();
     } else {
         // lfoPeriodParameter is a number of seconds
-        lfoPeriodFrames = std::max(lfoPeriodParameter, kMinLfoBeats) * sampleRate;
+        lfoPeriodFrames = std::max(lfoPeriodParameter, kMinLfoBeats)
+                * bufferParameters.sampleRate();
     }
 
     // When the period is changed, the position of the sound shouldn't
@@ -159,12 +168,12 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
 
     CSAMPLE_GAIN mix = m_pMixParameter->value();
     RampingValue<CSAMPLE_GAIN> mixRamped(
-            pState->prev_mix, mix, numSamples / kChannels);
+            pState->prev_mix, mix, bufferParameters.framesPerBuffer());
     pState->prev_mix = mix;
 
     CSAMPLE_GAIN regen = m_pRegenParameter->value();
     RampingValue<CSAMPLE_GAIN> regenRamped(
-            pState->prev_regen, regen, numSamples / kChannels);
+            pState->prev_regen, regen, bufferParameters.framesPerBuffer());
     pState->prev_regen = regen;
 
     // With and Manual is limited by amount of amplitude that remains from width
@@ -176,17 +185,19 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
     manual = math_clamp(manual, minManual, maxManual);
 
     RampingValue<double> widthRamped(
-            pState->prev_width, width, numSamples / kChannels);
+            pState->prev_width, width, bufferParameters.framesPerBuffer());
     pState->prev_width = width;
 
     RampingValue<double> manualRamped(
-            pState->prev_manual, manual, numSamples / kChannels);
+            pState->prev_manual, manual, bufferParameters.framesPerBuffer());
     pState->prev_manual = manual;
 
     CSAMPLE* delayLeft = pState->delayLeft;
     CSAMPLE* delayRight = pState->delayRight;
 
-   for (unsigned int i = 0; i < numSamples; i += kChannels) {
+   for (unsigned int i = 0;
+          i < bufferParameters.samplesPerBuffer();
+          i += bufferParameters.channelCount()) {
 
         CSAMPLE_GAIN mix_ramped = mixRamped.getNext();
         CSAMPLE_GAIN regen_ramped = regenRamped.getNext();
@@ -200,7 +211,7 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
 
         float periodFraction = static_cast<float>(pState->lfoFrames) / lfoPeriodFrames;
         double delayMs = manual_ramped + width_ramped / 2 * sin(M_PI * 2.0f * periodFraction);
-        double delayFrames = delayMs * sampleRate / 1000;
+        double delayFrames = delayMs * bufferParameters.sampleRate() / 1000;
 
         SINT framePrev = (pState->delayPos - static_cast<SINT>(floor(delayFrames))
                 + kBufferLenth) % kBufferLenth;
@@ -226,7 +237,7 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
         pOutput[i + 1] = (pInput[i + 1] + mix_ramped * delayedSampleRight) / gain;
     }
 
-    if (enableState == EffectProcessor::DISABLING) {
+    if (enableState == EffectEnableState::Disabling) {
         SampleUtil::clear(delayLeft, kBufferLenth);
         SampleUtil::clear(delayRight, kBufferLenth);
         pState->previousPeriodFrames = -1;

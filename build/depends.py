@@ -215,9 +215,10 @@ class Qt(Dependence):
                 import subprocess
                 try:
                     if qt5:
-                        core = subprocess.Popen(["pkg-config", "--variable=libdir", "Qt5Core"], stdout = subprocess.PIPE).communicate()[0].rstrip()
+                        qtcore = "Qt5Core"
                     else:
-                        core = subprocess.Popen(["pkg-config", "--variable=libdir", "QtCore"], stdout = subprocess.PIPE).communicate()[0].rstrip()
+                        qtcore = "QtCore"
+                    core = subprocess.Popen(["pkg-config", "--variable=libdir", qtcore], stdout = subprocess.PIPE).communicate()[0].rstrip().decode()
                 finally:
                     if os.path.isdir(core):
                         return core
@@ -670,11 +671,12 @@ class MixxxCore(Feature):
 
                    "preferences/configobject.cpp",
                    "preferences/dialog/dlgprefautodj.cpp",
-                   "preferences/dialog/dlgprefcontrols.cpp",
+                   "preferences/dialog/dlgprefdeck.cpp",
                    "preferences/dialog/dlgprefcrossfader.cpp",
                    "preferences/dialog/dlgprefeffects.cpp",
                    "preferences/dialog/dlgprefeq.cpp",
                    "preferences/dialog/dlgpreferences.cpp",
+                   "preferences/dialog/dlgprefinterface.cpp",
                    "preferences/dialog/dlgpreflibrary.cpp",
                    "preferences/dialog/dlgprefnovinyl.cpp",
                    "preferences/dialog/dlgprefrecord.cpp",
@@ -728,6 +730,7 @@ class MixxxCore(Feature):
                    "effects/native/autopaneffect.cpp",
                    "effects/native/phasereffect.cpp",
                    "effects/native/metronomeeffect.cpp",
+                   "effects/native/tremoloeffect.cpp",
 
                    "engine/effects/engineeffectsmanager.cpp",
                    "engine/effects/engineeffectrack.cpp",
@@ -942,6 +945,7 @@ class MixxxCore(Feature):
                    "library/dlgmissing.cpp",
                    "library/dlgtagfetcher.cpp",
                    "library/dlgtrackinfo.cpp",
+                   "library/dlgtrackmetadataexport.cpp",
 
                    "library/browse/browsetablemodel.cpp",
                    "library/browse/browsethread.cpp",
@@ -1073,6 +1077,7 @@ class MixxxCore(Feature):
                    "track/beatgrid.cpp",
                    "track/beatmap.cpp",
                    "track/beatutils.cpp",
+                   "track/beats.cpp",
                    "track/bpm.cpp",
                    "track/keyfactory.cpp",
                    "track/keys.cpp",
@@ -1080,12 +1085,14 @@ class MixxxCore(Feature):
                    "track/playcounter.cpp",
                    "track/replaygain.cpp",
                    "track/track.cpp",
+                   "track/globaltrackcache.cpp",
                    "track/trackmetadata.cpp",
                    "track/trackmetadatataglib.cpp",
                    "track/tracknumbers.cpp",
                    "track/albuminfo.cpp",
                    "track/trackinfo.cpp",
                    "track/trackrecord.cpp",
+                   "track/trackref.cpp",
 
                    "mixer/auxiliary.cpp",
                    "mixer/baseplayer.cpp",
@@ -1196,11 +1203,12 @@ class MixxxCore(Feature):
             'library/recording/dlgrecording.ui',
             'preferences/dialog/dlgprefautodjdlg.ui',
             'preferences/dialog/dlgprefbeatsdlg.ui',
-            'preferences/dialog/dlgprefcontrolsdlg.ui',
+            'preferences/dialog/dlgprefdeckdlg.ui',
             'preferences/dialog/dlgprefcrossfaderdlg.ui',
             'preferences/dialog/dlgprefeffectsdlg.ui',
             'preferences/dialog/dlgprefeqdlg.ui',
             'preferences/dialog/dlgpreferencesdlg.ui',
+            'preferences/dialog/dlgprefinterfacedlg.ui',
             'preferences/dialog/dlgprefkeydlg.ui',
             'preferences/dialog/dlgpreflibrarydlg.ui',
             'preferences/dialog/dlgprefnovinyldlg.ui',

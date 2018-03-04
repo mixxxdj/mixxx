@@ -25,7 +25,8 @@ void WidgetHider::showWidget(QWidget* w) {
     w->update();
 }
 #else
-bool WidgetHider::eventFilter(QObject*, QEvent*) {
+bool WidgetHider::eventFilter(QObject* watched, QEvent* event) {
+    return QObject::eventFilter(watched,event);
 }
 
 void WidgetHider::retainSizeFor(QWidget* widget)

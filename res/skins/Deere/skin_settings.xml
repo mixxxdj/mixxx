@@ -19,18 +19,17 @@
             <Text>Skin Settings</Text>
           </Label>
           <Template src="skin:left_2state_button.xml">
-            <SetVariable name="TooltipId"></SetVariable>
-            <SetVariable name="Tooltip">Show/hide skin settings</SetVariable>
+            <SetVariable name="TooltipId">skin_settings</SetVariable>
             <SetVariable name="ObjectName">SidebarShowHideSkinSettingsButton</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
             <SetVariable name="state_0_text"></SetVariable>
-            <SetVariable name="state_0_pressed">icon/ic_menu_48px.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">icon/ic_menu_48px.svg</SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_settings_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_settings_48px.svg</SetVariable>
             <SetVariable name="state_1_text"></SetVariable>
-            <SetVariable name="state_1_pressed">icon/ic_menu_48px.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">icon/ic_menu_48px.svg</SetVariable>
+            <SetVariable name="state_1_pressed">icon/ic_settings_48px.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">icon/ic_settings_48px.svg</SetVariable>
             <SetVariable name="left_connection_control">[Deere],show_skin_settings</SetVariable>
           </Template>
         </Children>
@@ -48,12 +47,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9898; Parallel Waveforms</Text>
+              <Text>&#9675; Parallel Waveforms</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9899; Parallel Waveforms</Text>
+              <Text>&#9679; Parallel Waveforms</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -67,12 +66,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9898; 4 Decks</Text>
+              <Text>&#9675; 4 Decks</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9899; 4 Decks</Text>
+              <Text>&#9679; 4 Decks</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -97,16 +96,17 @@
         <Children>
 
           <PushButton>
+            <TooltipId>show_coverart</TooltipId>
             <Size>80me,20f</Size>
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9898; Cover Art</Text>
+              <Text>&#9675; Cover Art</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9899; Cover Art</Text>
+              <Text>&#9679; Cover Art</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -115,16 +115,17 @@
           </PushButton>
 
           <PushButton>
+            <TooltipId>show_spinny</TooltipId>
             <Size>80me,20f</Size>
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9898; Spinnies</Text>
+              <Text>&#9675; Spinnies</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9899; Spinnies</Text>
+              <Text>&#9679; Spinnies</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -137,12 +138,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9898; Artist &amp; Track Title</Text>
+              <Text>&#9675; Artist &amp; Track Title</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9899; Artist &amp; Track Title</Text>
+              <Text>&#9679; Artist &amp; Track Title</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -155,12 +156,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9898; BPM</Text>
+              <Text>&#9675; BPM</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9899; BPM</Text>
+              <Text>&#9679; BPM</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -173,12 +174,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9898; Star Rating</Text>
+              <Text>&#9675; Star Rating</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9899; Star Rating</Text>
+              <Text>&#9679; Star Rating</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -191,12 +192,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9898; More Hotcues</Text>
+              <Text>&#9675; More Hotcues</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9899; More Hotcues</Text>
+              <Text>&#9679; More Hotcues</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -205,16 +206,17 @@
           </PushButton>
 
           <PushButton>
+            <TooltipId>show_vinylcontrol</TooltipId>
             <Size>80me,20f</Size>
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9898; Vinyl Control Options</Text>
+              <Text>&#9675; Vinyl Control Options</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9899; Vinyl Control Options</Text>
+              <Text>&#9679; Vinyl Control Options</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -241,12 +243,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9898; Show</Text>
+              <Text>&#9675; Show</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9899; Show</Text>
+              <Text>&#9679; Show</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -260,12 +262,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9898; Equalizers</Text>
+              <Text>&#9675; Equalizers</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9899; Equalizers</Text>
+              <Text>&#9679; Equalizers</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -279,12 +281,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9898; Kill Switches</Text>
+              <Text>&#9675; Kill Switches</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9899; Kill Switches</Text>
+              <Text>&#9679; Kill Switches</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -298,12 +300,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9898; Faders</Text>
+              <Text>&#9675; Faders</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9899; Faders</Text>
+              <Text>&#9679; Faders</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -316,12 +318,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9898; Crossfader</Text>
+              <Text>&#9675; Crossfader</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9899; Crossfader</Text>
+              <Text>&#9679; Crossfader</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -440,6 +442,37 @@
             </Children>
           </WidgetStack>
 
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:left_1state_button.xml">
+                <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+                <SetVariable name="TooltipId">LoadSamplerBank</SetVariable>
+                <SetVariable name="ObjectName">SamplerBankLoadButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="HorizontalStretchButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text">Load Bank</SetVariable>
+                <SetVariable name="state_0_pressed"></SetVariable>
+                <SetVariable name="state_0_unpressed"></SetVariable>
+                <SetVariable name="left_connection_control">[Sampler],LoadSamplerBank</SetVariable>
+              </Template>
+
+              <Template src="skin:left_1state_button.xml">
+                <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+                <SetVariable name="TooltipId">SaveSamplerBank</SetVariable>
+                <SetVariable name="ObjectName">SamplerBankSaveButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="HorizontalStretchButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text">Save Bank</SetVariable>
+                <SetVariable name="state_0_pressed"></SetVariable>
+                <SetVariable name="state_0_unpressed"></SetVariable>
+                <SetVariable name="left_connection_control">[Sampler],SaveSamplerBank</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
         </Children>
       </WidgetGroup>
 
@@ -460,12 +493,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9898; Superknob</Text>
+              <Text>&#9675; Superknob</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9899; Superknob</Text>
+              <Text>&#9679; Superknob</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -478,12 +511,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9898; 4 Effect Units</Text>
+              <Text>&#9675; 4 Effect Units</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9899; 4 Effect Units</Text>
+              <Text>&#9679; 4 Effect Units</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -510,12 +543,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9898; Show</Text>
+              <Text>&#9675; Show</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9899; Show</Text>
+              <Text>&#9679; Show</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -530,12 +563,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9898; Preview Deck</Text>
+              <Text>&#9675; Preview Deck</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9899; Preview Deck</Text>
+              <Text>&#9679; Preview Deck</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -549,12 +582,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9898; Cover Art</Text>
+              <Text>&#9675; Cover Art</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9899; Cover Art</Text>
+              <Text>&#9679; Cover Art</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>

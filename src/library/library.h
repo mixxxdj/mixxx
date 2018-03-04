@@ -13,7 +13,7 @@
 #include <QFont>
 
 #include "preferences/usersettings.h"
-#include "track/track.h"
+#include "track/globaltrackcache.h"
 #include "recording/recordingmanager.h"
 #include "analysisfeature.h"
 #include "library/coverartcache.h"
@@ -36,7 +36,8 @@ class LibraryControl;
 class KeyboardEventFilter;
 class PlayerManagerInterface;
 
-class Library : public QObject {
+class Library: public QObject,
+    public virtual /*implements*/ GlobalTrackCacheSaver {
     Q_OBJECT
 
   public:
@@ -121,7 +122,13 @@ class Library : public QObject {
     void scanStarted();
     void scanFinished();
 
+  private slots:
+    void saveTrack(TrackPointer pTrack);
+
   private:
+    // Callback for GlobalTrackCache
+    void saveCachedTrack(TrackPointer pTrack) noexcept override;
+
     const UserSettingsPointer m_pConfig;
 
     // The Mixxx database connection pool

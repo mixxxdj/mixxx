@@ -1,10 +1,10 @@
 
-#include <effects/native/balanceeffect.h>
 #include <QtDebug>
 
 #include "effects/native/nativebackend.h"
 #include "effects/native/flangereffect.h"
 #include "effects/native/bitcrushereffect.h"
+#include "effects/native/balanceeffect.h"
 #include "effects/native/linkwitzriley8eqeffect.h"
 #include "effects/native/bessel8lvmixeqeffect.h"
 #include "effects/native/bessel4lvmixeqeffect.h"
@@ -22,6 +22,7 @@
 #include "effects/native/phasereffect.h"
 #include "effects/native/loudnesscontoureffect.h"
 #include "effects/native/metronomeeffect.h"
+#include "effects/native/tremoloeffect.h"
 
 NativeBackend::NativeBackend(QObject* pParent)
         : EffectsBackend(pParent, tr("Native")) {
@@ -50,6 +51,7 @@ NativeBackend::NativeBackend(QObject* pParent)
 #endif
     registerEffect<PhaserEffect>();
     registerEffect<MetronomeEffect>();
+    registerEffect<TremoloEffect>();
 }
 
 NativeBackend::~NativeBackend() {

@@ -25,6 +25,7 @@
 
 #include "soundio/sounddevice.h"
 #include "util/duration.h"
+#include "util/fifo.h"
 
 #define CPU_USAGE_UPDATE_RATE 30 // in 1/s, fits to display frame rate
 
@@ -39,16 +40,16 @@ typedef int (*EnableAlsaRT)(PaStream* s, int enable);
 class SoundDevicePortAudio : public SoundDevice {
   public:
     SoundDevicePortAudio(UserSettingsPointer config,
-                         SoundManager *sm, const PaDeviceInfo *deviceInfo,
+                         SoundManager* sm, const PaDeviceInfo* deviceInfo,
                          unsigned int devIndex);
-    virtual ~SoundDevicePortAudio();
+    ~SoundDevicePortAudio() override;
 
-    virtual SoundDeviceError open(bool isClkRefDevice, int syncBuffers);
-    virtual bool isOpen() const;
-    virtual SoundDeviceError close();
-    virtual void readProcess();
-    virtual void writeProcess();
-    virtual QString getError() const;
+    SoundDeviceError open(bool isClkRefDevice, int syncBuffers) override;
+    bool isOpen() const override;
+    SoundDeviceError close() override;
+    void readProcess() override;
+    void writeProcess() override;
+    QString getError() const override;
 
     // This callback function gets called everytime the sound device runs out of
     // samples (ie. when it needs more sound to play)
@@ -67,7 +68,7 @@ class SoundDevicePortAudio : public SoundDevice {
                         const PaStreamCallbackTimeInfo *timeInfo,
                         PaStreamCallbackFlags statusFlags);
 
-    virtual unsigned int getDefaultSampleRate() const {
+    unsigned int getDefaultSampleRate() const override {
         return m_deviceInfo ? static_cast<unsigned int>(
             m_deviceInfo->defaultSampleRate) : 44100;
     }

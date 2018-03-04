@@ -14,9 +14,9 @@ Variables:
   <WidgetGroup>
     <ObjectName>MixerChannelLeft</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>min,me</SizePolicy>
+    <Size>-1min,136f</Size>
     <Children>
-      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1me</Size></WidgetGroup>
+      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
       <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
 
@@ -25,22 +25,22 @@ Variables:
         <SizePolicy>min,min</SizePolicy>
         <Children>
             <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
-          <Template src="skin:eq_knob_button_left.xml"><!-- High EQ -->
-            <SetVariable name="parameter">3</SetVariable>
+          <Template src="skin:eq_knob_left.xml"><!-- High EQ -->
+            <SetVariable name="FxParameter">3</SetVariable>
           </Template>
             <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
-          <Template src="skin:eq_knob_button_left.xml"><!-- Mid EQ -->
-            <SetVariable name="parameter">2</SetVariable>
+          <Template src="skin:eq_knob_left.xml"><!-- Mid EQ -->
+            <SetVariable name="FxParameter">2</SetVariable>
           </Template>
             <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
-          <Template src="skin:eq_knob_button_left.xml"><!-- Low EQ -->
-            <SetVariable name="parameter">1</SetVariable>
+          <Template src="skin:eq_knob_left.xml"><!-- Low EQ -->
+            <SetVariable name="FxParameter">1</SetVariable>
           </Template>
             <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
-          <Template src="skin:quick_fx_knob_button_left.xml"/><!-- Quick Effect knob -->
+          <Template src="skin:quick_fx_knob_left.xml"/><!-- Quick Effect knob -->
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Tango],eq_knobs</ConfigKey>
+          <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /EQs + QuickEffect knobs -->
@@ -50,25 +50,25 @@ Variables:
       <WidgetGroup><!--  Volume Slider + Gain knob -->
         <ObjectName>VolumeSliderGain</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>f,me</SizePolicy>
+        <SizePolicy>f,min</SizePolicy>
         <Children>
           <SliderComposed><!-- Volume slider -->
             <ObjectName>VolumeSlider</ObjectName>
             <TooltipId>channel_volume</TooltipId>
-            <Slider>skin:/knobs_sliders/slider_volume_v_scale.svg</Slider>
-            <Handle>skin:/knobs_sliders/slider_volume_v_handle.svg</Handle>
+            <Slider>skin:/knobs_sliders/volume_scale.svg</Slider>
+            <Handle>skin:/knobs_sliders/volume_handle.svg</Handle>
             <Horizontal>false</Horizontal>
             <Connection>
               <ConfigKey><Variable name="group"/>,volume</ConfigKey>
             </Connection>
           </SliderComposed><!-- /Volume slider -->
 
-          <WidgetGroup><Size>1min,1me</Size></WidgetGroup>
+          <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
 
           <!-- Gain knob, centered below Volume slider -->
           <Template src="skin:knob_textless.xml">
-            <SetVariable name="TooltipId">pregain</SetVariable>
             <SetVariable name="ObjectName">GainKnob</SetVariable>
+            <SetVariable name="TooltipId">pregain</SetVariable>
             <SetVariable name="Size">30f,30f</SetVariable>
             <SetVariable name="Color">yellow</SetVariable>
             <SetVariable name="group"><Variable name="group"/></SetVariable>
@@ -83,7 +83,8 @@ Variables:
         <Layout>vertical</Layout>
         <Children>
           <Template src="skin:vumeter_mixer.xml"/>
-            <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
+
+          <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
 
           <WidgetGroup><!-- Pfl button, isolated with a 'gap' -->
             <ObjectName>PflBoxLeft</ObjectName>
@@ -95,9 +96,9 @@ Variables:
 
               <!-- Greyed out if no headphone device is configured -->
               <WidgetGroup>
-                <ObjectName>MixerbarCover</ObjectName>
+                <ObjectName>GuiCover</ObjectName>
                 <Layout>vertical</Layout>
-                <SizePolicy>me,me</SizePolicy>
+                <SizePolicy>min,min</SizePolicy>
                 <Connection>
                   <ConfigKey>[Master],headEnabled</ConfigKey>
                   <BindProperty>visible</BindProperty>
@@ -107,7 +108,7 @@ Variables:
 
               <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">pfl</SetVariable>
-                <SetVariable name="ObjectName">PflButtonLeft</SetVariable>
+                <SetVariable name="ObjectName">PflButton</SetVariable>
                 <SetVariable name="Size">24f,24f</SetVariable>
                 <SetVariable name="state_0_pressed">pfl_off.svg</SetVariable>
                 <SetVariable name="state_0_unpressed">pfl_off.svg</SetVariable>
@@ -120,9 +121,5 @@ Variables:
         </Children>
       </WidgetGroup><!-- /VU Meter + Pfl button -->
     </Children>
-    <Connection>
-      <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
-      <BindProperty>visible</BindProperty>
-    </Connection>
   </WidgetGroup>
 </Template>

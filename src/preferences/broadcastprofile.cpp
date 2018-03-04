@@ -298,7 +298,7 @@ bool BroadcastProfile::loadValues(const QString& filename) {
     m_customTitle = XmlParse::selectNodeQString(doc, kCustomTitle);
     m_metadataFormat = XmlParse::selectNodeQString(doc, kMetadataFormat);
     m_oggDynamicUpdate =
-            (bool)XmlParse::selectNodeInt(doc, kMetadataFormat);
+            (bool)XmlParse::selectNodeInt(doc, kOggDynamicUpdate);
 
     return true;
 }

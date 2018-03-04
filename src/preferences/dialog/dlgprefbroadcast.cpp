@@ -46,9 +46,9 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
     connectionList->setModel(m_pSettingsModel);
 
     connect(connectionList->selectionModel(),
-            SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),
+            SIGNAL(currentRowChanged(const QModelIndex&, const QModelIndex&)),
             this,
-            SLOT(profileListItemSelected(const QModelIndex&, const QModelIndex&)));
+            SLOT(connectionListItemSelected(const QModelIndex&)));
     connect(btnRemoveConnection, SIGNAL(clicked(bool)),
             this, SLOT(btnRemoveConnectionClicked()));
     connect(btnRenameConnection, SIGNAL(clicked(bool)),
@@ -104,9 +104,6 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
      comboBoxEncodingChannels->addItem(tr("Stereo"),
              static_cast<int>(EncoderSettings::ChannelMode::STEREO));
 
-     BroadcastProfilePtr pProfile = m_pBroadcastSettings->profileAt(0);
-     getValuesFromProfile(pProfile);
-
      connect(checkBoxEnableReconnect, SIGNAL(stateChanged(int)),
              this, SLOT(checkBoxEnableReconnectChanged(int)));
 
@@ -130,7 +127,7 @@ void DlgPrefBroadcast::slotUpdate() {
 
     // Force select an item to have the current selection
     // set to a profile pointer belonging to the model
-    connectionList->selectRow(0);
+    selectConnectionRow(0);
 
     // Don't let user modify information if
     // sending is enabled.
@@ -173,11 +170,13 @@ void DlgPrefBroadcast::slotApply() {
 
             if (!profileWithSameMountpoint.isNull()
                 && profileWithSameMountpoint->getHost().toLower()
-                    == profile->getHost().toLower()) {
+                    == profile->getHost().toLower()
+                && profileWithSameMountpoint->getPort()
+                    == profile->getPort() ) {
                 QMessageBox::warning(
                     this, tr("Action failed"),
                     tr("'%1' has the same Icecast mountpoint as '%2'.\n"
-                       "Two connections on the same server can't have the same mountpoint.")
+                       "Two source connections to the same server can't have the same mountpoint.")
                        .arg(profileName).arg(profileNameWithSameMountpoint));
                 return;
             }
@@ -236,7 +235,7 @@ void DlgPrefBroadcast::enableCustomMetadataChanged(int value) {
 void DlgPrefBroadcast::btnCreateConnectionClicked() {
     if(m_pSettingsModel->rowCount() >= BROADCAST_MAX_CONNECTIONS) {
         QMessageBox::warning(this, tr("Action failed"),
-                tr("You can't create more than %1 Live Broadcasting connections.")
+                tr("You can't create more than %1 source connections.")
                 .arg(BROADCAST_MAX_CONNECTIONS));
         return;
     }
@@ -249,7 +248,7 @@ void DlgPrefBroadcast::btnCreateConnectionClicked() {
     QString newName;
     do {
         profileNumber++;
-        newName = tr("Connection %1").arg(profileNumber);
+        newName = tr("Source connection %1").arg(profileNumber);
         existingProfile = m_pSettingsModel->getProfileByName(newName);
     } while(!existingProfile.isNull());
 
@@ -261,9 +260,7 @@ void DlgPrefBroadcast::btnCreateConnectionClicked() {
     selectConnectionRowByName(newProfile->getProfileName());
 }
 
-void DlgPrefBroadcast::profileListItemSelected(const QModelIndex& selected,
-        const QModelIndex& deselected) {
-    Q_UNUSED(deselected);
+void DlgPrefBroadcast::connectionListItemSelected(const QModelIndex& selected) {
     setValuesToProfile(m_pProfileListSelection);
 
     QString selectedName = m_pSettingsModel->data(selected,
@@ -292,11 +289,22 @@ void DlgPrefBroadcast::updateModel() {
 }
 
 void DlgPrefBroadcast::selectConnectionRow(int row) {
-    if(row < 0 || row > m_pSettingsModel->rowCount()) {
-        return;
+    if (row < 0) {
+        row = 0;
+    }
+
+    const int maxRow = m_pSettingsModel->rowCount() - 1;
+    if (row > maxRow) {
+        row = maxRow;
     }
 
     connectionList->selectRow(row);
+
+    // QTableView::selectRow updates the UI but doesn't trigger
+    // currentRowChanged in the selection model object, so
+    // we must do it manually
+    QModelIndex newSelection = m_pSettingsModel->index(row, kColumnName);
+    connectionListItemSelected(newSelection);
 }
 
 void DlgPrefBroadcast::selectConnectionRowByName(QString rowName) {
@@ -490,7 +498,7 @@ void DlgPrefBroadcast::setValuesToProfile(BroadcastProfilePtr profile) {
 void DlgPrefBroadcast::btnRemoveConnectionClicked() {
     if(m_pSettingsModel->rowCount() < 2) {
         QMessageBox::information(this, tr("Action failed"),
-                tr("At least one connection is required."));
+                tr("At least one source connection is required."));
         return;
     }
 
@@ -534,7 +542,7 @@ void DlgPrefBroadcast::btnRenameConnectionClicked() {
 void DlgPrefBroadcast::btnDisconnectAllClicked() {
     auto response = QMessageBox::question(this,
             tr("Confirmation required"),
-            tr("Are you sure you want to disconnect every active Live Broadcasting source connection?"),
+            tr("Are you sure you want to disconnect every active source connection?"),
             QMessageBox::Yes, QMessageBox::No);
 
     if(response == QMessageBox::Yes) {

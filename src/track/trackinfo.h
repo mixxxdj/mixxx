@@ -21,11 +21,10 @@ class TrackInfo final {
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    comment,              Comment)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    composer,             Composer)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    conductor,            Conductor)
-    PROPERTY_SET_BYVAL_GET_BYREF(Duration,   duration,             Duration)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    genre,                Genre)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    grouping,             Grouping)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    isrc,                 ISRC)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    key,                  Key)
+    PROPERTY_SET_BYVAL_GET_BYREF(QString,    isrc,                 ISRC)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    language,             Language)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    lyricist,             Lyricist)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    mood,                 Mood)
@@ -40,11 +39,6 @@ class TrackInfo final {
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    trackTotal,           TrackTotal)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    year,                 Year) // = release date
 
-    // Audio properties (in alphabetical order)
-    PROPERTY_SET_BYVAL_GET_BYREF(AudioSource::Bitrate,      bitrate,    Bitrate)
-    PROPERTY_SET_BYVAL_GET_BYREF(AudioSignal::ChannelCount, channels,   Channels)
-    PROPERTY_SET_BYVAL_GET_BYREF(AudioSignal::SampleRate,   sampleRate, SampleRate)
-
 public:
     TrackInfo() = default;
     TrackInfo(TrackInfo&&) = default;
@@ -53,6 +47,16 @@ public:
 
     TrackInfo& operator=(TrackInfo&&) = default;
     TrackInfo& operator=(const TrackInfo&) = default;
+
+    // TODO(XXX): Remove after all new fields have been added to the library
+    void resetUnsupportedValues();
+
+    // Adjusts floating-point values to match their string representation
+    // in file tags to account for rounding errors.
+    void normalizeBeforeExport() {
+        refBpm().normalizeBeforeExport();
+        refReplayGain().normalizeBeforeExport();
+    }
 };
 
 bool operator==(const TrackInfo& lhs, const TrackInfo& rhs);
@@ -61,6 +65,8 @@ inline
 bool operator!=(const TrackInfo& lhs, const TrackInfo& rhs) {
     return !(lhs == rhs);
 }
+
+QDebug operator<<(QDebug dbg, const TrackInfo& arg);
 
 } // namespace mixxx
 
