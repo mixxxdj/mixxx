@@ -38,9 +38,9 @@ Variables:
                 <Children>
                   <Template src="skin:button_2state_right.xml">
                     <SetVariable name="TooltipId">beatloop_activate</SetVariable>
-                    <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
+                    <SetVariable name="ObjectName">LoopActivateButton</SetVariable>
                     <SetVariable name="Size">30f,22f</SetVariable>
-                    <SetVariable name="state_0_icon">loop_on.svg</SetVariable>
+                    <SetVariable name="state_0_icon">loop.svg</SetVariable>
                     <SetVariable name="state_1_icon">loop_on.svg</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,beatloop_activate</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatlooproll_activate</SetVariable>

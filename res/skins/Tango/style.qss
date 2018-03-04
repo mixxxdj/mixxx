@@ -956,7 +956,7 @@ WWidgetGroup {
   background-color: #333;
   }
   #ReloopButton[displayValue="0"]:hover {
-    border: 1px solid #888;
+    border: 1px solid #ff8f00;
   }
   #ReloopButton[displayValue="1"] {
   /* See also #LoopIndicator */
@@ -964,6 +964,19 @@ WWidgetGroup {
     }
     #ReloopButton[displayValue="1"]:hover {
       border: 1px solid #eeeeee;
+    }
+
+#LoopActivateButton[displayValue="0"] {
+  background-color: #333;
+  }
+  #LoopActivateButton[displayValue="0"]:hover {
+    border: 1px solid #ff8f00;
+  }
+  #LoopActivateButton[displayValue="1"] {
+    /* See also #LoopIndicator
+      background-color: #ff8f00; */
+      border: 1px solid #ff8f00;
+      background-color: #0f0f0f;
     }
 
 WBeatSpinBox {
