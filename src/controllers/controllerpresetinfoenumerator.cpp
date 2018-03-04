@@ -49,7 +49,7 @@ QList<PresetInfo> PresetInfoEnumerator::getPresetsByExtension(const QString& ext
 
 void PresetInfoEnumerator::loadSupportedPresets() {
     for (const QString& dirPath : m_controllerDirPaths) {
-        QDirIterator it(dirPath);
+        QDirIterator it(dirPath, QDirIterator::Subdirectories | QDirIterator::FollowSymlinks);
         while (it.hasNext()) {
             it.next();
             const QString path = it.filePath();
