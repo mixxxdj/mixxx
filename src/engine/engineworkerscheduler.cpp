@@ -19,20 +19,14 @@ EngineWorkerScheduler::~EngineWorkerScheduler() {
     wait();
 }
 
-void EngineWorkerScheduler::workerReady(EngineWorker* pWorker) {
-    if (pWorker) {
-        // If the write fails, we really can't do much since we should not block
-        // in this slot. Write the address of the variable pWorker, since it is
-        // a 1-element array.
-        m_workerStates[pWorker] = true;
-        m_bWakeScheduler = true;
-    }
+void EngineWorkerScheduler::workerReady() {
+    m_bWakeScheduler = true;
 }
 
 void EngineWorkerScheduler::addWorker(EngineWorker* pWorker) {
-    if (pWorker) {
-        m_workerStates.insert(pWorker, false);
-    }
+    DEBUG_ASSERT(pWorker);
+    QMutexLocker locker(&m_mutex);
+    m_workers.push_back(pWorker);
 }
 
 void EngineWorkerScheduler::runWorkers() {
@@ -48,17 +42,17 @@ void EngineWorkerScheduler::runWorkers() {
 void EngineWorkerScheduler::run() {
     while (!m_bQuit) {
         Event::start("EngineWorkerScheduler");
-        QHash<EngineWorker*, bool>::iterator i = m_workerStates.begin();
-        while (i != m_workerStates.end()) {
-            if (i.key() && i.value()) {
-                i.key()->wake();
-                i.value() = false;
+        m_mutex.lock();
+        for(const auto& pWorker: m_workers) {
+            if (pWorker->isReady()) {
+                pWorker->wake();
             }
-            ++i;
         }
+        m_mutex.unlock();
         Event::end("EngineWorkerScheduler");
         m_mutex.lock();
         if (!m_bQuit) {
+            // Wait for next runWorkers() call
             m_waitCondition.wait(&m_mutex); // unlock mutex and wait
         }
         m_mutex.unlock();

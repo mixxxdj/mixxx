@@ -19,10 +19,14 @@ void EngineWorker::setScheduler(EngineWorkerScheduler* pScheduler) {
     pScheduler->addWorker(this);
 }
 
-bool EngineWorker::workReady() {
-    if (m_pScheduler) {
-        m_pScheduler->workerReady(this);
-        return true;
+void EngineWorker::workReady() {
+    m_ready = true;
+    VERIFY_OR_DEBUG_ASSERT(m_pScheduler) {
+        return;     
     }
-    return false;
+    m_pScheduler->workerReady();
+}
+
+bool EngineWorker::isReady() {
+    return m_ready;
 }

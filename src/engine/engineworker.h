@@ -25,8 +25,10 @@ class EngineWorker : public QThread {
     virtual void run();
 
     void setScheduler(EngineWorkerScheduler* pScheduler);
-    bool workReady();
+    void workReady();
+    bool isReady();
     void wake() {
+        m_ready = false;
         m_semaRun.release();
     }
 
@@ -35,6 +37,7 @@ class EngineWorker : public QThread {
 
   private:
     EngineWorkerScheduler* m_pScheduler;
+    volatile bool m_ready;
 };
 
 #endif /* ENGINEWORKER_H */
