@@ -24,8 +24,8 @@ Variables:
             </Connection>
           </StatusLight>
           <VuMeter>
-            <PathVu>skin:/graphics/vumeter_mixer_over.png</PathVu>
-            <PathBack>skin:/graphics/vumeter_mixer.png</PathBack>
+            <PathVu>skin:/graphics/vumeter_mixer_over.svg</PathVu>
+            <PathBack>skin:/graphics/vumeter_mixer.svg</PathBack>
             <Horizontal>false</Horizontal>
             <PeakHoldSize>5</PeakHoldSize>
             <PeakHoldTime>500</PeakHoldTime>
@@ -51,8 +51,8 @@ Variables:
             </Connection>
           </StatusLight>
           <VuMeter>
-            <PathVu>skin:/graphics/vumeter_mixer_over.png</PathVu>
-            <PathBack>skin:/graphics/vumeter_mixer.png</PathBack>
+            <PathVu>skin:/graphics/vumeter_mixer_over.svg</PathVu>
+            <PathBack>skin:/graphics/vumeter_mixer.svg</PathBack>
             <Horizontal>false</Horizontal>
             <PeakHoldSize>5</PeakHoldSize>
             <PeakHoldTime>500</PeakHoldTime>

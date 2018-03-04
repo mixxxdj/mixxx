@@ -32,8 +32,8 @@ Description:
                         </Connection>
                       </StatusLight>
                       <VuMeter>
-                        <PathVu>skin:/graphics/vumeter_floating_over.png</PathVu>
-                        <PathBack>skin:/graphics/vumeter_floating.png</PathBack>
+                        <PathVu>skin:/graphics/vumeter_floating_over.svg</PathVu>
+                        <PathBack>skin:/graphics/vumeter_floating.svg</PathBack>
                         <Horizontal>false</Horizontal>
                         <PeakHoldSize>5</PeakHoldSize>
                         <PeakHoldTime>500</PeakHoldTime>
@@ -59,8 +59,8 @@ Description:
                         </Connection>
                       </StatusLight>
                       <VuMeter>
-                        <PathVu>skin:/graphics/vumeter_floating_over.png</PathVu>
-                        <PathBack>skin:/graphics/vumeter_floating.png</PathBack>
+                        <PathVu>skin:/graphics/vumeter_floating_over.svg</PathVu>
+                        <PathBack>skin:/graphics/vumeter_floating.svg</PathBack>
                         <Horizontal>false</Horizontal>
                         <PeakHoldSize>5</PeakHoldSize>
                         <PeakHoldTime>500</PeakHoldTime>
