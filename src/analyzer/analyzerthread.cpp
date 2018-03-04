@@ -35,7 +35,7 @@ const SINT kAnalysisSamplesPerBlock =
         kAnalysisFramesPerBlock * kAnalysisChannels;
 
 // Maximum frequency of progress updates while busy
-constexpr std::chrono::milliseconds kBusyProgressInhibitDuration(100);
+const mixxx::Duration kBusyProgressInhibitDuration = mixxx::Duration::fromMillis(60);
 
 } // anonymous namespace
 
@@ -50,9 +50,8 @@ AnalyzerThread::AnalyzerThread(
           m_pConfig(std::move(pConfig)),
           m_mode(mode),
           m_sampleBuffer(kAnalysisSamplesPerBlock),
-          m_emittedState(AnalyzerThreadState::Void),
-          // The first signal should always be emitted
-          m_lastBusyProgressEmittedAt(Clock::now() - kBusyProgressInhibitDuration) {
+          m_emittedState(AnalyzerThreadState::Void) {
+    m_lastBusyProgressEmittedTimer.start();
     m_nextTrack.setValue(TrackPointer());
     // The types are registered multiple times although once would be sufficient
     qRegisterMetaType<AnalyzerThreadState>();
@@ -264,18 +263,17 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
 
 void AnalyzerThread::emitBusyProgress(AnalyzerProgress busyProgress) {
     DEBUG_ASSERT(m_currentTrack);
-    // Signals are only sent with the specified maximum frequency
-    // to avoid flooding the signal queue, which might impair the
-    // responsiveness of the ui thread.
-    const auto now = Clock::now();
     if ((m_emittedState == AnalyzerThreadState::Busy) &&
-            (now < (m_lastBusyProgressEmittedAt + kBusyProgressInhibitDuration))) {
-        // Don't update analyzer progress of the track
-        // Don't emit progress signal
+            (m_lastBusyProgressEmittedTimer.elapsed() < kBusyProgressInhibitDuration)) {
+        // Don't emit progress signal while still busy and the
+        // previous progress signal has been emitted just recently.
+        // This should keep the host thread responsive and prevents
+        // to overwhelm it with too frequent progress signals.
         return;
     }
-    m_lastBusyProgressEmittedAt = now;
+    m_lastBusyProgressEmittedTimer.restart();
     emitProgress(AnalyzerThreadState::Busy, m_currentTrack->getId(), busyProgress);
+    DEBUG_ASSERT(m_emittedState == AnalyzerThreadState::Busy);
 }
 
 void AnalyzerThread::emitDoneProgress(AnalyzerProgress doneProgress) {

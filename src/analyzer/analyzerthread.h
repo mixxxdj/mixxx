@@ -1,6 +1,5 @@
 #pragma once
 
-#include <chrono>
 #include <vector>
 
 #include "util/workerthread.h"
@@ -12,6 +11,7 @@
 #include "sources/audiosource.h"
 #include "track/track.h"
 #include "util/db/dbconnectionpool.h"
+#include "util/performancetimer.h"
 #include "util/samplebuffer.h"
 #include "util/memory.h"
 
@@ -103,8 +103,7 @@ class AnalyzerThread : public WorkerThread {
 
     AnalyzerThreadState m_emittedState;
 
-    typedef std::chrono::steady_clock Clock;
-    Clock::time_point m_lastBusyProgressEmittedAt;
+    PerformanceTimer m_lastBusyProgressEmittedTimer;
 
     enum class AnalysisResult {
         Pending,
