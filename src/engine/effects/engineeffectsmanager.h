@@ -41,9 +41,7 @@ class EngineEffectsManager : public EffectsRequestHandler {
         CSAMPLE* pInOut,
         const unsigned int numSamples,
         const unsigned int sampleRate,
-        const GroupFeatureState& groupFeatures,
-        const CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
-        const CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE);
+        const GroupFeatureState& groupFeatures);
 
     void processPostFaderAndMix(
         const ChannelHandle& inputHandle,
@@ -51,9 +49,7 @@ class EngineEffectsManager : public EffectsRequestHandler {
         CSAMPLE* pIn, CSAMPLE* pOut,
         const unsigned int numSamples,
         const unsigned int sampleRate,
-        const GroupFeatureState& groupFeatures,
-        const CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
-        const CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE);
+        const GroupFeatureState& groupFeatures);
 
     bool processEffectsRequest(
         EffectsRequest& message,
@@ -79,9 +75,7 @@ class EngineEffectsManager : public EffectsRequestHandler {
                       CSAMPLE* pIn, CSAMPLE* pOut,
                       const unsigned int numSamples,
                       const unsigned int sampleRate,
-                      const GroupFeatureState& groupFeatures,
-                      const CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
-                      const CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE);
+                      const GroupFeatureState& groupFeatures);
 
     QScopedPointer<EffectsResponsePipe> m_pResponsePipe;
     QHash<SignalProcessingStage, QList<EngineEffectRack*>> m_racksByStage;

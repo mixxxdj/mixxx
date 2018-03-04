@@ -142,14 +142,11 @@ void EngineEffectsManager::processPostFaderInPlace(
     CSAMPLE* pInOut,
     const unsigned int numSamples,
     const unsigned int sampleRate,
-    const GroupFeatureState& groupFeatures,
-    const CSAMPLE_GAIN oldGain,
-    const CSAMPLE_GAIN newGain) {
+    const GroupFeatureState& groupFeatures) {
     processInner(SignalProcessingStage::Postfader,
                  inputHandle, outputHandle,
                  pInOut, pInOut,
-                 numSamples, sampleRate, groupFeatures,
-                 oldGain, newGain);
+                 numSamples, sampleRate, groupFeatures);
 }
 
 void EngineEffectsManager::processPostFaderAndMix(
@@ -158,14 +155,11 @@ void EngineEffectsManager::processPostFaderAndMix(
     CSAMPLE* pIn, CSAMPLE* pOut,
     const unsigned int numSamples,
     const unsigned int sampleRate,
-    const GroupFeatureState& groupFeatures,
-    const CSAMPLE_GAIN oldGain,
-    const CSAMPLE_GAIN newGain) {
+    const GroupFeatureState& groupFeatures) {
     processInner(SignalProcessingStage::Postfader,
                  inputHandle, outputHandle,
                  pIn, pOut,
-                 numSamples, sampleRate, groupFeatures,
-                 oldGain, newGain);
+                 numSamples, sampleRate, groupFeatures);
 }
 
 void EngineEffectsManager::processInner(
@@ -175,15 +169,14 @@ void EngineEffectsManager::processInner(
     CSAMPLE* pIn, CSAMPLE* pOut,
     const unsigned int numSamples,
     const unsigned int sampleRate,
-    const GroupFeatureState& groupFeatures,
-    const CSAMPLE_GAIN oldGain,
-    const CSAMPLE_GAIN newGain) {
+    const GroupFeatureState& groupFeatures) {
 
     const QList<EngineEffectRack*>& racks = m_racksByStage.value(stage);
     if (pIn == pOut) {
         // Gain and effects are applied to the buffer in place,
         // modifying the original input buffer
-        SampleUtil::applyRampingGain(pIn, oldGain, newGain, numSamples);
+        SampleUtil::applyRampingGain(pIn, groupFeatures.volume_fader_old,
+                                     groupFeatures.volume_fader_new, numSamples);
         for (EngineEffectRack* pRack : racks) {
             if (pRack != nullptr) {
                 pRack->process(inputHandle, outputHandle,
@@ -200,13 +193,15 @@ void EngineEffectsManager::processInner(
         //    ChannelMixer::applyEffectsAndMixChannels use
         //    this to mix channels into pOut regardless of whether any effects were processsed.
         CSAMPLE* pIntermediateInput = m_buffer1.data();
-        if (oldGain == CSAMPLE_GAIN_ONE && newGain == CSAMPLE_GAIN_ONE) {
+        if (groupFeatures.volume_fader_old == CSAMPLE_GAIN_ONE &&
+            groupFeatures.volume_fader_new == CSAMPLE_GAIN_ONE) {
             // Avoid an unnecessary copy. EngineEffectRack::process does not modify the
             // input buffer when its input & output buffers are different, so this is okay.
             pIntermediateInput = pIn;
         } else {
             SampleUtil::copyWithRampingGain(pIntermediateInput, pIn,
-                                            oldGain, newGain, numSamples);
+                                            groupFeatures.volume_fader_old,
+                                            groupFeatures.volume_fader_new, numSamples);
         }
 
         CSAMPLE* pIntermediateOutput;
