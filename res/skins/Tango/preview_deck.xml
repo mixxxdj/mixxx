@@ -124,6 +124,10 @@ Variables:
                 </Connection>
               </Overview>
 
+              <Template src="skin:vumeter_mini.xml">
+                <SetVariable name="Size">5f,1me</SetVariable>
+              </Template>
+
               <Template src="skin:knob_textless.xml">
                 <SetVariable name="ObjectName">PreviewGainKnob</SetVariable>
                 <SetVariable name="Size">22f,22f</SetVariable>

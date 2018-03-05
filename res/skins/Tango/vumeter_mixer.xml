@@ -17,8 +17,8 @@ Variables:
         <Children>
           <StatusLight>
             <TooltipId>channel_VuMeterL</TooltipId>
-            <PathStatusLight>skin:/graphics/vumeter_mixer_clipping_over.png</PathStatusLight>
-            <PathBack>skin:/graphics/vumeter_mixer_clipping.png</PathBack>
+            <PathStatusLight>skin:/graphics/vumeter_mixer_clipping_over.svg</PathStatusLight>
+            <PathBack>skin:/graphics/vumeter_mixer_clipping.svg</PathBack>
             <Connection>
               <ConfigKey><Variable name="group"/>,PeakIndicatorL</ConfigKey>
             </Connection>
@@ -27,10 +27,10 @@ Variables:
             <PathVu>skin:/graphics/vumeter_mixer_over.svg</PathVu>
             <PathBack>skin:/graphics/vumeter_mixer.svg</PathBack>
             <Horizontal>false</Horizontal>
-            <PeakHoldSize>5</PeakHoldSize>
-            <PeakHoldTime>500</PeakHoldTime>
-            <PeakFallTime>50</PeakFallTime>
-            <PeakFallStep>2</PeakFallStep>
+            <PeakHoldSize>4</PeakHoldSize>
+            <PeakHoldTime>800</PeakHoldTime>
+            <PeakFallTime>200</PeakFallTime>
+            <PeakFallStep>5</PeakFallStep>
             <Connection>
               <ConfigKey><Variable name="group"/>,VuMeterL</ConfigKey>
             </Connection>
@@ -44,8 +44,8 @@ Variables:
         <Children>
           <StatusLight>
             <TooltipId>channel_VuMeterR</TooltipId>
-            <PathStatusLight>skin:/graphics/vumeter_mixer_clipping_over.png</PathStatusLight>
-            <PathBack>skin:/graphics/vumeter_mixer_clipping.png</PathBack>
+            <PathStatusLight>skin:/graphics/vumeter_mixer_clipping_over.svg</PathStatusLight>
+            <PathBack>skin:/graphics/vumeter_mixer_clipping.svg</PathBack>
             <Connection>
               <ConfigKey><Variable name="group"/>,PeakIndicatorR</ConfigKey>
             </Connection>
@@ -54,10 +54,10 @@ Variables:
             <PathVu>skin:/graphics/vumeter_mixer_over.svg</PathVu>
             <PathBack>skin:/graphics/vumeter_mixer.svg</PathBack>
             <Horizontal>false</Horizontal>
-            <PeakHoldSize>5</PeakHoldSize>
-            <PeakHoldTime>500</PeakHoldTime>
-            <PeakFallTime>50</PeakFallTime>
-            <PeakFallStep>2</PeakFallStep>
+            <PeakHoldSize>4</PeakHoldSize>
+            <PeakHoldTime>800</PeakHoldTime>
+            <PeakFallTime>200</PeakFallTime>
+            <PeakFallStep>5</PeakFallStep>
             <Connection>
               <ConfigKey><Variable name="group"/>,VuMeterR</ConfigKey>
             </Connection>
