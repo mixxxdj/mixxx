@@ -5,7 +5,7 @@
 /*      For Mixxx version 1.11                                  */
 /****************************************************************/
 
-function XoneK2() {}
+var XoneK2 = {};
 
 XoneK2.shift_status = false;
 
@@ -47,16 +47,15 @@ XoneK2.init = function (id) {    // called when the MIDI device is opened & set 
     if (engine.beginTimer(2000,"XoneK2.clearlights()",true) == 0) {
         print("Clearlights timer setup failed");
     }
-	XoneK2.clearlights();
+    XoneK2.clearlights();
 }
 
 XoneK2.shutdown = function(id) {
-	XoneK2.clearlights();
+    XoneK2.clearlights();
 }
 
 XoneK2.clearlights = function () {
-	for ( var LED in XoneK2.leds ) {
-        print("Clear LED: #" + LED +" --> "+XoneK2.leds[LED]);
+    for ( var LED in XoneK2.leds ) {
         midi.sendShortMsg(0x9F, XoneK2.leds[LED], 0x0);
     }
 }
@@ -195,4 +194,77 @@ XoneK2.Vinyl = function (midichannel, control, value, status) {
 
 XoneK2.IndexToDeck = function (index) {
     return XoneK2.deck_order[index];
+}
+
+// The Xone K2 uses different control numbers (second MIDI byte) to distinguish between
+// different colors for the LEDs. The baseline control number sets the LED to red. Adding
+// these offsets to the control number sets the LED to a different color.
+XoneK2.color = {
+    red: 0,
+    amber: 36,
+    green: 72
+};
+components.Component.prototype.send =  function (value) {
+    if (this.midi === undefined || this.midi[0] === undefined || this.midi[1] === undefined) {
+        return;
+    }
+    // The LEDs are turned on with a Note On MIDI message (first nybble of first byte 9)
+    // and turned off with a Note Offf MIDI message (first nybble of first byte 8).
+    if (value > 0) {
+        midi.sendShortMsg(this.midi[0] + 0x10, this.midi[1], value);
+    } else {
+        midi.sendShortMsg(this.midi[0], this.midi[1], 0x7F);
+    }
+};
+
+XoneK2.setColumnMidi = function (columnObject, columnNumber, midiChannel) {
+    midiChannel--;
+    columnObject.encoderPress.midi = [0x80 + midiChannel, 0x34 + (columnNumber-1)];
+
+    for (var b = 1; b <= 3; b++) {
+        columnObject.topButtons[b].midi = [0x80 + midiChannel,
+                                           0x30 - (b-1)*4 + (columnNumber-1)];
+    }
+
+    for (var c = 1; c <= 4; c++) {
+        columnObject.bottomButtons[c].midi = [0x80 + midiChannel,
+                                              0x24 - (c-1)*4 + (columnNumber-1)];
+    }
+};
+
+XoneK2.effectUnit = function (unitNumber, column, midiChannel) {
+    components.EffectUnit.call(this, [unitNumber]);
+
+    this.encoder = new components.Component();
+    // TODO: figure out a use for this
+    this.encoder.input = function () {};
+    this.encoderPress = this.effectFocusButton;
+
+    this.topButtons = [];
+    for (var b = 0; b <= 3; b++) {
+        this.topButtons[b] = this.enableButtons[b];
+    }
+
+    this.fader = this.dryWetKnob;
+
+    this.bottomButtons = [];
+    var channelString;
+    for (var c = 1; c <= 4; c++) {
+        channelString = "Channel" + c;
+        this.enableOnChannelButtons.addButton(channelString);
+        this.bottomButtons[c] = this.enableOnChannelButtons[channelString];
+    }
+
+    XoneK2.setColumnMidi(this, column, midiChannel);
+    this.init();
+};
+XoneK2.effectUnit.prototype = new components.ComponentContainer();
+
+XoneK2.midiChannels = [];
+for (var ch = 0; ch <= 16; ++ch) {
+    XoneK2.midiChannels[ch] = [];
+}
+XoneK2.midiChannels[14].columns = [];
+for (var z = 1; z <= 4; z++) {
+    XoneK2.midiChannels[14].columns[z] = new XoneK2.effectUnit(z, z, 14);
 }
