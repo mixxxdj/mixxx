@@ -277,8 +277,8 @@ Description:
               <VuMeter><!-- latency usage -->
                 <Size>31f,3f</Size>
                 <TooltipId>audio_latency_usage</TooltipId>
-                <PathVu>skin:/graphics/latency_usage_over.png</PathVu>
-                <PathBack>skin:/graphics/latency_usage.png</PathBack>
+                <PathVu>skin:/graphics/latency_usage_over.svg</PathVu>
+                <PathBack>skin:/graphics/latency_usage.svg</PathBack>
                 <Horizontal>true</Horizontal>
                 <PeakHoldSize>5</PeakHoldSize>
                 <PeakHoldTime>1000</PeakHoldTime>
