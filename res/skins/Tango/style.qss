@@ -50,13 +50,27 @@ WWidgetGroup {
   background-color: rgba(51, 51, 51, 200);
 }
 
-#WaveformSplitter::handle:vertical {
-  image: url(skin:/graphics/splitterVert_handle.png);
+/* splitters between
+    - waveforms & lower skin part
+    - treeview & library table */
+#LibrarySplitter::handle:horizontal {
+  image: url(skin:/graphics/splitterHori_handle.svg);
   }
-  #WaveformSplitter::handle:vertical:hover,
-  #WaveformSplitter::handle:vertical:pressed {
-    image: url(skin:/graphics/splitterVert_handle_pressed.png);
+  #LibrarySplitter::handle:horizontal:hover,
+  #LibrarySplitter::handle:horizontal:pressed {
+    image: url(skin:/graphics/splitterHori_handle_pressed.svg);
   }
+  /* splitter between coverArt and tree view */
+  #LibrarySplitter::handle:vertical,
+  #WaveformSplitter::handle:vertical {
+    image: url(skin:/graphics/splitterVert_handle.svg);
+    }
+    #LibrarySplitter::handle:vertical:hover,
+    #LibrarySplitter::handle:vertical:pressed,
+    #WaveformSplitter::handle:vertical:hover,
+    #WaveformSplitter::handle:vertical:pressed {
+      image: url(skin:/graphics/splitterVert_handle_pressed.svg);
+    }
 
 
 /* ################################################################
@@ -2123,26 +2137,6 @@ QScrollBar:horizontal {
     width: 0px;
     height: 0px;
   }
-
-/* splitters between treeview and library table */
-#LibrarySplitter::handle:horizontal {
-  image: url(skin:/graphics/splitterHori_handle.png);
-  }
-  #LibrarySplitter::handle:horizontal:hover,
-  #LibrarySplitter::handle:horizontal:pressed {
-    image: url(skin:/graphics/splitterHori_handle_pressed.png);
-  }
-  /* splitter between coverArt and tree view */
-  #LibrarySplitter::handle:vertical,
-  #WaveformSplitter::handle:vertical {
-    image: url(skin:/graphics/splitterVert_handle.png);
-    }
-    #LibrarySplitter::handle:vertical:hover,
-    #LibrarySplitter::handle:vertical:pressed,
-    #WaveformSplitter::handle:vertical:hover,
-    #WaveformSplitter::handle:vertical:pressed {
-      image: url(skin:/graphics/splitterVert_handle_pressed.png);
-    }
 
 /* Pushbuttons, a lot of them...
 Library features and their buttons:
