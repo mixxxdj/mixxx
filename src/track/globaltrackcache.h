@@ -151,7 +151,7 @@ public:
     static void destroyInstance();
 
     // Deleter callbacks for the smart-pointer
-    static void evictAndSaveCachedTrack(Track* plainPtr);
+    static void evictAndSaveCachedTrack(TrackPointer plainPtr);
 
 private:
     friend class GlobalTrackCacheLocker;
@@ -186,9 +186,9 @@ private:
             TrackRef trackRef,
             TrackId trackId);
 
-    void evictAndSave(Track* plainPtr);
+    void evictAndSave(TrackPointer deletingPtr);
 
-    typedef std::unordered_map<Track*, TrackWeakPointer> CachedTracks;
+    typedef std::unordered_map<Track*, std::pair<TrackWeakPointer, TrackPointer> >CachedTracks;
 
     bool evict(Track* plainPtr);
     bool isEvicted(Track* plainPtr) const;
