@@ -1,10 +1,12 @@
 var XoneK2 = {};
 
-XoneK2.deckOrder = [ 3, 1, 2, 4 ];
-XoneK2.effectsOrder = [ 3, 1, 2, 4 ];
+XoneK2.fourDecksOrder = [ 3, 1, 2, 4 ];
+XoneK2.fourEffectsOrder = [ 3, 1, 2, 4 ];
 
-XoneK2.decksMidiChannel = 0xE;
-XoneK2.effectsMidiChannel = 0xD;
+XoneK2.decksInMiddleMidiChannel = 0xE;
+XoneK2.effectsInMiddleMidiChannel = 0xD;
+XoneK2.fourDecksMidiChannel = 0xC;
+XoneK2.fourEffectsMidiChannel = 0xB;
 
 // The MIDI note offsets for different colors with the layer button is different
 // from the rest of the buttons.
@@ -13,21 +15,54 @@ XoneK2.deckBottomButtonLayers = [
     { name: 'loop', layerButtonNoteNumber: 0x10 }, // amber
     { name: 'hotcue', layerButtonNoteNumber: 0x14 } ]; // green
 
-XoneK2.midiChannels = [];
+// Multiple K2s/K1s can be connected via X-Link and plugged in with one USB
+// cable. The MIDI messages of the controllers can be distinguished by setting
+// each one to its own MIDI channel. The XoneK2.controllers array maintains state
+// for each controller. This also allows the same mapping to  be loaded for
+// different use cases as long as the user sets the appropriate MIDI channel for
+// the mapping they want.
+XoneK2.controllers = [];
 for (var ch = 0; ch <= 0xF; ++ch) {
-    XoneK2.midiChannels[ch] = [];
-    XoneK2.midiChannels[ch].columns = [];
-    XoneK2.midiChannels[ch].isShifted = false;
+    XoneK2.controllers[ch] = [];
+    XoneK2.controllers[ch].columns = [];
+    XoneK2.controllers[ch].isShifted = false;
+    // This gets incremented to 0 by the init function calling XoneK2.decksLayerButton
+    XoneK2.controllers[ch].deckLayerIndex = -1;
 }
 
 XoneK2.init = function (id) {
+    XoneK2.controllers[XoneK2.decksInMiddleMidiChannel].columns[1] =
+        new XoneK2.EffectUnit(1, 1, XoneK2.decksInMiddleMidiChannel);
+    XoneK2.controllers[XoneK2.decksInMiddleMidiChannel].columns[2] =
+        new XoneK2.Deck(1, 2, XoneK2.decksInMiddleMidiChannel);
+    XoneK2.controllers[XoneK2.decksInMiddleMidiChannel].columns[3] =
+        new XoneK2.Deck(2, 3, XoneK2.decksInMiddleMidiChannel);
+    XoneK2.controllers[XoneK2.decksInMiddleMidiChannel].columns[4] =
+        new XoneK2.EffectUnit(2, 4, XoneK2.decksInMiddleMidiChannel);
+
+    XoneK2.controllers[XoneK2.effectsInMiddleMidiChannel].columns[1] =
+        new XoneK2.Deck(1, 1, XoneK2.effectsInMiddleMidiChannel);
+    XoneK2.controllers[XoneK2.effectsInMiddleMidiChannel].columns[2] =
+        new XoneK2.EffectUnit(1, 2, XoneK2.effectsInMiddleMidiChannel);
+    XoneK2.controllers[XoneK2.effectsInMiddleMidiChannel].columns[3] =
+        new XoneK2.EffectUnit(2, 3, XoneK2.effectsInMiddleMidiChannel);
+    XoneK2.controllers[XoneK2.effectsInMiddleMidiChannel].columns[4] =
+        new XoneK2.Deck(2, 4, XoneK2.effectsInMiddleMidiChannel);
+
     for (var z = 1; z <= 4; z++) {
-        XoneK2.midiChannels[XoneK2.effectsMidiChannel].columns[z] =
-                new XoneK2.EffectUnit(XoneK2.effectsOrder[z-1], z, XoneK2.effectsMidiChannel);
-        XoneK2.midiChannels[XoneK2.decksMidiChannel].columns[z] =
-                new XoneK2.Deck(XoneK2.deckOrder[z-1], z, XoneK2.decksMidiChannel);
+        XoneK2.controllers[XoneK2.fourDecksMidiChannel].columns[z] =
+                new XoneK2.Deck(XoneK2.fourDecksOrder[z-1], z, XoneK2.fourDecksMidiChannel);
+        XoneK2.controllers[XoneK2.fourEffectsMidiChannel].columns[z] =
+                new XoneK2.EffectUnit(XoneK2.fourEffectsOrder[z-1], z,
+                                      XoneK2.fourEffectsMidiChannel);
     }
-    XoneK2.decksLayerButton(null, null, null, 0x90 + XoneK2.decksMidiChannel, null);
+
+    XoneK2.decksLayerButton(XoneK2.decksInMiddleMidiChannel, null, null,
+                            0x90 + XoneK2.decksInMiddleMidiChannel, null);
+    XoneK2.decksLayerButton(XoneK2.effectsInMiddleMidiChannel, null, null,
+                            0x90 + XoneK2.effectsInMiddleMidiChannel, null);
+    XoneK2.decksLayerButton(XoneK2.fourDecksMidiChannel, null, null,
+                            0x90 + XoneK2.fourDecksMidiChannel, null);
 }
 
 XoneK2.shutdown = function(id) {
@@ -35,8 +70,8 @@ XoneK2.shutdown = function(id) {
         component.send(0);
     };
     for (var z = 1; z <= 4; z++) {
-        XoneK2.midiChannels[XoneK2.effectsMidiChannel].columns[z].forEachComponent(turnOff);
-        XoneK2.midiChannels[XoneK2.decksMidiChannel].columns[z].forEachComponent(turnOff);
+        XoneK2.controllers[XoneK2.effectsMidiChannel].columns[z].forEachComponent(turnOff);
+        XoneK2.controllers[XoneK2.decksMidiChannel].columns[z].forEachComponent(turnOff);
     }
 }
 
@@ -44,12 +79,12 @@ XoneK2.shutdown = function(id) {
 XoneK2.decksBottomLeftEncoderIsPressed = false;
 XoneK2.decksBottomLeftEncoderPress = function (channel, control, value, status) {
     XoneK2.decksBottomLeftEncoderIsPressed =  (status & 0xF0) === 0x90;
-    if (XoneK2.midiChannels[channel].isShifted && XoneK2.decksBottomLeftEncoderIsPressed) {
+    if (XoneK2.controllers[channel].isShifted && XoneK2.decksBottomLeftEncoderIsPressed) {
         script.toggleControl('[Master]', 'headSplit');
     }
 };
 XoneK2.decksBottomLeftEncoder = function (channel, control, value, status) {
-    if (!XoneK2.midiChannels[channel].isShifted) {
+    if (!XoneK2.controllers[channel].isShifted) {
         if (!XoneK2.decksBottomLeftEncoderIsPressed) {
             var bpm = engine.getValue("[InternalClock]", "bpm");
             if (value === 1) {
@@ -84,7 +119,7 @@ XoneK2.decksBottomRightEncoderPress = function (channel, control, value, status)
     }
 };
 XoneK2.decksBottomRightEncoder = function (channel, control, value, status) {
-    if (!XoneK2.midiChannels[channel].isShifted) {
+    if (!XoneK2.controllers[channel].isShifted) {
         var bpm = engine.getValue("[InternalClock]", "bpm");
         if (value === 1) {
             engine.setValue("[Playlist]", "SelectNextTrack", 1);
@@ -104,15 +139,15 @@ XoneK2.decksBottomRightEncoder = function (channel, control, value, status) {
 };
 
 XoneK2.shiftButton = function (channel, control, value, status) {
-    XoneK2.midiChannels[channel].isShifted = (status & 0xF0) === 0x90;
-    if (XoneK2.midiChannels[channel].isShifted) {
+    XoneK2.controllers[channel].isShifted = (status & 0xF0) === 0x90;
+    if (XoneK2.controllers[channel].isShifted) {
         for (var z = 1; z <= 4; z++) {
-            XoneK2.midiChannels[channel].columns[z].shift();
+            XoneK2.controllers[channel].columns[z].shift();
         }
         midi.sendShortMsg(status, 0x0F, 0x7F);
     } else {
         for (var z = 1; z <= 4; z++) {
-            XoneK2.midiChannels[channel].columns[z].unshift();
+            XoneK2.controllers[channel].columns[z].unshift();
         }
         midi.sendShortMsg(status, 0x0F, 0x00);
     }
@@ -174,7 +209,7 @@ XoneK2.Deck = function (deckNumber, column, midiChannel) {
                 jogValue = 1;
             }
 
-            if (XoneK2.midiChannels[channel].isShifted) {
+            if (XoneK2.controllers[channel].isShifted) {
                 var rate = engine.getValue(this.group, "rate");
                 engine.setValue(this.group, "rate", rate + (.005 * jogValue));
             } else {
@@ -331,18 +366,23 @@ XoneK2.Deck = function (deckNumber, column, midiChannel) {
 };
 XoneK2.Deck.prototype = new components.ComponentContainer();
 
-// This gets incremented to 0 on startup.
-XoneK2.deckLayerIndex = -1;
 XoneK2.decksLayerButton = function (channel, control, value, status) {
     if (components.Button.prototype.isPress(channel, control, value, status)) {
-        XoneK2.deckLayerIndex++;
-        if (XoneK2.deckLayerIndex === XoneK2.deckBottomButtonLayers.length) {
-            XoneK2.deckLayerIndex = 0;
+        XoneK2.controllers[channel].deckLayerIndex++;
+        if (XoneK2.controllers[channel].deckLayerIndex === XoneK2.deckBottomButtonLayers.length) {
+            XoneK2.controllers[channel].deckLayerIndex = 0;
         }
-        var newLayer = XoneK2.deckBottomButtonLayers[XoneK2.deckLayerIndex];
+        var newLayer = XoneK2.deckBottomButtonLayers[XoneK2.controllers[channel].deckLayerIndex];
 
         for (var x = 1; x <= 4; ++x) {
-            var deckColumn = XoneK2.midiChannels[XoneK2.decksMidiChannel].columns[x];
+            if (channel === XoneK2.decksInMiddleMidiChannel && (x === 1 || x === 4)) {
+                continue;
+            }
+            if (channel === XoneK2.effectsInMiddleMidiChannel && (x === 2 || x === 3)) {
+                continue;
+            }
+
+            var deckColumn = XoneK2.controllers[channel].columns[x];
             deckColumn.bottomButtons.forEachComponent(function (c) {
                 c.disconnect();
             });
