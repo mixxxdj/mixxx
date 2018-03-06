@@ -10,10 +10,14 @@ XoneK2.fourEffectsMidiChannel = 0xB;
 
 // The MIDI note offsets for different colors with the layer button is different
 // from the rest of the buttons.
+XoneK2.layerButtonColors = {
+    red: 0x0C,
+    amber: 0x10,
+    green: 0x14
+}
 XoneK2.deckBottomButtonLayers = [
-    { name: 'transport', layerButtonNoteNumber: 0x0C }, // red
-    { name: 'loop', layerButtonNoteNumber: 0x10 }, // amber
-    { name: 'hotcue', layerButtonNoteNumber: 0x14 } ]; // green
+    { name: 'loop', layerButtonNoteNumber: XoneK2.layerButtonColors.amber },
+    { name: 'hotcue', layerButtonNoteNumber: XoneK2.layerButtonColors.red } ];
 
 // Multiple K2s/K1s can be connected via X-Link and plugged in with one USB
 // cable. The MIDI messages of the controllers can be distinguished by setting
@@ -202,32 +206,43 @@ XoneK2.Deck = function (deckNumber, column, midiChannel) {
     this.deckString = '[Channel' + deckNumber + ']';
 
     this.encoder = new components.Encoder({
-        input: function (channel, control, value, status) {
-            if (value == 127) {
-                jogValue = -1;
-            } else {
-                jogValue = 1;
-            }
-
-            if (XoneK2.controllers[channel].isShifted) {
-                var rate = engine.getValue(this.group, "rate");
-                engine.setValue(this.group, "rate", rate + (.005 * jogValue));
-            } else {
-                if (engine.getValue(this.group, "play") == 1 &&
-                    engine.getValue(this.group, "reverse") == 1) {
-                    jogValue = -(jogValue);
-                }
-                engine.setValue(this.group, "jog", jogValue);
-            }
+        unshift: function () {
+            this.input = function (channel, control, value, status) {
+                direction = (value === 1) ? 1 : -1;
+                engine.setValue(this.group, "jog", direction);
+            };
+        },
+        shift: function () {
+            this.input = function (channel, control, value, status) {
+                direction = (value === 1) ? 1 : -1;
+                var rate = engine.getValue(this.group, "key");
+                engine.setValue(this.group, "key", rate + (.005 * direction));
+            };
+        },
+        supershift: function () {
+            this.input = function (channel, control, value, status) {
+                direction = (value === 1) ? 1 : -1;
+                var gain = engine.getValue(this.group, "pregain");
+                engine.setValue(this.group, "pregain", gain + 0.025 * direction);
+            };
         },
     });
 
-    this.encoderPress = new components.Button();
-    this.encoderPress.input = function (channel, control, value, status, group) {
-        if (this.isPress(channel, control, value, status, group)) {
-            engine.setValue(this.group, "rate", 0.0);
-        }
-    };
+    this.encoderPress = new components.Button({
+        outKey: 'sync_enabled',
+        unshift: function () {
+            this.inKey = 'sync_enabled';
+            this.type = components.Button.prototype.types.toggle;
+        },
+        shift: function () {
+            this.inKey = 'reset_key';
+            this.type = components.Button.prototype.types.push;
+        },
+        supershift: function () {
+            this.inKey = 'rate_set_zero';
+            this.type = components.Button.prototype.types.push;
+        },
+    });
 
     this.knobs = new components.ComponentContainer();
     for (var k = 1; k <= 3; k++) {
@@ -241,89 +256,92 @@ XoneK2.Deck = function (deckNumber, column, midiChannel) {
 
     this.topButtons = new components.ComponentContainer();
     this.topButtons[1] = new components.Button({
-        key: 'keylock',
-        type: components.Button.prototype.types.toggle,
+        unshift: function () {
+            this.disconnect();
+            this.type = components.Button.prototype.types.toggle;
+            this.inKey = 'pfl';
+            this.outKey = 'pfl';
+            this.color = XoneK2.color.red;
+            this.connect();
+            this.trigger();
+        },
+        shift: function () {
+            this.unshift();
+        },
+        supershift: function () {
+            this.disconnect();
+            this.type = components.Button.prototype.types.push;
+            this.inKey = 'beats_translate_curpos';
+            this.outKey = 'beats_translate_curpos';
+            this.color = XoneK2.color.amber;
+            this.connect();
+            this.trigger();
+        },
     });
     this.topButtons[2] = new components.Button({
-        key: 'quantize',
-        type: components.Button.prototype.types.toggle,
+        unshift: function () {
+            this.disconnect();
+            this.type = components.Button.prototype.types.push;
+            this.inKey = 'cue_default';
+            this.outKey = 'cue_indicator';
+            this.color = XoneK2.color.red;
+            this.connect();
+            this.trigger();
+        },
+        shift: function () {
+            this.disconnect();
+            this.type = components.Button.prototype.types.push;
+            this.inKey = 'start_stop';
+            this.outKey = 'cue_indicator';
+            this.color = XoneK2.color.red;
+            this.connect();
+            this.trigger();
+        },
+        supershift: function () {
+            this.disconnect();
+            this.type = components.Button.prototype.types.toggle;
+            this.inKey = 'keylock';
+            this.outKey = 'keylock';
+            this.color = XoneK2.color.amber;
+            this.connect();
+            this.trigger();
+        },
     });
     this.topButtons[3] = new components.Button({
-        group: '[EqualizerRack1_' + this.deckString + '_Effect1]',
-        key: 'button_parameter1',
+        unshift: function () {
+            this.disconnect();
+            this.inKey = 'play';
+            this.outKey = 'play_indicator';
+            this.color = XoneK2.color.red;
+            this.connect();
+            this.trigger();
+        },
+        shift: function () {
+            this.disconnect();
+            this.inKey = 'reverse';
+            this.outKey = 'play_indicator';
+            this.color = XoneK2.color.red;
+            this.connect();
+            this.trigger();
+        },
+        supershift: function () {
+            this.disconnect();
+            this.inKey = 'quantize';
+            this.outKey = 'quantize';
+            this.color = XoneK2.color.amber;
+            this.connect();
+            this.trigger();
+        },
         type: components.Button.prototype.types.toggle,
     });
-
 
     // This should not be a ComponentContainer, otherwise strange things will
     // happen when iterating over the Deck with reconnectComponents.
     this.bottomButtonLayers = [];
 
-    this.bottomButtonLayers.transport = new components.ComponentContainer();
-    this.bottomButtonLayers.transport[1] = new components.Button({
-        key: 'pfl',
-        type: components.Button.prototype.types.toggle,
-    });
-    this.bottomButtonLayers.transport[2] = new components.SyncButton();
-    this.bottomButtonLayers.transport[3] = new components.CueButton();
-    this.bottomButtonLayers.transport[4] = new components.PlayButton();
-    this.bottomButtonLayers.transport.forEachComponent(function (c) {
-        c.color = XoneK2.color.red;
-    });
-
     this.bottomButtonLayers.loop = new components.ComponentContainer();
+
     this.bottomButtonLayers.loop[1] = new components.Button({
-        unshift: function () {
-            this.inKey = 'beatloop_activate';
-            this.outKey = 'beatloop_activate';
-            this.disconnect();
-            this.connect();
-            this.trigger();
-        },
-        shift: function () {
-            this.inKey = 'beatlooproll_activate';
-            this.outKey = 'beatlooproll_activate';
-            this.disconnect();
-            this.connect();
-            this.trigger();
-        },
-    });
-
-    this.bottomButtonLayers.loop[2] = new components.Button({
-        unshift: function () {
-            this.inKey = 'loop_halve';
-            this.outKey = 'loop_halve';
-            this.disconnect();
-            this.connect();
-            this.trigger();
-        },
-        shift: function () {
-            this.inKey = 'beatjump_backward';
-            this.outKey = 'beatjump_backward';
-            this.disconnect();
-            this.connect();
-            this.trigger();
-        },
-    });
-
-    this.bottomButtonLayers.loop[3] = new components.Button({
-        unshift: function () {
-            this.inKey = 'loop_double';
-            this.outKey = 'loop_double';
-            this.disconnect();
-            this.connect();
-            this.trigger();
-        },
-        shift: function () {
-            this.inKey = 'beatjump_forward';
-            this.outKey = 'beatjump_forward';
-            this.disconnect();
-            this.connect();
-            this.trigger();
-        },
-    });
-
-    this.bottomButtonLayers.loop[4] = new components.Button({
         outKey: 'loop_enabled',
         unshift: function () {
             this.inKey = 'reloop_toggle';
@@ -331,17 +349,73 @@ XoneK2.Deck = function (deckNumber, column, midiChannel) {
         shift: function () {
             this.inKey = 'reloop_andstop';
         },
+        color: XoneK2.color.red,
     });
 
-    this.bottomButtonLayers.loop.forEachComponent(function (c) {
-        c.color = XoneK2.color.amber;
+    this.bottomButtonLayers.loop[2] = new components.Button({
+        unshift: function () {
+            this.inKey = 'beatloop_activate';
+        },
+        shift: function () {
+            this.inKey = 'beatlooproll_activate';
+        },
+        trigger: function() {
+            this.send(this.on);
+        },
+        color: XoneK2.color.green,
+    });
+
+    this.bottomButtonLayers.loop[3] = new components.Button({
+        unshift: function () {
+            this.inKey = 'loop_double';
+            this.input = components.Button.prototype.input;
+        },
+        shift: function () {
+            this.inKey = 'beatjump_forward';
+            this.input = components.Button.prototype.input;
+        },
+        supershift: function () {
+            this.input = function (channel, control, value, status) {
+                if (this.isPress(channel, control, value, status)) {
+                    engine.setValue(this.group, 'beatjump_size',
+                                    engine.getValue(this.group, 'beatjump_size') * 2);
+                }
+            };
+        },
+        trigger: function() {
+            this.send(this.on);
+        },
+        color: XoneK2.color.amber,
+    });
+
+    this.bottomButtonLayers.loop[4] = new components.Button({
+        unshift: function () {
+            this.inKey = 'loop_halve';
+            this.input = components.Button.prototype.input;
+        },
+        shift: function () {
+            this.inKey = 'beatjump_backward';
+            this.input = components.Button.prototype.input;
+        },
+        supershift: function () {
+            this.input = function (channel, control, value, status) {
+                if (this.isPress(channel, control, value, status)) {
+                    engine.setValue(this.group, 'beatjump_size',
+                                    engine.getValue(this.group, 'beatjump_size') / 2);
+                }
+            };
+        },
+        trigger: function() {
+            this.send(this.on);
+        },
+        color: XoneK2.color.amber,
     });
 
     this.bottomButtonLayers.hotcue = new components.ComponentContainer();
     for (var n = 1; n <= 4; ++n) {
         this.bottomButtonLayers.hotcue[n] = new components.HotcueButton({
             number: n,
-            color: XoneK2.color.green,
+            color: XoneK2.color.red,
         });
     }
 
@@ -364,35 +438,70 @@ XoneK2.Deck = function (deckNumber, column, midiChannel) {
 
     XoneK2.setColumnMidi(this, column, midiChannel);
 };
-XoneK2.Deck.prototype = new components.ComponentContainer();
+XoneK2.Deck.prototype = new components.Deck();
 
 XoneK2.decksLayerButton = function (channel, control, value, status) {
-    if (components.Button.prototype.isPress(channel, control, value, status)) {
-        XoneK2.controllers[channel].deckLayerIndex++;
-        if (XoneK2.controllers[channel].deckLayerIndex === XoneK2.deckBottomButtonLayers.length) {
-            XoneK2.controllers[channel].deckLayerIndex = 0;
-        }
-        var newLayer = XoneK2.deckBottomButtonLayers[XoneK2.controllers[channel].deckLayerIndex];
-
-        for (var x = 1; x <= 4; ++x) {
-            if (channel === XoneK2.decksInMiddleMidiChannel && (x === 1 || x === 4)) {
-                continue;
+    if (!XoneK2.controllers[channel].isShifted) {
+        // Cycle the deck layers
+        if (components.Button.prototype.isPress(channel, control, value, status)) {
+            XoneK2.controllers[channel].deckLayerIndex++;
+            if (XoneK2.controllers[channel].deckLayerIndex === XoneK2.deckBottomButtonLayers.length) {
+                XoneK2.controllers[channel].deckLayerIndex = 0;
             }
-            if (channel === XoneK2.effectsInMiddleMidiChannel && (x === 2 || x === 3)) {
-                continue;
-            }
+            var newLayer = XoneK2.deckBottomButtonLayers[XoneK2.controllers[channel].deckLayerIndex];
 
-            var deckColumn = XoneK2.controllers[channel].columns[x];
-            deckColumn.bottomButtons.forEachComponent(function (c) {
-                c.disconnect();
-            });
-            deckColumn.bottomButtons = deckColumn.bottomButtonLayers[newLayer.name];
-            deckColumn.bottomButtons.forEachComponent(function (c) {
-                c.connect();
-                c.trigger();
-            });
+            for (var x = 1; x <= 4; ++x) {
+                var deckColumn = XoneK2.controllers[channel].columns[x];
+                if (!(deckColumn instanceof components.Deck)) {
+                    continue;
+                }
+
+                deckColumn.bottomButtons.forEachComponent(function (c) {
+                    c.disconnect();
+                });
+                deckColumn.bottomButtons = deckColumn.bottomButtonLayers[newLayer.name];
+                deckColumn.bottomButtons.forEachComponent(function (c) {
+                    c.connect();
+                    c.trigger();
+                });
+            }
+            midi.sendShortMsg(status, newLayer.layerButtonNoteNumber, 0x7F);
         }
-        midi.sendShortMsg(status, newLayer.layerButtonNoteNumber, 0x7F);
+    } else {
+        if (components.Button.prototype.isPress(channel, control, value, status)) {
+            // Activate supershift mode
+            var supershift = function (c) {
+                if (c.supershift !== undefined) {
+                    c.supershift();
+                }
+            };
+
+            for (var x = 1; x <= 4; ++x) {
+                var deckColumn = XoneK2.controllers[channel].columns[x];
+                if (!(deckColumn instanceof components.Deck)) {
+                    continue;
+                }
+                deckColumn.forEachComponent(supershift);
+                deckColumn.bottomButtons.forEachComponent(supershift);
+            }
+        } else {
+            // Shift button is still held down, so exit supershift mode by going back to
+            // plain shift mode
+            var shift = function (c) {
+                if (c.supershift !== undefined) {
+                    c.shift();
+                }
+            };
+
+            for (var x = 1; x <= 4; ++x) {
+                var deckColumn = XoneK2.controllers[channel].columns[x];
+                if (!(deckColumn instanceof components.Deck)) {
+                    continue;
+                }
+                deckColumn.forEachComponent(shift);
+                deckColumn.bottomButtons.forEachComponent(shift);
+            }
+        }
     }
 };
 
