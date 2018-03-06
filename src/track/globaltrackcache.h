@@ -150,12 +150,12 @@ public:
     // See also: GlobalTrackCacheLocker::deactivateCache()
     static void destroyInstance();
 
+    // Deleter callbacks for the smart-pointer
+    static void evictAndSaveCachedTrack(Track* plainPtr);
+
 private:
     friend class GlobalTrackCacheLocker;
     friend class GlobalTrackCacheResolver;
-
-    // Deleter callbacks for the smart-pointer
-    static void evictAndSaveCachedTrack(Track* plainPtr);
 
     explicit GlobalTrackCache(GlobalTrackCacheSaver* pDeleter);
     ~GlobalTrackCache();

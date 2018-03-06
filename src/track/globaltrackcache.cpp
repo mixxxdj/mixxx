@@ -33,6 +33,22 @@ TrackRef createTrackRef(const Track& track) {
     return TrackRef::fromFileInfo(track.getFileInfo(), track.getId());
 }
 
+struct EvictAndSaveFunctor
+{
+    EvictAndSaveFunctor(TrackPointer deletingPtr)
+        : m_deletingPtr(std::move(deletingPtr))
+    {
+    }
+
+    void operator()(Track* plainPtr)
+    {
+        GlobalTrackCache::evictAndSaveCachedTrack(plainPtr);
+        m_deletingPtr.reset();
+    }
+    TrackPointer m_deletingPtr;
+};
+
+
 void deleteTrack(Track* plainPtr) {
     DEBUG_ASSERT(plainPtr);
 
@@ -486,7 +502,7 @@ TrackPointer GlobalTrackCache::revive(
                 << plainPtr;
     }
     DEBUG_ASSERT(weakPtrRef.expired());
-    strongPtr = TrackPointer(plainPtr, evictAndSaveCachedTrack);
+    strongPtr = TrackPointer(plainPtr, EvictAndSaveFunctor(nullptr));
     weakPtrRef = strongPtr;
     DEBUG_ASSERT(!weakPtrRef.expired());
     DEBUG_ASSERT(weakPtrRef.lock() == strongPtr);
@@ -567,7 +583,7 @@ void GlobalTrackCache::resolve(
                     std::move(fileInfo),
                     std::move(pSecurityToken),
                     std::move(trackId));
-    auto strongPtr = TrackPointer(plainPtr, evictAndSaveCachedTrack);
+    auto strongPtr = TrackPointer(plainPtr, EvictAndSaveFunctor(nullptr));
     // Track objects live together with the cache on the main thread
     // and will be deleted later within the event loop. But this
     // function might be called from any thread, even from worker
