@@ -239,7 +239,7 @@ XoneK2.Deck = function (deckNumber, column, midiChannel) {
             this.type = components.Button.prototype.types.push;
         },
         supershift: function () {
-            this.inKey = 'rate_set_zero';
+            this.inKey = 'pregain_set_one';
             this.type = components.Button.prototype.types.push;
         },
     });
@@ -266,7 +266,13 @@ XoneK2.Deck = function (deckNumber, column, midiChannel) {
             this.trigger();
         },
         shift: function () {
-            this.unshift();
+            this.disconnect();
+            this.type = components.Button.prototype.types.push;
+            this.inKey = 'rate_set_zero';
+            this.outKey = 'pfl';
+            this.color = XoneK2.color.red;
+            this.connect();
+            this.trigger();
         },
         supershift: function () {
             this.disconnect();
