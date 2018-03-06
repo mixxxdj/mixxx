@@ -238,8 +238,8 @@ XoneK2.Deck = function (deckNumber, column, midiChannel) {
         shift: function () {
             this.input = function (channel, control, value, status) {
                 direction = (value === 1) ? 1 : -1;
-                var rate = engine.getValue(this.group, "key");
-                engine.setValue(this.group, "key", rate + (.005 * direction));
+                var pitch = engine.getValue(this.group, "pitch");
+                engine.setValue(this.group, "pitch", pitch + (.05 * direction));
             };
         },
         supershift: function () {
