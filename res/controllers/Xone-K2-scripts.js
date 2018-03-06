@@ -30,6 +30,9 @@ for (var ch = 0; ch <= 0xF; ++ch) {
     XoneK2.controllers[ch] = [];
     XoneK2.controllers[ch].columns = [];
     XoneK2.controllers[ch].isShifted = false;
+    XoneK2.controllers[ch].leftEncoderIsPressed = false;
+    XoneK2.controllers[ch].rightEncoderIsPressed = false;
+    XoneK2.controllers[ch].deckPicked = false;
     // This gets incremented to 0 by the init function calling XoneK2.decksLayerButton
     XoneK2.controllers[ch].deckLayerIndex = -1;
 }
@@ -80,16 +83,15 @@ XoneK2.shutdown = function(id) {
 }
 
 
-XoneK2.decksBottomLeftEncoderIsPressed = false;
 XoneK2.decksBottomLeftEncoderPress = function (channel, control, value, status) {
-    XoneK2.decksBottomLeftEncoderIsPressed =  (status & 0xF0) === 0x90;
-    if (XoneK2.controllers[channel].isShifted && XoneK2.decksBottomLeftEncoderIsPressed) {
+    XoneK2.controllers[channel].leftEncoderIsPressed =  (status & 0xF0) === 0x90;
+    if (XoneK2.controllers[channel].isShifted && XoneK2.controllers[channel].leftEncoderIsPressed) {
         script.toggleControl('[Master]', 'headSplit');
     }
 };
 XoneK2.decksBottomLeftEncoder = function (channel, control, value, status) {
     if (!XoneK2.controllers[channel].isShifted) {
-        if (!XoneK2.decksBottomLeftEncoderIsPressed) {
+        if (!XoneK2.controllers[channel].leftEncoderIsPressed) {
             var bpm = engine.getValue("[InternalClock]", "bpm");
             if (value === 1) {
                 bpm += 0.1;
@@ -118,8 +120,29 @@ XoneK2.decksBottomLeftEncoder = function (channel, control, value, status) {
 };
 
 XoneK2.decksBottomRightEncoderPress = function (channel, control, value, status) {
-    if ((status & 0xF0) === 0x90) {
-        engine.setValue("[Playlist]", "LoadSelectedIntoFirstStopped", 1);
+    XoneK2.controllers[channel].rightEncoderIsPressed = (status & 0xF0) === 0x90;
+    if (XoneK2.controllers[channel].rightEncoderIsPressed) {
+        for (var x = 1; x <= 4; ++x) {
+            var deckColumn = XoneK2.controllers[channel].columns[x];
+            if (!(deckColumn instanceof components.Deck)) {
+                continue;
+            }
+            deckColumn.topButtons[1].deckPickMode();
+        }
+    } else {
+        for (var x = 1; x <= 4; ++x) {
+            var deckColumn = XoneK2.controllers[channel].columns[x];
+            if (!(deckColumn instanceof components.Deck)) {
+                continue;
+            }
+            deckColumn.topButtons[1].input = components.Button.prototype.input;
+        }
+
+        if (XoneK2.controllers[channel].deckPicked === true) {
+            XoneK2.controllers[channel].deckPicked = false;
+        } else {
+            engine.setValue("[Playlist]", "LoadSelectedIntoFirstStopped", 1);
+        }
     }
 };
 XoneK2.decksBottomRightEncoder = function (channel, control, value, status) {
@@ -282,6 +305,14 @@ XoneK2.Deck = function (deckNumber, column, midiChannel) {
             this.color = XoneK2.color.amber;
             this.connect();
             this.trigger();
+        },
+        deckPickMode: function () {
+            this.input = function (channel, control, value, status) {
+                if (this.isPress(channel, control, value, status)) {
+                    engine.setValue(this.group, "LoadSelectedTrack", 1);
+                    XoneK2.controllers[channel].deckPicked = true;
+                }
+            };
         },
     });
     this.topButtons[2] = new components.Button({
