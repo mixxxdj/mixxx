@@ -397,7 +397,11 @@ XoneK2.decksLayerButton = function (channel, control, value, status) {
 };
 
 XoneK2.EffectUnit = function (unitNumber, column, midiChannel) {
-    components.EffectUnit.call(this, [unitNumber]);
+    components.EffectUnit.call(this, [unitNumber], false, {
+        unfocused: XoneK2.color.red,
+        focusChooseMode: XoneK2.color.green,
+        focused: XoneK2.color.amber,
+    });
 
     this.encoder = new components.Component();
     // TODO: figure out a use for this
