@@ -40,10 +40,8 @@ struct EvictAndSaveFunctor {
     }
 
     void operator()(Track* plainPtr) {
-        TrackPointer deletingPtr;
-        m_deletingPtr.swap(deletingPtr);
-        DEBUG_ASSERT(plainPtr == deletingPtr.get());
-        GlobalTrackCache::evictAndSaveCachedTrack(std::move(deletingPtr));
+        DEBUG_ASSERT(plainPtr == m_deletingPtr.get());
+        GlobalTrackCache::evictAndSaveCachedTrack(std::move(m_deletingPtr));
     }
     TrackPointer m_deletingPtr;
 };
