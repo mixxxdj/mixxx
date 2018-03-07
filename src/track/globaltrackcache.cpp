@@ -34,8 +34,9 @@ TrackRef createTrackRef(const Track& track) {
     return TrackRef::fromFileInfo(track.getFileInfo(), track.getId());
 }
 
-struct EvictAndSaveFunctor {
-    EvictAndSaveFunctor(TrackPointer deletingPtr)
+class EvictAndSaveFunctor {
+  public:
+    explicit EvictAndSaveFunctor(TrackPointer deletingPtr)
         : m_deletingPtr(std::move(deletingPtr)) {
     }
 
@@ -43,6 +44,8 @@ struct EvictAndSaveFunctor {
         DEBUG_ASSERT(plainPtr == m_deletingPtr.get());
         GlobalTrackCache::evictAndSaveCachedTrack(std::move(m_deletingPtr));
     }
+
+  private:
     TrackPointer m_deletingPtr;
 };
 
