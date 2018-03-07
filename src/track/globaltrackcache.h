@@ -139,7 +139,9 @@ protected:
     virtual ~GlobalTrackCacheSaver() {}
 };
 
-class GlobalTrackCache {
+class GlobalTrackCache : public QObject {
+    Q_OBJECT
+
 public:
     static void createInstance(GlobalTrackCacheSaver* pDeleter);
     // NOTE(uklotzde, 2018-02-20): We decided not to destroy the singular
@@ -152,6 +154,9 @@ public:
 
     // Deleter callbacks for the smart-pointer
     static void evictAndSaveCachedTrack(TrackPointer plainPtr);
+
+private slots:
+    void evictAndSave(TrackPointer deletingPtr);
 
 private:
     friend class GlobalTrackCacheLocker;
@@ -185,8 +190,6 @@ private:
             const TrackPointer& strongPtr,
             TrackRef trackRef,
             TrackId trackId);
-
-    void evictAndSave(TrackPointer deletingPtr);
 
     typedef std::unordered_map<Track*, std::pair<TrackWeakPointer, TrackPointer> >CachedTracks;
 

@@ -1,6 +1,7 @@
 #include "track/globaltrackcache.h"
 
 #include <QApplication>
+#include <QThread>
 
 #include "util/assert.h"
 #include "util/logger.h"
@@ -33,15 +34,12 @@ TrackRef createTrackRef(const Track& track) {
     return TrackRef::fromFileInfo(track.getFileInfo(), track.getId());
 }
 
-struct EvictAndSaveFunctor
-{
+struct EvictAndSaveFunctor {
     EvictAndSaveFunctor(TrackPointer deletingPtr)
-        : m_deletingPtr(std::move(deletingPtr))
-    {
+        : m_deletingPtr(std::move(deletingPtr)) {
     }
 
-    void operator()(Track* plainPtr)
-    {
+    void operator()(Track* plainPtr) {
         TrackPointer deletingPtr;
         m_deletingPtr.swap(deletingPtr);
         DEBUG_ASSERT(plainPtr == deletingPtr.get());
@@ -212,7 +210,7 @@ void GlobalTrackCache::destroyInstance() {
     // Reset the static/global pointer before entering the destructor
     s_pInstance = nullptr;
     // Delete the singular instance
-    delete pInstance;
+    pInstance->deleteLater();
 }
 
 //static
@@ -224,7 +222,14 @@ void GlobalTrackCache::evictAndSaveCachedTrack(TrackPointer deletingPtr) {
     // already have been either deleted or reused by a second
     // shared_ptr.
     if (s_pInstance) {
-        s_pInstance->evictAndSave(std::move(deletingPtr));
+        QMetaObject::invokeMethod(
+                s_pInstance,
+                "evictAndSave",
+                // Qt will choose either a direct or a queued connection
+                // depending on the thread from which this method has
+                // been invoked!
+                Qt::AutoConnection,
+                Q_ARG(TrackPointer, std::move(deletingPtr)));
     } else {
         // After the singular instance has been destroyed we are
         // not able to save pending changes. The track is deleted
@@ -652,17 +657,18 @@ void GlobalTrackCache::evictAndSave(
         TrackPointer deletingPtr) {
     DEBUG_ASSERT(deletingPtr);
 
-    // Nearly everything is possible until the cache is locked!!!
+    // We need to besure this is always called from the main thread
+    // because we can only access the DB from it and we must not loose the
+    // the lock until all changes are persistantly stored in file and DB
+    // to not hand out the track again with old metadata.
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+
     GlobalTrackCacheLocker cacheLocker;
 
-    // After obtaining the lock we need to check if the deletion
-    // is still valid, i.e. if the pointer has not already been
-    // deleted or if it has been revived by an intermediate cache
-    // lookup while this thread was blocked.
     const CachedTracks::iterator cachedTrack =
             m_cachedTracks.find(deletingPtr.get());
     if (cachedTrack == m_cachedTracks.end()) {
-        // We have already deleted this track while waiting at
+        // We have already evicted this track while waiting at
         // the lock at the beginning of this function.
         if (debugLogEnabled()) {
             kLogger.debug()
