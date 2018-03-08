@@ -61,12 +61,6 @@ AnalyzerThread::AnalyzerThread(
 }
 
 void AnalyzerThread::exec() {
-    // The thread-local database connection for waveform analysis
-    // must not be closed before returning from this function.
-    // Therefore the DbConnectionPooler is defined here independent
-    // of whether a database connection will be opened or not.
-    mixxx::DbConnectionPooler dbConnectionPooler;
-
     std::unique_ptr<AnalysisDao> pAnalysisDao;
     if (m_mode != AnalyzerMode::WithBeatsWithoutWaveform) {
         pAnalysisDao = std::make_unique<AnalysisDao>(m_pConfig);
@@ -86,8 +80,11 @@ void AnalyzerThread::exec() {
     DEBUG_ASSERT(!m_analyzers.empty());
     kLogger.debug() << "Activated" << m_analyzers.size() << "analyzers";
 
-    // pAnalysisDao remains null if no analyzer needs database access.
-    // Currently only the waveform analyzer makes use of it.
+    // This thread-local database connection for pAnalysisDao
+    // must not be closed before returning from this function.
+    // Therefore the DbConnectionPooler is defined outside of
+    // the conditional if block.
+    mixxx::DbConnectionPooler dbConnectionPooler;
     if (pAnalysisDao) {
         dbConnectionPooler = mixxx::DbConnectionPooler(m_pDbConnectionPool); // move assignment
         if (!dbConnectionPooler.isPooling()) {
