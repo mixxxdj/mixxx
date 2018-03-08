@@ -20,6 +20,8 @@ Variables:
           <Template src="skin:button_2state_right_display.xml">
             <SetVariable name="ObjectName">SamplerPlayCue</SetVariable>
             <SetVariable name="Size">34f,34f</SetVariable>
+            <SetVariable name="state_0_icon">play_sampler.svg</SetVariable>
+            <SetVariable name="state_1_icon">pause_sampler.svg</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,cue_gotoandplay</SetVariable>
             <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
             <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
@@ -104,12 +106,9 @@ Variables:
                 <SetVariable name="TooltipId">orientation</SetVariable>
                 <SetVariable name="ObjectName">SamplerButton</SetVariable>
                 <SetVariable name="Size">16f,16f</SetVariable>
-                <SetVariable name="state_0_pressed">sampler_xfader_left_white.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">sampler_xfader_left_white.svg</SetVariable>
-                <SetVariable name="state_1_pressed">sampler_xfader_center.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">sampler_xfader_center.svg</SetVariable>
-                <SetVariable name="state_2_pressed">sampler_xfader_right_white.svg</SetVariable>
-                <SetVariable name="state_2_unpressed">sampler_xfader_right_white.svg</SetVariable>
+                <SetVariable name="state_0_icon">sampler_xfader_left_white.svg</SetVariable>
+                <SetVariable name="state_1_icon">sampler_xfader_center.svg</SetVariable>
+                <SetVariable name="state_2_icon">sampler_xfader_right_white.svg</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
               </Template>
 
@@ -215,32 +214,9 @@ Variables:
 
                   <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
 
-                  <WidgetGroup>
-                    <ObjectName>VUMeterSampler</ObjectName>
-                    <Size>7f,36f</Size>
-                    <Layout>stacked</Layout>
-                    <Children>
-                      <StatusLight>
-                        <PathStatusLight scalemode="STRETCH">skin:/graphics/vumeter_mini_clipping_over.png</PathStatusLight>
-                        <PathBack scalemode="STRETCH">skin:/graphics/vumeter_mini_clipping.png</PathBack>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
-                        </Connection>
-                      </StatusLight>
-                      <VuMeter>
-                        <PathVu scalemode="STRETCH">skin:/graphics/vumeter_mini_over.png</PathVu>
-                        <PathBack scalemode="STRETCH">skin:/graphics/vumeter_mini.png</PathBack>
-                        <Horizontal>false</Horizontal>
-                        <PeakHoldSize>5</PeakHoldSize>
-                        <PeakHoldTime>500</PeakHoldTime>
-                        <PeakFallTime>50</PeakFallTime>
-                        <PeakFallStep>2</PeakFallStep>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
-                        </Connection>
-                      </VuMeter>
-                    </Children>
-                  </WidgetGroup><!-- /SamplerVU -->
+                  <Template src="skin:vumeter_mini.xml">
+                    <SetVariable name="Size">6f,1me</SetVariable>
+                  </Template>
 
                 </Children>
               </WidgetGroup><!-- /Play / Overview -->
@@ -286,10 +262,8 @@ Variables:
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup><Size>0min,1min</Size></WidgetGroup>
-
           <WidgetGroup><!-- Pfl button -->
-            <Size>18f,18f</Size>
+            <Size>20f,20f</Size>
             <Layout>stacked</Layout>
             <Children>
               <!-- index 0 due to bug -->
@@ -310,24 +284,22 @@ Variables:
               <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">pfl</SetVariable>
                 <SetVariable name="ObjectName">PflButton</SetVariable>
-                <SetVariable name="Size">18f,18f</SetVariable>
-                <SetVariable name="state_0_pressed">pfl_off.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">pfl_off.svg</SetVariable>
-                <SetVariable name="state_1_pressed">pfl_on.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">pfl_on.svg</SetVariable>
+                <SetVariable name="Size">20f,20f</SetVariable>
+                <SetVariable name="state_0_icon">pfl_off.svg</SetVariable>
+                <SetVariable name="state_1_icon">pfl_on.svg</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
               </Template>
             </Children>
           </WidgetGroup><!-- /Pfl button -->
 
+          <WidgetGroup><Size>0min,1min</Size></WidgetGroup>
+
           <Template src="skin:button_2state.xml">
             <SetVariable name="TooltipId">repeat</SetVariable>
             <SetVariable name="ObjectName">SamplerButton</SetVariable>
             <SetVariable name="Size">16f,16f</SetVariable>
-            <SetVariable name="state_0_pressed">sampler_repeat_off.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">sampler_repeat_off.svg</SetVariable>
-            <SetVariable name="state_1_pressed">sampler_repeat_on.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">sampler_repeat_on.svg</SetVariable>
+            <SetVariable name="state_0_icon">sampler_repeat_off.svg</SetVariable>
+            <SetVariable name="state_1_icon">sampler_repeat_on.svg</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,repeat</SetVariable>
           </Template>
 
@@ -344,10 +316,8 @@ Variables:
             <SetVariable name="TooltipId">keylock</SetVariable>
             <SetVariable name="ObjectName">SamplerButton</SetVariable>
             <SetVariable name="Size">14f,16f</SetVariable>
-            <SetVariable name="state_0_pressed">sampler_keylock_off.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">sampler_keylock_off.svg</SetVariable>
-            <SetVariable name="state_1_pressed">sampler_keylock_on.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">sampler_keylock_on.svg</SetVariable>
+            <SetVariable name="state_0_icon">sampler_keylock_off.svg</SetVariable>
+            <SetVariable name="state_1_icon">sampler_keylock_on.svg</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,keylock</SetVariable>
           </Template>
 
@@ -355,12 +325,9 @@ Variables:
             <SetVariable name="TooltipId">orientation</SetVariable>
             <SetVariable name="ObjectName">SamplerButton</SetVariable>
             <SetVariable name="Size">16f,16f</SetVariable>
-            <SetVariable name="state_0_pressed">sampler_xfader_left_white.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">sampler_xfader_left_white.svg</SetVariable>
-            <SetVariable name="state_1_pressed">sampler_xfader_center.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">sampler_xfader_center.svg</SetVariable>
-            <SetVariable name="state_2_pressed">sampler_xfader_right_white.svg</SetVariable>
-            <SetVariable name="state_2_unpressed">sampler_xfader_right_white.svg</SetVariable>
+            <SetVariable name="state_0_icon">sampler_xfader_left_white.svg</SetVariable>
+            <SetVariable name="state_1_icon">sampler_xfader_center.svg</SetVariable>
+            <SetVariable name="state_2_icon">sampler_xfader_right_white.svg</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
           </Template>
 

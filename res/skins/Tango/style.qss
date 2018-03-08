@@ -50,13 +50,27 @@ WWidgetGroup {
   background-color: rgba(51, 51, 51, 200);
 }
 
-#WaveformSplitter::handle:vertical {
-  image: url(skin:/graphics/splitterVert_handle.png);
+/* splitters between
+    - waveforms & lower skin part
+    - treeview & library table */
+#LibrarySplitter::handle:horizontal {
+  image: url(skin:/graphics/splitterHori_handle.svg);
   }
-  #WaveformSplitter::handle:vertical:hover,
-  #WaveformSplitter::handle:vertical:pressed {
-    image: url(skin:/graphics/splitterVert_handle_pressed.png);
+  #LibrarySplitter::handle:horizontal:hover,
+  #LibrarySplitter::handle:horizontal:pressed {
+    image: url(skin:/graphics/splitterHori_handle_pressed.svg);
   }
+  /* splitter between coverArt and tree view */
+  #LibrarySplitter::handle:vertical,
+  #WaveformSplitter::handle:vertical {
+    image: url(skin:/graphics/splitterVert_handle.svg);
+    }
+    #LibrarySplitter::handle:vertical:hover,
+    #LibrarySplitter::handle:vertical:pressed,
+    #WaveformSplitter::handle:vertical:hover,
+    #WaveformSplitter::handle:vertical:pressed {
+      image: url(skin:/graphics/splitterVert_handle_pressed.svg);
+    }
 
 
 /* ################################################################
@@ -131,7 +145,7 @@ WWidgetGroup {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
     border: 1px solid #1e1e1e;
     border-width: 0px 0px 3px 0px;
-}
+  }
   #CategoryLabel {
     font-size: 16px/16px;
     text-align: left;
@@ -181,7 +195,11 @@ WWidgetGroup {
 }
 #SubmenuLabel {
   color: #666666;
-}
+  }
+  #SkinSettingsLabel,
+  #SubmenuLabel {
+    font-size: 12px/12px;
+  }
 #CoverSpinnyHint {
   font-size: 13px/15px;
   font-weight: bold;
@@ -238,33 +256,6 @@ WWidgetGroup {
   }
 #BoothMixerLabel {
   image: url(skin:/buttons/btn_booth.svg) no-repeat center center;
-}
-
-#MixerbarButton,
-#MixerbarPflButton,
-#MixerbarXfaderButton {
-  font-weight: bold;
-  }
-  #MixerbarButton[displayValue="0"],
-  #MixerbarPflButton[displayValue="0"],
-  #MixerbarXfaderButton[displayValue="0"] {
-    background-color: #333;
-    border: 1px solid #333;
-    color: #888;
-    }
-    #MixerbarButton[displayValue="0"]:hover,
-    #MixerbarPflButton:hover,
-    #MixerbarXfaderButton:hover {
-      border: 1px solid #888;
-    }
-  #MixerbarButton[displayValue="1"],
-  #MixerbarButton[displayValue="2"] {
-    background-color: #666;
-    color: #eeeeee;
-    }
-
-#VUMeterMixerbar {
-  margin: 2px 0px 0px 0px;
 }
 #MixerbarKnob {
   margin: 2px 0px 0px 0px;
@@ -836,19 +827,19 @@ WWidgetGroup {
 /* Actual Play button. Receives click events, turns red
   when playing regularly, not from Cue or HotCue */
 #PlayCue[displayValue="0"] {
-  background-color: transparent;
-  image: url(skin:/buttons/btn_play.svg) no-repeat center center;
+  background-color: transparent;  /*
+  image: url(skin:/buttons/btn_play.svg) no-repeat center center; */
   }
   #PlayCue[displayValue="0"]:hover {
-    background-color: transparent;
-    image: url(skin:/buttons/btn_play_hover.svg) no-repeat center center;
+    background-color: transparent;  /*
+    image: url(skin:/buttons/btn_play_hover.svg) no-repeat center center; */
   }
 
 #SamplerPlayCue[displayValue="0"] {
   /* different than decks' Play button, this has some soft shadow to distinguish
   it better from underlying Cover Art (if available) */
-  background-color: transparent;
-  image: url(skin:/buttons/btn_sampler_play.png) no-repeat center center;
+  background-color: transparent;  /*
+  image: url(skin:/buttons/btn_sampler_play.png) no-repeat center center; */
   }
   #SamplerPlayCueUnderlay[displayValue="1"] {
     background: #a90000;
@@ -881,8 +872,8 @@ WWidgetGroup {
   }
 
 #PlayCue[displayValue="1"],
-#SamplerPlayCue[displayValue="1"] {
-  image: url(skin:/buttons/btn_pause.svg) no-repeat center center;
+#SamplerPlayCue[displayValue="1"] { /*
+  image: url(skin:/buttons/btn_pause.svg) no-repeat center center;  */
 }
 #PlayCue[displayValue="1"],
 #SamplerPlayCue[displayValue="1"],
@@ -979,7 +970,7 @@ WWidgetGroup {
   background-color: #333;
   }
   #ReloopButton[displayValue="0"]:hover {
-    border: 1px solid #888;
+    border: 1px solid #ff8f00;
   }
   #ReloopButton[displayValue="1"] {
   /* See also #LoopIndicator */
@@ -987,6 +978,19 @@ WWidgetGroup {
     }
     #ReloopButton[displayValue="1"]:hover {
       border: 1px solid #eeeeee;
+    }
+
+#LoopActivateButton[displayValue="0"] {
+  background-color: #333;
+  }
+  #LoopActivateButton[displayValue="0"]:hover {
+    border: 1px solid #ff8f00;
+  }
+  #LoopActivateButton[displayValue="1"] {
+    /* See also #LoopIndicator
+      background-color: #ff8f00; */
+      border: 1px solid #ff8f00;
+      background-color: #0f0f0f;
     }
 
 WBeatSpinBox {
@@ -1277,7 +1281,6 @@ decks, samplers, mic, aux, fx */
 #PflButton[displayValue="0"] {
   background-color: #333;
 }
-
 #PflButton[displayValue="1"] {
   background-color: #0f0f0f;
 }
@@ -1285,6 +1288,28 @@ decks, samplers, mic, aux, fx */
 #PflButton[displayValue="1"]:hover {
   background-color: #151515;
 }
+
+#FxUnitMixerLeft_mini WPushButton[displayValue="0"],
+#FxUnitMixerRight_mini WPushButton[displayValue="0"],
+#FxUnitMixerLeft WPushButton[displayValue="0"],
+#FxUnitMixerRight WPushButton[displayValue="0"],
+#SamplerDeck #PflButton {
+  border: 1px solid #151515;
+  }
+  #SamplerDeck #PflButton {
+    border-width: 0px 1px 0px 1px;
+    border-radius: 0px;
+  }
+  #FxUnitMixerLeft_mini WPushButton[displayValue="1"],
+  #FxUnitMixerRight_mini WPushButton[displayValue="1"],
+  #FxUnitMixerLeft WPushButton[displayValue="1"],
+  #FxUnitMixerRight WPushButton[displayValue="1"],
+  #FxUnitMixerLeft_mini WPushButton[displayValue="0"]:hover,
+  #FxUnitMixerRight_mini WPushButton[displayValue="0"]:hover,
+  #FxUnitMixerLeft WPushButton[displayValue="0"]:hover,
+  #FxUnitMixerRight WPushButton[displayValue="0"]:hover {
+    border: 1px solid #151515;
+  }
 
 #VUMeterMixer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
@@ -2112,26 +2137,6 @@ QScrollBar:horizontal {
     width: 0px;
     height: 0px;
   }
-
-/* splitters between treeview and library table */
-#LibrarySplitter::handle:horizontal {
-  image: url(skin:/graphics/splitterHori_handle.png);
-  }
-  #LibrarySplitter::handle:horizontal:hover,
-  #LibrarySplitter::handle:horizontal:pressed {
-    image: url(skin:/graphics/splitterHori_handle_pressed.png);
-  }
-  /* splitter between coverArt and tree view */
-  #LibrarySplitter::handle:vertical,
-  #WaveformSplitter::handle:vertical {
-    image: url(skin:/graphics/splitterVert_handle.png);
-    }
-    #LibrarySplitter::handle:vertical:hover,
-    #LibrarySplitter::handle:vertical:pressed,
-    #WaveformSplitter::handle:vertical:hover,
-    #WaveformSplitter::handle:vertical:pressed {
-      image: url(skin:/graphics/splitterVert_handle_pressed.png);
-    }
 
 /* Pushbuttons, a lot of them...
 Library features and their buttons:
