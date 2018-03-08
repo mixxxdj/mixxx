@@ -11,7 +11,7 @@
 
 // for lock free access, this value has to be >= the number of value using threads
 // value must be a fraction of an integer
-const int cRingSize = 8;
+const int cDefaultRingSize = 8;
 // there are basicly unlimited readers allowed at each ring element
 // but we have to count them so max() is just fine.
 // NOTE(rryan): Wrapping max with parentheses avoids conflict with the max macro
@@ -64,7 +64,7 @@ class ControlRingValue {
 // ring-buffer of ControlRingValues and a read pointer and write pointer to
 // provide getValue()/setValue() methods which *sacrifice perfect consistency*
 // for the benefit of wait-free read/write access to a value.
-template<typename T, bool ATOMIC = false>
+template<typename T, int cRingSize, bool ATOMIC = false>
 class ControlValueAtomicBase {
   public:
     inline T getValue() const {
@@ -154,13 +154,13 @@ class ControlValueAtomicBase<T, true> {
 // ControlValueAtomicBase to use. For types where sizeof(T) <= sizeof(void*),
 // the specialized implementation of ControlValueAtomicBase for types that are
 // atomic on the architecture is used.
-template<typename T>
+template<typename T, int cRingSize = cDefaultRingSize>
 class ControlValueAtomic
-    : public ControlValueAtomicBase<T, sizeof(T) <= sizeof(void*)> {
+    : public ControlValueAtomicBase<T, cRingSize, sizeof(T) <= sizeof(void*)> {
   public:
 
     ControlValueAtomic()
-        : ControlValueAtomicBase<T, sizeof(T) <= sizeof(void*)>() {
+        : ControlValueAtomicBase<T, cRingSize, sizeof(T) <= sizeof(void*)>() {
     }
 };
 

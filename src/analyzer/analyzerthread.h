@@ -88,7 +88,9 @@ class AnalyzerThread : public WorkerThread {
     /////////////////////////////////////////////////////////////////////////
     // Thread-safe atomic values
 
-    ControlValueAtomic<TrackPointer> m_nextTrack;
+    // The size of the ring buffer not be less than the maximum number of
+    // expected threads to avoid spin locks!
+    ControlValueAtomic<TrackPointer, 64> m_nextTrack;
 
     /////////////////////////////////////////////////////////////////////////
     // Thread local: Only used in the constructor/destructor and within
