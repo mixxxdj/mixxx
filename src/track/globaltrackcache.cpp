@@ -276,7 +276,7 @@ bool GlobalTrackCache::verifyConsistency() const {
             VERIFY_OR_DEBUG_ASSERT(trackById != m_tracksById.end()) {
                 return false;
             }
-            VERIFY_OR_DEBUG_ASSERT((*trackById).second == plainPtr) {
+            VERIFY_OR_DEBUG_ASSERT(trackById->second == plainPtr) {
                 return false;
             }
         }
@@ -293,7 +293,7 @@ bool GlobalTrackCache::verifyConsistency() const {
         }
     }
     for (TracksById::const_iterator i = m_tracksById.begin(); i != m_tracksById.end(); ++i) {
-        Track* plainPtr = (*i).second;
+        Track* plainPtr = i->second;
         VERIFY_OR_DEBUG_ASSERT(plainPtr) {
             return false;
         }
@@ -301,7 +301,7 @@ bool GlobalTrackCache::verifyConsistency() const {
         VERIFY_OR_DEBUG_ASSERT(trackRef.getId().isValid()) {
             return false;
         }
-        VERIFY_OR_DEBUG_ASSERT(trackRef.getId() == (*i).first) {
+        VERIFY_OR_DEBUG_ASSERT(trackRef.getId() == i->first) {
             return false;
         }
         VERIFY_OR_DEBUG_ASSERT(1 == m_tracksById.count(trackRef.getId())) {
@@ -315,7 +315,7 @@ bool GlobalTrackCache::verifyConsistency() const {
     }
     for (TracksByCanonicalLocation::const_iterator i = m_tracksByCanonicalLocation.begin();
             i != m_tracksByCanonicalLocation.end(); ++i) {
-        Track* plainPtr = (*i).second;
+        Track* plainPtr = i->second;
         VERIFY_OR_DEBUG_ASSERT(plainPtr) {
             return false;
         }
@@ -349,8 +349,8 @@ void GlobalTrackCache::relocateTracks(
             i = m_tracksByCanonicalLocation.begin();
             i != m_tracksByCanonicalLocation.end();
             ++i) {
-        const QString oldCanonicalLocation = (*i).first;
-        Track* plainPtr = (*i).second;
+        const QString oldCanonicalLocation = i->first;
+        Track* plainPtr = i->second;
         QFileInfo fileInfo = plainPtr->getFileInfo();
         // The file info has to be refreshed, otherwise it might return
         // a cached and outdated absolute and canonical location!
@@ -390,7 +390,7 @@ void GlobalTrackCache::relocateTracks(
         }
         relocatedTracksByCanonicalLocation.insert(std::make_pair(
                 std::move(newCanonicalLocation),
-                plainPtr));
+                i->second));
     }
     m_tracksByCanonicalLocation = std::move(relocatedTracksByCanonicalLocation);
 }
@@ -404,7 +404,7 @@ void GlobalTrackCache::deactivate() {
     // callback is triggered for all modified tracks before
     // exiting the application.
     for (const auto& i: m_cachedTracks) {
-        auto strongPtr = i.second.first.lock();
+        auto strongPtr = i.second.getDeletingPtr();
         if (strongPtr) {
             evict(strongPtr.get());
             m_pSaver->saveCachedTrack(std::move(strongPtr));
@@ -432,7 +432,7 @@ TrackPointer GlobalTrackCache::lookupById(
     const auto trackById(m_tracksById.find(trackId));
     if (m_tracksById.end() != trackById) {
         // Cache hit
-        Track* plainPtr = (*trackById).second;
+        Track* plainPtr = trackById->second;
         if (traceLogEnabled()) {
             kLogger.trace()
                     << "Cache hit for"
@@ -461,7 +461,7 @@ TrackPointer GlobalTrackCache::lookupByRef(
                 m_tracksByCanonicalLocation.find(canonicalLocation));
         if (m_tracksByCanonicalLocation.end() != trackByCanonicalLocation) {
             // Cache hit
-            Track* plainPtr = (*trackByCanonicalLocation).second;
+            Track* plainPtr = trackByCanonicalLocation->second;
             if (traceLogEnabled()) {
                 kLogger.trace()
                         << "Cache hit for"
@@ -486,7 +486,7 @@ TrackPointer GlobalTrackCache::revive(
     DEBUG_ASSERT(plainPtr);
     const auto i = m_cachedTracks.find(plainPtr);
     DEBUG_ASSERT(i != m_cachedTracks.end());
-    TrackWeakPointer& weakPtrRef = i->second.first;
+    TrackWeakPointer& weakPtrRef = i->second.getSavingWeakPtr();
     TrackPointer strongPtr = weakPtrRef.lock();
     if (strongPtr) {
         if (traceLogEnabled()) {
@@ -507,7 +507,7 @@ TrackPointer GlobalTrackCache::revive(
                 << plainPtr;
     }
     DEBUG_ASSERT(weakPtrRef.expired());
-    strongPtr = TrackPointer(plainPtr, EvictAndSaveFunctor(i->second.second));
+    strongPtr = TrackPointer(plainPtr, EvictAndSaveFunctor(i->second.getDeletingPtr()));
     weakPtrRef = strongPtr;
     DEBUG_ASSERT(!weakPtrRef.expired());
     DEBUG_ASSERT(weakPtrRef.lock() == strongPtr);
@@ -608,7 +608,7 @@ void GlobalTrackCache::resolve(
     TrackWeakPointer weakPtr(strongPtr);
     m_cachedTracks.insert(std::make_pair(
             deletingPtr.get(),
-            std::make_pair(weakPtr, deletingPtr)));
+            GlobalTrackCacheEntry(deletingPtr, weakPtr)));
     if (trackRef.hasId()) {
         // Insert item by id
         DEBUG_ASSERT(m_tracksById.find(
@@ -678,7 +678,7 @@ void GlobalTrackCache::evictAndSave(
         }
         return;
     }
-    if (!cachedTrack->second.first.expired()) {
+    if (!cachedTrack->second.getSavingWeakPtr().expired()) {
         // We have handed out (revived) this track again while waiting
         // at the lock at the beginning of this function or a new track
         // object has been allocated with the same memory address.

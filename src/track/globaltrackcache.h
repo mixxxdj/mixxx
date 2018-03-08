@@ -32,6 +32,34 @@ protected:
     virtual ~GlobalTrackCacheRelocator() {}
 };
 
+class GlobalTrackCacheEntry final {
+    // We need to hold two shared pointers, the deletingPtr is
+    // responsible for the lifetime of the Track object itselfe.
+    // The second one counts the references ouside Mixxx, if it
+    // is not longer referenced, the track is saved and evicted
+    // from the cache.
+  public:
+    GlobalTrackCacheEntry(
+            TrackPointer deletingPtr, TrackWeakPointer savingWeakPtr)
+        : m_deletingPtr(std::move(deletingPtr)),
+          m_savingWeakPtr(std::move(savingWeakPtr)) {
+    }
+
+    Track* getPlainPtr() const {
+        return m_deletingPtr.get();
+    }
+    const TrackPointer& getDeletingPtr() const {
+        return m_deletingPtr;
+    }
+    TrackWeakPointer& getSavingWeakPtr() {
+        return m_savingWeakPtr;
+    }
+
+  private:
+    TrackPointer m_deletingPtr;
+    TrackWeakPointer m_savingWeakPtr;
+};
+
 class GlobalTrackCacheLocker {
 public:
     GlobalTrackCacheLocker();
@@ -191,7 +219,7 @@ private:
             TrackRef trackRef,
             TrackId trackId);
 
-    typedef std::unordered_map<Track*, std::pair<TrackWeakPointer, TrackPointer> >CachedTracks;
+    typedef std::unordered_map<Track*, GlobalTrackCacheEntry>CachedTracks;
 
     bool evict(Track* plainPtr);
     bool isEvicted(Track* plainPtr) const;
