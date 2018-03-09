@@ -198,10 +198,6 @@ private:
     explicit GlobalTrackCache(GlobalTrackCacheSaver* pDeleter);
     ~GlobalTrackCache();
 
-    // This function should only be called DEBUG_ASSERT statements
-    // to verify the class invariants during development.
-    bool verifyConsistency() const;
-
     void relocateTracks(
             GlobalTrackCacheRelocator* /*nullable*/ pRelocator);
 
@@ -210,8 +206,7 @@ private:
     TrackPointer lookupByRef(
             const TrackRef& trackRef);
 
-    TrackPointer revive(
-            Track* plainPtr);
+    TrackPointer revive(GlobalTrackCacheEntryPointer entryPtr);
 
     void resolve(
             GlobalTrackCacheResolver* /*in/out*/ pCacheResolver,
@@ -224,8 +219,6 @@ private:
             TrackRef trackRef,
             TrackId trackId);
 
-    typedef std::unordered_map<Track*, GlobalTrackCacheEntryPointer>CachedTracks;
-
     bool evict(Track* plainPtr);
     bool isEvicted(Track* plainPtr) const;
 
@@ -237,8 +230,6 @@ private:
     mutable QMutex m_mutex;
 
     GlobalTrackCacheSaver* m_pSaver;
-
-    CachedTracks m_cachedTracks;
 
     // This caches the unsaved Tracks by ID
     typedef std::unordered_map<TrackId, GlobalTrackCacheEntryPointer, TrackId::hash_fun_t> TracksById;
