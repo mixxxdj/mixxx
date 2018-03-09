@@ -51,14 +51,19 @@ class GlobalTrackCacheEntry final {
     const TrackPointer& getDeletingPtr() const {
         return m_deletingPtr;
     }
-    TrackWeakPointer& getSavingWeakPtr() {
+    const TrackWeakPointer& getSavingWeakPtr() const {
         return m_savingWeakPtr;
+    }
+    void setSavingWeakPtr(TrackWeakPointer savingWeakPtr) {
+        m_savingWeakPtr = std::move(savingWeakPtr);
     }
 
   private:
     TrackPointer m_deletingPtr;
     TrackWeakPointer m_savingWeakPtr;
 };
+
+typedef std::shared_ptr<GlobalTrackCacheEntry> GlobalTrackCacheEntryPointer;
 
 class GlobalTrackCacheLocker {
 public:
@@ -181,10 +186,10 @@ public:
     static void destroyInstance();
 
     // Deleter callbacks for the smart-pointer
-    static void evictAndSaveCachedTrack(TrackPointer plainPtr);
+    static void evictAndSaveCachedTrack(GlobalTrackCacheEntryPointer cacheEntryPtr);
 
 private slots:
-    void evictAndSave(TrackPointer deletingPtr);
+    void evictAndSave(GlobalTrackCacheEntryPointer chacheEntryPtr);
 
 private:
     friend class GlobalTrackCacheLocker;
@@ -219,7 +224,7 @@ private:
             TrackRef trackRef,
             TrackId trackId);
 
-    typedef std::unordered_map<Track*, GlobalTrackCacheEntry>CachedTracks;
+    typedef std::unordered_map<Track*, GlobalTrackCacheEntryPointer>CachedTracks;
 
     bool evict(Track* plainPtr);
     bool isEvicted(Track* plainPtr) const;
@@ -236,10 +241,10 @@ private:
     CachedTracks m_cachedTracks;
 
     // This caches the unsaved Tracks by ID
-    typedef std::unordered_map<TrackId, Track*, TrackId::hash_fun_t> TracksById;
+    typedef std::unordered_map<TrackId, GlobalTrackCacheEntryPointer, TrackId::hash_fun_t> TracksById;
     TracksById m_tracksById;
 
     // This caches the unsaved Tracks by location
-    typedef std::map<QString, Track*> TracksByCanonicalLocation;
+    typedef std::map<QString, GlobalTrackCacheEntryPointer> TracksByCanonicalLocation;
     TracksByCanonicalLocation m_tracksByCanonicalLocation;
 };
