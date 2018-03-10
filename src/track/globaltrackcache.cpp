@@ -42,6 +42,10 @@ class EvictAndSaveFunctor {
 
     void operator()(Track* plainPtr) {
         DEBUG_ASSERT(plainPtr == m_cacheEntryPtr->getPlainPtr());
+        // Here we move m_cacheEntryPtr and the owned track out of the
+        // functor and the owning refference counting object.
+        // This is required to break a cycle reference from the weak pointer
+        // inside the cache entry to the same reference counting object.
         GlobalTrackCache::evictAndSaveCachedTrack(std::move(m_cacheEntryPtr));
     }
 
@@ -321,17 +325,17 @@ void GlobalTrackCache::deactivate() {
     // exiting the application.
     auto i = m_tracksById.begin();
     while (i != m_tracksById.end()) {
-        auto strongPtr = i->second->getDeletingPtr();
+        Track* plainPtr= i->second->getPlainPtr();
+        m_pSaver->saveCachedTrack(plainPtr);
+        m_tracksByCanonicalLocation.erase(plainPtr->getCanonicalLocation());
         i = m_tracksById.erase(i);
-        evict(strongPtr.get());
-        m_pSaver->saveCachedTrack(std::move(strongPtr));
     }
 
     auto j = m_tracksByCanonicalLocation.begin();
     while (j != m_tracksByCanonicalLocation.end()) {
-        auto strongPtr = j->second->getDeletingPtr();
+        Track* plainPtr= i->second->getPlainPtr();
+        m_pSaver->saveCachedTrack(plainPtr);
         j = m_tracksByCanonicalLocation.erase(j);
-        m_pSaver->saveCachedTrack(std::move(strongPtr));
     }
 
     // Verify that all cached tracks have been evicted
@@ -501,7 +505,7 @@ void GlobalTrackCache::resolve(
                 << "Cache miss - allocating track"
                 << trackRef;
     }
-    auto deletingPtr = TrackPointer(
+    auto deletingPtr = std::unique_ptr<Track, void (&)(Track*)>(
             new Track(
                     std::move(fileInfo),
                     std::move(pSecurityToken),
@@ -515,9 +519,9 @@ void GlobalTrackCache::resolve(
     deletingPtr->moveToThread(QApplication::instance()->thread());
 
     auto cacheEntryPtr = std::make_shared<GlobalTrackCacheEntry>(
-            deletingPtr, TrackWeakPointer());
+            std::move(deletingPtr));
     auto savingPtr = TrackPointer(
-            deletingPtr.get(),
+            cacheEntryPtr->getPlainPtr(),
             EvictAndSaveFunctor(cacheEntryPtr));
     cacheEntryPtr->setSavingWeakPtr(savingPtr);
 
@@ -612,15 +616,10 @@ void GlobalTrackCache::evictAndSave(
     }
 
     DEBUG_ASSERT(isEvicted(chacheEntryPtr->getPlainPtr()));
+    m_pSaver->saveCachedTrack(chacheEntryPtr->getPlainPtr());
 
-    TrackPointer deletingPtr = chacheEntryPtr->getDeletingPtr();
-    chacheEntryPtr.reset();
-
-    // Here the cache conceptually passes ownership of the evicted
-    // track object to the saver.
-    m_pSaver->saveCachedTrack(std::move(deletingPtr));
-    // After returning from the saver's callback a new object for
-    // the same track/file might be allocated and cached.
+    // here the chacheEntryPtr goes out of scope, the cache is deleted
+    // including the owned track
 }
 
 bool GlobalTrackCache::evict(Track* plainPtr) {

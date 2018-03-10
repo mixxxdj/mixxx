@@ -422,7 +422,7 @@ void Library::slotSetTrackTableRowHeight(int rowHeight) {
     emit(setTrackTableRowHeight(rowHeight));
 }
 
-void Library::saveCachedTrack(TrackPointer pTrack) noexcept {
+void Library::saveCachedTrack(Track* pTrack) noexcept {
     // It can produce dangerous signal loops if the track is still
     // sending signals while being saved!
     // See: https://bugs.launchpad.net/mixxx/+bug/1365708
@@ -435,10 +435,10 @@ void Library::saveCachedTrack(TrackPointer pTrack) noexcept {
     // ensure that we have exclusive (write) access on the file
     // and not reader or writer is accessing the same file
     // concurrently.
-    m_pTrackCollection->exportTrackMetadata(pTrack.get());
+    m_pTrackCollection->exportTrackMetadata(pTrack);
 
     // The track must be saved while the cache is locked to
     // prevent that a new track is created from the outdated
     // metadata that is is the database before saving is finished.
-    m_pTrackCollection->saveTrack(pTrack.get());
+    m_pTrackCollection->saveTrack(pTrack);
 }

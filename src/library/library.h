@@ -124,7 +124,7 @@ class Library: public QObject,
 
   private:
     // Callback for GlobalTrackCache
-    void saveCachedTrack(TrackPointer pTrack) noexcept override;
+    void saveCachedTrack(Track* pTrack) noexcept override;
 
     const UserSettingsPointer m_pConfig;
 

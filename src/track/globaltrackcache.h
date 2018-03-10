@@ -39,17 +39,15 @@ class GlobalTrackCacheEntry final {
     // is not longer referenced, the track is saved and evicted
     // from the cache.
   public:
-    GlobalTrackCacheEntry(
-            TrackPointer deletingPtr, TrackWeakPointer savingWeakPtr)
-        : m_deletingPtr(std::move(deletingPtr)),
-          m_savingWeakPtr(std::move(savingWeakPtr)) {
+    explicit GlobalTrackCacheEntry(
+            std::unique_ptr<Track, void (&)(Track*)> deletingPtr)
+        : m_deletingPtr(std::move(deletingPtr)) {
     }
+
+    GlobalTrackCacheEntry(const GlobalTrackCacheEntry& other) = delete;
 
     Track* getPlainPtr() const {
         return m_deletingPtr.get();
-    }
-    const TrackPointer& getDeletingPtr() const {
-        return m_deletingPtr;
     }
     const TrackWeakPointer& getSavingWeakPtr() const {
         return m_savingWeakPtr;
@@ -59,7 +57,7 @@ class GlobalTrackCacheEntry final {
     }
 
   private:
-    TrackPointer m_deletingPtr;
+    std::unique_ptr<Track, void (&)(Track*)> m_deletingPtr;
     TrackWeakPointer m_savingWeakPtr;
 };
 
@@ -165,8 +163,7 @@ private:
 class /*interface*/ GlobalTrackCacheSaver {
 private:
     friend class GlobalTrackCache;
-    virtual void saveCachedTrack(
-            TrackPointer pTrack) noexcept = 0;
+    virtual void saveCachedTrack(Track* pTrack) noexcept = 0;
 
 protected:
     virtual ~GlobalTrackCacheSaver() {}
