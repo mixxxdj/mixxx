@@ -110,8 +110,9 @@ void TrackAnalysisScheduler::emitProgressOrFinished() {
         AnalyzerProgress workerProgressSum = 0;
         int workerProgressCount = 0;
         for (const auto& worker: m_workers) {
-            if (worker.analyzerProgress() >= kAnalyzerProgressNone) {
-                workerProgressSum += worker.analyzerProgress();
+            const AnalyzerProgress workerProgress = worker.analyzerProgress();
+            if (workerProgress >= kAnalyzerProgressNone) {
+                workerProgressSum += workerProgress;
                 ++workerProgressCount;
             }
         }
