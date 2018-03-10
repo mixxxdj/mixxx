@@ -49,7 +49,7 @@ class TrackAnalysisScheduler : public QObject {
     // Progress for individual tracks is passed-through from the workers
     void trackProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
     // Current average progress for all scheduled tracks and from all workers
-    void progress(AnalyzerProgress currentProgress, int currentCount, int totalCount);
+    void progress(AnalyzerProgress currentTrackProgress, int currentTrackNumber, int totalTracksCount);
     void finished();
 
   private slots:
@@ -150,9 +150,9 @@ class TrackAnalysisScheduler : public QObject {
     bool submitNextTrack(Worker* worker);
     void emitProgressOrFinished();
 
-    bool isFinished() const {
-        DEBUG_ASSERT(m_finishedCount <= m_dequeuedCount);
-        return m_queuedTrackIds.empty() && (m_finishedCount == m_dequeuedCount);
+    bool allTracksFinished() const {
+        DEBUG_ASSERT(m_finishedTracksCount <= m_dequeuedTracksCount);
+        return m_queuedTrackIds.empty() && (m_finishedTracksCount == m_dequeuedTracksCount);
     }
 
     Library* m_library;
@@ -161,13 +161,13 @@ class TrackAnalysisScheduler : public QObject {
 
     std::deque<TrackId> m_queuedTrackIds;
 
-    AnalyzerProgress m_currentProgress;
+    AnalyzerProgress m_currentTrackProgress;
 
-    int m_currentCount;
+    int m_currentTrackNumber;
 
-    int m_finishedCount;
+    int m_finishedTracksCount;
 
-    int m_dequeuedCount;
+    int m_dequeuedTracksCount;
 
     typedef std::chrono::steady_clock Clock;
     Clock::time_point m_lastProgressEmittedAt;

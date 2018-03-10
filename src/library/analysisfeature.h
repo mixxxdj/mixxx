@@ -50,7 +50,7 @@ class AnalysisFeature : public LibraryFeature {
     void resumeAnalysis();
 
   private slots:
-    void onTrackAnalysisSchedulerProgress(AnalyzerProgress analyzerProgress, int currentCount, int totalCount);
+    void onTrackAnalysisSchedulerProgress(AnalyzerProgress currentTrackProgress, int currentTrackNumber, int totalTracksCount);
     void stopAnalysis();
 
   private:
@@ -61,7 +61,7 @@ class AnalysisFeature : public LibraryFeature {
     // Sets the title of this feature to the default name followed by (x / y)
     // where x is the current track being analyzed and y is the total number of
     // tracks in the job
-    void setTitleProgress(int currentTrack, int totalTracks);
+    void setTitleProgress(int currentTrackNumber, int totalTracksCount);
 
     Library* m_library;
 

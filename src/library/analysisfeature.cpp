@@ -58,11 +58,11 @@ void AnalysisFeature::setTitleDefault() {
     emit(featureIsLoading(this, false));
 }
 
-void AnalysisFeature::setTitleProgress(int currentTrack, int totalTracks) {
+void AnalysisFeature::setTitleProgress(int currentTrackNumber, int totalTracksCount) {
     m_Title = QString("%1 (%2 / %3)")
             .arg(m_analysisTitleName)
-            .arg(QString::number(currentTrack))
-            .arg(QString::number(totalTracks));
+            .arg(QString::number(currentTrackNumber))
+            .arg(QString::number(totalTracksCount));
     emit(featureIsLoading(this, false));
 }
 
@@ -148,14 +148,14 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
 }
 
 void AnalysisFeature::onTrackAnalysisSchedulerProgress(
-        AnalyzerProgress /*analyzerProgress*/,
-        int currentCount,
-        int totalCount) {
+        AnalyzerProgress /*currentTrackProgress*/,
+        int currentTrackNumber,
+        int totalTracksCount) {
     // Ignore any delayed progress updates after the analysis
     // has already been stopped.
     if (m_pTrackAnalysisScheduler) {
-        if (totalCount > 0) {
-            setTitleProgress(currentCount, totalCount);
+        if (totalTracksCount > 0) {
+            setTitleProgress(currentTrackNumber, totalTracksCount);
         } else {
             setTitleDefault();
         }

@@ -51,10 +51,10 @@ TrackAnalysisScheduler::TrackAnalysisScheduler(
         const UserSettingsPointer& pConfig,
         AnalyzerMode mode)
         : m_library(library),
-          m_currentProgress(kAnalyzerProgressUnknown),
-          m_currentCount(0),
-          m_finishedCount(0),
-          m_dequeuedCount(0),
+          m_currentTrackProgress(kAnalyzerProgressUnknown),
+          m_currentTrackNumber(0),
+          m_finishedTracksCount(0),
+          m_dequeuedTracksCount(0),
           // The first signal should always be emitted
           m_lastProgressEmittedAt(Clock::now() - kProgressInhibitDuration) {
     VERIFY_OR_DEBUG_ASSERT(numWorkerThreads > 0) {
@@ -92,7 +92,7 @@ TrackAnalysisScheduler::~TrackAnalysisScheduler() {
 void TrackAnalysisScheduler::emitProgressOrFinished() {
     // The finished() signal is emitted regardless of when the last
     // signal has been emitted
-    if (isFinished()) {
+    if (allTracksFinished()) {
         emit finished();
         return;
     }
@@ -104,8 +104,8 @@ void TrackAnalysisScheduler::emitProgressOrFinished() {
     }
     m_lastProgressEmittedAt = now;
 
-    if (isFinished()) {
-        m_currentProgress = kAnalyzerProgressDone;
+    if (allTracksFinished()) {
+        m_currentTrackProgress = kAnalyzerProgressDone;
     } else {
         AnalyzerProgress workerProgressSum = 0;
         int workerProgressCount = 0;
@@ -128,44 +128,44 @@ void TrackAnalysisScheduler::emitProgressOrFinished() {
             DEBUG_ASSERT(kAnalyzerProgressDone == 1);
             const int inProgressCount =
                     math_max(1, int(std::ceil(workerProgressSum)));
-            const AnalyzerProgress currentProgress =
+            const AnalyzerProgress currentTrackProgress =
                     workerProgressSum - std::floor(workerProgressSum);
-            // (m_finishedCount + inProgressCount) might exceed m_dequeuedCount
+            // (m_finishedTracksCount + inProgressCount) might exceed m_dequeuedTracksCount
             // in some situations due to race conditions! The minimum of those
             // values is an appropriate choice for reporting progress.
-            const int currentCount =
-                    math_min(m_finishedCount + inProgressCount, m_dequeuedCount);
+            const int currentTrackNumber =
+                    math_min(m_finishedTracksCount + inProgressCount, m_dequeuedTracksCount);
             // The combination of the values current count (primary) and current
             // progress (secondary) should never decrease to avoid confusion
-            if (m_currentCount < currentCount) {
-                m_currentCount = currentCount;
+            if (m_currentTrackNumber < currentTrackNumber) {
+                m_currentTrackNumber = currentTrackNumber;
                 // Unconditional progress update
-                m_currentProgress = currentProgress;
-            } else if (m_currentCount == currentCount) {
+                m_currentTrackProgress = currentTrackProgress;
+            } else if (m_currentTrackNumber == currentTrackNumber) {
                 // Conditional progress update if current count didn't change
-                if (m_currentProgress >= kAnalyzerProgressNone) {
+                if (m_currentTrackProgress >= kAnalyzerProgressNone) {
                     // Current progress should not decrease while the count is constant
-                    m_currentProgress = math_max(m_currentProgress, currentProgress);
+                    m_currentTrackProgress = math_max(m_currentTrackProgress, currentTrackProgress);
                 } else {
                     // Initialize current progress
-                    m_currentProgress = currentProgress;
+                    m_currentTrackProgress = currentTrackProgress;
                 }
             }
         } else {
-            if (m_currentCount < m_finishedCount) {
-                m_currentCount = m_finishedCount;
+            if (m_currentTrackNumber < m_finishedTracksCount) {
+                m_currentTrackNumber = m_finishedTracksCount;
             }
         }
     }
-    const int totalCount =
-            m_dequeuedCount + m_queuedTrackIds.size();
-    DEBUG_ASSERT(m_finishedCount <= m_currentCount);
-    DEBUG_ASSERT(m_currentCount <= m_dequeuedCount);
-    DEBUG_ASSERT(m_dequeuedCount <= totalCount);
+    const int totalTracksCount =
+            m_dequeuedTracksCount + m_queuedTrackIds.size();
+    DEBUG_ASSERT(m_finishedTracksCount <= m_currentTrackNumber);
+    DEBUG_ASSERT(m_currentTrackNumber <= m_dequeuedTracksCount);
+    DEBUG_ASSERT(m_dequeuedTracksCount <= totalTracksCount);
     emit progress(
-            m_currentProgress,
-            m_currentCount,
-            totalCount);
+            m_currentTrackProgress,
+            m_currentTrackNumber,
+            totalTracksCount);
 }
 
 void TrackAnalysisScheduler::onWorkerThreadProgress(int threadId, AnalyzerThreadState threadState, TrackId trackId, AnalyzerProgress analyzerProgress) {
@@ -184,8 +184,8 @@ void TrackAnalysisScheduler::onWorkerThreadProgress(int threadId, AnalyzerThread
     case AnalyzerThreadState::Done:
         worker.receiveAnalyzerProgress(trackId, analyzerProgress);
         emit trackProgress(trackId, analyzerProgress);
-        ++m_finishedCount;
-        DEBUG_ASSERT(m_finishedCount <= m_dequeuedCount);
+        ++m_finishedTracksCount;
+        DEBUG_ASSERT(m_finishedTracksCount <= m_dequeuedTracksCount);
         break;
     case AnalyzerThreadState::Exit:
         worker.receiveThreadExit();
@@ -237,17 +237,17 @@ bool TrackAnalysisScheduler::submitNextTrack(Worker* worker) {
         if (!nextTrack) {
             // Skip unloadable track
             m_queuedTrackIds.pop_front();
-            ++m_dequeuedCount;
-            ++m_finishedCount;
+            ++m_dequeuedTracksCount;
+            ++m_finishedTracksCount;
             continue;
         }
         worker->submitNextTrack(std::move(nextTrack));
         m_queuedTrackIds.pop_front();
-        ++m_dequeuedCount;
+        ++m_dequeuedTracksCount;
         worker->wakeThread();
         return true;
     }
-    DEBUG_ASSERT(m_finishedCount <= m_dequeuedCount);
+    DEBUG_ASSERT(m_finishedTracksCount <= m_dequeuedTracksCount);
     return false;
 }
 
