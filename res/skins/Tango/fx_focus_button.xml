@@ -13,7 +13,6 @@ Variables:
     <Layout>horizontal</Layout>
     <Size>14f,30me</Size>
     <Children>
-      <!-- visible if unfocused: left-click > focus, right click > unfocus -->
       <PushButton>
         <TooltipId>EffectSlot_focus</TooltipId>
         <ObjectName>FxFocusButton</ObjectName>
@@ -35,5 +34,9 @@ Variables:
         </Connection>
       </PushButton>
     </Children>
+    <Connection>
+      <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
   </WidgetGroup>
 </Template>
