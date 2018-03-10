@@ -37,16 +37,41 @@ const SINT kAnalysisSamplesPerBlock =
 // Maximum frequency of progress updates while busy
 const mixxx::Duration kBusyProgressInhibitDuration = mixxx::Duration::fromMillis(60);
 
+void deleteAnalyzerThread(AnalyzerThread* plainPtr) {
+    if (plainPtr) {
+        plainPtr->deleteAfterFinished();
+    }
+}
+
 } // anonymous namespace
+
+//static
+AnalyzerThread::Pointer AnalyzerThread::nullPointer() {
+    return Pointer(nullptr, [](AnalyzerThread*){});
+}
+
+//static
+AnalyzerThread::Pointer AnalyzerThread::createInstance(
+        int id,
+        mixxx::DbConnectionPoolPtr dbConnectionPool,
+        UserSettingsPointer pConfig,
+        AnalyzerMode mode) {
+    return Pointer(new AnalyzerThread(
+            id,
+            dbConnectionPool,
+            pConfig,
+            mode),
+            deleteAnalyzerThread);
+}
 
 AnalyzerThread::AnalyzerThread(
         int id,
-        mixxx::DbConnectionPoolPtr pDbConnectionPool,
+        mixxx::DbConnectionPoolPtr dbConnectionPool,
         UserSettingsPointer pConfig,
         AnalyzerMode mode)
         : WorkerThread(QString("AnalyzerThread %1").arg(id)),
           m_id(id),
-          m_pDbConnectionPool(std::move(pDbConnectionPool)),
+          m_dbConnectionPool(std::move(dbConnectionPool)),
           m_pConfig(std::move(pConfig)),
           m_mode(mode),
           m_sampleBuffer(kAnalysisSamplesPerBlock),
@@ -86,14 +111,14 @@ void AnalyzerThread::exec() {
     // the conditional if block.
     mixxx::DbConnectionPooler dbConnectionPooler;
     if (pAnalysisDao) {
-        dbConnectionPooler = mixxx::DbConnectionPooler(m_pDbConnectionPool); // move assignment
+        dbConnectionPooler = mixxx::DbConnectionPooler(m_dbConnectionPool); // move assignment
         if (!dbConnectionPooler.isPooling()) {
             kLogger.warning()
                     << "Failed to obtain database connection for analyzer queue thread";
             return;
         }
         // Obtain and use the newly created database connection within this thread
-        QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
+        QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_dbConnectionPool);
         DEBUG_ASSERT(dbConnection.isOpen());
         pAnalysisDao->initialize(dbConnection);
     }

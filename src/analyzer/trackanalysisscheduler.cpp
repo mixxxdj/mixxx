@@ -70,7 +70,7 @@ TrackAnalysisScheduler::TrackAnalysisScheduler(
     // 1st pass: Create worker threads
     m_workers.reserve(numWorkerThreads);
     for (int threadId = 0; threadId < numWorkerThreads; ++threadId) {
-        m_workers.emplace_back(std::make_unique<AnalyzerThread>(
+        m_workers.emplace_back(AnalyzerThread::createInstance(
                 threadId,
                 library->dbConnectionPool(),
                 pConfig,

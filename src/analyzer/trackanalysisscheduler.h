@@ -56,26 +56,27 @@ class TrackAnalysisScheduler : public QObject {
     void onWorkerThreadProgress(int threadId, AnalyzerThreadState threadState, TrackId trackId, AnalyzerProgress analyzerProgress);
 
   private:
+    // Owns an analyzer thread and buffers the most recent progress update
+    // received from this thread during analysis. It does not need to be
+    // thread-safe, because all functions are invoked from the host thread
+    // that runs the TrackAnalysisScheduler.
     class Worker {
       public:
-        explicit Worker(std::unique_ptr<AnalyzerThread> thread = std::unique_ptr<AnalyzerThread>())
-            : m_thread(thread.get()),
-              m_analyzerProgress(kAnalyzerProgressUnknown),
-              m_threadIdle(false) {
-            if (thread) {
-                thread.release()->deleteAfterFinished();
-            }
+        explicit Worker(AnalyzerThread::Pointer thread = AnalyzerThread::nullPointer())
+            : m_thread(std::move(thread)),
+              m_threadIdle(false),
+              m_analyzerProgress(kAnalyzerProgressUnknown) {
         }
         Worker(const Worker&) = delete;
         Worker(Worker&&) = default;
 
         operator bool() const {
-            return m_thread != nullptr;
+            return static_cast<bool>(m_thread);
         }
 
         AnalyzerThread* thread() const {
             DEBUG_ASSERT(m_thread);
-            return m_thread;
+            return m_thread.get();
         }
 
         bool threadIdle() const {
@@ -91,7 +92,7 @@ class TrackAnalysisScheduler : public QObject {
             DEBUG_ASSERT(track);
             DEBUG_ASSERT(m_thread);
             DEBUG_ASSERT(m_threadIdle);
-            m_thread->submitNextTrack(std::move(m_track));
+            m_thread->submitNextTrack(std::move(track));
             m_threadIdle = false;
         }
 
@@ -126,7 +127,7 @@ class TrackAnalysisScheduler : public QObject {
             m_analyzerProgress = kAnalyzerProgressUnknown;
         }
 
-        void receiveAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress) {
+        void receiveAnalyzerProgress(TrackId /*trackId*/, AnalyzerProgress analyzerProgress) {
             DEBUG_ASSERT(m_thread);
             DEBUG_ASSERT(!m_threadIdle);
             m_analyzerProgress = analyzerProgress;
@@ -134,13 +135,13 @@ class TrackAnalysisScheduler : public QObject {
 
         void receiveThreadExit() {
             DEBUG_ASSERT(m_thread);
-            m_thread = nullptr;
+            m_thread.reset();
             m_threadIdle = false;
             m_analyzerProgress = kAnalyzerProgressUnknown;
         }
 
       private:
-        AnalyzerThread* m_thread;
+        AnalyzerThread::Pointer m_thread;
         bool m_threadIdle;
         AnalyzerProgress m_analyzerProgress;
     };

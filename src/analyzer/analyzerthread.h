@@ -45,11 +45,20 @@ class AnalyzerThread : public WorkerThread {
     Q_OBJECT
 
   public:
-    AnalyzerThread(
+    typedef std::unique_ptr<AnalyzerThread, void(*)(AnalyzerThread*)> Pointer;
+    static Pointer nullPointer();
+
+    static Pointer createInstance(
             int id,
-            mixxx::DbConnectionPoolPtr pDbConnectionPool,
+            mixxx::DbConnectionPoolPtr dbConnectionPool,
             UserSettingsPointer pConfig,
             AnalyzerMode mode = AnalyzerMode::Default);
+
+    /*private*/ AnalyzerThread(
+            int id,
+            mixxx::DbConnectionPoolPtr dbConnectionPool,
+            UserSettingsPointer pConfig,
+            AnalyzerMode mode);
     ~AnalyzerThread() override = default;
 
     int id() const {
@@ -81,7 +90,7 @@ class AnalyzerThread : public WorkerThread {
     /////////////////////////////////////////////////////////////////////////
     // Immutable values and pointers (objects are thread-safe)
     const int m_id;
-    const mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
+    const mixxx::DbConnectionPoolPtr m_dbConnectionPool;
     const UserSettingsPointer m_pConfig;
     const AnalyzerMode m_mode;
 
