@@ -130,7 +130,7 @@ void WorkerThread::sleepWhileSuspended(std::unique_lock<std::mutex>* locked) {
     }
 }
 
-bool WorkerThread::fetchWorkBlocking() {
+bool WorkerThread::waitUntilWorkItemsFetched() {
     if (isStopping()) {
         // Early exit without locking the mutex
         return false;
@@ -138,18 +138,25 @@ bool WorkerThread::fetchWorkBlocking() {
     // Keep the mutex locked while idle or suspended
     std::unique_lock<std::mutex> locked(m_sleepMutex);
     while (!isStopping()) {
-        FetchWorkResult fetchWorkResult = fetchWork();
+        FetchWorkResult fetchWorkResult = tryFetchWorkItems();
         switch (fetchWorkResult) {
         case FetchWorkResult::Ready:
+            logTrace(m_logger, "Work items fetched and ready");
             return true;
         case FetchWorkResult::Idle:
             logTrace(m_logger, "Sleeping while idle");
             m_sleepWaitCond.wait(locked) ;
-            logTrace(m_logger, "Continuing after sleeping while idle");
+            logTrace(m_logger, "Continuing after slept while idle");
             break;
         case FetchWorkResult::Suspend:
+            logTrace(m_logger, "Suspending while idle");
             suspend();
             sleepWhileSuspended(&locked);
+            logTrace(m_logger, "Continuing after suspended while idle");
+            break;
+        case FetchWorkResult::Stop:
+            logTrace(m_logger, "Stopping after trying to fetch work items");
+            stop();
             break;
         }
     }

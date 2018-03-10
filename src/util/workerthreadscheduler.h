@@ -21,9 +21,9 @@ class WorkerThreadScheduler : public WorkerThread {
     bool resumeWorkers();
 
   protected:
-    void exec() override;
+    void runWhileNeitherFinishedNorStopping() override;
 
-    FetchWorkResult fetchWork() override;
+    FetchWorkResult tryFetchWorkItems() override;
 
   private:
     FIFO<WorkerThread*> m_scheduledWorkers;

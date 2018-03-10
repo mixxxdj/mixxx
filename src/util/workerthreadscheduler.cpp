@@ -29,7 +29,7 @@ bool WorkerThreadScheduler::resumeWorkers() {
     }
 }
 
-WorkerThread::FetchWorkResult WorkerThreadScheduler::fetchWork() {
+WorkerThread::FetchWorkResult WorkerThreadScheduler::tryFetchWorkItems() {
     DEBUG_ASSERT(!m_fetchedWorker);
     WorkerThread* worker;
     if (m_scheduledWorkers.read(&worker, 1) == 1) {
@@ -43,8 +43,8 @@ WorkerThread::FetchWorkResult WorkerThreadScheduler::fetchWork() {
     }
 }
 
-void WorkerThreadScheduler::exec() {
-    while (fetchWorkBlocking()) {
+void WorkerThreadScheduler::runWhileNeitherFinishedNorStopping() {
+    while (waitUntilWorkItemsFetched()) {
         m_fetchedWorker->resume();
         m_fetchedWorker = nullptr;
     }

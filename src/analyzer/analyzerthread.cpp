@@ -85,7 +85,7 @@ AnalyzerThread::AnalyzerThread(
     qRegisterMetaType<AnalyzerProgress>("AnalyzerProgress");
 }
 
-void AnalyzerThread::exec() {
+void AnalyzerThread::runWhileNeitherFinishedNorStopping() {
     std::unique_ptr<AnalysisDao> pAnalysisDao;
     if (m_mode != AnalyzerMode::WithBeatsWithoutWaveform) {
         pAnalysisDao = std::make_unique<AnalysisDao>(m_pConfig);
@@ -126,7 +126,7 @@ void AnalyzerThread::exec() {
     mixxx::AudioSource::OpenParams openParams;
     openParams.setChannelCount(kAnalysisChannels);
 
-    while (fetchWorkBlocking()) {
+    while (waitUntilWorkItemsFetched()) {
         DEBUG_ASSERT(m_currentTrack);
         kLogger.debug() << "Analyzing" << m_currentTrack->getLocation();
 
@@ -192,7 +192,7 @@ void AnalyzerThread::submitNextTrack(TrackPointer nextTrack) {
     m_nextTrack.setValue(std::move(nextTrack));
 }
 
-WorkerThread::FetchWorkResult AnalyzerThread::fetchWork() {
+WorkerThread::FetchWorkResult AnalyzerThread::tryFetchWorkItems() {
     DEBUG_ASSERT(!m_currentTrack);
     m_currentTrack = m_nextTrack.getValue();
     if (m_currentTrack) {

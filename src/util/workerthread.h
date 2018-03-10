@@ -35,7 +35,7 @@ class WorkerThread : public QThread {
     // ensure that the thread has already finished and is not running
     // while destroyed! Connect finished() to deleteAfter() and then
     // call stop() on the running worker thread explicitly to trigger
-    // the destruction. Use destroy() for this purpose (see below).
+    // the destruction. Use deleteAfterFinished() for this purpose.
     ~WorkerThread() override;
 
     void deleteAfterFinished();
@@ -69,31 +69,48 @@ class WorkerThread : public QThread {
   protected:
     void run() final;
 
-    // The internal event loop. Not to be confused with the
-    // Qt event loop since the worker thread doesn't has one!
-    virtual void exec() = 0;
+    // The internal run loop. Not to be confused with the Qt event
+    // loop since the worker thread doesn't has one! The name is
+    // a little clumsy but clearly states our expectations on an
+    // implementation.
+    virtual void runWhileNeitherFinishedNorStopping() = 0;
 
     enum class FetchWorkResult {
         Ready,
         Idle,
         Suspend,
+        Stop,
     };
 
     // Non-blocking function that determines whether the worker thread
     // is idle (i.e. no new tasks have been scheduled) and should be
-    // suspended until resumed or woken up. Returns true as long as the
-    // thread should be kept suspended because no work is available.
-    // The stop flag does not have to be taken into account here.
-    virtual FetchWorkResult fetchWork() = 0;
+    // either suspended until resumed or put to sleep until woken up.
+    //
+    // Implementing classes are able to control what to do if no more
+    // work is currently available. Returning FetchWorkResult::Idle
+    // preserves the current suspend state and just puts the thread
+    // to sleep until wake() is called. Returning FetchWorkResult::Suspend
+    // will suspend the thread until resume() is called. Returning
+    // FetchWorkResult::Stop will stop the worker thread.
+    //
+    // Implementing classes are responsible for storing the fetched
+    // work items internally for later processing during
+    // runWhileNeitherFinishedNorStopping().
+    //
+    // The stop flag does not have to be checked when entering this function,
+    // because it has already been checked just before the invocation. Though
+    // the fetch operation may check again before starting any expensive
+    // internal subtask.
+    virtual FetchWorkResult tryFetchWorkItems() = 0;
 
-    // Blocks while idle and not stopped. Returns true when the thread
-    // should continue processing and false when stopped and the thread
-    // should exit asap.
-    bool fetchWorkBlocking();
+    // Blocks while idle and not stopped. Returns true when new work items
+    // for processing have been fetched and false if the thread has been
+    // stopped while waiting.
+    bool waitUntilWorkItemsFetched();
 
     // Blocks the worker thread while the suspend flag is set.
-    // This function must not be called while idle which could
-    // block on the non-recursive mutex twice!
+    // This function must not be called from tryFetchWorkItems()
+    // to avoid a deadlock on the non-recursive mutex!
     void sleepWhileSuspended();
 
   private:
