@@ -253,7 +253,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     ControlObject* m_pCONumMicrophones;
     ControlObject* m_pCONumAuxiliaries;
 
-    TrackAnalysisSchedulerPointer m_pTrackAnalysisScheduler;
+    TrackAnalysisScheduler::Pointer m_pTrackAnalysisScheduler;
 
     QList<Deck*> m_decks;
     QList<Sampler*> m_samplers;

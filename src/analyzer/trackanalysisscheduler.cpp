@@ -15,7 +15,35 @@ constexpr QThread::Priority kWorkerThreadPriority = QThread::LowPriority;
 // Maximum frequency of progress updates
 constexpr std::chrono::milliseconds kProgressInhibitDuration(100);
 
+void deleteTrackAnalysisScheduler(TrackAnalysisScheduler* plainPtr) {
+    if (plainPtr) {
+        // Trigger stop
+        plainPtr->stop();
+        // Release ownership and let Qt delete the queue later
+        plainPtr->deleteLater();
+    }
+}
+
 } // anonymous namespace
+
+//static
+TrackAnalysisScheduler::Pointer TrackAnalysisScheduler::nullPointer() {
+    return Pointer(nullptr, [](TrackAnalysisScheduler*){});
+}
+
+//static
+TrackAnalysisScheduler::Pointer TrackAnalysisScheduler::createInstance(
+        Library* library,
+        int numWorkerThreads,
+        const UserSettingsPointer& pConfig,
+        AnalyzerMode mode) {
+    return Pointer(new TrackAnalysisScheduler(
+            library,
+            numWorkerThreads,
+            pConfig,
+            mode),
+            deleteTrackAnalysisScheduler);
+}
 
 TrackAnalysisScheduler::TrackAnalysisScheduler(
         Library* library,
@@ -241,14 +269,4 @@ TrackPointer TrackAnalysisScheduler::loadTrackById(TrackId trackId) {
                 << trackId;
     }
     return track;
-}
-
-void TrackAnalysisSchedulerPointer::reset() {
-    if (m_impl) {
-        // Trigger stop
-        m_impl->stop();
-        // Release ownership and let Qt delete the queue later
-        m_impl.release()->deleteLater();
-        DEBUG_ASSERT(!m_impl);
-    }
 }

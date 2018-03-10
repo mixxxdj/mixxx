@@ -66,7 +66,7 @@ class AnalysisFeature : public LibraryFeature {
     Library* m_library;
 
     UserSettingsPointer m_pConfig;
-    TrackAnalysisSchedulerPointer m_pTrackAnalysisScheduler;
+    TrackAnalysisScheduler::Pointer m_pTrackAnalysisScheduler;
 
     // The title returned by title()
     QVariant m_Title;

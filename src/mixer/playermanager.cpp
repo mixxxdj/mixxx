@@ -53,7 +53,8 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         m_pCONumMicrophones(new ControlObject(
             ConfigKey("[Master]", "num_microphones"), true, true)),
         m_pCONumAuxiliaries(new ControlObject(
-            ConfigKey("[Master]", "num_auxiliaries"), true, true)){
+            ConfigKey("[Master]", "num_auxiliaries"), true, true)),
+        m_pTrackAnalysisScheduler(TrackAnalysisScheduler::nullPointer()) {
     connect(m_pCONumDecks, SIGNAL(valueChanged(double)),
             this, SLOT(slotNumDecksControlChanged(double)),
             Qt::DirectConnection);
@@ -123,11 +124,14 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
             pLibrary, SLOT(slotLoadLocationToPlayer(QString, QString)));
 
     DEBUG_ASSERT(!m_pTrackAnalysisScheduler);
-    m_pTrackAnalysisScheduler = TrackAnalysisSchedulerPointer(pLibrary, kNumberOfAnalyzerThreads, m_pConfig);
+    m_pTrackAnalysisScheduler = TrackAnalysisScheduler::createInstance(
+            pLibrary,
+            kNumberOfAnalyzerThreads,
+            m_pConfig);
 
-    connect(m_pTrackAnalysisScheduler, SIGNAL(trackProgress(TrackId, AnalyzerProgress)),
+    connect(m_pTrackAnalysisScheduler.get(), SIGNAL(trackProgress(TrackId, AnalyzerProgress)),
             this, SLOT(onTrackAnalysisProgress(TrackId, AnalyzerProgress)));
-    connect(m_pTrackAnalysisScheduler, SIGNAL(finished()),
+    connect(m_pTrackAnalysisScheduler.get(), SIGNAL(finished()),
             this, SLOT(onTrackAnalysisFinished()));
 
     // Connect the player to the analyzer queue so that loaded tracks are

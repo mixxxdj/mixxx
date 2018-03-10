@@ -42,6 +42,7 @@ AnalysisFeature::AnalysisFeature(
         LibraryFeature(parent),
         m_library(parent),
         m_pConfig(pConfig),
+        m_pTrackAnalysisScheduler(TrackAnalysisScheduler::nullPointer()),
         m_analysisTitleName(tr("Analyze")),
         m_pAnalysisView(nullptr) {
     setTitleDefault();
@@ -122,17 +123,17 @@ void AnalysisFeature::activate() {
 
 void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
     if (!m_pTrackAnalysisScheduler) {
-        m_pTrackAnalysisScheduler = TrackAnalysisSchedulerPointer(
+        m_pTrackAnalysisScheduler = TrackAnalysisScheduler::createInstance(
                 m_library,
                 kNumberOfAnalyzerThreads,
                 m_pConfig,
                 getAnalyzerMode(m_pConfig));
 
-        connect(m_pTrackAnalysisScheduler, SIGNAL(progress(AnalyzerProgress, int, int)),
+        connect(m_pTrackAnalysisScheduler.get(), SIGNAL(progress(AnalyzerProgress, int, int)),
                 m_pAnalysisView, SLOT(onTrackAnalysisSchedulerProgress(AnalyzerProgress, int, int)));
-        connect(m_pTrackAnalysisScheduler, SIGNAL(progress(AnalyzerProgress, int, int)),
+        connect(m_pTrackAnalysisScheduler.get(), SIGNAL(progress(AnalyzerProgress, int, int)),
                 this, SLOT(onTrackAnalysisSchedulerProgress(AnalyzerProgress, int, int)));
-        connect(m_pTrackAnalysisScheduler, SIGNAL(finished()),
+        connect(m_pTrackAnalysisScheduler.get(), SIGNAL(finished()),
                 this, SLOT(stopAnalysis()));
 
         emit(analysisActive(true));
