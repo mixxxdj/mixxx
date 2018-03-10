@@ -427,7 +427,6 @@ class Qt(Dependence):
             qtdir = build.env['QTDIR']
             framework_path = Qt.find_framework_libdir(qtdir, qt5)
             if os.path.isdir(framework_path):
-                build.env.Append(LINKFLAGS="-Wl,-rpath," + framework_path)
                 build.env.Append(LINKFLAGS="-L" + framework_path)
 
         # Mixxx requires C++11 support. Windows enables C++11 features by
