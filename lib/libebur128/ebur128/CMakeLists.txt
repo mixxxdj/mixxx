@@ -17,8 +17,9 @@ endif()
 
 if(MSVC)
   add_definitions(-D_USE_MATH_DEFINES)
-  add_definitions(/arch:SSE2)
-  add_definitions(-D __SSE2_MATH__)
+  if(CMAKE_SIZEOF_VOID_P LESS 8)
+    add_definitions(/arch:SSE2)
+  endif()
 endif()
 
 
