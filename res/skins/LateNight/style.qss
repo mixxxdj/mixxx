@@ -1356,9 +1356,9 @@ WEffectSelector {
 
 /* Library styling is hard */
 
-#LibrarySingleton {
+#LibrarySingleton {/*
   padding-top: 5px;
-  padding-bottom: 2px;
+  padding-bottom: 2px;*/
 }
 
 #Library {
@@ -1437,10 +1437,6 @@ WEffectSelector {
   background-color: #191919;
 }
 
-#LibrarySidebarExpanded {
-  margin: -5px 0px 0px 5px;
-}
-
 #LibrarySidebarExpanded QPushButton {
   margin: 2px 3px 2px 3px; 
   padding: 4px 6px; 
@@ -1503,9 +1499,7 @@ WLibraryBreadCrumb QToolButton {
 
 WBaseLibrary QLabel {
   padding: 0px 0px 0px 0px;
-  margin: 100px 100px 100px 100px;
-  background-color: blue;
-  border: 0px solid blue;
+  margin: 0px;
 }
 
 QTreeView::item:selected:active, 
@@ -1654,7 +1648,6 @@ QSpinBox {
 }
 
 /* library search bar */
-<<<<<<< HEAD
 WSearchLineEdit { 
   margin-bottom: 2px;
   padding: 2px; 
@@ -1662,33 +1655,15 @@ WSearchLineEdit {
   background: #181818; 
   color: #cfb32c; 
 }
-
-
-WSearchLineEdit:focus { 
-  border: 1px solid #8E5C00;
-  background: #0f0f0f; 
-  color: #eece33;
-}
-
-||||||| merged common ancestors
-WSearchLineEdit { padding: 2px; border: 1px solid #656565; background: #181818; color: #cfb32c; }
-WSearchLineEdit:focus { padding: 2px; border: 2px solid #FF6600; background: #0f0f0f; color: #eece33;}
-=======
-WSearchLineEdit {
-  padding: 2px;
-  border: 1px solid #656565;
-  background: #181818;
-  color: #cfb32c;
-}
 WSearchLineEdit:focus {
   padding: 2px;
   border: 2px solid #FF6600;
   background: #0f0f0f;
 }
->>>>>>> fbf7cc1e61124f86902a692197249aea60281c38
 
 #SidebarContainer{
-    margin-top: -5px;
+  margin: 0px;
+  padding: 0px;
 }
 
 /* cover art */
