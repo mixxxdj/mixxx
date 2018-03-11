@@ -70,10 +70,13 @@ class WorkerThread : public QThread {
     void run() final;
 
     // The internal run loop. Not to be confused with the Qt event
-    // loop since the worker thread doesn't has one! The name is
-    // a little clumsy but clearly states our expectations on an
-    // implementation.
-    virtual void runWhileNeitherFinishedNorStopping() = 0;
+    // loop since the worker thread doesn't have one!
+    // An implementation may exit this loop after all work is done,
+    // which in turn exits and terminates the thread. The loop should
+    // also be left asap when isStopping() returns true. This condition
+    // should be checked repeatedly during execution of the loop and
+    // especially before starting any expensive subtasks.
+    virtual void doRun() = 0;
 
     enum class FetchWorkResult {
         Ready,
@@ -95,7 +98,7 @@ class WorkerThread : public QThread {
     //
     // Implementing classes are responsible for storing the fetched
     // work items internally for later processing during
-    // runWhileNeitherFinishedNorStopping().
+    // doRun().
     //
     // The stop flag does not have to be checked when entering this function,
     // because it has already been checked just before the invocation. Though

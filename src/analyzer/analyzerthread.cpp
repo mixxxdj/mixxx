@@ -85,7 +85,7 @@ AnalyzerThread::AnalyzerThread(
     qRegisterMetaType<AnalyzerProgress>("AnalyzerProgress");
 }
 
-void AnalyzerThread::runWhileNeitherFinishedNorStopping() {
+void AnalyzerThread::doRun() {
     std::unique_ptr<AnalysisDao> pAnalysisDao;
     if (m_mode != AnalyzerMode::WithBeatsWithoutWaveform) {
         pAnalysisDao = std::make_unique<AnalysisDao>(m_pConfig);

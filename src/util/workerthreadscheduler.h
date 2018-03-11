@@ -21,7 +21,7 @@ class WorkerThreadScheduler : public WorkerThread {
     bool resumeWorkers();
 
   protected:
-    void runWhileNeitherFinishedNorStopping() override;
+    void doRun() override;
 
     FetchWorkResult tryFetchWorkItems() override;
 

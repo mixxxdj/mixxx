@@ -43,7 +43,7 @@ WorkerThread::FetchWorkResult WorkerThreadScheduler::tryFetchWorkItems() {
     }
 }
 
-void WorkerThreadScheduler::runWhileNeitherFinishedNorStopping() {
+void WorkerThreadScheduler::doRun() {
     while (waitUntilWorkItemsFetched()) {
         m_fetchedWorker->resume();
         m_fetchedWorker = nullptr;

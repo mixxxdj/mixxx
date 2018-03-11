@@ -82,7 +82,7 @@ class AnalyzerThread : public WorkerThread {
     void progress(int threadId, AnalyzerThreadState threadState, TrackId trackId, AnalyzerProgress trackProgress);
 
   protected:
-    void runWhileNeitherFinishedNorStopping() override;
+    void doRun() override;
 
     FetchWorkResult tryFetchWorkItems() override;
 

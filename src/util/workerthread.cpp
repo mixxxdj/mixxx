@@ -60,7 +60,7 @@ void WorkerThread::run() {
 
     m_logger.debug() << "Running";
 
-    runWhileNeitherFinishedNorStopping();
+    doRun();
 
     m_logger.debug() << "Exiting";
 
