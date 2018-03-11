@@ -482,7 +482,7 @@ void WaveformWidgetFactory::setOverviewNormalized(bool normalize) {
 }
 
 void WaveformWidgetFactory::setPlayMarkerPosition(int position) {
-    // qDebug() << "setPlayMarkerPosition, position=" << position;
+    //qDebug() << "setPlayMarkerPosition, position=" << position;
     m_playMarkerPosition = position;
     if (m_config) {
         m_config->set(ConfigKey("[Waveform]", "PlayMarkerPosition"), ConfigValue(m_playMarkerPosition));
@@ -537,7 +537,7 @@ void WaveformWidgetFactory::render() {
                         pWaveformWidget->getWidget()->isVisible()) {
                     (void)pWaveformWidget->render();
                 }
-                // qDebug() << "render" << i << m_vsyncThread->elapsed();
+                //qDebug() << "render" << i << m_vsyncThread->elapsed();
             }
         }
 
