@@ -97,9 +97,10 @@ class AnalyzerThread : public WorkerThread {
     /////////////////////////////////////////////////////////////////////////
     // Thread-safe atomic values
 
-    // The size of the ring buffer not be less than the maximum number of
-    // expected threads to avoid spin locks!
-    ControlValueAtomic<TrackPointer, 64> m_nextTrack;
+    // There is only one consumer (namely the worker thread) and one producer
+    // (the host thread) for this value. Therefore default ring buffer size
+    // is sufficient.
+    ControlValueAtomic<TrackPointer> m_nextTrack;
 
     /////////////////////////////////////////////////////////////////////////
     // Thread local: Only used in the constructor/destructor and within
