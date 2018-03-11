@@ -10,10 +10,10 @@ WEffectSelector {
 }
 
 #EffectSelectorGroup[highlight="1"]{ 
-	border: 1px solid #f8ba54;  
+	border: 1px solid #3c8bb2;  
 } 
 #EffectSelectorGroup[highlight="0"]{ 
-	border: 0px solid #f8ba54;  
+	border: 0px solid #3c8bb2;  
 }
 
 

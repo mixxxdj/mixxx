@@ -1,6 +1,6 @@
 <Template>
 	<WidgetGroup>
-		<Size>164,28f</Size>	
+		<Size>164,25f</Size>	
 		<Children>
 			<WidgetGroup>
 				<ObjectName>EffectSelectorGroup</ObjectName>	
@@ -39,8 +39,8 @@
 				<Size>107f,22f</Size>				
 				<Children>
 					<Template src="skin:effect_selector_button.xml">
-						<SetVariable name="Effect">1</SetVariable>
-						<SetVariable name="effectnum">1</SetVariable>
+						<SetVariable name="effectunitnum"><Variable name="effectunitnum"/></SetVariable>
+						<SetVariable name="effectnum"><Variable name="effectnum"/></SetVariable>
 					</Template>
 				</Children>
                 <Connection>
@@ -52,7 +52,7 @@
 
 			<PushButton>
 				<Pos>137,10</Pos>
-				<TooltipId>show_samplers</TooltipId>
+				<TooltipId></TooltipId>
 				<Style></Style>
 				<NumberStates>2</NumberStates>
 				<State>
@@ -72,142 +72,9 @@
 				  <Transform><IsEqual><Variable name="effectnum"/></IsEqual></Transform>
 				</Connection>
 			</PushButton>
-<!--
-			<Knob>
-				<TooltipId>EffectUnit_super1</TooltipId>
-				<Style></Style>
-				<NumberStates>63</NumberStates>
-				<Path>knobs/knob_rotary_s%1.png</Path>
-				<Pos>134,3</Pos>
-				<Connection>
-					<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],meta</ConfigKey>
-				</Connection>
-			</Knob>
--->
 	    </Children>
 	</WidgetGroup>	
 </Template>
 
 
-<!--
-<Template>
-	<WidgetGroup>
-		<Size>100e,43f</Size>
-		<Layout>horizontal</Layout>
-		<Children>
-			<WidgetGroup>
-		        <ObjectName>EffectLeftBorder</ObjectName>
-				<Size>5f,40f</Size>
-				<BackPath>style/style_bg_deck_border.png</BackPath>
-				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
-			</WidgetGroup>	
-			<WidgetGroup>
-				<Size>0e,40f</Size>
-				<Style>QGroupBox { 
-					border: 1px solid green;  
-					margin: 0px 0px 0px 0px;
-				} 
-				</Style>
-				<BackPath>style/style_bg_looping.png</BackPath>
-                <Layout>horizontal</Layout>
-				<Children>
-					<WidgetGroup>
-						<Size>4f,28f</Size>
-					</WidgetGroup>
-					<Template src="skin:effect_selector_button.xml">
-						<SetVariable name="Effect">1</SetVariable>
-						<SetVariable name="effectnum">1</SetVariable>
-					</Template>
-			    </Children>
-			</WidgetGroup>
-			<WidgetGroup>
-		        <ObjectName>EffectRightBorder</ObjectName>
-				<Size>5f,40f</Size>
-				<BackPath>style/style_bg_deck_border.png</BackPath>
-				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
-			</WidgetGroup>	
-			<WidgetGroup>
-				<ObjectName>EffectRightBorder</ObjectName>
-				<Size>3f,40f</Size>
-				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
-			</WidgetGroup>	
-		</Children>		
-	</WidgetGroup>	
-</Template>
--->
 
-<!--
-
-<Template>
-	<WidgetGroup>
-		<Size>508e,104f</Size>
-		<Layout>horizontal</Layout>
-		<Children>
-			<WidgetGroup>
-				<Size>495,100</Size>
-				<Style>QGroupBox { 
-					border: 0px solid green;  
-					margin: 0px 0px 0px 0px;
-				} 
-				</Style>
-				<Children>
-					<WidgetGroup>
-						<BackPathHighlighted>style/style_bg_effect1_high</BackPathHighlighted>
-						<Pos>5,5</Pos>
-						<Size>495,45</Size>
-						<Layout>horizontal</Layout>
-						<Style>QGroupBox { 
-							background: Url(); 
-						} 
-						</Style>
-						<Children>
-
-							<Template src="skin:effect_selector_button.xml">
-								<SetVariable name="Effect">1</SetVariable>
-								<SetVariable name="effectnum">1</SetVariable>
-							</Template>
-							<Template src="skin:effect_parameters.xml">
-								<SetVariable name="effectnum">1</SetVariable>
-							</Template>
-
-						</Children>
-						<Connection>
-							<BindProperty>highlight</BindProperty>
-							<Transform>
-								<IsEqual>1</IsEqual>
-							</Transform>
-							</Connection>
-					</WidgetGroup>
-					<WidgetGroup>
-						<BackPathHighlighted>style/style_bg_effect2_high</BackPathHighlighted>
-						<Pos>5,50</Pos>
-						<Size>495,45</Size>
-						<Layout>horizontal</Layout>
-						<Style>QGroupBox { 
-							background: Url(); 
-						} 
-						</Style>
-						<Children>
-
-							<Template src="skin:effect_selector_button.xml">
-								<SetVariable name="Effect">1</SetVariable>
-								<SetVariable name="effectnum">2</SetVariable>
-							</Template>
-							<Template src="skin:effect_parameters.xml">
-								<SetVariable name="effectnum">2</SetVariable>
-							</Template>
-						</Children>
-						<Connection>
-							<BindProperty>highlight</BindProperty>
-							<Transform>
-								<IsEqual>2</IsEqual>
-							</Transform>
-						</Connection>
-					</WidgetGroup>	
-				</Children>		
-			</WidgetGroup>
-		</Children>		
-	</WidgetGroup>	
-</Template>
-
--->
