@@ -14,9 +14,9 @@ class LibraryTest : public MixxxTest,
     public virtual /*implements*/ GlobalTrackCacheSaver {
 
   public:
-    void saveCachedTrack(TrackPointer pTrack) noexcept override {
-        m_trackCollection.exportTrackMetadata(pTrack.get());
-        m_trackCollection.saveTrack(pTrack.get());
+    void saveCachedTrack(Track* pTrack) noexcept override {
+        m_trackCollection.exportTrackMetadata(pTrack);
+        m_trackCollection.saveTrack(pTrack);
     }
 
   protected:
