@@ -194,9 +194,8 @@ void AnalyzerThread::submitNextTrack(TrackPointer nextTrack) {
 
 WorkerThread::FetchWorkResult AnalyzerThread::tryFetchWorkItems() {
     DEBUG_ASSERT(!m_currentTrack);
-    m_currentTrack = m_nextTrack.getValue();
+    m_currentTrack = m_nextTrack.getValueOnce();
     if (m_currentTrack) {
-        m_nextTrack.setValue(TrackPointer());
         return FetchWorkResult::Ready;
     } else {
         if (m_emittedState != AnalyzerThreadState::Idle) {

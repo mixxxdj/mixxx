@@ -31,10 +31,31 @@ class ControlRingValue {
         : m_readerSlots(cReaderSlotCnt) {
     }
 
+    // Tries to copy the stored value if a reader slot is available.
+    // This is operation can be repeated multiple times for the same
+    // slot, because the stored value is preserved.
     bool tryGet(T* value) const {
         // Read while consuming one readerSlot
         if (m_readerSlots.fetchAndAddAcquire(-1) > 0) {
             *value = m_value;
+            m_readerSlots.fetchAndAddRelease(1);
+            return true;
+        } else {
+            // Otherwise a writer is active. The writer will reset
+            // the counter in m_readerSlots when releasing the lock
+            // and we must not re-add the substracted value here!
+            return false;
+        }
+    }
+
+    // A destructive read operation that tries to move the stored
+    // value into the provided argument if a reader slot is available.
+    // This is operation should not be repeated once it returned true,
+    // because the stored value becomes invalid after it has been moved.
+    bool tryGetOnce(T* value) {
+        // Read while consuming one readerSlot
+        if (m_readerSlots.fetchAndAddAcquire(-1) > 0) {
+            *value = std::move(m_value);
             m_readerSlots.fetchAndAddRelease(1);
             return true;
         } else {
@@ -87,6 +108,23 @@ class ControlValueAtomicBase {
         return value;
     }
 
+    inline T getValueOnce() {
+        T value;
+        unsigned int index = static_cast<unsigned int>(load_atomic(m_readIndex)) % cRingSize;
+        while (!m_ring[index].tryGetOnce(&value)) {
+            // We are here if
+            // 1) there are more then cReaderSlotCnt reader (get) reading the same value or
+            // 2) the formerly current value is locked by a writer
+            // Case 1 does not happen because we have enough (0x7fffffff) reader slots.
+            // Case 2 happens when the a reader is delayed after reading the
+            // m_currentIndex and in the mean while a reader locks the formally current value
+            // because it has written cRingSize times. Reading the less recent value will fix
+            // it because it is now actually the current value.
+            index = (index - 1) % cRingSize;
+        }
+        return value;
+    }
+
     inline void setValue(const T& value) {
         // Test if we can read atomic
         // This test is const and will be mad only at compile time
@@ -126,6 +164,10 @@ class ControlValueAtomicBase<T, true> {
   public:
     inline T getValue() const {
         return m_value;
+    }
+
+    inline T getValueOnce() {
+        return std::move(m_value);
     }
 
     inline void setValue(const T& value) {
