@@ -13,7 +13,7 @@
 #include "library/dlganalysis.h"
 #include "widget/wlibrary.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
-#include "analyzer/analyzerqueue.h"
+#include "analyzer/analyzermanager.h"
 #include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
 #include "util/debug.h"
@@ -22,13 +22,13 @@ const QString AnalysisFeature::m_sAnalysisViewName = QString("Analysis");
 
 AnalysisFeature::AnalysisFeature(Library* parent,
                                UserSettingsPointer pConfig,
-                               TrackCollection* pTrackCollection) :
+                               TrackCollection* pTrackCollection,
+                               AnalyzerManager* pAnalyzerManager) :
         LibraryFeature(parent),
         m_pConfig(pConfig),
         m_pDbConnectionPool(parent->dbConnectionPool()),
         m_pTrackCollection(pTrackCollection),
-        m_pAnalyzerQueue(nullptr),
-        m_iOldBpmEnabled(0),
+        m_pAnalyzerManager(pAnalyzerManager),
         m_analysisTitleName(tr("Analyze")),
         m_pAnalysisView(nullptr) {
     setTitleDefault();
@@ -84,10 +84,20 @@ void AnalysisFeature::bindWidget(WLibrary* libraryWidget,
     connect(this, SIGNAL(trackAnalysisStarted(int)),
             m_pAnalysisView, SLOT(trackAnalysisStarted(int)));
 
+    connect(m_pAnalyzerManager, SIGNAL(trackProgress(int, int)),
+            m_pAnalysisView, SLOT(trackAnalysisProgress(int, int)));
+    connect(m_pAnalyzerManager, SIGNAL(trackFinished(int)),
+            this, SLOT(slotProgressUpdate(int)));
+    connect(m_pAnalyzerManager, SIGNAL(trackFinished(int)),
+            m_pAnalysisView, SLOT(trackAnalysisFinished(int)));
+
+    connect(m_pAnalyzerManager, SIGNAL(queueEmpty()),
+        this, SLOT(cleanupAnalyzer()));
+
     m_pAnalysisView->installEventFilter(keyboard);
 
     // Let the DlgAnalysis know whether or not analysis is active.
-    bool bAnalysisActive = m_pAnalyzerQueue != NULL;
+    bool bAnalysisActive = m_pAnalyzerManager->isDefaultQueueActive();
     emit(analysisActive(bAnalysisActive));
 
     libraryWidget->registerView(m_sAnalysisViewName, m_pAnalysisView);
@@ -112,48 +122,16 @@ void AnalysisFeature::activate() {
     emit(enableCoverArtDisplay(true));
 }
 
-namespace {
-    inline
-    AnalyzerQueue::Mode getAnalyzerQueueMode(
-            const UserSettingsPointer& pConfig) {
-        if (pConfig->getValue<bool>(ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"), true)) {
-            return AnalyzerQueue::Mode::Default;
-        } else {
-            return AnalyzerQueue::Mode::WithoutWaveform;
-        }
-    }
-} // anonymous namespace
 
 void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
-    if (m_pAnalyzerQueue == NULL) {
-        // Save the old BPM detection prefs setting (on or off)
-        m_iOldBpmEnabled = m_pConfig->getValueString(ConfigKey("[BPM]","BPMDetectionEnabled")).toInt();
-        // Force BPM detection to be on.
-        m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(1));
-        // Note: this sucks... we should refactor the prefs/analyzer to fix this hacky bit ^^^^.
 
-        m_pAnalyzerQueue = new AnalyzerQueue(
-                m_pDbConnectionPool,
-                m_pConfig,
-                getAnalyzerQueueMode(m_pConfig));
-
-        connect(m_pAnalyzerQueue, SIGNAL(trackProgress(int)),
-                m_pAnalysisView, SLOT(trackAnalysisProgress(int)));
-        connect(m_pAnalyzerQueue, SIGNAL(trackFinished(int)),
-                this, SLOT(slotProgressUpdate(int)));
-        connect(m_pAnalyzerQueue, SIGNAL(trackFinished(int)),
-                m_pAnalysisView, SLOT(trackAnalysisFinished(int)));
-
-        connect(m_pAnalyzerQueue, SIGNAL(queueEmpty()),
-                this, SLOT(cleanupAnalyzer()));
-        emit(analysisActive(true));
-    }
+    emit(analysisActive(true));
 
     for (const auto& trackId: trackIds) {
         TrackPointer pTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
         if (pTrack) {
             //qDebug() << this << "Queueing track for analysis" << pTrack->getLocation();
-            m_pAnalyzerQueue->queueAnalyseTrack(pTrack);
+            m_pAnalyzerManager->queueAnalyseTrack(pTrack);
         }
     }
     if (trackIds.size() > 0) {
@@ -165,28 +143,18 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
 void AnalysisFeature::slotProgressUpdate(int num_left) {
     int num_tracks = m_pAnalysisView->getNumTracks();
     if (num_left > 0) {
-        int currentTrack = num_tracks - num_left + 1;
+        int currentTrack = num_tracks - num_left;
         setTitleProgress(currentTrack, num_tracks);
     }
 }
 
 void AnalysisFeature::stopAnalysis() {
-    //qDebug() << this << "stopAnalysis()";
-    if (m_pAnalyzerQueue != NULL) {
-        m_pAnalyzerQueue->stop();
-    }
+    m_pAnalyzerManager->stop(false);
 }
 
 void AnalysisFeature::cleanupAnalyzer() {
     setTitleDefault();
     emit(analysisActive(false));
-    if (m_pAnalyzerQueue != NULL) {
-        m_pAnalyzerQueue->stop();
-        m_pAnalyzerQueue->deleteLater();
-        m_pAnalyzerQueue = NULL;
-        // Restore old BPM detection setting for preferences...
-        m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(m_iOldBpmEnabled));
-    }
 }
 
 bool AnalysisFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {

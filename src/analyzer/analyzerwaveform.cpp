@@ -16,8 +16,10 @@ mixxx::Logger kLogger("AnalyzerWaveform");
 } // anonymous
 
 AnalyzerWaveform::AnalyzerWaveform(
-        AnalysisDao* pAnalysisDao) :
+        AnalysisDao* pAnalysisDao,
+        Mode mode) :
         m_pAnalysisDao(pAnalysisDao),
+        m_mode(mode),
         m_skipProcessing(false),
         m_waveformData(nullptr),
         m_waveformSummaryData(nullptr),
@@ -92,6 +94,11 @@ bool AnalyzerWaveform::initialize(TrackPointer tio, int sampleRate, int totalSam
 }
 
 bool AnalyzerWaveform::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
+
+	if (m_mode == Mode::WithoutWaveform) {
+        return true;
+    }
+
     ConstWaveformPointer pTrackWaveform = tio->getWaveform();
     ConstWaveformPointer pTrackWaveformSummary = tio->getWaveformSummary();
     ConstWaveformPointer pLoadedTrackWaveform;
@@ -109,8 +116,9 @@ bool AnalyzerWaveform::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
         while (it.hasNext()) {
             const AnalysisDao::AnalysisInfo& analysis = it.next();
             WaveformFactory::VersionClass vc;
-
-            if (analysis.type == AnalysisDao::TYPE_WAVEFORM) {
+            if (analysis.data.size() == 0 ) {
+                m_pAnalysisDao->deleteAnalysis(analysis.analysisId);
+            } else if (analysis.type == AnalysisDao::TYPE_WAVEFORM) {
                 vc = WaveformFactory::waveformVersionToVersionClass(analysis.version);
                 if (missingWaveform && vc == WaveformFactory::VC_USE) {
                     pLoadedTrackWaveform = ConstWaveformPointer(
@@ -120,7 +128,7 @@ bool AnalyzerWaveform::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
                     // remove all other Analysis except that one we should keep
                     m_pAnalysisDao->deleteAnalysis(analysis.analysisId);
                 }
-            } if (analysis.type == AnalysisDao::TYPE_WAVESUMMARY) {
+            } else if (analysis.type == AnalysisDao::TYPE_WAVESUMMARY) {
                 vc = WaveformFactory::waveformSummaryVersionToVersionClass(analysis.version);
                 if (missingWavesummary && vc == WaveformFactory::VC_USE) {
                     pLoadedTrackWaveformSummary = ConstWaveformPointer(

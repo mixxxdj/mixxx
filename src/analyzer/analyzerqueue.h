@@ -18,6 +18,7 @@
 class Analyzer;
 class AnalysisDao;
 
+//DEPRECATED. Now we use AnalyzerManager and AnalyzerWorkers.
 class AnalyzerQueue : public QThread {
     Q_OBJECT
 

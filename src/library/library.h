@@ -35,6 +35,7 @@ class CrateFeature;
 class LibraryControl;
 class KeyboardEventFilter;
 class PlayerManagerInterface;
+class AnalyzerManager;
 
 class Library: public QObject,
     public virtual /*implements*/ GlobalTrackCacheSaver {
@@ -62,6 +63,10 @@ class Library: public QObject,
 
     void addFeature(LibraryFeature* feature);
     QStringList getDirs();
+
+    AnalyzerManager* getAnalyzerManager() {
+        return m_pAnalyzerManager;
+    }
 
     inline int getTrackTableRowHeight() const {
         return m_iTrackTableRowHeight;
@@ -144,6 +149,7 @@ class Library: public QObject,
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
     AnalysisFeature* m_pAnalysisFeature;
+    AnalyzerManager* m_pAnalyzerManager;
     LibraryScanner m_scanner;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;

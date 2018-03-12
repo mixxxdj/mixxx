@@ -788,7 +788,8 @@ class MixxxCore(Feature):
                    "engine/cachingreaderchunk.cpp",
                    "engine/cachingreaderworker.cpp",
 
-                   "analyzer/analyzerqueue.cpp",
+                   "analyzer/analyzermanager.cpp",
+                   "analyzer/analyzerworker.cpp",
                    "analyzer/analyzerwaveform.cpp",
                    "analyzer/analyzergain.cpp",
                    "analyzer/analyzerebur128.cpp",

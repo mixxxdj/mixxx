@@ -44,6 +44,7 @@ QAtomicInt s_instanceCounter(0);
 
 } // anonymous namespace
 
+//DEPRECATED. Now we use AnalyzerManager and AnalyzerWorkers.
 AnalyzerQueue::AnalyzerQueue(
         mixxx::DbConnectionPoolPtr pDbConnectionPool,
         const UserSettingsPointer& pConfig,

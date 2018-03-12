@@ -136,8 +136,13 @@ struct WaveformStride {
 
 class AnalyzerWaveform : public Analyzer {
   public:
+    enum class Mode {
+        Default,
+        WithoutWaveform,
+    };
+      
     explicit AnalyzerWaveform(
-            AnalysisDao* pAnalysisDao);
+        AnalysisDao* pAnalysisDao, Mode mode);
     ~AnalyzerWaveform() override;
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
@@ -155,6 +160,7 @@ class AnalyzerWaveform : public Analyzer {
     void storeIfGreater(float* pDest, float source);
 
     AnalysisDao* m_pAnalysisDao;
+    Mode m_mode;
 
     bool m_skipProcessing;
 

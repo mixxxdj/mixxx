@@ -4,7 +4,7 @@
 
 #include <QMutexLocker>
 
-#include "analyzer/analyzerqueue.h"
+#include "analyzer/analyzermanager.h"
 #include "control/controlobject.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
@@ -32,9 +32,9 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         m_pSoundManager(pSoundManager),
         m_pEffectsManager(pEffectsManager),
         m_pEngine(pEngine),
+        m_pAnalyzerManager(nullptr),
         // NOTE(XXX) LegacySkinParser relies on these controls being Controls
         // and not ControlProxies.
-        m_pAnalyzerQueue(nullptr),
         m_pCONumDecks(new ControlObject(
             ConfigKey("[Master]", "num_decks"), true, true)),
         m_pCONumSamplers(new ControlObject(
@@ -98,9 +98,6 @@ PlayerManager::~PlayerManager() {
     delete m_pCONumPreviewDecks;
     delete m_pCONumMicrophones;
     delete m_pCONumAuxiliaries;
-    if (m_pAnalyzerQueue) {
-        delete m_pAnalyzerQueue;
-    }
 }
 
 void PlayerManager::bindToLibrary(Library* pLibrary) {
@@ -112,27 +109,27 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
     connect(this, SIGNAL(loadLocationToPlayer(QString, QString)),
             pLibrary, SLOT(slotLoadLocationToPlayer(QString, QString)));
 
-    m_pAnalyzerQueue = new AnalyzerQueue(pLibrary->dbConnectionPool(), m_pConfig);
+    m_pAnalyzerManager = pLibrary->getAnalyzerManager();
 
     // Connect the player to the analyzer queue so that loaded tracks are
     // analysed.
     foreach(Deck* pDeck, m_decks) {
         connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
+            m_pAnalyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
     // Connect the player to the analyzer queue so that loaded tracks are
     // analysed.
     foreach(Sampler* pSampler, m_samplers) {
         connect(pSampler, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
+            m_pAnalyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
     // Connect the player to the analyzer queue so that loaded tracks are
     // analysed.
     foreach(PreviewDeck* pPreviewDeck, m_preview_decks) {
         connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
+            m_pAnalyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 }
 
@@ -349,9 +346,9 @@ void PlayerManager::addDeckInner() {
     connect(pDeck, SIGNAL(noVinylControlInputConfigured()),
             this, SIGNAL(noVinylControlInputConfigured()));
 
-    if (m_pAnalyzerQueue) {
+    if (m_pAnalyzerManager) {
         connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
+                m_pAnalyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
     m_players[group] = pDeck;
@@ -410,9 +407,9 @@ void PlayerManager::addSamplerInner() {
 
     Sampler* pSampler = new Sampler(this, m_pConfig, m_pEngine,
                                     m_pEffectsManager, orientation, group);
-    if (m_pAnalyzerQueue) {
+    if (m_pAnalyzerManager) {
         connect(pSampler, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
+                    m_pAnalyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
     m_players[group] = pSampler;
@@ -438,9 +435,9 @@ void PlayerManager::addPreviewDeckInner() {
     PreviewDeck* pPreviewDeck = new PreviewDeck(this, m_pConfig, m_pEngine,
                                                 m_pEffectsManager, orientation,
                                                 group);
-    if (m_pAnalyzerQueue) {
+    if (m_pAnalyzerManager) {
         connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
+                    m_pAnalyzerManager, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
     m_players[group] = pPreviewDeck;

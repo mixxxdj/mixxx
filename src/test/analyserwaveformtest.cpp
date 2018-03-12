@@ -19,7 +19,7 @@ class AnalyzerWaveformTest: public MixxxTest {
   protected:
     AnalyzerWaveformTest()
       : analysisDao(config()),
-        aw(&analysisDao),
+        aw(&analysisDao, AnalyzerWaveform::Mode::Default),
         bigbuf(nullptr),
         canaryBigBuf(nullptr) {
     }

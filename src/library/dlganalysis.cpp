@@ -15,6 +15,7 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_bAnalysisActive(false),
+          m_percentages(),
           m_tracksInQueue(0),
           m_currentTrack(0) {
     setupUi(this);
@@ -150,6 +151,7 @@ void DlgAnalysis::analysisActive(bool bActive) {
         pushButtonAnalyze->setText(tr("Analyze"));
         labelProgress->setText("");
         labelProgress->setEnabled(false);
+        m_percentages.clear();
     }
 }
 
@@ -157,18 +159,34 @@ void DlgAnalysis::analysisActive(bool bActive) {
 void DlgAnalysis::trackAnalysisFinished(int size) {
     qDebug() << "Analysis finished" << size << "tracks left";
     if (size > 0) {
-        m_currentTrack = m_tracksInQueue - size + 1;
+        m_currentTrack = m_tracksInQueue - size;
     }
 }
 
 // slot
-void DlgAnalysis::trackAnalysisProgress(int progress) {
+void DlgAnalysis::trackAnalysisProgress(int worker, int progress) {
     if (m_bAnalysisActive) {
+        m_percentages[worker] = progress;
+        //This is a bit cumbersome, yes, I just avoided to change the translating text.
+        QString perc;
+        bool add = false;
+        foreach(int percentage, m_percentages) {
+            if (add) {
+                perc+= "% ";
+            }
+            perc += QString::number(percentage);
+            add = true;
+        }
         QString text = tr("Analyzing %1/%2 %3%").arg(
                 QString::number(m_currentTrack),
                 QString::number(m_tracksInQueue),
-                QString::number(progress));
+                perc);
         labelProgress->setText(text);
+        //This isn't strictly necessary, but it is useful to remove priority (player) worker analysis
+        //which would accumulate otherwise. Another option is to not send this signal for priority workers.
+        if (progress == 100) {
+            m_percentages.remove(worker);
+        }
     }
 }
 

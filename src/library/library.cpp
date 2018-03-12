@@ -8,6 +8,7 @@
 
 #include "database/mixxxdb.h"
 
+#include "analyzer/analyzermanager.h"
 #include "mixer/playermanager.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
@@ -78,6 +79,8 @@ Library::Library(
 
     QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
 
+    m_pAnalyzerManager = new AnalyzerManager(pConfig,m_pDbConnectionPool);
+    
     // TODO(XXX): Add a checkbox in the library preferences for checking
     // and repairing the database on the next restart of the application.
     if (pConfig->getValue(kConfigKeyRepairDatabaseOnNextRestart, false)) {
@@ -124,7 +127,7 @@ Library::Library(
     addFeature(browseFeature);
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, pRecordingManager));
     addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
-    m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection);
+    m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection, m_pAnalyzerManager);
     connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
             m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
     connect(m_pCrateFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
@@ -196,6 +199,8 @@ Library::~Library() {
     // we never see the TrackCollection's destructor being called... - Albert
     // Has to be deleted at last because the features holds references of it.
     delete m_pTrackCollection;
+
+	delete m_pAnalyzerManager;
 }
 
 void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {

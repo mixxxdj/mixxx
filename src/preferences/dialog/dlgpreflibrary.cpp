@@ -11,6 +11,7 @@
 #include "preferences/dialog/dlgpreflibrary.h"
 #include "library/dlgtrackmetadataexport.h"
 #include "sources/soundsourceproxy.h"
+#include "analyzer/analyzermanager.h"
 
 #define MIXXX_ADDONS_URL "http://www.mixxx.org/wiki/doku.php/add-ons"
 
@@ -23,7 +24,8 @@ DlgPrefLibrary::DlgPrefLibrary(
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
           m_bAddedDirectory(false),
-          m_iOriginalTrackTableRowHeight(Library::kDefaultRowHeightPx) {
+          m_iOriginalTrackTableRowHeight(Library::kDefaultRowHeightPx),
+          m_iOriginalMaxThreads(1)  {
     setupUi(this);
 
     connect(this, SIGNAL(requestAddDir(QString)),
@@ -61,6 +63,10 @@ DlgPrefLibrary::DlgPrefLibrary(
             m_pLibrary, SLOT(slotSetTrackTableFont(QFont)));
     connect(this, SIGNAL(setTrackTableRowHeight(int)),
             m_pLibrary, SLOT(slotSetTrackTableRowHeight(int)));
+
+    AnalyzerManager* analyzerManager = m_pLibrary->getAnalyzerManager();
+    connect(this, SIGNAL(setMaxThreads(int)),
+            analyzerManager, SLOT(slotMaxThreadsChanged(int)));
 
     // TODO(XXX) this string should be extracted from the soundsources
     QString builtInFormatsStr = "Ogg Vorbis, FLAC, WAVe, AIFF";
@@ -130,6 +136,20 @@ void DlgPrefLibrary::initializeDirList() {
     }
 }
 
+void DlgPrefLibrary::initializeThreadsCombo() {
+    // save which index was selected
+    const int selected = cmbMaxThreads->currentIndex();
+    // clear and fill model
+    cmbMaxThreads->clear();
+    int cpuMax = QThread::idealThreadCount();
+    if (cpuMax < 1) { cpuMax = 8; }
+    for (int i=1; i <= cpuMax; i++) {
+        QString displayname = QString::number(i);
+        cmbMaxThreads->addItem(displayname);
+    }
+    cmbMaxThreads->setCurrentIndex(selected);
+}
+
 void DlgPrefLibrary::slotExtraPlugins() {
     QDesktopServices::openUrl(QUrl(MIXXX_ADDONS_URL));
 }
@@ -146,11 +166,17 @@ void DlgPrefLibrary::slotResetToDefaults() {
     radioButton_dbclick_top->setChecked(false);
     radioButton_dbclick_deck->setChecked(true);
     spinBoxRowHeight->setValue(Library::kDefaultRowHeightPx);
+    int cpuMax = QThread::idealThreadCount();
+    if (cpuMax < 1) { cpuMax = 1; }
+    //setCurrentIndex is zero based. threads is one based.
+    cmbMaxThreads->setCurrentIndex(cpuMax-1);
+
     setLibraryFont(QApplication::font());
 }
 
 void DlgPrefLibrary::slotUpdate() {
     initializeDirList();
+    initializeThreadsCombo();
     checkBox_library_scan->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","RescanOnStartup"), false));
     checkBox_SyncTrackMetadataExport->setChecked(m_pConfig->getValue(
@@ -183,6 +209,11 @@ void DlgPrefLibrary::slotUpdate() {
     m_iOriginalTrackTableRowHeight = m_pLibrary->getTrackTableRowHeight();
     spinBoxRowHeight->setValue(m_iOriginalTrackTableRowHeight);
     setLibraryFont(m_originalTrackTableFont);
+
+    m_iOriginalMaxThreads = m_pConfig->getValue<int>(ConfigKey("[Library]", "MaxAnalysisThreads"));
+    //setCurrentIndex is zero based. threads is one based.
+    cmbMaxThreads->setCurrentIndex(m_iOriginalMaxThreads-1);
+
 }
 
 void DlgPrefLibrary::slotCancel() {
@@ -320,6 +351,15 @@ void DlgPrefLibrary::slotApply() {
         m_pConfig->set(ConfigKey("[Library]","RowHeight"),
                        ConfigValue(rowHeight));
     }
+
+    //setCurrentIndex is zero based. threads is one based.
+    int threads = cmbMaxThreads->currentIndex()+1;
+    if (m_iOriginalMaxThreads != threads && threads > 0) {
+        m_pConfig->setValue<int>(ConfigKey("[Library]", "MaxAnalysisThreads"),
+                      threads);
+        emit(setMaxThreads(threads));
+    }
+
 
     // TODO(rryan): Don't save here.
     m_pConfig->save();

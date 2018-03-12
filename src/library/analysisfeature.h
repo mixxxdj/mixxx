@@ -13,21 +13,22 @@
 #include <QList>
 
 #include "library/libraryfeature.h"
-#include "library/dlganalysis.h"
 #include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
 #include "util/db/dbconnectionpool.h"
 
+class DlgAnalysis;
 class Library;
 class TrackCollection;
-class AnalyzerQueue;
+class AnalyzerManager;
 
 class AnalysisFeature : public LibraryFeature {
     Q_OBJECT
   public:
     AnalysisFeature(Library* parent,
                     UserSettingsPointer pConfig,
-                    TrackCollection* pTrackCollection);
+                    TrackCollection* pTrackCollection,
+                    AnalyzerManager* pAnalyzerManager);
     virtual ~AnalysisFeature();
 
     QVariant title();
@@ -67,9 +68,7 @@ class AnalysisFeature : public LibraryFeature {
     UserSettingsPointer m_pConfig;
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
     TrackCollection* m_pTrackCollection;
-    AnalyzerQueue* m_pAnalyzerQueue;
-    // Used to temporarily enable BPM detection in the prefs before we analyse
-    int m_iOldBpmEnabled;
+    AnalyzerManager* m_pAnalyzerManager;
     // The title returned by title()
     QVariant m_Title;
     TreeItemModel m_childModel;

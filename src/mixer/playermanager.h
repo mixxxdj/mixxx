@@ -12,7 +12,7 @@
 #include "preferences/usersettings.h"
 #include "track/track.h"
 
-class AnalyzerQueue;
+class AnalyzerManager;
 class Auxiliary;
 class BaseTrackPlayer;
 class ControlObject;
@@ -236,7 +236,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     EffectsManager* m_pEffectsManager;
     EngineMaster* m_pEngine;
     SamplerBank* m_pSamplerBank;
-    AnalyzerQueue* m_pAnalyzerQueue;
+    AnalyzerManager* m_pAnalyzerManager;
     ControlObject* m_pCONumDecks;
     ControlObject* m_pCONumSamplers;
     ControlObject* m_pCOSamplerBankLoad;
