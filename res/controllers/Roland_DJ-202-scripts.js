@@ -4,6 +4,11 @@ DJ202.init = function () {
 
     DJ202.leftDeck = new DJ202.Deck([1,3], 0);
     DJ202.rightDeck = new DJ202.Deck([2,4], 1);
+    
+    
+    if (engine.getValue('[Master]', 'num_samplers') < 16) {
+        engine.setValue('[Master]', 'num_samplers', 16);
+    }
 };
 
 DJ202.shutdown = function () {
@@ -83,7 +88,57 @@ DJ202.Deck = function (deckNumbers, offset) {
         }
     }
     
+    
+    
+    // ========================== PERFORMANCE PADS ==============================
+    this.hotcueButton = [];
+    this.samplerButton = [];
+    this.loopButton = [];
+    
+    samplerNumber = [];
+    samplerNumber[1] = [1,2,3,4, 9,10,11,12]
+    samplerNumber[2] = [5,6,7,8, 13,14,15,16]
+    
+    for (var i = 1; i <= 8; i++) {
+        this.hotcueButton[i] = new components.HotcueButton({
+            midi: [0x94 + offset, 0x00 + i],
+            sendShifted: true,
+            shiftControl: true,
+            shiftOffset: 8,
+            number: i,
+        });
+        
+        this.samplerButton[i] = new components.SamplerButton({
+            midi: [0x94 + offset, 0x20 + i],
+            sendShifted: true,
+            shiftControl: true,
+            shiftOffset: 8,
+            number: samplerNumber[channel][i],
+        });
+    }
+    
 
+    for (var i = 1; i <= 4; i++) {
+        this.loopButton[i] = new components.Button({
+            midi: [0x94 + offset, 0x10 + i],
+            inKey: 'beatloop_'+ Math.pow(2,i-1) +'_activate',
+        });
+    }
+    
+    this.loopIn = new components.Button({
+        midi: [0x94 + offset, 0x15],
+        inKey: 'loop_in',
+    });
+    this.loopOut = new components.Button({
+        midi: [0x94 + offset, 0x16],
+        inKey: 'loop_out',
+    });
+    this.loopToggle = new components.Button({
+        midi: [0x94 + offset, 0x18],
+        inKey: 'reloop_toggle',
+    });
+
+    
     // ============================= TRANSPORT ==================================
     this.play = new components.PlayButton([0x90 + offset, 0x00]); // LED doesn't stay on
     this.cue = new components.CueButton([0x90 + offset, 0x01]);
