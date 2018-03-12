@@ -2243,16 +2243,23 @@ WLibrary QPushButton {
   QPushButton#LibraryPreviewButton {
     width: 23px;
     height: 12px;
-    background: none;
-    border: 0px;
+    background: transparent;
+    border: 1px solid transparent;
     margin: 0px;
     padding: 0px;
     }
-    QPushButton#LibraryPreviewButton:!checked{
+    QPushButton#LibraryPreviewButton:hover,
+    QPushButton#LibraryPreviewButton:checked:hover {
+      border: 1px solid #eeeeee;
+    }
+    QPushButton#LibraryPreviewButton:!checked {
       image: url(skin:/graphics/library_preview_play.png);
+      background-color: #0f0f0f;
       }
-    QPushButton#LibraryPreviewButton:checked{
+    QPushButton#LibraryPreviewButton:checked {
       image: url(skin:/graphics/library_preview_pause.png);
+      background-color: #000;
+      border: 1px solid #ff6600;
       }
 
   /* checkbox in library "Played" column */
