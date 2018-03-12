@@ -42,19 +42,21 @@ void EngineWorkerScheduler::runWorkers() {
 void EngineWorkerScheduler::run() {
     while (!m_bQuit) {
         Event::start("EngineWorkerScheduler");
-        m_mutex.lock();
-        for(const auto& pWorker: m_workers) {
-            if (pWorker->isReady()) {
-                pWorker->wake();
+        {
+            QMutexLocker lock(&m_mutex);
+            for(const auto& pWorker: m_workers) {
+                if (pWorker->isReady()) {
+                    pWorker->wake();
+                }
             }
         }
-        m_mutex.unlock();
         Event::end("EngineWorkerScheduler");
-        m_mutex.lock();
-        if (!m_bQuit) {
-            // Wait for next runWorkers() call
-            m_waitCondition.wait(&m_mutex); // unlock mutex and wait
+        {
+            QMutexLocker lock(&m_mutex);
+            if (!m_bQuit) {
+                // Wait for next runWorkers() call
+                m_waitCondition.wait(&m_mutex); // unlock mutex and wait
+            }
         }
-        m_mutex.unlock();
     }
 }
