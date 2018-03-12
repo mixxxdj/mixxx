@@ -61,6 +61,28 @@ DJ202.Deck = function (deckNumbers, offset) {
         midi: [0xB0 + offset, 0x09],
         inKey: 'rate',
     });
+    
+    
+    // ============================= JOG WHEELS =================================
+    this.wheelTouch = function (channel, control, value, status, group) {
+      if (value === 0x7F) {
+            var alpha = 1.0/8;
+            var beta = alpha/32;
+            engine.scratchEnable(script.deckFromGroup(this.currentDeck), 512, 45, alpha, beta);
+        } else {    // If button up
+            engine.scratchDisable(script.deckFromGroup(this.currentDeck));
+        }
+    }
+    
+    this.wheelTurn = function (channel, control, value, status, group) {
+        var newValue = value - 64;
+        if (engine.isScratching(1)) {
+            engine.scratchTick(script.deckFromGroup(this.currentDeck), newValue); // Scratch!
+        } else {
+            engine.setValue(this.currentDeck, 'jog', newValue); // Pitch bend
+        }
+    }
+    
 
     // ============================= TRANSPORT ==================================
     this.play = new components.PlayButton([0x90 + offset, 0x00]); // LED doesn't stay on
