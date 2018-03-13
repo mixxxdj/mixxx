@@ -30,6 +30,15 @@ class ControlNumericBehavior {
             MidiOpCode o, double dParam, ControlDoublePrivate* pControl);
 };
 
+// ControlSelectBehavior passes the midi value directly to the internal parameter value.  It's
+// useful for selector knobs that pass +1 in one direction and -1 in the other.
+class ControlSelectBehavior : public ControlNumericBehavior {
+  public:
+    ControlSelectBehavior() {}
+    double midiToParameter(double midiValue) override;
+    double valueToMidiParameter(double dValue) override;
+};
+
 class ControlPotmeterBehavior : public ControlNumericBehavior {
   public:
     ControlPotmeterBehavior(double dMinValue, double dMaxValue,
