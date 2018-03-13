@@ -19,7 +19,6 @@ QMap<QString, QWeakPointer<VisualPlayPosition> > VisualPlayPosition::m_listVisua
 PerformanceTimer VisualPlayPosition::m_timeInfoTime;
 double VisualPlayPosition::m_dCallbackEntryToDacSecs = 0;
 
-
 VisualPlayPosition::VisualPlayPosition(const QString& key)
         : m_valid(false),
           m_key(key) {
@@ -58,7 +57,7 @@ double VisualPlayPosition::getAtNextVSync(VSyncThread* vsyncThread) {
         VisualPlayPositionData data = m_data.getValue();
         int usRefToVSync = vsyncThread->usFromTimerToNextSync(data.m_referenceTime);
         int offset = usRefToVSync - data.m_callbackEntrytoDac;
-        offset = math_min(offset, static_cast<int>(m_dAudioBufferSize) * kMaxOffsetRange);
+        offset = math_min(offset, static_cast<int>(m_dAudioBufferSize * 1000 * kMaxOffsetRange));
         double playPos = data.m_enginePlayPos;  // load playPos for the first sample in Buffer
         // add the offset for the position of the sample that will be transfered to the DAC
         // When the next display frame is displayed
@@ -79,7 +78,7 @@ void VisualPlayPosition::getPlaySlipAt(int usFromNow, double* playPosition, doub
         int usElapsed = data.m_referenceTime.elapsed().toIntegerMicros();
         int dacFromNow = usElapsed - data.m_callbackEntrytoDac;
         int offset = dacFromNow - usFromNow;
-        offset = math_min(offset, static_cast<int>(m_dAudioBufferSize) * kMaxOffsetRange);
+        offset = math_min(offset, static_cast<int>(m_dAudioBufferSize * 1000 * kMaxOffsetRange));
         double playPos = data.m_enginePlayPos;  // load playPos for the first sample in Buffer
         playPos += data.m_positionStep * offset * data.m_rate / m_dAudioBufferSize / 1000;
         *playPosition = playPos;
