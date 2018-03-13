@@ -31,6 +31,14 @@ void ControlNumericBehavior::setValueFromMidi(
     pControl->set(parameterToValue(dNorm), NULL);
 }
 
+double ControlSelectBehavior::midiToParameter(double midiValue) {
+    return midiValue;
+}
+
+double ControlSelectBehavior::valueToMidiParameter(double dValue) {
+    return dValue;
+}
+
 ControlPotmeterBehavior::ControlPotmeterBehavior(double dMinValue, double dMaxValue,
                                                  bool allowOutOfBounds)
         : m_dMinValue(dMinValue),
