@@ -149,7 +149,7 @@ XoneK2.decksBottomRightEncoderPress = function (channel, control, value, status)
             if (!(deckColumn instanceof components.Deck)) {
                 continue;
             }
-            deckColumn.topButtons[1].deckPickMode();
+            deckColumn.topButtons[3].startDeckPickMode();
         }
     } else {
         for (var x = 1; x <= 4; ++x) {
@@ -157,7 +157,7 @@ XoneK2.decksBottomRightEncoderPress = function (channel, control, value, status)
             if (!(deckColumn instanceof components.Deck)) {
                 continue;
             }
-            deckColumn.topButtons[1].input = components.Button.prototype.input;
+            deckColumn.topButtons[3].stopDeckPickMode();
         }
 
         if (XoneK2.controllers[channel].deckPicked === true) {
@@ -328,14 +328,6 @@ XoneK2.Deck = function (column, deckNumber, midiChannel) {
             this.connect();
             this.trigger();
         },
-        deckPickMode: function () {
-            this.input = function (channel, control, value, status) {
-                if (this.isPress(channel, control, value, status)) {
-                    engine.setValue(this.group, "LoadSelectedTrack", 1);
-                    XoneK2.controllers[channel].deckPicked = true;
-                }
-            };
-        },
     });
     this.topButtons[2] = new components.Button({
         unshift: function () {
@@ -390,6 +382,20 @@ XoneK2.Deck = function (column, deckNumber, midiChannel) {
             this.color = XoneK2.color.amber;
             this.connect();
             this.trigger();
+        },
+        startDeckPickMode: function () {
+            this.input = function (channel, control, value, status) {
+                if (this.isPress(channel, control, value, status)) {
+                    engine.setValue(this.group, "LoadSelectedTrack", 1);
+                    XoneK2.controllers[channel].deckPicked = true;
+                }
+            };
+        },
+        stopDeckPickMode: function () {
+            // The inKey and outKey are still set from before startDeckPickMode was
+            // called, so all that is needed to get back to that mode is to fall back
+            // to the prototype input function.
+            this.input = components.Button.prototype.input;
         },
         type: components.Button.prototype.types.toggle,
     });
