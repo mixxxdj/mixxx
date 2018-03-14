@@ -4,7 +4,7 @@
 #ifndef ENGINEWORKER_H
 #define ENGINEWORKER_H
 
-#include <QAtomicInt>
+#include <atomic>
 #include <QObject>
 #include <QSemaphore>
 #include <QThread>
@@ -26,18 +26,14 @@ class EngineWorker : public QThread {
 
     void setScheduler(EngineWorkerScheduler* pScheduler);
     void workReady();
-    bool isReady();
-    void wake() {
-        m_ready = false;
-        m_semaRun.release();
-    }
+    void wakeIfReady();
 
   protected:
     QSemaphore m_semaRun;
 
   private:
     EngineWorkerScheduler* m_pScheduler;
-    volatile bool m_ready;
+    std::atomic_flag m_notReady;
 };
 
 #endif /* ENGINEWORKER_H */

@@ -45,9 +45,7 @@ void EngineWorkerScheduler::run() {
         {
             QMutexLocker lock(&m_mutex);
             for(const auto& pWorker: m_workers) {
-                if (pWorker->isReady()) {
-                    pWorker->wake();
-                }
+                pWorker->wakeIfReady();
             }
         }
         Event::end("EngineWorkerScheduler");
