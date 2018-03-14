@@ -11,8 +11,6 @@
     <SizePolicy>min,me</SizePolicy>
     <Children>
 
-      <Template src="skin:effect_routing_buttons.xml"/>
-
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
@@ -21,6 +19,8 @@
           <Template src="skin:mixer_column_eq_right.xml"/>
         </Children>
       </WidgetGroup>
+
+      <Template src="skin:effect_routing_buttons.xml"/>
 
     </Children>
   </WidgetGroup>

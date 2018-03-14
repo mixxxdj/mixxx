@@ -10,9 +10,6 @@
     <Layout>vertical</Layout>
     <SizePolicy>min,me</SizePolicy>
     <Children>
-
-      <Template src="skin:effect_routing_buttons.xml"/>
-
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
@@ -21,6 +18,8 @@
           <Template src="skin:mixer_column_volume.xml"/>
         </Children>
       </WidgetGroup>
+
+      <Template src="skin:effect_routing_buttons.xml"/>
     </Children>
   </WidgetGroup>
 </Template>
