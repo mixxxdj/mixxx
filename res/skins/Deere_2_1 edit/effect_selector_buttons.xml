@@ -1,0 +1,75 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Effect selector buttons.
+  Variables:
+    EffectRack: the rack
+    EffectUnit: the chain
+    Effect: the effect
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <Children>
+
+      <Template src="skin:left_2state_button.xml">
+        <SetVariable name="TooltipId">EffectSlot_enabled</SetVariable>
+        <SetVariable name="ObjectName"></SetVariable>
+        <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+        <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+        <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+        <SetVariable name="state_0_text"></SetVariable>
+        <SetVariable name="state_0_pressed">icon/ic_power_48px.svg</SetVariable>
+        <SetVariable name="state_0_unpressed">icon/ic_power_48px.svg</SetVariable>
+        <SetVariable name="state_1_text"></SetVariable>
+        <SetVariable name="state_1_pressed">icon/ic_power_48px.svg</SetVariable>
+        <SetVariable name="state_1_unpressed">icon/ic_power_48px.svg</SetVariable>
+        <SetVariable name="left_connection_control">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],enabled</SetVariable>
+      </Template>
+
+      <Template src="skin:left_1state_button.xml">
+        <SetVariable name="TooltipId">EffectSlot_clear</SetVariable>
+        <SetVariable name="ObjectName"></SetVariable>
+        <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+        <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+        <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+        <SetVariable name="state_0_text"></SetVariable>
+        <SetVariable name="state_0_pressed">icon/ic_eject_48px.svg</SetVariable>
+        <SetVariable name="state_0_unpressed">icon/ic_eject_48px.svg</SetVariable>
+        <SetVariable name="left_connection_control">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],clear</SetVariable>
+      </Template>
+
+      <EffectName>
+        <MinimumSize>50,-1</MinimumSize>
+        <MaximumSize>50,-1</MaximumSize>
+        <EffectRack><Variable name="EffectRack"/></EffectRack>
+        <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+        <Effect><Variable name="Effect"/></Effect>
+      </EffectName>
+
+      <Template src="skin:left_1state_button.xml">
+        <SetVariable name="TooltipId">EffectSlot_prev_effect</SetVariable>
+        <SetVariable name="ObjectName"></SetVariable>
+        <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+        <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+        <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+        <SetVariable name="state_0_text"></SetVariable>
+        <SetVariable name="state_0_pressed">icon/ic_chevron_left_48px.svg</SetVariable>
+        <SetVariable name="state_0_unpressed">icon/ic_chevron_left_48px.svg</SetVariable>
+        <SetVariable name="left_connection_control">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],prev_effect</SetVariable>
+      </Template>
+
+      <Template src="skin:left_1state_button.xml">
+        <SetVariable name="TooltipId">EffectSlot_next_effect</SetVariable>
+        <SetVariable name="ObjectName"></SetVariable>
+        <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+        <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+        <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+        <SetVariable name="state_0_text"></SetVariable>
+        <SetVariable name="state_0_pressed">icon/ic_chevron_right_48px.svg</SetVariable>
+        <SetVariable name="state_0_unpressed">icon/ic_chevron_right_48px.svg</SetVariable>
+        <SetVariable name="left_connection_control">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],next_effect</SetVariable>
+      </Template>
+    </Children>
+  </WidgetGroup>
+</Template>

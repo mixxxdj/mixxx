@@ -1,0 +1,187 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Sampler overview row (overview and option grid)
+  Variables:
+    group: the group to connect to
+-->
+
+<Template>
+  <WidgetGroup>
+    <ObjectName>OverviewRow</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <MinimumSize>-1,40</MinimumSize>
+    <MaximumSize>-1,60</MaximumSize>
+
+    <Children>
+      <WidgetGroup>
+        <ObjectName>SamplerTextRow</ObjectName>
+        <Layout>vertical</Layout>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>TitleGutter</ObjectName>
+            <Layout>vertical</Layout>
+            <Children>
+              <TrackProperty>
+                <TooltipId>track_title</TooltipId>
+                <SizePolicy>me,min</SizePolicy>
+                <Property>title</Property>
+                <Group><Variable name="group"/></Group>
+                <Elide>right</Elide>
+              </TrackProperty>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:left_right_display_2state_button.xml">
+                <SetVariable name="TooltipId">play_start</SetVariable>
+                <SetVariable name="ObjectName">SamplerPlayButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_play_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_play_48px.svg</SetVariable>
+                <SetVariable name="state_1_text"></SetVariable>
+                <SetVariable name="state_1_pressed">icon/ic_play_48px.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">icon/ic_play_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,cue_gotoandplay</SetVariable>
+                <SetVariable name="right_connection_control"><Variable name="group"/>,start_stop</SetVariable>
+                <SetVariable name="display_connection_control"><Variable name="group"/>,play_indicator</SetVariable>
+              </Template>
+
+              <Overview>
+                <TooltipId>waveform_overview</TooltipId>
+                <Group><Variable name="group"/></Group>
+                <SizePolicy>me,me</SizePolicy>
+                <BgColor></BgColor>
+                <SignalHighColor>#FFE300</SignalHighColor>
+                <SignalMidColor>#0099FF</SignalMidColor>
+                <SignalLowColor>#FF0035</SignalLowColor>
+                <SignalRGBHighColor></SignalRGBHighColor>
+                <SignalRGBMidColor></SignalRGBMidColor>
+                <SignalRGBLowColor></SignalRGBLowColor>
+                <SignalColor>#FF8000</SignalColor>
+                <PlayPosColor>#00FF00</PlayPosColor>
+                <DefaultMark>
+                  <Align>bottom</Align>
+                  <Color>#00FF00</Color>
+                  <TextColor>#FFFFFF</TextColor>
+                  <Text> %1 </Text>
+                </DefaultMark>
+                <MarkRange>
+                  <StartControl>loop_start_position</StartControl>
+                  <EndControl>loop_end_position</EndControl>
+                  <EnabledControl>loop_enabled</EnabledControl>
+                  <Color>#00FF00</Color>
+                  <DisabledColor>#FFFFFF</DisabledColor>
+                </MarkRange>
+                <Mark>
+                  <Control>cue_point</Control>
+                  <Align>top</Align>
+                  <Color>#FF001C</Color>
+                  <TextColor>#FFFFFF</TextColor>
+                  <Text>C</Text>
+                </Mark>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+                  <EmitOnDownPress>false</EmitOnDownPress>
+                </Connection>
+              </Overview>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>OptionGrid</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,me</SizePolicy>
+        <MinimumSize>40,40</MinimumSize>
+        <MaximumSize>60,60</MaximumSize>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>OptionGridRow1</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>p,me</SizePolicy>
+            <MinimumSize>40,20</MinimumSize>
+            <MaximumSize>60,30</MaximumSize>
+            <Children>
+              <Template src="skin:left_2state_button.xml">
+                <SetVariable name="TooltipId">repeat</SetVariable>
+                <SetVariable name="ObjectName">RepeatButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_repeat_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_repeat_48px.svg</SetVariable>
+                <SetVariable name="state_1_text"></SetVariable>
+                <SetVariable name="state_1_pressed">icon/ic_repeat_48px.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">icon/ic_repeat_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,repeat</SetVariable>
+              </Template>
+
+              <Template src="skin:left_1state_button.xml">
+                <SetVariable name="TooltipId">eject</SetVariable>
+                <SetVariable name="ObjectName">EjectButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_eject_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_eject_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,eject</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>OptionGridRow2</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>p,me</SizePolicy>
+            <MinimumSize>40,20</MinimumSize>
+            <MaximumSize>60,30</MaximumSize>
+            <Children>
+              <Template src="skin:left_3state_button.xml">
+                <SetVariable name="TooltipId">orientation</SetVariable>
+                <SetVariable name="ObjectName">OrientationButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_orientation_left_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_orientation_left_48px.svg</SetVariable>
+                <SetVariable name="state_1_text"></SetVariable>
+                <SetVariable name="state_1_pressed">icon/ic_orientation_48px.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">icon/ic_orientation_48px.svg</SetVariable>
+                <SetVariable name="state_2_text"></SetVariable>
+                <SetVariable name="state_2_pressed">icon/ic_orientation_right_48px.svg</SetVariable>
+                <SetVariable name="state_2_unpressed">icon/ic_orientation_right_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,orientation</SetVariable>
+              </Template>
+
+              <Template src="skin:left_2state_button.xml">
+                <SetVariable name="TooltipId">keylock</SetVariable>
+                <SetVariable name="ObjectName">KeylockButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_key_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_key_48px.svg</SetVariable>
+                <SetVariable name="state_1_text"></SetVariable>
+                <SetVariable name="state_1_pressed">icon/ic_key_48px.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">icon/ic_key_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,keylock</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

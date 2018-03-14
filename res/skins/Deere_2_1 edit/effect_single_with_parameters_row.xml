@@ -1,0 +1,121 @@
+<!DOCTYPE template>
+<!--
+A single effect with all parameters showing
+
+Variables:
+  EffectRack: the rack
+  EffectUnit: the chain
+  Effect: the effect
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>EffectUnitControlRow</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>EffectUnitParameters</ObjectName>
+        <SizePolicy>me,max</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>EffectSingleControls</ObjectName>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>EffectButtonContainer</ObjectName>
+                <Layout>horizontal</Layout>
+                <Children>
+
+                  <Template src="skin:effect_buttons.xml"/>
+
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <Children>
+                      <Template src="skin:effect_meta_knob.xml"/>
+
+                      <Label>
+                        <Size>40f,10f</Size>
+                        <ObjectName>KnobLabel</ObjectName>
+                        <Text>Meta</Text>
+                      </Label>
+                    </Children>
+                  </WidgetGroup>
+
+                </Children>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetGroup>
+
+          <!-- Allow up to 8 parameters, needed to control the graphic eq effect-->
+
+          <EffectSelector>
+            <EffectRack><Variable name="EffectRack"/></EffectRack>
+            <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+            <Effect><Variable name="Effect"/></Effect>
+          </EffectSelector>
+
+          <Template src="skin:effect_parameter_knob.xml">
+            <SetVariable name="EffectParameter">1</SetVariable>
+            <SetVariable name="color">blue</SetVariable>
+          </Template>
+          <Template src="skin:effect_parameter_knob.xml">
+            <SetVariable name="EffectParameter">2</SetVariable>
+            <SetVariable name="color">blue</SetVariable>
+          </Template>
+          <Template src="skin:effect_parameter_knob.xml">
+            <SetVariable name="EffectParameter">3</SetVariable>
+            <SetVariable name="color">blue</SetVariable>
+          </Template>
+          <Template src="skin:effect_parameter_knob.xml">
+            <SetVariable name="EffectParameter">4</SetVariable>
+            <SetVariable name="color">blue</SetVariable>
+          </Template>
+          <Template src="skin:effect_parameter_knob.xml">
+            <SetVariable name="EffectParameter">5</SetVariable>
+            <SetVariable name="color">blue</SetVariable>
+          </Template>
+          <Template src="skin:effect_parameter_knob.xml">
+            <SetVariable name="EffectParameter">6</SetVariable>
+            <SetVariable name="color">blue</SetVariable>
+          </Template>
+          <Template src="skin:effect_parameter_knob.xml">
+            <SetVariable name="EffectParameter">7</SetVariable>
+            <SetVariable name="color">blue</SetVariable>
+          </Template>
+          <Template src="skin:effect_parameter_knob.xml">
+            <SetVariable name="EffectParameter">8</SetVariable>
+            <SetVariable name="color">blue</SetVariable>
+          </Template>
+
+          <Template src="skin:effect_button_parameter.xml">
+            <SetVariable name="EffectButtonParameter">1</SetVariable>
+          </Template>
+          <Template src="skin:effect_button_parameter.xml">
+            <SetVariable name="EffectButtonParameter">2</SetVariable>
+          </Template>
+          <Template src="skin:effect_button_parameter.xml">
+            <SetVariable name="EffectButtonParameter">3</SetVariable>
+          </Template>
+          <Template src="skin:effect_button_parameter.xml">
+            <SetVariable name="EffectButtonParameter">4</SetVariable>
+          </Template>
+          <Template src="skin:effect_button_parameter.xml">
+            <SetVariable name="EffectButtonParameter">5</SetVariable>
+          </Template>
+          <Template src="skin:effect_button_parameter.xml">
+            <SetVariable name="EffectButtonParameter">6</SetVariable>
+          </Template>
+          <Template src="skin:effect_button_parameter.xml">
+            <SetVariable name="EffectButtonParameter">7</SetVariable>
+          </Template>
+          <Template src="skin:effect_button_parameter.xml">
+            <SetVariable name="EffectButtonParameter">8</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

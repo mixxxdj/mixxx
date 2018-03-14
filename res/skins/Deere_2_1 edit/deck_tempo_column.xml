@@ -1,0 +1,49 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Deck rate slider column.
+  Variables:
+    group: The deck group.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>DeckRateSliderColumn</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>max,min</SizePolicy>
+    <Children>
+      
+
+      
+
+      <WidgetGroup>
+        <ObjectName>RateDisplay<Variable name="i"/></ObjectName>
+        <Layout>vertical</Layout>
+        <Children>
+          <NumberRate>
+            <TooltipId>rate_display</TooltipId>
+            <Channel>
+                <Variable name="i"/>
+            </Channel>
+            <NumberOfDigits>2</NumberOfDigits>
+          </NumberRate>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <SliderComposed>
+            <TooltipId>rate</TooltipId>
+            <Size>40f,-1me</Size>
+            <MaximumSize>40,200</MaximumSize>
+            <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+            <Handle scalemode="STRETCH_ASPECT">handle-vertical-blue.svg</Handle>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,rate</ConfigKey>
+            </Connection>
+          </SliderComposed>
+        </Children>
+      </WidgetGroup>      
+    </Children>
+  </WidgetGroup>
+</Template>

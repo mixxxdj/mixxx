@@ -1,0 +1,186 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Library widget.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>LibraryContainer</ObjectName>
+    <Layout>vertical</Layout>
+    <!-- 'Ignore' is the only thing that lets it
+          shrink to nothing. -->
+    <SizePolicy>me,i</SizePolicy>
+    <Children>
+      <!-- QSplitter between LibrarySidebar and Library -->
+      <Splitter>
+        <ObjectName>LibrarySplitter</ObjectName>
+        <Orientation>horizontal</Orientation>
+        <SizePolicy>me,me</SizePolicy>
+        <SplitSizesConfigKey>[Deere],LibrarySidebarSplitSize</SplitSizesConfigKey>
+        <SplitSizes>2,8</SplitSizes>
+        <Children>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>PreviewDeckContainer</ObjectName>
+                <Layout>vertical</Layout>
+                <!-- When TextRow is laid out, we need to ignore our children.
+                      Otherwise decks might end up with different widths based
+                      on the size of the labels in this row -->
+                <SizePolicy>i,max</SizePolicy>
+                <Children>
+                  <Template src="skin:vumeter.xml">
+                    <SetVariable name="TooltipId">channel_VuMeter</SetVariable>>
+                    <SetVariable name="group">[PreviewDeck1]</SetVariable>
+                    <SetVariable name="control">VuMeter</SetVariable>
+                  </Template>
+
+                  <WidgetGroup>
+                    <ObjectName>PreviewDeckTextRow</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <Text>
+                      <TooltipId>text</TooltipId>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Group>[PreviewDeck1]</Group>
+                        <Elide>right</Elide>
+                      </Text>
+
+                      <Template src="skin:left_1state_button.xml">
+                        <SetVariable name="TooltipId">eject</SetVariable>
+                        <SetVariable name="ObjectName">PreviewDeckEjectButton</SetVariable>
+                        <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                        <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                        <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                        <SetVariable name="state_0_text"></SetVariable>
+                        <SetVariable name="state_0_pressed">icon/ic_eject_48px.svg</SetVariable>
+                        <SetVariable name="state_0_unpressed">icon/ic_eject_48px.svg</SetVariable>
+                        <SetVariable name="left_connection_control">[PreviewDeck1],eject</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <ObjectName>PreviewDeckVisualRow</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <Template src="skin:left_right_2state_button.xml">
+                        <SetVariable name="TooltipId">play_start</SetVariable>
+                        <SetVariable name="ObjectName">PreviewDeckPlayButton</SetVariable>
+                        <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                        <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                        <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                        <SetVariable name="state_0_text"></SetVariable>
+                        <SetVariable name="state_0_pressed">icon/ic_play_48px.svg</SetVariable>
+                        <SetVariable name="state_0_unpressed">icon/ic_play_48px.svg</SetVariable>
+                        <SetVariable name="state_1_text"></SetVariable>
+                        <SetVariable name="state_1_pressed">icon/ic_pause_48px.svg</SetVariable>
+                        <SetVariable name="state_1_unpressed">icon/ic_pause_48px.svg</SetVariable>
+                        <SetVariable name="left_connection_control">[PreviewDeck1],play</SetVariable>
+                        <SetVariable name="right_connection_control">[PreviewDeck1],start</SetVariable>
+                      </Template>
+
+                      <Overview>
+                        <TooltipId>waveform_overview</TooltipId>
+                        <Style></Style>
+                        <Group>[PreviewDeck1]</Group>
+                        <Size>me,30f</Size>
+                        <BgColor></BgColor>
+                        <PlayedOverlayColor>#88000000</PlayedOverlayColor>
+                        <SignalHighColor>#FFE300</SignalHighColor>
+                        <SignalMidColor>#0099FF</SignalMidColor>
+                        <SignalLowColor>#FF0035</SignalLowColor>
+                        <SignalRGBHighColor></SignalRGBHighColor>
+                        <SignalRGBMidColor></SignalRGBMidColor>
+                        <SignalRGBLowColor></SignalRGBLowColor>
+                        <SignalColor>#FF8000</SignalColor>
+                        <PlayPosColor>#00FF00</PlayPosColor>
+                        <DefaultMark>
+                          <Align>bottom</Align>
+                          <Color>#FFFFFF</Color>
+                          <TextColor>#00FF00</TextColor>
+                          <Text> %1 </Text>
+                        </DefaultMark>
+                        <Mark>
+                          <Control>cue_point</Control>
+                          <Text> C </Text>
+                          <Align>top</Align>
+                          <Color>#FF001C</Color>
+                          <TextColor>#00FF00</TextColor>
+                        </Mark>
+                        <Connection>
+                          <ConfigKey>[PreviewDeck1],playposition</ConfigKey>
+                          <EmitOnDownPress>false</EmitOnDownPress>
+                        </Connection>
+                      </Overview>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+                <Connection>
+                  <ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:hide_show_button.xml">
+                    <SetVariable name="TooltipId">maximize_library</SetVariable>
+                    <SetVariable name="object_name">LibraryToggle</SetVariable>
+                    <SetVariable name="control">[Master],maximize_library</SetVariable>
+                  </Template>
+                  <SearchBox>
+                  </SearchBox>
+                </Children>
+              </WidgetGroup>
+              <!-- QSplitter between LibrarySidebar and CoverArt -->
+              <Splitter>
+                <ObjectName>LibraryCoverArtSplitter</ObjectName>
+                <Orientation>vertical</Orientation>
+                <SizePolicy>me,me</SizePolicy>
+                <MinimumSize>30,30</MinimumSize>
+                <SplitSizesConfigKey>[Deere],LibraryCoverartSplitSize</SplitSizesConfigKey>
+                <SplitSizes>2,8</SplitSizes>
+                <Collapsible>0,0</Collapsible>
+                <Children>
+                  <LibrarySidebar>
+                  </LibrarySidebar>
+
+                  <CoverArt>
+                    <ObjectName>LibraryCoverArt</ObjectName>
+                    <TooltipId>coverart</TooltipId>
+                    <SizePolicy>me,me</SizePolicy>
+                    <MinimumSize>30,30</MinimumSize>
+                    <Connection>
+                      <ConfigKey>[Library],show_coverart</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </CoverArt>
+                </Children>
+              </Splitter>
+            </Children>
+          </WidgetGroup>
+          <Library>
+          </Library>
+        </Children>
+        <Connection>
+          <ConfigKey>[Library],show_library</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </Splitter>
+
+      <WidgetGroup>
+        <ObjectName>Spacer22</ObjectName>
+        <SizePolicy>me,me</SizePolicy>
+        <Children/>
+        <Connection>
+          <ConfigKey>[Library],show_library</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

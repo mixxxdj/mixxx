@@ -1,0 +1,106 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An effect chain widget.
+  Variables:
+    EffectRack: number of the effect rack (1)
+    EffectUnit: number of this effect unit
+-->
+<Template>
+  <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,me</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>EffectUnitGroupControls</ObjectName>
+        <SizePolicy>me,max</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>EffectUnitGroupControlsLeft</ObjectName>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:hide_show_button.xml">
+                <SetVariable name="object_name">EffectUnitToggle</SetVariable>
+                <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
+                <SetVariable name="control">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_parameters</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <Template src="skin:spacer_h.xml"/>
+          <Label>
+            <ObjectName>EffectUnitLabel</ObjectName>
+            <Text>FX<Variable name="EffectUnit"/></Text>
+          </Label>
+          <Template src="skin:spacer_h.xml"/>
+
+          <WidgetGroup>
+            <ObjectName>EffectUnitGroupControlsRight</ObjectName>
+            <Layout>horizontal</Layout>
+            <Children>
+
+              <Template src="skin:left_2state_button.xml">
+                <SetVariable name="TooltipId">EffectUnit_headphones_enabled</SetVariable>
+                <SetVariable name="ObjectName">FxAssignmentButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_headphones_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_headphones_48px.svg</SetVariable>
+                <SetVariable name="state_1_pressed">icon/ic_headphones_48px.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">icon/ic_headphones_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control">[EffectRack1_EffectUnit<Variable name="EffectUnit"/>],group_[Headphone]_enable</SetVariable>
+              </Template>
+
+              <Template src="skin:left_2state_button.xml">
+                <SetVariable name="TooltipId">EffectUnit_master_enabled</SetVariable>
+                <SetVariable name="ObjectName">FxAssignmentButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SmallWideButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SmallWideButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SmallWideButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text">Master</SetVariable>
+                <SetVariable name="state_1_text">Master</SetVariable>
+                <SetVariable name="left_connection_control">[EffectRack1_EffectUnit<Variable name="EffectUnit"/>],group_[Master]_enable</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <Template src="skin:effect_unit_no_parameters.xml"/>
+          <WidgetGroup>
+            <ObjectName>EffectUnitFiller</ObjectName>
+            <SizePolicy>me,me</SizePolicy>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,show_parameters</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform>
+            <Not/>
+          </Transform>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skin:effect_unit_with_parameters.xml"/>
+        </Children>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,show_parameters</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

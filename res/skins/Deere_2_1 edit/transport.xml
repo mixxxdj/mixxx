@@ -1,0 +1,66 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A grid of transport controls (rev/fwd/back/beatjump).
+  Variables:
+    group: The group for the controls.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>TransportContainer</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>max,max</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:left_right_1state_button.xml">
+            <SetVariable name="TooltipId">back_start</SetVariable>
+            <SetVariable name="ObjectName">FastBackButton</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_fast_rewind_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_fast_rewind_48px.svg</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,back</SetVariable>
+            <SetVariable name="right_connection_control"><Variable name="group"/>,start</SetVariable>
+          </Template>
+
+          <Template src="skin:left_right_1state_button.xml">
+            <SetVariable name="TooltipId">reverse</SetVariable>
+            <SetVariable name="ObjectName">ReverseButton</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_reverse_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_reverse_48px.svg</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,reverse</SetVariable>
+            <SetVariable name="right_connection_control"><Variable name="group"/>,reverseroll</SetVariable>
+          </Template>
+
+          <Template src="skin:left_right_1state_button.xml">
+            <SetVariable name="TooltipId">fwd_end</SetVariable>
+            <SetVariable name="ObjectName">FastFwdButton</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_fast_forward_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_fast_forward_48px.svg</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,fwd</SetVariable>
+            <SetVariable name="right_connection_control"><Variable name="group"/>,end</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:beatjump.xml"/>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>
