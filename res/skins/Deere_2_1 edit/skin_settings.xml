@@ -67,12 +67,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9675; Show deck 3</Text>
+              <Text>&#9675; Deck 3</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9679; Show deck 3</Text>
+              <Text>&#9679; Deck 3</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -87,12 +87,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9675; Show deck 4</Text>
+              <Text>&#9675; Deck 4</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9679; Show deck 4</Text>
+              <Text>&#9679; Deck 4</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -247,12 +247,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9675; Show Internal Controls</Text>
+              <Text>&#9675; Internal Controls</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9679; Show Internal Controls</Text>
+              <Text>&#9679; Internal Controls</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -265,12 +265,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9675; Show Loop/Beatjump</Text>
+              <Text>&#9675; Loop/Beatjump</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9679; Show Loop/Beatjump</Text>
+              <Text>&#9679; Loop/Beatjump</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -283,12 +283,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9675; Show Pitch Fader</Text>
+              <Text>&#9675; Pitch Fader</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9679; Show Pitch Fader</Text>
+              <Text>&#9679; Pitch Fader</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
