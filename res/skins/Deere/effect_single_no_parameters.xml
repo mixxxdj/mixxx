@@ -16,28 +16,18 @@ Variables:
 
       <WidgetGroup>
         <ObjectName>EffectHighlightable</ObjectName>
-        <Layout>vertical</Layout>
-        <Size>-1max,70f</Size>
+        <Layout>horizontal</Layout>
         <Children>
+          <Template src="skin:effect_buttons.xml"/>
 
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <Children>
-
-              <Template src="skin:effect_buttons.xml"/>
-
-              <Template src="skin:effect_meta_knob.xml"/>
-
-            </Children>
-          </WidgetGroup>
+          <Template src="skin:effect_meta_knob.xml"/>
 
           <EffectSelector>
             <EffectRack><Variable name="EffectRack"/></EffectRack>
             <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
             <Effect><Variable name="Effect"/></Effect>
-            <Size>120f,-1</Size>
+            <Size>90f,-1</Size>
           </EffectSelector>
-
         </Children>
         <Connection>
           <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],focused_effect</ConfigKey>
@@ -62,30 +52,19 @@ Variables:
 
       <WidgetGroup>
         <ObjectName>EffectNotHighlightable</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>me,f</SizePolicy>
-        <MinimumSize>-1,65</MinimumSize>
-        <MaximumSize>-1,65</MaximumSize>
+        <Layout>horizontal</Layout>
+        <SizePolicy>max,f</SizePolicy>
         <Children>
+          <Template src="skin:effect_buttons.xml"/>
 
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <Children>
-
-              <Template src="skin:effect_buttons.xml"/>
-
-              <Template src="skin:effect_meta_knob.xml"/>
-
-            </Children>
-          </WidgetGroup>
+          <Template src="skin:effect_meta_knob.xml"/>
 
           <EffectSelector>
             <EffectRack><Variable name="EffectRack"/></EffectRack>
             <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
             <Effect><Variable name="Effect"/></Effect>
-            <Size>120f,-1</Size>
+            <Size>90f,-1</Size>
           </EffectSelector>
-
         </Children>
       </WidgetGroup>
 
