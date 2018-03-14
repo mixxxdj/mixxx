@@ -17,8 +17,8 @@
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:mixer_column_eq_left.xml"/>
-          <Template src="skin:mixer_column_volume.xml"/>
           <Template src="skin:mixer_column_gain_levels.xml"/>
+          <Template src="skin:mixer_column_volume.xml"/>
         </Children>
       </WidgetGroup>
     </Children>
