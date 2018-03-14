@@ -7,12 +7,21 @@
   <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
   <WidgetGroup>
     <ObjectName>DeckMixer</ObjectName>
-    <Layout>horizontal</Layout>
+    <Layout>vertical</Layout>
     <SizePolicy>min,me</SizePolicy>
     <Children>
-      <Template src="skin:mixer_column_gain_levels.xml"/>
-      <Template src="skin:mixer_column_volume.xml"/>
-      <Template src="skin:mixer_column_eq_right.xml"/>
+
+      <Template src="skin:effect_routing_buttons.xml"/>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:mixer_column_gain_levels.xml"/>
+          <Template src="skin:mixer_column_volume.xml"/>
+          <Template src="skin:mixer_column_eq_right.xml"/>
+        </Children>
+      </WidgetGroup>
+
     </Children>
   </WidgetGroup>
 </Template>

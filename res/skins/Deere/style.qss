@@ -685,7 +685,8 @@ WWidget, QLabel {
 /* Start spacing for Deck controls row (transport, beatgrid, looping, hotcue, vinylcontrol) */
 
 #HotcueGrid,
-#VinylControlsGrid {
+#VinylControlsGrid,
+#EffectUnitRoutingButtons {
   padding: 1px;
   qproperty-layoutSpacing: 2;
 }

@@ -1,0 +1,39 @@
+<!-- Effect unit routing buttons -->
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <ObjectName>EffectUnitRoutingButtons</ObjectName>
+    <Children>
+      <Template src="skin:fx_unit_group_assignment_button.xml">
+        <SetVariable name="EffectUnit">1</SetVariable>
+        <SetVariable name="SourceType">deck</SetVariable>
+      </Template>
+
+      <Template src="skin:fx_unit_group_assignment_button.xml">
+        <SetVariable name="EffectUnit">2</SetVariable>
+        <SetVariable name="SourceType">deck</SetVariable>
+      </Template>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <ObjectName>EffectUnitRoutingButtons</ObjectName>
+        <Connection>
+          <ConfigKey>[Master],show_4effectunits</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+        <Children>
+          <Template src="skin:fx_unit_group_assignment_button.xml">
+            <SetVariable name="EffectUnit">3</SetVariable>
+            <SetVariable name="SourceType">deck</SetVariable>
+          </Template>
+
+          <Template src="skin:fx_unit_group_assignment_button.xml">
+            <SetVariable name="EffectUnit">4</SetVariable>
+            <SetVariable name="SourceType">deck</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>
