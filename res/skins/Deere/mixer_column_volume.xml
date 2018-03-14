@@ -130,7 +130,6 @@
       <WidgetGroup>
         <ObjectName>ButtonContainer</ObjectName>
         <Layout>horizontal</Layout>
-        <Size>-1me,28f</Size>
         <Children>
           <Template src="skin:crossfader_orientation_button.xml">
             <SetVariable name="Unit">Deck<Variable name="i"/></SetVariable>
