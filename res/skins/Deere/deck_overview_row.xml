@@ -177,9 +177,14 @@
 
       <WidgetGroup>
         <ObjectName>DeckControlsGrid</ObjectName>
+        <Connection>
+          <ConfigKey>[Master],show_4effectunits</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform><Not/></Transform>
+        </Connection>
         <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
         <Children>
+
           <Template src="skin:fx_unit_group_assignment_button.xml">
             <SetVariable name="EffectUnit">1</SetVariable>
             <SetVariable name="SourceType">deck</SetVariable>
@@ -189,6 +194,7 @@
             <SetVariable name="EffectUnit">2</SetVariable>
             <SetVariable name="SourceType">deck</SetVariable>
           </Template>
+
         </Children>
       </WidgetGroup>
 
@@ -198,6 +204,8 @@
           <ConfigKey>[Master],show_4effectunits</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
+        <Layout>horizontal</Layout>
+        <ObjectName>DeckControlsGrid</ObjectName>
         <Children>
 
           <WidgetGroup>
@@ -206,7 +214,24 @@
             <SizePolicy>min,min</SizePolicy>
             <Children>
               <Template src="skin:fx_unit_group_assignment_button.xml">
+                <SetVariable name="EffectUnit">1</SetVariable>
+                <SetVariable name="SourceType">deck</SetVariable>
+              </Template>
+
+              <Template src="skin:fx_unit_group_assignment_button.xml">
                 <SetVariable name="EffectUnit">3</SetVariable>
+                <SetVariable name="SourceType">deck</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>DeckControlsGrid</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skin:fx_unit_group_assignment_button.xml">
+                <SetVariable name="EffectUnit">2</SetVariable>
                 <SetVariable name="SourceType">deck</SetVariable>
               </Template>
 
