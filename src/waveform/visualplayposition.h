@@ -65,7 +65,7 @@ class VisualPlayPosition : public QObject {
   private:
     ControlValueAtomic<VisualPlayPositionData> m_data;
     ControlProxy* m_audioBufferSize;
-    double m_dAudioBufferUs; // Audio buffer size in µs
+    int m_audioBufferMicros; // Audio buffer size in µs
     bool m_valid;
     QString m_key;
 

@@ -12,7 +12,7 @@ namespace {
 // This should be sufficiant to compensate jitter,
 // but does not continue in case of underflows.
 constexpr int kMaxOffsetBufferCnt = 2;
-constexpr int kUsPerMs = 1000; // one ms contains 1000 µs
+constexpr int kMicrosPerMillis = 1000; // 1 ms contains 1000 µs
 } // anonymous namespace
 
 
@@ -28,7 +28,7 @@ VisualPlayPosition::VisualPlayPosition(const QString& key)
             "[Master]", "audio_buffer_size", this);
     m_audioBufferSize->connectValueChanged(
             SLOT(slotAudioBufferSizeChanged(double)));
-    m_dAudioBufferUs = m_audioBufferSize->get() * kUsPerMs;
+    m_audioBufferMicros = static_cast<int>(m_audioBufferSize->get() * kMicrosPerMillis);
 }
 
 VisualPlayPosition::~VisualPlayPosition() {
@@ -57,32 +57,32 @@ double VisualPlayPosition::getAtNextVSync(VSyncThread* vsyncThread) {
 
     if (m_valid) {
         VisualPlayPositionData data = m_data.getValue();
-        int usRefToVSync = vsyncThread->usFromTimerToNextSync(data.m_referenceTime);
-        int offset = usRefToVSync - data.m_callbackEntrytoDac;
-        offset = math_min(offset, static_cast<int>(m_dAudioBufferUs * kMaxOffsetBufferCnt));
+        int refToVSync = vsyncThread->fromTimerToNextSyncMicros(data.m_referenceTime);
+        int offset = refToVSync - data.m_callbackEntrytoDac;
+        offset = math_min(offset, m_audioBufferMicros * kMaxOffsetBufferCnt);
         double playPos = data.m_enginePlayPos;  // load playPos for the first sample in Buffer
         // add the offset for the position of the sample that will be transfered to the DAC
         // When the next display frame is displayed
-        playPos += data.m_positionStep * offset * data.m_rate / m_dAudioBufferUs;
+        playPos += data.m_positionStep * offset * data.m_rate / m_audioBufferMicros;
         //qDebug() << "playPos" << playPos << offset;
         return playPos;
     }
     return -1;
 }
 
-void VisualPlayPosition::getPlaySlipAt(int usFromNow, double* playPosition, double* slipPosition) {
+void VisualPlayPosition::getPlaySlipAt(int fromNowMicros, double* playPosition, double* slipPosition) {
     //static double testPos = 0;
     //testPos += 0.000017759; //0.000016608; //  1.46257e-05;
     //return testPos;
 
     if (m_valid) {
         VisualPlayPositionData data = m_data.getValue();
-        int usElapsed = data.m_referenceTime.elapsed().toIntegerMicros();
-        int dacFromNow = usElapsed - data.m_callbackEntrytoDac;
-        int offset = dacFromNow - usFromNow;
-        offset = math_min(offset, static_cast<int>(m_dAudioBufferUs * kMaxOffsetBufferCnt));
+        int elapsed = data.m_referenceTime.elapsed().toIntegerMicros();
+        int dacFromNow = elapsed - data.m_callbackEntrytoDac;
+        int offset = dacFromNow - fromNowMicros;
+        offset = math_min(offset, m_audioBufferMicros * kMaxOffsetBufferCnt);
         double playPos = data.m_enginePlayPos;  // load playPos for the first sample in Buffer
-        playPos += data.m_positionStep * offset * data.m_rate / m_dAudioBufferUs;
+        playPos += data.m_positionStep * offset * data.m_rate / m_audioBufferMicros;
         *playPosition = playPos;
         *slipPosition = data.m_pSlipPosition;
     }
@@ -97,8 +97,8 @@ double VisualPlayPosition::getEnginePlayPos() {
     }
 }
 
-void VisualPlayPosition::slotAudioBufferSizeChanged(double sizeMs) {
-    m_dAudioBufferUs = sizeMs * kUsPerMs;
+void VisualPlayPosition::slotAudioBufferSizeChanged(double sizeMillis) {
+    m_audioBufferMicros = static_cast<int>(sizeMillis * kMicrosPerMillis);
 }
 
 //static
