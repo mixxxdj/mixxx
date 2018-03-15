@@ -169,6 +169,7 @@
       <SizePolicy>me,me</SizePolicy>
       <Layout>vertical</Layout>
       <Children>
+
         <Template src="skin:tool_bar.xml"/>
 
         <Splitter><!-- Visible when Library is not maximized -->
@@ -276,6 +277,7 @@
               <SizePolicy>min,max</SizePolicy>
               <Children>
                 <Template src="skin:main_decks.xml"/>
+                <Template src="skin:crossfader.xml"/>
                 <Template src="skin:effect_rack.xml"/>
                 <Template src="skin:sample_decks.xml"/>
                 <Template src="skin:microphone_rack.xml"/>

@@ -1031,6 +1031,13 @@ WEffectSelector {
   margin-top: 1px;
 }
 
+#CrossfaderRow {
+  border-style: solid;
+  border-color: #111;
+  border-width: 1px 2px 3px 2px;
+  background-color: #333;
+}
+
 #Crossfader[highlight="0"] {
   border-image: none;
 }

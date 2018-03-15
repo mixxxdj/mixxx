@@ -1,0 +1,45 @@
+<Template>
+  <WidgetGroup>
+    <ObjectName>CrossfaderRow</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>CrossfaderContainer</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>250f,-1min</Size>
+        <Children>
+          <!-- Slider background is highlighted orange if AutoDJ is enabled -->
+          <WidgetGroup>
+            <ObjectName>Crossfader</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <SliderComposed>
+                <TooltipId>crossfader</TooltipId>
+                <Size>1me,40f</Size>
+                <Slider scalemode="STRETCH">slider-crossfader.svg</Slider>
+                <Handle scalemode="STRETCH_ASPECT">handle-crossfader-grey.svg</Handle>
+                <Horizontal>true</Horizontal>
+                <Connection>
+                  <ConfigKey>[Master],crossfader</ConfigKey>
+                  <EmitOnDownPress>false</EmitOnDownPress>
+                </Connection>
+              </SliderComposed>
+            </Children>
+            <Connection>
+              <ConfigKey>[AutoDJ],enabled</ConfigKey>
+              <BindProperty>highlight</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- Crossfader -->
+
+        </Children>
+      </WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey>[Deere],show_crossfader</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup><!-- CrossfaderContainer -->
+</Template>
