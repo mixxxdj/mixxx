@@ -378,7 +378,7 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
             }
         } else if (!m_trackLoaded) {
             // This happens if the track samples are not loaded, but we have
-            // a cashed track
+            // a cached track
             //: Text on waveform overview when file is cached from source
             paintText(tr("Loading track .."), &painter);
         }
