@@ -5,6 +5,10 @@ DJ202.init = function () {
     DJ202.leftDeck = new DJ202.Deck([1,3], 0);
     DJ202.rightDeck = new DJ202.Deck([2,4], 1);
     
+    DJ202.effectUnit = [];
+    DJ202.effectUnit[1] = new DJ202.EffectUnit(1);
+    DJ202.effectUnit[2] = new DJ202.EffectUnit(2);
+    
     
     if (engine.getValue('[Master]', 'num_samplers') < 16) {
         engine.setValue('[Master]', 'num_samplers', 16);
@@ -185,3 +189,88 @@ DJ202.Deck = function (deckNumbers, offset) {
     });
 };
 DJ202.Deck.prototype = new components.Deck();
+
+
+
+
+///////////////////////////////////////////////////////////////
+//                             FX                            //
+///////////////////////////////////////////////////////////////
+
+DJ202.EffectUnit = function (unitNumber) {
+    var eu = this;
+    this.group = '[EffectRack1_EffectUnit' + unitNumber + ']';
+    engine.setValue(this.group, 'show_focus', 1);
+
+    this.EffectButton = function (buttonNumber) {
+        this.buttonNumber = buttonNumber;
+
+        this.group = eu.group;
+        this.midi = [0x98 + unitNumber-1, 0x00 + buttonNumber-1];
+
+        components.Button.call(this);
+    };
+    this.EffectButton.prototype = new components.Button({
+        input: function (channel, control, value, status) {
+            if (this.isPress(channel, control, value, status)) {
+                this.isLongPressed = false;
+                this.longPressTimer = engine.beginTimer(this.longPressTimeout, function () {
+                    var effectGroup = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + this.buttonNumber + ']';
+                    script.toggleControl(effectGroup, 'enabled');
+                    this.isLongPressed = true;
+                }, true);
+            } else {
+                if (!this.isLongPressed) {
+                    var focusedEffect = engine.getValue(eu.group, 'focused_effect');
+                    if (focusedEffect === this.buttonNumber) {
+                        engine.setValue(eu.group, 'focused_effect', 0);
+                    } else {
+                        engine.setValue(eu.group, 'focused_effect', this.buttonNumber);
+                    }
+                }
+                this.isLongPressed = false;
+                engine.stopTimer(this.longPressTimer);
+            }
+        },
+        outKey: 'focused_effect',
+        output: function (value, group, control) {
+            this.send((value === this.buttonNumber) ? this.on : this.off);
+        },
+        sendShifted: true,
+        shiftOffset: 0x0B,
+    });
+
+    this.button = [];
+    for (var i = 1; i <= 3; i++) {
+        this.button[i] = new this.EffectButton(i);
+
+        var effectGroup = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + i + ']';
+        engine.softTakeover(effectGroup, 'meta', true);
+        engine.softTakeover(eu.group, 'mix', true);
+    }
+
+    this.knob = new components.Pot({
+        unshift: function () {
+            this.input = function (channel, control, value, status) {
+                value = (this.MSB << 7) + value;
+
+                var focusedEffect = engine.getValue(eu.group, 'focused_effect');
+                if (focusedEffect === 0) {
+                    engine.setParameter(eu.group, 'mix', value / this.max);
+                } else {
+                    var effectGroup = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + focusedEffect + ']';
+                    engine.setParameter(effectGroup, 'meta', value / this.max);
+                }
+            };
+        },
+    });
+
+    this.knobSoftTakeoverHandler = engine.makeConnection(eu.group, 'focused_effect', function (value, group, control) {
+        if (value === 0) {
+            engine.softTakeoverIgnoreNextValue(eu.group, 'mix');
+        } else {
+            var effectGroup = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + value + ']';
+            engine.softTakeoverIgnoreNextValue(effectGroup, 'meta');
+        }
+    });
+};

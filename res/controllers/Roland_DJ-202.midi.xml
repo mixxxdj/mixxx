@@ -446,6 +446,79 @@
                     <script-binding/>
                 </options>
             </control>
+            <!-- FX -->
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.effectUnit[1].knob.input</key>
+                <status>0xB8</status>
+                <midino>0x00</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.effectUnit[1].knob.input</key>
+                <status>0xB8</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.effectUnit[1].button[1].input</key>
+                <status>0x98</status>
+                <midino>0x00</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.effectUnit[1].button[2].input</key>
+                <status>0x98</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.effectUnit[1].button[3].input</key>
+                <status>0x98</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.effectUnit[1].button[1].input</key>
+                <status>0x98</status>
+                <midino>0x0B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.effectUnit[1].button[2].input</key>
+                <status>0x98</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.effectUnit[1].button[3].input</key>
+                <status>0x98</status>
+                <midino>0x0D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
             <!-- jog wheels -->
             <control>
                 <group>[Channel1]</group>
