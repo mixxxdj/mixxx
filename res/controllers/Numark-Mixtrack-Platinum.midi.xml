@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxControllerPreset mixxxVersion="2.1.0+" schemaVersion="1">
     <info>
-        <name>Numark Mixtrack Platinum (local)</name>
+        <name>Numark Mixtrack Platinum</name>
         <author>Matthew Nicholson</author>
         <description>Numark Mixtrack Platinum mapping with support for LED screens and 4 deck playback.</description>
         <forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=8863</forums>
