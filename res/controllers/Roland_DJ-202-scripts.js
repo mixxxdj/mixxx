@@ -66,7 +66,8 @@ DJ202.Deck = function (deckNumbers, offset) {
         outKey: 'keylock',
     });
     
-    this.rate = new components.Pot({
+    engine.setValue(this.currentDeck, "rate_dir", -1);
+    this.tempoFader = new components.Pot({
         midi: [0xB0 + offset, 0x09],
         inKey: 'rate',
     });
