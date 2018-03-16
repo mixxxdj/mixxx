@@ -1,5 +1,7 @@
 var DJ202 = {};
 
+DJ202.tempoRange = [0.08, 0.16, 0.5]
+
 DJ202.init = function () {
 
     DJ202.leftDeck = new DJ202.Deck([1,3], 0);
@@ -61,9 +63,30 @@ DJ202.Deck = function (deckNumbers, offset) {
 
     this.keylock = new components.Button({
         midi: [0x90 + offset, 0x0D],
-        type: components.Button.prototype.types.toggle,
-        inKey: 'keylock',
+        shiftOffset: 1,
+        shiftControl: true,
+        sendShifted: true,
         outKey: 'keylock',
+        currentRangeIndex: 0,
+        unshift: function () {
+            this.type = components.Button.prototype.types.toggle;
+            this.input = components.Button.prototype.input;
+            this.inKey = 'keylock';
+        },
+        shift: function () {
+            this.inKey = 'rateRange';
+            this.type = undefined;
+            this.input = function (channel, control, value, status, group) {
+                if (this.isPress(channel, control, value, status)) {
+                    print(this.currentRangeIndex)
+                    this.currentRangeIndex++;
+                    if (this.currentRangeIndex >= DJ202.tempoRange.length) {
+                        this.currentRangeIndex = 0;
+                    }
+                    this.inSetValue(DJ202.tempoRange[this.currentRangeIndex]);
+                }
+            }
+        }
     });
     
     engine.setValue(this.currentDeck, "rate_dir", -1);
