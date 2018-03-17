@@ -18,6 +18,7 @@
 					<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 				</WidgetGroup>
 				<WidgetGroup>
+	  				<ObjectName>EffectUnit</ObjectName>
 				    <Layout>vertical</Layout>
 				    <Children>
 						<Template src="skin:effectunitsmall.xml">
@@ -30,6 +31,7 @@
 				    </Children>
 				</WidgetGroup>
 				<WidgetGroup>
+	  				<ObjectName>EffectUnit</ObjectName>
 				    <Layout>vertical</Layout>
 				    <Children>
 						<Template src="skin:effectunitsmall.xml">
