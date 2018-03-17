@@ -55,6 +55,7 @@ Variables:
         <EffectUnit><Variable name="FxUnit"/></EffectUnit>
         <Effect><Variable name="FxNum"/></Effect>
         <Elide>right</Elide>
+        <Size>82f,20f</Size>
       </EffectSelector>
 
     </Children>
