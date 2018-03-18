@@ -56,33 +56,6 @@
 						<ConfigKey>[Microphone<Variable name="micnum"/>],pregain</ConfigKey>
 					</Connection>
 				</Knob>
-
-				<!--
-				****************************************
-				Button- Talkover
-				****************************************
-				-->
-				<PushButton>
-					<TooltipId>microphone_talkover</TooltipId>
-					<Style></Style>
-					<NumberStates>2</NumberStates>
-					<State>
-						<Number>0</Number>
-						<Pressed>btn_microphone_talkover_overdown.png</Pressed>
-						<Unpressed>btn_microphone_talkover.png</Unpressed>
-					</State>
-					<State>
-						<Number>1</Number>
-						<Pressed>btn_microphone_talkover_overdown.png</Pressed>
-						<Unpressed>btn_microphone_talkover_over.png</Unpressed>
-					</State>
-					<Pos>4,25</Pos>
-					<Connection>
-						<ConfigKey>[Microphone<Variable name="micnum"/>],talkover</ConfigKey>
-						<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-						<ButtonState>LeftButton</ButtonState>
-					</Connection>
-				</PushButton>
 			</Children>
 		</WidgetGroup>
 </Template>
