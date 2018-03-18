@@ -21,7 +21,7 @@
 				    <Layout>vertical</Layout>
 				    <Children>
 						<Template src="skin:srcmicrophoneaux.xml">
-                    		<SetVariable name="micnum">1</SetVariable>
+                    		<SetVariable name="micnum"></SetVariable>
 							<SetVariable name="auxnum">1</SetVariable>
 						</Template>
 				    </Children>
