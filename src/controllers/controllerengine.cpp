@@ -204,6 +204,11 @@ void ControllerEngine::initializeScriptEngine() {
     QScriptValue engineGlobalObject = m_pEngine->globalObject();
     engineGlobalObject.setProperty("engine", m_pEngine->newQObject(this));
 
+    QScriptValue includeFun = m_pEngine->newFunction(include);
+    // Attach "this" to the function so we can get it in static function "include".
+    includeFun.setData(m_pEngine->toScriptValue(this));
+    engineGlobalObject.setProperty("include", includeFun);
+
     if (m_pController) {
         qDebug() << "Controller in script engine is:" << m_pController->getName();
 
@@ -547,6 +552,50 @@ ControlObjectScript* ControllerEngine::getControlObjectScript(const QString& gro
         }
     }
     return coScript;
+}
+
+// Static
+QScriptValue ControllerEngine::include(QScriptContext *context, QScriptEngine *engine) {
+    // Our current context is a function call.
+    // The filename is defined in the global parent context.
+    if (!context) {
+        qWarning() << "ControllerEngine::include: context is null";
+        return QScriptValue();
+    }
+    QScriptContext* parentContext = context->parentContext();
+    QScriptContextInfo parentContextInfo(parentContext);
+
+    // This is the name of the file that contains the include.
+    // We build the path to the included file relative to it.
+    QString parentFileName = parentContextInfo.fileName();
+
+    // If no filename info is provided, we ignore the include
+    // This prevents snippets of js in the xml to include JS files.
+    if (parentFileName.isEmpty() || parentFileName.isNull()) {
+        qWarning() << "ControllerEngine: Could not determine the file that executed the include.";
+        return QScriptValue();
+    }
+    QString parentFilePath = QFileInfo(parentFileName).path();
+    QDir parentDir(parentFilePath);
+
+    if (context->argumentCount() != 1 || !context->argument(0).isString()) {
+        qWarning() << QString("ControllerEngine: include statement expects one single string parameter. File: %1, Line %2")
+                .arg(parentFileName, QString::number(parentContextInfo.lineNumber()));
+        return QScriptValue();
+    }
+    QString includedFileName = context->argument(0).toString();
+
+    ControllerPreset::ScriptFileInfo fileInfo = ControllerPreset::ScriptFileInfo();
+    fileInfo.name = parentDir.absoluteFilePath(includedFileName);
+    fileInfo.functionPrefix = "";
+
+    // Get instance of ControllerEngine attached to function call
+    ControllerEngine* self = qscriptvalue_cast<ControllerEngine*>(context->callee().data());
+    QList<ControllerPreset::ScriptFileInfo> fileInfoList;
+    fileInfoList.append(fileInfo);
+    self->loadScriptFiles(self->m_lastScriptPaths, fileInfoList);
+
+    return QScriptValue(QScriptValue::UndefinedValue);
 }
 
 /* -------- ------------------------------------------------------

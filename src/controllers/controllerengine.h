@@ -71,6 +71,8 @@ class ScriptConnectionInvokableWrapper : public QObject {
     QString m_idString;
 };
 
+Q_DECLARE_METATYPE(ControllerEngine*)
+
 class ControllerEngine : public QObject {
     Q_OBJECT
   public:
@@ -101,6 +103,12 @@ class ControllerEngine : public QObject {
     void triggerScriptConnection(const ScriptConnection conn);
 
   protected:
+    /**
+    * Loads a JS file into the execution engine.
+    * @param fileName - The path of file to add to the JS engine, relative to the file that contains the include call.
+    */
+    static QScriptValue include(QScriptContext *context, QScriptEngine *engine);
+
     Q_INVOKABLE double getValue(QString group, QString name);
     Q_INVOKABLE void setValue(QString group, QString name, double newValue);
     Q_INVOKABLE double getParameter(QString group, QString name);
