@@ -49,6 +49,8 @@ Variables:
             <SetVariable name="ObjectName">PlayCue</SetVariable>
             <SetVariable name="TooltipId">play_cue_set</SetVariable>
             <SetVariable name="Size">50f,24f</SetVariable>
+            <SetVariable name="state_0_icon">play_deck.svg</SetVariable>
+            <SetVariable name="state_1_icon">pause_deck.svg</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
             <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
             <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
@@ -103,6 +105,8 @@ Variables:
                 <SetVariable name="ObjectName">PlayCue</SetVariable>
                 <SetVariable name="TooltipId">play_cue_set</SetVariable>
                 <SetVariable name="Size">50f,24f</SetVariable>
+                <SetVariable name="state_0_icon">play_deck.svg</SetVariable>
+                <SetVariable name="state_1_icon">pause_deck.svg</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="group"/>,play</SetVariable>
                 <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
@@ -182,42 +186,33 @@ Variables:
           <Template src="skin:deckbutton_2state_permanent.xml">
             <SetVariable name="Width">20max</SetVariable>
             <SetVariable name="TooltipId">quantize</SetVariable>
-            <SetVariable name="state_0_pressed">quantize_off.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">quantize_off.svg</SetVariable>
-            <SetVariable name="state_1_pressed">quantize_on.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">quantize_on.svg</SetVariable>
+            <SetVariable name="state_0_icon">quantize_off.svg</SetVariable>
+            <SetVariable name="state_1_icon">quantize_on.svg</SetVariable>
             <SetVariable name="Control">quantize</SetVariable>
           </Template>
 
           <Template src="skin:deckbutton_3state_permanent.xml">
             <SetVariable name="Width">20max</SetVariable>
             <SetVariable name="TooltipId">orientation</SetVariable>
-            <SetVariable name="state_0_pressed">xfader_left_attention.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">xfader_left_attention.svg</SetVariable>
-            <SetVariable name="state_1_pressed">xfader_center_attention.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">xfader_center_attention.svg</SetVariable>
-            <SetVariable name="state_2_pressed">xfader_right.svg</SetVariable>
-            <SetVariable name="state_2_unpressed">xfader_right.svg</SetVariable>
+            <SetVariable name="state_0_icon">xfader_left_attention.svg</SetVariable>
+            <SetVariable name="state_1_icon">xfader_center_attention.svg</SetVariable>
+            <SetVariable name="state_2_icon">xfader_right.svg</SetVariable>
             <SetVariable name="Control">orientation</SetVariable>
           </Template>
 
           <Template src="skin:deckbutton_2state_permanent.xml">
             <SetVariable name="Width">22max</SetVariable>
             <SetVariable name="TooltipId">repeat</SetVariable>
-            <SetVariable name="state_0_pressed">repeat_off.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">repeat_off.svg</SetVariable>
-            <SetVariable name="state_1_pressed">repeat_on.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">repeat_on.svg</SetVariable>
+            <SetVariable name="state_0_icon">repeat_off.svg</SetVariable>
+            <SetVariable name="state_1_icon">repeat_on.svg</SetVariable>
             <SetVariable name="Control">repeat</SetVariable>
           </Template>
 
           <Template src="skin:deckbutton_2state_permanent.xml">
             <SetVariable name="Width">22max</SetVariable>
             <SetVariable name="TooltipId">slip_mode</SetVariable>
-            <SetVariable name="state_0_pressed">slipmode_off.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">slipmode_off.svg</SetVariable>
-            <SetVariable name="state_1_pressed">slipmode_on.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">slipmode_on.svg</SetVariable>
+            <SetVariable name="state_0_icon">slipmode_off.svg</SetVariable>
+            <SetVariable name="state_1_icon">slipmode_on.svg</SetVariable>
             <SetVariable name="Control">slip_enabled</SetVariable>
           </Template>
 
@@ -232,10 +227,8 @@ Variables:
           <Template src="skin:deckbutton_2state_permanent.xml">
             <SetVariable name="Width">18max</SetVariable>
             <SetVariable name="TooltipId">keylock</SetVariable>
-            <SetVariable name="state_0_pressed">keylock_off.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">keylock_off.svg</SetVariable>
-            <SetVariable name="state_1_pressed">keylock_on.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">keylock_on.svg</SetVariable>
+            <SetVariable name="state_0_icon">keylock_off.svg</SetVariable>
+            <SetVariable name="state_1_icon">keylock_on.svg</SetVariable>
             <SetVariable name="Control">keylock</SetVariable>
           </Template>
           <!-- /Deck Controls which are always visible -->
@@ -250,42 +243,33 @@ Variables:
               <Template src="skin:deckbutton_2state_optional.xml">
                 <SetVariable name="Width">20f</SetVariable>
                 <SetVariable name="TooltipId">quantize</SetVariable>
-                <SetVariable name="state_0_pressed">quantize_off.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">quantize_off.svg</SetVariable>
-                <SetVariable name="state_1_pressed">quantize_on.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">quantize_on.svg</SetVariable>
+                <SetVariable name="state_0_icon">quantize_off.svg</SetVariable>
+                <SetVariable name="state_1_icon">quantize_on.svg</SetVariable>
                 <SetVariable name="Control">quantize</SetVariable>
               </Template>
 
               <Template src="skin:deckbutton_3state_optional.xml">
                 <SetVariable name="Width">20f</SetVariable>
                 <SetVariable name="TooltipId">orientation</SetVariable>
-                <SetVariable name="state_0_pressed">xfader_left_attention.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">xfader_left_attention.svg</SetVariable>
-                <SetVariable name="state_1_pressed">xfader_center_attention.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">xfader_center_attention.svg</SetVariable>
-                <SetVariable name="state_2_pressed">xfader_right.svg</SetVariable>
-                <SetVariable name="state_2_unpressed">xfader_right.svg</SetVariable>
+                <SetVariable name="state_0_icon">xfader_left_attention.svg</SetVariable>
+                <SetVariable name="state_1_icon">xfader_center_attention.svg</SetVariable>
+                <SetVariable name="state_2_icon">xfader_right.svg</SetVariable>
                 <SetVariable name="Control">orientation</SetVariable>
               </Template>
 
               <Template src="skin:deckbutton_2state_optional.xml">
                 <SetVariable name="Width">22f</SetVariable>
                 <SetVariable name="TooltipId">repeat</SetVariable>
-                <SetVariable name="state_0_pressed">repeat_off.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">repeat_off.svg</SetVariable>
-                <SetVariable name="state_1_pressed">repeat_on.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">repeat_on.svg</SetVariable>
+                <SetVariable name="state_0_icon">repeat_off.svg</SetVariable>
+                <SetVariable name="state_1_icon">repeat_on.svg</SetVariable>
                 <SetVariable name="Control">repeat</SetVariable>
               </Template>
 
               <Template src="skin:deckbutton_2state_optional.xml">
                 <SetVariable name="Width">22f</SetVariable>
                 <SetVariable name="TooltipId">slip_mode</SetVariable>
-                <SetVariable name="state_0_pressed">slipmode_off.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">slipmode_off.svg</SetVariable>
-                <SetVariable name="state_1_pressed">slipmode_on.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">slipmode_on.svg</SetVariable>
+                <SetVariable name="state_0_icon">slipmode_off.svg</SetVariable>
+                <SetVariable name="state_1_icon">slipmode_on.svg</SetVariable>
                 <SetVariable name="Control">slip_enabled</SetVariable>
               </Template>
 
@@ -300,10 +284,8 @@ Variables:
               <Template src="skin:deckbutton_2state_optional.xml">
                 <SetVariable name="Width">18f</SetVariable>
                 <SetVariable name="TooltipId">keylock</SetVariable>
-                <SetVariable name="state_0_pressed">keylock_off.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">keylock_off.svg</SetVariable>
-                <SetVariable name="state_1_pressed">keylock_on.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">keylock_on.svg</SetVariable>
+                <SetVariable name="state_0_icon">keylock_off.svg</SetVariable>
+                <SetVariable name="state_1_icon">keylock_on.svg</SetVariable>
                 <SetVariable name="Control">keylock</SetVariable>
               </Template>
             </Children>

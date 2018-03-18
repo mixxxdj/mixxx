@@ -18,7 +18,7 @@ Variables:
       <WidgetGroup><!-- FX expand button + FX label -->
         <ObjectName>Spacer25</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <Size>30f,30f</Size>
         <Children>
           <Label>
             <ObjectName>FxUnitLabel</ObjectName>
@@ -153,10 +153,8 @@ Variables:
                     <SetVariable name="ObjectName">PflButton</SetVariable>
                     <SetVariable name="TooltipId">EffectUnit_headphones_enabled</SetVariable>
                     <SetVariable name="Size">20f,20f</SetVariable>
-                    <SetVariable name="state_0_pressed">pfl_off.svg</SetVariable>
-                    <SetVariable name="state_0_unpressed">pfl_off.svg</SetVariable>
-                    <SetVariable name="state_1_pressed">pfl_on.svg</SetVariable>
-                    <SetVariable name="state_1_unpressed">pfl_on.svg</SetVariable>
+                    <SetVariable name="state_0_icon">pfl_off.svg</SetVariable>
+                    <SetVariable name="state_1_icon">pfl_on.svg</SetVariable>
                     <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],group_[Headphone]_enable</SetVariable>
                   </Template>
                 </Children>
