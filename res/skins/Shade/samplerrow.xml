@@ -85,6 +85,68 @@
 		    <Template src="skin:samplersmall.xml">
 		      <SetVariable name="samplernum"><Variable name="samplernum4"/></SetVariable>
 		    </Template>
+			<WidgetGroup>
+				<Size>26f,43f</Size>
+				<Layout>horizontal</Layout>
+				<Children>
+					<WidgetGroup>
+						<ObjectName>EffectLeftBorder</ObjectName>
+						<Size>5f,40f</Size>
+						<BackPath>style/style_bg_deck_border.png</BackPath>
+						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+					</WidgetGroup>	
+					<WidgetGroup>
+						<Size>0e,40f</Size>
+						<Style>QGroupBox { 
+							border: 0px solid green;  
+							margin: 0px 0px 0px 0px;
+						} 
+						</Style>
+						<BackPath>style/style_bg_looping.png</BackPath>
+						<Children>
+							<PushButton>
+								<TooltipId>LoadSamplerBank</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_load.png</Pressed>
+									<Unpressed>btn_load.png</Unpressed>
+								</State>
+								<Pos>0,6</Pos>
+								<Connection>
+									<ConfigKey>[Sampler],LoadSamplerBank</ConfigKey>
+								</Connection>
+							</PushButton>
+							<PushButton>
+								<TooltipId>SaveSamplerBank</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_save.png</Pressed>
+									<Unpressed>btn_save.png</Unpressed>
+								</State>
+								<Pos>0,20</Pos>
+								<Connection>
+									<ConfigKey>[Sampler],SaveSamplerBank</ConfigKey>
+								</Connection>
+							</PushButton>
+						</Children>
+					</WidgetGroup>
+					<WidgetGroup>
+						<ObjectName>EffectRightBorder</ObjectName>
+						<Size>5f,40f</Size>
+						<BackPath>style/style_bg_deck_border.png</BackPath>
+						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+					</WidgetGroup>	
+					<WidgetGroup>
+						<ObjectName>EffectRightBorder</ObjectName>
+						<Size>3f,40f</Size>
+						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+					</WidgetGroup>	
+				</Children>		
+			</WidgetGroup>	
 		  </Children>
 		  <Connection>
 		    <ConfigKey>[SamplerRow<Variable name="rownum"/>],expanded</ConfigKey>
@@ -124,7 +186,7 @@
 						} 
 						</Style>
 						<BackPath>style/style_bg_sampler_right.png</BackPath>
-														<Children>
+						<Children>
 							<PushButton>
 								<TooltipId>show_samplers</TooltipId>
 								<Style></Style>
@@ -171,6 +233,70 @@
 		    <Template src="skin:sampler.xml">
 		      <SetVariable name="samplernum"><Variable name="samplernum4"/></SetVariable>
 		    </Template>
+			<WidgetGroup>
+				<Size>26f,103f</Size>
+				<Layout>horizontal</Layout>
+				<Children>
+
+					<WidgetGroup>
+						<ObjectName>SamplerLeftBorder</ObjectName>
+						<Size>5f,100f</Size>
+						<BackPath>style/style_bg_deck_border.png</BackPath>
+						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+					</WidgetGroup>
+
+					<WidgetGroup>
+						<Size>0e,100f</Size>
+						<Style>QGroupBox { 
+							border: 0px solid green;  
+							margin: 0px 0px 0px 0px;
+						} 
+						</Style>
+						<BackPath>style/style_bg_sampler_right.png</BackPath>
+						<Children>
+							<PushButton>
+								<TooltipId>LoadSamplerBank</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_load.png</Pressed>
+									<Unpressed>btn_load.png</Unpressed>
+								</State>
+								<Pos>0,6</Pos>
+								<Connection>
+									<ConfigKey>[Sampler],LoadSamplerBank</ConfigKey>
+								</Connection>
+							</PushButton>
+							<PushButton>
+								<TooltipId>SaveSamplerBank</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_save.png</Pressed>
+									<Unpressed>btn_save.png</Unpressed>
+								</State>
+								<Pos>0,20</Pos>
+								<Connection>
+									<ConfigKey>[Sampler],SaveSamplerBank</ConfigKey>
+								</Connection>
+							</PushButton>
+						</Children>
+					</WidgetGroup>
+					<WidgetGroup>
+						<ObjectName>EffectRightBorder</ObjectName>
+						<Size>5f,100f</Size>
+						<BackPath>style/style_bg_deck_border.png</BackPath>
+						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+					</WidgetGroup>	
+					<WidgetGroup>
+						<ObjectName>EffectRightBorder</ObjectName>
+						<Size>3f,40f</Size>
+						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+					</WidgetGroup>	
+				</Children>		
+			</WidgetGroup>	
 		  </Children>
 		  <Connection>
 		    <ConfigKey>[SamplerRow<Variable name="rownum"/>],expanded</ConfigKey>
