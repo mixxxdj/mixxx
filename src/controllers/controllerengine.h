@@ -224,6 +224,7 @@ class ControllerEngine : public QObject {
     // Filesystem watcher for script auto-reload
     QFileSystemWatcher m_scriptWatcher;
     QList<QString> m_lastScriptPaths;
+    QSet<QString> m_loadedScriptsPaths;
 
     friend class ControllerEngineTest;
 };

@@ -200,6 +200,8 @@ void ControllerEngine::initializeScriptEngine() {
     // Create the Script Engine
     m_pEngine = new QScriptEngine(this);
 
+    m_loadedScriptsPaths = QSet<QString>();
+
     // Make this ControllerEngine instance available to scripts as 'engine'.
     QScriptValue engineGlobalObject = m_pEngine->globalObject();
     engineGlobalObject.setProperty("engine", m_pEngine->newQObject(this));
@@ -994,12 +996,18 @@ bool ControllerEngine::evaluate(const QString& scriptName, QList<QString> script
             filename = scriptPathDir.absoluteFilePath(scriptName);
             input.setFileName(filename);
             if (input.exists())  {
-                qDebug() << "ControllerEngine: Watching JS File:" << filename;
-                m_scriptWatcher.addPath(filename);
                 break;
             }
         }
     }
+
+    if (m_loadedScriptsPaths.contains(filename)) {
+        qDebug() << "ControllerEngine: " << filename << "already included. Skipping...";
+        return true;
+    }
+
+    qDebug() << "ControllerEngine: Watching JS File:" << filename;
+    m_scriptWatcher.addPath(filename);
 
     qDebug() << "ControllerEngine: Loading" << filename;
 
@@ -1060,6 +1068,7 @@ bool ControllerEngine::evaluate(const QString& scriptName, QList<QString> script
     }
 
     // Evaluate the code
+    m_loadedScriptsPaths.insert(filename);
     QScriptValue scriptFunction = m_pEngine->evaluate(scriptCode, filename);
 
     // Record errors
