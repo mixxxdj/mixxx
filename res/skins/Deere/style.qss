@@ -685,7 +685,8 @@ WWidget, QLabel {
 /* Start spacing for Deck controls row (transport, beatgrid, looping, hotcue, vinylcontrol) */
 
 #HotcueGrid,
-#VinylControlsGrid {
+#VinylControlsGrid,
+#EffectUnitRoutingButtons {
   padding: 1px;
   qproperty-layoutSpacing: 2;
 }
@@ -1030,6 +1031,13 @@ WEffectSelector {
   margin-top: 1px;
 }
 
+#CrossfaderRow {
+  border-style: solid;
+  border-color: #111;
+  border-width: 1px 2px 3px 2px;
+  background-color: #333;
+}
+
 #Crossfader[highlight="0"] {
   border-image: none;
 }
@@ -1281,14 +1289,9 @@ WStarRating {
   padding-left: 5px;
 }
 
-#EffectUnitEffectsNoParameters {
-  qproperty-layoutSpacing: 30;
-}
-
 #EffectUnitEffects {
   padding: 2px;
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  qproperty-layoutSpacing: 2;
 }
 
 #EffectUnitParameters {
@@ -1298,7 +1301,7 @@ WStarRating {
 }
 
 #EffectUnitControls {
-  padding: 2px;
+  padding: 8px;
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
   qproperty-layoutSpacing: 2;
 }
