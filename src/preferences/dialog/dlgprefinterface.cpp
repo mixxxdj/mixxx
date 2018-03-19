@@ -146,6 +146,7 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
 
     //: Entry of the HiDPI scale combo box. %1 is the scale factor in percent
     comboBoxScaleFactor->addItem(QString(tr("%1 %")).arg(50), 0.5);
+    comboBoxScaleFactor->addItem(QString(tr("%1 %")).arg(75), 0.75);
     comboBoxScaleFactor->addItem(QString(tr("%1 %")).arg(100), 1);
     comboBoxScaleFactor->addItem(QString(tr("%1 %")).arg(200), 2);
     comboBoxScaleFactor->addItem(QString(tr("%1 %")).arg(300), 3);
