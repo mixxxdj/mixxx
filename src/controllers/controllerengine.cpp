@@ -581,21 +581,28 @@ QScriptValue ControllerEngine::include(QScriptContext *context, QScriptEngine *e
     QDir parentDir(parentFilePath);
 
     if (context->argumentCount() != 1 || !context->argument(0).isString()) {
-        qWarning() << QString("ControllerEngine: include statement expects one single string parameter. File: %1, Line %2")
+        QString errorString = QString("ControllerEngine: include statement expects one single string parameter. File: %1, Line %2")
                 .arg(parentFileName, QString::number(parentContextInfo.lineNumber()));
-        return QScriptValue();
+        return context->throwError(QScriptContext::TypeError, errorString);
     }
     QString includedFileName = context->argument(0).toString();
+    QString includedAbsoluteFileName = parentDir.absoluteFilePath(includedFileName);
 
     ControllerPreset::ScriptFileInfo fileInfo = ControllerPreset::ScriptFileInfo();
-    fileInfo.name = parentDir.absoluteFilePath(includedFileName);
+    fileInfo.name = includedAbsoluteFileName;
     fileInfo.functionPrefix = "";
 
     // Get instance of ControllerEngine attached to function call
     ControllerEngine* self = qscriptvalue_cast<ControllerEngine*>(context->callee().data());
     QList<ControllerPreset::ScriptFileInfo> fileInfoList;
     fileInfoList.append(fileInfo);
-    self->loadScriptFiles(self->m_lastScriptPaths, fileInfoList);
+    bool loadSuccess = self->loadScriptFiles(self->m_lastScriptPaths, fileInfoList);
+
+    if (!loadSuccess) {
+        QString errorString = QString("ControllerEngine: error while including file %1, from file %2")
+                .arg(parentFileName, includedAbsoluteFileName);
+        return context->throwError(QScriptContext::TypeError, errorString);
+    }
 
     return QScriptValue(QScriptValue::UndefinedValue);
 }
