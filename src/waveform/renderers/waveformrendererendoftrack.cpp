@@ -21,6 +21,7 @@ WaveformRendererEndOfTrack::WaveformRendererEndOfTrack(
       m_pTrackSampleRate(NULL),
       m_pPlayControl(NULL),
       m_pLoopControl(NULL),
+      m_pTimeRemainingControl(NULL),
       m_color(200, 25, 20),
       m_remainingTimeTriggerSeconds(30),
       m_blinkingPeriodMillis(1000) {
