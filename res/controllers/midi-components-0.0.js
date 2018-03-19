@@ -609,7 +609,7 @@
         }
     });
 
-    EffectUnit = function (unitNumbers, allowFocusWhenParametersHidden) {
+    EffectUnit = function (unitNumbers, allowFocusWhenParametersHidden, colors) {
         var eu = this;
         this.focusChooseModeActive = false;
 
@@ -839,12 +839,18 @@
             // NOTE: This function is only connected when not in focus choosing mode.
             onFocusChange: function (value, group, control) {
                 if (value === 0) {
+                    if (colors !== undefined) {
+                        this.color = colors.unfocused;
+                    }
                     this.group = '[EffectRack1_EffectUnit' +
                                   eu.currentUnitNumber + '_Effect' +
                                   this.number + ']';
                     this.inKey = 'enabled';
                     this.outKey = 'enabled';
                 } else {
+                    if (colors !== undefined) {
+                        this.color = colors.focused;
+                    }
                     this.group = '[EffectRack1_EffectUnit' + eu.currentUnitNumber +
                                  '_Effect' + value + ']';
                     this.inKey = 'button_parameter' + this.number;
@@ -855,6 +861,9 @@
                 this.type = Button.prototype.types.powerWindow;
                 this.input = Button.prototype.input;
                 this.output = Button.prototype.output;
+                if (colors !== undefined) {
+                    this.color = colors.unfocused;
+                }
 
                 this.connect = function () {
                     this.connections[0] = engine.makeConnection(eu.group, "focused_effect",
@@ -881,6 +890,9 @@
                 }
             },
             startEffectFocusChooseMode: function () {
+                if (colors !== undefined) {
+                    this.color = colors.focusChooseMode;
+                }
                 this.input = function (channel, control, value, status, group) {
                     if (this.isPress(channel, control, value, status)) {
                         if (engine.getValue(eu.group, "focused_effect") === this.number) {
@@ -922,10 +934,23 @@
             pressedWhenParametersHidden: false,
             previouslyFocusedEffect: 0,
             startEffectFocusChooseMode: function () {
+                if (colors !== undefined) {
+                    this.color = colors.focusChooseMode;
+                }
+                this.send(this.on);
                 eu.focusChooseModeActive = true;
                 eu.enableButtons.reconnectComponents(function (button) {
                     button.startEffectFocusChooseMode();
                 });
+            },
+            setColor: function () {
+                if (colors !== undefined) {
+                    if (engine.getValue(this.group, 'focused_effect') === 0) {
+                        this.color = colors.unfocused;
+                    } else {
+                        this.color = colors.focused;
+                    }
+                }
             },
             unshift: function () {
                 this.input = function (channel, control, value, status, group) {
@@ -948,6 +973,8 @@
                         }
 
                         if (eu.focusChooseModeActive) {
+                            this.setColor();
+                            this.trigger();
                             eu.enableButtons.reconnectComponents(function (button) {
                                 button.stopEffectFocusChooseMode();
                             });
@@ -978,6 +1005,7 @@
             },
             outConnect: false,
         });
+        this.effectFocusButton.setColor();
 
         this.init = function () {
             this.knobs.reconnectComponents();

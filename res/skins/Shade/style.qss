@@ -84,6 +84,10 @@ WEffectSelector:item:selected
 	margin: 0px 0px 0px 0px;
 }
 
+#EffectUnit { 
+	qproperty-layoutAlignment:AlignTop;
+}
+
 
 
 

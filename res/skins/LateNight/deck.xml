@@ -73,8 +73,8 @@
               <SliderComposed>
                 <ObjectName>RateSlider</ObjectName>
                 <TooltipId>rate</TooltipId>
-                <Handle>knob_pitch1.png</Handle>
-                <Slider>slider_pitch1.png</Slider>
+                <Handle>knob_pitch_deck.svg</Handle>
+                <Slider>slider_pitch_deck.svg</Slider>
                 <Horizontal>false</Horizontal>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,rate</ConfigKey>

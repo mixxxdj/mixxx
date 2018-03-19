@@ -199,15 +199,15 @@ void WOverview::slotAnalyzerProgress(int progress) {
 }
 
 void WOverview::slotTrackLoaded(TrackPointer pTrack) {
-    if (m_pCurrentTrack == pTrack) {
-        m_trackLoaded = true;
-        update();
-    }
+    DEBUG_ASSERT(m_pCurrentTrack == pTrack);
+    m_trackLoaded = true;
+    update();
 }
 
 void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     //qDebug() << this << "WOverview::slotLoadingTrack" << pNewTrack << pOldTrack;
-    if (m_pCurrentTrack != nullptr && pOldTrack == m_pCurrentTrack) {
+    DEBUG_ASSERT(m_pCurrentTrack == pOldTrack);
+    if (m_pCurrentTrack != nullptr) {
         disconnect(m_pCurrentTrack.get(), SIGNAL(waveformSummaryUpdated()),
                    this, SLOT(slotWaveformSummaryUpdated()));
         disconnect(m_pCurrentTrack.get(), SIGNAL(analyzerProgress(int)),
@@ -353,26 +353,34 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
         if (m_dAnalyzerProgress < 1.0) {
             // Paint analyzer Progress
             painter.setPen(QPen(m_signalColors.getAxesColor(), 3 * m_scaleFactor));
-            if (m_orientation == Qt::Horizontal) {
-                painter.drawLine(m_dAnalyzerProgress * width(), height() / 2,
-                                 width(), height() / 2);
-            } else {
-                painter.drawLine(width() / 2 , m_dAnalyzerProgress * height(),
-                                 width() / 2, height());
-            }
-        }
 
-        if (m_dAnalyzerProgress <= 0.5) { // remove text after progress by wf is recognizable
-            if (m_trackLoaded) {
-                //: Text on waveform overview when file is cached from source
-                paintText(tr("Ready to play, analyzing .."), &painter);
-            } else {
-                //: Text on waveform overview when file is playable but no waveform is visible
-                paintText(tr("Loading track .."), &painter);
+            if (m_dAnalyzerProgress > 0.0) {
+                if (m_orientation == Qt::Horizontal) {
+                    painter.drawLine(m_dAnalyzerProgress * width(), height() / 2,
+                                     width(), height() / 2);
+                } else {
+                    painter.drawLine(width() / 2 , m_dAnalyzerProgress * height(),
+                                     width() / 2, height());
+                }
             }
-        } else if (m_bAnalyzerFinalizing) {
-            //: Text on waveform overview during finalizing of waveform analysis
-            paintText(tr("Finalizing .."), &painter);
+
+            if (m_dAnalyzerProgress <= 0.5) { // remove text after progress by wf is recognizable
+                if (m_trackLoaded) {
+                    //: Text on waveform overview when file is playable but no waveform is visible
+                    paintText(tr("Ready to play, analyzing .."), &painter);
+                } else {
+                    //: Text on waveform overview when file is cached from source
+                    paintText(tr("Loading track .."), &painter);
+                }
+            } else if (m_bAnalyzerFinalizing) {
+                //: Text on waveform overview during finalizing of waveform analysis
+                paintText(tr("Finalizing .."), &painter);
+            }
+        } else if (!m_trackLoaded) {
+            // This happens if the track samples are not loaded, but we have
+            // a cached track
+            //: Text on waveform overview when file is cached from source
+            paintText(tr("Loading track .."), &painter);
         }
 
         double trackSamples = m_trackSamplesControl->get();

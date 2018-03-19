@@ -18,8 +18,12 @@
 					<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 				</WidgetGroup>
 				<WidgetGroup>
+	  				<ObjectName>EffectUnit</ObjectName>
 				    <Layout>vertical</Layout>
 				    <Children>
+						<WidgetGroup>
+							<Size>0e,1f</Size>
+						</WidgetGroup>
 						<Template src="skin:effectunitsmall.xml">
 						  <SetVariable name="effectunitnum">1</SetVariable>
 						</Template>
@@ -27,11 +31,18 @@
 						  <SetVariable name="effectunitnum">1</SetVariable>
 						</Template>
 						<Template src="skin:effectunit_border.xml"/>
+						<WidgetGroup>
+							<Size>0e,2f</Size>
+						</WidgetGroup>
 				    </Children>
 				</WidgetGroup>
 				<WidgetGroup>
+	  				<ObjectName>EffectUnit</ObjectName>
 				    <Layout>vertical</Layout>
 				    <Children>
+						<WidgetGroup>
+							<Size>0e,1f</Size>
+						</WidgetGroup>
 						<Template src="skin:effectunitsmall.xml">
 						  <SetVariable name="effectunitnum">2</SetVariable>
 						</Template>
@@ -39,6 +50,9 @@
 						  <SetVariable name="effectunitnum">2</SetVariable>
 						</Template>
 						<Template src="skin:effectunit_border.xml"/>
+						<WidgetGroup>
+							<Size>0e,2f</Size>
+						</WidgetGroup>
 				    </Children>
 				</WidgetGroup>
 			  </Children>

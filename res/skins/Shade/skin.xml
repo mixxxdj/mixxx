@@ -71,6 +71,88 @@
 			<attribute persist="true" config_key="[Library],show_coverart">0</attribute>
 			<attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
 			<attribute persist="false" config_key="[Shade],looping">0</attribute>
+
+			<!--Disable hidden effect routing Buttons-->
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Master]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MasterOutput]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusCenter]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusTalkover]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Channel1]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Channel2]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Channel3]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Channel4]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Sampler1]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Sampler2]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Sampler3]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Sampler4]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Sampler5]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Sampler6]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Sampler7]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Sampler8]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Microphone]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Microphone2]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Auxiliary1]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Auxiliary2]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Master]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[MasterOutput]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusCenter]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusTalkover]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Channel1]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Channel2]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Channel3]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Channel4]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Sampler1]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Sampler2]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Sampler3]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Sampler4]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Sampler5]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Sampler6]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Sampler7]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Sampler8]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Microphone]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Microphone2]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Auxiliary1]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Auxiliary2]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Master]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[MasterOutput]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusCenter]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusTalkover]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Channel1]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Channel2]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Channel3]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Channel4]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Sampler1]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Sampler2]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Sampler3]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Sampler4]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Sampler5]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Sampler6]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Sampler7]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Sampler8]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Microphone]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Microphone2]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Auxiliary1]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Auxiliary2]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Master]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[MasterOutput]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusCenter]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusTalkover]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Channel1]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Channel2]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Channel3]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Channel4]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Sampler1]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Sampler2]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Sampler3]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Sampler4]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Sampler5]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Sampler6]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Sampler7]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Sampler8]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Microphone]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Microphone2]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Auxiliary1]_enable">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Auxiliary2]_enable">0</attribute>
 		</attributes>
 	</manifest>
 
@@ -198,7 +280,7 @@
 											<SetVariable name="samplernum2">2</SetVariable>
 											<SetVariable name="samplernum3">3</SetVariable>
 											<SetVariable name="samplernum4">4</SetVariable>
-											<SetVariable name="micnum">1</SetVariable>
+											<SetVariable name="micnum"></SetVariable>
 											<SetVariable name="auxnum">1</SetVariable>
 				  						</Template>
 										<WidgetGroup>
@@ -298,6 +380,23 @@
 			<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 			cause push buttons in library will show up with wrong margin/padding -->
 			<Children>
+			    <Template src="skin:effectrow.xml"/>	
+				<Template src="skin:srcrow.xml"/>	
+			    <Template src="skin:samplerrow.xml">
+					<SetVariable name="rownum">1</SetVariable>
+					<SetVariable name="samplernum1">1</SetVariable>
+					<SetVariable name="samplernum2">2</SetVariable>
+	                <SetVariable name="samplernum3">5</SetVariable>
+	                <SetVariable name="samplernum4">6</SetVariable>
+				</Template>
+
+			    <Template src="skin:samplerrow.xml">
+					<SetVariable name="rownum">2</SetVariable>
+					<SetVariable name="samplernum1">3</SetVariable>
+					<SetVariable name="samplernum2">4</SetVariable>
+	                <SetVariable name="samplernum3">7</SetVariable>
+	                <SetVariable name="samplernum4">8</SetVariable>
+				</Template>	
 				<WidgetGroup>
 				  <SizePolicy>me,f</SizePolicy>
 				  <Layout>horizontal</Layout>
@@ -335,25 +434,7 @@
 				      <Not/>
 				    </Transform>
 				  </Connection>
-				</WidgetGroup>
-
-		        <Template src="skin:samplerrow.xml">
-					<SetVariable name="rownum">1</SetVariable>
-					<SetVariable name="samplernum1">1</SetVariable>
-					<SetVariable name="samplernum2">2</SetVariable>
-                    <SetVariable name="samplernum3">5</SetVariable>
-                    <SetVariable name="samplernum4">6</SetVariable>
-				</Template>
-
-		        <Template src="skin:samplerrow.xml">
-					<SetVariable name="rownum">2</SetVariable>
-					<SetVariable name="samplernum1">3</SetVariable>
-					<SetVariable name="samplernum2">4</SetVariable>
-                    <SetVariable name="samplernum3">7</SetVariable>
-                    <SetVariable name="samplernum4">8</SetVariable>
-				</Template>
-
-		        <Template src="skin:effectrow.xml"/>			
+				</WidgetGroup>	
 				<!--
 				**********************************************
 				Library / Preview Deck / Search / Tree view
