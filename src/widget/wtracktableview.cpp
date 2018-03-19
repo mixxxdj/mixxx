@@ -105,9 +105,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
             this, SLOT(slotReloadCoverArt()));
 
-
-    // Disable editing
-    //setEditTriggers(QAbstractItemView::NoEditTriggers);
+    setEditTriggers(QAbstractItemView::EditKeyPressed);
 
     // Create all the context m_pMenu->actions (stuff that shows up when you
     //right-click)
