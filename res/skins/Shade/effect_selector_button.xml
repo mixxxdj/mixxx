@@ -24,6 +24,7 @@
 		        <EffectRack>1</EffectRack>
 		        <EffectUnit><Variable name="effectunitnum"/></EffectUnit>
 		        <Effect><Variable name="effectnum"/></Effect>
+				<Size>105f,20f</Size>	
 		     </EffectSelector>
 		</Children>
 	</WidgetGroup>
