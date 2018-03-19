@@ -601,7 +601,7 @@ QScriptValue ControllerEngine::include(QScriptContext *context, QScriptEngine *e
     if (!loadSuccess) {
         QString errorString = QString("ControllerEngine: error while including file %1, from file %2")
                 .arg(parentFileName, includedAbsoluteFileName);
-        return context->throwError(QScriptContext::TypeError, errorString);
+        return context->throwError(QScriptContext::UnknownError, errorString);
     }
 
     return QScriptValue(QScriptValue::UndefinedValue);
