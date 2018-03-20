@@ -427,7 +427,6 @@ class Qt(Dependence):
             qtdir = build.env['QTDIR']
             framework_path = Qt.find_framework_libdir(qtdir, qt5)
             if os.path.isdir(framework_path):
-                build.env.Append(LINKFLAGS="-Wl,-rpath," + framework_path)
                 build.env.Append(LINKFLAGS="-L" + framework_path)
 
         # Mixxx requires C++11 support. Windows enables C++11 features by
@@ -472,7 +471,7 @@ class ReplayGain(Dependence):
 
 
 class Ebur128Mit(Dependence):
-    INTERNAL_PATH = '#lib/libebur128-1.2.3'
+    INTERNAL_PATH = '#lib/libebur128'
     INTERNAL_LINK = False
 
     def sources(self, build):

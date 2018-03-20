@@ -60,12 +60,12 @@ class VisualPlayPosition : public QObject {
     void setInvalid() { m_valid = false; };
 
   private slots:
-    void slotAudioBufferSizeChanged(double size);
+    void slotAudioBufferSizeChanged(double sizeMs);
 
   private:
     ControlValueAtomic<VisualPlayPositionData> m_data;
     ControlProxy* m_audioBufferSize;
-    double m_dAudioBufferSize; // Audio buffer size in ms
+    int m_audioBufferMicros; // Audio buffer size in µs
     bool m_valid;
     QString m_key;
 

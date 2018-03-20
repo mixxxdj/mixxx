@@ -55,6 +55,7 @@ Variables:
             <EffectRack><Variable name="EffectRack"/></EffectRack>
             <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
             <Effect><Variable name="Effect"/></Effect>
+            <Size>120f,-1</Size>
           </EffectSelector>
 
           <Template src="skin:effect_parameter_knob.xml">

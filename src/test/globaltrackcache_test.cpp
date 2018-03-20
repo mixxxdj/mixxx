@@ -60,7 +60,7 @@ class TrackTitleThread: public QThread {
 
 class GlobalTrackCacheTest: public MixxxTest, public virtual GlobalTrackCacheSaver {
   public:
-    void saveCachedTrack(TrackPointer pTrack) noexcept override {
+    void saveCachedTrack(Track* pTrack) noexcept override {
         ASSERT_FALSE(pTrack == nullptr);
     }
 
