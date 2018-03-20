@@ -40,7 +40,7 @@
 							</WidgetGroup>
 							<WidgetGroup>
 								<ObjectName>DeckTopMidPart</ObjectName>
-								<Size>0e,45f</Size>
+								<Size>i,45f</Size>
 								<Layout>vertical</Layout>
 								<BackPath>style/style_bg_deck_top_mid.png</BackPath>
 								<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>

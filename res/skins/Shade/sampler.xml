@@ -1,7 +1,7 @@
 <Template>
 	<WidgetGroup>
 		<ObjectName>Sampler</ObjectName>
-		<Size>0e,103f</Size>
+		<Size>i,103f</Size>
 		<Layout>horizontal</Layout>
 		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 10px; } </Style>
 		<Children>
