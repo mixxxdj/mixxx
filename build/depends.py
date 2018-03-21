@@ -661,7 +661,7 @@ class MixxxCore(Feature):
                    "control/controlproxy.cpp",
                    "control/controlpushbutton.cpp",
                    "control/controlttrotary.cpp",
-                   "control/controlselector.cpp",
+                   "control/controlencoder.cpp",
 
                    "controllers/dlgcontrollerlearning.cpp",
                    "controllers/dlgprefcontroller.cpp",
