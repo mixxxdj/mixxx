@@ -31,11 +31,11 @@ void ControlNumericBehavior::setValueFromMidi(
     pControl->set(parameterToValue(dNorm), NULL);
 }
 
-double ControlSelectBehavior::midiToParameter(double midiValue) {
+double ControlEncoderBehavior::midiToParameter(double midiValue) {
     return midiValue;
 }
 
-double ControlSelectBehavior::valueToMidiParameter(double dValue) {
+double ControlEncoderBehavior::valueToMidiParameter(double dValue) {
     return dValue;
 }
 
