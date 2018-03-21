@@ -380,23 +380,6 @@
 			<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 			cause push buttons in library will show up with wrong margin/padding -->
 			<Children>
-			    <Template src="skin:effectrow.xml"/>	
-				<Template src="skin:srcrow.xml"/>	
-			    <Template src="skin:samplerrow.xml">
-					<SetVariable name="rownum">1</SetVariable>
-					<SetVariable name="samplernum1">1</SetVariable>
-					<SetVariable name="samplernum2">2</SetVariable>
-	                <SetVariable name="samplernum3">5</SetVariable>
-	                <SetVariable name="samplernum4">6</SetVariable>
-				</Template>
-
-			    <Template src="skin:samplerrow.xml">
-					<SetVariable name="rownum">2</SetVariable>
-					<SetVariable name="samplernum1">3</SetVariable>
-					<SetVariable name="samplernum2">4</SetVariable>
-	                <SetVariable name="samplernum3">7</SetVariable>
-	                <SetVariable name="samplernum4">8</SetVariable>
-				</Template>	
 				<WidgetGroup>
 				  <SizePolicy>me,f</SizePolicy>
 				  <Layout>horizontal</Layout>
@@ -435,6 +418,23 @@
 				    </Transform>
 				  </Connection>
 				</WidgetGroup>	
+			    <Template src="skin:effectrow.xml"/>	
+				<Template src="skin:srcrow.xml"/>	
+			    <Template src="skin:samplerrow.xml">
+					<SetVariable name="rownum">1</SetVariable>
+					<SetVariable name="samplernum1">1</SetVariable>
+					<SetVariable name="samplernum2">2</SetVariable>
+	                <SetVariable name="samplernum3">5</SetVariable>
+	                <SetVariable name="samplernum4">6</SetVariable>
+				</Template>
+
+			    <Template src="skin:samplerrow.xml">
+					<SetVariable name="rownum">2</SetVariable>
+					<SetVariable name="samplernum1">3</SetVariable>
+					<SetVariable name="samplernum2">4</SetVariable>
+	                <SetVariable name="samplernum3">7</SetVariable>
+	                <SetVariable name="samplernum4">8</SetVariable>
+				</Template>	
 				<!--
 				**********************************************
 				Library / Preview Deck / Search / Tree view
