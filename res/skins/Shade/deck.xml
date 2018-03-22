@@ -1,19 +1,19 @@
 <Template>
 	<WidgetGroup>
         <ObjectName>Deck</ObjectName>
-		<Size>0e,201f</Size>
+		<Size>0e,165f</Size>
         <Layout>horizontal</Layout>
 		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 		<Children>
 			<WidgetGroup>
 		        <ObjectName>DeckLeftBorder</ObjectName>
-				<Size>5f,201f</Size>
+				<Size>5f,165f</Size>
 				<BackPath>style/style_bg_deck_border.png</BackPath>
 				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 			</WidgetGroup>	
 			<WidgetGroup>
 				<ObjectName>DeckLeft</ObjectName>
-				<Size>0e,201f</Size>
+				<Size>0e,165f</Size>
 				<Layout>vertical</Layout>
 				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 				<Children>
@@ -40,7 +40,7 @@
 							</WidgetGroup>
 							<WidgetGroup>
 								<ObjectName>DeckTopMidPart</ObjectName>
-								<Size>0e,45f</Size>
+								<Size>i,45f</Size>
 								<Layout>vertical</Layout>
 								<BackPath>style/style_bg_deck_top_mid.png</BackPath>
 								<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
@@ -108,13 +108,13 @@
 				    </WidgetGroup>
 					<WidgetGroup>
 				        <ObjectName>DeckUpperLeftMidPart</ObjectName>
-						<Size>0e,117f</Size>
+						<Size>0e,81f</Size>
 						<Layout>horizontal</Layout>
 						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 						<Children>
 							<WidgetGroup>
 								<ObjectName>DeckUpperMidPart</ObjectName>
-								<Size>0e,117f</Size>
+								<Size>0e,81f</Size>
 								<BackPath>style/style_bg_deck_pane.png</BackPath>
 								<Layout>horizontal</Layout>
 								<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
@@ -122,7 +122,7 @@
 									<!-- Collapsing Waveform, VinylControl & spinning Vinyl widget-->
 									<WidgetGroup>
 										<ObjectName>DeckWaveformVinylControlSpinny</ObjectName>
-										<Size>0e,117f</Size>
+										<Size>0e,81f</Size>
 										<Layout>horizontal</Layout>
 										<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 										<Children>
@@ -144,7 +144,7 @@
 												<TooltipId>waveform_display</TooltipId>
 												<Style></Style>
 												<Channel><Variable name="channum"/></Channel>
-												<Size>0e,117f</Size>
+												<Size>0e,81f</Size>
 												<!--See comment about <Size> above-->
 												<!--<Size>415,119</Size>-->
 												<BgColor>#8D98A3</BgColor>
@@ -201,23 +201,11 @@
 
 											<!-- Spinning Vinyl & VinylControl -->
 											<WidgetGroup>
-												<Style>
-													QGroupBox {
-														border: 0px solid yellow;
-													}
-													QWidget { margin: 0; padding: 0; }
-												</Style>
-												<Layout>vertical</Layout>
+												<Layout>horizontal</Layout>
 												<Children>
-													<WidgetGroup>
-														<Style>QGroupBox { border: 0px solid green; } QWidget { margin: 0; padding: 0;}
-														</Style>
-														<Size>82f,0e</Size>
-													 </WidgetGroup>
 													<!-- Spinning Vinyl sub-widget -->
 													<WidgetGroup>
-														<Style>QGroupBox { border: 0px solid green; } QWidget { margin: 0; padding: 0;} </Style>
-														<Size>82f,82f</Size>
+														<Size>81f,81f</Size>
 														<Children>
 															<!--
 															**********************************************
@@ -226,10 +214,7 @@
 															-->
 															<Spinny>
 																<TooltipId>spinny</TooltipId>
-																<Style></Style>
 																<Channel><Variable name="channum"/></Channel>
-																<Pos>0,0</Pos>
-																<Size>82f,82f</Size>
 																<PathBackground>vinyl_spinny1_background.png</PathBackground>
 																<PathForeground>vinyl_spinny1_foreground.png</PathForeground>
 																<PathGhost>vinyl_spinny1_foreground_ghost.png</PathGhost>
@@ -239,11 +224,6 @@
 															<ConfigKey>[Spinny<Variable name="channum"/>],show_spinny</ConfigKey>
 															<BindProperty>visible</BindProperty>
 														</Connection>
-													</WidgetGroup>
-													<WidgetGroup>
-														<Style>QGroupBox { border: 0px solid green; } QWidget { margin: 0; padding: 0;}
-														</Style>
-														<Size>82f,0e</Size>
 													</WidgetGroup>
 							 						<Template src="skin:vinylcontrol.xml">
 														<SetVariable name="channum"><Variable name="channum"/></SetVariable>
@@ -284,6 +264,7 @@
 										<SignalColor>#191F24</SignalColor>
 										<PlayPosColor>#00FF00</PlayPosColor>
 										<EndOfTrackColor>#EA0000</EndOfTrackColor>
+										<PlayedOverlayColor>#60000000</PlayedOverlayColor>
 										<DefaultMark>
 											<Align>bottom|right</Align>
 											<Color>#FD0564</Color>
@@ -445,7 +426,7 @@
 			</WidgetGroup>
 			<WidgetGroup>
 		        <ObjectName>DeckRightPart</ObjectName>
-				<Size>52f,201f</Size>
+				<Size>52f,165f</Size>
 				<BackPath>style/style_bg_deck_right.png</BackPath>
 				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 				<Children>
@@ -551,13 +532,9 @@
 						<TooltipId>pitch_down</TooltipId>
 						<Size>10f,10f</Size>
 						<Style></Style>
-						<NumberStates>2</NumberStates>
+						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Text>◄</Text>
-						</State>
-						<State>
-							<Number>1</Number>
 							<Text>◄</Text>
 						</State>
 						<Pos>5,57</Pos>
@@ -575,11 +552,7 @@
 						<TooltipId>pitch_up</TooltipId>
 						<Size>10f,10f</Size>
 						<Style></Style>
-						<NumberStates>2</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Text>►</Text>
-						</State>
+						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
 							<Text>►</Text>
@@ -623,14 +596,13 @@
 
 					<PushButton>
 						<TooltipId>rate_temp_up_rate_temp_up_small</TooltipId>
-						<Style></Style>
+                        <Size>10f,10f</Size>
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_nudge_up1_overdown.png</Pressed>
-							<Unpressed>btn_nudge_up1.png</Unpressed>
+							<Text>►</Text>
 						</State>
-						<Pos>27,176</Pos>
+						<Pos>36,148</Pos>
 						<Connection>
 							<ConfigKey>[Channel<Variable name="channum"/>],rate_temp_up</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -645,14 +617,13 @@
 
 					<PushButton>
 						<TooltipId>rate_temp_down_rate_temp_down_small</TooltipId>
-						<Style></Style>
+                        <Size>10f,10f</Size>
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_nudge_down1_overdown.png</Pressed>
-							<Unpressed>btn_nudge_down1.png</Unpressed>
+							<Text>◄</Text>
 						</State>
-						<Pos>6,176</Pos>
+						<Pos>7,148</Pos>
 						<Connection>
 							<ConfigKey>[Channel<Variable name="channum"/>],rate_temp_down</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
