@@ -23,7 +23,7 @@
         <EffectRack>1</EffectRack>
         <EffectUnit><Variable name="effectunitnum"/></EffectUnit>
         <Effect><Variable name="effectnum"/></Effect>
-        <Size>94f,20f</Size>
+        <Size>92f,20f</Size>
       </EffectSelector>
     </Children>
   </WidgetGroup>
