@@ -53,7 +53,7 @@
 							<Style></Style>
 							<Handle>knob_crossfader.png</Handle>
 							<Slider>slider_crossfader.png</Slider>
-							<Pos>72,204</Pos>
+							<Pos>72,200</Pos>
 							<Horizontal>true</Horizontal>
 							<Connection>
 								<ConfigKey>[Master],crossfader</ConfigKey>
