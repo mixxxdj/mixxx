@@ -1,7 +1,7 @@
 <Template>
 	<WidgetGroup>
 		<ObjectName>Sampler</ObjectName>
-		<Size>0e,103f</Size>
+		<Size>i,103f</Size>
 		<Layout>horizontal</Layout>
 		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 10px; } </Style>
 		<Children>
@@ -54,20 +54,19 @@
 							</TrackProperty>
 							-->
 							<WidgetGroup>
-							 	<Size>42f,24f</Size>
+							 	<Size>35f,24f</Size>
 								<Style>QGroupBox {border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 								<Children>
-									<NumberBpm>
+									<Number>
 										<TooltipId>visual_bpm</TooltipId>
-										<Style>QLabel { font: bold 12px/14px sans-serif;
+										<Style>QLabel { font: bold 9px sans-serif;
 												font-family: "Open Sans";
 												background-color: transparent;
 												color: #191F24;
-												text-align: right;
-												padding-left: 0px;
-												padding-top: 1px;}
+												padding-right: 0;
+												padding-top: 2px;}
 										</Style>
-										<Size>42f,24f</Size>
+										<Size>35f,24f</Size>
 										<Pos>0,2</Pos>
 										<Group>[Sampler<Variable name="samplernum"/>]</Group>
 										<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
@@ -75,7 +74,7 @@
 										<Connection>
 											<ConfigKey>[Sampler<Variable name="samplernum"/>],visual_bpm</ConfigKey>
 										</Connection>
-									</NumberBpm>
+									</Number>
 									<!-- Little trickery here:
 										 BPM tap is transparent png directly over BPM display, so it became BPM and TAP at once,
 										 changed tooltip accordingly
@@ -136,7 +135,7 @@
 						                <ButtonState>LeftButton</ButtonState>
 						            </Connection>
 						            <Connection>
-						                <ConfigKey>[Sampler<Variable name="samplernum"/>],start_stop</ConfigKey>
+						                <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_default</ConfigKey>
 						                <ButtonState>RightButton</ButtonState>
 						            </Connection>
 						            <Connection>
@@ -160,6 +159,7 @@
 									<Pos>0,0</Pos>
 									<Size>0e,35f</Size>
 									<BgColor>#8D98A3</BgColor>
+									<PlayedOverlayColor>#60000000</PlayedOverlayColor>
 									<SignalHighColor></SignalHighColor>
 									<SignalMidColor></SignalMidColor>
 									<SignalLowColor></SignalLowColor>
@@ -482,8 +482,8 @@
 			</WidgetGroup>
 			<WidgetGroup>
 				<ObjectName>SamplerVUMeter</ObjectName>
-				<Size>7f,100f</Size>
-				<BackPath>style/style_bg_deck_border.png</BackPath>
+				<Size>8f,100f</Size>
+				<BackPath>style/style_bg_sampler_vu.png</BackPath>
 				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 				<Children>
 					<StatusLight>
@@ -491,7 +491,7 @@
 						<Style></Style>
 						<PathStatusLight>btn_clipping_sampler_over.png</PathStatusLight>
 						<PathBack>btn_clipping_sampler.png</PathBack>
-						<Pos>1,5</Pos>
+						<Pos>3,7</Pos>
 						<Connection>
 							<ConfigKey>[Sampler<Variable name="samplernum"/>],PeakIndicator</ConfigKey>
 						</Connection>
@@ -501,7 +501,7 @@
 						<Style></Style>
 						<PathVu>btn_volume_display_sampler_over.png</PathVu>
 						<PathBack>btn_volume_display_sampler.png</PathBack>
-						<Pos>1,24</Pos>
+						<Pos>3,24</Pos>
 						<Horizontal>false</Horizontal>
 						<PeakHoldSize>5</PeakHoldSize>
 						<PeakHoldTime>500</PeakHoldTime>

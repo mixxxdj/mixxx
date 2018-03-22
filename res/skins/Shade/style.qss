@@ -1,9 +1,3 @@
-#QToolTip { 
-	background-color: #191919; 
-	color: #CCCCCC; 
-	border: 1px solid #CCCCCC; 
-}
-
 #Mixxx {
     background-color: #191919;
     background-repeat:no-repeat;
@@ -11,12 +5,88 @@
 	background-position:center top;  
 }
 
-#DecksAndMixer {
-    border: 10px solid #565E6B; 
-    //margin: 100px 100px 100px 100px;
-    //padding: 100px 100px 100px 100px;
+WBeatSpinBox {
+	color: #060613;
+	background-color: #aab2b7;
+	border: 1px solid #060613;
+	padding: 0px;
+	font: 13px;
 }
 
+WBeatSpinBox::up-button{
+	height: 9px;
+	border-style: solid;
+	border-color: #060613;
+	border-width: 0px 0px 0px 1px;
+	image: url(skin:/btn_spin_up.png) no-repeat;
+}
+
+WBeatSpinBox::down-button {
+	height: 9px;										
+	border-style: solid;
+	border-color: #060613;
+	border-width: 0px 0px 0px 1px;
+	image: url(skin:/btn_spin_down.png) no-repeat;
+}
+
+WEffectSelector {
+	color: #060613;
+	background-color: #aab2b7;
+	/* Fixes the white bars on the top/bottom of the popup on Mac OS X */
+	margin-top: 0px;
+	margin-bottom: 0px;
+	border: 1px solid #060613;
+	padding-left: 3px;
+	font: 13px;
+}
+
+WEffectSelector::drop-down {
+	/* This causes the Qt theme's widget style to magically not apply. Go figure. */
+	border: 0;
+}
+
+WEffectSelector::down-arrow {
+	height: 20px;
+	border-style: solid;
+	border-color: #060613;
+	border-width: 0px 0px 0px 1px;
+	image: url(skin:/btn_spin_down.png) no-repeat;
+}
+
+WEffectSelector QAbstractItemView {
+	border: 2px solid #060613;
+	selection-background-color: lightgray;
+	font: 13px;
+}
+
+WEffectSelector:item
+{
+	border: 0px;
+	padding-left: 16px;  /* move text right to make room for tick mark */
+	font: 13px;
+	height: 17px; 
+}
+
+WEffectSelector:item:selected
+{
+	border: 0px;
+	font: 13px;
+	background-color: #aab2b7;
+	height: 20px;
+}
+
+#EffectSelectorGroup[highlight="1"]{ 
+	border: 1px solid #52f864;  
+	margin: 0px 0px 0px 0px;
+} 
+#EffectSelectorGroup[highlight="0"]{ 
+	border: 0px solid #52f864;  
+	margin: 0px 0px 0px 0px;
+}
+
+#EffectUnit { 
+	qproperty-layoutAlignment:AlignTop;
+}
 
 
 

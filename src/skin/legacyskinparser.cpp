@@ -363,12 +363,18 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
 
         if (created) {
             created_attributes.append(pControl);
-        }
-        if (!attribute.persist()) {
-            // Only set the value if the control wasn't set up through
-            // the persist logic.  Skin attributes are always
-            // set on skin load.
-            pControl->set(value);
+            if (!attribute.persist()) {
+                // Only set the value if the control wasn't set up through
+                // the persist logic.  Skin attributes are always
+                // set on skin load.
+                pControl->set(value);
+            }
+        } else {
+            if (!attribute.persist()) {
+                // Set the value using the static function, so the
+                // value changes singal is transmitted to the owner.
+                ControlObject::set(configKey, value);
+            }
         }
     }
 

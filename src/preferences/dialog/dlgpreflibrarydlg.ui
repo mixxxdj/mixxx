@@ -261,13 +261,6 @@
       <string extracomment="Sets default action when double-clicking a track in the library.">Track Load Action</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_5">
-      <item row="2" column="0">
-       <widget class="QRadioButton" name="radioButton_dbclick_top">
-        <property name="text">
-         <string>Add track to Auto DJ Queue (top)</string>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="0">
        <widget class="QRadioButton" name="radioButton_dbclick_deck">
         <property name="text">
@@ -282,6 +275,20 @@
        <widget class="QRadioButton" name="radioButton_dbclick_bottom">
         <property name="text">
          <string>Add track to Auto DJ Queue (bottom)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QRadioButton" name="radioButton_dbclick_top">
+        <property name="text">
+         <string>Add track to Auto DJ Queue (top)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QRadioButton" name="radioButton_dbclick_edit_metadata">
+        <property name="text">
+         <string>Edit metadata</string>
         </property>
        </widget>
       </item>
