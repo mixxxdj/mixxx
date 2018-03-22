@@ -1,76 +1,79 @@
 <Template>
-	<WidgetGroup>
-	  <SizePolicy>me,f</SizePolicy>
-	  <Layout>horizontal</Layout>
-	  <!-- I don't now why this works but a WidgetGroup wrapper around a
-		 WidgetStack with a 'fixed' size policy makes the group track the
-		 minimum size of the current stack widget. -->
-	  <Children>
-		<WidgetGroup>
-		  <Layout>horizontal</Layout>
-		  <Children>
-			<WidgetGroup>
-			  <Layout>horizontal</Layout>
-			  <Children>
-				<WidgetGroup>
-					<ObjectName>SamplerLeftBorder</ObjectName>
-					<Size>3f,0e</Size>
-					<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
-				</WidgetGroup>
-				<WidgetGroup>
-	  				<ObjectName>EffectUnit</ObjectName>
-				    <Layout>vertical</Layout>
-				    <Children>
-						<WidgetGroup>
-							<Size>0e,1f</Size>
-						</WidgetGroup>
-						<Template src="skin:effectunitsmall.xml">
-						  <SetVariable name="effectunitnum">1</SetVariable>
-						</Template>
-						<Template src="skin:effectunit_parameters.xml">
-						  <SetVariable name="effectunitnum">1</SetVariable>
-						</Template>
-						<Template src="skin:effectunit_border.xml"/>
-						<WidgetGroup>
-							<Size>0e,2f</Size>
-						</WidgetGroup>
-				    </Children>
-				</WidgetGroup>
-				<WidgetGroup>
-	  				<ObjectName>EffectUnit</ObjectName>
-				    <Layout>vertical</Layout>
-				    <Children>
-						<WidgetGroup>
-							<Size>0e,1f</Size>
-						</WidgetGroup>
-						<Template src="skin:effectunitsmall.xml">
-						  <SetVariable name="effectunitnum">2</SetVariable>
-						</Template>
-						<Template src="skin:effectunit_parameters.xml">
-						  <SetVariable name="effectunitnum">2</SetVariable>
-						</Template>
-						<Template src="skin:effectunit_border.xml"/>
-						<WidgetGroup>
-							<Size>0e,2f</Size>
-						</WidgetGroup>
-				    </Children>
-				</WidgetGroup>
-			  </Children>
-			</WidgetGroup>
-		  </Children>
-		  <Connection>
-		    <ConfigKey>[EffectRack1],show</ConfigKey>
-		    <BindProperty>visible</BindProperty>
-		  </Connection>
-		</WidgetGroup>
-	  </Children>
-	   <Connection>
-		 <ConfigKey>[Master],maximize_library</ConfigKey>
-		 <BindProperty>visible</BindProperty>
-		 <Transform>
-		   <Not/>
-		 </Transform>
-	   </Connection>
-	</WidgetGroup>
+  <WidgetGroup>
+    <SizePolicy>me,f</SizePolicy>
+    <Layout>horizontal</Layout>
+    <Children>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+
+              <WidgetGroup>
+                <ObjectName>SamplerLeftBorder</ObjectName>
+                <Size>3f,0e</Size>
+                <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+              </WidgetGroup>
+              <WidgetGroup>
+                <ObjectName>EffectUnit</ObjectName>
+                <Layout>vertical</Layout>
+                <Children>
+                  <WidgetGroup>
+                    <Size>0e,1f</Size>
+                  </WidgetGroup>
+                  <Template src="skin:effectunitsmall.xml">
+                    <SetVariable name="effectunitnum">1</SetVariable>
+                  </Template>
+                  <Template src="skin:effectunit_parameters.xml">
+                    <SetVariable name="effectunitnum">1</SetVariable>
+                  </Template>
+                  <Template src="skin:effectunit_border.xml"/>
+                  <WidgetGroup>
+                    <Size>0e,2f</Size>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>EffectUnit</ObjectName>
+                <Layout>vertical</Layout>
+                <Children>
+                  <WidgetGroup>
+                    <Size>0e,1f</Size>
+                  </WidgetGroup>
+                  <Template src="skin:effectunitsmall.xml">
+                    <SetVariable name="effectunitnum">2</SetVariable>
+                  </Template>
+                  <Template src="skin:effectunit_parameters.xml">
+                    <SetVariable name="effectunitnum">2</SetVariable>
+                  </Template>
+                  <Template src="skin:effectunit_border.xml"/>
+                  <WidgetGroup>
+                    <Size>0e,2f</Size>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey>[EffectRack1],show</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey>[Master],maximize_library</ConfigKey>
+      <BindProperty>visible</BindProperty>
+      <Transform>
+        <Not/>
+      </Transform>
+    </Connection>
+  </WidgetGroup>
 </Template>
 
