@@ -19,7 +19,7 @@
         <BackPath>style/style_bg_looping.png</BackPath>
         <Children>
           <PushButton>
-            <TooltipId>reloop_exit</TooltipId>
+            <TooltipId>reloop_toggle</TooltipId>
             <Style></Style>
             <Pos>4,10</Pos>
             <NumberStates>2</NumberStates>
@@ -35,7 +35,7 @@
               <Unpressed>btn_reloop1_over.png</Unpressed>
             </State>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],reloop_exit</ConfigKey>
+              <ConfigKey>[Channel<Variable name="channum"/>],reloop_toggle</ConfigKey>
               <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
               <ButtonState>LeftButton</ButtonState>
               <ConnectValueToWidget>false</ConnectValueToWidget>
@@ -122,7 +122,7 @@
           **********************************************
           -->
           <PushButton>
-            <TooltipId>beatloop</TooltipId>
+            <TooltipId>beatloop_activate</TooltipId>
             <Style></Style>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -154,7 +154,7 @@
             </Connection>
           </PushButton>
           <PushButton>
-            <TooltipId>beatloop</TooltipId>
+            <TooltipId>beatloop_activate</TooltipId>
             <Style></Style>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -186,7 +186,7 @@
             </Connection>
           </PushButton>
           <PushButton>
-            <TooltipId>beatloop</TooltipId>
+            <TooltipId>beatloop_activate</TooltipId>
             <Style></Style>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -218,7 +218,7 @@
             </Connection>
           </PushButton>
           <PushButton>
-            <TooltipId>beatloop</TooltipId>
+            <TooltipId>beatloop_activate</TooltipId>
             <Style></Style>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -250,7 +250,7 @@
             </Connection>
           </PushButton>
           <PushButton>
-            <TooltipId>beatloop</TooltipId>
+            <TooltipId>beatloop_activate</TooltipId>
             <Style></Style>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -282,7 +282,7 @@
             </Connection>
           </PushButton>
           <PushButton>
-            <TooltipId>beatloop</TooltipId>
+            <TooltipId>beatloop_activate</TooltipId>
             <Style></Style>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -314,7 +314,7 @@
             </Connection>
           </PushButton>
           <PushButton>
-            <TooltipId>beatloop</TooltipId>
+            <TooltipId>beatloop_activate</TooltipId>
             <Style></Style>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -346,7 +346,7 @@
             </Connection>
           </PushButton>
           <PushButton>
-            <TooltipId>beatloop</TooltipId>
+            <TooltipId>beatloop_activate</TooltipId>
             <Style></Style>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
