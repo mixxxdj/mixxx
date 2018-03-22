@@ -208,16 +208,11 @@
         <property name="singleStep">
          <double>25.0</double>
         </property>
-        <!-- Technically values between 0% and 25% would work, but 0% is invalid.
-        Setting the minimum to 1% makes an odd situation if the user then steps
-        up to 26%, 51%, and so on. So set the minimum to one step size. -->
         <property name="minimum">
-         <double>25.0</double>
+         <double>50.0</double>
         </property>
-        <!-- There should not actually be a maximum, but the default maximum is
-        100, which is too low. -->
         <property name="maximum">
-         <double>100000000000000000000</double>
+         <double>400</double>
         </property>
        </widget>
       </item>
