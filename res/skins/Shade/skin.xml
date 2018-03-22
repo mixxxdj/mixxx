@@ -212,7 +212,7 @@
 
 	<ObjectName>Mixxx</ObjectName>
 	<Style src="skin:style.qss"/>
-	<Size>1024e,500e</Size>
+	<Size>1008e,500e</Size>
 	<Layout>vertical</Layout>
     <LaunchImageStyle>
     	LaunchImage { background-color: #202020; }
@@ -240,7 +240,7 @@
 	<Children>
 		<WidgetGroup>
 			<ObjectName>DecksAndMixer</ObjectName>
-			<MinimumSize>1024e,259f</MinimumSize>
+			<MinimumSize>1008e,259f</MinimumSize>
 			<Layout>horizontal</Layout>
   			<Children>
 				<WidgetGroup>
@@ -373,7 +373,7 @@
 		############################################################################################
 		-->
 		<WidgetGroup>
-			<MinimumSize>1024,105</MinimumSize>
+			<MinimumSize>1008,105</MinimumSize>
 			<SizePolicy>me,me</SizePolicy>
 			<Layout>vertical</Layout>
 			<!--deactivate the standard
