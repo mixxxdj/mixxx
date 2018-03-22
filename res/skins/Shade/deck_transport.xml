@@ -57,7 +57,7 @@
       </PushButton>
 
       <PushButton>
-        <TooltipId></TooltipId>
+        <TooltipId>mute</TooltipId>
         <Style></Style>
         <NumberStates>2</NumberStates>
         <State>
@@ -313,7 +313,7 @@
       **********************************************
       -->
       <PushButton>
-        <TooltipId>beatloop</TooltipId>
+        <TooltipId>beatloop_activate</TooltipId>
         <Style></Style>
         <NumberStates>2</NumberStates>
         <LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -403,7 +403,7 @@
       </PushButton>
 
       <PushButton>
-        <TooltipId>reloop_exit</TooltipId>
+        <TooltipId>reloop_toggle</TooltipId>
         <Style></Style>
         <NumberStates>2</NumberStates>
         <LeftClickIsPushButton>true</LeftClickIsPushButton>
