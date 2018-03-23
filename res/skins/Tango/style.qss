@@ -1484,12 +1484,13 @@ decks, samplers, mic, aux, fx */
 
   WEffectSelector {
     font-size: 13px/13px;
+    /* On Linux this is applied to both effect name and effect list. */
     color: #ccc;
     /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
     margin: 0px;
     /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
         names start getting cut off. Adding explicit padding improves this. */
-    padding: 0px;
+    padding: 0px 28px 0px 0px;
     /* The 3D frame on the combo box becomes flat when you give it a border */
     border: 0px solid transparent;
     border-radius: 3px;
@@ -1517,13 +1518,15 @@ decks, samplers, mic, aux, fx */
 
     WEffectSelector QAbstractItemView {
       background-color: #202020;
+      selection-background-color: #0f0f0f;
       /* On Linux, this is not applied but font color from WEffectSelector
       is inherited. On Windows, it must be defined here explicitely: */
       color: #ccc;
+      border: 1px solid #333;
       border-radius: 2px;
       margin: 0px;
-      padding: 0px;
-      width: 150px;
+      /* Move list to the left to hide tick mark and prevent cut-off text. */
+      padding: 0px 0px 0px -20px;
     }
     /* items */
     WEffectSelector::item:!selected {
@@ -1532,8 +1535,8 @@ decks, samplers, mic, aux, fx */
     /* hovered items */
     WEffectSelector::item:selected {
       background-color: #0f0f0f;
-    /* This moves the tick mark behind item text,
-      text sits at left border now
+    /* This moves the tick mark behind item text, text sits at left border now.
+      Drawback: font size is not scaled with skin anymore. magic!
       border: 0; */
     }
     /* selected item */
@@ -1541,25 +1544,26 @@ decks, samplers, mic, aux, fx */
       /* not applied
       padding-left: 5px;
       font-weight: bold;	*/
-      color: #00b4ff;
+      color: #0081B7;
+      background-color: #000;
     }
     /* tick mark frame */
     WEffectSelector::indicator:checked {
     /* This is sufficient to completely hide the tick mark,
-      but this alone would show an empty, shadowed box instead of tick mark:
-      background-color: transparent;  */  /*
-      This should decrease the tick mark's left & right margin but is not respected
-      margin: 0px -4px 0px -4px;
-      This draws a border. And eliminates the tick mark...
-      border: 1px solid #999;
-      This has no effect:
-      background-color: #202020;
-      background-color: #101010;
+      but this alone would show an empty, shadowed box instead of tick mark:  */
+      background-color: transparent;
+      /* This should decrease the tick mark's left & right margin but is not respected
+      margin: 0px -4px 0px -4px; */
+      /* This draws a border. And eliminates the tick mark...
+      border: 1px solid #999; */
+      /* This has no effect:
       height: 10px;
-      width: 10px;
-      Image is rendered correctly but size of the tick mark containers
-      won't change:
-      image: url(skin:/buttons/btn_tick.svg) no-repeat center center; */
+      width: 10px; */
+      /* Image is rendered correctly but size of the tick mark containers
+      won't change. Also, only with this option the hover bg color defined
+      above will be applied... it's qt magic
+      image: url(skin:/buttons/btn_fx_selector_tick.svg) no-repeat center center; */
+      background: #0081B7;
     }
 
 #FxParameterKnob {
