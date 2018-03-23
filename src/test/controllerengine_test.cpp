@@ -588,3 +588,58 @@ TEST_F(ControllerEngineTest, connectionExecutesWithCorrectThisObject) {
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
+
+TEST_F(ControllerEngineTest, includedFilesCodeIsEvaluated) {
+    QString testScriptPath = QDir::current().absoluteFilePath("src/test/controllerscripttestfiles/controllerscripttestfile1.js");
+    bool evalResult = cEngine->evaluate(testScriptPath);
+
+    // Check that the content of script files has been evaluated
+    EXPECT_TRUE(evalResult);
+    EXPECT_FALSE(cEngine->hasErrors(testScriptPath));
+    EXPECT_TRUE(execute("function() {"
+                            "if (file3Loaded !== true) {"
+                                "throw \"file not included\";"
+                            "}"
+                        "}"));
+    EXPECT_TRUE(execute("function() {"
+                            "if (file4Loaded !== true) {"
+                                "throw \"file not included\";"
+                            "}"
+                        "}"));
+}
+
+TEST_F(ControllerEngineTest, includedFilesCodeIsEvaluatedOnlyOnce) {
+    QString testScriptPath = QDir::current().absoluteFilePath("src/test/controllerscripttestfiles/controllerscripttestfile5.js");
+    bool evalResult = cEngine->evaluate(testScriptPath);
+
+    // Check that the content of script files has been evaluated only once
+    EXPECT_TRUE(evalResult);
+    EXPECT_FALSE(cEngine->hasErrors(testScriptPath));
+    EXPECT_TRUE(execute("function() {"
+                            "if (counter > 1) {"
+                                "throw \"content of included file evaluated more than once\";"
+                            "}"
+                        "}"));
+}
+
+TEST_F(ControllerEngineTest, filesCanBeIncludedWithAbsolutePath) {
+    QString includedTestScriptPath = QDir::current().absoluteFilePath("src/test/controllerscripttestfiles/controllerscripttestfile3.js");
+
+    // We build a temp script that includes the other script with absolute path.
+    QString includingFileContent = ";(function (global) {"
+                                       "include(\"" + includedTestScriptPath + "\");"
+                                   "}(this));";
+    ScopedTemporaryFile pIncludingScriptFile(makeTemporaryFile(includingFileContent));
+
+    bool evalResult = cEngine->evaluate(pIncludingScriptFile->fileName());
+
+    // Check that the content of the included file has been evaluated.
+    EXPECT_TRUE(evalResult);
+    EXPECT_FALSE(cEngine->hasErrors(pIncludingScriptFile->fileName()));
+    EXPECT_FALSE(cEngine->hasErrors(pIncludingScriptFile->fileName()));
+    EXPECT_TRUE(execute("function() {"
+                            "if (file3Loaded !== true) {"
+                                "throw \"file not included\";"
+                            "}"
+                        "}"));
+}
