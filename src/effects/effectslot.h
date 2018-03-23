@@ -5,6 +5,7 @@
 #include <QSharedPointer>
 #include <QString>
 
+#include "control/controlencoder.h"
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
@@ -123,7 +124,7 @@ class EffectSlot : public QObject {
     ControlObject* m_pControlNumButtonParameterSlots;
     ControlObject* m_pControlNextEffect;
     ControlObject* m_pControlPrevEffect;
-    ControlObject* m_pControlEffectSelector;
+    ControlEncoder* m_pControlEffectSelector;
     ControlObject* m_pControlClear;
     ControlPotmeter* m_pControlMetaParameter;
     QList<EffectParameterSlotPointer> m_parameters;

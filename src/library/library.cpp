@@ -422,6 +422,23 @@ void Library::slotSetTrackTableRowHeight(int rowHeight) {
     emit(setTrackTableRowHeight(rowHeight));
 }
 
-void Library::onEvictingTrackFromCache(GlobalTrackCacheLocker* pCacheLocker, Track* pTrack) {
-    m_pTrackCollection->saveTrack(pCacheLocker, pTrack);
+void Library::saveCachedTrack(Track* pTrack) noexcept {
+    // It can produce dangerous signal loops if the track is still
+    // sending signals while being saved!
+    // See: https://bugs.launchpad.net/mixxx/+bug/1365708
+    // NOTE(uklotzde, 2018-02-03): Simply disconnecting all receivers
+    // doesn't seem to work reliably. Emitting the clean() signal from
+    // a track that is about to deleted may cause access violations!!
+    pTrack->blockSignals(true);
+
+    // The metadata must be exported while the cache is locked to
+    // ensure that we have exclusive (write) access on the file
+    // and not reader or writer is accessing the same file
+    // concurrently.
+    m_pTrackCollection->exportTrackMetadata(pTrack);
+
+    // The track must be saved while the cache is locked to
+    // prevent that a new track is created from the outdated
+    // metadata that is is the database before saving is finished.
+    m_pTrackCollection->saveTrack(pTrack);
 }

@@ -9,8 +9,6 @@ Variables:
     <Layout>vertical</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
-      <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
-
       <WidgetGroup>
         <ObjectName>Spacer0f</ObjectName>
         <Layout>horizontal</Layout>
@@ -58,6 +56,8 @@ Variables:
           </Template>
         </Children>
       </WidgetGroup>
+
+      <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
     </Children>
     <Connection>
       <ConfigKey persist="true">[Tango],loop_sizes</ConfigKey>

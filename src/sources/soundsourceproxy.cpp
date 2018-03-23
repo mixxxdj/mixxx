@@ -28,6 +28,7 @@
 
 #include "library/coverartutils.h"
 #include "library/coverartcache.h"
+#include "track/globaltrackcache.h"
 #include "util/cmdlineargs.h"
 #include "util/regex.h"
 #include "util/logger.h"
@@ -298,12 +299,40 @@ SoundSourceProxy::findSoundSourceProviderRegistrations(
     return registrationsForFileExtension;
 }
 
+
+//static
+TrackPointer SoundSourceProxy::importTemporaryTrack(
+        QFileInfo fileInfo,
+        SecurityTokenPointer pSecurityToken) {
+    TrackPointer pTrack = Track::newTemporary(std::move(fileInfo), std::move(pSecurityToken));
+    // Lock the track cache while populating the temporary track
+    // object to ensure that no metadata is exported into any file
+    // while reading from this file. Since locking individual files
+    // is not possible and the whole cache is locked.
+    GlobalTrackCacheLocker locker;
+    SoundSourceProxy(pTrack).updateTrackFromSource();
+    return pTrack;
+}
+
+//static
+QImage SoundSourceProxy::importTemporaryCoverImage(
+        QFileInfo fileInfo,
+        SecurityTokenPointer pSecurityToken) {
+    TrackPointer pTrack = Track::newTemporary(std::move(fileInfo), std::move(pSecurityToken));
+    // Lock the track cache while populating the temporary track
+    // object to ensure that no metadata is exported into any file
+    // while reading from this file. Since locking individual files
+    // is not possible and the whole cache is locked.
+    GlobalTrackCacheLocker locker;
+    return SoundSourceProxy(pTrack).importCoverImage();
+}
+
 //static
 Track::ExportMetadataResult
 SoundSourceProxy::exportTrackMetadataBeforeSaving(Track* pTrack) {
     DEBUG_ASSERT(pTrack);
     mixxx::MetadataSourcePointer pMetadataSource =
-            SoundSourceProxy(pTrack).m_pSoundSource;
+            SoundSourceProxy(getCanonicalUrlForTrack(pTrack)).m_pSoundSource;
     if (pMetadataSource) {
         return pTrack->exportMetadata(pMetadataSource);
     } else {
@@ -324,9 +353,8 @@ SoundSourceProxy::SoundSourceProxy(
 }
 
 SoundSourceProxy::SoundSourceProxy(
-        const Track* pTrack)
-    : m_pTrack(TrackPointer()), // provided track object is about to be destroyed
-      m_url(getCanonicalUrlForTrack(pTrack)),
+        const QUrl& url)
+    : m_url(url),
       m_soundSourceProviderRegistrations(findSoundSourceProviderRegistrations(m_url)),
       m_soundSourceProviderRegistrationIndex(0) {
     initSoundSource();

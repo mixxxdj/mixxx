@@ -62,9 +62,9 @@
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
       <attribute persist="true" config_key="[Master],show_eqs">1</attribute>
       <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
-      <attribute persist="true" config_key="[Master],maximize_library">0</attribute>
+      <attribute config_key="[Library],show_library">1</attribute>
+      <attribute config_key="[Master],maximize_library">0</attribute>
       <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
-      <attribute persist="true" config_key="[Library],show_library">1</attribute>
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
       <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
@@ -95,8 +95,8 @@
       <attribute persist="true" config_key="[Tango],separate_cue_button">1</attribute>
       <attribute persist="true" config_key="[Tango],hotcues">1</attribute>
       <attribute persist="true" config_key="[Tango],8_hotcues">0</attribute>
-      <attribute persist="true" config_key="[Tango],key_controls">1</attribute>
-      <attribute persist="true" config_key="[Tango],rate_key_buttons">0</attribute>
+      <attribute persist="true" config_key="[Tango],key_display_match">1</attribute>
+      <attribute persist="true" config_key="[Tango],rate_key_controls">0</attribute>
       <attribute persist="true" config_key="[Tango],loop_beatjump_controls">1</attribute>
       <attribute persist="true" config_key="[Tango],loop_sizes">0</attribute>
       <attribute persist="true" config_key="[Tango],pitch_fader">1</attribute>
@@ -114,6 +114,27 @@
       <attribute persist="true" config_key="[Tango],vinylControlsDeck3">0</attribute>
       <attribute persist="true" config_key="[Tango],vinylControlsDeck4">0</attribute>
       <attribute persist="true" config_key="[Tango],vumeter">1</attribute>
+      <!--Disable hidden effect routing Buttons-->
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusLeft]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusCenter]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusRight]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusTalkover]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusLeft]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusCenter]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusRight]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusTalkover]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusLeft]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusCenter]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusRight]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusTalkover]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusLeft]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusCenter]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusRight]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusTalkover]_enable">0</attribute>
     </attributes>
   </manifest>
 
@@ -187,6 +208,14 @@
 <!--################################################################
      Singleton definitions  #######################################
    ############################################################### -->
+    <SingletonDefinition>
+      <ObjectName>Waveforms_Singleton</ObjectName>
+      <Children>
+        <Template src="skin:waveforms_container.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+
     <SingletonDefinition>
       <ObjectName>Library_Singleton</ObjectName>
       <Children>
@@ -262,7 +291,9 @@
                       <Layout>vertical</Layout>
                       <SizePolicy>me,max</SizePolicy>
                       <Children>
-                        <Template src="skin:waveforms_container.xml"/>
+                        <SingletonContainer>
+                          <ObjectName>Waveforms_Singleton</ObjectName>
+                        </SingletonContainer>
                       </Children>
                       <Connection>
                         <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
@@ -276,6 +307,25 @@
                       <Children>
 
                         <Template src="skin:decks_12.xml"/>
+
+                    <!-- Load scrolling waveforms Singleton here if the waveforms
+                        in the waveforms/decks Splitter are collapsed.
+                        Otherwise the end-of-track warning would not show up
+                        in overview waveforms. -->
+                        <WidgetGroup>
+                          <Layout>vertical</Layout>
+                          <Size>0me,0f</Size>
+                          <Children>
+                            <SingletonContainer>
+                              <ObjectName>Waveforms_Singleton</ObjectName>
+                            </SingletonContainer>
+                          </Children>
+                          <Connection>
+                            <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
+                            <Transform><Not/></Transform>
+                            <BindProperty>visible</BindProperty>
+                          </Connection>
+                        </WidgetGroup>
 
                         <WidgetGroup>
                           <Layout>vertical</Layout>

@@ -63,7 +63,7 @@
        </widget>
       </item>
       <item row="2" column="0" rowspan="2">
-       <widget class="QLabel" name="lableColorScheme">
+       <widget class="QLabel" name="labelColorScheme">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -195,9 +195,24 @@
        </widget>
       </item>
       <item row="6" column="1">
-       <widget class="QComboBox" name="comboBoxScaleFactor">
+       <widget class="QDoubleSpinBox" name="spinBoxScaleFactor">
         <property name="toolTip">
          <string>Change the size of text, buttons, and other items.</string>
+        </property>
+        <property name="decimals">
+         <number>0</number>
+        </property>
+        <property name="suffix">
+         <string notr="true"> %</string>
+        </property>
+        <property name="singleStep">
+         <double>25.0</double>
+        </property>
+        <property name="minimum">
+         <double>50.0</double>
+        </property>
+        <property name="maximum">
+         <double>400</double>
         </property>
        </widget>
       </item>

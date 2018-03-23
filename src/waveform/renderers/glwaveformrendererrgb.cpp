@@ -91,10 +91,7 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
         }
         glEnd();
 
-        glLineWidth(2.0);
-        glEnable(GL_LINE_SMOOTH);
-
-        glBegin(GL_LINES); {
+        glBegin(GL_QUADS); {
             for (int visualIndex = firstVisualIndex;
                  visualIndex < lastVisualIndex;
                  visualIndex += 2) {
@@ -107,6 +104,7 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
                     break;
                 }
 
+
                 float left_low    = lowGain  * (float) data[visualIndex].filtered.low;
                 float left_mid    = midGain  * (float) data[visualIndex].filtered.mid;
                 float left_high   = highGain * (float) data[visualIndex].filtered.high;
@@ -117,8 +115,10 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
                 float left_max    = math_max3(left_red, left_green, left_blue);
                 if (left_max > 0.0f) {  // Prevent division by zero
                     glColor4f(left_red / left_max, left_green / left_max, left_blue / left_max, 0.8f);
-                    glVertex2f(visualIndex, 0.0f);
-                    glVertex2f(visualIndex, left_all);
+                    glVertex2f(visualIndex - 1.0f, 0.0f);
+                    glVertex2f(visualIndex - 1.0f, left_all);
+                    glVertex2f(visualIndex + 1.0f, left_all);
+                    glVertex2f(visualIndex + 1.0f, 0.0f);
                 }
 
                 float right_low   = lowGain  * (float) data[visualIndex+1].filtered.low;
@@ -131,8 +131,10 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
                 float right_max   = math_max3(right_red, right_green, right_blue);
                 if (right_max > 0.0f) {  // Prevent division by zero
                     glColor4f(right_red / right_max, right_green / right_max, right_blue / right_max, 0.8f);
-                    glVertex2f(visualIndex, 0.0f);
-                    glVertex2f(visualIndex, -1.0f * right_all);
+                    glVertex2f(visualIndex - 1.0f, 0.0f);
+                    glVertex2f(visualIndex - 1.0f, -1.0f * right_all);
+                    glVertex2f(visualIndex + 1.0f, -1.0f * right_all);
+                    glVertex2f(visualIndex + 1.0f, 0.0f);
                 }
             }
         }
@@ -159,10 +161,7 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
         glScalef(1.0f, allGain, 1.0f);
 
-        glLineWidth(2.0);
-        glEnable(GL_LINE_SMOOTH);
-
-        glBegin(GL_LINES); {
+        glBegin(GL_QUADS); {
             for (int visualIndex = firstVisualIndex;
                  visualIndex < lastVisualIndex;
                  visualIndex += 2) {
@@ -188,8 +187,10 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
                 float max = math_max3(red, green, blue);
                 if (max > 0.0f) {  // Prevent division by zero
                     glColor4f(red / max, green / max, blue / max, 0.9f);
-                    glVertex2f(float(visualIndex), 0.0f);
-                    glVertex2f(float(visualIndex), all);
+                    glVertex2f(float(visualIndex) - 1.0f, 0.0f);
+                    glVertex2f(float(visualIndex) - 1.0f, all);
+                    glVertex2f(float(visualIndex) + 1.0f, all);
+                    glVertex2f(float(visualIndex) + 1.0f, 0.0f);
                 }
             }
         }

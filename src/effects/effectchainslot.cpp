@@ -62,7 +62,7 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
             this, SLOT(slotControlChainPrevPreset(double)));
 
     // Ignoring no-ops is important since this is for +/- tickers.
-    m_pControlChainSelector = new ControlObject(ConfigKey(m_group, "chain_selector"), false);
+    m_pControlChainSelector = new ControlEncoder(ConfigKey(m_group, "chain_selector"), false);
     connect(m_pControlChainSelector, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainSelector(double)));
 
@@ -80,9 +80,10 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
                                         true);
     m_pControlChainShowParameters->setButtonMode(ControlPushButton::TOGGLE);
 
-    m_pControlChainFocusedEffect = new ControlObject(
+    m_pControlChainFocusedEffect = new ControlPushButton(
                                        ConfigKey(m_group, "focused_effect"),
-                                       true, false, true);
+                                       true);
+    m_pControlChainFocusedEffect->setButtonMode(ControlPushButton::TOGGLE);
 }
 
 EffectChainSlot::~EffectChainSlot() {
@@ -303,7 +304,9 @@ EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
 
     EffectSlotPointer pSlot(pEffectSlot);
     m_slots.append(pSlot);
-    m_pControlNumEffectSlots->forceSet(m_pControlNumEffectSlots->get() + 1);
+    int numEffectSlots = m_pControlNumEffectSlots->get() + 1;
+    m_pControlNumEffectSlots->forceSet(numEffectSlots);
+    m_pControlChainFocusedEffect->setStates(numEffectSlots);
     return pSlot;
 }
 

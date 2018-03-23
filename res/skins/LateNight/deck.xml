@@ -73,8 +73,8 @@
               <SliderComposed>
                 <ObjectName>RateSlider</ObjectName>
                 <TooltipId>rate</TooltipId>
-                <Handle>knob_pitch1.png</Handle>
-                <Slider>slider_pitch1.png</Slider>
+                <Handle>knob_pitch_deck.svg</Handle>
+                <Slider>slider_pitch_deck.svg</Slider>
                 <Horizontal>false</Horizontal>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,rate</ConfigKey>
@@ -288,7 +288,6 @@
               <!-- Disable explicit master for now. -->
               <!-- <PushButton>
                 <TooltipId>sync_master</TooltipId>
-                <Style></Style>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>

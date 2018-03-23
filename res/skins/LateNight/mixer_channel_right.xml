@@ -9,7 +9,7 @@ vertical layout and a reversed side-by-side layout for two-deck mode -->
     <Children>
 
       <WidgetGroup><!--  Channel2 controls side-by-side-->
-        <ObjectName>MixerChannelHoriz</ObjectName>
+        <ObjectName>MixerChannel_2Decks</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
@@ -46,8 +46,8 @@ vertical layout and a reversed side-by-side layout for two-deck mode -->
                 <Children>
                   <StatusLight>
                     <TooltipId>channel_PeakIndicator</TooltipId>
-                    <PathStatusLight>buttons/btn_clipping1_over.png</PathStatusLight>
-                    <PathBack>buttons/btn_clipping1.png</PathBack>
+                    <PathStatusLight>style/clipping_deck_over.svg</PathStatusLight>
+                    <PathBack>style/clipping_deck.svg</PathBack>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
                     </Connection>
@@ -61,8 +61,8 @@ vertical layout and a reversed side-by-side layout for two-deck mode -->
                 <Children>
                   <VuMeter>
                     <TooltipId>channel_VuMeter</TooltipId>
-                    <PathVu>buttons/btn_volume_display1_over.png</PathVu>
-                    <PathBack>buttons/btn_volume_display1.png</PathBack>
+                    <PathVu>style/volume_display_deck_over.svg</PathVu>
+                    <PathBack>style/volume_display_deck.svg</PathBack>
                     <Horizontal>false</Horizontal>
                     <PeakHoldSize>5</PeakHoldSize>
                     <PeakHoldTime>500</PeakHoldTime>
@@ -94,8 +94,8 @@ vertical layout and a reversed side-by-side layout for two-deck mode -->
 
               <SliderComposed><!-- Volume -->
                 <TooltipId>channel_volume</TooltipId>
-                <Handle>knob_volume1.png</Handle>
-                <Slider>slider_volume1.png</Slider>
+                <Handle>knob_volume_deck.svg</Handle>
+                <Slider>slider_volume_deck.svg</Slider>
                 <Horizontal>false</Horizontal>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,volume</ConfigKey>
@@ -106,7 +106,7 @@ vertical layout and a reversed side-by-side layout for two-deck mode -->
 
           <WidgetGroup><!-- EQs -->
             <Layout>vertical</Layout>
-            <ObjectName>MixerChannelReversed</ObjectName>
+            <ObjectName>MixerChannel_2Decks_Right</ObjectName>
             <SizePolicy>min,min</SizePolicy>
             <Children>
 

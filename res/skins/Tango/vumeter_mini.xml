@@ -1,0 +1,34 @@
+<!--
+Description:
+  VUMeter embedded in Mic unit, Aux unit & Preview deck.
+Variables:
+  group   : [MicrophoneN], [AuxiliaryN], [PerviewDeck]
+  chanNum : channel number
+-->
+<Template>
+  <WidgetGroup>
+    <Size><Variable name="Size"/></Size>
+    <Layout>stacked</Layout>
+    <Children>
+      <StatusLight>
+        <PathStatusLight scalemode="STRETCH">skin:/graphics/vumeter_mini_clipping_over.svg</PathStatusLight>
+        <PathBack scalemode="STRETCH">skin:/graphics/vumeter_mini_clipping.svg</PathBack>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
+        </Connection>
+      </StatusLight>
+      <VuMeter>
+        <PathVu scalemode="STRETCH">skin:/graphics/vumeter_mini_over.svg</PathVu>
+        <PathBack scalemode="STRETCH">skin:/graphics/vumeter_mini.svg</PathBack>
+        <Horizontal>false</Horizontal>
+        <PeakHoldSize>5</PeakHoldSize>
+        <PeakHoldTime>500</PeakHoldTime>
+        <PeakFallTime>50</PeakFallTime>
+        <PeakFallStep>2</PeakFallStep>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
+        </Connection>
+      </VuMeter>
+    </Children>
+  </WidgetGroup>
+</Template>

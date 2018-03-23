@@ -4,6 +4,7 @@
 #include <QDebug>
 
 #include "control/controlpushbutton.h"
+#include "control/controlencoder.h"
 #include "control/controlproxy.h"
 #include "util/math.h"
 #include "util/xml.h"
@@ -48,7 +49,7 @@ EffectSlot::EffectSlot(const QString& group,
             this, SLOT(slotPrevEffect(double)));
 
     // Ignoring no-ops is important since this is for +/- tickers.
-    m_pControlEffectSelector = new ControlObject(ConfigKey(m_group, "effect_selector"), false);
+    m_pControlEffectSelector = new ControlEncoder(ConfigKey(m_group, "effect_selector"), false);
     connect(m_pControlEffectSelector, SIGNAL(valueChanged(double)),
             this, SLOT(slotEffectSelector(double)));
 

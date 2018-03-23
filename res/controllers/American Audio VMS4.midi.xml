@@ -1354,16 +1354,6 @@
          <!-- Mixer main-->
          <control>
             <group>[Master]</group>
-            <key>crossfader</key>
-            <status>0xB0</status>
-            <midino>0x1F</midino>
-            <options>
-               <invert/>
-               <soft-takeover/>
-            </options>
-         </control>
-         <control>
-            <group>[Master]</group>
             <key>headMix</key>
             <status>0xB0</status>
             <midino>0x22</midino>
@@ -1436,15 +1426,6 @@
                 <soft-takeover />
             </options>
          </control>
-         <control>
-            <group>[Channel1]</group>
-            <key>volume</key>
-            <status>0xB0</status>
-            <midino>0x09</midino>
-            <options>
-                <soft-takeover />
-            </options>
-         </control>
          <control><!-- on -->
             <group>[Channel1]</group>
             <key>pfl</key>
@@ -1497,15 +1478,6 @@
             <key>parameter1</key>
             <status>0xB0</status>
             <midino>0x0D</midino>
-            <options>
-                <soft-takeover />
-            </options>
-         </control>
-         <control>
-            <group>[Channel2]</group>
-            <key>volume</key>
-            <status>0xB0</status>
-            <midino>0x0E</midino>
             <options>
                 <soft-takeover />
             </options>
@@ -1566,15 +1538,6 @@
                  <soft-takeover />
              </options>
          </control>
-         <control>
-             <group>[Channel3]</group>
-             <key>volume</key>
-             <status>0xB0</status>
-             <midino>0x04</midino>
-             <options>
-                 <soft-takeover />
-             </options>
-         </control>
          <control><!-- on -->
              <group>[Channel3]</group>
              <key>pfl</key>
@@ -1627,15 +1590,6 @@
              <key>parameter1</key>
              <status>0xB0</status>
              <midino>0x12</midino>
-             <options>
-                 <soft-takeover />
-             </options>
-         </control>
-         <control>
-             <group>[Channel4]</group>
-             <key>volume</key>
-             <status>0xB0</status>
-             <midino>0x13</midino>
              <options>
                  <soft-takeover />
              </options>
