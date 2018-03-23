@@ -414,6 +414,9 @@ XoneK2.Deck = function (column, deckNumber, midiChannel) {
         shift: function () {
             this.inKey = 'reloop_andstop';
         },
+        supershift: function () {
+            this.inKey = 'loop_in';
+        },
         color: XoneK2.color.red,
     });
 
@@ -423,6 +426,9 @@ XoneK2.Deck = function (column, deckNumber, midiChannel) {
         },
         shift: function () {
             this.inKey = 'beatlooproll_activate';
+        },
+        supershift: function () {
+            this.inKey = 'loop_out';
         },
         trigger: function() {
             this.send(this.on);
