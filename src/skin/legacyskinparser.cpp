@@ -307,7 +307,7 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
     qDebug() << "LegacySkinParser loading skin:" << skinPath;
 
     m_pContext = std::make_unique<SkinContext>(m_pConfig, skinPath + "/skin.xml");
-    m_pContext->setSkinBasePath(skinPath + "/");
+    m_pContext->setSkinBasePath(skinPath);
 
     if (m_pParent) {
         qDebug() << "ERROR: Somehow a parent already exists -- you are probably re-using a LegacySkinParser which is not advisable!";
@@ -379,9 +379,6 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
     }
 
     ColorSchemeParser::setupLegacyColorSchemes(skinDocument, m_pConfig, &m_style);
-
-    QStringList skinPaths(skinPath);
-    QDir::setSearchPaths("skin", skinPaths);
 
     // don't parent till here so the first opengl waveform doesn't screw
     // up --bkgood
