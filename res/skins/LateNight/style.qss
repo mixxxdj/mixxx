@@ -1348,6 +1348,10 @@ QTableView, QTextBrowser, QTreeView {
   selection-background-color: #725309;
 }
 
+QTableView:focus, QTreeView:focus {
+  border: 1px solid #FF6600;
+}
+
 /* checkbox in library "Played" column */
 QTableView::indicator { width: 12px; height: 12px;}
 QTableView::indicator:checked { background: url(skin:/style/style_checkbox_checked.png);}
