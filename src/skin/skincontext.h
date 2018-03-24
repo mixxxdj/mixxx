@@ -31,8 +31,8 @@ class SkinContext {
     virtual ~SkinContext();
 
     // Gets a path relative to the skin path.
-    QString getSkinPath(const QString& relativePath) const {
-        return m_skinBasePath.filePath(relativePath);
+    QString makeSkinPath(const QString& relativePath) const {
+        return QString("skin:").append(relativePath);
     }
 
     // Sets the base path used by getSkinPath.

@@ -86,7 +86,7 @@ void SvgParser::parseElement(QDomElement* element) const {
 
         QString scriptPath = element->attribute("src");
         if (!scriptPath.isNull()) {
-            QFile scriptFile(m_pChildContext->getSkinPath(scriptPath));
+            QFile scriptFile(m_pChildContext->makeSkinPath(scriptPath));
             if (!scriptFile.open(QIODevice::ReadOnly|QIODevice::Text)) {
                 qDebug() << "ERROR: Failed to open script file";
             }

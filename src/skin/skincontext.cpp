@@ -208,7 +208,7 @@ QDomElement SkinContext::loadSvg(const QString& filename) const {
 
 PixmapSource SkinContext::getPixmapSourceInner(const QString& filename) const {
     if (!filename.isEmpty()) {
-        return PixmapSource(getSkinPath(filename));
+        return PixmapSource(makeSkinPath(filename));
     }
     return PixmapSource();
 }
