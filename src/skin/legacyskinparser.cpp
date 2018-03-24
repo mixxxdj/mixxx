@@ -1510,6 +1510,7 @@ QDomElement LegacySkinParser::loadTemplate(const QString& path) {
     }
 
     m_templateCache[absolutePath] = tmpl.documentElement();
+    m_pContext->setSkinTemplatePath(templateFileInfo.absoluteDir().absolutePath());
     return tmpl.documentElement();
 }
 
@@ -1523,10 +1524,14 @@ QList<QWidget*> LegacySkinParser::parseTemplate(const QDomElement& node) {
 
     QString path = node.attribute("src");
 
+    std::unique_ptr<SkinContext> pOldContext = std::move(m_pContext);
+    m_pContext = std::make_unique<SkinContext>(*pOldContext);
+
     QDomElement templateNode = loadTemplate(path);
 
     if (templateNode.isNull()) {
         SKIN_WARNING(node, *m_pContext) << "Template instantiation for template failed:" << path;
+        m_pContext = std::move(pOldContext);
         return QList<QWidget*>();
     }
 
@@ -1534,8 +1539,6 @@ QList<QWidget*> LegacySkinParser::parseTemplate(const QDomElement& node) {
         qDebug() << "BEGIN TEMPLATE" << path;
     }
 
-    std::unique_ptr<SkinContext> pOldContext = std::move(m_pContext);
-    m_pContext = std::make_unique<SkinContext>(*pOldContext);
     // Take any <SetVariable> elements from this node and update the context
     // with them.
     m_pContext->updateVariables(node);
