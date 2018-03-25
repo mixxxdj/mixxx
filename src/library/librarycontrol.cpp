@@ -471,22 +471,12 @@ void LibraryControl::slotGoToItem(double v) {
     {
         setLibraryFocus();
     }
+    // TODO(xxx) instead of remote control the widgets individual, we should 
+    // translate this into Alt+Return and handle it at each library widget 
+    // individual https://bugs.launchpad.net/mixxx/+bug/1758618
+    //emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Return, Qt::AltModifier});
 }
-/*
-=======
 
-    if (v > 0) {
-        if (dynamic_cast<WTrackTableView*>(QApplication::focusWidget())) {
-            // If main pane is focused then try to load the selected track into first stopped
-            return slotLoadSelectedIntoFirstStopped(v);
-        } else {
-            // Otherwise we press return + tab to select current item and go to the next pane
-            emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier});
-            emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier});
-        }
-    }
->>>>>>> Replace the ChooseItem control with new GoToItem
-*/
 void LibraryControl::slotFontSize(double v) {
     if (v == 0.0) {
         return;

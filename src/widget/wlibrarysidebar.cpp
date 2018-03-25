@@ -194,6 +194,10 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
             emit(pressed(index));
         }
         return;
+    //} else if (event->key() == Qt::Key_Enter && (event->modifiers() & Qt::AltModifier)) {
+    //    // encoder click via "GoToItem"
+    //    qDebug() << "GoToItem";
+    //    TODO(xxx) decide what todo here instead of in librarycontrol
     }
 
     // Fall through to deafult handler.
