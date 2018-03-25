@@ -619,7 +619,7 @@ MixtrackPlatinum.pflToggle = function(value, group, control) {
 
 MixtrackPlatinum.vuCallback = function(value, group, control) {
     // the top LED lights up at 81
-    var level = value * 81;
+    var level = value * 80;
 
     // if any channel pfl is active, show channel levels
     if (engine.getValue('[Channel1]', 'pfl')
@@ -627,6 +627,10 @@ MixtrackPlatinum.vuCallback = function(value, group, control) {
         || engine.getValue('[Channel3]', 'pfl')
         || engine.getValue('[Channel4]', 'pfl'))
     {
+        if (engine.getValue(group, "PeakIndicator")) {
+            level = 81;
+        }
+
         if (group == '[Channel1]' && MixtrackPlatinum.deck_active[0]) {
             midi.sendShortMsg(0xBF, 0x44, level);
         }
@@ -641,9 +645,15 @@ MixtrackPlatinum.vuCallback = function(value, group, control) {
         }
     }
     else if (group == '[Master]' && control == 'VuMeterL') {
+        if (engine.getValue(group, "PeakIndicatorL")) {
+            level = 81;
+        }
         midi.sendShortMsg(0xBF, 0x44, level);
     }
     else if (group == '[Master]' && control == 'VuMeterR') {
+        if (engine.getValue(group, "PeakIndicatorR")) {
+            level = 81;
+        }
         midi.sendShortMsg(0xBF, 0x45, level);
     }
 };
