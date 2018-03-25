@@ -102,7 +102,7 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("deck1", "loop_out", 0x0E, "B", 0x08);
   MessageShort.addControl("deck1", "loop_in", 0x0E, "B", 0x04);
   MessageShort.addControl("deck1", "slip_enabled", 0x0E, "B", 0x02);
-  MessageShort.addControl("deck1", "!reset", 0x0E, "B", 0x01);
+  MessageShort.addControl("deck1", "eject", 0x0E, "B", 0x01);
   MessageShort.addControl("deck1", "beatloop_activate", 0x13, "B", 0x02);
   MessageShort.addControl("deck1", "!loop_activate", 0x13, "B", 0x01);
   MessageShort.addControl("deck1", "!jog_touch", 0x11, "B", 0x01);
@@ -130,7 +130,7 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("deck2", "loop_out", 0x0B, "B", 0x08);
   MessageShort.addControl("deck2", "loop_in", 0x0B, "B", 0x04);
   MessageShort.addControl("deck2", "slip_enabled", 0x0B, "B", 0x02);
-  MessageShort.addControl("deck2", "!reset", 0x0B, "B", 0x01);
+  MessageShort.addControl("deck2", "eject", 0x0B, "B", 0x01);
   MessageShort.addControl("deck2", "beatloop_activate", 0x13, "B", 0x10);
   MessageShort.addControl("deck2", "!loop_activate", 0x13, "B", 0x08);
   MessageShort.addControl("deck2", "!jog_touch", 0x11, "B", 0x02);
@@ -165,8 +165,11 @@ TraktorS4MK2.registerInputPackets = function() {
 
   MessageShort.addControl("[Playlist]", "LoadSelectedIntoFirstStopped", 0x13, "B", 0x04);
   MessageShort.addControl("[PreviewDeck1]", "!previewdeck", 0x0F, "B", 0x01);
+  MessageShort.addControl("[Recording]", "toggle_recording", 0x0F, "B", 0x04);
+
 
   MessageShort.addControl("[Master]", "!quantize", 0x0A, "B", 0x08);
+  MessageShort.addControl("[Master]", "!snap", 0x0A, "B", 0x02)
 
   MessageShort.setCallback("deck1", "!shift", this.shiftHandler);
   MessageShort.setCallback("deck2", "!shift", this.shiftHandler);
@@ -204,6 +207,8 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.setCallback("deck2", "!remix4", this.remixHandler);
   MessageShort.setCallback("[PreviewDeck1]", "!previewdeck", this.previewDeckHandler);
   MessageShort.setCallback("[Master]", "!quantize", this.quantizeHandler);
+  MessageShort.setCallback("[Master]", "!snap", this.snapHandler);
+
   // TODO: the rest of the "!" controls.
   this.controller.registerInputPacket(MessageShort);
 
@@ -306,6 +311,8 @@ TraktorS4MK2.registerOutputPackets = function() {
     }
   }
 
+
+
   Output1.addOutput("[Channel1]", "PeakIndicator", 0x0F, "B");
   Output1.addOutput("[Channel2]", "PeakIndicator", 0x17, "B");
   Output1.addOutput("[Channel3]", "PeakIndicator", 0x07, "B");
@@ -314,6 +321,8 @@ TraktorS4MK2.registerOutputPackets = function() {
   Output1.addOutput("[Master]", "!usblight", 0x2A, "B");
   Output1.addOutput("[Master]", "!quantize", 0x31, "B");
   Output1.addOutput("[InternalClock]", "sync_master", 0x30, "B");
+  Output1.addOutput("[Recording]", "status", 0x34, "B" );
+
   this.controller.registerOutputPacket(Output1);
 
   Output2.addOutput("deck1", "!shift", 0x1D, "B");
@@ -364,6 +373,7 @@ TraktorS4MK2.registerOutputPackets = function() {
   Output2.addOutput("[Channel4]", "!deck_D", 0x37, "B");
 
   Output2.addOutput("[PreviewDeck1]", "play_indicator", 0x3D, "B");
+
 
   // Note: this logic means remix button actions are not switchable without reloading the script.
   // Once we have support for controller preferences, this can be changed.
@@ -457,6 +467,7 @@ TraktorS4MK2.registerOutputPackets = function() {
   TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit2]", "show_parameters", TraktorS4MK2.outputChannelCallback);
   TraktorS4MK2.linkChannelOutput("[PreviewDeck1]", "play_indicator", TraktorS4MK2.outputChannelCallback);
   TraktorS4MK2.linkChannelOutput("[InternalClock]", "sync_master", TraktorS4MK2.outputChannelCallback);
+  TraktorS4MK2.linkChannelOutput("[Recording]", "status", TraktorS4MK2.outputChannelCallback);
 
   if (TraktorS4MK2.RemixSlotButtonAction === "SAMPLES") {
     TraktorS4MK2.linkChannelOutput("[Sampler1]", "play_indicator", TraktorS4MK2.outputChannelCallback);
@@ -535,6 +546,8 @@ TraktorS4MK2.lightDeck = function(group) {
   TraktorS4MK2.lightGroup(packet, "[EffectRack1_EffectUnit1]", "[EffectRack1_EffectUnit1]");
   TraktorS4MK2.lightGroup(packet, "[EffectRack1_EffectUnit2]", "[EffectRack1_EffectUnit2]");
 
+  // Loop size indicator
+
   // Selected deck lights
   if (group === "[Channel1]") {
     TraktorS4MK2.controller.setOutput("[Channel1]", "!deck_A", 0x7F, false);
@@ -578,6 +591,7 @@ TraktorS4MK2.pointlessLightShow = function() {
         packets[i][j] = k;
       }
     }
+
     controller.send(packets[0], packets[0].length, 0);
     controller.send(packets[1], packets[1].length, 0);
     controller.send(packets[2], packets[2].length, 0);
@@ -607,7 +621,9 @@ TraktorS4MK2.init = function(id) {
   TraktorS4MK2.controller.setOutput("[Master]", "!quantize", 0x7F * TraktorS4MK2.master_quantize, true);
 
   TraktorS4MK2.controller.setOutput("[Master]", "!usblight", 0x7F, true);
+
   TraktorS4MK2.outputChannelCallback(engine.getValue("[InternalClock]", "sync_master"), "[InternalClock]", "sync_master");
+  TraktorS4MK2.outputChannelCallback(engine.getValue("[Recording]", "status"), "[Recording]", "status");
   TraktorS4MK2.lightDeck("[PreviewDeck1]");
   // Light 3 and 4 first so we get the mixer lights on, then do 1 and 2 since those are active
   // on startup.
@@ -1088,6 +1104,14 @@ TraktorS4MK2.quantizeHandler = function(field) {
   TraktorS4MK2.controller.setOutput("[Master]", "!quantize", 0x7F * TraktorS4MK2.master_quantize, true);
 }
 
+TraktorS4MK2.snapHandler = function(field) {
+  if (field.value === 0) {
+    return;
+  }
+  library_maximized = engine.getValue("[Master]", "maximize_library");
+  engine.setValue("[Master]", "maximize_library", !library_maximized);
+}
+
 TraktorS4MK2.callbackPregain = function(field) {
   // TODO: common-hid-packet-parser looks like it should do deltas, but I can't get them to work.
   prev_pregain = TraktorS4MK2.controller.prev_pregain[field.group];
@@ -1103,8 +1127,21 @@ TraktorS4MK2.callbackPregain = function(field) {
     delta = -0.05;
   }
 
-  var cur_pregain = engine.getValue(group, "pregain");
-  engine.setValue(group, "pregain", cur_pregain + delta);
+  if (
+    TraktorS4MK2.controller.shift_pressed['deck1'] ||
+    TraktorS4MK2.controller.shift_pressed['deck2']
+  ) {
+    if(delta > 0){
+        engine.setValue(group, 'beats_translate_later', true);
+    } else if (delta < 0){
+        engine.setValue(group, 'beats_translate_earlier', true);
+    }
+  }
+  else {
+    var cur_pregain = engine.getValue(group, "pregain");
+    engine.setValue(group, "pregain", cur_pregain + delta);
+  }
+
 }
 
 TraktorS4MK2.callbackLoopMove = function(field) {
@@ -1135,6 +1172,36 @@ TraktorS4MK2.callbackLoopMove = function(field) {
     }
   } else {
     engine.setValue(field.group, "loop_move", delta);
+  }
+}
+
+TraktorS4MK2.sendLoopSizeMessage = function(group, beats) {
+  var LoopSizeIndicators = {
+      "deck2" : [0x2B, 0x3A],
+      "deck1" : [0x1B, 0x2A],
+  }
+  start_signal = LoopSizeIndicators[group]
+
+  var sizesArray = {
+    64: [1,2,4,5,6,7,9,10,11,13],
+    32: [1,2,3,4,7,9,11,12,14,15],
+    16: [2,3,9,10,12,13,14,15],
+    8:  [9,10,11,12,13,14,15],
+    4:  [9,10,11,13],
+    2:  [9,11,12,14,15],
+  }
+  var packets = Object();
+
+  packets.length = 61;
+
+  start_signal = parseInt(LoopSizeIndicators[group][0])
+  for (k = 0; k < 0x7F; k+=0x05) {
+      packets[0] = 0x82;
+      for (j = 0; j < sizesArray[beats].length; j++) {
+        var hid_msg = start_signal +  sizesArray[beats][j]
+        packets[hid_msg] = k;
+    }
+  controller.send(packets, packets.length, 0);
   }
 }
 
@@ -1171,6 +1238,7 @@ TraktorS4MK2.callbackLoopSize = function(field) {
       engine.setValue(field.group, "loop_halve", 0);
     }
   }
+  // TraktorS4MK2.sendLoopSizeMessage(group, engine.getValue(field.group, "beatloop_size"));
 }
 
 TraktorS4MK2.callbackBrowse = function(field) {
@@ -1187,8 +1255,15 @@ TraktorS4MK2.callbackBrowse = function(field) {
   } else {
     delta = -1;
   }
-
-  engine.setValue("[Playlist]", "SelectTrackKnob", delta);
+  if (
+    TraktorS4MK2.controller.shift_pressed["deck1"] ||
+    TraktorS4MK2.controller.shift_pressed["deck2"]
+  ) {
+    engine.setValue("[Playlist]", "SelectPlaylist", delta);
+  }
+  else {
+    engine.setValue("[Playlist]", "SelectTrackKnob", delta);
+  }
 }
 
 TraktorS4MK2.scalerParameter = function(group, name, value) {
