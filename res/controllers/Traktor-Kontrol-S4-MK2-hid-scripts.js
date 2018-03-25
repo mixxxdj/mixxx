@@ -109,10 +109,10 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("deck1", "!jog_wheel", 0x01, "I");
   MessageShort.addControl("deck1", "!deckswitch", 0x0F, "B", 0x20);
   MessageShort.addControl("deck1", "!load_track", 0x0F, "B", 0x10);
-  MessageShort.addControl("deck1", "!FX1", 0x12, "B", 0x80);
-  MessageShort.addControl("deck1", "!FX2", 0x12, "B", 0x40);
-  MessageShort.addControl("deck1", "!FX3", 0x12, "B", 0x20);
-  MessageShort.addControl("deck1", "!FX4", 0x12, "B", 0x10);
+  MessageShort.addControl("deck1", "!FXon", 0x12, "B", 0x80);
+  MessageShort.addControl("[EffectRack1_EffectUnit1_Effect1]", "!FXButton", 0x12, "B", 0x40);
+  MessageShort.addControl("[EffectRack1_EffectUnit1_Effect2]", "!FXButton", 0x12, "B", 0x20);
+  MessageShort.addControl("[EffectRack1_EffectUnit1_Effect3]", "!FXButton", 0x12, "B", 0x10);
   MessageShort.addControl("[EffectRack1_EffectUnit1]", "show_parameters", 0x11, "B", 0x08);
 
   MessageShort.addControl("deck2", "!shift", 0x0C, "B", 0x08);
@@ -137,10 +137,10 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("deck2", "!jog_wheel", 0x05, "I");
   MessageShort.addControl("deck2", "!deckswitch", 0x0A, "B", 0x20);
   MessageShort.addControl("deck2", "!load_track", 0x0A, "B", 0x10);
-  MessageShort.addControl("deck2", "!FX1", 0x10, "B", 0x08);
-  MessageShort.addControl("deck2", "!FX2", 0x10, "B", 0x04);
-  MessageShort.addControl("deck2", "!FX3", 0x10, "B", 0x02);
-  MessageShort.addControl("deck2", "!FX4", 0x10, "B", 0x01);
+  MessageShort.addControl("deck2", "!FXon", 0x10, "B", 0x08);
+  MessageShort.addControl("[EffectRack1_EffectUnit2_Effect1]", "!FXButton", 0x10, "B", 0x04);
+  MessageShort.addControl("[EffectRack1_EffectUnit2_Effect2]", "!FXButton", 0x10, "B", 0x02);
+  MessageShort.addControl("[EffectRack1_EffectUnit2_Effect3]", "!FXButton", 0x10, "B", 0x01);
   MessageShort.addControl("[EffectRack1_EffectUnit2]", "show_parameters", 0x11, "B", 0x04);
 
   MessageShort.addControl("[Channel1]", "pfl", 0x0F, "B", 0x40);
@@ -208,6 +208,16 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.setCallback("[PreviewDeck1]", "!previewdeck", this.previewDeckHandler);
   MessageShort.setCallback("[Master]", "!quantize", this.quantizeHandler);
   MessageShort.setCallback("[Master]", "!snap", this.snapHandler);
+
+  MessageShort.setCallback("[EffectRack1_EffectUnit1_Effect1]", "!FXButton", this.FXButtonHandler);
+  MessageShort.setCallback("[EffectRack1_EffectUnit1_Effect2]", "!FXButton", this.FXButtonHandler);
+  MessageShort.setCallback("[EffectRack1_EffectUnit1_Effect3]", "!FXButton", this.FXButtonHandler);
+
+  MessageShort.setCallback("[EffectRack1_EffectUnit2_Effect1]", "!FXButton", this.FXButtonHandler);
+  MessageShort.setCallback("[EffectRack1_EffectUnit2_Effect2]", "!FXButton", this.FXButtonHandler);
+  MessageShort.setCallback("[EffectRack1_EffectUnit2_Effect3]", "!FXButton", this.FXButtonHandler);
+
+
 
   // TODO: the rest of the "!" controls.
   this.controller.registerInputPacket(MessageShort);
@@ -422,8 +432,18 @@ TraktorS4MK2.registerOutputPackets = function() {
   Output3.addOutput("[EffectRack1_EffectUnit1]", "group_[Channel4]_enable", 0x0B, "B");
   Output3.addOutput("[EffectRack1_EffectUnit2]", "group_[Channel4]_enable", 0x0C, "B");
 
+  Output3.addOutput("[EffectRack1_EffectUnit1_Effect1]", "enabled", 0x02, "B");
+  Output3.addOutput("[EffectRack1_EffectUnit1_Effect2]", "enabled", 0x03, "B");
+  Output3.addOutput("[EffectRack1_EffectUnit1_Effect3]", "enabled", 0x04, "B");
+
+  Output3.addOutput("[EffectRack1_EffectUnit2_Effect1]", "enabled", 0x0E, "B");
+  Output3.addOutput("[EffectRack1_EffectUnit2_Effect2]", "enabled", 0x0F, "B");
+  Output3.addOutput("[EffectRack1_EffectUnit2_Effect3]", "enabled", 0x10, "B");
+
   Output3.addOutput("[EffectRack1_EffectUnit1]", "show_parameters", 0x11, "B");
+
   Output3.addOutput("[EffectRack1_EffectUnit2]", "show_parameters", 0x12, "B");
+
 
   this.controller.registerOutputPacket(Output3);
 
@@ -465,6 +485,13 @@ TraktorS4MK2.registerOutputPackets = function() {
 
   TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit1]", "show_parameters", TraktorS4MK2.outputChannelCallback);
   TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit2]", "show_parameters", TraktorS4MK2.outputChannelCallback);
+  TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit1_Effect1]", "enabled", TraktorS4MK2.outputChannelCallback);
+  TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit1_Effect2]", "enabled", TraktorS4MK2.outputChannelCallback);
+  TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit1_Effect3]", "enabled", TraktorS4MK2.outputChannelCallback);
+  TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit2_Effect1]", "enabled", TraktorS4MK2.outputChannelCallback);
+  TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit2_Effect2]", "enabled", TraktorS4MK2.outputChannelCallback);
+  TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit2_Effect3]", "enabled", TraktorS4MK2.outputChannelCallback);
+
   TraktorS4MK2.linkChannelOutput("[PreviewDeck1]", "play_indicator", TraktorS4MK2.outputChannelCallback);
   TraktorS4MK2.linkChannelOutput("[InternalClock]", "sync_master", TraktorS4MK2.outputChannelCallback);
   TraktorS4MK2.linkChannelOutput("[Recording]", "status", TraktorS4MK2.outputChannelCallback);
@@ -545,6 +572,12 @@ TraktorS4MK2.lightDeck = function(group) {
   var packet = this.controller.OutputPackets["output3"];
   TraktorS4MK2.lightGroup(packet, "[EffectRack1_EffectUnit1]", "[EffectRack1_EffectUnit1]");
   TraktorS4MK2.lightGroup(packet, "[EffectRack1_EffectUnit2]", "[EffectRack1_EffectUnit2]");
+  TraktorS4MK2.lightGroup(packet, "[EffectRack1_EffectUnit1_Effect1]", "[EffectRack1_EffectUnit1_Effect1]");
+  TraktorS4MK2.lightGroup(packet, "[EffectRack1_EffectUnit1_Effect2]", "[EffectRack1_EffectUnit1_Effect2]");
+  TraktorS4MK2.lightGroup(packet, "[EffectRack1_EffectUnit1_Effect3]", "[EffectRack1_EffectUnit1_Effect3]");
+  TraktorS4MK2.lightGroup(packet, "[EffectRack1_EffectUnit2_Effect1]", "[EffectRack1_EffectUnit2_Effect1]");
+  TraktorS4MK2.lightGroup(packet, "[EffectRack1_EffectUnit2_Effect2]", "[EffectRack1_EffectUnit2_Effect2]");
+  TraktorS4MK2.lightGroup(packet, "[EffectRack1_EffectUnit2_Effect3]", "[EffectRack1_EffectUnit2_Effect3]");
 
   // Loop size indicator
 
@@ -1110,6 +1143,21 @@ TraktorS4MK2.snapHandler = function(field) {
   }
   library_maximized = engine.getValue("[Master]", "maximize_library");
   engine.setValue("[Master]", "maximize_library", !library_maximized);
+}
+
+TraktorS4MK2.FXButtonHandler = function(field){
+  if(field.value){
+    if (
+      TraktorS4MK2.controller.shift_pressed['deck1'] ||
+      TraktorS4MK2.controller.shift_pressed['deck2']
+    ) {
+      engine.setValue(field.group, "effect_selector", 1);
+    }
+    else {
+      engine.setValue(field.group, "enabled", !engine.getValue(field.group, "enabled"));
+    }
+  }
+  TraktorS4MK2.lightDeck(field.group);
 }
 
 TraktorS4MK2.callbackPregain = function(field) {
