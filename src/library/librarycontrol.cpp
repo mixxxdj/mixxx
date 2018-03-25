@@ -461,15 +461,15 @@ void LibraryControl::slotGoToItem(double v) {
     if (activeView && activeView->hasFocus()) {
         return slotLoadSelectedIntoFirstStopped(v);
     }
-    // Otherwise toggle the sidebar item expanded state (like a double-click)
-    slotToggleSelectedSidebarItem(v);
 
     // Focus the library if this is a leaf node in the tree
     if (m_pSidebarWidget && v > 0
-        && m_pSidebarWidget->hasFocus()
-        && m_pSidebarWidget->isLeafNodeSelected())
-    {
+            && m_pSidebarWidget->hasFocus()
+            && m_pSidebarWidget->isLeafNodeSelected()) {
         setLibraryFocus();
+    } else {
+        // Otherwise toggle the sidebar item expanded state
+        slotToggleSelectedSidebarItem(v);
     }
     // TODO(xxx) instead of remote control the widgets individual, we should 
     // translate this into Alt+Return and handle it at each library widget 

@@ -82,7 +82,7 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
             if (sidebarModel) {
                 accepted = false;
                 for (const QUrl& url : urls) {
-                    QModelIndex destIndex = this->indexAt(event->pos());
+                    QModelIndex destIndex = indexAt(event->pos());
                     if (sidebarModel->dragMoveAccept(destIndex, url)) {
                         // We only need one URL to be valid for us
                         // to accept the whole drag...
@@ -170,7 +170,13 @@ bool WLibrarySidebar::isLeafNodeSelected() {
     QModelIndexList selectedIndices = this->selectionModel()->selectedRows();
     if (selectedIndices.size() > 0) {
         QModelIndex index = selectedIndices.at(0);
-        return !index.model()->hasChildren(index);
+        if(!index.model()->hasChildren(index)) {
+            return true;
+        }
+        const SidebarModel* sidebarModel = dynamic_cast<const SidebarModel*>(index.model());
+        if (sidebarModel) {
+            return sidebarModel->hasTrackTable(index);
+        }
     }
     return false;
 }
