@@ -6,7 +6,7 @@
 */
 
 #include <QApplication>
-#include <QScriptValue>
+#include <QJSValue>
 
 #include "controllers/controller.h"
 #include "controllers/controllerdebug.h"
@@ -136,7 +136,7 @@ void Controller::receive(const QByteArray data, mixxx::Duration timestamp) {
             continue;
         }
         function.append(".incomingData");
-        QScriptValue incomingData = m_pEngine->wrapFunctionCode(function, 2);
+        QJSValue incomingData = m_pEngine->wrapFunctionCode(function, 2);
         if (!m_pEngine->execute(incomingData, data, timestamp)) {
             qWarning() << "Controller: Invalid script function" << function;
         }

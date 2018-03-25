@@ -55,7 +55,7 @@ void ControlObjectScript::removeScriptConnection(const ScriptConnection& conn) {
     }
 }
 
-void ControlObjectScript::disconnectAllConnectionsToFunction(const QScriptValue& function) {
+void ControlObjectScript::disconnectAllConnectionsToFunction(const QJSValue& function) {
     // Make a local copy of m_scriptConnections because items are removed within the loop.
     const QList<ScriptConnection> connections = m_scriptConnections;
     for (const auto& conn: connections) {
