@@ -42,29 +42,29 @@ for (var ch = 0; ch <= 0xF; ++ch) {
 
 XoneK2.init = function (id) {
     var channel = XoneK2.decksInMiddleMidiChannel;
-    XoneK2.controllers[channel].columns[1] = new XoneK2.EffectUnit(1, 1, channel);
+    XoneK2.controllers[channel].columns[1] = new XoneK2.EffectUnit(1, 1, channel, true);
     XoneK2.controllers[channel].columns[2] = new XoneK2.Deck(2, 1, channel);
     XoneK2.controllers[channel].columns[3] = new XoneK2.Deck(3, 2, channel);
-    XoneK2.controllers[channel].columns[4] = new XoneK2.EffectUnit(4, 2, channel);
+    XoneK2.controllers[channel].columns[4] = new XoneK2.EffectUnit(4, 2, channel, true);
     XoneK2.decksLayerButton(channel, null, null, 0x90 + channel, null);
 
     channel = XoneK2.effectsInMiddleMidiChannel;
     XoneK2.controllers[channel].columns[1] = new XoneK2.Deck(1, 1, channel);
-    XoneK2.controllers[channel].columns[2] = new XoneK2.EffectUnit(1, 1, channel);
-    XoneK2.controllers[channel].columns[3] = new XoneK2.EffectUnit(3, 2, channel);
+    XoneK2.controllers[channel].columns[2] = new XoneK2.EffectUnit(2, 1, channel, true);
+    XoneK2.controllers[channel].columns[3] = new XoneK2.EffectUnit(3, 2, channel, true);
     XoneK2.controllers[channel].columns[4] = new XoneK2.Deck(4, 2, channel);
     XoneK2.decksLayerButton(channel, null, null, 0x90 + channel, null);
 
     channel = XoneK2.decksOnLeftMidiChannel;
     XoneK2.controllers[channel].columns[1] = new XoneK2.Deck(1, 1, channel);
-    XoneK2.controllers[channel].columns[2] = new XoneK2.Deck(1, 2, channel);
-    XoneK2.controllers[channel].columns[3] = new XoneK2.EffectUnit(3, 1, channel);
-    XoneK2.controllers[channel].columns[4] = new XoneK2.EffectUnit(4, 2, channel);
+    XoneK2.controllers[channel].columns[2] = new XoneK2.Deck(2, 2, channel);
+    XoneK2.controllers[channel].columns[3] = new XoneK2.EffectUnit(3, 1, channel, true);
+    XoneK2.controllers[channel].columns[4] = new XoneK2.EffectUnit(4, 2, channel, true);
     XoneK2.decksLayerButton(channel, null, null, 0x90 + channel, null);
 
     channel = XoneK2.decksOnRightMidiChannel;
-    XoneK2.controllers[channel].columns[1] = new XoneK2.EffectUnit(1, 1, channel);
-    XoneK2.controllers[channel].columns[2] = new XoneK2.EffectUnit(2, 2, channel);
+    XoneK2.controllers[channel].columns[1] = new XoneK2.EffectUnit(1, 1, channel, true);
+    XoneK2.controllers[channel].columns[2] = new XoneK2.EffectUnit(2, 2, channel, true);
     XoneK2.controllers[channel].columns[3] = new XoneK2.Deck(3, 1, channel);
     XoneK2.controllers[channel].columns[4] = new XoneK2.Deck(4, 2, channel);
     XoneK2.decksLayerButton(channel, null, null, 0x90 + channel, null);
@@ -605,10 +605,56 @@ XoneK2.EffectUnit = function (column, unitNumber, midiChannel, twoDeck) {
 
     this.bottomButtons = new components.ComponentContainer();
     var channelString;
-    for (var c = 1; c <= 4; c++) {
-        channelString = "Channel" + c;
-        this.libraryEffectUnit.enableOnChannelButtons.addButton(channelString);
-        this.bottomButtons[c] = this.libraryEffectUnit.enableOnChannelButtons[channelString];
+    libraryEffectUnit.enableOnChannelButtons.addButton('Channel1');
+    this.bottomButtons[1] = libraryEffectUnit.enableOnChannelButtons.Channel1;
+    libraryEffectUnit.enableOnChannelButtons.addButton('Channel2');
+    this.bottomButtons[2] = libraryEffectUnit.enableOnChannelButtons.Channel2;
+    if (twoDeck === true) {
+        libraryEffectUnit.enableOnChannelButtons.addButton('Master');
+        this.bottomButtons[3] = libraryEffectUnit.enableOnChannelButtons.Master;
+        libraryEffectUnit.enableOnChannelButtons.addButton('Headphone');
+        this.bottomButtons[4] = libraryEffectUnit.enableOnChannelButtons.Headphone;
+    } else {
+        this.bottomButtons[3] = new components.Button({
+            group: unitString,
+            unshift: function () {
+                this.disconnect();
+                this.inKey = 'group_[Channel3]_enable';
+                this.outKey = 'group_[Channel3]_enable';
+                this.color = XoneK2.color.red;
+                this.connect();
+                this.trigger();
+            },
+            shift: function () {
+                this.disconnect();
+                this.inKey = 'group_[Master]_enable';
+                this.outKey = 'group_[Master]_enable';
+                this.color = XoneK2.color.amber;
+                this.connect();
+                this.trigger();
+            },
+            type: components.Button.prototype.types.toggle,
+        });
+        this.bottomButtons[4] = new components.Button({
+            group: unitString,
+            unshift: function () {
+                this.disconnect();
+                this.inKey = 'group_[Channel4]_enable';
+                this.outKey = 'group_[Channel4]_enable';
+                this.color = XoneK2.color.red;
+                this.connect();
+                this.trigger();
+            },
+            shift: function () {
+                this.disconnect();
+                this.inKey = 'group_[Headphone]_enable';
+                this.outKey = 'group_[Headphone]_enable';
+                this.color = XoneK2.color.amber;
+                this.connect();
+                this.trigger();
+            },
+            type: components.Button.prototype.types.toggle,
+        });
     }
 
     this.encoder = new components.Component({
