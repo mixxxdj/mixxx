@@ -176,7 +176,7 @@ QTableView {
 }
 
 QTableView:focus, QTreeView:focus {
-  border: 1px solid #027ED7;
+  border: 1px solid #FF6600;
 }
 
 /* Colors aren't applied to selected items, define them manually */
