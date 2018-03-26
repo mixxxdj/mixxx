@@ -584,10 +584,13 @@ XoneK2.decksLayerButton = function (channel, control, value, status) {
     }
 };
 
-XoneK2.EffectUnit = function (column, unitNumber, midiChannel) {
+XoneK2.EffectUnit = function (column, unitNumber, midiChannel, twoDeck) {
     // "library" refers to the Components library
-
-    this.libraryEffectUnit = new components.EffectUnit([unitNumber], false, {
+    // This is a private variable rather than a property of XoneK2.EffectUnit
+    // so that components.ComponentContainer.prototype.shift/unshift do not
+    // call the shift/unshift methods of the components in libraryEffectUnit
+    // when a single effect unit is focused.
+    var libraryEffectUnit = new components.EffectUnit([unitNumber], false, {
         unfocused: XoneK2.color.red,
         focusChooseMode: XoneK2.color.green,
         focused: XoneK2.color.amber,
@@ -598,9 +601,9 @@ XoneK2.EffectUnit = function (column, unitNumber, midiChannel) {
     this.hadParametersShowing = engine.getValue(unitString, 'show_parameters');
     this.hadFocusShowing = engine.getValue(unitString, 'show_focus');
 
-    this.fader = this.libraryEffectUnit.dryWetKnob;
+    this.fader = libraryEffectUnit.dryWetKnob;
 
-    this.bottomButtons = [];
+    this.bottomButtons = new components.ComponentContainer();
     var channelString;
     for (var c = 1; c <= 4; c++) {
         channelString = "Channel" + c;
@@ -609,7 +612,7 @@ XoneK2.EffectUnit = function (column, unitNumber, midiChannel) {
     }
 
     this.encoder = new components.Component({
-        // TODO: figure out a use for this
+        // TODO: figure out a use for this. Maybe switching chain presets?
         input: function () {},
     });
 
@@ -627,27 +630,27 @@ XoneK2.EffectUnit = function (column, unitNumber, midiChannel) {
             component.disconnect();
         });
 
-        this.encoderPress = this.libraryEffectUnit.effectFocusButton;
-        this.knobs = this.libraryEffectUnit.knobs;
-        this.topButtons = this.libraryEffectUnit.enableButtons;
+        this.encoderPress = libraryEffectUnit.effectFocusButton;
+        this.knobs = libraryEffectUnit.knobs;
+        this.topButtons = libraryEffectUnit.enableButtons;
 
         engine.setValue(unitString, 'show_focus', this.hadFocusShowing);
         engine.setValue(unitString, 'show_parameters', this.hadParametersShowing);
 
         XoneK2.setColumnMidi(this, column, midiChannel);
-        if (this.libraryEffectUnit.hasInitialized) {
-            this.libraryEffectUnit.showParametersConnection =
+        if (libraryEffectUnit.hasInitialized) {
+            libraryEffectUnit.showParametersConnection =
                 engine.makeConnection(unitString,
                                       'show_parameters',
-                                      this.libraryEffectUnit.onShowParametersChange);
+                                      libraryEffectUnit.onShowParametersChange);
 
-            this.libraryEffectUnit.knobs.reconnectComponents();
-            this.libraryEffectUnit.enableButtons.reconnectComponents();
-            this.libraryEffectUnit.effectFocusButton.connect();
-            this.libraryEffectUnit.effectFocusButton.trigger();
-            this.libraryEffectUnit.showParametersConnection.trigger();
+            libraryEffectUnit.knobs.reconnectComponents();
+            libraryEffectUnit.enableButtons.reconnectComponents();
+            libraryEffectUnit.effectFocusButton.connect();
+            libraryEffectUnit.effectFocusButton.trigger();
+            libraryEffectUnit.showParametersConnection.trigger();
         } else {
-            this.libraryEffectUnit.init();
+            libraryEffectUnit.init();
         }
 
     };
@@ -676,11 +679,15 @@ XoneK2.EffectUnit = function (column, unitNumber, midiChannel) {
     });
     XoneK2.setTopEncoderPressMidi(this.unitFocusButton, column, midiChannel);
 
+    this.disconnectShowParameters = function () {
+        libraryEffectUnit.showParametersConnection.disconnect();
+    };
+
     this.focusUnit = function (focusedUnitNumber) {
         //print('================================================== COLUMN '
         //    + column + ' FOCUSING UNIT ' + focusedUnitNumber);
 
-        this.libraryEffectUnit.effectFocusButton.disconnect();
+        libraryEffectUnit.effectFocusButton.disconnect();
         // The showParametersConnection connection does not belong to any specific
         // Component, so it must be disconnected manually. This script creates
         // objects for every potential layout on different MIDI channels. The
@@ -690,10 +697,10 @@ XoneK2.EffectUnit = function (column, unitNumber, midiChannel) {
         for (var n = 0; n <= 0xF; n++) {
             var col = XoneK2.controllers[n].columns[column];
             if (col instanceof XoneK2.EffectUnit) {
-                col.libraryEffectUnit.showParametersConnection.disconnect();
+                col.disconnectShowParameters();
             }
         }
-        this.libraryEffectUnit.showParametersConnection.disconnect();
+        libraryEffectUnit.showParametersConnection.disconnect();
         this.knobs.forEachComponent(function (component) {
             component.disconnect();
         });
@@ -720,6 +727,36 @@ XoneK2.EffectUnit = function (column, unitNumber, midiChannel) {
             this.knobs[k] = new components.Pot({
                 group: '[EffectRack1_EffectUnit' + focusedUnitNumber + '_Effect' + k + ']',
                 inKey: 'parameter' + column,
+                unshift: function () {
+                    this.input = function (channel, control, value, status, group) {
+                        this.inSetParameter(this.inValueScale(value));
+
+                        if (this.previousValueReceived === undefined) {
+                            engine.softTakeover(this.group, this.inKey, true);
+                        }
+                        this.previousValueReceived = value;
+                    };
+                },
+                shift: function () {
+                    engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
+                    this.valueAtLastEffectSwitch = this.previousValueReceived;
+                    // Floor the threshold to ensure that every effect can be selected
+                    this.changeThreshold = Math.floor(this.max /
+                        engine.getValue('[Master]', 'num_effectsavailable'));
+
+                    this.input = function (channel, control, value, status, group) {
+                        var change = value - this.valueAtLastEffectSwitch;
+                        if (Math.abs(change) >= this.changeThreshold
+                            // this.valueAtLastEffectSwitch can be undefined if
+                            // shift was pressed before the first MIDI value was received.
+                            || this.valueAtLastEffectSwitch === undefined) {
+                            engine.setValue(this.group, 'effect_selector', change);
+                            this.valueAtLastEffectSwitch = value;
+                        }
+
+                        this.previousValueReceived = value;
+                    };
+                },
             });
 
             if (column === 1) {
