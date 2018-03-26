@@ -240,14 +240,22 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageLong.setCallback("deck2", "!loopsize", this.callbackLoopSize);
 
   MessageLong.addControl("[EffectRack1_EffectUnit1]", "mix", 0x3F, "H");
-  MessageLong.addControl("[EffectRack1_EffectUnit1_Effect1]", "meta", 0x41, "H");
-  MessageLong.addControl("[EffectRack1_EffectUnit1_Effect2]", "meta", 0x43, "H");
-  MessageLong.addControl("[EffectRack1_EffectUnit1_Effect3]", "meta", 0x45, "H");
+  MessageLong.addControl("[EffectRack1_EffectUnit1_Effect1]", "!FXMeta", 0x41, "H");
+  MessageLong.addControl("[EffectRack1_EffectUnit1_Effect2]", "!FXMeta", 0x43, "H");
+  MessageLong.addControl("[EffectRack1_EffectUnit1_Effect3]", "!FXMeta", 0x45, "H");
+
+  MessageLong.setCallback("[EffectRack1_EffectUnit1_Effect1]", "!FXMeta",this.FXMetaHandler);
+  MessageLong.setCallback("[EffectRack1_EffectUnit1_Effect2]", "!FXMeta",this.FXMetaHandler);
+  MessageLong.setCallback("[EffectRack1_EffectUnit1_Effect3]", "!FXMeta",this.FXMetaHandler);
 
   MessageLong.addControl("[EffectRack1_EffectUnit2]", "mix", 0x47, "H");
-  MessageLong.addControl("[EffectRack1_EffectUnit2_Effect1]", "meta", 0x49, "H");
-  MessageLong.addControl("[EffectRack1_EffectUnit2_Effect2]", "meta", 0x4B, "H");
-  MessageLong.addControl("[EffectRack1_EffectUnit2_Effect3]", "meta", 0x4D, "H");
+  MessageLong.addControl("[EffectRack1_EffectUnit2_Effect1]", "!FXMeta", 0x49, "H");
+  MessageLong.addControl("[EffectRack1_EffectUnit2_Effect2]", "!FXMeta", 0x4B, "H");
+  MessageLong.addControl("[EffectRack1_EffectUnit2_Effect3]", "!FXMeta", 0x4D, "H");
+
+  MessageLong.setCallback("[EffectRack1_EffectUnit2_Effect1]", "!FXMeta",this.FXMetaHandler);
+  MessageLong.setCallback("[EffectRack1_EffectUnit2_Effect2]", "!FXMeta",this.FXMetaHandler);
+  MessageLong.setCallback("[EffectRack1_EffectUnit2_Effect3]", "!FXMeta",this.FXMetaHandler);
 
   MessageLong.addControl("[Channel1]", "volume", 0x37, "H");
   MessageLong.addControl("[QuickEffectRack1_[Channel1]]", "super1", 0x1D, "H");
@@ -485,7 +493,7 @@ TraktorS4MK2.registerOutputPackets = function() {
 
   TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit1]", "show_parameters", TraktorS4MK2.outputChannelCallback);
   TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit2]", "show_parameters", TraktorS4MK2.outputChannelCallback);
-  TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit1_Effect1]", "enabled", TraktorS4MK2.outputChannelCallback);
+  TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit1_Effect1]", "enabled", TraktorS4MK2.outputChannelCallback)
   TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit1_Effect2]", "enabled", TraktorS4MK2.outputChannelCallback);
   TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit1_Effect3]", "enabled", TraktorS4MK2.outputChannelCallback);
   TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit2_Effect1]", "enabled", TraktorS4MK2.outputChannelCallback);
@@ -1073,10 +1081,19 @@ TraktorS4MK2.wheelDeltas = function(group, value) {
 }
 
 TraktorS4MK2.scalerJog = function(tick_delta, time_delta) {
+  // If it's playing nudge
   if (engine.getValue(group, "play")) {
     return (tick_delta / time_delta) / 3;
   } else {
-    return (tick_delta / time_delta) * 2.0;
+    //If shift pressed, fast search through tracks
+    // otherwise search normal speed
+    if (TraktorS4MK2.controller.shift_pressed['deck1'] ||
+        TraktorS4MK2.controller.shift_pressed['deck2']
+      ){
+      return (tick_delta / time_delta) * 20.0;
+    } else {
+      return (tick_delta / time_delta) * 2.0;
+    }
   }
 }
 
@@ -1158,6 +1175,15 @@ TraktorS4MK2.FXButtonHandler = function(field){
     }
   }
   TraktorS4MK2.lightDeck(field.group);
+}
+
+TraktorS4MK2.FXMetaHandler = function(field){
+  engine.setValue(field.group, "meta", field.value / parseFloat(4096));
+}
+
+
+TraktorS4MK2.outputFXCallback = function(value, group, key) {
+  TraktorS4MK2.controller.setOutput(group, key, value * 0x7F, !TraktorS4MK2.controller.freeze_lights);
 }
 
 TraktorS4MK2.callbackPregain = function(field) {
