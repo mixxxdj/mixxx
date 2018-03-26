@@ -790,7 +790,10 @@
                         value = (this.MSB << 7) + value;
                     }
                     var change = value - this.valueAtLastEffectSwitch;
-                    if (Math.abs(change) >= this.changeThreshold) {
+                    if (Math.abs(change) >= this.changeThreshold
+                        // this.valueAtLastEffectSwitch can be undefined if
+                        // shift was pressed before the first MIDI value was received.
+                        || this.valueAtLastEffectSwitch === undefined) {
                         var effectGroup = '[EffectRack1_EffectUnit' +
                                            eu.currentUnitNumber + '_Effect' +
                                            this.number + ']';
