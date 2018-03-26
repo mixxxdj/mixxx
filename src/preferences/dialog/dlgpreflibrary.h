@@ -20,8 +20,7 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     enum TrackDoubleClickAction {
         LOAD_TO_DECK,
         ADD_TO_AUTODJ_BOTTOM,
-        ADD_TO_AUTODJ_TOP,
-        EDIT_METADATA
+        ADD_TO_AUTODJ_TOP
     };
 
     DlgPrefLibrary(
@@ -51,8 +50,6 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     void requestAddDir(QString dir);
     void requestRemoveDir(QString dir, Library::RemovalType removalType);
     void requestRelocateDir(QString currentDir, QString newDir);
-    void setTrackTableFont(const QFont& font);
-    void setTrackTableRowHeight(int rowHeight);
 
   private slots:
     void slotRowHeightValueChanged(int);
