@@ -1,6 +1,6 @@
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2017-11-5
+// description: 2018-3-26
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 // JSHint Configuration
@@ -224,6 +224,10 @@ VCI102.set = function(group, key, value) {
 VCI102.super1 = function(ch, midino, value, status, group) {
     if (engine.getValue(VCI102.slot(group, 1), "parameter1_link_type") > 1) {
         // loose center if Effect1 may be "Filter"
+        // intended to compensate lack of center detent of the filter knob:
+        // midi values 0-50 to 0.0-0.5
+        // midi values 50-77 to 0.5
+        // midi values 77-127 to 0.5-1.0
         if (value > 77) {
             value -= 27;
         } else if (value > 50) {
@@ -330,6 +334,9 @@ VCI102.reloop = function(ch, midino, value, status, group) {
         if (engine.getValue(group, "loop_enabled")) {
             engine.setValue(group, "loop_out", 1);
             engine.setValue(group, "loop_out", 0);
+            // can be used for manual loop:
+            // push loop button (VCI102.loop) with enough loop size to begin
+            // push shift+loop button (VCI102.reloop) to set loop out position
         } else {
             engine.setValue(group, "reloop_toggle", 1);
         }
