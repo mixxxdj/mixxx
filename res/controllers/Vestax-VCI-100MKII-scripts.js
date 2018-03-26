@@ -1,6 +1,6 @@
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2018-3-26
+// description: 2018-3-27
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 // JSHint Configuration
@@ -333,13 +333,14 @@ VCI102.reloop = function(ch, midino, value, status, group) {
     if (value) {
         if (engine.getValue(group, "loop_enabled")) {
             engine.setValue(group, "loop_out", 1);
-            engine.setValue(group, "loop_out", 0);
-            // can be used for manual loop:
-            // push loop button (VCI102.loop) with enough loop size to begin
-            // push shift+loop button (VCI102.reloop) to set loop out position
         } else {
             engine.setValue(group, "reloop_toggle", 1);
         }
+    } else if (engine.getValue(group, "loop_out")) {
+        engine.setValue(group, "loop_out", 0);
+        // can be used for manual loop:
+        // push Loop button to begin
+        // push & release Shift + Loop button to set loop out position
     }
 };
 
