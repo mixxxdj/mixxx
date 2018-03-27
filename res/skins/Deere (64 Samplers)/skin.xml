@@ -258,7 +258,7 @@
               <Children>
                 <Template src="skin:../Deere/main_decks.xml"/>
                 <Template src="skin:../Deere/effect_rack.xml"/>
-                <Template src="skin:../Deere/sample_decks.xml"/>
+                <Template src="skin:sample_decks.xml"/>
                 <Template src="skin:../Deere/microphone_rack.xml"/>
                 <SingletonContainer>
                   <ObjectName>Library</ObjectName>
@@ -285,6 +285,6 @@
 
       </Children>
     </WidgetGroup>
-    <Template src="skin:../Deere/skin_settings.xml"/>
+    <Template src="skin:skin_settings.xml"/>
   </Children>
 </skin>

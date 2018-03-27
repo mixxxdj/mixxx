@@ -7,10 +7,34 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.1"
    width="200"
    height="200"
-   id="svg3969">
+   id="svg3969"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="cover_default_mini.svg">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1366"
+     inkscape:window-height="740"
+     id="namedview12"
+     showgrid="false"
+     inkscape:zoom="1.18"
+     inkscape:cx="-43.220339"
+     inkscape:cy="100"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg3969" />
   <metadata
      id="metadata3981">
     <rdf:RDF>
@@ -27,8 +51,8 @@
      id="defs3979" />
   <path
      d="m 89.524769,48.144024 c 0,25.035397 -18.853618,45.330597 -42.110733,45.330597 -23.257116,0 -42.1107332,-20.2952 -42.1107332,-45.330597 0,-25.035397 18.8536172,-45.330597 42.1107332,-45.330597 23.257115,0 42.110733,20.2952 42.110733,45.330597 z"
-     transform="matrix(2.2882,0,0,2.12567,-8.4929119,-2.3383)"
-     id="path3971" />
+     id="path3971"
+     transform="matrix(2.2882,0,0,2.12567,-8.4929119,-2.3383)" />
   <path
      d="m 99.999969,55.98392 c -24.309379,0 -44.016044,19.70667 -44.016044,44.01605 0,24.3094 19.706665,44.01604 44.016044,44.01604 24.309401,0 44.016041,-19.70664 44.016041,-44.01604 0,-24.30938 -19.70664,-44.01605 -44.016041,-44.01605 z"
      id="path3973" />
