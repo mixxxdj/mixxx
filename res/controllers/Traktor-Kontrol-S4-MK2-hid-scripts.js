@@ -1181,8 +1181,7 @@ TraktorS4MK2.FXButtonHandler = function(field){
       TraktorS4MK2.controller.shift_pressed['deck2']
     ) {
       engine.setValue(field.group, "effect_selector", 1);
-    }
-    else {
+    } else {
       engine.setValue(field.group, "enabled", !engine.getValue(field.group, "enabled"));
     }
   }
@@ -1217,13 +1216,12 @@ TraktorS4MK2.callbackPregain = function(field) {
     TraktorS4MK2.controller.shift_pressed['deck1'] ||
     TraktorS4MK2.controller.shift_pressed['deck2']
   ) {
-    if(delta > 0){
+    if (delta > 0){
         engine.setValue(group, 'beats_translate_later', true);
     } else if (delta < 0){
         engine.setValue(group, 'beats_translate_earlier', true);
     }
-  }
-  else {
+  } else {
     var cur_pregain = engine.getValue(group, "pregain");
     engine.setValue(group, "pregain", cur_pregain + delta);
   }
@@ -1343,7 +1341,6 @@ TraktorS4MK2.callbackLoopSize = function(field) {
       engine.setValue(field.group, "loop_halve", 0);
     }
   }
-  // TraktorS4MK2.sendLoopSizeMessage(group, engine.getValue(field.group, "beatloop_size"));
 }
 
 TraktorS4MK2.callbackBrowse = function(field) {
