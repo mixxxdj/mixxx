@@ -251,10 +251,6 @@
       </item>
       <item row="4" column="0" colspan="2">
        <widget class="QCheckBox" name="checkBoxEditMetadataSelectedClicked">
-        <property name="toolTip">
-         <string>This enables instant metadata editing within the track table.
-Editing starts when clicking on an already selected item.</string>
-        </property>
         <property name="text">
          <string>Edit metadata after clicking selected track</string>
         </property>
