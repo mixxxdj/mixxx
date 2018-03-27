@@ -83,7 +83,7 @@ class Library: public QObject,
 
     void setFont(const QFont& font);
     void setRowHeight(int rowHeight);
-    void setEditMedatata(bool enable);
+    void setEditMedatataSelectedClick(bool enable);
 
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
@@ -147,7 +147,7 @@ class Library: public QObject,
     LibraryScanner m_scanner;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
-    bool m_editMetadata;
+    bool m_editMetadataSelectedClick;
     QScopedPointer<ControlObject> m_pKeyNotation;
 };
 

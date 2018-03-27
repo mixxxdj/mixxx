@@ -139,7 +139,7 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_show_itunes->setChecked(true);
     checkBox_show_traktor->setChecked(true);
     radioButton_dbclick_bottom->setChecked(false);
-    checkBoxEditMetadata->setChecked(true);
+    checkBoxEditMetadataSelectedClicked->setChecked(true);
     radioButton_dbclick_top->setChecked(false);
     radioButton_dbclick_deck->setChecked(true);
     spinBoxRowHeight->setValue(Library::kDefaultRowHeightPx);
@@ -176,9 +176,9 @@ void DlgPrefLibrary::slotUpdate() {
             break;
     }
 
-    checkBoxEditMetadata->setChecked(
+    checkBoxEditMetadataSelectedClicked->setChecked(
             m_pConfig->getValue(
-                        ConfigKey("[Library]","EditMetadata"), true));
+                        ConfigKey("[Library]","EditMetadataSelectedClick"), true));
 
     m_originalTrackTableFont = m_pLibrary->getTrackTableFont();
     m_iOriginalTrackTableRowHeight = m_pLibrary->getTrackTableRowHeight();
@@ -310,9 +310,10 @@ void DlgPrefLibrary::slotApply() {
     m_pConfig->set(ConfigKey("[Library]","TrackLoadAction"),
                 ConfigValue(dbclick_status));
 
-    m_pConfig->set(ConfigKey("[Library]","EditMetadata"),
-                    ConfigValue(checkBoxEditMetadata->checkState()));
-    m_pLibrary->setEditMedatata(checkBoxEditMetadata->checkState());
+    m_pConfig->set(ConfigKey("[Library]", "EditMetadataSelectedClick"),
+            ConfigValue(checkBoxEditMetadataSelectedClicked->checkState()));
+    m_pLibrary->setEditMedatataSelectedClick(
+            checkBoxEditMetadataSelectedClicked->checkState());
 
     QFont font = m_pLibrary->getTrackTableFont();
     if (m_originalTrackTableFont != font) {

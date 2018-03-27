@@ -173,8 +173,8 @@ Library::Library(
         m_trackTableFont = QApplication::font();
     }
 
-    m_editMetadata = m_pConfig->getValue(
-            ConfigKey(kConfigGroup, "EditMetadata"), true);
+    m_editMetadataSelectedClick = m_pConfig->getValue(
+            ConfigKey(kConfigGroup, "EditMetadataSelectedClick"), true);
 }
 
 Library::~Library() {
@@ -265,7 +265,7 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
     // just connected to us.
     emit(setTrackTableFont(m_trackTableFont));
     emit(setTrackTableRowHeight(m_iTrackTableRowHeight));
-    emit(setSelectedClick(m_editMetadata));
+    emit(setSelectedClick(m_editMetadataSelectedClick));
 }
 
 void Library::addFeature(LibraryFeature* feature) {
@@ -428,8 +428,8 @@ void Library::setRowHeight(int rowHeight) {
     emit(setTrackTableRowHeight(rowHeight));
 }
 
-void Library::setEditMedatata(bool enabled) {
-    m_editMetadata = enabled;
+void Library::setEditMedatataSelectedClick(bool enabled) {
+    m_editMetadataSelectedClick = enabled;
     emit(setSelectedClick(enabled));
 }
 
