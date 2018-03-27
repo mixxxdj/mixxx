@@ -502,9 +502,6 @@ Hercules4Mx.onEffectStateChange = function(value, group, control) {
     var fxidx = parseInt(group.slice(-2).substr(0, 1)); // "[EffectRack1_EffectUnit1_Effect1]"
     if (fxidx > 0 && fxidx <= Hercules4Mx.FxLedIdx.length) {
         var newval = (value > 0) ? 0x7F : 0x0;
-        /* old 2.0 behaviour
-        var deck = parseInt(control.slice(-9).substr(0, 1)); // "group_[Channel1]_enable"
-        */
         var deck = parseInt(group.slice(-10).substr(0, 1));
         var messageto = (deck === 1 || deck === 2) ? Hercules4Mx.NOnC1 : Hercules4Mx.NOnC2;
         var offset = (deck === 1 || deck === 3) ? 0x00 : 0x20;
