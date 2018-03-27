@@ -1270,9 +1270,22 @@ TraktorS4MK2.sendLoopSizeMessage = function(deck, firstChar, secondChar, firstDo
 }
 
 TraktorS4MK2.displayCharLoopCounter = function(deck, charPos, character){
-  // charPost is 0 or 1 for first or second character
+  // charPost is 0 or 1 for first or second character on the display
+  // the display is placed like this:
+    // o  -- 4 --
+    //   |        |
+    //   5        3
+    //   |        |
+    //    -- 1 --
+    //   |        |
+    //   6        2
+    //   |        |
+    //    -- 7 --
+    //  Where the numbers respresent each segment of the display
+    //  and the dot before it is 0 (but this is dealt with in displayCharLoopDot)
+
   var numArray = {
-    '': [],
+    '': [], //empty
     0: [2,3,4,5,6,7],
     1: [2,3],
     2: [1,3,4,6,7],
@@ -1288,14 +1301,16 @@ TraktorS4MK2.displayCharLoopCounter = function(deck, charPos, character){
     'n': [6,1,2],
     'o': [6,1,2,7],
     '-': [1],
-
+    'b': [5,6,7,2,1],
+    'c': [1,6,7],
+    'u': [6,2,7],
   }
 
   for (j = 0; j < 8; j++) {
     loop_key = 8*charPos + j;
     var key = "!loopSize" + loop_key;
     TraktorS4MK2.controller.setOutput(
-      deck, key, (numArray[character].indexOf(j) > -1)*0x7F,
+      deck, key, (numArray[character].indexOf(j) > -1)*0x7F, // if it's in the array turn it on, off otherwise
       !TraktorS4MK2.controller.freeze_lights
     );
   }
