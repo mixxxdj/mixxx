@@ -102,7 +102,7 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("deck1", "loop_out", 0x0E, "B", 0x08);
   MessageShort.addControl("deck1", "loop_in", 0x0E, "B", 0x04);
   MessageShort.addControl("deck1", "slip_enabled", 0x0E, "B", 0x02);
-  MessageShort.addControl("deck1", "eject", 0x0E, "B", 0x01);
+  MessageShort.addControl("deck1", "reset_key", 0x0E, "B", 0x01);
   MessageShort.addControl("deck1", "beatloop_activate", 0x13, "B", 0x02);
   MessageShort.addControl("deck1", "!loop_activate", 0x13, "B", 0x01);
   MessageShort.addControl("deck1", "!jog_touch", 0x11, "B", 0x01);
@@ -130,7 +130,7 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("deck2", "loop_out", 0x0B, "B", 0x08);
   MessageShort.addControl("deck2", "loop_in", 0x0B, "B", 0x04);
   MessageShort.addControl("deck2", "slip_enabled", 0x0B, "B", 0x02);
-  MessageShort.addControl("deck2", "eject", 0x0B, "B", 0x01);
+  MessageShort.addControl("deck2", "reset_key", 0x0B, "B", 0x01);
   MessageShort.addControl("deck2", "beatloop_activate", 0x13, "B", 0x10);
   MessageShort.addControl("deck2", "!loop_activate", 0x13, "B", 0x08);
   MessageShort.addControl("deck2", "!jog_touch", 0x11, "B", 0x02);
