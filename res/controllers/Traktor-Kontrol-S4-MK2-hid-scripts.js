@@ -453,6 +453,11 @@ TraktorS4MK2.registerOutputPackets = function() {
   Output3.addOutput("[EffectRack1_EffectUnit2]", "show_parameters", 0x12, "B");
 
 
+ for (i=0; i < 16; i++){
+   Output3.addOutput("deck1", "!loopSize"+i, 0x1B+i, "B");
+   Output3.addOutput("deck2", "!loopSize"+i, 0x2B+i, "B");
+ }
+
   this.controller.registerOutputPacket(Output3);
 
   // Link up control objects to their outputs
@@ -530,6 +535,12 @@ TraktorS4MK2.registerOutputPackets = function() {
   engine.connectControl("[Channel2]", "loop_enabled", "TraktorS4MK2.onLoopEnabledChanged");
   engine.connectControl("[Channel3]", "loop_enabled", "TraktorS4MK2.onLoopEnabledChanged");
   engine.connectControl("[Channel4]", "loop_enabled", "TraktorS4MK2.onLoopEnabledChanged");
+
+  engine.connectControl("[Channel1]", "beatloop_size", "TraktorS4MK2.onLoopSizeChanged");
+  engine.connectControl("[Channel2]", "beatloop_size", "TraktorS4MK2.onLoopSizeChanged");
+  engine.connectControl("[Channel3]", "beatloop_size", "TraktorS4MK2.onLoopSizeChanged");
+  engine.connectControl("[Channel4]", "beatloop_size", "TraktorS4MK2.onLoopSizeChanged");
+
 }
 
 TraktorS4MK2.linkDeckOutputs = function(key, callback) {
@@ -588,6 +599,7 @@ TraktorS4MK2.lightDeck = function(group) {
   TraktorS4MK2.lightGroup(packet, "[EffectRack1_EffectUnit2_Effect3]", "[EffectRack1_EffectUnit2_Effect3]");
 
   // Loop size indicator
+  TraktorS4MK2.loopSizeSet(group);
 
   // Selected deck lights
   if (group === "[Channel1]") {
@@ -1249,36 +1261,55 @@ TraktorS4MK2.callbackLoopMove = function(field) {
   }
 }
 
-TraktorS4MK2.sendLoopSizeMessage = function(group, beats) {
-  var LoopSizeIndicators = {
-      "deck2" : [0x2B, 0x3A],
-      "deck1" : [0x1B, 0x2A],
+TraktorS4MK2.sendLoopSizeMessage = function(deck, firstChar, secondChar, firstDot, secondDot) {
+// display_num must be a string with two chars
+  // Do the second number first
+  TraktorS4MK2.displayCharLoopCounter(deck, 0, firstChar);
+  TraktorS4MK2.displayCharLoopCounter(deck, 1, secondChar);
+  TraktorS4MK2.displayCharLoopDot(deck, 1, firstDot);
+  TraktorS4MK2.displayCharLoopDot(deck, 0, secondDot);
+
+}
+
+TraktorS4MK2.displayCharLoopCounter = function(deck, charPos, character){
+  // charPost is 0 or 1 for first or second character
+  var numArray = {
+    '': [],
+    0: [2,3,4,5,6,7],
+    1: [2,3],
+    2: [1,3,4,6,7],
+    3: [1,2,3,4,7],
+    4: [1,2,3,5],
+    5: [4,5,1,2,7],
+    6: [4,5,1,2,6,7],
+    7: [4,3,2],
+    8: [1,2,3,4,5,6,7],
+    9: [5,4,1,3,2,7],
+// Add a few special characters
+    'h': [5,1,6,2],
+    'n': [6,1,2],
+    'o': [6,1,2,7],
+    '-': [1],
+
   }
-  start_signal = LoopSizeIndicators[group]
 
-  var sizesArray = {
-    64: [1,2,4,5,6,7,9,10,11,13],
-    32: [1,2,3,4,7,9,11,12,14,15],
-    16: [2,3,9,10,12,13,14,15],
-    8:  [9,10,11,12,13,14,15],
-    4:  [9,10,11,13],
-    2:  [9,11,12,14,15],
-  }
-  var packets = Object();
-
-  packets.length = 61;
-
-  start_signal = parseInt(LoopSizeIndicators[group][0])
-  for (k = 0; k < 0x7F; k+=0x05) {
-      packets[0] = 0x82;
-      for (j = 0; j < sizesArray[beats].length; j++) {
-        var hid_msg = start_signal +  sizesArray[beats][j]
-        packets[hid_msg] = k;
-    }
-  controller.send(packets, packets.length, 0);
+  for (j = 0; j < 8; j++) {
+    loop_key = 8*charPos + j;
+    var key = "!loopSize" + loop_key;
+    TraktorS4MK2.controller.setOutput(
+      deck, key, (numArray[character].indexOf(j) > -1)*0x7F,
+      !TraktorS4MK2.controller.freeze_lights
+    );
   }
 }
 
+TraktorS4MK2.displayCharLoopDot = function(deck, charPos, on){
+  var key = "!loopSize" + 8*charPos;
+  TraktorS4MK2.controller.setOutput(
+    deck, key, on*0x7F,
+    !TraktorS4MK2.controller.freeze_lights
+  );
+}
 TraktorS4MK2.callbackLoopSize = function(field) {
   var splitted = field.id.split(".");
   var group = splitted[0]
@@ -1499,4 +1530,33 @@ TraktorS4MK2.onVuMeterChanged = function(value, group, key) {
 TraktorS4MK2.onLoopEnabledChanged = function(value, group, key) {
   TraktorS4MK2.outputCallbackLoop(value, group, "loop_in");
   TraktorS4MK2.outputCallbackLoop(value, group, "loop_out");
+}
+
+TraktorS4MK2.onLoopSizeChanged = function(value, group, key) {
+  var deck = TraktorS4MK2.resolveDeckIfActive(group);
+  //deal with single digit values
+  if (value.toString().length === 1){
+    TraktorS4MK2.sendLoopSizeMessage(deck, '', value, false, false);
+  // values with two digits
+  } else if (value.toString().length === 2 ) {
+    TraktorS4MK2.sendLoopSizeMessage(deck, value.toString().split("")[0], value.toString().split("")[1], false, false);
+  // deal with fraction beats
+  } else if (1 > value > 0 ) {
+    if (value === 0.5){
+      TraktorS4MK2.sendLoopSizeMessage(deck, '-', 2, false, false);
+    } else if (value === 0.25){
+      TraktorS4MK2.sendLoopSizeMessage(deck, '-', 4, false, false);
+    } else if (value === 0.125){
+      TraktorS4MK2.sendLoopSizeMessage(deck, '-', 8, false, false);
+    } else {
+      TraktorS4MK2.sendLoopSizeMessage(deck, '-', 'n', false, false);
+    }
+  // deal with larger Loops
+  } else if (value.toString().length > 2){
+    TraktorS4MK2.sendLoopSizeMessage(deck, value.toString().split("")[0], value.toString().split("")[1], true, true);
+  }
+}
+
+TraktorS4MK2.loopSizeSet = function(group) {
+  TraktorS4MK2.onLoopSizeChanged(engine.getValue(group, "beatloop_size"), group);
 }
