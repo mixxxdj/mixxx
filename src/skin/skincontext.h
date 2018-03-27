@@ -32,6 +32,11 @@ class SkinContext {
 
     // Gets a path relative to the skin path.
     QString makeSkinPath(const QString& relativePath) const {
+        if (relativePath.startsWith("/") || relativePath.contains(":")) {
+            // This is already an absolut path start with the root folder "/"
+            // a windows drive letter e.g. "C:" or a qt search path prefix
+            return relativePath;
+        }
         return QString("skin:").append(relativePath);
     }
 
