@@ -98,7 +98,7 @@ Hercules4Mx.userSettings = {
     'FXbuttonsSetup': 'mixxx21',
     // This allows to use the left jog wheel in place of the right jog wheel when pressing the right jog wheel.
     // I implemented this to overcome the failure of the right jog wheel on my controller.
-    'useSingleJogWeelHack': false
+    'useSingleJogWheelHack': false
 };
 
 //
@@ -499,9 +499,6 @@ Hercules4Mx.onLoopStateChange = function(value, group, control) {
 };
 //A change in an effect channel status has happened
 Hercules4Mx.onEffectStateChange = function(value, group, control) {
-    /* old 2.0 behaviour
-    var fxidx = parseInt(group.slice(-2).substr(0, 1)); // "[EffectRack1_EffectUnit1]"
-    */
     var fxidx = parseInt(group.slice(-2).substr(0, 1)); // "[EffectRack1_EffectUnit1_Effect1]"
     if (fxidx > 0 && fxidx <= Hercules4Mx.FxLedIdx.length) {
         var newval = (value > 0) ? 0x7F : 0x0;
@@ -1177,10 +1174,6 @@ Hercules4Mx.effectKnob = function(midichan, control, value, status, group) {
         engine.setValue(fxGroup, "loop_move", direction);
         Hercules4Mx.editModeStatus.used = true;
     } else if (Hercules4Mx.editModeStatus.mode === Hercules4Mx.editModes.effectknob) {
-        /* Old 2.0 effects method
-        fxGroup = "[EffectRack1_EffectUnit" + Hercules4Mx.editModeStatus.effect + "]";
-        engine.setParameter(fxGroup, "super1", engine.getParameter(fxGroup, "super1") + step * direction);
-        */
         fxGroup = "[EffectRack1_EffectUnit" + group.slice(-3).substr(0, 1) + "_Effect" + Hercules4Mx.editModeStatus.effect + "]";
         engine.setParameter(fxGroup, "meta", engine.getParameter(fxGroup, "meta") + step * direction);
         Hercules4Mx.editModeStatus.used = true;
@@ -1245,10 +1238,6 @@ Hercules4Mx.FxSwitchUp = function(group, fxbutton, value, extraparam) {
     }
     if (Hercules4Mx.editModeStatus.used === false) {
         var deck = script.deckFromGroup(group);
-        /*Old 2.0 effects method
-        var state = engine.getParameter("[EffectRack1_EffectUnit" + extraparam + "]", "group_[Channel" + deck + "]_enable");
-        engine.setParameter("[EffectRack1_EffectUnit" + extraparam + "]", "group_[Channel" + deck + "]_enable", !state);
-        */
         var state = engine.getParameter("[EffectRack1_EffectUnit" + deck + "_Effect" + extraparam + "]", "enabled");
         engine.setParameter("[EffectRack1_EffectUnit" + deck + "_Effect" + extraparam + "]", "enabled", !state);
     }
@@ -1439,7 +1428,7 @@ Hercules4Mx.jogWheel = function(midichan, control, value, status, groupInitial) 
         Hercules4Mx.doNavigateAction();
     } else {
         var group = (Hercules4Mx.previewOnDeck[groupInitial]) ? '[PreviewDeck1]' : groupInitial;
-        if (Hercules4Mx.userSettings.useSingleJogWeelHack === true 
+        if (Hercules4Mx.userSettings.useSingleJogWheelHack === true 
                 && Hercules4Mx.swapJogWheel === true) {
             group = Hercules4Mx.rightJogWheelGroup;
         }
@@ -1553,19 +1542,6 @@ Hercules4Mx.deckVolume = function(midichan, control, value, status, group) {
         engine.setParameter(group, "volume", script.absoluteLin(value,0,1));
     }
 };
-// function to scale fader volume linearly in dB until the second-to-last line, and
-// do the rest linearly. 0dBFs -6dbFs, -12dbFs,-18dbFs, -inf). Just like what the UI does.
-// It was needed when using engine.setValue() for "volume".
-Hercules4Mx.faderToVolume = function (value) {
-    var lowerval = 32; //(1/4th of 127)
-    var lowerdb = 0.125; //(1/4th of 1)
-    if (value < lowerval) {
-        return value*lowerdb/lowerval;
-    } else {
-        var dbs = -(127-value)*6/32;
-        return Math.pow(10.0,dbs/20.0);
-    }
-};
 
 Hercules4Mx.crossfader = function(midichan, control, value, status, group) {
     engine.setParameter(group, "crossfader", script.absoluteLin(value,0,1));
@@ -1649,7 +1625,7 @@ Hercules4Mx.getNewDestinationChannel = function(chan) {
 Hercules4Mx.reinitButtonsMap = function() {
     Hercules4Mx.buttonMappings = Hercules4Mx.buttonMappings.slice(Hercules4Mx.buttonMappings.length);
     //This is setup here because the function is undefined when the map is defined.
-    Hercules4Mx.noActionButtonMap.buttonPressAction=Hercules4Mx.FxActionNoOp;
+    Hercules4Mx.noActionButtonMap.buttonPressAction = Hercules4Mx.FxActionNoOp;
 };
 Hercules4Mx.mapNewButton = function(pushAction, releaseAction, extraParameter, signalLed) {
     var i;
@@ -1682,10 +1658,6 @@ Hercules4Mx.mapNewButton = function(pushAction, releaseAction, extraParameter, s
         if (pushAction === Hercules4Mx.FxSwitchDown) {
             Hercules4Mx.FxLedIdx.push(Hercules4Mx.buttonMappings.length);
             for (i = 1; i <= 4; i++) {
-                /* Old 2.0 effects method
-                engine.connectControl("[EffectRack1_EffectUnit" + extraParameter + "]", "group_[Channel" + i + "]_enable", "Hercules4Mx.onEffectStateChange");
-                engine.trigger("[EffectRack1_EffectUnit" + extraParameter + "]", "group_[Channel" + i + "]_enable");
-                */
                 engine.connectControl("[EffectRack1_EffectUnit" + i + "_Effect" + extraParameter + "]", "enabled", "Hercules4Mx.onEffectStateChange");
                 engine.trigger("[EffectRack1_EffectUnit" + i + "_Effect" + extraParameter + "]", "enabled");
             }
