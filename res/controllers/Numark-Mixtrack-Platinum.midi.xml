@@ -1982,7 +1982,6 @@
             <control>
                 <group>[EffectRack1_EffectUnit2_Effect2]</group>
                 <key>MixtrackPlatinum.effects[2].knobs[2].input</key>
-                <key>mix</key>
                 <status>0xB9</status>
                 <midino>0x01</midino>
                 <options>
