@@ -1098,15 +1098,6 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
-                <key>rate_temp_up</key>
-                <status>0x90</status>
-                <midino>0x0B</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
                 <group>[Channel4]</group>
                 <key>playposition</key>
                 <status>0xB3</status>
