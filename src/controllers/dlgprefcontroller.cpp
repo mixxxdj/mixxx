@@ -229,15 +229,6 @@ void DlgPrefController::slotDirty() {
     m_bDirty = true;
 }
 
-const QString DlgPrefController::presetDisplayName(const PresetInfo& info) {
-    if (QFileInfo(info.getPath()).absoluteDir() == userPresetsPath(m_pConfig)) {
-        //: Shown in combobox to select controller mappings to distinguish user-installed mappings from mappings included in Mixxx
-        return info.getName() + " (" + tr("user") + ")";
-    } else {
-        return info.getName();
-    }
-}
-
 void DlgPrefController::enumeratePresets() {
     m_ui.comboBoxPreset->clear();
 
@@ -264,7 +255,7 @@ void DlgPrefController::enumeratePresets() {
 
     PresetInfo match;
     for (const PresetInfo& preset : presets) {
-        m_ui.comboBoxPreset->addItem(presetDisplayName(preset), preset.getPath());
+        m_ui.comboBoxPreset->addItem(preset.getName(), preset.getPath());
         if (m_pController->matchPreset(preset)) {
             match = preset;
         }
@@ -272,7 +263,7 @@ void DlgPrefController::enumeratePresets() {
 
     // Jump to matching device in list if it was found.
     if (match.isValid()) {
-        int index = m_ui.comboBoxPreset->findText(presetDisplayName(match));
+        int index = m_ui.comboBoxPreset->findText(match.getName());
         if (index != -1) {
             m_ui.comboBoxPreset->setCurrentIndex(index);
         }

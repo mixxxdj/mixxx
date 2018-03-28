@@ -12,7 +12,20 @@
 
 namespace {
 bool presetInfoNameComparator(const PresetInfo &a, const PresetInfo &b) {
-    return a.getName() < b.getName();
+    if (a.getDirPath() == b.getDirPath()) {
+        // FIXME: Mixxx copies every loaded mapping into the user mapping folder
+        // with a different file name. This is confusing, especially when developing
+        // a mapping and working on it in the user mapping folder. Sorting
+        // by file path here is a quick hack to keep the identically named mappings
+        // in a consistent order.
+        if (a.getName() == b.getName()) {
+            return a.getPath() < b.getPath();
+        } else {
+            return a.getName() < b.getName();
+        }
+    } else {
+        return a.getDirPath() < b.getDirPath();
+    }
 }
 }
 

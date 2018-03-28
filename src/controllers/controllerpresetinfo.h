@@ -48,14 +48,8 @@ class PresetInfo {
     }
 
     inline const QString getPath() const { return m_path; }
-
-    inline const QString getName() const {
-        if (m_name.length() != 0) {
-            return m_name;
-        } else {
-            return QFileInfo(m_path).baseName();
-        }
-    }
+    inline const QString getDirPath() const { return m_dirPath; }
+    inline const QString getName() const { return m_name; }
     inline const QString getDescription() const { return m_description; }
     inline const QString getForumLink() const { return m_forumlink; }
     inline const QString getWikiLink() const { return m_wikilink; }
@@ -69,6 +63,7 @@ class PresetInfo {
 
     bool m_valid;
     QString m_path;
+    QString m_dirPath;
     QString m_name;
     QString m_author;
     QString m_description;
