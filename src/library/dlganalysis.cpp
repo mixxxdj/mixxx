@@ -6,12 +6,14 @@
 #include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
 #include "library/dlganalysis.h"
+#include "library/library.h"
 #include "util/assert.h"
 
-DlgAnalysis::DlgAnalysis(QWidget* pLibrary,
+DlgAnalysis::DlgAnalysis(QWidget* pParent,
                        UserSettingsPointer pConfig,
+                       Library* pLibrary,
                        TrackCollection* pTrackCollection)
-        : QWidget(pLibrary),
+        : QWidget(pParent),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_bAnalysisActive(false),
