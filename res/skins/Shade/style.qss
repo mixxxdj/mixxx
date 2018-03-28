@@ -88,6 +88,125 @@ WEffectSelector:item:selected
 	qproperty-layoutAlignment:AlignTop;
 }
 
+QTableView, QTextBrowser, QTreeView {
+  border: 1px solid #656565;
+  background: transparent; color: #ACACAC;
+  /* we use  "background: transparent" as workaround, else "alternate-background-color" wont work, QT 4.7.x bug?*/
+  alternate-background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(43, 43, 43, 255), stop:0.049 rgba(43, 43, 43, 255), stop:0.050 rgba(43, 43, 43, 100), stop:0.949 rgba(43, 43, 43, 100), stop:0.95 rgba(43, 43, 43, 255), stop:1 rgba(43, 43, 43, 255));}
+
+QTableView:focus, QTreeView:focus {
+  border: 1px solid #FF6600;
+}
+/* checkbox in library "Played" column */
+QTableView::indicator { width: 12px; height: 12px;}
+QTableView::indicator:checked { background: url(skin:/style/style_checkbox_checked.png);}
+QTableView::indicator:unchecked { background: url(skin:/style/style_checkbox_unchecked.png);}
+
+/*  BPM lock icon in the library "BPM" column. */
+#LibraryBPMButton::indicator:checked { image: url(:/images/library/ic_library_checked.png); }
+#LibraryBPMButton::indicator:unchecked { image: url(:/images/library/ic_library_unchecked.png); }
+
+/* Button in library "Preview" column */
+QPushButton#LibraryPreviewButton { width: 23px; height: 12px; background: transparent; border: 0; }
+QPushButton#LibraryPreviewButton:!checked{ image: url(skin:/style/style_library_preview_play.png); }
+QPushButton#LibraryPreviewButton:checked{ image: url(skin:/style/style_library_preview_pause.png); }
+
+QPushButton#LibraryBPMButton {background: transparent; border: 0;}
+QPushButton#LibraryBPMButton::checked {image: url(:/images/library/ic_library_checked.png);}
+QPushButton#LibraryBPMButton::!checked {image: url(:/images/library/ic_library_unchecked.png);}
+
+QHeaderView { font-size: 10pt; }
+
+/* Styling a QSpinbox is complex and it took ages to figure out how to remove the surrounding frame and make the background transparent without affecting the subcontrols (up/down-buttons).
+You could easily style a subcontrol like in the QT-Docs, but if you want to have the OS-native subcontrols, this is the only way i found ( there are probably others ).
+In our case make sure that the "frame"-property in the corresponding dlgautodj.ui file is set to "false"
+The general rule when it comes to stylesheets is always to remember that if you style part of a widget, then you usually have to style all of it.
+*/
+/* transition time in Auto DJ tab*/
+QSpinBox:editable {
+  font-size: 10pt;
+  background: transparent;
+  color: #ACACAC; }
+QSpinBox { min-height: 20px; max-height: 20px;min-width: 40px; max-width: 40px;}
+
+/* library search bar*/
+WSearchLineEdit {
+  margin: 2px 0px 3px 3px;
+  padding: 2px;
+  border: 1px solid #656565;
+  font-size: 10pt;
+  font-family: "Open Sans";
+  background: transparent;
+  color: #ACACAC;
+}
+WSearchLineEdit:focus {
+  padding: 2px;
+  border: 2px solid #FF6600;
+  font-size: 10pt;
+  font-family: "Open Sans";
+  background: rgba(255, 102, 0,50);
+  color: #D6D6D6;}
+
+/* Cover Art*/
+WCoverArt {
+  font: 11px/15px sans-serif;
+  font-family: "Open Sans";
+  background: transparent;
+  color: #ACACAC;
+}
+
+/* splitter between treeview and library*/
+QSplitter::handle { image: url(skin:/style/style_handle_unchecked.png); background: none; }
+QSplitter::handle:pressed { image: url(skin:/style/style_handle_checked.png); background: none; }
+QSplitter::handle:horizontal { width: 6px; }
+QSplitter::handle:vertical { height: 6px;}
+
+QPushButton { font-size: 10pt;
+  font-family: "Open Sans";}
+/* Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome */
+QLabel, QRadioButton {
+  font-size: 10pt;
+  background: transparent;
+  color: #C1C1C1;}
+
+WLibrary { margin: 2px 3px 0px 0px; }
+
+/* Additional space for QRadionButtons and QLabels*/
+WLibrary QRadioButton, WLibrary QLabel { margin: 9px 3px 6px 3px; }
+
+/* Additional space for the first QRadionButton in the row*/
+WLibrary QRadioButton#radioButtonRecentlyAdded { margin: 9px 3px 6px 12px; }
+
+/* Additional space for the QPushButtons*/
+#DlgMissing > QPushButton,
+#DlgHidden > QPushButton,
+#DlgAutoDJ > QPushButton,
+#DlgRecording > QPushButton,
+#DlgAnalysis > QPushButton {
+  margin: 9px 3px 6px 3px;
+  padding: 3px 8px;
+  min-width: 65px;
+}
+
+/* Additional space for the first QPushButton in the row*/
+#DlgMissing > QPushButton#btnPurge,
+#DlgHidden > QPushButton#btnUnhide,
+#DlgAutoDJ > QPushButton#pushButtonAutoDJ,
+#DlgRecording > QPushButton#pushButtonRecording,
+#DlgAnalysis > QPushButton#pushButtonAnalyze { margin: 9px 12px 6px 3px; }
+
+/* Additional space for the last QPushButton in the row*/
+#DlgAutoDJ > QPushButton#pushButtonShuffle { margin: 9px 3px 6px 12px; }
+
+/* Spacing between treeview and searchbar*/
+QTreeView { margin: 2px 0px 0px 3px; }
+
+/* triangle for closed/opened branches in treeview*/
+QTreeView { show-decoration-selected: 0;} /*  Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588*/
+QTreeView::branch:has-children:!has-siblings:closed,
+QTreeView::branch:closed:has-children:has-siblings { border-image: none; image: url(skin:/style/style_branch_closed.png);}
+QTreeView::branch:open:has-children:!has-siblings,
+QTreeView::branch:open:has-children:has-siblings { border-image: none; image: url(skin:/style/style_branch_open.png);}
 
 
 
