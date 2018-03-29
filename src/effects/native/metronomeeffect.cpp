@@ -96,10 +96,12 @@ void MetronomeEffect::processChannel(
             if (maxFrames > clickSize &&
                     currentFrame > clickSize &&
                     currentFrame < maxFrames - clickSize &&
-                    gs->m_framesSinceClickStart > clickSize) {
+                    gs->m_framesSinceClickStart > clickSize &&
+                    currentFrame != gs->m_previousFrame) {
                 // plays a single click on low speed
                 gs->m_framesSinceClickStart = currentFrame;
             }
+            gs->m_previousFrame = currentFrame;
         }
     } else {
         maxFrames = bufferParameters.sampleRate() * 60 / m_pBpmParameter->value();
