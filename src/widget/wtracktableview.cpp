@@ -105,8 +105,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
             this, SLOT(slotReloadCoverArt()));
 
-    setEditTriggers(QAbstractItemView::EditKeyPressed);
-
     // Create all the context m_pMenu->actions (stuff that shows up when you
     //right-click)
     createActions();
@@ -563,8 +561,6 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
     } else if (doubleClickAction == DlgPrefLibrary::ADD_TO_AUTODJ_TOP
         && modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
         sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP);
-    } else if (doubleClickAction == DlgPrefLibrary::EDIT_METADATA) {
-        edit(index);
     }
 }
 

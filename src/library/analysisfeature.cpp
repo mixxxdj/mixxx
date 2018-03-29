@@ -25,6 +25,7 @@ AnalysisFeature::AnalysisFeature(Library* parent,
                                TrackCollection* pTrackCollection) :
         LibraryFeature(parent),
         m_pConfig(pConfig),
+        m_pLibrary(parent),
         m_pDbConnectionPool(parent->dbConnectionPool()),
         m_pTrackCollection(pTrackCollection),
         m_pAnalyzerQueue(nullptr),
@@ -66,6 +67,7 @@ void AnalysisFeature::bindWidget(WLibrary* libraryWidget,
                                  KeyboardEventFilter* keyboard) {
     m_pAnalysisView = new DlgAnalysis(libraryWidget,
                                       m_pConfig,
+                                      m_pLibrary,
                                       m_pTrackCollection);
     connect(m_pAnalysisView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));

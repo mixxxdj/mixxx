@@ -36,13 +36,15 @@ DlgMissing::DlgMissing(QWidget* parent, UserSettingsPointer pConfig,
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this,
             SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
+    connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
+            this, SIGNAL(trackSelected(TrackPointer)));
+
     connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
             m_pTrackTableView, SLOT(setTrackTableFont(QFont)));
     connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
             m_pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-
-    connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
+    connect(pLibrary, SIGNAL(setSelectedClick(bool)),
+            m_pTrackTableView, SLOT(setSelectedClick(bool)));
 }
 
 DlgMissing::~DlgMissing() {
@@ -78,14 +80,6 @@ void DlgMissing::selectionChanged(const QItemSelection &selected,
                                   const QItemSelection &deselected) {
     Q_UNUSED(deselected);
     activateButtons(!selected.indexes().isEmpty());
-}
-
-void DlgMissing::setTrackTableFont(const QFont& font) {
-    m_pTrackTableView->setTrackTableFont(font);
-}
-
-void DlgMissing::setTrackTableRowHeight(int rowHeight) {
-    m_pTrackTableView->setTrackTableRowHeight(rowHeight);
 }
 
 bool DlgMissing::hasFocus() const {
