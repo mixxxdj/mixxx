@@ -139,7 +139,7 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_show_itunes->setChecked(true);
     checkBox_show_traktor->setChecked(true);
     radioButton_dbclick_bottom->setChecked(false);
-    checkBoxEditMetadataSelectedClicked->setChecked(true);
+    checkBoxEditMetadataSelectedClicked->setChecked(false);
     radioButton_dbclick_top->setChecked(false);
     radioButton_dbclick_deck->setChecked(true);
     spinBoxRowHeight->setValue(Library::kDefaultRowHeightPx);
@@ -176,9 +176,10 @@ void DlgPrefLibrary::slotUpdate() {
             break;
     }
 
-    checkBoxEditMetadataSelectedClicked->setChecked(
-            m_pConfig->getValue(
-                        ConfigKey("[Library]","EditMetadataSelectedClick"), true));
+    bool editMetadataSelectedClick = m_pConfig->getValue(
+            ConfigKey("[Library]","EditMetadataSelectedClick"), false);
+    checkBoxEditMetadataSelectedClicked->setChecked(editMetadataSelectedClick);
+    m_pLibrary->setEditMedatataSelectedClick(editMetadataSelectedClick);
 
     m_originalTrackTableFont = m_pLibrary->getTrackTableFont();
     m_iOriginalTrackTableRowHeight = m_pLibrary->getTrackTableRowHeight();
