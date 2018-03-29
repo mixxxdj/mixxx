@@ -31,7 +31,7 @@ Variables:
             <ObjectName>SamplerCover</ObjectName>
             <Size>34f,34f</Size>
             <Group><Variable name="group"/></Group>
-            <DefaultCover>skin:/graphics/blank_1x1.svg</DefaultCover>
+            <DefaultCover>graphics/blank_1x1.svg</DefaultCover>
           </CoverArt>
       <!-- Background turns Orange when playing preview from Cue/HotCue.
           Only visible when play_indicator=0 -->
@@ -228,8 +228,8 @@ Variables:
             <ObjectName>SamplerPitchSlider</ObjectName>
             <TooltipId>rate</TooltipId>
             <Size>20f,54f</Size>
-            <Handle>skin:/knobs_sliders/pitch_sampler_handle.svg</Handle>
-            <Slider>skin:/knobs_sliders/pitch_sampler_scale.svg</Slider>
+            <Handle>knobs_sliders/pitch_sampler_handle.svg</Handle>
+            <Slider>knobs_sliders/pitch_sampler_scale.svg</Slider>
             <Horizontal>false</Horizontal>
             <Connection>
               <ConfigKey><Variable name="group"/>,rate</ConfigKey>

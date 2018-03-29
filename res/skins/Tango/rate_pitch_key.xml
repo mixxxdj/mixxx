@@ -169,8 +169,8 @@ Variables:
             <MaximumSize>50,136</MaximumSize>
             <SizePolicy>f,me</SizePolicy>
             <TooltipId>rate</TooltipId>
-            <Handle>skin:/knobs_sliders/pitch_handle.svg</Handle>
-            <Slider scalemode="STRETCH">skin:/knobs_sliders/pitch_scale.svg</Slider>
+            <Handle>knobs_sliders/pitch_handle.svg</Handle>
+            <Slider scalemode="STRETCH">knobs_sliders/pitch_scale.svg</Slider>
             <Horizontal>false</Horizontal>
             <Connection>
               <ConfigKey><Variable name="group"/>,rate</ConfigKey>

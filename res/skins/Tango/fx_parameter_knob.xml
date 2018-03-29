@@ -29,8 +29,8 @@ Variables:
             <Children>
               <EffectParameterKnobComposed>
                 <Size>26f,23f</Size>
-                <Knob>skin:/knobs_sliders/knob_fx_yellow.svg</Knob>
-                <BackPath>skin:/knobs_sliders/knob_bg_fx_parameter.svg</BackPath>
+                <Knob>knobs_sliders/knob_fx_yellow.svg</Knob>
+                <BackPath>knobs_sliders/knob_bg_fx_parameter.svg</BackPath>
                 <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                 <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
                 <KnobCenterYOffset>2.000</KnobCenterYOffset>

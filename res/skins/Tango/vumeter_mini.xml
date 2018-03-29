@@ -11,15 +11,15 @@ Variables:
     <Layout>stacked</Layout>
     <Children>
       <StatusLight>
-        <PathStatusLight scalemode="STRETCH">skin:/graphics/vumeter_mini_clipping_over.svg</PathStatusLight>
-        <PathBack scalemode="STRETCH">skin:/graphics/vumeter_mini_clipping.svg</PathBack>
+        <PathStatusLight scalemode="STRETCH">graphics/vumeter_mini_clipping_over.svg</PathStatusLight>
+        <PathBack scalemode="STRETCH">graphics/vumeter_mini_clipping.svg</PathBack>
         <Connection>
           <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
         </Connection>
       </StatusLight>
       <VuMeter>
-        <PathVu scalemode="STRETCH">skin:/graphics/vumeter_mini_over.svg</PathVu>
-        <PathBack scalemode="STRETCH">skin:/graphics/vumeter_mini.svg</PathBack>
+        <PathVu scalemode="STRETCH">graphics/vumeter_mini_over.svg</PathVu>
+        <PathBack scalemode="STRETCH">graphics/vumeter_mini.svg</PathBack>
         <Horizontal>false</Horizontal>
         <PeakHoldSize>5</PeakHoldSize>
         <PeakHoldTime>500</PeakHoldTime>

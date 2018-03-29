@@ -36,8 +36,8 @@ Variables:
             <Children>
               <EffectParameterKnobComposed>
                 <Size>30f,30f</Size>
-                <Knob>skin:/knobs_sliders/knob_white.svg</Knob>
-                <BackPath>skin:/knobs_sliders/knob_bg.svg</BackPath>
+                <Knob>knobs_sliders/knob_white.svg</Knob>
+                <BackPath>knobs_sliders/knob_bg.svg</BackPath>
                 <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                 <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
                 <Connection>

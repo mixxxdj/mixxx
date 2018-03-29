@@ -38,7 +38,7 @@
     <attributes>
       <!-- Set skin defaults. -->
       <attribute config_key="[Master],num_decks">4</attribute>
-      <attribute config_key="[Master],num_samplers">16</attribute>
+      <attribute config_key="[Master],num_samplers">64</attribute>
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
       <attribute persist="true" config_key="[Master],show_eqs">1</attribute>
       <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
@@ -119,7 +119,7 @@
   </manifest>
 
   <ObjectName>Mixxx</ObjectName>
-  <Style src="skin:style.qss"/>
+  <Style src="skin:../Tango/style.qss"/>
   <MinimumSize>1008,500</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>
@@ -133,7 +133,7 @@
       background-color: #0f0f0f;
     }
     QLabel {
-      image: url(skin:/graphics/logo_160x40.svg);
+      image: url(skin:../Tango//graphics/logo_160x40.svg);
       padding: 0;
       margin: 0px 2px 0px 2px;
       border: none;
@@ -191,7 +191,7 @@
     <SingletonDefinition>
       <ObjectName>Waveforms_Singleton</ObjectName>
       <Children>
-        <Template src="skin:waveforms_container.xml"/>
+        <Template src="skin:../Tango/waveforms_container.xml"/>
       </Children>
     </SingletonDefinition>
 
@@ -199,7 +199,7 @@
     <SingletonDefinition>
       <ObjectName>Library_Singleton</ObjectName>
       <Children>
-        <Template src="skin:library.xml"/>
+        <Template src="skin:../Tango/library.xml"/>
       </Children>
     </SingletonDefinition>
 
@@ -208,14 +208,14 @@
     <SingletonDefinition>
       <ObjectName>FxUnits_12_Singleton</ObjectName>
       <Children>
-        <Template src="skin:fx_units_12.xml"/>
+        <Template src="skin:../Tango/fx_units_12.xml"/>
       </Children>
     </SingletonDefinition>
 
     <SingletonDefinition>
       <ObjectName>SamplerRowsButton_Singleton</ObjectName>
       <Children>
-        <Template src="skin:skin_settings_sampler_rows.xml"/>
+        <Template src="skin:/skin_settings_sampler_rows_64.xml"/>
       </Children>
     </SingletonDefinition>
 
@@ -254,7 +254,7 @@
               <SizePolicy>me,me</SizePolicy>
               <Children>
 
-                <Template src="skin:topbar.xml"/>
+                <Template src="skin:../Tango/topbar.xml"/>
 
                 <Splitter>
                   <ObjectName>WaveformSplitter</ObjectName>
@@ -284,7 +284,7 @@
                       <SizePolicy>me,min</SizePolicy>
                       <Children>
 
-                        <Template src="skin:decks_12.xml"/>
+                        <Template src="skin:../Tango/decks_12.xml"/>
 
                     <!-- Load scrolling waveforms Singleton here if the waveforms
                         in the waveforms/decks Splitter are collapsed.
@@ -319,13 +319,13 @@
                           </Connection>
                         </WidgetGroup>
 
-                        <Template src="skin:decks_34.xml"/>
+                        <Template src="skin:../Tango/decks_34.xml"/>
 
                         <WidgetGroup>
                           <Layout>vertical</Layout>
                           <SizePolicy>me,min</SizePolicy>
                           <Children>
-                            <Template src="skin:fx_units_34.xml"/>
+                            <Template src="skin:../Tango/fx_units_34.xml"/>
                           </Children>
                           <Connection>
                             <ConfigKey persist="true">[Tango],4_FxUnits</ConfigKey>
@@ -347,9 +347,9 @@
                           </Connection>
                         </WidgetGroup>
 
-                        <Template src="skin:sample_decks.xml"/>
+                        <Template src="skin:/sample_decks.xml"/>
 
-                        <Template src="skin:mic_aux.xml"/>
+                        <Template src="skin:../Tango/mic_aux.xml"/>
 
                         <SingletonContainer>
                           <ObjectName>Library_Singleton</ObjectName>
@@ -382,21 +382,20 @@
               </Connection>
             </WidgetGroup>
 
-            <Template src="skin:skin_settings.xml"/>
+            <Template src="skin:../Tango/skin_settings.xml"/>
 
           </Children>
         </WidgetGroup><!-- /All skin elements + Skin menu -->
 
         <!-- Detect if screen (window) size is netbook-like.
             Center spacer in top bar will adapt to size. -->
-        <Template src="skin:size_detector_screen.xml"/>
+        <Template src="skin:../Tango/size_detector_screen.xml"/>
 
         <!-- Detect if Star rating fits into deck buttons row.
             Do this here, so it doesn't interfere with expanded skin menu -->
-        <Template src="skin:size_detector_stars.xml"/>
+        <Template src="skin:../Tango/size_detector_stars.xml"/>
 
       </Children>
     </WidgetGroup><!-- /SkinContainer -->
   </Children>
 </skin>
-

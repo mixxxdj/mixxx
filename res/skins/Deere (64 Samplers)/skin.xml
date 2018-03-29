@@ -9,7 +9,7 @@
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
       <attribute config_key="[Master],num_decks">4</attribute>
-      <attribute config_key="[Master],num_samplers">16</attribute>
+      <attribute config_key="[Master],num_samplers">64</attribute>
       <attribute config_key="[Master],num_preview_decks">1</attribute>
       <attribute config_key="[Library],show_library">1</attribute>
 
@@ -65,7 +65,7 @@
   </manifest>
 
   <ObjectName>Mixxx</ObjectName>
-  <Style src="skin:style.qss"/>
+  <Style src="skin:../Deere/style.qss"/>
 
   <Size>1024me,550me</Size>
   <Layout>horizontal</Layout>
@@ -126,7 +126,7 @@
     <SingletonDefinition>
       <ObjectName>DeckVisualRow1</ObjectName>
       <Children>
-        <Template src="skin:deck_visual_row.xml">
+        <Template src="skin:../Deere/deck_visual_row.xml">
           <SetVariable name="i">1</SetVariable>
           <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
           <!-- Traditional Blue -->
@@ -140,7 +140,7 @@
     <SingletonDefinition>
       <ObjectName>DeckVisualRow2</ObjectName>
       <Children>
-        <Template src="skin:deck_visual_row.xml">
+        <Template src="skin:../Deere/deck_visual_row.xml">
           <SetVariable name="i">2</SetVariable>
           <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
           <!-- Traditional Orange -->
@@ -154,7 +154,7 @@
     <SingletonDefinition>
       <ObjectName>DeckVisualRow3</ObjectName>
       <Children>
-        <Template src="skin:deck_visual_row.xml">
+        <Template src="skin:../Deere/deck_visual_row.xml">
           <SetVariable name="i">3</SetVariable>
           <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
           <!-- Violet -->
@@ -168,7 +168,7 @@
     <SingletonDefinition>
       <ObjectName>DeckVisualRow4</ObjectName>
       <Children>
-        <Template src="skin:deck_visual_row.xml">
+        <Template src="skin:../Deere/deck_visual_row.xml">
           <SetVariable name="i">4</SetVariable>
           <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
           <!-- Lime -->
@@ -182,7 +182,7 @@
     <SingletonDefinition>
       <ObjectName>Library</ObjectName>
       <Children>
-        <Template src="skin:library.xml"/>
+        <Template src="skin:../Deere/library.xml"/>
       </Children>
     </SingletonDefinition>
 
@@ -190,7 +190,7 @@
       <SizePolicy>me,me</SizePolicy>
       <Layout>vertical</Layout>
       <Children>
-        <Template src="skin:tool_bar.xml"/>
+        <Template src="skin:../Deere/tool_bar.xml"/>
 
         <Splitter><!-- Visible when Library is not maximized -->
           <ObjectName>WaveformSplitter</ObjectName>
@@ -256,10 +256,10 @@
               <Layout>vertical</Layout>
               <SizePolicy>min,max</SizePolicy>
               <Children>
-                <Template src="skin:main_decks.xml"/>
-                <Template src="skin:effect_rack.xml"/>
+                <Template src="skin:../Deere/main_decks.xml"/>
+                <Template src="skin:../Deere/effect_rack.xml"/>
                 <Template src="skin:sample_decks.xml"/>
-                <Template src="skin:microphone_rack.xml"/>
+                <Template src="skin:../Deere/microphone_rack.xml"/>
                 <SingletonContainer>
                   <ObjectName>Library</ObjectName>
                 </SingletonContainer>
