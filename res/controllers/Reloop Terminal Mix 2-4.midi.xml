@@ -263,11 +263,303 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
           <Script-Binding/>
         </options>
       </control>
+      <!-- Loop controls -->
+      <control> <!-- Loop Length encoder press -->
+        <group>[Channel1]</group>
+				<key>TerminalMix.loopLengthPress</key>
+        <status>0x90</status>
+        <midino>0x0B</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+				<key>TerminalMix.loopLengthPress</key>
+        <status>0x91</status>
+        <midino>0x0B</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+				<key>TerminalMix.loopLengthPress</key>
+        <status>0x92</status>
+        <midino>0x0B</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+				<key>TerminalMix.loopLengthPress</key>
+        <status>0x93</status>
+        <midino>0x0B</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control> <!-- Shifetd Loop Length encoder press -->
+        <group>[Channel1]</group>
+				<key>TerminalMix.shiftedLoopLengthPress</key>
+        <status>0x90</status>
+        <midino>0x51</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+				<key>TerminalMix.shiftedLoopLengthPress</key>
+        <status>0x91</status>
+        <midino>0x51</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+				<key>TerminalMix.shiftedLoopLengthPress</key>
+        <status>0x92</status>
+        <midino>0x51</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+				<key>TerminalMix.shiftedLoopLengthPress</key>
+        <status>0x93</status>
+        <midino>0x51</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control> <!-- Loop Length knob turn -->
+        <group>[Channel1]</group>
+        <key>TerminalMix.loopLengthTurn</key>
+        <status>0xB0</status>
+        <midino>0x0B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>TerminalMix.loopLengthTurn</key>
+        <status>0xB1</status>
+        <midino>0x0B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>TerminalMix.loopLengthTurn</key>
+        <status>0xB2</status>
+        <midino>0x0B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>TerminalMix.loopLengthTurn</key>
+        <status>0xB3</status>
+        <midino>0x0B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control><!-- Loop move press -->
+        <group>[Channel1]</group>
+        <key>TerminalMix.loopMovePress</key>
+        <description>beatjump / loopmove</description>
+        <status>0x90</status>
+        <midino>0x0E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>TerminalMix.loopMovePress</key>
+        <description>beatjump / loopmove</description>
+        <status>0x91</status>
+        <midino>0x0E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>TerminalMix.loopMovePress</key>
+        <description>beatjump / loopmove</description>
+        <status>0x92</status>
+        <midino>0x0E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>TerminalMix.loopMovePress</key>
+        <description>beatjump / loopmove</description>
+        <status>0x93</status>
+        <midino>0x0E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control><!-- Loop Move knob turn -->
+        <group>[Channel1]</group>
+        <key>TerminalMix.loopMoveTurn</key>
+        <description>beatjump / loopmove</description>
+        <status>0xB0</status>
+        <midino>0x0E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>TerminalMix.loopMoveTurn</key>
+        <description>beatjump / loopmove</description>
+        <status>0xB1</status>
+        <midino>0x0E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>TerminalMix.loopMoveTurn</key>
+        <description>beatjump / loopmove</description>
+        <status>0xB2</status>
+        <midino>0x0E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>TerminalMix.loopMoveTurn</key>
+        <description>beatjump / loopmove</description>
+        <status>0xB3</status>
+        <midino>0x0E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control><!-- Shifted Loop Move knob turn -->
+        <group>[Channel1]</group>
+        <key>TerminalMix.shiftedLoopMoveTurn</key>
+        <description>beatjump / loopmove</description>
+        <status>0xB0</status>
+        <midino>0x54</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>TerminalMix.shiftedLoopMoveTurn</key>
+        <description>beatjump / loopmove</description>
+        <status>0xB1</status>
+        <midino>0x54</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>TerminalMix.shiftedLoopMoveTurn</key>
+        <description>beatjump / loopmove</description>
+        <status>0xB2</status>
+        <midino>0x54</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>TerminalMix.shiftedLoopMoveTurn</key>
+        <description>beatjump / loopmove</description>
+        <status>0xB3</status>
+        <midino>0x54</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>loop_in</key>
         <status>0x90</status>
         <midino>0x0C</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>loop_in</key>
+        <status>0x91</status>
+        <midino>0x0C</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>loop_in</key>
+        <status>0x92</status>
+        <midino>0x0C</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>loop_in</key>
+        <status>0x93</status>
+        <midino>0x0C</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>loop_out</key>
+        <status>0x90</status>
+        <midino>0x0D</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>loop_out</key>
+        <status>0x91</status>
+        <midino>0x0D</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>loop_out</key>
+        <status>0x92</status>
+        <midino>0x0D</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>loop_out</key>
+        <status>0x93</status>
+        <midino>0x0D</midino>
         <options>
           <normal/>
         </options>
@@ -572,51 +864,6 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
           <normal/>
         </options>
       </control>
-      <control> <!-- Loop Length knob -->
-        <group>[Channel1]</group>
-        <key>TerminalMix.loopLengthKnob</key>
-        <status>0xB0</status>
-        <midino>0x0B</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control> <!-- Loop Length knob press -->
-        <group>[Channel1]</group>
-        <key>reloop_exit</key>
-        <status>0x90</status>
-        <midino>0x0B</midino>
-        <options>
-          <normal/>
-        </options>
-      </control>
-      <control> <!-- Loop Move knob -->
-        <group>[Channel1]</group>
-        <key>TerminalMix.loopMoveKnob</key>
-        <status>0xB0</status>
-        <midino>0x0E</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control> <!-- Shifted Loop Move knob for smaller steps -->
-        <group>[Channel1]</group>
-        <key>TerminalMix.tinyLoopMoveKnob</key>
-        <status>0xB0</status>
-        <midino>0x54</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control> <!-- Loop Move knob press -->
-        <group>[Channel1]</group>
-        <key>beatloop_4_toggle</key>
-        <status>0x90</status>
-        <midino>0x0E</midino>
-        <options>
-          <button/>
-        </options>
-      </control>
       <control> <!-- Shifted Loop Move knob press -->
         <group>[Channel1]</group>
         <key>quantize</key>
@@ -626,6 +873,72 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
           <normal/>
         </options>
       </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>quantize</key>
+        <status>0x91</status>
+        <midino>0x54</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>quantize</key>
+        <status>0x92</status>
+        <midino>0x54</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>quantize</key>
+        <status>0x93</status>
+        <midino>0x54</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control> <!-- Shifted Loop Move knob for smaller steps -->
+        <group>[Channel1]</group>
+        <key>TerminalMix.shiftedLoopMoveTurn</key>
+        <status>0xB0</status>
+        <midino>0x54</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>TerminalMix.shiftedLoopMoveTurn</key>
+        <status>0xB1</status>
+        <midino>0x54</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>TerminalMix.shiftedLoopMoveTurn</key>
+        <status>0xB2</status>
+        <midino>0x54</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>TerminalMix.shiftedLoopMoveTurn</key>
+        <status>0xB3</status>
+        <midino>0x54</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
+
+
       <control>
         <group>[Channel1]</group>
         <key>loop_double</key>
@@ -667,15 +980,6 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         <key>show_spinny</key>
         <status>0x90</status>
         <midino>0x20</midino>
-        <options>
-          <normal/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>loop_halve</key>
-        <status>0x90</status>
-        <midino>0x52</midino>
         <options>
           <normal/>
         </options>
@@ -756,15 +1060,6 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         <key>keylock</key>
         <status>0x90</status>
         <midino>0x02</midino>
-        <options>
-          <normal/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>loop_out</key>
-        <status>0x90</status>
-        <midino>0x0D</midino>
         <options>
           <normal/>
         </options>
@@ -867,15 +1162,6 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         <midino>0x78</midino>
         <options>
           <Script-Binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>loop_in</key>
-        <status>0x91</status>
-        <midino>0x0C</midino>
-        <options>
-          <normal/>
         </options>
       </control>
 <!--    Samplers    -->
@@ -1178,60 +1464,6 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
           <normal/>
         </options>
       </control>
-      <control> <!-- Loop Length knob -->
-        <group>[Channel2]</group>
-        <key>TerminalMix.loopLengthKnob</key>
-        <status>0xB1</status>
-        <midino>0x0B</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control> <!-- Loop Length knob press -->
-        <group>[Channel2]</group>
-        <key>reloop_exit</key>
-        <status>0x91</status>
-        <midino>0x0B</midino>
-        <options>
-          <normal/>
-        </options>
-      </control>
-      <control> <!-- Loop Move knob -->
-        <group>[Channel2]</group>
-        <key>TerminalMix.loopMoveKnob</key>
-        <status>0xB1</status>
-        <midino>0x0E</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control> <!-- Shifted Loop Move knob for smaller steps -->
-        <group>[Channel2]</group>
-        <key>TerminalMix.tinyLoopMoveKnob</key>
-        <status>0xB1</status>
-        <midino>0x54</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control> <!-- Loop Move knob press -->
-        <group>[Channel2]</group>
-        <key>beatloop_4_toggle</key>
-        <status>0x91</status>
-        <midino>0x0E</midino>
-        <options>
-          <button/>
-        </options>
-      </control>
-      <control> <!-- Shifted Loop Move knob press -->
-        <group>[Channel2]</group>
-        <key>quantize</key>
-        <status>0x91</status>
-        <midino>0x54</midino>
-        <options>
-          <normal/>
-        </options>
-      </control>
       <control>
         <group>[Channel2]</group>
         <key>loop_double</key>
@@ -1273,15 +1505,6 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         <key>show_spinny</key>
         <status>0x91</status>
         <midino>0x20</midino>
-        <options>
-          <normal/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>loop_halve</key>
-        <status>0x91</status>
-        <midino>0x52</midino>
         <options>
           <normal/>
         </options>
@@ -1362,15 +1585,6 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         <key>keylock</key>
         <status>0x91</status>
         <midino>0x02</midino>
-        <options>
-          <normal/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>loop_out</key>
-        <status>0x91</status>
-        <midino>0x0D</midino>
         <options>
           <normal/>
         </options>
@@ -1473,15 +1687,6 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         <midino>0x78</midino>
         <options>
           <Script-Binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>loop_in</key>
-        <status>0x92</status>
-        <midino>0x0C</midino>
-        <options>
-          <normal/>
         </options>
       </control>
 <!--    Samplers    -->
@@ -1794,60 +1999,6 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>TerminalMix.loopLengthKnob</key>
-        <status>0xB2</status>
-        <midino>0x0B</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>reloop_exit</key>
-        <status>0x92</status>
-        <midino>0x0B</midino>
-        <options>
-          <normal/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>TerminalMix.loopMoveKnob</key>
-        <status>0xB2</status>
-        <midino>0x0E</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control> <!-- Shifted Loop Move knob for smaller steps -->
-        <group>[Channel3]</group>
-        <key>TerminalMix.tinyLoopMoveKnob</key>
-        <status>0xB2</status>
-        <midino>0x54</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>beatloop_4_toggle</key>
-        <status>0x92</status>
-        <midino>0x0E</midino>
-        <options>
-          <button/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>quantize</key>
-        <status>0x92</status>
-        <midino>0x54</midino>
-        <options>
-          <normal/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
         <key>loop_double</key>
         <status>0x92</status>
         <midino>0x53</midino>
@@ -1887,15 +2038,6 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         <key>show_spinny</key>
         <status>0x92</status>
         <midino>0x20</midino>
-        <options>
-          <normal/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>loop_halve</key>
-        <status>0x92</status>
-        <midino>0x52</midino>
         <options>
           <normal/>
         </options>
@@ -1976,15 +2118,6 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         <key>keylock</key>
         <status>0x92</status>
         <midino>0x02</midino>
-        <options>
-          <normal/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>loop_out</key>
-        <status>0x92</status>
-        <midino>0x0D</midino>
         <options>
           <normal/>
         </options>
@@ -2080,16 +2213,6 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
           <Script-Binding/>
         </options>
       </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>loop_in</key>
-        <status>0x93</status>
-        <midino>0x0C</midino>
-        <options>
-          <normal/>
-        </options>
-      </control>
--->
       <!--    Samplers    -->
       <control>
         <group>[Sampler1]</group>
@@ -2380,66 +2503,11 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
           <normal/>
         </options>
       </control>
-
       <control>
         <group>[Channel4]</group>
         <key>beatsync</key>
         <status>0x93</status>
         <midino>0x22</midino>
-        <options>
-          <normal/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>TerminalMix.loopLengthKnob</key>
-        <status>0xB3</status>
-        <midino>0x0B</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>reloop_exit</key>
-        <status>0x93</status>
-        <midino>0x0B</midino>
-        <options>
-          <normal/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>TerminalMix.loopMoveKnob</key>
-        <status>0xB3</status>
-        <midino>0x0E</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control> <!-- Shifted Loop Move knob for smaller steps -->
-        <group>[Channel4]</group>
-        <key>TerminalMix.tinyLoopMoveKnob</key>
-        <status>0xB3</status>
-        <midino>0x54</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>beatloop_4_toggle</key>
-        <status>0x93</status>
-        <midino>0x0E</midino>
-        <options>
-          <button/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>quantize</key>
-        <status>0x93</status>
-        <midino>0x54</midino>
         <options>
           <normal/>
         </options>
@@ -2485,15 +2553,6 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         <key>show_spinny</key>
         <status>0x93</status>
         <midino>0x20</midino>
-        <options>
-          <normal/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>loop_halve</key>
-        <status>0x93</status>
-        <midino>0x52</midino>
         <options>
           <normal/>
         </options>
@@ -2574,15 +2633,6 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         <key>keylock</key>
         <status>0x93</status>
         <midino>0x02</midino>
-        <options>
-          <normal/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>loop_out</key>
-        <status>0x93</status>
-        <midino>0x0D</midino>
         <options>
           <normal/>
         </options>
@@ -2868,20 +2918,6 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       </output>
       <output>
         <group>[Channel1]</group>
-        <key>loop_halve</key>
-        <status>0x90</status>
-        <midino>0x52</midino>
-        <minimum>0.1</minimum>
-      </output>
-      <output>
-        <group>[Channel1]</group>
-        <key>loop_double</key>
-        <status>0x90</status>
-        <midino>0x53</midino>
-        <minimum>0.1</minimum>
-      </output>
-      <output>
-        <group>[Channel1]</group>
         <key>pfl</key>
         <status>0x90</status>
         <midino>0x30</midino>
@@ -3048,20 +3084,6 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         <key>loop_out</key>
         <status>0x91</status>
         <midino>0x0D</midino>
-        <minimum>0.1</minimum>
-      </output>
-      <output>
-        <group>[Channel2]</group>
-        <key>loop_halve</key>
-        <status>0x91</status>
-        <midino>0x52</midino>
-        <minimum>0.1</minimum>
-      </output>
-      <output>
-        <group>[Channel2]</group>
-        <key>loop_double</key>
-        <status>0x91</status>
-        <midino>0x53</midino>
         <minimum>0.1</minimum>
       </output>
       <output>
@@ -3236,20 +3258,6 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       </output>
       <output>
         <group>[Channel3]</group>
-        <key>loop_halve</key>
-        <status>0x92</status>
-        <midino>0x52</midino>
-        <minimum>0.1</minimum>
-      </output>
-      <output>
-        <group>[Channel3]</group>
-        <key>loop_double</key>
-        <status>0x92</status>
-        <midino>0x53</midino>
-        <minimum>0.1</minimum>
-      </output>
-      <output>
-        <group>[Channel3]</group>
         <key>pfl</key>
         <status>0x92</status>
         <midino>0x30</midino>
@@ -3416,20 +3424,6 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         <key>loop_out</key>
         <status>0x93</status>
         <midino>0x0D</midino>
-        <minimum>0.1</minimum>
-      </output>
-      <output>
-        <group>[Channel4]</group>
-        <key>loop_halve</key>
-        <status>0x93</status>
-        <midino>0x52</midino>
-        <minimum>0.1</minimum>
-      </output>
-      <output>
-        <group>[Channel4]</group>
-        <key>loop_double</key>
-        <status>0x93</status>
-        <midino>0x53</midino>
         <minimum>0.1</minimum>
       </output>
       <output>

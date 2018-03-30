@@ -1,9 +1,10 @@
 /****************************************************************
- *      Reloop Terminal Mix MIDI controller script v1.01        *
- *          Copyright (C) 2012-2013, Sean M. Pappalardo         *
- *      but feel free to tweak this to your heart's content!    *
- *      For Mixxx version 1.11.x                                *
- ****************************************************************/
+*      Reloop Terminal Mix MIDI controller script v1.01        *
+*          Copyright (C) 2012-2013, Sean M. Pappalardo         *
+*                        2018, ronso0 (2.1 update)             *
+*      but feel free to tweak this to your heart's content!    *
+*      For Mixxx version 2.1.x                                 *
+****************************************************************/
 
 function TerminalMix() {}
 
@@ -18,6 +19,11 @@ TerminalMix.faderStart = [];
 TerminalMix.lastFader = [];   // Last value of each channel/cross fader
 TerminalMix.lastEQs = [[]];
 TerminalMix.traxKnobMode = "tracks";
+TerminalMix.shifted = false;
+TerminalMix.shiftedL = false;
+TerminalMix.shiftedR = false;
+TerminalMix.loopMovePressedL = false;
+TerminalMix.loopMovePressedR = false;
 
 // ----------   Functions   ----------
 
@@ -155,25 +161,115 @@ TerminalMix.crossfaderCurve = function (channel, control, value, status, group) 
     script.crossfaderCurve(value);
 }
 
-TerminalMix.loopLengthKnob = function (channel, control, value, status, group) {
-    if ((value-64)>0) {
-        engine.setValue(group,"loop_double",1);
-        engine.setValue(group,"loop_double",0);
+TerminalMix.loopLengthPress = function (channel, control, value, status, group) {
+  if (value) {
+    if (engine.getValue(group,"loop_enabled") === 0) {
+      script.triggerControl(group,"beatloop_activate",100);
+    } else {
+      script.triggerControl(group,"reloop_toggle",100);
     }
-    else {
-        engine.setValue(group,"loop_halve",1);
-        engine.setValue(group,"loop_halve",0);
+  }
+}
+
+TerminalMix.shiftedLoopLengthPress = function (channel, control, value, status, group) {
+  if (value) {
+    script.triggerControl(group,"reloop_toggle",100);
+  }
+}
+
+TerminalMix.loopLengthTurn = function (channel, control, value, status, group) {
+    if (value === 65) {
+        script.triggerControl(group,"loop_double",100);
+    }
+    else if (value === 63) {
+        script.triggerControl(group,"loop_halve",100);
     }
 }
 
-TerminalMix.loopMoveKnob = function (channel, control, value, status, group) {
-    // numberOfBeats not defined, uses default 0.5 beats
-    script.loopMove(group,value-64);
+TerminalMix.loopMovePress = function (channel, control, value, status, group) {
+  /* [ronso0] This sets a boolean allowing to correctly interpret any turn of the
+    loopmove encoder. All 4 encoders are mapped to this function so we need to find
+    out on which side the encoder is located. This is necessary because we can't
+    set 'dynamic variables' like ``bool loopMovePressed[channel number]``. */
+  /* Left decks */
+  if (channel === 1 || channel === 3) {
+    if (value) {
+      TerminalMix.loopMovePressedL = true;
+    } else {
+      TerminalMix.loopMovePressedL = false;
+    }
+  /* Right decks */
+  } else {
+    if (value) {
+      TerminalMix.loopMovePressedR = true;
+    } else {
+      TerminalMix.loopMovePressedR = false;
+    }
+  }
 }
 
-TerminalMix.tinyLoopMoveKnob = function (channel, control, value, status, group) {
-    // do smaller steps (1/8 beat) with [Shift]+LoopMove knob
-    script.loopMove(group,value-64,0.125);
+TerminalMix.loopMoveTurn = function (channel, control, value, status, group) {
+  if (channel === 1 || channel === 3) {
+    /* If loopmove encoder is pressed while we turn it, we change beatjump_size */
+    if (TerminalMix.loopMovePressedL) {
+      TerminalMix.setBeatjumpSize(channel, control, value, status, group);
+    /* Else we move the loop or make the play position jump */
+    } else {
+      TerminalMix.loopMove(channel, control, value, status, group);
+    }
+  /* Right decks */
+  } else {
+    if (TerminalMix.loopMovePressedR) {
+      TerminalMix.setBeatjumpSize(channel, control, value, status, group);
+    } else {
+      TerminalMix.loopMove(channel, control, value, status, group);
+    }
+  }
+}
+
+TerminalMix.shiftedLoopMoveTurn = function (channel, control, value, status, group) {
+  if (value === 65) {
+    script.triggerControl(group,"beatjump_forward",100);
+  }
+  else if (value === 63) {
+    script.triggerControl(group,"beatjump_backward",100);
+  }
+}
+
+
+
+TerminalMix.loopMove = function (channel, control, value, status, group) {
+  /* Loop enabled */
+  if (engine.getValue(group,"loop_enabled") === 1) {
+    if (engine.getValue(group,"quantize") === 1) {
+    /* With 'quantize' enabled the loop_in marker might not snap to the beat
+      we want the loop to start at, but to the next or previous beat.
+      So we move the loop by one beat. */
+      script.loopMove(group,value-64,1);
+    } else {
+    /* With 'quantize' OFF we might have missed the sweet spot, so we probably
+      want to move the loop only by a fraction of a beat. Default = 1/8th beat */
+      script.loopMove(group,value-64,0.125);
+    }
+  /* Loop disabled */
+  } else {
+    // jump by 'beatjump_size' beats
+    if (value === 65) {
+      script.triggerControl(group,"beatjump_forward",100);
+    }
+    else if (value === 63) {
+      script.triggerControl(group,"beatjump_backward",100);
+    }
+  }
+}
+
+TerminalMix.setBeatjumpSize = function (channel, control, value, status, group) {
+    if (value === 65) {
+      engine.setValue(group,"beatjump_size",engine.getValue(group,"beatjump_size")*2);
+    }
+    else if (value === 63) {
+      engine.setValue(group,"beatjump_size",engine.getValue(group,"beatjump_size")/2);
+    }
 }
 
 TerminalMix.cfAssignL = function (channel, control, value, status, group) {
@@ -277,13 +373,15 @@ TerminalMix.channelFader = function (channel, control, value, status, group) {
     if (TerminalMix.lastFader[group]==value) return;
 
     if (value==0 && engine.getValue(group,"play")==1) {
-        engine.setValue(group,"cue_default",1);
-        engine.setValue(group,"cue_default",0);
+        script.triggerControl(group,"cue_default",100);
     }
     if (TerminalMix.lastFader[group]==0) engine.setValue(group,"play",1);
 
     TerminalMix.lastFader[group]=value;
 }
+
+
+
 
 TerminalMix.crossFader = function (channel, control, value, status, group) {
     var cfValue = script.absoluteNonLin(value,-1,0,1);
@@ -301,8 +399,7 @@ TerminalMix.crossFader = function (channel, control, value, status, group) {
             if (TerminalMix.faderStart[group]
                 && engine.getValue(group,"orientation")==2
                 && engine.getValue(group,"play")==1) {
-                    engine.setValue(group,"cue_default",1);
-                    engine.setValue(group,"cue_default",0);
+                    script.triggerControl(group,"cue_default",100);
             }
         }
     }
@@ -314,8 +411,7 @@ TerminalMix.crossFader = function (channel, control, value, status, group) {
             if (TerminalMix.faderStart[group]
                 && engine.getValue(group,"orientation")==0
                 && engine.getValue(group,"play")==1) {
-                    engine.setValue(group,"cue_default",1);
-                    engine.setValue(group,"cue_default",0);
+                    script.triggerControl(group,"cue_default",100);
             }
         }
     }
@@ -357,8 +453,7 @@ TerminalMix.traxKnobTurn = function (channel, control, value, status, group) {
 TerminalMix.traxKnobPress = function (channel, control, value, status, group) {
     if (value>0) {
         if (TerminalMix.traxKnobMode == "tracks") {
-            engine.setValue(group,"LoadSelectedIntoFirstStopped",1);
-            engine.setValue(group,"LoadSelectedIntoFirstStopped",0);
+            script.triggerControl(group,"LoadSelectedIntoFirstStopped",100);
         } else {
             TerminalMix.traxKnobMode = "tracks";
             midi.sendShortMsg(0x90,0x37,0x7F);
