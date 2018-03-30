@@ -1628,6 +1628,17 @@ void WTrackTableView::slotPopulateCrateMenu() {
         pCheckBox->setProperty("crateId",
                                 QVariant::fromValue(crate.getId()));
         pCheckBox->setEnabled(!crate.isLocked());
+        // Strangely, the normal styling of QActions does not automatically
+        // apply to QWidgetActions. The :selected pseudo-state unfortunately
+        // does not work with QWidgetAction. :hover works for selecting items
+        // with the mouse, but not with the keyboard. :focus works for the
+        // keyboard but with the mouse, the last clicked item keeps the style
+        // after the mouse cursor is moved to hover over another item.
+        pCheckBox->setStyleSheet(
+            QString("QCheckBox {color: %1;}").arg(
+                    pCheckBox->palette().text().color().name()) + "\n" +
+            QString("QCheckBox:hover {background-color: %1;}").arg(
+                    pCheckBox->palette().highlight().color().name()));
         pAction->setEnabled(!crate.isLocked());
         pAction->setDefaultWidget(pCheckBox.get());
 
