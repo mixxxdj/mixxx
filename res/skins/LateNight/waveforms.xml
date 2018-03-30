@@ -4,10 +4,10 @@
     <SizePolicy>me,min</SizePolicy>
     <Children>
 
-    <!-- Select between either the full UI or the big library -->
+    <!-- Select between either the full or half width waveforms -->
     <WidgetStack currentpage="[Skin],half_waveform">
       <Children>
-          <!-- Waveforms -->
+          <!-- Waveforms full width -->
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <Size>100me,40me</Size>
@@ -18,7 +18,7 @@
             </Children>
           </WidgetGroup>
 
-          <!-- MAximized Library -->
+           <!-- Waveforms half width -->
           <WidgetGroup trigger="[Skin],half_waveform" on_hide_select="0">
             <Layout>horizontal</Layout>
             <Size>100me,40me</Size>
