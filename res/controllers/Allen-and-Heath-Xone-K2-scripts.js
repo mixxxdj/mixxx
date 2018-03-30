@@ -446,11 +446,11 @@ XoneK2.Deck = function (column, deckNumber, midiChannel) {
 
     this.bottomButtonLayers.loop[3] = new components.Button({
         unshift: function () {
-            this.inKey = 'loop_double';
+            this.inKey = 'beatjump_forward';
             this.input = components.Button.prototype.input;
         },
         shift: function () {
-            this.inKey = 'beatjump_forward';
+            this.inKey = 'loop_double';
             this.input = components.Button.prototype.input;
         },
         supershift: function () {
@@ -469,11 +469,11 @@ XoneK2.Deck = function (column, deckNumber, midiChannel) {
 
     this.bottomButtonLayers.loop[4] = new components.Button({
         unshift: function () {
-            this.inKey = 'loop_halve';
+            this.inKey = 'beatjump_backward';
             this.input = components.Button.prototype.input;
         },
         shift: function () {
-            this.inKey = 'beatjump_backward';
+            this.inKey = 'loop_halve';
             this.input = components.Button.prototype.input;
         },
         supershift: function () {
