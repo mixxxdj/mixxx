@@ -8,35 +8,17 @@
 
     Main focus was to make every control easily and quickly recognizable,
     especially when your eyes are mostly on your controller and your hands.
-    I started with LateNight and got much inspiration from Deere and how templates and
-    variables can be used. I used WidgetStacks and SizeAwareStacks to switch i.e. Star rating
-    visibility.
 
     Special feature: Comment row
     Display first line of track's comment below track overview (read from metadata tag,
     editable in tracks table or Properties window).
-    Show/hide with toggle in skin settings menu.
     How to use:
     - add your notes on cue points, moods, whatever to the beginning of track comment
     - for a line break in comment, press <shift> + <enter>
-    - to push iTunes info etc. down, insert a blank line: <space> then <shift> + <enter>
+    - to push down iTunes info and other info irrelevant when playing, insert a blank line:
+      <space> then <shift> + <enter>
 
     Enjoy!
-
-    Big   U	    U   P P P
-          U	    U   P     P
-          U	    U   P P P
-            U	U	    P        to mixxx devs for their work over the past years!!
-
-
-    Note - Number of samplers:
-    To set the number of available sample decks, three numbers need to be changed
-    * how many samplers are instantiated in the engine
-      line 61:  <attribute config_key="[Master],num_samplers">XX</attribute>
-    * how many sample decks are loaded in the skin
-      line 322:  <Template src="skin:sample_decks_XX.xml"/>
-    * the selection button insied the skin menu (instantiated here as Singleton)
-      line 210:  <Template src="skin:skin_settings_sampler_rows_16.xml"/
 
 -->
 
@@ -44,7 +26,7 @@
   <manifest>
     <title>Tango</title>
     <author>ronso0</author>
-    <version>2.1.7</version>
+    <version>2.1.0.01</version>
     <description>A controller-focused nightime skin. Almost all controls can be hidden with skin menu.</description>
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
@@ -56,9 +38,7 @@
     <attributes>
       <!-- Set skin defaults. -->
       <attribute config_key="[Master],num_decks">4</attribute>
-      <!-- First setting to choose between 16 or 64 samplers -->
-      <attribute config_key="[Master],num_samplers">64</attribute>
-      <!--attribute config_key="[Master],num_samplers">16</attribute-->
+      <attribute config_key="[Master],num_samplers">16</attribute>
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
       <attribute persist="true" config_key="[Master],show_eqs">1</attribute>
       <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
@@ -232,12 +212,10 @@
       </Children>
     </SingletonDefinition>
 
-    <!-- Here we can choose between 16 or 64 sample decks -->
     <SingletonDefinition>
       <ObjectName>SamplerRowsButton_Singleton</ObjectName>
       <Children>
-        <Template src="skin:skin_settings_sampler_rows_64.xml"/>
-        <!--Template src="skin:skin_settings_sampler_rows_16.xml"/-->
+        <Template src="skin:skin_settings_sampler_rows.xml"/>
       </Children>
     </SingletonDefinition>
 
@@ -369,8 +347,7 @@
                           </Connection>
                         </WidgetGroup>
 
-                        <Template src="skin:sample_decks_64.xml"/>
-                        <!--Template src="skin:sample_decks_16.xml"/-->
+                        <Template src="skin:sample_decks.xml"/>
 
                         <Template src="skin:mic_aux.xml"/>
 
@@ -422,3 +399,4 @@
     </WidgetGroup><!-- /SkinContainer -->
   </Children>
 </skin>
+

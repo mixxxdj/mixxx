@@ -58,7 +58,7 @@ class LibraryControl : public QObject {
     void slotMoveFocusForward(double);
     void slotMoveFocusBackward(double);
     void slotMoveFocus(double);
-    void slotChooseItem(double v);
+    void slotGoToItem(double v);
 
     // Deprecated navigation slots
     void slotLoadSelectedTrackToGroup(QString group, bool play);
@@ -111,7 +111,7 @@ class LibraryControl : public QObject {
     std::unique_ptr<ControlEncoder> m_pMoveFocus;
 
     // Control to choose the currently selected item in focused widget (double click)
-    std::unique_ptr<ControlObject> m_pChooseItem;
+    std::unique_ptr<ControlObject> m_pGoToItem;
 
     // Add to Auto-Dj Cueue
     std::unique_ptr<ControlObject> m_pAutoDjAddTop;

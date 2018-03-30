@@ -172,6 +172,9 @@ Library::Library(
     } else {
         m_trackTableFont = QApplication::font();
     }
+
+    m_editMetadataSelectedClick = m_pConfig->getValue(
+            ConfigKey(kConfigGroup, "EditMetadataSelectedClick"), true);
 }
 
 Library::~Library() {
@@ -242,6 +245,8 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
             pTrackTableView, SLOT(setTrackTableFont(QFont)));
     connect(this, SIGNAL(setTrackTableRowHeight(int)),
             pTrackTableView, SLOT(setTrackTableRowHeight(int)));
+    connect(this, SIGNAL(setSelectedClick(bool)),
+            pTrackTableView, SLOT(setSelectedClick(bool)));
 
     connect(this, SIGNAL(searchStarting()),
             pTrackTableView, SLOT(onSearchStarting()));
@@ -260,6 +265,7 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
     // just connected to us.
     emit(setTrackTableFont(m_trackTableFont));
     emit(setTrackTableRowHeight(m_iTrackTableRowHeight));
+    emit(setSelectedClick(m_editMetadataSelectedClick));
 }
 
 void Library::addFeature(LibraryFeature* feature) {
@@ -412,14 +418,19 @@ QStringList Library::getDirs() {
     return m_pTrackCollection->getDirectoryDAO().getDirs();
 }
 
-void Library::slotSetTrackTableFont(const QFont& font) {
+void Library::setFont(const QFont& font) {
     m_trackTableFont = font;
     emit(setTrackTableFont(font));
 }
 
-void Library::slotSetTrackTableRowHeight(int rowHeight) {
+void Library::setRowHeight(int rowHeight) {
     m_iTrackTableRowHeight = rowHeight;
     emit(setTrackTableRowHeight(rowHeight));
+}
+
+void Library::setEditMedatataSelectedClick(bool enabled) {
+    m_editMetadataSelectedClick = enabled;
+    emit(setSelectedClick(enabled));
 }
 
 void Library::saveCachedTrack(Track* pTrack) noexcept {

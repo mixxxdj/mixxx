@@ -67,6 +67,6 @@ WaveformMarkProperties::WaveformMarkProperties(const QDomNode& node,
     m_text = context.selectString(node, "Text").arg(hotCue + 1);
     m_pixmapPath = context.selectString(node, "Pixmap");
     if (!m_pixmapPath.isEmpty()) {
-        m_pixmapPath = context.getSkinPath(m_pixmapPath);
+        m_pixmapPath = context.makeSkinPath(m_pixmapPath);
     }
 }

@@ -21,15 +21,15 @@ Variables:
             <Children>
               <StatusLight>
                 <TooltipId>channel_VuMeterL</TooltipId>
-                <PathStatusLight>skin:/graphics/vumeter_floating_clipping_over.svg</PathStatusLight>
-                <PathBack>skin:/graphics/vumeter_floating_clipping.svg</PathBack>
+                <PathStatusLight>graphics/vumeter_floating_clipping_over.svg</PathStatusLight>
+                <PathBack>graphics/vumeter_floating_clipping.svg</PathBack>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,PeakIndicatorL</ConfigKey>
                 </Connection>
               </StatusLight>
               <VuMeter>
-                <PathVu>skin:/graphics/vumeter_floating_over.svg</PathVu>
-                <PathBack>skin:/graphics/vumeter_floating.svg</PathBack>
+                <PathVu>graphics/vumeter_floating_over.svg</PathVu>
+                <PathBack>graphics/vumeter_floating.svg</PathBack>
                 <Horizontal>false</Horizontal>
                 <PeakHoldSize>4</PeakHoldSize>
                 <PeakHoldTime>800</PeakHoldTime>
@@ -48,15 +48,15 @@ Variables:
             <Children>
               <StatusLight>
                 <TooltipId>channel_VuMeterR</TooltipId>
-                <PathStatusLight>skin:/graphics/vumeter_floating_clipping_over.svg</PathStatusLight>
-                <PathBack>skin:/graphics/vumeter_floating_clipping.svg</PathBack>
+                <PathStatusLight>graphics/vumeter_floating_clipping_over.svg</PathStatusLight>
+                <PathBack>graphics/vumeter_floating_clipping.svg</PathBack>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,PeakIndicatorR</ConfigKey>
                 </Connection>
               </StatusLight>
               <VuMeter>
-                <PathVu>skin:/graphics/vumeter_floating_over.svg</PathVu>
-                <PathBack>skin:/graphics/vumeter_floating.svg</PathBack>
+                <PathVu>graphics/vumeter_floating_over.svg</PathVu>
+                <PathBack>graphics/vumeter_floating.svg</PathBack>
                 <Horizontal>false</Horizontal>
                 <PeakHoldSize>4</PeakHoldSize>
                 <PeakHoldTime>800</PeakHoldTime>

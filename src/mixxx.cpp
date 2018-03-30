@@ -444,6 +444,10 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         m_pLibrary->scan();
     }
 
+    // This has to be done before m_pSoundManager->setupDevices()
+    // https://bugs.launchpad.net/mixxx/+bug/1758189
+    m_pPlayerManager->loadSamplers();
+
     // Try open player device If that fails, the preference panel is opened.
     bool retryClicked;
     do {
@@ -486,8 +490,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i+1);
         }
     }
-
-    m_pPlayerManager->loadSamplers();
 
     connect(&PlayerInfo::instance(),
             SIGNAL(currentPlayingTrackChanged(TrackPointer)),

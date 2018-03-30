@@ -1,79 +1,88 @@
 <Template>
-	<WidgetGroup>
-		<Size>164,25f</Size>	
-		<Children>
-			<WidgetGroup>
-				<ObjectName>EffectSelectorGroup</ObjectName>	
-				<Size>22f,22f</Size>
-				<Pos>3,3</Pos>				
-				<Children>
-					<PushButton>
-				        <Pos>1,1</Pos>
-						<TooltipId>EffectSlot_enabled</TooltipId>
-						<NumberStates>2</NumberStates>
-						<State>
-						<Number>0</Number>
-						<Pressed>btn_hotcue1_<Variable name="effectnum"/>_down.png</Pressed>
-						<Unpressed>btn_hotcue1_<Variable name="effectnum"/>.png</Unpressed>
-						</State>
-						<State>
-							<Number>1</Number>
-							<Pressed>btn_hotcue1_<Variable name="effectnum"/>_overdown.png</Pressed>
-							<Unpressed>btn_hotcue1_<Variable name="effectnum"/>_over.png</Unpressed>
-						</State>
-						<Connection>
-							<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],enabled</ConfigKey>
-							<ButtonState>LeftButton</ButtonState>
-				 		</Connection>
-					</PushButton>
-				</Children>
-                <Connection>
-                  <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],focused_effect</ConfigKey>
-                  <Transform><IsEqual><Variable name="effectnum"/></IsEqual></Transform>
-                  <BindProperty>highlight</BindProperty>
-                </Connection>
-			</WidgetGroup>	
-			<WidgetGroup>
-				<ObjectName>EffectSelectorGroup</ObjectName>
-				<Pos>25,3</Pos>
-				<Size>107f,22f</Size>				
-				<Children>
-					<Template src="skin:effect_selector_button.xml">
-						<SetVariable name="effectunitnum"><Variable name="effectunitnum"/></SetVariable>
-						<SetVariable name="effectnum"><Variable name="effectnum"/></SetVariable>
-					</Template>
-				</Children>
-                <Connection>
-                  <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],focused_effect</ConfigKey>
-                  <Transform><IsEqual><Variable name="effectnum"/></IsEqual></Transform>
-                  <BindProperty>highlight</BindProperty>
-                </Connection>
-			</WidgetGroup>
+  <WidgetGroup>
+    <Size>163f,26f</Size>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>EffectSelectorGroup</ObjectName>
+        <Pos>3,3</Pos>
+        <Size>22f,22f</Size>
+        <Children>
+          <PushButton>
+            <Pos>1,1</Pos>
+            <TooltipId>EffectSlot_enabled</TooltipId>
+            <NumberStates>2</NumberStates>
+            <State>
+            <Number>0</Number>
+            <Pressed>btn_hotcue1_<Variable name="effectnum"/>_down.png</Pressed>
+            <Unpressed>btn_hotcue1_<Variable name="effectnum"/>.png</Unpressed>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Pressed>btn_hotcue1_<Variable name="effectnum"/>_overdown.png</Pressed>
+              <Unpressed>btn_hotcue1_<Variable name="effectnum"/>_over.png</Unpressed>
+            </State>
+            <Connection>
+              <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],enabled</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+          </PushButton>
+        </Children>
+        <Connection>
+          <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],focused_effect</ConfigKey>
+          <Transform><IsEqual><Variable name="effectnum"/></IsEqual></Transform>
+          <BindProperty>highlight</BindProperty>
+        </Connection>
+      </WidgetGroup>
 
-			<PushButton>
-				<Pos>137,10</Pos>
-				<TooltipId></TooltipId>
-				<Style></Style>
-				<NumberStates>2</NumberStates>
-				<State>
-					<Number>0</Number>
-					<Pressed>btn_plus.png</Pressed>
-				    <Unpressed>btn_plus.png</Unpressed>
-				</State>
-				<State>
-					<Number>1</Number>
-					<Pressed>btn_minus.png</Pressed>
-			        <Unpressed>btn_minus.png</Unpressed>
-				</State>
-				<Pos>2,0</Pos>
-				<Connection>
-				  <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],focused_effect</ConfigKey>
-				  <ButtonState>LeftButton</ButtonState>
-				  <Transform><IsEqual><Variable name="effectnum"/></IsEqual></Transform>
-				</Connection>
-			</PushButton>
-	    </Children>
-	</WidgetGroup>	
+      <WidgetGroup>
+        <ObjectName>EffectSelectorGroup</ObjectName>
+        <Pos>27,3</Pos>
+        <Size>94f,22f</Size>
+        <Children>
+          <Template src="skin:effect_selector_button.xml">
+            <SetVariable name="effectunitnum"><Variable name="effectunitnum"/></SetVariable>
+            <SetVariable name="effectnum"><Variable name="effectnum"/></SetVariable>
+          </Template>
+        </Children>
+        <Connection>
+          <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],focused_effect</ConfigKey>
+          <Transform><IsEqual><Variable name="effectnum"/></IsEqual></Transform>
+          <BindProperty>highlight</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <Knob>
+        <Pos>124,3</Pos>
+        <TooltipId>EffectSlot_metaknob</TooltipId>
+        <NumberStates>63</NumberStates>
+        <Path>knobs/knob_rotary_s%1.png</Path>
+        <Connection>
+          <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],meta</ConfigKey>
+        </Connection>
+      </Knob>
+
+      <PushButton>
+        <Pos>153,10</Pos>
+        <TooltipId>EffectSlot_focus</TooltipId>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>btn_plus.png</Pressed>
+          <Unpressed>btn_plus.png</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>btn_minus.png</Pressed>
+          <Unpressed>btn_minus.png</Unpressed>
+        </State>
+        <Connection>
+          <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],focused_effect</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+          <Transform><IsEqual><Variable name="effectnum"/></IsEqual></Transform>
+        </Connection>
+      </PushButton>
+    </Children>
+  </WidgetGroup>
 </Template>
 
 

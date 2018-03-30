@@ -97,10 +97,7 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         }
         glEnd();
 
-        glLineWidth(1.1);
-        glEnable(GL_LINE_SMOOTH);
-
-        glBegin(GL_LINES); {
+        glBegin(GL_QUADS); {
             for (int visualIndex = firstVisualIndex;
                  visualIndex < lastVisualIndex;
                  visualIndex += 2) {
@@ -114,8 +111,10 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
                 maxAll[0] = (float)data[visualIndex].filtered.all;
                 maxAll[1] = (float)data[visualIndex+1].filtered.all;
                 glColor4f(m_signalColor_r, m_signalColor_g, m_signalColor_b, 0.9);
-                glVertex2f(visualIndex,maxAll[0]);
-                glVertex2f(visualIndex,-1.f*maxAll[1]);
+                glVertex2f(visualIndex - 1.0f, maxAll[0]);
+                glVertex2f(visualIndex - 1.0f, -1.0f * maxAll[1]);
+                glVertex2f(visualIndex + 1.0f, -1.0f * maxAll[1]);
+                glVertex2f(visualIndex + 1.0f, maxAll[0]);
             }
         }
         glEnd();
@@ -138,10 +137,7 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
 
         glScalef(1.f, allGain, 1.f);
 
-        glLineWidth(1.1);
-        glEnable(GL_LINE_SMOOTH);
-
-        glBegin(GL_LINES); {
+        glBegin(GL_QUADS); {
             for (int visualIndex = firstVisualIndex;
                  visualIndex < lastVisualIndex;
                  visualIndex += 2) {
@@ -155,8 +151,10 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
                 maxAll[0] = (float)data[visualIndex].filtered.all;
                 maxAll[1] = (float)data[visualIndex+1].filtered.all;
                 glColor4f(m_signalColor_r, m_signalColor_g, m_signalColor_b, 0.8);
-                glVertex2f(float(visualIndex),0.f);
-                glVertex2f(float(visualIndex),math_max(maxAll[0],maxAll[1]));
+                glVertex2f(float(visualIndex) - 1.0f, 0.0f);
+                glVertex2f(float(visualIndex) - 1.0f, math_max(maxAll[0], maxAll[1]));
+                glVertex2f(float(visualIndex) + 1.0f, math_max(maxAll[0], maxAll[1]));
+                glVertex2f(float(visualIndex) + 1.0f, 0.0f);
             }
         }
         glEnd();

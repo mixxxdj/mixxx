@@ -31,6 +31,8 @@ DlgRecording::DlgRecording(QWidget* parent, UserSettingsPointer pConfig,
             m_pTrackTableView, SLOT(setTrackTableFont(QFont)));
     connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
             m_pTrackTableView, SLOT(setTrackTableRowHeight(int)));
+    connect(pLibrary, SIGNAL(setSelectedClick(bool)),
+            m_pTrackTableView, SLOT(setSelectedClick(bool)));
 
     connect(m_pRecordingManager, SIGNAL(isRecording(bool)),
             this, SLOT(slotRecordingEnabled(bool)));
@@ -157,11 +159,3 @@ void DlgRecording::refreshLabel() {
               .arg(m_durationRecordedStr);
     label->setText(text);
  }
-
-void DlgRecording::setTrackTableFont(const QFont& font) {
-    m_pTrackTableView->setTrackTableFont(font);
-}
-
-void DlgRecording::setTrackTableRowHeight(int rowHeight) {
-    m_pTrackTableView->setTrackTableRowHeight(rowHeight);
-}

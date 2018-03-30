@@ -57,7 +57,7 @@
       </PushButton>
 
       <PushButton>
-        <TooltipId></TooltipId>
+        <TooltipId>mute</TooltipId>
         <Style></Style>
         <NumberStates>2</NumberStates>
         <State>
@@ -313,7 +313,7 @@
       **********************************************
       -->
       <PushButton>
-        <TooltipId>beatloop</TooltipId>
+        <TooltipId>beatloop_activate</TooltipId>
         <Style></Style>
         <NumberStates>2</NumberStates>
         <LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -403,8 +403,9 @@
       </PushButton>
 
       <PushButton>
-        <TooltipId>reloop_exit</TooltipId>
+        <TooltipId>reloop_toggle</TooltipId>
         <Style></Style>
+        <Pos>170,35</Pos>
         <NumberStates>2</NumberStates>
         <LeftClickIsPushButton>true</LeftClickIsPushButton>
         <State>
@@ -417,11 +418,16 @@
           <Pressed>btn_reloop1_overdown.png</Pressed>
           <Unpressed>btn_reloop1_over.png</Unpressed>
         </State>
-        <Pos>170,35</Pos>
         <Connection>
-          <ConfigKey>[Channel<Variable name="channum"/>],reloop_exit</ConfigKey>
+          <ConfigKey>[Channel<Variable name="channum"/>],reloop_toggle</ConfigKey>
           <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
           <ButtonState>LeftButton</ButtonState>
+          <ConnectValueToWidget>false</ConnectValueToWidget>
+        </Connection>
+        <Connection>
+          <ConfigKey>[Channel<Variable name="channum"/>],reloop_andstop</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ButtonState>RightButton</ButtonState>
           <ConnectValueToWidget>false</ConnectValueToWidget>
         </Connection>
         <Connection>

@@ -3,13 +3,13 @@
   <manifest>
     <title>Deere</title>
     <author>RJ Ryan, S.Brandt</author>
-    <version>1.12.0.01</version>
+    <version>2.1.0.01</version>
     <description>A flexible skin.</description>
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
       <attribute config_key="[Master],num_decks">4</attribute>
-      <attribute config_key="[Master],num_samplers">64</attribute>
+      <attribute config_key="[Master],num_samplers">16</attribute>
       <attribute config_key="[Master],num_preview_decks">1</attribute>
       <attribute config_key="[Library],show_library">1</attribute>
 

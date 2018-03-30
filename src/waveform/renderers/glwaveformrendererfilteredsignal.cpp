@@ -67,7 +67,6 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
     float maxLow[2];
     float maxMid[2];
     float maxHigh[2];
-    float meanIndex;
 
 #ifndef __OPENGLES__
 
@@ -99,10 +98,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
         }
         glEnd();
 
-        glLineWidth(1.1);
-        glEnable(GL_LINE_SMOOTH);
-
-        glBegin(GL_LINES); {
+        glBegin(GL_QUADS); {
             for (int visualIndex = firstVisualIndex;
                  visualIndex < lastVisualIndex;
                  visualIndex += 2) {
@@ -120,19 +116,23 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
                 maxMid[1] = (float)data[visualIndex+1].filtered.mid;
                 maxHigh[1] = (float)data[visualIndex+1].filtered.high;
 
-                meanIndex = visualIndex;
-
                 glColor4f(m_lowColor_r, m_lowColor_g, m_lowColor_b, 0.8);
-                glVertex2f(meanIndex,lowGain*maxLow[0]);
-                glVertex2f(meanIndex,-1.f*lowGain*maxLow[1]);
+                glVertex2f(visualIndex - 1.0f, lowGain * maxLow[0]);
+                glVertex2f(visualIndex - 1.0f, -1.0f * lowGain * maxLow[1]);
+                glVertex2f(visualIndex + 1.0f, -1.0f * lowGain * maxLow[1]);
+                glVertex2f(visualIndex + 1.0f, lowGain * maxLow[0]);
 
                 glColor4f(m_midColor_r, m_midColor_g, m_midColor_b, 0.85);
-                glVertex2f(meanIndex,midGain*maxMid[0]);
-                glVertex2f(meanIndex,-1.f*midGain*maxMid[1]);
+                glVertex2f(visualIndex - 1.0f, midGain * maxMid[0]);
+                glVertex2f(visualIndex - 1.0f, -1.0f * midGain * maxMid[1]);
+                glVertex2f(visualIndex + 1.0f, -1.0f * midGain * maxMid[1]);
+                glVertex2f(visualIndex + 1.0f, midGain * maxMid[0]);
 
                 glColor4f(m_highColor_r, m_highColor_g, m_highColor_b, 0.9);
-                glVertex2f(meanIndex,highGain*maxHigh[0]);
-                glVertex2f(meanIndex,-1.f*highGain*maxHigh[1]);
+                glVertex2f(visualIndex - 1.0f, highGain * maxHigh[0]);
+                glVertex2f(visualIndex - 1.0f, -1.0f * highGain * maxHigh[1]);
+                glVertex2f(visualIndex + 1.0f, -1.0f * highGain * maxHigh[1]);
+                glVertex2f(visualIndex + 1.0f, highGain * maxHigh[0]);
             }
         }
         glEnd();
@@ -155,10 +155,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
 
         glScalef(1.f,allGain,1.f);
 
-        glLineWidth(1.1);
-        glEnable(GL_LINE_SMOOTH);
-
-        glBegin(GL_LINES); {
+        glBegin(GL_QUADS); {
             for (int visualIndex = firstVisualIndex;
                  visualIndex < lastVisualIndex;
                  visualIndex += 2) {
@@ -177,16 +174,22 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
                 maxHigh[1] = (float)data[visualIndex+1].filtered.high;
 
                 glColor4f(m_lowColor_r, m_lowColor_g, m_lowColor_b, 0.8);
-                glVertex2f(float(visualIndex),0.f);
-                glVertex2f(float(visualIndex),lowGain*math_max(maxLow[0],maxLow[1]));
+                glVertex2f(float(visualIndex) - 1.0f, 0.0f);
+                glVertex2f(float(visualIndex) - 1.0f, lowGain * math_max(maxLow[0], maxLow[1]));
+                glVertex2f(float(visualIndex) + 1.0f, lowGain * math_max(maxLow[0], maxLow[1]));
+                glVertex2f(float(visualIndex) + 1.0f, 0.0f);
 
                 glColor4f(m_midColor_r, m_midColor_g, m_midColor_b, 0.85);
-                glVertex2f(float(visualIndex),0.f);
-                glVertex2f(float(visualIndex),midGain*math_max(maxMid[0],maxMid[1]));
+                glVertex2f(float(visualIndex) - 1.0f, 0.0f);
+                glVertex2f(float(visualIndex) - 1.0f, midGain * math_max(maxMid[0], maxMid[1]));
+                glVertex2f(float(visualIndex) + 1.0f, midGain * math_max(maxMid[0], maxMid[1]));
+                glVertex2f(float(visualIndex) + 1.0f, 0.0f);
 
                 glColor4f(m_highColor_r, m_highColor_g, m_highColor_b, 0.9);
-                glVertex2f(float(visualIndex),0.f);
-                glVertex2f(float(visualIndex),highGain*math_max(maxHigh[0],maxHigh[1]));
+                glVertex2f(float(visualIndex) - 1.0f, 0.0f);
+                glVertex2f(float(visualIndex) - 1.0f, highGain * math_max(maxHigh[0], maxHigh[1]));
+                glVertex2f(float(visualIndex) + 1.0f, highGain * math_max(maxHigh[0], maxHigh[1]));
+                glVertex2f(float(visualIndex) + 1.0f, 0.0f);
             }
         }
         glEnd();

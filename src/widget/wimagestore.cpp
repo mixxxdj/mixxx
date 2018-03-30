@@ -62,10 +62,20 @@ QImage* WImageStore::getImageNoCache(const PixmapSource& source, double scaleFac
     QImage* pImage;
     if (source.isSVG()) {
         QSvgRenderer renderer;
-        if (source.getData().isEmpty()) {
-            renderer.load(source.getPath());
+
+        if (!source.getSvgSourceData().isEmpty()) {
+            // Call here the different overload for svg content
+            if (!renderer.load(source.getSvgSourceData())) {
+                // The above line already logs a warning
+                return pImage;
+            }
+        } else if (!source.getPath().isEmpty()) {
+            if (!renderer.load(source.getPath())) {
+                // The above line already logs a warning
+                return pImage;
+            }
         } else {
-            renderer.load(source.getData());
+            return pImage;
         }
 
         pImage = new QImage(renderer.defaultSize() * scaleFactor,
