@@ -65,6 +65,10 @@ class LibraryFeature : public QObject {
                             KeyboardEventFilter* /* keyboard */) {}
     virtual TreeItemModel* getChildModel() = 0;
 
+    virtual bool hasTrackTable() {
+        return false;
+    }
+
   protected:
     QStringList getPlaylistFiles() const {
         return getPlaylistFiles(QFileDialog::ExistingFiles);

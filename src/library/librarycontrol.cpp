@@ -11,6 +11,7 @@
 #include "mixer/playermanager.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "widget/wtracktableview.h"
 #include "library/library.h"
 #include "library/libraryview.h"
 
@@ -92,9 +93,9 @@ LibraryControl::LibraryControl(Library* pLibrary)
     connect(m_pMoveFocusBackward.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveFocusBackward(double)));
     connect(m_pMoveFocus.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveFocus(double)));
 
-    // Control to choose the currently selected item in focussed widget (double click)
-    m_pChooseItem = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "ChooseItem"));
-    connect(m_pChooseItem.get(), SIGNAL(valueChanged(double)), this, SLOT(slotChooseItem(double)));
+    // Control to "goto" the currently selected item in focussed widget (context dependent)
+    m_pGoToItem = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "GoToItem"));
+    connect(m_pGoToItem.get(), SIGNAL(valueChanged(double)), this, SLOT(slotGoToItem(double)));
 
     // Auto DJ controls
     m_pAutoDjAddTop = std::make_unique<ControlPushButton>(ConfigKey("[Library]","AutoDjAddTop"));
@@ -451,8 +452,7 @@ void LibraryControl::slotToggleSelectedSidebarItem(double v) {
     }
 }
 
-void LibraryControl::slotChooseItem(double v) {
-    // XXX: Make this more generic? If Enter key is mapped correctly maybe we can use that
+void LibraryControl::slotGoToItem(double v) {
     if (!m_pLibraryWidget) {
         return;
     }
@@ -461,8 +461,21 @@ void LibraryControl::slotChooseItem(double v) {
     if (activeView && activeView->hasFocus()) {
         return slotLoadSelectedIntoFirstStopped(v);
     }
-    // Otherwise toggle the sidebar item expanded state (like a double-click)
-    slotToggleSelectedSidebarItem(v);
+
+    // Focus the library if this is a leaf node in the tree
+    if (m_pSidebarWidget->hasFocus()) {
+        if (m_pSidebarWidget && v > 0
+                && m_pSidebarWidget->isLeafNodeSelected()) {
+            setLibraryFocus();
+        } else {
+            // Otherwise toggle the sidebar item expanded state
+            slotToggleSelectedSidebarItem(v);
+        }
+    }
+    // TODO(xxx) instead of remote control the widgets individual, we should 
+    // translate this into Alt+Return and handle it at each library widget 
+    // individual https://bugs.launchpad.net/mixxx/+bug/1758618
+    //emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Return, Qt::AltModifier});
 }
 
 void LibraryControl::slotFontSize(double v) {
