@@ -104,6 +104,13 @@
     </SingletonDefinition>
 
     <SingletonDefinition>
+      <ObjectName>WaveformsSingleton_half</ObjectName>
+      <Children>
+        <Template src="skin:waveforms_singleton_half.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
       <ObjectName>LibrarySingleton</ObjectName>
       <Children>
         <Template src="skin:library.xml"/>
