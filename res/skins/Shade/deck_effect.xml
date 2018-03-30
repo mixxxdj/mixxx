@@ -1,6 +1,6 @@
 <Template>
 	<WidgetGroup>
-		<Size>100f,64f</Size>
+		<Size>105f,64f</Size>
 		<BackPath>style/style_bg_deck_botom_mid.png</BackPath>
 		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 		<Children>
@@ -30,23 +30,23 @@
 			</PushButton>
 
 			<PushButton>
-				<TooltipId></TooltipId>
+				<TooltipId>EffectUnit_deck_enabled</TooltipId>
 				<Style></Style>
 				<NumberStates>2</NumberStates>
 				<RightClickIsPushButton>true</RightClickIsPushButton>
 				<State>
 					<Number>0</Number>
-					<Pressed>btn_effect_enable_down.png</Pressed>
-					<Unpressed>btn_effect_enable.png</Unpressed>
+					<Pressed>btn_hotcue1_<Variable name="effectunitnum"/>_down.png</Pressed>
+					<Unpressed>btn_hotcue1_<Variable name="effectunitnum"/>.png</Unpressed>
 				</State>
 				<State>
 					<Number>1</Number>
-					<Pressed>btn_effect_enable_overdown.png</Pressed>
-					<Unpressed>btn_effect_enable_over.png</Unpressed>
+					<Pressed>btn_hotcue1_<Variable name="effectunitnum"/>_overdown.png</Pressed>
+					<Unpressed>btn_hotcue1_<Variable name="effectunitnum"/>_over.png</Unpressed>
 				</State>
 				<Pos>4,14</Pos>
 				<Connection>
-					<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],group_<Variable name="group"/>_enable</ConfigKey>
+					<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],group_[Channel<Variable name="effectunitnum"/>]_enable</ConfigKey>
 					<ButtonState>LeftButton</ButtonState>
 				</Connection>
 			</PushButton>	
@@ -65,9 +65,30 @@
 					<Pressed>btn_pfl_fx_overdown.png</Pressed>
 					<Unpressed>btn_pfl_fx_over.png</Unpressed>
 				</State>
-			    <Pos>4,35</Pos>
+			    <Pos>25,14</Pos>
 				<Connection>
 					<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],group_[Headphone]_enable</ConfigKey>
+					<ButtonState>LeftButton</ButtonState>
+				</Connection>
+			</PushButton>
+
+			<PushButton>
+				<TooltipId>EffectUnit_<Variable name="group"/>_enabled</TooltipId>
+				<Style></Style>
+				<NumberStates>2</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_fx<Variable name="effectunitnum"/>_down.png</Pressed>
+					<Unpressed>btn_fx<Variable name="effectunitnum"/>.png</Unpressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Pressed>btn_fx<Variable name="effectunitnum"/>_overdown.png</Pressed>
+					<Unpressed>btn_fx<Variable name="effectunitnum"/>_over.png</Unpressed>
+				</State>
+			    <Pos>4,35</Pos>
+				<Connection>
+					<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],group_[<Variable name="group"/>]_enable</ConfigKey>
 					<ButtonState>LeftButton</ButtonState>
 				</Connection>
 			</PushButton>
@@ -76,7 +97,7 @@
 		        <Size>17f,5f</Size>
 		        <BackPath>btn_mix.png</BackPath>
 		        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-				<Pos>37,18</Pos>
+				<Pos>53,18</Pos>
 	        </WidgetGroup>
 
 			<Knob>
@@ -84,7 +105,7 @@
 				<Style></Style>
 				<NumberStates>63</NumberStates>
 				<Path>knobs/knob_rotary_s%1.png</Path>
-				<Pos>32,29</Pos>
+				<Pos>49,29</Pos>
 				<Connection>
 					<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],mix</ConfigKey>
 				</Connection>
@@ -94,7 +115,7 @@
 		        <Size>29f,5f</Size>
 		        <BackPath>btn_super.png</BackPath>
 		        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-				<Pos>64,18</Pos>
+				<Pos>76,18</Pos>
 	        </WidgetGroup>
 
 			<Knob>
@@ -102,7 +123,7 @@
 				<Style></Style>
 				<NumberStates>63</NumberStates>
 				<Path>knobs/knob_rotary_s%1.png</Path>
-				<Pos>65,29</Pos>
+				<Pos>77,29</Pos>
 				<Connection>
 					<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],super1</ConfigKey>
 				</Connection>

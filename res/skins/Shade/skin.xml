@@ -272,7 +272,7 @@
 										</WidgetGroup>
 				 						<Template src="skin:deck_effect.xml">
 											<SetVariable name="effectunitnum">1</SetVariable>
-											<SetVariable name="group">[BusLeft]</SetVariable>
+											<SetVariable name="group">BusLeft</SetVariable>
 										</Template>
 				 						<Template src="skin:deck_transport.xml">
 											<SetVariable name="channum">1</SetVariable>
@@ -327,7 +327,7 @@
 
 										<Template src="skin:deck_effect.xml">
 											<SetVariable name="effectunitnum">2</SetVariable>
-											<SetVariable name="group">[BusRight]</SetVariable>
+											<SetVariable name="group">BusRight</SetVariable>
 				  						</Template>
 				 						<Template src="skin:deck_transport.xml">
 											<SetVariable name="channum">2</SetVariable>

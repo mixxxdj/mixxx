@@ -767,6 +767,16 @@ void Tooltips::addStandardTooltips() {
             << tr("Route the master mix through this effect unit.")
             << effectsWithinUnit;
 
+    add("EffectUnit_BusLeft_enabled")
+            << tr("Assign Effect Unit")
+            << tr("Route the left crossfader bus through this effect unit.")
+            << effectsWithinUnit;
+
+    add("EffectUnit_BusRight_enabled")
+            << tr("Assign Effect Unit")
+            << tr("Route the right crossfader bus through this effect unit.")
+            << effectsWithinUnit;
+
     add("EffectUnit_deck_enabled")
             << tr("Assign Effect Unit")
             << tr("Route this deck through the indicated effect unit.")
