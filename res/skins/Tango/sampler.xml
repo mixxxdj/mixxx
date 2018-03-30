@@ -51,7 +51,7 @@ Variables:
 
       <WidgetGroup><!-- Play/Cue + Cover-->
         <ObjectName>SamplerPlayBox_mini</ObjectName>
-        <Layout>stacked</Layout>
+        <Layout>horizontal</Layout>
         <Size>35f,34f</Size>
         <Children>
           <SingletonContainer>
@@ -174,12 +174,14 @@ Variables:
 
                   <WidgetGroup><!-- Play/Cue + Cover-->
                     <ObjectName>SamplerPlayBox</ObjectName>
-                    <Layout>stacked</Layout>
+                    <Layout>vertical</Layout>
                     <Size>35f,36f</Size>
                     <Children>
+                      <WidgetGroup><Size>0min,1f</Size></WidgetGroup>
                       <SingletonContainer>
                         <ObjectName>Sampler<Variable name="samNum"/>_Play_Cover</ObjectName>
                       </SingletonContainer>
+                      <WidgetGroup><Size>0min,1f</Size></WidgetGroup>
                     </Children>
                   </WidgetGroup>
 
@@ -211,9 +213,11 @@ Variables:
                     </Connection>
                   </Overview>
 
+                  <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
+
                   <WidgetGroup>
                     <ObjectName>VUMeterSampler</ObjectName>
-                    <Size>8f,36f</Size>
+                    <Size>7f,36f</Size>
                     <Layout>stacked</Layout>
                     <Children>
                       <StatusLight>

@@ -104,8 +104,7 @@
                   </Template>
 
                   <PushButton>
-                    <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
-                    <TooltipId></TooltipId>
+                    <TooltipId>talkover_duck_mode</TooltipId>
                     <Size>66f,20f</Size>
                     <NumberStates>3</NumberStates>
                     <State>
@@ -146,8 +145,7 @@
                       <Template src="skin:knob.xml">
                         <SetVariable name="group">[Master]</SetVariable>
                         <SetVariable name="control">duckStrength</SetVariable>
-                        <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
-                        <SetVariable name="TooltipId"></SetVariable>
+                        <SetVariable name="TooltipId">talkover_duck_strength</SetVariable>
                         <SetVariable name="color">blue</SetVariable>
                       </Template>
                     </Children>

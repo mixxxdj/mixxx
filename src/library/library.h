@@ -42,7 +42,7 @@ class WSearchLineEdit;
 class TreeItem;
 
 class Library: public QObject,
-    public virtual /*implements*/ GlobalTrackCacheEvictor {
+    public virtual /*implements*/ GlobalTrackCacheSaver {
     Q_OBJECT
 public:
     enum RemovalType {
@@ -105,8 +105,6 @@ public:
 
     void focusSearch();
 
-    void onEvictingTrackFromCache(GlobalTrackCacheLocker* pCacheLocker, Track* pTrack) override;
-
   public slots:
 
     void slotActivateFeature(LibraryFeature* pFeature);
@@ -150,8 +148,10 @@ public:
     void scanStarted();
     void scanFinished();
 
-  private:
+  private slots:
+    void saveTrack(TrackPointer pTrack);
 
+  private:
     // If the pane exists returns it, otherwise it creates the pane
     LibraryPaneManager* getOrCreatePane(int paneId);
     LibraryPaneManager* getFocusedPane();
@@ -165,6 +165,10 @@ public:
 
     void handleFocus();
     void handlePreselection();
+
+    // Callback for GlobalTrackCache
+    void saveCachedTrack(TrackPointer pTrack) noexcept override;
+
 
     const UserSettingsPointer m_pConfig;
 

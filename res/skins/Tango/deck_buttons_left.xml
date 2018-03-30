@@ -18,7 +18,7 @@ Variables:
 <Template>
   <WidgetGroup>
     <ObjectName>DeckButtonsPlay</ObjectName>
-    <Size>0me,25f</Size>
+    <Size>0me,24f</Size>
     <Layout>stacked</Layout>
     <Children>
       <WidgetGroup><!-- Play + deck controls -->
@@ -32,70 +32,6 @@ Variables:
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
-
-              <!-- Deck Controls which are always visible -->
-              <Template src="skin:deckbutton_2state_permanent.xml">
-                <SetVariable name="Width">18max</SetVariable>
-                <SetVariable name="TooltipId">keylock</SetVariable>
-                <SetVariable name="state_0_pressed">keylock_off.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">keylock_off.svg</SetVariable>
-                <SetVariable name="state_1_pressed">keylock_on.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">keylock_on.svg</SetVariable>
-                <SetVariable name="Control">keylock</SetVariable>
-              </Template>
-
-              <Template src="skin:deckbutton_1state_permanent.xml">
-                <SetVariable name="Width">18max</SetVariable>
-                <SetVariable name="TooltipId">eject</SetVariable>
-                <SetVariable name="state_0_pressed">eject_pressed.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">eject.svg</SetVariable>
-                <SetVariable name="Control">eject</SetVariable>
-              </Template>
-
-              <Template src="skin:deckbutton_2state_permanent.xml">
-                <SetVariable name="Width">22max</SetVariable>
-                <SetVariable name="TooltipId">slip_mode</SetVariable>
-                <SetVariable name="state_0_pressed">slipmode_off.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">slipmode_off.svg</SetVariable>
-                <SetVariable name="state_1_pressed">slipmode_on.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">slipmode_on.svg</SetVariable>
-                <SetVariable name="Control">slip_enabled</SetVariable>
-              </Template>
-
-              <Template src="skin:deckbutton_2state_permanent.xml">
-                <SetVariable name="Width">22max</SetVariable>
-                <SetVariable name="TooltipId">repeat</SetVariable>
-                <SetVariable name="state_0_pressed">repeat_off.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">repeat_off.svg</SetVariable>
-                <SetVariable name="state_1_pressed">repeat_on.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">repeat_on.svg</SetVariable>
-                <SetVariable name="Control">repeat</SetVariable>
-              </Template>
-
-              <Template src="skin:deckbutton_3state_permanent.xml">
-                <SetVariable name="Width">20max</SetVariable>
-                <SetVariable name="TooltipId">orientation</SetVariable>
-                <SetVariable name="state_0_pressed">xfader_left.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">xfader_left.svg</SetVariable>
-                <SetVariable name="state_1_pressed">xfader_center_attention.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">xfader_center_attention.svg</SetVariable>
-                <SetVariable name="state_2_pressed">xfader_right_attention.svg</SetVariable>
-                <SetVariable name="state_2_unpressed">xfader_right_attention.svg</SetVariable>
-                <SetVariable name="Control">orientation</SetVariable>
-              </Template>
-
-              <Template src="skin:deckbutton_2state_permanent.xml">
-                <SetVariable name="Width">20max</SetVariable>
-                <SetVariable name="TooltipId">quantize</SetVariable>
-                <SetVariable name="state_0_pressed">quantize_off.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">quantize_off.svg</SetVariable>
-                <SetVariable name="state_1_pressed">quantize_on.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">quantize_on.svg</SetVariable>
-                <SetVariable name="Control">quantize</SetVariable>
-              </Template>
-              <!-- /Deck Controls which are always visible -->
-
-              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
               <WidgetGroup><!-- Toggle Deck controls -->
                 <Layout>vertical</Layout>
@@ -115,7 +51,7 @@ Variables:
               </WidgetGroup>
 
               <WidgetGroup><!-- Expandable Deck controls -->
-                <ObjectName>DeckControlsExpanded</ObjectName>
+                <ObjectName>DeckControlsExpandedLeft</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
@@ -184,6 +120,70 @@ Variables:
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- /Expandable Deck controls -->
+
+              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+              <!-- Deck Controls which are always visible -->
+              <Template src="skin:deckbutton_2state_permanent.xml">
+                <SetVariable name="Width">18max</SetVariable>
+                <SetVariable name="TooltipId">keylock</SetVariable>
+                <SetVariable name="state_0_pressed">keylock_off.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">keylock_off.svg</SetVariable>
+                <SetVariable name="state_1_pressed">keylock_on.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">keylock_on.svg</SetVariable>
+                <SetVariable name="Control">keylock</SetVariable>
+              </Template>
+
+              <Template src="skin:deckbutton_1state_permanent.xml">
+                <SetVariable name="Width">18max</SetVariable>
+                <SetVariable name="TooltipId">eject</SetVariable>
+                <SetVariable name="state_0_pressed">eject_pressed.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">eject.svg</SetVariable>
+                <SetVariable name="Control">eject</SetVariable>
+              </Template>
+
+              <Template src="skin:deckbutton_2state_permanent.xml">
+                <SetVariable name="Width">22max</SetVariable>
+                <SetVariable name="TooltipId">slip_mode</SetVariable>
+                <SetVariable name="state_0_pressed">slipmode_off.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">slipmode_off.svg</SetVariable>
+                <SetVariable name="state_1_pressed">slipmode_on.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">slipmode_on.svg</SetVariable>
+                <SetVariable name="Control">slip_enabled</SetVariable>
+              </Template>
+
+              <Template src="skin:deckbutton_2state_permanent.xml">
+                <SetVariable name="Width">22max</SetVariable>
+                <SetVariable name="TooltipId">repeat</SetVariable>
+                <SetVariable name="state_0_pressed">repeat_off.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">repeat_off.svg</SetVariable>
+                <SetVariable name="state_1_pressed">repeat_on.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">repeat_on.svg</SetVariable>
+                <SetVariable name="Control">repeat</SetVariable>
+              </Template>
+
+              <Template src="skin:deckbutton_3state_permanent.xml">
+                <SetVariable name="Width">20max</SetVariable>
+                <SetVariable name="TooltipId">orientation</SetVariable>
+                <SetVariable name="state_0_pressed">xfader_left.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">xfader_left.svg</SetVariable>
+                <SetVariable name="state_1_pressed">xfader_center_attention.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">xfader_center_attention.svg</SetVariable>
+                <SetVariable name="state_2_pressed">xfader_right_attention.svg</SetVariable>
+                <SetVariable name="state_2_unpressed">xfader_right_attention.svg</SetVariable>
+                <SetVariable name="Control">orientation</SetVariable>
+              </Template>
+
+              <Template src="skin:deckbutton_2state_permanent.xml">
+                <SetVariable name="Width">20max</SetVariable>
+                <SetVariable name="TooltipId">quantize</SetVariable>
+                <SetVariable name="state_0_pressed">quantize_off.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">quantize_off.svg</SetVariable>
+                <SetVariable name="state_1_pressed">quantize_on.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">quantize_on.svg</SetVariable>
+                <SetVariable name="Control">quantize</SetVariable>
+              </Template>
+              <!-- /Deck Controls which are always visible -->
 
               <!-- Stars -->
               <!-- visibility controlled by SizeAwareStack in size_detector_stars.xml -->

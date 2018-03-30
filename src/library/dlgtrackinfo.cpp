@@ -4,7 +4,6 @@
 
 #include "library/dlgtrackinfo.h"
 #include "sources/soundsourceproxy.h"
-#include "track/track.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/dao/cue.h"
@@ -20,7 +19,6 @@ const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 
 
 DlgTrackInfo::DlgTrackInfo(QWidget* parent)
             : QDialog(parent),
-              m_pLoadedTrack(NULL),
               m_pTapFilter(new TapFilter(this, kFilterLength, kMaxInterval)),
               m_dLastTapedBpm(-1.),
               m_pWCoverArtLabel(new WCoverArtLabel(this)) {
@@ -619,13 +617,11 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
         // We cannot reuse m_pLoadedTrack, because it might already been
         // modified and we want to read fresh metadata directly from the
         // file. Otherwise the changes in m_pLoadedTrack would be lost.
-        TrackPointer pTrack = Track::newTemporary(
+        TrackPointer pTrack = SoundSourceProxy::importTemporaryTrack(
                 m_pLoadedTrack->getFileInfo(),
                 m_pLoadedTrack->getSecurityToken());
-        if (pTrack) {
-            SoundSourceProxy(pTrack).updateTrackFromSource();
-            populateFields(*pTrack);
-        }
+        DEBUG_ASSERT(pTrack);
+        populateFields(*pTrack);
     }
 }
 

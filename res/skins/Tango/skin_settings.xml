@@ -36,6 +36,7 @@ Description:
               <WidgetGroup><Size>1me,1me</Size></WidgetGroup>
 
               <Template src="skin:button_2state.xml">
+                <SetVariable name="TooltipId">skin_settings</SetVariable>
                 <SetVariable name="ObjectName">SkinSettingsClose</SetVariable>
                 <SetVariable name="Size">20f,24f</SetVariable>
                 <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>
@@ -177,14 +178,14 @@ Description:
                         <SetVariable name="state_0_text">      Key/Key Match</SetVariable>
                         <SetVariable name="state_1_text"> &#10004; Key/Key Match</SetVariable>
                         <SetVariable name="width">182</SetVariable>
-                        <SetVariable name="Setting">[Tango],key_controls</SetVariable>
+                        <SetVariable name="Setting">[Tango],key_display_match</SetVariable>
                       </Template>
 
                       <Template src="skin:skin_settings_button_2state.xml">
                         <SetVariable name="state_0_text">      Rate/Key Adjustment Buttons</SetVariable>
                         <SetVariable name="state_1_text"> &#10004; Rate/Key Adjustment Buttons</SetVariable>
                         <SetVariable name="width">182</SetVariable>
-                        <SetVariable name="Setting">[Tango],rate_key_buttons</SetVariable>
+                        <SetVariable name="Setting">[Tango],rate_key_controls</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup>
@@ -830,6 +831,7 @@ Description:
                 <Children>
                   <WidgetGroup><Size>14f,13me</Size></WidgetGroup>
                   <Template src="skin:button_1state.xml">
+                    <SetVariable name="TooltipId">LoadSamplerBank</SetVariable>
                     <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
                     <SetVariable name="Size">31f,17f</SetVariable>
                     <SetVariable name="state_0_text"> Load /</SetVariable>
@@ -840,6 +842,7 @@ Description:
                     <Text> / </Text>
                   </Label>
                   <Template src="skin:button_1state.xml">
+                    <SetVariable name="TooltipId">SaveSamplerBank</SetVariable>
                     <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
                     <SetVariable name="Size">110me,17f</SetVariable>
                     <SetVariable name="state_0_text"> Save Sampler Bank</SetVariable>
