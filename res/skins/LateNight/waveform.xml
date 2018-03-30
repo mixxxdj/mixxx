@@ -73,30 +73,13 @@
             <SizePolicy>f,f</SizePolicy>
             <Children>
 
-              <WidgetGroup><!-- half size waveform & Beat Curpos -->
-                <Layout>vertical</Layout>
-                <SizePolicy>f,f</SizePolicy>
-                <Children>
-                  <Template src="skin:button_1state.xml">
-                    <SetVariable name="TooltipId">halfSizeWaveform</SetVariable>
-                    <SetVariable name="ObjectName">halfSizeWaveform</SetVariable>
-                    <SetVariable name="Icon">wave_half</SetVariable>
-                    <SetVariable name="Size">28f,28f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="group"/>,[Skin],half_waveform</SetVariable>
-                  </Template>
-
-                    
-                  <Template src="skin:button_1state.xml">
-                    <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
-                    <SetVariable name="ObjectName">BeatCurpos</SetVariable>
-                    <SetVariable name="Icon">beat_curpos_large</SetVariable>
-                    <SetVariable name="Size">28f,28f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_curpos</SetVariable>
-                  </Template>
-
-                </Children>
-              </WidgetGroup><!-- /half size waveform & Beat Curpos -->
-
+-              <Template src="skin:button_1state.xml">
+-                <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
+-                <SetVariable name="ObjectName">BeatCurpos</SetVariable>
+-                <SetVariable name="Icon">beat_curpos_large</SetVariable>
+-                <SetVariable name="Size">28f,56f</SetVariable>
+-                <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_curpos</SetVariable>
+-              </Template>
 
               <WidgetGroup><!-- beats earlier & faster -->
                 <Layout>vertical</Layout>
