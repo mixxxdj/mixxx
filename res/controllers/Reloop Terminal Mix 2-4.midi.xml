@@ -2610,7 +2610,7 @@ Uses scripting. Open script file and adapt variables to your needs:
       </control>
 
 <!-- Effect controls -->
-  <!-- Focus buttons, normal --->
+  <!-- Focus buttons, unshifted -->
       <control>
         <group>[EffectRack1]</group>
         <key>TerminalMix.effectUnit13.effectFocusButton.input</key>
@@ -2631,7 +2631,7 @@ Uses scripting. Open script file and adapt variables to your needs:
           <script-binding/>
         </options>
       </control>
-  <!-- Focus buttons, shifted --->
+  <!-- Focus buttons, shifted -->
       <control>
         <group>[EffectRack1]</group>
         <key>TerminalMix.effectUnit13.effectFocusButton.input</key>
@@ -2714,13 +2714,16 @@ Uses scripting. Open script file and adapt variables to your needs:
           <script-binding/>
         </options>
       </control>
-  <!-- Dry/Wet knobs --->
+  <!-- Dry/Wet knobs -->
       <control>
         <group>[EffectRack1]</group>
         <key>TerminalMix.effectUnit13.dryWetKnob.input</key>
         <description>fx</description>
         <status>0xB0</status>
-        <midino>0x2B</midino>
+        <!-- 'Beats' knob -->
+        <midino>0x06</midino>
+        <!-- Gain knob
+        <midino>0x2B</midino> -->
         <options>
           <script-binding/>
         </options>
@@ -2730,12 +2733,15 @@ Uses scripting. Open script file and adapt variables to your needs:
         <key>TerminalMix.effectUnit24.dryWetKnob.input</key>
         <description>fx</description>
         <status>0xB1</status>
-        <midino>0x2B</midino>
+        <!-- 'Beats' knob -->
+        <midino>0x06</midino>
+        <!-- Gain knob
+        <midino>0x2B</midino> -->
         <options>
           <script-binding/>
         </options>
       </control>
-  <!-- Effect knobs --->
+  <!-- Effect knobs -->
       <control>
         <group>[EffectRack1]</group>
         <key>TerminalMix.effectUnit13.knobs[1].input</key>
