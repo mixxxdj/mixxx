@@ -1,20 +1,17 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxMIDIPreset mixxxVersion="2.1.0" schemaVersion="1">
   <info>
-    <name>Reloop Terminal Mix 2/4 2.1</name>
+    <name>Reloop Terminal Mix 2/4 2.1111111</name>
     <author>Sean M. Pappalardo (1.11), ronso0 (2.1 update)</author>
     <description>
 A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
-Uses scripting. Open script file and adapt variables to your needs:
-* bla
-* bklaos
     </description>
     <wiki>http://mixxx.org/wiki/doku.php/reloop_terminal_mix</wiki>
   </info>
   <controller id="TerminalMix">
     <scriptfiles>
-        <file functionprefix="" filename="lodash.mixxx.js"/>
-        <file functionprefix="" filename="midi-components-0.0.js"/>
+      <file functionprefix="" filename="lodash.mixxx.js"/>
+      <file functionprefix="" filename="midi-components-0.0.js"/>
       <file filename="Reloop Terminal Mix 2-4.js" functionprefix="TerminalMix"/>
     </scriptfiles>
     <controls>
@@ -2608,10 +2605,8 @@ Uses scripting. Open script file and adapt variables to your needs:
           <soft-takeover/>
         </options>
       </control>
-
 <!-- Effect controls -->
-  <!-- Focus buttons, unshifted -->
-      <control>
+      <control><!-- Focus buttons, unshifted -->
         <group>[EffectRack1]</group>
         <key>TerminalMix.effectUnit13.effectFocusButton.input</key>
         <description>fx</description>
@@ -2631,8 +2626,7 @@ Uses scripting. Open script file and adapt variables to your needs:
           <script-binding/>
         </options>
       </control>
-  <!-- Focus buttons, shifted -->
-      <control>
+      <control><!-- Focus buttons, shifted -->
         <group>[EffectRack1]</group>
         <key>TerminalMix.effectUnit13.effectFocusButton.input</key>
         <description>fx</description>
@@ -2652,8 +2646,7 @@ Uses scripting. Open script file and adapt variables to your needs:
           <script-binding/>
         </options>
       </control>
-  <!-- Effect enable buttons -->
-      <control>
+      <control><!-- Effect enable buttons -->
         <group>[EffectRack1]</group>
         <key>TerminalMix.effectUnit13.enableButtons[1].input</key>
         <description>fx</description>
@@ -2693,7 +2686,6 @@ Uses scripting. Open script file and adapt variables to your needs:
           <script-binding/>
         </options>
       </control>
-    </controls>
       <control>
         <group>[EffectRack1]</group>
         <key>TerminalMix.effectUnit13.enableButtons[3].input</key>
@@ -2714,8 +2706,7 @@ Uses scripting. Open script file and adapt variables to your needs:
           <script-binding/>
         </options>
       </control>
-  <!-- Dry/Wet knobs -->
-      <control>
+      <control><!-- Dry/Wet knobs -->
         <group>[EffectRack1]</group>
         <key>TerminalMix.effectUnit13.dryWetKnob.input</key>
         <description>fx</description>
@@ -2741,7 +2732,26 @@ Uses scripting. Open script file and adapt variables to your needs:
           <script-binding/>
         </options>
       </control>
-  <!-- Effect knobs -->
+      <control><!-- Effect knobs -->
+        <group>[EffectRack1]</group>
+        <key>TerminalMix.effectUnit13.knobs[3].input</key>
+        <description>fx</description>
+        <status>0xB0</status>
+        <midino>0x05</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1]</group>
+        <key>TerminalMix.effectUnit24.knobs[3].input</key>
+        <description>fx</description>
+        <status>0xB1</status>
+        <midino>0x05</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
       <control>
         <group>[EffectRack1]</group>
         <key>TerminalMix.effectUnit13.knobs[1].input</key>
@@ -2782,48 +2792,28 @@ Uses scripting. Open script file and adapt variables to your needs:
           <script-binding/>
         </options>
       </control>
+      <!-- Shift buttons -->
       <control>
-        <group>[EffectRack1]</group>
-        <key>TerminalMix.effectUnit13.knobs[3].input</key>
-        <description>fx</description>
-        <status>0xB0</status>
-        <midino>0x05</midino>
+        <group>[Controller]</group>
+        <key>TerminalMix.shiftButtonL</key>
+        <description>ui</description>
+        <status>0x90</status>
+        <midino>0x21</midino>
         <options>
           <script-binding/>
         </options>
       </control>
       <control>
-        <group>[EffectRack1]</group>
-        <key>TerminalMix.effectUnit24.knobs[3].input</key>
-        <description>fx</description>
-        <status>0xB1</status>
-        <midino>0x05</midino>
+        <group>[Controller]</group>
+        <key>TerminalMix.shiftButtonR</key>
+        <description>ui</description>
+        <status>0x91</status>
+        <midino>0x21</midino>
         <options>
           <script-binding/>
         </options>
       </control>
-
-<!-- Shift buttons -->
-    <control>
-      <group>[Controller]</group>
-      <key>TerminalMix.shiftButtonL</key>
-      <description>ui</description>
-      <status>0x90</status>
-      <midino>0x21</midino>
-      <options>
-        <script-binding/>
-      </options>
-    </control>
-    <control>
-      <group>[Controller]</group>
-      <key>TerminalMix.shiftButtonR</key>
-      <description>ui</description>
-      <status>0x91</status>
-      <midino>0x21</midino>
-      <options>
-        <script-binding/>
-      </options>
-    </control>
+    </controls>
 
     <outputs>
       <!-- *** Deck 1 *** -->

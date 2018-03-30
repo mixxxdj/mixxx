@@ -373,29 +373,72 @@ TerminalMix.backButton = function (channel, control, value, status, group) {
     }
 }
 
+// NEW ronso0:: Left shift button
+TerminalMix.shiftButtonL = function (channel, control, value, status, group) {
+  if (value === 127) {
+    TerminalMix.effectUnit13.shift();
+    TerminalMix.effectUnit24.shift();
+    TerminalMix.shifted = true;
+    TerminalMix.shiftedL = true;
+  } else {
+    TerminalMix.effectUnit13.unshift();
+    TerminalMix.effectUnit24.unshift();
+    TerminalMix.shifted = false;
+    TerminalMix.shiftedL = false;
+  }
+};
+// NEW ronso0:: Right shift button
+TerminalMix.shiftButtonR = function (channel, control, value, status, group) {
+  if (value === 127) {
+    TerminalMix.effectUnit13.shift();
+    TerminalMix.effectUnit24.shift();
+    TerminalMix.shifted = true;
+    TerminalMix.shiftedR = true;
+  } else {
+    TerminalMix.effectUnit13.unshift();
+    TerminalMix.effectUnit24.unshift();
+    TerminalMix.shifted = false;
+    TerminalMix.shiftedR = false;
+  }
+}
+
 // New mapping of FX units using midi-components-0.0.js
 // EffectUnits 1 & 3. Usage:
 // new components.EffectUnit([int list EffUnit numbers], bool allowFocusWhenParametersHidden)
-TerminalMix.effectUnit13 = new components.EffectUnit([1,3],false);
+TerminalMix.effectUnit13 = new components.EffectUnit([1,3]);
 TerminalMix.effectUnit13.enableButtons[1].midi = [0x90, 0x07];
 TerminalMix.effectUnit13.enableButtons[2].midi = [0x90, 0x08];
 TerminalMix.effectUnit13.enableButtons[3].midi = [0x90, 0x09];
-TerminalMix.effectUnit13.knobs[1].midi = [0xB0, 0x01];
-TerminalMix.effectUnit13.knobs[2].midi = [0xB0, 0x02];
-TerminalMix.effectUnit13.knobs[3].midi = [0xB0, 0x03];
+TerminalMix.effectUnit13.knobs[1].midi = [0xB0, 0x03];
+TerminalMix.effectUnit13.knobs[2].midi = [0xB0, 0x04];
+TerminalMix.effectUnit13.knobs[3].midi = [0xB0, 0x05];
 TerminalMix.effectUnit13.dryWetKnob.midi = [0xB0, 0x06];
+TerminalMix.effectUnit13.dryWetKnob.input = function (channel, control, value, status, group) {
+    if (value === 63) {
+       this.inSetParameter(this.inGetParameter() - .07);
+    } else if (value === 65) {
+       this.inSetParameter(this.inGetParameter() + .07);
+    }
+};
 TerminalMix.effectUnit13.effectFocusButton.midi = [0x90, 0x0A];
 TerminalMix.effectUnit13.init();
 
 // EffectUnits 2 & 4
-TerminalMix.effectUnit24 = new components.EffectUnit([2,4],false);
+TerminalMix.effectUnit24 = new components.EffectUnit([2,4]);
 TerminalMix.effectUnit24.enableButtons[1].midi = [0x91, 0x07];
 TerminalMix.effectUnit24.enableButtons[2].midi = [0x91, 0x08];
 TerminalMix.effectUnit24.enableButtons[3].midi = [0x91, 0x09];
-TerminalMix.effectUnit24.knobs[1].midi = [0xB1, 0x01];
-TerminalMix.effectUnit24.knobs[2].midi = [0xB1, 0x02];
-TerminalMix.effectUnit24.knobs[3].midi = [0xB1, 0x03];
+TerminalMix.effectUnit24.knobs[1].midi = [0xB1, 0x03];
+TerminalMix.effectUnit24.knobs[2].midi = [0xB1, 0x04];
+TerminalMix.effectUnit24.knobs[3].midi = [0xB1, 0x05];
 TerminalMix.effectUnit24.dryWetKnob.midi = [0xB1, 0x06];
+TerminalMix.effectUnit24.dryWetKnob.input = function (channel, control, value, status, group) {
+    if (value === 63) {
+       this.inSetParameter(this.inGetParameter() - .07);
+    } else if (value === 65) {
+       this.inSetParameter(this.inGetParameter() + .07);
+    }
+};
 TerminalMix.effectUnit24.effectFocusButton.midi = [0x91, 0x0A];
 TerminalMix.effectUnit24.init();
 
