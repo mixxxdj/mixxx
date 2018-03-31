@@ -1,15 +1,20 @@
 /****************************************************************
-*      Reloop Terminal Mix MIDI controller script v1.01        *
-*          Copyright (C) 2012-2013, Sean M. Pappalardo         *
-*                        2018, ronso0 (2.1 update)             *
-*      but feel free to tweak this to your heart's content!    *
-*      For Mixxx version 2.1.x                                 *
+*       Reloop Terminal Mix MIDI controller script v2.1         *
+*           Copyright (C) 2012-2013, Sean M. Pappalardo         *
+*                         2018, ronso0 (2.1 update)             *
+*       but feel free to tweak this to your heart's content!    *
+*       For Mixxx version 2.1.x                                 *
+*                                                               *
+*       Documentation in the Mixxx wiki:                        *
+*       https://mixxx.org/wiki/doku.php/reloop_terminal_mix     *
 ****************************************************************/
 
 function TerminalMix() {}
 
 // ----------   Customization variables ----------
-//      See http://mixxx.org/wiki/doku.php/reloop_terminalmix4_user_guide  for details
+// Push the 'RANGE' button at the top edge of the pitch fader to
+// cycle through the following pitch ranges. Edit the array to choose
+// the ranges you need. For example '0.08' means +/-8%
 TerminalMix.pitchRanges = [ 0.08, 0.12, 0.25, 0.5, 1.0 ];
 
 // ----------   Other global variables    ----------
@@ -187,10 +192,12 @@ TerminalMix.loopLengthTurn = function (channel, control, value, status, group) {
 }
 
 TerminalMix.loopMovePress = function (channel, control, value, status, group) {
-  /* [ronso0] This sets a boolean allowing to correctly interpret any turn of the
-    loopmove encoder. All 4 encoders are mapped to this function so we need to find
-    out on which side the encoder is located. This is necessary because we can't
-    set 'dynamic variables' like ``bool loopMovePressed[channel number]``. */
+  /* Press the Move encoder to switch between two layers:
+  a turn knob to jump X beats back or forth, or move any active loop by Y beats
+  b Press & turn to adjust the beatjump/loopmove size
+  This function stores the <pressed>/<unpressed> state because the knob sends
+  the same signals independent from the pushbutton state, and we can't
+  set 'dynamic variables' like ``bool loopMovePressed[channel number]``. */
   /* Left decks */
   if (channel === 1 || channel === 3) {
     if (value) {
@@ -468,7 +475,7 @@ TerminalMix.backButton = function (channel, control, value, status, group) {
     }
 }
 
-// NEW ronso0:: Left shift button
+// Left shift button
 TerminalMix.shiftButtonL = function (channel, control, value, status, group) {
   if (value === 127) {
     TerminalMix.effectUnit13.shift();
@@ -482,7 +489,7 @@ TerminalMix.shiftButtonL = function (channel, control, value, status, group) {
     TerminalMix.shiftedL = false;
   }
 };
-// NEW ronso0:: Right shift button
+// Right shift button
 TerminalMix.shiftButtonR = function (channel, control, value, status, group) {
   if (value === 127) {
     TerminalMix.effectUnit13.shift();
