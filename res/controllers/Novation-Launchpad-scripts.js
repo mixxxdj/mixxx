@@ -20366,11 +20366,11 @@ var Tall = (function (controlComponentBuilder) {
               grid: grid([2, 1]),
               pfl: pfl([0, 2]),
               quantize: quantize([1, 2]),
-              loopIo: loopIo([2, 3]),
+              loopIo: loopIo([2, 2]),
               load: load([0, 3]),
               key: key([1, 3]),
               reloop: reloop([2, 3]),
-              slip: slip([2, 4]),
+              slip: slip([3, 3]),
               hotcue: hotcue(4, 2)([0, 4]),
               loopMultiply: loopMultiply([2, 4]),
               beatloop: beatloop([0.5, 1, 2, 4, 8, 16], 2)([2, 5]),
@@ -20713,9 +20713,9 @@ var Screen = function (_Component) {
   }, {
     key: 'onUnmount',
     value: function onUnmount() {
-      this.layout.unmount();
       this.playListSidebar.unmount();
       this.modifier.unmount();
+      this.layout.unmount();
     }
   }]);
   return Screen;
