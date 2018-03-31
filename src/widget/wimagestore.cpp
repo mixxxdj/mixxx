@@ -5,6 +5,7 @@
 #include <QPainter>
 
 #include "skin/imgloader.h"
+#include "util/assert.h"
 
 // static
 QHash<QString, WImageStore::ImageInfoType*> WImageStore::m_dictionary;
@@ -23,6 +24,9 @@ QImage* WImageStore::getImage(const QString& fileName, double scaleFactor) {
 
 // static
 QImage* WImageStore::getImage(const PixmapSource& source, double scaleFactor) {
+    if (source.isEmpty()) {
+        return nullptr;
+    }
     // Search for Image in list
     ImageInfoType* info = nullptr;
     QString key = source.getId() + QString::number(scaleFactor);
