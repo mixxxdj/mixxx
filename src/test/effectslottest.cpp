@@ -59,7 +59,7 @@ TEST_F(EffectSlotTest, ControlsReflectSlotState) {
     EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(group, "enabled")));
     EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(group, "num_parameters")));
 
-    pEffectSlot->loadEffect(pEffect);
+    pEffectSlot->loadEffect(pEffect, false);
     EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(group, "enabled")));
     EXPECT_DOUBLE_EQ(1, ControlObject::get(ConfigKey(group, "num_parameters")));
 

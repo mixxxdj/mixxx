@@ -57,7 +57,7 @@ class MetaLinkTest : public BaseEffectTest {
         // Check the controls reflect the state of their loaded effect.
         EffectPointer pEffect = m_pEffectsManager->instantiateEffect(manifest.id());
 
-        m_pEffectSlot->loadEffect(pEffect);
+        m_pEffectSlot->loadEffect(pEffect, false);
 
         QString itemPrefix = EffectParameterSlot::formatItemPrefix(0);
 
@@ -220,7 +220,7 @@ TEST_F(MetaLinkTest, HalfLinkTakeover) {
     registerTestEffect(manifest, false);
     // Check the controls reflect the state of their loaded effect.
     EffectPointer pEffect = m_pEffectsManager->instantiateEffect(manifest.id());
-    m_pEffectSlot->loadEffect(pEffect);
+    m_pEffectSlot->loadEffect(pEffect, false);
     QString itemPrefix = EffectParameterSlot::formatItemPrefix(0);
     m_pControlValue.reset(new ControlProxy(group, itemPrefix));
     m_pControlLinkType.reset(new ControlProxy(group,

@@ -63,6 +63,8 @@ class EffectChainManager : public QObject {
 
     static const int kNumStandardEffectChains = 4;
 
+    bool getAdoptMetaknobPosition() const;
+
   private:
     QString debugString() const {
         return "EffectChainManager";
