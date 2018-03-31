@@ -27,9 +27,9 @@ export default class Screen extends Component {
     this.layout.mount()
   }
   onUnmount () {
-    this.layout.unmount()
     this.playListSidebar.unmount()
     this.modifier.unmount()
+    this.layout.unmount()
   }
 }
 
