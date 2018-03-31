@@ -42,20 +42,20 @@ QImage* WImageStore::getImage(const PixmapSource& source, double scaleFactor) {
     // Image wasn't found, construct it
     //qDebug() << "WImageStore Loading Image from file" << source.getPath();
 
-    QImage* loadedImage = getImageNoCache(source, scaleFactor);
+    QImage* pLoadedImage = getImageNoCache(source, scaleFactor);
 
-    if (loadedImage == nullptr) {
+    if (pLoadedImage == nullptr) {
         return nullptr;
     }
 
-    if (loadedImage->isNull()) {
-        qDebug() << "WImageStore couldn't load:" << source.getPath() << (loadedImage == nullptr);
-        delete loadedImage;
+    if (pLoadedImage->isNull()) {
+        qDebug() << "WImageStore couldn't load:" << source.getPath() << (pLoadedImage == nullptr);
+        delete pLoadedImage;
         return nullptr;
     }
 
     info = new ImageInfoType;
-    info->image = loadedImage;
+    info->image = pLoadedImage;
     info->instCount = 1;
     m_dictionary.insert(key, info);
     return info->image;
@@ -63,7 +63,6 @@ QImage* WImageStore::getImage(const PixmapSource& source, double scaleFactor) {
 
 // static
 QImage* WImageStore::getImageNoCache(const PixmapSource& source, double scaleFactor) {
-    QImage* pImage;
     if (source.isSVG()) {
         QSvgRenderer renderer;
 
@@ -71,26 +70,26 @@ QImage* WImageStore::getImageNoCache(const PixmapSource& source, double scaleFac
             // Call here the different overload for svg content
             if (!renderer.load(source.getSvgSourceData())) {
                 // The above line already logs a warning
-                return pImage;
+                return nullptr;
             }
         } else if (!source.getPath().isEmpty()) {
             if (!renderer.load(source.getPath())) {
                 // The above line already logs a warning
-                return pImage;
+                return nullptr;
             }
         } else {
-            return pImage;
+            return nullptr;
         }
 
-        pImage = new QImage(renderer.defaultSize() * scaleFactor,
+        auto pImage = new QImage(renderer.defaultSize() * scaleFactor,
                             QImage::Format_ARGB32);
         pImage->fill(0x00000000);  // Transparent black.
         QPainter painter(pImage);
         renderer.render(&painter);
+        return pImage;
     } else {
-        pImage = m_loader->getImage(source.getPath(), scaleFactor);
+        return m_loader->getImage(source.getPath(), scaleFactor);
     }
-    return pImage;
 }
 
 // static
