@@ -7,8 +7,9 @@
 #include "skin/imgloader.h"
 #include "util/assert.h"
 
+
 // static
-QHash<QString, WImageStore::ImageInfoType*> WImageStore::m_dictionary;
+QHash<QString, std::weak_ptr<QImage> > WImageStore::m_dictionary;
 QSharedPointer<ImgSource> WImageStore::m_loader
         = QSharedPointer<ImgSource>(new ImgLoader());
 
@@ -18,47 +19,40 @@ QImage* WImageStore::getImageNoCache(const QString& fileName, double scaleFactor
 }
 
 // static
-QImage* WImageStore::getImage(const QString& fileName, double scaleFactor) {
+std::shared_ptr<QImage> WImageStore::getImage(const QString& fileName, double scaleFactor) {
     return getImage(PixmapSource(fileName), scaleFactor);
 }
 
 // static
-QImage* WImageStore::getImage(const PixmapSource& source, double scaleFactor) {
+std::shared_ptr<QImage> WImageStore::getImage(const PixmapSource& source, double scaleFactor) {
     if (source.isEmpty()) {
         return nullptr;
     }
     // Search for Image in list
-    ImageInfoType* info = nullptr;
     QString key = source.getId() + QString::number(scaleFactor);
 
-    QHash<QString, ImageInfoType*>::iterator it = m_dictionary.find(key);
+    QHash<QString, std::weak_ptr<QImage> >::iterator it = m_dictionary.find(key);
     if (it != m_dictionary.end()) {
-        info = it.value();
-        info->instCount++;
         //qDebug() << "WImageStore returning cached Image for:" << source.getPath();
-        return info->image;
+        return it.value().lock();
     }
 
     // Image wasn't found, construct it
     //qDebug() << "WImageStore Loading Image from file" << source.getPath();
 
-    QImage* pLoadedImage = getImageNoCache(source, scaleFactor);
+    auto pLoadedImage = std::shared_ptr<QImage>(getImageNoCache(source, scaleFactor), &deleteImage);
 
-    if (pLoadedImage == nullptr) {
+    if (!pLoadedImage) {
         return nullptr;
     }
 
     if (pLoadedImage->isNull()) {
         qDebug() << "WImageStore couldn't load:" << source.getPath() << (pLoadedImage == nullptr);
-        delete pLoadedImage;
         return nullptr;
     }
 
-    info = new ImageInfoType;
-    info->image = pLoadedImage;
-    info->instCount = 1;
-    m_dictionary.insert(key, info);
-    return info->image;
+    m_dictionary.insert(key, pLoadedImage);
+    return pLoadedImage;
 }
 
 // static
@@ -93,27 +87,14 @@ QImage* WImageStore::getImageNoCache(const PixmapSource& source, double scaleFac
 }
 
 // static
-void WImageStore::deleteImage(QImage* p)
-{
-    // Search for Image in list
-    ImageInfoType *info = nullptr;
-    QMutableHashIterator<QString, ImageInfoType*> it(m_dictionary);
-
-    while (it.hasNext())
-    {
-        info = it.next().value();
-        if (p == info->image)
-        {
-            info->instCount--;
-            if (info->instCount<1)
-            {
-                it.remove();
-                delete info->image;
-                delete info;
-            }
-            break;
+void WImageStore::deleteImage(QImage* p) {
+    QMutableHashIterator<QString, std::weak_ptr<QImage> >it(m_dictionary);
+    while (it.hasNext()) {
+        if(it.next().value().expired()) {
+            it.remove();
         }
     }
+    delete p;
 }
 
 // static
