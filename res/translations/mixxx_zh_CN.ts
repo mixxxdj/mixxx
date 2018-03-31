@@ -11,7 +11,7 @@
 <context>
     <name>AnalysisFeature</name>
     <message>
-        <location filename="../../src/library/analysisfeature.cpp" line="32"/>
+        <location filename="../../src/library/analysisfeature.cpp" line="33"/>
         <source>Analyze</source>
         <translation>分析</translation>
     </message>
@@ -375,7 +375,7 @@
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="105"/>
         <source>Action failed</source>
-        <translation type="unfinished"/>
+        <translation>操作失败</translation>
     </message>
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="106"/>
@@ -436,17 +436,17 @@
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="180"/>
         <source>Connected</source>
-        <translation type="unfinished"/>
+        <translation>已连接</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="182"/>
         <source>Failed</source>
-        <translation type="unfinished"/>
+        <translation>失败</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="185"/>
         <source>Unknown</source>
-        <translation type="unfinished"/>
+        <translation>未知</translation>
     </message>
 </context>
 <context>
@@ -787,13 +787,13 @@
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="69"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="712"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="716"/>
         <source>Set to full volume</source>
         <translation>音量全满</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="70"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="716"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="720"/>
         <source>Set to zero volume</source>
         <translation>设为音量 0</translation>
     </message>
@@ -818,13 +818,13 @@
         <translation>倒带(轨)键</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="741"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="745"/>
         <source>Headphone listen button</source>
         <translation>耳机监听键</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="72"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="720"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="724"/>
         <source>Mute button</source>
         <translation>静音按钮</translation>
     </message>
@@ -840,25 +840,25 @@
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="42"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="724"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="728"/>
         <source>Mix orientation (e.g. left, right, center)</source>
         <translation>声道选择(例如：左声道、右声道、立体声)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="44"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="728"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="732"/>
         <source>Set mix orientation to left</source>
         <translation>设置输出声道为左声道</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="46"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="733"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="737"/>
         <source>Set mix orientation to center</source>
         <translation>设置输出声道为立体声</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="48"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="737"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="741"/>
         <source>Set mix orientation to right</source>
         <translation>设置输出声道为右声道</translation>
     </message>
@@ -1287,20 +1287,20 @@
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="68"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="707"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="708"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="711"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="712"/>
         <source>Volume Fader</source>
         <translation>音量调节</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="69"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="711"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="715"/>
         <source>Full Volume</source>
         <translation>满音量</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="70"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="715"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="719"/>
         <source>Zero Volume</source>
         <translation>零音量</translation>
     </message>
@@ -1316,7 +1316,7 @@
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="72"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="719"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="723"/>
         <source>Mute</source>
         <translation>静音</translation>
     </message>
@@ -1327,7 +1327,7 @@
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="74"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="740"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="744"/>
         <source>Headphone Listen</source>
         <translation>耳机监听</translation>
     </message>
@@ -1348,25 +1348,25 @@
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="41"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="723"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="727"/>
         <source>Orientation</source>
         <translation>定向</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="43"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="727"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="731"/>
         <source>Orient Left</source>
         <translation>向左</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="45"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="732"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="736"/>
         <source>Orient Center</source>
         <translation>向中间</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="47"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="736"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="740"/>
         <source>Orient Right</source>
         <translation>向右</translation>
     </message>
@@ -1773,277 +1773,277 @@
         <translation>循环滚动 %1 拍</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="419"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="423"/>
         <source>Add to Auto DJ Queue (bottom)</source>
         <translation>添加至自动 Dj 队列（底部）</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="420"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="424"/>
         <source>Append the selected track to the Auto DJ Queue</source>
         <translation>将所选音轨追加到自动 Dj 队列</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="423"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="427"/>
         <source>Add to Auto DJ Queue (top)</source>
         <translation>添加至自动 Dj 队列（顶部）</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="424"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="428"/>
         <source>Prepend selected track to the Auto DJ Queue</source>
         <translation>将所选音轨前置于自动 Dj 队列</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="434"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="438"/>
         <source>Load Track</source>
         <translation>加载音轨</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="435"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="439"/>
         <source>Load selected track</source>
         <translation>载入选中音轨</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="436"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="440"/>
         <source>Track Load and Play</source>
         <translation>加载和播放音轨</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="437"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="441"/>
         <source>Load selected track and play</source>
         <translation>加载并播放所选音轨</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="440"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="444"/>
         <source>Record Mix</source>
         <translation>录制混音</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="441"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="445"/>
         <source>Toggle mix recording</source>
         <translation>混音录制开关</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="445"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="449"/>
         <source>Effects</source>
         <translation>效果</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="448"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="452"/>
         <source>Quick Effects</source>
         <translation>快捷效果</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="452"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="456"/>
         <source>Deck %1 Quick Effect Super Knob</source>
         <translation>碟机 %1 快捷效果的超级旋钮</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="453"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="457"/>
         <source>Quick Effect Super Knob (control linked effect parameters)</source>
         <translation>快捷效果超级旋钮（控制关联的效果参数）</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="454"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="458"/>
         <source>Quick Effect</source>
         <translation>快捷效果</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="466"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="470"/>
         <source>Clear effect rack</source>
         <translation>清除效果器</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="466"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="470"/>
         <source>Clear Effect Rack</source>
         <translation>清除效果器</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="483"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="487"/>
         <source>Clear Unit</source>
         <translation>清除单元</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="484"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="488"/>
         <source>Clear effect unit</source>
         <translation>清除效果单元</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="487"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="491"/>
         <source>Toggle Unit</source>
         <translation>切换单元</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="491"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="495"/>
         <source>Dry/Wet</source>
         <translation>干/湿</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="492"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="496"/>
         <source>Adjust the balance between the original (dry) and processed (wet) signal.</source>
         <translation>调整原始（dry）信号和处理后（wet）信号之间的平衡。</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="495"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="499"/>
         <source>Super Knob</source>
         <translation>超级旋钮</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="500"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="501"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="504"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="505"/>
         <source>Insert/Send Toggle</source>
         <translation>插入/发送切换</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="505"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="509"/>
         <source>Next Chain</source>
         <translation>下一效果器链</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="547"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="548"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="562"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="563"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="577"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="578"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="591"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="592"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="551"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="552"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="566"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="567"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="581"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="582"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="595"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="596"/>
         <source>Assign </source>
         <translation>分配</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="614"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="618"/>
         <source>Clear</source>
         <translation>清除</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="614"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="618"/>
         <source>Clear the current effect</source>
         <translation>清除当前效果</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="622"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="626"/>
         <source>Toggle</source>
         <translation>切换</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="622"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="626"/>
         <source>Toggle the current effect</source>
         <translation>切换当前效果</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="626"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="630"/>
         <source>Next</source>
         <translation>下一首</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="626"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="630"/>
         <source>Switch to next effect</source>
         <translation>切换至下一个效果</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="630"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="634"/>
         <source>Previous</source>
         <translation>上一首</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="630"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="634"/>
         <source>Switch to the previous effect</source>
         <translation>切换至之前的效果</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="634"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="638"/>
         <source>Next or Previous</source>
         <translation>下一个或上一个</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="635"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="639"/>
         <source>Switch to either next or previous effect</source>
         <translation>切换至下一个或上一个效果</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="661"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="662"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="665"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="666"/>
         <source>Parameter Value</source>
         <translation>参数值</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="690"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="691"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="694"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="695"/>
         <source>Microphone Ducking Strength</source>
         <translation>麦克风闪避强度</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="694"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="698"/>
         <source>Microphone Ducking Mode</source>
         <translation>麦克风闪避模式</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="703"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="707"/>
         <source>Gain</source>
         <translation>增益</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="704"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="708"/>
         <source>Gain knob</source>
         <translation>增益旋钮</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="748"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="752"/>
         <source>Shuffle the content of the Auto DJ queue</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="751"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="755"/>
         <source>Skip the next track in the Auto DJ queue</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="756"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="760"/>
         <source>Auto DJ Toggle</source>
         <translation>自动 DJ 切换</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="757"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="761"/>
         <source>Toggle Auto DJ On/Off</source>
         <translation>开启/关闭自动 DJ</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="780"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="784"/>
         <source>Library Maximize/Restore</source>
         <translation>音乐库界面最大化/还原</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="781"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="785"/>
         <source>Maximize the track library to take up all the available screen space.</source>
         <translation>最大化音乐库占用所有可用的屏幕空间。</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="774"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="778"/>
         <source>Effect Rack Show/Hide</source>
         <translation>效果器 显出/隐藏</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="775"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="779"/>
         <source>Show/hide the effect rack</source>
         <translation>显出/隐藏 效果器</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="777"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="781"/>
         <source>Cover Art Show/Hide</source>
         <translation>封面图片 显出/隐藏</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="778"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="782"/>
         <source>Show/hide cover art</source>
         <translation>显出/隐藏 封面图片</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="794"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="798"/>
         <source>Waveform Zoom Out</source>
         <translation>缩小波形</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="521"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="525"/>
         <source>Toggle Effect Unit</source>
         <translation>切换效果单元</translation>
     </message>
@@ -2386,218 +2386,228 @@
         <translation>使用旋钮左右移动焦点，和按键盘上的 TAB/SHIFT+TAB 键效果一致</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="427"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="419"/>
+        <source>Go to the currently selected item</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="420"/>
+        <source>Choose the currently selected item and advance forward one pane if appropriate</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="431"/>
         <source>Add to Auto DJ Queue (replace)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="428"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="432"/>
         <source>Replace Auto DJ Queue with selected tracks</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="488"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="492"/>
         <source>Enable or disable effect processing</source>
         <translation>启用/禁用效果</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="496"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="500"/>
         <source>Super Knob (control effects&apos; Meta Knobs)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="506"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="510"/>
         <source>Next chain preset</source>
         <translation>下一预设效果器链</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="509"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="513"/>
         <source>Previous Chain</source>
         <translation>上一效果器链</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="510"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="514"/>
         <source>Previous chain preset</source>
         <translation>上一预设效果器链</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="513"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="517"/>
         <source>Next/Previous Chain</source>
         <translation>下一个/上一个效果器链</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="514"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="518"/>
         <source>Next or previous chain preset</source>
         <translation>下一个/上一个预设效果器链</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="517"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="518"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="521"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="522"/>
         <source>Show Effect Parameters</source>
         <translation>显示效果的参数</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="618"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="622"/>
         <source>Meta Knob</source>
         <translation>元旋钮</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="618"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="622"/>
         <source>Effect Meta Knob (control linked effect parameters)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="667"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="671"/>
         <source>Meta Knob Mode</source>
         <translation>元旋钮模式</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="668"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="672"/>
         <source>Set how linked effect parameters change when turning the Meta Knob.</source>
         <translation>设置调节元旋钮时相关参数的改变方式。</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="672"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="676"/>
         <source>Meta Knob Mode Invert</source>
         <translation>元旋钮模式反转</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="673"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="677"/>
         <source>Invert how linked effect parameters change when turning the Meta Knob.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="683"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="687"/>
         <source>Microphone / Auxiliary</source>
         <translation>麦克风/辅助物</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="686"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="690"/>
         <source>Microphone On/Off</source>
         <translation>麦克风 开/关</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="687"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="691"/>
         <source>Microphone on/off</source>
         <translation>麦克风 开/关</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="695"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="699"/>
         <source>Toggle microphone ducking mode (OFF, AUTO, MANUAL)</source>
         <translation>切换麦克风闪避模式（关闭/自动/手动）</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="698"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="702"/>
         <source>Auxiliary On/Off</source>
         <translation>辅助物 开/关</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="699"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="703"/>
         <source>Auxiliary on/off</source>
         <translation>辅助物 开/关</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="745"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="749"/>
         <source>Auto DJ</source>
         <translation>自动 DJ</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="747"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="751"/>
         <source>Auto DJ Shuffle</source>
         <translation>自动 DJ 随机播放</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="750"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="754"/>
         <source>Auto DJ Skip Next</source>
         <translation>自动 DJ 跳至下一首</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="753"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="757"/>
         <source>Auto DJ Fade To Next</source>
         <translation>自动 Dj 淡出至下一首</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="754"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="758"/>
         <source>Trigger the transition to the next track</source>
         <translation>切换到下一音轨</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="760"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="764"/>
         <source>User Interface</source>
         <translation>用户界面</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="762"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="766"/>
         <source>Samplers Show/Hide</source>
         <translation>显示/隐藏采样器</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="763"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="767"/>
         <source>Show/hide the sampler section</source>
         <translation>显示/隐藏采样器区域</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="765"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="769"/>
         <source>Microphone Show/Hide</source>
         <translation>麦克风 显示/隐藏</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="766"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="770"/>
         <source>Show/hide the microphone section</source>
         <translation>显示/隐藏 麦克风界面</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="768"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="772"/>
         <source>Vinyl Control Show/Hide</source>
         <translation>唱盘控制 显示/隐藏</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="769"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="773"/>
         <source>Show/hide the vinyl control section</source>
         <translation>显示/隐藏 唱盘控制界面</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="771"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="775"/>
         <source>Preview Deck Show/Hide</source>
         <translation>预览用碟机 显示/隐藏</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="772"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="776"/>
         <source>Show/hide the preview deck</source>
         <translation>显示/隐藏 预览用碟机</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="783"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="787"/>
         <source>Vinyl Spinner Show/Hide</source>
         <translation>唱盘控制 显示/隐藏</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="784"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="788"/>
         <source>Show/hide spinning vinyl widget</source>
         <translation>显示/隐藏 唱盘控制器</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="792"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="796"/>
         <source>Waveform zoom</source>
         <translation>波形缩放</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="792"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="796"/>
         <source>Waveform Zoom</source>
         <translation>波形缩放</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="793"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="797"/>
         <source>Zoom waveform in</source>
         <translation>放大波形</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="793"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="797"/>
         <source>Waveform Zoom In</source>
         <translation>放大波形</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="794"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="798"/>
         <source>Zoom waveform out</source>
         <translation>缩小波形</translation>
     </message>
@@ -2741,7 +2751,7 @@
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="77"/>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="332"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="330"/>
         <source>Lock</source>
         <translation>锁定</translation>
     </message>
@@ -2766,7 +2776,7 @@
         <translation>自动 DJ 音轨源</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="388"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="386"/>
         <source>Enter new name for crate:</source>
         <translation>输入分类列表的新名称：</translation>
     </message>
@@ -2784,38 +2794,38 @@
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="89"/>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="668"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="666"/>
         <source>Export Crate</source>
         <translation>导出分类列表</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="332"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="330"/>
         <source>Unlock</source>
         <translation>解锁</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="625"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="623"/>
         <source>An unknown error occurred while creating crate: </source>
         <translation>在创建分类列表时发生未知错误：</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="387"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="385"/>
         <source>Rename Crate</source>
         <translation>重命名分类列表</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="398"/>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="405"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="396"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="403"/>
         <source>Renaming Crate Failed</source>
         <translation>重命名分类列表失败</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="624"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="622"/>
         <source>Crate Creation Failed</source>
         <translation>创建分类列表失败</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="670"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="668"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
         <translation>M3U 播放列表(*.m3u);;M3U8 播放列表(*.m3u8);;PLS 播放列表(*.pls);;文本 CSV (*.csv);;可读文本(*.txt)</translation>
     </message>
@@ -2835,12 +2845,12 @@
         <translation>随心所欲管理音乐，就用分类列表！</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="399"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="397"/>
         <source>A crate cannot have a blank name.</source>
         <translation>分类列表不能命名为空。</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="406"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="404"/>
         <source>A crate by that name already exists.</source>
         <translation>已有相同分类列表名。</translation>
     </message>
@@ -2915,7 +2925,17 @@
         <translation>关于 Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgaboutdlg.ui" line="111"/>
+        <location filename="../../src/dialog/dlgaboutdlg.ui" line="104"/>
+        <source>Credits</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/dialog/dlgaboutdlg.ui" line="130"/>
+        <source>License</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/dialog/dlgaboutdlg.ui" line="152"/>
         <source>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</source>
         <translation>&lt;a href=&quot;http://mixxx.org/&quot;&gt;官方网站&lt;/a&gt;</translation>
     </message>
@@ -2925,7 +2945,7 @@
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="14"/>
         <location filename="../../src/library/dlganalysis.ui" line="105"/>
-        <location filename="../../src/library/dlganalysis.cpp" line="150"/>
+        <location filename="../../src/library/dlganalysis.cpp" line="159"/>
         <source>Analyze</source>
         <translation>分析</translation>
     </message>
@@ -2970,12 +2990,12 @@
         <translation>对所选音轨进行节拍、音调和播放增益检测。为了节约磁盘空间，不会生成相应的波形文件。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlganalysis.cpp" line="147"/>
+        <location filename="../../src/library/dlganalysis.cpp" line="156"/>
         <source>Stop Analysis</source>
         <translation>停止分析</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlganalysis.cpp" line="167"/>
+        <location filename="../../src/library/dlganalysis.cpp" line="176"/>
         <source>Analyzing %1/%2 %3%</source>
         <translation>分析 %1/%2 %3%</translation>
     </message>
@@ -2983,30 +3003,30 @@
 <context>
     <name>DlgAutoDJ</name>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="141"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="143"/>
         <source>One deck must be stopped to enable Auto DJ mode.</source>
         <translation>要启动自动 DJ 模式，必须停止一个碟机。</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="149"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="151"/>
         <source>Decks 3 and 4 must be stopped to enable Auto DJ mode.</source>
         <translation>必须停止碟机 3 和碟机 4 以启用自动Dj 模式。</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="177"/>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="178"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="179"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="180"/>
         <source>Disable Auto DJ</source>
         <translation>关闭自动 Dj</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="219"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="213"/>
         <source>Displays the duration and number of selected tracks.</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="14"/>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="140"/>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="148"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="142"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="150"/>
         <source>Auto DJ</source>
         <translation>自动 DJ</translation>
     </message>
@@ -3074,8 +3094,8 @@ If no track sources are configured, the track is added from the library instead.
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="154"/>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="170"/>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="171"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="172"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="173"/>
         <source>Enable Auto DJ</source>
         <translation>开启自动切换曲目</translation>
     </message>
@@ -3591,64 +3611,64 @@ You tried to learn: %1,%2</source>
         <translation>立体声</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="175"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="235"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="498"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="532"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="177"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="237"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="500"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="534"/>
         <source>Action failed</source>
-        <translation type="unfinished"/>
+        <translation>操作失败</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="176"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="178"/>
         <source>'%1' has the same Icecast mountpoint as '%2'.
 Two source connections to the same server can&apos;t have the same mountpoint.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="236"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="238"/>
         <source>You can&apos;t create more than %1 source connections.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="249"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="251"/>
         <source>Source connection %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="499"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="501"/>
         <source>At least one source connection is required.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="543"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="545"/>
         <source>Are you sure you want to disconnect every active source connection?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="505"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="542"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="507"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="544"/>
         <source>Confirmation required</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="506"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="508"/>
         <source>Are you sure you want to delete &apos;%1&apos;?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="521"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="523"/>
         <source>Renaming &apos;%1&apos;</source>
-        <translation type="unfinished"/>
+        <translation>重命名 &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="522"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="524"/>
         <source>New name for &apos;%1&apos;:</source>
-        <translation type="unfinished"/>
+        <translation>&apos;%1&apos; 的新名称：</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="533"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="535"/>
         <source>Can&apos;t rename &apos;%1&apos; to &apos;%2&apos;: name already in use</source>
-        <translation type="unfinished"/>
+        <translation>无法将 &apos;%1&apos; 重命名为 &apos;%2&apos;：名称已被使用</translation>
     </message>
 </context>
 <context>
@@ -3691,22 +3711,22 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="65"/>
         <source>Delete selected</source>
-        <translation type="unfinished"/>
+        <translation>删除选中项</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="92"/>
         <source>Create new connection</source>
-        <translation type="unfinished"/>
+        <translation>建立新连接</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="115"/>
         <source>Rename selected</source>
-        <translation type="unfinished"/>
+        <translation>重命名选中项</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="72"/>
         <source>Disconnect all</source>
-        <translation type="unfinished"/>
+        <translation>断开所有连接</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="124"/>
@@ -3716,7 +3736,7 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="153"/>
         <source>Settings for %1</source>
-        <translation type="unfinished"/>
+        <translation>%1 的设置</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="455"/>
@@ -3741,17 +3761,17 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="786"/>
         <source>Password storage</source>
-        <translation type="unfinished"/>
+        <translation>密码存储方式</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="793"/>
         <source>Plain text</source>
-        <translation type="unfinished"/>
+        <translation>明文</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="803"/>
         <source>Secure storage (OS keychain)</source>
-        <translation type="unfinished"/>
+        <translation>安全存储区（系统钥匙链）</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="611"/>
@@ -3904,100 +3924,100 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
 <context>
     <name>DlgPrefController</name>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="137"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="117"/>
         <source>Apply device settings?</source>
         <translation>应用设备设置吗？</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="138"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="118"/>
         <source>Your settings must be applied before starting the learning wizard.
 Apply settings and continue?</source>
         <translation>在开始学习向导前，必须应用相关设置。
 是否应用设置并继续？</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="185"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="165"/>
         <source>None</source>
         <translation>无</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="190"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="170"/>
         <source>%1 by %2</source>
         <translation>%1 / %2</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="207"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="187"/>
         <source>No Name</source>
         <translation>未命名</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="216"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="196"/>
         <source>No Description</source>
         <translation>无描述</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="225"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="205"/>
         <source>No Author</source>
         <translation>无作者</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="459"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="438"/>
         <source>Troubleshooting</source>
         <translation>故障排除</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="529"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="508"/>
         <source>Filename</source>
         <translation>文件名</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="531"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="510"/>
         <source>Function Prefix</source>
         <translation>函数前缀</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="533"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="512"/>
         <source>Built-in</source>
         <translation>内置</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="609"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="588"/>
         <source>Clear Input Mappings</source>
         <translation>清除输入映射</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="610"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="589"/>
         <source>Are you sure you want to clear all input mappings?</source>
         <translation>您确定要清除所有的输入映射吗？</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="650"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="629"/>
         <source>Clear Output Mappings</source>
         <translation>清除输出映射</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="651"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="630"/>
         <source>Are you sure you want to clear all output mappings?</source>
         <translation>您确定要清除所有的输出映射吗？</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="663"/>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="673"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="642"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="652"/>
         <source>Add Script</source>
         <translation>添加脚本</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="665"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="644"/>
         <source>Controller Script Files (*.js)</source>
         <translation>控制器脚本文件（*.js）</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="674"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="653"/>
         <source>Could not add script file: &apos;%s&apos;</source>
         <translation>无法添加脚本文件：“%s”</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="744"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="723"/>
         <source>Please select a script from the list to open.</source>
         <translation>请从列表中选择要打开的脚本。</translation>
     </message>
@@ -4231,17 +4251,17 @@ Apply settings and continue?</source>
         <translation>更改字体，按钮和其他项目的大小</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="207"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="222"/>
         <source>Adopt scale factor from the operating system</source>
         <translation>通过从操作系统的缩放比例</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="210"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="225"/>
         <source>Auto Scaling</source>
         <translation>自动缩放比例</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="217"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="232"/>
         <source>Screen saver</source>
         <translation>屏幕保护程序</translation>
     </message>
@@ -4653,9 +4673,9 @@ Numark 模式：
 <context>
     <name>DlgPrefEQ</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="231"/>
-        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="261"/>
-        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="676"/>
+        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="232"/>
+        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="262"/>
+        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="677"/>
         <source>None</source>
         <extracomment>Displayed when no effect is selected
 ----------
@@ -4826,47 +4846,32 @@ Displayed when no effect is selected</extracomment>
         <translation>您的屏幕分辨率太低，无法容纳所选皮肤的最小尺寸。</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="148"/>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="149"/>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="150"/>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="151"/>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="152"/>
-        <source>%1 %</source>
-        <extracomment>Entry of the HiDPI scale combo box. %1 is the scale factor in percent</extracomment>
-        <translation>%1 %</translation>
-    </message>
-    <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="163"/>
-        <source>%1 % (Experimental)</source>
-        <translation>%1 % (实验性)</translation>
-    </message>
-    <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="185"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="167"/>
         <source>Allow screensaver to run</source>
         <translation>允许屏幕保护程序运行</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="187"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="169"/>
         <source>Prevent screensaver from running</source>
         <translation>防止屏幕保护程序运行</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="189"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="171"/>
         <source>Prevent screensaver while playing</source>
         <translation>播放时防止屏幕保护程序运行</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="220"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="202"/>
         <source>This skin does not support color schemes</source>
         <translation>该皮肤不支持色彩方案</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="322"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="308"/>
         <source>Information</source>
         <translation>信息</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="323"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="309"/>
         <source>Mixxx must be restarted before the new locale setting will take effect.</source>
         <translation type="unfinished"/>
     </message>
@@ -5069,32 +5074,32 @@ and allows you to pitch adjust them for harmonic mixing.</source>
 <context>
     <name>DlgPrefLibrary</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="96"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="92"/>
         <source>Music Directory Added</source>
         <translation>音乐目录已添加</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="97"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="93"/>
         <source>You added one or more music directories. The tracks in these directories won&apos;t be available until you rescan your library. Would you like to rescan now?</source>
         <translation>您已添加一个或更多音乐目录。这些音轨将在您重新扫描音乐库前不可用。您想立即扫描音乐库吗？</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="101"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="97"/>
         <source>Scan</source>
         <translation>扫描</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="196"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="197"/>
         <source>Choose a music directory</source>
         <translation>选择一个音乐目录</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="211"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="212"/>
         <source>Confirm Directory Removal</source>
         <translation>确认移除目录</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="213"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="214"/>
         <source>Mixxx will no longer watch this directory for new tracks. What would you like to do with the tracks from this directory and subdirectories?&lt;ul&gt;&lt;li&gt;Hide all tracks from this directory and subdirectories.&lt;/li&gt;&lt;li&gt;Delete all metadata for these tracks from Mixxx permanently.&lt;/li&gt;&lt;li&gt;Leave the tracks unchanged in your library.&lt;/li&gt;&lt;/ul&gt;Hiding tracks saves their metadata in case you re-add them in the future.</source>
         <translation>Mixxx 将不会监视该目录中的新音轨。您希望如何处理该目录（及其子目录）中的音轨？
 &lt;ul&gt;
@@ -5105,32 +5110,32 @@ and allows you to pitch adjust them for harmonic mixing.</source>
 隐藏音轨可以保留其元数据，以便您以后再次添加它们。</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="224"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="225"/>
         <source>Metadata means all track details (artist, title, playcount, etc.) as well as beatgrids, hotcues, and loops. This choice only affects the Mixxx library. No files on disk will be changed or deleted.</source>
         <translation>元数据即音轨的信息（艺术家、标题、播放次数等）、节拍模式、热切点和循环设置。这些选项仅影响 Mixxx 媒体库。不会更改或删除相关的媒体文件。</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="232"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="233"/>
         <source>Hide Tracks</source>
         <translation>隐藏音轨</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="234"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="235"/>
         <source>Delete Track Metadata</source>
         <translation>删除音轨元数据</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="236"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="237"/>
         <source>Leave Tracks Unchanged</source>
         <translation>不做改动</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="278"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="279"/>
         <source>Relink music directory to new location</source>
         <translation>将音乐目录链接至新位置</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="350"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="356"/>
         <source>Select Library Font</source>
         <translation>选择音乐库字体</translation>
     </message>
@@ -5240,7 +5245,12 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <translation>启动时重新扫描音乐库</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="267"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="255"/>
+        <source>Prevent editing of metadata by clicking selected track</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="291"/>
         <source>Add track to Auto DJ Queue (top)</source>
         <translation>添加音轨至自动 Dj 队列（顶部）</translation>
     </message>
@@ -5265,7 +5275,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <translation>px</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="261"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="268"/>
         <source>Track Load Action</source>
         <extracomment>Sets default action when double-clicking a track in the library.</extracomment>
         <translation>音轨加载选项</translation>
@@ -5276,37 +5286,37 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <translation>将音轨载入下一个可用碟机</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="294"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="301"/>
         <source>External Libraries</source>
         <translation>外部库</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="300"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="307"/>
         <source>You will need to restart Mixxx for these settings to take effect.</source>
         <translation>您需要重启 Mixxx 以便这些设置生效。</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="307"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="314"/>
         <source>Show Rhythmbox Library</source>
         <translation>显示Rhythmbox音乐库</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="317"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="324"/>
         <source>Show Banshee Library</source>
         <translation>显示Banshee音乐库</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="327"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="334"/>
         <source>Show iTunes Library</source>
         <translation>显示iTunes音乐库</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="337"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="344"/>
         <source>Show Traktor Library</source>
         <translation>显示Traktor音乐库</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="347"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="354"/>
         <source>All external libraries shown are write protected.</source>
         <translation>所有显示的外部库均为写保护模式。</translation>
     </message>
@@ -5728,113 +5738,113 @@ The loudness target is approximate and assumes track pregain and master output l
 <context>
     <name>DlgPrefSound</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="49"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="48"/>
         <source>None</source>
         <translation>无</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="59"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="58"/>
         <source>%1 Hz</source>
         <translation>%1 赫兹</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="70"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="69"/>
         <source>Default (long delay)</source>
         <translation>默认（长延时）</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="71"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="70"/>
         <source>Experimental (no delay)</source>
         <translation>试验（无延时）</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="72"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="71"/>
         <source>Disabled (short delay)</source>
         <translation>禁用（短延时）</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="78"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="77"/>
         <source>Soundcard Clock</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="79"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="78"/>
         <source>Network Clock</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="112"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="111"/>
         <source>Master output only</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="114"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="113"/>
         <source>Master and booth outputs</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="116"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="115"/>
         <source>Direct monitor (recording and broadcasting only)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="164"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="163"/>
         <source>Disabled</source>
         <translation>禁用</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="165"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="164"/>
         <source>Enabled</source>
         <translation>已启用</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="172"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="171"/>
         <source>Stereo</source>
         <translation>立体声</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="173"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="172"/>
         <source>Mono</source>
         <translation>启用</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="701"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="700"/>
         <source>Microphone inputs are out of time in the record &amp; broadcast signal compared to what you hear.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="702"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="701"/>
         <source>Measure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="703"/>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="710"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="702"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="709"/>
         <source>Refer to the Mixxx User Manual for details.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="708"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="707"/>
         <source>Configured latency has changed.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="709"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="708"/>
         <source>Remeasure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="187"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="186"/>
         <source>Realtime scheduling is enabled.</source>
         <translation>已启用实时调度。</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="534"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="533"/>
         <source>%1 ms</source>
         <translation>%1 ms</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="238"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="237"/>
         <source>Configuration error</source>
         <translation>配置错误</translation>
     </message>
@@ -5967,7 +5977,7 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="378"/>
         <source>System Reported Latency</source>
-        <translation type="unfinished"/>
+        <translation>系统报告的延迟</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="325"/>
@@ -6252,7 +6262,7 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="157"/>
         <source>Waveform type</source>
-        <translation type="unfinished"/>
+        <translation>波形类别</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="281"/>
@@ -6434,17 +6444,17 @@ Select from different types of displays for the waveform, which differ primarily
     </message>
     <message>
         <location filename="../../src/library/recording/dlgrecording.ui" line="72"/>
-        <location filename="../../src/library/recording/dlgrecording.cpp" line="131"/>
+        <location filename="../../src/library/recording/dlgrecording.cpp" line="133"/>
         <source>Start Recording</source>
         <translation>开始录制</translation>
     </message>
     <message>
-        <location filename="../../src/library/recording/dlgrecording.cpp" line="128"/>
+        <location filename="../../src/library/recording/dlgrecording.cpp" line="130"/>
         <source>Stop Recording</source>
         <translation>停止录制</translation>
     </message>
     <message>
-        <location filename="../../src/library/recording/dlgrecording.cpp" line="154"/>
+        <location filename="../../src/library/recording/dlgrecording.cpp" line="156"/>
         <source>Recording to file: %1 (%2 MiB written in %3)</source>
         <translation>录制到文件：%1（%3 内写入了 %2）</translation>
     </message>
@@ -6543,32 +6553,32 @@ Select from different types of displays for the waveform, which differ primarily
         <translation>关闭(&amp;C)</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtagfetcher.cpp" line="97"/>
+        <location filename="../../src/library/dlgtagfetcher.cpp" line="96"/>
         <source>Status: %1</source>
         <translation>状态：%1</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtagfetcher.cpp" line="117"/>
+        <location filename="../../src/library/dlgtagfetcher.cpp" line="116"/>
         <source>HTTP Status: %1</source>
         <translation>HTTP 状态：%1</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtagfetcher.cpp" line="119"/>
+        <location filename="../../src/library/dlgtagfetcher.cpp" line="118"/>
         <source>Mixxx can&apos;t connect to %1 for an unknown reason.</source>
         <translation>Mixxx 无法连接到 %1，错误原因未知。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtagfetcher.cpp" line="121"/>
+        <location filename="../../src/library/dlgtagfetcher.cpp" line="120"/>
         <source>Mixxx can&apos;t connect to %1.</source>
         <translation>Mixxx 无法连接到 %1。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtagfetcher.cpp" line="145"/>
+        <location filename="../../src/library/dlgtagfetcher.cpp" line="144"/>
         <source>Original tags</source>
         <translation>原始标签</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtagfetcher.cpp" line="148"/>
+        <location filename="../../src/library/dlgtagfetcher.cpp" line="147"/>
         <source>Suggested tags</source>
         <translation>建议标签</translation>
     </message>
@@ -6921,7 +6931,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
 <context>
     <name>EffectChainSlot</name>
     <message>
-        <location filename="../../src/effects/effectchainslot.cpp" line="253"/>
+        <location filename="../../src/effects/effectchainslot.cpp" line="258"/>
         <source>Empty Chain</source>
         <extracomment>Name for an empty effect chain, that is created after eject</extracomment>
         <translation>效果器链为空</translation>
@@ -6938,37 +6948,37 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
 <context>
     <name>EffectsManager</name>
     <message>
-        <location filename="../../src/effects/effectsmanager.cpp" line="316"/>
+        <location filename="../../src/effects/effectsmanager.cpp" line="328"/>
         <source>Flanger</source>
         <translation>镶边</translation>
     </message>
     <message>
-        <location filename="../../src/effects/effectsmanager.cpp" line="324"/>
+        <location filename="../../src/effects/effectsmanager.cpp" line="336"/>
         <source>BitCrusher</source>
         <translation>降比特率（BitCrusher）</translation>
     </message>
     <message>
-        <location filename="../../src/effects/effectsmanager.cpp" line="331"/>
+        <location filename="../../src/effects/effectsmanager.cpp" line="343"/>
         <source>Filter</source>
         <translation>过滤器</translation>
     </message>
     <message>
-        <location filename="../../src/effects/effectsmanager.cpp" line="339"/>
+        <location filename="../../src/effects/effectsmanager.cpp" line="351"/>
         <source>Reverb</source>
         <translation>混响</translation>
     </message>
     <message>
-        <location filename="../../src/effects/effectsmanager.cpp" line="347"/>
+        <location filename="../../src/effects/effectsmanager.cpp" line="359"/>
         <source>Echo</source>
         <translation>回声</translation>
     </message>
     <message>
-        <location filename="../../src/effects/effectsmanager.cpp" line="354"/>
+        <location filename="../../src/effects/effectsmanager.cpp" line="366"/>
         <source>AutoPan</source>
         <translation>自动声场（AutoPan）</translation>
     </message>
     <message>
-        <location filename="../../src/effects/effectsmanager.cpp" line="361"/>
+        <location filename="../../src/effects/effectsmanager.cpp" line="373"/>
         <source>Tremolo</source>
         <translation type="unfinished"/>
     </message>
@@ -7179,13 +7189,13 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
 <context>
     <name>LegacySkinParser</name>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1150"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1153"/>
         <source>Safe Mode Enabled</source>
         <extracomment>Shown when Mixxx is running in safe mode.</extracomment>
         <translation>已启用安全模式</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1161"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1164"/>
         <source>No OpenGL
 support.</source>
         <extracomment>Shown when Spinny can not be displayed. Please keep 
@@ -7194,57 +7204,57 @@ support.</source>
 支持。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2133"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2145"/>
         <source>activate</source>
         <translation>启用</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2138"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2150"/>
         <source>toggle</source>
         <translation>切换</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2148"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2160"/>
         <source>right</source>
         <translation>右</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2153"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2165"/>
         <source>left</source>
         <translation>左</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2158"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2170"/>
         <source>right small</source>
         <translation>右小</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2163"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2175"/>
         <source>left small</source>
         <translation>左小</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2168"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2180"/>
         <source>up</source>
         <translation>上</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2173"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2185"/>
         <source>down</source>
         <translation>下</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2178"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2190"/>
         <source>up small</source>
         <translation>上小</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2183"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2195"/>
         <source>down small</source>
         <translation>下小</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2216"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2228"/>
         <source>Shortcut</source>
         <translation>快捷键</translation>
     </message>
@@ -7252,12 +7262,12 @@ support.</source>
 <context>
     <name>Library</name>
     <message>
-        <location filename="../../src/library/library.cpp" line="352"/>
+        <location filename="../../src/library/library.cpp" line="358"/>
         <source>Add Directory to Library</source>
         <translation>添加目录到音乐库</translation>
     </message>
     <message>
-        <location filename="../../src/library/library.cpp" line="353"/>
+        <location filename="../../src/library/library.cpp" line="359"/>
         <source>Could not add the directory to your library. Either this directory is already in your library or you are currently rescanning your library.</source>
         <translation>无法添加目录到您的音乐库。可能此目录已在音乐库内或正在重新扫描音乐库。</translation>
     </message>
@@ -7410,52 +7420,52 @@ support.</source>
 <context>
     <name>MixxxMainWindow</name>
     <message>
-        <location filename="../../src/mixxx.cpp" line="309"/>
+        <location filename="../../src/mixxx.cpp" line="319"/>
         <source>Choose music library directory</source>
         <translation>选择音乐库目录</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="812"/>
+        <location filename="../../src/mixxx.cpp" line="821"/>
         <source>Sound Device Busy</source>
         <translation>声音设备正忙</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="821"/>
+        <location filename="../../src/mixxx.cpp" line="830"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after closing the other application or reconnecting a sound device</source>
         <translation>请关闭其他应用程序，或重新连接设备后&lt;b&gt;重试&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="825"/>
-        <location filename="../../src/mixxx.cpp" line="852"/>
-        <location filename="../../src/mixxx.cpp" line="877"/>
+        <location filename="../../src/mixxx.cpp" line="834"/>
+        <location filename="../../src/mixxx.cpp" line="861"/>
+        <location filename="../../src/mixxx.cpp" line="886"/>
         <source>&lt;b&gt;Reconfigure&lt;/b&gt; Mixxx&apos;s sound device settings.</source>
         <translation>&lt;b&gt;重新配置&lt;/b&gt; Mixxx 声音设备。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="828"/>
-        <location filename="../../src/mixxx.cpp" line="855"/>
+        <location filename="../../src/mixxx.cpp" line="837"/>
+        <location filename="../../src/mixxx.cpp" line="864"/>
         <source>Get &lt;b&gt;Help&lt;/b&gt; from the Mixxx Wiki.</source>
         <translation>从 Mixxx Wiki 中获取&lt;b&gt;帮助&lt;/b&gt;。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="831"/>
-        <location filename="../../src/mixxx.cpp" line="858"/>
-        <location filename="../../src/mixxx.cpp" line="880"/>
+        <location filename="../../src/mixxx.cpp" line="840"/>
+        <location filename="../../src/mixxx.cpp" line="867"/>
+        <location filename="../../src/mixxx.cpp" line="889"/>
         <source>&lt;b&gt;Exit&lt;/b&gt; Mixxx.</source>
         <translation>&lt;b&gt;退出&lt;/b&gt; Mixxx。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="771"/>
+        <location filename="../../src/mixxx.cpp" line="780"/>
         <source>Retry</source>
         <translation>重试</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="680"/>
+        <location filename="../../src/mixxx.cpp" line="689"/>
         <source>Cannot open database</source>
         <translation>无法打开数据库</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="681"/>
+        <location filename="../../src/mixxx.cpp" line="690"/>
         <source>Unable to establish a database connection.
 Mixxx requires QT with SQLite support. Please read the Qt SQL driver documentation for information on how to build it.
 
@@ -7466,111 +7476,111 @@ Mixxx 需要 QT 支持 SQLite。请阅读 Qt SQL 驱动文档以了解相关构�
 点击 OK 退出。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="773"/>
-        <location filename="../../src/mixxx.cpp" line="888"/>
+        <location filename="../../src/mixxx.cpp" line="782"/>
+        <location filename="../../src/mixxx.cpp" line="897"/>
         <source>Reconfigure</source>
         <translation>重新配置</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="775"/>
+        <location filename="../../src/mixxx.cpp" line="784"/>
         <source>Help</source>
         <translation>帮助</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="777"/>
-        <location filename="../../src/mixxx.cpp" line="890"/>
+        <location filename="../../src/mixxx.cpp" line="786"/>
+        <location filename="../../src/mixxx.cpp" line="899"/>
         <source>Exit</source>
         <translation>退出</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="815"/>
-        <location filename="../../src/mixxx.cpp" line="844"/>
+        <location filename="../../src/mixxx.cpp" line="824"/>
+        <location filename="../../src/mixxx.cpp" line="853"/>
         <source>Mixxx was unable to open all the configured sound devices.</source>
         <translation>Mixxx 无法打开所有要打开的音频设备</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="841"/>
+        <location filename="../../src/mixxx.cpp" line="850"/>
         <source>Sound Device Error</source>
         <translation>音频设备错误</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="849"/>
+        <location filename="../../src/mixxx.cpp" line="858"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after fixing an issue</source>
         <translation>修正错误后 &lt;b&gt; 重试 &lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="868"/>
+        <location filename="../../src/mixxx.cpp" line="877"/>
         <source>No Output Devices</source>
         <translation>没有输出设备</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="870"/>
+        <location filename="../../src/mixxx.cpp" line="879"/>
         <source>Mixxx was configured without any output sound devices. Audio processing will be disabled without a configured output device.</source>
         <translation>Mixxx 的配置中没有任何输出设备，将会禁用音频处理操作。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="874"/>
+        <location filename="../../src/mixxx.cpp" line="883"/>
         <source>&lt;b&gt;Continue&lt;/b&gt; without any outputs.</source>
         <translation>确定在没有任何输出的情况下&lt;b&gt;继续&lt;/b&gt;。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="886"/>
+        <location filename="../../src/mixxx.cpp" line="895"/>
         <source>Continue</source>
         <translation>继续</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1026"/>
+        <location filename="../../src/mixxx.cpp" line="1035"/>
         <source>Load track to Deck %1</source>
         <translation>加载音轨到碟机 %1</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1027"/>
+        <location filename="../../src/mixxx.cpp" line="1036"/>
         <source>Deck %1 is currently playing a track.</source>
         <translation>碟机 %1 当前正在播放。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1029"/>
+        <location filename="../../src/mixxx.cpp" line="1038"/>
         <source>Are you sure you want to load a new track?</source>
         <translation>您确定要加载新音轨吗？</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1139"/>
+        <location filename="../../src/mixxx.cpp" line="1148"/>
         <source>There is no input device selected for this vinyl control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>尚未选择用于唱盘控制的输入设备。
 请在声音硬件的首选项中选择一个输入设备。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1150"/>
+        <location filename="../../src/mixxx.cpp" line="1159"/>
         <source>There is no input device selected for this passthrough control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>尚未选择用于唱盘控制的输入设备。
 请在声音硬件的首选项中选择一个输入设备。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1161"/>
+        <location filename="../../src/mixxx.cpp" line="1170"/>
         <source>There is no input device selected for this microphone.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>尚未选择用于麦克风控制的输入设备。
 请在声音硬件的首选项中选择一个输入设备。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1236"/>
+        <location filename="../../src/mixxx.cpp" line="1245"/>
         <source>Error in skin file</source>
         <translation>皮肤文件错误</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1237"/>
+        <location filename="../../src/mixxx.cpp" line="1246"/>
         <source>The selected skin cannot be loaded.</source>
         <translation>无法加载所选皮肤。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1328"/>
+        <location filename="../../src/mixxx.cpp" line="1337"/>
         <source>OpenGL Direct Rendering</source>
         <translation>OpenGL 直接渲染</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1329"/>
+        <location filename="../../src/mixxx.cpp" line="1338"/>
         <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.&lt;br&gt;&lt;br&gt;NOTE: If you use NVIDIA hardware,&lt;br&gt;direct rendering may not be present, but you should&lt;br&gt;not experience degraded performance.</source>
         <translation>您的系统未启用直接渲染功能。&lt;br&gt;&lt;br&gt;
 这意味着波形显示的速度将会&lt;b&gt;很慢，且消耗更多的&lt;br&gt;
@@ -7581,29 +7591,29 @@ CPU 资源&lt;/b&gt;。&lt;br&gt;
 直接渲染的选项，但您也不应遇到降低性能的问题。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1363"/>
-        <location filename="../../src/mixxx.cpp" line="1371"/>
+        <location filename="../../src/mixxx.cpp" line="1372"/>
         <location filename="../../src/mixxx.cpp" line="1380"/>
+        <location filename="../../src/mixxx.cpp" line="1389"/>
         <source>Confirm Exit</source>
         <translation>确认退出</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1364"/>
+        <location filename="../../src/mixxx.cpp" line="1373"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
         <translation>有唱机正在播放。确定退出 Mixxx 吗？</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1372"/>
+        <location filename="../../src/mixxx.cpp" line="1381"/>
         <source>A sampler is currently playing. Exit Mixxx?</source>
         <translation>有采样器正在播放。确定退出 Mixxx 吗？</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1381"/>
+        <location filename="../../src/mixxx.cpp" line="1390"/>
         <source>The preferences window is still open.</source>
         <translation>首选项窗口尚未关闭。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1382"/>
+        <location filename="../../src/mixxx.cpp" line="1391"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation>取消所作更改并退出 Mixxx 吗？</translation>
     </message>
@@ -8003,223 +8013,277 @@ To abort this action, press Cancel on the file dialog.</source>
         <translation>您选择了错误的文件。为了使 Mixxx 能正确访问，请选择文件“%1”。若您不希望继续，请选择“取消”。</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="14"/>
-        <source>BitCrusher</source>
-        <translation>降比特率器</translation>
-    </message>
-    <message>
-        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="17"/>
-        <source>The BitCrusher is an effect that adds quantisation noise to the signal by the reduction of the resolution or bandwidth of the samples.</source>
-        <translation>降比特率器是通过降低采样分辨率或带宽来添加量化噪声的效果器。</translation>
-    </message>
-    <message>
         <location filename="../../src/effects/native/bitcrushereffect.cpp" line="24"/>
+        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="25"/>
         <source>Bit Depth</source>
         <translation>位深</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="25"/>
-        <source>Adjusts the bit depth of the samples.</source>
-        <translation>调整采样的位深。</translation>
+        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="14"/>
+        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="15"/>
+        <source>Bitcrusher</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="40"/>
+        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="18"/>
+        <source>Adds noise by the reducing the bit depth and sample rate</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="26"/>
+        <source>The bit depth of the samples</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="42"/>
         <source>Downsampling</source>
         <translation>向下采样</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="41"/>
+        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="43"/>
         <source>Down</source>
         <translation>下</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="42"/>
-        <source>Adjusts the sample rate, to which the signal is downsampled.</source>
-        <translation>调整采样率，使得信号被采集时质量降低。</translation>
+        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="44"/>
+        <source>The sample rate to which the signal is downsampled</source>
+        <translation type="unfinished"/>
     </message>
     <message>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="31"/>
         <location filename="../../src/effects/native/echoeffect.cpp" line="32"/>
         <source>Echo</source>
         <translation>回声</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="35"/>
-        <source>Simple Echo with pingpong</source>
-        <translation>简单的乒乓回声</translation>
-    </message>
-    <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="39"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="40"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="41"/>
         <source>Time</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="40"/>
-        <source>Delay time
-1/8 - 2 beats if tempo is detected (decks and samplers) 
-1/8 - 2 seconds if no tempo is detected (mic &amp; aux inputs, master mix)</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="64"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="68"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="69"/>
         <source>Ping Pong</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="66"/>
-        <source>As the ping pong amount increases, increasing amounts of the echoed signal is bounced between the left and right speakers.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="78"/>
-        <location filename="../../src/effects/native/reverbeffect.cpp" line="63"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="81"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="82"/>
+        <location filename="../../src/effects/native/reverbeffect.cpp" line="64"/>
+        <location filename="../../src/effects/native/reverbeffect.cpp" line="65"/>
         <source>Send</source>
         <translation>发送</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="80"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="83"/>
         <source>How much of the signal to send into the delay buffer</source>
         <translation>发送至延迟缓冲区的信号数量</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="52"/>
-        <location filename="../../src/effects/native/phasereffect.cpp" line="41"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="55"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="56"/>
+        <location filename="../../src/effects/native/phasereffect.cpp" line="44"/>
+        <location filename="../../src/effects/native/phasereffect.cpp" line="45"/>
         <source>Feedback</source>
         <translation>回馈</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="54"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="35"/>
+        <source>Stores the input signal in a temporary buffer and outputs it after a short time</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="42"/>
+        <source>Delay time
+1/8 - 2 beats if tempo is detected
+1/8 - 2 seconds if no tempo is detected</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="57"/>
         <source>Amount the echo fades each time it loops</source>
         <translation>每个回声循环中，回声的衰减量</translation>
     </message>
     <message>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="70"/>
+        <source>How much the echoed sound bounces between the left and right sides of the stereo field</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="95"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="96"/>
+        <location filename="../../src/effects/native/tremoloeffect.cpp" line="102"/>
+        <location filename="../../src/effects/native/tremoloeffect.cpp" line="103"/>
+        <source>Quantize</source>
+        <translation>量化模式</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="97"/>
+        <source>Round the Time parameter to the nearest 1/4 beat.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="108"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="109"/>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="104"/>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="105"/>
+        <location filename="../../src/effects/native/phasereffect.cpp" line="97"/>
+        <location filename="../../src/effects/native/phasereffect.cpp" line="98"/>
+        <location filename="../../src/effects/native/tremoloeffect.cpp" line="116"/>
+        <source>Triplets</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="110"/>
+        <source>When the Quantize parameter is enabled, divide rounded 1/4 beats of Time parameter by 3.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <location filename="../../src/effects/native/filtereffect.cpp" line="18"/>
+        <location filename="../../src/effects/native/filtereffect.cpp" line="19"/>
         <source>Filter</source>
         <translation>过滤器</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/filtereffect.cpp" line="21"/>
-        <source>The filter changes the tone of the music by allowing only high or low frequencies to pass through.</source>
-        <translation>过滤器通过截断高频或低频信号来改变音乐的色调。</translation>
+        <location filename="../../src/effects/native/filtereffect.cpp" line="22"/>
+        <source>Allows only high or low frequencies to play.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/effects/native/filtereffect.cpp" line="28"/>
+        <source>Low Pass Filter Cutoff</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/filtereffect.cpp" line="29"/>
         <location filename="../../src/effects/native/moogladder4filtereffect.cpp" line="28"/>
         <source>LPF</source>
         <translation>LPF</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/filtereffect.cpp" line="29"/>
+        <location filename="../../src/effects/native/filtereffect.cpp" line="30"/>
         <location filename="../../src/effects/native/moogladder4filtereffect.cpp" line="29"/>
         <source>Corner frequency ratio of the low pass filter</source>
         <translation>低通滤波器的角频率比</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/filtereffect.cpp" line="42"/>
+        <location filename="../../src/effects/native/filtereffect.cpp" line="44"/>
         <source>Q</source>
         <translation>Q</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/filtereffect.cpp" line="43"/>
-        <source>Resonance of the filters, default = Flat top</source>
-        <translation>滤波器的共振值，默认值 = Flat top</translation>
+        <location filename="../../src/effects/native/filtereffect.cpp" line="45"/>
+        <source>Resonance of the filters
+Default: flat top</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/filtereffect.cpp" line="53"/>
+        <location filename="../../src/effects/native/filtereffect.cpp" line="57"/>
+        <source>High Pass Filter Cutoff</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/filtereffect.cpp" line="58"/>
         <location filename="../../src/effects/native/moogladder4filtereffect.cpp" line="53"/>
         <source>HPF</source>
         <translation>HPF</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/filtereffect.cpp" line="54"/>
+        <location filename="../../src/effects/native/filtereffect.cpp" line="59"/>
         <location filename="../../src/effects/native/moogladder4filtereffect.cpp" line="54"/>
         <source>Corner frequency ratio of the high pass filter</source>
         <translation>高通滤波器的角频率比</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/phasereffect.cpp" line="74"/>
+        <location filename="../../src/effects/native/phasereffect.cpp" line="83"/>
+        <location filename="../../src/effects/native/phasereffect.cpp" line="84"/>
+        <location filename="../../src/effects/native/tremoloeffect.cpp" line="26"/>
+        <location filename="../../src/effects/native/tremoloeffect.cpp" line="27"/>
         <source>Depth</source>
         <translation>深度</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/flangereffect.cpp" line="27"/>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="28"/>
         <source>Flanger</source>
         <translation>镶边</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/flangereffect.cpp" line="30"/>
-        <source>A simple modulation effect, created by taking the input signal and mixing it with a delayed, pitch modulated copy of itself.</source>
-        <translation>简单的调制效果器，将输入信号与其延迟后（且音高调制）的信号进行混合。</translation>
-    </message>
-    <message>
         <location filename="../../src/effects/native/flangereffect.cpp" line="36"/>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="37"/>
         <source>Speed</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/flangereffect.cpp" line="37"/>
-        <source>Controls the speed of the LFO (low frequency oscillator)
-32 - 1/4 beats rounded to 1/2 beat per lfo cycle if tempo is detected (decks and samplers) 
-1/32 - 4 Hz if no tempo is detected (mic &amp; aux inputs, master mix)</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/effects/native/flangereffect.cpp" line="49"/>
-        <source>Controls the delay amplitude of the LFO (low frequency oscillator).</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/effects/native/flangereffect.cpp" line="59"/>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="63"/>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="64"/>
         <source>Manual</source>
+        <translation>用户手册</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="31"/>
+        <source>Mixes the input with a delayed, pitch modulated copy of itself to create comb filtering</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/flangereffect.cpp" line="60"/>
-        <source>Controls the delay offset of the LFO (low frequency oscillator).
-With width at zero, it allows to manual sweep over the entire delay range.</source>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="38"/>
+        <source>Speed of the LFO (low frequency oscillator)
+32 - 1/4 beats rounded to 1/2 beat per LFO cycle if tempo is detected
+1/32 - 4 Hz if no tempo is detected</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/flangereffect.cpp" line="71"/>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="52"/>
+        <source>Delay amplitude of the LFO (low frequency oscillator)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="65"/>
+        <source>Delay offset of the LFO (low frequency oscillator).
+With width at zero, this allows for manually sweeping over the entire delay range.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="77"/>
         <source>Regeneration</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/flangereffect.cpp" line="72"/>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="78"/>
         <source>Regen</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/flangereffect.cpp" line="73"/>
-        <source>Controls how much of the delay output is feed back into the input.</source>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="79"/>
+        <source>How much of the delay output is feed back into the input</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/flangereffect.cpp" line="83"/>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="92"/>
+        <location filename="../../src/effects/native/phasereffect.cpp" line="85"/>
+        <source>Intensity of the effect</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="106"/>
+        <location filename="../../src/effects/native/phasereffect.cpp" line="99"/>
+        <source>Divide rounded 1/2 beats of the Period parameter by 3.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="90"/>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="91"/>
         <source>Mix</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/flangereffect.cpp" line="84"/>
-        <source>Controls the intensity of the effect.</source>
-        <translation>控制效果器的强度。</translation>
-    </message>
-    <message>
-        <location filename="../../src/effects/native/autopaneffect.cpp" line="21"/>
-        <source>AutoPan</source>
-        <translation>自动声场</translation>
-    </message>
-    <message>
-        <location filename="../../src/effects/native/autopaneffect.cpp" line="33"/>
-        <source>How fast the sound goes from a side to another
-1/4 - 4 beats rounded to 1/2 beat if tempo is detected (decks and samplers)
-1/4 - 4 seconds if no tempo is detected (mic &amp; aux inputs, master mix)</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/effects/native/autopaneffect.cpp" line="64"/>
-        <location filename="../../src/effects/native/flangereffect.cpp" line="48"/>
-        <location filename="../../src/effects/native/tremoloeffect.cpp" line="55"/>
+        <location filename="../../src/effects/native/autopaneffect.cpp" line="65"/>
+        <location filename="../../src/effects/native/autopaneffect.cpp" line="66"/>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="50"/>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="51"/>
         <location filename="../../src/effects/native/tremoloeffect.cpp" line="56"/>
+        <location filename="../../src/effects/native/tremoloeffect.cpp" line="57"/>
         <source>Width</source>
         <translation>宽度</translation>
     </message>
@@ -8254,24 +8318,38 @@ With width at zero, it allows to manual sweep over the entire delay range.</sour
         <translation type="unfinished"/>
     </message>
     <message>
+        <location filename="../../src/effects/native/autopaneffect.cpp" line="31"/>
         <location filename="../../src/effects/native/autopaneffect.cpp" line="32"/>
-        <location filename="../../src/effects/native/phasereffect.cpp" line="28"/>
+        <location filename="../../src/effects/native/phasereffect.cpp" line="29"/>
+        <location filename="../../src/effects/native/phasereffect.cpp" line="30"/>
         <source>Period</source>
         <translation>周期</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/autopaneffect.cpp" line="24"/>
-        <source>Bounce the sound from a channel to another, roughly or softly, fully or partially, fastly or slowly.
-A delay, inversed on each side, is added to increase the spatial move and the period can be synced with the BPM.</source>
+        <location filename="../../src/effects/native/autopaneffect.cpp" line="21"/>
+        <location filename="../../src/effects/native/autopaneffect.cpp" line="22"/>
+        <source>Autopan</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/autopaneffect.cpp" line="47"/>
+        <location filename="../../src/effects/native/autopaneffect.cpp" line="25"/>
+        <source>Bounce the sound left and right across the stereo field</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/autopaneffect.cpp" line="33"/>
+        <source>How fast the sound goes from one side to another
+1/4 - 4 beats rounded to 1/2 beat if tempo is detected
+1/4 - 4 seconds if no tempo is detected</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/autopaneffect.cpp" line="48"/>
         <source>Smoothing</source>
         <translation>平滑</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/autopaneffect.cpp" line="48"/>
+        <location filename="../../src/effects/native/autopaneffect.cpp" line="49"/>
         <source>Smooth</source>
         <translation>平滑</translation>
     </message>
@@ -8281,47 +8359,60 @@ A delay, inversed on each side, is added to increase the spatial move and the pe
         <translation type="unfinished"/>
     </message>
     <message>
+        <location filename="../../src/effects/native/autopaneffect.cpp" line="67"/>
+        <source>How far the signal goes to each side</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <location filename="../../src/effects/native/reverbeffect.cpp" line="16"/>
         <source>Reverb</source>
         <translation>混响</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/reverbeffect.cpp" line="27"/>
+        <location filename="../../src/effects/native/reverbeffect.cpp" line="19"/>
+        <source>Emulates the sound of the signal bouncing off the walls of a room</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/reverbeffect.cpp" line="24"/>
+        <location filename="../../src/effects/native/reverbeffect.cpp" line="25"/>
         <source>Decay</source>
         <translation>衰减</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/reverbeffect.cpp" line="28"/>
-        <source>Lower decay values cause reverberations to die out more quickly.</source>
-        <translation>衰减值越小，混响效果消失得越快。</translation>
+        <location filename="../../src/effects/native/reverbeffect.cpp" line="26"/>
+        <source>Lower decay values cause reverberations to fade out more quickly.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/reverbeffect.cpp" line="38"/>
+        <location filename="../../src/effects/native/reverbeffect.cpp" line="39"/>
+        <source>Bandwidth of the low pass filter at the input.
+Higher values result in less attenuation of high frequencies.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/reverbeffect.cpp" line="37"/>
         <source>Bandwidth</source>
         <translation>带宽</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/reverbeffect.cpp" line="39"/>
+        <location filename="../../src/effects/native/reverbeffect.cpp" line="38"/>
         <source>BW</source>
         <translation>BW</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/reverbeffect.cpp" line="40"/>
-        <source>Bandwidth of the low pass filter at the input. Higher values result in less attenuation of high frequencies.</source>
-        <translation>输入处的低通滤波器的带宽。 值越高，高频的衰减越少。</translation>
-    </message>
-    <message>
         <location filename="../../src/effects/native/reverbeffect.cpp" line="51"/>
+        <location filename="../../src/effects/native/reverbeffect.cpp" line="52"/>
         <source>Damping</source>
         <translation>衰减</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/reverbeffect.cpp" line="52"/>
+        <location filename="../../src/effects/native/reverbeffect.cpp" line="53"/>
         <source>Higher damping values cause high frequencies to decay more quickly than low frequencies.</source>
         <translation>衰减值越大，高频的信号会比低频衰减更快。</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/reverbeffect.cpp" line="64"/>
+        <location filename="../../src/effects/native/reverbeffect.cpp" line="66"/>
         <source>How much of the signal to send to the effect</source>
         <translation>发送至效果器的信号数量</translation>
     </message>
@@ -8334,7 +8425,7 @@ A delay, inversed on each side, is added to increase the spatial move and the pe
     </message>
     <message>
         <location filename="../../src/effects/native/equalizer_util.h" line="15"/>
-        <location filename="../../src/effects/native/graphiceqeffect.cpp" line="31"/>
+        <location filename="../../src/effects/native/graphiceqeffect.cpp" line="32"/>
         <location filename="../../src/test/metaknob_link_test.cpp" line="46"/>
         <source>Gain for Low Filter</source>
         <translation>低通滤波器增益</translation>
@@ -8370,11 +8461,6 @@ A delay, inversed on each side, is added to increase the spatial move and the pe
         <translation>使用 Lipshitz 和 Vanderkooy 混音器的 Bessel 四阶滤波隔离器（比特完美统一，滚降为 -24 分贝/八度音）。</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/equalizer_util.h" line="83"/>
-        <source>To adjust frequency shelves see the Equalizer preferences.</source>
-        <translation>要调整频率架，请参考均衡器选项。</translation>
-    </message>
-    <message>
         <location filename="../../src/effects/native/equalizer_util.h" line="38"/>
         <source>Gain for Mid Filter</source>
         <translation>中通滤波器增益</translation>
@@ -8396,7 +8482,7 @@ A delay, inversed on each side, is added to increase the spatial move and the pe
     </message>
     <message>
         <location filename="../../src/effects/native/equalizer_util.h" line="61"/>
-        <location filename="../../src/effects/native/graphiceqeffect.cpp" line="64"/>
+        <location filename="../../src/effects/native/graphiceqeffect.cpp" line="68"/>
         <source>Gain for High Filter</source>
         <translation>高通滤波器增益</translation>
     </message>
@@ -8409,6 +8495,11 @@ A delay, inversed on each side, is added to increase the spatial move and the pe
         <location filename="../../src/effects/native/equalizer_util.h" line="73"/>
         <source>Kill the High Filter</source>
         <translation>阻断高通滤波器</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/equalizer_util.h" line="83"/>
+        <source>To adjust frequency shelves, go to Preferences -&gt; Equalizers.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/effects/native/graphiceqeffect.cpp" line="15"/>
@@ -8426,7 +8517,7 @@ A delay, inversed on each side, is added to increase the spatial move and the pe
         <translation>基于双二阶滤波器的八频段图形化滤波器</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/graphiceqeffect.cpp" line="51"/>
+        <location filename="../../src/effects/native/graphiceqeffect.cpp" line="54"/>
         <source>Gain for Band Filter %1</source>
         <translation>带通滤波器 %1 增益</translation>
     </message>
@@ -8451,7 +8542,7 @@ A delay, inversed on each side, is added to increase the spatial move and the pe
         <translation>共鸣</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/filtereffect.cpp" line="41"/>
+        <location filename="../../src/effects/native/filtereffect.cpp" line="43"/>
         <location filename="../../src/effects/native/moogladder4filtereffect.cpp" line="41"/>
         <source>Resonance</source>
         <translation>共振</translation>
@@ -8462,18 +8553,18 @@ A delay, inversed on each side, is added to increase the spatial move and the pe
         <translation>滤波器的共振值。-4 表示自振荡</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="109"/>
+        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="110"/>
         <source>Deck %1 EQ Effect</source>
         <translation>碟机 %1 的均衡器效果</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="134"/>
-        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="295"/>
+        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="135"/>
+        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="296"/>
         <source>EQ Effect</source>
         <translation>均衡器效果</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="297"/>
+        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="298"/>
         <source>Deck 1 EQ Effect</source>
         <translation>碟机 1 的均衡器效果</translation>
     </message>
@@ -8489,55 +8580,59 @@ A delay, inversed on each side, is added to increase the spatial move and the pe
     </message>
     <message>
         <location filename="../../src/effects/native/phasereffect.cpp" line="18"/>
+        <location filename="../../src/effects/native/phasereffect.cpp" line="19"/>
         <source>Phaser</source>
         <translation>解析器</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/phasereffect.cpp" line="21"/>
-        <source>A more complex sound effect obtained by mixing the input signal with a copy passed through a series of all-pass filters.</source>
-        <translation>将输入信号与其延迟后（且音高调制）的信号进行混合后，得到的更复杂的声音效果。</translation>
-    </message>
-    <message>
-        <location filename="../../src/effects/native/phasereffect.cpp" line="29"/>
-        <source>Controls the period of the LFO (low frequency oscillator)
-1/4 - 4 beats rounded to 1/2 beat if tempo is detected (decks and samplers) 
-1/4 - 4 seconds if no tempo is detected (mic &amp; aux inputs, master mix)</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/effects/native/phasereffect.cpp" line="97"/>
+        <location filename="../../src/effects/native/phasereffect.cpp" line="110"/>
+        <location filename="../../src/effects/native/phasereffect.cpp" line="111"/>
         <source>Stereo</source>
         <translation>立体声</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/phasereffect.cpp" line="98"/>
-        <source>Enables/disables stereo</source>
-        <translation>启用/禁用立体声</translation>
-    </message>
-    <message>
-        <location filename="../../src/effects/native/phasereffect.cpp" line="63"/>
+        <location filename="../../src/effects/native/phasereffect.cpp" line="70"/>
+        <location filename="../../src/effects/native/phasereffect.cpp" line="71"/>
         <source>Stages</source>
         <translation>阶梯</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/phasereffect.cpp" line="64"/>
-        <source>Sets number of stages.</source>
-        <translation>设置阶梯数。</translation>
+        <location filename="../../src/effects/native/phasereffect.cpp" line="22"/>
+        <source>Mixes the input signal with a copy passed through a series of all-pass filters to create comb filtering</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/phasereffect.cpp" line="42"/>
+        <location filename="../../src/effects/native/phasereffect.cpp" line="31"/>
+        <source>Period of the LFO (low frequency oscillator)
+1/4 - 4 beats rounded to 1/2 beat if tempo is detected
+1/4 - 4 seconds if no tempo is detected</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/phasereffect.cpp" line="46"/>
         <source>Controls how much of the output signal is looped</source>
         <translation>设置输出信号的循环量</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/phasereffect.cpp" line="52"/>
+        <location filename="../../src/effects/native/phasereffect.cpp" line="57"/>
+        <location filename="../../src/effects/native/phasereffect.cpp" line="58"/>
         <source>Range</source>
         <translation>范围</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/phasereffect.cpp" line="53"/>
+        <location filename="../../src/effects/native/phasereffect.cpp" line="59"/>
         <source>Controls the frequency range across which the notches sweep.</source>
         <translation>控制缺口扫过的频率范围。</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/phasereffect.cpp" line="72"/>
+        <source>Number of stages</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/phasereffect.cpp" line="112"/>
+        <source>Sets the LFOs (low frequency oscillators) for the left and right channels out of phase with each others</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wbattery.cpp" line="81"/>
@@ -8665,33 +8760,35 @@ A delay, inversed on each side, is added to increase the spatial move and the pe
         <translation>三频段均衡器，整合了均衡器和隔离器，提供平缓的斜率和完全阻断。</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/loudnesscontoureffect.cpp" line="27"/>
+        <location filename="../../src/effects/native/loudnesscontoureffect.cpp" line="26"/>
         <source>Loudness Contour</source>
         <translation>等响度曲线</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/loudnesscontoureffect.cpp" line="28"/>
+        <location filename="../../src/effects/native/loudnesscontoureffect.cpp" line="27"/>
+        <location filename="../../src/effects/native/loudnesscontoureffect.cpp" line="36"/>
         <location filename="../../src/effects/native/loudnesscontoureffect.cpp" line="37"/>
         <source>Loudness</source>
         <translation>响度</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/loudnesscontoureffect.cpp" line="31"/>
+        <location filename="../../src/effects/native/loudnesscontoureffect.cpp" line="30"/>
         <source>Amplifies low and high frequencies at low volumes to compensate for reduced sensitivity of the human ear.</source>
         <translation>增益低响度的高频与低频信号以弥补人耳听力不足</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/loudnesscontoureffect.cpp" line="39"/>
+        <location filename="../../src/effects/native/loudnesscontoureffect.cpp" line="38"/>
         <source>Set the gain of the applied loudness contour</source>
         <translation>调整已应用的等响度曲线的增益值</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/loudnesscontoureffect.cpp" line="51"/>
+        <location filename="../../src/effects/native/loudnesscontoureffect.cpp" line="52"/>
         <source>Use Gain</source>
         <translation>使用增益</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/loudnesscontoureffect.cpp" line="52"/>
+        <location filename="../../src/effects/native/loudnesscontoureffect.cpp" line="53"/>
         <source>Follow Gain Knob</source>
         <translation>跟随增益旋钮</translation>
     </message>
@@ -8734,44 +8831,53 @@ A delay, inversed on each side, is added to increase the spatial move and the pe
         <translation>32 位浮点数</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/balanceeffect.cpp" line="20"/>
-        <location filename="../../src/effects/native/balanceeffect.cpp" line="28"/>
+        <location filename="../../src/effects/native/balanceeffect.cpp" line="21"/>
+        <location filename="../../src/effects/native/balanceeffect.cpp" line="30"/>
+        <location filename="../../src/effects/native/balanceeffect.cpp" line="31"/>
         <source>Balance</source>
         <translation>平衡</translation>
     </message>
     <message>
-        <location filename="../../src/effects/native/balanceeffect.cpp" line="23"/>
+        <location filename="../../src/effects/native/balanceeffect.cpp" line="24"/>
         <source>Adjust the left/right balance and stereo width</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/balanceeffect.cpp" line="29"/>
+        <location filename="../../src/effects/native/balanceeffect.cpp" line="32"/>
         <source>Adjust balance between left and right channels</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/balanceeffect.cpp" line="40"/>
+        <location filename="../../src/effects/native/balanceeffect.cpp" line="44"/>
+        <location filename="../../src/effects/native/balanceeffect.cpp" line="45"/>
         <source>Mid/Side</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/balanceeffect.cpp" line="41"/>
-        <source>Adjust stereo width by changing balance between middle and side of the signal.
-Fully left is mono, fully right is only side ambiance, and centered does not change the original signal.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/effects/native/balanceeffect.cpp" line="53"/>
+        <location filename="../../src/effects/native/balanceeffect.cpp" line="62"/>
         <source>Bypass Fr.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/balanceeffect.cpp" line="54"/>
+        <location filename="../../src/effects/native/balanceeffect.cpp" line="61"/>
         <source>Bypass Frequency</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/balanceeffect.cpp" line="55"/>
+        <location filename="../../src/effects/native/balanceeffect.cpp" line="20"/>
+        <source>Stereo Balance</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/balanceeffect.cpp" line="46"/>
+        <source>Adjust stereo width by changing balance between middle and side of the signal.
+Fully left: mono
+Fully right: only side ambiance
+Center: does not change the original signal.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/balanceeffect.cpp" line="63"/>
         <source>Frequencies below this cutoff are not adjusted in the stereo field</source>
         <translation type="unfinished"/>
     </message>
@@ -8793,72 +8899,88 @@ It is designed as a complement to the steep mixing equalizers.</source>
     </message>
     <message>
         <location filename="../../src/effects/native/parametriceqeffect.cpp" line="31"/>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="32"/>
         <source>Gain 1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="32"/>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="33"/>
         <source>Gain for Filter 1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="43"/>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="45"/>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="46"/>
         <source>Q 1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="44"/>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="47"/>
         <source>Controls the bandwidth of Filter 1.
 A lower Q affects a wider band of frequencies,
 a higher Q affects a narrower band of frequencies.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="58"/>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="61"/>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="62"/>
         <source>Center 1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="59"/>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="63"/>
         <source>Center frequency for Filter 1, from 100 Hz to 14 kHz</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="70"/>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="75"/>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="76"/>
         <source>Gain 2</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="71"/>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="77"/>
         <source>Gain for Filter 2</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="82"/>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="89"/>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="90"/>
         <source>Q 2</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="83"/>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="91"/>
         <source>Controls the bandwidth of Filter 2.
 A lower Q affects a wider band of frequencies,
 a higher Q affects a narrower band of frequencies.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="97"/>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="105"/>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="106"/>
         <source>Center 2</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="98"/>
+        <location filename="../../src/effects/native/parametriceqeffect.cpp" line="107"/>
         <source>Center frequency for Filter 2, from 100 Hz to 14 kHz</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/tremoloeffect.cpp" line="19"/>
-        <location filename="../../src/effects/native/tremoloeffect.cpp" line="20"/>
+        <location filename="../../src/effects/native/tremoloeffect.cpp" line="17"/>
+        <location filename="../../src/effects/native/tremoloeffect.cpp" line="18"/>
         <source>Tremolo</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/tremoloeffect.cpp" line="21"/>
+        <source>Cycles the volume up and down</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/tremoloeffect.cpp" line="28"/>
+        <source>How much the effect changes the volume</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -8869,37 +8991,55 @@ a higher Q affects a narrower band of frequencies.</source>
     </message>
     <message>
         <location filename="../../src/effects/native/tremoloeffect.cpp" line="42"/>
-        <source>Controls the rate of the effect
-4 beats - 1/8 beat if tempo is detected (decks and samplers) 
-1/4 Hz - 8 Hz if no tempo is detected (mic &amp; aux inputs, master mix)</source>
+        <source>Rate of the volume changes
+4 beats - 1/8 beat if tempo is detected
+1/4 Hz - 8 Hz if no tempo is detected</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/tremoloeffect.cpp" line="57"/>
-        <source>Sets the width of the volume peak
+        <location filename="../../src/effects/native/tremoloeffect.cpp" line="58"/>
+        <source>Width of the volume peak
 10% - 90% of the effect period</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/tremoloeffect.cpp" line="68"/>
-        <location filename="../../src/effects/native/tremoloeffect.cpp" line="69"/>
-        <source>Waveform</source>
+        <location filename="../../src/effects/native/tremoloeffect.cpp" line="72"/>
+        <source>Shape of the volume modulation wave
+Fully left: Square wave
+Fully right: Sine wave</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/tremoloeffect.cpp" line="118"/>
+        <source>When the Quantize parameter is enabled, divide the effect period by 3.</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/effects/native/tremoloeffect.cpp" line="70"/>
-        <source>Sets the shape of the modulation
-Fully left - Square wave
-Fully right - Sine wave</source>
+        <location filename="../../src/effects/native/tremoloeffect.cpp" line="71"/>
+        <source>Waveform</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/tremoloeffect.cpp" line="84"/>
+        <location filename="../../src/effects/native/tremoloeffect.cpp" line="86"/>
+        <location filename="../../src/effects/native/tremoloeffect.cpp" line="87"/>
         <source>Phase</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/tremoloeffect.cpp" line="113"/>
+        <location filename="../../src/effects/native/tremoloeffect.cpp" line="88"/>
+        <source>Shifts the position of the volume peak within the period
+Fully left: beginning of the effect period
+Fully right: end of the effect period</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/tremoloeffect.cpp" line="104"/>
+        <source>Round the Rate parameter to the nearest whole division of a beat.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/tremoloeffect.cpp" line="117"/>
         <source>Triplet</source>
         <translation type="unfinished"/>
     </message>
@@ -8955,8 +9095,8 @@ Fully right - Sine wave</source>
     </message>
     <message>
         <location filename="../../src/recording/recordingmanager.cpp" line="230"/>
-        <source>You can change the location of the Recordings folder in Preferences &gt; Recording.</source>
-        <translation>您可以在“首选项 -&gt; 录制”中改变录制文件夹的位置。</translation>
+        <source>You can change the location of the Recordings folder in Preferences -&gt; Recording.</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -9020,48 +9160,48 @@ Fully right - Sine wave</source>
 <context>
     <name>SetlogFeature</name>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="28"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="31"/>
         <source>Join with previous</source>
         <translation>与前一项合并</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="32"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="35"/>
         <source>Create new history playlist</source>
         <translation>创建新的历史播放列表</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="50"/>
-        <location filename="../../src/library/setlogfeature.cpp" line="325"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="53"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="342"/>
         <source>History</source>
         <translation>历史</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="88"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="93"/>
         <source>Unlock</source>
         <translation>解锁</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="88"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="93"/>
         <source>Lock</source>
         <translation>锁定</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="326"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="343"/>
         <source>The history section automatically keeps a list of tracks you play in your DJ sets.</source>
         <translation>历史记录部分将自动保存您在 Dj 碟机中播放的音轨列表。</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="327"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="344"/>
         <source>This is handy for remembering what worked in your DJ sets, posting set-lists, or reporting your plays to licensing organizations.</source>
         <translation>这有助于记录您使用 Dj 唱机的工作、发布播放列表，或向许可机构报告您的播放操作。</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="328"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="345"/>
         <source>Every time you start Mixxx, a new history section is created. You can export it as a playlist in various formats or play it again with Auto DJ.</source>
         <translation>每次启动 Mixxx 时，将会自动创建一个历史列表。您可以将其导出为不同格式的播放列表，或用自动 Dj 再次播放它。</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="329"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="346"/>
         <source>You can join the current history session with a previous one by right-clicking and selecting &quot;Join with previous&quot;.</source>
         <translation>您可以右键点击并选择“与前一项合并”来将当前历史列表与之前的列表合并。</translation>
     </message>
@@ -9236,23 +9376,23 @@ Fully right - Sine wave</source>
 <context>
     <name>SoundManager</name>
     <message>
+        <location filename="../../src/soundio/soundmanager.cpp" line="528"/>
         <location filename="../../src/soundio/soundmanager.cpp" line="533"/>
-        <location filename="../../src/soundio/soundmanager.cpp" line="538"/>
         <source>a device</source>
         <translation>一个设备</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanager.cpp" line="539"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="534"/>
         <source>An unknown error occurred</source>
         <translation>发生了未知错误</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanager.cpp" line="547"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="542"/>
         <source>Two outputs cannot share channels on &quot;%1&quot;</source>
         <translation>两个输出无法共享 %1 的通道</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanager.cpp" line="550"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="545"/>
         <source>Error opening &quot;%1&quot;</source>
         <translation>无法打开 &quot;%1&quot;</translation>
     </message>
@@ -9376,11 +9516,6 @@ Fully right - Sine wave</source>
         <translation>显示当前载入到此通道的音轨信息。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="40"/>
-        <source>Jump around in the track by clicking somewhere on the waveform.</source>
-        <translation>通过点击波形的不同位置，可以切换到音轨中的相应位置。</translation>
-    </message>
-    <message>
         <location filename="../../src/skin/tooltips.cpp" line="43"/>
         <source>Use the mouse to scratch, spin-back or throw tracks.</source>
         <translation>用鼠标滑动，旋转或拖动音轨</translation>
@@ -9422,7 +9557,7 @@ Fully right - Sine wave</source>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="63"/>
-        <location filename="../../src/skin/tooltips.cpp" line="372"/>
+        <location filename="../../src/skin/tooltips.cpp" line="383"/>
         <source>Spinning Vinyl</source>
         <translation>蹉碟</translation>
     </message>
@@ -9582,11 +9717,6 @@ Fully right - Sine wave</source>
         <translation>耳机混音</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="198"/>
-        <source>Controls what you hear on the headphone output.</source>
-        <translation>控制您在耳机中听到的输出信号。</translation>
-    </message>
-    <message>
         <location filename="../../src/skin/tooltips.cpp" line="202"/>
         <source>Headphone Split Cue</source>
         <translation>耳机分离选听</translation>
@@ -9602,992 +9732,1069 @@ Fully right - Sine wave</source>
         <translation>调整耳机混音使得左声道不输出纯切入(cueing)信号。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="210"/>
-        <source>Mix Orientation</source>
-        <translation>混音定向</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="211"/>
-        <source>Set the channel&apos;s mix orientation.</source>
-        <translation>选择通道的混音定向。</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="212"/>
-        <source>Either to the left side of crossfader, to the right side or to the center (default).</source>
-        <translation>置于平滑转换器的左侧、右侧或中央（默认值）。</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="215"/>
+        <location filename="../../src/skin/tooltips.cpp" line="213"/>
         <source>Microphone</source>
         <translation>麦克风</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="216"/>
+        <location filename="../../src/skin/tooltips.cpp" line="214"/>
         <source>Show/hide the Microphone section.</source>
         <translation>显示/隐藏麦克风界面。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="219"/>
+        <location filename="../../src/skin/tooltips.cpp" line="217"/>
         <source>Sampler</source>
         <translation>采样器</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="220"/>
+        <location filename="../../src/skin/tooltips.cpp" line="218"/>
         <source>Show/hide the Sampler section.</source>
         <translation>显示/隐藏采样器区域。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="223"/>
+        <location filename="../../src/skin/tooltips.cpp" line="221"/>
         <source>Vinyl Control</source>
         <translation>唱盘控制</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="224"/>
+        <location filename="../../src/skin/tooltips.cpp" line="222"/>
         <source>Show/hide the Vinyl Control section.</source>
         <translation>显示/隐藏唱盘控制界面。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="228"/>
+        <location filename="../../src/skin/tooltips.cpp" line="226"/>
         <source>Preview Deck</source>
         <translation>预览碟机</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="229"/>
+        <location filename="../../src/skin/tooltips.cpp" line="227"/>
         <source>Show/hide the Preview deck.</source>
         <translation>显示/隐藏预览碟机。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="232"/>
-        <location filename="../../src/skin/tooltips.cpp" line="698"/>
+        <location filename="../../src/skin/tooltips.cpp" line="230"/>
+        <location filename="../../src/skin/tooltips.cpp" line="709"/>
         <source>Cover Art</source>
         <translation>封面图片</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="233"/>
+        <location filename="../../src/skin/tooltips.cpp" line="231"/>
         <source>Show/hide Cover Art.</source>
         <translation>显出/隐藏封面图片。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="236"/>
+        <location filename="../../src/skin/tooltips.cpp" line="234"/>
         <source>Toggle 4 Decks</source>
         <translation>切换 4 碟机</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="237"/>
+        <location filename="../../src/skin/tooltips.cpp" line="235"/>
         <source>Switches between showing 2 decks and 4 decks.</source>
         <translation>在 2 碟机视图和 4 碟机视图之间切换。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="240"/>
+        <location filename="../../src/skin/tooltips.cpp" line="238"/>
         <source>Show Library</source>
         <translation>显示音乐库</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="241"/>
+        <location filename="../../src/skin/tooltips.cpp" line="239"/>
         <source>Show or hide the track library.</source>
         <translation>显示或隐藏音乐库。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="252"/>
+        <location filename="../../src/skin/tooltips.cpp" line="242"/>
+        <source>Show Effects</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="243"/>
+        <source>Show or hide the effects.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="250"/>
         <source>Toggle Mixer</source>
         <translation>切换混音器</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="253"/>
+        <location filename="../../src/skin/tooltips.cpp" line="251"/>
         <source>Show or hide the mixer.</source>
         <translation>显示或隐藏混音器。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="256"/>
+        <location filename="../../src/skin/tooltips.cpp" line="254"/>
         <source>Microphone Volume</source>
         <translation>麦克风音量</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="257"/>
+        <location filename="../../src/skin/tooltips.cpp" line="255"/>
         <source>Adjusts the microphone volume.</source>
         <translation>调整麦克风音量。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="261"/>
+        <location filename="../../src/skin/tooltips.cpp" line="259"/>
         <source>Microphone Gain</source>
         <translation>麦克风增益</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="262"/>
+        <location filename="../../src/skin/tooltips.cpp" line="260"/>
         <source>Adjusts the pre-fader microphone gain.</source>
         <translation>调整麦克风的预衰减增益。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="266"/>
+        <location filename="../../src/skin/tooltips.cpp" line="264"/>
         <source>Microphone Talk-Over</source>
         <translation>麦克风自动增益</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="267"/>
+        <location filename="../../src/skin/tooltips.cpp" line="265"/>
         <source>Hold-to-talk or short click for latching to</source>
         <translation>按住说话（Hold-to-talk）或点击此处，以便</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="268"/>
+        <location filename="../../src/skin/tooltips.cpp" line="266"/>
         <source>mix microphone input into the master output.</source>
         <translation>将麦克风输入与主输出混合。</translation>
     </message>
     <message>
+        <location filename="../../src/skin/tooltips.cpp" line="269"/>
+        <source>Microphone Talkover Mode</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="270"/>
+        <source>Off: Do not reduce music volume</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="271"/>
+        <source>Auto: Automatically reduce music volume when microphones are in use. Adjust the amount the music volume is reduced with the Strength knob.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <location filename="../../src/skin/tooltips.cpp" line="272"/>
+        <source>Manual: Reduce music volume by a fixed amount set by the Strength knob.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="276"/>
+        <source>Behavior depends on Microphone Talkover Mode:</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="277"/>
+        <source>Off: Does nothing</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="278"/>
+        <source>Auto: Sets how much to reduce the music volume when microphones are in use.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="279"/>
+        <source>Manual: Sets how much to reduce the music volume, regardless of volume of microphone inputs.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="283"/>
         <source>Raise Pitch</source>
         <translation>升高音调</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="273"/>
+        <location filename="../../src/skin/tooltips.cpp" line="284"/>
         <source>Sets the pitch higher.</source>
         <translation>将音调提高。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="274"/>
+        <location filename="../../src/skin/tooltips.cpp" line="285"/>
         <source>Sets the pitch higher in small steps.</source>
         <translation>将音高略微升高。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="278"/>
+        <location filename="../../src/skin/tooltips.cpp" line="289"/>
         <source>Lower Pitch</source>
         <translation>降低音调</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="279"/>
+        <location filename="../../src/skin/tooltips.cpp" line="290"/>
         <source>Sets the pitch lower.</source>
         <translation>将音调降低。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="280"/>
+        <location filename="../../src/skin/tooltips.cpp" line="291"/>
         <source>Sets the pitch lower in small steps.</source>
         <translation>将音高略微降低。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="284"/>
+        <location filename="../../src/skin/tooltips.cpp" line="295"/>
         <source>Raise Pitch Temporary (Nudge)</source>
         <translation>临时升高音调（微调）</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="285"/>
+        <location filename="../../src/skin/tooltips.cpp" line="296"/>
         <source>Holds the pitch higher while active.</source>
         <translation>活动时将音调升高。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="286"/>
+        <location filename="../../src/skin/tooltips.cpp" line="297"/>
         <source>Holds the pitch higher (small amount) while active.</source>
         <translation>活动时将音调（略微）升高。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="290"/>
+        <location filename="../../src/skin/tooltips.cpp" line="301"/>
         <source>Lower Pitch Temporary (Nudge)</source>
         <translation>临时降低音调（微调）</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="291"/>
+        <location filename="../../src/skin/tooltips.cpp" line="302"/>
         <source>Holds the pitch lower while active.</source>
         <translation>活动时将音调降低。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="292"/>
+        <location filename="../../src/skin/tooltips.cpp" line="303"/>
         <source>Holds the pitch lower (small amount) while active.</source>
         <translation>活动时将音调（略微）降低。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="296"/>
+        <location filename="../../src/skin/tooltips.cpp" line="307"/>
         <source>Low EQ</source>
         <translation>低 EQ</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="297"/>
+        <location filename="../../src/skin/tooltips.cpp" line="308"/>
         <source>Adjusts the gain of the low EQ filter.</source>
         <translation>调整低频均衡滤波器的增益。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="301"/>
+        <location filename="../../src/skin/tooltips.cpp" line="312"/>
         <source>Mid EQ</source>
         <translation>中 EQ</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="302"/>
+        <location filename="../../src/skin/tooltips.cpp" line="313"/>
         <source>Adjusts the gain of the mid EQ filter.</source>
         <translation>调整中频均衡滤波器的增益。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="306"/>
+        <location filename="../../src/skin/tooltips.cpp" line="317"/>
         <source>High EQ</source>
         <translation>高 EQ</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="307"/>
+        <location filename="../../src/skin/tooltips.cpp" line="318"/>
         <source>Adjusts the gain of the high EQ filter.</source>
         <translation>调整高频均衡滤波器的增益。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="310"/>
+        <location filename="../../src/skin/tooltips.cpp" line="321"/>
         <source>Hold-to-kill or short click for latching.</source>
         <translation>按住关闭（Hold-to-kill）或点击此处以锁定。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="312"/>
+        <location filename="../../src/skin/tooltips.cpp" line="323"/>
         <source>High EQ Kill</source>
         <translation>阻断高 EQ</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="313"/>
+        <location filename="../../src/skin/tooltips.cpp" line="324"/>
         <source>Holds the gain of the high EQ to zero while active.</source>
         <translation>启用时，将高频均衡器的增益置为 0。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="317"/>
+        <location filename="../../src/skin/tooltips.cpp" line="328"/>
         <source>Mid EQ Kill</source>
         <translation>阻断中 EQ</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="318"/>
+        <location filename="../../src/skin/tooltips.cpp" line="329"/>
         <source>Holds the gain of the mid EQ to zero while active.</source>
         <translation>启用时，将中频均衡器的增益置为 0。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="322"/>
+        <location filename="../../src/skin/tooltips.cpp" line="333"/>
         <source>Low EQ Kill</source>
         <translation>阻断低 EQ</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="323"/>
+        <location filename="../../src/skin/tooltips.cpp" line="334"/>
         <source>Holds the gain of the low EQ to zero while active.</source>
         <translation>启用时，将低频均衡器的增益置为 0。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="326"/>
+        <location filename="../../src/skin/tooltips.cpp" line="337"/>
         <source>Displays the tempo of the loaded track in BPM (beats per minute).</source>
         <translation>显示已加载音轨的BPM（拍每分钟）。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="328"/>
+        <location filename="../../src/skin/tooltips.cpp" line="339"/>
         <source>Tempo</source>
         <translation>速度</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="333"/>
+        <location filename="../../src/skin/tooltips.cpp" line="344"/>
         <source>Key</source>
         <extracomment>The musical key of a track</extracomment>
         <translation>音调</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="337"/>
+        <location filename="../../src/skin/tooltips.cpp" line="348"/>
         <source>BPM Tap</source>
         <translation>BPM 敲击</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="338"/>
-        <location filename="../../src/skin/tooltips.cpp" line="369"/>
+        <location filename="../../src/skin/tooltips.cpp" line="349"/>
+        <location filename="../../src/skin/tooltips.cpp" line="380"/>
         <source>When tapped repeatedly, adjusts the BPM to match the tapped BPM.</source>
         <translation>若重复点击，将把音轨的 BPM 设为点击动作的 BPM。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="341"/>
+        <location filename="../../src/skin/tooltips.cpp" line="352"/>
         <source>Adjust BPM Down</source>
         <translation>下调 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="342"/>
+        <location filename="../../src/skin/tooltips.cpp" line="353"/>
         <source>When tapped, adjusts the average BPM down by a small amount.</source>
         <translation>点击时，将平均 BPM 略微下调。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="345"/>
+        <location filename="../../src/skin/tooltips.cpp" line="356"/>
         <source>Adjust BPM Up</source>
         <translation>上调 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="346"/>
+        <location filename="../../src/skin/tooltips.cpp" line="357"/>
         <source>When tapped, adjusts the average BPM up by a small amount.</source>
         <translation>点击时，将平均 BPM 略微上调。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="349"/>
+        <location filename="../../src/skin/tooltips.cpp" line="360"/>
         <source>Adjust Beats Earlier</source>
         <translation>提早节拍</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="350"/>
+        <location filename="../../src/skin/tooltips.cpp" line="361"/>
         <source>When tapped, moves the beatgrid left by a small amount.</source>
         <translation>点击时，将节拍略微提早。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="353"/>
+        <location filename="../../src/skin/tooltips.cpp" line="364"/>
         <source>Adjust Beats Later</source>
         <translation>推迟节拍</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="354"/>
+        <location filename="../../src/skin/tooltips.cpp" line="365"/>
         <source>When tapped, moves the beatgrid right by a small amount.</source>
         <translation>点击时，将节拍略微推迟。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="367"/>
+        <location filename="../../src/skin/tooltips.cpp" line="378"/>
         <source>Tempo and BPM Tap</source>
         <translation>速度和 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="373"/>
+        <location filename="../../src/skin/tooltips.cpp" line="384"/>
         <source>Show/hide the spinning vinyl section.</source>
         <translation>显示/隐藏唱盘控制器。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="376"/>
+        <location filename="../../src/skin/tooltips.cpp" line="387"/>
         <source>Keylock</source>
         <translation>音调锁</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="378"/>
+        <location filename="../../src/skin/tooltips.cpp" line="389"/>
         <source>Toggling keylock during playback may result in a momentary audio glitch.</source>
         <translation>在回放时切换音高锁定可能会导致音频出现瞬间的噪音（glitch）。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="401"/>
+        <location filename="../../src/skin/tooltips.cpp" line="412"/>
         <source>Places a cue point at the current position on the waveform.</source>
         <translation>在波形的当前位置上设置一个切入点。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="411"/>
+        <location filename="../../src/skin/tooltips.cpp" line="422"/>
         <source>Stops track at cue point, OR go to cue point and play after release (CUP mode).</source>
         <translation>在切入点处停止，或跳至切入点并在释放后播放（切播模式下）。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="412"/>
+        <location filename="../../src/skin/tooltips.cpp" line="423"/>
         <source>Set cue point (Pioneer/Mixxx/Numark mode), set cue point and play after release (CUP mode) OR preview from it (Denon mode).</source>
         <translation>设置切入点（Pioneer/Mixxx 模式下）并在释放后开始播放（切播模式下），或从切入点出开始预览（Denon 模式下）。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="416"/>
+        <location filename="../../src/skin/tooltips.cpp" line="427"/>
         <source>Seeks the track to the cue point and stops.</source>
         <translation>跳至音轨的切入点，然后停止。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="470"/>
+        <location filename="../../src/skin/tooltips.cpp" line="481"/>
         <source>Changes the track playback speed (affects both the tempo and the pitch). If keylock is enabled, only the tempo is affected.</source>
         <translation>改变音轨回放速度（影响速度和音高）。若启用了音高锁，则仅影响速度。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="522"/>
+        <location filename="../../src/skin/tooltips.cpp" line="533"/>
         <source>Recording Duration</source>
         <translation>录制时间</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="523"/>
+        <location filename="../../src/skin/tooltips.cpp" line="534"/>
         <source>Displays the duration of the running recording.</source>
         <translation>显示运行录制的持续时间。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="566"/>
+        <location filename="../../src/skin/tooltips.cpp" line="577"/>
         <source>Sets the track Loop-In Marker to the current play position.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="569"/>
+        <location filename="../../src/skin/tooltips.cpp" line="580"/>
         <source>Press and hold to move Loop-In Marker.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="570"/>
+        <location filename="../../src/skin/tooltips.cpp" line="581"/>
         <source>Jump to Loop-In Marker.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="575"/>
+        <location filename="../../src/skin/tooltips.cpp" line="586"/>
         <source>Sets the track Loop-Out Marker to the current play position.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="578"/>
+        <location filename="../../src/skin/tooltips.cpp" line="589"/>
         <source>Press and hold to move Loop-Out Marker.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="579"/>
+        <location filename="../../src/skin/tooltips.cpp" line="590"/>
         <source>Jump to Loop-Out Marker.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="591"/>
+        <location filename="../../src/skin/tooltips.cpp" line="602"/>
         <source>Beatloop Size</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="592"/>
+        <location filename="../../src/skin/tooltips.cpp" line="603"/>
         <source>Select the size of the loop in beats to set with the Beatloop button.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="593"/>
+        <location filename="../../src/skin/tooltips.cpp" line="604"/>
         <source>Changing this resizes the loop if the loop already matches this size.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="596"/>
+        <location filename="../../src/skin/tooltips.cpp" line="607"/>
         <source>Halve the size of an existing beatloop, or halve the size of the next beatloop set with the Beatloop button.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="599"/>
+        <location filename="../../src/skin/tooltips.cpp" line="610"/>
         <source>Double the size of an existing beatloop, or double the size of the next beatloop set with the Beatloop button.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="604"/>
+        <location filename="../../src/skin/tooltips.cpp" line="615"/>
         <source>Start a loop over the set number of beats.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="606"/>
+        <location filename="../../src/skin/tooltips.cpp" line="617"/>
         <source>Temporarily enable a rolling loop over the set number of beats.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="610"/>
+        <location filename="../../src/skin/tooltips.cpp" line="621"/>
         <source>Beatjump/Loop Move Size</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="611"/>
+        <location filename="../../src/skin/tooltips.cpp" line="622"/>
         <source>Select the number of beats to jump or move the loop with the Beatjump Forward/Backward buttons.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="614"/>
+        <location filename="../../src/skin/tooltips.cpp" line="625"/>
         <source>Beatjump Forward</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="615"/>
+        <location filename="../../src/skin/tooltips.cpp" line="626"/>
         <source>Jump forward by the set number of beats.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="616"/>
+        <location filename="../../src/skin/tooltips.cpp" line="627"/>
         <source>Move the loop forward by the set number of beats.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="617"/>
+        <location filename="../../src/skin/tooltips.cpp" line="628"/>
         <source>Jump forward by 1 beat.</source>
         <translation>向前跳 1 拍</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="618"/>
+        <location filename="../../src/skin/tooltips.cpp" line="629"/>
         <source>Move the loop forward by 1 beat.</source>
         <translation>将循环向前移动 1 拍</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="621"/>
+        <location filename="../../src/skin/tooltips.cpp" line="632"/>
         <source>Beatjump Backward</source>
         <translation>向后跳拍</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="622"/>
+        <location filename="../../src/skin/tooltips.cpp" line="633"/>
         <source>Jump backward by the set number of beats.</source>
         <translation>向后跳过指定数量的节拍。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="623"/>
+        <location filename="../../src/skin/tooltips.cpp" line="634"/>
         <source>Move the loop backward by the set number of beats.</source>
         <translation>将循环向后移动指定数量的节拍。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="624"/>
+        <location filename="../../src/skin/tooltips.cpp" line="635"/>
         <source>Jump backward by 1 beat.</source>
         <translation>向后跳 1 拍</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="625"/>
+        <location filename="../../src/skin/tooltips.cpp" line="636"/>
         <source>Move the loop backward by 1 beat.</source>
         <translation>将循环向后移动 1 拍</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="633"/>
+        <location filename="../../src/skin/tooltips.cpp" line="644"/>
         <source>Reloop</source>
         <translation>再循环</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="635"/>
+        <location filename="../../src/skin/tooltips.cpp" line="646"/>
         <source>If the loop is ahead of the current position, looping will start when the loop is reached.</source>
         <translation>如果在当前播放位置前方有循环节的话，将会在到达循环的时候开始循环。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="636"/>
+        <location filename="../../src/skin/tooltips.cpp" line="647"/>
         <source>Works only if Loop-In and Loop-Out Marker are set.</source>
         <translation>仅当设置了循环起始和结束位置时才会有效。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="637"/>
+        <location filename="../../src/skin/tooltips.cpp" line="648"/>
         <source>Enable loop, jump to Loop-In Marker, and stop playback.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="646"/>
+        <location filename="../../src/skin/tooltips.cpp" line="657"/>
         <source>Displays the elapsed and/or remaining time of the track loaded.</source>
         <translation>显示加载跟踪的经过和 （或） 剩余时间。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="647"/>
+        <location filename="../../src/skin/tooltips.cpp" line="658"/>
         <source>Click to toggle between time elapsed/remaining time/both.</source>
         <translation>单击可切换时间/剩余时间时间或两者。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="708"/>
-        <source>Clear Chain</source>
-        <translation>清除连锁</translation>
+        <location filename="../../src/skin/tooltips.cpp" line="772"/>
+        <source>Route the left crossfader bus through this effect unit.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="709"/>
-        <source>Clear effect chain.</source>
-        <translation>清除效果锁</translation>
+        <location filename="../../src/skin/tooltips.cpp" line="777"/>
+        <source>Route the right crossfader bus through this effect unit.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="712"/>
+        <location filename="../../src/skin/tooltips.cpp" line="843"/>
+        <source>Right side active: parameter moves with right half of Meta Knob turn</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="880"/>
+        <source>Skin Settings Menu</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="881"/>
+        <source>Show/hide skin settings menu</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="885"/>
+        <source>Save Sampler Bank</source>
+        <translation>保存采样库</translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="886"/>
+        <source>Save the collection of samples loaded in the samplers.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="889"/>
+        <source>Load Sampler Bank</source>
+        <translation>加载采样库</translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="890"/>
+        <source>Load a previously saved collection of samples into the samplers.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="723"/>
         <source>Show Effect Parameters</source>
         <translation>显示效果的参数</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="713"/>
-        <source>Show/hide parameters for effects in this chain.</source>
-        <translation>显示/隐藏此链中的作用的参数。</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="716"/>
-        <source>Toggle Chain</source>
-        <translation>切换链</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="717"/>
-        <source>Enable or disable this whole effect chain.</source>
-        <translation>启用或禁用此整体效果链。</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="720"/>
-        <source>Adjust the balance between the original (dry) and processed (wet) signal for the whole effect chain.</source>
-        <translation>调整原(干)之间的平衡和处理整体效果链(湿法)信号</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="725"/>
-        <source>Controls the Meta Knob of all effects in this chain together.</source>
-        <translation>在一起控制元旋钮在此链中的所有效果。</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="734"/>
-        <source>Next effect chain preset.</source>
-        <translation>下一个效果链预设。</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="738"/>
-        <source>Previous effect chain preset.</source>
-        <translation>以前的效果链预设。</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="742"/>
-        <source>Next or previous effect chain preset.</source>
-        <translation>下一个或上一个效果链预设。</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="746"/>
-        <source>Assign this effect chain to the channel output.</source>
-        <translation>这个效应链分配通道输出。</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="751"/>
-        <source>Route the headphone channel through this effect chain.</source>
-        <translation>路由通过此效应链的耳机信道。</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="756"/>
-        <source>Route the master mix through this effect chain.</source>
-        <translation>通过此效应链混合路线。</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="761"/>
-        <source>Route this deck through the indicated effect chain.</source>
-        <translation>路由通过指示的效应链这甲板。</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="766"/>
-        <source>Route this sampler through the indicated effect chain.</source>
-        <translation>路由通过指示的效应链采样。</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="771"/>
-        <source>Route this microphone through the indicated effect chain.</source>
-        <translation>路由通过指示的效应链这个麦克风。</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="776"/>
-        <source>Route this auxiliary input through the indicated effect chain.</source>
-        <translation>路由通过指示的效应链此辅助输入。</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="785"/>
+        <location filename="../../src/skin/tooltips.cpp" line="806"/>
         <source>Enable Effect</source>
         <translation>启用特效</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="786"/>
-        <source>This effect chain must also be assigned to a deck or other sound source to hear the effect.</source>
-        <translation>特效必须应用在调音台或其他音源才能启用</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="817"/>
+        <location filename="../../src/skin/tooltips.cpp" line="838"/>
         <source>Meta Knob Link</source>
         <translation>元旋钮链接</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="818"/>
+        <location filename="../../src/skin/tooltips.cpp" line="839"/>
         <source>Set how this parameter is linked to the effect&apos;s Meta Knob.</source>
         <translation>设置此参数如何链接到效果的 Meta 旋钮。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="826"/>
+        <location filename="../../src/skin/tooltips.cpp" line="847"/>
         <source>Meta Knob Link Inversion</source>
         <translation>元旋钮链接反演</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="827"/>
+        <location filename="../../src/skin/tooltips.cpp" line="848"/>
         <source>Inverts the direction this parameter moves when turning the effect&apos;s Meta Knob.</source>
         <translation>反转此参数时效果的 Meta 旋钮移动的方向。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="719"/>
+        <location filename="../../src/skin/tooltips.cpp" line="730"/>
         <source>Dry/Wet</source>
         <translation>干/湿</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="724"/>
+        <location filename="../../src/skin/tooltips.cpp" line="735"/>
         <source>Super Knob</source>
         <translation>超级旋钮</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="729"/>
-        <location filename="../../src/skin/tooltips.cpp" line="730"/>
+        <location filename="../../src/skin/tooltips.cpp" line="740"/>
+        <location filename="../../src/skin/tooltips.cpp" line="741"/>
         <source>Insert/Send Toggle</source>
         <translation>插入/发送切换</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="733"/>
+        <location filename="../../src/skin/tooltips.cpp" line="744"/>
         <source>Next Chain</source>
         <translation>下一效果器链</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="737"/>
+        <location filename="../../src/skin/tooltips.cpp" line="748"/>
         <source>Previous Chain</source>
         <translation>上一效果器链</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="741"/>
+        <location filename="../../src/skin/tooltips.cpp" line="752"/>
         <source>Next/Previous Chain</source>
         <translation>下一个/上一个效果器链</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="745"/>
-        <location filename="../../src/skin/tooltips.cpp" line="750"/>
-        <location filename="../../src/skin/tooltips.cpp" line="755"/>
-        <location filename="../../src/skin/tooltips.cpp" line="760"/>
-        <location filename="../../src/skin/tooltips.cpp" line="765"/>
-        <location filename="../../src/skin/tooltips.cpp" line="770"/>
-        <location filename="../../src/skin/tooltips.cpp" line="775"/>
-        <source>Assign Effect Chain</source>
-        <translation>指定效果器链</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="781"/>
+        <location filename="../../src/skin/tooltips.cpp" line="802"/>
         <source>Clear</source>
         <translation>清除</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="782"/>
+        <location filename="../../src/skin/tooltips.cpp" line="803"/>
         <source>Clear the current effect.</source>
         <translation>清除当前效果。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="842"/>
+        <location filename="../../src/skin/tooltips.cpp" line="863"/>
         <source>Toggle</source>
         <translation>切换</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="843"/>
+        <location filename="../../src/skin/tooltips.cpp" line="864"/>
         <source>Toggle the current effect.</source>
         <translation>切换当前效果。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="789"/>
+        <location filename="../../src/skin/tooltips.cpp" line="810"/>
         <source>Next</source>
         <translation>下一首</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="790"/>
+        <location filename="../../src/skin/tooltips.cpp" line="719"/>
+        <source>Clear Unit</source>
+        <translation>清除单元</translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="720"/>
+        <source>Clear effect unit.</source>
+        <translation>清除效果单元。</translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="724"/>
+        <source>Show/hide parameters for effects in this unit.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="727"/>
+        <source>Toggle Unit</source>
+        <translation>切换单元</translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="728"/>
+        <source>Enable or disable this whole effect unit.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="731"/>
+        <source>Adjust the balance between the original (dry) and processed (wet) signal for the whole effect unit.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="736"/>
+        <source>Controls the Meta Knob of all effects in this unit together.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="745"/>
+        <source>Load next effect chain preset into this effect unit.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="749"/>
+        <source>Load previous effect chain preset into this effect unit.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="753"/>
+        <source>Load next or previous effect chain preset into this effect unit.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="756"/>
+        <location filename="../../src/skin/tooltips.cpp" line="761"/>
+        <location filename="../../src/skin/tooltips.cpp" line="766"/>
+        <location filename="../../src/skin/tooltips.cpp" line="771"/>
+        <location filename="../../src/skin/tooltips.cpp" line="776"/>
+        <location filename="../../src/skin/tooltips.cpp" line="781"/>
+        <location filename="../../src/skin/tooltips.cpp" line="786"/>
+        <location filename="../../src/skin/tooltips.cpp" line="791"/>
+        <location filename="../../src/skin/tooltips.cpp" line="796"/>
+        <source>Assign Effect Unit</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="757"/>
+        <source>Assign this effect unit to the channel output.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="762"/>
+        <source>Route the headphone channel through this effect unit.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="767"/>
+        <source>Route the master mix through this effect unit.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="782"/>
+        <source>Route this deck through the indicated effect unit.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="787"/>
+        <source>Route this sampler through the indicated effect unit.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="792"/>
+        <source>Route this microphone through the indicated effect unit.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="797"/>
+        <source>Route this auxiliary input through the indicated effect unit.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="807"/>
+        <source>The effect unit must also be assigned to a deck or other sound source to hear the effect.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="811"/>
         <source>Switch to the next effect.</source>
         <translation>切换至下一个效果。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="793"/>
+        <location filename="../../src/skin/tooltips.cpp" line="814"/>
         <source>Previous</source>
         <translation>上一首</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="794"/>
+        <location filename="../../src/skin/tooltips.cpp" line="815"/>
         <source>Switch to the previous effect.</source>
         <translation>切换至之前的效果。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="797"/>
+        <location filename="../../src/skin/tooltips.cpp" line="818"/>
         <source>Next or Previous</source>
         <translation>下一个或上一个</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="798"/>
+        <location filename="../../src/skin/tooltips.cpp" line="819"/>
         <source>Switch to either the next or previous effect.</source>
         <translation>切换至下一个或上一个效果。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="801"/>
+        <location filename="../../src/skin/tooltips.cpp" line="822"/>
         <source>Meta Knob</source>
         <translation>元旋钮</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="802"/>
+        <location filename="../../src/skin/tooltips.cpp" line="823"/>
         <source>Controls linked parameters of this effect</source>
         <translation>这种效应的控制链接的参数</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="806"/>
+        <location filename="../../src/skin/tooltips.cpp" line="827"/>
         <source>Effect Focus Button</source>
         <translation>影响对焦按钮</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="807"/>
+        <location filename="../../src/skin/tooltips.cpp" line="828"/>
         <source>Focuses this effect.</source>
         <translation>针对这种效果。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="808"/>
+        <location filename="../../src/skin/tooltips.cpp" line="829"/>
         <source>Unfocuses this effect.</source>
         <translation>Unfocuses 这种效果。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="809"/>
+        <location filename="../../src/skin/tooltips.cpp" line="830"/>
         <source>Refer to the web page on the Mixxx wiki for your controller for more information.</source>
         <translation>您的控制器的详细信息，请参阅 Mixxx wiki 上的 web 页。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="812"/>
+        <location filename="../../src/skin/tooltips.cpp" line="833"/>
         <source>Effect Parameter</source>
         <translation>效果器参数</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="813"/>
+        <location filename="../../src/skin/tooltips.cpp" line="834"/>
         <source>Adjusts a parameter of the effect.</source>
         <translation>调整效果器的参数。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="819"/>
+        <location filename="../../src/skin/tooltips.cpp" line="840"/>
         <source>Inactive: parameter not linked</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="820"/>
+        <location filename="../../src/skin/tooltips.cpp" line="841"/>
         <source>Active: parameter moves with Meta Knob</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="821"/>
+        <location filename="../../src/skin/tooltips.cpp" line="842"/>
         <source>Left side active: parameter moves with left half of Meta Knob turn</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="822"/>
-        <source>Right side active: parameter moves with right half of Meta Knob turn </source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="823"/>
+        <location filename="../../src/skin/tooltips.cpp" line="844"/>
         <source>Left and right side active: parameter moves across range with half of Meta Knob turn and back with the other half</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="830"/>
-        <location filename="../../src/skin/tooltips.cpp" line="854"/>
+        <location filename="../../src/skin/tooltips.cpp" line="851"/>
+        <location filename="../../src/skin/tooltips.cpp" line="875"/>
         <source>Equalizer Parameter Kill</source>
         <translation>均衡器参数置零</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="831"/>
-        <location filename="../../src/skin/tooltips.cpp" line="855"/>
+        <location filename="../../src/skin/tooltips.cpp" line="852"/>
+        <location filename="../../src/skin/tooltips.cpp" line="876"/>
         <source>Holds the gain of the EQ to zero while active.</source>
         <translation>启用时，将均衡器的增益设为 0。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="836"/>
+        <location filename="../../src/skin/tooltips.cpp" line="857"/>
         <source>Quick Effect Super Knob</source>
         <translation>快捷效果的超级旋钮</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="837"/>
+        <location filename="../../src/skin/tooltips.cpp" line="858"/>
         <source>Quick Effect Super Knob (control linked effect parameters).</source>
         <translation>快捷效果超级旋钮（控制关联的效果参数）。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="839"/>
+        <location filename="../../src/skin/tooltips.cpp" line="860"/>
         <source>Hint: Change the default Quick Effect mode in Preferences -&gt; Equalizers.</source>
         <translation>提示：可以在 首选项 -&gt; 均衡器 设置中更改默认的快捷效果模式。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="848"/>
+        <location filename="../../src/skin/tooltips.cpp" line="869"/>
         <source>Equalizer Parameter</source>
         <translation>均衡器参数</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="849"/>
+        <location filename="../../src/skin/tooltips.cpp" line="870"/>
         <source>Adjusts the gain of the EQ filter.</source>
         <translation>调整均衡滤波器的增益。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="851"/>
+        <location filename="../../src/skin/tooltips.cpp" line="872"/>
         <source>Hint: Change the default EQ mode in Preferences -&gt; Equalizers.</source>
         <translation>提示：可以在 首选项 -&gt; 均衡器 设置中更改默认的均衡器模式。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="357"/>
-        <location filename="../../src/skin/tooltips.cpp" line="362"/>
+        <location filename="../../src/skin/tooltips.cpp" line="368"/>
+        <location filename="../../src/skin/tooltips.cpp" line="373"/>
         <source>Adjust Beatgrid</source>
         <translation>调整节拍</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="358"/>
+        <location filename="../../src/skin/tooltips.cpp" line="369"/>
         <source>Adjust beatgrid so the closest beat is aligned with the current play position.</source>
         <translation>调整节拍样式，使得当前播放位置与周围最近的节拍对齐。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="359"/>
-        <location filename="../../src/skin/tooltips.cpp" line="363"/>
+        <location filename="../../src/skin/tooltips.cpp" line="370"/>
+        <location filename="../../src/skin/tooltips.cpp" line="374"/>
         <source>Adjust beatgrid to match another playing deck.</source>
         <translation>调整节拍样式以匹配另一个正在播放的碟机。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="381"/>
+        <location filename="../../src/skin/tooltips.cpp" line="392"/>
         <source>If quantize is enabled, snaps to the nearest beat.</source>
         <translation>若启用量化，则对齐到最近的节拍。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="383"/>
+        <location filename="../../src/skin/tooltips.cpp" line="394"/>
         <source>Quantize</source>
         <translation>量化模式</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="384"/>
+        <location filename="../../src/skin/tooltips.cpp" line="395"/>
         <source>Toggles quantization.</source>
         <translation>切换量化模式。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="385"/>
+        <location filename="../../src/skin/tooltips.cpp" line="396"/>
         <source>Loops and cues snap to the nearest beat when quantization is enabled.</source>
         <translation>若启用量化，循环和切入点将对齐到最近的节拍。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="389"/>
+        <location filename="../../src/skin/tooltips.cpp" line="400"/>
         <source>Reverse</source>
         <translation>反向</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="390"/>
+        <location filename="../../src/skin/tooltips.cpp" line="401"/>
         <source>Reverses track playback during regular playback.</source>
         <translation>在常规的回放模式中，反向播放音轨。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="391"/>
+        <location filename="../../src/skin/tooltips.cpp" line="402"/>
         <source>Puts a track into reverse while being held (Censor).</source>
         <translation>按下时，将音轨反向。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="392"/>
+        <location filename="../../src/skin/tooltips.cpp" line="403"/>
         <source>Playback continues where the track would have been if it had not been temporarily reversed.</source>
         <translation>在继续播放的同时，将音轨反转（若之前尚未反转的话）。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="396"/>
-        <location filename="../../src/skin/tooltips.cpp" line="403"/>
+        <location filename="../../src/skin/tooltips.cpp" line="407"/>
+        <location filename="../../src/skin/tooltips.cpp" line="414"/>
         <source>Play/Pause</source>
         <translation>播放/暂停</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="430"/>
+        <location filename="../../src/skin/tooltips.cpp" line="441"/>
         <source>Jumps to the beginning of the track.</source>
         <translation>跳至音轨起始点。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="441"/>
+        <location filename="../../src/skin/tooltips.cpp" line="452"/>
         <source>Syncs the tempo (BPM) and phase to that of the other track, if BPM is detected on both.</source>
         <translation>将速度（BPM）和相位与其他音轨同步（若二者的 BPM 均以被获取）。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="443"/>
+        <location filename="../../src/skin/tooltips.cpp" line="454"/>
         <source>Syncs the tempo (BPM) to that of the other track, if BPM is detected on both.</source>
         <translation>将速度（BPM）与其他音轨同步（若二者的 BPM 均以被获取）。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="459"/>
+        <location filename="../../src/skin/tooltips.cpp" line="470"/>
         <source>Sync and Reset Key</source>
         <translation>同步并重置音调</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="481"/>
+        <location filename="../../src/skin/tooltips.cpp" line="492"/>
         <source>Increases the pitch by one semitone.</source>
         <translation>将音高升高半音。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="487"/>
+        <location filename="../../src/skin/tooltips.cpp" line="498"/>
         <source>Decreases the pitch by one semitone.</source>
         <translation>将音高降低半音。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="539"/>
+        <location filename="../../src/skin/tooltips.cpp" line="550"/>
         <source>Enable Vinyl Control</source>
         <translation>启用唱盘控制</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="540"/>
+        <location filename="../../src/skin/tooltips.cpp" line="551"/>
         <source>When disabled, the track is controlled by Mixxx playback controls.</source>
         <translation>若禁用，将由 Mixxx 回放控制器来控制音轨。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="541"/>
+        <location filename="../../src/skin/tooltips.cpp" line="552"/>
         <source>When enabled, the track responds to external vinyl control.</source>
         <translation>若启用，则由外部唱盘控制器来控制音轨。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="535"/>
+        <location filename="../../src/skin/tooltips.cpp" line="546"/>
         <source>Enable Passthrough</source>
         <translation>启用直通</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="695"/>
+        <location filename="../../src/skin/tooltips.cpp" line="706"/>
         <source>Indicates that the audio buffer is too small to do all audio processing.</source>
         <translation>指示当前音频缓冲区太小，无法进行完整的音频处理。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="699"/>
+        <location filename="../../src/skin/tooltips.cpp" line="710"/>
         <source>Displays cover artwork of the loaded track.</source>
         <translation>显示已加载音轨的封面。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="700"/>
+        <location filename="../../src/skin/tooltips.cpp" line="711"/>
         <source>Displays options for editing cover artwork.</source>
         <translation>显示用于编辑封面的选项。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="703"/>
+        <location filename="../../src/skin/tooltips.cpp" line="714"/>
         <source>Star Rating</source>
         <translation>开始评分</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="704"/>
+        <location filename="../../src/skin/tooltips.cpp" line="715"/>
         <source>Assign ratings to individual tracks by clicking the stars.</source>
         <translation>通过选择星星数来给每个专辑打分（评级）。</translation>
     </message>
@@ -10712,280 +10919,275 @@ Fully right - Sine wave</source>
         <translation>主通道左音量表</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="244"/>
-        <source>Show Effect Rack</source>
-        <translation>显示效果器</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="245"/>
-        <source>Show or hide the effect rack.</source>
-        <translation>显示或隐藏效果器.</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="248"/>
+        <location filename="../../src/skin/tooltips.cpp" line="246"/>
         <source>Maximize Library</source>
         <translation>最大化音乐库</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="249"/>
+        <location filename="../../src/skin/tooltips.cpp" line="247"/>
         <source>Maximize the track library to take up all the available screen space.</source>
         <translation>最大化音乐库以占用所有可用的屏幕空间。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="377"/>
+        <location filename="../../src/skin/tooltips.cpp" line="275"/>
+        <source>Microphone Talkover Ducking Strength</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="388"/>
         <source>Prevents the pitch from changing when the rate changes.</source>
         <translation>当速率改变时，防止音高也改变。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="397"/>
+        <location filename="../../src/skin/tooltips.cpp" line="408"/>
         <source>Starts playing from the beginning of the track.</source>
         <translation>从音轨起点处开始播放。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="398"/>
+        <location filename="../../src/skin/tooltips.cpp" line="409"/>
         <source>Jumps to the beginning of the track and stops.</source>
         <translation>跳至音轨起始点，然后停止。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="404"/>
+        <location filename="../../src/skin/tooltips.cpp" line="415"/>
         <source>Plays or pauses the track.</source>
         <translation>播放或暂停音轨。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="407"/>
+        <location filename="../../src/skin/tooltips.cpp" line="418"/>
         <source>(while playing)</source>
         <translation>（播放时）</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="408"/>
+        <location filename="../../src/skin/tooltips.cpp" line="419"/>
         <source>(while stopped)</source>
         <translation>（停止时）</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="410"/>
+        <location filename="../../src/skin/tooltips.cpp" line="421"/>
         <source>Cue</source>
         <translation>切入(Cue)</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="419"/>
+        <location filename="../../src/skin/tooltips.cpp" line="430"/>
         <source>Headphone</source>
         <translation>耳机</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="424"/>
+        <location filename="../../src/skin/tooltips.cpp" line="435"/>
         <source>Mute</source>
         <translation>静音</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="425"/>
+        <location filename="../../src/skin/tooltips.cpp" line="436"/>
         <source>Mutes the selected channel&apos;s audio in the master output.</source>
         <translation>将主输出中所选通道静音。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="439"/>
+        <location filename="../../src/skin/tooltips.cpp" line="450"/>
         <source>Old Synchronize</source>
         <translation>老式同步</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="440"/>
+        <location filename="../../src/skin/tooltips.cpp" line="451"/>
         <source>(This skin should be updated to use Master Sync!)</source>
         <translation>（应当更新此皮肤以使用主同步！）</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="445"/>
+        <location filename="../../src/skin/tooltips.cpp" line="456"/>
         <source>Syncs to the first deck (in numerical order) that is playing a track and has a BPM.</source>
         <translation>与第一个（按数字顺序）正在播放音轨（且音轨有 BPM 信息）的碟机同步。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="446"/>
+        <location filename="../../src/skin/tooltips.cpp" line="457"/>
         <source>If no deck is playing, syncs to the first deck that has a BPM.</source>
         <translation>若没有正在播放的碟机，与第一个有 BPM 信息的碟机同步。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="447"/>
+        <location filename="../../src/skin/tooltips.cpp" line="458"/>
         <source>Decks can&apos;t sync to samplers and samplers can only sync to decks.</source>
         <translation>无法将碟机与采样器同步，采样器仅能与碟机同步。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="451"/>
+        <location filename="../../src/skin/tooltips.cpp" line="462"/>
         <source>Enable Master Sync</source>
         <translation>启用主同步</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="452"/>
+        <location filename="../../src/skin/tooltips.cpp" line="463"/>
         <source>Tap to sync the tempo to other playing tracks or the master clock.</source>
         <translation>点击以将此碟机的速度与其他碟机（或主时钟）同步。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="453"/>
+        <location filename="../../src/skin/tooltips.cpp" line="464"/>
         <source>Hold for at least a second to enable sync lock for this deck.</source>
         <translation>按住一秒钟，可以启用此碟机的同步锁定。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="454"/>
+        <location filename="../../src/skin/tooltips.cpp" line="465"/>
         <source>Decks with sync locked will all play at the same tempo, and decks that also have quantize enabled will always have their beats lined up.</source>
         <translation>启用了同步锁定的碟机将会以相同的速度播放；其中启用了量化模式的碟机还会自动同步节拍。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="462"/>
+        <location filename="../../src/skin/tooltips.cpp" line="473"/>
         <source>Resets the key to the original track key.</source>
         <translation>重置为音轨的原音调。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="465"/>
+        <location filename="../../src/skin/tooltips.cpp" line="476"/>
         <source>Enable Sync Clock Master</source>
         <translation>启用主时钟同步</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="466"/>
+        <location filename="../../src/skin/tooltips.cpp" line="477"/>
         <source>When enabled, this device will serve as the master clock for all other decks.</source>
         <translation>若启用，此设备将作为其他碟机的主时钟。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="469"/>
+        <location filename="../../src/skin/tooltips.cpp" line="480"/>
         <source>Speed Control</source>
         <translation>速度控制</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="475"/>
-        <location filename="../../src/skin/tooltips.cpp" line="480"/>
         <location filename="../../src/skin/tooltips.cpp" line="486"/>
+        <location filename="../../src/skin/tooltips.cpp" line="491"/>
+        <location filename="../../src/skin/tooltips.cpp" line="497"/>
         <source>Changes the track pitch independent of the tempo.</source>
         <translation>保持速度不变的前提下，改变音轨音高。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="482"/>
+        <location filename="../../src/skin/tooltips.cpp" line="493"/>
         <source>Increases the pitch by 10 cents.</source>
         <translation>增加 10% 音高。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="488"/>
+        <location filename="../../src/skin/tooltips.cpp" line="499"/>
         <source>Decreases the pitch by 10 cents.</source>
         <translation>降低 10% 音高。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="491"/>
+        <location filename="../../src/skin/tooltips.cpp" line="502"/>
         <source>Pitch Adjust</source>
         <translation>调整音高</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="492"/>
+        <location filename="../../src/skin/tooltips.cpp" line="503"/>
         <source>Adjust the pitch in addition to the speed slider pitch.</source>
         <translation>在速度滑块所对应的音高基准上再次调整音高。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="517"/>
+        <location filename="../../src/skin/tooltips.cpp" line="528"/>
         <source>Record Mix</source>
         <translation>录制混音</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="518"/>
+        <location filename="../../src/skin/tooltips.cpp" line="529"/>
         <source>Toggle mix recording.</source>
         <translation>切换混音录制。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="528"/>
+        <location filename="../../src/skin/tooltips.cpp" line="539"/>
         <source>Enable Live Broadcasting</source>
         <translation>启用在线广播</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="529"/>
+        <location filename="../../src/skin/tooltips.cpp" line="540"/>
         <source>Stream your mix over the Internet.</source>
         <translation>将您的混音结果以流的形式发送到互联网。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="530"/>
+        <location filename="../../src/skin/tooltips.cpp" line="541"/>
         <source>Provides visual feedback for Live Broadcasting status:</source>
         <translation>为在线广播的状态提供可视化反馈：</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="531"/>
+        <location filename="../../src/skin/tooltips.cpp" line="542"/>
         <source>disabled, connecting, connected, failure.</source>
         <translation>禁用，正在连接，已连接，失败。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="536"/>
+        <location filename="../../src/skin/tooltips.cpp" line="547"/>
         <source>When enabled, the deck directly plays the audio arriving on the vinyl input.</source>
         <translation>若启用，碟机将会直接播放来自唱盘的输入信号。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="548"/>
+        <location filename="../../src/skin/tooltips.cpp" line="559"/>
         <source>Blue for passthrough enabled.</source>
         <translation>蓝色表示已启用直通。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="607"/>
+        <location filename="../../src/skin/tooltips.cpp" line="618"/>
         <source>Playback will resume where the track would have been if it had not entered the loop.</source>
         <translation>若音轨尚未进入循环，则会继续进行回放。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="628"/>
+        <location filename="../../src/skin/tooltips.cpp" line="639"/>
         <source>Loop Exit</source>
         <translation>结束循环</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="629"/>
+        <location filename="../../src/skin/tooltips.cpp" line="640"/>
         <source>Turns the current loop off.</source>
         <translation>关闭当前循环。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="640"/>
+        <location filename="../../src/skin/tooltips.cpp" line="651"/>
         <source>Slip Mode</source>
         <translation>滑动模式</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="641"/>
+        <location filename="../../src/skin/tooltips.cpp" line="652"/>
         <source>When active, the playback continues muted in the background during a loop, reverse, scratch etc.</source>
         <translation>若启用，将会在循环、反向或刮擦的时候将回放信号静音。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="642"/>
+        <location filename="../../src/skin/tooltips.cpp" line="653"/>
         <source>Once disabled, the audible playback will resume where the track would have been.</source>
         <translation>禁用之后，将会从音轨即将要播放的地方开始回放。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="673"/>
+        <location filename="../../src/skin/tooltips.cpp" line="684"/>
         <source>Track Key</source>
         <extracomment>The musical key of a track</extracomment>
         <translation>音轨音调</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="674"/>
+        <location filename="../../src/skin/tooltips.cpp" line="685"/>
         <source>Displays the musical key of the loaded track.</source>
         <translation>显示已加载音轨的音调。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="684"/>
+        <location filename="../../src/skin/tooltips.cpp" line="695"/>
         <source>Clock</source>
         <translation>时钟</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="685"/>
+        <location filename="../../src/skin/tooltips.cpp" line="696"/>
         <source>Displays the current time.</source>
         <translation>显示当前时间。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="688"/>
+        <location filename="../../src/skin/tooltips.cpp" line="699"/>
         <source>Audio Latency Usage Meter</source>
         <translation>音频使用延迟指示器</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="689"/>
+        <location filename="../../src/skin/tooltips.cpp" line="700"/>
         <source>Displays the fraction of latency used for audio processing.</source>
         <translation>显示用于音频处理的延迟分数。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="690"/>
+        <location filename="../../src/skin/tooltips.cpp" line="701"/>
         <source>A high value indicates that audible glitches are likely.</source>
         <translation>值越大，表示越可能出现噪音。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="691"/>
+        <location filename="../../src/skin/tooltips.cpp" line="702"/>
         <source>Do not enable keylock, effects or additional decks in this situation.</source>
         <translation>在这个情况不要启用音调锁，效果器或者额外的碟机。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="694"/>
+        <location filename="../../src/skin/tooltips.cpp" line="705"/>
         <source>Audio Latency Overload Indicator</source>
         <translation>音频延迟过载指示器</translation>
     </message>
@@ -11000,6 +11202,11 @@ Fully right - Sine wave</source>
         <translation>从音乐库、文件浏览器、其他碟机/采样器拖动音轨到这里。</translation>
     </message>
     <message>
+        <location filename="../../src/skin/tooltips.cpp" line="40"/>
+        <source>Jump around in the track by clicking anywhere on the waveform.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <location filename="../../src/skin/tooltips.cpp" line="151"/>
         <source>Shows the current master volume for the right channel.</source>
         <translation>显示右通道当前的主音量。</translation>
@@ -11010,294 +11217,314 @@ Fully right - Sine wave</source>
         <translation>可以在 首选项 -&gt; 平滑转换器 中改变平滑转换曲线</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="225"/>
+        <location filename="../../src/skin/tooltips.cpp" line="198"/>
+        <source>Crossfades the headphone output between the master mix and cueing (PFL or Pre-Fader Listening) signal.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="208"/>
+        <source>Crossfader Orientation</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="209"/>
+        <source>Set the channel&apos;s crossfader orientation.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="210"/>
+        <source>Either to the left side of crossfader, to the right side or to the center (unaffected by crossfader)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="223"/>
         <source>Activate Vinyl Control from the Menu -&gt; Options.</source>
         <translation>可以在 菜单 -&gt; 选项 中启用唱盘控制。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="270"/>
+        <location filename="../../src/skin/tooltips.cpp" line="281"/>
         <source>Change the step-size in the Preferences -&gt; Interface menu.</source>
         <translation>可以在 首选项 -&gt; 界面 菜单中改变步长。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="334"/>
+        <location filename="../../src/skin/tooltips.cpp" line="345"/>
         <source>Displays the current musical key of the loaded track after pitch shifting.</source>
         <translation>显示已加载的音轨移调后的当前音高。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="420"/>
+        <location filename="../../src/skin/tooltips.cpp" line="431"/>
         <source>Sends the selected channel&apos;s audio to the headphone output,</source>
         <translation>将所选通道的音频发送到耳机输出，</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="421"/>
+        <location filename="../../src/skin/tooltips.cpp" line="432"/>
         <source>selected in Preferences -&gt; Sound Hardware.</source>
         <translation>可以在 首选项 -&gt; 声音硬件 中进行选择。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="428"/>
+        <location filename="../../src/skin/tooltips.cpp" line="439"/>
         <source>Fast Rewind</source>
         <translation>快退</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="429"/>
+        <location filename="../../src/skin/tooltips.cpp" line="440"/>
         <source>Fast rewind through the track.</source>
         <translation>音轨快退。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="433"/>
+        <location filename="../../src/skin/tooltips.cpp" line="444"/>
         <source>Fast Forward</source>
         <translation>快进</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="434"/>
+        <location filename="../../src/skin/tooltips.cpp" line="445"/>
         <source>Fast forward through the track.</source>
         <translation>音轨快进。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="435"/>
+        <location filename="../../src/skin/tooltips.cpp" line="446"/>
         <source>Jumps to the end of the track.</source>
         <translation>跳至音轨结束点。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="460"/>
+        <location filename="../../src/skin/tooltips.cpp" line="471"/>
         <source>Sets the pitch to a key that allows a harmonic transition from the other track. Requires a detected key on both involved decks.</source>
         <translation>选择音调的音高，以便从其他音轨进行和声转换。需要双方碟机均已检测到音调信息。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="474"/>
-        <location filename="../../src/skin/tooltips.cpp" line="479"/>
         <location filename="../../src/skin/tooltips.cpp" line="485"/>
+        <location filename="../../src/skin/tooltips.cpp" line="490"/>
+        <location filename="../../src/skin/tooltips.cpp" line="496"/>
         <source>Pitch Control</source>
         <translation>音高控制</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="497"/>
+        <location filename="../../src/skin/tooltips.cpp" line="508"/>
         <source>Pitch Rate</source>
         <translation>音高速率</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="498"/>
+        <location filename="../../src/skin/tooltips.cpp" line="509"/>
         <source>Displays the current playback rate of the track.</source>
         <translation>显示当前音轨的回放速率。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="501"/>
+        <location filename="../../src/skin/tooltips.cpp" line="512"/>
         <source>Repeat</source>
         <translation>重复</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="502"/>
+        <location filename="../../src/skin/tooltips.cpp" line="513"/>
         <source>When active the track will repeat if you go past the end or reverse before the start.</source>
         <translation>若启用，则会在音轨播放结束或返回音轨起始处时再次播放音轨。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="505"/>
+        <location filename="../../src/skin/tooltips.cpp" line="516"/>
         <source>Eject</source>
         <translation>弹出</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="506"/>
+        <location filename="../../src/skin/tooltips.cpp" line="517"/>
         <source>Ejects track from the player.</source>
         <translation>从播放器中弹出音轨。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="509"/>
+        <location filename="../../src/skin/tooltips.cpp" line="520"/>
         <source>Hotcue</source>
         <translation>热切点（Hotcue）</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="510"/>
+        <location filename="../../src/skin/tooltips.cpp" line="521"/>
         <source>If hotcue is set, jumps to the hotcue.</source>
         <translation>若设置了热切，将会跳至热切点。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="511"/>
+        <location filename="../../src/skin/tooltips.cpp" line="522"/>
         <source>If hotcue is not set, sets the hotcue to the current play position.</source>
         <translation>若未设置热切，将会在当前播放位置设置一个热切点。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="513"/>
+        <location filename="../../src/skin/tooltips.cpp" line="524"/>
         <source>If hotcue is set, clears the hotcue.</source>
         <translation>若设置了热切点，则将其清除。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="551"/>
+        <location filename="../../src/skin/tooltips.cpp" line="562"/>
         <source>Vinyl Control Mode</source>
         <translation>黑胶控制模式</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="552"/>
+        <location filename="../../src/skin/tooltips.cpp" line="563"/>
         <source>Absolute mode - track position equals needle position and speed.</source>
         <translation>绝对模式 - 音轨位置与播放指针的位置和速度一致。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="553"/>
+        <location filename="../../src/skin/tooltips.cpp" line="564"/>
         <source>Relative mode - track speed equals needle speed regardless of needle position.</source>
         <translation>相对模式 - 音轨速度与播放指针速度一致（无论指针处于哪个位置）</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="554"/>
+        <location filename="../../src/skin/tooltips.cpp" line="565"/>
         <source>Constant mode - track speed equals last known-steady speed regardless of needle input.</source>
         <translation>常量模式 - 音轨速度等于（最近的）已知的稳定速度（无视指针输入）。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="544"/>
+        <location filename="../../src/skin/tooltips.cpp" line="555"/>
         <source>Vinyl Status</source>
         <translation>唱盘状态</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="545"/>
+        <location filename="../../src/skin/tooltips.cpp" line="556"/>
         <source>Provides visual feedback for vinyl control status:</source>
         <translation>为唱盘控制器的状态提供可视化反馈：</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="546"/>
+        <location filename="../../src/skin/tooltips.cpp" line="557"/>
         <source>Green for control enabled.</source>
         <translation>绿色表示已启用控制。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="547"/>
+        <location filename="../../src/skin/tooltips.cpp" line="558"/>
         <source>Blinking yellow for when the needle reaches the end of the record.</source>
         <translation>黄色（闪烁）表示播放指针到达记录结尾。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="564"/>
+        <location filename="../../src/skin/tooltips.cpp" line="575"/>
         <source>Loop-In Marker</source>
         <translation>循环起始标记</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="573"/>
+        <location filename="../../src/skin/tooltips.cpp" line="584"/>
         <source>Loop-Out Marker</source>
         <translation>播放结束标记</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="582"/>
+        <location filename="../../src/skin/tooltips.cpp" line="593"/>
         <source>Loop Halve</source>
         <translation>循环一半</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="583"/>
+        <location filename="../../src/skin/tooltips.cpp" line="594"/>
         <source>Halves the current loop&apos;s length by moving the end marker.</source>
         <translation>移动循环结束标记，使得循环长度减半。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="584"/>
+        <location filename="../../src/skin/tooltips.cpp" line="595"/>
         <source>Deck immediately loops if past the new endpoint.</source>
         <translation>在到达新的结束位置后，碟机将会立即循环。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="587"/>
+        <location filename="../../src/skin/tooltips.cpp" line="598"/>
         <source>Loop Double</source>
         <translation>循环加倍</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="588"/>
+        <location filename="../../src/skin/tooltips.cpp" line="599"/>
         <source>Doubles the current loop&apos;s length by moving the end marker.</source>
         <translation>移动循环结束标记，使得循环长度加倍。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="603"/>
+        <location filename="../../src/skin/tooltips.cpp" line="614"/>
         <source>Beatloop</source>
         <translation>节拍循环</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="634"/>
+        <location filename="../../src/skin/tooltips.cpp" line="645"/>
         <source>Toggles the current loop on or off.</source>
         <translation>开启或关闭当前循环。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="630"/>
+        <location filename="../../src/skin/tooltips.cpp" line="641"/>
         <source>Works only if Loop-In and Loop-Out marker are set.</source>
         <translation>仅当设置了循环起始和结束位置时才会有效。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="414"/>
+        <location filename="../../src/skin/tooltips.cpp" line="425"/>
         <source>Hint: Change the default cue mode in Preferences -&gt; Interface.</source>
         <translation>提示：可以在 首选项 -&gt; 界面 中改变默认的切入模式。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="557"/>
+        <location filename="../../src/skin/tooltips.cpp" line="568"/>
         <source>Vinyl Cueing Mode</source>
         <translation>唱盘Cueing模式</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="558"/>
+        <location filename="../../src/skin/tooltips.cpp" line="569"/>
         <source>Determines how cue points are treated in vinyl control Relative mode:</source>
         <translation>设置在唱盘控制的相对模式中，如何处理切入点：</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="559"/>
+        <location filename="../../src/skin/tooltips.cpp" line="570"/>
         <source>Off - Cue points ignored.</source>
         <translation>关闭 - 忽略切入点。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="560"/>
+        <location filename="../../src/skin/tooltips.cpp" line="571"/>
         <source>One Cue - If needle is dropped after the cue point, track will seek to that cue point.</source>
         <translation>单次切入 - 若取消了切入点后的播放指针，将会定位到此切入点。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="561"/>
+        <location filename="../../src/skin/tooltips.cpp" line="572"/>
         <source>Hot Cue - Track will seek to nearest previous hot cue point.</source>
         <translation>热切 - 将会定位到上一个（最近的）热切入点。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="645"/>
+        <location filename="../../src/skin/tooltips.cpp" line="656"/>
         <source>Track Time</source>
         <translation>音轨时间</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="650"/>
+        <location filename="../../src/skin/tooltips.cpp" line="661"/>
         <source>Track Duration</source>
         <translation>音轨长度</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="651"/>
+        <location filename="../../src/skin/tooltips.cpp" line="662"/>
         <source>Displays the duration of the loaded track.</source>
         <translation>显示已加载的音轨的长度。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="653"/>
+        <location filename="../../src/skin/tooltips.cpp" line="664"/>
         <source>Information is loaded from the track&apos;s metadata tags.</source>
         <translation>已从音轨的元数据标签中载入 信息。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="655"/>
+        <location filename="../../src/skin/tooltips.cpp" line="666"/>
         <source>Track Artist</source>
         <translation>音轨艺术家</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="656"/>
+        <location filename="../../src/skin/tooltips.cpp" line="667"/>
         <source>Displays the artist of the loaded track.</source>
         <translation>显示音轨的艺术家。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="661"/>
+        <location filename="../../src/skin/tooltips.cpp" line="672"/>
         <source>Track Title</source>
         <translation>音轨标题</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="662"/>
+        <location filename="../../src/skin/tooltips.cpp" line="673"/>
         <source>Displays the title of the loaded track.</source>
         <translation>显示音轨的标题。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="667"/>
+        <location filename="../../src/skin/tooltips.cpp" line="678"/>
         <source>Track Album</source>
         <translation>专辑</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="668"/>
+        <location filename="../../src/skin/tooltips.cpp" line="679"/>
         <source>Displays the album name of the loaded track.</source>
         <translation>显示音轨的专辑名称。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="678"/>
+        <location filename="../../src/skin/tooltips.cpp" line="689"/>
         <source>Track Artist/Title</source>
         <translation>音轨艺术家/标题</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="679"/>
+        <location filename="../../src/skin/tooltips.cpp" line="690"/>
         <source>Displays the artist and title of the loaded track.</source>
         <translation>显示音轨的艺术家和标题。</translation>
     </message>
@@ -11305,12 +11532,12 @@ Fully right - Sine wave</source>
 <context>
     <name>TrackCollection</name>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="103"/>
+        <location filename="../../src/library/trackcollection.cpp" line="117"/>
         <source>Hiding tracks</source>
         <translation>隐藏曲目</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="104"/>
+        <location filename="../../src/library/trackcollection.cpp" line="118"/>
         <source>The selected tracks are in the following playlists:%1Hiding them will remove them from these playlists. Continue?</source>
         <translation>选定的曲目是在下面的 playlists:%1Hiding，他们将从这些播放列表中删除它们。要继续吗？</translation>
     </message>
@@ -11422,27 +11649,27 @@ Fully right - Sine wave</source>
 <context>
     <name>Ui</name>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="27"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="35"/>
         <source>Mixxx %1 Development Team</source>
         <translation>Mixxx %1 开发团队</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="28"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="36"/>
         <source>With contributions from:</source>
         <translation>贡献人员名单：</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="29"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="37"/>
         <source>And special thanks to:</source>
         <translation>特别致谢：</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="30"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="38"/>
         <source>Past Developers</source>
         <translation>早期开发者</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="31"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="39"/>
         <source>Past Contributors</source>
         <translation>早期贡献者</translation>
     </message>
@@ -11518,9 +11745,9 @@ Fully right - Sine wave</source>
     </message>
     <message>
         <location filename="../../src/widget/wcoverartmenu.cpp" line="25"/>
-        <source>Unset cover</source>
+        <source>Clear cover</source>
         <comment>clears the set cover art -- does not touch files on disk</comment>
-        <translation>取消设置封面</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wcoverartmenu.cpp" line="30"/>
@@ -12004,19 +12231,22 @@ Fully right - Sine wave</source>
 <context>
     <name>WOverview</name>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="368"/>
+        <location filename="../../src/widget/woverview.cpp" line="370"/>
         <source>Ready to play, analyzing ..</source>
-        <extracomment>Text on waveform overview when file is cached from source</extracomment>
+        <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation>音轨已就绪，正在分析 ..</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="371"/>
+        <location filename="../../src/widget/woverview.cpp" line="373"/>
+        <location filename="../../src/widget/woverview.cpp" line="383"/>
         <source>Loading track ..</source>
-        <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
+        <extracomment>Text on waveform overview when file is cached from source
+----------
+Text on waveform overview when file is cached from source</extracomment>
         <translation>载入音轨 ..</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="375"/>
+        <location filename="../../src/widget/woverview.cpp" line="377"/>
         <source>Finalizing ..</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>完成处理 ..</translation>
@@ -12090,211 +12320,247 @@ Fully right - Sine wave</source>
 <context>
     <name>WTrackTableView</name>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="71"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="82"/>
         <source>Add to Playlist</source>
         <translation>添加到播放列表</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="73"/>
-        <source>Add to Crate</source>
-        <translation>添加至分类列表</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="69"/>
-        <source>Load to Sampler</source>
-        <translation>载入采样器</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="75"/>
-        <source>BPM Options</source>
-        <translation>BPM 选项</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="77"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="101"/>
         <source>Cover Art</source>
         <translation>封面图片</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="107"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="129"/>
         <source>ESC</source>
         <comment>Focus</comment>
         <translation>ESC</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="384"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="414"/>
         <source>Remove</source>
         <translation>删除</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="387"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="417"/>
         <source>Hide from Library</source>
         <translation>在媒体库中隐藏</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="390"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="420"/>
         <source>Unhide from Library</source>
         <translation>在媒体库中显示</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="393"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="423"/>
         <source>Purge from Library</source>
         <translation>从媒体库中清除</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="396"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="426"/>
         <source>Properties</source>
         <translation>属性</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="400"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="430"/>
         <source>Open in File Browser</source>
         <translation>在文件管理器中打开</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="451"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="512"/>
         <source>4/3 BPM</source>
         <translation>4/3 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="452"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="513"/>
         <source>3/2 BPM</source>
         <translation>3/2 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="478"/>
-        <source>Clear Waveform</source>
-        <translation>清晰的波形</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="837"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1481"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1552"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1575"/>
         <source>Create New Playlist</source>
         <translation>新建播放列表</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="858"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1664"/>
         <source>Create New Crate</source>
         <translation>新建分类列表</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1482"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1576"/>
         <source>Enter name for new playlist:</source>
         <translation>输入播放列表的新名称：</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1484"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="75"/>
+        <source>Load to</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtracktableview.cpp" line="77"/>
+        <source>Deck</source>
+        <translation>碟机</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtracktableview.cpp" line="79"/>
+        <source>Sampler</source>
+        <translation>采样器</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtracktableview.cpp" line="86"/>
+        <source>Crates</source>
+        <translation>分类列表</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtracktableview.cpp" line="94"/>
+        <source>Change BPM</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtracktableview.cpp" line="98"/>
+        <source>Clear</source>
+        <extracomment>Clear metadata in right click track context menu in library</extracomment>
+        <translation>清除</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtracktableview.cpp" line="434"/>
+        <source>Add to Auto DJ Queue (Bottom)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtracktableview.cpp" line="438"/>
+        <source>Add to Auto DJ Queue (Top)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtracktableview.cpp" line="442"/>
+        <source>Add to Auto DJ Queue (Replace)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtracktableview.cpp" line="446"/>
+        <source>Import From File Tags</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtracktableview.cpp" line="450"/>
+        <source>Import From MusicBrainz</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtracktableview.cpp" line="454"/>
+        <source>Export To File Tags</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtracktableview.cpp" line="458"/>
+        <source>Preview Deck</source>
+        <translation>预览碟机</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtracktableview.cpp" line="467"/>
+        <source>BPM and Beatgrid</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtracktableview.cpp" line="471"/>
+        <source>Play Count</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtracktableview.cpp" line="475"/>
+        <source>Cue Point</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtracktableview.cpp" line="479"/>
+        <source>Hotcues</source>
+        <translation>热切点（Hotcues）</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtracktableview.cpp" line="483"/>
+        <source>Loop</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtracktableview.cpp" line="487"/>
+        <source>ReplayGain</source>
+        <translation>播放音量增益</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtracktableview.cpp" line="491"/>
+        <source>Waveform</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtracktableview.cpp" line="495"/>
+        <source>All</source>
+        <translation>全部</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtracktableview.cpp" line="833"/>
+        <source>Deck %1</source>
+        <translation>碟机 %1</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1578"/>
         <source>New Playlist</source>
         <translation>新建播放列表</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1491"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1495"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1504"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1585"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1589"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1598"/>
         <source>Playlist Creation Failed</source>
         <translation>播放列表创建失败</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1492"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1586"/>
         <source>A playlist by that name already exists.</source>
         <translation>使用该名称的播放列表已存在。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1496"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1590"/>
         <source>A playlist cannot have a blank name.</source>
         <translation>播放列表名称不能为空。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1505"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1599"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>创建播放列表时发生未知错误： </translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="428"/>
-        <source>Load to Preview Deck</source>
-        <translation>载入预览碟机</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="404"/>
-        <source>Add to Auto DJ Queue (bottom)</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="408"/>
-        <source>Add to Auto DJ Queue (top)</source>
-        <translation>添加至自动 Dj 队列（顶部）</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="412"/>
-        <source>Add to Auto DJ Queue (replace)</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="416"/>
-        <source>Import Metadata from File</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="420"/>
-        <source>Import Metadata from MusicBrainz</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="424"/>
-        <source>Export Metadata into File</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="435"/>
-        <source>Reset Play Count</source>
-        <translation>重置播放计数</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="439"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="500"/>
         <source>Lock BPM</source>
         <translation>锁定 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="440"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="501"/>
         <source>Unlock BPM</source>
         <translation>取消锁定 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="447"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="508"/>
         <source>Double BPM</source>
         <translation>BPM 加倍</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="448"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="509"/>
         <source>Halve BPM</source>
         <translation>BPM 减半</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="449"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="510"/>
         <source>2/3 BPM</source>
         <translation>2/3 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="450"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="511"/>
         <source>3/4 BPM</source>
         <translation>3/4 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="474"/>
-        <source>Clear BPM and Beatgrid</source>
-        <translation>清除 BPM 和节拍样式</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="482"/>
-        <source>Reset ReplayGain</source>
-        <translation>重置播放增益</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="777"/>
-        <source>Load to Deck %1</source>
-        <translation>载入碟机 %1</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="796"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="853"/>
         <source>Sampler %1</source>
         <translation>采样器 %1</translation>
     </message>

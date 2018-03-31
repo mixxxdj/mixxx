@@ -27,8 +27,8 @@ Variables:
               <KnobComposed>
                 <TooltipId>QuickEffectRack_super1</TooltipId>
                 <Size>30f,30f</Size>
-                <Knob>skin:/knobs_sliders/knob_blue.svg</Knob>
-                <BackPath>skin:/knobs_sliders/knob_bg.svg</BackPath>
+                <Knob>knobs_sliders/knob_blue.svg</Knob>
+                <BackPath>knobs_sliders/knob_bg.svg</BackPath>
                 <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                 <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
                 <Connection>

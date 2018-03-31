@@ -31,13 +31,27 @@ class SkinContext {
     virtual ~SkinContext();
 
     // Gets a path relative to the skin path.
-    QString getSkinPath(const QString& relativePath) const {
-        return m_skinBasePath.filePath(relativePath);
+    QString makeSkinPath(const QString& relativePath) const {
+        if (relativePath.startsWith("/") || relativePath.contains(":")) {
+            // This is already an absolut path start with the root folder "/"
+            // a windows drive letter e.g. "C:" or a qt search path prefix
+            return relativePath;
+        }
+        return QString("skin:").append(relativePath);
     }
 
     // Sets the base path used by getSkinPath.
     void setSkinBasePath(const QString& skinBasePath) {
-        m_skinBasePath = QDir(skinBasePath);
+        QStringList skinPaths(skinBasePath);
+        QDir::setSearchPaths("skin", skinPaths);
+        m_skinBasePath = skinBasePath;
+    }
+
+    // Sets the base path used by getSkinPath.
+    void setSkinTemplatePath(const QString& skinTemplatePath) {
+        QStringList skinPaths(m_skinBasePath);
+        skinPaths.append(skinTemplatePath);
+        QDir::setSearchPaths("skin", skinPaths);
     }
 
     // Variable lookup and modification methods.
@@ -263,7 +277,7 @@ class SkinContext {
     QString variableNodeToText(const QDomElement& element) const;
 
     QString m_xmlPath;
-    QDir m_skinBasePath;
+    QString m_skinBasePath;
     UserSettingsPointer m_pConfig;
 
     QHash<QString, QString> m_variables;

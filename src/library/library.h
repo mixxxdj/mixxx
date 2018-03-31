@@ -86,6 +86,10 @@ class Library: public QObject,
 
     static const int kDefaultRowHeightPx;
 
+    void setFont(const QFont& font);
+    void setRowHeight(int rowHeight);
+    void setEditMedatataSelectedClick(bool enable);
+
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
@@ -100,8 +104,6 @@ class Library: public QObject,
     void slotRequestRemoveDir(QString directory, Library::RemovalType removalType);
     void slotRequestRelocateDir(QString previousDirectory, QString newDirectory);
     void onSkinLoadFinished();
-    void slotSetTrackTableFont(const QFont& font);
-    void slotSetTrackTableRowHeight(int rowHeight);
 
     void scan() {
         m_scanner.scan();
@@ -122,6 +124,7 @@ class Library: public QObject,
 
     void setTrackTableFont(const QFont& font);
     void setTrackTableRowHeight(int rowHeight);
+    void setSelectedClick(bool enable);
 
     // Emitted when a library scan starts and finishes.
     void scanStarted();
@@ -149,6 +152,7 @@ class Library: public QObject,
     LibraryScanner m_scanner;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
+    bool m_editMetadataSelectedClick;
     QScopedPointer<ControlObject> m_pKeyNotation;
 };
 

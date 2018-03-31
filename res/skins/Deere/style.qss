@@ -175,6 +175,10 @@ QTableView {
   gridline-color: red;
 }
 
+QTableView:focus, QTreeView:focus {
+  border: 1px solid #FF6600;
+}
+
 /* Colors aren't applied to selected items, define them manually */
 QTableView::item:selected,
 QTreeView::item:selected,

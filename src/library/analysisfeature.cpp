@@ -38,8 +38,8 @@ AnalyzerMode getAnalyzerMode(
 
 AnalysisFeature::AnalysisFeature(
         Library* parent,
-        UserSettingsPointer pConfig) :
-        LibraryFeature(parent),
+        UserSettingsPointer pConfig)
+        : LibraryFeature(parent),
         m_library(parent),
         m_pConfig(pConfig),
         m_pTrackAnalysisScheduler(TrackAnalysisScheduler::nullPointer()),
@@ -78,7 +78,7 @@ void AnalysisFeature::bindWidget(WLibrary* libraryWidget,
                                  KeyboardEventFilter* keyboard) {
     m_pAnalysisView = new DlgAnalysis(libraryWidget,
                                       m_pConfig,
-                                      &m_library->trackCollection());
+                                      m_library);
     connect(m_pAnalysisView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
     connect(m_pAnalysisView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),

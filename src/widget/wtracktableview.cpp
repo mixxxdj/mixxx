@@ -105,10 +105,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
             this, SLOT(slotReloadCoverArt()));
 
-
-    // Disable editing
-    //setEditTriggers(QAbstractItemView::NoEditTriggers);
-
     // Create all the context m_pMenu->actions (stuff that shows up when you
     //right-click)
     createActions();
@@ -539,28 +535,32 @@ void WTrackTableView::createActions() {
 
 // slot
 void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
-    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTODECK)) {
-        return;
-    }
     // Read the current TrackLoadAction settings
-    int action = DlgPrefLibrary::LOAD_TRACK_DECK; // default action
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
-        action = m_pConfig->getValueString(ConfigKey("[Library]","TrackLoadAction")).toInt();
-    }
-    switch (action) {
-    case DlgPrefLibrary::ADD_TRACK_BOTTOM:
-            sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM); // add track to Auto-DJ Queue (bottom)
-            break;
-    case DlgPrefLibrary::ADD_TRACK_TOP:
-            sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP); // add track to Auto-DJ Queue (top)
-            break;
-    default: // load track to next available deck
-            TrackModel* trackModel = getTrackModel();
-            TrackPointer pTrack;
-            if (trackModel && (pTrack = trackModel->getTrack(index))) {
-                emit(loadTrack(pTrack));
-            }
-            break;
+    int doubleClickActionConfigValue = m_pConfig->getValue(
+            ConfigKey("[Library]","TrackLoadAction"),
+            static_cast<int>(DlgPrefLibrary::LOAD_TO_DECK));
+    DlgPrefLibrary::TrackDoubleClickAction doubleClickAction =
+            static_cast<DlgPrefLibrary::TrackDoubleClickAction>(doubleClickActionConfigValue);
+
+    if (doubleClickAction == DlgPrefLibrary::LOAD_TO_DECK
+        && modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTODECK)) {
+        TrackModel* trackModel = getTrackModel();
+        VERIFY_OR_DEBUG_ASSERT(trackModel) {
+            return;
+        }
+
+        TrackPointer pTrack = trackModel->getTrack(index);
+        VERIFY_OR_DEBUG_ASSERT(pTrack) {
+            return;
+        }
+
+        emit(loadTrack(pTrack));
+    } else if (doubleClickAction == DlgPrefLibrary::ADD_TO_AUTODJ_BOTTOM
+        && modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
+        sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM);
+    } else if (doubleClickAction == DlgPrefLibrary::ADD_TO_AUTODJ_TOP
+        && modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
+        sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP);
     }
 }
 
@@ -1628,6 +1628,17 @@ void WTrackTableView::slotPopulateCrateMenu() {
         pCheckBox->setProperty("crateId",
                                 QVariant::fromValue(crate.getId()));
         pCheckBox->setEnabled(!crate.isLocked());
+        // Strangely, the normal styling of QActions does not automatically
+        // apply to QWidgetActions. The :selected pseudo-state unfortunately
+        // does not work with QWidgetAction. :hover works for selecting items
+        // with the mouse, but not with the keyboard. :focus works for the
+        // keyboard but with the mouse, the last clicked item keeps the style
+        // after the mouse cursor is moved to hover over another item.
+        pCheckBox->setStyleSheet(
+            QString("QCheckBox {color: %1;}").arg(
+                    pCheckBox->palette().text().color().name()) + "\n" +
+            QString("QCheckBox:hover {background-color: %1;}").arg(
+                    pCheckBox->palette().highlight().color().name()));
         pAction->setEnabled(!crate.isLocked());
         pAction->setDefaultWidget(pCheckBox.get());
 

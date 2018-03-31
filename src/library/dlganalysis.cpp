@@ -7,20 +7,21 @@
 #include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
 #include "library/dlganalysis.h"
+#include "library/library.h"
 #include "util/assert.h"
 
 DlgAnalysis::DlgAnalysis(QWidget* parent,
                        UserSettingsPointer pConfig,
-                       TrackCollection* pTrackCollection)
+                       Library* pLibrary)
         : QWidget(parent),
           m_pConfig(pConfig),
-          m_pTrackCollection(pTrackCollection),
+          m_pTrackCollection(&pLibrary->trackCollection()),
           m_bAnalysisActive(false) {
     setupUi(this);
     m_songsButtonGroup.addButton(radioButtonRecentlyAdded);
     m_songsButtonGroup.addButton(radioButtonAllSongs);
 
-    m_pAnalysisLibraryTableView = new WAnalysisLibraryTableView(this, pConfig, pTrackCollection);
+    m_pAnalysisLibraryTableView = new WAnalysisLibraryTableView(this, pConfig, m_pTrackCollection);
     connect(m_pAnalysisLibraryTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
     connect(m_pAnalysisLibraryTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
@@ -37,7 +38,7 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
         box->insertWidget(1, m_pAnalysisLibraryTableView);
     }
 
-    m_pAnalysisLibraryTableModel = new AnalysisLibraryTableModel(this, pTrackCollection);
+    m_pAnalysisLibraryTableModel = new AnalysisLibraryTableModel(this, m_pTrackCollection);
     m_pAnalysisLibraryTableView->loadTrackModel(m_pAnalysisLibraryTableModel);
 
     connect(radioButtonRecentlyAdded, SIGNAL(clicked()),
@@ -59,6 +60,13 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
             SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection&)),
             this,
             SLOT(tableSelectionChanged(const QItemSelection &, const QItemSelection&)));
+
+    connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
+            m_pAnalysisLibraryTableView, SLOT(setTrackTableFont(QFont)));
+    connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
+            m_pAnalysisLibraryTableView, SLOT(setTrackTableRowHeight(int)));
+    connect(pLibrary, SIGNAL(setSelectedClick(bool)),
+            m_pAnalysisLibraryTableView, SLOT(setSelectedClick(bool)));
 
     slotAnalysisActive(m_bAnalysisActive);
 }

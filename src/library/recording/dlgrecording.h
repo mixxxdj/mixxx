@@ -42,8 +42,6 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     void refreshBrowseModel();
     void slotRestoreSearch();
     void slotDurationRecorded(QString durationRecorded);
-    void setTrackTableFont(const QFont& font);
-    void setTrackTableRowHeight(int rowHeight);
 
   signals:
     void loadTrack(TrackPointer tio);

@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
+        <file>../LICENSE</file>
         <file>images/ic_mixxx_window.png</file>
         <file>images/library/cover_default.png</file>
         <file>images/library/cross.png</file>

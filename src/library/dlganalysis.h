@@ -12,13 +12,14 @@
 
 class AnalysisLibraryTableModel;
 class WAnalysisLibraryTableView;
+class Library;
 
 class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual LibraryView {
     Q_OBJECT
   public:
     DlgAnalysis(QWidget *parent,
                UserSettingsPointer pConfig,
-               TrackCollection* pTrackCollection);
+               Library* pLibrary);
     ~DlgAnalysis() override = default;
 
     void onSearch(const QString& text) override;

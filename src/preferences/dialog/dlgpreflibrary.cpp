@@ -57,10 +57,6 @@ DlgPrefLibrary::DlgPrefLibrary(
 
     connect(libraryFontButton, SIGNAL(clicked()),
             this, SLOT(slotSelectFont()));
-    connect(this, SIGNAL(setTrackTableFont(QFont)),
-            m_pLibrary, SLOT(slotSetTrackTableFont(QFont)));
-    connect(this, SIGNAL(setTrackTableRowHeight(int)),
-            m_pLibrary, SLOT(slotSetTrackTableRowHeight(int)));
 
     // TODO(XXX) this string should be extracted from the soundsources
     QString builtInFormatsStr = "Ogg Vorbis, FLAC, WAVe, AIFF";
@@ -143,6 +139,7 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_show_itunes->setChecked(true);
     checkBox_show_traktor->setChecked(true);
     radioButton_dbclick_bottom->setChecked(false);
+    checkBoxDisableSelectedClick->setChecked(false);
     radioButton_dbclick_top->setChecked(false);
     radioButton_dbclick_deck->setChecked(true);
     spinBoxRowHeight->setValue(Library::kDefaultRowHeightPx);
@@ -167,17 +164,21 @@ void DlgPrefLibrary::slotUpdate() {
             ConfigKey("[Library]","ShowTraktorLibrary"), true));
 
     switch (m_pConfig->getValue<int>(
-            ConfigKey("[Library]","TrackLoadAction"), LOAD_TRACK_DECK)) {
-    case ADD_TRACK_BOTTOM:
+            ConfigKey("[Library]","TrackLoadAction"), LOAD_TO_DECK)) {
+    case ADD_TO_AUTODJ_BOTTOM:
             radioButton_dbclick_bottom->setChecked(true);
             break;
-    case ADD_TRACK_TOP:
+    case ADD_TO_AUTODJ_TOP:
             radioButton_dbclick_top->setChecked(true);
             break;
     default:
             radioButton_dbclick_deck->setChecked(true);
             break;
     }
+
+    checkBoxDisableSelectedClick->setChecked(
+            !m_pConfig->getValue(
+                        ConfigKey("[Library]","EditMetadataSelectedClick"), true));
 
     m_originalTrackTableFont = m_pLibrary->getTrackTableFont();
     m_iOriginalTrackTableRowHeight = m_pLibrary->getTrackTableRowHeight();
@@ -187,8 +188,8 @@ void DlgPrefLibrary::slotUpdate() {
 
 void DlgPrefLibrary::slotCancel() {
     // Undo any changes in the library font or row height.
-    emit(setTrackTableRowHeight(m_iOriginalTrackTableRowHeight));
-    emit(setTrackTableFont(m_originalTrackTableFont));
+    m_pLibrary->setFont(m_originalTrackTableFont);
+    m_pLibrary->setRowHeight(m_iOriginalTrackTableRowHeight);
 }
 
 void DlgPrefLibrary::slotAddDir() {
@@ -300,14 +301,19 @@ void DlgPrefLibrary::slotApply() {
                 ConfigValue((int)checkBox_show_traktor->isChecked()));
     int dbclick_status;
     if (radioButton_dbclick_bottom->isChecked()) {
-            dbclick_status = ADD_TRACK_BOTTOM;
+            dbclick_status = ADD_TO_AUTODJ_BOTTOM;
     } else if (radioButton_dbclick_top->isChecked()) {
-            dbclick_status = ADD_TRACK_TOP;
+            dbclick_status = ADD_TO_AUTODJ_TOP;
     } else {
-            dbclick_status = LOAD_TRACK_DECK;
+            dbclick_status = LOAD_TO_DECK;
     }
     m_pConfig->set(ConfigKey("[Library]","TrackLoadAction"),
                 ConfigValue(dbclick_status));
+
+    m_pConfig->set(ConfigKey("[Library]", "EditMetadataSelectedClick"),
+            ConfigValue(!checkBoxDisableSelectedClick->checkState()));
+    m_pLibrary->setEditMedatataSelectedClick(
+            !checkBoxDisableSelectedClick->checkState());
 
     QFont font = m_pLibrary->getTrackTableFont();
     if (m_originalTrackTableFont != font) {
@@ -326,13 +332,13 @@ void DlgPrefLibrary::slotApply() {
 }
 
 void DlgPrefLibrary::slotRowHeightValueChanged(int height) {
-    emit(setTrackTableRowHeight(height));
+    m_pLibrary->setRowHeight(height);
 }
 
 void DlgPrefLibrary::setLibraryFont(const QFont& font) {
     libraryFont->setText(QString("%1 %2 %3pt").arg(
         font.family(), font.styleName(), QString::number(font.pointSizeF())));
-    emit(setTrackTableFont(font));
+    m_pLibrary->setFont(font);
 
     // Don't let the row height exceed the library height.
     QFontMetrics metrics(font);

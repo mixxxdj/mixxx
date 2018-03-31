@@ -62,7 +62,7 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
             this, SLOT(slotControlChainPrevPreset(double)));
 
     // Ignoring no-ops is important since this is for +/- tickers.
-    m_pControlChainSelector = new ControlObject(ConfigKey(m_group, "chain_selector"), false);
+    m_pControlChainSelector = new ControlEncoder(ConfigKey(m_group, "chain_selector"), false);
     connect(m_pControlChainSelector, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainSelector(double)));
 

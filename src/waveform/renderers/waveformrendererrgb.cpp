@@ -69,6 +69,10 @@ void WaveformRendererRGB::draw(QPainter* painter,
 
     QColor color;
 
+    QPen pen;
+    pen.setCapStyle(Qt::FlatCap);
+    pen.setWidthF(math_max(1.0, 1.0 / m_waveformRenderer->getVisualSamplePerPixel()));
+
     const int breadth = m_waveformRenderer->getBreadth();
     const float halfBreadth = (float)breadth / 2.0;
 
@@ -149,7 +153,9 @@ void WaveformRendererRGB::draw(QPainter* painter,
             // Set color
             color.setRgbF(red / max, green / max, blue / max);
 
-            painter->setPen(color);
+            pen.setColor(color);
+
+            painter->setPen(pen);
             switch (m_alignment) {
                 case Qt::AlignBottom:
                 case Qt::AlignRight:
