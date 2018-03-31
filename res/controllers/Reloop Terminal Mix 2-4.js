@@ -448,31 +448,27 @@ TerminalMix.crossFader = function (channel, control, value, status, group) {
     TerminalMix.lastFader["crossfader"] = cfValue;
 }
 
+// Move cursor vertically with Trax knob, scroll with Shift pressed
 TerminalMix.traxKnobTurn = function (channel, control, value, status, group) {
-    var newValue = (value-64);
-    if (TerminalMix.traxKnobMode == "tracks") {
-        engine.setValue(group,"SelectTrackKnob", newValue);
+  if (TerminalMix.shifted) {
+      engine.setValue(group,"ScrollVertical", value-64);
     } else {
-        engine.setValue(group, "SelectPlaylist", newValue);
+      engine.setValue(group,"MoveVertical", value-64);
     }
 }
 
-TerminalMix.traxKnobPress = function (channel, control, value, status, group) {
-    if (value>0) {
-        if (TerminalMix.traxKnobMode == "tracks") {
-            script.triggerControl(group,"LoadSelectedIntoFirstStopped",100);
-        } else {
-            TerminalMix.traxKnobMode = "tracks";
-            midi.sendShortMsg(0x90,0x37,0x7F);
-        }
-    }
-}
-
+// Move focus right between tracks table and side panel.
+// Shift moves the focus to the left. Right now there are only two possible
+// focus regions (panel + tracks table) so left/right have the same result,
+// but the redesigned Library yet to come may have more regions.
 TerminalMix.backButton = function (channel, control, value, status, group) {
     if (value>0) {
-        TerminalMix.traxKnobMode = "sections";
-        midi.sendShortMsg(0x90,0x37,0);
+      if (TerminalMix.shifted) {
+      engine.setValue(group,"MoveFocus",-1);
+    } else {
+      engine.setValue(group,"MoveFocus",1);
     }
+  }
 }
 
 // Left shift button

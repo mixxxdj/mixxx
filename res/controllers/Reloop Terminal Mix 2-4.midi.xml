@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxMIDIPreset mixxxVersion="2.1.0" schemaVersion="1">
   <info>
-    <name>Reloop Terminal Mix 2/4 2.1111111</name>
+    <name>Reloop Terminal Mix 2/4</name>
     <author>Sean M. Pappalardo (1.11), ronso0 (2.1 update)</author>
     <description>
 A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
@@ -19,6 +19,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Master]</group>
         <key>headMix</key>
+        <description>Master</description>
         <status>0xB0</status>
         <midino>0x33</midino>
         <options>
@@ -28,6 +29,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Master]</group>
         <key>TerminalMix.crossFader</key>
+        <description>crossfader</description>
         <status>0xB0</status>
         <midino>0x3A</midino>
         <options>
@@ -44,8 +46,9 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control> <!-- Trax knob turn -->
-        <group>[Playlist]</group>
+        <group>[Library]</group>
         <key>TerminalMix.traxKnobTurn</key>
+        <description>Library</description>
         <status>0xB0</status>
         <midino>0x39</midino>
         <options>
@@ -53,17 +56,19 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control> <!-- Trax knob press -->
-        <group>[Playlist]</group>
-        <key>TerminalMix.traxKnobPress</key>
+        <group>[Library]</group>
+        <key>ChooseItem</key>
+        <description>Library</description>
         <status>0x90</status>
         <midino>0x39</midino>
         <options>
-          <Script-Binding/>
+          <normal/>
         </options>
       </control>
       <control> <!-- Back button -->
-        <group>[Playlist]</group>
+        <group>[Library]</group>
         <key>TerminalMix.backButton</key>
+        <description>Library</description>
         <status>0x90</status>
         <midino>0x37</midino>
         <options>
@@ -74,6 +79,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel1]</group>
         <key>TerminalMix.cfAssignL</key>
+        <description>crossfader</description>
         <status>0x90</status>
         <midino>0x3B</midino>
         <options>
@@ -83,6 +89,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel1]</group>
         <key>TerminalMix.cfAssignM</key>
+        <description>crossfader</description>
         <status>0x90</status>
         <midino>0x3C</midino>
         <options>
@@ -92,6 +99,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel1]</group>
         <key>TerminalMix.cfAssignR</key>
+        <description>crossfader</description>
         <status>0x90</status>
         <midino>0x3D</midino>
         <options>
@@ -101,6 +109,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel2]</group>
         <key>TerminalMix.cfAssignL</key>
+        <description>crossfader</description>
         <status>0x90</status>
         <midino>0x3E</midino>
         <options>
@@ -110,6 +119,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel2]</group>
         <key>TerminalMix.cfAssignM</key>
+        <description>crossfader</description>
         <status>0x90</status>
         <midino>0x3F</midino>
         <options>
@@ -119,6 +129,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel2]</group>
         <key>TerminalMix.cfAssignR</key>
+        <description>crossfader</description>
         <status>0x90</status>
         <midino>0x40</midino>
         <options>
@@ -129,6 +140,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel3]</group>
         <key>TerminalMix.cfAssignL</key>
+        <description>crossfader</description>
         <status>0x90</status>
         <midino>0x41</midino>
         <options>
@@ -138,6 +150,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel3]</group>
         <key>TerminalMix.cfAssignM</key>
+        <description>crossfader</description>
         <status>0x90</status>
         <midino>0x42</midino>
         <options>
@@ -147,6 +160,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel3]</group>
         <key>TerminalMix.cfAssignR</key>
+        <description>crossfader</description>
         <status>0x90</status>
         <midino>0x43</midino>
         <options>
@@ -156,6 +170,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel4]</group>
         <key>TerminalMix.cfAssignL</key>
+        <description>crossfader</description>
         <status>0x90</status>
         <midino>0x44</midino>
         <options>
@@ -165,6 +180,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel4]</group>
         <key>TerminalMix.cfAssignM</key>
+        <description>crossfader</description>
         <status>0x90</status>
         <midino>0x45</midino>
         <options>
@@ -174,6 +190,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel4]</group>
         <key>TerminalMix.cfAssignR</key>
+        <description>crossfader</description>
         <status>0x90</status>
         <midino>0x46</midino>
         <options>
@@ -185,6 +202,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>   <!-- With vinyl button active -->
         <group>[Channel1]</group>
         <key>TerminalMix.wheelTouch</key>
+        <description>wheel</description>
         <status>0x90</status>
         <midino>0x28</midino>
         <options>
@@ -194,6 +212,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control> <!-- With vinyl button NOT active -->
         <group>[Channel1]</group>
         <key>TerminalMix.wheelTurn</key>
+        <description>wheel</description>
         <status>0xB0</status>
         <midino>0x27</midino>
         <options>
@@ -203,6 +222,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control> <!-- With vinyl button active -->
         <group>[Channel1]</group>
         <key>TerminalMix.wheelTurn</key>
+        <description>wheel</description>
         <status>0xB0</status>
         <midino>0x28</midino>
         <options>
@@ -212,6 +232,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[QuickEffectRack1_[Channel1]]</group>
         <key>super1</key>
+        <description>mixer</description>
         <status>0xB0</status>
         <midino>0x2F</midino>
         <options>
@@ -221,6 +242,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Master]</group>
         <key>TerminalMix.crossfaderCurve</key>
+        <description>crossfader</description>
         <status>0xB0</status>
         <midino>0x46</midino>
         <options>
@@ -236,15 +258,6 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
           <Script-Binding/>
         </options>
       </control>
-      <control> <!-- Beats knob press -->
-        <group>[Channel1]</group>
-        <key>beats_translate_curpos</key>
-        <status>0x90</status>
-        <midino>0x06</midino>
-        <options>
-          <normal/>
-        </options>
-      </control>
       <control>
         <group>[Channel1]</group>
         <key>LoadSelectedTrack</key>
@@ -257,6 +270,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control> <!-- Fader start -->
         <group>[Channel1]</group>
         <key>TerminalMix.faderStart</key>
+        <description>play controls</description>
         <status>0x90</status>
         <midino>0x78</midino>
         <options>
@@ -267,6 +281,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control> <!-- Loop Length encoder press -->
         <group>[Channel1]</group>
 				<key>TerminalMix.loopLengthPress</key>
+        <description>looping</description>
         <status>0x90</status>
         <midino>0x0B</midino>
         <options>
@@ -276,6 +291,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel2]</group>
 				<key>TerminalMix.loopLengthPress</key>
+        <description>looping</description>
         <status>0x91</status>
         <midino>0x0B</midino>
         <options>
@@ -285,6 +301,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel3]</group>
 				<key>TerminalMix.loopLengthPress</key>
+        <description>looping</description>
         <status>0x92</status>
         <midino>0x0B</midino>
         <options>
@@ -294,6 +311,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel4]</group>
 				<key>TerminalMix.loopLengthPress</key>
+        <description>looping</description>
         <status>0x93</status>
         <midino>0x0B</midino>
         <options>
@@ -303,6 +321,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control> <!-- Shifetd Loop Length encoder press -->
         <group>[Channel1]</group>
 				<key>TerminalMix.shiftedLoopLengthPress</key>
+        <description>looping</description>
         <status>0x90</status>
         <midino>0x51</midino>
         <options>
@@ -312,6 +331,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel2]</group>
 				<key>TerminalMix.shiftedLoopLengthPress</key>
+        <description>looping</description>
         <status>0x91</status>
         <midino>0x51</midino>
         <options>
@@ -321,6 +341,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel3]</group>
 				<key>TerminalMix.shiftedLoopLengthPress</key>
+        <description>looping</description>
         <status>0x92</status>
         <midino>0x51</midino>
         <options>
@@ -330,6 +351,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel4]</group>
 				<key>TerminalMix.shiftedLoopLengthPress</key>
+        <description>looping</description>
         <status>0x93</status>
         <midino>0x51</midino>
         <options>
@@ -339,6 +361,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control> <!-- Loop Length knob turn -->
         <group>[Channel1]</group>
         <key>TerminalMix.loopLengthTurn</key>
+        <description>looping</description>
         <status>0xB0</status>
         <midino>0x0B</midino>
         <options>
@@ -348,6 +371,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel2]</group>
         <key>TerminalMix.loopLengthTurn</key>
+        <description>looping</description>
         <status>0xB1</status>
         <midino>0x0B</midino>
         <options>
@@ -357,6 +381,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel3]</group>
         <key>TerminalMix.loopLengthTurn</key>
+        <description>looping</description>
         <status>0xB2</status>
         <midino>0x0B</midino>
         <options>
@@ -366,6 +391,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel4]</group>
         <key>TerminalMix.loopLengthTurn</key>
+        <description>looping</description>
         <status>0xB3</status>
         <midino>0x0B</midino>
         <options>
@@ -375,7 +401,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control><!-- Loop move press -->
         <group>[Channel1]</group>
         <key>TerminalMix.loopMovePress</key>
-        <description>beatjump / loopmove</description>
+        <description>loopmove / beatjump</description>
         <status>0x90</status>
         <midino>0x0E</midino>
         <options>
@@ -385,7 +411,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel2]</group>
         <key>TerminalMix.loopMovePress</key>
-        <description>beatjump / loopmove</description>
+        <description>loopmove / beatjump</description>
         <status>0x91</status>
         <midino>0x0E</midino>
         <options>
@@ -395,7 +421,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel3]</group>
         <key>TerminalMix.loopMovePress</key>
-        <description>beatjump / loopmove</description>
+        <description>loopmove / beatjump</description>
         <status>0x92</status>
         <midino>0x0E</midino>
         <options>
@@ -405,7 +431,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel4]</group>
         <key>TerminalMix.loopMovePress</key>
-        <description>beatjump / loopmove</description>
+        <description>loopmove / beatjump</description>
         <status>0x93</status>
         <midino>0x0E</midino>
         <options>
@@ -415,7 +441,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control><!-- Loop Move knob turn -->
         <group>[Channel1]</group>
         <key>TerminalMix.loopMoveTurn</key>
-        <description>beatjump / loopmove</description>
+        <description>loopmove / beatjump</description>
         <status>0xB0</status>
         <midino>0x0E</midino>
         <options>
@@ -425,7 +451,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel2]</group>
         <key>TerminalMix.loopMoveTurn</key>
-        <description>beatjump / loopmove</description>
+        <description>loopmove / beatjump</description>
         <status>0xB1</status>
         <midino>0x0E</midino>
         <options>
@@ -435,7 +461,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel3]</group>
         <key>TerminalMix.loopMoveTurn</key>
-        <description>beatjump / loopmove</description>
+        <description>loopmove / beatjump</description>
         <status>0xB2</status>
         <midino>0x0E</midino>
         <options>
@@ -445,7 +471,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel4]</group>
         <key>TerminalMix.loopMoveTurn</key>
-        <description>beatjump / loopmove</description>
+        <description>loopmove / beatjump</description>
         <status>0xB3</status>
         <midino>0x0E</midino>
         <options>
@@ -455,7 +481,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control><!-- Shifted Loop Move knob turn -->
         <group>[Channel1]</group>
         <key>TerminalMix.shiftedLoopMoveTurn</key>
-        <description>beatjump / loopmove</description>
+        <description>loopmove / beatjump</description>
         <status>0xB0</status>
         <midino>0x54</midino>
         <options>
@@ -465,7 +491,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel2]</group>
         <key>TerminalMix.shiftedLoopMoveTurn</key>
-        <description>beatjump / loopmove</description>
+        <description>loopmove / beatjump</description>
         <status>0xB1</status>
         <midino>0x54</midino>
         <options>
@@ -475,7 +501,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel3]</group>
         <key>TerminalMix.shiftedLoopMoveTurn</key>
-        <description>beatjump / loopmove</description>
+        <description>loopmove / beatjump</description>
         <status>0xB2</status>
         <midino>0x54</midino>
         <options>
@@ -485,7 +511,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel4]</group>
         <key>TerminalMix.shiftedLoopMoveTurn</key>
-        <description>beatjump / loopmove</description>
+        <description>loopmove / beatjump</description>
         <status>0xB3</status>
         <midino>0x54</midino>
         <options>
@@ -495,6 +521,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel1]</group>
         <key>loop_in</key>
+        <description>looping</description>
         <status>0x90</status>
         <midino>0x0C</midino>
         <options>
@@ -504,6 +531,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel2]</group>
         <key>loop_in</key>
+        <description>looping</description>
         <status>0x91</status>
         <midino>0x0C</midino>
         <options>
@@ -513,6 +541,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel3]</group>
         <key>loop_in</key>
+        <description>looping</description>
         <status>0x92</status>
         <midino>0x0C</midino>
         <options>
@@ -522,6 +551,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel4]</group>
         <key>loop_in</key>
+        <description>looping</description>
         <status>0x93</status>
         <midino>0x0C</midino>
         <options>
@@ -531,6 +561,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel1]</group>
         <key>loop_out</key>
+        <description>looping</description>
         <status>0x90</status>
         <midino>0x0D</midino>
         <options>
@@ -540,6 +571,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel2]</group>
         <key>loop_out</key>
+        <description>looping</description>
         <status>0x91</status>
         <midino>0x0D</midino>
         <options>
@@ -549,6 +581,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel3]</group>
         <key>loop_out</key>
+        <description>looping</description>
         <status>0x92</status>
         <midino>0x0D</midino>
         <options>
@@ -558,6 +591,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel4]</group>
         <key>loop_out</key>
+        <description>looping</description>
         <status>0x93</status>
         <midino>0x0D</midino>
         <options>
@@ -854,17 +888,17 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
           <normal/>
         </options>
       </control>
-      <!--    -->
       <control>
         <group>[Channel1]</group>
         <key>beatsync</key>
+        <description>BPM</description>
         <status>0x90</status>
         <midino>0x22</midino>
         <options>
           <normal/>
         </options>
       </control>
-      <control> <!-- Shifted Loop Move knob press -->
+      <control> <!-- Quantize -->
         <group>[Channel1]</group>
         <key>quantize</key>
         <status>0x90</status>
@@ -900,54 +934,6 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
           <normal/>
         </options>
       </control>
-      <control> <!-- Shifted Loop Move knob for smaller steps -->
-        <group>[Channel1]</group>
-        <key>TerminalMix.shiftedLoopMoveTurn</key>
-        <status>0xB0</status>
-        <midino>0x54</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>TerminalMix.shiftedLoopMoveTurn</key>
-        <status>0xB1</status>
-        <midino>0x54</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>TerminalMix.shiftedLoopMoveTurn</key>
-        <status>0xB2</status>
-        <midino>0x54</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>TerminalMix.shiftedLoopMoveTurn</key>
-        <status>0xB3</status>
-        <midino>0x54</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-
-
-
-      <control>
-        <group>[Channel1]</group>
-        <key>loop_double</key>
-        <status>0x90</status>
-        <midino>0x53</midino>
-        <options>
-          <normal/>
-        </options>
-      </control>
       <control>
         <group>[Channel1]</group>
         <key>playposition</key>
@@ -957,11 +943,22 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
           <rot64/>
         </options>
       </control>
-      <control>
+      <control><!-- Beats knob press -->
         <group>[Channel1]</group>
         <key>bpm_tap</key>
-        <status>0xB0</status>
-        <midino>0x0A</midino>
+        <description>BPM</description>
+        <status>0x90</status>
+        <midino>0x06</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control><!-- Shift + Beats knob press -->
+        <group>[Channel1]</group>
+        <key>beat_translate_curpos</key>
+        <description>BPM</description>
+        <status>0x90</status>
+        <midino>0x4C</midino>
         <options>
           <normal/>
         </options>
@@ -969,6 +966,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel1]</group>
         <key>filterLow</key>
+        <description>mixer</description>
         <status>0xB0</status>
         <midino>0x2E</midino>
         <options>
@@ -976,17 +974,9 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Spinny1]</group>
-        <key>show_spinny</key>
-        <status>0x90</status>
-        <midino>0x20</midino>
-        <options>
-          <normal/>
-        </options>
-      </control>
-      <control>
         <group>[Channel1]</group>
         <key>cue_gotoandplay</key>
+        <description>play controls</description>
         <status>0x90</status>
         <midino>0x23</midino>
         <options>
@@ -996,6 +986,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel1]</group>
         <key>play</key>
+        <description>play controls</description>
         <status>0x90</status>
         <midino>0x25</midino>
         <options>
@@ -1005,6 +996,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel1]</group>
         <key>TerminalMix.brake</key>
+        <description>play controls</description>
         <status>0x90</status>
         <midino>0x68</midino>
         <options>
@@ -1014,6 +1006,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel1]</group>
         <key>pfl</key>
+        <description>mixer</description>
         <status>0x90</status>
         <midino>0x30</midino>
         <options>
@@ -1023,6 +1016,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel1]</group>
         <key>filterMid</key>
+        <description>mixer</description>
         <status>0xB0</status>
         <midino>0x2D</midino>
         <options>
@@ -1032,6 +1026,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel1]</group>
         <key>TerminalMix.pitchSlider</key>
+        <description>BPM</description>
         <status>0xE0</status>
         <options>
           <script-binding/>
@@ -1040,6 +1035,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel1]</group>
         <key>cue_default</key>
+        <description>play controls</description>
         <status>0x90</status>
         <midino>0x24</midino>
         <options>
@@ -1049,6 +1045,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel1]</group>
         <key>filterHigh</key>
+        <description>mixer</description>
         <status>0xB0</status>
         <midino>0x2C</midino>
         <options>
@@ -1067,6 +1064,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel1]</group>
         <key>TerminalMix.channelFader</key>
+        <description>mixer</description>
         <status>0xB0</status>
         <midino>0x31</midino>
         <options>
@@ -1076,6 +1074,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel1]</group>
         <key>pregain</key>
+        <description>mixer</description>
         <status>0xB0</status>
         <midino>0x2B</midino>
         <options>
@@ -1086,6 +1085,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>   <!-- With vinyl button active -->
         <group>[Channel2]</group>
         <key>TerminalMix.wheelTouch</key>
+        <description>wheel</description>
         <status>0x91</status>
         <midino>0x28</midino>
         <options>
@@ -1095,6 +1095,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control> <!-- With vinyl button NOT active -->
         <group>[Channel2]</group>
         <key>TerminalMix.wheelTurn</key>
+        <description>wheel</description>
         <status>0xB1</status>
         <midino>0x27</midino>
         <options>
@@ -1104,6 +1105,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control> <!-- With vinyl button active -->
         <group>[Channel2]</group>
         <key>TerminalMix.wheelTurn</key>
+        <description>wheel</description>
         <status>0xB1</status>
         <midino>0x28</midino>
         <options>
@@ -1113,19 +1115,11 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[QuickEffectRack1_[Channel2]]</group>
         <key>super1</key>
+        <description>mixer</description>
         <status>0xB1</status>
         <midino>0x2F</midino>
         <options>
           <soft-takeover/>
-        </options>
-      </control>
-      <control>
-        <group>[Master]</group>
-        <key>TerminalMix.crossfaderCurve</key>
-        <status>0xB1</status>
-        <midino>0x46</midino>
-        <options>
-          <Script-Binding/>
         </options>
       </control>
       <control>
@@ -1135,15 +1129,6 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         <midino>0x01</midino>
         <options>
           <Script-Binding/>
-        </options>
-      </control>
-      <control> <!-- Beats knob press -->
-        <group>[Channel2]</group>
-        <key>beats_translate_curpos</key>
-        <status>0x91</status>
-        <midino>0x06</midino>
-        <options>
-          <normal/>
         </options>
       </control>
       <control>
@@ -1158,6 +1143,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control> <!-- Fader start -->
         <group>[Channel2]</group>
         <key>TerminalMix.faderStart</key>
+        <description>play controls</description>
         <status>0x91</status>
         <midino>0x78</midino>
         <options>
@@ -1458,17 +1444,9 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel2]</group>
         <key>beatsync</key>
+        <description>BPM</description>
         <status>0x91</status>
         <midino>0x22</midino>
-        <options>
-          <normal/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>loop_double</key>
-        <status>0x91</status>
-        <midino>0x53</midino>
         <options>
           <normal/>
         </options>
@@ -1482,11 +1460,22 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
           <rot64/>
         </options>
       </control>
-      <control>
+      <control><!-- Beats knob press -->
         <group>[Channel2]</group>
         <key>bpm_tap</key>
-        <status>0xB1</status>
-        <midino>0x0A</midino>
+        <description>BPM</description>
+        <status>0x91</status>
+        <midino>0x06</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control><!-- Shift + Beats knob press -->
+        <group>[Channel2]</group>
+        <key>beat_translate_curpos</key>
+        <description>BPM</description>
+        <status>0x91</status>
+        <midino>0x4C</midino>
         <options>
           <normal/>
         </options>
@@ -1494,6 +1483,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel2]</group>
         <key>filterLow</key>
+        <description>mixer</description>
         <status>0xB1</status>
         <midino>0x2E</midino>
         <options>
@@ -1501,17 +1491,9 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Spinny2]</group>
-        <key>show_spinny</key>
-        <status>0x91</status>
-        <midino>0x20</midino>
-        <options>
-          <normal/>
-        </options>
-      </control>
-      <control>
         <group>[Channel2]</group>
         <key>cue_gotoandplay</key>
+        <description>play controls</description>
         <status>0x91</status>
         <midino>0x23</midino>
         <options>
@@ -1521,6 +1503,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel2]</group>
         <key>play</key>
+        <description>play controls</description>
         <status>0x91</status>
         <midino>0x25</midino>
         <options>
@@ -1530,6 +1513,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel2]</group>
         <key>TerminalMix.brake</key>
+        <description>play controls</description>
         <status>0x91</status>
         <midino>0x6B</midino>
         <options>
@@ -1539,6 +1523,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel2]</group>
         <key>pfl</key>
+        <description>mixer</description>
         <status>0x91</status>
         <midino>0x30</midino>
         <options>
@@ -1548,6 +1533,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel2]</group>
         <key>filterMid</key>
+        <description>mixer</description>
         <status>0xB1</status>
         <midino>0x2D</midino>
         <options>
@@ -1557,6 +1543,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel2]</group>
         <key>TerminalMix.pitchSlider</key>
+        <description>BPM</description>
         <status>0xE1</status>
         <options>
           <script-binding/>
@@ -1565,6 +1552,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel2]</group>
         <key>cue_default</key>
+        <description>play controls</description>
         <status>0x91</status>
         <midino>0x24</midino>
         <options>
@@ -1574,6 +1562,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel2]</group>
         <key>filterHigh</key>
+        <description>mixer</description>
         <status>0xB1</status>
         <midino>0x2C</midino>
         <options>
@@ -1592,6 +1581,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel2]</group>
         <key>TerminalMix.channelFader</key>
+        <description>mixer</description>
         <status>0xB1</status>
         <midino>0x31</midino>
         <options>
@@ -1600,6 +1590,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       </control>
       <control>
         <group>[Channel2]</group>
+        <description>mixer</description>
         <key>pregain</key>
         <status>0xB1</status>
         <midino>0x2B</midino>
@@ -1607,19 +1598,11 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
           <soft-takeover/>
         </options>
       </control>
-      <control>
-        <group>[Master]</group>
-        <key>TerminalMix.crossfaderCurve</key>
-        <status>0xB2</status>
-        <midino>0x46</midino>
-        <options>
-          <Script-Binding/>
-        </options>
-      </control>
 <!-- *** Deck 3 *** -->
       <control>
         <group>[Channel3]</group>
         <key>TerminalMix.wheelTouch</key>
+        <description>wheel</description>
         <status>0x92</status>
         <midino>0x28</midino>
         <options>
@@ -1629,6 +1612,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel3]</group>
         <key>TerminalMix.wheelTurn</key>
+        <description>wheel</description>
         <status>0xB2</status>
         <midino>0x27</midino>
         <options>
@@ -1638,6 +1622,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel3]</group>
         <key>TerminalMix.wheelTurn</key>
+        <description>wheel</description>
         <status>0xB2</status>
         <midino>0x28</midino>
         <options>
@@ -1647,6 +1632,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[QuickEffectRack1_[Channel3]]</group>
         <key>super1</key>
+        <description>mixer</description>
         <status>0xB2</status>
         <midino>0x2F</midino>
         <options>
@@ -1664,15 +1650,6 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>beats_translate_curpos</key>
-        <status>0x92</status>
-        <midino>0x06</midino>
-        <options>
-          <normal/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
         <key>LoadSelectedTrack</key>
         <status>0x92</status>
         <midino>0x32</midino>
@@ -1683,6 +1660,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel3]</group>
         <key>TerminalMix.faderStart</key>
+        <description>play controls</description>
         <status>0x92</status>
         <midino>0x78</midino>
         <options>
@@ -1834,15 +1812,6 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
           <normal/>
         </options>
       </control>
-      <control>
-        <group>[Master]</group>
-        <key>TerminalMix.crossfaderCurve</key>
-        <status>0xB3</status>
-        <midino>0x46</midino>
-        <options>
-          <Script-Binding/>
-        </options>
-      </control>
       <!--    Hot cues    -->
       <control>
         <group>[Channel3]</group>
@@ -1991,17 +1960,9 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel3]</group>
         <key>beatsync</key>
+        <description>BPM</description>
         <status>0x92</status>
         <midino>0x22</midino>
-        <options>
-          <normal/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>loop_double</key>
-        <status>0x92</status>
-        <midino>0x53</midino>
         <options>
           <normal/>
         </options>
@@ -2018,6 +1979,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel3]</group>
         <key>filterLow</key>
+        <description>mixer</description>
         <status>0xB2</status>
         <midino>0x2E</midino>
         <options>
@@ -2025,17 +1987,9 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Spinny3]</group>
-        <key>show_spinny</key>
-        <status>0x92</status>
-        <midino>0x20</midino>
-        <options>
-          <normal/>
-        </options>
-      </control>
-      <control>
         <group>[Channel3]</group>
         <key>cue_gotoandplay</key>
+        <description>play controls</description>
         <status>0x92</status>
         <midino>0x23</midino>
         <options>
@@ -2045,6 +1999,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel3]</group>
         <key>play</key>
+        <description>play controls</description>
         <status>0x92</status>
         <midino>0x25</midino>
         <options>
@@ -2054,6 +2009,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel3]</group>
         <key>TerminalMix.brake</key>
+        <description>play controls</description>
         <status>0x92</status>
         <midino>0x68</midino>
         <options>
@@ -2063,6 +2019,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel3]</group>
         <key>pfl</key>
+        <description>mixer</description>
         <status>0x92</status>
         <midino>0x30</midino>
         <options>
@@ -2072,6 +2029,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel3]</group>
         <key>filterMid</key>
+        <description>mixer</description>
         <status>0xB2</status>
         <midino>0x2D</midino>
         <options>
@@ -2081,6 +2039,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel3]</group>
         <key>TerminalMix.pitchSlider</key>
+        <description>BPM</description>
         <status>0xE2</status>
         <options>
           <script-binding/>
@@ -2089,6 +2048,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel3]</group>
         <key>cue_default</key>
+        <description>play controls</description>
         <status>0x92</status>
         <midino>0x24</midino>
         <options>
@@ -2098,6 +2058,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel3]</group>
         <key>filterHigh</key>
+        <description>mixer</description>
         <status>0xB2</status>
         <midino>0x2C</midino>
         <options>
@@ -2116,6 +2077,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel3]</group>
         <key>TerminalMix.channelFader</key>
+        <description>mixer</description>
         <status>0xB2</status>
         <midino>0x31</midino>
         <options>
@@ -2125,6 +2087,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel3]</group>
         <key>pregain</key>
+        <description>mixer</description>
         <status>0xB2</status>
         <midino>0x2B</midino>
         <options>
@@ -2135,6 +2098,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel4]</group>
         <key>TerminalMix.wheelTouch</key>
+        <description>wheel</description>
         <status>0x93</status>
         <midino>0x28</midino>
         <options>
@@ -2144,6 +2108,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel4]</group>
         <key>TerminalMix.wheelTurn</key>
+        <description>wheel</description>
         <status>0xB3</status>
         <midino>0x27</midino>
         <options>
@@ -2153,6 +2118,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel4]</group>
         <key>TerminalMix.wheelTurn</key>
+        <description>wheel</description>
         <status>0xB3</status>
         <midino>0x28</midino>
         <options>
@@ -2162,6 +2128,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[QuickEffectRack1_[Channel4]]</group>
         <key>super1</key>
+        <description>mixer</description>
         <status>0xB3</status>
         <midino>0x2F</midino>
         <options>
@@ -2179,15 +2146,6 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>beats_translate_curpos</key>
-        <status>0x93</status>
-        <midino>0x06</midino>
-        <options>
-          <normal/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
         <key>LoadSelectedTrack</key>
         <status>0x93</status>
         <midino>0x32</midino>
@@ -2198,6 +2156,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel4]</group>
         <key>TerminalMix.faderStart</key>
+        <description>play controls</description>
         <status>0x93</status>
         <midino>0x78</midino>
         <options>
@@ -2497,17 +2456,9 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel4]</group>
         <key>beatsync</key>
+        <description>BPM</description>
         <status>0x93</status>
         <midino>0x22</midino>
-        <options>
-          <normal/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>loop_double</key>
-        <status>0x93</status>
-        <midino>0x53</midino>
         <options>
           <normal/>
         </options>
@@ -2524,6 +2475,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel4]</group>
         <key>filterLow</key>
+        <description>mixer</description>
         <status>0xB3</status>
         <midino>0x2E</midino>
         <options>
@@ -2531,17 +2483,9 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Spinny4]</group>
-        <key>show_spinny</key>
-        <status>0x93</status>
-        <midino>0x20</midino>
-        <options>
-          <normal/>
-        </options>
-      </control>
-      <control>
         <group>[Channel4]</group>
         <key>cue_gotoandplay</key>
+        <description>play controls</description>
         <status>0x93</status>
         <midino>0x23</midino>
         <options>
@@ -2551,6 +2495,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel4]</group>
         <key>play</key>
+        <description>play controls</description>
         <status>0x93</status>
         <midino>0x25</midino>
         <options>
@@ -2560,6 +2505,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel4]</group>
         <key>TerminalMix.brake</key>
+        <description>play controls</description>
         <status>0x93</status>
         <midino>0x6B</midino>
         <options>
@@ -2569,6 +2515,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel4]</group>
         <key>pfl</key>
+        <description>mixer</description>
         <status>0x93</status>
         <midino>0x30</midino>
         <options>
@@ -2578,6 +2525,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel4]</group>
         <key>filterMid</key>
+        <description>mixer</description>
         <status>0xB3</status>
         <midino>0x2D</midino>
         <options>
@@ -2587,6 +2535,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel4]</group>
         <key>TerminalMix.pitchSlider</key>
+        <description>BPM</description>
         <status>0xE3</status>
         <options>
           <script-binding/>
@@ -2595,6 +2544,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel4]</group>
         <key>cue_default</key>
+        <description>play controls</description>
         <status>0x93</status>
         <midino>0x24</midino>
         <options>
@@ -2604,6 +2554,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel4]</group>
         <key>filterHigh</key>
+        <description>mixer</description>
         <status>0xB3</status>
         <midino>0x2C</midino>
         <options>
@@ -2622,6 +2573,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel4]</group>
         <key>TerminalMix.channelFader</key>
+        <description>mixer</description>
         <status>0xB3</status>
         <midino>0x31</midino>
         <options>
@@ -2631,6 +2583,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Channel4]</group>
         <key>pregain</key>
+        <description>mixer</description>
         <status>0xB3</status>
         <midino>0x2B</midino>
         <options>
@@ -2766,26 +2719,6 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       </control>
       <control><!-- Effect knobs -->
         <group>[EffectRack1]</group>
-        <key>TerminalMix.effectUnit13.knobs[3].input</key>
-        <description>fx</description>
-        <status>0xB0</status>
-        <midino>0x05</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[EffectRack1]</group>
-        <key>TerminalMix.effectUnit24.knobs[3].input</key>
-        <description>fx</description>
-        <status>0xB1</status>
-        <midino>0x05</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[EffectRack1]</group>
         <key>TerminalMix.effectUnit13.knobs[1].input</key>
         <description>fx</description>
         <status>0xB0</status>
@@ -2824,11 +2757,31 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
           <script-binding/>
         </options>
       </control>
+      <control>
+        <group>[EffectRack1]</group>
+        <key>TerminalMix.effectUnit13.knobs[3].input</key>
+        <description>fx</description>
+        <status>0xB0</status>
+        <midino>0x05</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1]</group>
+        <key>TerminalMix.effectUnit24.knobs[3].input</key>
+        <description>fx</description>
+        <status>0xB1</status>
+        <midino>0x05</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
       <!-- Shift buttons -->
       <control>
         <group>[Controller]</group>
         <key>TerminalMix.shiftButtonL</key>
-        <description>ui</description>
+        <description>misc</description>
         <status>0x90</status>
         <midino>0x21</midino>
         <options>
@@ -2838,7 +2791,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
       <control>
         <group>[Controller]</group>
         <key>TerminalMix.shiftButtonR</key>
-        <description>ui</description>
+        <description>misc</description>
         <status>0x91</status>
         <midino>0x21</midino>
         <options>
