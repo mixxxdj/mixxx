@@ -182,10 +182,6 @@ RMX.init = function() {
   c.capture("keypad6","all", function(g, e, v) {
     engine.setValue(g,"loop_out",v)
   } );
-  
-  
-  c.capture("keypad5","all", print_unhandled_button );
-  c.capture("keypad6","all", print_unhandled_button );
 
   var filterKill = function(g, e, v) {
     engine.setValue(g, e, !engine.getValue(g, e));
