@@ -14,6 +14,29 @@
    <string>Interface Preferences</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
+   <item row="1" column="0">
+    <widget class="QGroupBox" name="groupBoxEffectOption">
+     <property name="title">
+      <string>Effect options</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelLoadBehaviour">
+        <property name="text">
+         <string>Load beahviour </string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" colspan="2">
+       <widget class="QCheckBox" name="checkBoxAdoptMetaknobPosition">
+        <property name="text">
+         <string>Adopt metaknob position</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
    <item row="0" column="0">
     <widget class="QGroupBox" name="groupBoxSkinOptions">
      <property name="title">

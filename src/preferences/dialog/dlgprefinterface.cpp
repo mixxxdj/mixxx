@@ -255,6 +255,9 @@ void DlgPrefInterface::slotUpdate() {
 
     int inhibitsettings = static_cast<int>(m_mixxx->getInhibitScreensaver());
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(inhibitsettings));
+
+    checkBoxAdoptMetaknobPosition->setChecked(m_pConfig->getValue(
+            ConfigKey("[Effects]", "AdoptMetaknobPosition"), true));
 }
 
 void DlgPrefInterface::slotResetToDefaults() {
@@ -280,6 +283,8 @@ void DlgPrefInterface::slotResetToDefaults() {
 
     // Tooltips on everywhere.
     radioButtonTooltipsLibraryAndSkin->setChecked(true);
+
+    checkBoxAdoptMetaknobPosition->setChecked(true);
 }
 
 void DlgPrefInterface::slotSetLocale(int pos) {
@@ -359,6 +364,9 @@ void DlgPrefInterface::slotApply() {
 
     m_pConfig->set(ConfigKey("[Config]", "StartInFullscreen"),
             ConfigValue(checkBoxStartFullScreen->isChecked()));
+
+    m_pConfig->set(ConfigKey("[Effects]", "AdoptMetaknobPosition"),
+            ConfigValue(checkBoxAdoptMetaknobPosition->isChecked()));
 
     m_mixxx->setToolTipsCfg(m_tooltipMode);
 

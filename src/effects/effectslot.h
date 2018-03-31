@@ -71,7 +71,7 @@ class EffectSlot : public QObject {
 
   public slots:
     // Request that this EffectSlot load the given Effect
-    void loadEffect(EffectPointer pEffect);
+    void loadEffect(EffectPointer pEffect, bool adoptMetaknobPosition);
     void setMetaParameter(double v, bool force = false);
 
     void slotEnabled(double v);
@@ -113,6 +113,7 @@ class EffectSlot : public QObject {
     const unsigned int m_iChainNumber;
     const unsigned int m_iEffectNumber;
     const QString m_group;
+    UserSettingsPointer m_pConfig;
     EffectPointer m_pEffect;
 
     ControlObject* m_pControlLoaded;
