@@ -34,6 +34,7 @@ EffectManifest EchoEffect::getManifest() {
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
       "Stores the input signal in a temporary buffer and outputs it after a short time"));
+    manifest.setMetaknobDefault(db2ratio(-3.0));
 
     EffectManifestParameter* delay = manifest.addParameter();
     delay->setId("delay_time");

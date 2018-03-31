@@ -18,6 +18,7 @@ EffectManifest BitCrusherEffect::getManifest() {
     manifest.setDescription(QObject::tr(
         "Adds noise by the reducing the bit depth and sample rate"));
     manifest.setEffectRampsFromDry(true);
+    manifest.setMetaknobDefault(0.0);
 
     EffectManifestParameter* depth = manifest.addParameter();
     depth->setId("bit_depth");

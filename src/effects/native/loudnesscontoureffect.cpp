@@ -30,6 +30,7 @@ EffectManifest LoudnessContourEffect::getManifest() {
     manifest.setDescription(QObject::tr(
         "Amplifies low and high frequencies at low volumes to compensate for reduced sensitivity of the human ear."));
     manifest.setEffectRampsFromDry(true);
+    manifest.setMetaknobDefault(-kMaxLoGain / 2);
 
     EffectManifestParameter* loudness = manifest.addParameter();
     loudness->setId("loudness");

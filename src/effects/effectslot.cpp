@@ -186,6 +186,9 @@ void EffectSlot::loadEffect(EffectPointer pEffect, bool adoptMetaknobPosition) {
 
         if (adoptMetaknobPosition) {
             slotEffectMetaParameter(m_pControlMetaParameter->get(), true);
+        } else {
+            m_pControlMetaParameter->set(pEffect->getMetaknobDefault());
+            slotEffectMetaParameter(pEffect->getMetaknobDefault(), true);
         }
 
         emit(effectLoaded(pEffect, m_iEffectNumber));
