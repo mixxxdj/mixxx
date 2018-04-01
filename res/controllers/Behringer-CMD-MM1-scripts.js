@@ -219,15 +219,6 @@ CMDMM.fxButton = function(channel, control, value, status, group) {
     );
   }
 };
-FUNCTIONS.prepFXUnitSettings = function() {
-  // Enable the FX buttons on every channel and sets the dryWetKnob of their units to 0 (fully dry) as recommended by Be in #1329
-  for (var i = 1; i <= 4; i++) {
-    engine.setParameter("[EffectRack1_EffectUnit" + i + "]", "mix", 0);
-    for (var ii = 1; ii <= 4; ii++) {
-      engine.setParameter("[EffectRack1_EffectUnit" + i + "]", "group_[Channel" + ii + "]_enable", 1);
-    }
-  }
-};
 FUNCTIONS.assignKnobsWithQuickEffect = function() {
   CMDMM.knob = function(channel, control, value, status, group) {
     var realChannel = (control - 0x06) % 4;
@@ -564,7 +555,6 @@ CMDMM.init = function() {
   FUNCTIONS.buttonFromChannelNumber();
   FUNCTIONS.cycleKnobAssignment();
   FUNCTIONS.enableSoftTakeover();
-  FUNCTIONS.prepFXUnitSettings();
   CALLBACK.registerCallbacks();
   CMDMM.updateLEDs();
 };
