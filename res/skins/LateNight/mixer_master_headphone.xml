@@ -205,16 +205,16 @@
                     <Children>
                       <StatusLight>
                         <TooltipId>master_PeakIndicator</TooltipId>
-                        <PathStatusLight>style/clipping_deck_over.svg</PathStatusLight>
-                        <PathBack>style/clipping_deck.svg</PathBack>
+                        <PathStatusLight>style/clipping_deck_over.png</PathStatusLight>
+                        <PathBack>style/clipping_deck.png</PathBack>
                         <Connection>
                           <ConfigKey>[Master],PeakIndicatorL</ConfigKey>
                         </Connection>
                       </StatusLight>
                       <StatusLight>
                         <TooltipId>master_PeakIndicator</TooltipId>
-                        <PathStatusLight>style/clipping_deck_over.svg</PathStatusLight>
-                        <PathBack>style/clipping_deck.svg</PathBack>
+                        <PathStatusLight>style/clipping_deck_over.png</PathStatusLight>
+                        <PathBack>style/clipping_deck.png</PathBack>
                         <Connection>
                           <ConfigKey>[Master],PeakIndicatorR</ConfigKey>
                         </Connection>
@@ -229,8 +229,8 @@
                     <Children>
                       <VuMeter>
                         <TooltipId>master_VuMeterL</TooltipId>
-                        <PathVu>style/volume_display_deck_over.svg</PathVu>
-                        <PathBack>style/volume_display_deck.svg</PathBack>
+                        <PathVu>style/volume_display_deck_over.png</PathVu>
+                        <PathBack>style/volume_display_deck.png</PathBack>
                         <Horizontal>false</Horizontal>
                         <PeakHoldSize>5</PeakHoldSize>
                         <PeakHoldTime>500</PeakHoldTime>
@@ -242,8 +242,8 @@
                       </VuMeter>
                       <VuMeter>
                         <TooltipId>master_VuMeterR</TooltipId>
-                        <PathVu>style/volume_display_deck_over.svg</PathVu>
-                        <PathBack>style/volume_display_deck.svg</PathBack>
+                        <PathVu>style/volume_display_deck_over.png</PathVu>
+                        <PathBack>style/volume_display_deck.png</PathBack>
                         <Horizontal>false</Horizontal>
                         <PeakHoldSize>5</PeakHoldSize>
                         <PeakHoldTime>500</PeakHoldTime>

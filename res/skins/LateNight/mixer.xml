@@ -92,8 +92,8 @@
                             <Children>
                               <VuMeter>
                                 <TooltipId>master_VuMeterL</TooltipId>
-                                <PathVu>style/volume_display_deck_over.svg</PathVu>
-                                <PathBack>style/volume_display_deck.svg</PathBack>
+                                <PathVu>style/volume_display_deck_over.png</PathVu>
+                                <PathBack>style/volume_display_deck.png</PathBack>
                                 <Horizontal>false</Horizontal>
                                 <PeakHoldSize>5</PeakHoldSize>
                                 <PeakHoldTime>500</PeakHoldTime>
@@ -105,8 +105,8 @@
                               </VuMeter>
                               <VuMeter>
                                 <TooltipId>master_VuMeterR</TooltipId>
-                                <PathVu>style/volume_display_deck_over.svg</PathVu>
-                                <PathBack>style/volume_display_deck.svg</PathBack>
+                                <PathVu>style/volume_display_deck_over.png</PathVu>
+                                <PathBack>style/volume_display_deck.png</PathBack>
                                 <Horizontal>false</Horizontal>
                                 <PeakHoldSize>5</PeakHoldSize>
                                 <PeakHoldTime>500</PeakHoldTime>
