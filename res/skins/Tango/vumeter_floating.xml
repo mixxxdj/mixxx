@@ -33,7 +33,7 @@ Refer to https://bugs.launchpad.net/mixxx/+bug/1759433
               </StatusLight>
               <VuMeter>
                 <PathVu>skin:/graphics/vumeter_floating_over.png</PathVu>
-                <PathBack>skin:/graphics/vumeter_floating.</PathBack>
+                <PathBack>skin:/graphics/vumeter_floating.png</PathBack>
                 <Horizontal>false</Horizontal>
                 <PeakHoldSize>4</PeakHoldSize>
                 <PeakHoldTime>800</PeakHoldTime>
