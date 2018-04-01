@@ -132,13 +132,16 @@
           <WidgetGroup>
             <ObjectName>CondensedButtonContainerLeft</ObjectName>
             <SizePolicy>me,min</SizePolicy>
-            <Layout>vertical</Layout>
+            <Layout>horizontal</Layout>
             <Children>
 
               <Template src="skin:crossfader_orientation_button.xml">
                 <SetVariable name="Unit">Deck<Variable name="i"/></SetVariable>
               </Template>
 
+              <Template src="skin:spacer_hx.xml">
+               <SetVariable name="width">9f,-1</SetVariable>
+              </Template>
             </Children>
           </WidgetGroup>
         </Children>
