@@ -39,7 +39,7 @@ CMDMM.blink = 0x02;
 
 CMDMM.buttons = [0x12,0x13,0x14,0x17,0x18,0x1B,0x1C,0x1F, 0x20,0x30,0x31,0x32,0x33,];
 //               ^    ^Fx1 ^Fx2 ^Fx1 ^Fx2 ^Fx1 ^Fx2 ^Fx1 ^Fx2 ^CUE1^CUE2^CUE3^CUE4
-//               |    ^Channel1 ^Channel2 ^Channel3 ^Channel4 
+//               |    ^Channel1 ^Channel2 ^Channel3 ^Channel4
 //               ^middlebutton
 
 CMDMM.varStorage = {
@@ -50,11 +50,11 @@ CMDMM.varStorage = {
 	ChannelAssignmentStatus: [[0,0],[0,0],[0,0],[0,0]],
 };
 
-CMDMM.getShift = function () {return (CMDMM.varStorage.level==1 ? true:false);}; 
+CMDMM.getShift = function () {return CMDMM.varStorage.level===1;};
 CMDMM.shift = function () { CMDMM.varStorage.level++; CMDMM.updateLEDs(); FUNCTIONS.ignoreNextValue();};
 CMDMM.unshift = function () {CMDMM.varStorage.level--; CMDMM.updateLEDs();FUNCTIONS.ignoreNextValue();};
 
-CMDMM.getCtrl = function () {return (CMDMM.varStorage.level==2 ? true:false);};
+CMDMM.getCtrl = function () {return CMDMM.varStorage.level===2;};
 CMDMM.ctrl = function () {CMDMM.varStorage.level += 2; CMDMM.updateLEDs();FUNCTIONS.ignoreNextValue();};
 CMDMM.unctrl = function () {CMDMM.varStorage.level -= 2; CMDMM.updateLEDs();FUNCTIONS.ignoreNextValue();};
 
@@ -70,7 +70,7 @@ CMDMM.cue = function (channel, control, value, status, group) {
 				script.toggleControl("[Channel"+cueChannel+"]", "pfl");
 			},
 			function(){
-				//load track into selected channel	
+				//load track into selected channel
 				engine.setParameter("[Channel"+cueChannel+"]", "LoadSelectedTrack", 1);
 			},
 			function() {/*
@@ -275,21 +275,11 @@ CMDMM.fader = function (channel, control, value, status, group) {
 	}
 };
 
-CMDMM.out = function (channel, control, value, status, group) {
-	CMDMM.modes(
-		function(){
-			engine.setParameter("[EffectRack1_EffectUnit"+control+"]","super1", value/127);
-		},
-		function(){
-			engine.setParameter("[EffectRack1_EffectUnit"+control+"]","mix", value/127);
-		},
-		function(){
-			engine.setParameter("[EffectRack1_EffectUnit"+(control+2)+"]","super1", value/127);
-		},
-		function(){
-			engine.setParameter("[EffectRack1_EffectUnit"+(control+2)+"]","mix", value/127);
-		}
-	);
+CMDMM.out1 = function (channel, control, value, status, group) {
+	engine.setParameter("[Master]","balance", value/127);
+};
+DMM.out2 = function (channel, control, value, status, group) {
+	engine.setParameter("[Master]","gain", value/127);
 };
 
 FUNCTIONS.resetColor = function () {

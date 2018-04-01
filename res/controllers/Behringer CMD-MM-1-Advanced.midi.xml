@@ -170,8 +170,8 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>CMDMM.out</key>
-                <description>Super/Mix for Fx2/4</description>
+                <key>CMDMM.out2</key>
+                <description>Master Gain</description>
                 <status>&CC;</status>
                 <midino>0x02</midino>
                 <options>
@@ -249,9 +249,9 @@
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>CMDMM.out</key>
-                <description>Super/Mix for Fx1/3</description>
+                <group>[Master]</group>
+                <key>CMDMM.out1</key>
+                <description>Master balance</description>
                 <status>&CC;</status>
                 <midino>0x01</midino>
                 <options>
