@@ -6,15 +6,15 @@
 ]>
 <MixxxControllerPreset mixxxVersion="" schemaVersion="1">
     <info>
-        <name>Behringer CMD MM-1 Advanced</name>
+        <name>Behringer CMD MM-1</name>
         <author>Swiftb0y</author>
-        <description>This mapping is supposed to be used in combination with the Launchpad Mk2 mapping by midiparse</description>
+        <description>4 deck mapping with options for controlling effect units. Refer to the Mixxx wiki page for how to configure it to control effect units.</description>
         <forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=9276</forums>
-        <wiki>https://www.mixxx.org/wiki/doku.php/behringer_cmd_mm-1_advanced_mapping</wiki>
+        <wiki>https://mixxx.org/wiki/doku.php/behringer_cmd_mm-1</wiki>
     </info>
     <controller id="CMD">
         <scriptfiles>
-            <file functionprefix="CMDMM" filename="Behringer-CMD-MM-1-Advanced-scripts.js"/>
+            <file functionprefix="CMDMM" filename="Behringer-CMD-MM1-scripts.js"/>
         </scriptfiles>
         <controls>
             <control>
