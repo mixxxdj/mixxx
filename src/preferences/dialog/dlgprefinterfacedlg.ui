@@ -14,29 +14,6 @@
    <string>Interface Preferences</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
-   <item row="1" column="0">
-    <widget class="QGroupBox" name="groupBoxEffectOption">
-     <property name="title">
-      <string>Effect options</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <widget class="QLabel" name="labelLoadBehaviour">
-        <property name="text">
-         <string>Load beahviour </string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1" colspan="2">
-       <widget class="QCheckBox" name="checkBoxAdoptMetaknobPosition">
-        <property name="text">
-         <string>Adopt metaknob position</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
    <item row="0" column="0">
     <widget class="QGroupBox" name="groupBoxSkinOptions">
      <property name="title">
@@ -247,6 +224,46 @@
      </layout>
     </widget>
    </item>
+   <item row="1" column="0">
+    <widget class="QGroupBox" name="groupBoxEffectOption">
+     <property name="title">
+      <string>Effect options</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelLoadBehavior">
+        <property name="text">
+         <string>Load behavior</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" colspan="2">
+       <layout class="QHBoxLayout" name="horizontalLayoutEffects">
+        <item>
+         <widget class="QRadioButton" name="radioButtonKeepMetaknobPosition">
+          <property name="text">
+           <string>Keep metaknob position</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupEffectLoadBehavior</string>
+          </attribute>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioButtonMetaknobLoadDefault">
+          <property name="text">
+           <string>Reset metaknob to effect default</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupEffectLoadBehavior</string>
+          </attribute>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
    <item row="2" column="0">
     <spacer name="verticalSpacer">
      <property name="orientation">
@@ -276,5 +293,6 @@
  <connections/>
  <buttongroups>
   <buttongroup name="buttonGroupTooltips"/>
+  <buttongroup name="buttonGroupEffectLoadBehavior"/>
  </buttongroups>
 </ui>
