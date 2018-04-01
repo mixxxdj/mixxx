@@ -219,5 +219,5 @@ void EffectChainManager::loadEffectChains() {
 }
 
 bool EffectChainManager::getAdoptMetaknobPositionSetting() const {
-    return m_pConfig->getValue(ConfigKey("[Effects]", "AdoptMetaknobPosition"), true);
+    return m_pConfig->getValue(ConfigKey("[Effects]", "EffectLoadMetaknobBehavior"), true);
 }
