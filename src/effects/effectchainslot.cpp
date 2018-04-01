@@ -180,7 +180,7 @@ void EffectChainSlot::slotChainEffectChanged(unsigned int effectSlotNumber,
             pEffect = effects.at(effectSlotNumber);
         }
         if (pSlot != nullptr) {
-            pSlot->loadEffect(pEffect, m_pEffectRack->getAdoptMetaknobPosition());
+            pSlot->loadEffect(pEffect, m_pEffectRack->getAdoptMetaknobPositionSetting());
         }
 
         m_pControlNumEffects->forceSet(math_min(

@@ -57,7 +57,7 @@ class EffectRack : public QObject {
 
     QDomElement toXml(QDomDocument* doc) const;
 
-    virtual bool getAdoptMetaknobPosition() const;
+    virtual bool getAdoptMetaknobPositionSetting() const;
 
   public slots:
     void slotClearRack(double v);
@@ -199,7 +199,7 @@ class QuickEffectRack : public PerGroupRack {
                                            group);
     }
 
-    bool getAdoptMetaknobPosition() const override {
+    bool getAdoptMetaknobPositionSetting() const override {
         // No visible Metaknobs to adopt
         return false;
     }
@@ -251,7 +251,7 @@ class EqualizerRack : public PerGroupRack {
                                            group);
     }
 
-    bool getAdoptMetaknobPosition() const override {
+    bool getAdoptMetaknobPositionSetting() const override {
         // No visible Metaknobs to adopt
         return false;
     }
