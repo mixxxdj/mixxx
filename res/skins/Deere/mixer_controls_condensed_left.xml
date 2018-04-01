@@ -53,6 +53,10 @@
             </Children>
           </WidgetGroup>
 
+          <Template src="skin:spacer_vx.xml">
+            <SetVariable name="height">-1,3f</SetVariable>
+          </Template>
+
           <WidgetGroup>
             <GroupName>CondensedVolumeAndMonoMeter</GroupName>
             <Layout>horizontal</Layout>
@@ -128,6 +132,10 @@
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
+
+          <Template src="skin:spacer_vx.xml">
+            <SetVariable name="height">-1,3f</SetVariable>
+          </Template>
 
           <WidgetGroup>
             <ObjectName>CondensedButtonContainerLeft</ObjectName>

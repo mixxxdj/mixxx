@@ -53,6 +53,10 @@
             </Children>
           </WidgetGroup><!-- PFL -->
 
+          <Template src="skin:spacer_vx.xml">
+            <SetVariable name="height">-1,3f</SetVariable>
+          </Template>
+
           <WidgetGroup><!-- VU + Vol fader -->
             <GroupName>CondensedVolumeAndMonoMeter</GroupName>
             <Layout>horizontal</Layout>
@@ -130,6 +134,10 @@
               <Transform><Not/></Transform>
             </Connection>
           </WidgetGroup><!-- VU + spacer -->
+
+          <Template src="skin:spacer_vx.xml">
+            <SetVariable name="height">-1,3f</SetVariable>
+          </Template>
 
           <WidgetGroup>
             <ObjectName>CondensedButtonContainerRight</ObjectName>
