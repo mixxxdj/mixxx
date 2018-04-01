@@ -32,6 +32,10 @@
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
+              <Template src="skin:spacer_hx.xml">
+                <SetVariable name="width">9f,-1</SetVariable>
+              </Template>
+
               <Template src="skin:left_2state_button.xml">
                 <SetVariable name="TooltipId">pfl</SetVariable>
                 <SetVariable name="ObjectName">DeckPFLButton</SetVariable>
