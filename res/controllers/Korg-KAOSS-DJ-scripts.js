@@ -3,18 +3,18 @@
 
 function KAOSSDJ() {};
                      
-const ON = 0x7F, 
+var ON = 0x7F, 
     OFF = 0x00, 
     UP = 0x01, 
     DOWN = 0x7F;
-const ledChannel = {
+var ledChannel = {
     'btnsL': 0x97,
     'btnsR': 0x98,
     'knobsL': 0xB7,
     'knobsR': 0xB8,
     'master': 0xB6
 };
-const led = {
+var led = {
     'cue': 0x1E,
     'sync': 0x1D,
     'play': 0x1B,
