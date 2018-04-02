@@ -1568,18 +1568,6 @@ TraktorS4MK2.onLoopSizeChanged = function(value, group, key) {
     TraktorS4MK2.sendLoopSizeMessage(deck, value.toString().split("")[0], value.toString().split("")[1], false, false);
   // deal with fraction beats
   } else if (1 > value > 0 ) {
-    // var inverse_val = 1/value;
-    // if (inverse_val % 1 === 0){
-    //   if (inverse_val.toString().length === 1){
-    //     TraktorS4MK2.sendLoopSizeMessage(deck, '', value, false, true);
-    //     // values with two digits
-    //   } else if (inverse_val.toString().length === 2 ) {
-    //     TraktorS4MK2.sendLoopSizeMessage(deck, inverse_val.toString().split("")[0], inverse_val.toString().split("")[1], true, false);
-    //   }
-    // }
-    // } else {
-
-    // }
     var inverse_value = 1/value;
     if (inverse_value % 1 === 0){
       if (inverse_value.toString().length === 1){
