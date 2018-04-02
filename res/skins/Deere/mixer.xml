@@ -217,7 +217,7 @@
                         <TooltipId>crossfader</TooltipId>
                         <Size>1me,40f</Size>
                         <Slider scalemode="STRETCH">slider-crossfader.svg</Slider>
-                        <Handle scalemode="STRETCH_ASPECT">handle-crossfader-grey.svg</Handle>
+                        <Handle scalemode="STRETCH_ASPECT">handle-crossfader-orange.svg</Handle>
                         <Horizontal>true</Horizontal>
                         <Connection>
                           <ConfigKey>[Master],crossfader</ConfigKey>

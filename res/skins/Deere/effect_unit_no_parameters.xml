@@ -71,7 +71,7 @@ Variables:
                 <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
                 <SetVariable name="control">mix</SetVariable>
                 <SetVariable name="label">Mix</SetVariable>
-                <SetVariable name="color">orange</SetVariable>
+                <SetVariable name="color">purple_gapless</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
