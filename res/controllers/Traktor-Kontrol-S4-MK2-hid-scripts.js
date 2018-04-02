@@ -2,7 +2,7 @@
 /*      Traktor Kontrol S4 MK2 HID controller script v1.00      */
 /*      Copyright (C) 2015, the Mixxx Team                      */
 /*      but feel free to tweak this to your heart's content!    */
-/*      For Mixxx version 2.0                                   */
+/*      For Mixxx version 2.1                                   */
 /****************************************************************/
 
 // TODO:
