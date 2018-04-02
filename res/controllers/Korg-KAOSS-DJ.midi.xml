@@ -363,10 +363,20 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>KAOSSDJ.controllerFxTouchMove</key>
+                <key>KAOSSDJ.controllerFxTouchMoveVertical</key>
                 <description>Fx Control</description>
                 <status>0xB8</status>
                 <midino>0x0D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>KAOSSDJ.controllerFxTouchMoveHorizontal</key>
+                <description>Fx Control</description>
+                <status>0xB8</status>
+                <midino>0x0C</midino>
                 <options>
                     <script-binding/>
                 </options>
