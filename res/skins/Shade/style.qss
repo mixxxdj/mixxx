@@ -57,6 +57,7 @@ WEffectSelector QAbstractItemView {
 	border: 2px solid #060613;
 	selection-background-color: lightgray;
 	font: 13px;
+	/* hack around text getting cut off with scaled checkbox on macOS with Retina screens */
 	margin: 0px 0px 0px -4px; /* no matter if padding or margin, the left border is gone */
 }
 
