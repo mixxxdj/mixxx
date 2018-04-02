@@ -178,7 +178,7 @@ KAOSSDJ.rightFxSwitch = function(channel, control, value, status, group) {
     }
 };
 
-KAOSSDJ.controllerFxTouchMove = function(channel, control, value, status, group) {
+KAOSSDJ.controllerFxTouchMoveVertical = function(channel, control, value, status, group) {
     var decks = KAOSSDJ.decks;
     for(key in decks) {
         var deck = decks[key];
@@ -188,7 +188,18 @@ KAOSSDJ.controllerFxTouchMove = function(channel, control, value, status, group)
     }
 };
 
+KAOSSDJ.controllerFxTouchMoveHorizontal = function(channel, control, value, status, group) {
+    var decks = KAOSSDJ.decks;
+    for(key in decks) {
+        var deck = decks[key];
+        if(deck.fx) {
+            engine.setValue('[EffectRack1_EffectUnit'+deck.deckNumber +']', 'super1', value / 127);
+        }
+    }
+};
+
 KAOSSDJ.controllerFxTouchUp = function(channel, control, value, status, group) {
     var deck = KAOSSDJ.getDeckByChannel(channel);
     engine.setValue('[EffectRack1_EffectUnit'+deck.deckNumber +']', 'mix', 0);
+    engine.setValue('[EffectRack1_EffectUnit'+deck.deckNumber +']', 'super1', 0);
 };
