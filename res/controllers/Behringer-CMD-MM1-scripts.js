@@ -136,13 +136,13 @@ CMDMM.cue = function(channel, control, value, status, group) {
   } else {
     CMDMM.modes(
       function() {
+        script.toggleControl("[EffectRack1_EffectUnit" + cueChannel + "_Effect3]", "enabled");
+      },
+      function() {
         script.toggleControl("[EffectRack1_EffectUnit" + cueChannel + "]", "group_[Headphone]_enable");
       },
       function() {
         script.toggleControl("[EffectRack1_EffectUnit" + cueChannel + "]", "group_[Master]_enable");
-      },
-      function() {
-        script.toggleControl("[EffectRack1_EffectUnit" + cueChannel + "_Effect3]", "enabled");
       },
       function() {
         CMDMM.varStorage.channelKind[control - 0x30] = !CMDMM.varStorage.channelKind[control - 0x30];
@@ -196,6 +196,10 @@ CMDMM.fxButton = function(channel, control, value, status, group) {
   } else {
     CMDMM.modes(
       function() {
+        var effectUnit = button % 2 === 0 ? 2 : 1;
+        script.toggleControl("[EffectRack1_EffectUnit" + mixxxChannel + "_Effect" + effectUnit + "]", "enabled");
+      },
+      function() {
         var effectUnit = button % 2 === 0 ? 2 : 1; //checks if buttonnumber is even, if true, return effectUnit 2 if false, return effectUnit 1;
         // maps button to range [0;7], divides and floors it (result: [0;3]). That value is being used to lookup the right channel.
         script.toggleControl("[EffectRack1_EffectUnit" + mixxxChannel + "]", "group_[Channel" + effectUnit + "]_enable");
@@ -204,10 +208,6 @@ CMDMM.fxButton = function(channel, control, value, status, group) {
         var effectUnit = button % 2 === 0 ? 4 : 3; //checks if buttonnumber is even, if true, return effectUnit 4 if false, return effectUnit 3;
         // maps button to range [0;7], divides and floors it (result: [0;3]). That value is being used to lookup the right channel.
         script.toggleControl("[EffectRack1_EffectUnit" + mixxxChannel + "]", "group_[Channel" + effectUnit + "]_enable");
-      },
-      function() {
-        var effectUnit = button % 2 === 0 ? 2 : 1;
-        script.toggleControl("[EffectRack1_EffectUnit" + mixxxChannel + "_Effect" + effectUnit + "]", "enabled");
       },
       function() {
         var left_right = button % 2 === 0 ? 2 : 1;
