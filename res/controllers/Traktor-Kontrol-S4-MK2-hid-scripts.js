@@ -599,26 +599,27 @@ TraktorS4MK2.lightDeck = function(group) {
   TraktorS4MK2.lightGroup(packet, "[EffectRack1_EffectUnit2_Effect2]", "[EffectRack1_EffectUnit2_Effect2]");
   TraktorS4MK2.lightGroup(packet, "[EffectRack1_EffectUnit2_Effect3]", "[EffectRack1_EffectUnit2_Effect3]");
 
-  // Loop size indicator
-  TraktorS4MK2.loopSizeSet(group);
-
   // Selected deck lights
   if (group === "[Channel1]") {
     TraktorS4MK2.controller.setOutput("[Channel1]", "!deck_A", 0x7F, false);
     TraktorS4MK2.controller.setOutput("[Channel3]", "!deck_C", 0x00, false);
     TraktorS4MK2.controller.setOutput("deck1", "!deckLight", 0x05, false);
+    TraktorS4MK2.loopSizeSet(group);
   } else if (group === "[Channel2]") {
     TraktorS4MK2.controller.setOutput("[Channel2]", "!deck_B", 0x7F, false);
     TraktorS4MK2.controller.setOutput("[Channel4]", "!deck_D", 0x00, false);
     TraktorS4MK2.controller.setOutput("deck2", "!deckLight", 0x05, false);
+    TraktorS4MK2.loopSizeSet(group);
   } else if (group === "[Channel3]") {
     TraktorS4MK2.controller.setOutput("[Channel3]", "!deck_C", 0x7F, false);
     TraktorS4MK2.controller.setOutput("[Channel1]", "!deck_A", 0x00, false);
     TraktorS4MK2.controller.setOutput("deck1", "!deckLight", 0x7F, false);
+    TraktorS4MK2.loopSizeSet(group);
   } else if (group === "[Channel4]") {
     TraktorS4MK2.controller.setOutput("[Channel4]", "!deck_D", 0x7F, false);
     TraktorS4MK2.controller.setOutput("[Channel2]", "!deck_B", 0x00, false);
     TraktorS4MK2.controller.setOutput("deck2", "!deckLight", 0x7F, false);
+    TraktorS4MK2.loopSizeSet(group);
   }
 
   this.controller.freeze_lights = false;
@@ -1265,8 +1266,8 @@ TraktorS4MK2.sendLoopSizeMessage = function(deck, firstChar, secondChar, firstDo
   // Do the second number first
   TraktorS4MK2.displayCharLoopCounter(deck, 0, firstChar);
   TraktorS4MK2.displayCharLoopCounter(deck, 1, secondChar);
-  TraktorS4MK2.displayCharLoopDot(deck, 1, firstDot);
-  TraktorS4MK2.displayCharLoopDot(deck, 0, secondDot);
+  TraktorS4MK2.displayCharLoopDot(deck, 0, firstDot);
+  TraktorS4MK2.displayCharLoopDot(deck, 1, secondDot);
 
 }
 
@@ -1555,14 +1556,25 @@ TraktorS4MK2.onLoopSizeChanged = function(value, group, key) {
     TraktorS4MK2.sendLoopSizeMessage(deck, value.toString().split("")[0], value.toString().split("")[1], false, false);
   // deal with fraction beats
   } else if (1 > value > 0 ) {
-    if (value === 0.5){
-      TraktorS4MK2.sendLoopSizeMessage(deck, '-', 2, false, false);
-    } else if (value === 0.25){
-      TraktorS4MK2.sendLoopSizeMessage(deck, '-', 4, false, false);
-    } else if (value === 0.125){
-      TraktorS4MK2.sendLoopSizeMessage(deck, '-', 8, false, false);
-    } else {
-      TraktorS4MK2.sendLoopSizeMessage(deck, '-', 'n', false, false);
+    // var inverse_val = 1/value;
+    // if (inverse_val % 1 === 0){
+    //   if (inverse_val.toString().length === 1){
+    //     TraktorS4MK2.sendLoopSizeMessage(deck, '', value, false, true);
+    //     // values with two digits
+    //   } else if (inverse_val.toString().length === 2 ) {
+    //     TraktorS4MK2.sendLoopSizeMessage(deck, inverse_val.toString().split("")[0], inverse_val.toString().split("")[1], true, false);
+    //   }
+    // }
+    // } else {
+
+    // }
+    var inverse_value = 1/value;
+    if (inverse_value % 1 === 0){
+      if (inverse_value.toString().length === 1){
+        TraktorS4MK2.sendLoopSizeMessage(deck, '', inverse_value, false, true);
+      }else if(inverse_value.toString().length === 2) {
+        TraktorS4MK2.sendLoopSizeMessage(deck, inverse_value.toString().split("")[0], inverse_value.toString().split("")[1], true, false);
+      }
     }
   // deal with larger Loops
   } else if (value.toString().length > 2){
