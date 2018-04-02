@@ -363,6 +363,7 @@ TraktorS4MK2.registerOutputPackets = function() {
   Output2.addOutput("deck1", "loop_out", 0x2A, "B");
   Output2.addOutput("deck1", "keylock", 0x2F, "B");
   Output2.addOutput("deck1", "slip_enabled", 0x39, "B");
+  Output2.addOutput("deck1", "!on_air", 0x2D, "B");
 
   Output2.addOutput("deck2", "!shift", 0x25, "B");
   Output2.addOutput("deck2", "sync_enabled", 0x26, "B");
@@ -384,6 +385,7 @@ TraktorS4MK2.registerOutputPackets = function() {
   Output2.addOutput("deck2", "loop_out", 0x2C, "B");
   Output2.addOutput("deck2", "keylock", 0x35, "B");
   Output2.addOutput("deck2", "slip_enabled", 0x3B, "B");
+  Output2.addOutput("deck2", "!on_air", 0x33, "B");
 
   Output2.addOutput("[Channel1]", "!deck_A", 0x2E, "B");
   Output2.addOutput("[Channel2]", "!deck_B", 0x34, "B");
@@ -679,6 +681,8 @@ TraktorS4MK2.init = function(id) {
 
   TraktorS4MK2.outputChannelCallback(engine.getValue("[InternalClock]", "sync_master"), "[InternalClock]", "sync_master");
   TraktorS4MK2.outputChannelCallback(engine.getValue("[Recording]", "status"), "[Recording]", "status");
+  TraktorS4MK2.controller.setOutput("deck1", "!on_air", engine.getValue("[Recording]", "status")*0x7F);
+  TraktorS4MK2.controller.setOutput("deck2", "!on_air", engine.getValue("[Recording]", "status")*0x7F);
   TraktorS4MK2.lightDeck("[PreviewDeck1]");
   // Light 3 and 4 first so we get the mixer lights on, then do 1 and 2 since those are active
   // on startup.
@@ -1596,4 +1600,6 @@ TraktorS4MK2.loopSizeSet = function(group) {
 
 TraktorS4MK2.onRecordingChanged = function(group) {
   TraktorS4MK2.outputChannelCallback(engine.getValue("[Recording]", "status"), "[Recording]", "status");
+  TraktorS4MK2.controller.setOutput("deck1", "!on_air", engine.getValue("[Recording]", "status")*0x7F);
+  TraktorS4MK2.controller.setOutput("deck2", "!on_air", engine.getValue("[Recording]", "status")*0x7F);
 }
