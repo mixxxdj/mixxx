@@ -30,10 +30,10 @@
      id="namedview897"
      showgrid="false"
      inkscape:zoom="6.9411765"
-     inkscape:cx="-13.711864"
+     inkscape:cx="21.728814"
      inkscape:cy="17"
-     inkscape:window-x="0"
-     inkscape:window-y="68"
+     inkscape:window-x="625"
+     inkscape:window-y="1223"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg2" />
   <defs
@@ -91,7 +91,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -99,5 +99,5 @@
      d="m 7.6728885,30.696176 a 15.865708,15.865708 0 1 1 22.0424935,0"
      transform="matrix(0.96904934,0,0,0.96870025,1.8847978,-0.06558939)"
      id="path6998"
-     style="color:#000000;fill:none;stroke:#9129ec;stroke-width:2.3222816;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+     style="color:#000000;fill:none;stroke:#b03eec;stroke-width:2.3222816;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
 </svg>
