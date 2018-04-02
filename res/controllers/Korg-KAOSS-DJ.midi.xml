@@ -203,7 +203,7 @@
             </control>
             <control>
                 <group>[Sampler3]</group>
-                <key>cue_cdj</key>
+                <key>cue_gotoandplay</key>
                 <description>Sampler 3 Play</description>
                 <status>0x96</status>
                 <midino>0x4C</midino>
@@ -233,7 +233,7 @@
             </control>
             <control>
                 <group>[Sampler4]</group>
-                <key>cue_cdj</key>
+                <key>cue_gotoandplay</key>
                 <description>Sampler 4 Play</description>
                 <status>0x96</status>
                 <midino>0x4D</midino>
@@ -273,7 +273,7 @@
             </control>
             <control>
                 <group>[Sampler1]</group>
-                <key>cue_cdj</key>
+                <key>cue_gotoandplay</key>
                 <description>Sampler 1 Play</description>
                 <status>0x96</status>
                 <midino>0x4A</midino>
@@ -323,7 +323,7 @@
             </control>
             <control>
                 <group>[Sampler2]</group>
-                <key>cue_cdj</key>
+                <key>cue_gotoandplay</key>
                 <description>Sampler 2 Play</description>
                 <status>0x96</status>
                 <midino>0x4B</midino>
