@@ -1177,28 +1177,20 @@ WEffectSelector {
   border: 1px solid #666;
   border-radius: 3px;
   }
-  WEffectSelector::drop-down {/*
-    width: 16px;
-    height: 24px;
-    padding: 0;
-    margin: 0;*/
+  WEffectSelector::drop-down {
     border: 0;
   }
-  WEffectSelector::down-arrow {/*
-    width: 16px;
-    height: 24px;*/
+  WEffectSelector::down-arrow {
     image: url(skin:/buttons/btn_fxSelector.svg);
     border: 0;
     padding: 0;
     margin: 0;
     }
-    WEffectSelector::down-arrow:hover {/*
-      width: 16px;
-      height: 24px;*/
+    WEffectSelector::down-arrow:hover {
       image: url(skin:/buttons/btn_fxSelector_pressed.svg);
-    border: 0;
-    padding: 0;
-    margin: 0;
+      border: 0;
+      padding: 0;
+      margin: 0;
     }
 
   WEffectSelector QAbstractItemView {
@@ -1213,19 +1205,24 @@ WEffectSelector {
     border: 1px solid #666;
     border-radius: 2px;
     padding: 0px;
-    margin: 0px;
+    margin: 0px 0px 0px -7px;
   }
   /* selected item */
   WEffectSelector::checked {
     /* not applied
     padding-left: 5px;
     font-weight: bold;	*/
+    padding: 0px;
+    margin: 0px;
     color: #eee;
     background-color: #1e1e1e;
   }
   /* hovered items */
   WEffectSelector::item:selected {
     background-color: #333;
+  /* Already of those two destroys font config and puts tick mark behind text:
+    margin: 0px;
+    padding: 0px; */
   /* This moves the tick mark behind item text,
     text sits at left border now
     border: 0; */
