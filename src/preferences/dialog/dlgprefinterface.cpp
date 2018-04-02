@@ -82,6 +82,7 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
     warningLabel->setText(warningString);
 
     ComboBoxSkinconf->clear();
+    skinPreviewLabel->setText("");
 
     QList<QDir> skinSearchPaths = m_pSkinLoader->getSkinSearchPaths();
     QList<QFileInfo> skins;
@@ -104,6 +105,7 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
         if (skinInfo.absoluteFilePath() == configuredSkinPath) {
             m_skin = skinInfo.fileName();
             ComboBoxSkinconf->setCurrentIndex(index);
+            skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin));
             if (size_ok) {
                 warningLabel->hide();
             } else {
@@ -329,6 +331,7 @@ void DlgPrefInterface::slotSetScheme(int) {
 
 void DlgPrefInterface::slotSetSkin(int) {
     QString newSkin = ComboBoxSkinconf->currentText();
+    skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(newSkin));
     if (newSkin != m_skin) {
         m_skin = newSkin;
         m_bRebootMixxxView = newSkin != m_skinOnUpdate;
