@@ -1586,8 +1586,8 @@ TraktorS4MK2.loopSizeSet = function(group) {
   TraktorS4MK2.onLoopSizeChanged(engine.getValue(group, "beatloop_size"), group);
 }
 
-TraktorS4MK2.onRecordingChanged = function(group) {
-  TraktorS4MK2.outputChannelCallback(engine.getValue("[Recording]", "status"), "[Recording]", "status");
-  TraktorS4MK2.controller.setOutput("deck1", "!on_air", engine.getValue("[Recording]", "status")*0x7F);
-  TraktorS4MK2.controller.setOutput("deck2", "!on_air", engine.getValue("[Recording]", "status")*0x7F);
+TraktorS4MK2.onRecordingChanged = function(value, group, control) {
+  TraktorS4MK2.outputChannelCallback(value, "[Recording]", "status");
+  TraktorS4MK2.controller.setOutput("deck1", "!on_air", value*0x7F);
+  TraktorS4MK2.controller.setOutput("deck2", "!on_air", value*0x7F);
 }
