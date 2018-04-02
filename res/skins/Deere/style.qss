@@ -1149,12 +1149,10 @@ to avoid EQ kill buttons from shifting center of rest of column */
 
 #CondensedButtonContainerRight {
   qproperty-layoutAlignment: 'AlignLeft';
-  padding: 3px 0px 3px 9px;
 }
 
 #CondensedButtonContainerLeft {
   qproperty-layoutAlignment: 'AlignRight';
-  padding: 3px 9px 3px 0px;
 }
 
 #4DecksMixerCondensedMonoMeterLeft {
