@@ -507,7 +507,6 @@ TraktorS4MK2.registerOutputPackets = function() {
 
   TraktorS4MK2.linkChannelOutput("[PreviewDeck1]", "play_indicator", TraktorS4MK2.outputChannelCallback);
   TraktorS4MK2.linkChannelOutput("[InternalClock]", "sync_master", TraktorS4MK2.outputChannelCallback);
-  TraktorS4MK2.linkChannelOutput("[Recording]", "status", TraktorS4MK2.outputChannelCallback);
 
   if (TraktorS4MK2.RemixSlotButtonAction === "SAMPLES") {
     TraktorS4MK2.linkChannelOutput("[Sampler1]", "play_indicator", TraktorS4MK2.outputChannelCallback);
@@ -524,6 +523,8 @@ TraktorS4MK2.registerOutputPackets = function() {
     TraktorS4MK2.linkDeckOutputs("beatlooproll_0.5_activate", TraktorS4MK2.outputCallback);
     TraktorS4MK2.linkDeckOutputs("beatlooproll_1_activate", TraktorS4MK2.outputCallback);
   }
+
+  engine.connectControl("[Recording]", "status", "TraktorS4MK2.onRecordingChanged");
 
   // VU meters get special attention
   engine.connectControl("[Channel1]", "VuMeter", "TraktorS4MK2.onVuMeterChanged");
@@ -1571,4 +1572,8 @@ TraktorS4MK2.onLoopSizeChanged = function(value, group, key) {
 
 TraktorS4MK2.loopSizeSet = function(group) {
   TraktorS4MK2.onLoopSizeChanged(engine.getValue(group, "beatloop_size"), group);
+}
+
+TraktorS4MK2.onRecordingChanged = function(group) {
+  TraktorS4MK2.outputChannelCallback(engine.getValue("[Recording]", "status"), "[Recording]", "status");
 }
