@@ -1,8 +1,7 @@
 // Korg KAOSS DJ controller mapping for Mixxx
 // Seb Dooris, Fayaaz Ahmed, Lee Arromba
 
-function KAOSSDJ() {};
-                     
+var KAOSSDJ = {};  
 var ON = 0x7F, 
     OFF = 0x00, 
     UP = 0x01, 
