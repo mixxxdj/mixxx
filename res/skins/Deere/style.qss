@@ -982,7 +982,8 @@ WEffectSelector {
     color: #c1cabe;
     background-color: #201f1f;
     selection-background-color: #184880;
-    margin: 0px 0px 0px -7px;
+    /* hack around text getting cut off with scaled checkbox on macOS with Retina screens */
+    margin: 0px 0px 0px -24px;
   }
 
 #EffectKnob {
