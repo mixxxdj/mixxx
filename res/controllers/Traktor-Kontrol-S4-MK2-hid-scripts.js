@@ -1133,9 +1133,17 @@ TraktorS4MK2.remixHandler = function(field) {
       buttonNumber = buttonNumber + 4;
     }
     if (TraktorS4MK2.controller.shift_pressed[group]) {
-      engine.setValue("[Sampler" + buttonNumber + "]", "eject", 1);
+      if (engine.getValue("[Sampler" + buttonNumber + "]", "play")){
+        engine.setValue("[Sampler" + buttonNumber + "]", "start_stop", 1);
+      } else {
+        engine.setValue("[Sampler" + buttonNumber + "]", "eject", 1);
+      }
     } else {
-      engine.setValue("[Sampler" + buttonNumber + "]", "cue_gotoandplay", 1);
+      if (engine.getValue("[Sampler" + buttonNumber + "]", "track_loaded")){
+        engine.setValue("[Sampler" + buttonNumber + "]", "cue_gotoandplay", 1);
+      } else {
+        engine.setValue("[Sampler" + buttonNumber + "]", "LoadSelectedTrack", 1);
+      }
     }
   } else if (TraktorS4MK2.RemixSlotButtonAction === "LOOPROLLS") {
     var buttonNumber = parseInt(field.name[field.name.length - 1]);
