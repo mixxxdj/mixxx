@@ -75,11 +75,11 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
   private:
     QString m_group;
     UserSettingsPointer m_pConfig;
-    QImage* m_pBgImage;
-    QImage* m_pMaskImage;
-    QImage* m_pFgImage;
+    std::shared_ptr<QImage> m_pBgImage;
+    std::shared_ptr<QImage> m_pMaskImage;
+    std::shared_ptr<QImage> m_pFgImage;
     QImage m_fgImageScaled;
-    QImage* m_pGhostImage;
+    std::shared_ptr<QImage> m_pGhostImage;
     QImage m_ghostImageScaled;
     ControlProxy* m_pPlay;
     ControlProxy* m_pPlayPos;
