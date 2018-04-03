@@ -46,11 +46,10 @@ Variables:
             <SizePolicy>max,max</SizePolicy>
             <Children>
 
-              <Template src="skin:knob_with_label.xml">
+              <Template src="skin:knob.xml">
                 <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
                 <SetVariable name="control">mix</SetVariable>
-                <SetVariable name="label">Mix</SetVariable>
-                <SetVariable name="color">orange</SetVariable>
+                <SetVariable name="color">purple_gapless</SetVariable>
               </Template>
 
               <WidgetGroup>
@@ -60,10 +59,9 @@ Variables:
                   <BindProperty>visible</BindProperty>
                 </Connection>
                 <Children>
-                  <Template src="skin:knob_with_label.xml">
+                  <Template src="skin:knob.xml">
                     <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
                     <SetVariable name="control">super1</SetVariable>
-                    <SetVariable name="label">Super</SetVariable>
                     <SetVariable name="color">blue_gapless</SetVariable>
                   </Template>
                 </Children>

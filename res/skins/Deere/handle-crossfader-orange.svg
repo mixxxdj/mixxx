@@ -10,10 +10,10 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.1"
-   width="200"
-   height="75"
+   width="80"
+   height="200"
    id="svg2"
-   sodipodi:docname="handle-vertical-purple.svg"
+   sodipodi:docname="handle-crossfader-orange.svg"
    inkscape:version="0.92.2 (5c3e80d, 2017-08-06)">
   <sodipodi:namedview
      pagecolor="#ffffff"
@@ -24,15 +24,15 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1476"
-     inkscape:window-height="1001"
-     id="namedview3867"
+     inkscape:window-width="1031"
+     inkscape:window-height="553"
+     id="namedview6629"
      showgrid="false"
-     inkscape:zoom="3.1466667"
-     inkscape:cx="12.923729"
-     inkscape:cy="37.5"
-     inkscape:window-x="1833"
-     inkscape:window-y="200"
+     inkscape:zoom="1.668772"
+     inkscape:cx="-124.98688"
+     inkscape:cy="111.41787"
+     inkscape:window-x="1815"
+     inkscape:window-y="642"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg2" />
   <metadata
@@ -43,30 +43,30 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <defs
      id="defs10" />
   <rect
-     width="65"
+     width="70"
      height="190"
      rx="10"
      ry="10"
-     x="-70"
-     y="5"
-     transform="matrix(0,-1,1,0,0,0)"
+     x="-75"
+     y="-195"
+     transform="scale(-1,-1)"
      id="rect4138"
-     style="fill:#333333;fill-opacity:1;stroke:#e0e0e0;stroke-width:9.99999905;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+     style="fill:#333333;fill-opacity:1;stroke:#e0e0e0;stroke-width:10;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
   <rect
      width="155.73222"
-     height="29.525"
+     height="34.525127"
      rx="2"
      ry="2"
-     x="-177.86612"
-     y="-52.262566"
-     transform="scale(-1,-1)"
+     x="22.133881"
+     y="-57.262573"
+     transform="matrix(0,1,-1,0,0,0)"
      id="rect4151-3"
-     style="fill:#f2d440;fill-opacity:1;stroke:none" />
+     style="fill:#ffb108;fill-opacity:1;stroke:none" />
 </svg>

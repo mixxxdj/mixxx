@@ -20,7 +20,7 @@
               <Template src="skin:knob.xml">
                 <SetVariable name="TooltipId">pregain</SetVariable>
                 <SetVariable name="control">pregain</SetVariable>
-                <SetVariable name="color">grey</SetVariable>
+                <SetVariable name="color">green</SetVariable>
               </Template>
             </Children>
             <Connection>
@@ -48,7 +48,7 @@
           <Template src="skin:knob.xml">
             <SetVariable name="TooltipId">pregain</SetVariable>
             <SetVariable name="control">pregain</SetVariable>
-            <SetVariable name="color">grey</SetVariable>
+            <SetVariable name="color">green</SetVariable>
           </Template>
         </Children>
         <Connection>
