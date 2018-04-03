@@ -89,19 +89,19 @@ void MetronomeEffect::processChannel(
     }
 
     unsigned int maxFrames;
-    if (m_pSyncParameter->toBool() && groupFeatures.has_beat_length_sec) {
-        maxFrames = bufferParameters.sampleRate() * groupFeatures.beat_length_sec;
+    if (m_pSyncParameter->toBool() && groupFeatures.has_bpm) {
+        maxFrames = bufferParameters.sampleRate() * 60 / groupFeatures.bpm;
+
         if (groupFeatures.has_beat_fraction) {
             unsigned int currentFrame =  maxFrames * groupFeatures.beat_fraction;
             if (maxFrames > clickSize &&
                     currentFrame > clickSize &&
                     currentFrame < maxFrames - clickSize &&
                     gs->m_framesSinceClickStart > clickSize &&
-                    currentFrame != gs->m_previousFrame) {
+                    groupFeatures.isPlaying) {
                 // plays a single click on low speed
                 gs->m_framesSinceClickStart = currentFrame;
             }
-            gs->m_previousFrame = currentFrame;
         }
     } else {
         maxFrames = bufferParameters.sampleRate() * 60 / m_pBpmParameter->value();

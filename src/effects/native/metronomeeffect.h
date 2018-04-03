@@ -17,14 +17,12 @@ class MetronomeGroupState final : public EffectState {
   public:
     MetronomeGroupState(const mixxx::EngineParameters& bufferParameters)
       : EffectState(bufferParameters),
-        m_framesSinceClickStart(0),
-        m_previousFrame(-1) {
+        m_framesSinceClickStart(0) {
     }
     ~MetronomeGroupState() {
     }
 
     unsigned int m_framesSinceClickStart;
-    unsigned int m_previousFrame;
 };
 
 class MetronomeEffect : public EffectProcessorImpl<MetronomeGroupState> {
