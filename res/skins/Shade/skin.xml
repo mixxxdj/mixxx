@@ -457,8 +457,9 @@
 					<Children>
 						<Splitter>
 							<Size>me,me</Size>
-							<Style></Style>
-							<SplitSizes>1,e</SplitSizes>
+							<SplitSizes>1,6</SplitSizes>
+							<Collapsible>1,0</Collapsible>
+							<SplitSizesConfigKey>[Shade],splitSizeLibTree</SplitSizesConfigKey>
 							<Children>
 								<WidgetGroup>
 									<Style>QGroupBox {}</Style>
@@ -616,7 +617,6 @@
 											<!-- Preview Deck Column 2-->
 												<WidgetGroup>
 													<MinimumSize>20,62</MinimumSize>
-
 													<Children>
 													<!--
 													**********************************************
@@ -707,6 +707,7 @@
 									<!-- Library Table-->
 									<Style>QGroupBox {}</Style>
 									<Layout>vertical</Layout>
+									<SizePolicy>me,me</SizePolicy>
 									<Children>
 										<Library></Library>
 									</Children>

@@ -81,10 +81,14 @@
 
           <WidgetGroup>
             <Layout>horizontal</Layout>
-            <Size>120f,26f</Size>
+            <MinimumSize>110,26</MinimumSize>
+            <MaximumSize>150,26</MaximumSize>
+            <SizePolicy>me,f</SizePolicy>
             <Children>
               <EffectSelector>
-                <Size>120f,26f</Size>
+                <MinimumSize>110,26</MinimumSize>
+                <MaximumSize>150,26</MaximumSize>
+                <SizePolicy>me,f</SizePolicy>
                 <EffectRack><Variable name="FxRack"/></EffectRack>
                 <EffectUnit><Variable name="FxUnit"/></EffectUnit>
                 <Effect><Variable name="FxNum"/></Effect>
@@ -98,17 +102,24 @@
             <SetVariable name="control">meta</SetVariable>
           </Template>
 
-          <Template src="skin:button_2state.xml">
-            <SetVariable name="TooltipId">EffectSlot_enabled</SetVariable>
-            <SetVariable name="ObjectName">FxToggleButton</SetVariable>
-            <SetVariable name="icon">fxToggle</SetVariable>
-            <SetVariable name="Size">30f,30f</SetVariable>
-            <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,enabled</SetVariable>
-          </Template>
+          <WidgetGroup>
+            <ObjectName>AlignCenter</ObjectName>
+            <Layout>vertical</Layout>
+            <Size>30f,-1me</Size>
+            <Children>
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="TooltipId">EffectSlot_enabled</SetVariable>
+                <SetVariable name="ObjectName">FxToggleButton</SetVariable>
+                <SetVariable name="icon">fxToggle</SetVariable>
+                <SetVariable name="Size">30f,30f</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,enabled</SetVariable>
+              </Template>
 
-          <WidgetGroup><Size>2f,-1min</Size></WidgetGroup>
+              <Template src="skin:fx_focus_button.xml"/>
 
-          <Template src="skin:fx_focus_button.xml"/>
+            </Children>
+          </WidgetGroup>
+
         </Children>
       </WidgetGroup>
 

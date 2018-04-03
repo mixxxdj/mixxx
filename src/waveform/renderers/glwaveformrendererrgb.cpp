@@ -43,6 +43,7 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
     double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
+    const double lineWidth = (1.0 / m_waveformRenderer->getVisualSamplePerPixel()) + 1.5;
 
     const int firstIndex = int(firstVisualIndex + 0.5);
     firstVisualIndex = firstIndex - firstIndex % 2;
@@ -91,19 +92,17 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
         }
         glEnd();
 
-        glBegin(GL_QUADS); {
-            for (int visualIndex = firstVisualIndex;
-                 visualIndex < lastVisualIndex;
-                 visualIndex += 2) {
+        glLineWidth(lineWidth);
+        glEnable(GL_LINE_SMOOTH);
 
-                if (visualIndex < 0) {
-                    continue;
-                }
+        glBegin(GL_LINES); {
 
-                if (visualIndex > dataSize - 1) {
-                    break;
-                }
+            int firstIndex = math_max(static_cast<int>(firstVisualIndex), 0);
+            int lastIndex = math_min(static_cast<int>(lastVisualIndex), dataSize);
 
+            for (int visualIndex = firstIndex;
+                    visualIndex < lastIndex;
+                    visualIndex += 2) {
 
                 float left_low    = lowGain  * (float) data[visualIndex].filtered.low;
                 float left_mid    = midGain  * (float) data[visualIndex].filtered.mid;
@@ -115,10 +114,8 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
                 float left_max    = math_max3(left_red, left_green, left_blue);
                 if (left_max > 0.0f) {  // Prevent division by zero
                     glColor4f(left_red / left_max, left_green / left_max, left_blue / left_max, 0.8f);
-                    glVertex2f(visualIndex - 1.0f, 0.0f);
-                    glVertex2f(visualIndex - 1.0f, left_all);
-                    glVertex2f(visualIndex + 1.0f, left_all);
-                    glVertex2f(visualIndex + 1.0f, 0.0f);
+                    glVertex2f(visualIndex, 0.0f);
+                    glVertex2f(visualIndex, left_all);
                 }
 
                 float right_low   = lowGain  * (float) data[visualIndex+1].filtered.low;
@@ -131,10 +128,8 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
                 float right_max   = math_max3(right_red, right_green, right_blue);
                 if (right_max > 0.0f) {  // Prevent division by zero
                     glColor4f(right_red / right_max, right_green / right_max, right_blue / right_max, 0.8f);
-                    glVertex2f(visualIndex - 1.0f, 0.0f);
-                    glVertex2f(visualIndex - 1.0f, -1.0f * right_all);
-                    glVertex2f(visualIndex + 1.0f, -1.0f * right_all);
-                    glVertex2f(visualIndex + 1.0f, 0.0f);
+                    glVertex2f(visualIndex, 0.0f);
+                    glVertex2f(visualIndex, -1.0f * right_all);
                 }
             }
         }
@@ -161,18 +156,17 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
         glScalef(1.0f, allGain, 1.0f);
 
-        glBegin(GL_QUADS); {
-            for (int visualIndex = firstVisualIndex;
-                 visualIndex < lastVisualIndex;
-                 visualIndex += 2) {
+        glLineWidth(lineWidth);
+        glEnable(GL_LINE_SMOOTH);
 
-                if (visualIndex < 0) {
-                    continue;
-                }
+        glBegin(GL_LINES); {
 
-                if (visualIndex > dataSize - 1) {
-                    break;
-                }
+            int firstIndex = math_max(static_cast<int>(firstVisualIndex), 0);
+            int lastIndex = math_min(static_cast<int>(lastVisualIndex), dataSize);
+
+            for (int visualIndex = firstIndex;
+                    visualIndex < lastIndex;
+                    visualIndex += 2) {
 
                 float low  = lowGain  * (float) math_max(data[visualIndex].filtered.low,  data[visualIndex+1].filtered.low);
                 float mid  = midGain  * (float) math_max(data[visualIndex].filtered.mid,  data[visualIndex+1].filtered.mid);
@@ -187,10 +181,8 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
                 float max = math_max3(red, green, blue);
                 if (max > 0.0f) {  // Prevent division by zero
                     glColor4f(red / max, green / max, blue / max, 0.9f);
-                    glVertex2f(float(visualIndex) - 1.0f, 0.0f);
-                    glVertex2f(float(visualIndex) - 1.0f, all);
-                    glVertex2f(float(visualIndex) + 1.0f, all);
-                    glVertex2f(float(visualIndex) + 1.0f, 0.0f);
+                    glVertex2f(float(visualIndex), 0.0f);
+                    glVertex2f(float(visualIndex), all);
                 }
             }
         }
