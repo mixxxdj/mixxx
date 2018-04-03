@@ -746,6 +746,11 @@ MixtrackPlatinum.wheelTouch = function (channel, control, value, status, group) 
 
 // The wheel that actually controls the scratching
 MixtrackPlatinum.scratch_direction = []; // true == forward
+MixtrackPlatinum.scratch_accumulator = [];
+MixtrackPlatinum.scratch_accumulator[1] = 0;
+MixtrackPlatinum.scratch_accumulator[2] = 0;
+MixtrackPlatinum.scratch_accumulator[3] = 0;
+MixtrackPlatinum.scratch_accumulator[4] = 0;
 MixtrackPlatinum.wheelTurn = function (channel, control, value, status, group) {
     var deck = channel + 1;
     var direction;
@@ -773,19 +778,34 @@ MixtrackPlatinum.wheelTurn = function (channel, control, value, status, group) {
     if (MixtrackPlatinum.scratch_direction[deck] === null) {
         MixtrackPlatinum.scratch_direction[deck] = direction;
     }
-    else if (MixtrackPlatinum.scratch_direction[deck] != direction
-        && !MixtrackPlatinum.touching[deck])
-    {
-        MixtrackPlatinum.scratchDisable(deck);
+    else if (MixtrackPlatinum.scratch_direction[deck] != direction) {
+        if (!MixtrackPlatinum.touching[deck]) {
+            MixtrackPlatinum.scratchDisable(deck);
+        }
+        MixtrackPlatinum.scratch_accumulator[deck] = 0;
     }
 
     MixtrackPlatinum.scratch_direction[deck] = direction;
+    MixtrackPlatinum.scratch_accumulator[deck] += Math.abs(newValue);
 
-    // In either case, register the movement
+    // handle scratching
     if (engine.isScratching(deck)) {
         engine.scratchTick(deck, newValue); // Scratch!
         MixtrackPlatinum.resetScratchTimer(deck, newValue);
-    } else {
+    }
+    // handle beat jumping
+    else if (MixtrackPlatinum.shift) {
+        if (MixtrackPlatinum.scratch_accumulator[deck] > 61) {
+            MixtrackPlatinum.scratch_accumulator[deck] -= 61;
+            if (direction) { // forward
+                engine.setParameter(group, 'beatjump_1_forward', 1);
+            } else {
+                engine.setParameter(group, 'beatjump_1_backward', 1);
+            }
+        }
+    }
+    // handle pitch bending
+    else {
         engine.setValue(group, 'jog', newValue * 0.1); // Pitch bend
     }
 };
@@ -816,6 +836,12 @@ MixtrackPlatinum.shiftToggle = function (channel, control, value, status, group)
         MixtrackPlatinum.sampler.shift();
         MixtrackPlatinum.effects.shift();
         MixtrackPlatinum.browse.shift();
+
+        // reset the beat jump scratch accumulators
+        MixtrackPlatinum.scratch_accumulator[1] = 0;
+        MixtrackPlatinum.scratch_accumulator[2] = 0;
+        MixtrackPlatinum.scratch_accumulator[3] = 0;
+        MixtrackPlatinum.scratch_accumulator[4] = 0;
     }
     else {
         MixtrackPlatinum.decks.unshift();
