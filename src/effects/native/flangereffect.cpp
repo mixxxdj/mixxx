@@ -30,6 +30,7 @@ EffectManifest FlangerEffect::getManifest() {
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
         "Mixes the input with a delayed, pitch modulated copy of itself to create comb filtering"));
+    manifest.setMetaknobDefault(1.0);
 
     EffectManifestParameter* speed = manifest.addParameter();
     speed->setId("speed");

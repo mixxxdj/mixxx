@@ -150,7 +150,7 @@ EffectButtonParameterSlotPointer EffectSlot::getEffectButtonParameterSlot(unsign
     return m_buttonParameters[slotNumber];
 }
 
-void EffectSlot::loadEffect(EffectPointer pEffect) {
+void EffectSlot::loadEffect(EffectPointer pEffect, bool adoptMetaknobPosition) {
     //qDebug() << debugString() << "loadEffect"
     //         << (pEffect ? pEffect->getManifest().name() : "(null)");
     if (pEffect) {
@@ -184,7 +184,13 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
             pParameter->loadEffect(pEffect);
         }
 
-        slotEffectMetaParameter(m_pControlMetaParameter->get(), true);
+
+        if (adoptMetaknobPosition) {
+            slotEffectMetaParameter(m_pControlMetaParameter->get(), true);
+        } else {
+            m_pControlMetaParameter->set(pEffect->getMetaknobDefault());
+            slotEffectMetaParameter(pEffect->getMetaknobDefault(), true);
+        }
 
         emit(effectLoaded(pEffect, m_iEffectNumber));
     } else {

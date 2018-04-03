@@ -211,6 +211,10 @@ QDomElement EffectRack::toXml(QDomDocument* doc) const {
     return rackElement;
 }
 
+bool EffectRack::isAdoptMetaknobValueEnabled() const {
+    return m_pEffectChainManager->isAdoptMetaknobValueEnabled();
+}
+
 StandardEffectRack::StandardEffectRack(EffectsManager* pEffectsManager,
                                        EffectChainManager* pChainManager,
                                        const unsigned int iRackNumber)
@@ -283,7 +287,7 @@ OutputEffectRack::OutputEffectRack(EffectsManager* pEffectsManager,
             this, SLOT(loadPrevEffect(unsigned int, unsigned int, EffectPointer)));
 
     // Register the master channel.
-    const ChannelHandleAndGroup* masterHandleAndGroup;
+    const ChannelHandleAndGroup* masterHandleAndGroup = nullptr;
 
     // TODO(Be): Remove this hideous hack to get the ChannelHandleAndGroup
     const QSet<ChannelHandleAndGroup>& registeredChannels =
@@ -336,7 +340,7 @@ void PerGroupRack::setupForGroup(const QString& groupName) {
     pChain->updateEngineState();
 
     // TODO(rryan): remove.
-    const ChannelHandleAndGroup* handleAndGroup;
+    const ChannelHandleAndGroup* handleAndGroup = nullptr;
     for (const ChannelHandleAndGroup& handle_group :
              m_pEffectChainManager->registeredInputChannels()) {
         if (handle_group.name() == groupName) {
