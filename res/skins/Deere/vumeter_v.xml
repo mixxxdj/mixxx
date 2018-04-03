@@ -39,8 +39,8 @@
                     <PathVu scalemode="STRETCH">vumeter_v.png</PathVu>
                     <Horizontal>false</Horizontal>
                     <PeakHoldSize>5</PeakHoldSize>
-                    <PeakHoldTime>600</PeakHoldTime>
-                    <PeakFallTime>100</PeakFallTime>
+                    <PeakHoldTime>300</PeakHoldTime>
+                    <PeakFallTime>20</PeakFallTime>
                     <PeakFallStep>1</PeakFallStep>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,VuMeter<Variable name="side"/></ConfigKey>
@@ -67,8 +67,8 @@
                     <PathVu scalemode="STRETCH">vumeter_v.png</PathVu>
                     <Horizontal>false</Horizontal>
                     <PeakHoldSize>5</PeakHoldSize>
-                    <PeakHoldTime>600</PeakHoldTime>
-                    <PeakFallTime>100</PeakFallTime>
+                    <PeakHoldTime>300</PeakHoldTime>
+                    <PeakFallTime>20</PeakFallTime>
                     <PeakFallStep>1</PeakFallStep>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,VuMeter<Variable name="side"/></ConfigKey>
