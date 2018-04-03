@@ -43,6 +43,31 @@ TraktorS4MK2 = new function() {
   // Controller object.
   this.controller.left_deck_C = false;
   this.controller.right_deck_D = false;
+
+  this.controller.effect_focus_button_pressed = {};
+  this.controller.effect_focus_button_pressed["[EffectRack1_EffectUnit1]"] = false;
+  this.controller.effect_focus_button_pressed["[EffectRack1_EffectUnit2]"] = false;
+
+  this.controller.effect_button_output_connections = {};
+  this.controller.effect_button_output_connections["[EffectRack1_EffectUnit1]"] = [];
+  this.controller.effect_button_output_connections["[EffectRack1_EffectUnit2]"] = [];
+
+  this.controller.previously_focused_effect = {};
+  this.controller.previously_focused_effect["[EffectRack1_EffectUnit1]"] = null;
+  this.controller.previously_focused_effect["[EffectRack1_EffectUnit2]"] = null;
+
+  for (var u = 1; u <= 2; u++) {
+    engine.setValue("[EffectRack1_EffectUnit" + u +"]", "show_focus", 1);
+    for (var e = 1; e <= 3; e++) {
+      engine.softTakeover("[EffectRack1_EffectUnit" + u + "_Effect" + e + "]", "meta", true);
+      for (var p = 1; p <= 3; p++) {
+        engine.softTakeover("[EffectRack1_EffectUnit" + u + "_Effect" + e + "]",
+                            "parameter" + p, true);
+      }
+    }
+  }
+
+  this.controller.effect_focus_connection = {};
   // The controller has a single quantize button, and we remember its state independent of
   // other channels.  (The user may toggle channel quantize in the GUI)
   this.controller.master_quantize = false;
@@ -109,10 +134,10 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("deck1", "!jog_wheel", 0x01, "I");
   MessageShort.addControl("deck1", "!deckswitch", 0x0F, "B", 0x20);
   MessageShort.addControl("deck1", "!load_track", 0x0F, "B", 0x10);
-  MessageShort.addControl("deck1", "!FXon", 0x12, "B", 0x80);
   MessageShort.addControl("[EffectRack1_EffectUnit1_Effect1]", "!FXButton", 0x12, "B", 0x40);
   MessageShort.addControl("[EffectRack1_EffectUnit1_Effect2]", "!FXButton", 0x12, "B", 0x20);
   MessageShort.addControl("[EffectRack1_EffectUnit1_Effect3]", "!FXButton", 0x12, "B", 0x10);
+  MessageShort.addControl("[EffectRack1_EffectUnit ]", "!FXFocusButton", 0x12, "B", 0x80);
   MessageShort.addControl("[EffectRack1_EffectUnit1]", "show_parameters", 0x11, "B", 0x08);
 
   MessageShort.addControl("deck2", "!shift", 0x0C, "B", 0x08);
@@ -137,10 +162,10 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("deck2", "!jog_wheel", 0x05, "I");
   MessageShort.addControl("deck2", "!deckswitch", 0x0A, "B", 0x20);
   MessageShort.addControl("deck2", "!load_track", 0x0A, "B", 0x10);
-  MessageShort.addControl("deck2", "!FXon", 0x10, "B", 0x08);
   MessageShort.addControl("[EffectRack1_EffectUnit2_Effect1]", "!FXButton", 0x10, "B", 0x04);
   MessageShort.addControl("[EffectRack1_EffectUnit2_Effect2]", "!FXButton", 0x10, "B", 0x02);
   MessageShort.addControl("[EffectRack1_EffectUnit2_Effect3]", "!FXButton", 0x10, "B", 0x01);
+  MessageShort.addControl("[EffectRack1_EffectUnit2]", "!FXFocusButton", 0x10, "B", 0x08);
   MessageShort.addControl("[EffectRack1_EffectUnit2]", "show_parameters", 0x11, "B", 0x04);
 
   MessageShort.addControl("[Channel1]", "pfl", 0x0F, "B", 0x40);
@@ -211,10 +236,12 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.setCallback("[Master]", "!quantize", this.quantizeHandler);
   MessageShort.setCallback("[Master]", "!snap", this.snapHandler);
 
+  MessageShort.setCallback("[EffectRack1_EffectUnit1]", "!FXFocusButton", this.FXFocusButtonHandler);
   MessageShort.setCallback("[EffectRack1_EffectUnit1_Effect1]", "!FXButton", this.FXButtonHandler);
   MessageShort.setCallback("[EffectRack1_EffectUnit1_Effect2]", "!FXButton", this.FXButtonHandler);
   MessageShort.setCallback("[EffectRack1_EffectUnit1_Effect3]", "!FXButton", this.FXButtonHandler);
 
+  MessageShort.setCallback("[EffectRack1_EffectUnit2]", "!FXFocusButton", this.FXFocusButtonHandler);
   MessageShort.setCallback("[EffectRack1_EffectUnit2_Effect1]", "!FXButton", this.FXButtonHandler);
   MessageShort.setCallback("[EffectRack1_EffectUnit2_Effect2]", "!FXButton", this.FXButtonHandler);
   MessageShort.setCallback("[EffectRack1_EffectUnit2_Effect3]", "!FXButton", this.FXButtonHandler);
@@ -242,22 +269,22 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageLong.setCallback("deck2", "!loopsize", this.callbackLoopSize);
 
   MessageLong.addControl("[EffectRack1_EffectUnit1]", "mix", 0x3F, "H");
-  MessageLong.addControl("[EffectRack1_EffectUnit1_Effect1]", "!FXMeta", 0x41, "H");
-  MessageLong.addControl("[EffectRack1_EffectUnit1_Effect2]", "!FXMeta", 0x43, "H");
-  MessageLong.addControl("[EffectRack1_EffectUnit1_Effect3]", "!FXMeta", 0x45, "H");
+  MessageLong.addControl("[EffectRack1_EffectUnit1_Effect1]", "!FXKnob", 0x41, "H");
+  MessageLong.addControl("[EffectRack1_EffectUnit1_Effect2]", "!FXKnob", 0x43, "H");
+  MessageLong.addControl("[EffectRack1_EffectUnit1_Effect3]", "!FXKnob", 0x45, "H");
 
-  MessageLong.setCallback("[EffectRack1_EffectUnit1_Effect1]", "!FXMeta",this.FXMetaHandler);
-  MessageLong.setCallback("[EffectRack1_EffectUnit1_Effect2]", "!FXMeta",this.FXMetaHandler);
-  MessageLong.setCallback("[EffectRack1_EffectUnit1_Effect3]", "!FXMeta",this.FXMetaHandler);
+  MessageLong.setCallback("[EffectRack1_EffectUnit1_Effect1]", "!FXKnob",this.FXKnobHandler);
+  MessageLong.setCallback("[EffectRack1_EffectUnit1_Effect2]", "!FXKnob",this.FXKnobHandler);
+  MessageLong.setCallback("[EffectRack1_EffectUnit1_Effect3]", "!FXKnob",this.FXKnobHandler);
 
   MessageLong.addControl("[EffectRack1_EffectUnit2]", "mix", 0x47, "H");
-  MessageLong.addControl("[EffectRack1_EffectUnit2_Effect1]", "!FXMeta", 0x49, "H");
-  MessageLong.addControl("[EffectRack1_EffectUnit2_Effect2]", "!FXMeta", 0x4B, "H");
-  MessageLong.addControl("[EffectRack1_EffectUnit2_Effect3]", "!FXMeta", 0x4D, "H");
+  MessageLong.addControl("[EffectRack1_EffectUnit2_Effect1]", "!FXKnob", 0x49, "H");
+  MessageLong.addControl("[EffectRack1_EffectUnit2_Effect2]", "!FXKnob", 0x4B, "H");
+  MessageLong.addControl("[EffectRack1_EffectUnit2_Effect3]", "!FXKnob", 0x4D, "H");
 
-  MessageLong.setCallback("[EffectRack1_EffectUnit2_Effect1]", "!FXMeta",this.FXMetaHandler);
-  MessageLong.setCallback("[EffectRack1_EffectUnit2_Effect2]", "!FXMeta",this.FXMetaHandler);
-  MessageLong.setCallback("[EffectRack1_EffectUnit2_Effect3]", "!FXMeta",this.FXMetaHandler);
+  MessageLong.setCallback("[EffectRack1_EffectUnit2_Effect1]", "!FXKnob",this.FXKnobHandler);
+  MessageLong.setCallback("[EffectRack1_EffectUnit2_Effect2]", "!FXKnob",this.FXKnobHandler);
+  MessageLong.setCallback("[EffectRack1_EffectUnit2_Effect3]", "!FXKnob",this.FXKnobHandler);
 
   MessageLong.addControl("[Channel1]", "volume", 0x37, "H");
   MessageLong.addControl("[QuickEffectRack1_[Channel1]]", "super1", 0x1D, "H");
@@ -444,23 +471,88 @@ TraktorS4MK2.registerOutputPackets = function() {
   Output3.addOutput("[EffectRack1_EffectUnit1]", "group_[Channel4]_enable", 0x0B, "B");
   Output3.addOutput("[EffectRack1_EffectUnit2]", "group_[Channel4]_enable", 0x0C, "B");
 
-  Output3.addOutput("[EffectRack1_EffectUnit1_Effect1]", "enabled", 0x02, "B");
-  Output3.addOutput("[EffectRack1_EffectUnit1_Effect2]", "enabled", 0x03, "B");
-  Output3.addOutput("[EffectRack1_EffectUnit1_Effect3]", "enabled", 0x04, "B");
+  Output3.addOutput("[EffectRack1_EffectUnit1]", "!FXFocusButton", 0x01, "B");
+  Output3.addOutput("[EffectRack1_EffectUnit1_Effect1]", "!FXButton1", 0x02, "B");
+  Output3.addOutput("[EffectRack1_EffectUnit1_Effect2]", "!FXButton2", 0x03, "B");
+  Output3.addOutput("[EffectRack1_EffectUnit1_Effect3]", "!FXButton3", 0x04, "B");
 
-  Output3.addOutput("[EffectRack1_EffectUnit2_Effect1]", "enabled", 0x0E, "B");
-  Output3.addOutput("[EffectRack1_EffectUnit2_Effect2]", "enabled", 0x0F, "B");
-  Output3.addOutput("[EffectRack1_EffectUnit2_Effect3]", "enabled", 0x10, "B");
+  Output3.addOutput("[EffectRack1_EffectUnit2]", "!FXFocusButton", 0x0D, "B");
+  Output3.addOutput("[EffectRack1_EffectUnit2_Effect1]", "!FXButton1", 0x0E, "B");
+  Output3.addOutput("[EffectRack1_EffectUnit2_Effect2]", "!FXButton2", 0x0F, "B");
+  Output3.addOutput("[EffectRack1_EffectUnit2_Effect3]", "!FXButton3", 0x10, "B");
+
+  var effectFocusedCallback = function (focusedEffect, effectUnit, control) {
+    var regexMatch = effectUnit.match(script.effectUnitRegEx);
+    var effectUnitNumber = regexMatch[1];
+
+    for (var i = 1; i <= 3; i++) {
+      var effectString = "[EffectRack1_EffectUnit" + effectUnitNumber + "_Effect" + i +"]";
+
+      // disconnect old output callbacks
+      var oldConnection = TraktorS4MK2.controller.effect_button_output_connections[effectUnit][i];
+      if (oldConnection !== undefined) {
+        oldConnection.disconnect();
+      }
+
+      // Take care of soft takeover for the knobs being switched away from.
+      // previously_focused_effect is null on startup to avoid calling
+      // engine.softTakeoverIgnoreNextValue
+      var previouslyFocusedEffect =
+        TraktorS4MK2.controller.previously_focused_effect[effectUnit];
+
+      if (previouslyFocusedEffect === 0) {
+        engine.softTakeoverIgnoreNextValue(effectString, "meta");
+      } else if (previouslyFocusedEffect !== null) {
+        engine.softTakeoverIgnoreNextValue(
+          "[EffectRack1_EffectUnit" + effectUnitNumber + "_Effect" +
+          previouslyFocusedEffect + "]",
+          "parameter" + i);
+      }
+
+      var outputCallback = function (value, group, control) {
+        var led_value = 0x19;
+        if (value) {
+          led_value = 0x7F;
+        }
+        TraktorS4MK2.controller.setOutput(effectString, "!FXButton" + i, led_value,
+                                          !TraktorS4MK2.controller.freeze_lights);
+      };
+
+      if (focusedEffect === 0) {
+        TraktorS4MK2.controller.effect_button_output_connections[effectUnit][i] =
+          engine.makeConnection(effectString, "enabled", outputCallback);
+        TraktorS4MK2.controller.setOutput(effectUnit, "!FXFocusButton", 0x19, false);
+      } else {
+        var focusedEffectString = "[EffectRack1_EffectUnit" + effectUnitNumber +
+          "_Effect" + focusedEffect +"]";
+        TraktorS4MK2.controller.effect_button_output_connections[effectUnit][i] =
+          engine.makeConnection(focusedEffectString, "parameter" + i, outputCallback);
+        TraktorS4MK2.controller.setOutput(effectUnit, "!FXFocusButton", 0x7F, false);
+      }
+      TraktorS4MK2.controller.effect_button_output_connections[effectUnit][i].trigger();
+    }
+    TraktorS4MK2.controller.previously_focused_effect[effectUnit] = focusedEffect;
+  };
+
+  TraktorS4MK2.controller.effect_focus_connection["[EffectRack1_EffectUnit1]"] =
+    engine.makeConnection("[EffectRack1_EffectUnit1]", "focused_effect",
+                          effectFocusedCallback);
+  TraktorS4MK2.controller.effect_focus_connection["[EffectRack1_EffectUnit1]"].trigger();
+
+  TraktorS4MK2.controller.effect_focus_connection["[EffectRack1_EffectUnit2]"] =
+    engine.makeConnection("[EffectRack1_EffectUnit2]", "focused_effect",
+                          effectFocusedCallback);
+  TraktorS4MK2.controller.effect_focus_connection["[EffectRack1_EffectUnit2]"].trigger();
 
   Output3.addOutput("[EffectRack1_EffectUnit1]", "show_parameters", 0x11, "B");
 
   Output3.addOutput("[EffectRack1_EffectUnit2]", "show_parameters", 0x12, "B");
 
 
- for (i=0; i < 16; i++){
-   Output3.addOutput("deck1", "!loopSize"+i, 0x1B+i, "B");
-   Output3.addOutput("deck2", "!loopSize"+i, 0x2B+i, "B");
- }
+  for (i=0; i < 16; i++){
+    Output3.addOutput("deck1", "!loopSize"+i, 0x1B+i, "B");
+    Output3.addOutput("deck2", "!loopSize"+i, 0x2B+i, "B");
+  }
 
   this.controller.registerOutputPacket(Output3);
 
@@ -502,12 +594,6 @@ TraktorS4MK2.registerOutputPackets = function() {
 
   TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit1]", "show_parameters", TraktorS4MK2.outputChannelCallback);
   TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit2]", "show_parameters", TraktorS4MK2.outputChannelCallback);
-  TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit1_Effect1]", "enabled", TraktorS4MK2.outputChannelCallback)
-  TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit1_Effect2]", "enabled", TraktorS4MK2.outputChannelCallback);
-  TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit1_Effect3]", "enabled", TraktorS4MK2.outputChannelCallback);
-  TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit2_Effect1]", "enabled", TraktorS4MK2.outputChannelCallback);
-  TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit2_Effect2]", "enabled", TraktorS4MK2.outputChannelCallback);
-  TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit2_Effect3]", "enabled", TraktorS4MK2.outputChannelCallback);
 
   TraktorS4MK2.linkChannelOutput("[PreviewDeck1]", "play_indicator", TraktorS4MK2.outputChannelCallback);
   TraktorS4MK2.linkChannelOutput("[InternalClock]", "sync_master", TraktorS4MK2.outputChannelCallback);
@@ -1180,22 +1266,73 @@ TraktorS4MK2.snapHandler = function(field) {
   engine.setValue("[Master]", "maximize_library", !library_maximized);
 }
 
-TraktorS4MK2.FXButtonHandler = function(field){
-  if(field.value){
-    if (
-      TraktorS4MK2.controller.shift_pressed['deck1'] ||
-      TraktorS4MK2.controller.shift_pressed['deck2']
-    ) {
-      engine.setValue(field.group, "effect_selector", 1);
+TraktorS4MK2.FXButtonHandler = function (field) {
+  var regexMatch = field.group.match(script.individualEffectRegEx);
+  var effectUnitNumber = regexMatch[1];
+  var buttonNumber = regexMatch[2];
+  var effectUnit = "[EffectRack1_EffectUnit" + effectUnitNumber + "]";
+  var focusedEffect = engine.getValue(effectUnit, "focused_effect");
+
+  if (field.value) {
+    if (TraktorS4MK2.controller.effect_focus_button_pressed[effectUnit]) {
+      if (focusedEffect === buttonNumber) {
+        engine.setValue(effectUnit, "focused_effect", 0);
+      } else {
+        engine.setValue(effectUnit, "focused_effect", buttonNumber);
+      }
     } else {
-      engine.setValue(field.group, "enabled", !engine.getValue(field.group, "enabled"));
+      if (TraktorS4MK2.controller.shift_pressed['deck1']
+          || TraktorS4MK2.controller.shift_pressed['deck2']) {
+        engine.setValue(field.group, "effect_selector", 1);
+      } else {
+        if (focusedEffect === 0) {
+          script.toggleControl(field.group, "enabled");
+        } else {
+          var effectString = "[EffectRack1_EffectUnit" + effectUnitNumber + "_Effect" + focusedEffect + "]";
+          script.toggleControl(effectString, "button_parameter" + buttonNumber);
+        }
+      }
     }
   }
   TraktorS4MK2.lightDeck(field.group);
 }
 
-TraktorS4MK2.FXMetaHandler = function(field){
-  engine.setValue(field.group, "meta", field.value / parseFloat(4096));
+TraktorS4MK2.FXFocusButtonHandler = function (field) {
+  if (field.value) {
+    var regexMatch = field.group.match(script.effectUnitRegEx);
+    var effectUnitNumber = regexMatch[1];
+    var focusedEffect = engine.getValue(field.group, "focused_effect");
+
+    for (var x = 1; x <= 3; x++) {
+      var effectString = "[EffectRack1_EffectUnit" + effectUnitNumber + "_Effect" + x +"]";
+      var led_value = 0x19;
+      if (focusedEffect === x) {
+        led_value = 0x7F;
+      }
+      TraktorS4MK2.controller.setOutput(effectString, "!FXButton" + x, led_value,
+                                        !TraktorS4MK2.controller.freeze_lights);
+    }
+  } else {
+    for (var i = 1; i <= 3; i++) {
+      TraktorS4MK2.controller.effect_button_output_connections[field.group][i].trigger();
+    }
+  }
+  TraktorS4MK2.controller.effect_focus_button_pressed[field.group] = field.value;
+}
+
+TraktorS4MK2.FXKnobHandler = function (field) {
+  var regexMatch = field.group.match(script.individualEffectRegEx);
+  var effectUnitNumber = regexMatch[1];
+  var knobNumber = regexMatch[2];
+  var focusedEffect = engine.getValue("[EffectRack1_EffectUnit" + effectUnitNumber + "]",
+                                      "focused_effect");
+  if (focusedEffect === 0) {
+    engine.setValue(field.group, "meta", field.value / parseFloat(4096));
+  } else {
+    engine.setValue("[EffectRack1_EffectUnit" + effectUnitNumber + "_Effect" + focusedEffect +"]",
+                    "parameter" + knobNumber,
+                    field.value / parseFloat(4096));
+  }
 }
 
 
