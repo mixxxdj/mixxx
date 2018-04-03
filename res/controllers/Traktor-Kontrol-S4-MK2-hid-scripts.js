@@ -1567,12 +1567,12 @@ TraktorS4MK2.onLoopSizeChanged = function(value, group, key) {
   } else if (value.toString().length === 2 ) {
     TraktorS4MK2.sendLoopSizeMessage(deck, value.toString().split("")[0], value.toString().split("")[1], false, false);
   // deal with fraction beats
-  } else if (1 > value > 0 ) {
+  } else if (1 > value > 0) {
     var inverse_value = 1/value;
     if (inverse_value % 1 === 0){
-      if (inverse_value.toString().length === 1){
+      if (inverse_value.toString().length === 1) {
         TraktorS4MK2.sendLoopSizeMessage(deck, '', inverse_value, false, true);
-      }else if(inverse_value.toString().length === 2) {
+      } else if(inverse_value.toString().length === 2) {
         TraktorS4MK2.sendLoopSizeMessage(deck, inverse_value.toString().split("")[0], inverse_value.toString().split("")[1], true, false);
       }
     }
