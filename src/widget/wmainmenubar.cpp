@@ -679,7 +679,8 @@ void VisibilityControlConnection::slotClearControl() {
 }
 
 void VisibilityControlConnection::slotReconnectControl() {
-    m_pControl.reset(new ControlProxy(m_key, this));
+    m_pControl.reset(new ControlProxy(this));
+    m_pControl->initialize(m_key, false);
     m_pControl->connectValueChanged(SLOT(slotControlChanged()));
     m_pAction->setEnabled(m_pControl->valid());
     slotControlChanged();
