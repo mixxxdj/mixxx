@@ -216,6 +216,9 @@ void DlgPrefInterface::slotUpdateSchemes() {
 
 void DlgPrefInterface::slotUpdate() {
     m_skinOnUpdate = m_pConfig->getValueString(ConfigKey("[Config]", "ResizableSkin"));
+    if (m_skinOnUpdate.isEmpty()) {
+        m_skinOnUpdate = m_pSkinLoader->getDefaultSkinName();
+    }
     ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findText(m_skinOnUpdate));
     slotUpdateSchemes();
     m_bRebootMixxxView = false;
