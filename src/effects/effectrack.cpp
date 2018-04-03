@@ -211,8 +211,8 @@ QDomElement EffectRack::toXml(QDomDocument* doc) const {
     return rackElement;
 }
 
-bool EffectRack::getAdoptMetaknobPositionSetting() const {
-    return m_pEffectChainManager->getAdoptMetaknobPositionSetting();
+bool EffectRack::isAdoptMetaknobValueEnabled() const {
+    return m_pEffectChainManager->isAdoptMetaknobValueEnabled();
 }
 
 StandardEffectRack::StandardEffectRack(EffectsManager* pEffectsManager,
