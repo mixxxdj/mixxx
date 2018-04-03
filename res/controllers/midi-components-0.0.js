@@ -620,21 +620,21 @@
                 // when show_parameters button is clicked in skin.
                 // Otherwise this.previouslyFocusedEffect would always be set to 0
                 // on the second call.
-                if (engine.getValue(this.group, 'show_focus') > 0) {
-                    engine.setValue(this.group, 'show_focus', 0);
-                    this.previouslyFocusedEffect = engine.getValue(this.group,
+                if (engine.getValue(eu.group, 'show_focus') > 0) {
+                    engine.setValue(eu.group, 'show_focus', 0);
+                    eu.previouslyFocusedEffect = engine.getValue(eu.group,
                                                                   "focused_effect");
-                    engine.setValue(this.group, "focused_effect", 0);
+                    engine.setValue(eu.group, "focused_effect", 0);
                 }
             } else {
-                engine.setValue(this.group, 'show_focus', 1);
-                if (this.previouslyFocusedEffect !== undefined) {
-                    engine.setValue(this.group, 'focused_effect',
-                                    this.previouslyFocusedEffect);
+                engine.setValue(eu.group, 'show_focus', 1);
+                if (eu.previouslyFocusedEffect !== undefined) {
+                    engine.setValue(eu.group, 'focused_effect',
+                                    eu.previouslyFocusedEffect);
                 }
             }
-            if (this.enableButtons !== undefined) {
-                this.enableButtons.reconnectComponents(function (button) {
+            if (eu.enableButtons !== undefined) {
+                eu.enableButtons.reconnectComponents(function (button) {
                     button.stopEffectFocusChooseMode();
                 });
             }
@@ -790,7 +790,10 @@
                         value = (this.MSB << 7) + value;
                     }
                     var change = value - this.valueAtLastEffectSwitch;
-                    if (Math.abs(change) >= this.changeThreshold) {
+                    if (Math.abs(change) >= this.changeThreshold
+                        // this.valueAtLastEffectSwitch can be undefined if
+                        // shift was pressed before the first MIDI value was received.
+                        || this.valueAtLastEffectSwitch === undefined) {
                         var effectGroup = '[EffectRack1_EffectUnit' +
                                            eu.currentUnitNumber + '_Effect' +
                                            this.number + ']';

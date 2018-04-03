@@ -36,33 +36,35 @@ for (var ch = 0; ch <= 0xF; ++ch) {
     XoneK2.controllers[ch].deckPicked = false;
     // This gets incremented to 0 by the init function calling XoneK2.decksLayerButton
     XoneK2.controllers[ch].deckLayerIndex = -1;
+    XoneK2.controllers[ch].focusedEffectUnit = 1;
+    XoneK2.controllers[ch].singleEffectUnitModeActive = false;
 }
 
 XoneK2.init = function (id) {
     var channel = XoneK2.decksInMiddleMidiChannel;
-    XoneK2.controllers[channel].columns[1] = new XoneK2.EffectUnit(1, 1, channel);
+    XoneK2.controllers[channel].columns[1] = new XoneK2.EffectUnit(1, 1, channel, true);
     XoneK2.controllers[channel].columns[2] = new XoneK2.Deck(2, 1, channel);
     XoneK2.controllers[channel].columns[3] = new XoneK2.Deck(3, 2, channel);
-    XoneK2.controllers[channel].columns[4] = new XoneK2.EffectUnit(4, 2, channel);
+    XoneK2.controllers[channel].columns[4] = new XoneK2.EffectUnit(4, 2, channel, true);
     XoneK2.decksLayerButton(channel, null, null, 0x90 + channel, null);
 
     channel = XoneK2.effectsInMiddleMidiChannel;
     XoneK2.controllers[channel].columns[1] = new XoneK2.Deck(1, 1, channel);
-    XoneK2.controllers[channel].columns[2] = new XoneK2.EffectUnit(1, 1, channel);
-    XoneK2.controllers[channel].columns[3] = new XoneK2.EffectUnit(3, 2, channel);
+    XoneK2.controllers[channel].columns[2] = new XoneK2.EffectUnit(2, 1, channel, true);
+    XoneK2.controllers[channel].columns[3] = new XoneK2.EffectUnit(3, 2, channel, true);
     XoneK2.controllers[channel].columns[4] = new XoneK2.Deck(4, 2, channel);
     XoneK2.decksLayerButton(channel, null, null, 0x90 + channel, null);
 
     channel = XoneK2.decksOnLeftMidiChannel;
     XoneK2.controllers[channel].columns[1] = new XoneK2.Deck(1, 1, channel);
-    XoneK2.controllers[channel].columns[2] = new XoneK2.Deck(1, 2, channel);
-    XoneK2.controllers[channel].columns[3] = new XoneK2.EffectUnit(3, 1, channel);
-    XoneK2.controllers[channel].columns[4] = new XoneK2.EffectUnit(4, 2, channel);
+    XoneK2.controllers[channel].columns[2] = new XoneK2.Deck(2, 2, channel);
+    XoneK2.controllers[channel].columns[3] = new XoneK2.EffectUnit(3, 1, channel, true);
+    XoneK2.controllers[channel].columns[4] = new XoneK2.EffectUnit(4, 2, channel, true);
     XoneK2.decksLayerButton(channel, null, null, 0x90 + channel, null);
 
     channel = XoneK2.decksOnRightMidiChannel;
-    XoneK2.controllers[channel].columns[1] = new XoneK2.EffectUnit(1, 1, channel);
-    XoneK2.controllers[channel].columns[2] = new XoneK2.EffectUnit(2, 2, channel);
+    XoneK2.controllers[channel].columns[1] = new XoneK2.EffectUnit(1, 1, channel, true);
+    XoneK2.controllers[channel].columns[2] = new XoneK2.EffectUnit(2, 2, channel, true);
     XoneK2.controllers[channel].columns[3] = new XoneK2.Deck(3, 1, channel);
     XoneK2.controllers[channel].columns[4] = new XoneK2.Deck(4, 2, channel);
     XoneK2.decksLayerButton(channel, null, null, 0x90 + channel, null);
@@ -227,6 +229,17 @@ components.Button.prototype.isPress = function (channel, control, value, status)
     return (status & 0xF0) === 0x90;
 }
 
+XoneK2.setTopEncoderPressMidi = function (topEncoderPressObject, columnNumber, midiChannel) {
+    topEncoderPressObject.midi = [0x80 + midiChannel, 0x34 + (columnNumber-1)];
+}
+
+XoneK2.setTopButtonsMidi = function (topButtonsObject, columnNumber, midiChannel) {
+    for (var c = 1; c <= 3; c++) {
+        topButtonsObject[c].midi = [0x80 + midiChannel,
+                                    0x30 - (c-1)*4 + (columnNumber-1)];
+    }
+};
+
 XoneK2.setBottomButtonsMidi = function (bottomButtonsObject, columnNumber, midiChannel) {
     for (var c = 1; c <= 4; c++) {
         bottomButtonsObject[c].midi = [0x80 + midiChannel,
@@ -235,13 +248,8 @@ XoneK2.setBottomButtonsMidi = function (bottomButtonsObject, columnNumber, midiC
 };
 
 XoneK2.setColumnMidi = function (columnObject, columnNumber, midiChannel) {
-    columnObject.encoderPress.midi = [0x80 + midiChannel, 0x34 + (columnNumber-1)];
-
-    for (var b = 1; b <= 3; b++) {
-        columnObject.topButtons[b].midi = [0x80 + midiChannel,
-                                           0x30 - (b-1)*4 + (columnNumber-1)];
-    }
-
+    XoneK2.setTopEncoderPressMidi(columnObject.encoderPress, columnNumber, midiChannel);
+    XoneK2.setTopButtonsMidi(columnObject.topButtons, columnNumber, midiChannel);
     XoneK2.setBottomButtonsMidi(columnObject.bottomButtons, columnNumber, midiChannel);
 };
 
@@ -414,6 +422,9 @@ XoneK2.Deck = function (column, deckNumber, midiChannel) {
         shift: function () {
             this.inKey = 'reloop_andstop';
         },
+        supershift: function () {
+            this.inKey = 'loop_in';
+        },
         color: XoneK2.color.red,
     });
 
@@ -424,6 +435,9 @@ XoneK2.Deck = function (column, deckNumber, midiChannel) {
         shift: function () {
             this.inKey = 'beatlooproll_activate';
         },
+        supershift: function () {
+            this.inKey = 'loop_out';
+        },
         trigger: function() {
             this.send(this.on);
         },
@@ -432,11 +446,11 @@ XoneK2.Deck = function (column, deckNumber, midiChannel) {
 
     this.bottomButtonLayers.loop[3] = new components.Button({
         unshift: function () {
-            this.inKey = 'loop_double';
+            this.inKey = 'beatjump_forward';
             this.input = components.Button.prototype.input;
         },
         shift: function () {
-            this.inKey = 'beatjump_forward';
+            this.inKey = 'loop_double';
             this.input = components.Button.prototype.input;
         },
         supershift: function () {
@@ -455,11 +469,11 @@ XoneK2.Deck = function (column, deckNumber, midiChannel) {
 
     this.bottomButtonLayers.loop[4] = new components.Button({
         unshift: function () {
-            this.inKey = 'loop_halve';
+            this.inKey = 'beatjump_backward';
             this.input = components.Button.prototype.input;
         },
         shift: function () {
-            this.inKey = 'beatjump_backward';
+            this.inKey = 'loop_halve';
             this.input = components.Button.prototype.input;
         },
         supershift: function () {
@@ -499,9 +513,9 @@ XoneK2.Deck = function (column, deckNumber, midiChannel) {
 
     this.bottomButtons = this.bottomButtonLayers[XoneK2.deckBottomButtonLayers[0].name];
 
+    XoneK2.setColumnMidi(this, column, midiChannel);
     this.reconnectComponents(setGroup);
 
-    XoneK2.setColumnMidi(this, column, midiChannel);
 };
 XoneK2.Deck.prototype = new components.Deck();
 
@@ -570,34 +584,275 @@ XoneK2.decksLayerButton = function (channel, control, value, status) {
     }
 };
 
-XoneK2.EffectUnit = function (column, unitNumber, midiChannel) {
-    components.EffectUnit.call(this, [unitNumber], false, {
+XoneK2.EffectUnit = function (column, unitNumber, midiChannel, twoDeck) {
+    // "library" refers to the Components library
+    // This is a private variable rather than a property of XoneK2.EffectUnit
+    // so that components.ComponentContainer.prototype.shift/unshift do not
+    // call the shift/unshift methods of the components in libraryEffectUnit
+    // when a single effect unit is focused.
+    var libraryEffectUnit = new components.EffectUnit([unitNumber], false, {
         unfocused: XoneK2.color.red,
         focusChooseMode: XoneK2.color.green,
         focused: XoneK2.color.amber,
     });
 
-    this.encoder = new components.Component();
-    // TODO: figure out a use for this
-    this.encoder.input = function () {};
-    this.encoderPress = this.effectFocusButton;
+    var unitString = '[EffectRack1_EffectUnit' + unitNumber + ']';
 
-    this.topButtons = [];
-    for (var b = 0; b <= 3; b++) {
-        this.topButtons[b] = this.enableButtons[b];
-    }
+    this.hadParametersShowing = engine.getValue(unitString, 'show_parameters');
+    this.hadFocusShowing = engine.getValue(unitString, 'show_focus');
 
-    this.fader = this.dryWetKnob;
+    this.fader = libraryEffectUnit.dryWetKnob;
 
-    this.bottomButtons = [];
+    this.bottomButtons = new components.ComponentContainer();
     var channelString;
-    for (var c = 1; c <= 4; c++) {
-        channelString = "Channel" + c;
-        this.enableOnChannelButtons.addButton(channelString);
-        this.bottomButtons[c] = this.enableOnChannelButtons[channelString];
+    libraryEffectUnit.enableOnChannelButtons.addButton('Channel1');
+    this.bottomButtons[1] = libraryEffectUnit.enableOnChannelButtons.Channel1;
+    libraryEffectUnit.enableOnChannelButtons.addButton('Channel2');
+    this.bottomButtons[2] = libraryEffectUnit.enableOnChannelButtons.Channel2;
+    if (twoDeck === true) {
+        libraryEffectUnit.enableOnChannelButtons.addButton('Master');
+        this.bottomButtons[3] = libraryEffectUnit.enableOnChannelButtons.Master;
+        libraryEffectUnit.enableOnChannelButtons.addButton('Headphone');
+        this.bottomButtons[4] = libraryEffectUnit.enableOnChannelButtons.Headphone;
+    } else {
+        this.bottomButtons[3] = new components.Button({
+            group: unitString,
+            unshift: function () {
+                this.disconnect();
+                this.inKey = 'group_[Channel3]_enable';
+                this.outKey = 'group_[Channel3]_enable';
+                this.color = XoneK2.color.red;
+                this.connect();
+                this.trigger();
+            },
+            shift: function () {
+                this.disconnect();
+                this.inKey = 'group_[Master]_enable';
+                this.outKey = 'group_[Master]_enable';
+                this.color = XoneK2.color.amber;
+                this.connect();
+                this.trigger();
+            },
+            type: components.Button.prototype.types.toggle,
+        });
+        this.bottomButtons[4] = new components.Button({
+            group: unitString,
+            unshift: function () {
+                this.disconnect();
+                this.inKey = 'group_[Channel4]_enable';
+                this.outKey = 'group_[Channel4]_enable';
+                this.color = XoneK2.color.red;
+                this.connect();
+                this.trigger();
+            },
+            shift: function () {
+                this.disconnect();
+                this.inKey = 'group_[Headphone]_enable';
+                this.outKey = 'group_[Headphone]_enable';
+                this.color = XoneK2.color.amber;
+                this.connect();
+                this.trigger();
+            },
+            type: components.Button.prototype.types.toggle,
+        });
     }
 
-    XoneK2.setColumnMidi(this, column, midiChannel);
-    this.init();
+    this.encoder = new components.Component({
+        // TODO: figure out a use for this. Maybe switching chain presets?
+        input: function () {},
+    });
+
+    this.topButtons = new components.ComponentContainer();
+    this.knobs = new components.ComponentContainer();
+
+    this.useLibraryEffectUnit = function () {
+        //print('*************************************************** COLUMN '
+        //    + column + ' USING LIBRARY UNIT');
+
+        this.knobs.forEachComponent(function (component) {
+            component.disconnect();
+        });
+        this.topButtons.forEachComponent(function (component) {
+            component.disconnect();
+        });
+
+        this.encoderPress = libraryEffectUnit.effectFocusButton;
+        this.knobs = libraryEffectUnit.knobs;
+        this.topButtons = libraryEffectUnit.enableButtons;
+
+        engine.setValue(unitString, 'show_focus', this.hadFocusShowing);
+        engine.setValue(unitString, 'show_parameters', this.hadParametersShowing);
+
+        XoneK2.setColumnMidi(this, column, midiChannel);
+        if (libraryEffectUnit.hasInitialized) {
+            libraryEffectUnit.showParametersConnection =
+                engine.makeConnection(unitString,
+                                      'show_parameters',
+                                      libraryEffectUnit.onShowParametersChange);
+
+            libraryEffectUnit.knobs.reconnectComponents();
+            libraryEffectUnit.enableButtons.reconnectComponents();
+            libraryEffectUnit.effectFocusButton.connect();
+            libraryEffectUnit.effectFocusButton.trigger();
+            libraryEffectUnit.showParametersConnection.trigger();
+        } else {
+            libraryEffectUnit.init();
+        }
+
+    };
+    this.useLibraryEffectUnit();
+
+    this.unitFocusButton = new components.Button({
+        input: function (channel, control, value, status) {
+            if (this.isPress(channel, control, value, status)) {
+                if (XoneK2.controllers[channel].focusedEffectUnit === unitNumber) {
+                    // Prevent flickering
+                    return;
+                }
+
+                for (var x = 1; x <= 4; ++x) {
+                    var effectUnitColumn = XoneK2.controllers[channel].columns[x];
+                    if (!(effectUnitColumn instanceof XoneK2.EffectUnit)) {
+                        continue;
+                    }
+
+                    XoneK2.controllers[channel].focusedEffectUnit = unitNumber;
+                    effectUnitColumn.focusUnit(unitNumber);
+                }
+            }
+        },
+        color: XoneK2.color.red,
+    });
+    XoneK2.setTopEncoderPressMidi(this.unitFocusButton, column, midiChannel);
+
+    this.disconnectShowParameters = function () {
+        libraryEffectUnit.showParametersConnection.disconnect();
+    };
+
+    this.focusUnit = function (focusedUnitNumber) {
+        //print('================================================== COLUMN '
+        //    + column + ' FOCUSING UNIT ' + focusedUnitNumber);
+
+        libraryEffectUnit.effectFocusButton.disconnect();
+        // The showParametersConnection connection does not belong to any specific
+        // Component, so it must be disconnected manually. This script creates
+        // objects for every potential layout on different MIDI channels. The
+        // showParametersConnection for every XoneK2.EffectUnit must be disconnected
+        // or the connections for other MIDI channels will interfere with
+        // the MIDI channel actually being used.
+        for (var n = 0; n <= 0xF; n++) {
+            var col = XoneK2.controllers[n].columns[column];
+            if (col instanceof XoneK2.EffectUnit) {
+                col.disconnectShowParameters();
+            }
+        }
+        libraryEffectUnit.showParametersConnection.disconnect();
+        this.knobs.forEachComponent(function (component) {
+            component.disconnect();
+        });
+        this.topButtons.forEachComponent(function (component) {
+            component.disconnect();
+        });
+
+        if (!XoneK2.controllers[midiChannel].singleEffectUnitModeActive) {
+            this.hadFocusShowing = engine.getValue(unitString, 'show_focus');
+            this.hadParametersShowing = engine.getValue(unitString, 'show_parameters');
+        }
+        engine.setValue(unitString, 'show_focus', 0);
+        engine.setValue(unitString, 'show_parameters', focusedUnitNumber === unitNumber);
+
+        this.encoderPress = this.unitFocusButton;
+        this.unitFocusButton.send(focusedUnitNumber === unitNumber);
+
+        // The containers must be reassigned to new objects before reassigning
+        // the Components within them. Otherwise, the Components in
+        // libraryEffectUnit will get reassigned too.
+        this.knobs = new components.ComponentContainer();
+        this.topButtons = new components.ComponentContainer();
+        for (var k = 1; k <= 3; k++) {
+            this.knobs[k] = new components.Pot({
+                group: '[EffectRack1_EffectUnit' + focusedUnitNumber + '_Effect' + k + ']',
+                inKey: 'parameter' + column,
+                unshift: function () {
+                    this.input = function (channel, control, value, status, group) {
+                        this.inSetParameter(this.inValueScale(value));
+
+                        if (this.previousValueReceived === undefined) {
+                            engine.softTakeover(this.group, this.inKey, true);
+                        }
+                        this.previousValueReceived = value;
+                    };
+                },
+                shift: function () {
+                    engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
+                    this.valueAtLastEffectSwitch = this.previousValueReceived;
+                    // Floor the threshold to ensure that every effect can be selected
+                    this.changeThreshold = Math.floor(this.max /
+                        engine.getValue('[Master]', 'num_effectsavailable'));
+
+                    this.input = function (channel, control, value, status, group) {
+                        var change = value - this.valueAtLastEffectSwitch;
+                        if (Math.abs(change) >= this.changeThreshold
+                            // this.valueAtLastEffectSwitch can be undefined if
+                            // shift was pressed before the first MIDI value was received.
+                            || this.valueAtLastEffectSwitch === undefined) {
+                            engine.setValue(this.group, 'effect_selector', change);
+                            this.valueAtLastEffectSwitch = value;
+                        }
+
+                        this.previousValueReceived = value;
+                    };
+                },
+            });
+
+            if (column === 1) {
+                this.topButtons[k] = new components.Button({
+                    group: '[EffectRack1_EffectUnit' + focusedUnitNumber + '_Effect' + k + ']',
+                    key: 'enabled',
+                    type: components.Button.prototype.types.powerWindow,
+                    color: XoneK2.color.amber,
+                    outConnect: false, // midi is not defined yet
+                });
+            } else {
+                this.topButtons[k] = new components.Button({
+                    group: '[EffectRack1_EffectUnit' + focusedUnitNumber + '_Effect' + k + ']',
+                    key: 'button_parameter' + (column-1),
+                    type: components.Button.prototype.types.powerWindow,
+                    color: XoneK2.color.green,
+                    outConnect: false, // midi is not defined yet
+                });
+            }
+        }
+        XoneK2.setTopButtonsMidi(this.topButtons, column, midiChannel);
+        this.knobs.reconnectComponents();
+        this.topButtons.reconnectComponents();
+    };
 };
 XoneK2.EffectUnit.prototype = new components.ComponentContainer();
+
+// This is only used for the 4 effect unit layouts
+XoneK2.effectsLayerButton = function (channel, control, value, status) {
+    if (components.Button.prototype.isPress(channel, control, value, status)) {
+        for (var x = 1; x <= 4; ++x) {
+            var effectUnitColumn = XoneK2.controllers[channel].columns[x];
+            if (!(effectUnitColumn instanceof XoneK2.EffectUnit)) {
+                continue;
+            }
+
+            if (XoneK2.controllers[channel].singleEffectUnitModeActive === true) {
+                effectUnitColumn.useLibraryEffectUnit();
+            } else {
+                effectUnitColumn.focusUnit(XoneK2.controllers[channel].focusedEffectUnit);
+            }
+        }
+
+        XoneK2.controllers[channel].singleEffectUnitModeActive =
+            !XoneK2.controllers[channel].singleEffectUnitModeActive;
+
+        if (XoneK2.controllers[channel].singleEffectUnitModeActive) {
+            midi.sendShortMsg(status, XoneK2.layerButtonColors.red, 0x7F);
+        } else {
+            midi.sendShortMsg(status, XoneK2.layerButtonColors.red, 0x00);
+        }
+    }
+};
