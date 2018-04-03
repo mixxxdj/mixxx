@@ -1583,7 +1583,7 @@ TraktorS4MK2.onLoopSizeChanged = function(value, group, key) {
       if (inverse_value.toString().length === 1) {
         TraktorS4MK2.sendLoopSizeMessage(deck, '', inverse_value, false, true);
       } else if(inverse_value.toString().length === 2) {
-        TraktorS4MK2.sendLoopSizeMessage(deck, inverse_value.toString().split("")[0], inverse_value.toString().split("")[1], true, false);
+        TraktorS4MK2.sendLoopSizeMessage(deck, inverse_value.toString().split("")[0], inverse_value.toString().split("")[1], false, true);
       }
     }
   // deal with larger Loops
