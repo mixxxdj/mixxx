@@ -28,6 +28,11 @@
                 </Children>
               </WidgetGroup>
 
+              <WidgetGroup><!-- black spacer -->
+                <ObjectName>WaveformDivider</ObjectName>
+                <Size>10f,me</Size>
+              </WidgetGroup>
+
               <WidgetGroup><!-- Waveform 2 -->
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,me</SizePolicy>
@@ -69,6 +74,15 @@
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- Waveform 3 -->
+
+              <WidgetGroup><!-- black spacer -->
+                <ObjectName>WaveformDivider</ObjectName>
+                <Size>10f,me</Size>
+                <Connection>
+                  <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
 
               <WidgetGroup><!-- Waveform 4 -->
                 <Layout>horizontal</Layout>
