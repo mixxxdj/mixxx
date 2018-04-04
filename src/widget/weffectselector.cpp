@@ -36,6 +36,23 @@ void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
                 << "EffectSelector node could not attach to effect slot.";
     }
 
+    // macOS displays a wide checkmark on the left of the drop down menu
+    // that displaces text and makes it get cut off on the right side.
+    // The checkmark icon can be hidden by styling WEffectSelector::indicator,
+    // but the space it occupies cannot be easily changed. So, set a negative
+    // left margin for WEffectSelector QAbstractItemView. However, that
+    // causes the text to get cut off on the left on KDE, so here is a horribly
+    // ugly hack to set the QSS margin from C++ in a platform dependent way.
+#ifdef _Q_OS_MAC
+        setStyleSheet(QString(
+            // Setting a more negative left margin than necessary puts the
+            // text up against the left side of the drop down menu but does
+            // not cut off the left side of the text on macOS.
+            "WEffectSelector QAbstractItemView { margin: 0 0 0 -100px; } \n")
+            // This hides the checkmark icon.
+            "WEffectSelector::indicator { background-color: transparent; }");
+#endif
+
     populate();
 }
 
