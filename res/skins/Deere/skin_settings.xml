@@ -42,7 +42,7 @@
         <Children>
 
           <PushButton>
-            <TooltipId>toggle_parallel_waveforms</TooltipId>
+            <TooltipId></TooltipId>
             <Size>80me,20f</Size>
             <NumberStates>2</NumberStates>
             <State>
@@ -257,7 +257,7 @@
           </PushButton>
 
           <PushButton>
-            <TooltipId>show_eqs</TooltipId>
+            <TooltipId></TooltipId>
             <Size>80me,20f</Size>
             <NumberStates>2</NumberStates>
             <State>
@@ -276,7 +276,7 @@
           </PushButton>
 
           <PushButton>
-            <TooltipId>show_killswitches</TooltipId>
+            <TooltipId></TooltipId>
             <Size>80me,20f</Size>
             <NumberStates>2</NumberStates>
             <State>
@@ -295,7 +295,7 @@
           </PushButton>
 
           <PushButton>
-            <TooltipId>show_faders</TooltipId>
+            <TooltipId></TooltipId>
             <Size>80me,20f</Size>
             <NumberStates>2</NumberStates>
             <State>

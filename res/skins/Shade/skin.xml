@@ -240,7 +240,6 @@
 	<Children>
 		<WidgetGroup>
 			<ObjectName>DecksAndMixer</ObjectName>
-			<MinimumSize>1008e,259f</MinimumSize>
 			<Layout>horizontal</Layout>
   			<Children>
 				<WidgetGroup>
