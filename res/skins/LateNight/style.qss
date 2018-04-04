@@ -629,13 +629,13 @@ WEffectButtonParameter*/
   }
   #SkinSettingsButton[displayValue="1"],
   #SkinSettingsButton[displayValue="2"] {
-    background-color: #202020;
+    background-color: #0f0f0f;
     color: #eeeeee;
   }
   #SkinSettingsButton[displayValue="0"]:hover,
   #SkinSettingsButton[displayValue="1"]:hover,
   #SkinSettingsButton[displayValue="2"]:hover {
-    background-color: #0f0f0f;
+    background-color: #202020;
   }
 
 /*################################################################
