@@ -77,7 +77,7 @@ QString computeSettingsPath(const QString& configFilename) {
         QFileInfo configFileInfo(configFilename);
         return configFileInfo.absoluteDir().absolutePath();
     }
-    return configFilename;
+    return QString();
 }
 
 }  // namespace
