@@ -287,6 +287,25 @@
               <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
             </Connection>
           </PushButton>
+          
+          <PushButton>
+            <Size>69f,24f</Size>
+            <TooltipId>skin_settings</TooltipId>
+            <ObjectName>GuiToggleButton</ObjectName>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>SETTINGS</Text>
+           </State>
+           <State>
+              <Number>1</Number>
+              <Text>SETTINGS</Text>
+          </State>
+          <Connection>
+            <ConfigKey persist="true">[Latenight],skin_settings</ConfigKey>
+          </Connection>
+         </PushButton>
+         
         </Children>
         <Connection>
           <ConfigKey>[Master],maximize_library</ConfigKey>
