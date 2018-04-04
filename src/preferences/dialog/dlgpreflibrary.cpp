@@ -139,7 +139,11 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_show_itunes->setChecked(true);
     checkBox_show_traktor->setChecked(true);
     radioButton_dbclick_bottom->setChecked(false);
+#ifdef Q_OS_MAC
     checkBoxEditMetadataSelectedClicked->setChecked(false);
+#else
+    checkBoxEditMetadataSelectedClicked->setChecked(true);
+#endif
     radioButton_dbclick_top->setChecked(false);
     radioButton_dbclick_deck->setChecked(true);
     spinBoxRowHeight->setValue(Library::kDefaultRowHeightPx);
@@ -177,7 +181,13 @@ void DlgPrefLibrary::slotUpdate() {
     }
 
     bool editMetadataSelectedClick = m_pConfig->getValue(
-            ConfigKey("[Library]","EditMetadataSelectedClick"), false);
+            ConfigKey("[Library]","EditMetadataSelectedClick"),
+// disable by default on macOS due to https://bugs.launchpad.net/mixxx/+bug/1665583
+#ifdef Q_OS_MAC
+            false);
+#else
+            true);
+#endif
     checkBoxEditMetadataSelectedClicked->setChecked(editMetadataSelectedClick);
     m_pLibrary->setEditMedatataSelectedClick(editMetadataSelectedClick);
 
