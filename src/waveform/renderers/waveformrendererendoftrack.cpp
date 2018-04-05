@@ -32,6 +32,7 @@ WaveformRendererEndOfTrack::~WaveformRendererEndOfTrack() {
     delete m_pTrackSampleRate;
     delete m_pPlayControl;
     delete m_pLoopControl;
+    delete m_pTimeRemainingControl;
 }
 
 bool WaveformRendererEndOfTrack::init() {

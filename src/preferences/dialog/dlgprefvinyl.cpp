@@ -33,8 +33,7 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
                            UserSettingsPointer  _config)
         : DlgPreferencePage(parent),
           m_pVCManager(pVCMan),
-          config(_config),
-          m_iConfiguredDecks(0) {
+          config(_config) {
     m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
     m_pNumDecks->connectValueChanged(SLOT(slotNumDecksChanged(double)));
 
@@ -129,7 +128,7 @@ void DlgPrefVinyl::slotNumDecksChanged(double dNumDecks) {
         return;
     }
 
-    for (int i = m_iConfiguredDecks; i < num_decks; ++i) {
+    for (int i = m_COSpeeds.length(); i < num_decks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
         m_COSpeeds.push_back(new ControlProxy(group, "vinylcontrol_speed_type"));
         setDeckWidgetsVisible(i, true);
