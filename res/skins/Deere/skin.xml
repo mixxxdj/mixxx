@@ -65,7 +65,7 @@
   </manifest>
 
   <ObjectName>Mixxx</ObjectName>
-  <Style src="skin:style.qss"/>
+  <Style src="skin:style.qss" src-mac="skin:style-mac.qss"/>
 
   <Size>1008me,550me</Size>
   <Layout>horizontal</Layout>

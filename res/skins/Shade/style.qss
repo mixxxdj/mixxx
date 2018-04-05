@@ -54,27 +54,20 @@ WEffectSelector::down-arrow {
 }
 
 WEffectSelector QAbstractItemView {
+	color: #060613;
+	background-color: #aab2b7;
 	border: 2px solid #060613;
 	selection-background-color: lightgray;
-	font: 13px;
-	/* hack around text getting cut off with scaled checkbox on macOS with Retina screens */
-	margin: 0px 0px 0px -4px; /* no matter if padding or margin, the left border is gone */
 }
 
-WEffectSelector:item
+WEffectSelector::item:selected
 {
-	border: 0px;         /* puts tick mark behind item text */
-	padding-left: 14px;  /* move text right to make room for tick mark */
-	font: 13px;
-	height: 17px; 
+	background-color: lightgray;
 }
 
-WEffectSelector:item:selected
+WEffectSelector::checked
 {
-	border: 0px;
-	font: 13px;
-	background-color: #aab2b7;
-	height: 20px;
+	color: #EC4522;
 }
 
 #EffectSelectorGroup[highlight="1"]{ 
