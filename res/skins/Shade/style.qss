@@ -54,25 +54,20 @@ WEffectSelector::down-arrow {
 }
 
 WEffectSelector QAbstractItemView {
+	color: #060613;
+	background-color: #aab2b7;
 	border: 2px solid #060613;
 	selection-background-color: lightgray;
-	font: 13px;
 }
 
-WEffectSelector:item
+WEffectSelector::item:selected
 {
-	border: 0px;
-	padding-left: 16px;  /* move text right to make room for tick mark */
-	font: 13px;
-	height: 17px; 
+	background-color: lightgray;
 }
 
-WEffectSelector:item:selected
+WEffectSelector::checked
 {
-	border: 0px;
-	font: 13px;
-	background-color: #aab2b7;
-	height: 20px;
+	color: #EC4522;
 }
 
 #EffectSelectorGroup[highlight="1"]{ 

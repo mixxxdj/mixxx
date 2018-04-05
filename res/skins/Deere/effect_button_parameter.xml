@@ -17,7 +17,9 @@
         <Layout>vertical</Layout>
         <Children>
           <EffectPushButton>
-            <Size>55f,15f</Size>
+            <MinimumSize>34,15</MinimumSize>
+            <MaximumSize>55,15</MaximumSize>
+            <SizePolicy>me,f</SizePolicy>
             <ObjectName>EffectButton</ObjectName>
             <NumberStates>2</NumberStates>
               <State>
@@ -35,7 +37,10 @@
           </EffectPushButton>
 
           <EffectButtonParameterName>
-            <Size>55f,15f</Size>
+            <MinimumSize>34,15</MinimumSize>
+            <MaximumSize>55,15</MaximumSize>
+            <SizePolicy>me,f</SizePolicy>
+            <Elide>right</Elide>
             <ObjectName>EffectButtonLabel</ObjectName>
             <EffectRack><Variable name="EffectRack"/></EffectRack>
             <EffectUnit><Variable name="EffectUnit"/></EffectUnit>

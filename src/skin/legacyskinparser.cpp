@@ -1873,6 +1873,26 @@ QString LegacySkinParser::getStyleFromNode(const QDomNode& node) {
                                            fileBytes.length());
         }
 
+        QString platformSpecificAttribute;
+#if defined(Q_OS_MAC)
+        platformSpecificAttribute = "src-mac";
+#elif defined(__WINDOWS__)
+        platformSpecificAttribute = "src-windows";
+#else
+        platformSpecificAttribute = "src-linux";
+#endif
+
+        if (styleElement.hasAttribute(platformSpecificAttribute)) {
+            QString platformSpecificSrc = styleElement.attribute(platformSpecificAttribute);
+            QFile platformSpecificFile(platformSpecificSrc);
+            if (platformSpecificFile.open(QIODevice::ReadOnly)) {
+                QByteArray fileBytes = platformSpecificFile.readAll();
+
+                style += QString::fromLocal8Bit(fileBytes.constData(),
+                                                fileBytes.length());
+            }
+        }
+
 // This section can be enabled on demand. It is useful to tweak
 // pixel sized values for different scalings. But we should know if this is
 // actually used when migrating to Qt5

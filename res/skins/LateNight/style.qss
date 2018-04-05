@@ -1205,7 +1205,6 @@ WEffectSelector {
     border: 1px solid #666;
     border-radius: 2px;
     padding: 0px;
-    margin: 0px 0px 0px -7px;
   }
   /* selected item */
   WEffectSelector::checked {

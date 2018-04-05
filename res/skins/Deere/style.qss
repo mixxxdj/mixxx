@@ -979,9 +979,21 @@ WEffectSelector {
   }
 
   WEffectSelector QAbstractItemView {
-    color: #c1cabe;
     background-color: #201f1f;
-    selection-background-color: #184880;
+  }
+  
+  WEffectSelector::item:!selected {
+    background-color: #201f1f;
+  }
+  
+  WEffectSelector::item:selected {
+    background-color: #08080;
+  }
+  
+  /* currently loaded effect */
+  WEffectSelector::checked {
+    color: #4495F4;
+    font-weight: bold;
   }
 
 #EffectKnob {

@@ -33,6 +33,13 @@ const int kNumberOfAnalyzerThreads = math_max(1, QThread::idealThreadCount() / 2
 
 } // anonymous namespace
 
+//static
+QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumDecks;
+//static
+QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumSamplers;
+//static
+QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumPreviewDecks;
+
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                              SoundManager* pSoundManager,
                              EffectsManager* pEffectsManager,
@@ -45,15 +52,15 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         // NOTE(XXX) LegacySkinParser relies on these controls being Controls
         // and not ControlProxies.
         m_pCONumDecks(new ControlObject(
-            ConfigKey("[Master]", "num_decks"), true, true)),
+                ConfigKey("[Master]", "num_decks"), true, true)),
         m_pCONumSamplers(new ControlObject(
-            ConfigKey("[Master]", "num_samplers"), true, true)),
+                ConfigKey("[Master]", "num_samplers"), true, true)),
         m_pCONumPreviewDecks(new ControlObject(
-            ConfigKey("[Master]", "num_preview_decks"), true, true)),
+                ConfigKey("[Master]", "num_preview_decks"), true, true)),
         m_pCONumMicrophones(new ControlObject(
-            ConfigKey("[Master]", "num_microphones"), true, true)),
+                ConfigKey("[Master]", "num_microphones"), true, true)),
         m_pCONumAuxiliaries(new ControlObject(
-            ConfigKey("[Master]", "num_auxiliaries"), true, true)),
+                ConfigKey("[Master]", "num_auxiliaries"), true, true)),
         m_pTrackAnalysisScheduler(TrackAnalysisScheduler::nullPointer()) {
     connect(m_pCONumDecks, SIGNAL(valueChanged(double)),
             this, SLOT(slotNumDecksControlChanged(double)),
@@ -105,6 +112,10 @@ PlayerManager::~PlayerManager() {
     m_microphones.clear();
     m_auxiliaries.clear();
 
+    delete m_pCOPNumDecks.fetchAndStoreAcquire(nullptr);
+    delete m_pCOPNumSamplers.fetchAndStoreAcquire(nullptr);
+    delete m_pCOPNumPreviewDecks.fetchAndStoreAcquire(nullptr);
+
     delete m_pCONumSamplers;
     delete m_pCONumDecks;
     delete m_pCONumPreviewDecks;
@@ -154,21 +165,6 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
         connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
                 this, SLOT(slotAnalyzeTrack(TrackPointer)));
     }
-}
-
-// static
-unsigned int PlayerManager::numDecks() {
-    // We do this to cache the control once it is created so callers don't incur
-    // a hashtable lookup every time they call this.
-    static ControlProxy* pNumCO = NULL;
-    if (pNumCO == NULL) {
-        pNumCO = new ControlProxy(ConfigKey("[Master]", "num_decks"));
-        if (!pNumCO->valid()) {
-            delete pNumCO;
-            pNumCO = NULL;
-        }
-    }
-    return pNumCO ? pNumCO->get() : 0;
 }
 
 // static
@@ -223,34 +219,52 @@ bool PlayerManager::isPreviewDeckGroup(const QString& group, int* number) {
 }
 
 // static
-unsigned int PlayerManager::numSamplers() {
+unsigned int PlayerManager::numDecks() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    static ControlProxy* pNumCO = NULL;
-    if (pNumCO == NULL) {
-        pNumCO = new ControlProxy(ConfigKey("[Master]", "num_samplers"));
+    if (m_pCOPNumDecks == nullptr) {
+        ControlProxy* pNumCO = new ControlProxy(ConfigKey("[Master]", "num_decks"));
         if (!pNumCO->valid()) {
             delete pNumCO;
             pNumCO = NULL;
+        } else {
+            m_pCOPNumDecks = pNumCO;
         }
     }
-    return pNumCO ? pNumCO->get() : 0;
+    return m_pCOPNumDecks ? m_pCOPNumDecks->get() : 0;
+}
+
+// static
+unsigned int PlayerManager::numSamplers() {
+    // We do this to cache the control once it is created so callers don't incur
+    // a hashtable lookup every time they call this.
+    if (m_pCOPNumSamplers == nullptr) {
+        ControlProxy* pNumCO = new ControlProxy(ConfigKey("[Master]", "num_samplers"));
+        if (!pNumCO->valid()) {
+            delete pNumCO;
+            pNumCO = NULL;
+        } else {
+            m_pCOPNumSamplers = pNumCO;   
+        }
+    }
+    return m_pCOPNumSamplers ? m_pCOPNumSamplers->get() : 0;
 }
 
 // static
 unsigned int PlayerManager::numPreviewDecks() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    static ControlProxy* pNumCO = NULL;
-    if (pNumCO == NULL) {
-        pNumCO = new ControlProxy(
+    if (m_pCOPNumPreviewDecks == NULL) {
+        ControlProxy* pNumCO = new ControlProxy(
                 ConfigKey("[Master]", "num_preview_decks"));
         if (!pNumCO->valid()) {
             delete pNumCO;
             pNumCO = NULL;
+        } else {
+            m_pCOPNumPreviewDecks = pNumCO;   
         }
     }
-    return pNumCO ? pNumCO->get() : 0;
+    return m_pCOPNumPreviewDecks ? m_pCOPNumPreviewDecks->get() : 0;
 }
 
 void PlayerManager::slotNumDecksControlChanged(double v) {

@@ -20,6 +20,7 @@ EffectManifest TremoloEffect::getManifest() {
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
         "Cycles the volume up and down"));
+    manifest.setMetaknobDefault(1.0);
 
     EffectManifestParameter* depth = manifest.addParameter();
     depth->setId("depth");

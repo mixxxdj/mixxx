@@ -64,6 +64,8 @@ class Effect : public QObject {
     static EffectPointer createFromXml(EffectsManager* pEffectsManager,
                                  const QDomElement& element);
 
+    double getMetaknobDefault();
+
   signals:
     void enabledChanged(bool enabled);
 

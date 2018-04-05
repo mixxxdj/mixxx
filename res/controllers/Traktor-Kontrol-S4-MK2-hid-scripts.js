@@ -103,7 +103,7 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("deck1", "loop_in", 0x0E, "B", 0x04);
   MessageShort.addControl("deck1", "slip_enabled", 0x0E, "B", 0x02);
   MessageShort.addControl("deck1", "reset_key", 0x0E, "B", 0x01);
-  MessageShort.addControl("deck1", "beatloop_activate", 0x13, "B", 0x02);
+  MessageShort.addControl("deck1", "!loop_set", 0x13, "B", 0x02);
   MessageShort.addControl("deck1", "!loop_activate", 0x13, "B", 0x01);
   MessageShort.addControl("deck1", "!jog_touch", 0x11, "B", 0x01);
   MessageShort.addControl("deck1", "!jog_wheel", 0x01, "I");
@@ -131,7 +131,7 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("deck2", "loop_in", 0x0B, "B", 0x04);
   MessageShort.addControl("deck2", "slip_enabled", 0x0B, "B", 0x02);
   MessageShort.addControl("deck2", "reset_key", 0x0B, "B", 0x01);
-  MessageShort.addControl("deck2", "beatloop_activate", 0x13, "B", 0x10);
+  MessageShort.addControl("deck2", "!loop_set", 0x13, "B", 0x10);
   MessageShort.addControl("deck2", "!loop_activate", 0x13, "B", 0x08);
   MessageShort.addControl("deck2", "!jog_touch", 0x11, "B", 0x02);
   MessageShort.addControl("deck2", "!jog_wheel", 0x05, "I");
@@ -191,6 +191,8 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.setCallback("deck2", "!load_track", this.loadTrackHandler);
   MessageShort.setCallback("deck1", "!sync_enabled", this.syncEnabledHandler);
   MessageShort.setCallback("deck2", "!sync_enabled", this.syncEnabledHandler);
+  MessageShort.setCallback("deck1", "!loop_set", this.loopSetHandler);
+  MessageShort.setCallback("deck2", "!loop_set", this.loopSetHandler);
   MessageShort.setCallback("deck1", "!loop_activate", this.loopActivateHandler);
   MessageShort.setCallback("deck2", "!loop_activate", this.loopActivateHandler);
   MessageShort.setCallback("deck1", "!jog_touch", this.jogTouchHandler);
@@ -928,16 +930,6 @@ TraktorS4MK2.syncEnabledHandler = function(field) {
   }
 }
 
-TraktorS4MK2.loopActivateHandler = function(field) {
-  var splitted = field.id.split(".");
-  var group = splitted[0];
-  if (TraktorS4MK2.controller.shift_pressed[group]) {
-    engine.setValue(field.group, "pitch_adjust_set_default", field.value);
-  } else {
-    engine.setValue(field.group, "reloop_exit", field.value);
-  }
-}
-
 TraktorS4MK2.cueHandler = function(field) {
   var splitted = field.id.split(".");
   var group = splitted[0];
@@ -1259,33 +1251,44 @@ TraktorS4MK2.callbackLoopMove = function(field) {
     delta = -1;
   }
 
-  // Shift mode: adjust musical key
   if (TraktorS4MK2.controller.shift_pressed[group]) {
-    if (delta == 1) {
-      engine.setValue(field.group, "pitch_up_small", 1);
-      engine.setValue(field.group, "pitch_up_small", 0);
+    var beatjump_size = engine.getValue(field.group, "beatjump_size");
+    if (delta === 1) {
+      engine.setValue(field.group, "beatjump_size", beatjump_size * 2);
     } else {
-      engine.setValue(field.group, "pitch_down_small", 1);
-      engine.setValue(field.group, "pitch_down_small", 0);
+      engine.setValue(field.group, "beatjump_size", beatjump_size / 2);
     }
   } else {
-    engine.setValue(field.group, "loop_move", delta);
+    if (delta === 1) {
+      script.triggerControl(field.group, "beatjump_forward");
+    } else {
+      script.triggerControl(field.group, "beatjump_backward");
+    }
+  }
+}
+
+TraktorS4MK2.loopActivateHandler = function(field) {
+  var splitted = field.id.split(".");
+  var group = splitted[0];
+  if (TraktorS4MK2.controller.shift_pressed[group]) {
+    engine.setValue(field.group, "reloop_andstop", field.value);
+  } else {
+    engine.setValue(field.group, "reloop_toggle", field.value);
   }
 }
 
 TraktorS4MK2.sendLoopSizeMessage = function(deck, firstChar, secondChar, firstDot, secondDot) {
-// display_num must be a string with two chars
+  // display_num must be a string with two characters
   // Do the second number first
   TraktorS4MK2.displayCharLoopCounter(deck, 0, firstChar);
   TraktorS4MK2.displayCharLoopCounter(deck, 1, secondChar);
   TraktorS4MK2.displayCharLoopDot(deck, 0, firstDot);
   TraktorS4MK2.displayCharLoopDot(deck, 1, secondDot);
-
 }
 
 TraktorS4MK2.displayCharLoopCounter = function(deck, charPos, character){
-  // charPost is 0 or 1 for first or second character on the display
-  // the display is placed like this:
+    // charPost is 0 or 1 for first or second character on the display
+    // the display is placed like this:
     // o  -- 4 --
     //   |        |
     //   5        3
@@ -1337,6 +1340,7 @@ TraktorS4MK2.displayCharLoopDot = function(deck, charPos, on){
     !TraktorS4MK2.controller.freeze_lights
   );
 }
+
 TraktorS4MK2.callbackLoopSize = function(field) {
   var splitted = field.id.split(".");
   var group = splitted[0]
@@ -1354,21 +1358,27 @@ TraktorS4MK2.callbackLoopSize = function(field) {
   }
 
   if (TraktorS4MK2.controller.shift_pressed[group]) {
-    var playPosition = engine.getValue(field.group, "playposition")
     if (delta == 1) {
-      playPosition += 0.0125;
+      script.triggerControl(field.group, "pitch_up_small");
     } else {
-      playPosition -= 0.0125;
+      script.triggerControl(field.group, "pitch_down_small");
     }
-    engine.setValue(field.group, "playposition", playPosition);
   } else {
     if (delta == 1) {
-      engine.setValue(field.group, "loop_double", 1);
-      engine.setValue(field.group, "loop_double", 0);
+      script.triggerControl(field.group, "loop_double");
     } else {
-      engine.setValue(field.group, "loop_halve", 1);
-      engine.setValue(field.group, "loop_halve", 0);
+      script.triggerControl(field.group, "loop_halve");
     }
+  }
+}
+
+TraktorS4MK2.loopSetHandler = function(field) {
+  var splitted = field.id.split(".");
+  var group = splitted[0];
+  if (TraktorS4MK2.controller.shift_pressed[group]) {
+    engine.setValue(field.group, "pitch_adjust_set_default", field.value);
+  } else {
+    engine.setValue(field.group, "beatloop_activate", field.value);
   }
 }
 
@@ -1573,7 +1583,7 @@ TraktorS4MK2.onLoopSizeChanged = function(value, group, key) {
       if (inverse_value.toString().length === 1) {
         TraktorS4MK2.sendLoopSizeMessage(deck, '', inverse_value, false, true);
       } else if(inverse_value.toString().length === 2) {
-        TraktorS4MK2.sendLoopSizeMessage(deck, inverse_value.toString().split("")[0], inverse_value.toString().split("")[1], true, false);
+        TraktorS4MK2.sendLoopSizeMessage(deck, inverse_value.toString().split("")[0], inverse_value.toString().split("")[1], false, true);
       }
     }
   // deal with larger Loops

@@ -23,7 +23,7 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <WidgetGroup><Size>0me,-1min</Size></WidgetGroup>
+              <WidgetGroup><Size>0min,-1min</Size></WidgetGroup>
               <Template src="skin:fx_parameter_button.xml">
                 <SetVariable name="FxParameter">1</SetVariable>
               </Template>

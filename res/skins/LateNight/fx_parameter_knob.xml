@@ -14,7 +14,9 @@
   <WidgetGroup>
     <ObjectName>FxKnobContainer</ObjectName>
     <Layout>vertical</Layout>
-    <Size>60f,-1me</Size>
+    <MinimumSize>55,35</MinimumSize>
+    <MaximumSize>60,-1</MaximumSize>
+    <SizePolicy>me,me</SizePolicy>
     <Children>
 
       <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
@@ -68,7 +70,7 @@
       <Template src="skin:button_5state.xml">
         <SetVariable name="TooltipId">EffectSlot_parameter_link_type</SetVariable>
         <SetVariable name="ObjectName">FxSuperLinkButton</SetVariable>
-        <SetVariable name="Size">60f,5f</SetVariable>
+        <SetVariable name="Size">55me,5f</SetVariable>
         <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/>_link_type</SetVariable>
       </Template>
 
@@ -78,7 +80,7 @@
       <Template src="skin:button_2state.xml">
         <SetVariable name="TooltipId">EffectSlot_parameter_inversion</SetVariable>
         <SetVariable name="ObjectName">FxSuperLinkInvertButton</SetVariable>
-        <SetVariable name="Size">60f,7f</SetVariable>
+        <SetVariable name="Size">55me,7f</SetVariable>
         <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/>_link_inverse</SetVariable>
       </Template>
 
