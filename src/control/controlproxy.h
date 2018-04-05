@@ -24,7 +24,7 @@ class ControlProxy : public QObject {
     ControlProxy(const ConfigKey& key, QObject* pParent = NULL);
     virtual ~ControlProxy();
 
-    void initialize(const ConfigKey& key);
+    void initialize(const ConfigKey& key, bool warn = true);
 
     const ConfigKey& getKey() const {
         return m_key;

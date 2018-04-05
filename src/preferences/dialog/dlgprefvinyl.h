@@ -68,7 +68,6 @@ class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
     UserSettingsPointer config;
     QList<ControlProxy*> m_COSpeeds;
     ControlProxy* m_pNumDecks;
-    int m_iConfiguredDecks;
 };
 
 #endif

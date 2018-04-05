@@ -7,9 +7,9 @@ Variables passed through from fx_unit:
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>FxParameters</ObjectName>
+    <ObjectName>FxParameters<Variable name="Side"/></ObjectName>
     <Layout>horizontal</Layout>
-    <Size>max,max</Size>
+    <Size>min,max</Size>
     <Children>
 
       <Template src="skin:fx_parameter_knob.xml">

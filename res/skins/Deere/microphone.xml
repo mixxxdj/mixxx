@@ -33,7 +33,7 @@
           <Template src="skin:knob_with_button.xml">
             <SetVariable name="TooltipId">microphone_pregain</SetVariable>
             <SetVariable name="control">pregain</SetVariable>
-            <SetVariable name="color">carmine</SetVariable>
+            <SetVariable name="color">green</SetVariable>
             <SetVariable name="button_TooltipId">mute</SetVariable>
             <SetVariable name="button_control">mute</SetVariable>
             <SetVariable name="label">Gain</SetVariable>

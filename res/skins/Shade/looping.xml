@@ -119,7 +119,7 @@
                 <Size>50f,20f</Size>
                 <ObjectName>BeatloopSizeSpinBox</ObjectName>
                 <TooltipId>beatloop_size</TooltipId>
-                <Value><Variable name="channum"/>,beatloop_size</Value>
+                <Value>[Channel<Variable name="channum"/>],beatloop_size</Value>
               </BeatSpinBox>
             </Children>
           </WidgetGroup>
@@ -432,7 +432,7 @@
                 <Size>50f,20f</Size>
                 <ObjectName>BeatjumpSizeSpinBox</ObjectName>
                 <TooltipId>beatjump_size</TooltipId>
-                <Value><Variable name="channum"/>,beatjump_size</Value>
+                <Value>[Channel<Variable name="channum"/>],beatjump_size</Value>
               </BeatSpinBox>
             </Children>
           </WidgetGroup>

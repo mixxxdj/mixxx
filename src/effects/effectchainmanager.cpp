@@ -217,3 +217,7 @@ void EffectChainManager::loadEffectChains() {
         }
     }
 }
+
+bool EffectChainManager::isAdoptMetaknobValueEnabled() const {
+    return m_pConfig->getValue(ConfigKey("[Effects]", "AdoptMetaknobValue"), true);
+}

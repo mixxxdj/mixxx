@@ -57,6 +57,8 @@ class EffectRack : public QObject {
 
     QDomElement toXml(QDomDocument* doc) const;
 
+    virtual bool isAdoptMetaknobValueEnabled() const;
+
   public slots:
     void slotClearRack(double v);
 
@@ -197,6 +199,11 @@ class QuickEffectRack : public PerGroupRack {
                                            group);
     }
 
+    bool isAdoptMetaknobValueEnabled() const override {
+        // No visible Metaknobs to adopt
+        return false;
+    }
+
   protected:
     void configureEffectChainSlotForGroup(EffectChainSlotPointer pSlot,
                                           const QString& group) override;
@@ -242,6 +249,11 @@ class EqualizerRack : public PerGroupRack {
                                         const QString& group) const {
         return formatEffectSlotGroupString(getRackNumber(), iEffectSlotNumber,
                                            group);
+    }
+
+    bool isAdoptMetaknobValueEnabled() const override {
+        // No visible Metaknobs to adopt
+        return false;
     }
 
   protected:

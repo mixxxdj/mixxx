@@ -79,11 +79,11 @@
   </manifest>
 
   <ObjectName>Mixxx</ObjectName>
-  <Style src="skin:style.qss"/>
+  <Style src="skin:style.qss" src-mac="skin:style-mac.qss"/>
 
   <!-- MinimumSize should not be an exact monitor resolution. There needs
   to be space for the title bar or other chrome at full screen -->
-  <MinimumSize>1270,666</MinimumSize>
+  <MinimumSize>1270,550</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>
 

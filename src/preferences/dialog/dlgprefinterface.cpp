@@ -82,6 +82,7 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
     warningLabel->setText(warningString);
 
     ComboBoxSkinconf->clear();
+    skinPreviewLabel->setText("");
 
     QList<QDir> skinSearchPaths = m_pSkinLoader->getSkinSearchPaths();
     QList<QFileInfo> skins;
@@ -104,6 +105,7 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
         if (skinInfo.absoluteFilePath() == configuredSkinPath) {
             m_skin = skinInfo.fileName();
             ComboBoxSkinconf->setCurrentIndex(index);
+            skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin));
             if (size_ok) {
                 warningLabel->hide();
             } else {
@@ -216,6 +218,9 @@ void DlgPrefInterface::slotUpdateSchemes() {
 
 void DlgPrefInterface::slotUpdate() {
     m_skinOnUpdate = m_pConfig->getValueString(ConfigKey("[Config]", "ResizableSkin"));
+    if (m_skinOnUpdate.isEmpty()) {
+        m_skinOnUpdate = m_pSkinLoader->getDefaultSkinName();
+    }
     ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findText(m_skinOnUpdate));
     slotUpdateSchemes();
     m_bRebootMixxxView = false;
@@ -238,6 +243,11 @@ void DlgPrefInterface::slotUpdate() {
 
     int inhibitsettings = static_cast<int>(m_mixxx->getInhibitScreensaver());
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(inhibitsettings));
+
+    bool effectAdoptMetaknobValue = m_pConfig->getValue(
+            ConfigKey("[Effects]", "AdoptMetaknobValue"), true);
+    radioButtonKeepMetaknobPosition->setChecked(effectAdoptMetaknobValue);
+    radioButtonMetaknobLoadDefault->setChecked(!effectAdoptMetaknobValue);
 }
 
 void DlgPrefInterface::slotResetToDefaults() {
@@ -264,6 +274,8 @@ void DlgPrefInterface::slotResetToDefaults() {
 
     // Tooltips on everywhere.
     radioButtonTooltipsLibraryAndSkin->setChecked(true);
+
+    radioButtonKeepMetaknobPosition->setChecked(true);
 }
 
 void DlgPrefInterface::slotSetLocale(int pos) {
@@ -319,6 +331,7 @@ void DlgPrefInterface::slotSetScheme(int) {
 
 void DlgPrefInterface::slotSetSkin(int) {
     QString newSkin = ComboBoxSkinconf->currentText();
+    skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(newSkin));
     if (newSkin != m_skin) {
         m_skin = newSkin;
         m_bRebootMixxxView = newSkin != m_skinOnUpdate;
@@ -345,6 +358,9 @@ void DlgPrefInterface::slotApply() {
 
     m_pConfig->set(ConfigKey("[Config]", "StartInFullscreen"),
             ConfigValue(checkBoxStartFullScreen->isChecked()));
+
+    m_pConfig->set(ConfigKey("[Effects]", "AdoptMetaknobValue"),
+            ConfigValue(radioButtonKeepMetaknobPosition->isChecked()));
 
     m_mixxx->setToolTipsCfg(m_tooltipMode);
 

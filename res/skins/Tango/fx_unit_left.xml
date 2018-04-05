@@ -30,7 +30,11 @@ Variables:
                 <SizePolicy>min,min</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:fx_parameter_row.xml"><SetVariable name="FxNum">1</SetVariable></Template>
+                  <WidgetGroup><Size>0min,1min</Size></WidgetGroup>
+                  <Template src="skin:fx_parameter_row.xml">
+                    <SetVariable name="FxNum">1</SetVariable>
+                    <SetVariable name="Side">Left</SetVariable>
+                  </Template>
                   <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_toggle_selector.xml"><SetVariable name="FxNum">1</SetVariable></Template>
                   <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
@@ -47,7 +51,11 @@ Variables:
                 <SizePolicy>min,min</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:fx_parameter_row.xml"><SetVariable name="FxNum">2</SetVariable></Template>
+                  <WidgetGroup><Size>0min,1min</Size></WidgetGroup>
+                  <Template src="skin:fx_parameter_row.xml">
+                    <SetVariable name="FxNum">2</SetVariable>
+                    <SetVariable name="Side">Left</SetVariable>
+                  </Template>
                   <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_toggle_selector.xml"><SetVariable name="FxNum">2</SetVariable></Template>
                   <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
@@ -64,7 +72,11 @@ Variables:
                 <SizePolicy>min,min</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:fx_parameter_row.xml"><SetVariable name="FxNum">3</SetVariable></Template>
+                  <WidgetGroup><Size>0min,1min</Size></WidgetGroup>
+                  <Template src="skin:fx_parameter_row.xml">
+                    <SetVariable name="FxNum">3</SetVariable>
+                    <SetVariable name="Side">Left</SetVariable>
+                  </Template>
                   <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_toggle_selector.xml"><SetVariable name="FxNum">3</SetVariable></Template>
                   <WidgetGroup><Size>2f,1min</Size></WidgetGroup>

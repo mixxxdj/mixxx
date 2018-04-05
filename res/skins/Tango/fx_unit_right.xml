@@ -165,7 +165,11 @@ Variables:
                   <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_toggle_selector.xml"><SetVariable name="FxNum">1</SetVariable></Template>
                   <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-                  <Template src="skin:fx_parameter_row.xml"><SetVariable name="FxNum">1</SetVariable></Template>
+                  <Template src="skin:fx_parameter_row.xml">
+                    <SetVariable name="FxNum">1</SetVariable>
+                    <SetVariable name="Side">Right</SetVariable>
+                  </Template>
+                  <WidgetGroup><Size>0min,1min</Size></WidgetGroup>
                 </Children>
               </WidgetGroup><!-- /EffectSlot 1 -->
 
@@ -182,7 +186,11 @@ Variables:
                   <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_toggle_selector.xml"><SetVariable name="FxNum">2</SetVariable></Template>
                   <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-                  <Template src="skin:fx_parameter_row.xml"><SetVariable name="FxNum">2</SetVariable></Template>
+                  <Template src="skin:fx_parameter_row.xml">
+                    <SetVariable name="FxNum">2</SetVariable>
+                    <SetVariable name="Side">Right</SetVariable>
+                  </Template>
+                  <WidgetGroup><Size>0min,1min</Size></WidgetGroup>
                 </Children>
               </WidgetGroup><!-- /EffectSlot 2 -->
 
@@ -198,7 +206,10 @@ Variables:
                   <Template src="skin:fx_metaknob.xml"><SetVariable name="FxNum">3</SetVariable></Template>
                   <Template src="skin:fx_toggle_selector.xml"><SetVariable name="FxNum">3</SetVariable></Template>
                   <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-                  <Template src="skin:fx_parameter_row.xml"><SetVariable name="FxNum">3</SetVariable></Template>
+                  <Template src="skin:fx_parameter_row.xml">
+                    <SetVariable name="FxNum">3</SetVariable>
+                    <SetVariable name="Side">Right</SetVariable>
+                  </Template>
                 </Children>
               </WidgetGroup><!-- /EffectSlot 3 -->
             </Children>
