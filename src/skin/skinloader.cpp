@@ -57,7 +57,11 @@ QString SkinLoader::getSkinPath(const QString& skinName) const {
 }
 
 QPixmap SkinLoader::getSkinPreview(const QString& skinName) const {
-    return QPixmap(getSkinPath(skinName) + "/preferences_preview_screenshot.png");
+    QPixmap preview(getSkinPath(skinName) + "/preferences_preview_screenshot.png");
+    if (!preview.isNull()){
+        return preview;
+    }
+    return QPixmap(":/images/skin_preview_placeholder.png");
 }
 
 QString SkinLoader::getConfiguredSkinPath() const {
