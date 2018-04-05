@@ -1566,6 +1566,18 @@ decks, samplers, mic, aux, fx */
       background: #0081B7;
     }
 
+#FxParametersLeft {
+  qproperty-layoutAlignment: 'AlignRight';
+}
+
+#FxParametersRight {
+  qproperty-layoutAlignment: 'AlignLeft';
+}
+
+#FxParameterKnob {
+  padding-right: 1px;
+}
+
 #FxParameterKnob {
   qproperty-layoutAlignment: 'AlignCenter';
   margin-right: 1px;
@@ -1614,6 +1626,7 @@ decks, samplers, mic, aux, fx */
   /* those buttons are only 5px tall, that's why they won't accept
   3px radius which is set for all WPushButtons */
   border-radius: 2px;
+  margin-right: 1px;
 }
 
 #FxSuperLinkButton[value="0"],
