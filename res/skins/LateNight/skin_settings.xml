@@ -146,6 +146,38 @@ Description:
                 </Children>
               </WidgetGroup><!-- /EQ knobs -->
 
+              <WidgetGroup><!-- EQ Kill -->
+                <Layout>stacked</Layout>
+                <MinimumSize>182,13</MinimumSize>
+                <MaximumSize>182,17</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <MinimumSize>182,13</MinimumSize>
+                    <MaximumSize>182,17</MaximumSize>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Connection>
+                      <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="state_0_text">      EQ Kill</SetVariable>
+                    <SetVariable name="state_1_text"> &#10004; EQ Kill</SetVariable>
+                    <SetVariable name="Setting">[Master],show_eq_kill_buttons</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup><!-- /EQ knobs -->
+
+
             </Children>
           </WidgetGroup><!-- /Mixer -->
 
@@ -192,21 +224,35 @@ Description:
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
-              <WidgetGroup><!-- Channel mixer toggle -->
-                <Layout>horizontal</Layout>
+              <WidgetGroup><!-- Super knobs -->
+                <Layout>stacked</Layout>
                 <MinimumSize>182,13</MinimumSize>
                 <MaximumSize>182,17</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup>
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <MinimumSize>182,13</MinimumSize>
+                    <MaximumSize>182,17</MaximumSize>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Connection>
+                      <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
                   <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="state_0_text">      Channel Mixer</SetVariable>
-                    <SetVariable name="state_1_text"> &#10004; Channel Mixer</SetVariable>
-                    <SetVariable name="width">110</SetVariable>
-                    <SetVariable name="Setting">[Master],show_mixer</SetVariable>
+                    <SetVariable name="state_0_text">      Super Knobs</SetVariable>
+                    <SetVariable name="state_1_text"> &#10004; Super Knobs</SetVariable>
+                    <SetVariable name="Setting">[Master],show_superknobs</SetVariable>
                   </Template>
-                  <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
                 </Children>
-              </WidgetGroup>
+              </WidgetGroup><!-- /Super knobs -->
 
             </Children>
           </WidgetGroup><!-- /Effects -->
@@ -230,10 +276,10 @@ Description:
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
                   <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="state_0_text">      Channel Mixer</SetVariable>
-                    <SetVariable name="state_1_text"> &#10004; Channel Mixer</SetVariable>
+                    <SetVariable name="state_0_text">          Supper Knobs</SetVariable>
+                    <SetVariable name="state_1_text"> &#10004; Super Knobs</SetVariable>
                     <SetVariable name="width">110</SetVariable>
-                    <SetVariable name="Setting">[Master],show_mixer</SetVariable>
+                    <SetVariable name="Setting">[Master],show_superknobs</SetVariable>
                   </Template>
                   <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
                 </Children>
