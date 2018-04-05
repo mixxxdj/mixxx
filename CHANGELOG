@@ -1,4 +1,4 @@
-==== 2.1 2018-03-31 ====
+==== 2.1 2018-04-05 ====
 After two years of hard work, we are pleased to announce Mixxx 2.1. We
 have overhauled the effects system, redesigned the skins, added and improved
 lots of controller mappings, rewrote the audio file decoders twice, and of
@@ -49,16 +49,23 @@ release. Mappings marked with an asterisk (*) have been updated for the new
 effects interface:
   * American Audio VMS2
   * American Audio VMS4
+  * Allen & Heath Xone K2/K1*
   * Behringer CMD Micro
+  * Behringer CMD MM1*
   * Behringer CMD Studio 4a
-  * Denon MC4000
+  * Denon MC4000*
+  * Denon MC6000 Mk2*
   * FaderFox DJ2
+  * Hercules DJ Console 4-Mx*
   * Hercules DJ Control MP3 LE / Glow
   * Hercules DJ Control Compact
   * Hercules P32*
   * Ion Discover DJ
   * Korg Nanokontrol 2
+  * Korg KAOSS DJ
   * M-Audio Xponent
+  * Native Instruments Traktor Kontrol S4 Mk2*
+  * Novation Launchpad Mk1 & Mk2
   * Novation Twitch
   * Numark Mixtrack Pro 3 & Numark Mixtrack 3*
   * Pioneer DDJ-SB2*
