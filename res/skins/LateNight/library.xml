@@ -2,7 +2,7 @@
   <WidgetGroup>
     <ObjectName>Library</ObjectName>
     <SizePolicy>me,i</SizePolicy>
-    <MinimumSize>1280,-</MinimumSize>
+    <MinimumSize>1270,-</MinimumSize>
     <Layout>vertical</Layout>
     <Children>
 

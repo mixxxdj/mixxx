@@ -11,7 +11,9 @@
 <Template>
   <WidgetGroup>
     <Layout>vertical</Layout>
-    <Size>55f,42f</Size>
+    <MinimumSize>34,42</MinimumSize>
+    <MaximumSize>55,42</MaximumSize>
+    <SizePolicy>me,f</SizePolicy>
     <Children>
 
       <WidgetGroup>
@@ -32,12 +34,15 @@
       </WidgetGroup>
 
       <EffectParameterName>
-        <Size>55f,12f</Size>
+        <MinimumSize>34,12</MinimumSize>
+        <MaximumSize>55,12</MaximumSize>
+        <SizePolicy>me,f</SizePolicy>
         <ObjectName>EffectKnobLabel</ObjectName>
         <EffectRack><Variable name="EffectRack"/></EffectRack>
         <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
         <Effect><Variable name="Effect"/></Effect>
         <EffectParameter><Variable name="EffectParameter"/></EffectParameter>
+        <Elide>right</Elide>
       </EffectParameterName>
 
       <Template src="skin:left_5state_button.xml">
