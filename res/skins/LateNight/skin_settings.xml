@@ -29,7 +29,7 @@ Description:
               <Label>
                 <ObjectName>CategoryLabel</ObjectName>
                 <Text>Decks / General</Text>
-                <Size>200f,21f</Size>
+                <Size>200f,40f</Size>
               </Label>
 
               <!-- push Close button to far right -->
@@ -68,21 +68,54 @@ Description:
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
-              <WidgetGroup><!-- Channel mixer toggle -->
-                <Layout>horizontal</Layout>
+              <WidgetGroup><!-- 2/4 Decks toogle -->
+                <Layout>stacked</Layout>
                 <MinimumSize>182,13</MinimumSize>
                 <MaximumSize>182,17</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
                   <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="state_0_text">      Channel Mixer</SetVariable>
-                    <SetVariable name="state_1_text"> &#10004; Channel Mixer</SetVariable>
+                    <SetVariable name="state_0_text">      4 Decks</SetVariable>
+                    <SetVariable name="state_1_text"> &#10004; 4 Decks</SetVariable>
                     <SetVariable name="width">110</SetVariable>
-                    <SetVariable name="Setting">[Master],show_mixer</SetVariable>
+                    <SetVariable name="Setting">[Master],show_4decks</SetVariable>
                   </Template>
                   <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
                 </Children>
               </WidgetGroup>
+
+              <WidgetGroup><!-- Preview Deck toogle -->
+                <Layout>stacked</Layout>
+                <MinimumSize>182,13</MinimumSize>
+                <MaximumSize>182,17</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="state_0_text">      Preview Deck</SetVariable>
+                    <SetVariable name="state_1_text"> &#10004; Preview Deck</SetVariable>
+                    <SetVariable name="width">110</SetVariable>
+                    <SetVariable name="Setting">[PreviewDeck],show_previewdeck</SetVariable>
+                  </Template>
+                  <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup><!-- coverart toogle -->
+                <Layout>stacked</Layout>
+                <MinimumSize>182,13</MinimumSize>
+                <MaximumSize>182,17</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="state_0_text">      Cover Art</SetVariable>
+                    <SetVariable name="state_1_text"> &#10004; Cover Art</SetVariable>
+                    <SetVariable name="width">110</SetVariable>
+                    <SetVariable name="Setting">[Library],show_coverart</SetVariable>
+                  </Template>
+                  <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+                </Children>
+              </WidgetGroup>
+
 
             </Children>
           </WidgetGroup><!-- /Deck / General -->
@@ -100,7 +133,7 @@ Description:
             <Layout>vertical</Layout>
             <Children>
               <WidgetGroup><!-- Channel mixer toggle -->
-                <Layout>horizontal</Layout>
+                <Layout>stacked</Layout>
                 <MinimumSize>182,13</MinimumSize>
                 <MaximumSize>182,17</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
@@ -181,10 +214,10 @@ Description:
             </Children>
           </WidgetGroup><!-- /Mixer -->
 
-           <Label><!-- Spinny / Cover -->
+          <Label><!-- Spinny/Cover -->
             <ObjectName>CategoryLabel</ObjectName>
             <Size>200f,21f</Size>
-            <Text>Spinny / Cover</Text>
+            <Text>Spinny/Cover</Text>
           </Label>
           <WidgetGroup><!-- 4 buttons -->
             <ObjectName>SkinSettingsCategory</ObjectName>
@@ -193,24 +226,38 @@ Description:
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
-              <WidgetGroup><!-- Channel mixer toggle -->
-                <Layout>horizontal</Layout>
+              <WidgetGroup><!-- Super knobs -->
+                <Layout>stacked</Layout>
                 <MinimumSize>182,13</MinimumSize>
                 <MaximumSize>182,17</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup>
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>stacked</Layout>
+                    <MinimumSize>182,13</MinimumSize>
+                    <MaximumSize>182,17</MaximumSize>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Connection>
+                      <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
                   <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="state_0_text">      Channel Mixer</SetVariable>
-                    <SetVariable name="state_1_text"> &#10004; Channel Mixer</SetVariable>
-                    <SetVariable name="width">110</SetVariable>
-                    <SetVariable name="Setting">[Master],show_mixer</SetVariable>
+                    <SetVariable name="state_0_text">      Super Knobs</SetVariable>
+                    <SetVariable name="state_1_text"> &#10004; Super Knobs</SetVariable>
+                    <SetVariable name="Setting">[Master],show_superknobs</SetVariable>
                   </Template>
-                  <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
                 </Children>
-              </WidgetGroup>
+              </WidgetGroup><!-- /Super knobs -->
 
             </Children>
-          </WidgetGroup><!-- /Spinny / Cover -->
+          </WidgetGroup><!-- /Spinny/Cover -->
 
           <Label><!-- Effects -->
             <ObjectName>CategoryLabel</ObjectName>
@@ -235,7 +282,7 @@ Description:
 
                   <WidgetGroup>
                     <ObjectName>SubmenuCover</ObjectName>
-                    <Layout>vertical</Layout>
+                    <Layout>stacked</Layout>
                     <MinimumSize>182,13</MinimumSize>
                     <MaximumSize>182,17</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
@@ -269,21 +316,35 @@ Description:
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
-              <WidgetGroup><!-- Channel mixer toggle -->
-                <Layout>horizontal</Layout>
+              <WidgetGroup><!-- Super knobs -->
+                <Layout>stacked</Layout>
                 <MinimumSize>182,13</MinimumSize>
                 <MaximumSize>182,17</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup>
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>stacked</Layout>
+                    <MinimumSize>182,13</MinimumSize>
+                    <MaximumSize>182,17</MaximumSize>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Connection>
+                      <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
                   <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="state_0_text">          Supper Knobs</SetVariable>
+                    <SetVariable name="state_0_text">      Super Knobs</SetVariable>
                     <SetVariable name="state_1_text"> &#10004; Super Knobs</SetVariable>
-                    <SetVariable name="width">110</SetVariable>
                     <SetVariable name="Setting">[Master],show_superknobs</SetVariable>
                   </Template>
-                  <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
                 </Children>
-              </WidgetGroup>
+              </WidgetGroup><!-- /Super knobs -->
 
             </Children>
           </WidgetGroup><!-- /Extras -->
