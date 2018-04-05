@@ -188,8 +188,7 @@ Description:
                   </Template>
 
                 </Children>
-              </WidgetGroup><!-- /EQ knobs -->
-
+              </WidgetGroup><!-- /EQ Kill -->
 
             </Children>
           </WidgetGroup><!-- /Mixer -->
@@ -207,7 +206,7 @@ Description:
             <Layout>vertical</Layout>
             <Children>
 
-              <WidgetGroup><!-- coverart toogle -->
+              <WidgetGroup><!-- Spinny -->
                 <Layout>stacked</Layout>
                 <MinimumSize>182,13</MinimumSize>
                 <MaximumSize>182,17</MaximumSize>
