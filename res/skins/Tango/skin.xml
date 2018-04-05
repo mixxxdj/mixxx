@@ -119,7 +119,7 @@
   </manifest>
 
   <ObjectName>Mixxx</ObjectName>
-  <Style src="skin:style.qss"/>
+  <Style src="skin:style.qss" src-mac="skin:style-mac.qss"/>
   <MinimumSize>1008,500</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>

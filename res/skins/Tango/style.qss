@@ -1525,8 +1525,6 @@ decks, samplers, mic, aux, fx */
       border: 1px solid #333;
       border-radius: 2px;
       margin: 0px;
-      /* Move list to the left to hide tick mark and prevent cut-off text. */
-      padding: 0px 0px 0px -20px;
     }
     /* items */
     WEffectSelector::item:!selected {
