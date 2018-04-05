@@ -1,5 +1,5 @@
-==== 2.1 beta 2017-12-22 ====
-After two years of hard work, we are pleased to announce Mixxx 2.1 beta. We
+==== 2.1 2018-04-05 ====
+After two years of hard work, we are pleased to announce Mixxx 2.1. We
 have overhauled the effects system, redesigned the skins, added and improved
 lots of controller mappings, rewrote the audio file decoders twice, and of
 course fixed a bunch of bugs. Download it!
@@ -49,16 +49,23 @@ release. Mappings marked with an asterisk (*) have been updated for the new
 effects interface:
   * American Audio VMS2
   * American Audio VMS4
+  * Allen & Heath Xone K2/K1*
   * Behringer CMD Micro
+  * Behringer CMD MM1*
   * Behringer CMD Studio 4a
-  * Denon MC4000
+  * Denon MC4000*
+  * Denon MC6000 Mk2*
   * FaderFox DJ2
+  * Hercules DJ Console 4-Mx*
   * Hercules DJ Control MP3 LE / Glow
   * Hercules DJ Control Compact
   * Hercules P32*
   * Ion Discover DJ
   * Korg Nanokontrol 2
+  * Korg KAOSS DJ
   * M-Audio Xponent
+  * Native Instruments Traktor Kontrol S4 Mk2*
+  * Novation Launchpad Mk1 & Mk2
   * Novation Twitch
   * Numark Mixtrack Pro 3 & Numark Mixtrack 3*
   * Pioneer DDJ-SB2*
@@ -70,22 +77,10 @@ effects interface:
   * Reloop Terminal Mix 4
   * Vestax VCI-100 Mk2
   * Vestax Typhoon
-If you have a controller with an old mapping, please consider contributing an
-updated mapping for the 2.1 release. We have some tips for updating controller
-mappings on the wiki.
-
-We will be beta testing 2.1 for 3 months before releasing 2.1 at the end of
-March 2018. The beta release will be updated continuously until that time. No
-big new features will be added to 2.1 after this point. We will fix small bugs,
-continue to polish the skins, and update more controller mappings until the
-final 2.1 release.  We will be writing the English version of the manual during
-January 2018 to allow two months for translating it before the release. To get
-you exciting new features sooner, we have decided to move to a fixed 6 month
-release cycle going forward, so look for Mixxx 2.2 at the end of September 2018.
 
 For users upgrading from older versions of Mixxx, we have a few important
 announcements. First, if you are using Windows, you will have to uninstall any
-old versions of Mixxx before you can install 2.1 beta. How to uninstall Mixxx
+old versions of Mixxx before you can install 2.1. How to uninstall Mixxx
 varies on different versions of Windows:
   * Windows Vista, 7, and 8: Start > Control Panel > Programs > Uninstall a
 Program https://support.microsoft.com/en-us/help/2601726
@@ -107,13 +102,6 @@ start fresh. Regardless, we recommend clearing the waveforms for all MP3
 files. To clear these, type "location:mp3" into the library search bar, press
 Control + A to select all tracks, right click, and select the information you
 want to clear from the menu.
-
-There are a few rough edges in the beta that we are aware of and are still
-working on. First, Mixxx takes a long time to start up and shut down. Also,
-running batch analysis makes the interface unresponsive while the analysis is
-going. We are working to improve that, but we recommend letting your computer
-analyze all your tracks overnight or another time when you can leave your
-computer running for a long time.
 
 In the works for Mixxx 2.2, we have a big redesign of the library GUI. Along
 with that will come saving & restoring search queries plus nested crates.
