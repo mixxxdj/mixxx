@@ -211,7 +211,7 @@
 	-->
 
 	<ObjectName>Mixxx</ObjectName>
-	<Style src="skin:style.qss"/>
+	<Style src="skin:style.qss" src-mac="skin:style-mac.qss"/>
 	<Size>1008e,500e</Size>
 	<Layout>vertical</Layout>
     <LaunchImageStyle>
@@ -240,7 +240,6 @@
 	<Children>
 		<WidgetGroup>
 			<ObjectName>DecksAndMixer</ObjectName>
-			<MinimumSize>1008e,259f</MinimumSize>
 			<Layout>horizontal</Layout>
   			<Children>
 				<WidgetGroup>

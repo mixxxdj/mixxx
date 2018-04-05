@@ -55,40 +55,34 @@ Variables:
             <EffectRack><Variable name="EffectRack"/></EffectRack>
             <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
             <Effect><Variable name="Effect"/></Effect>
-            <Size>120f,-1</Size>
+            <MinimumSize>85,22</MinimumSize>
+            <MaximumSize>120,22</MaximumSize>
+            <SizePolicy>min,f</SizePolicy>
           </EffectSelector>
 
           <Template src="skin:effect_parameter_knob.xml">
             <SetVariable name="EffectParameter">1</SetVariable>
-            <SetVariable name="color">blue</SetVariable>
           </Template>
           <Template src="skin:effect_parameter_knob.xml">
             <SetVariable name="EffectParameter">2</SetVariable>
-            <SetVariable name="color">blue</SetVariable>
           </Template>
           <Template src="skin:effect_parameter_knob.xml">
             <SetVariable name="EffectParameter">3</SetVariable>
-            <SetVariable name="color">blue</SetVariable>
           </Template>
           <Template src="skin:effect_parameter_knob.xml">
             <SetVariable name="EffectParameter">4</SetVariable>
-            <SetVariable name="color">blue</SetVariable>
           </Template>
           <Template src="skin:effect_parameter_knob.xml">
             <SetVariable name="EffectParameter">5</SetVariable>
-            <SetVariable name="color">blue</SetVariable>
           </Template>
           <Template src="skin:effect_parameter_knob.xml">
             <SetVariable name="EffectParameter">6</SetVariable>
-            <SetVariable name="color">blue</SetVariable>
           </Template>
           <Template src="skin:effect_parameter_knob.xml">
             <SetVariable name="EffectParameter">7</SetVariable>
-            <SetVariable name="color">blue</SetVariable>
           </Template>
           <Template src="skin:effect_parameter_knob.xml">
             <SetVariable name="EffectParameter">8</SetVariable>
-            <SetVariable name="color">blue</SetVariable>
           </Template>
 
           <Template src="skin:effect_button_parameter.xml">

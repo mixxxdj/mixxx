@@ -1268,8 +1268,6 @@ WEffectSelector {
     border: 1px solid #666;
     border-radius: 2px;
     padding: 0px;
-    /* hack around text getting cut off with scaled checkbox on macOS with Retina screens */
-    margin: 0px 0px 0px -24px;
   }
   /* selected item */
   WEffectSelector::checked {
