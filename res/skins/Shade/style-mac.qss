@@ -1,11 +1,10 @@
 /* hack around text getting cut off with scaled checkbox on Macs with Retina screens */
 WEffectSelector QAbstractItemView {
-	margin: 0px 0px 0px -4px; /* no matter if padding or margin, the left border is gone */
+	margin: 0px 0px 0px -26px;
 }
 
-WEffectSelector:item
-{
-	border: 0px;         /* puts tick mark behind item text */
-	padding-left: 14px;  /* move text right to make room for tick mark */
+/* just in case there is a partial checkmark shown on some untested screen, hide
+the checkmark */
+WEffectSelector::indicator {
+    border: 0;
 }
-
