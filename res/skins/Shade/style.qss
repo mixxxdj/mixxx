@@ -57,14 +57,12 @@ WEffectSelector QAbstractItemView {
 	border: 2px solid #060613;
 	selection-background-color: lightgray;
 	font: 13px;
-	/* hack around text getting cut off with scaled checkbox on macOS with Retina screens */
-	margin: 0px 0px 0px -4px; /* no matter if padding or margin, the left border is gone */
 }
 
 WEffectSelector:item
 {
 	border: 0px;         /* puts tick mark behind item text */
-	padding-left: 14px;  /* move text right to make room for tick mark */
+	padding-left: 16px;  /* move text right to make room for tick mark */
 	font: 13px;
 	height: 17px; 
 }
