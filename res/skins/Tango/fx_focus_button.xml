@@ -13,7 +13,6 @@ Variables:
     <Layout>horizontal</Layout>
     <Size>14f,30me</Size>
     <Children>
-      <!-- visible if unfocused: left-click > focus, right click > unfocus -->
       <PushButton>
         <TooltipId>EffectSlot_focus</TooltipId>
         <ObjectName>FxFocusButton</ObjectName>
@@ -23,52 +22,21 @@ Variables:
         <Connection>
           <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
-          <EmitOnDownPress>true</EmitOnDownPress>
           <Transform><IsEqual><Variable name="FxNum"/></IsEqual></Transform>
         </Connection>
-        <Connection>
-          <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
-          <ButtonState>RightButton</ButtonState>
-          <EmitOnDownPress>true</EmitOnDownPress>
-          <Transform><IsEqual><Variable name="FxNum"/></IsEqual><Not/></Transform>
-        </Connection>
-        <Connection>
-          <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
-          <Transform><IsEqual><Variable name="FxNum"/></IsEqual><Not/></Transform>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </PushButton>
-
-      <!-- visible if focused: left-click > unfocus, right click > unfocus -->
-      <PushButton>
-        <TooltipId>EffectSlot_focus</TooltipId>
-        <ObjectName>FxFocusButton</ObjectName>
-        <Size>14f,18f</Size>
-        <NumberStates>2</NumberStates>
         <RightClickIsPushButton>true</RightClickIsPushButton>
         <Connection>
-          <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
-          <ButtonState>LeftButton</ButtonState>
-          <EmitOnDownPress>true</EmitOnDownPress>
-          <Transform><IsEqual><Variable name="FxNum"/></IsEqual><Not/></Transform>
-        </Connection>
-        <Connection>
+          <!-- right click > unfocus -->
           <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
           <ButtonState>RightButton</ButtonState>
           <EmitOnDownPress>true</EmitOnDownPress>
           <Transform><IsEqual><Variable name="FxNum"/></IsEqual><Not/></Transform>
-        </Connection>
-        <Connection>
-          <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
-          <Transform><IsEqual><Variable name="FxNum"/></IsEqual></Transform>
-          <ConnectValueFromWidget>false</ConnectValueFromWidget>
-        </Connection>
-        <Connection>
-          <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
-          <Transform><IsEqual><Variable name="FxNum"/></IsEqual></Transform>
-          <BindProperty>visible</BindProperty>
         </Connection>
       </PushButton>
     </Children>
+    <Connection>
+      <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
   </WidgetGroup>
 </Template>

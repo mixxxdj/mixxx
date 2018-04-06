@@ -34,11 +34,21 @@ Variables:
             <Children>
 
               <Template src="skin:deck_overview_left.xml"/>
+
               <Template src="skin:deck_comment_left.xml"/>
-              <Template src="skin:deck_artist_title_left.xml"/>
+
+              <WidgetGroup><!-- Parallel Artist + Time -->
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:deck_artist_title_left.xml"/>
+                  <Template src="skin:loop_indicator.xml"/>
+                </Children>
+              </WidgetGroup>
 
             </Children>
           </WidgetGroup><!-- /Overview, Comment, ArtistTitle -->
+
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1min,1f</Size></WidgetGroup>
 
           <Template src="skin:deck_buttons_left.xml"/>
 

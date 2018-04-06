@@ -1,6 +1,10 @@
 // mixxxlibraryfeature.cpp
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 
+// Windows build won't initialize kGroupingText
+// and kGroupingOptions without this:
+#define Q_COMPILER_INITIALIZER_LISTS
+
 #include <QDebug>
 #include <QMenu>
 #include <QStringList>

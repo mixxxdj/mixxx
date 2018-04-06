@@ -14,26 +14,26 @@ Variables:
 
   <WidgetGroup>
     <Layout>vertical</Layout>
-    <Size>52f,45f</Size>
+    <Size>52f,47f</Size>
     <Children>
+
       <WidgetGroup><!-- Parameter knob + parameter name -->
-        <!-- stacked because there was no other way to get knob and
-            name closer together -->
-        <Layout>stacked</Layout>
+        <Layout>vertical</Layout>
         <Size>52f,34f</Size>
         <Children>
 
           <WidgetGroup><!-- Effect parameter knob -->
-            <ObjectName>FxParameterknob</ObjectName>
+            <ObjectName>FxParameterKnob</ObjectName>
             <Layout>vertical</Layout>
-            <Size>51f,26f</Size>
+            <Size>51f,23f</Size>
             <Children>
               <EffectParameterKnobComposed>
-                <Size>26f,26f</Size>
+                <Size>26f,23f</Size>
                 <Knob>skin:/knobs_sliders/knob_fx_yellow.svg</Knob>
                 <BackPath>skin:/knobs_sliders/knob_bg_fx_parameter.svg</BackPath>
                 <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                 <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+                <KnobCenterYOffset>2.000</KnobCenterYOffset>
                 <Connection>
                   <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/></ConfigKey>
                 </Connection>
@@ -42,14 +42,14 @@ Variables:
           </WidgetGroup>
 
           <WidgetGroup><!-- Name of parameter -->
-            <Size>51f,34f</Size>
+            <Size>51f,11f</Size>
             <Layout>horizontal</Layout>
             <Children>
               <!-- To keep text centered it's in an container with spacers on the left/right -->
               <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
               <EffectParameterName>
                 <ObjectName>FxParameterKnobName</ObjectName>
-                <Size>-1min,34f</Size>
+                <Size>-1min,11f</Size>
                 <EffectRack><Variable name="FxRack"/></EffectRack>
                 <EffectUnit><Variable name="FxUnit"/></EffectUnit>
                 <Effect><Variable name="FxNum"/></Effect>
@@ -81,6 +81,8 @@ Variables:
         <SetVariable name="Size">51f,5f</SetVariable>
         <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/>_link_inverse</SetVariable>
       </Template>
+
+      <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
 
     </Children>
     <!-- show only if parameter is loaded -->

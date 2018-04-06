@@ -15,8 +15,7 @@
 
 #include "library/scanner/libraryscanner.h"
 #include "preferences/usersettings.h"
-#include "track/track.h"
-#include "track/trackcache.h"
+#include "track/globaltrackcache.h"
 #include "recording/recordingmanager.h"
 #include "util/parented_ptr.h"
 #include "util/memory.h"
@@ -43,7 +42,7 @@ class WSearchLineEdit;
 class TreeItem;
 
 class Library: public QObject,
-    public virtual /*implements*/ TrackCacheEvictor {
+    public virtual /*implements*/ GlobalTrackCacheSaver {
     Q_OBJECT
 public:
     enum RemovalType {
@@ -106,8 +105,6 @@ public:
 
     void focusSearch();
 
-    void onEvictingTrackFromCache(TrackCacheLocker* pCacheLocker, Track* pTrack) override;
-
   public slots:
 
     void slotActivateFeature(LibraryFeature* pFeature);
@@ -151,8 +148,10 @@ public:
     void scanStarted();
     void scanFinished();
 
-  private:
+  private slots:
+    void saveTrack(TrackPointer pTrack);
 
+  private:
     // If the pane exists returns it, otherwise it creates the pane
     LibraryPaneManager* getOrCreatePane(int paneId);
     LibraryPaneManager* getFocusedPane();
@@ -166,6 +165,10 @@ public:
 
     void handleFocus();
     void handlePreselection();
+
+    // Callback for GlobalTrackCache
+    void saveCachedTrack(TrackPointer pTrack) noexcept override;
+
 
     const UserSettingsPointer m_pConfig;
 

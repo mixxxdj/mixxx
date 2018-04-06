@@ -4,14 +4,60 @@
     background-color: #fff;
 }
 
+#Mixxx, WWidget,
+WLabel, QLabel,
+WPushButton, QPushButton,
+WEffect, WEffectSelector,
+WBeatSpinBox {/**/
+  font-family: Ubuntu;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+QToolTip {/*
+  font-family: Ubuntu;*/
+}
+
+#KeyText,
+#PlayPositionText,
+#DurationText,
+#BpmText,
+#RateText,
+WBeatSpinBox,
+WOverview {
+  font-family: "Open Sans";
+}
+
+WPushButton, QPushButton {
+  font-size: 11px/12px;
+}
+
+#Deck3 WLabel, #Deck4 WLabel {
+  color: #09B2AE;
+}
+
+#TristateButton,
+#PreviewLabel,
+#MicTitle,
+#MicSubTitle,
+#SamplerTitle,
+#Deck1 WLabel, #Deck2 WLabel,
+#Deck3 #KeyText, #Deck4 #KeyText,
+WSearchLineEdit:focus,
+#LatencyLabel,
+WTime {
+  color: #eece33;
+  font-weight: bold;
+}
+WStarRating {
+  color: #f0bb2b;
+  font-weight: bold;
+}
+
 #ToolBar {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   background-color: #1e1e1e;
   padding-top: 1px;
-  border: 1px solid #585858;
-  border-right: 0px;
-  border-left: 0px;
-  border-bottom: 0px;
 }
 
 #UIButtonMargin {
@@ -88,22 +134,27 @@
   /*border-top: 1px solid #585858;*/
 }
 
-#DeckRowOne {
+#DeckRow_1_KeyVinylFx {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   border-bottom: 1px solid #585858;
   background-color: #1e1e1e;
-  padding: 1px 0px 1px 2px;
+  padding: 1px;
 }
 
-#DeckRowTwoThreeFour {
+#DeckRow_2_3_ArtistTitleTime {
   border-bottom: 1px solid #585858;
   background-color: #1e1e1e;
 }
 
-#DeckRowFive {
+#DeckRow_4_OverviewSpinny {
   border-bottom: 1px solid #585858;
   background-color: #1e1e1e;
   padding: 0px;
+}
+
+#DeckRow_5_LoopCuesTransport {
+  qproperty-layoutAlignment: 'AlignBottom';
+  padding: 3px 1px 1px 3px;
 }
 
 #DecksAndMixer {
@@ -158,6 +209,10 @@
   margin-bottom: 2px;
 }
 
+WTime {
+  font-size: 13px/13px;
+}
+
 #LatencyMeter {
   margin: 1px;
   padding-right: 4px;
@@ -166,6 +221,7 @@
 
 #LatencyLabel {
   padding-bottom: 2px;
+  font-size: 10px/10px;
 }
 
 #Mixer {/*
@@ -195,38 +251,45 @@
     padding-top: 3px;
   }
 
-#MasterControls {
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+#MasterHeadphoneMixer {
+}
+
+#MasterHeadphoneDivider {
+  background-color: #585858;
+  margin: 5px 0px 5px 0px;
+}
+
+#MasterControls,
+#HeadphoneControls {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   padding: 2px;
-  /* this wouldn't work:
-  border-left: 1px solid #585858;
-  border-width: 0px 0px 0px 1px; */
-  border: 1px solid #585858;
-  background: transparent url(skin:background_tile.png) repeat;
 }
 
-#MixerChannel {
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  padding-left: 2px;
-  padding-right: 2px;
-}
-
-#MixerChannelReversed {
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  padding-left: 2px;
-  padding-right: 2px;
-}
-
-#MixerChannelHoriz {
+#MixerChannel_2Decks {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
 }
 
-#MasterVuMeter2ch {
+#MixerChannel_4Decks {
+  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+}
+
+#MixerChannel_2Decks_Left {
+  qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+  padding: 0px 2px;
+}
+
+#MixerChannel_2Decks_Right {
+  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+  padding: 0px 2px;
+}
+
+#MasterVuMeter_2Decks {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
 }
 
-#MasterVuMeter4ch {
+#MasterVuMeter_4Decks {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+  margin-top: 5px;
 }
 
 #NoMixerLogo {
@@ -236,10 +299,6 @@
   background-color: #1e1e1e;
 }
 
-#MasterKnobs {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-}
-
 #MasterKnobCol {
   padding-left:1px;
   padding-right:1px;
@@ -247,23 +306,23 @@
 
 #VuAndSlider {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  padding-top: 3px;
+  padding: 1px 4px 0px 0px;
 }
 
-#VuMeter {
+#VuMeter4Decks {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-  padding-right: 4px;
+  padding: 0px 4px 2px 0px;
+}
+
+#VolumeGain2Decks {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  padding: 0px 0px 0px 0px;
 }
 
 #MasterSync {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   padding: 1px;
   padding-left: 2px;
-}
-
-#MasterFaders, #MasterLevels {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  background-color: #1e1e1e;
 }
 
 #KnobCentered {
@@ -282,9 +341,9 @@
   margin-top: 2px;
 }
 
-#TitleGutter, #AlbumGutter {
+#TitleGutter {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  padding: 1px;
+  padding: 2px 3px 2px 2px;
   border: 1px solid #585858;
   border-top: 0px;
   border-left: 0px;
@@ -293,51 +352,17 @@
 
 #ArtistGutter{
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  padding: 1px;/*
-  padding-bottom: 2px;*/
+  padding: 2px;
   border: 0px solid #585858;
 }
 
 
 #TimeGutter, #DurationGutter {
   qproperty-layoutAlignment: 'AlignRight | AlignBottom';
-  padding: 3px;
+  padding: 2px;
 }
 
-#RateGutter {
-  qproperty-layoutAlignment: 'AlignCenter | AlignBottom';
-  text-align: center;
-  padding-top: 0px;
-}
-
-#ColumnThree {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  padding: 3px;
-  padding-left:10px;
-}
-
-#LoopSizeButtons {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-}
-
-#Hotcues {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-}
-
-#FFRew {
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';
-}
-
-#ColumnFour {
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';
-  padding: 3px;
-}
-
-#LoopInOut {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-}
-
-#PlayCue {
+#PlayCueRevHotCues {
   qproperty-layoutAlignment: 'AlignRight | AlignBottom';
 }
 
@@ -345,26 +370,7 @@
   qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
 }
 
-#ColumnOne {
-  qproperty-layoutAlignment: 'AlignLeft';
-}
-
-#ColumnTwo {
-  padding: 3px;
-  padding-left: 10px;
-  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-}
-
-#DeckButtons {
-  qproperty-layoutAlignment: 'AlignBottom';
-  padding: 3px 1px 1px 3px;
-}
-
-#ColumnTwo {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-}
-
-#ToolbarButtons {
+#DeckControls {
   qproperty-layoutAlignment: 'AlignCenter';
   border: 1px solid #585858;
   border-top: 0px;
@@ -375,57 +381,71 @@
 
 #KeyText {
   qproperty-alignment: 'AlignCenter';
-  font-size: 13px/16px;
-  font-weight: bold;
-  font-family: Lucida Grande, Lucida Sans Unicode, Segoe UI, Arial, Verdana, sans-serif;
+  font-size: 13px/13px;
   background-color: #0f0f0f;
   border: 1px solid #585858;
   border-radius: 3px;
-  padding: 0px;
   margin: 0px 1px;
 }
 
 #ArtistText,
 #TitleText,
 #PlayPositionText {
- font-size: 18px/21px;
- font-weight: bold;
- font-family: Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font-size: 18px/20px;
+}
+
+#ArtistText,
+#TitleText,
+#PlayPositionText,
+#KeyText,
+#PreviewTitle {
+  text-transform: none;
 }
 
 #DurationText {
   font-size: 13px/15px;
-  font-weight: bold;
-  font-family: Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 }
 
 #VinylControls {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
 
-#KnobLabel {
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 10px/8px;
-  text-transform: uppercase;
+#KnobLabel,
+#FxKnobLabel,
+#FxButtonLabel {
+  font: bold 10px/10px;
   color: #585858;
   text-align: center;
   qproperty-alignment: 'AlignCenter | AlignBottom';
-  padding-top: -2px;
+  padding-top: -1px;
+  text-transform: uppercase;
 }
 
-#FxKnobLabel {
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 10px/8px;
-  text-transform: uppercase;
-  color: #585858;
-  text-align: center;
-  qproperty-alignment: 'AlignCenter | AlignBottom';
-  padding-top: 26px;
-}
+#MasterHeadphoneMixer WLabel,
+/*WEffectParameter,
+WEffectButtonParameter*/
+#FxKnobLabel,
+#FxButtonLabel {
+  background-color: #101010;
+  }
+  #MasterHeadphoneMixer WLabel {
+    padding: 0px;
+  }
+  #FxKnobLabel {
+    padding: 0px;
+  }
+  #FxButtonLabel {
+    padding: 0px;
+    margin: 0px 0px 0px 0px;
+  }
 
 #FxKnobContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';/*
   background-color: #113397;*/
+}
+
+#FxUnit1_PflButton, #FxUnit2_PflButton {
+  margin: 0px 0px 1px 2px;
 }
 
 #SyncControls {
@@ -435,23 +455,30 @@
 }
 
 #ToolbarDivider {
-  background: transparent url(skin:/buttons/toolbar_divider.png) no-repeat center center;
+  background: transparent url(skin:/style/toolbar_divider.png) no-repeat center center;
+  margin: 0px 5px;
 }
 
 #RecBox {
   border: 1px solid #585858;
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
   margin: 2px;
   border-radius: 2px;
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #282828,
+    stop:1 #0e0e0e);
 }
 
 #RecFeedback[displayValue="0"] {
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #282828,
+    stop:1 #0e0e0e);
 }
 
 #RecFeedback[displayValue="1"],
 #RecFeedback[displayValue="2"] {
-  background-color: #840600;
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #840600,
+    stop:1 #AD0800);
 }
 
 #RecDot {
@@ -459,176 +486,81 @@
 }
 
 #RecDuration {
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #ddd;
-}
-
-#GuiToggleButton,
-#GuiToggleButtonInverted {
-  margin: 2px;
-}
-
-#GuiToggleButton[displayValue="0"] {
-  border: 1px solid #585858;
-  border-radius: 2px;
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 10px/12px;
+  font-size: 10px/12px;
   color: #ddd;
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
-}
-
-#GuiToggleButton[displayValue="1"] {
-  border: 1px solid #585858;
-  border-radius: 2px;
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 10px/12px;
-  color: #0e0e0e;
-  background-color: #eece33;
-}
-
-#GuiToggleButton[displayValue="2"] {
-  border: 1px solid #585858;
-  border-radius: 2px;
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 10px/12px;
-  color: #0e0e0e;
-  background-color: #eece33;
-}
-
-#GuiToggleButtonInverted[displayValue="0"] {
-  border: 1px solid #585858;
-  border-radius: 2px;
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 10px/12px;
-  color: #0e0e0e;
-  background-color: #eece33;
-}
-
-#GuiToggleButtonInverted[displayValue="1"] {
-  border: 1px solid #585858;
-  border-radius: 2px;
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 10px/12px;
-  color: #ddd;
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                  stop:0 #282828,
-                                  stop:1 #0e0e0e);
 }
 
 #VinylStatus {
   border-radius: 5px;
 }
 
-#VinylToggleButtonUL[displayValue="0"],
-#FxAssignButton[displayValue="0"] {
+#VinylButton,
+#FxAssignButton,
+#GuiToggleButton {
   border: 1px solid #585858;
   border-radius: 2px;
-  margin: 1px;
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 10px/12px;
+  }
+
+  #GuiToggleButton {
+    margin: 2px;
+  }
+
+  #VinylButton,
+  #FxAssignButton {
+    margin: 1px;
+  }
+
+#VinylButton[displayValue="0"],
+#GuiToggleButton[displayValue="0"],
+#FxAssignButton[displayValue="0"] {
   color: #ddd;
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                  stop:0 #282828,
-                                  stop:1 #0e0e0e);
+  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #282828,
+    stop:1 #0e0e0e);
 }
 
-#VinylToggleButtonUL[displayValue="1"],
+#VinylButton[displayValue="1"],
+#VinylButton[displayValue="2"],
+#GuiToggleButton[displayValue="1"],
+#GuiToggleButton[displayValue="2"],
 #FxAssignButton[displayValue="1"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    margin: 1px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #0e0e0e;
-    background-color: #eece33;
-}
-
-#VinylToggleButtonLL[displayValue="0"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    margin: 1px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #ddd;
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                    stop:0 #282828,
-                                    stop:1 #0e0e0e);
-}
-
-#VinylToggleButtonLL[displayValue="1"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    margin: 1px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #0e0e0e;
-    background-color: #eece33;
+  border: 1px solid #585858;
+  border-radius: 2px;
+  color: #0e0e0e;
+  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #B69700,
+    stop:1 #eece33);
 }
 
 #TristateButton {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    margin: 1px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #eece33;
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+  border: 1px solid #585858;
+  border-radius: 2px;
+  margin: 1px;
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #282828,
+    stop:1 #0e0e0e);
 }
 
-#VinylCueButton[displayValue="0"] {
+#PitchTweakButton {
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
+  }
+
+  #PitchTweakButton[displayValue="0"] {
     color: #ddd;
-    background-color: #0e0e0e;
-}
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+      stop:0 #282828,
+      stop:1 #0e0e0e);
+  }
 
-#VinylCueButton[displayValue="1"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    margin: 1px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #0e0e0e;
-    background-color: #eece33;
-}
-
-#VinylCueButton[displayValue="2"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    margin: 1px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #0e0e0e;
-    background-color: #eece33;
-}
-
-#PitchTweakButton[displayValue="0"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px;
-    color: #ddd;
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
-    margin: 1px;
-}
-
-#PitchTweakButton[displayValue="1"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px;
+  #PitchTweakButton[displayValue="1"] {
     color: #ddd;
     background-color: #c00a09;
-    margin: 1px;
-}
+  }
 
 #PitchLabel {
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 12px/14px;
+  font-size: 12px/14px;
   color: #585858;
   text-align: center;
   qproperty-alignment: 'AlignHCenter | AlignBottom';
@@ -636,93 +568,24 @@
   margin: 2px;
 }
 
-#SyncToggleButton[displayValue="0"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #ddd;
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
-    margin-right: 3px;
-}
-
-#SyncToggleButton[displayValue="1"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #c0c0c0;
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #d80000, stop:1 #910000);
-    margin-right: 3px;
-}
-
 #LoopToggleButton[displayValue="0"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
     color: #ddd;
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+      stop:0 #282828,
+      stop:1 #0e0e0e);
     margin-right: 2px;
 }
 
 #LoopToggleButton[displayValue="1"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
     color: #c0c0c0;
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #d80000, stop:1 #910000);
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+      stop:0 #d80000,
+      stop:1 #910000);
     margin-right: 2px;
-}
-
-#CueToggleButton[displayValue="0"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #ddd;
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
-    margin-right: 2px;
-    margin-bottom: 2px;
-}
-
-#CueToggleButton[displayValue="1"] {
-    border: 1px solid #585858;
-    border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
-    color: #c0c0c0;
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #d80000, stop:1 #910000);
-    margin-right: 2px;
-    margin-bottom: 2px;
-}
-
-#CrossFadeContainer {
-qproperty-layoutAlignment: 'AlignCenter';
-background-color: #1e1e1e;
-padding-top: 5px;
-}
-
-#GuiToggleContainer {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding: 2px;
-  border: 0px solid #585858;
-  border-left:0px;
-  border-right:0px;
-  border-bottom:0px;
-  background-color: transparent;
-}
-
-#GuiToggleContainerPadLeft {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding: 0px;
-  padding-left: 4px;
-  border: 0px solid #585858;
-  border-left:0px;
-  border-right:0px;
-  border-bottom:0px;
-  background-color: transparent;
 }
 
 /*################################################################
@@ -767,53 +630,58 @@ padding-top: 5px;
 WBeatSpinBox {
   /* make it 2px smaller in each dimension,
     border is added for final size */
-  min-width: 45px;
-  max-width: 180px;
+  min-width: 55px;
+  max-width: 55px;
+  width: 55px;
   min-height: 22px;
-  max-height: 88px;
+  max-height: 22px;
+  height: 22px;
   border: 1px solid #666;
   /* size of spinbox: 54x22px
   incl. up/down button: 70x22px */
   border-radius: 2px;
-  color: #aaaaaa;
+  color: #cfb32c;
   background-color: #0f0f0f;
   selection-color: #0f0f0f;
   selection-background-color: #d2d2d2;
   font-size: 13px/13px;
   padding: 0px;
-  padding-left: 3px;
-  margin: 0 24px 2px 0;
+  padding: 0px 2px 0px 1px;
+  margin: 0px -1px 2px 0px;
 }
   WBeatSpinBox:hover {
     border-color: #888;
   }
   WBeatSpinBox:focus {
     border-color: #d2d2d2;
-    color: #ccc;
+    color: #cfb32c;
   }
 
   WBeatSpinBox::up-button, WBeatSpinBox::down-button {
-    subcontrol-origin: margin;
+    subcontrol-origin: padding;
     position: relative;
     /* as with spinbox: border is added to size.
       define it with same width as hover border, otherwise size jumps */
-    min-width: 16px;
-    min-height: 26px;
-    margin: 1px 0px 1px 0px;
+    min-width: 18px;
+    max-width: 18px;
+    min-height: 12px;
+    max-height: 12px;
+    margin: 0px 0px 0px 0px;
     padding: 0px;
     border: 0px;
     }
 
   WBeatSpinBox::up-button {
-    subcontrol-position: center right;
+    subcontrol-position: top right;
+    margin-top: -1px;
     image: url(skin:/buttons/btn_beatbox_double.svg) no-repeat;
     }
     WBeatSpinBox::up-button:pressed {
       image: url(skin:/buttons/btn_beatbox_double_pressed.svg) no-repeat;
     }
   WBeatSpinBox::down-button {
-    subcontrol-position: center right;
-    left: -15px;
+    subcontrol-position: bottom right;
+    margin-bottom: -2px;
     image: url(skin:/buttons/btn_beatbox_halve.svg) no-repeat;
     }
     WBeatSpinBox::down-button:pressed {
@@ -823,7 +691,16 @@ WBeatSpinBox {
 #Crossfader {
   qproperty-layoutAlignment: 'AlignCenter';
   /*background-color:#1e1e1e;*/
-  padding-top: 5px;
+  padding: 3px 1px 1px 5px;
+}
+
+#CrossfaderAndSwitches2Decks {
+  padding: 0px 10px 0px 10px;
+}
+
+#CrossfaderSwitch4Decks {
+  qproperty-layoutAlignment: 'AlignRight';
+  margin: 1px 10px 0px 0px;
 }
 
 #PreviewDeck {
@@ -834,9 +711,8 @@ WBeatSpinBox {
   margin-bottom: 5px;
 }
 
-#PreviewDeckText {
+#PreviewDeckTextRow {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
   font-size: 10px/11px;
   padding: 0px;
   color: #cfb32c;
@@ -845,22 +721,31 @@ WBeatSpinBox {
 
 #PreviewLabel {
   qproperty-alignment: 'AlignVCenter | AlignHCenter';
-  font: 13px/14px "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
   background-color: #1e1e1e;
-  font-weight:bold;
   text-transform: uppercase;
   border-right: 1px solid #585858;
-  color: #eece33;
   text-align: center;
-  padding-top: 3px;
-  padding-bottom: 3px;
+  padding-top: 2px;
+  padding-bottom: 2px;
 }
 
-#PreviewDeckMargin {
+#PreviewTitle {
+  font: bold 14px/14px;
+  text-align: left;
+  color: #cfb32c;
+  margin: 2px;
 }
 
 #PreviewPlayOverview {
-  padding: 3px;
+  border: 1px solid #585858;
+  border-top: 0px;
+  border-left: 0px;
+  border-bottom: 0px;
+}
+
+#PreviewPlay {
+  padding: 3px 1px 1px 3px;
+  border-right: 1px solid #585858;
 }
 
 #NoBorder {
@@ -868,10 +753,6 @@ border: 0px;
 }
 
 #PreviewColumnOne {
-  border: 1px solid #585858;
-  border-top: 0px;
-  border-left: 0px;
-  border-bottom: 0px;
   padding: 0px;
   margin: 0px;
 }
@@ -883,32 +764,20 @@ border: 0px;
   border-right: 0px;
 }
 
-#PreviewPlayOverview {
-  padding: 3px;
-}
-
-#PreviewDeckExpanded {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-}
-
-#HideShowButton {
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: 14px/18px;
-  padding:0px;
-  margin:0px;
-  text-align:left;
-  color: #eece33;
-}
-
-#CollapseButton {
-  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-  padding-top: 0px;
-  padding-bottom:3px;
-  text-align:left;
+#AlignLeft {
+  qproperty-layoutAlignment: 'AlignLeft';
 }
 
 #AlignLeftTop {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+}
+
+#AlignLeftBottom {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+}
+
+#AlignRight {
+  qproperty-layoutAlignment: 'AlignRight';
 }
 
 #AlignRightTop {
@@ -923,16 +792,16 @@ border: 0px;
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
 }
 
-#AlignLeftBottom {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-}
-
 #AlignCenter {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
 }
 
 #AlignCenterTop {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
+#AlignBottom {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
 }
 /**/
 #TEST {
@@ -944,12 +813,16 @@ border: 0px;
 }
 
 #Spacer58 {
+  background-color: #585858;
+}
+
+#Border58 {
   border: 1px solid #585858;
 }
 
 #PFLVUMeterBox {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  padding: 7px 0px 7px 0px;
+  padding: 4px 0px 5px 0px;
 }
 
 #VUMeterBox {
@@ -974,6 +847,29 @@ border: 0px;
 #Waveform {
 }
 
+#BeatgridButtonsToggle {
+  image: url(skin:/buttons/btn_beatgrid_buttons_toggle.svg) no-repeat center center;
+  border: 1px solid #585858;
+  border-radius: 2px;
+  margin: 1px;
+  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+          stop:0 #282828,
+          stop:0.13 #1a1a1a,
+          stop:0.87 #1a1a1a,
+          stop:1 #0e0e0e);
+}
+
+#BeatCurpos {
+  border: 1px solid #585858;
+  border-radius: 2px;
+  margin: 1px;
+  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+          stop:0 #282828,
+          stop:0.25 #1a1a1a,
+          stop:0.75 #1a1a1a,
+          stop:1 #0e0e0e);
+}
+
 #RateContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   border: 1px solid #585858;
@@ -987,9 +883,8 @@ border: 0px;
 
 #BpmText {
   qproperty-alignment: 'AlignCenter';
-  font-size: 16px/18px;
+  font-size: 18px/18px;
   font-weight: bold;
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
   background-color: transparent;
   text-align: center;
   padding: 0px;
@@ -999,13 +894,10 @@ border: 0px;
 #RateText {
   qproperty-alignment: 'AlignCenter';
   font-size: 12px/13px;
-  font-weight: bold;
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
   background-color: transparent;
   text-align: center;
   padding: 0px;
   margin: 0px;
-  color: #eece33;
 }
 
 #RateControls {
@@ -1025,50 +917,87 @@ border: 0px;
 #MicContainer, #AuxContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   border: 1px solid #585858;
-  padding: 3px;
   background-color: #1e1e1e;
 }
 
 #MicContainer {
-  margin: 5px 2px 0px 0px;
+  margin: 5px 5px 0px 0px;
+  padding: 1px 6px 3px 6px;
 }
 
 #AuxContainer {
-  margin: 5px 0px 0px 2px;
-}
-
-#MicBorder {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  border: 1px solid #585858;
-  margin-left: 3px;
-  margin-right: 3px;
-}
-
-#MicInterior {
-  padding-left:5px;
-  padding-right:5px;
-}
-
-#MicButtonContainer {
-  padding: 2px;
-  padding-bottom: 5px;
+  margin: 5px 0px 0px 5px;
+  padding: 1px 0px 3px 6px;
 }
 
 #MicTitle {
   qproperty-alignment: 'AlignLeft | AlignTop';
   text-transform: uppercase;
   font-size: 15px/17px;
-  font-weight: bold;
-  color: #eece33;
+}
+
+#MicBorder {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  border: 1px solid #585858;
+  margin: 1px 6px 1px 0px;
+}
+
+#MicInterior {
+  padding: 0px 3px 2px 3px;
 }
 
 #MicSubTitle {
-  qproperty-alignment: 'AlignLeft | AlignTop';
+  qproperty-alignment: 'AlignCenter | AlignTop';
   font-size: 12px/13px;
-  font-weight: bold;
-  color: #eece33;
+  text-align: center;
 }
 
+#MicDuckingTitle {
+  qproperty-alignment: 'AlignCenter | AlignTop';
+  font-size: 12px/13px;
+  font-weight: bold;
+  color: #585858;
+  text-align: center;
+}
+
+#MicDuckingContainer {
+  margin: 0px 0px 3px 0px;
+}
+
+#MicDuckingButton[displayValue="0"] {
+  color: #ddd;
+  }
+
+  #MicDuckingButton[displayValue="1"],
+  #MicDuckingButton[displayValue="2"] {
+    color: #0e0e0e;
+  }
+
+#MicGainPFlContainer {
+  qproperty-layoutAlignment: 'AlignCenter';
+  padding: 0px;
+  margin-left: 2px;
+}
+
+#MicGainKnob {
+  qproperty-layoutAlignment: 'AlignCenter';
+  margin: 0px 8px 0px 3px;
+}
+
+#MicVUMeter {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+  padding: 3px 0px 1px 4px;
+}
+
+#MicFxButtons {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+}
+
+#MicTalkButton,
+#AuxMuteButton {
+  border-radius: 2px;
+  margin: 1px 0px 1px 2px;
+}
 
 #SamplerDecksContainer {
   background-color: #0e0e0e;
@@ -1088,96 +1017,81 @@ border: 0px;
   background-color: #1e1e1e;
 }
 
-#SamplerVU {
-  padding: 0px 5px 0px 5px;
-  qproperty-layoutAlignment: 'AlignRight | AlignBottom';
-  border: 1px solid #585858;
-  border-top: 0px;
-  border-bottom: 0px;
-  border-left: 0px;
-}
-
-#SamplerPitch {
-  padding: 0px 5px 0px 5px;
-  qproperty-layoutAlignment: 'AlignRight | AlignBottom';
-}
-
-#SamplerSyncButton {
-  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-}
-
 #SamplerMainControls {
-  border: 1px solid #585858;
-  border-top: 0px;
-  border-left: 0px;
-  border-bottom: 0px;
-}
-
-#SamplerButtons {
-  padding: 5px;
-  qproperty-layoutAlignment: 'AlignCenter';
-}
-
-#SamplerRowTwo {
-  border: 1px solid #585858;
-  border-left: 0px;
-  border-right: 0px;
 }
 
 #SamplerText {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding: 3px;
+  padding: 3px 3px 3px 5px;
+  border: 1px solid #585858;
+  border-top: 0px;
+  border-left: 0px;
 }
 
-#SamplerHotcues {
-  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+#SamplerTitle {
+  font-size: 16px/19px;
+  text-align: left;
+  text-transform: none;
 }
 
-#SamplerPfl {
-  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-  padding:5px;
-  padding-top:0px;
-  padding-bottom:0px;
-  padding-right:0px;
+#SamplerRowTwo {
+  border: 1px solid #585858;
+  border-top: 0px;
+  border-right: 0px;
+  border-left: 0px;
+}
+
+#SamplerButtons {
+  qproperty-layoutAlignment: 'AlignVCenter';
+}
+
+#SamplerPlay {
+  padding: 3px 1px 1px 3px;
+  border: 1px solid #585858;
+  border-top: 0px;
+  border-left: 0px;
+  border-bottom: 0px;
 }
 
 #SamplerButtonGrid {
   border: 1px solid #585858;
   border-top: 0px;
-  border-right: 0px;
   border-bottom: 0px;
 }
 
-#SamplerPlay {
-  padding: 5px;
-  padding-top: 2px;
-  padding-bottom: 2px;
+#SamplerHotcues {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+  margin: 2px 0px 0px 2px;
+}
+
+#SamplerPfl {
+  margin: 2px 1px 0px 0px;
+}
+
+#SamplerGain {
+  padding: 0px 0px 0px 2px;
+}
+
+#SamplerVU {
+  padding: 0px 3px;
+  qproperty-layoutAlignment: 'AlignCenter';
   border: 1px solid #585858;
   border-top: 0px;
   border-left: 0px;
   border-bottom: 0px;
 }
 
-#SamplerVol {
-  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-  border: 1px solid #585858;
-  border-top: 0px;
-  border-bottom: 0px;
-  border-right: 0px;
-  padding: 2px;
+#SamplerPitch {
+  padding: 1px 2px 0px 2px;
+  qproperty-layoutAlignment: 'AlignRight | AlignBottom';
 }
 
-#Deck1 WLabel, Deck2 WLabel {
-  color: #eece33;
+#SamplerSyncButton {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
 }
 
-#Deck3 WLabel, #Deck4 WLabel {
-  color: #09B2AE;
-}
-
-#TitleGutter WLabel, #EffectUnitNameContainer WLabel {
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 16px/19px;
+#TitleGutter WLabel {
+  font-size: 16px/19px;
   text-transform: none;
   text-align: left;
 }
@@ -1190,19 +1104,14 @@ border: 0px;
 #EffectUnit1, #EffectUnit2, #EffectUnit3, #EffectUnit4 {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
   border: 1px solid #585858;
-  margin-top: 5px;
 }
 
-#EffectUnit1,
-#EffectUnit3 {
-  border-left: none;
-  margin-right: 2px;
+#EffectUnit1, #EffectUnit3 {
+  margin: 5px 5px 2px 2px;
 }
 
-#EffectUnit2,
-#EffectUnit4 {
-  border-right: none;
-  margin-left: 2px;
+#EffectUnit2, #EffectUnit4 {
+  margin: 5px 2px 2px 5px;
 }
 
 #EffectRows {
@@ -1213,12 +1122,13 @@ border: 0px;
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   background-color: #1e1e1e;
   border-left: 1px solid #585858;
-  padding: 1px 0px 2px 1px;
+  padding: 0px 2px;
 }
 
 #FxUnit1_ExpandCollapseButton,
 #FxUnit2_ExpandCollapseButton {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  margin: 1px 0px 1px 0px;
 }
 
 #FxUnit1_ExpandCollapseButton WPushButton,
@@ -1233,12 +1143,10 @@ border: 0px;
 #EffectSlot2,
 #EffectSlot3 {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-  padding: 2px 4px 2px 4px;
+  padding: 2px 2px 2px 5px;
 }
 
-#EffectSlot_focused {/*
-  background: transparent url(skin:background_tile_focused.png) repeat;
-  background-color: #000;*/
+#EffectSlot_focused {
   background-color:qlineargradient(
       x1:0, y1:0, x2:0, y2:1,
         stop:0 #000,
@@ -1268,7 +1176,7 @@ border: 0px;
 
 #EffectUnitKnob {
   qproperty-layoutAlignment: 'AlignRight';
-  padding:3px;
+  padding: 3px;
 }
 
 WEffectSelector {
@@ -1321,8 +1229,10 @@ WEffectSelector {
     is inherited.
     On Windows, it must be defined here */
     color: #cfb32c;
-    border: 0px;
+    border: 1px solid #666;
     border-radius: 2px;
+    padding: 0px;
+    margin: 0px;
   }
   /* selected item */
   WEffectSelector::checked {
@@ -1342,31 +1252,22 @@ WEffectSelector {
   WEffectSelector::indicator {
   /* This is sufficient to completely hide the tick mark, but
     this alone would show an empty, shadowed box instead of tick mark
-    background-color: transparent;
-    This should decrease the tick mark's left & right margin but is not respected */
-    margin: 0px -4px 0px -4px;
-    background-color: transparent;
+    background-color: transparent;*/
+  /* This should decrease the tick mark's left & right margin but is not respected */
+    margin: 0px;
+    padding: 0px;
   }
-
-/* this is now inline in the pushbutton so we can change styles */
-/*#EffectUnitGroupControlButton {
-  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-  font: bold 11px/13px;
-  text-transform: uppercase;
-  color: #eece33;
-  text-transform: none;
-  text-align: center;
-  border: 1px solid #eece33;
-  margin: 1px;
-}*/
 
 #FxSuperLinkButton,
 #FxSuperLinkInvertButton {
-  /* those buttons are 5px tall, that's why they won't accept
-  3px radius which is set for all WPushButtons
-  border-radius: 2px; */
-  margin: 0px 5px 0px 5px;
-}
+  border-radius: 1px;
+  }
+  #FxSuperLinkButton {
+    margin: 0px 5px 0px 5px;
+  }
+  #FxSuperLinkInvertButton {
+    margin: 0px 5px 2px 5px;
+  }
 
 #FxSuperLinkButton[value="0"],
 #FxSuperLinkInvertButton[displayValue="0"] {
@@ -1437,34 +1338,9 @@ WEffectSelector {
       stop: 1 #CDCDCD);
   }
 
-#EffectUnitGroupControlButton[displayValue="0"] {
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 9px/11px;
-    text-transform: uppercase;
-    color: #585858;
-    background-color: #0e0e0e;
-    text-transform: none;
-    text-align: center;
-    border: 1px solid #585858;
-    margin: 1px;
-}
-
-#EffectUnitGroupControlButton[displayValue="1"] {
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 9px/11px;
-    text-transform: uppercase;
-    color: #0e0e0e;
-    background-color: #eece33;
-    text-transform: none;
-    text-align: center;
-    border: 1px solid #585858;
-    margin: 1px;
-}
-
 #EffectToggleButton[displayValue="0"] {
     border: 1px solid #585858;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
+    font-size: 10px/12px;
     color: #585858;
     background-color: #0e0e0e;
     margin-right: 1px;
@@ -1472,8 +1348,7 @@ WEffectSelector {
 
 #EffectToggleButton[displayValue="1"] {
     border: 1px solid #585858;
-    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-    font: bold 10px/12px;
+    font-size: 10px/12px;
     color: #0e0e0e;
     background-color: #eece33;
     margin-right: 1px;
@@ -1481,9 +1356,9 @@ WEffectSelector {
 
 /* Library styling is hard */
 
-#LibrarySingleton {
+#LibrarySingleton {/*
   padding-top: 5px;
-  padding-bottom: 2px;
+  padding-bottom: 2px;*/
 }
 
 #Library {
@@ -1562,10 +1437,6 @@ WEffectSelector {
   background-color: #191919;
 }
 
-#LibrarySidebarExpanded {
-  margin: -5px 0px 0px 5px;
-}
-
 #LibrarySidebarExpanded QPushButton {
   margin: 2px 3px 2px 3px; 
   padding: 4px 6px; 
@@ -1607,6 +1478,7 @@ QTableView:focus {
 
 #LibrarySidebarButtons, QTableView, QTextBrowser, QTreeView {
   border: 1px solid #585858;
+  /*font-size: 15px/18px;*/
   color: #cfb32c;
   background-color: #0f0f0f;
   alternate-background-color: #1a1a1a;
@@ -1627,9 +1499,7 @@ WLibraryBreadCrumb QToolButton {
 
 WBaseLibrary QLabel {
   padding: 0px 0px 0px 0px;
-  margin: 100px 100px 100px 100px;
-  background-color: blue;
-  border: 0px solid blue;
+  margin: 0px;
 }
 
 QTreeView::item:selected:active, 
@@ -1654,8 +1524,12 @@ QTableView::indicator:checked { background: url(skin:/style/style_checkbox_check
 QTableView::indicator:unchecked { background: url(skin:/style/style_checkbox_unchecked.png);}
 
 /* BPM lock icon in the library "BPM" column. */
-#LibraryBPMButton::indicator:checked { image: url(:/images/library/ic_library_checked.png); }
-#LibraryBPMButton::indicator:unchecked { image: url(:/images/library/ic_library_unchecked.png); }
+#LibraryBPMButton::indicator:checked {
+  image: url(:/images/library/ic_library_checked.png);
+}
+#LibraryBPMButton::indicator:unchecked {
+  image: url(:/images/library/ic_library_unchecked.png);
+}
 #LibraryBPMButton::item:selected {
   color: #cfb32c;
   background-color: #725309;
@@ -1671,20 +1545,27 @@ QTableView::indicator:unchecked { background: url(skin:/style/style_checkbox_unc
   border: 0px;
 }
 
-#LibraryPreviewButton:checked { 
-    image: url(skin:/style/style_library_preview_pause.png); 
+QPushButton#LibraryPreviewButton:!checked{
+  image: url(skin:/style/style_library_preview_play.png);
+}
+QPushButton#LibraryPreviewButton:checked{
+  image: url(skin:/style/style_library_preview_pause.png);
 }
 
 QHeaderView {
-  font: 13px/15px;
+  font-size: 13px/15px;
   color: #cfb32c;
+  font-weight: bold;
   background-color: #0f0f0f;
 }
 QHeaderView::section {
   height: 18px;
   border: 1px solid #585858;
   border-left: 0px;
-  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
+  padding-left: 1px;
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #585858,
+    stop:1 #0f0f0f);
 }
 
 QHeaderView::up-arrow,
@@ -1731,11 +1612,21 @@ QScrollBar::add-page, QScrollBar::sub-page {
   background-color: #1a1a1a;
   border-radius: 3px;
 }
-QScrollBar::handle {
-  min-height: 25px;
-  background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(114, 83, 9, 190), stop:1 rgba(65, 47, 5, 190));
+QScrollBar::handle:horizontal {
+  min-width: 25px;
   border-radius: 3px;
   border: 1px solid #725309;
+  background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #725309,
+    stop:1 #412f05);
+}
+QScrollBar::handle:vertical {
+  min-height: 25px;
+  border-radius: 3px;
+  border: 1px solid #725309;
+  background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #725309,
+    stop:1 #412f05);
 }
 /* Turn off buttons */
 QScrollBar::add-line, QScrollBar::sub-line {
@@ -1745,8 +1636,16 @@ QScrollBar::add-line, QScrollBar::sub-line {
 }
 
 /* transition time in Auto DJ tab */
-QSpinBox:editable { background: transparent; color: #cfb32c; }
-QSpinBox { min-height: 20px; max-height: 20px;min-width: 40px; max-width: 40px;}
+QSpinBox:editable {
+  background: transparent;
+  color: #cfb32c;
+}
+QSpinBox {
+  min-height: 20px;
+  max-height: 20px;
+  min-width: 40px;
+  max-width: 40px;
+}
 
 /* library search bar */
 WSearchLineEdit { 
@@ -1756,21 +1655,22 @@ WSearchLineEdit {
   background: #181818; 
   color: #cfb32c; 
 }
-
-
-WSearchLineEdit:focus { 
-  border: 1px solid #8E5C00;
-  background: #0f0f0f; 
-  color: #eece33;
+WSearchLineEdit:focus {
+  padding: 2px;
+  border: 2px solid #FF6600;
+  background: #0f0f0f;
 }
 
-
 #SidebarContainer{
-    margin-top: -5px;
+  margin: 0px;
+  padding: 0px;
 }
 
 /* cover art */
-WCoverArt { background: transparent; color: #ACACAC; }
+WCoverArt {
+  background: transparent;
+  color: #ACACAC;
+}
 
 /* splitter between treeview and library */
 #LibrarySplitter::handle {
@@ -1811,53 +1711,122 @@ WCoverArt { background: transparent; color: #ACACAC; }
 }
 
 /* Extra declaration for QRadioButton otherwise it shows up with wrong colors in Linux with Gnome */
-QLabel, QRadioButton { background: transparent; color: #cfb32c; }
+QLabel, QRadioButton {
+  background: transparent;
+  color: #cfb32c;
+}
 
 /* Additional space for QRadionButtons and QLabels */
-WBaseLibrary QRadioButton, WBaseLibrary QLabel { margin: 9px 3px 6px 3px; }
+WLibrary QRadioButton, WLibrary QLabel {
+  margin: 9px 3px 6px 3px;
+}
 
-/* Additional space for the first QRadionButton in the row 
-WBaseLibrary QRadioButton#radioButtonRecentlyAdded { margin: 9px 3px 6px 12px; } */
+/* Additional space for the first QRadionButton in the row */
+WLibrary QRadioButton#radioButtonRecentlyAdded {
+  margin: 9px 3px 6px 12px;
+}
+
+WLibrary QRadioButton::indicator:checked {
+  background: url(skin:/buttons/btn_lib_radio_button_on.svg);
+}
+
+WLibrary QRadioButton::indicator:unchecked {
+  background: url(skin:/buttons/btn_lib_radio_button_off.svg);
+}
+
+/* Additional space for the QPushButtons */
+#DlgMissing > QPushButton,
+#DlgHidden > QPushButton,
+#DlgAutoDJ > QPushButton,
+#DlgRecording > QPushButton,
+#DlgAnalysis > QPushButton {
+  margin: 5px 3px 5px 3px;
+  padding: 3px 8px;
+  min-width: 65px;
+  border: 1px solid #585858;
+  border-radius: 2px;
+  color: #eeeeee;
+}
+
+/* Additional space for the first QPushButton in the row */
+#DlgMissing > QPushButton#btnPurge,
+#DlgHidden > QPushButton#btnUnhide,
+#DlgAutoDJ > QPushButton#pushButtonAutoDJ,
+#DlgRecording > QPushButton#pushButtonRecording,
+#DlgAnalysis > QPushButton#pushButtonAnalyze {
+  margin: 5px 12px 5px 3px;
+}
+
+/* Additional space for the last QPushButton in the row */
+#DlgAutoDJ > QPushButton#pushButtonShuffle {
+  margin: 5px 3px 5px 12px;
+}
+
+#DlgAutoDJ > QPushButton:checked {
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #AD5700,
+    stop:1 #DE7000);
+}
+
+#DlgRecording > QPushButton:checked {
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #840600,
+    stop:1 #AD0800);
+}
+
+#DlgMissing > QPushButton:!checked,
+#DlgHidden > QPushButton:!checked,
+#DlgAutoDJ > QPushButton:!checked,
+#DlgRecording > QPushButton:!checked,
+#DlgAnalysis > QPushButton:!checked {
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #6F7176,
+    stop:1 #626468);
+}
 
 /* Spacing between treeview and searchbar */
 QTreeView { margin: 0px 0px 0px 0px; }
 
 /* triangle for closed/opened branches in treeview */
-QTreeView::branch,
-QTreeView { 
-  background-color: #0f0f0f; } /*  Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588 */
+QTreeView {
+  show-decoration-selected: 0;
+  background-color: #151515;
+}
+/*  Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588 */
 QTreeView::branch:has-children:!has-siblings:closed,
-QTreeView::branch:closed:has-children:has-siblings { 
-  border-image: none; 
+QTreeView::branch:closed:has-children:has-siblings {
+  border-image: none;
   image: url(skin:/style/style_branch_closed.png);
   background-color:#0f0f0f;
 }
 QTreeView::branch:open:has-children:!has-siblings,
-QTreeView::branch:open:has-children:has-siblings { 
-  border-image: none; 
+QTreeView::branch:open:has-children:has-siblings {
+  border-image: none;
   image: url(skin:/style/style_branch_open.png);
   background-color:#0f0f0f;
 }
 QTreeView::branch:has-children:!has-siblings:closed:selected,
-QTreeView::branch:closed:has-children:has-siblings:selected { 
-  border-image: none; 
+QTreeView::branch:closed:has-children:has-siblings:selected {
+  border-image: none;
   image: url(skin:/style/style_branch_closed.png);
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #585858,
+    stop:1 #0f0f0f);
 }
 QTreeView::branch:open:has-children:!has-siblings:selected,
-QTreeView::branch:open:has-children:has-siblings:selected { 
-  border-image: none; 
+QTreeView::branch:open:has-children:has-siblings:selected {
+  border-image: none;
   image: url(skin:/style/style_branch_open.png);
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #585858,
+    stop:1 #0f0f0f);
 }
-
-WLibrary[showFocus="0"] {
-  border-top: 2px solid #0f0f0f;
+QTreeView::item:selected {
+  color: #cfb32c;
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #585858,
+    stop:1 #0f0f0f);
 }
-
-WLibrary[showFocus="1"] {
-  border-top: 2px solid #FF7100;
-}
-
-
 
 QToolTip {
   background-color: #0f0f0f;

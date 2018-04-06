@@ -124,9 +124,9 @@ TEST_F(CoverArtUtilTest, searchImage) {
     EXPECT_EQ(expected1, res);
 
     // Looking for a track with embedded cover.
-    pTrack = TrackPointer(Track::newTemporary(kTrackLocationTest));
+    pTrack = Track::newTemporary(kTrackLocationTest);
     SoundSourceProxy(pTrack).updateTrackFromSource();
-    CoverInfo result = pTrack->getCoverInfo();
+    CoverInfo result = pTrack->getCoverInfoWithLocation();
     EXPECT_EQ(result.type, CoverInfo::METADATA);
     EXPECT_EQ(result.source, CoverInfo::GUESSED);
     EXPECT_EQ(result.coverLocation, QString());

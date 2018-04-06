@@ -1,81 +1,76 @@
 <Template>
   <WidgetGroup>
-		<ObjectName>Library</ObjectName>
-		<SizePolicy>me,i</SizePolicy>
-		<MinimumSize>1280,-</MinimumSize>
-		<Layout>vertical</Layout>
-		<Children>
+    <ObjectName>Library</ObjectName>
+    <SizePolicy>me,i</SizePolicy>
+    <MinimumSize>1280,-</MinimumSize>
+    <Layout>vertical</Layout>
+    <Children>
 
       <WidgetGroup><Size>0me,5f</Size></WidgetGroup>
-			<!--
-			**********************************************
-			Library / Preview Deck / Search / Tree view
-			**********************************************
-			-->
-			<WidgetGroup>
-				<Layout>horizontal</Layout>
-				<SizePolicy>me,me</SizePolicy>
-				<Children>
-					<LibrarySidebarButtons>
-						<ObjectName>LibrarySidebarButtons</ObjectName>
-					</LibrarySidebarButtons>
+      <!--
+      **********************************************
+      Library / Preview Deck / Search / Tree view
+      **********************************************
+      -->
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
 
-					<Splitter>
-
+          <Splitter>
             <ObjectName>LibrarySplitter</ObjectName>
-						<SizePolicy>me,me</SizePolicy>
-						<SplitSizes>1,12</SplitSizes>
+            <SizePolicy>me,me</SizePolicy>
+            <SplitSizes>1,10</SplitSizes>
             <SplitSizesConfigKey>[LateNight],LibrarySidebarSplitSize</SplitSizesConfigKey>
-						<Children>
-							<WidgetGroup>
-								<Layout>vertical</Layout>
-								<Children>
+            <Collapsible>1,0</Collapsible>
+            <Children>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,me</SizePolicy>
+                <MinimumSize>100,-1</MinimumSize>
+                <Children>
 
-                                    <Splitter>
-                                        <ObjectName>CoverArtSplitter</ObjectName>
-                                        <Size>me,me</Size>
-                                        <MinimumSize>30,30</MinimumSize>
-                                        <SplitSizes>2,8</SplitSizes>
-                                        <SplitSizesConfigKey>[LateNight],CoverArtSplitSize</SplitSizesConfigKey>
-                                        <Orientation>vertical</Orientation>
-                                        <Collapsible>0,0</Collapsible>
-                                        <Children>
-                                            <!--Library Tree View-->
-                                            <LibrarySidebarExpanded>
-                                            	<ObjectName>LibrarySidebarExpanded</ObjectName>
-                                            </LibrarySidebarExpanded>
-                                            <!--Cover Art-->
-                                            <CoverArt>
-                                                <SizePolicy>me,me</SizePolicy>
-                                                <MinimumSize>30,30,</MinimumSize>
-                                                <Connection>
-                                                    <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
-                                                    <BindProperty>visible</BindProperty>
-                                                </Connection>
-                                            </CoverArt>
-                                        </Children>
-                                    </Splitter>
-								</Children>
-							</WidgetGroup>
-							<WidgetGroup>
-								<Layout>vertical</Layout>
-								<Children>
-									<LibraryBreadCrumb>
-										<Id>1</Id>
-									</LibraryBreadCrumb>
-									<SearchBox>
-										<Id>1</Id>
-									</SearchBox>
-									<LibraryPane>
-										<Id>1</Id>
-									</LibraryPane>
-								</Children>
-							</WidgetGroup>
-						</Children>
-					</Splitter>
+                  <Template src="skin:preview_deck.xml"/>
 
-				</Children>
-			</WidgetGroup>
-		</Children>
-	</WidgetGroup>
+                  <!--Search Input Field-->
+                  <SearchBox></SearchBox>
+
+                  <Splitter>
+                    <ObjectName>CoverArtSplitter</ObjectName>
+                    <Size>me,me</Size>
+                    <SplitSizes>1,1</SplitSizes>
+                    <SplitSizesConfigKey>[LateNight],CoverArtSplitSize</SplitSizesConfigKey>
+                    <Orientation>vertical</Orientation>
+                    <Collapsible>0,0</Collapsible>
+                    <Children>
+                      <!--Library Tree View-->
+                      <LibrarySidebar></LibrarySidebar>
+                      <!--Cover Art-->
+                      <CoverArt>
+                        <SizePolicy>me,me</SizePolicy>
+                        <MinimumSize>40,40</MinimumSize>
+                        <Connection>
+                          <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </CoverArt>
+                    </Children>
+                  </Splitter>
+
+                </Children>
+              </WidgetGroup>
+              
+              <!-- Library Table-->
+              <Library>
+                <BgColor>#585858</BgColor>
+                <FgColor>#eece33</FgColor>
+              </Library>
+
+            </Children>
+          </Splitter>
+
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
 </Template>

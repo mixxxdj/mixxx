@@ -36,9 +36,9 @@ Description:
               </WidgetGroup>
 
               <PushButton>
-                <MinimumSize>50,24</MinimumSize>
+                <MinimumSize>51,12</MinimumSize>
                 <MaximumSize>102,24</MaximumSize>
-                <SizePolicy>me,f</SizePolicy>
+                <SizePolicy>me,min</SizePolicy>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -57,11 +57,11 @@ Description:
               </PushButton>
 
               <WidgetGroup><!-- Master & Headphone mixer -->
-                <Size>28f,28f</Size>
+                <Size>22f,28f</Size>
                 <Layout>horizontal</Layout>
                 <Children>
                   <Label>
-                    <Size>28f,28f</Size>
+                    <Size>22f,28f</Size>
                     <ObjectName>MasterHeadMixerLabel</ObjectName>
                   </Label>
                 </Children>
@@ -79,7 +79,7 @@ Description:
                 <SetVariable name="ConfigKey">[Tango],master_mixer</SetVariable>
               </Template>
 
-              <WidgetGroup><Size>0min,1min</Size></WidgetGroup>
+              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
               <Template src="skin:mixer_master_booth.xml"/>
 
@@ -91,56 +91,47 @@ Description:
 
               <Template src="skin:mixer_headphone.xml"/>
 
+              <WidgetGroup><Size>0min,1min</Size></WidgetGroup>
+
             </Children>
           </WidgetGroup>
         </Children>
       </WidgetGroup><!-- /Logo + Master, Headphone & Booth Mixer -->
 
-      <WidgetGroup><!-- Crossfader (if enabled) + responsive spacer underneath -->
-        <ObjectName>AlignHCenter</ObjectName>
+      <WidgetGroup><!-- Crossfader -->
         <SizePolicy>min,min</SizePolicy>
-        <Layout>vertical</Layout>
+        <Layout>horizontal</Layout>
         <Children>
-
-          <WidgetGroup><!-- Crossfader -->
-            <SizePolicy>min,min</SizePolicy>
-            <Layout>horizontal</Layout>
+          <WidgetGroup>
+            <ObjectName>CrossfaderContainer</ObjectName>
+            <SizePolicy>min,f</SizePolicy>
+            <Layout>vertical</Layout>
             <Children>
-              <WidgetGroup>
-                <ObjectName>CrossfaderContainer</ObjectName>
-                <SizePolicy>min,f</SizePolicy>
-                <Layout>vertical</Layout>
-                <Children>
-                  <SliderComposed>
-                    <TooltipId>crossfader</TooltipId>
-                    <Handle>skin:/knobs_sliders/crossfader_handle.svg</Handle>
-                    <Slider>skin:/knobs_sliders/crossfader_scale.svg</Slider>
-                    <Horizontal>true</Horizontal>
-                    <Connection>
-                      <ConfigKey>[Master],crossfader</ConfigKey>
-                    </Connection>
-                  </SliderComposed>
-                </Children>
-              </WidgetGroup>
+              <SliderComposed>
+                <TooltipId>crossfader</TooltipId>
+                <Handle>skin:/knobs_sliders/crossfader_handle.svg</Handle>
+                <Slider>skin:/knobs_sliders/crossfader_scale.svg</Slider>
+                <Horizontal>true</Horizontal>
+                <Connection>
+                  <ConfigKey>[Master],crossfader</ConfigKey>
+                </Connection>
+              </SliderComposed>
             </Children>
-            <Connection>
-              <ConfigKey persist="true">[Tango],crossfader</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup><!-- /Crossfader -->
-
-          <!-- Zero-height spacers below Crossfader ensures left and right toolbars
-              are aligned with deck edges. -->
-          <Template src="skin:spacer_topbar.xml"/>
-
+          </WidgetGroup>
         </Children>
-      </WidgetGroup><!-- /Crossfader (if enabled) + responsive spacer underneath -->
+        <Connection>
+          <ConfigKey persist="true">[Tango],crossfader</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Crossfader -->
 
       <WidgetGroup><!-- Skin toggles, Rec, Broadcast, Clock, Skin menu toggle -->
         <Layout>horizontal</Layout>
         <ObjectName>SkinControlsBar</ObjectName>
         <SizePolicy>me,min</SizePolicy>
         <Children>
+
+          <WidgetGroup><Size>10me,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml"><!-- Waveforms -->
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
@@ -152,7 +143,7 @@ Description:
             <SetVariable name="ConfigKey">[Tango],stacked_waveforms</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+          <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml"><!-- FX -->
             <SetVariable name="TooltipId">show_effects</SetVariable>
@@ -178,7 +169,7 @@ Description:
 
           <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
-          <Template src="skin:button_2state_persist.xml"><!-- Library -->
+          <Template src="skin:button_2state_persist.xml">
             <SetVariable name="TooltipId">show_microphone</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">30f,20f</SetVariable>
@@ -216,19 +207,6 @@ Description:
 
           <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
-          <Template src="skin:button_2state_persist.xml"><!-- Library -->
-            <SetVariable name="TooltipId">show_library</SetVariable>
-            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">20f,20f</SetVariable>
-            <SetVariable name="state_0_pressed">lib_off.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">lib_off.svg</SetVariable>
-            <SetVariable name="state_1_pressed">lib_on.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">lib_on.svg</SetVariable>
-            <SetVariable name="ConfigKey">[Library],show_library</SetVariable>
-          </Template>
-
-          <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
-
           <Template src="skin:button_2state_persist.xml"><!-- 4 Decks -->
             <SetVariable name="ObjectName">GuiToggleButton2</SetVariable>
             <SetVariable name="Size">20f,20f</SetVariable>
@@ -240,7 +218,7 @@ Description:
             <SetVariable name="ConfigKey">[Master],show_4decks</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>10me,1min</Size></WidgetGroup>
+          <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
 
           <WidgetGroup><!-- Recording button & recording duration label -->
             <ObjectName>RecBox</ObjectName>
@@ -334,6 +312,7 @@ Description:
             <SizePolicy>min,min</SizePolicy>
             <Children>
               <Template src="skin:button_2state.xml">
+                <SetVariable name="TooltipId">skin_settings</SetVariable>
                 <SetVariable name="ObjectName">SkinSettingsToggler</SetVariable>
                 <SetVariable name="Size">24f,24f</SetVariable>
                 <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>

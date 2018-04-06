@@ -1,7 +1,8 @@
 #include <QDirIterator>
 #include <QFile>
 #include <QMutexLocker>
-#include <QtDebug>
+
+#include <atomic>
 
 #include "track/track.h"
 #include "track/trackref.h"
@@ -14,11 +15,17 @@
 
 namespace {
 
-mixxx::Logger kLogger("Track");
+const mixxx::Logger kLogger("Track");
+
+constexpr bool kLogStats = false;
+
+// Count the number of currently existing instances for detecting
+// memory leaks.
+std::atomic<int> s_numberOfInstances;
 
 SecurityTokenPointer openSecurityToken(
         const QFileInfo& fileInfo,
-        const SecurityTokenPointer& pSecurityToken = SecurityTokenPointer()) {
+        SecurityTokenPointer pSecurityToken = SecurityTokenPointer()) {
     if (pSecurityToken.isNull()) {
         return Sandbox::openSecurityToken(fileInfo, true);
     } else {
@@ -54,40 +61,67 @@ mixxx::Bpm getActualBpm(
 } // anonymous namespace
 
 Track::Track(
-        const QFileInfo& fileInfo,
-        const SecurityTokenPointer& pSecurityToken,
+        QFileInfo fileInfo,
+        SecurityTokenPointer pSecurityToken,
         TrackId trackId)
-        : m_fileInfo(fileInfo),
-          m_pSecurityToken(openSecurityToken(m_fileInfo, pSecurityToken)),
-          m_qMutex(QMutex::Recursive),
+        : m_qMutex(QMutex::Recursive),
+          m_fileInfo(std::move(fileInfo)),
+          m_pSecurityToken(openSecurityToken(m_fileInfo, std::move(pSecurityToken))),
           m_record(trackId),
           m_bDirty(false),
           m_bMarkedForMetadataExport(false),
           m_analyzerProgress(-1) {
+    if (kLogStats && kLogger.debugEnabled()) {
+        long numberOfInstancesBefore = s_numberOfInstances.fetch_add(1);
+        kLogger.debug()
+                << "Creating instance:"
+                << this
+                << numberOfInstancesBefore
+                << "->"
+                << numberOfInstancesBefore + 1;
+    }
+}
+
+Track::~Track() {
+    if (kLogStats && kLogger.debugEnabled()) {
+        long numberOfInstancesBefore = s_numberOfInstances.fetch_sub(1);
+        kLogger.debug()
+                << "Destroying instance:"
+                << this
+                << numberOfInstancesBefore
+                << "->"
+                << numberOfInstancesBefore - 1;
+    }
 }
 
 //static
 TrackPointer Track::newTemporary(
-        const QFileInfo& fileInfo,
-        const SecurityTokenPointer& pSecurityToken) {
-    Track* pTrack =
-            new Track(
-                    fileInfo,
-                    pSecurityToken,
-                    TrackId());
-    return TrackPointer(pTrack);
+        QFileInfo fileInfo,
+        SecurityTokenPointer pSecurityToken) {
+    return std::make_shared<Track>(
+            std::move(fileInfo),
+            std::move(pSecurityToken));
 }
 
 //static
 TrackPointer Track::newDummy(
-        const QFileInfo& fileInfo,
+        QFileInfo fileInfo,
         TrackId trackId) {
-    Track* pTrack =
-            new Track(
-                    fileInfo,
-                    SecurityTokenPointer(),
-                    trackId);
-    return TrackPointer(pTrack);
+    return std::make_shared<Track>(
+            std::move(fileInfo),
+            SecurityTokenPointer(),
+            trackId);
+}
+
+void Track::relocate(
+        QFileInfo fileInfo,
+        SecurityTokenPointer pSecurityToken) {
+    QMutexLocker lock(&m_qMutex);
+    m_fileInfo = fileInfo;
+    m_pSecurityToken = pSecurityToken;
+    // The track does not need to be marked as dirty,
+    // because this function will always be called with
+    // the updated location from the database.
 }
 
 void Track::setTrackMetadata(
@@ -830,9 +864,14 @@ bool Track::isDirty() {
 
 void Track::markForMetadataExport() {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_bMarkedForMetadataExport, true)) {
-        markDirtyAndUnlock(&lock);
-    }
+    m_bMarkedForMetadataExport = true;
+    // No need to mark the track as dirty, because this flag
+    // is transient and not stored in the database.
+}
+
+bool Track::isMarkedForMetadataExport() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_bMarkedForMetadataExport;
 }
 
 int Track::getRating() const {
@@ -910,29 +949,22 @@ bool Track::isBpmLocked() const {
     return m_record.getBpmLocked();
 }
 
-void Track::setCoverInfo(const CoverInfoRelative& coverInfoRelative) {
+void Track::setCoverInfo(const CoverInfoRelative& coverInfo) {
+    DEBUG_ASSERT((coverInfo.type != CoverInfo::METADATA) || coverInfo.coverLocation.isEmpty());
+    DEBUG_ASSERT((coverInfo.source != CoverInfo::UNKNOWN) || (coverInfo.type == CoverInfo::NONE));
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_record.refCoverInfo(), coverInfoRelative)) {
+    if (compareAndSet(&m_record.refCoverInfo(), coverInfo)) {
         markDirtyAndUnlock(&lock);
         emit(coverArtUpdated());
     }
 }
 
-void Track::setCoverInfo(const CoverInfo& coverInfo) {
-    CoverInfoRelative coverInfoRelative(coverInfo);
+CoverInfoRelative Track::getCoverInfo() const {
     QMutexLocker lock(&m_qMutex);
-    DEBUG_ASSERT(coverInfo.trackLocation == m_fileInfo.absoluteFilePath());
-    if (compareAndSet(&m_record.refCoverInfo(), coverInfoRelative)) {
-        markDirtyAndUnlock(&lock);
-        emit(coverArtUpdated());
-    }
+    return m_record.getCoverInfo();
 }
 
-void Track::setCoverInfo(const CoverArt& coverArt) {
-    setCoverInfo(static_cast<const CoverInfo&>(coverArt));
-}
-
-CoverInfo Track::getCoverInfo() const {
+CoverInfo Track::getCoverInfoWithLocation() const {
     QMutexLocker lock(&m_qMutex);
     return CoverInfo(m_record.getCoverInfo(), m_fileInfo.absoluteFilePath());
 }

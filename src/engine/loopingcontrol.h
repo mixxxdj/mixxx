@@ -48,7 +48,7 @@ class LoopingControl : public EngineControl {
     // sample, if set.
     void hintReader(HintVector* pHintList) override;
 
-    void notifySeek(double dNewPlaypos) override;
+    void notifySeek(double dNewPlaypos, bool adjustingPhase) override;
 
   public slots:
     void slotLoopIn(double pressed);
@@ -99,12 +99,11 @@ class LoopingControl : public EngineControl {
     void setLoopOutToCurrentPosition();
     void clearActiveBeatLoop();
     void updateBeatLoopingControls();
-    int calculateEndOfBeatloop(int startSample, double beatloopSizeInBeats);
     bool currentLoopMatchesBeatloopSize();
     // When a loop changes size such that the playposition is outside of the loop,
     // we can figure out the best place in the new loop to seek to maintain
     // the beat.  It will even keep multi-bar phrasing correct with 4/4 tracks.
-    int seekInsideAdjustedLoop(double currentSample,
+    double seekInsideAdjustedLoop(double currentSample,
             double old_loop_in, double new_loop_in, double new_loop_out);
 
     ControlPushButton* m_pCOBeatLoopActivate;
@@ -132,7 +131,6 @@ class LoopingControl : public EngineControl {
     bool m_bAdjustingLoopInOld;
     bool m_bAdjustingLoopOutOld;
     bool m_bLoopOutPressedWhileLoopDisabled;
-    // TODO(DSC) Make the following values double
     ControlValueAtomic<LoopSamples> m_loopSamples;
     LoopSamples m_oldLoopSamples;
     ControlValueAtomic<double> m_currentSample;

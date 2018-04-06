@@ -441,16 +441,24 @@ void EffectsManager::processEffectsResponses() {
 
 void EffectsManager::collectGarbage(const EffectsRequest* pRequest) {
     if (pRequest->type == EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
-        //qDebug() << debugString() << "delete" << pRequest->RemoveEffectFromChain.pEffect;
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << "delete" << pRequest->RemoveEffectFromChain.pEffect;
+        }
         delete pRequest->RemoveEffectFromChain.pEffect;
     } else if (pRequest->type == EffectsRequest::REMOVE_CHAIN_FROM_RACK) {
-        //qDebug() << debugString() << "delete" << request->RemoveEffectFromChain.pEffect;
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << "delete" << pRequest->RemoveEffectFromChain.pEffect;
+        }
         delete pRequest->RemoveChainFromRack.pChain;
     } else if (pRequest->type == EffectsRequest::REMOVE_EFFECT_RACK) {
-        //qDebug() << debugString() << "delete" << pRequest->RemoveEffectRack.pRack;
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << "delete" << pRequest->RemoveEffectRack.pRack;
+        }
         delete pRequest->RemoveEffectRack.pRack;
     } else if (pRequest->type == EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL) {
-        //qDebug() << debugString() << "deleting states for input channel" << pRequest->channel << "for EngineEffectChain" << pRequest->pTargetChain;
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << "deleting states for input channel" << pRequest->DisableInputChannelForChain.pChannelHandle << "for EngineEffectChain" << pRequest->pTargetChain;
+        }
         pRequest->pTargetChain->deleteStatesForInputChannel(
                 pRequest->DisableInputChannelForChain.pChannelHandle);
     }
