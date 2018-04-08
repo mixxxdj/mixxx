@@ -461,9 +461,9 @@ MixtrackPlatinum.BrowseKnob = function() {
 
     this.button = new components.Button({
         group: '[Library]',
-        inKey: 'ChooseItem',
+        inKey: 'GoToItem',
         unshift: function() {
-            this.inKey = 'ChooseItem';
+            this.inKey = 'GoToItem';
         },
         shift: function() {
             this.inKey = 'MoveFocusForward';
