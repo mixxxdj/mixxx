@@ -98,7 +98,7 @@ DJ202.Deck = function (deckNumbers, offset) {
     
     // ============================= JOG WHEELS =================================
     this.wheelTouch = function (channel, control, value, status, group) {
-      if (value === 0x7F) {
+      if (value === 0x7F && !this.isShifted) {
             var alpha = 1.0/8;
             var beta = alpha/32;
             engine.scratchEnable(script.deckFromGroup(this.currentDeck), 512, 45, alpha, beta);
@@ -109,8 +109,14 @@ DJ202.Deck = function (deckNumbers, offset) {
     
     this.wheelTurn = function (channel, control, value, status, group) {
         var newValue = value - 64;
-        if (engine.isScratching(1)) {
-            engine.scratchTick(script.deckFromGroup(this.currentDeck), newValue); // Scratch!
+        var deck = script.deckFromGroup(this.currentDeck);
+        if (engine.isScratching(deck)) {
+            engine.scratchTick(deck, newValue); // Scratch!
+        } else if (this.isShifted) {
+            // Strip search.
+            var oldPos = engine.getValue(this.currentDeck, 'playposition');
+            var newPos = Math.max(0, oldPos + newValue / 0xff);
+            engine.setValue(this.currentDeck, 'playposition', newPos);
         } else {
             engine.setValue(this.currentDeck, 'jog', newValue); // Pitch bend
         }
