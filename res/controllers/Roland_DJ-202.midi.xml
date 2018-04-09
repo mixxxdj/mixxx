@@ -538,6 +538,15 @@
                     <script-binding/>
                 </options>
             </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>slip_enabled</key>
+                <status>0x90</status>
+                <midino>0x07</midino>
+                <options>
+                    <switch/>
+                </options>
+            </control>
             <!-- mixer -->
             <control>
                 <group>[Channel1]</group>
