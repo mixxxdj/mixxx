@@ -611,6 +611,15 @@
                     <script-binding/>
                 </options>
             </control>
+           <control>
+               <group>[Channel1]</group>
+               <key>DJ202.leftDeck.tapBPM</key>
+               <status>0x90</status>
+               <midino>0x12</midino>
+               <options>
+                   <script-binding/>
+               </options>
+           </control>
             <control>
                 <group>[Channel1]</group>
                 <key>DJ202.leftDeck.volume.input</key>
