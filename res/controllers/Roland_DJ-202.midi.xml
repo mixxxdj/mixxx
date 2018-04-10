@@ -622,7 +622,7 @@
             </control>
            <control>
                <group>[Channel1]</group>
-               <key>DJ202.leftDeck.tapBPM</key>
+               <key>DJ202.leftDeck.tapBPM.input</key>
                <status>0x90</status>
                <midino>0x12</midino>
                <options>

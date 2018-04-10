@@ -207,11 +207,23 @@ DJ202.Deck = function (deckNumbers, offset) {
         outKey: 'pfl',
     });
 
-    this.tapBPM = function (channel, control, value, status, group) {
+    this.tapBPM = new components.Button({
+        input: function (channel, control, value, status, group) {
         if (value == 127) {
-            bpm.tapButton(script.deckFromGroup(this.currentDeck));
+                script.triggerControl(group, 'beats_translate_curpos');
+                bpm.tapButton(script.deckFromGroup(group));
+                this.longPressTimer = engine.beginTimer(
+                    this.longPressTimeout,
+                    function () {
+                        script.triggerControl(group, 'beats_translate_match_alignment');
+                    },
+                    true
+                );
+            } else {
+                engine.stopTimer(this.longPressTimer);
         }
-    };
+        }
+    });
 
     this.volume = new components.Pot({
         midi: [0xB0 + offset, 0x1C],
