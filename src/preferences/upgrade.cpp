@@ -37,7 +37,6 @@
 
 Upgrade::Upgrade()
         : m_bFirstRun(false),
-          m_bUpgraded(false),
           m_bRescanLibrary(false) {
 }
 
@@ -85,7 +84,6 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         if (oldFile->exists()) {
             if (oldFile->copy(newFilePath)) {
                 oldFile->remove();
-                m_bUpgraded = true;
             }
             else {
                 if (oldFile->error()==14) qDebug() << errorText.arg("library", oldFilePath, newFilePath) << "The destination file already exists.";
@@ -351,7 +349,6 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         if (successful) {
             qDebug() << "Upgrade Successful";
             configVersion = "1.11.0";
-            m_bUpgraded = true;
             config->set(ConfigKey("[Config]","Version"),
                         ConfigValue(configVersion));
         } else {
@@ -409,12 +406,17 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         // updated
         if (successful) {
             configVersion = MIXXX_VERSION;
-            m_bUpgraded = true;
             config->set(ConfigKey("[Config]","Version"), ConfigValue(MIXXX_VERSION));
         }
         else {
             qDebug() << "Upgrade failed!\n";
         }
+    }
+
+    if (configVersion.startsWith("1.12") || configVersion.startsWith("2.0")) {
+        // No special upgrade required, just update the value.
+        configVersion = MIXXX_VERSION;
+        config->set(ConfigKey("[Config]","Version"), ConfigValue(MIXXX_VERSION));
     }
 
     if (configVersion == MIXXX_VERSION) qDebug() << "Configuration file is now at the current version" << MIXXX_VERSION;
