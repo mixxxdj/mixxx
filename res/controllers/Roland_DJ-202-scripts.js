@@ -307,6 +307,23 @@ DJ202.EffectUnit = function (unitNumber) {
         engine.softTakeover(eu.group, 'mix', true);
     }
 
+    this.headphones = new components.Button({
+        group: '[EffectRack1_EffectUnit' + unitNumber + ']',
+        midi: [0x98, 0x04],
+        unshift: function() {
+            this.outKey = 'group_[Headphone]_enable';
+            this.inKey = this.outKey;
+            this.input = function (channel, control, value, status) {
+                // FIXME Trigger *after* release, to work-around the device
+                // disabling the LED on release. Refactor this once a customized
+                // ‘Button’ class is available.
+                if (!value) {
+                    script.toggleControl(this.group, this.outKey);
+                };
+            };
+        }
+    });
+
     this.knob = new components.Pot({
         unshift: function () {
             this.input = function (channel, control, value, status) {
