@@ -421,12 +421,6 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 
     if (configVersion == MIXXX_VERSION) qDebug() << "Configuration file is now at the current version" << MIXXX_VERSION;
     else {
-        /* Way too verbose, this confuses the hell out of Linux users when they see this:
-        qWarning() << "Configuration file is at version" << configVersion
-                   << "and I don't know how to upgrade it to the current" << MIXXX_VERSION
-                   << "\n   (That means a function to do this needs to be added to upgrade.cpp.)"
-                   << "\n-> Leaving the configuration file version as-is.";
-        */
         qWarning() << "Configuration file is at version" << configVersion
                    << "instead of the current" << MIXXX_VERSION;
     }
