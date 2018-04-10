@@ -211,7 +211,7 @@
 	-->
 
 	<ObjectName>Mixxx</ObjectName>
-	<Style src="skin:style.qss" src-mac="skin:style-mac.qss"/>
+	<Style src="skin:style.qss" src-linux="skin:style-linux.qss" src-mac="skin:style-mac.qss"/>
 	<Size>1008e,500e</Size>
 	<Layout>vertical</Layout>
     <LaunchImageStyle>
