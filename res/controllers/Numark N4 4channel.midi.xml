@@ -969,90 +969,74 @@
       <!-- Bpm Slider -->
       <control>
         <group>[Channel1]</group>
-        <key>rate</key>
+        <key>NumarkN4.Deck1.bpmSlider.inputMSB</key>
         <status>0xB1</status>
         <midino>0x01</midino>
         <options>
-          <fourteen-bit-msb/>
-          <Soft-takeover/>
-          <Invert/>
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>rate</key>
+        <key>NumarkN4.Deck1.bpmSlider.inputLSB</key>
         <status>0xB1</status>
         <midino>0x21</midino>
         <options>
-          <fourteen-bit-lsb/>
-          <Soft-takeover/>
-          <Invert/>
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>rate</key>
-        <status>0xB2</status>
+        <key>NumarkN4.Deck2.bpmSlider.inputMSB</key>
+        <status>0xB1</status>
         <midino>0x01</midino>
         <options>
-          <fourteen-bit-msb/>
-          <Soft-takeover/>
-          <Invert/>
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>rate</key>
-        <status>0xB2</status>
+        <key>NumarkN4.Deck2.bpmSlider.inputLSB</key>
+        <status>0xB1</status>
         <midino>0x21</midino>
         <options>
-          <fourteen-bit-lsb/>
-          <Soft-takeover/>
-          <Invert/>
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>rate</key>
-        <status>0xB3</status>
+        <key>NumarkN4.Deck3.bpmSlider.inputMSB</key>
+        <status>0xB1</status>
         <midino>0x01</midino>
         <options>
-          <fourteen-bit-msb/>
-          <Soft-takeover/>
-          </options>
-          <Invert/>
+          <script-binding />
+        </options>
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>rate</key>
-        <status>0xB3</status>
+        <key>NumarkN4.Deck3.bpmSlider.inputLSB</key>
+        <status>0xB1</status>
         <midino>0x21</midino>
         <options>
-          <fourteen-bit-lsb/>
-          <Soft-takeover/>
-          <Invert/>
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>rate</key>
-        <status>0xB4</status>
+        <key>NumarkN4.Deck4.bpmSlider.inputMSB</key>
+        <status>0xB1</status>
         <midino>0x01</midino>
         <options>
-          <fourteen-bit-msb/>
-          <Soft-takeover/>
-          <Invert/>
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>rate</key>
-        <status>0xB4</status>
+        <key>NumarkN4.Deck4.bpmSlider.inputLSB</key>
+        <status>0xB1</status>
         <midino>0x21</midino>
         <options>
-          <fourteen-bit-lsb/>
-          <Soft-takeover/>
-          <Invert/>
+          <script-binding />
         </options>
       </control>
     </controls>

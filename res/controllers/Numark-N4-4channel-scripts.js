@@ -30,6 +30,8 @@ NumarkN4.vinylTouched = [false,false,false,false,];
 NumarkN4.init = function (id) {
 
   components.Component.prototype.send = function (value) {
+    // This Override is supposed to make integration automatic assignment of elements easier.
+    // Right now it just allows specifying the input and output bytes (even though the input bytes dont do anything right now.)
     if (this.midi === undefined || this.midi[0] === undefined || this.midi[1] === undefined) {
         return;
     }
@@ -71,7 +73,7 @@ NumarkN4.topContainer = function (channel) {
     });
   }
   this.button5 = new components.Button({
-    midi: [0x90+channel,0x27,0x18],
+    midi: [0x90+channel,0x27,0xB0+channel,0x18],
     group: '[Channel'+channel+']',
     key: "loop_in",
     shift: function () {},
@@ -283,6 +285,16 @@ NumarkN4.Deck = function (channel) {
     key: "keylock",
     type: components.Button.prototype.types.toggle,
   });
+  print("instancing bpmSlider");
+  this.bpmSlider = new components.Pot({
+    midi: [0xB0+channel,0x01,0xB0+channel,0x37], //only specifing input MSB
+    key: "rate",
+    invert: true,
+  });
+  this.bpmSlider.invert = true; // doesnt work by using the args in the constructor.
+  this.pitchLedHandler = engine.makeConnection(theDeck.group,"rate",function (value){
+    midi.sendShortMsg(0xB0+channel,0x37,!value); //inexplicit cast to bool; turns on if value===0;
+  });
 
   // BUG: NOT WORKING
   // BUG: INVERTED; Maybe has to done via components.Pot
@@ -299,10 +311,6 @@ NumarkN4.Deck = function (channel) {
       this.send(theDeck.rateRangeEntry%2); // BUG: lighting "not changing" when switching between values that are both even/uneven
     },
   });
-  this.pitchLedHandler = engine.makeConnection(theDeck.group,"rate",function (value){
-    midi.sendShortMsg(0xB0+channel,0x37,!value);
-  });
-
 
   this.reconnectComponents(function (c) {
        if (c.group === undefined) {
@@ -319,7 +327,6 @@ NumarkN4.shutdown = function () {
 };
 
 
-//NOTE
 
 //Deck
 //  [x] shift
