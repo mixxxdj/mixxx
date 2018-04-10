@@ -15,7 +15,7 @@
         <controls>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.shiftButton</key>
+                <key>DJ202.shiftButton</key>
                 <status>0x9F</status>
                 <midino>0x00</midino>
                 <options>

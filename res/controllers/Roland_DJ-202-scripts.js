@@ -4,9 +4,18 @@ DJ202.tempoRange = [0.08, 0.16, 0.5]
 
 DJ202.init = function () {
 
+    DJ202.shiftButton = function (channel, control, value, status, group) {
+        DJ202.deck.concat(DJ202.effectUnit).forEach(
+            value
+                ? function (module) { module.shift(); }
+                : function (module) { module.unshift(); }
+        );
+    };
+
     DJ202.leftDeck = new DJ202.Deck([1,3], 0);
     DJ202.rightDeck = new DJ202.Deck([2,4], 1);
-    
+    DJ202.deck = [DJ202.leftDeck, DJ202.rightDeck];
+
     DJ202.effectUnit = [];
     DJ202.effectUnit[1] = new DJ202.EffectUnit(1);
     DJ202.effectUnit[2] = new DJ202.EffectUnit(2);
@@ -42,14 +51,6 @@ DJ202.crossfader = new components.Pot({
 DJ202.Deck = function (deckNumbers, offset) {
     components.Deck.call(this, deckNumbers);
     channel = offset+1;
-
-    this.shiftButton = function (channel, control, value, status, group) {
-        if (value === 127) {
-            this.shift();
-        } else {
-            this.unshift();
-        }
-    };
 
     this.loadTrack = new components.Button({
         midi: [0x9F, 0x02 + offset],
@@ -237,6 +238,20 @@ DJ202.EffectUnit = function (unitNumber) {
     this.group = '[EffectRack1_EffectUnit' + unitNumber + ']';
     engine.setValue(this.group, 'show_focus', 1);
 
+    this.shift = function () {
+        this.button.forEach(function (button) {
+            button.shift();
+        });
+        this.knob.shift();
+    };
+
+    this.unshift = function () {
+        this.button.forEach(function (button) {
+            button.unshift();
+        });
+        this.knob.unshift();
+    };
+
     this.EffectButton = function (buttonNumber) {
         this.buttonNumber = buttonNumber;
 
@@ -246,33 +261,41 @@ DJ202.EffectUnit = function (unitNumber) {
         components.Button.call(this);
     };
     this.EffectButton.prototype = new components.Button({
-        input: function (channel, control, value, status) {
-            if (this.isPress(channel, control, value, status)) {
-                this.isLongPressed = false;
-                this.longPressTimer = engine.beginTimer(this.longPressTimeout, function () {
-                    var effectGroup = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + this.buttonNumber + ']';
-                    script.toggleControl(effectGroup, 'enabled');
-                    this.isLongPressed = true;
-                }, true);
-            } else {
-                if (!this.isLongPressed) {
-                    var focusedEffect = engine.getValue(eu.group, 'focused_effect');
-                    if (focusedEffect === this.buttonNumber) {
-                        engine.setValue(eu.group, 'focused_effect', 0);
-                    } else {
-                        engine.setValue(eu.group, 'focused_effect', this.buttonNumber);
+        unshift: function() {
+            this.input = function (channel, control, value, status) {
+                if (this.isPress(channel, control, value, status)) {
+                    this.isLongPressed = false;
+                    this.longPressTimer = engine.beginTimer(this.longPressTimeout, function () {
+                        var effectGroup = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + this.buttonNumber + ']';
+                        script.toggleControl(effectGroup, 'enabled');
+                        this.isLongPressed = true;
+                    }, true);
+                } else {
+                    if (!this.isLongPressed) {
+                        var focusedEffect = engine.getValue(eu.group, 'focused_effect');
+                        if (focusedEffect === this.buttonNumber) {
+                            engine.setValue(eu.group, 'focused_effect', 0);
+                        } else {
+                            engine.setValue(eu.group, 'focused_effect', this.buttonNumber);
+                        }
                     }
+                    this.isLongPressed = false;
+                    engine.stopTimer(this.longPressTimer);
                 }
-                this.isLongPressed = false;
-                engine.stopTimer(this.longPressTimer);
             }
+            this.outKey = 'focused_effect';
+            this.output = function (value, group, control) {
+                this.send((value === this.buttonNumber) ? this.on : this.off);
+            };
+            this.sendShifted = true;
+            this.shiftOffset = 0x0B;
         },
-        outKey: 'focused_effect',
-        output: function (value, group, control) {
-            this.send((value === this.buttonNumber) ? this.on : this.off);
-        },
-        sendShifted: true,
-        shiftOffset: 0x0B,
+        shift: function () {
+            this.input = function (channel, control, value, status) {
+                var group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + this.buttonNumber + ']';
+                script.toggleControl(group, 'next_effect');
+            };
+        }
     });
 
     this.button = [];
@@ -298,6 +321,12 @@ DJ202.EffectUnit = function (unitNumber) {
                 }
             };
         },
+        shift: function() {
+            this.input = function (channel, control, value, status) {
+                var group = '[EffectRack1_EffectUnit' + unitNumber + ']';
+                engine.setParameter(group, 'super1', value / 0x7f);
+            }
+        }
     });
 
     this.knobSoftTakeoverHandler = engine.makeConnection(eu.group, 'focused_effect', function (value, group, control) {
