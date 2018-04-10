@@ -620,6 +620,60 @@
                     <script-binding/>
                 </options>
             </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.leftDeck.paramDown</key>
+                <status>0x94</status>
+                <midino>0x42</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.leftDeck.paramDown</key>
+                <status>0x94</status>
+                <midino>0x44</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.leftDeck.paramDown</key>
+                <status>0x94</status>
+                <midino>0x46</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.leftDeck.paramUp</key>
+                <status>0x94</status>
+                <midino>0x41</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.leftDeck.paramUp</key>
+                <status>0x94</status>
+                <midino>0x43</midino>
+                <options>
+                  <script-binding/>
+                </options>
+            </control>
+            <control>
+              <group>[Channel1]</group>
+                <key>DJ202.leftDeck.paramUp</key>
+                <status>0x94</status>
+                <midino>0x45</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
            <control>
                <group>[Channel1]</group>
                <key>DJ202.leftDeck.tapBPM.input</key>
