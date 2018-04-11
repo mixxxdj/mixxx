@@ -31,12 +31,13 @@ DJ202.shutdown = function () {
 
 DJ202.browseEncoder = new components.Encoder({
     input: function (channel, control, value, status, group) {
+        var isShifted = control === 1;
         if (value === 1) {
-            script.triggerControl(group, 'MoveUp');
+            script.triggerControl(group, isShifted ? 'ScrollUp' : 'MoveUp');
         } else if (value === 127) {
-            script.triggerControl(group, 'MoveDown');
+            script.triggerControl(group, isShifted ? 'ScrollDown' : 'MoveDown');
         }
-    },
+    }
 });
 
 DJ202.crossfader = new components.Pot({
