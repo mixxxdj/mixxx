@@ -711,7 +711,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Library]</group>
                 <key>DJ202.browseEncoder.input</key>
                 <status>0xBF</status>
                 <midino>0x00</midino>

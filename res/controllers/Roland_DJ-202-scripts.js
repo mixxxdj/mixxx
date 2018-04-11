@@ -30,14 +30,11 @@ DJ202.shutdown = function () {
 };
 
 DJ202.browseEncoder = new components.Encoder({
-    midi: [0xBF, 0x00],
-    group: '[Playlist]',
-    inKey: 'SelectTrackKnob',
     input: function (channel, control, value, status, group) {
         if (value === 1) {
-            this.inSetParameter(1);
+            script.triggerControl(group, 'MoveUp');
         } else if (value === 127) {
-            this.inSetParameter(-1);
+            script.triggerControl(group, 'MoveDown');
         }
     },
 });
