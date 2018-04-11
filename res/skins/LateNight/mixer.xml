@@ -146,6 +146,7 @@
                             <SetVariable name="channum">4</SetVariable>
                             <SetVariable name="deckSide">Right</SetVariable>
                           </Template>
+                          <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
                         </Children>
                         <Connection>
                           <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
