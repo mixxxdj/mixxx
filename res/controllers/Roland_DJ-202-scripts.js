@@ -227,7 +227,60 @@ DJ202.Deck = function (deckNumbers, offset) {
     // ============================= TRANSPORT ==================================
     this.play = new components.PlayButton([0x90 + offset, 0x00]); // LED doesn't stay on
     this.cue = new components.CueButton([0x90 + offset, 0x01]);
-    this.sync = new components.SyncButton([0x90 + offset, 0x02]); // doesn't work properly
+    var SyncButton = function (options) {
+        components.SyncButton.call(this, options);
+    };
+
+    SyncButton.prototype = new components.SyncButton({
+        doubleTapTimeout: 500,
+        unshift: function () {
+            this.input = function (channel, control, value, status, group) {
+                if (this.isPress(channel, control, value, status)) {
+                    if (this.isDoubleTap) {
+                        var fileBPM = engine.getValue(this.group, 'file_bpm');
+                        engine.setValue(this.group, 'bpm', fileBPM);
+                    } else if (engine.getValue(this.group, 'sync_enabled') === 0) {
+                        engine.setValue(this.group, 'beatsync', 1);
+                        this.longPressTimer = engine.beginTimer(this.longPressTimeout, function () {
+                            engine.setValue(this.group, 'sync_enabled', 1);
+                            this.longPressTimer = 0;
+                        }, true);
+                        this.isDoubleTap = true; // For the next call.
+                        this.doubleTapTimer = engine.beginTimer(this.doubleTapTimeout, function () {
+                            this.isDoubleTap = false;
+                        }, true);
+                    } else {
+                        engine.setValue(this.group, 'sync_enabled', 0);
+                    };
+                } else {
+                    if (this.longPressTimer !== 0) {
+                        engine.stopTimer(this.longPressTimer);
+                        this.longPressTimer = 0;
+                    };
+                    // Apparently some DJ-202 button LEDS reset themselves when
+                    // a button is released, so we need to re-enable the LED
+                    // again.
+                    if(engine.getValue(group, 'sync_enabled')) {
+                        midi.sendShortMsg(0x90 + offset, 0x02, 0x7f);
+                    }
+                };
+            };
+
+            var ledControl = engine.getValue(this.group, 'sync_enabled') ? 0x02 : 0x03;
+            this.output = function (value, group, control) {
+                // To disable the sync LED, the note must be shifted. This
+                // corresponds to the DJ-202 surface, which has sync off on the
+                // shift layer.
+                midi.sendShortMsg(0x90 + offset, ledControl, 0x7f);
+            };
+            // Pressing shift + sync off on the controller will disable the sync
+            // LED even when sync is still enabled within mixxx.
+            midi.sendShortMsg(0x90 + offset, ledControl, 0x7f);
+        },
+
+    });
+
+    this.sync = new SyncButton();
 
     // =============================== MIXER ====================================
     this.pregain = new components.Pot({
