@@ -729,6 +729,24 @@
                 </options>
             </control>
             <control>
+                <group>[Library]</group>
+                <key>DJ202.browseEncoder.input</key>
+                <status>0x9F</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>DJ202.browseEncoder.input</key>
+                <status>0x9F</status>
+                <midino>0x07</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Master]</group>
                 <key>DJ202.crossfader.input</key>
                 <status>0xBF</status>

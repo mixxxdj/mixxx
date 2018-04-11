@@ -31,11 +31,19 @@ DJ202.shutdown = function () {
 
 DJ202.browseEncoder = new components.Encoder({
     input: function (channel, control, value, status, group) {
-        var isShifted = control === 1;
-        if (value === 1) {
-            script.triggerControl(group, isShifted ? 'ScrollUp' : 'MoveUp');
-        } else if (value === 127) {
-            script.triggerControl(group, isShifted ? 'ScrollDown' : 'MoveDown');
+        var isShifted = control % 2 != 0;
+        switch (status) {
+        case 0xBF: // Rotate.
+            if (value === 1) {
+                script.triggerControl(group, isShifted ? 'ScrollUp' : 'MoveUp');
+            } else if (value === 127) {
+                script.triggerControl(group, isShifted ? 'ScrollDown' : 'MoveDown');
+            }
+            break;
+        case 0x9F: // Push.
+            if (value) {
+                script.triggerControl(group, isShifted ? 'MoveFocusBackward' : 'MoveFocusForward');
+            }
         }
     }
 });
