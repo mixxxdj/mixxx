@@ -413,7 +413,9 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         }
     }
 
-    if (configVersion.startsWith("1.12") || configVersion.startsWith("2.0")) {
+    if (configVersion.startsWith("1.12") ||
+        configVersion.startsWith("2.0") ||
+        configVersion.startsWith("2.1rc")) {
         // No special upgrade required, just update the value.
         configVersion = MIXXX_VERSION;
         config->set(ConfigKey("[Config]","Version"), ConfigValue(MIXXX_VERSION));
