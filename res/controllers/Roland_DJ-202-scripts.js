@@ -207,7 +207,7 @@ DJ202.Deck = function (deckNumbers, offset) {
             sendShifted: true,
             shiftControl: true,
             shiftOffset: 8,
-            number: samplerNumber[channel][i],
+            number: samplerNumber[channel][i-1],
         });
     }
     
