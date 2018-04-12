@@ -375,24 +375,30 @@ DJ202.EffectUnit = function (unitNumber) {
 
         components.Button.call(this);
     };
+
+    // FIXME The LED should only be toggled *after* a long press was registered,
+    // so one immediately sees that focus has switched without looking at the
+    // GUI. If the hardware always flashes immediately upon button-down, one
+    // could indicate focus switch by toggling it off for a second before
+    // re-enabling it.
     this.EffectButton.prototype = new components.Button({
         unshift: function() {
             this.input = function (channel, control, value, status) {
                 if (this.isPress(channel, control, value, status)) {
                     this.isLongPressed = false;
                     this.longPressTimer = engine.beginTimer(this.longPressTimeout, function () {
-                        var effectGroup = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + this.buttonNumber + ']';
-                        script.toggleControl(effectGroup, 'enabled');
-                        this.isLongPressed = true;
-                    }, true);
-                } else {
-                    if (!this.isLongPressed) {
                         var focusedEffect = engine.getValue(eu.group, 'focused_effect');
                         if (focusedEffect === this.buttonNumber) {
                             engine.setValue(eu.group, 'focused_effect', 0);
                         } else {
                             engine.setValue(eu.group, 'focused_effect', this.buttonNumber);
                         }
+                        this.isLongPressed = true;
+                    }, true);
+                } else {
+                    if (!this.isLongPressed) {
+                        var effectGroup = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + this.buttonNumber + ']';
+                        script.toggleControl(effectGroup, 'enabled');
                     }
                     this.isLongPressed = false;
                     engine.stopTimer(this.longPressTimer);
