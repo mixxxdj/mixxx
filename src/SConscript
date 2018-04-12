@@ -503,7 +503,6 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                 PLUGINS=plugins, ##XXX test what happens if we don't pass any plugins
                 #Qt plugins ((Qt *NEEDS* its plugins in specific locations or it refuses to find them, however this is clearly awkward to write out like this.. maybe))
                 QT_HACK = [(p_tgt_dir, os.path.join(qtplugindir, "plugins", p_tgt_dir, p)) for p_tgt_dir, p in qt_plugins], #sigh :(
-                STRIP=build.build_is_release,
                 APP_RESOURCES_MAP=resource_map,
                 IDENTIFIER="org.mixxx.mixxx",
                 DISPLAY_NAME="Mixxx",

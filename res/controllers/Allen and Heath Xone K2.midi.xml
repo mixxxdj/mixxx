@@ -23,7 +23,7 @@ If you are using K2s, they must have Latching Layers turned off, which is the de
         <scriptfiles>
             <file filename="lodash.mixxx.js"/>
             <file filename="midi-components-0.0.js"/>
-            <file filename="Xone-K2-scripts.js" functionprefix="XoneK2"/>
+            <file filename="Allen-and-Heath-Xone-K2-scripts.js" functionprefix="XoneK2"/>
         </scriptfiles>
         <controls>
 <!-- ============= MIDI CHANNEL 0xE ==================  -->
@@ -3974,6 +3974,18 @@ If you are using K2s, they must have Latching Layers turned off, which is the de
                 <midino>0x0F</midino>
                 <options><Script-Binding/></options>
             </control>
+            <control>
+              <key>XoneK2.effectsLayerButton</key>
+              <status>0x88</status>
+              <midino>0x0C</midino>
+              <options><Script-Binding/></options>
+            </control>
+            <control>
+              <key>XoneK2.effectsLayerButton</key>
+              <status>0x98</status>
+              <midino>0x0C</midino>
+              <options><Script-Binding/></options>
+            </control>
 
 <!-- ============= MIDI CHANNEL 0x7 ==================  -->
 <!-- Column 1 -->
@@ -4496,6 +4508,18 @@ If you are using K2s, they must have Latching Layers turned off, which is the de
                 <status>0x97</status>
                 <midino>0x0F</midino>
                 <options><Script-Binding/></options>
+            </control>
+            <control>
+              <key>XoneK2.effectsLayerButton</key>
+              <status>0x87</status>
+              <midino>0x0C</midino>
+              <options><Script-Binding/></options>
+            </control>
+            <control>
+              <key>XoneK2.effectsLayerButton</key>
+              <status>0x97</status>
+              <midino>0x0C</midino>
+              <options><Script-Binding/></options>
             </control>
         </controls>
     </controller>

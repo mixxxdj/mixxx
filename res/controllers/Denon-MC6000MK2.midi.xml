@@ -995,12 +995,12 @@
                 </options>
             </control>
             <control>
-                <group>[Playlist]</group>
-                <key>SelectNextPlaylist</key>
+                <group></group>
+                <key>DenonMC6000MK2.recvFwdButton</key>
                 <status>0x90</status>
                 <midino>0x29</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1599,7 +1599,7 @@
             </control>
             <control>
                 <group>[Master]</group>
-                <key>volume</key>
+                <key>gain</key>
                 <status>0xB0</status>
                 <midino>0x19</midino>
                 <options>
@@ -1937,7 +1937,7 @@
             </control>
             <control>
                 <group>[Master]</group>
-                <key>headVolume</key>
+                <key>headGain</key>
                 <status>0xB0</status>
                 <midino>0x44</midino>
                 <options>
@@ -2161,12 +2161,12 @@
                 </options>
             </control>
             <control>
-                <group>[Playlist]</group>
-                <key>SelectPrevPlaylist</key>
+                <group></group>
+                <key>DenonMC6000MK2.recvBackButton</key>
                 <status>0x90</status>
                 <midino>0x30</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -2278,12 +2278,12 @@
                 </options>
             </control>
             <control>
-                <group>[Playlist]</group>
-                <key>ToggleSelectedSidebarItem</key>
+                <group></group>
+                <key>DenonMC6000MK2.recvTrackSelectButton</key>
                 <status>0x90</status>
                 <midino>0x28</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>

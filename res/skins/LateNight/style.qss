@@ -294,6 +294,11 @@ WTime {
   padding: 1px 4px 0px 0px;
 }
 
+#VuAndSlider4decks {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  padding: 1px 0px 0px 0px;
+}
+
 #VuMeter4Decks {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
   padding: 0px 4px 2px 0px;
@@ -676,12 +681,13 @@ WBeatSpinBox {
 }
 
 #CrossfaderAndSwitches2Decks {
-  padding: 0px 10px 0px 10px;
+  qpoperty-layoutAlignment: 'AlignHCenter';
+  padding: 0px;
 }
 
 #CrossfaderSwitch4Decks {
   qproperty-layoutAlignment: 'AlignRight';
-  margin: 1px 10px 0px 0px;
+  margin: 1px 6px 0px 0px;
 }
 
 #PreviewDeck {

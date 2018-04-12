@@ -26,6 +26,7 @@
         <file>images/library/ic_library_unchecked.png</file>
         <file>images/mixxx-icon.png</file>
         <file>images/mixxx-icon-logo-symbolic.svg</file>
+        <file>images/skin_preview_placeholder.png</file>
         <file>images/preferences/ic_preferences_autodj.png</file>
         <file>images/preferences/ic_preferences_bpmdetect.png</file>
         <file>images/preferences/ic_preferences_broadcast.png</file>
@@ -57,6 +58,7 @@
         <file>translations/mixxx_bg.qm</file>
         <file>translations/mixxx_br.qm</file>
         <file>translations/mixxx_bs.qm</file>
+        <file>translations/mixxx_ca-ES.qm</file>
         <file>translations/mixxx_ca.qm</file>
         <file>translations/mixxx_ceb.qm</file>
         <file>translations/mixxx_cs.qm</file>
@@ -65,9 +67,11 @@
         <file>translations/mixxx_el.qm</file>
         <file>translations/mixxx_en_GB.qm</file>
         <file>translations/mixxx_eo.qm</file>
+        <file>translations/mixxx_es-ES.qm</file>
         <file>translations/mixxx_es.qm</file>
         <file>translations/mixxx_et.qm</file>
         <file>translations/mixxx_eu.qm</file>
+        <file>translations/mixxx_fa.qm</file>
         <file>translations/mixxx_fi.qm</file>
         <file>translations/mixxx_fr.qm</file>
         <file>translations/mixxx_ga.qm</file>
@@ -81,6 +85,7 @@
         <file>translations/mixxx_is.qm</file>
         <file>translations/mixxx_it.qm</file>
         <file>translations/mixxx_ja.qm</file>
+        <file>translations/mixxx_ko.qm</file>
         <file>translations/mixxx_ky.qm</file>
         <file>translations/mixxx_lb.qm</file>
         <file>translations/mixxx_lt.qm</file>
@@ -96,17 +101,23 @@
         <file>translations/mixxx_nn.qm</file>
         <file>translations/mixxx_oc.qm</file>
         <file>translations/mixxx_pl.qm</file>
+        <file>translations/mixxx_pt-PT.qm</file>
         <file>translations/mixxx_pt.qm</file>
         <file>translations/mixxx_pt_BR.qm</file>
         <file>translations/mixxx_ro.qm</file>
         <file>translations/mixxx_ru.qm</file>
+        <file>translations/mixxx_si.qm</file>
+        <file>translations/mixxx_sk.qm</file>
         <file>translations/mixxx_sl.qm</file>
+        <file>translations/mixxx_sn.qm</file>
+        <file>translations/mixxx_sq-AL.qm</file>
         <file>translations/mixxx_sr.qm</file>
         <file>translations/mixxx_sv.qm</file>
         <file>translations/mixxx_te.qm</file>
         <file>translations/mixxx_tr.qm</file>
         <file>translations/mixxx_uk.qm</file>
         <file>translations/mixxx_uz.qm</file>
+        <file>translations/mixxx_vi.qm</file>
         <file>translations/mixxx_zh_CN.qm</file>
         <file>translations/mixxx_zh_TW.qm</file>
     </qresource>
