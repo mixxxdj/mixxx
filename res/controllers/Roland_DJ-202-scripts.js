@@ -34,9 +34,9 @@ DJ202.browseEncoder = new components.Encoder({
         var isShifted = control % 2 != 0;
         switch (status) {
         case 0xBF: // Rotate.
-            if (value === 1) {
+            if (value === 127) {
                 script.triggerControl(group, isShifted ? 'ScrollUp' : 'MoveUp');
-            } else if (value === 127) {
+            } else if (value === 1) {
                 script.triggerControl(group, isShifted ? 'ScrollDown' : 'MoveDown');
             }
             break;
