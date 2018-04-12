@@ -157,7 +157,9 @@ DJ202.Deck = function (deckNumbers, offset) {
             engine.scratchDisable(script.deckFromGroup(this.currentDeck));
         }
     }
-    
+
+    this.stripSearchScaling = 100;
+
     this.wheelTurn = function (channel, control, value, status, group) {
         var newValue = value - 64;
         var deck = script.deckFromGroup(this.currentDeck);
@@ -166,7 +168,14 @@ DJ202.Deck = function (deckNumbers, offset) {
         } else if (this.isShifted) {
             // Strip search.
             var oldPos = engine.getValue(this.currentDeck, 'playposition');
-            var newPos = Math.max(0, oldPos + newValue / 0xff);
+            // Scale to interval [0,1].
+            newValue = newValue / 0xff;
+            // Since ‘playposition’ is normalized to unity, we need to scale by
+            // song duration in order for the jog wheel to cover the same amount
+            // of time given a constant turning angle.
+            var duration = engine.getValue(this.currentDeck, 'duration');
+            newValue = newValue / duration;
+            var newPos = Math.max(0, oldPos + newValue * this.stripSearchScaling);
             engine.setValue(this.currentDeck, 'playposition', newPos);
         } else {
             engine.setValue(this.currentDeck, 'jog', newValue); // Pitch bend
