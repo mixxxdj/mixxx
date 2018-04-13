@@ -2273,8 +2273,7 @@ QHeaderView {
   background-color: #1e1e1e;
   }
   /*	Library header 'buttons'	*/
-  QHeaderView::section {	/*
-    height: 17px;	*/
+  QHeaderView::section {
     padding-left: 4px;
     padding-top: 1px;
     /*	set right border so that first column header
@@ -2286,6 +2285,23 @@ QHeaderView {
   QHeaderView::section:hover {
     background-color: #585858;
     border-radius: 0px;
+  }
+
+  QHeaderView::up-arrow,
+  QHeaderView::down-arrow {
+  font-size: 10pt;
+  }
+  QHeaderView::up-arrow {
+    image: url(skin:/graphics/library_sort_up.svg)
+    }
+    QHeaderView::up-arrow:hover {
+      image: url(skin:/graphics/library_sort_up_hover.svg)
+    }
+  QHeaderView::down-arrow {
+    image: url(skin:/graphics/library_sort_down.svg)
+    }
+    QHeaderView::down-arrow:hover {
+      image: url(skin:/graphics/library_sort_down_hover.svg)
     }
 
     QHeaderView::up-arrow {
@@ -2462,16 +2478,23 @@ WLibrary QPushButton {
   QPushButton#LibraryPreviewButton {
     width: 23px;
     height: 12px;
-    background: none;
-    border: 0px;
+    background: transparent;
+    border: 1px solid transparent;
     margin: 0px;
     padding: 0px;
     }
-    QPushButton#LibraryPreviewButton:!checked{
+    QPushButton#LibraryPreviewButton:hover,
+    QPushButton#LibraryPreviewButton:checked:hover {
+      border: 1px solid #eeeeee;
+    }
+    QPushButton#LibraryPreviewButton:!checked {
       image: url(skin:/graphics/library_preview_play.png);
+      background-color: #0f0f0f;
       }
-    QPushButton#LibraryPreviewButton:checked{
+    QPushButton#LibraryPreviewButton:checked {
       image: url(skin:/graphics/library_preview_pause.png);
+      background-color: #000;
+      border: 1px solid #ff6600;
       }
 
   /* checkbox in library "Played" column */

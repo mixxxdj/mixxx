@@ -167,12 +167,15 @@ void DlgPrefLibrary::slotUpdate() {
             ConfigKey("[Library]","ShowTraktorLibrary"), true));
 
     switch (m_pConfig->getValue<int>(
-            ConfigKey("[Library]","TrackLoadAction"), LOAD_TRACK_DECK)) {
-    case ADD_TRACK_BOTTOM:
+            ConfigKey("[Library]","TrackLoadAction"), LOAD_TO_DECK)) {
+    case ADD_TO_AUTODJ_BOTTOM:
             radioButton_dbclick_bottom->setChecked(true);
             break;
-    case ADD_TRACK_TOP:
+    case ADD_TO_AUTODJ_TOP:
             radioButton_dbclick_top->setChecked(true);
+            break;
+    case EDIT_METADATA:
+            radioButton_dbclick_edit_metadata->setChecked(true);
             break;
     default:
             radioButton_dbclick_deck->setChecked(true);
@@ -300,11 +303,13 @@ void DlgPrefLibrary::slotApply() {
                 ConfigValue((int)checkBox_show_traktor->isChecked()));
     int dbclick_status;
     if (radioButton_dbclick_bottom->isChecked()) {
-            dbclick_status = ADD_TRACK_BOTTOM;
+            dbclick_status = ADD_TO_AUTODJ_BOTTOM;
     } else if (radioButton_dbclick_top->isChecked()) {
-            dbclick_status = ADD_TRACK_TOP;
+            dbclick_status = ADD_TO_AUTODJ_TOP;
+    } else if (radioButton_dbclick_edit_metadata->isChecked()) {
+            dbclick_status = EDIT_METADATA;
     } else {
-            dbclick_status = LOAD_TRACK_DECK;
+            dbclick_status = LOAD_TO_DECK;
     }
     m_pConfig->set(ConfigKey("[Library]","TrackLoadAction"),
                 ConfigValue(dbclick_status));
