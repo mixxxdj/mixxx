@@ -105,6 +105,10 @@ public:
 
     void focusSearch();
 
+    void setFont(const QFont& font);
+    void setRowHeight(int rowHeight);
+    void setEditMedatataSelectedClick(bool enable);
+
   public slots:
 
     void slotActivateFeature(LibraryFeature* pFeature);
@@ -121,8 +125,6 @@ public:
     void slotRequestRemoveDir(QString directory, Library::RemovalType removalType);
     void slotRequestRelocateDir(QString previousDirectory, QString newDirectory);
     void onSkinLoadFinished();
-    void slotSetTrackTableFont(const QFont& font);
-    void slotSetTrackTableRowHeight(int rowHeight);
 
     void slotSetHoveredFeature(LibraryFeature* pFeature);
     void slotResetHoveredFeature(LibraryFeature* pFeature);
@@ -143,6 +145,7 @@ public:
 
     void setTrackTableFont(const QFont& font);
     void setTrackTableRowHeight(int rowHeight);
+    void setSelectedClick(bool enable);
 
     // Emitted when a library scan starts and finishes.
     void scanStarted();
@@ -181,6 +184,7 @@ public:
     LibraryScanner m_scanner;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
+    bool m_editMetadataSelectedClick;
     QScopedPointer<ControlObject> m_pKeyNotation;
 
     QHash<int, LibraryPaneManager*> m_panes;

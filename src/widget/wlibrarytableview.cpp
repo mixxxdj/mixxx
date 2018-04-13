@@ -20,10 +20,12 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
           m_savedSortColumn(-1),
           m_savedSortOrder(Qt::AscendingOrder) {
 
+    loadVScrollBarPosState();
+
     // Setup properties for table
 
     // Editing starts when clicking on an already selected item.
-    setEditTriggers(QAbstractItemView::SelectedClicked);
+    setEditTriggers(QAbstractItemView::SelectedClicked|QAbstractItemView::EditKeyPressed);
 
     //Enable selection by rows and extended selection (ctrl/shift click)
     setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -160,4 +162,12 @@ void WLibraryTableView::setTrackTableRowHeight(int rowHeight) {
     int fontHeightPx = metrics.height();
     verticalHeader()->setDefaultSectionSize(math_max(
                                                 rowHeight, fontHeightPx));
+}
+
+void WLibraryTableView::setSelectedClick(bool enable) {
+    if (enable) {
+        setEditTriggers(QAbstractItemView::SelectedClicked|QAbstractItemView::EditKeyPressed);
+    } else {
+        setEditTriggers(QAbstractItemView::EditKeyPressed);
+    }
 }
