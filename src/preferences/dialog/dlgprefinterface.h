@@ -53,7 +53,7 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     void slotSetScheme(int);
     void slotUpdateSchemes();
     void slotSetLocale(int);
-    void slotSetScaleFactor(int index);
+    void slotSetScaleFactor(double newValue);
     void slotSetScaleFactorAuto(bool checked);
 
   private:

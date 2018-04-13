@@ -1,7 +1,8 @@
 <Template>
 	<WidgetGroup>
         <Size>73f,54f</Size>
-		<Style>QGroupBox { border: 0px solid yellow; border-left: 1px solid #626f87; background: url(skin:/style/style_bg_ducking.png) no-repeat;} QWidget { margin: 0; padding: 0; }</Style>
+	    <BackPath>style/style_bg_ducking.png</BackPath>
+		<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 		<Children>
 		    <PushButton>
 			    <TooltipId></TooltipId>
