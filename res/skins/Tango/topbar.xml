@@ -42,13 +42,13 @@ Description:
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_logo_102x24_grey.svg</Pressed>
-                  <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_logo_102x24_grey.svg</Unpressed>
+                  <Pressed scalemode="STRETCH_ASPECT">buttons/btn_logo_102x24_grey.svg</Pressed>
+                  <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_logo_102x24_grey.svg</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_logo_102x24.svg</Pressed>
-                  <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_logo_102x24.svg</Unpressed>
+                  <Pressed scalemode="STRETCH_ASPECT">buttons/btn_logo_102x24.svg</Pressed>
+                  <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_logo_102x24.svg</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey persist="true">[Tango],colorLogo</ConfigKey>
@@ -109,8 +109,8 @@ Description:
             <Children>
               <SliderComposed>
                 <TooltipId>crossfader</TooltipId>
-                <Handle>skin:/knobs_sliders/crossfader_handle.svg</Handle>
-                <Slider>skin:/knobs_sliders/crossfader_scale.svg</Slider>
+                <Handle>knobs_sliders/crossfader_handle.svg</Handle>
+                <Slider>knobs_sliders/crossfader_scale.svg</Slider>
                 <Horizontal>true</Horizontal>
                 <Connection>
                   <ConfigKey>[Master],crossfader</ConfigKey>
@@ -277,8 +277,8 @@ Description:
               <VuMeter><!-- latency usage -->
                 <Size>31f,3f</Size>
                 <TooltipId>audio_latency_usage</TooltipId>
-                <PathVu>skin:/graphics/latency_usage_over.svg</PathVu>
-                <PathBack>skin:/graphics/latency_usage.svg</PathBack>
+                <PathVu>graphics/latency_usage_over.svg</PathVu>
+                <PathBack>graphics/latency_usage.svg</PathBack>
                 <Horizontal>true</Horizontal>
                 <PeakHoldSize>5</PeakHoldSize>
                 <PeakHoldTime>1000</PeakHoldTime>

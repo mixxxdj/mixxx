@@ -15,11 +15,11 @@ PixmapSource::PixmapSource(const QString& filepath)
     }
 }
 
-QByteArray PixmapSource::getData() const {
+const QByteArray& PixmapSource::getSvgSourceData() const {
     return m_svgSourceData;
 }
 
-QString PixmapSource::getPath() const {
+const QString& PixmapSource::getPath() const {
     return m_path;
 }
 

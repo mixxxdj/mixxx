@@ -72,7 +72,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     m_backgroundPixmapPath = context.selectString(node, "BgPixmap");
     if (!m_backgroundPixmapPath.isEmpty()) {
         m_backgroundPixmap = *WPixmapStore::getPixmapNoCache(
-                context.getSkinPath(m_backgroundPixmapPath),
+                context.makeSkinPath(m_backgroundPixmapPath),
                 m_scaleFactor);
     }
 

@@ -1,10 +1,10 @@
-    <!--
-    Shade, Skin for Mixxx 1.12.x
-    www.mixxx.org
-    Copyright (C) 2010-2014 jus <s.brandt@mixxx.org>
-    This file is part of the "Shade" Skin for Mixxx
-    "Shade" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
-    http://creativecommons.org/licenses/by-sa/3.0/
+	<!--
+	Shade, Skin for Mixxx 2.1.x
+	www.mixxx.org
+	Copyright (C) 2010-2014 jus <s.brandt@mixxx.org>
+	This file is part of the "Shade" Skin for Mixxx
+	"Shade" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
+	http://creativecommons.org/licenses/by-sa/3.0/
 
     With every copy of the work, you are required to either provide a copy of the license it self
     or a link (URI). Failure to do this is a failure to complete the terms of the CC license.
@@ -50,26 +50,26 @@
     ############################################################################################
     -->
 
-    <manifest>
-        <title>Shade</title>
-        <author>jus</author>
-        <version>1.12.0.01</version>
-        <description>A 2-deck split-waveform skin with 4 samplers.</description>
-        <language>en</language>
-        <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
-        <attributes>
-            <attribute config_key="[Master],num_decks">2</attribute>
-            <attribute config_key="[Master],num_samplers">4</attribute>
-            <attribute config_key="[Master],num_preview_decks">1</attribute>
-            <!--Optionally, make elements visible on skin load-->
-            <attribute persist="true" config_key="[Spinny1],show_spinny">1</attribute>
-            <attribute persist="true" config_key="[Spinny2],show_spinny">1</attribute>
-            <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
-            <attribute persist="true" config_key="[EffectRack1],show">0</attribute>
-            <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
-            <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
-            <attribute persist="true" config_key="[Library],show_coverart">0</attribute>
-            <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
+	<manifest>
+		<title>Shade</title>
+		<author>jus</author>
+		<version>2.1.0.01</version>
+		<description>A 2-deck split-waveform skin with 4 samplers.</description>
+		<language>en</language>
+		<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
+		<attributes>
+			<attribute config_key="[Master],num_decks">2</attribute>
+			<attribute config_key="[Master],num_samplers">8</attribute>
+			<attribute config_key="[Master],num_preview_decks">1</attribute>
+			<!--Optionally, make elements visible on skin load-->
+			<attribute persist="true" config_key="[Spinny1],show_spinny">1</attribute>
+			<attribute persist="true" config_key="[Spinny2],show_spinny">1</attribute>
+			<attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1],show">0</attribute>
+			<attribute persist="false" config_key="[Microphone],show_microphone">0</attribute>
+			<attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
+			<attribute persist="true" config_key="[Library],show_coverart">0</attribute>
+			<attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
             <attribute persist="true" config_key="[Library],show_icon_text">1</attribute>
 			<attribute persist="false" config_key="[Shade],looping">0</attribute>
 
@@ -158,7 +158,7 @@
     </manifest>
 
 
-     <LibraryIconsColor>#e74421</LibraryIconsColor>
+    <LibraryIconsColor>#e74421</LibraryIconsColor>
 
     <!--
     **********************************************
