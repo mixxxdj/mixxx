@@ -1,0 +1,15 @@
+/* LateNight 2.1
+ * hack to prevent effect names in effect selector list being cut off */
+
+  WEffectSelector QAbstractItemView {
+    width: 142px;
+    background-color: #0f0f0f;
+    /* padding-left: 6px; */
+    font-size: 12px/13px;
+    /* On Linux, this is not applied but font color from WEffectSelector
+    is inherited. For Windows, it must be defined here */
+    color: #cfb32c;
+    border: 1px solid #666;
+    border-radius: 2px;
+    padding: 0px 0px 0px -10px;
+  }

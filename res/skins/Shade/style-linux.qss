@@ -1,0 +1,11 @@
+/* Shade 2.1
+ * This file only contains a hack to prevent effect names in effect selector list being cut off. */
+WEffectSelector QAbstractItemView {
+	margin: 0px 0px 0px -30px;
+}
+
+/* just in case there is a partial checkmark shown on some untested screen, hide
+the checkmark */
+WEffectSelector::indicator {
+    border: 0;
+}
