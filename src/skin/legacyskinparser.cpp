@@ -380,7 +380,7 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
         }
     }
 
-    ColorSchemeParser::setupLegacyColorSchemes(skinDocument, m_pConfig);
+    ColorSchemeParser::setupLegacyColorSchemes(skinDocument, m_pConfig, &m_style);
     
     // Setup Library Icons color
     QString colorName = m_pContext->selectString(skinDocument, "LibraryIconsColor");
@@ -392,7 +392,7 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
     } else {
         WPixmapStore::setLibraryIconLoader(QSharedPointer<ImgMonoColor>());
     }
-    
+
     QStringList skinPaths(skinPath);
     QDir::setSearchPaths("skin", skinPaths);
 
@@ -1979,8 +1979,9 @@ void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
     }
 }
 
+//static
 QString LegacySkinParser::getStyleFromNode(const QDomNode& node) {
-    QDomElement styleElement = m_pContext->selectElement(node, "Style");
+    QDomElement styleElement = SkinContext::selectElement(node, "Style");
 
     if (styleElement.isNull()) {
         return QString();
@@ -2101,6 +2102,11 @@ void LegacySkinParser::setupWidget(const QDomNode& node,
     // Check if we should apply legacy library styling to this node.
     if (m_pContext->selectBool(node, "LegacyTableViewStyle", false)) {
         style = getLibraryStyle(node);
+    }
+    // check if we have a style from color schema: 
+    if (!m_style.isEmpty()) {
+        style.append(m_style);
+        m_style.clear(); // only apply color scheme to the first widget
     }
     if (!style.isEmpty()) {
         pWidget->setStyleSheet(style);
