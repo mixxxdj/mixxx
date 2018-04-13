@@ -10,7 +10,7 @@
 			**********************************************
 			-->
 			<PushButton>
-				<TooltipId>show_samplers</TooltipId>
+				<TooltipId>show_effects</TooltipId>
 				<Style></Style>
 				<NumberStates>2</NumberStates>
 				<State>
@@ -30,7 +30,7 @@
 			</PushButton>
 
 			<PushButton>
-				<TooltipId>play_start</TooltipId>
+				<TooltipId></TooltipId>
 				<Style></Style>
 				<NumberStates>2</NumberStates>
 				<RightClickIsPushButton>true</RightClickIsPushButton>

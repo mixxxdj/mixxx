@@ -8,24 +8,23 @@
     Effect: the effect
 -->
 <Template>
-	<WidgetGroup>
-		<Layout>horizontal</Layout>
-		<Style> WEffect, WPushButton { 
-			font: bold 12px/10px sans-serif;
-			font-family: "Open Sans";
-			background-color: transparent; 
-			color: #191F24; 
-			padding-left: 1px;
-		}
-		</Style>
-		<Pos>1,1</Pos>
-		<Children>
-            <EffectSelector>
-		        <EffectRack>1</EffectRack>
-		        <EffectUnit><Variable name="effectunitnum"/></EffectUnit>
-		        <Effect><Variable name="effectnum"/></Effect>
-				<Size>105f,20f</Size>	
-		     </EffectSelector>
-		</Children>
-	</WidgetGroup>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <Style> WEffect, WPushButton {
+      font: bold 12px/10px sans-serif;
+      font-family: "Open Sans";
+      background-color: transparent;
+      color: #191F24;
+    }
+    </Style>
+    <Pos>1,1</Pos>
+    <Children>
+      <EffectSelector>
+        <EffectRack>1</EffectRack>
+        <EffectUnit><Variable name="effectunitnum"/></EffectUnit>
+        <Effect><Variable name="effectnum"/></Effect>
+        <Size>92f,20f</Size>
+      </EffectSelector>
+    </Children>
+  </WidgetGroup>
 </Template>
