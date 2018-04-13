@@ -120,11 +120,12 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     //Legacy stuff (Ryan it that OK?) -> Limit our rate adjustment to < 99%, "Bad Things" might happen otherwise.
     m_rateAdjust = m_rateDir * math_min(0.99, m_rate * m_rateRange);
 
-    //rate adjust may have change sampling per
-    //vRince for the moment only more than one sample per pixel is supported
-    //due to the fact we play the visual play pos modulo floor m_visualSamplePerPixel ...
+    // Compute visual sample to pixel ratio
+    // Allow waveform to spread one visual sample across a hundred pixels
+    // NOTE: The hundred pixel limit is totally arbitrary. Theoretically,
+    // there should be no limit to how far the waveforms can be zoomed in.
     double visualSamplePerPixel = m_zoomFactor * (1.0 + m_rateAdjust) / m_scaleFactor;
-    m_visualSamplePerPixel = math_max(1.0, visualSamplePerPixel);
+    m_visualSamplePerPixel = math_max(0.01, visualSamplePerPixel);
 
     TrackPointer pTrack(m_pTrack);
     ConstWaveformPointer pWaveform = pTrack ? pTrack->getWaveform() : ConstWaveformPointer();

@@ -1,5 +1,6 @@
 #include "dialog/dlgabout.h"
 #include "util/version.h"
+#include <QFile>
 
 DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
     setupUi(this);
@@ -23,6 +24,13 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
         version.append(QString("(%1)").arg(buildInfo.join(" ")));
     }
     version_label->setText(version.join(" "));
+
+    QFile licenseFile(":/LICENSE");
+    if (!licenseFile.open(QIODevice::ReadOnly)) {
+        qWarning() << "LICENSE file not found";
+    } else {
+        licenseText->setPlainText(licenseFile.readAll());
+    }
 
     QString s_devTeam = tr("Mixxx %1 Development Team").arg(mixxxVersion);
     QString s_contributions = tr("With contributions from:");
