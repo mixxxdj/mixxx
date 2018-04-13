@@ -8,11 +8,13 @@
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    version="1.1"
-   width="24"
-   height="24"
-   id="svg3033">
+   width="8"
+   height="99"
+   id="svg4073">
+  <defs
+     id="defs4075" />
   <metadata
-     id="metadata3041">
+     id="metadata4078">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
@@ -23,14 +25,15 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
-  <defs
-     id="defs3039" />
-  <path
-     d="M 19.5587,12.000057 7.416788,19.010194 V 4.989921 z"
-     id="path4"
-     style="fill:#181818" />
-  <path
-     d="M 18.392276,12.000025 8,18.000009 V 6.0000416 z"
-     id="path3035"
-     style="fill:#ffffff;fill-opacity:1" />
+  <g
+     transform="translate(0,-953.3622)"
+     id="layer1">
+    <rect
+       width="8"
+       height="98.999985"
+       x="0"
+       y="953.36218"
+       id="rect4081"
+       style="color:#000000;fill:#ff00ff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+  </g>
 </svg>

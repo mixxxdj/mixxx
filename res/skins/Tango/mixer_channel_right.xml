@@ -48,10 +48,8 @@ Variables:
                 <SetVariable name="TooltipId">pfl</SetVariable>
                 <SetVariable name="ObjectName">PflButton</SetVariable>
                 <SetVariable name="Size">24f,24f</SetVariable>
-                <SetVariable name="state_0_pressed">pfl_off.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">pfl_off.svg</SetVariable>
-                <SetVariable name="state_1_pressed">pfl_on.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">pfl_on.svg</SetVariable>
+                <SetVariable name="state_0_icon">pfl_off.svg</SetVariable>
+                <SetVariable name="state_1_icon">pfl_on.svg</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
               </Template>
             </Children>

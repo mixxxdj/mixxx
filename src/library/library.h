@@ -148,9 +148,6 @@ public:
     void scanStarted();
     void scanFinished();
 
-  private slots:
-    void saveTrack(TrackPointer pTrack);
-
   private:
     // If the pane exists returns it, otherwise it creates the pane
     LibraryPaneManager* getOrCreatePane(int paneId);
@@ -167,7 +164,7 @@ public:
     void handlePreselection();
 
     // Callback for GlobalTrackCache
-    void saveCachedTrack(TrackPointer pTrack) noexcept override;
+    void saveCachedTrack(Track* pTrack) noexcept override;
 
 
     const UserSettingsPointer m_pConfig;

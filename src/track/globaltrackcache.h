@@ -32,6 +32,37 @@ protected:
     virtual ~GlobalTrackCacheRelocator() {}
 };
 
+class GlobalTrackCacheEntry final {
+    // We need to hold two shared pointers, the deletingPtr is
+    // responsible for the lifetime of the Track object itselfe.
+    // The second one counts the references ouside Mixxx, if it
+    // is not longer referenced, the track is saved and evicted
+    // from the cache.
+  public:
+    explicit GlobalTrackCacheEntry(
+            std::unique_ptr<Track, void (&)(Track*)> deletingPtr)
+        : m_deletingPtr(std::move(deletingPtr)) {
+    }
+
+    GlobalTrackCacheEntry(const GlobalTrackCacheEntry& other) = delete;
+
+    Track* getPlainPtr() const {
+        return m_deletingPtr.get();
+    }
+    const TrackWeakPointer& getSavingWeakPtr() const {
+        return m_savingWeakPtr;
+    }
+    void setSavingWeakPtr(TrackWeakPointer savingWeakPtr) {
+        m_savingWeakPtr = std::move(savingWeakPtr);
+    }
+
+  private:
+    std::unique_ptr<Track, void (&)(Track*)> m_deletingPtr;
+    TrackWeakPointer m_savingWeakPtr;
+};
+
+typedef std::shared_ptr<GlobalTrackCacheEntry> GlobalTrackCacheEntryPointer;
+
 class GlobalTrackCacheLocker {
 public:
     GlobalTrackCacheLocker();
@@ -132,14 +163,15 @@ private:
 class /*interface*/ GlobalTrackCacheSaver {
 private:
     friend class GlobalTrackCache;
-    virtual void saveCachedTrack(
-            TrackPointer pTrack) noexcept = 0;
+    virtual void saveCachedTrack(Track* pTrack) noexcept = 0;
 
 protected:
     virtual ~GlobalTrackCacheSaver() {}
 };
 
-class GlobalTrackCache {
+class GlobalTrackCache : public QObject {
+    Q_OBJECT
+
 public:
     static void createInstance(GlobalTrackCacheSaver* pDeleter);
     // NOTE(uklotzde, 2018-02-20): We decided not to destroy the singular
@@ -150,19 +182,18 @@ public:
     // See also: GlobalTrackCacheLocker::deactivateCache()
     static void destroyInstance();
 
+    // Deleter callbacks for the smart-pointer
+    static void evictAndSaveCachedTrack(GlobalTrackCacheEntryPointer cacheEntryPtr);
+
+private slots:
+    void evictAndSave(GlobalTrackCacheEntryPointer chacheEntryPtr);
+
 private:
     friend class GlobalTrackCacheLocker;
     friend class GlobalTrackCacheResolver;
 
-    // Callback for the smart-pointer
-    static void deleter(Track* plainPtr);
-
     explicit GlobalTrackCache(GlobalTrackCacheSaver* pDeleter);
     ~GlobalTrackCache();
-
-    // This function should only be called DEBUG_ASSERT statements
-    // to verify the class invariants during development.
-    bool verifyConsistency() const;
 
     void relocateTracks(
             GlobalTrackCacheRelocator* /*nullable*/ pRelocator);
@@ -172,8 +203,7 @@ private:
     TrackPointer lookupByRef(
             const TrackRef& trackRef);
 
-    TrackPointer revive(
-            Track* plainPtr);
+    TrackPointer revive(GlobalTrackCacheEntryPointer entryPtr);
 
     void resolve(
             GlobalTrackCacheResolver* /*in/out*/ pCacheResolver,
@@ -186,13 +216,8 @@ private:
             TrackRef trackRef,
             TrackId trackId);
 
-    void evictOrDelete(Track* plainPtr);
-
-    typedef std::unordered_map<Track*, TrackWeakPointer> AllocatedTracks;
-
-    bool evictAndSave(TrackPointer strongPtr);
-
-    void evict(TrackPointer strongPtr);
+    bool evict(Track* plainPtr);
+    bool isEvicted(Track* plainPtr) const;
 
     bool isEmpty() const;
 
@@ -203,19 +228,11 @@ private:
 
     GlobalTrackCacheSaver* m_pSaver;
 
-    // This is the owner of the Track objects.
-    // The tracks are saved back to database and file metatdata if the first
-    // shared_ptr expires. This time the Track is still cached.
-    // Than the track is copied into a second shared_ptr used while saving the
-    // track. If this also expires, the track is finally deleted and removed
-    // from the index.
-    AllocatedTracks m_allocatedTracks;
-
     // This caches the unsaved Tracks by ID
-    typedef std::unordered_map<TrackId, Track*, TrackId::hash_fun_t> TracksById;
+    typedef std::unordered_map<TrackId, GlobalTrackCacheEntryPointer, TrackId::hash_fun_t> TracksById;
     TracksById m_tracksById;
 
     // This caches the unsaved Tracks by location
-    typedef std::map<QString, Track*> TracksByCanonicalLocation;
+    typedef std::map<QString, GlobalTrackCacheEntryPointer> TracksByCanonicalLocation;
     TracksByCanonicalLocation m_tracksByCanonicalLocation;
 };
