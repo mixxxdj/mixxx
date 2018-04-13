@@ -60,7 +60,7 @@
             </control>
             <control>
                 <group></group>
-                <key>DenonMC6000MK2.rightSide.efxUnit.recvAdjust1Button</key>
+                <key>DenonMC6000MK2.newRightSide.effectUnit.enableButtons[1].input</key>
                 <status>0x80</status>
                 <midino>0x55</midino>
                 <options>
@@ -78,7 +78,7 @@
             </control>
             <control>
                 <group></group>
-                <key>DenonMC6000MK2.rightSide.efxUnit.recvAdjust3Button</key>
+                <key>DenonMC6000MK2.newRightSide.effectUnit.enableButtons[3].input</key>
                 <status>0x80</status>
                 <midino>0x53</midino>
                 <options>
@@ -105,7 +105,7 @@
             </control>
             <control>
                 <group></group>
-                <key>DenonMC6000MK2.rightSide.efxUnit.recvAdjust1Button</key>
+                <key>DenonMC6000MK2.newRightSide.effectUnit.enableButtons[1].input</key>
                 <status>0x90</status>
                 <midino>0x55</midino>
                 <options>
@@ -168,7 +168,7 @@
             </control>
             <control>
                 <group></group>
-                <key>DenonMC6000MK2.rightSide.efxUnit.recvAdjust3Knob</key>
+                <key>DenonMC6000MK2.newRightSide.effectUnit.knobs[3].input</key>
                 <status>0xB0</status>
                 <midino>0x5B</midino>
                 <options>
@@ -186,7 +186,7 @@
             </control>
             <control>
                 <group></group>
-                <key>DenonMC6000MK2.rightSide.efxUnit.recvAdjust3Button</key>
+                <key>DenonMC6000MK2.newRightSide.effectUnit.enableButtons[3].input</key>
                 <status>0x90</status>
                 <midino>0x53</midino>
                 <options>
@@ -195,7 +195,7 @@
             </control>
             <control>
                 <group></group>
-                <key>DenonMC6000MK2.rightSide.efxUnit.recvAdjust1Knob</key>
+                <key>DenonMC6000MK2.newRightSide.effectUnit.knobs[1].input</key>
                 <status>0xB0</status>
                 <midino>0x59</midino>
                 <options>
@@ -285,7 +285,7 @@
             </control>
             <control>
                 <group></group>
-                <key>DenonMC6000MK2.leftSide.efxUnit.recvAdjust3Knob</key>
+                <key>DenonMC6000MK2.newLeftSide.effectUnit.knobs[3].input</key>
                 <status>0xB0</status>
                 <midino>0x57</midino>
                 <options>
@@ -303,7 +303,7 @@
             </control>
             <control>
                 <group></group>
-                <key>DenonMC6000MK2.leftSide.efxUnit.recvAdjust2Button</key>
+                <key>DenonMC6000MK2.newLeftSide.effectUnit.enableButtons[2].input</key>
                 <status>0x80</status>
                 <midino>0x12</midino>
                 <options>
@@ -312,7 +312,7 @@
             </control>
             <control>
                 <group></group>
-                <key>DenonMC6000MK2.leftSide.efxUnit.recvAdjust1Knob</key>
+                <key>DenonMC6000MK2.newLeftSide.effectUnit.knobs[1].input</key>
                 <status>0xB0</status>
                 <midino>0x55</midino>
                 <options>
@@ -330,7 +330,7 @@
             </control>
             <control>
                 <group></group>
-                <key>DenonMC6000MK2.leftSide.efxUnit.recvAdjust2Button</key>
+                <key>DenonMC6000MK2.newLeftSide.effectUnit.enableButtons[2].input</key>
                 <status>0x90</status>
                 <midino>0x12</midino>
                 <options>
@@ -420,7 +420,16 @@
             </control>
             <control>
                 <group></group>
-                <key>DenonMC6000MK2.rightSide.efxUnit.recvTapButton</key>
+                <key>DenonMC6000MK2.newRightSide.efxUnit.recvTabButton</key>
+                <status>0x80</status>
+                <midino>0x47</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>DenonMC6000MK2.newRightSide.efxUnit.recvTabButton</key>
                 <status>0x90</status>
                 <midino>0x47</midino>
                 <options>
@@ -582,7 +591,16 @@
             </control>
             <control>
                 <group></group>
-                <key>DenonMC6000MK2.rightSide.efxUnit.recvBeatsButton</key>
+                <key>DenonMC6000MK2.newRightSide.effectUnit.effectFocusButton.input</key>
+                <status>0x80</status>
+                <midino>0x41</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>DenonMC6000MK2.newRightSide.effectUnit.effectFocusButton.input</key>
                 <status>0x90</status>
                 <midino>0x41</midino>
                 <options>
@@ -1284,7 +1302,7 @@
             </control>
             <control>
                 <group></group>
-                <key>DenonMC6000MK2.rightSide.efxUnit.recvAdjust2Button</key>
+                <key>DenonMC6000MK2.newRightSide.effectUnit.enableButtons[2].input</key>
                 <status>0x80</status>
                 <midino>0x52</midino>
                 <options>
@@ -1311,7 +1329,7 @@
             </control>
             <control>
                 <group></group>
-                <key>DenonMC6000MK2.rightSide.efxUnit.recvBeatsKnob</key>
+                <key>DenonMC6000MK2.newRightSide.effectUnit.dryWetKnob.input</key>
                 <status>0xB0</status>
                 <midino>0x5C</midino>
                 <options>
@@ -1392,7 +1410,7 @@
             </control>
             <control>
                 <group></group>
-                <key>DenonMC6000MK2.rightSide.efxUnit.recvAdjust2Knob</key>
+                <key>DenonMC6000MK2.newRightSide.effectUnit.knobs[2].input</key>
                 <status>0xB0</status>
                 <midino>0x5A</midino>
                 <options>
@@ -1419,7 +1437,7 @@
             </control>
             <control>
                 <group></group>
-                <key>DenonMC6000MK2.leftSide.efxUnit.recvAdjust1Button</key>
+                <key>DenonMC6000MK2.newLeftSide.effectUnit.enableButtons[1].input</key>
                 <status>0x80</status>
                 <midino>0x15</midino>
                 <options>
@@ -1446,7 +1464,7 @@
             </control>
             <control>
                 <group></group>
-                <key>DenonMC6000MK2.rightSide.efxUnit.recvAdjust2Button</key>
+                <key>DenonMC6000MK2.newRightSide.effectUnit.enableButtons[2].input</key>
                 <status>0x90</status>
                 <midino>0x52</midino>
                 <options>
@@ -1455,7 +1473,7 @@
             </control>
             <control>
                 <group></group>
-                <key>DenonMC6000MK2.leftSide.efxUnit.recvBeatsKnob</key>
+                <key>DenonMC6000MK2.newLeftSide.effectUnit.dryWetKnob.input</key>
                 <status>0xB0</status>
                 <midino>0x58</midino>
                 <options>
@@ -1482,7 +1500,7 @@
             </control>
             <control>
                 <group></group>
-                <key>DenonMC6000MK2.leftSide.efxUnit.recvAdjust3Button</key>
+                <key>DenonMC6000MK2.newLeftSide.effectUnit.enableButtons[3].input</key>
                 <status>0x80</status>
                 <midino>0x13</midino>
                 <options>
@@ -1554,7 +1572,7 @@
             </control>
             <control>
                 <group></group>
-                <key>DenonMC6000MK2.leftSide.efxUnit.recvAdjust2Knob</key>
+                <key>DenonMC6000MK2.newLeftSide.effectUnit.knobs[2].input</key>
                 <status>0xB0</status>
                 <midino>0x56</midino>
                 <options>
@@ -1563,7 +1581,7 @@
             </control>
             <control>
                 <group></group>
-                <key>DenonMC6000MK2.leftSide.efxUnit.recvAdjust1Button</key>
+                <key>DenonMC6000MK2.newLeftSide.effectUnit.enableButtons[1].input</key>
                 <status>0x90</status>
                 <midino>0x15</midino>
                 <options>
@@ -1581,7 +1599,7 @@
             </control>
             <control>
                 <group></group>
-                <key>DenonMC6000MK2.leftSide.efxUnit.recvAdjust3Button</key>
+                <key>DenonMC6000MK2.newLeftSide.effectUnit.enableButtons[3].input</key>
                 <status>0x90</status>
                 <midino>0x13</midino>
                 <options>
@@ -1734,7 +1752,16 @@
             </control>
             <control>
                 <group></group>
-                <key>DenonMC6000MK2.leftSide.efxUnit.recvTapButton</key>
+                <key>DenonMC6000MK2.newLeftSide.efxUnit.recvTabButton</key>
+                <status>0x80</status>
+                <midino>0x46</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>DenonMC6000MK2.newLeftSide.efxUnit.recvTabButton</key>
                 <status>0x90</status>
                 <midino>0x46</midino>
                 <options>
@@ -1860,7 +1887,16 @@
             </control>
             <control>
                 <group></group>
-                <key>DenonMC6000MK2.leftSide.efxUnit.recvBeatsButton</key>
+                <key>DenonMC6000MK2.newLeftSide.effectUnit.effectFocusButton.input</key>
+                <status>0x80</status>
+                <midino>0x40</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>DenonMC6000MK2.newLeftSide.effectUnit.effectFocusButton.input</key>
                 <status>0x90</status>
                 <midino>0x40</midino>
                 <options>
@@ -2463,33 +2499,9 @@
                 <group>[Channel3]</group>
                 <key>VuMeter</key>
                 <status>0xB1</status>
-                <midino>0x53</midino>
+                <midino>0x58</midino>
                 <on>0x01</on>
-                <minimum>0.2</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>VuMeter</key>
-                <status>0xB1</status>
-                <midino>0x54</midino>
-                <on>0x01</on>
-                <minimum>0.4</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>VuMeter</key>
-                <status>0xB1</status>
-                <midino>0x55</midino>
-                <on>0x01</on>
-                <minimum>0.6</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>VuMeter</key>
-                <status>0xB1</status>
-                <midino>0x56</midino>
-                <on>0x01</on>
-                <minimum>0.75</minimum>
+                <minimum>0.92</minimum>
             </output>
             <output>
                 <group>[Channel3]</group>
@@ -2503,14 +2515,30 @@
                 <group>[Channel3]</group>
                 <key>VuMeter</key>
                 <status>0xB1</status>
-                <midino>0x58</midino>
+                <midino>0x56</midino>
                 <on>0x01</on>
-                <minimum>0.92</minimum>
+                <minimum>0.75</minimum>
             </output>
             <output>
-                <group>[Channel1]</group>
+                <group>[Channel3]</group>
                 <key>VuMeter</key>
-                <status>0xB0</status>
+                <status>0xB1</status>
+                <midino>0x55</midino>
+                <on>0x01</on>
+                <minimum>0.6</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>VuMeter</key>
+                <status>0xB1</status>
+                <midino>0x54</midino>
+                <on>0x01</on>
+                <minimum>0.4</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>VuMeter</key>
+                <status>0xB1</status>
                 <midino>0x53</midino>
                 <on>0x01</on>
                 <minimum>0.2</minimum>
@@ -2519,25 +2547,9 @@
                 <group>[Channel1]</group>
                 <key>VuMeter</key>
                 <status>0xB0</status>
-                <midino>0x54</midino>
+                <midino>0x58</midino>
                 <on>0x01</on>
-                <minimum>0.4</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>VuMeter</key>
-                <status>0xB0</status>
-                <midino>0x55</midino>
-                <on>0x01</on>
-                <minimum>0.6</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>VuMeter</key>
-                <status>0xB0</status>
-                <midino>0x56</midino>
-                <on>0x01</on>
-                <minimum>0.75</minimum>
+                <minimum>0.92</minimum>
             </output>
             <output>
                 <group>[Channel1]</group>
@@ -2551,9 +2563,33 @@
                 <group>[Channel1]</group>
                 <key>VuMeter</key>
                 <status>0xB0</status>
-                <midino>0x58</midino>
+                <midino>0x56</midino>
                 <on>0x01</on>
-                <minimum>0.92</minimum>
+                <minimum>0.75</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>VuMeter</key>
+                <status>0xB0</status>
+                <midino>0x55</midino>
+                <on>0x01</on>
+                <minimum>0.6</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>VuMeter</key>
+                <status>0xB0</status>
+                <midino>0x54</midino>
+                <on>0x01</on>
+                <minimum>0.4</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>VuMeter</key>
+                <status>0xB0</status>
+                <midino>0x53</midino>
+                <on>0x01</on>
+                <minimum>0.2</minimum>
             </output>
             <output>
                 <group>[Channel1]</group>
@@ -2567,33 +2603,9 @@
                 <group>[Channel4]</group>
                 <key>VuMeter</key>
                 <status>0xB3</status>
-                <midino>0x53</midino>
+                <midino>0x58</midino>
                 <on>0x01</on>
-                <minimum>0.2</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>VuMeter</key>
-                <status>0xB3</status>
-                <midino>0x54</midino>
-                <on>0x01</on>
-                <minimum>0.4</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>VuMeter</key>
-                <status>0xB3</status>
-                <midino>0x55</midino>
-                <on>0x01</on>
-                <minimum>0.6</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>VuMeter</key>
-                <status>0xB3</status>
-                <midino>0x56</midino>
-                <on>0x01</on>
-                <minimum>0.75</minimum>
+                <minimum>0.92</minimum>
             </output>
             <output>
                 <group>[Channel4]</group>
@@ -2607,9 +2619,33 @@
                 <group>[Channel4]</group>
                 <key>VuMeter</key>
                 <status>0xB3</status>
-                <midino>0x58</midino>
+                <midino>0x56</midino>
                 <on>0x01</on>
-                <minimum>0.92</minimum>
+                <minimum>0.75</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>VuMeter</key>
+                <status>0xB3</status>
+                <midino>0x55</midino>
+                <on>0x01</on>
+                <minimum>0.6</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>VuMeter</key>
+                <status>0xB3</status>
+                <midino>0x54</midino>
+                <on>0x01</on>
+                <minimum>0.4</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>VuMeter</key>
+                <status>0xB3</status>
+                <midino>0x53</midino>
+                <on>0x01</on>
+                <minimum>0.2</minimum>
             </output>
             <output>
                 <group>[Channel3]</group>
@@ -2623,33 +2659,9 @@
                 <group>[Channel2]</group>
                 <key>VuMeter</key>
                 <status>0xB2</status>
-                <midino>0x53</midino>
+                <midino>0x58</midino>
                 <on>0x01</on>
-                <minimum>0.2</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>VuMeter</key>
-                <status>0xB2</status>
-                <midino>0x54</midino>
-                <on>0x01</on>
-                <minimum>0.4</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>VuMeter</key>
-                <status>0xB2</status>
-                <midino>0x55</midino>
-                <on>0x01</on>
-                <minimum>0.6</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>VuMeter</key>
-                <status>0xB2</status>
-                <midino>0x56</midino>
-                <on>0x01</on>
-                <minimum>0.75</minimum>
+                <minimum>0.92</minimum>
             </output>
             <output>
                 <group>[Channel2]</group>
@@ -2663,9 +2675,33 @@
                 <group>[Channel2]</group>
                 <key>VuMeter</key>
                 <status>0xB2</status>
-                <midino>0x58</midino>
+                <midino>0x56</midino>
                 <on>0x01</on>
-                <minimum>0.92</minimum>
+                <minimum>0.75</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>VuMeter</key>
+                <status>0xB2</status>
+                <midino>0x55</midino>
+                <on>0x01</on>
+                <minimum>0.6</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>VuMeter</key>
+                <status>0xB2</status>
+                <midino>0x54</midino>
+                <on>0x01</on>
+                <minimum>0.4</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>VuMeter</key>
+                <status>0xB2</status>
+                <midino>0x53</midino>
+                <on>0x01</on>
+                <minimum>0.2</minimum>
             </output>
             <output>
                 <group>[Channel2]</group>
