@@ -450,246 +450,27 @@
 					<Layout>horizontal</Layout>
 					<Style>
 					QGroupBox { border: 0px solid #565E6B; margin: 0px 0px 0px 0px;}
-
-					QTableView, QTextBrowser, QTreeView {
-						border: 1px solid #656565;
-						background: transparent; color: #ACACAC;
-						<!--we use  "background: transparent" as workaround, else "alternate-background-color" wont work, QT 4.7.x bug?-->
-						alternate-background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(43, 43, 43, 255), stop:0.049 rgba(43, 43, 43, 255), stop:0.050 rgba(43, 43, 43, 100), stop:0.949 rgba(43, 43, 43, 100), stop:0.95 rgba(43, 43, 43, 255), stop:1 rgba(43, 43, 43, 255));}
-					<!--checkbox in library "Played" column -->
-					QTableView::indicator { width: 12px; height: 12px;}
-					QTableView::indicator:checked { background: url(skin:/style/style_checkbox_checked.png);}
-					QTableView::indicator:unchecked { background: url(skin:/style/style_checkbox_unchecked.png);}
-
-                                        <!-- BPM lock icon in the library "BPM" column. -->
-                                        #LibraryBPMButton::indicator:checked { image: url(:/images/library/ic_library_checked.png); }
-                                        #LibraryBPMButton::indicator:unchecked { image: url(:/images/library/ic_library_unchecked.png); }
-
-                    <!--Button in library "Preview" column -->
-                    QPushButton#LibraryPreviewButton { width: 23px; height: 12px; background: transparent; border: 0; }
-                    QPushButton#LibraryPreviewButton:!checked{ image: url(skin:/style/style_library_preview_play.png); }
-                    QPushButton#LibraryPreviewButton:checked{ image: url(skin:/style/style_library_preview_pause.png); }
-
-                    QPushButton#LibraryBPMButton {background: transparent; border: 0;}
-                    QPushButton#LibraryBPMButton::checked {image: url(:/images/library/ic_library_checked.png);}
-                    QPushButton#LibraryBPMButton::!checked {image: url(:/images/library/ic_library_unchecked.png);}
-
-                    QHeaderView { font-size: 10pt; }
-
-                    <!--Styling a QSpinbox is complex and it took ages to figure out how to remove the surrounding frame and make the background transparent without affecting the subcontrols (up/down-buttons).
-                    You could easily style a subcontrol like in the QT-Docs, but if you want to have the OS-native subcontrols, this is the only way i found ( there are probably others ).
-                    In our case make sure that the "frame"-property in the corresponding dlgautodj.ui file is set to "false"
-                    The general rule when it comes to stylesheets is always to remember that if you style part of a widget, then you usually have to style all of it.
-                    -->
-                    <!--transition time in Auto DJ tab-->
-                    QSpinBox:editable {
-                            font-size: 10pt;
-                            background: transparent;
-                            color: #ACACAC; }
-                    QSpinBox { min-height: 20px; max-height: 20px;min-width: 40px; max-width: 40px;}
-
-                    <!--library search bar-->
-                    WSearchLineEdit {
-                        margin: 3px 0px 3px 0px;
-                        padding: 1px;
-                        border: 1px solid #656565;
-                        font-size: 10pt;
-                        font-family: "Open Sans";
-                        background: transparent;
-                        color: #ACACAC;
-                    }
-                    WSearchLineEdit:focus {
-                        padding: 2px;
-                        border: 2px solid #e74421;
-                        font-size: 10pt;
-                        font-family: "Open Sans";
-                        background: rgba(255, 102, 0,50);
-                        color: #D6D6D6;}
-
-                    <!--Cover Art-->
-                    WCoverArt {
-                        font: 11px/15px sans-serif;
-                        font-family: "Open Sans";
-                        background: transparent;
-                        color: #ACACAC;
-                    }
-
-                    <!--splitter between treeview and library-->
-                    QSplitter::handle { image: url(skin:/style/style_handle_unchecked.png); background: none; }
-                    QSplitter::handle:pressed { image: url(skin:/style/style_handle_checked.png); background: none; }
-                    QSplitter::handle:horizontal { width: 6px; }
-                    QSplitter::handle:vertical { height: 6px;}
-
-                    QAbstractButton { font: 12px/14px sans-serif;
-                              font-family: "Open Sans";}
-                    <!--Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome -->
-                    QLabel, QRadioButton {
-                        font-size: 10pt;
-                        font-family: "Open Sans";
-                        background: transparent;
-                        color: #C1C1C1;}
-
-					WLibrary { margin: 2px 3px 0px 0px; }
-
-                    <!--Additional space for the QPushButtons-->
-                    WBaseLibrary QPushButton {
-                        margin: 2px 3px;
-                        padding: 3px 3px;
-                    }
-
-                    /* Scroll bars */
-                    QScrollBar {
-                      color: #474747;
-                      font-size: 8pt;
-                      padding: 3px;
-                      background-color: #aab2b7;
-                    }
-
-                    QScrollBar:horizontal {
-                      border-top: 1px solid #141414;
-                      min-width: 12px;
-                      height: 15px;
-                    }
-                    QScrollBar:vertical {
-                      border-left: 1px solid #141414;
-                      min-height: 12px;
-                      width: 15px;
-                    }
-                    /* "add-page" and "sub-page" are the gutter of the scrollbar */
-                    QScrollBar::add-page, QScrollBar::sub-page {
-                      background: none;
-                    }
-
-                    QScrollBar::handle {
-                      min-height: 25px;
-                      background: rgba(95, 95, 95, 150);
-                      border: none;
-                    }
-                    QScrollBar::handle:hover {
-                      background: rgba(120, 120, 120, 150);
-                    }
-
-                    /* Turn off buttons */
-                    QScrollBar::add-line, QScrollBar::sub-line {
-                      width: 0px;
-                      height: 0px;
-                      border: none;
-                    }
-
-                    WBaseLibrary QScrollArea,                   
-                    QScrollArea QWidget {
-                        border: none;
-                        background-color: transparent;
-                    }
-
-                    WBaseLibrary QTabWidget QTreeView, 
-                    #DlgAutoDJ QScrollArea {
-                        background-color: #191919;
-                        border: none;
-                    }
-
-                    #DlgAutoDJ QScrollArea QScrollBar {
-                      background-color: #aab2b7;
-                    }
-
-                    WBaseLibrary QTabWidget::pane {
-                        background-color: #191919;
-                        border: 1px solid #646464;
-                    }
-
-                    WBaseLibrary QTreeView {
-                        margin: 0px;
-                    }
-
-                    WBaseLibrary QPushButton {
-                        border: 1px solid black;
-                        background-color: #aab2b7;
-                    }
-
-                    #LibrarySidebarButtons {
-                        border: none;       
-                        background-color: #aab2b7;
-                    } 
-
-                    #LibrarySidebarButtons WButtonBar {
-                        background-color: #aab2b7;
-                    }
-
-                    WButtonBar {
-                        border: none;
-                    }
-
-                    WButtonBar QToolButton {
-                        padding: 2px 2px 2px 2px;
-                        color: black;
-                        background-color: #aab2b7;
-                        border: 2px solid #aab2b7;
-                    }
-
-
-
-                    WButtonBar QToolButton:hover {
-                        border: 2px solid #626f87;
-                    }
-
-                    WButtonBar QToolButton:focus {
-                        border: 2px solid #e74421;
-                    }
-
-                    #LibrarySidebarButtons:focus,
-                    #LibrarySidebarButtons QToolButton:focus,
-                    #LibrarySidebarExpanded > QWidget:focus,
-                    #LibrarySidebarExpanded QAbstractScrollArea > QWidget:focus,
-                    WLibrarySidebar:focus, 
-                    WLibrary:focus,
-                    QTableView:focus {
-                      border: 1px solid #e74421;
-                    }
-
-                    WLibraryBreadCrumb QLabel {
-                        margin: 2px 0px 2px 3px;
-                    }
-
-                    WLibraryBreadCrumb QToolButton {
-                        margin-right: 3px;
-                        background: none;
-                        border: none;
-                    }
-
-                    WBaseLibrary QLabel {
-                        margin-left: 5px;
-                        margin-bottom: 5px;
-                    }
-
-                    <!--Spacing between treeview and searchbar-->
-                    QTreeView { margin: 0px 0px 0px 5px; }
-
-                    <!--triangle for closed/opened branches in treeview-->
-                    QTreeView { show-decoration-selected: 0;} <!-- Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588-->
-                    QTreeView::branch:has-children:!has-siblings:closed,
-                    QTreeView::branch:closed:has-children:has-siblings { border-image: none; image: url(skin:/style/style_branch_closed.png);}
-                    QTreeView::branch:open:has-children:!has-siblings,
-                    QTreeView::branch:open:has-children:has-siblings { border-image: none; image: url(skin:/style/style_branch_open.png);}
-                    <!--
-                    <BgColor>#101010</BgColor>
-                    <FgColor>#C1C1C1</FgColor>
-                    <BgColorRowEven>#101010</BgColorRowEven>
-                    <BgColorRowUneven>#151515</BgColorRowUneven>
-                    -->
-                    </Style>
-                    <Children>
-                        <Splitter>
-                            <Size>me,me</Size>
-                            <SplitSizesConfigKey>[Shade],LibrarySidebarSplitSize</SplitSizesConfigKey>
-                            <SplitSizes>1,e</SplitSizes>
-                            <Children>
-                                <WidgetGroup>
-                                    <Layout>vertical</Layout>
-                                    <Children>
-                                        <!-- Preview Deck-->
-                                        <WidgetGroup>
-                                            <Style>
-                                                QGroupBox {
+					<!--
+					<BgColor>#101010</BgColor>
+					<FgColor>#C1C1C1</FgColor>
+					<BgColorRowEven>#101010</BgColorRowEven>
+					<BgColorRowUneven>#151515</BgColorRowUneven>
+					-->
+					</Style>
+					<Children>
+						<Splitter>
+							<Size>me,me</Size>
+							<Style></Style>
+							<SplitSizes>1,e</SplitSizes>
+							<Children>
+								<WidgetGroup>
+									<Style>QGroupBox {}</Style>
+									<Layout>vertical</Layout>
+									<Children>
+										<!-- Preview Deck-->
+										<WidgetGroup>
+											<Style>
+												QGroupBox {
 													margin: 2px 0px 2px 3px;
                                                     padding: 0px;
                                                     border: 1px solid #656565;
