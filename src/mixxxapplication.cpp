@@ -48,6 +48,8 @@ void MixxxApplication::registerMetaTypes() {
     qRegisterMetaType<mixxx::Duration>("mixxx::Duration");
 }
 
+// Macs do not have touchscreens
+#ifndef Q_OS_MAC
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 
 extern void qt_translateRawTouchEvent(QWidget *window,
@@ -181,6 +183,7 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
     return ret;
 }
 #endif // QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#endif // Q_OS_MAC
 
 bool MixxxApplication::touchIsRightButton() {
     if (!m_pTouchShift) {

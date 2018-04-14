@@ -11,6 +11,10 @@
 #include "test/mockedenginebackendtest.h"
 #include "util/memory.h"
 
+// Due to rounding errors loop positions should be compared with EXPECT_NEAR instead of EXPECT_EQ.
+// NOTE(uklotzde, 2017-12-10): The rounding errors currently only appeared with GCC 7.2.1.
+constexpr double kLoopPositionMaxAbsError = 0.000000001;
+
 class LoopingControlTest : public MockedEngineBackendTest {
   public:
     LoopingControlTest()
@@ -110,10 +114,10 @@ TEST_F(LoopingControlTest, LoopSet) {
 
 TEST_F(LoopingControlTest, LoopSetOddSamples) {
     m_pLoopStartPoint->slotSet(1);
-    m_pLoopEndPoint->slotSet(101);
+    m_pLoopEndPoint->slotSet(101.5);
     seekToSampleAndProcess(50);
-    EXPECT_EQ(0, m_pLoopStartPoint->get());
-    EXPECT_EQ(100, m_pLoopEndPoint->get());
+    EXPECT_EQ(1, m_pLoopStartPoint->get());
+    EXPECT_EQ(101.5, m_pLoopEndPoint->get());
 }
 
 TEST_F(LoopingControlTest, LoopInSetInsideLoopContinues) {
@@ -390,7 +394,11 @@ TEST_F(LoopingControlTest, LoopScale_HalvesLoop) {
     EXPECT_EQ(500, m_pLoopEndPoint->get());
     // Since the current sample was out of range of the new loop,
     // the current sample should reseek based on the new loop size.
-    EXPECT_EQ(300, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    double target;
+    double trigger = m_pChannel1->getEngineBuffer()->m_pLoopingControl->nextTrigger(
+            false, 1800, &target);
+    EXPECT_EQ(300, target);
+    EXPECT_EQ(1800, trigger);
 }
 
 TEST_F(LoopingControlTest, LoopDoubleButton_IgnoresPastTrackEnd) {
@@ -512,6 +520,7 @@ TEST_F(LoopingControlTest, LoopMoveTest) {
     ProcessBuffer();
     EXPECT_EQ(44100, m_pLoopStartPoint->get());
     EXPECT_EQ(44400, m_pLoopEndPoint->get());
+    ProcessBuffer();
     // Should seek to the corresponding offset within the moved loop
     EXPECT_EQ(44110, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
 
@@ -522,10 +531,13 @@ TEST_F(LoopingControlTest, LoopMoveTest) {
     m_pButtonBeatMoveBackward->set(0.0);
     ProcessBuffer();
     EXPECT_EQ(0, m_pLoopStartPoint->get());
-    EXPECT_EQ(300, m_pLoopEndPoint->get());
-    EXPECT_EQ(200, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    EXPECT_NEAR(300, m_pLoopEndPoint->get(), kLoopPositionMaxAbsError);
+    ProcessBuffer();
+    EXPECT_NEAR(200,
+            m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample(),
+            kLoopPositionMaxAbsError);
 
-    // Now repeat the test with looping disabled (should not affect the
+     // Now repeat the test with looping disabled (should not affect the
     // playhead).
     m_pButtonReloopToggle->slotSet(1);
     EXPECT_FALSE(isLoopEnabled());
@@ -537,7 +549,9 @@ TEST_F(LoopingControlTest, LoopMoveTest) {
     EXPECT_EQ(44100, m_pLoopStartPoint->get());
     EXPECT_EQ(44400, m_pLoopEndPoint->get());
     // Should not seek inside the moved loop when the loop is disabled
-    EXPECT_EQ(200, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    EXPECT_NEAR(200,
+            m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample(),
+            kLoopPositionMaxAbsError);
 
     // Move backward so that the current position is outside the new location of the loop
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(500, EngineBuffer::SEEK_STANDARD);
@@ -546,8 +560,10 @@ TEST_F(LoopingControlTest, LoopMoveTest) {
     m_pButtonBeatMoveBackward->set(0.0);
     ProcessBuffer();
     EXPECT_EQ(0, m_pLoopStartPoint->get());
-    EXPECT_EQ(300, m_pLoopEndPoint->get());
-    EXPECT_EQ(500, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    EXPECT_NEAR(300, m_pLoopEndPoint->get(), kLoopPositionMaxAbsError);
+    EXPECT_NEAR(500,
+            m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample(),
+            kLoopPositionMaxAbsError);
 }
 
 TEST_F(LoopingControlTest, LoopResizeSeek) {
@@ -577,6 +593,7 @@ TEST_F(LoopingControlTest, LoopResizeSeek) {
     // loop.
     EXPECT_EQ(0, m_pLoopStartPoint->get());
     EXPECT_EQ(450, m_pLoopEndPoint->get());
+    ProcessBuffer();
     EXPECT_EQ(50, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
 
     // But if looping is not enabled, no warping occurs.
@@ -794,6 +811,13 @@ TEST_F(LoopingControlTest, Beatjump_MovesActiveLoop) {
     EXPECT_EQ(beatLength, m_pLoopStartPoint->get());
     EXPECT_EQ(beatLength * 5, m_pLoopEndPoint->get());
 
+    // jump backward with playposition outside the loop should not move the loop
+    m_pButtonBeatJumpBackward->set(1.0);
+    m_pButtonBeatJumpBackward->set(0.0);
+    EXPECT_EQ(beatLength, m_pLoopStartPoint->get());
+    EXPECT_EQ(beatLength * 5, m_pLoopEndPoint->get());
+
+    seekToSampleAndProcess(beatLength);
     m_pButtonBeatJumpBackward->set(1.0);
     m_pButtonBeatJumpBackward->set(0.0);
     EXPECT_EQ(0, m_pLoopStartPoint->get());
@@ -829,4 +853,24 @@ TEST_F(LoopingControlTest, Beatjump_MovesLoopBoundaries) {
     ProcessBuffer();
     EXPECT_EQ(beatLength, m_pLoopStartPoint->get());
     EXPECT_EQ(beatLength * 2, m_pLoopEndPoint->get());
+}
+
+TEST_F(LoopingControlTest, LoopEscape) {
+    m_pLoopStartPoint->slotSet(100);
+    m_pLoopEndPoint->slotSet(200);
+    m_pButtonReloopToggle->set(1.0);
+    m_pButtonReloopToggle->set(0.0);
+    ProcessBuffer();
+    EXPECT_TRUE(isLoopEnabled());
+    // seek outside a loop schould disable it
+    seekToSampleAndProcess(300);
+    EXPECT_FALSE(isLoopEnabled());
+
+    m_pButtonReloopToggle->set(1.0);
+    m_pButtonReloopToggle->set(0.0);
+    ProcessBuffer();
+    EXPECT_TRUE(isLoopEnabled());
+    // seek outside a loop schould disable it
+    seekToSampleAndProcess(50);
+    EXPECT_FALSE(isLoopEnabled());
 }

@@ -192,10 +192,11 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
             if (p) {
                 m_rightButtonMode = p->getButtonMode();
                 if (m_rightButtonMode != ControlPushButton::PUSH &&
+                        m_rightButtonMode != ControlPushButton::TOGGLE &&
                         m_rightButtonMode != ControlPushButton::TRIGGER) {
                     SKIN_WARNING(node, context)
-                            << "WPushButton::setup: Connecting a Pushbutton not in PUSH or TRIGGER mode is not implemented\n"
-                            << "Please set <RightClickIsPushButton>true</RightClickIsPushButton>";
+                            << "WPushButton::setup: Connecting a Pushbutton not in PUSH, TRIGGER or TOGGLE mode is not implemented\n"
+                            << "Please consider to set <RightClickIsPushButton>true</RightClickIsPushButton>";
                 }
             }
         }

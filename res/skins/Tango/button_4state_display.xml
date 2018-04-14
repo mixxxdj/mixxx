@@ -22,29 +22,29 @@ Variables:
     <State>
       <Number>0</Number>
       <Text><Variable name="state_0_text"/></Text>
-      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_0_pressed"/></Pressed>
-      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_0_unpressed"/></Unpressed>
+      <Pressed scalemode="STRETCH_ASPECT">buttons/btn_<Variable name="state_0_icon"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_<Variable name="state_0_icon"/></Unpressed>
       <Alignment><Variable name="Align"/></Alignment>
     </State>
     <State>
       <Number>1</Number>
       <Text><Variable name="state_1_text"/></Text>
-      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_1_pressed"/></Pressed>
-      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_1_unpressed"/></Unpressed>
+      <Pressed scalemode="STRETCH_ASPECT">buttons/btn_<Variable name="state_1_icon"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_<Variable name="state_1_icon"/></Unpressed>
       <Alignment><Variable name="Align"/></Alignment>
     </State>
     <State>
       <Number>2</Number>
       <Text><Variable name="state_2_text"/></Text>
-      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_2_pressed"/></Pressed>
-      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_2_unpressed"/></Unpressed>
+      <Pressed scalemode="STRETCH_ASPECT">buttons/btn_<Variable name="state_2_icon"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_<Variable name="state_2_icon"/></Unpressed>
       <Alignment><Variable name="Align"/></Alignment>
     </State>
     <State>
       <Number>3</Number>
       <Text><Variable name="state_3_text"/></Text>
-      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_3_pressed"/></Pressed>
-      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_3_unpressed"/></Unpressed>
+      <Pressed scalemode="STRETCH_ASPECT">buttons/btn_<Variable name="state_3_icon"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_<Variable name="state_3_icon"/></Unpressed>
       <Alignment><Variable name="Align"/></Alignment>
     </State>
     <Connection>

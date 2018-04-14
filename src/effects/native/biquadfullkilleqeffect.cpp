@@ -4,7 +4,7 @@
 #include "util/math.h"
 
 namespace {
-
+static const double kStartupSamplerate = 44100;
 static const double kMinimumFrequency = 10.0;
 static const double kMaximumFrequency = kStartupSamplerate / 2;
 static const double kStartupMidFreq = 1100.0;
@@ -69,11 +69,13 @@ EffectManifest BiquadFullKillEQEffect::getManifest() {
     return manifest;
 }
 
-BiquadFullKillEQEffectGroupState::BiquadFullKillEQEffectGroupState()
-        : m_pLowBuf(MAX_BUFFER_LEN),
-          m_pBandBuf(MAX_BUFFER_LEN),
-          m_pHighBuf(MAX_BUFFER_LEN),
-          m_tempBuf(MAX_BUFFER_LEN),
+BiquadFullKillEQEffectGroupState::BiquadFullKillEQEffectGroupState(
+      const mixxx::EngineParameters& bufferParameters) :
+          EffectState(bufferParameters),
+          m_pLowBuf(bufferParameters.samplesPerBuffer()),
+          m_pBandBuf(bufferParameters.samplesPerBuffer()),
+          m_pHighBuf(bufferParameters.samplesPerBuffer()),
+          m_tempBuf(bufferParameters.samplesPerBuffer()),
           m_oldLowBoost(0),
           m_oldMidBoost(0),
           m_oldHighBoost(0),
@@ -103,12 +105,10 @@ BiquadFullKillEQEffectGroupState::BiquadFullKillEQEffectGroupState()
             kStartupSamplerate, kStartupMidFreq, kQKill);
     m_highKill = std::make_unique<EngineFilterBiquad1HighShelving>(
             kStartupSamplerate, kStartupHiFreq / 2, kQHighKillShelve);
-    m_lvMixIso = std::make_unique<LVMixEQEffectGroupState<EngineFilterBessel4Low>>();
+    m_lvMixIso = std::make_unique<
+            LVMixEQEffectGroupState<EngineFilterBessel4Low>>(bufferParameters);
 
     setFilters(kStartupSamplerate, kStartupLoFreq, kStartupHiFreq);
-}
-
-BiquadFullKillEQEffectGroupState::~BiquadFullKillEQEffectGroupState() {
 }
 
 void BiquadFullKillEQEffectGroupState::setFilters(
@@ -148,35 +148,35 @@ BiquadFullKillEQEffect::BiquadFullKillEQEffect(EngineEffect* pEffect,
     m_pHiFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "HiEQFrequency");
 }
 
-BiquadFullKillEQEffect::~BiquadFullKillEQEffect() {
-}
+// BiquadFullKillEQEffect::~BiquadFullKillEQEffect() {
+// }
 
 void BiquadFullKillEQEffect::processChannel(
         const ChannelHandle& handle,
         BiquadFullKillEQEffectGroupState* pState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
-        const unsigned int numSamples,
-        const unsigned int sampleRate,
-        const EffectProcessor::EnableState enableState,
+        const mixxx::EngineParameters& bufferParameters,
+        const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
 
-    if (pState->m_oldSampleRate != sampleRate ||
+    if (pState->m_oldSampleRate != bufferParameters.sampleRate() ||
             (pState->m_loFreqCorner != m_pLoFreqCorner->get()) ||
             (pState->m_highFreqCorner != m_pHiFreqCorner->get())) {
         pState->m_loFreqCorner = m_pLoFreqCorner->get();
         pState->m_highFreqCorner = m_pHiFreqCorner->get();
-        pState->m_oldSampleRate = sampleRate;
-        pState->setFilters(sampleRate, pState->m_loFreqCorner, pState->m_highFreqCorner);
+        pState->m_oldSampleRate = bufferParameters.sampleRate();
+        pState->setFilters(bufferParameters.sampleRate(),
+                           pState->m_loFreqCorner, pState->m_highFreqCorner);
     }
 
     // Ramp to dry, when disabling, this will ramp from dry when enabling as well
     double bqGainLow = 0;
     double bqGainMid = 0;
     double bqGainHigh = 0;
-    if (enableState != EffectProcessor::DISABLING) {
+    if (enableState != EffectEnableState::Disabling) {
         bqGainLow = knobValueToBiquadGainDb(
                 m_pPotLow->value(), m_pKillLow->toBool());
         bqGainMid = knobValueToBiquadGainDb(
@@ -256,15 +256,15 @@ void BiquadFullKillEQEffect::processChannel(
             double lowCenter = getCenterFrequency(
                     kMinimumFrequency, pState->m_loFreqCorner);
             pState->m_lowBoost->setFrequencyCorners(
-                    sampleRate, lowCenter, kQBoost, bqGainLow);
+                    bufferParameters.sampleRate(), lowCenter, kQBoost, bqGainLow);
             pState->m_oldLowBoost = bqGainLow;
         }
         if (bqGainLow > 0.0) {
             pState->m_lowBoost->process(
-                    inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
         } else {
             pState->m_lowBoost->processAndPauseFilter(
-                    inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
         }
         ++bufIndex;
     } else {
@@ -277,15 +277,15 @@ void BiquadFullKillEQEffect::processChannel(
             double lowCenter = getCenterFrequency(
                     kMinimumFrequency, pState->m_loFreqCorner);
             pState->m_lowKill->setFrequencyCorners(
-                    sampleRate, lowCenter * 2, kQLowKillShelve, bqGainLow);
+                    bufferParameters.sampleRate(), lowCenter * 2, kQLowKillShelve, bqGainLow);
             pState->m_oldLowKill = bqGainLow;
         }
         if (bqGainLow < 0.0) {
             pState->m_lowKill->process(
-                    inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
         } else {
             pState->m_lowKill->processAndPauseFilter(
-                    inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
         }
         ++bufIndex;
     } else {
@@ -298,15 +298,15 @@ void BiquadFullKillEQEffect::processChannel(
             double midCenter = getCenterFrequency(
                     pState->m_loFreqCorner, pState->m_highFreqCorner);
             pState->m_midBoost->setFrequencyCorners(
-                    sampleRate, midCenter, kQBoost, bqGainMid);
+                    bufferParameters.sampleRate(), midCenter, kQBoost, bqGainMid);
             pState->m_oldMidBoost = bqGainMid;
         }
         if (bqGainMid > 0.0) {
             pState->m_midBoost->process(
-                    inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
         } else {
             pState->m_midBoost->processAndPauseFilter(
-                    inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
         }
         ++bufIndex;
     } else {
@@ -318,15 +318,15 @@ void BiquadFullKillEQEffect::processChannel(
             double midCenter = getCenterFrequency(
                     pState->m_loFreqCorner, pState->m_highFreqCorner);
             pState->m_midKill->setFrequencyCorners(
-                    sampleRate, midCenter, kQKill, bqGainMid);
+                    bufferParameters.sampleRate(), midCenter, kQKill, bqGainMid);
             pState->m_oldMidKill = bqGainMid;
         }
         if (bqGainMid < 0.0) {
             pState->m_midKill->process(
-                    inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
         } else {
             pState->m_midKill->processAndPauseFilter(
-                    inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
         }
         ++bufIndex;
     } else {
@@ -338,15 +338,15 @@ void BiquadFullKillEQEffect::processChannel(
             double highCenter = getCenterFrequency(
                     pState->m_highFreqCorner, kMaximumFrequency);
             pState->m_highBoost->setFrequencyCorners(
-                    sampleRate, highCenter, kQBoost, bqGainHigh);
+                    bufferParameters.sampleRate(), highCenter, kQBoost, bqGainHigh);
             pState->m_oldHighBoost = bqGainHigh;
         }
         if (bqGainHigh > 0.0) {
             pState->m_highBoost->process(
-                    inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
         } else {
             pState->m_highBoost->processAndPauseFilter(
-                    inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
         }
         ++bufIndex;
     } else {
@@ -358,15 +358,15 @@ void BiquadFullKillEQEffect::processChannel(
             double highCenter = getCenterFrequency(
                     pState->m_highFreqCorner, kMaximumFrequency);
             pState->m_highKill->setFrequencyCorners(
-                    sampleRate, highCenter / 2, kQHighKillShelve, bqGainHigh);
+                    bufferParameters.sampleRate(), highCenter / 2, kQHighKillShelve, bqGainHigh);
             pState->m_oldHighKill = bqGainHigh;
         }
         if (bqGainHigh < 0.0) {
             pState->m_highKill->process(
-                    inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
         } else {
             pState->m_highKill->processAndPauseFilter(
-                    inBuffer[bufIndex], outBuffer[bufIndex], numSamples);
+                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
         }
         ++bufIndex;
     } else {
@@ -374,10 +374,10 @@ void BiquadFullKillEQEffect::processChannel(
     }
 
     if (activeFilters == 0) {
-        SampleUtil::copy(pOutput, pInput, numSamples);
+        SampleUtil::copy(pOutput, pInput, bufferParameters.samplesPerBuffer());
     }
 
-    if (enableState == EffectProcessor::DISABLING) {
+    if (enableState == EffectEnableState::Disabling) {
         pState->m_lowBoost->pauseFilter();
         pState->m_midBoost->pauseFilter();
         pState->m_highBoost->pauseFilter();
@@ -386,8 +386,8 @@ void BiquadFullKillEQEffect::processChannel(
         pState->m_highKill->pauseFilter();
     }
 
-    if (enableState == EffectProcessor::DISABLING) {
-        pState->m_lvMixIso->processChannelAndPause(pOutput, pOutput, numSamples);
+    if (enableState == EffectEnableState::Disabling) {
+        pState->m_lvMixIso->processChannelAndPause(pOutput, pOutput, bufferParameters.samplesPerBuffer());
     } else {
         double fLow = knobValueToBesselRatio(
                 m_pPotLow->value(), m_pKillLow->toBool());
@@ -396,7 +396,9 @@ void BiquadFullKillEQEffect::processChannel(
         double fHigh = knobValueToBesselRatio(
                 m_pPotHigh->value(), m_pKillHigh->toBool());
         pState->m_lvMixIso->processChannel(
-                pOutput, pOutput, numSamples, sampleRate, fLow, fMid, fHigh,
+                pOutput, pOutput,
+                bufferParameters.samplesPerBuffer(), bufferParameters.sampleRate(),
+                fLow, fMid, fHigh,
                 m_pLoFreqCorner->get(), m_pHiFreqCorner->get());
     }
 }

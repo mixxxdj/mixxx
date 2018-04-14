@@ -4,14 +4,17 @@ Description:
 Variables:
   group   : [ChannelN]
   chanNum : channel number
+  
+Rendering the meters from SVGs makes the entire GUI very laggy on older Macs.
+Refer to https://bugs.launchpad.net/mixxx/+bug/1759433
 -->
 <Template>
   <WidgetGroup>
     <ObjectName>VUMeterMixer</ObjectName>
     <Layout>horizontal</Layout>
-    <Size>12me,1me</Size>
+    <SizePolicy>me,min</SizePolicy>
     <Children>
-      <WidgetGroup><!-- Left -->
+      <WidgetGroup><!-- VU Left -->
         <Layout>stacked</Layout>
         <Size>4f,1me</Size>
         <Children>
@@ -27,18 +30,18 @@ Variables:
             <PathVu>skin:/graphics/vumeter_mixer_over.png</PathVu>
             <PathBack>skin:/graphics/vumeter_mixer.png</PathBack>
             <Horizontal>false</Horizontal>
-            <PeakHoldSize>5</PeakHoldSize>
-            <PeakHoldTime>500</PeakHoldTime>
-            <PeakFallTime>50</PeakFallTime>
-            <PeakFallStep>2</PeakFallStep>
+            <PeakHoldSize>4</PeakHoldSize>
+            <PeakHoldTime>800</PeakHoldTime>
+            <PeakFallTime>200</PeakFallTime>
+            <PeakFallStep>5</PeakFallStep>
             <Connection>
               <ConfigKey><Variable name="group"/>,VuMeterL</ConfigKey>
             </Connection>
           </VuMeter>
         </Children>
-      </WidgetGroup><!-- /Left -->
+      </WidgetGroup><!-- /VU Left -->
 
-      <WidgetGroup><!-- Right -->
+      <WidgetGroup><!-- VU Right -->
         <Layout>stacked</Layout>
         <Size>4f,1me</Size>
         <Children>
@@ -54,16 +57,16 @@ Variables:
             <PathVu>skin:/graphics/vumeter_mixer_over.png</PathVu>
             <PathBack>skin:/graphics/vumeter_mixer.png</PathBack>
             <Horizontal>false</Horizontal>
-            <PeakHoldSize>5</PeakHoldSize>
-            <PeakHoldTime>500</PeakHoldTime>
-            <PeakFallTime>50</PeakFallTime>
-            <PeakFallStep>2</PeakFallStep>
+            <PeakHoldSize>4</PeakHoldSize>
+            <PeakHoldTime>800</PeakHoldTime>
+            <PeakFallTime>200</PeakFallTime>
+            <PeakFallStep>5</PeakFallStep>
             <Connection>
               <ConfigKey><Variable name="group"/>,VuMeterR</ConfigKey>
             </Connection>
           </VuMeter>
         </Children>
-      </WidgetGroup><!-- /Right -->
+      </WidgetGroup><!-- /VU Right -->
     </Children>
   </WidgetGroup>
 </Template>

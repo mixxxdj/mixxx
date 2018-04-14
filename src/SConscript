@@ -503,7 +503,6 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                 PLUGINS=plugins, ##XXX test what happens if we don't pass any plugins
                 #Qt plugins ((Qt *NEEDS* its plugins in specific locations or it refuses to find them, however this is clearly awkward to write out like this.. maybe))
                 QT_HACK = [(p_tgt_dir, os.path.join(qtplugindir, "plugins", p_tgt_dir, p)) for p_tgt_dir, p in qt_plugins], #sigh :(
-                STRIP=build.build_is_release,
                 APP_RESOURCES_MAP=resource_map,
                 IDENTIFIER="org.mixxx.mixxx",
                 DISPLAY_NAME="Mixxx",
@@ -1069,17 +1068,20 @@ def BuildUbuntuPackage(target, source, env):
                                                            branch_name, vcs_revision,
                                                            ubuntu_version, ubuntu_distro)
 
+                ubuntu_signing_identity = SCons.ARGUMENTS.get('ubuntu_signing_identity', "Mixxx Buildbot <builds@mixxx.org>")
+
                 # Add a changelog record for this package
                 if build.build_is_debug:
                         description = "  * Experimental build of branch '%s' at revision %s" % (branch_name, vcs_revision)
                         ubuntu_append_changelog('debian', package_name, package_version,
-                                                description, distro=ubuntu_distro)
+                                                description, distro=ubuntu_distro,
+                                                author=ubuntu_signing_identity)
                 else:
                         description = "  * New upstream release."
                         ubuntu_append_changelog('debian', package_name, package_version,
                                                 description,
                                                 distro=ubuntu_distro,
-                                                author="RJ Ryan <rryan@mixxx.org>")
+                                                author=ubuntu_signing_identity)
 
                 # Run pbuilder
                 print("* Starting pbuilder ...  (cwd: %s)" % os.getcwd())

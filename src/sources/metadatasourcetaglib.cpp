@@ -5,6 +5,7 @@
 #include "util/logger.h"
 #include "util/memory.h"
 
+#include <QFile>
 #include <QFileInfo>
 
 #include <taglib/mp4file.h>
@@ -22,6 +23,17 @@ namespace {
 
 Logger kLogger("MetadataSourceTagLib");
 
+// TODO(uklotzde): Add a configurable option in the user settings
+const bool kExportTrackMetadataIntoTemporaryFile = true;
+
+// Appended to the original file name of the temporary file used for writing
+const QString kSafelyWritableTempFileSuffix = "_temp";
+
+// Appended to the original file name for renaming and before deleting this
+// file. Should not be longer than kSafelyWritableTempFileSuffix to avoid
+// potential failures caused by exceeded path length.
+const QString kSafelyWritableOrigFileSuffix = "_orig";
+
 // Workaround for missing functionality in TagLib 1.11.x that
 // doesn't support to read text chunks from AIFF files.
 // See also:
@@ -35,23 +47,28 @@ class AiffFile: public TagLib::RIFF::AIFF::File {
         : TagLib::RIFF::AIFF::File(fileName) {
     }
 
-    void importTrackMetadataFromTextChunks(TrackMetadata* pTrackMetadata) /*non-const*/ {
+    bool importTrackMetadataFromTextChunks(TrackMetadata* pTrackMetadata) /*non-const*/ {
         if (pTrackMetadata == nullptr) {
-            return; // nothing to do
+            return false; // nothing to do
         }
+        bool imported = false;
         for(unsigned int i = 0; i < chunkCount(); ++i) {
             const TagLib::ByteVector chunkId(TagLib::RIFF::AIFF::File::chunkName(i));
             if (chunkId == "NAME") {
                 pTrackMetadata->refTrackInfo().setTitle(decodeChunkText(
                         TagLib::RIFF::AIFF::File::chunkData(i)));
+                imported = true;
             } else if (chunkId == "AUTH") {
                 pTrackMetadata->refTrackInfo().setArtist(decodeChunkText(
                         TagLib::RIFF::AIFF::File::chunkData(i)));
+                imported = true;
             } else if (chunkId == "ANNO") {
                 pTrackMetadata->refTrackInfo().setComment(decodeChunkText(
                         TagLib::RIFF::AIFF::File::chunkData(i)));
+                imported = true;
             }
         }
+        return imported;
     }
 
   private:
@@ -64,17 +81,24 @@ class AiffFile: public TagLib::RIFF::AIFF::File {
     }
 };
 
+QDateTime getMetadataSynchronized(QFileInfo fileInfo) {
+    const QDateTime metadataSynchronized = fileInfo.lastModified();
+    VERIFY_OR_DEBUG_ASSERT(!metadataSynchronized.isNull()) {
+        return QDateTime::currentDateTimeUtc();
+    }
+    return metadataSynchronized;
+}
+
 } // anonymous namespace
 
-
 std::pair<MetadataSourceTagLib::ImportResult, QDateTime>
-MetadataSourceTagLib::afterImportSucceeded() const {
-    return std::make_pair(ImportResult::Succeeded, QFileInfo(m_fileName).lastModified());
+MetadataSourceTagLib::afterImport(ImportResult importResult) const {
+    return std::make_pair(importResult, getMetadataSynchronized(QFileInfo(m_fileName)));
 }
 
 std::pair<MetadataSourceTagLib::ExportResult, QDateTime>
-MetadataSourceTagLib::afterExportSucceeded() const {
-    return std::make_pair(ExportResult::Succeeded, QFileInfo(m_fileName).lastModified());
+MetadataSourceTagLib::afterExport(ExportResult exportResult) const {
+    return std::make_pair(exportResult, getMetadataSynchronized(QFileInfo(m_fileName)));
 }
 
 std::pair<MetadataSource::ImportResult, QDateTime>
@@ -86,7 +110,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
                 << "Nothing to import"
                 << "from file" << m_fileName
                 << "with type" << m_fileType;
-        return std::make_pair(MetadataSource::ImportResult::Unavailable, QDateTime());
+        return afterImport(ImportResult::Unavailable);
     }
     kLogger.trace() << "Importing"
             << ((pTrackMetadata && pCoverImage) ? "track metadata and cover art" : (pTrackMetadata ? "track metadata" : "cover art"))
@@ -109,20 +133,20 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
             if (pID3v2Tag) {
                 taglib::importTrackMetadataFromID3v2Tag(pTrackMetadata, *pID3v2Tag);
                 taglib::importCoverImageFromID3v2Tag(pCoverImage, *pID3v2Tag);
-                return afterImportSucceeded();
+                return afterImport(ImportResult::Succeeded);
             } else {
                 const TagLib::APE::Tag* pAPETag =
                         taglib::hasAPETag(file) ? file.APETag() : nullptr;
                 if (pAPETag) {
                     taglib::importTrackMetadataFromAPETag(pTrackMetadata, *pAPETag);
                     taglib::importCoverImageFromAPETag(pCoverImage, *pAPETag);
-                    return afterImportSucceeded();
+                    return afterImport(ImportResult::Succeeded);
                 } else {
                     // fallback
                     const TagLib::Tag* pTag(file.tag());
                     if (pTag) {
                         taglib::importTrackMetadataFromTag(pTrackMetadata, *pTag);
-                        return afterImportSucceeded();
+                        return afterImport(ImportResult::Succeeded);
                     }
                 }
             }
@@ -137,13 +161,13 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
             if (pMP4Tag) {
                 taglib::importTrackMetadataFromMP4Tag(pTrackMetadata, *pMP4Tag);
                 taglib::importCoverImageFromMP4Tag(pCoverImage, *pMP4Tag);
-                return afterImportSucceeded();
+                return afterImport(ImportResult::Succeeded);
             } else {
                 // fallback
                 const TagLib::Tag* pTag(file.tag());
                 if (pTag) {
                     taglib::importTrackMetadataFromTag(pTrackMetadata, *pTag);
-                    return afterImportSucceeded();
+                    return afterImport(ImportResult::Succeeded);
                 }
             }
         }
@@ -164,20 +188,20 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
             if (pXiphComment) {
                 taglib::importTrackMetadataFromVorbisCommentTag(pTrackMetadata, *pXiphComment);
                 taglib::importCoverImageFromVorbisCommentTag(pCoverImage, *pXiphComment);
-                return afterImportSucceeded();
+                return afterImport(ImportResult::Succeeded);
             } else {
                 const TagLib::ID3v2::Tag* pID3v2Tag =
                         taglib::hasID3v2Tag(file) ? file.ID3v2Tag() : nullptr;
                 if (pID3v2Tag) {
                     taglib::importTrackMetadataFromID3v2Tag(pTrackMetadata, *pID3v2Tag);
                     taglib::importCoverImageFromID3v2Tag(pCoverImage, *pID3v2Tag);
-                    return afterImportSucceeded();
+                    return afterImport(ImportResult::Succeeded);
                 } else {
                     // fallback
                     const TagLib::Tag* pTag(file.tag());
                     if (pTag) {
                         taglib::importTrackMetadataFromTag(pTrackMetadata, *pTag);
-                        return afterImportSucceeded();
+                        return afterImport(ImportResult::Succeeded);
                     }
                 }
             }
@@ -192,13 +216,13 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
             if (pXiphComment) {
                 taglib::importTrackMetadataFromVorbisCommentTag(pTrackMetadata, *pXiphComment);
                 taglib::importCoverImageFromVorbisCommentTag(pCoverImage, *pXiphComment);
-                return afterImportSucceeded();
+                return afterImport(ImportResult::Succeeded);
             } else {
                 // fallback
                 const TagLib::Tag* pTag(file.tag());
                 if (pTag) {
                     taglib::importTrackMetadataFromTag(pTrackMetadata, *pTag);
-                    return afterImportSucceeded();
+                    return afterImport(ImportResult::Succeeded);
                 }
             }
         }
@@ -213,13 +237,13 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
             if (pXiphComment) {
                 taglib::importTrackMetadataFromVorbisCommentTag(pTrackMetadata, *pXiphComment);
                 taglib::importCoverImageFromVorbisCommentTag(pCoverImage, *pXiphComment);
-                 return afterImportSucceeded();
+                 return afterImport(ImportResult::Succeeded);
             } else {
                 // fallback
                 const TagLib::Tag* pTag(file.tag());
                 if (pTag) {
                     taglib::importTrackMetadataFromTag(pTrackMetadata, *pTag);
-                    return afterImportSucceeded();
+                    return afterImport(ImportResult::Succeeded);
                 }
             }
         }
@@ -235,13 +259,13 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
             if (pAPETag) {
                 taglib::importTrackMetadataFromAPETag(pTrackMetadata, *pAPETag);
                 taglib::importCoverImageFromAPETag(pCoverImage, *pAPETag);
-                return afterImportSucceeded();
+                return afterImport(ImportResult::Succeeded);
             } else {
                 // fallback
                 const TagLib::Tag* pTag(file.tag());
                 if (pTag) {
                     taglib::importTrackMetadataFromTag(pTrackMetadata, *pTag);
-                    return afterImportSucceeded();
+                    return afterImport(ImportResult::Succeeded);
                 }
             }
         }
@@ -260,13 +284,13 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
             if (pID3v2Tag) {
                 taglib::importTrackMetadataFromID3v2Tag(pTrackMetadata, *pID3v2Tag);
                 taglib::importCoverImageFromID3v2Tag(pCoverImage, *pID3v2Tag);
-                return afterImportSucceeded();
+                return afterImport(ImportResult::Succeeded);
             } else {
                 // fallback
                 const TagLib::RIFF::Info::Tag* pTag = file.InfoTag();
                 if (pTag) {
                     taglib::importTrackMetadataFromRIFFTag(pTrackMetadata, *pTag);
-                    return afterImportSucceeded();
+                    return afterImport(ImportResult::Succeeded);
                 }
             }
         }
@@ -284,11 +308,13 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
             if (pID3v2Tag) {
                 taglib::importTrackMetadataFromID3v2Tag(pTrackMetadata, *pID3v2Tag);
                 taglib::importCoverImageFromID3v2Tag(pCoverImage, *pID3v2Tag);
+                return afterImport(ImportResult::Succeeded);
             } else {
                 // fallback
-                file.importTrackMetadataFromTextChunks(pTrackMetadata);
+                if (file.importTrackMetadataFromTextChunks(pTrackMetadata)) {
+                    return afterImport(ImportResult::Succeeded);
+                }
             }
-            return afterImportSucceeded();
         }
         break;
     }
@@ -297,14 +323,14 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
             << "Cannot import track metadata"
             << "from file" << m_fileName
             << "with unknown or unsupported type" << m_fileType;
-        return MetadataSource::importTrackMetadataAndCoverImage(pTrackMetadata, pCoverImage);
+        return afterImport(ImportResult::Failed);
     }
 
-    kLogger.warning()
+    kLogger.debug()
             << "No track metadata or cover art found"
             << "in file" << m_fileName
             << "with type" << m_fileType;
-    return MetadataSource::importTrackMetadataAndCoverImage(pTrackMetadata, pCoverImage);
+    return afterImport(ImportResult::Unavailable);
 }
 
 namespace {
@@ -561,7 +587,8 @@ public:
         : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
           m_modifiedTags(exportTrackMetadata(&m_file, trackMetadata)) {
     }
-    ~AiffTagSaver() override {}
+    ~AiffTagSaver() override {
+    }
 
     bool hasModifiedTags() const override {
         return m_modifiedTags;
@@ -581,6 +608,138 @@ private:
     bool m_modifiedTags;
 };
 
+/**
+ * When writing the tags in-place directly into the original file
+ * an intermediate failure might corrupt this precious file. For
+ * example this might occur if the application crashes or is quit
+ * unexpectedly, if the original file becomes unavailable while
+ * writing by disconnecting a drive, if the file system is running
+ * out of free space, or if an unexpected driver or hardware failure
+ * occurs.
+ *
+ * To reduce the risk of corrupting the original file all write
+ * operations are performed on a temporary file that is created
+ * as an exact copy of the original file. Only after all write
+ * operations have finished successfully the original file is
+ * replaced with the temporary file.
+ */
+class SafelyWritableFile final {
+  public:
+    SafelyWritableFile(QString origFileName, bool useTemporaryFile)
+        : m_origFileName(std::move(origFileName)) {
+        DEBUG_ASSERT(m_tempFileName.isNull());
+        if (useTemporaryFile) {
+            QString tempFileName = m_origFileName + kSafelyWritableTempFileSuffix;
+            QFile origFile(m_origFileName);
+            if (origFile.copy(tempFileName)) {
+                m_tempFileName = std::move(tempFileName);
+            } else {
+                kLogger.warning()
+                        << origFile.errorString()
+                        << "- Failed to copy original into temporary file before writing:"
+                        << origFile.fileName()
+                        << "->"
+                        << tempFileName;
+            }
+        }
+    }
+    ~SafelyWritableFile() {
+        cancel();
+    }
+
+    const QString& fileName() const {
+        if (m_tempFileName.isNull()) {
+            return m_origFileName;
+        } else {
+            return m_tempFileName;
+        }
+    }
+
+    bool commit() {
+        if (m_tempFileName.isNull()) {
+            return true; // nothing to do
+        }
+        QFile newFile(m_tempFileName);
+        if (!newFile.exists()) {
+            kLogger.warning()
+                    << "Temporary file not found:"
+                    << newFile.fileName();
+            return false;
+        }
+        QFile oldFile(m_origFileName);
+        if (oldFile.exists()) {
+            QString backupFileName = m_origFileName + kSafelyWritableOrigFileSuffix;
+            DEBUG_ASSERT(!QFile::exists(backupFileName)); // very unlikely, otherwise renaming fails
+            if (!oldFile.rename(backupFileName)) {
+                kLogger.critical()
+                        << oldFile.errorString()
+                        << "- Failed to rename the original file for backup before writing:"
+                        << oldFile.fileName()
+                        << "->"
+                        << backupFileName;
+                return false;
+            }
+        }
+        DEBUG_ASSERT(!QFile::exists(m_origFileName));
+        if (!newFile.rename(m_origFileName)) {
+            kLogger.critical()
+                    << newFile.errorString()
+                    << "- Failed to rename temporary file after writing:"
+                    << newFile.fileName()
+                    << "->"
+                    << m_origFileName;
+            if (oldFile.exists()) {
+                // Try to restore the original file
+                if (!oldFile.rename(m_origFileName)) {
+                    // Undo operation failed
+                    kLogger.warning()
+                            << oldFile.errorString()
+                            << "- Both the original and the temporary file are still available:"
+                            << oldFile.fileName()
+                            << newFile.fileName();
+                }
+                return false;
+            }
+        }
+        if (oldFile.exists()) {
+            if (!oldFile.remove()) {
+                kLogger.warning()
+                    << oldFile.errorString()
+                    << "- Failed to remove backup file after writing:"
+                    << oldFile.fileName();
+                return false;
+            }
+        }
+        // Prevent any further interaction and file access
+        m_origFileName = QString();
+        m_tempFileName = QString();
+        return true;
+    }
+
+    void cancel() {
+        if (m_tempFileName.isNull()) {
+            return; // nothing to do
+        }
+        QFile tempFile(m_tempFileName);
+        if (!tempFile.exists()) {
+            return; // nothing to do
+        }
+        if (!tempFile.remove()) {
+            kLogger.warning()
+                    << tempFile.errorString()
+                    << "- Failed to remove temporary file:"
+                    << m_tempFileName;
+        }
+        // Prevent any further interaction and file access
+        m_origFileName = QString();
+        m_tempFileName = QString();
+    }
+
+  private:
+    QString m_origFileName;
+    QString m_tempFileName;
+};
+
 } // anonymous namespace
 
 std::pair<MetadataSource::ExportResult, QDateTime>
@@ -590,48 +749,50 @@ MetadataSourceTagLib::exportTrackMetadata(
             << "into file" << m_fileName
             << "with type" << m_fileType;
 
+    SafelyWritableFile safelyWritableFile(m_fileName, kExportTrackMetadataIntoTemporaryFile);
+
     std::unique_ptr<TagSaver> pTagSaver;
     switch (m_fileType) {
     case taglib::FileType::MP3:
     {
-        pTagSaver = std::make_unique<MpegTagSaver>(m_fileName, trackMetadata);
+        pTagSaver = std::make_unique<MpegTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
     case taglib::FileType::MP4:
     {
-        pTagSaver = std::make_unique<Mp4TagSaver>(m_fileName, trackMetadata);
+        pTagSaver = std::make_unique<Mp4TagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
     case taglib::FileType::FLAC:
     {
-        pTagSaver = std::make_unique<FlacTagSaver>(m_fileName, trackMetadata);
+        pTagSaver = std::make_unique<FlacTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
     case taglib::FileType::OGG:
     {
-        pTagSaver = std::make_unique<OggTagSaver>(m_fileName, trackMetadata);
+        pTagSaver = std::make_unique<OggTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
 #if (TAGLIB_HAS_OPUSFILE)
     case taglib::FileType::OPUS:
     {
-        pTagSaver = std::make_unique<OpusTagSaver>(m_fileName, trackMetadata);
+        pTagSaver = std::make_unique<OpusTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
 #endif // TAGLIB_HAS_OPUSFILE
     case taglib::FileType::WV:
     {
-        pTagSaver = std::make_unique<WavPackTagSaver>(m_fileName, trackMetadata);
+        pTagSaver = std::make_unique<WavPackTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
     case taglib::FileType::WAV:
     {
-        pTagSaver = std::make_unique<WavTagSaver>(m_fileName, trackMetadata);
+        pTagSaver = std::make_unique<WavTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
     case taglib::FileType::AIFF:
     {
-        pTagSaver = std::make_unique<AiffTagSaver>(m_fileName, trackMetadata);
+        pTagSaver = std::make_unique<AiffTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
     default:
@@ -640,20 +801,23 @@ MetadataSourceTagLib::exportTrackMetadata(
             << "into file" << m_fileName
             << "with unknown or unsupported type"
             << m_fileType;
-        return MetadataSource::exportTrackMetadata(trackMetadata);
+        return afterExport(ExportResult::Unsupported);
     }
 
     if (pTagSaver->hasModifiedTags()) {
         if (pTagSaver->saveModifiedTags()) {
-            return afterExportSucceeded();
-        } else {
-            kLogger.warning() << "Failed to save tags of file" << m_fileName;
-            return std::make_pair(ExportResult::Failed, QDateTime());
+            // Close all file handles after modified tags have been saved into the temporary file!
+            pTagSaver.reset();
+            // Now we can safely replace the original file with the temporary file
+            if (safelyWritableFile.commit()) {
+                return afterExport(ExportResult::Succeeded);
+            }
         }
+        kLogger.warning() << "Failed to save tags of file" << m_fileName;
     } else {
         kLogger.warning() << "Failed to modify tags of file" << m_fileName;
-        return std::make_pair(ExportResult::Failed, QDateTime());
     }
+    return afterExport(ExportResult::Failed);
 }
 
 } // namespace mixxx

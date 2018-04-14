@@ -34,6 +34,7 @@ class WaveformRendererEndOfTrack : public WaveformRendererAbstract {
     ControlProxy* m_pTrackSampleRate;
     ControlProxy* m_pPlayControl;
     ControlProxy* m_pLoopControl;
+    ControlProxy* m_pTimeRemainingControl;
 
     QColor m_color;
     PerformanceTimer m_timer;

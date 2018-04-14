@@ -4,7 +4,6 @@
 namespace {
 
 // The defaults are tweaked to match the TEA6320 IC
-static const int kStartupSamplerate = 44100;
 static const double kLoPeakFreq = 20.0;
 static const double kHiShelveFreq = 3000.0;
 static const double kMaxLoGain = 30.0;
@@ -29,14 +28,16 @@ EffectManifest LoudnessContourEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-            "Amplifies low and high frequencies at low volumes to compensate for reduced sensitivity of the human ear."));
+        "Amplifies low and high frequencies at low volumes to compensate for reduced sensitivity of the human ear."));
     manifest.setEffectRampsFromDry(true);
+    manifest.setMetaknobDefault(-kMaxLoGain / 2);
 
     EffectManifestParameter* loudness = manifest.addParameter();
     loudness->setId("loudness");
     loudness->setName(QObject::tr("Loudness"));
-    loudness->setDescription(
-            QObject::tr("Set the gain of the applied loudness contour"));
+    loudness->setShortName(QObject::tr("Loudness"));
+    loudness->setDescription(QObject::tr(
+        "Set the gain of the applied loudness contour"));
     loudness->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     loudness->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     loudness->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -49,7 +50,9 @@ EffectManifest LoudnessContourEffect::getManifest() {
     EffectManifestParameter* useGain = manifest.addParameter();
     useGain->setId("useGain");
     useGain->setName(QObject::tr("Use Gain"));
-    useGain->setDescription(QObject::tr("Follow Gain Knob"));
+    useGain->setShortName(QObject::tr("Use Gain"));
+    useGain->setDescription(QObject::tr(
+        "Follow Gain Knob"));
     useGain->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     useGain->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     useGain->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -60,21 +63,23 @@ EffectManifest LoudnessContourEffect::getManifest() {
     return manifest;
 }
 
-LoudnessContourEffectGroupState::LoudnessContourEffectGroupState()
-        : m_oldGainKnob(1.0),
+LoudnessContourEffectGroupState::LoudnessContourEffectGroupState(
+        const mixxx::EngineParameters& bufferParameters)
+        : EffectState(bufferParameters),
+          m_oldGainKnob(1.0),
           m_oldLoudness(0.0),
           m_oldGain(1.0),
           m_oldFilterGainDb(0),
           m_oldUseGain(false),
-          m_oldSampleRate(kStartupSamplerate) {
+          m_oldSampleRate(bufferParameters.sampleRate()) {
 
-    m_pBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
+    m_pBuf = SampleUtil::alloc(bufferParameters.samplesPerBuffer());
 
     // Initialize the filters with default parameters
     m_low = std::make_unique<EngineFilterBiquad1Peaking>(
-            kStartupSamplerate , kLoPeakFreq , kHiShelveQ);
+            bufferParameters.sampleRate() , kLoPeakFreq , kHiShelveQ);
     m_high = std::make_unique<EngineFilterBiquad1HighShelving>(
-            kStartupSamplerate , kHiShelveFreq ,kHiShelveQ);
+            bufferParameters.sampleRate() , kHiShelveFreq ,kHiShelveQ);
 }
 
 LoudnessContourEffectGroupState::~LoudnessContourEffectGroupState() {
@@ -104,9 +109,8 @@ void LoudnessContourEffect::processChannel(
         LoudnessContourEffectGroupState* pState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
-        const unsigned int numSamples,
-        const unsigned int sampleRate,
-        const EffectProcessor::EnableState enableState,
+        const mixxx::EngineParameters& bufferParameters,
+        const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
@@ -114,7 +118,7 @@ void LoudnessContourEffect::processChannel(
     double filterGainDb = pState->m_oldFilterGainDb;
     double gain = pState->m_oldGain;
 
-    if (enableState != EffectProcessor::DISABLING) {
+    if (enableState != EffectEnableState::Disabling) {
 
         bool useGain = m_pUseGain->toBool() && groupFeatures.has_gain;
         double loudness = m_pLoudness->value();
@@ -125,12 +129,12 @@ void LoudnessContourEffect::processChannel(
         if (useGain != pState->m_oldUseGain ||
                 gainKnob != pState->m_oldGainKnob ||
                 loudness != pState->m_oldLoudness ||
-                sampleRate != pState->m_oldSampleRate) {
+                bufferParameters.sampleRate() != pState->m_oldSampleRate) {
 
             pState->m_oldUseGain = useGain;
             pState->m_oldGainKnob =  gainKnob;
             pState->m_oldLoudness = loudness;
-            pState->m_oldSampleRate = sampleRate;
+            pState->m_oldSampleRate = bufferParameters.sampleRate();
 
             if (useGain) {
                 gainKnob = math_clamp(gainKnob, 0.03, 1.0); // Limit at 0 .. -30 dB
@@ -143,19 +147,20 @@ void LoudnessContourEffect::processChannel(
                 // compensate filter boost to avoid clipping
                 gain = db2ratio(-filterGainDb);
             }
-            pState->setFilters(sampleRate, filterGainDb);
+            pState->setFilters(bufferParameters.sampleRate(), filterGainDb);
         }
     }
 
     if (filterGainDb == 0) {
         pState->m_low->pauseFilter();
         pState->m_high->pauseFilter();
-        SampleUtil::copy(pOutput, pInput, numSamples);
+        SampleUtil::copy(pOutput, pInput, bufferParameters.samplesPerBuffer());
     } else {
-        pState->m_low->process(pInput, pOutput, numSamples);
-        pState->m_high->process(pOutput, pState->m_pBuf, numSamples);
+        pState->m_low->process(pInput, pOutput, bufferParameters.samplesPerBuffer());
+        pState->m_high->process(pOutput, pState->m_pBuf, bufferParameters.samplesPerBuffer());
         SampleUtil::copyWithRampingGain(
-                pOutput, pState->m_pBuf, pState->m_oldGain, gain, numSamples);
+                pOutput, pState->m_pBuf, pState->m_oldGain, gain,
+                bufferParameters.samplesPerBuffer());
     }
 
     pState->m_oldFilterGainDb = filterGainDb ;

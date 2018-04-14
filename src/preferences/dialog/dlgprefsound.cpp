@@ -21,7 +21,6 @@
 #include "engine/enginemaster.h"
 #include "mixer/playermanager.h"
 #include "soundio/soundmanager.h"
-#include "soundio/sounddevice.h"
 #include "util/rlimit.h"
 #include "util/scopedoverridecursor.h"
 #include "control/controlproxy.h"
@@ -290,8 +289,8 @@ void DlgPrefSound::addPath(AudioOutput output) {
         toInsert = new DlgPrefSoundItem(outputTab, type,
             m_outputDevices, false);
     }
-    connect(this, SIGNAL(refreshOutputDevices(const QList<SoundDevice*>&)),
-            toInsert, SLOT(refreshDevices(const QList<SoundDevice*>&)));
+    connect(this, SIGNAL(refreshOutputDevices(const QList<SoundDevicePointer>&)),
+            toInsert, SLOT(refreshDevices(const QList<SoundDevicePointer>&)));
     insertItem(toInsert, outputVLayout);
     connectSoundItem(toInsert);
 }
@@ -321,8 +320,8 @@ void DlgPrefSound::addPath(AudioInput input) {
         toInsert = new DlgPrefSoundItem(inputTab, type,
             m_inputDevices, true);
     }
-    connect(this, SIGNAL(refreshInputDevices(const QList<SoundDevice*>&)),
-            toInsert, SLOT(refreshDevices(const QList<SoundDevice*>&)));
+    connect(this, SIGNAL(refreshInputDevices(const QList<SoundDevicePointer>&)),
+            toInsert, SLOT(refreshDevices(const QList<SoundDevicePointer>&)));
     insertItem(toInsert, inputVLayout);
     connectSoundItem(toInsert);
 }

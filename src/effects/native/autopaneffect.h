@@ -61,8 +61,10 @@ class RampedSample {
 static const int panMaxDelay = 3300; // allows a 30 Hz filter at 97346;
 // static const int panMaxDelay = 50000; // high for debug;
 
-struct AutoPanGroupState {
-    AutoPanGroupState() {
+class AutoPanGroupState : public EffectState {
+  public:
+    AutoPanGroupState(const mixxx::EngineParameters& bufferParameters)
+            : EffectState(bufferParameters) {
         time = 0;
         delay = new EngineFilterPanSingle<panMaxDelay>();
         m_dPreviousPeriod = -1.0;
@@ -75,7 +77,7 @@ struct AutoPanGroupState {
     double m_dPreviousPeriod;
 };
 
-class AutoPanEffect : public PerChannelEffectProcessor<AutoPanGroupState> {
+class AutoPanEffect : public EffectProcessorImpl<AutoPanGroupState> {
   public:
     AutoPanEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~AutoPanEffect();
@@ -83,14 +85,12 @@ class AutoPanEffect : public PerChannelEffectProcessor<AutoPanGroupState> {
     static QString getId();
     static EffectManifest getManifest();
 
-    // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,
-                        AutoPanGroupState* pState,
-                      const CSAMPLE* pInput, CSAMPLE* pOutput,
-                      const unsigned int numSamples,
-                      const unsigned int sampleRate,
-                      const EffectProcessor::EnableState enableState,
-                      const GroupFeatureState& groupFeatures);
+            AutoPanGroupState* pState,
+            const CSAMPLE* pInput, CSAMPLE* pOutput,
+            const mixxx::EngineParameters& bufferParameters,
+            const EffectEnableState enableState,
+            const GroupFeatureState& groupFeatures);
 
     double computeLawCoefficient(double position);
 

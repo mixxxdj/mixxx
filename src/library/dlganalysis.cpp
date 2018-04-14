@@ -6,12 +6,14 @@
 #include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
 #include "library/dlganalysis.h"
+#include "library/library.h"
 #include "util/assert.h"
 
-DlgAnalysis::DlgAnalysis(QWidget* parent,
+DlgAnalysis::DlgAnalysis(QWidget* pParent,
                        UserSettingsPointer pConfig,
+                       Library* pLibrary,
                        TrackCollection* pTrackCollection)
-        : QWidget(parent),
+        : QWidget(pParent),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_bAnalysisActive(false),
@@ -62,6 +64,13 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
             SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection&)),
             this,
             SLOT(tableSelectionChanged(const QItemSelection &, const QItemSelection&)));
+
+    connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
+            m_pAnalysisLibraryTableView, SLOT(setTrackTableFont(QFont)));
+    connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
+            m_pAnalysisLibraryTableView, SLOT(setTrackTableRowHeight(int)));
+    connect(pLibrary, SIGNAL(setSelectedClick(bool)),
+            m_pAnalysisLibraryTableView, SLOT(setSelectedClick(bool)));
 }
 
 DlgAnalysis::~DlgAnalysis() {

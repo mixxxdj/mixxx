@@ -9,14 +9,18 @@
 #include "util/class.h"
 #include "util/defs.h"
 #include "util/sample.h"
+#include "util/samplebuffer.h"
 #include "util/types.h"
 
-struct FilterGroupState {
-    FilterGroupState();
+struct FilterGroupState : public EffectState {
+    FilterGroupState(const mixxx::EngineParameters& bufferParameters);
     ~FilterGroupState();
+
+    void engineParametersChanged(const mixxx::EngineParameters& bufferParameters) override;
+
     void setFilters(int sampleRate, double lowFreq, double highFreq);
 
-    CSAMPLE* m_pBuf;
+    mixxx::SampleBuffer m_buffer;
     EngineFilterBiquad1Low* m_pLowFilter;
     EngineFilterBiquad1High* m_pHighFilter;
 
@@ -26,7 +30,7 @@ struct FilterGroupState {
 
 };
 
-class FilterEffect : public PerChannelEffectProcessor<FilterGroupState> {
+class FilterEffect : public EffectProcessorImpl<FilterGroupState> {
   public:
     FilterEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~FilterEffect();
@@ -34,13 +38,11 @@ class FilterEffect : public PerChannelEffectProcessor<FilterGroupState> {
     static QString getId();
     static EffectManifest getManifest();
 
-    // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,
                         FilterGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
-                        const unsigned int numSamples,
-                        const unsigned int sampleRate,
-                        const EffectProcessor::EnableState enableState,
+                        const mixxx::EngineParameters& bufferParameters,
+                        const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatures);
 
   private:

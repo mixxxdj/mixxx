@@ -109,7 +109,7 @@ void CoverArtCache::requestCover(const Track& track,
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache == nullptr) return;
 
-    CoverInfo info = track.getCoverInfo();
+    CoverInfo info = track.getCoverInfoWithLocation();
     pCache->requestCover(info, pRequestor, 0, false, true);
 }
 

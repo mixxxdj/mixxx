@@ -44,8 +44,13 @@ private:
 
 bool operator==(const PlayCounter& lhs, const PlayCounter& rhs);
 
-inline bool operator!=(const PlayCounter& lhs, const PlayCounter& rhs) {
+inline
+bool operator!=(const PlayCounter& lhs, const PlayCounter& rhs) {
     return !(lhs == rhs);
 }
 
+inline
+QDebug operator<<(QDebug dbg, const PlayCounter& arg) {
+    return dbg << "played =" << arg.isPlayed() << "/" << "count =" << arg.getTimesPlayed();
+}
 #endif // MIXXX_PLAYCOUNTER_H

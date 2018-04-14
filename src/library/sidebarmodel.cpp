@@ -293,6 +293,14 @@ bool SidebarModel::dropAccept(const QModelIndex& index, QList<QUrl> urls,
     return result;
 }
 
+bool SidebarModel::hasTrackTable(const QModelIndex& index) const {
+    if (index.internalPointer() == this) {
+     return m_sFeatures[index.row()]->hasTrackTable();
+    }
+    return false;
+}
+
+
 bool SidebarModel::dragMoveAccept(const QModelIndex& index, QUrl url) {
     //qDebug() << "SidebarModel::dragMoveAccept() index=" << index << url;
     bool result = false;

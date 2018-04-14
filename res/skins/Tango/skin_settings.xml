@@ -29,13 +29,14 @@ Description:
               <Label>
                 <ObjectName>CategoryLabel</ObjectName>
                 <Text>Decks / General</Text>
-                <Size>190f,19f</Size>
+                <Size>200f,21f</Size>
               </Label>
 
               <!-- push Close button to far right -->
               <WidgetGroup><Size>1me,1me</Size></WidgetGroup>
 
               <Template src="skin:button_2state.xml">
+                <SetVariable name="TooltipId">skin_settings</SetVariable>
                 <SetVariable name="ObjectName">SkinSettingsClose</SetVariable>
                 <SetVariable name="Size">20f,24f</SetVariable>
                 <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>
@@ -43,74 +44,26 @@ Description:
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup><!-- Decks / General | 9 buttons, 1 fixed row -->
+          <!-- Each category's MinimumSize & MaximumSize need to be defined
+              in order to let them grow reasonably on big screens, as well as to
+              allow good-looking compression of items on small screens.
+              <SizePolicy> is very hard to handle in many places here due to
+              translucent covers and submenus, defining button sizes explicitely helps.
+
+              Each categroy has a padding: top 2px, bottom 2px
+              For every button we need to provide space (13-17px):
+              MinSize = (num. of buttons/rows x 13px) + 15px + 3px padding + 3px border-bottom
+              MaxSize = (num. of buttons/rows x 17px) + 15px + 3px padding + 3px border-bottom +10px
+              (let's add 10px so sections can grow on big screens) -->
+          <WidgetGroup><!-- Decks / General | 8 buttons/rows 13-17px, 1 fixed row 15px -->
             <ObjectName>SkinSettingsCategory</ObjectName>
-            <MinimumSize>182,150</MinimumSize>
-            <MaximumSize>-1,176</MaximumSize>
+            <!-- increse minimal height so that other categories get squeezed more
+            <MinimumSize>200,138</MinimumSize> -->
+            <MinimumSize>200,150</MinimumSize>
+            <MaximumSize>200,167</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
-              <WidgetGroup><!-- force compact mode -->
-                <Layout>stacked</Layout>
-                <MinimumSize>182,13</MinimumSize>
-                <MaximumSize>-1,17</MaximumSize>
-                <SizePolicy>me,me</SizePolicy>
-                <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
-                  <WidgetGroup><!-- translucent cover when skin switched to netbook mode automatically -->
-                    <ObjectName>SubmenuCover</ObjectName>
-                    <Layout>vertical</Layout>
-                    <MinimumSize>182,13</MinimumSize>
-                    <MaximumSize>-1,17</MaximumSize>
-                    <SizePolicy>me,me</SizePolicy>
-                    <Connection>
-                      <ConfigKey persist="true">[Tango],netbook_mode_auto</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
-
-                  <WidgetGroup><!-- button when skin switched to netbook mode automatically -->
-                    <ObjectName>SubmenuCover</ObjectName>
-                    <Layout>vertical</Layout>
-                    <MinimumSize>182,13</MinimumSize>
-                    <MaximumSize>-1,17</MaximumSize>
-                    <SizePolicy>me,me</SizePolicy>
-                    <Children>
-                      <Template src="skin:skin_settings_button_2state.xml">
-                        <SetVariable name="state_0_text">      Netbook mode</SetVariable>
-                        <SetVariable name="state_1_text"> &#10004; Netbook mode</SetVariable>
-                        <SetVariable name="Setting">[Tango],enforce_netbook_mode</SetVariable>
-                      </Template>
-                    </Children>
-                    <Connection>
-                      <ConfigKey persist="true">[Tango],netbook_mode_auto</ConfigKey>
-                      <Transform><Not/></Transform>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
-
-                  <WidgetGroup><!-- button when skin switched to netbook mode automatically -->
-                    <ObjectName>SubmenuCover</ObjectName>
-                    <Layout>vertical</Layout>
-                    <MinimumSize>182,13</MinimumSize>
-                    <MaximumSize>-1,17</MaximumSize>
-                    <SizePolicy>me,me</SizePolicy>
-                    <Children>
-                      <Template src="skin:skin_settings_button_2state.xml">
-                        <SetVariable name="state_0_text"> &#10004; Netbook mode (automatic)</SetVariable>
-                        <SetVariable name="state_1_text"> &#10004; Netbook mode (automatic)</SetVariable>
-                        <SetVariable name="Setting">[Tango],enforce_netbook_mode</SetVariable>
-                      </Template>
-                    </Children>
-                    <Connection>
-                      <ConfigKey persist="true">[Tango],netbook_mode_auto</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
-                </Children>
-              </WidgetGroup><!-- /force compact mode -->
 
               <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="state_0_text">      Symmetric Overviews</SetVariable>
@@ -124,20 +77,64 @@ Description:
                 <SetVariable name="Setting">[Tango],symmetric_time</SetVariable>
               </Template>
 
-              <WidgetGroup>
+              <WidgetGroup><!-- HotCue settings -->
                 <MinimumSize>182,13</MinimumSize>
-                <MaximumSize>-1,17</MaximumSize>
+                <MaximumSize>182,17</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <WidgetGroup><Size>14f,1min</Size></WidgetGroup>
                   <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="state_0_text">[ 4 &#9664;  8 ]  Hotcues</SetVariable>
-                    <SetVariable name="state_1_text">[ 4  &#9654; 8 ]  Hotcues</SetVariable>
-                    <SetVariable name="Setting">[Tango],8_hotcues</SetVariable>
+                    <SetVariable name="state_0_text">      Hot Cues</SetVariable>
+                    <SetVariable name="state_1_text"> &#10004; Hot Cues</SetVariable>
+                    <SetVariable name="width">70</SetVariable>
+                    <SetVariable name="Setting">[Tango],hotcues</SetVariable>
                   </Template>
+                  <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+                  <WidgetGroup><!-- 4 or 8 -->
+                    <MinimumSize>182,13</MinimumSize>
+                    <MaximumSize>182,17</MaximumSize>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Layout>stacked</Layout>
+                    <Children>
+                      <!-- index 0 due to bug -->
+                      <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                      <WidgetGroup><!-- translucent cover when Hot Cues are invisble -->
+                        <ObjectName>SubmenuCover</ObjectName>
+                        <Layout>vertical</Layout>
+                        <Size>182f,13me</Size>
+                        <Connection>
+                          <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
+                          <Transform><Not/></Transform>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
+
+                      <WidgetGroup>
+                        <MinimumSize>182,13</MinimumSize>
+                        <MaximumSize>182,17</MaximumSize>
+                        <SizePolicy>me,me</SizePolicy>
+                        <Layout>horizontal</Layout>
+                        <Children>
+                          <Template src="skin:skin_settings_button_multi.xml">
+                            <SetVariable name="state_x_text"> [ 4 ] </SetVariable>
+                            <SetVariable name="width">26</SetVariable>
+                            <SetVariable name="stateX">0</SetVariable>
+                            <SetVariable name="Setting">[Tango],8_hotcues</SetVariable>
+                          </Template>
+                          <Template src="skin:skin_settings_button_multi.xml">
+                            <SetVariable name="state_x_text"> [ 8 ] </SetVariable>
+                            <SetVariable name="width">26</SetVariable>
+                            <SetVariable name="stateX">1</SetVariable>
+                            <SetVariable name="Setting">[Tango],8_hotcues</SetVariable>
+                          </Template>
+                          <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
+                        </Children>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup><!-- /4 or 8 -->
                 </Children>
-              </WidgetGroup>
+              </WidgetGroup><!-- /HotCue settings -->
 
               <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="state_0_text">      Track Comment</SetVariable>
@@ -146,15 +143,15 @@ Description:
               </Template>
 
               <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="state_0_text">      BPM / Pitch Fader</SetVariable>
-                <SetVariable name="state_1_text"> &#10004; BPM / Pitch Fader</SetVariable>
+                <SetVariable name="state_0_text">      BPM/Sync &amp; Pitch Fader</SetVariable>
+                <SetVariable name="state_1_text"> &#10004; BPM/Sync &amp; Pitch Fader</SetVariable>
                 <SetVariable name="Setting">[Tango],pitch_fader</SetVariable>
               </Template>
 
-              <WidgetGroup><!-- Pitch/Key submenu -->
+              <WidgetGroup><!-- Rate/Key submenu -->
                 <Layout>stacked</Layout>
-                <MinimumSize>182,13</MinimumSize>
-                <MaximumSize>-1,17</MaximumSize>
+                <MinimumSize>182,26</MinimumSize>
+                <MaximumSize>-1,34</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
                   <!-- index 0 due to bug -->
@@ -163,8 +160,8 @@ Description:
                   <WidgetGroup><!-- translucent cover when Pitch slider is hidden -->
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
-                    <MinimumSize>182,13</MinimumSize>
-                    <MaximumSize>-1,17</MaximumSize>
+                    <MinimumSize>182,26</MinimumSize>
+                    <MaximumSize>-1,34</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
                     <Connection>
                       <ConfigKey persist="true">[Tango],pitch_fader</ConfigKey>
@@ -173,30 +170,39 @@ Description:
                     </Connection>
                   </WidgetGroup>
 
-                  <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="state_0_text">      Key Controls</SetVariable>
-                    <SetVariable name="state_1_text"> &#10004; Key Controls</SetVariable>
-                    <SetVariable name="Setting">[Tango],key_controls</SetVariable>
-                  </Template>
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <Size>182f,0me</Size>
+                    <Children>
+                      <Template src="skin:skin_settings_button_2state.xml">
+                        <SetVariable name="state_0_text">      Key/Key Match</SetVariable>
+                        <SetVariable name="state_1_text"> &#10004; Key/Key Match</SetVariable>
+                        <SetVariable name="width">182</SetVariable>
+                        <SetVariable name="Setting">[Tango],key_display_match</SetVariable>
+                      </Template>
+
+                      <Template src="skin:skin_settings_button_2state.xml">
+                        <SetVariable name="state_0_text">      Rate/Key Adjustment Buttons</SetVariable>
+                        <SetVariable name="state_1_text"> &#10004; Rate/Key Adjustment Buttons</SetVariable>
+                        <SetVariable name="width">182</SetVariable>
+                        <SetVariable name="Setting">[Tango],rate_key_controls</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
                 </Children>
               </WidgetGroup><!-- Pitch/Key submenu -->
-
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="state_0_text">      Loop/Jump controls</SetVariable>
-                <SetVariable name="state_1_text"> &#10004; Loop/Jump controls</SetVariable>
-                <SetVariable name="Setting">[Tango],loop_beatjump_controls</SetVariable>
-              </Template>
 
               <WidgetGroup><!-- Permanent deck controls -->
                 <ObjectName>DeckIndicatorSettings</ObjectName>
                 <Layout>vertical</Layout>
                 <MinimumSize>182,28</MinimumSize>
-                <MaximumSize>-1,32</MaximumSize>
+                <MaximumSize>182,32</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
                   <Label>
+                    <ObjectName>SkinSettingsLabel</ObjectName>
                     <MinimumSize>182,13</MinimumSize>
-                    <MaximumSize>-1,17</MaximumSize>
+                    <MaximumSize>182,17</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
                     <Text>Permanent Deck controls:</Text>
                     <Alignment>left</Alignment>
@@ -210,60 +216,48 @@ Description:
                       <Template src="skin:button_2state_persist.xml"><!-- Keylock -->
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
-                        <SetVariable name="state_0_pressed">keylock_off.svg</SetVariable>
-                        <SetVariable name="state_0_unpressed">keylock_off.svg</SetVariable>
-                        <SetVariable name="state_1_pressed">keylock_on.svg</SetVariable>
-                        <SetVariable name="state_1_unpressed">keylock_on.svg</SetVariable>
+                        <SetVariable name="state_0_icon">keylock_off.svg</SetVariable>
+                        <SetVariable name="state_1_icon">keylock_on.svg</SetVariable>
                         <SetVariable name="ConfigKey">[Tango],always_visible_keylock</SetVariable>
                       </Template>
 
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
-                        <SetVariable name="state_0_pressed">eject.svg</SetVariable>
-                        <SetVariable name="state_0_unpressed">eject.svg</SetVariable>
-                        <SetVariable name="state_1_pressed">eject_pressed.svg</SetVariable>
-                        <SetVariable name="state_1_unpressed">eject_pressed.svg</SetVariable>
+                        <SetVariable name="state_0_icon">eject.svg</SetVariable>
+                        <SetVariable name="state_1_icon">eject_pressed.svg</SetVariable>
                         <SetVariable name="ConfigKey">[Tango],always_visible_eject</SetVariable>
                       </Template>
 
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
-                        <SetVariable name="state_0_pressed">slipmode_hidden.svg</SetVariable>
-                        <SetVariable name="state_0_unpressed">slipmode_hidden.svg</SetVariable>
-                        <SetVariable name="state_1_pressed">slipmode_visible.svg</SetVariable>
-                        <SetVariable name="state_1_unpressed">slipmode_visible.svg</SetVariable>
-                        <SetVariable name="ConfigKey">[Tango],always_visible_slipMode</SetVariable>
+                        <SetVariable name="state_0_icon">slipmode_hidden.svg</SetVariable>
+                        <SetVariable name="state_1_icon">slipmode_visible.svg</SetVariable>
+                        <SetVariable name="ConfigKey">[Tango],always_visible_slip_enabled</SetVariable>
                       </Template>
 
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
-                        <SetVariable name="state_0_pressed">repeat_hidden.svg</SetVariable>
-                        <SetVariable name="state_0_unpressed">repeat_hidden.svg</SetVariable>
-                        <SetVariable name="state_1_pressed">repeat_visible.svg</SetVariable>
-                        <SetVariable name="state_1_unpressed">repeat_visible.svg</SetVariable>
+                        <SetVariable name="state_0_icon">repeat_hidden.svg</SetVariable>
+                        <SetVariable name="state_1_icon">repeat_visible.svg</SetVariable>
                         <SetVariable name="ConfigKey">[Tango],always_visible_repeat</SetVariable>
                       </Template>
 
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
-                        <SetVariable name="state_0_pressed">xfader_center.svg</SetVariable>
-                        <SetVariable name="state_0_unpressed">xfader_center.svg</SetVariable>
-                        <SetVariable name="state_1_pressed">xfader_visible.svg</SetVariable>
-                        <SetVariable name="state_1_unpressed">xfader_visible.svg</SetVariable>
-                        <SetVariable name="ConfigKey">[Tango],always_visible_xfaderOrientation</SetVariable>
+                        <SetVariable name="state_0_icon">xfader_center.svg</SetVariable>
+                        <SetVariable name="state_1_icon">xfader_visible.svg</SetVariable>
+                        <SetVariable name="ConfigKey">[Tango],always_visible_orientation</SetVariable>
                       </Template>
 
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
-                        <SetVariable name="state_0_pressed">quantize_hidden.svg</SetVariable>
-                        <SetVariable name="state_0_unpressed">quantize_hidden.svg</SetVariable>
-                        <SetVariable name="state_1_pressed">quantize_visible.svg</SetVariable>
-                        <SetVariable name="state_1_unpressed">quantize_visible.svg</SetVariable>
+                        <SetVariable name="state_0_icon">quantize_hidden.svg</SetVariable>
+                        <SetVariable name="state_1_icon">quantize_visible.svg</SetVariable>
                         <SetVariable name="ConfigKey">[Tango],always_visible_quantize</SetVariable>
                       </Template>
 
@@ -290,10 +284,8 @@ Description:
                           <Template src="skin:button_2state_persist.xml">
                             <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                             <SetVariable name="Size">16f,15f</SetVariable>
-                            <SetVariable name="state_0_pressed">stars_hidden.svg</SetVariable>
-                            <SetVariable name="state_0_unpressed">stars_hidden.svg</SetVariable>
-                            <SetVariable name="state_1_pressed">stars_visible.svg</SetVariable>
-                            <SetVariable name="state_1_unpressed">stars_visible.svg</SetVariable>
+                            <SetVariable name="state_0_icon">stars_hidden.svg</SetVariable>
+                            <SetVariable name="state_1_icon">stars_visible.svg</SetVariable>
                             <SetVariable name="ConfigKey">[Tango],stars</SetVariable>
                           </Template>
                         </Children>
@@ -305,8 +297,8 @@ Description:
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">28f,15f</SetVariable>
-                        <SetVariable name="state_0_text">CUE</SetVariable>
-                        <SetVariable name="state_1_text">CUE</SetVariable>
+                        <SetVariable name="state_0_text">Q</SetVariable>
+                        <SetVariable name="state_1_text">Q</SetVariable>
                         <SetVariable name="ConfigKey">[Tango],separate_cue_button</SetVariable>
                       </Template>
                     </Children>
@@ -318,55 +310,53 @@ Description:
 
           <Label><!-- Mixer -->
             <ObjectName>CategoryLabel</ObjectName>
-            <Size>190f,19f</Size>
+            <Size>200f,21f</Size>
             <Text>Mixer</Text>
           </Label>
-          <WidgetGroup><!-- 5 buttons -->
+          <WidgetGroup><!-- 4 buttons -->
             <ObjectName>SkinSettingsCategory</ObjectName>
-            <MinimumSize>182,72</MinimumSize>
-            <MaximumSize>-1,92</MaximumSize>
+            <MinimumSize>200,58</MinimumSize>
+            <MaximumSize>200,84</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
               <WidgetGroup><!-- Channel mixer toggle + hint for big cover -->
-                <ObjectName>AlignLeft</ObjectName>
                 <Layout>horizontal</Layout>
                 <MinimumSize>182,13</MinimumSize>
-                <MaximumSize>-1,17</MaximumSize>
+                <MaximumSize>182,17</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
                   <Template src="skin:skin_settings_button_2state.xml">
                     <SetVariable name="state_0_text">      Channel Mixer</SetVariable>
                     <SetVariable name="state_1_text"> &#10004; Channel Mixer</SetVariable>
-                    <SetVariable name="Setting">[Tango],channel_mixer</SetVariable>
+                    <SetVariable name="width">110</SetVariable>
+                    <SetVariable name="Setting">[Master],show_mixer</SetVariable>
                   </Template>
 
                   <WidgetGroup><!-- Show hint when Big Cover was enabled but Channel mixer is visible -->
-                    <ObjectName>AlignLeft</ObjectName>
                     <Layout>horizontal</Layout>
-                    <MinimumSize>80,13</MinimumSize>
-                    <MaximumSize>80,17</MaximumSize>
+                    <MinimumSize>15,13</MinimumSize>
+                    <MaximumSize>15,17</MaximumSize>
                     <SizePolicy>f,me</SizePolicy>
                     <Children>
                       <WidgetGroup>
-                        <ObjectName>AlignLeft</ObjectName>
                         <Layout>horizontal</Layout>
-                        <MinimumSize>80,13</MinimumSize>
-                        <MaximumSize>80,17</MaximumSize>
+                        <MinimumSize>15,13</MinimumSize>
+                        <MaximumSize>15,17</MaximumSize>
                         <SizePolicy>f,me</SizePolicy>
                         <Children>
+                          <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
                           <Label>
                             <ObjectName>CoverSpinnyHint</ObjectName>
                             <MinimumSize>10,13</MinimumSize>
-                            <MaximumSize>10,13</MaximumSize>
+                            <MaximumSize>10,17</MaximumSize>
                             <SizePolicy>me,f</SizePolicy>
-                            <Text>&#9664;</Text>
+                            <Text>!</Text>
                             <Connection>
-                              <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
+                              <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
                               <BindProperty>visible</BindProperty>
                             </Connection>
                           </Label>
-                          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
                         </Children>
                         <Connection>
                           <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
@@ -375,18 +365,18 @@ Description:
                       </WidgetGroup>
                     </Children>
                     <Connection>
-                      <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
-                      <Transform><IsEqual>2</IsEqual><Not/></Transform>
+                      <ConfigKey persist="true">[Tango],show_spinny_cover</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup><!-- /Show hint when Channel mixer is visible -->
+                  <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
                 </Children>
               </WidgetGroup>
 
               <WidgetGroup><!-- EQ knobs -->
                 <Layout>stacked</Layout>
                 <MinimumSize>182,13</MinimumSize>
-                <MaximumSize>-1,17</MaximumSize>
+                <MaximumSize>182,17</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
                   <!-- index 0 due to bug -->
@@ -396,10 +386,10 @@ Description:
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
                     <MinimumSize>182,13</MinimumSize>
-                    <MaximumSize>-1,17</MaximumSize>
+                    <MaximumSize>182,17</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
                     <Connection>
-                      <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
+                      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
                       <Transform><Not/></Transform>
                       <BindProperty>visible</BindProperty>
                     </Connection>
@@ -408,196 +398,203 @@ Description:
                   <Template src="skin:skin_settings_button_2state.xml">
                     <SetVariable name="state_0_text">      EQ Knobs</SetVariable>
                     <SetVariable name="state_1_text"> &#10004; EQ Knobs</SetVariable>
-                    <SetVariable name="Setting">[Tango],eq_knobs</SetVariable>
+                    <SetVariable name="Setting">[Master],show_eqs</SetVariable>
                   </Template>
 
                 </Children>
               </WidgetGroup><!-- /EQ knobs -->
 
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="state_0_text">      Permanent Level Meters</SetVariable>
-                <SetVariable name="state_1_text"> &#10004; Permanent Level Meters</SetVariable>
-                <SetVariable name="Setting">[Tango],vumeter</SetVariable>
-              </Template>
+              <WidgetGroup><!-- Permanent Level Meters -->
+                <Layout>stacked</Layout>
+                <MinimumSize>182,13</MinimumSize>
+                <MaximumSize>182,17</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <MinimumSize>182,13</MinimumSize>
+                    <MaximumSize>182,17</MaximumSize>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Connection>
+                      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="state_0_text">      Always Show Level Meters</SetVariable>
+                    <SetVariable name="state_1_text"> &#10004; Always Show Level Meters</SetVariable>
+                    <SetVariable name="Setting">[Tango],vumeter</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup><!-- /Permanent Level Meters -->
 
               <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="state_0_text">      Crossfader</SetVariable>
                 <SetVariable name="state_1_text"> &#10004; Crossfader</SetVariable>
                 <SetVariable name="Setting">[Tango],crossfader</SetVariable>
               </Template>
-
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="state_0_text">      Mixer Bar</SetVariable>
-                <SetVariable name="state_1_text"> &#10004; Mixer Bar</SetVariable>
-                <SetVariable name="Setting">[Tango],mixerbar</SetVariable>
-              </Template>
             </Children>
           </WidgetGroup><!-- /Mixer -->
 
           <Label><!-- Spinny / Cover -->
             <ObjectName>CategoryLabel</ObjectName>
-            <Size>190f,19f</Size>
+            <Size>200f,21f</Size>
             <Text>Spinny / Cover</Text>
           </Label>
           <WidgetGroup><!-- 3 buttons -->
             <ObjectName>SkinSettingsCategory</ObjectName>
-            <MinimumSize>182,46</MinimumSize>
-            <MaximumSize>-1,58</MaximumSize>
+            <MinimumSize>200,45</MinimumSize>
+            <MaximumSize>200,67</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
-              <WidgetGroup><!-- Spinny / Cover / Off -->
+
+              <WidgetGroup><!-- show Spinny/Cover + small/BIG selector -->
                 <MinimumSize>182,13</MinimumSize>
-                <MaximumSize>-1,17</MaximumSize>
+                <MaximumSize>182,17</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <WidgetGroup><Size>14f,1min</Size></WidgetGroup>
-                  <Template src="skin:skin_settings_button_3state.xml">
-                    <SetVariable name="state_0_text"> [ Spinny &#9664;  Cover    Off ]</SetVariable>
-                    <SetVariable name="state_1_text"> [ Spinny  &#9654; Cover    Off ]</SetVariable>
-                    <SetVariable name="state_2_text"> [ Spinny    Cover  &#9654; Off ]</SetVariable>
-                    <SetVariable name="Setting">[Tango],spinny_cover_none</SetVariable>
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="state_0_text">      Show</SetVariable>
+                    <SetVariable name="state_1_text"> &#10004; Show</SetVariable>
+                    <SetVariable name="width">50</SetVariable>
+                    <SetVariable name="Setting">[Tango],show_spinny_cover</SetVariable>
                   </Template>
-                </Children>
-              </WidgetGroup><!-- /Spinny / Cover / Off -->
 
-              <WidgetGroup><!-- BIG/small Spinny / Cover -->
+                  <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- small/BIG selector -->
+                    <MinimumSize>182,13</MinimumSize>
+                    <MaximumSize>182,17</MaximumSize>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Layout>stacked</Layout>
+                    <Children>
+                      <!-- index 0 due to bug -->
+                      <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                      <WidgetGroup><!-- translucent cover when Spinny/Cover is hidden -->
+                        <ObjectName>SubmenuCover</ObjectName>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>me,me</SizePolicy>
+                        <Connection>
+                          <ConfigKey persist="true">[Tango],show_spinny_cover</ConfigKey>
+                          <Transform><Not/></Transform>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
+
+                      <WidgetGroup><!-- hint: enforced small cover/spinny with mixer-->
+                        <ObjectName>SubmenuCover</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <MinimumSize>182,13</MinimumSize>
+                        <MaximumSize>182,17</MaximumSize>
+                        <SizePolicy>me,me</SizePolicy>
+                        <Children>
+                          <WidgetGroup><Size>8f,1min</Size></WidgetGroup>
+                          <Label>
+                            <ObjectName>CoverSpinnyHint</ObjectName>
+                            <MinimumSize>8,13</MinimumSize>
+                            <MaximumSize>8,17</MaximumSize>
+                            <SizePolicy>min,me</SizePolicy>
+                            <Text> ° </Text>
+                          </Label>
+                          <WidgetGroup><Size>40f,1min</Size></WidgetGroup>
+                          <Label>
+                            <ObjectName>SubmenuLabel</ObjectName>
+                            <MinimumSize>100,13</MinimumSize>
+                            <MaximumSize>100,17</MaximumSize>
+                            <SizePolicy>min,me</SizePolicy>
+                            <Text>(automatic)</Text>
+                          </Label>
+                          <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
+                        </Children>
+                        <Connection>
+                          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup><!-- /hint: enforced small cover/spinny with mixer-->
+
+                      <WidgetGroup><!-- small/BIG selector, hidden mixer -->
+                        <MinimumSize>182,13</MinimumSize>
+                        <MaximumSize>182,17</MaximumSize>
+                        <SizePolicy>me,me</SizePolicy>
+                        <Layout>horizontal</Layout>
+                        <Children>
+                          <Template src="skin:skin_settings_button_multi.xml">
+                            <SetVariable name="state_x_text"> [  °  ] </SetVariable>
+                            <SetVariable name="width">28</SetVariable>
+                            <SetVariable name="stateX">0</SetVariable>
+                            <SetVariable name="Setting">[Tango],spinnyCoverBIG</SetVariable>
+                          </Template>
+                          <Template src="skin:skin_settings_button_multi.xml">
+                            <SetVariable name="state_x_text"> [ O ] </SetVariable>
+                            <SetVariable name="width">28</SetVariable>
+                            <SetVariable name="stateX">1</SetVariable>
+                            <SetVariable name="Setting">[Tango],spinnyCoverBIG</SetVariable>
+                          </Template>
+                          <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
+                        </Children>
+                      </WidgetGroup><!-- /small/BIG selector, hidden mixer -->
+                    </Children>
+                  </WidgetGroup><!-- /small/BIG selector -->
+                </Children>
+              </WidgetGroup><!-- /show Spinny/Cover + small/BIG selector -->
+
+              <WidgetGroup><!-- Spinny or Cover -->
                 <MinimumSize>182,13</MinimumSize>
-                <MaximumSize>-1,17</MaximumSize>
+                <MaximumSize>182,17</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
                 <Layout>stacked</Layout>
                 <Children>
                   <!-- index 0 due to bug -->
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-                  <WidgetGroup><!-- translucent cover when Spinny/Cover is hidden -->
+                  <WidgetGroup><!-- translucent cover when Spinny/Cover is invisble -->
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
-                    <SizePolicy>me,me</SizePolicy>
+                    <Size>182f,13me</Size>
                     <Connection>
-                      <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
-                      <Transform><IsEqual>2</IsEqual></Transform>
+                      <ConfigKey persist="true">[Tango],show_spinny_cover</ConfigKey>
+                      <Transform><Not/></Transform>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
 
-                  <WidgetGroup><!-- BIG/small Spinny / Cover without ChannelMixer -->
+                  <WidgetGroup>
                     <MinimumSize>182,13</MinimumSize>
-                    <MaximumSize>-1,17</MaximumSize>
-                    <SizePolicy>me,me</SizePolicy>
+                    <MaximumSize>182,17</MaximumSize>
+                    <SizePolicy>min,me</SizePolicy>
                     <Layout>horizontal</Layout>
                     <Children>
-                      <WidgetGroup><Size>14f,1min</Size></WidgetGroup>
-                      <Template src="skin:skin_settings_button_2state.xml">
-                        <SetVariable name="state_0_text"> [ ° &#9664;  O ]</SetVariable>
-                        <SetVariable name="state_1_text"> [ °  &#9654; O ]</SetVariable>
-                        <SetVariable name="Setting">[Tango],spinnyCoverBIG</SetVariable>
+                      <WidgetGroup><Size>13f,1min</Size></WidgetGroup>
+                      <Template src="skin:skin_settings_button_multi.xml">
+                        <SetVariable name="state_x_text"> [ Spinny ] </SetVariable>
+                        <SetVariable name="width">55</SetVariable>
+                        <SetVariable name="stateX">0</SetVariable>
+                        <SetVariable name="Setting">[Tango],spinny_or_cover</SetVariable>
                       </Template>
+                      <Template src="skin:skin_settings_button_multi.xml">
+                        <SetVariable name="state_x_text"> [ Cover ] </SetVariable>
+                        <SetVariable name="width">50</SetVariable>
+                        <SetVariable name="stateX">1</SetVariable>
+                        <SetVariable name="Setting">[Tango],spinny_or_cover</SetVariable>
+                      </Template>
+                      <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
                     </Children>
-                    <Connection>
-                      <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
-                      <Transform><Not/></Transform>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup><!-- /BIG/small Spinny / Cover without ChannelMixer -->
-
-                  <WidgetGroup><!-- BIG/small Spinny / Cover-->
-                    <MinimumSize>182,13</MinimumSize>
-                    <MaximumSize>-1,17</MaximumSize>
-                    <SizePolicy>me,me</SizePolicy>
-                    <Layout>horizontal</Layout>
-                    <Children>
-                      <WidgetGroup><Size>14f,1min</Size></WidgetGroup>
-                      <PushButton>
-                        <ObjectName>SkinSettingsButton</ObjectName>
-                        <MinimumSize>16,13</MinimumSize>
-                        <MaximumSize>16,17</MaximumSize>
-                        <SizePolicy>f,me</SizePolicy>
-                        <NumberStates>2</NumberStates>
-                        <RightClickIsPushButton>false</RightClickIsPushButton>
-                        <State>
-                          <Number>0</Number>
-                          <Text> [ ° </Text>
-                          <Alignment>left</Alignment>
-                        </State>
-                        <State>
-                          <Number>1</Number>
-                          <Text> [ ° </Text>
-                          <Alignment>left</Alignment>
-                        </State>
-                        <Connection>
-                          <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
-                          <ButtonState>LeftButton</ButtonState>
-                        </Connection>
-                      </PushButton>
-                      <WidgetGroup><!-- disabled BIG cover/spinny with hint -->
-                        <Layout>stacked</Layout>
-                        <MinimumSize>70,13</MinimumSize>
-                        <MaximumSize>-1,17</MaximumSize>
-                        <SizePolicy>me,me</SizePolicy>
-                        <Children>
-                          <WidgetGroup>
-                            <SizePolicy>me,me</SizePolicy>
-                            <Layout>horizontal</Layout>
-                            <Children>
-                              <Label>
-                                <ObjectName>CoverSpinnyHint</ObjectName>
-                                <MinimumSize>70,13</MinimumSize>
-                                <MaximumSize>-1,13</MaximumSize>
-                                <SizePolicy>me,f</SizePolicy>
-                                <Text>     !</Text>
-                                <Connection>
-                                  <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
-                                  <BindProperty>visible</BindProperty>
-                                </Connection>
-                              </Label>
-                              <WidgetGroup><SizePolicy>me,me</SizePolicy></WidgetGroup>
-                            </Children>
-                          </WidgetGroup>
-                          <WidgetGroup>
-                            <ObjectName>SubmenuCover</ObjectName>
-                            <MinimumSize>70,13</MinimumSize>
-                            <MaximumSize>-1,17</MaximumSize>
-                            <SizePolicy>me,me</SizePolicy>
-                          </WidgetGroup>
-                          <PushButton>
-                            <ObjectName>SkinSettingsButton</ObjectName>
-                            <MinimumSize>70,13</MinimumSize>
-                            <MaximumSize>-1,17</MaximumSize>
-                            <SizePolicy>me,me</SizePolicy>
-                            <NumberStates>2</NumberStates>
-                            <RightClickIsPushButton>false</RightClickIsPushButton>
-                            <State>
-                              <Number>0</Number>
-                              <Text>&#9664;  O ] (automatic)</Text>
-                              <Alignment>left</Alignment>
-                            </State>
-                            <State>
-                              <Number>1</Number>
-                              <Text>&#9664;      ] (automatic)</Text>
-                              <Alignment>left</Alignment>
-                            </State>
-                            <Connection>
-                              <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
-                              <ButtonState>LeftButton</ButtonState>
-                            </Connection>
-                          </PushButton>
-                        </Children>
-                      </WidgetGroup><!-- /disabled BIG cover/spinny with hint -->
-                    </Children>
-                    <Connection>
-                      <ConfigKey persist="true">[Tango],channel_mixer</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup><!-- /BIG/small Spinny / Cover without ChannelMixer -->
+                  </WidgetGroup>
                 </Children>
-              </WidgetGroup><!-- /Spinny / Cover / Off -->
+              </WidgetGroup><!-- /Spinny or Cover -->
 
-              <WidgetGroup><!-- Spinny/Cover Cover on Spinny-->
+              <WidgetGroup><!-- Cover on Spinny-->
                 <Layout>stacked</Layout>
-                <MinimumSize>50,13</MinimumSize>
-                <MaximumSize>-1,17</MaximumSize>
+                <MinimumSize>182,13</MinimumSize>
+                <MaximumSize>182,17</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
                   <!-- index 0 due to bug -->
@@ -606,60 +603,134 @@ Description:
                   <WidgetGroup><!-- translucent cover when Spinny/Cover is hidden -->
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
-                    <SizePolicy>me,me</SizePolicy>
+                    <Size>182f,13me</Size>
                     <Connection>
-                      <ConfigKey persist="true">[Tango],spinny_cover_none</ConfigKey>
-                      <Transform><IsEqual>0</IsEqual><Not/></Transform>
+                      <ConfigKey persist="true">[Tango],show_spinny_cover</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover when Cover is enabled -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Size>182f,13me</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[Tango],spinny_or_cover</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
 
                   <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="state_0_text">      Cover on Spinny</SetVariable>
-                    <SetVariable name="state_1_text"> &#10004; Cover on Spinny</SetVariable>
+                    <SetVariable name="state_0_text">      Spinny with Cover</SetVariable>
+                    <SetVariable name="state_1_text"> &#10004; Spinny with Cover</SetVariable>
                     <SetVariable name="Setting">[Tango],spinnyWithCoverArt</SetVariable>
                   </Template>
                 </Children>
-              </WidgetGroup><!-- /Spinny/Cover Cover on Spinny-->
+              </WidgetGroup><!-- /Cover on Spinny-->
 
             </Children>
           </WidgetGroup><!-- /Spinny / Cover -->
 
           <Label><!-- Effects -->
             <ObjectName>CategoryLabel</ObjectName>
-            <Size>190f,19f</Size>
+            <Size>200f,21f</Size>
             <Text>Effects</Text>
           </Label>
-          <WidgetGroup><!-- 3 buttons, 1 commented out -->
+          <WidgetGroup><!-- 2 buttons (1 commented out) -->
             <ObjectName>SkinSettingsCategory</ObjectName>
-            <!-- <MinimumSize>182,59</MinimumSize>
-            <MaximumSize>-1,73</MaximumSize> -->
-            <MinimumSize>182,46</MinimumSize>
-            <MaximumSize>-1,58</MaximumSize>
+            <MinimumSize>200,34</MinimumSize>
+            <MaximumSize>200,44</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
-              <WidgetGroup>
+
+              <WidgetGroup><!-- Effect Units, 2 or 4 -->
                 <MinimumSize>182,13</MinimumSize>
-                <MaximumSize>-1,17</MaximumSize>
+                <MaximumSize>182,17</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <WidgetGroup><Size>14f,1min</Size></WidgetGroup>
                   <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="state_0_text"> [ 2 &#9664;  4 ]  Effect Units</SetVariable>
-                    <SetVariable name="state_1_text"> [ 2  &#9654; 4 ]  Effect Units</SetVariable>
-                    <SetVariable name="Setting">[Tango],2or4_FxUnits</SetVariable>
+                    <SetVariable name="state_0_text">      Effect Units</SetVariable>
+                    <SetVariable name="state_1_text"> &#10004; Effect Units</SetVariable>
+                    <SetVariable name="width">82</SetVariable>
+                    <SetVariable name="Setting">[EffectRack1],show</SetVariable>
+                  </Template>
+                  <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+                  <WidgetGroup><!-- 2 or 4 -->
+                    <MinimumSize>182,13</MinimumSize>
+                    <MaximumSize>182,17</MaximumSize>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Layout>stacked</Layout>
+                    <Children>
+                      <!-- index 0 due to bug -->
+                      <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                      <WidgetGroup><!-- translucent cover when Effects are invisble -->
+                        <ObjectName>SubmenuCover</ObjectName>
+                        <Layout>vertical</Layout>
+                        <Size>182f,13me</Size>
+                        <Connection>
+                          <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+                          <Transform><Not/></Transform>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
+
+                      <WidgetGroup>
+                        <MinimumSize>182,13</MinimumSize>
+                        <MaximumSize>182,17</MaximumSize>
+                        <SizePolicy>me,me</SizePolicy>
+                        <Layout>horizontal</Layout>
+                        <Children>
+                          <Template src="skin:skin_settings_button_multi.xml">
+                            <SetVariable name="state_x_text"> [ 2 ] </SetVariable>
+                            <SetVariable name="width">26</SetVariable>
+                            <SetVariable name="stateX">0</SetVariable>
+                            <SetVariable name="Setting">[Tango],4_FxUnits</SetVariable>
+                          </Template>
+                          <Template src="skin:skin_settings_button_multi.xml">
+                            <SetVariable name="state_x_text"> [ 4 ] </SetVariable>
+                            <SetVariable name="width">26</SetVariable>
+                            <SetVariable name="stateX">1</SetVariable>
+                            <SetVariable name="Setting">[Tango],4_FxUnits</SetVariable>
+                          </Template>
+                          <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
+                        </Children>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup><!-- /2 or 4 -->
+                </Children>
+              </WidgetGroup><!-- Effect Units, 2 or 4 -->
+
+              <WidgetGroup><!-- Super Knobs -->
+                <MinimumSize>182,13</MinimumSize>
+                <MaximumSize>182,17</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
+                <Layout>stacked</Layout>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover when Effects are invisble -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Size>182f,13me</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="state_0_text">      Super Knobs</SetVariable>
+                    <SetVariable name="state_1_text"> &#10004; Super Knobs</SetVariable>
+                    <SetVariable name="Setting">[Master],show_superknobs</SetVariable>
                   </Template>
                 </Children>
-              </WidgetGroup>
-
-
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="state_0_text">      Super Knobs</SetVariable>
-                <SetVariable name="state_1_text"> &#10004; Super Knobs</SetVariable>
-                <SetVariable name="Setting">[Tango],fx_super_knob</SetVariable>
-              </Template>
+              </WidgetGroup><!-- /Super Knobs -->
 
               <!-- Buttons in samplers were removed for now
               <Template src="skin:skin_settings_button_2state.xml">
@@ -668,24 +739,19 @@ Description:
                 <SetVariable name="Setting">[Tango],sampler_fx_buttons</SetVariable>
               </Template>
               -->
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="state_0_text">      Mic/AUX FX buttons</SetVariable>
-                <SetVariable name="state_1_text"> &#10004; Mic/AUX FX buttons</SetVariable>
-                <SetVariable name="Setting">[Tango],micaux_fx_buttons</SetVariable>
-              </Template>
 
             </Children>
           </WidgetGroup><!-- /Effects -->
 
           <Label><!-- Extras -->
             <ObjectName>CategoryLabel</ObjectName>
-            <Size>190f,19f</Size>
+            <Size>200f,21f</Size>
             <Text>Extras</Text>
           </Label>
           <WidgetGroup>
             <ObjectName>SkinSettingsCategory</ObjectName>
-            <MinimumSize>182,46</MinimumSize>
-            <MaximumSize>-1,58</MaximumSize>
+            <MinimumSize>200,45</MinimumSize>
+            <MaximumSize>200,67</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
@@ -696,26 +762,63 @@ Description:
                 <SetVariable name="Setting">[PreviewDeck],show_previewdeck</SetVariable>
               </Template>
 
-              <WidgetGroup>
+              <WidgetGroup><!-- Sampler rows -->
                 <MinimumSize>182,13</MinimumSize>
-                <MaximumSize>-1,17</MaximumSize>
+                <MaximumSize>182,17</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <WidgetGroup><Size>14f,1min</Size></WidgetGroup>
-                  <Template src="skin:skin_settings_sampler_rows.xml"/>
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="state_0_text">      Samplers</SetVariable>
+                    <SetVariable name="state_1_text"> &#10004; Samplers</SetVariable>
+                    <SetVariable name="width">70</SetVariable>
+                    <SetVariable name="Setting">[Samplers],show_samplers</SetVariable>
+                  </Template>
+                  <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- Sampler row buttons -->
+                    <Layout>stacked</Layout>
+                    <MinimumSize>112,13</MinimumSize>
+                    <MaximumSize>112,17</MaximumSize>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Children>
+                      <!-- index 0 due to bug -->
+                      <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                      <WidgetGroup><!-- translucent cover when Samlers are hidden -->
+                        <ObjectName>SubmenuCover</ObjectName>
+                        <Layout>vertical</Layout>
+                        <MinimumSize>112,13</MinimumSize>
+                        <MaximumSize>112,17</MaximumSize>
+                        <SizePolicy>me,me</SizePolicy>
+                        <Connection>
+                          <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+                          <Transform><Not/></Transform>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
+
+                      <!--Template src="skin:skin_settings_sampler_rows.xml"/-->
+
+                      <SingletonContainer>
+                        <ObjectName>SamplerRowsButton_Singleton</ObjectName>
+                      </SingletonContainer>
+
+                    </Children>
+                  </WidgetGroup><!-- /Sampler row buttons -->
                 </Children>
-              </WidgetGroup>
-          
+              </WidgetGroup><!-- /Sampler rows -->
+
               <WidgetGroup><!-- Load/Save Sampler Bank -->
                 <ObjectName>AlignLeft</ObjectName>
                 <Layout>horizontal</Layout>
-                <MinimumSize>50,13</MinimumSize>
-                <MaximumSize>-1,17</MaximumSize>
-                <SizePolicy>me,max</SizePolicy>
+                <MinimumSize>182,13</MinimumSize>
+                <MaximumSize>182,17</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
                 <Children>
                   <WidgetGroup><Size>14f,13me</Size></WidgetGroup>
                   <Template src="skin:button_1state.xml">
+                    <SetVariable name="TooltipId">LoadSamplerBank</SetVariable>
                     <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
                     <SetVariable name="Size">31f,17f</SetVariable>
                     <SetVariable name="state_0_text"> Load /</SetVariable>
@@ -726,6 +829,7 @@ Description:
                     <Text> / </Text>
                   </Label>
                   <Template src="skin:button_1state.xml">
+                    <SetVariable name="TooltipId">SaveSamplerBank</SetVariable>
                     <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
                     <SetVariable name="Size">110me,17f</SetVariable>
                     <SetVariable name="state_0_text"> Save Sampler Bank</SetVariable>

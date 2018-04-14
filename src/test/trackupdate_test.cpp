@@ -136,9 +136,9 @@ TEST_F(TrackUpdateTest, parseModifiedDirtyAgain) {
     pTrack->getTrackMetadata(&trackMetadataAfter);
     auto coverInfoAfter = pTrack->getCoverInfo();
 
-    // Not updated
+    // Updated
     EXPECT_TRUE(pTrack->isMetadataSynchronized());
     EXPECT_TRUE(pTrack->isDirty());
-    EXPECT_EQ(trackMetadataBefore, trackMetadataAfter);
+    EXPECT_NE(trackMetadataBefore, trackMetadataAfter);
     EXPECT_EQ(coverInfoBefore, coverInfoAfter);
 }

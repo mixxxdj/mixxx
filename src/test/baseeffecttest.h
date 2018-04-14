@@ -34,14 +34,21 @@ class MockEffectProcessor : public EffectProcessor {
   public:
     MockEffectProcessor() {}
 
-    MOCK_METHOD7(process, void(const ChannelHandle& group, const CSAMPLE* pInput,
+    MOCK_METHOD3(initialize, void(const QSet<ChannelHandleAndGroup>& activeInputChannels,
+                                  EffectsManager* pEffectsManager,
+                                  const mixxx::EngineParameters& bufferParameters));
+    MOCK_METHOD1(createState, EffectState*(const mixxx::EngineParameters& bufferParameters));
+    MOCK_METHOD2(loadStatesForInputChannel, bool(const ChannelHandle* inputChannel,
+          const EffectStatesMap* pStatesMap));
+    MOCK_METHOD1(deleteStatesForInputChannel, void(const ChannelHandle* inputChannel));
+    MOCK_METHOD7(process, void(const ChannelHandle& inputHandle,
+                               const ChannelHandle& outputHandle,
+                               const CSAMPLE* pInput,
                                CSAMPLE* pOutput,
-                               const unsigned int numSamples,
-                               const unsigned int sampleRate,
-                               const EffectProcessor::EnableState enableState,
+                               const mixxx::EngineParameters& bufferParameters,
+                               const EffectEnableState enableState,
                                const GroupFeatureState& groupFeatures));
 
-    MOCK_METHOD1(initialize, void(const QSet<ChannelHandleAndGroup>& registeredChannels));
 };
 
 class MockEffectInstantiator : public EffectInstantiator {
@@ -54,8 +61,10 @@ class MockEffectInstantiator : public EffectInstantiator {
 
 class BaseEffectTest : public MixxxTest {
   protected:
-    BaseEffectTest() : m_pTestBackend(NULL),
-                       m_pEffectsManager(new EffectsManager(NULL, config())) {
+    BaseEffectTest() : m_pChannelHandleFactory(new ChannelHandleFactory()),
+                       m_pTestBackend(nullptr),
+                       m_pEffectsManager(new EffectsManager(nullptr, config(),
+                                                            m_pChannelHandleFactory)) {
     }
 
     void registerTestBackend() {
@@ -64,6 +73,8 @@ class BaseEffectTest : public MixxxTest {
     }
 
     void registerTestEffect(const EffectManifest& manifest, bool willAddToEngine);
+
+    ChannelHandleFactory* m_pChannelHandleFactory;
 
     // Deleted by EffectsManager. Do not delete.
     TestEffectBackend* m_pTestBackend;

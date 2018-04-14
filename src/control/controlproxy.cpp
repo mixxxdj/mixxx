@@ -23,11 +23,11 @@ ControlProxy::ControlProxy(const ConfigKey& key, QObject* pParent)
     initialize(key);
 }
 
-void ControlProxy::initialize(const ConfigKey& key) {
+void ControlProxy::initialize(const ConfigKey& key, bool warn) {
     m_key = key;
     // Don't bother looking up the control if key is NULL. Prevents log spew.
     if (!key.isNull()) {
-        m_pControl = ControlDoublePrivate::getControl(key);
+        m_pControl = ControlDoublePrivate::getControl(key, warn);
     }
 }
 

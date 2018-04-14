@@ -21,7 +21,7 @@ Variables:
 
       <!-- Greyed out if no headphone device is configured -->
       <WidgetGroup>
-        <ObjectName>MixerbarCover</ObjectName>
+        <ObjectName>GuiCover</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Connection>
@@ -54,6 +54,9 @@ Variables:
                   </Text>
                 </Children>
               </WidgetGroup>
+
+              <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
+
               <Template src="skin:button_1state.xml">
                 <SetVariable name="TooltipId">eject</SetVariable>
                 <SetVariable name="ObjectName">PreviewEject</SetVariable>
@@ -78,6 +81,8 @@ Variables:
                   <Template src="skin:button_2state_right_display.xml">
                     <SetVariable name="ObjectName">PlayCue</SetVariable>
                     <SetVariable name="Size">24f,34f</SetVariable>
+                    <SetVariable name="state_0_icon">play_previewdeck.svg</SetVariable>
+                    <SetVariable name="state_1_icon">pause_previewdeck.svg</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
                     <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
@@ -96,7 +101,7 @@ Variables:
                 <TooltipId>waveform_overview</TooltipId>
                 <Size>1me,34f</Size>
                 <Group><Variable name="group"/></Group>
-                <BgColor>#1a1a1a</BgColor>
+                <BgColor>#151515</BgColor>
                 <SignalColor>#bababa</SignalColor>
                 <PlayPosColor>#FF4300</PlayPosColor>
                 <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
@@ -109,7 +114,7 @@ Variables:
                 </DefaultMark>
                 <Mark>
                   <Control>cue_point</Control>
-                  <Text>C</Text>
+                  <Text>Q</Text>
                   <Align>top|right</Align>
                   <Color>#FF0080</Color>
                   <TextColor>#FFFFFF</TextColor>
@@ -119,17 +124,19 @@ Variables:
                 </Connection>
               </Overview>
 
-              <!-- Wrapping in WidgetGroup enables padding -->
+              <Template src="skin:vumeter_mini.xml">
+                <SetVariable name="Size">5f,1me</SetVariable>
+              </Template>
+
               <Template src="skin:knob_textless.xml">
                 <SetVariable name="ObjectName">PreviewGainKnob</SetVariable>
                 <SetVariable name="Size">22f,22f</SetVariable>
                 <SetVariable name="ConfigKey">pregain</SetVariable>
                 <SetVariable name="Color">tiny_red</SetVariable>
               </Template>
+
             </Children>
           </WidgetGroup><!-- /Play-Overview-Gain -->
-
-          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>0me,1f</Size></WidgetGroup>
 
           <Template src="skin:hotcues_sampler_preview.xml"/>
 
