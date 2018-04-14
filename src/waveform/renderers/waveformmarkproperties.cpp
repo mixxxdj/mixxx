@@ -3,6 +3,7 @@
 #include "widget/wskincolor.h"
 
 #include "waveform/renderers/waveformmarkproperties.h"
+#include "waveform/renderers/waveformmark.h"
 
 Qt::Alignment decodeAlignmentFlags(QString alignString, Qt::Alignment defaultFlags) {
     QStringList stringFlags = alignString.toLower()
@@ -64,7 +65,11 @@ WaveformMarkProperties::WaveformMarkProperties(const QDomNode& node,
     QString markAlign = context.selectString(node, "Align");
     m_align = decodeAlignmentFlags(markAlign, Qt::AlignBottom | Qt::AlignHCenter);
 
-    m_text = context.selectString(node, "Text").arg(hotCue + 1);
+    if (WaveformMark::kNoHotCue != hotCue) {
+        m_text = context.selectString(node, "Text").arg(hotCue + 1);
+    } else {
+        m_text = context.selectString(node, "Text");
+    }
     m_pixmapPath = context.selectString(node, "Pixmap");
     if (!m_pixmapPath.isEmpty()) {
         m_pixmapPath = context.makeSkinPath(m_pixmapPath);

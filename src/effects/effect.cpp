@@ -210,3 +210,7 @@ EffectPointer Effect::createFromXml(EffectsManager* pEffectsManager,
     EffectPointer pEffect = pEffectsManager->instantiateEffect(effectId);
     return pEffect;
 }
+
+double Effect::getMetaknobDefault() {
+    return m_manifest.metaknobDefault();
+}

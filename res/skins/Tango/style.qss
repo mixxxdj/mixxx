@@ -1525,8 +1525,6 @@ decks, samplers, mic, aux, fx */
       border: 1px solid #333;
       border-radius: 2px;
       margin: 0px;
-      /* Move list to the left to hide tick mark and prevent cut-off text. */
-      padding: 0px 0px 0px -20px;
     }
     /* items */
     WEffectSelector::item:!selected {
@@ -1565,6 +1563,18 @@ decks, samplers, mic, aux, fx */
       image: url(skin:/buttons/btn_fx_selector_tick.svg) no-repeat center center; */
       background: #0081B7;
     }
+
+#FxParametersLeft {
+  qproperty-layoutAlignment: 'AlignRight';
+}
+
+#FxParametersRight {
+  qproperty-layoutAlignment: 'AlignLeft';
+}
+
+#FxParameterKnob {
+  padding-right: 1px;
+}
 
 #FxParameterKnob {
   qproperty-layoutAlignment: 'AlignCenter';
@@ -1614,6 +1624,7 @@ decks, samplers, mic, aux, fx */
   /* those buttons are only 5px tall, that's why they won't accept
   3px radius which is set for all WPushButtons */
   border-radius: 2px;
+  margin-right: 1px;
 }
 
 #FxSuperLinkButton[value="0"],
