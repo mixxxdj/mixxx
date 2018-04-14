@@ -39,6 +39,7 @@ class MetaLinkTest : public BaseEffectTest {
         EffectManifest manifest;
         manifest.setId("org.mixxx.test.effect");
         manifest.setName("Test Effect");
+        manifest.setMetaknobDefault(0.0);
 
         EffectManifestParameter* low = manifest.addParameter();
         low->setId("low");

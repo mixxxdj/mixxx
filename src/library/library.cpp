@@ -133,7 +133,8 @@ Library::Library(
     }
 
     m_editMetadataSelectedClick = m_pConfig->getValue(
-            ConfigKey(kConfigGroup, "EditMetadataSelectedClick"), true);
+            ConfigKey(kConfigGroup, "EditMetadataSelectedClick"),
+            PREF_LIBRARY_EDIT_METADATA_DEFAULT);
 }
 
 Library::~Library() {
