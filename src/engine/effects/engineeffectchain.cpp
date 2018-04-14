@@ -243,8 +243,13 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
     ChannelStatus& channelStatus = m_chainStatusForChannelMatrix[inputHandle][outputHandle];
     EffectEnableState effectiveChainEnableState = channelStatus.enable_state;
 
-    if (m_enableState != EffectEnableState::Enabled) {
-        effectiveChainEnableState = m_enableState;
+    // If the channel is fully disabled, do not let intermediate
+    // enabling/disabing signals from the chain's enable switch override
+    // the channel's state.
+    if (effectiveChainEnableState != EffectEnableState::Disabled) {
+        if (m_enableState != EffectEnableState::Enabled) {
+            effectiveChainEnableState = m_enableState;
+        }
     }
 
     CSAMPLE currentWetGain = m_dMix;
