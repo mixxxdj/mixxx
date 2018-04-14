@@ -338,6 +338,15 @@
                 </options>
             </control>
             <control>
+                <group></group>
+                <key>DenonMC6000MK2.rightSide.efxUnit.recvTapButton</key>
+                <status>0x80</status>
+                <midino>0x47</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
                 <key>DenonMC6000MK2.recvJogSpinVinyl</key>
                 <status>0xB0</status>
@@ -420,16 +429,7 @@
             </control>
             <control>
                 <group></group>
-                <key>DenonMC6000MK2.newRightSide.efxUnit.recvTabButton</key>
-                <status>0x80</status>
-                <midino>0x47</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group></group>
-                <key>DenonMC6000MK2.newRightSide.efxUnit.recvTabButton</key>
+                <key>DenonMC6000MK2.rightSide.efxUnit.recvTapButton</key>
                 <status>0x90</status>
                 <midino>0x47</midino>
                 <options>
@@ -527,6 +527,15 @@
                 </options>
             </control>
             <control>
+                <group></group>
+                <key>DenonMC6000MK2.newRightSide.effectUnit.effectFocusButton.input</key>
+                <status>0x80</status>
+                <midino>0x41</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel4]</group>
                 <key>DenonMC6000MK2.rightSide.recvDeckButton</key>
                 <status>0x93</status>
@@ -585,15 +594,6 @@
                 <key>DenonMC6000MK2.rightSide.recvDeckButton</key>
                 <status>0x92</status>
                 <midino>0x08</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group></group>
-                <key>DenonMC6000MK2.newRightSide.effectUnit.effectFocusButton.input</key>
-                <status>0x80</status>
-                <midino>0x41</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1706,6 +1706,15 @@
                 </options>
             </control>
             <control>
+                <group></group>
+                <key>DenonMC6000MK2.leftSide.efxUnit.recvTapButton</key>
+                <status>0x80</status>
+                <midino>0x46</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel4]</group>
                 <key>volume</key>
                 <status>0xB0</status>
@@ -1752,16 +1761,7 @@
             </control>
             <control>
                 <group></group>
-                <key>DenonMC6000MK2.newLeftSide.efxUnit.recvTabButton</key>
-                <status>0x80</status>
-                <midino>0x46</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group></group>
-                <key>DenonMC6000MK2.newLeftSide.efxUnit.recvTabButton</key>
+                <key>DenonMC6000MK2.leftSide.efxUnit.recvTapButton</key>
                 <status>0x90</status>
                 <midino>0x46</midino>
                 <options>
@@ -1823,6 +1823,15 @@
                 </options>
             </control>
             <control>
+                <group></group>
+                <key>DenonMC6000MK2.newLeftSide.effectUnit.effectFocusButton.input</key>
+                <status>0x80</status>
+                <midino>0x40</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel3]</group>
                 <key>DenonMC6000MK2.leftSide.recvDeckButton</key>
                 <status>0x91</status>
@@ -1881,15 +1890,6 @@
                 <key>DenonMC6000MK2.recvCueMixButton</key>
                 <status>0x90</status>
                 <midino>0x07</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group></group>
-                <key>DenonMC6000MK2.newLeftSide.effectUnit.effectFocusButton.input</key>
-                <status>0x80</status>
-                <midino>0x40</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -2499,33 +2499,9 @@
                 <group>[Channel3]</group>
                 <key>VuMeter</key>
                 <status>0xB1</status>
-                <midino>0x58</midino>
+                <midino>0x53</midino>
                 <on>0x01</on>
-                <minimum>0.92</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>VuMeter</key>
-                <status>0xB1</status>
-                <midino>0x57</midino>
-                <on>0x01</on>
-                <minimum>0.85</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>VuMeter</key>
-                <status>0xB1</status>
-                <midino>0x56</midino>
-                <on>0x01</on>
-                <minimum>0.75</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>VuMeter</key>
-                <status>0xB1</status>
-                <midino>0x55</midino>
-                <on>0x01</on>
-                <minimum>0.6</minimum>
+                <minimum>0.2</minimum>
             </output>
             <output>
                 <group>[Channel3]</group>
@@ -2539,14 +2515,30 @@
                 <group>[Channel3]</group>
                 <key>VuMeter</key>
                 <status>0xB1</status>
-                <midino>0x53</midino>
+                <midino>0x55</midino>
                 <on>0x01</on>
-                <minimum>0.2</minimum>
+                <minimum>0.6</minimum>
             </output>
             <output>
-                <group>[Channel1]</group>
+                <group>[Channel3]</group>
                 <key>VuMeter</key>
-                <status>0xB0</status>
+                <status>0xB1</status>
+                <midino>0x56</midino>
+                <on>0x01</on>
+                <minimum>0.75</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>VuMeter</key>
+                <status>0xB1</status>
+                <midino>0x57</midino>
+                <on>0x01</on>
+                <minimum>0.85</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>VuMeter</key>
+                <status>0xB1</status>
                 <midino>0x58</midino>
                 <on>0x01</on>
                 <minimum>0.92</minimum>
@@ -2555,25 +2547,9 @@
                 <group>[Channel1]</group>
                 <key>VuMeter</key>
                 <status>0xB0</status>
-                <midino>0x57</midino>
+                <midino>0x53</midino>
                 <on>0x01</on>
-                <minimum>0.85</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>VuMeter</key>
-                <status>0xB0</status>
-                <midino>0x56</midino>
-                <on>0x01</on>
-                <minimum>0.75</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>VuMeter</key>
-                <status>0xB0</status>
-                <midino>0x55</midino>
-                <on>0x01</on>
-                <minimum>0.6</minimum>
+                <minimum>0.2</minimum>
             </output>
             <output>
                 <group>[Channel1]</group>
@@ -2587,9 +2563,33 @@
                 <group>[Channel1]</group>
                 <key>VuMeter</key>
                 <status>0xB0</status>
-                <midino>0x53</midino>
+                <midino>0x55</midino>
                 <on>0x01</on>
-                <minimum>0.2</minimum>
+                <minimum>0.6</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>VuMeter</key>
+                <status>0xB0</status>
+                <midino>0x56</midino>
+                <on>0x01</on>
+                <minimum>0.75</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>VuMeter</key>
+                <status>0xB0</status>
+                <midino>0x57</midino>
+                <on>0x01</on>
+                <minimum>0.85</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>VuMeter</key>
+                <status>0xB0</status>
+                <midino>0x58</midino>
+                <on>0x01</on>
+                <minimum>0.92</minimum>
             </output>
             <output>
                 <group>[Channel1]</group>
@@ -2603,33 +2603,9 @@
                 <group>[Channel4]</group>
                 <key>VuMeter</key>
                 <status>0xB3</status>
-                <midino>0x58</midino>
+                <midino>0x53</midino>
                 <on>0x01</on>
-                <minimum>0.92</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>VuMeter</key>
-                <status>0xB3</status>
-                <midino>0x57</midino>
-                <on>0x01</on>
-                <minimum>0.85</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>VuMeter</key>
-                <status>0xB3</status>
-                <midino>0x56</midino>
-                <on>0x01</on>
-                <minimum>0.75</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>VuMeter</key>
-                <status>0xB3</status>
-                <midino>0x55</midino>
-                <on>0x01</on>
-                <minimum>0.6</minimum>
+                <minimum>0.2</minimum>
             </output>
             <output>
                 <group>[Channel4]</group>
@@ -2643,9 +2619,33 @@
                 <group>[Channel4]</group>
                 <key>VuMeter</key>
                 <status>0xB3</status>
-                <midino>0x53</midino>
+                <midino>0x55</midino>
                 <on>0x01</on>
-                <minimum>0.2</minimum>
+                <minimum>0.6</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>VuMeter</key>
+                <status>0xB3</status>
+                <midino>0x56</midino>
+                <on>0x01</on>
+                <minimum>0.75</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>VuMeter</key>
+                <status>0xB3</status>
+                <midino>0x57</midino>
+                <on>0x01</on>
+                <minimum>0.85</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>VuMeter</key>
+                <status>0xB3</status>
+                <midino>0x58</midino>
+                <on>0x01</on>
+                <minimum>0.92</minimum>
             </output>
             <output>
                 <group>[Channel3]</group>
@@ -2659,33 +2659,9 @@
                 <group>[Channel2]</group>
                 <key>VuMeter</key>
                 <status>0xB2</status>
-                <midino>0x58</midino>
+                <midino>0x53</midino>
                 <on>0x01</on>
-                <minimum>0.92</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>VuMeter</key>
-                <status>0xB2</status>
-                <midino>0x57</midino>
-                <on>0x01</on>
-                <minimum>0.85</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>VuMeter</key>
-                <status>0xB2</status>
-                <midino>0x56</midino>
-                <on>0x01</on>
-                <minimum>0.75</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>VuMeter</key>
-                <status>0xB2</status>
-                <midino>0x55</midino>
-                <on>0x01</on>
-                <minimum>0.6</minimum>
+                <minimum>0.2</minimum>
             </output>
             <output>
                 <group>[Channel2]</group>
@@ -2699,9 +2675,33 @@
                 <group>[Channel2]</group>
                 <key>VuMeter</key>
                 <status>0xB2</status>
-                <midino>0x53</midino>
+                <midino>0x55</midino>
                 <on>0x01</on>
-                <minimum>0.2</minimum>
+                <minimum>0.6</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>VuMeter</key>
+                <status>0xB2</status>
+                <midino>0x56</midino>
+                <on>0x01</on>
+                <minimum>0.75</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>VuMeter</key>
+                <status>0xB2</status>
+                <midino>0x57</midino>
+                <on>0x01</on>
+                <minimum>0.85</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>VuMeter</key>
+                <status>0xB2</status>
+                <midino>0x58</midino>
+                <on>0x01</on>
+                <minimum>0.92</minimum>
             </output>
             <output>
                 <group>[Channel2]</group>
