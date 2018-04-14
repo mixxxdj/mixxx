@@ -16,7 +16,7 @@
       <!-- nav encoder -->
       <control>
         <group>[Library]</group>
-        <key>NumarkN4.Mixer.navigationEncoderTick</key>
+        <key>NumarkN4.Mixer.navigationEncoderTick.input</key>
         <status>0xB0</status>
         <midino>0x44</midino>
         <options>
@@ -25,7 +25,16 @@
       </control>
       <control>
         <group>[Library]</group>
-        <key>NumarkN4.Mixer.navigationEncoderButton</key>
+        <key>NumarkN4.Mixer.navigationEncoderButton.input</key>
+        <status>0x80</status>
+        <midino>0x08</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>NumarkN4.Mixer.navigationEncoderButton.input</key>
         <status>0x90</status>
         <midino>0x08</midino>
         <options>
@@ -35,7 +44,7 @@
       <!-- Crossfader side Assignment -->
       <control>
         <group>[Channel1]</group>
-        <key>NumarkN4.Deck1.orientationButtonLeft.input</key>
+        <key>NumarkN4.Decks[1].orientationButtonLeft.input</key>
         <status>0x90</status>
         <midino>0x35</midino>
         <options>
@@ -44,7 +53,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>NumarkN4.Deck1.orientationButtonRight.input</key>
+        <key>NumarkN4.Decks[1].orientationButtonRight.input</key>
         <status>0x90</status>
         <midino>0x36</midino>
         <options>
@@ -53,7 +62,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkN4.Deck2.orientationButtonLeft.input</key>
+        <key>NumarkN4.Decks[2].orientationButtonLeft.input</key>
         <status>0x90</status>
         <midino>0x37</midino>
         <options>
@@ -62,7 +71,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkN4.Deck2.orientationButtonRight.input</key>
+        <key>NumarkN4.Decks[2].orientationButtonRight.input</key>
         <status>0x90</status>
         <midino>0x38</midino>
         <options>
@@ -71,7 +80,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>NumarkN4.Deck3.orientationButtonLeft.input</key>
+        <key>NumarkN4.Decks[3].orientationButtonLeft.input</key>
         <status>0x90</status>
         <midino>0x39</midino>
         <options>
@@ -80,7 +89,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>NumarkN4.Deck3.orientationButtonRight.input</key>
+        <key>NumarkN4.Decks[3].orientationButtonRight.input</key>
         <status>0x90</status>
         <midino>0x3A</midino>
         <options>
@@ -89,7 +98,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>NumarkN4.Deck4.orientationButtonLeft.input</key>
+        <key>NumarkN4.Decks[4].orientationButtonLeft.input</key>
         <status>0x90</status>
         <midino>0x3B</midino>
         <options>
@@ -98,7 +107,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>NumarkN4.Deck4.orientationButtonRight.input</key>
+        <key>NumarkN4.Decks[4].orientationButtonRight.input</key>
         <status>0x90</status>
         <midino>0x3C</midino>
         <options>
@@ -107,7 +116,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>NumarkN4.Deck1.orientationButtonLeft.input</key>
+        <key>NumarkN4.Decks[1].orientationButtonLeft.input</key>
         <status>0x80</status>
         <midino>0x35</midino>
         <options>
@@ -116,7 +125,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>NumarkN4.Deck1.orientationButtonRight.input</key>
+        <key>NumarkN4.Decks[1].orientationButtonRight.input</key>
         <status>0x80</status>
         <midino>0x36</midino>
         <options>
@@ -125,7 +134,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkN4.Deck2.orientationButtonLeft.input</key>
+        <key>NumarkN4.Decks[2].orientationButtonLeft.input</key>
         <status>0x80</status>
         <midino>0x37</midino>
         <options>
@@ -134,7 +143,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkN4.Deck2.orientationButtonRight.input</key>
+        <key>NumarkN4.Decks[2].orientationButtonRight.input</key>
         <status>0x80</status>
         <midino>0x38</midino>
         <options>
@@ -143,7 +152,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>NumarkN4.Deck3.orientationButtonLeft.input</key>
+        <key>NumarkN4.Decks[3].orientationButtonLeft.input</key>
         <status>0x80</status>
         <midino>0x39</midino>
         <options>
@@ -152,7 +161,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>NumarkN4.Deck3.orientationButtonRight.input</key>
+        <key>NumarkN4.Decks[3].orientationButtonRight.input</key>
         <status>0x80</status>
         <midino>0x3A</midino>
         <options>
@@ -161,7 +170,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>NumarkN4.Deck4.orientationButtonLeft.input</key>
+        <key>NumarkN4.Decks[4].orientationButtonLeft.input</key>
         <status>0x80</status>
         <midino>0x3B</midino>
         <options>
@@ -170,9 +179,443 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>NumarkN4.Deck4.orientationButtonRight.input</key>
+        <key>NumarkN4.Decks[4].orientationButtonRight.input</key>
         <status>0x80</status>
         <midino>0x3C</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkN4.Decks[1].TopContainer.btnEffect1.input</key>
+        <status>0x91</status>
+        <midino>0x13</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkN4.Decks[2].TopContainer.btnEffect1.input</key>
+        <status>0x92</status>
+        <midino>0x13</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkN4.Decks[3].TopContainer.btnEffect1.input</key>
+        <status>0x93</status>
+        <midino>0x13</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkN4.Decks[4].TopContainer.btnEffect1.input</key>
+        <status>0x94</status>
+        <midino>0x13</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkN4.Decks[1].TopContainer.btnEffect2.input</key>
+        <status>0x91</status>
+        <midino>0x14</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkN4.Decks[2].TopContainer.btnEffect2.input</key>
+        <status>0x92</status>
+        <midino>0x14</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkN4.Decks[3].TopContainer.btnEffect2.input</key>
+        <status>0x93</status>
+        <midino>0x14</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkN4.Decks[4].TopContainer.btnEffect2.input</key>
+        <status>0x94</status>
+        <midino>0x14</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkN4.Decks[1].TopContainer.btnSample3.input</key>
+        <status>0x91</status>
+        <midino>0x15</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkN4.Decks[2].TopContainer.btnSample3.input</key>
+        <status>0x92</status>
+        <midino>0x15</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkN4.Decks[3].TopContainer.btnSample3.input</key>
+        <status>0x93</status>
+        <midino>0x15</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkN4.Decks[4].TopContainer.btnSample3.input</key>
+        <status>0x94</status>
+        <midino>0x15</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkN4.Decks[1].TopContainer.btnSample4.input</key>
+        <status>0x91</status>
+        <midino>0x16</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkN4.Decks[2].TopContainer.btnSample4.input</key>
+        <status>0x92</status>
+        <midino>0x16</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkN4.Decks[3].TopContainer.btnSample4.input</key>
+        <status>0x93</status>
+        <midino>0x16</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkN4.Decks[4].TopContainer.btnSample4.input</key>
+        <status>0x94</status>
+        <midino>0x16</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkN4.Decks[1].TopContainer.btnEffect1.input</key>
+        <status>0x91</status>
+        <midino>0x13</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkN4.Decks[2].TopContainer.btnEffect1.input</key>
+        <status>0x82</status>
+        <midino>0x13</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkN4.Decks[3].TopContainer.btnEffect1.input</key>
+        <status>0x83</status>
+        <midino>0x13</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkN4.Decks[4].TopContainer.btnEffect1.input</key>
+        <status>0x84</status>
+        <midino>0x13</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkN4.Decks[1].TopContainer.btnEffect2.input</key>
+        <status>0x81</status>
+        <midino>0x14</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkN4.Decks[2].TopContainer.btnEffect2.input</key>
+        <status>0x82</status>
+        <midino>0x14</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkN4.Decks[3].TopContainer.btnEffect2.input</key>
+        <status>0x83</status>
+        <midino>0x14</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkN4.Decks[4].TopContainer.btnEffect2.input</key>
+        <status>0x84</status>
+        <midino>0x14</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkN4.Decks[1].TopContainer.btnSample3.input</key>
+        <status>0x81</status>
+        <midino>0x15</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkN4.Decks[2].TopContainer.btnSample3.input</key>
+        <status>0x82</status>
+        <midino>0x15</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkN4.Decks[3].TopContainer.btnSample3.input</key>
+        <status>0x83</status>
+        <midino>0x15</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkN4.Decks[4].TopContainer.btnSample3.input</key>
+        <status>0x84</status>
+        <midino>0x15</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkN4.Decks[1].TopContainer.btnSample4.input</key>
+        <status>0x81</status>
+        <midino>0x16</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkN4.Decks[2].TopContainer.btnSample4.input</key>
+        <status>0x82</status>
+        <midino>0x16</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkN4.Decks[3].TopContainer.btnSample4.input</key>
+        <status>0x83</status>
+        <midino>0x16</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkN4.Decks[4].TopContainer.btnSample4.input</key>
+        <status>0x84</status>
+        <midino>0x16</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+
+
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkN4.Decks[1].TopContainer.hotcueButtons[0].input</key>
+        <status>0x91</status>
+        <midino>0x27</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkN4.Decks[2].TopContainer.hotcueButtons[0].input</key>
+        <status>0x92</status>
+        <midino>0x27</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkN4.Decks[3].TopContainer.hotcueButtons[0].input</key>
+        <status>0x93</status>
+        <midino>0x27</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkN4.Decks[4].TopContainer.hotcueButtons[0].input</key>
+        <status>0x94</status>
+        <midino>0x27</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkN4.Decks[1].TopContainer.hotcueButtons[1].input</key>
+        <status>0x91</status>
+        <midino>0x28</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkN4.Decks[2].TopContainer.hotcueButtons[1].input</key>
+        <status>0x92</status>
+        <midino>0x28</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkN4.Decks[3].TopContainer.hotcueButtons[1].input</key>
+        <status>0x93</status>
+        <midino>0x28</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkN4.Decks[4].TopContainer.hotcueButtons[1].input</key>
+        <status>0x94</status>
+        <midino>0x28</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkN4.Decks[1].TopContainer.hotcueButtons[2].input</key>
+        <status>0x91</status>
+        <midino>0x29</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkN4.Decks[2].TopContainer.hotcueButtons[2].input</key>
+        <status>0x92</status>
+        <midino>0x29</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkN4.Decks[3].TopContainer.hotcueButtons[2].input</key>
+        <status>0x93</status>
+        <midino>0x29</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkN4.Decks[4].TopContainer.hotcueButtons[2].input</key>
+        <status>0x94</status>
+        <midino>0x29</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkN4.Decks[1].TopContainer.hotcueButtons[3].input</key>
+        <status>0x91</status>
+        <midino>0x2A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkN4.Decks[2].TopContainer.hotcueButtons[3].input</key>
+        <status>0x92</status>
+        <midino>0x2A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkN4.Decks[3].TopContainer.hotcueButtons[3].input</key>
+        <status>0x93</status>
+        <midino>0x2A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkN4.Decks[4].TopContainer.hotcueButtons[3].input</key>
+        <status>0x94</status>
+        <midino>0x2A</midino>
         <options>
           <script-binding />
         </options>
@@ -180,7 +623,153 @@
 
       <control>
         <group>[Channel1]</group>
-        <key>NumarkN4.Deck1.loadButton.input</key>
+        <key>NumarkN4.Decks[1].TopContainer.encFxParam1.input</key>
+        <status>0xB1</status>
+        <midino>0x57</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkN4.Decks[2].TopContainer.encFxParam1.input</key>
+        <status>0xB2</status>
+        <midino>0x57</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkN4.Decks[3].TopContainer.encFxParam1.input</key>
+        <status>0xB3</status>
+        <midino>0x57</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkN4.Decks[4].TopContainer.encFxParam1.input</key>
+        <status>0xB4</status>
+        <midino>0x57</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkN4.Decks[1].TopContainer.encFxParam2.input</key>
+        <status>0xB1</status>
+        <midino>0x58</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkN4.Decks[2].TopContainer.encFxParam2.input</key>
+        <status>0xB2</status>
+        <midino>0x58</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkN4.Decks[3].TopContainer.encFxParam2.input</key>
+        <status>0xB3</status>
+        <midino>0x58</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkN4.Decks[4].TopContainer.encFxParam2.input</key>
+        <status>0xB4</status>
+        <midino>0x58</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkN4.Decks[1].TopContainer.encSample3.input</key>
+        <status>0xB1</status>
+        <midino>0x59</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkN4.Decks[2].TopContainer.encSample3.input</key>
+        <status>0xB2</status>
+        <midino>0x59</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkN4.Decks[3].TopContainer.encSample3.input</key>
+        <status>0xB3</status>
+        <midino>0x59</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkN4.Decks[4].TopContainer.encSample4.input</key>
+        <status>0xB4</status>
+        <midino>0x5A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkN4.Decks[1].TopContainer.encFxPara42.input</key>
+        <status>0xB1</status>
+        <midino>0x5A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkN4.Decks[2].TopContainer.encFxPara42.input</key>
+        <status>0xB2</status>
+        <midino>0x5A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkN4.Decks[3].TopContainer.encFxPara42.input</key>
+        <status>0xB3</status>
+        <midino>0x5A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkN4.Decks[4].TopContainer.encFxParam2.input</key>
+        <status>0xB4</status>
+        <midino>0x58</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkN4.Decks[1].loadButton.input</key>
         <status>0x91</status>
         <midino>0x06</midino>
         <options>
@@ -189,7 +778,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkN4.Deck2.loadButton.input</key>
+        <key>NumarkN4.Decks[2].loadButton.input</key>
         <status>0x92</status>
         <midino>0x06</midino>
         <options>
@@ -198,7 +787,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>NumarkN4.Deck3.loadButton.input</key>
+        <key>NumarkN4.Decks[3].loadButton.input</key>
         <status>0x93</status>
         <midino>0x06</midino>
         <options>
@@ -207,7 +796,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>NumarkN4.Deck4.loadButton.input</key>
+        <key>NumarkN4.Decks[4].loadButton.input</key>
         <status>0x94</status>
         <midino>0x06</midino>
         <options>
@@ -216,7 +805,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>NumarkN4.Deck1.pflButton.input</key>
+        <key>NumarkN4.Decks[1].pflButton.input</key>
         <status>0x90</status>
         <midino>0x31</midino>
         <options>
@@ -225,7 +814,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkN4.Deck2.pflButton.input</key>
+        <key>NumarkN4.Decks[2].pflButton.input</key>
         <status>0x90</status>
         <midino>0x32</midino>
         <options>
@@ -234,7 +823,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>NumarkN4.Deck3.pflButton.input</key>
+        <key>NumarkN4.Decks[3].pflButton.input</key>
         <status>0x90</status>
         <midino>0x33</midino>
         <options>
@@ -243,7 +832,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>NumarkN4.Deck4.pflButton.input</key>
+        <key>NumarkN4.Decks[4].pflButton.input</key>
         <status>0x90</status>
         <midino>0x34</midino>
         <options>
@@ -252,7 +841,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>NumarkN4.Deck1.pflButton.input</key>
+        <key>NumarkN4.Decks[1].pflButton.input</key>
         <status>0x80</status>
         <midino>0x31</midino>
         <options>
@@ -261,7 +850,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkN4.Deck2.pflButton.input</key>
+        <key>NumarkN4.Decks[2].pflButton.input</key>
         <status>0x80</status>
         <midino>0x32</midino>
         <options>
@@ -270,7 +859,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>NumarkN4.Deck3.pflButton.input</key>
+        <key>NumarkN4.Decks[3].pflButton.input</key>
         <status>0x80</status>
         <midino>0x33</midino>
         <options>
@@ -279,7 +868,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>NumarkN4.Deck4.pflButton.input</key>
+        <key>NumarkN4.Decks[4].pflButton.input</key>
         <status>0x80</status>
         <midino>0x34</midino>
         <options>
@@ -288,7 +877,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>NumarkN4.Deck1.cueButton.input</key>
+        <key>NumarkN4.Decks[1].cueButton.input</key>
         <status>0x91</status>
         <midino>0x10</midino>
         <options>
@@ -297,7 +886,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkN4.Deck2.cueButton.input</key>
+        <key>NumarkN4.Decks[2].cueButton.input</key>
         <status>0x92</status>
         <midino>0x10</midino>
         <options>
@@ -306,7 +895,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>NumarkN4.Deck3.cueButton.input</key>
+        <key>NumarkN4.Decks[3].cueButton.input</key>
         <status>0x93</status>
         <midino>0x10</midino>
         <options>
@@ -315,7 +904,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>NumarkN4.Deck4.cueButton.input</key>
+        <key>NumarkN4.Decks[4].cueButton.input</key>
         <status>0x94</status>
         <midino>0x10</midino>
         <options>
@@ -324,7 +913,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>NumarkN4.Deck1.searchButton</key>
+        <key>NumarkN4.Decks[1].searchButton</key>
         <status>0x91</status>
         <midino>0x21</midino>
         <options>
@@ -333,7 +922,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkN4.Deck2.searchButton</key>
+        <key>NumarkN4.Decks[2].searchButton</key>
         <status>0x92</status>
         <midino>0x21</midino>
         <options>
@@ -342,7 +931,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>NumarkN4.Deck3.searchButton</key>
+        <key>NumarkN4.Decks[3].searchButton</key>
         <status>0x93</status>
         <midino>0x21</midino>
         <options>
@@ -351,7 +940,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>NumarkN4.Deck4.searchButton</key>
+        <key>NumarkN4.Decks[4].searchButton</key>
         <status>0x94</status>
         <midino>0x21</midino>
         <options>
@@ -434,7 +1023,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>NumarkN4.Deck1.playButton.input</key>-
+        <key>NumarkN4.Decks[1].playButton.input</key>-
         <status>0x91</status>
         <midino>0x11</midino>
         <options>
@@ -443,7 +1032,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkN4.Deck2.playButton.input</key>
+        <key>NumarkN4.Decks[2].playButton.input</key>
         <status>0x92</status>
         <midino>0x11</midino>
         <options>
@@ -452,7 +1041,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>NumarkN4.Deck1.syncButton.input</key>
+        <key>NumarkN4.Decks[1].syncButton.input</key>
         <status>0x91</status>
         <midino>0x0F</midino>
         <options>
@@ -461,7 +1050,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkN4.Deck2.syncButton.input</key>
+        <key>NumarkN4.Decks[2].syncButton.input</key>
         <status>0x92</status>
         <midino>0x0F</midino>
         <options>
@@ -470,7 +1059,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>NumarkN4.Deck3.syncButton.input</key>
+        <key>NumarkN4.Decks[3].syncButton.input</key>
         <status>0x93</status>
         <midino>0x0F</midino>
         <options>
@@ -479,7 +1068,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>NumarkN4.Deck4.syncButton.input</key>
+        <key>NumarkN4.Decks[4].syncButton.input</key>
         <status>0x94</status>
         <midino>0x0F</midino>
         <options>
@@ -488,7 +1077,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>NumarkN4.Deck1.tapButton</key>
+        <key>NumarkN4.Decks[1].tapButton</key>
         <status>0x91</status>
         <midino>0x1E</midino>
         <options>
@@ -497,7 +1086,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkN4.Deck2.tapButton</key>
+        <key>NumarkN4.Decks[2].tapButton</key>
         <status>0x92</status>
         <midino>0x1E</midino>
         <options>
@@ -506,7 +1095,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>NumarkN4.Deck3.tapButton</key>
+        <key>NumarkN4.Decks[3].tapButton</key>
         <status>0x93</status>
         <midino>0x1E</midino>
         <options>
@@ -515,7 +1104,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>NumarkN4.Deck4.tapButton</key>
+        <key>NumarkN4.Decks[4].tapButton</key>
         <status>0x94</status>
         <midino>0x1E</midino>
         <options>
@@ -524,7 +1113,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>NumarkN4.Deck1.keylockButton.input</key>
+        <key>NumarkN4.Decks[1].keylockButton.input</key>
         <status>0x91</status>
         <midino>0x1B</midino>
         <options>
@@ -533,7 +1122,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkN4.Deck2.keylockButton.input</key>
+        <key>NumarkN4.Decks[2].keylockButton.input</key>
         <status>0x92</status>
         <midino>0x1B</midino>
         <options>
@@ -542,7 +1131,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>NumarkN4.Deck3.keylockButton.input</key>
+        <key>NumarkN4.Decks[3].keylockButton.input</key>
         <status>0x93</status>
         <midino>0x1B</midino>
         <options>
@@ -551,7 +1140,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>NumarkN4.Deck4.keylockButton.input</key>
+        <key>NumarkN4.Decks[4].keylockButton.input</key>
         <status>0x94</status>
         <midino>0x1B</midino>
         <options>
@@ -560,7 +1149,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>NumarkN4.Deck1.keylockButton.input</key>
+        <key>NumarkN4.Decks[1].keylockButton.input</key>
         <status>0x81</status>
         <midino>0x1B</midino>
         <options>
@@ -569,7 +1158,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkN4.Deck2.keylockButton.input</key>
+        <key>NumarkN4.Decks[2].keylockButton.input</key>
         <status>0x82</status>
         <midino>0x1B</midino>
         <options>
@@ -578,7 +1167,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>NumarkN4.Deck3.keylockButton.input</key>
+        <key>NumarkN4.Decks[3].keylockButton.input</key>
         <status>0x83</status>
         <midino>0x1B</midino>
         <options>
@@ -587,7 +1176,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>NumarkN4.Deck4.keylockButton.input</key>
+        <key>NumarkN4.Decks[4].keylockButton.input</key>
         <status>0x84</status>
         <midino>0x1B</midino>
         <options>
@@ -596,43 +1185,43 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>NumarkN4.Deck1.pitchRange.input</key>
+        <key>NumarkN4.Decks[1].pitchRange.input</key>
         <status>0x91</status>
-        <midino>0x1B</midino>
+        <midino>0x1A</midino>
         <options>
           <script-binding />
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkN4.Deck2.pitchRange.input</key>
+        <key>NumarkN4.Decks[2].pitchRange.input</key>
         <status>0x92</status>
-        <midino>0x1B</midino>
+        <midino>0x1A</midino>
         <options>
           <script-binding />
         </options>
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>NumarkN4.Deck3.pitchRange.input</key>
+        <key>NumarkN4.Decks[3].pitchRange.input</key>
         <status>0x93</status>
-        <midino>0x1B</midino>
+        <midino>0x1A</midino>
         <options>
           <script-binding />
         </options>
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>NumarkN4.Deck4.pitchRange.input</key>
+        <key>NumarkN4.Decks[4].pitchRange.input</key>
         <status>0x94</status>
-        <midino>0x1B</midino>
+        <midino>0x1A</midino>
         <options>
           <script-binding />
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>NumarkN4.Deck1.jogWheelScratchEnable</key>
+        <key>NumarkN4.Decks[1].jogWheelScratchEnable</key>
         <status>0x91</status>
         <midino>0x2C</midino>
         <options>
@@ -641,7 +1230,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>NumarkN4.Deck1.jogWheelScratchEnable</key>
+        <key>NumarkN4.Decks[1].jogWheelScratchEnable</key>
         <status>0x81</status>
         <midino>0x2C</midino>
         <options>
@@ -650,7 +1239,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkN4.Deck2.jogWheelScratchEnable</key>
+        <key>NumarkN4.Decks[2].jogWheelScratchEnable</key>
         <status>0x92</status>
         <midino>0x2C</midino>
         <options>
@@ -659,7 +1248,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkN4.Deck2.jogWheelScratchEnable</key>
+        <key>NumarkN4.Decks[2].jogWheelScratchEnable</key>
         <status>0x82</status>
         <midino>0x2C</midino>
         <options>
@@ -668,7 +1257,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>NumarkN4.Deck3.jogWheelScratchEnable</key>
+        <key>NumarkN4.Decks[3].jogWheelScratchEnable</key>
         <status>0x93</status>
         <midino>0x2C</midino>
         <options>
@@ -677,7 +1266,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>NumarkN4.Deck3.jogWheelScratchEnable</key>
+        <key>NumarkN4.Decks[3].jogWheelScratchEnable</key>
         <status>0x83</status>
         <midino>0x2C</midino>
         <options>
@@ -686,7 +1275,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>NumarkN4.Deck4.jogWheelScratchEnable</key>
+        <key>NumarkN4.Decks[4].jogWheelScratchEnable</key>
         <status>0x94</status>
         <midino>0x2C</midino>
         <options>
@@ -695,7 +1284,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>NumarkN4.Deck4.jogWheelScratchEnable</key>
+        <key>NumarkN4.Decks[4].jogWheelScratchEnable</key>
         <status>0x84</status>
         <midino>0x2C</midino>
         <options>
@@ -705,7 +1294,7 @@
 
       <control>
         <group>[Channel1]</group>
-        <key>NumarkN4.Deck1.jogWheelTurn</key>
+        <key>NumarkN4.Decks[1].jogWheelTurn</key>
         <status>0xB1</status>
         <midino>0x20</midino>
         <options>
@@ -714,7 +1303,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkN4.Deck2.jogWheelTurn</key>
+        <key>NumarkN4.Decks[2].jogWheelTurn</key>
         <status>0xB2</status>
         <midino>0x20</midino>
         <options>
@@ -723,7 +1312,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>NumarkN4.Deck3.jogWheelTurn</key>
+        <key>NumarkN4.Decks[3].jogWheelTurn</key>
         <status>0xB3</status>
         <midino>0x20</midino>
         <options>
@@ -732,7 +1321,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>NumarkN4.Deck4.jogWheelTurn</key>
+        <key>NumarkN4.Decks[4].jogWheelTurn</key>
         <status>0xB4</status>
         <midino>0x20</midino>
         <options>
@@ -742,7 +1331,7 @@
 
       <control>
         <group>[Channel1]</group>
-        <key>NumarkN4.Deck1.shiftButton</key>
+        <key>NumarkN4.Decks[1].shiftButton.input</key>
         <status>0x91</status>
         <midino>0x12</midino>
         <options>
@@ -751,7 +1340,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>NumarkN4.Deck1.shiftButton</key>
+        <key>NumarkN4.Decks[1].shiftButton.input</key>
         <status>0x81</status>
         <midino>0x12</midino>
         <options>
@@ -760,7 +1349,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkN4.Deck2.shiftButton</key>
+        <key>NumarkN4.Decks[2].shiftButton.input</key>
         <status>0x92</status>
         <midino>0x12</midino>
         <options>
@@ -769,7 +1358,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkN4.Deck2.shiftButton</key>
+        <key>NumarkN4.Decks[2].shiftButton.input</key>
         <status>0x82</status>
         <midino>0x12</midino>
         <options>
@@ -778,7 +1367,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>NumarkN4.Deck1.pitchBendMinus.input</key>
+        <key>NumarkN4.Decks[1].pitchBendMinus.input</key>
         <status>0x91</status>
         <midino>0x18</midino>
         <options>
@@ -788,7 +1377,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkN4.Deck2.pitchBendMinus.input</key>
+        <key>NumarkN4.Decks[2].pitchBendMinus.input</key>
         <status>0x92</status>
         <midino>0x18</midino>
         <options>
@@ -798,7 +1387,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>NumarkN4.Deck1.pitchBendMinus.input</key>
+        <key>NumarkN4.Decks[1].pitchBendMinus.input</key>
         <status>0x81</status>
         <midino>0x18</midino>
         <options>
@@ -808,7 +1397,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkN4.Deck2.pitchBendMinus.input</key>
+        <key>NumarkN4.Decks[2].pitchBendMinus.input</key>
         <status>0x82</status>
         <midino>0x18</midino>
         <options>
@@ -818,7 +1407,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>NumarkN4.Deck1.pitchBendPlus.input</key>
+        <key>NumarkN4.Decks[1].pitchBendPlus.input</key>
         <status>0x91</status>
         <midino>0x19</midino>
         <options>
@@ -828,7 +1417,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkN4.Deck2.pitchBendPlus.input</key>
+        <key>NumarkN4.Decks[2].pitchBendPlus.input</key>
         <status>0x92</status>
         <midino>0x19</midino>
         <options>
@@ -838,7 +1427,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>NumarkN4.Deck1.pitchBendPlus.input</key>
+        <key>NumarkN4.Decks[1].pitchBendPlus.input</key>
         <status>0x81</status>
         <midino>0x19</midino>
         <options>
@@ -848,7 +1437,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkN4.Deck2.pitchBendPlus.input</key>
+        <key>NumarkN4.Decks[2].pitchBendPlus.input</key>
         <status>0x82</status>
         <midino>0x19</midino>
         <options>
@@ -969,7 +1558,7 @@
       <!-- Bpm Slider -->
       <control>
         <group>[Channel1]</group>
-        <key>NumarkN4.Deck1.bpmSlider.inputMSB</key>
+        <key>NumarkN4.Decks[1].bpmSlider.inputMSB</key>
         <status>0xB1</status>
         <midino>0x01</midino>
         <options>
@@ -978,7 +1567,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>NumarkN4.Deck1.bpmSlider.inputLSB</key>
+        <key>NumarkN4.Decks[1].bpmSlider.inputLSB</key>
         <status>0xB1</status>
         <midino>0x21</midino>
         <options>
@@ -987,8 +1576,8 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkN4.Deck2.bpmSlider.inputMSB</key>
-        <status>0xB1</status>
+        <key>NumarkN4.Decks[2].bpmSlider.inputMSB</key>
+        <status>0xB2</status>
         <midino>0x01</midino>
         <options>
           <script-binding />
@@ -996,8 +1585,8 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkN4.Deck2.bpmSlider.inputLSB</key>
-        <status>0xB1</status>
+        <key>NumarkN4.Decks[2].bpmSlider.inputLSB</key>
+        <status>0xB2</status>
         <midino>0x21</midino>
         <options>
           <script-binding />
@@ -1005,8 +1594,8 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>NumarkN4.Deck3.bpmSlider.inputMSB</key>
-        <status>0xB1</status>
+        <key>NumarkN4.Decks[3].bpmSlider.inputMSB</key>
+        <status>0xB3</status>
         <midino>0x01</midino>
         <options>
           <script-binding />
@@ -1014,8 +1603,8 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>NumarkN4.Deck3.bpmSlider.inputLSB</key>
-        <status>0xB1</status>
+        <key>NumarkN4.Decks[3].bpmSlider.inputLSB</key>
+        <status>0xB3</status>
         <midino>0x21</midino>
         <options>
           <script-binding />
@@ -1023,8 +1612,8 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>NumarkN4.Deck4.bpmSlider.inputMSB</key>
-        <status>0xB1</status>
+        <key>NumarkN4.Decks[4].bpmSlider.inputMSB</key>
+        <status>0xB4</status>
         <midino>0x01</midino>
         <options>
           <script-binding />
@@ -1032,8 +1621,8 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>NumarkN4.Deck4.bpmSlider.inputLSB</key>
-        <status>0xB1</status>
+        <key>NumarkN4.Decks[4].bpmSlider.inputLSB</key>
+        <status>0xB4</status>
         <midino>0x21</midino>
         <options>
           <script-binding />
