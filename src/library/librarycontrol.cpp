@@ -423,16 +423,30 @@ void LibraryControl::slotToggleSelectedSidebarItem(double v) {
 }
 
 void LibraryControl::slotGoToItem(double v) {
-    if (v > 0) {
-        if (dynamic_cast<WTrackTableView*>(QApplication::focusWidget())) {
-            // If main pane is focused then try to load the selected track into first stopped
-            return slotLoadSelectedIntoFirstStopped(v);
+    if (!m_pLibrary) {
+        return;
+    }
+
+    // Load current track if a LibraryView object has focus
+    LibraryView* activeView  = m_pLibrary->getActiveView();
+    if (activeView && activeView->hasFocus()) {
+        return slotLoadSelectedIntoFirstStopped(v);
+    }
+
+    // Focus the library if this is a leaf node in the tree
+    if (m_pSidebarWidget->hasFocus()) {
+        if (m_pSidebarWidget && v > 0
+                && m_pSidebarWidget->isLeafNodeSelected()) {
+            setLibraryFocus();
         } else {
-            // Otherwise we press return + tab to select current item and go to the next pane
-            emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier});
-            emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier});
+            // Otherwise toggle the sidebar item expanded state
+            slotToggleSelectedSidebarItem(v);
         }
     }
+    // TODO(xxx) instead of remote control the widgets individual, we should 
+    // translate this into Alt+Return and handle it at each library widget 
+    // individual https://bugs.launchpad.net/mixxx/+bug/1758618
+    //emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Return, Qt::AltModifier});
 }
 
 void LibraryControl::slotFontSize(double v) {

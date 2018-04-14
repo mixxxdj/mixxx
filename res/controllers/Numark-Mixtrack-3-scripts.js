@@ -1080,27 +1080,20 @@ NumarkMixtrack3.PlayButton = function(channel, control, value, status, group) {
     }
 };
 
-/******************     Browse Button/Knob :
- * Track list mode.....:
- * - Turn         : Select a track in the play list
- * - Push         : Load Selected track into first stopped deck
- * Directory mode...... :
- * - SHIFT + Turn : Select Play List/Side bar item
- * - SHIFT + Push : Open/Close selected side bar item.
- *                   Load the selected track (if any) and play.
- * *********************************************************************/
 NumarkMixtrack3.BrowseButton = function(channel, control, value, status, group) {
     var shifted = (NumarkMixtrack3.decks.D1.shiftKey || NumarkMixtrack3.decks
         .D2.shiftKey || NumarkMixtrack3.decks.D3.shiftKey || NumarkMixtrack3.decks.D4.shiftKey);
 
-    if (shifted && value === ON) {
-        // SHIFT + BROWSE push : directory mode -- > Open/Close selected side bar item
-        engine.setValue('[Library]', 'ChooseItem', true);
-    } else {
-        // Browse push : maximize/minimize library view
-        if (value === ON) {
-            script.toggleControl('[Master]', 'maximize_library');
-        }
+    if (value === ON) {
+	    if (shifted) {
+	        // SHIFT + BROWSE push : directory mode -- > Open/Close selected side bar item
+	        engine.setValue('[Library]', 'GoToItem', true);
+	    } else {
+	        // Browse push : maximize/minimize library view
+	        if (value === ON) {
+	            script.toggleControl('[Master]', 'maximize_library');
+	        }
+	    }
     }
 };
 
