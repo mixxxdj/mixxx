@@ -32,6 +32,10 @@
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
+              <Template src="skin:spacer_hx.xml">
+                <SetVariable name="width">9f,-1</SetVariable>
+              </Template>
+
               <Template src="skin:left_2state_button.xml">
                 <SetVariable name="TooltipId">pfl</SetVariable>
                 <SetVariable name="ObjectName">DeckPFLButton</SetVariable>
@@ -48,6 +52,10 @@
               </Template>
             </Children>
           </WidgetGroup><!-- PFL -->
+
+          <Template src="skin:spacer_vx.xml">
+            <SetVariable name="height">-1,3f</SetVariable>
+          </Template>
 
           <WidgetGroup><!-- VU + Vol fader -->
             <GroupName>CondensedVolumeAndMonoMeter</GroupName>
@@ -127,11 +135,18 @@
             </Connection>
           </WidgetGroup><!-- VU + spacer -->
 
+          <Template src="skin:spacer_vx.xml">
+            <SetVariable name="height">-1,3f</SetVariable>
+          </Template>
+
           <WidgetGroup>
             <ObjectName>CondensedButtonContainerRight</ObjectName>
             <SizePolicy>me,min</SizePolicy>
-            <Layout>vertical</Layout>
+            <Layout>horizontal</Layout>
             <Children>
+              <Template src="skin:spacer_hx.xml">
+               <SetVariable name="width">9f,-1</SetVariable>
+              </Template>
 
               <Template src="skin:crossfader_orientation_button.xml">
                 <SetVariable name="Unit">Deck<Variable name="i"/></SetVariable>
