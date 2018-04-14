@@ -1,6 +1,8 @@
 #include <QtDebug>
+#include <QCryptographicHash>
 
 #include "skin/pixmapsource.h"
+#include "util/assert.h"
 
 PixmapSource::PixmapSource()
      : m_eType(SVG) {
@@ -41,11 +43,9 @@ void PixmapSource::setSVG(const QByteArray& content) {
 }
 
 QString PixmapSource::getId() const {
-    quint16 checksum;
     if (m_svgSourceData.isEmpty()) {
-        checksum = qChecksum(m_path.toAscii().constData(), m_path.length());
-    } else {
-        checksum = qChecksum(m_svgSourceData.constData(), m_svgSourceData.length());
+        DEBUG_ASSERT(!m_path.isEmpty());
+        return m_path;
     }
-    return m_path + QString::number(checksum);
+    return QCryptographicHash::hash(m_svgSourceData, QCryptographicHash::Sha1).toHex();
 }

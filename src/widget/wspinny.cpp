@@ -25,10 +25,6 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
           WBaseWidget(this),
           m_group(group),
           m_pConfig(pConfig),
-          m_pBgImage(nullptr),
-          m_pMaskImage(nullptr),
-          m_pFgImage(nullptr),
-          m_pGhostImage(nullptr),
           m_pPlay(nullptr),
           m_pPlayPos(nullptr),
           m_pVisualPlayPos(nullptr),
@@ -100,10 +96,6 @@ WSpinny::~WSpinny() {
 #ifdef __VINYLCONTROL__
     m_pVCManager->removeSignalQualityListener(this);
 #endif
-    WImageStore::deleteImage(m_pBgImage);
-    WImageStore::deleteImage(m_pMaskImage);
-    WImageStore::deleteImage(m_pFgImage);
-    WImageStore::deleteImage(m_pGhostImage);
 }
 
 void WSpinny::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report) {
