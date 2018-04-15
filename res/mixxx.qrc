@@ -54,6 +54,7 @@
         <file>shaders/passthrough.vert</file>
         <file>shaders/rgbsignal.frag</file>
         <file>translations/mixxx_ar.qm</file>
+        <file>translations/mixxx_az.qm</file>
         <file>translations/mixxx_ast.qm</file>
         <file>translations/mixxx_bg.qm</file>
         <file>translations/mixxx_br.qm</file>
@@ -64,6 +65,7 @@
         <file>translations/mixxx_cs.qm</file>
         <file>translations/mixxx_da.qm</file>
         <file>translations/mixxx_de.qm</file>
+        <file>translations/mixxx_de-DE.qm</file>
         <file>translations/mixxx_el.qm</file>
         <file>translations/mixxx_en_GB.qm</file>
         <file>translations/mixxx_eo.qm</file>
@@ -74,9 +76,11 @@
         <file>translations/mixxx_fa.qm</file>
         <file>translations/mixxx_fi.qm</file>
         <file>translations/mixxx_fr.qm</file>
+        <file>translations/mixxx_fr-BE.qm</file>
         <file>translations/mixxx_ga.qm</file>
         <file>translations/mixxx_gl.qm</file>
         <file>translations/mixxx_he.qm</file>
+        <file>translations/mixxx_hi-IN.qm</file>
         <file>translations/mixxx_hr.qm</file>
         <file>translations/mixxx_hu.qm</file>
         <file>translations/mixxx_hy.qm</file>
@@ -84,6 +88,7 @@
         <file>translations/mixxx_id.qm</file>
         <file>translations/mixxx_is.qm</file>
         <file>translations/mixxx_it.qm</file>
+        <file>translations/mixxx_it-IT.qm</file>
         <file>translations/mixxx_ja.qm</file>
         <file>translations/mixxx_ko.qm</file>
         <file>translations/mixxx_ky.qm</file>
@@ -114,6 +119,7 @@
         <file>translations/mixxx_sr.qm</file>
         <file>translations/mixxx_sv.qm</file>
         <file>translations/mixxx_te.qm</file>
+        <file>translations/mixxx_tl-PH.qm</file>
         <file>translations/mixxx_tr.qm</file>
         <file>translations/mixxx_uk.qm</file>
         <file>translations/mixxx_uz.qm</file>
