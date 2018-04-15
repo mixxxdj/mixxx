@@ -581,6 +581,7 @@ WEffectButtonParameter*/
 
 #SkinSettingsContainer{
   margin-left: 5px;
+  
 }
 
 #SkinSettings {
@@ -613,17 +614,17 @@ WEffectButtonParameter*/
     border-width: 0px 0px 3px 0px;
   }
   #CategoryLabel {
-    font-size: 16px/16px;
+    font-size: 17px/17px;
     text-align: left;
     padding: 5px 0px 0px 3px;
-    background-color: none;
+    color: #eece33;
   }
-
 #SkinSettingsButton {
   padding-top: 1px;
   font-size: 12px/14px;
   color: #d2d2d2;
   }
+
   #SkinSettingsButton[displayValue="0"] {
     background-color: none;
   }
@@ -636,6 +637,13 @@ WEffectButtonParameter*/
   #SkinSettingsButton[displayValue="1"]:hover,
   #SkinSettingsButton[displayValue="2"]:hover {
     background-color: #202020;
+  }
+
+#SkinSettingsLabelButton {
+    font-size: 17px/17px;
+    text-align: left;
+    padding: 5px 0px 0px 3px;
+    color: #eece33;
   }
 
 /*################################################################
