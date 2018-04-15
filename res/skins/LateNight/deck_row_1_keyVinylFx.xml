@@ -6,7 +6,7 @@
     <Children>
 
       <PushButton>
-        <Size>32f,22f</Size>
+        <Size>28f,22f</Size>
         <TooltipId>sync_reset_key</TooltipId>
         <ObjectName>PitchTweakButton</ObjectName>
         <NumberStates>2</NumberStates>
