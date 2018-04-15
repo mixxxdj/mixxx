@@ -81,12 +81,12 @@
 
           <WidgetGroup>
             <Layout>horizontal</Layout>
-            <MinimumSize>110,26</MinimumSize>
+            <MinimumSize>102,26</MinimumSize>
             <MaximumSize>150,26</MaximumSize>
             <SizePolicy>me,f</SizePolicy>
             <Children>
               <EffectSelector>
-                <MinimumSize>110,26</MinimumSize>
+                <MinimumSize>102,26</MinimumSize>
                 <MaximumSize>150,26</MaximumSize>
                 <SizePolicy>me,f</SizePolicy>
                 <EffectRack><Variable name="FxRack"/></EffectRack>
