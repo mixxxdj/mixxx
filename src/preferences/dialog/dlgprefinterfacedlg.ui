@@ -316,5 +316,6 @@
  <buttongroups>
   <buttongroup name="buttonGroupEffectLoadBehavior"/>
   <buttongroup name="buttonGroupTooltips"/>
+  <buttongroup name="buttonGroupEffectLoadBehavior"/>
  </buttongroups>
 </ui>
