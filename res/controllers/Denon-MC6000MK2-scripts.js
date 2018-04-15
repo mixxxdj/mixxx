@@ -354,15 +354,6 @@ DenonMC6000MK2.Hotcue.prototype.isEnabled = function() {
     return this.deck.getValue(this.ctrlPrefix + "_enabled");
 };
 
-DenonMC6000MK2.Hotcue.prototype.connectLeds = function() {
-    this.led = this.deck.connectTriLed(this.midiLedValue);
-    this.dimmerLed = this.deck.connectTriLed(this.midiDimmerLedValue);
-};
-
-DenonMC6000MK2.Hotcue.prototype.updateLeds = function() {
-    this.led.setStateBoolean(this.isEnabled());
-};
-
 
 ////////////////////////////////////////////////////////////////////////
 // Samplers                                                           //
@@ -593,22 +584,6 @@ DenonMC6000MK2.OldDeck.prototype.disableSyncMode = function() {
     this.setValue("sync_mode", DenonMC6000MK2.MIXXX_SYNC_NONE);
 };
 
-DenonMC6000MK2.OldDeck.prototype.onSyncModeValue = function(value) {
-    switch (value) {
-        case DenonMC6000MK2.MIXXX_SYNC_NONE:
-            this.syncModeLed.setTriState(DenonMC6000MK2.TRI_LED_OFF);
-            break;
-        case DenonMC6000MK2.MIXXX_SYNC_FOLLOWER:
-            this.syncModeLed.setTriState(DenonMC6000MK2.TRI_LED_ON);
-            break;
-        case DenonMC6000MK2.MIXXX_SYNC_MASTER:
-            this.syncModeLed.setTriState(DenonMC6000MK2.TRI_LED_BLINK);
-            break;
-        default:
-            DenonMC6000MK2.logError("Unknown sync_mode value: " + value);
-    }
-};
-
 /* Cue Mix */
 
 DenonMC6000MK2.OldDeck.prototype.setCueMixSolo = function() {
@@ -656,75 +631,8 @@ DenonMC6000MK2.OldDeck.prototype.onTrackSamplesValue = function(value) {
 
 /* Cue & Play */
 
-DenonMC6000MK2.OldDeck.prototype.onCueButton = function(isButtonPressed) {
-    if (engine.getValue("[AutoDJ]", "enabled")) {
-        if (isButtonPressed && this.isTrackLoaded() && !this.isPlaying()) {
-            engine.setValue("[AutoDJ]", "skip_next", true);
-        }
-    } else {
-        if (this.isTrackLoaded()) {
-            if (this.getShiftState()) {
-                if (isButtonPressed) {
-                    if (this.isPlaying()) {
-                        // break effect
-                        engine.brake(this.number, isButtonPressed);
-                    } else {
-                        if (0.0 < this.getValue("cue_point")) {
-                            // clear cue point
-                            this.setValue("cue_point", 0.0);
-                        } else {
-                            // no cue point -> jump to beginning of track
-                            this.setValue("playposition", 0.0);
-                        }
-                    }
-                }
-            } else {
-                this.setValue("cue_default", isButtonPressed);
-            }
-        } else {
-            if (isButtonPressed) {
-                this.loadSelectedTrack();
-            }
-        }
-    }
-};
-
-DenonMC6000MK2.OldDeck.prototype.onCueIndicatorValue = function(value) {
-    this.cueLed.setStateBoolean(value);
-};
-
-DenonMC6000MK2.OldDeck.prototype.onPlayButton = function(isButtonPressed) {
-    if (engine.getValue("[AutoDJ]", "enabled")) {
-        if (isButtonPressed && this.isTrackLoaded() && !this.isPlaying()) {
-            engine.setValue("[AutoDJ]", "fade_now", true);
-        }
-    } else {
-        if (this.isTrackLoaded()) {
-            if (this.getShiftState()) {
-                this.setValue("play_stutter", isButtonPressed);
-            } else {
-                if (isButtonPressed) {
-                    if (this.isPlaying()) {
-                        this.setValue("stop", true);
-                    } else {
-                        this.setValue("play", true);
-                    }
-                }
-            }
-        } else {
-            if (isButtonPressed) {
-                this.loadSelectedTrackAndPlay();
-            }
-        }
-    }
-};
-
 DenonMC6000MK2.OldDeck.prototype.isPlaying = function() {
     return this.getValue("play");
-};
-
-DenonMC6000MK2.OldDeck.prototype.onPlayIndicatorValue = function(value) {
-    this.playLed.setStateBoolean(value);
 };
 
 /* Pitch Bend / Track Search */
@@ -1049,9 +957,6 @@ DenonMC6000MK2.OldDeck.prototype.connectTriLed = function(midiValue) {
 DenonMC6000MK2.OldDeck.prototype.connectLeds = function() {
     this.vinylModeLed = this.connectTriLed(0x06);
     this.keyLockLed = this.connectTriLed(0x08);
-    this.syncModeLed = this.connectTriLed(0x09);
-    this.cueLed = this.connectTriLed(0x26);
-    this.playLed = this.connectTriLed(0x27);
     this.loopInLed = this.connectTriLed(0x24);
     this.loopInDimmerLed = this.connectTriLed(0x3E);
     this.loopOutLed = this.connectTriLed(0x40);
@@ -1059,9 +964,6 @@ DenonMC6000MK2.OldDeck.prototype.connectLeds = function() {
     this.autoLoopLed = this.connectTriLed(0x2B);
     this.autoLoopDimmerLed = this.connectTriLed(0x53);
     this.slipModeLed = this.connectTriLed(0x64);
-    for (var hotcueIndex in this.hotcues) {
-        this.hotcues[hotcueIndex].connectLeds();
-    }
 };
 
 DenonMC6000MK2.OldDeck.prototype.connectControl = function(ctrl, func) {
@@ -1069,9 +971,6 @@ DenonMC6000MK2.OldDeck.prototype.connectControl = function(ctrl, func) {
 };
 
 DenonMC6000MK2.OldDeck.prototype.connectControls = function() {
-    this.connectControl("cue_indicator", DenonMC6000MK2.ctrlCueIndicator);
-    this.connectControl("play_indicator", DenonMC6000MK2.ctrlPlayIndicator);
-    this.connectControl("sync_mode", DenonMC6000MK2.ctrlSyncMode);
     this.connectControl("keylock", DenonMC6000MK2.ctrlKeyLock);
     this.connectControl("pfl", DenonMC6000MK2.ctrlCueMix);
     this.connectControl("track_samples", DenonMC6000MK2.ctrlTrackSamples);
@@ -1141,11 +1040,7 @@ DenonMC6000MK2.EfxUnit.prototype.isEnabled = function() {
 
 DenonMC6000MK2.EfxUnit.prototype.onEnableButton = function(isButtonPressed) {
     if (isButtonPressed) {
-        if (this.getShiftState()) {
-            engine.setValue(this.group, "enabled", true);
-        } else {
-            script.toggleControl(this.group, "enabled");
-        }
+        script.toggleControl(this.group, "enabled");
     }
 };
 
@@ -1695,11 +1590,6 @@ DenonMC6000MK2.ctrlKeyLock = function(value, group, control) {
     deck.onKeyLockValue(value);
 };
 
-DenonMC6000MK2.ctrlSyncMode = function(value, group, control) {
-    var deck = DenonMC6000MK2.getDeckByGroup(group);
-    deck.onSyncModeValue(value);
-};
-
 DenonMC6000MK2.ctrlSlipModeValue = function(value, group, control) {
     var deck = DenonMC6000MK2.getDeckByGroup(group);
     deck.onSlipModeValue(value);
@@ -1713,16 +1603,6 @@ DenonMC6000MK2.ctrlCueMix = function(value, group, control) {
 DenonMC6000MK2.ctrlTrackSamples = function(value, group, control) {
     var deck = DenonMC6000MK2.getDeckByGroup(group);
     deck.onTrackSamplesValue(value);
-};
-
-DenonMC6000MK2.ctrlCueIndicator = function(value, group, control) {
-    var deck = DenonMC6000MK2.getDeckByGroup(group);
-    deck.onCueIndicatorValue(value);
-};
-
-DenonMC6000MK2.ctrlPlayIndicator = function(value, group, control) {
-    var deck = DenonMC6000MK2.getDeckByGroup(group);
-    deck.onPlayIndicatorValue(value);
 };
 
 // Loop controls
@@ -1740,28 +1620,6 @@ DenonMC6000MK2.ctrlLoopEndPosition = function(value, group, control) {
 DenonMC6000MK2.ctrlLoopEnabled = function(value, group, control) {
     var deck = DenonMC6000MK2.getDeckByGroup(group);
     deck.updateLoopLeds();
-};
-
-// Hotcue controls
-
-DenonMC6000MK2.ctrlHotcue1 = function(value, group, control) {
-    var deck = DenonMC6000MK2.getDeckByGroup(group);
-    deck.hotcues[1].updateLeds();
-};
-
-DenonMC6000MK2.ctrlHotcue2 = function(value, group, control) {
-    var deck = DenonMC6000MK2.getDeckByGroup(group);
-    deck.hotcues[2].updateLeds();
-};
-
-DenonMC6000MK2.ctrlHotcue3 = function(value, group, control) {
-    var deck = DenonMC6000MK2.getDeckByGroup(group);
-    deck.hotcues[3].updateLeds();
-};
-
-DenonMC6000MK2.ctrlHotcue4 = function(value, group, control) {
-    var deck = DenonMC6000MK2.getDeckByGroup(group);
-    deck.hotcues[4].updateLeds();
 };
 
 // Sampler controls
@@ -1895,16 +1753,16 @@ DenonMC6000MK2.Deck = function (number, channel) {
 
     this.side = undefined;
 
-    this.loadButton = new DenonMC6000MK2.LoadButton([0x90 + channel, 0x63]);
+    this.loadButton = new DenonMC6000MK2.LoadButton();
 
-    this.cueButton = new components.CueButton([0x90 + channel, 0x42]);
-    this.playButton = new components.PlayButton([0x90 + channel, 0x43]);
-    this.syncButton = new components.SyncButton([0x90 + channel, 0x6B]);
+    this.cueButton = new components.CueButton([0xB0 + channel, 0x26]);
+    this.playButton = new components.PlayButton([0xB0 + channel, 0x27]);
+    this.syncButton = new components.SyncButton([0xB0 + channel, 0x09]);
 
     this.hotcueButtons = [];
     for (var i = 1; i <= 4; i++) {
         this.hotcueButtons[i] = new components.HotcueButton({
-            midi: [0x90 + channel, 0x16 + i],
+            midi: [0xB0 + channel, 0x11 + 2 * (i - 1)],
             number: i,
         });
     }
@@ -1938,8 +1796,22 @@ DenonMC6000MK2.init = function(id, debug) {
     DenonMC6000MK2.logInfo("Initializing controller");
 
     // Customize components
-    components.Button.isPress = function (channel, control, value, status) {
+    components.Button.prototype.isPress = function (channel, control, value, status) {
         return (status & 0xF0) === 0x90;
+    };
+    components.Button.prototype.off = DenonMC6000MK2.MIDI_TRI_LED_OFF;
+    components.Button.prototype.on = DenonMC6000MK2.MIDI_TRI_LED_ON;
+    components.Button.prototype.on_shifted = DenonMC6000MK2.MIDI_TRI_LED_BLINK;
+    components.Button.prototype.send = function (value) {
+        if (this.midi === undefined || this.midi[0] === undefined || this.midi[1] === undefined) {
+            return;
+        }
+        // For Denon hardware we need to swap the 2 midi bytes (= 2nd/3rd param) in sendShortMsg()!
+        if (value == this.on && this.sendShifted) {
+            midi.sendShortMsg(this.midi[0], this.on_shifted, this.midi[1]);
+        } else {
+            midi.sendShortMsg(this.midi[0], value, this.midi[1]);
+        }
     };
 
     // Init both sides (left/right)
@@ -1947,15 +1819,15 @@ DenonMC6000MK2.init = function(id, debug) {
     DenonMC6000MK2.newRightSide = new DenonMC6000MK2.Side("right", DenonMC6000MK2.rightSide);
 
     // Init left side decks (1/3)
-    DenonMC6000MK2.leftDeck1 = new DenonMC6000MK2.Deck(1, 0);
+    DenonMC6000MK2.leftDeck1 = new DenonMC6000MK2.Deck(1, DenonMC6000MK2.MIDI_CH0);
     DenonMC6000MK2.newLeftSide.connectDeck(DenonMC6000MK2.leftDeck1);
-    DenonMC6000MK2.leftDeck3 = new DenonMC6000MK2.Deck(3, 1);
+    DenonMC6000MK2.leftDeck3 = new DenonMC6000MK2.Deck(3, DenonMC6000MK2.MIDI_CH1);
     DenonMC6000MK2.newLeftSide.connectDeck(DenonMC6000MK2.leftDeck3);
 
     // Init right side decks (2/4)
-    DenonMC6000MK2.rightDeck2 = new DenonMC6000MK2.Deck(2, 2);
+    DenonMC6000MK2.rightDeck2 = new DenonMC6000MK2.Deck(2, DenonMC6000MK2.MIDI_CH2);
     DenonMC6000MK2.newRightSide.connectDeck(DenonMC6000MK2.rightDeck2);
-    DenonMC6000MK2.rightDeck4 = new DenonMC6000MK2.Deck(4, 3);
+    DenonMC6000MK2.rightDeck4 = new DenonMC6000MK2.Deck(4, DenonMC6000MK2.MIDI_CH3);
     DenonMC6000MK2.newRightSide.connectDeck(DenonMC6000MK2.rightDeck4);
     
     DenonMC6000MK2.allDecks = [
