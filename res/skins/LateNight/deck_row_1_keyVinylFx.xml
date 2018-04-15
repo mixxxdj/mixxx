@@ -6,7 +6,7 @@
     <Children>
 
       <PushButton>
-        <Size>32f,22f</Size>
+        <Size>28f,22f</Size>
         <TooltipId>sync_reset_key</TooltipId>
         <ObjectName>PitchTweakButton</ObjectName>
         <NumberStates>2</NumberStates>
@@ -102,7 +102,7 @@
 
       <!-- FX buttons 1-4 -->
       <PushButton>
-        <Size>32f,22f</Size>
+        <Size>30f,22f</Size>
         <TooltipId>EffectUnit_deck_enabled</TooltipId>
         <ObjectName>FxAssignButton</ObjectName>
         <NumberStates>2</NumberStates>
@@ -121,7 +121,7 @@
       </PushButton>
 
       <PushButton>
-        <Size>32f,22f</Size>
+        <Size>30f,22f</Size>
         <TooltipId>EffectUnit_deck_enabled</TooltipId>
         <ObjectName>FxAssignButton</ObjectName>
         <NumberStates>2</NumberStates>
@@ -147,7 +147,7 @@
         </Connection>
         <Children>
           <PushButton>
-            <Size>32f,22f</Size>
+            <Size>30f,22f</Size>
             <TooltipId>EffectUnit_deck_enabled</TooltipId>
             <ObjectName>FxAssignButton</ObjectName>
             <NumberStates>2</NumberStates>
@@ -166,7 +166,7 @@
           </PushButton>
 
           <PushButton>
-            <Size>32f,22f</Size>
+            <Size>30f,22f</Size>
             <TooltipId>EffectUnit_deck_enabled</TooltipId>
             <ObjectName>FxAssignButton</ObjectName>
             <NumberStates>2</NumberStates>
