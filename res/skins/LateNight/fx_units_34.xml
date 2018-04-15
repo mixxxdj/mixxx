@@ -9,7 +9,7 @@
   <SetVariable name="FxRack">1</SetVariable>
 
   <SingletonDefinition>
-    <ObjectName>FxUnit1_ExpandCollapseButton</ObjectName>
+    <ObjectName>FxUnit3_ExpandCollapseButton</ObjectName>
     <Children>
       <WidgetGroup>
         <SizePolicy>me,max</SizePolicy>
@@ -24,16 +24,16 @@
             <Number>0</Number>
             <Pressed>skin:/buttons/btn_fxExpand.svg</Pressed>
             <Unpressed>skin:/buttons/btn_fxExpand.svg</Unpressed>
-            <Text>FX&#8202;1</Text>
+            <Text>FX&#8202;3</Text>
           </State>
           <State>
             <Number>1</Number>
             <Pressed>skin:/buttons/btn_fxCollapse.svg</Pressed>
             <Unpressed>skin:/buttons/btn_fxCollapse.svg</Unpressed>
-            <Text>FX&#8202;1</Text>
+            <Text>FX&#8202;3</Text>
           </State>
           <Connection>
-            <ConfigKey>[EffectRack1_EffectUnit1],show_parameters</ConfigKey>
+            <ConfigKey>[EffectRack1_EffectUnit3],show_parameters</ConfigKey>
             <ButtonState>LeftButton</ButtonState>
           </Connection>
         </PushButton>
@@ -43,7 +43,7 @@
   </SingletonDefinition>
 
   <SingletonDefinition>
-    <ObjectName>FxUnit2_ExpandCollapseButton</ObjectName>
+    <ObjectName>FxUnit4_ExpandCollapseButton</ObjectName>
     <Children>
       <WidgetGroup>
         <SizePolicy>me,min</SizePolicy>
@@ -58,16 +58,16 @@
             <Number>0</Number>
             <Pressed>skin:/buttons/btn_fxExpand.svg</Pressed>
             <Unpressed>skin:/buttons/btn_fxExpand.svg</Unpressed>
-            <Text>FX&#8202;2</Text>
+            <Text>FX&#8202;4</Text>
           </State>
           <State>
             <Number>1</Number>
             <Pressed>skin:/buttons/btn_fxCollapse.svg</Pressed>
             <Unpressed>skin:/buttons/btn_fxCollapse.svg</Unpressed>
-            <Text>FX&#8202;2</Text>
+            <Text>FX&#8202;4</Text>
           </State>
           <Connection>
-            <ConfigKey>[EffectRack1_EffectUnit2],show_parameters</ConfigKey>
+            <ConfigKey>[EffectRack1_EffectUnit4],show_parameters</ConfigKey>
             <ButtonState>LeftButton</ButtonState>
           </Connection>
         </PushButton>
@@ -77,7 +77,7 @@
   </SingletonDefinition>
 
   <SingletonDefinition>
-    <ObjectName>FxUnit1_PflButton</ObjectName>
+    <ObjectName>FxUnit3_PflButton</ObjectName>
     <Children>
       <WidgetGroup>
         <SizePolicy>me,min</SizePolicy>
@@ -98,7 +98,7 @@
               <Unpressed>buttons/btn_pfl_over.svg</Unpressed>
             </State>
             <Connection>
-              <ConfigKey>[EffectRack1_EffectUnit1],group_[Headphone]_enable</ConfigKey>
+              <ConfigKey>[EffectRack1_EffectUnit3],group_[Headphone]_enable</ConfigKey>
             </Connection>
           </PushButton>
         </Children>
@@ -107,7 +107,7 @@
   </SingletonDefinition>
 
   <SingletonDefinition>
-    <ObjectName>FxUnit2_PflButton</ObjectName>
+    <ObjectName>FxUnit4_PflButton</ObjectName>
     <Children>
       <WidgetGroup>
         <SizePolicy>me,min</SizePolicy>
@@ -128,7 +128,7 @@
               <Unpressed>buttons/btn_pfl_over.svg</Unpressed>
             </State>
             <Connection>
-              <ConfigKey>[EffectRack1_EffectUnit2],group_[Headphone]_enable</ConfigKey>
+              <ConfigKey>[EffectRack1_EffectUnit4],group_[Headphone]_enable</ConfigKey>
             </Connection>
           </PushButton>
         </Children>
@@ -137,7 +137,7 @@
   </SingletonDefinition>
 
   <SingletonDefinition>
-    <ObjectName>FxUnit1_SuperKnob</ObjectName>
+    <ObjectName>FxUnit3_SuperKnob</ObjectName>
     <Children>
       <WidgetGroup>
         <SizePolicy>me,min</SizePolicy>
@@ -146,7 +146,7 @@
           <Template src="skin:knob.xml">
             <SetVariable name="Size">35f,30f</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
-            <SetVariable name="group">[EffectRack1_EffectUnit1]</SetVariable>
+            <SetVariable name="group">[EffectRack1_EffectUnit3]</SetVariable>
             <SetVariable name="control">super1</SetVariable>
             <SetVariable name="label">Super</SetVariable>
           </Template>
@@ -156,7 +156,7 @@
   </SingletonDefinition>
 
   <SingletonDefinition>
-    <ObjectName>FxUnit2_SuperKnob</ObjectName>
+    <ObjectName>FxUnit4_SuperKnob</ObjectName>
     <Children>
       <WidgetGroup>
         <SizePolicy>me,min</SizePolicy>
@@ -165,7 +165,7 @@
           <Template src="skin:knob.xml">
             <SetVariable name="Size">35f,30f</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
-            <SetVariable name="group">[EffectRack1_EffectUnit2]</SetVariable>
+            <SetVariable name="group">[EffectRack1_EffectUnit4]</SetVariable>
             <SetVariable name="control">super1</SetVariable>
             <SetVariable name="label">Super</SetVariable>
           </Template>
@@ -175,7 +175,7 @@
   </SingletonDefinition>
       
   <SingletonDefinition>
-    <ObjectName>FxUnit1_DryWetKnob</ObjectName>
+    <ObjectName>FxUnit3_DryWetKnob</ObjectName>
     <Children>
       <WidgetGroup>
         <SizePolicy>me,min</SizePolicy>
@@ -184,7 +184,7 @@
           <Template src="skin:knob.xml">
             <SetVariable name="Size">35f,30f</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
-            <SetVariable name="group">[EffectRack1_EffectUnit1]</SetVariable>
+            <SetVariable name="group">[EffectRack1_EffectUnit3]</SetVariable>
             <SetVariable name="control">mix</SetVariable>
             <SetVariable name="label">Mix</SetVariable>
           </Template>
@@ -194,7 +194,7 @@
   </SingletonDefinition>
       
   <SingletonDefinition>
-    <ObjectName>FxUnit2_DryWetKnob</ObjectName>
+    <ObjectName>FxUnit4_DryWetKnob</ObjectName>
     <Children>
       <WidgetGroup>
         <SizePolicy>me,min</SizePolicy>
@@ -203,7 +203,7 @@
           <Template src="skin:knob.xml">
             <SetVariable name="Size">35f,30f</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
-            <SetVariable name="group">[EffectRack1_EffectUnit2]</SetVariable>
+            <SetVariable name="group">[EffectRack1_EffectUnit4]</SetVariable>
             <SetVariable name="control">mix</SetVariable>
             <SetVariable name="label">Mix</SetVariable>
           </Template>
@@ -217,67 +217,71 @@
     <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
-      <WidgetStack currentpage="[EffectRack1_EffectUnit1],show_parameters" persist="true"><!-- EffectUnit 1 -->
+      <WidgetStack currentpage="[EffectRack1_EffectUnit3],show_parameters" persist="true"><!-- EffectUnit 3 -->
         <SizePolicy>me,min</SizePolicy>
         <Children>
 
-          <WidgetGroup><!-- EffectUnit 1 mini -->
-            <ObjectName>EffUnit1_mini</ObjectName>
+          <WidgetGroup><!-- EffectUnit 3 mini -->
+            <ObjectName>EffUnit3_mini</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>me,min</SizePolicy>
             <Children>
               <Template src="skin:fx_unit_parameters_hidden.xml">
-                <SetVariable name="FxUnit">1</SetVariable>
+                <SetVariable name="FxUnit">3</SetVariable>
               </Template>
               <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
             </Children>
           </WidgetGroup>
 
           <!-- EffectUnit 1 maxi -->
-          <WidgetGroup trigger="[EffectRack1_EffectUnit1],show_parameters" on_hide_select="0" persist="true">
+          <WidgetGroup trigger="[EffectRack1_EffectUnit3],show_parameters" on_hide_select="0" persist="true">
             <ObjectName>EffUnit1_maxi</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>me,max</SizePolicy>
             <Children>
               <Template src="skin:fx_unit_parameters_visible.xml">
-                <SetVariable name="FxUnit">1</SetVariable>
+                <SetVariable name="FxUnit">3</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
 
         </Children>
-      </WidgetStack><!-- /EffectUnit 1 -->
+      </WidgetStack><!-- /EffectUnit 3 -->
 
-      <!-- EffectUnit 2 -->
-      <WidgetStack currentpage="[EffectRack1_EffectUnit2],show_parameters" persist="true">
+      <!-- EffectUnit 4 -->
+      <WidgetStack currentpage="[EffectRack1_EffectUnit4],show_parameters" persist="true">
         <SizePolicy>me,min</SizePolicy>
         <Children>
 
-          <WidgetGroup><!-- EffectUnit 2 mini -->
+          <WidgetGroup><!-- EffectUnit 4 mini -->
             <Layout>vertical</Layout>
             <SizePolicy>me,min</SizePolicy>
             <Children>
               <Template src="skin:fx_unit_parameters_hidden.xml">
-                <SetVariable name="FxUnit">2</SetVariable>
+                <SetVariable name="FxUnit">4</SetVariable>
               </Template>
               <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
             </Children>
           </WidgetGroup>
 
-          <!-- EffectUnit 2 maxi -->
-          <WidgetGroup trigger="[EffectRack1_EffectUnit2],show_parameters" on_hide_select="0" persist="true">
+          <!-- EffectUnit 4 maxi -->
+          <WidgetGroup trigger="[EffectRack1_EffectUnit4],show_parameters" on_hide_select="0" persist="true">
             <Layout>vertical</Layout>
             <SizePolicy>me,min</SizePolicy>
             <Children>
               <Template src="skin:fx_unit_parameters_visible.xml">
-                <SetVariable name="FxUnit">2</SetVariable>
+                <SetVariable name="FxUnit">4</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
 
         </Children>
-      </WidgetStack><!-- /EffectUnit 2 -->
+      </WidgetStack><!-- /EffectUnit 4 -->
 
     </Children>
+    <Connection>
+      <ConfigKey persist="true">[Master],show_4effectunits</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
   </WidgetGroup>
 </Template>

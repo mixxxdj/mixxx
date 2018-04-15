@@ -202,6 +202,24 @@
             </Connection>
           </PushButton>
 
+          <PushButton>
+            <Size>94f,24f</Size>
+            <TooltipId>show_effects</TooltipId>
+            <ObjectName>GuiToggleButton</ObjectName>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>4 EFFECT UNITS</Text>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>4 EFFECT UNITS</Text>
+            </State>
+            <Connection>
+              <ConfigKey persist="true">[Master],show_4effectunits</ConfigKey>
+            </Connection>
+          </PushButton>
+
           <WidgetGroup>
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
