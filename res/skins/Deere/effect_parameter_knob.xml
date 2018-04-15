@@ -12,7 +12,7 @@
   <WidgetGroup>
     <Layout>vertical</Layout>
     <MinimumSize>34,42</MinimumSize>
-    <MaximumSize>55,42</MaximumSize>
+    <MaximumSize>58,42</MaximumSize>
     <SizePolicy>me,f</SizePolicy>
     <Children>
 
@@ -35,7 +35,7 @@
 
       <EffectParameterName>
         <MinimumSize>34,12</MinimumSize>
-        <MaximumSize>55,12</MaximumSize>
+        <MaximumSize>58,12</MaximumSize>
         <SizePolicy>me,f</SizePolicy>
         <ObjectName>EffectKnobLabel</ObjectName>
         <EffectRack><Variable name="EffectRack"/></EffectRack>
