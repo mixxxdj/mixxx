@@ -16,6 +16,9 @@ QSharedPointer<ImgSource> WPixmapStore::m_loader
 PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
                                             Paintable::DrawMode mode,
                                             double scaleFactor) {
+    if (source.isEmpty()) {
+        return PaintablePointer();
+    }
     QString key = source.getId() + QString::number(mode) + QString::number(scaleFactor);
 
     // See if we have a cached value for the pixmap.
