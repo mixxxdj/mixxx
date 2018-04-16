@@ -198,13 +198,13 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
             this, SLOT(slotRatePermFineSpinbox(double)));
 
     m_dRateTempCoarse = m_pConfig->getValue(ConfigKey("[Controls]", "RateTempLeft"),
-            kDefaultPermanentRateChangeCoarse);
-    m_dRateTempFine = m_pConfig->getValue(ConfigKey("[Controls]", "RateTempRight"),
-            kDefaultPermanentRateChangeFine);
-    m_dRatePermCoarse = m_pConfig->getValue(ConfigKey("[Controls]", "RatePermLeft"),
             kDefaultTemporaryRateChangeCoarse);
-    m_dRatePermFine = m_pConfig->getValue(ConfigKey("[Controls]", "RatePermRight"),
+    m_dRateTempFine = m_pConfig->getValue(ConfigKey("[Controls]", "RateTempRight"),
             kDefaultTemporaryRateChangeFine);
+    m_dRatePermCoarse = m_pConfig->getValue(ConfigKey("[Controls]", "RatePermLeft"),
+            kDefaultPermanentRateChangeCoarse);
+    m_dRatePermFine = m_pConfig->getValue(ConfigKey("[Controls]", "RatePermRight"),
+            kDefaultPermanentRateChangeFine);
 
     spinBoxTemporaryRateCoarse->setValue(m_dRateTempCoarse);
     spinBoxTemporaryRateFine->setValue(m_dRateTempFine);
