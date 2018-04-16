@@ -18,7 +18,7 @@
         <Children>
           <EffectPushButton>
             <MinimumSize>34,15</MinimumSize>
-            <MaximumSize>55,15</MaximumSize>
+            <MaximumSize>58,15</MaximumSize>
             <SizePolicy>me,f</SizePolicy>
             <ObjectName>EffectButton</ObjectName>
             <NumberStates>2</NumberStates>
@@ -38,7 +38,7 @@
 
           <EffectButtonParameterName>
             <MinimumSize>34,15</MinimumSize>
-            <MaximumSize>55,15</MaximumSize>
+            <MaximumSize>58,15</MaximumSize>
             <SizePolicy>me,f</SizePolicy>
             <Elide>right</Elide>
             <ObjectName>EffectButtonLabel</ObjectName>
