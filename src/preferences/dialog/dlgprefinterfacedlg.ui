@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>594</width>
+    <width>602</width>
     <height>723</height>
    </rect>
   </property>
@@ -20,6 +20,20 @@
       <string>Interface options</string>
      </property>
      <layout class="QGridLayout" name="GridLayout1">
+      <item row="1" column="1" colspan="2">
+       <widget class="QLabel" name="skinPreviewLabel">
+        <property name="text">
+         <string notr="true">skin preview screenshot goes here</string>
+        </property>
+       </widget>
+      </item>
+      <item row="11" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Screen saver</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="0">
        <widget class="QLabel" name="lableSkin_2">
         <property name="enabled">
@@ -59,25 +73,6 @@
         </property>
         <property name="alignment">
          <set>Qt::AlignJustify|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0" rowspan="2">
-       <widget class="QLabel" name="labelColorScheme">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="font">
-         <font/>
-        </property>
-        <property name="text">
-         <string>Color scheme</string>
-        </property>
-        <property name="wordWrap">
-         <bool>false</bool>
-        </property>
-        <property name="buddy">
-         <cstring>ComboBoxSchemeconf</cstring>
         </property>
        </widget>
       </item>
@@ -199,20 +194,20 @@
         <property name="toolTip">
          <string>Change the size of text, buttons, and other items.</string>
         </property>
-        <property name="decimals">
-         <number>0</number>
-        </property>
         <property name="suffix">
          <string notr="true"> %</string>
         </property>
-        <property name="singleStep">
-         <double>25.0</double>
+        <property name="decimals">
+         <number>0</number>
         </property>
         <property name="minimum">
-         <double>50.0</double>
+         <double>50.000000000000000</double>
         </property>
         <property name="maximum">
-         <double>400</double>
+         <double>400.000000000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>25.000000000000000</double>
         </property>
        </widget>
       </item>
@@ -226,20 +221,25 @@
         </property>
        </widget>
       </item>
-      <item row="11" column="0">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Screen saver</string>
-        </property>
-       </widget>
-      </item>
       <item row="11" column="1" colspan="2">
        <widget class="QComboBox" name="comboBoxScreensaver"/>
       </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="skinPreviewLabel">
+      <item row="3" column="0" rowspan="2">
+       <widget class="QLabel" name="labelColorScheme">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="font">
+         <font/>
+        </property>
         <property name="text">
-         <string notr="true">skin preview screenshot goes here</string>
+         <string>Color scheme</string>
+        </property>
+        <property name="wordWrap">
+         <bool>false</bool>
+        </property>
+        <property name="buddy">
+         <cstring>ComboBoxSchemeconf</cstring>
         </property>
        </widget>
       </item>
@@ -314,7 +314,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroupTooltips"/>
   <buttongroup name="buttonGroupEffectLoadBehavior"/>
+  <buttongroup name="buttonGroupTooltips"/>
  </buttongroups>
 </ui>

@@ -211,7 +211,8 @@ unsigned int PlayerManager::numDecks() {
             m_pCOPNumDecks = pNumCO;
         }
     }
-    return m_pCOPNumDecks ? m_pCOPNumDecks->get() : 0;
+    // m_pCOPNumDecks->get() fails on MacOs
+    return m_pCOPNumDecks ? (*m_pCOPNumDecks).get() : 0;
 }
 
 // static
@@ -227,7 +228,8 @@ unsigned int PlayerManager::numSamplers() {
             m_pCOPNumSamplers = pNumCO;   
         }
     }
-    return m_pCOPNumSamplers ? m_pCOPNumSamplers->get() : 0;
+    // m_pCOPNumSamplers->get() fails on MacOs
+    return m_pCOPNumSamplers ? (*m_pCOPNumSamplers).get() : 0;
 }
 
 // static
@@ -244,7 +246,8 @@ unsigned int PlayerManager::numPreviewDecks() {
             m_pCOPNumPreviewDecks = pNumCO;   
         }
     }
-    return m_pCOPNumPreviewDecks ? m_pCOPNumPreviewDecks->get() : 0;
+    // m_pCOPNumPreviewDecks->get() fails on MacOs
+    return m_pCOPNumPreviewDecks ? (*m_pCOPNumPreviewDecks).get() : 0;
 }
 
 void PlayerManager::slotNumDecksControlChanged(double v) {

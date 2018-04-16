@@ -312,6 +312,11 @@ WTime {
   padding: 1px 4px 0px 0px;
 }
 
+#VuAndSlider4decks {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  padding: 1px 0px 0px 0px;
+}
+
 #VuMeter4Decks {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
   padding: 0px 4px 2px 0px;
@@ -694,12 +699,13 @@ WBeatSpinBox {
 }
 
 #CrossfaderAndSwitches2Decks {
-  padding: 0px 10px 0px 10px;
+  qpoperty-layoutAlignment: 'AlignHCenter';
+  padding: 0px;
 }
 
 #CrossfaderSwitch4Decks {
   qproperty-layoutAlignment: 'AlignRight';
-  margin: 1px 10px 0px 0px;
+  margin: 1px 6px 0px 0px;
 }
 
 #PreviewDeck {
@@ -1126,13 +1132,17 @@ border: 0px;
 }
 
 #FxUnit1_ExpandCollapseButton,
-#FxUnit2_ExpandCollapseButton {
+#FxUnit2_ExpandCollapseButton,
+#FxUnit3_ExpandCollapseButton,
+#FxUnit4_ExpandCollapseButton {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   margin: 1px 0px 1px 0px;
 }
 
 #FxUnit1_ExpandCollapseButton WPushButton,
-#FxUnit2_ExpandCollapseButton WPushButton {
+#FxUnit2_ExpandCollapseButton WPushButton,
+#FxUnit3_ExpandCollapseButton WPushButton,
+#FxUnit4_ExpandCollapseButton WPushButton {
   font-size: 13px/13px;
   font-weight: bold;
   padding-top: 10px;
