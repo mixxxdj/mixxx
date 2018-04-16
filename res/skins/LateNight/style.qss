@@ -1114,13 +1114,17 @@ border: 0px;
 }
 
 #FxUnit1_ExpandCollapseButton,
-#FxUnit2_ExpandCollapseButton {
+#FxUnit2_ExpandCollapseButton,
+#FxUnit3_ExpandCollapseButton,
+#FxUnit4_ExpandCollapseButton {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   margin: 1px 0px 1px 0px;
 }
 
 #FxUnit1_ExpandCollapseButton WPushButton,
-#FxUnit2_ExpandCollapseButton WPushButton {
+#FxUnit2_ExpandCollapseButton WPushButton,
+#FxUnit3_ExpandCollapseButton WPushButton,
+#FxUnit4_ExpandCollapseButton WPushButton {
   font-size: 13px/13px;
   font-weight: bold;
   padding-top: 10px;

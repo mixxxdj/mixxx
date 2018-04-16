@@ -6,7 +6,7 @@
     <Children>
 
       <PushButton>
-        <Size>32f,22f</Size>
+        <Size>28f,22f</Size>
         <TooltipId>sync_reset_key</TooltipId>
         <ObjectName>PitchTweakButton</ObjectName>
         <NumberStates>2</NumberStates>
@@ -102,7 +102,7 @@
 
       <!-- FX buttons 1-4 -->
       <PushButton>
-        <Size>35f,22f</Size>
+        <Size>30f,22f</Size>
         <TooltipId>EffectUnit_deck_enabled</TooltipId>
         <ObjectName>FxAssignButton</ObjectName>
         <NumberStates>2</NumberStates>
@@ -121,7 +121,7 @@
       </PushButton>
 
       <PushButton>
-        <Size>35f,22f</Size>
+        <Size>30f,22f</Size>
         <TooltipId>EffectUnit_deck_enabled</TooltipId>
         <ObjectName>FxAssignButton</ObjectName>
         <NumberStates>2</NumberStates>
@@ -138,45 +138,54 @@
           <ButtonState>LeftButton</ButtonState>
         </Connection>
       </PushButton>
-<!-- 
-      <PushButton>
-        <Size>35f,22f</Size>
-        <TooltipId>EffectUnit_deck_enabled</TooltipId>
-        <ObjectName>FxAssignButton</ObjectName>
-        <NumberStates>2</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>FX&#8202;3</Text>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>FX&#8202;3</Text>
-        </State>
-        <Connection>
-          <ConfigKey>[EffectRack1_EffectUnit3],group_<Variable name="group"/>_enable</ConfigKey>
-          <ButtonState>LeftButton</ButtonState>
-        </Connection>
-      </PushButton>
 
-      <PushButton>
-        <Size>35f,22f</Size>
-        <TooltipId>EffectUnit_deck_enabled</TooltipId>
-        <ObjectName>FxAssignButton</ObjectName>
-        <NumberStates>2</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>FX&#8202;4</Text>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>FX&#8202;4</Text>
-        </State>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
         <Connection>
-          <ConfigKey>[EffectRack1_EffectUnit4],group_<Variable name="group"/>_enable</ConfigKey>
-          <ButtonState>LeftButton</ButtonState>
+          <ConfigKey>[Master],show_4effectunits</ConfigKey>
+          <BindProperty>visible</BindProperty>
         </Connection>
-      </PushButton>
-      /FX buttons 1-4 -->
+        <Children>
+          <PushButton>
+            <Size>30f,22f</Size>
+            <TooltipId>EffectUnit_deck_enabled</TooltipId>
+            <ObjectName>FxAssignButton</ObjectName>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>FX&#8202;3</Text>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>FX&#8202;3</Text>
+            </State>
+            <Connection>
+              <ConfigKey>[EffectRack1_EffectUnit3],group_<Variable name="group"/>_enable</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <Size>30f,22f</Size>
+            <TooltipId>EffectUnit_deck_enabled</TooltipId>
+            <ObjectName>FxAssignButton</ObjectName>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>FX&#8202;4</Text>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>FX&#8202;4</Text>
+            </State>
+            <Connection>
+              <ConfigKey>[EffectRack1_EffectUnit4],group_<Variable name="group"/>_enable</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+          </PushButton>
+        </Children>
+      </WidgetGroup>
+      <!-- /FX buttons 1-4 -->
 
     </Children>
   </WidgetGroup>
