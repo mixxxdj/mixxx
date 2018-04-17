@@ -40,7 +40,7 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
 
     QStringList thisReleaseDevelopers;
     thisReleaseDevelopers
-            << "RJ Ryan"
+            << "RJ Skerry-Ryan"
             << "Owen Williams"
             << "Sean Pappalardo"
             << "Daniel Sch&uuml;rmann"
