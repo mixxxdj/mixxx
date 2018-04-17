@@ -55,42 +55,6 @@
             </Connection>
           </PushButton>
 
-          <PushButton>
-            <Size>61f,24f</Size>
-            <TooltipId>show_spinny</TooltipId>
-            <ObjectName>GuiToggleButton</ObjectName>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>SPINNIES</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>SPINNIES</Text>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[Spinny],show_spinnies</ConfigKey>
-            </Connection>
-          </PushButton>
-
-          <PushButton>
-            <Size>44f,24f</Size>
-            <TooltipId>show_vinylcontrol</TooltipId>
-            <ObjectName>GuiToggleButton</ObjectName>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>VINYL</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>VINYL</Text>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>
-            </Connection>
-          </PushButton>
-
           <WidgetGroup>
             <ObjectName>ToolbarDivider</ObjectName>
             <Size>13f,9min</Size>
@@ -115,71 +79,6 @@
           </PushButton>
 
           <WidgetGroup>
-            <SizePolicy>min,min</SizePolicy>
-            <Layout>horizontal</Layout>
-            <Children>
-              <PushButton>
-                <Size>44f,24f</Size>
-                <ObjectName>GuiToggleButton</ObjectName>
-                <NumberStates>2</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Text>EQ</Text>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Text>EQ</Text>
-                </State>
-                <Connection>
-                  <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
-                </Connection>
-              </PushButton>
-            </Children>
-            <Connection>
-              <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-
-          <WidgetGroup>
-            <SizePolicy>min,min</SizePolicy>
-            <Layout>horizontal</Layout>
-            <Children>
-              <WidgetGroup>
-                <SizePolicy>min,min</SizePolicy>
-                <Layout>horizontal</Layout>
-                <Children>
-                  <PushButton>
-                    <Size>54f,24f</Size>
-                    <ObjectName>GuiToggleButton</ObjectName>
-                    <NumberStates>2</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Text>EQ KILL</Text>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Text>EQ KILL</Text>
-                    </State>
-                    <Connection>
-                      <ConfigKey persist="true">[Master],show_eq_kill_buttons</ConfigKey>
-                    </Connection>
-                  </PushButton>
-                </Children>
-                <Connection>
-                  <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-            </Children>
-            <Connection>
-              <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-
-
-          <WidgetGroup>
             <ObjectName>ToolbarDivider</ObjectName>
             <Size>13f,9min</Size>
           </WidgetGroup>
@@ -201,51 +100,6 @@
               <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
             </Connection>
           </PushButton>
-
-          <PushButton>
-            <Size>94f,24f</Size>
-            <TooltipId>show_effects</TooltipId>
-            <ObjectName>GuiToggleButton</ObjectName>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>4 EFFECT UNITS</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>4 EFFECT UNITS</Text>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[Master],show_4effectunits</ConfigKey>
-            </Connection>
-          </PushButton>
-
-          <WidgetGroup>
-            <SizePolicy>min,min</SizePolicy>
-            <Layout>horizontal</Layout>
-            <Children>
-              <PushButton>
-                <Size>88f,24f</Size>
-                <ObjectName>GuiToggleButton</ObjectName>
-                <NumberStates>2</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Text>Super knobs</Text>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Text>Super knobs</Text>
-                </State>
-                <Connection>
-                  <ConfigKey persist="true">[Master],show_superknobs</ConfigKey>
-                </Connection>
-              </PushButton>
-            </Children>
-            <Connection>
-              <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
 
           <WidgetGroup>
             <ObjectName>ToolbarDivider</ObjectName>
@@ -305,6 +159,30 @@
               <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
             </Connection>
           </PushButton>
+
+          <WidgetGroup>
+            <ObjectName>ToolbarDivider</ObjectName>
+            <Size>13f,9min</Size>
+          </WidgetGroup>
+
+          <PushButton>
+            <Size>69f,24f</Size>
+            <TooltipId>skin_settings</TooltipId>
+            <ObjectName>GuiToggleButton</ObjectName>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>SETTINGS</Text>
+           </State>
+           <State>
+              <Number>1</Number>
+              <Text>SETTINGS</Text>
+          </State>
+          <Connection>
+            <ConfigKey persist="true">[Latenight],skin_settings</ConfigKey>
+          </Connection>
+         </PushButton>
+
         </Children>
         <Connection>
           <ConfigKey>[Master],maximize_library</ConfigKey>

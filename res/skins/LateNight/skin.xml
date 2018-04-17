@@ -55,6 +55,7 @@
       <attribute persist="true" config_key="[Master],show_xfader">1</attribute>
       <attribute persist="true" config_key="[Skin],8_hotcues">0</attribute>
       <attribute config_key="[Master],maximize_library">0</attribute>
+      <attribute config_key="[Latenight],skin_settings">0</attribute>
       <!--Disable hidden effect routing Buttons-->
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MasterOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusLeft]_enable">0</attribute>
@@ -115,6 +116,10 @@
       <Layout>vertical</Layout>
       <SizePolicy>me,me</SizePolicy>
       <Children>
+        <WidgetGroup><!-- All skin elements-->
+          <Layout>horizontal</Layout>
+          <SizePolicy>me,me</SizePolicy>
+            <Children>
 
         <!-- Select between either the full UI or the big library -->
         <WidgetStack currentpage="[Master],maximize_library">
@@ -128,45 +133,47 @@
               <SplitSizes>1,5</SplitSizes>
               <SplitSizesConfigKey>[LateNight],waveform_splitSize</SplitSizesConfigKey>
               <Collapsible>1,0</Collapsible>
-              <Children>
+                  <Children>
 
-                <Template src="skin:waveforms.xml"/>
+                    <Template src="skin:waveforms.xml"/>
 
-                <WidgetGroup>
+                    <WidgetGroup>
+                      <Layout>vertical</Layout>
+                      <SizePolicy>me,me</SizePolicy>
+                      <Children>
+                        <WidgetGroup>
+                          <Layout>horizontal</Layout>
+                          <SizePolicy>me,max</SizePolicy>
+                          <Children>
+                            <Template src="skin:decks_left.xml"/>
+                            <Template src="skin:mixer.xml"/>
+                            <Template src="skin:decks_right.xml"/>
+                          </Children>
+                        </WidgetGroup>
+                        <Template src="skin:fx.xml"/>
+                        <Template src="skin:lower_half.xml"/>
+                      </Children>
+                    </WidgetGroup>
+
+                  </Children>
+                </Splitter><!-- Decks, Effects ... Library -->
+
+                <!-- MAximized Library -->
+                <WidgetGroup trigger="[Master],maximize_library" on_hide_select="0">
                   <Layout>vertical</Layout>
                   <SizePolicy>me,me</SizePolicy>
                   <Children>
-                    <WidgetGroup>
-                      <Layout>horizontal</Layout>
-                      <SizePolicy>me,max</SizePolicy>
-                      <Children>
-                        <Template src="skin:decks_left.xml"/>
-                        <Template src="skin:mixer.xml"/>
-                        <Template src="skin:decks_right.xml"/>
-                      </Children>
-                    </WidgetGroup>
-                    <Template src="skin:fx.xml"/>
-                    <Template src="skin:lower_half.xml"/>
+                    <SingletonContainer>
+                      <ObjectName>LibrarySingleton</ObjectName>
+                    </SingletonContainer>
                   </Children>
                 </WidgetGroup>
 
               </Children>
-            </Splitter><!-- Decks, Effects ... Library -->
-
-            <!-- MAximized Library -->
-            <WidgetGroup trigger="[Master],maximize_library" on_hide_select="0">
-              <Layout>vertical</Layout>
-              <SizePolicy>me,me</SizePolicy>
-              <Children>
-                <SingletonContainer>
-                  <ObjectName>LibrarySingleton</ObjectName>
-                </SingletonContainer>
-              </Children>
-            </WidgetGroup>
-
+            </WidgetStack>
+            <Template src="skin:skin_settings.xml"/>
           </Children>
-        </WidgetStack>
-
+        </WidgetGroup>
         <Template src="skin:toolbar.xml"/>
       </Children>
     </WidgetGroup>

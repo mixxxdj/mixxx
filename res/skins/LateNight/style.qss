@@ -568,6 +568,78 @@ WEffectButtonParameter*/
 }
 
 /*################################################################
+ #######  Skin Settings  ########################################
+##############################################################*/
+
+#SkinSettingsContainer{
+  margin-left: 5px;
+  
+}
+
+#SkinSettings {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  padding: 2px 0px 0px 0px;
+  text-align: left;
+
+}
+#SkinSettingsHeader {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  padding-right: 2px;
+  }
+  #SkinSettingsClose {
+    border-radius:2px;
+    margin-bottom: 4px;
+    background-color: transparent;
+    image: url(skin:/buttons/btn_skinsettings_close.svg) no-repeat center top;
+    }
+    #SkinSettingsClose:hover {
+      border-radius:2px;
+      margin-bottom: 4px;
+      background-color: #0f0f0f;
+      image: url(skin:/buttons/btn_skinsettings_close_hover.svg) no-repeat center top;
+    }
+
+#SkinSettingsCategory {
+  padding: 2px 8px 1px 10px;
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+    border: 1px solid #1e1e1e;
+    border-width: 0px 0px 3px 0px;
+  }
+  #CategoryLabel {
+    font-size: 17px/17px;
+    text-align: left;
+    padding: 5px 0px 0px 3px;
+    color: #eece33;
+  }
+#SkinSettingsButton {
+  padding-top: 1px;
+  font-size: 12px/14px;
+  color: #d2d2d2;
+  }
+
+  #SkinSettingsButton[displayValue="0"] {
+    background-color: none;
+  }
+  #SkinSettingsButton[displayValue="1"],
+  #SkinSettingsButton[displayValue="2"] {
+    background-color: #0f0f0f;
+    color: #eeeeee;
+  }
+  #SkinSettingsButton[displayValue="0"]:hover,
+  #SkinSettingsButton[displayValue="1"]:hover,
+  #SkinSettingsButton[displayValue="2"]:hover {
+    background-color: #202020;
+  }
+
+#SkinSettingsLabelButton {
+    font-size: 17px/17px;
+    text-align: left;
+    padding: 5px 0px 0px 3px;
+    color: #eece33;
+  }
+
+
+/*################################################################
 #######  Loop Controls  ########################################
 ##############################################################*/
 

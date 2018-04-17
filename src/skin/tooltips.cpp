@@ -388,6 +388,11 @@ void Tooltips::addStandardTooltips() {
             << tr("Prevents the pitch from changing when the rate changes.")
             << tr("Toggling keylock during playback may result in a momentary audio glitch.");
 
+    // Show 4/8 hotcue
+    add("hotcue_toggle")
+        <<tr("Toggle displayed hotcue, 4 or 8");
+
+
     // Used in cue/hotcue/loop tooltips below.
     QString quantizeSnap = tr("If quantize is enabled, snaps to the nearest beat.");
     add("quantize")
