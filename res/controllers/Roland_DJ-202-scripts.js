@@ -252,7 +252,11 @@ DJ202.Deck = function (deckNumbers, offset) {
 
     
     // ============================= TRANSPORT ==================================
-    this.cue = new components.CueButton([0x90 + offset, 0x01]);
+
+    this.cue = new components.CueButton({
+        reverseRollOnShift: true
+    });
+
     this.play = new components.Button({
         outKey: 'play_indicator',
         unshift: function () {
