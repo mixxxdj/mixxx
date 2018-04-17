@@ -8,14 +8,23 @@
 #include "library/browse/browsefeature.h"
 #include "util/assert.h"
 
+namespace {
+
+// The time between selecting and activating (= clicking) a feature item
+// in the sidebar tree. This is essential to allow smooth scrolling through
+// a list of items with an encoder or the keyboard! A value of 300 ms has
+// been chosen as a compromise between usability and responsiveness.
+const int kPressedUntilClickedTimeoutMillis = 300;
+
+} // anonymous namespace
+
 SidebarModel::SidebarModel(
         QObject* parent)
         : QAbstractItemModel(parent),
           m_iDefaultSelectedIndex(0),
-          m_clickedChildActivationTimer(new QTimer(this)),
-          m_clickedFeature(nullptr) {
-    m_clickedChildActivationTimer->setSingleShot(true);
-    connect(m_clickedChildActivationTimer, SIGNAL(timeout()), this, SLOT(slotActivateChildAtClickedFeatureIndex()));
+          m_pressedUntilClickedTimer(new QTimer(this)) {
+    m_pressedUntilClickedTimer->setSingleShot(true);
+    connect(m_pressedUntilClickedTimer, SIGNAL(timeout()), this, SLOT(slotPressedUntilClickedTimeout()));
 }
 
 void SidebarModel::addLibraryFeature(LibraryFeature* feature) {
@@ -222,62 +231,72 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
     return QVariant();
 }
 
-void SidebarModel::onFeatureIndexClicked(
-        LibraryFeature* feature,
-        QModelIndex index) {
-    m_clickedChildActivationTimer->stop();
-    m_clickedFeature = feature;
-    m_clickedIndex = index;
+void SidebarModel::startPressedUntilClickedTimer(QModelIndex pressedIndex) {
+    m_pressedIndex = pressedIndex;
+    m_pressedUntilClickedTimer->start(kPressedUntilClickedTimeoutMillis);
 }
 
-void SidebarModel::slotActivateChildAtClickedFeatureIndex() {
-    if (m_clickedFeature) {
-        m_clickedFeature->activateChild(m_clickedIndex);
+void SidebarModel::stopPressedUntilClickedTimer() {
+    m_pressedUntilClickedTimer->stop();
+    m_pressedIndex = QModelIndex();
+}
+
+void SidebarModel::slotPressedUntilClickedTimeout() {
+    if (m_pressedIndex.isValid()) {
+        QModelIndex clickedIndex = m_pressedIndex;
+        stopPressedUntilClickedTimer();
+        clicked(clickedIndex);
     }
 }
 
-void SidebarModel::clicked(const QModelIndex& index) {
-    //qDebug() << "SidebarModel::clicked() index=" << index;
-
-    // We use clicked() for keyboard and mouse control, and the
-    // following code breaks that for us:
-    /*if (QApplication::mouseButtons() != Qt::LeftButton) {
-        return;
-    }*/
-
+void SidebarModel::pressed(const QModelIndex& index) {
+    stopPressedUntilClickedTimer();
     if (index.isValid()) {
         if (index.internalPointer() == this) {
             m_sFeatures[index.row()]->activate();
         } else {
-            TreeItem* tree_item = (TreeItem*)index.internalPointer();
+            startPressedUntilClickedTimer(index);
+        }
+    }
+}
+
+void SidebarModel::clicked(const QModelIndex& index) {
+    // When triggered by a mouse event pressed() has been
+    // invoked immediately before. That doesn't matter,
+    // because we stop any running timer before handling
+    // this event.
+    stopPressedUntilClickedTimer();
+    if (index.isValid()) {
+        if (index.internalPointer() == this) {
+            m_sFeatures[index.row()]->activate();
+        } else {
+            TreeItem* tree_item = static_cast<TreeItem*>(index.internalPointer());
             if (tree_item) {
-                onFeatureIndexClicked(tree_item->feature(), index);
-                DEBUG_ASSERT(m_clickedFeature);
-                // Deferred activation is required for smooth scrolling when using
-                // encoder knobs
-                m_clickedChildActivationTimer->start(
-                        m_clickedFeature->clickedChildActivationTimeoutMillis());
+                LibraryFeature* feature = tree_item->feature();
+                DEBUG_ASSERT(feature);
+                feature->activateChild(index);
             }
         }
     }
 }
+
 void SidebarModel::doubleClicked(const QModelIndex& index) {
+    stopPressedUntilClickedTimer();
     if (index.isValid()) {
         if (index.internalPointer() == this) {
            return;
         } else {
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
             if (tree_item) {
-                onFeatureIndexClicked(tree_item->feature(), index);
-                DEBUG_ASSERT(m_clickedFeature);
-                m_clickedFeature->onLazyChildExpandation(m_clickedIndex);
+                LibraryFeature* feature = tree_item->feature();
+                feature->onLazyChildExpandation(index);
             }
         }
     }
 }
 
 void SidebarModel::rightClicked(const QPoint& globalPos, const QModelIndex& index) {
-    //qDebug() << "SidebarModel::rightClicked() index=" << index;
+    stopPressedUntilClickedTimer();
     if (index.isValid()) {
         if (index.internalPointer() == this) {
             m_sFeatures[index.row()]->activate();
@@ -287,10 +306,9 @@ void SidebarModel::rightClicked(const QPoint& globalPos, const QModelIndex& inde
         {
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
             if (tree_item) {
-                onFeatureIndexClicked(tree_item->feature(), index);
-                DEBUG_ASSERT(m_clickedFeature);
-                m_clickedFeature->activateChild(m_clickedIndex);
-                m_clickedFeature->onRightClickChild(globalPos, m_clickedIndex);
+                LibraryFeature* feature = tree_item->feature();
+                feature->activateChild(index);
+                feature->onRightClickChild(globalPos, index);
             }
         }
     }
