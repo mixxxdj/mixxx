@@ -68,33 +68,51 @@ DJ202.Deck = function (deckNumbers, offset) {
         },
     });
 
-    this.paramUp = function (channel, control, value, status, group) {
-        if (value) {
-            this.paramUp.active = true;
-            if (this.paramDown.active) {
-                script.triggerControl(group, 'reset_key');
-            } else if (this.keylock.is_held) {
-                var adjust = engine.getValue(group, 'pitch_adjust');
-                engine.setValue(group, 'pitch_adjust', Math.min(7, adjust + 1));
-            }
-        } else {
-            this.paramUp.active = false;
+    this.paramPlusMinus = function (channel, control, value, status, group) {
+        var isPlus = control % 2 == 0;
+
+        this.paramButtonsActive[isPlus ? 0 : 1] = Boolean(value);
+
+        if (!value) {
+            return
+        }
+
+        if (this.paramButtonsActive.every(Boolean)) {
+            script.triggerControl(group, 'reset_key');
+            return;
+        }
+
+        if (this.keylock.is_held) {
+            var adjust = engine.getValue(group, 'pitch_adjust');
+            var new_adjust = isPlus ? Math.min(7, adjust + 1) : Math.max(-7, adjust - 1);
+            engine.setValue(group, 'pitch_adjust', new_adjust);
+            return;
+        }
+
+        var beatjumpSize = engine.getValue(group, 'beatjump_size');
+        var beatloopSize = engine.getValue(group, 'beatloop_size');
+
+        switch (control) {
+        case 0x41:                                                 // Loop mode.
+        case 0x42:
+            engine.setValue(group, 'loop_move', isPlus ? beatjumpSize : -beatjumpSize);
+            break;
+        case 0x43:                                              // Hot-Cue mode.
+        case 0x44:
+            script.triggerControl(group, isPlus ? 'beatjump_forward' : 'beatjump_backward');
+            break;
+        case 0x49:                                       // Loop mode (shifted).
+        case 0x4A:
+            engine.setValue(group, 'beatloop_size', isPlus ? beatloopSize*2 : beatloopSize/2);
+            break;
+        case 0x4B:                                    // Hot-Cue mode (shifted).
+        case 0x4C:
+            engine.setValue(group, 'beatjump_size', isPlus ? beatjumpSize*2 : beatjumpSize/2);
+            break;
         }
     };
 
-    this.paramDown = function (channel, control, value, status, group) {
-        if (value) {
-            this.paramDown.active = true;
-            if (this.paramUp.active) {
-                script.triggerControl(group, 'reset_key');
-            } else if (this.keylock.is_held) {
-                var adjust = engine.getValue(group, 'pitch_adjust');
-                engine.setValue(group, 'pitch_adjust', Math.max(-7, adjust - 1));
-            }
-        } else {
-            this.paramDown.active = false;
-        }
-    };
+    this.paramButtonsActive = [false, false];
 
     this.keylock = new components.Button({
         midi: [0x90 + offset, 0x0D],

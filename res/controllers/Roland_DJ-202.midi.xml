@@ -612,58 +612,124 @@
                     <script-binding/>
                 </options>
             </control>
+            <!-- Deck 1, Loop-Mode, Param⁻ -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramDown</key>
-                <status>0x94</status>
-                <midino>0x42</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramDown</key>
-                <status>0x94</status>
-                <midino>0x44</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramDown</key>
-                <status>0x94</status>
-                <midino>0x46</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramUp</key>
+                <key>DJ202.leftDeck.paramPlusMinus</key>
                 <status>0x94</status>
                 <midino>0x41</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
+            <!-- Deck 1, Loop-Mode, Param⁺ -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramUp</key>
+                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <status>0x94</status>
+                <midino>0x42</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- Deck 1, Hot-Cue-Mode, Param- -->
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.leftDeck.paramPlusMinus</key>
                 <status>0x94</status>
                 <midino>0x43</midino>
                 <options>
                   <script-binding/>
                 </options>
             </control>
+            <!-- Deck 1, Hot-Cue-Mode, Param⁺ -->
             <control>
               <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramUp</key>
+                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <status>0x94</status>
+                <midino>0x44</midino>
+                <options>
+                  <script-binding/>
+                </options>
+            </control>
+            <!-- Deck1, Sampler-Mode, Param⁻ -->
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.leftDeck.paramPlusMinus</key>
                 <status>0x94</status>
                 <midino>0x45</midino>
                 <options>
                     <script-binding/>
+                </options>
+            </control>
+            <!-- Deck1, Sampler-Mode, Param⁺ -->
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <status>0x94</status>
+                <midino>0x46</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- Deck 1, Loop-Mode, Shift+Param⁻ -->
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <status>0x94</status>
+                <midino>0x49</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- Deck 1, Loop-Mode, Shift+Param⁺ -->
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <status>0x94</status>
+                <midino>0x4A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- Deck 1, Hot-Cue-Mode, Shift+Param⁻ -->
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <status>0x94</status>
+                <midino>0x4B</midino>
+                <options>
+                  <script-binding/>
+                </options>
+            </control>
+            <!-- Deck 1, Hot-Cue-Mode, Shift+Param⁺ -->
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <status>0x94</status>
+                <midino>0x4C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- Deck 1, Sampler-Mode, Shift+Param⁻ -->
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <status>0x94</status>
+                <midino>0x4D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- Deck 1, Sample-Mode, Shift+Param⁺ -->
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <status>0x94</status>
+                <midino>0x4E</midino>
+                <options>
+                  <script-binding/>
                 </options>
             </control>
            <control>
@@ -1284,58 +1350,124 @@
                     <script-binding/>
                 </options>
             </control>
+            <!-- Deck 2, Loop-Mode, Param⁻ -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramDown</key>
-                <status>0x95</status>
-                <midino>0x42</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramDown</key>
-                <status>0x95</status>
-                <midino>0x44</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramDown</key>
-                <status>0x95</status>
-                <midino>0x46</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramUp</key>
+                <key>DJ202.rightDeck.paramPlusMinus</key>
                 <status>0x95</status>
                 <midino>0x41</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
+            <!-- Deck 2, Loop-Mode, Param⁺ -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramUp</key>
+                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <status>0x95</status>
+                <midino>0x42</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- Deck 2, Hot-Cue-Mode, Param⁻ -->
+            <control>
+                <group>[Channel2]</group>
+                <key>DJ202.rightDeck.paramPlusMinus</key>
                 <status>0x95</status>
                 <midino>0x43</midino>
                 <options>
                   <script-binding/>
                 </options>
             </control>
+            <!-- Deck 2, Hot-Cue-Mode, Param⁺ -->
             <control>
               <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramUp</key>
+                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <status>0x95</status>
+                <midino>0x44</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- Deck 2, Sampler-Mode, Param⁻ -->
+            <control>
+                <group>[Channel2]</group>
+                <key>DJ202.rightDeck.paramPlusMinus</key>
                 <status>0x95</status>
                 <midino>0x45</midino>
                 <options>
                     <script-binding/>
+                </options>
+            </control>
+            <!-- Deck 2, Sampler-Mode, Param⁺ -->
+            <control>
+                <group>[Channel2]</group>
+                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <status>0x95</status>
+                <midino>0x46</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- Deck 2, Loop-Mode, Shift+Param⁻ -->
+            <control>
+                <group>[Channel2]</group>
+                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <status>0x95</status>
+                <midino>0x49</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- Deck 2, Loop-Mode, Shift+Param⁺ -->
+            <control>
+                <group>[Channel2]</group>
+                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <status>0x95</status>
+                <midino>0x4A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- Deck 2, Hot-Cue-Mode, Shift+Param⁻ -->
+            <control>
+                <group>[Channel2]</group>
+                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <status>0x95</status>
+                <midino>0x4B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- Deck 2, Hot-Cue-Mode, Shift+Param⁺ -->
+            <control>
+                <group>[Channel2]</group>
+                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <status>0x95</status>
+                <midino>0x4C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- Deck 2, Sampler-Mode, Shift+Param⁻ -->
+            <control>
+                <group>[Channel2]</group>
+                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <status>0x95</status>
+                <midino>0x4D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- Deck 2, Sample-Mode, Shift+Param⁺ -->
+            <control>
+                <group>[Channel2]</group>
+                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <status>0x95</status>
+                <midino>0x4E</midino>
+                <options>
+                  <script-binding/>
                 </options>
             </control>
            <control>
