@@ -7,6 +7,7 @@
 #include <QAbstractItemModel>
 #include <QList>
 #include <QModelIndex>
+#include <QTimer>
 #include <QVariant>
 
 class LibraryFeature;
@@ -14,8 +15,9 @@ class LibraryFeature;
 class SidebarModel : public QAbstractItemModel {
     Q_OBJECT
   public:
-    explicit SidebarModel(QObject* parent = 0);
-    virtual ~SidebarModel();
+    explicit SidebarModel(
+            QObject* parent = nullptr);
+    ~SidebarModel() override = default;
 
     void addLibraryFeature(LibraryFeature* feature);
     QModelIndex getDefaultSelection();
@@ -64,11 +66,22 @@ class SidebarModel : public QAbstractItemModel {
   signals:
     void selectIndex(const QModelIndex& index);
 
+  private slots:
+    void slotActivateChildAtClickedFeatureIndex();
+
   private:
     QModelIndex translateSourceIndex(const QModelIndex& parent);
     void featureRenamed(LibraryFeature*);
     QList<LibraryFeature*> m_sFeatures;
     unsigned int m_iDefaultSelectedIndex; /** Index of the item in the sidebar model to select at startup. */
+
+    QTimer* const m_clickedChildActivationTimer;
+    LibraryFeature* m_clickedFeature;
+    QModelIndex m_clickedIndex;
+
+    void onFeatureIndexClicked(
+            LibraryFeature* feature,
+            QModelIndex index);
 };
 
 #endif /* SIDEBARMODEL_H */

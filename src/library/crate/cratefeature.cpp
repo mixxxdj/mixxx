@@ -29,6 +29,8 @@
 
 namespace {
 
+const int kClickedChildActivationTimeoutMillis = 100;
+
 QString formatLabel(
         const CrateSummary& crateSummary) {
     return QString("%1 (%2) %3").arg(
@@ -42,7 +44,7 @@ QString formatLabel(
 CrateFeature::CrateFeature(Library* pLibrary,
                            TrackCollection* pTrackCollection,
                            UserSettingsPointer pConfig)
-        : LibraryFeature(pConfig),
+        : LibraryFeature(pConfig, kClickedChildActivationTimeoutMillis),
           m_cratesIcon(":/images/library/ic_library_crates.png"),
           m_lockedCrateIcon(":/images/library/ic_library_locked.png"),
           m_pTrackCollection(pTrackCollection),

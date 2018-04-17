@@ -8,13 +8,14 @@
 #include "library/browse/browsefeature.h"
 #include "util/assert.h"
 
-SidebarModel::SidebarModel(QObject* parent)
+SidebarModel::SidebarModel(
+        QObject* parent)
         : QAbstractItemModel(parent),
-          m_iDefaultSelectedIndex(0) {
-}
-
-SidebarModel::~SidebarModel() {
-
+          m_iDefaultSelectedIndex(0),
+          m_clickedChildActivationTimer(new QTimer(this)),
+          m_clickedFeature(nullptr) {
+    m_clickedChildActivationTimer->setSingleShot(true);
+    connect(m_clickedChildActivationTimer, SIGNAL(timeout()), this, SLOT(slotActivateChildAtClickedFeatureIndex()));
 }
 
 void SidebarModel::addLibraryFeature(LibraryFeature* feature) {
@@ -221,6 +222,20 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
     return QVariant();
 }
 
+void SidebarModel::onFeatureIndexClicked(
+        LibraryFeature* feature,
+        QModelIndex index) {
+    m_clickedChildActivationTimer->stop();
+    m_clickedFeature = feature;
+    m_clickedIndex = index;
+}
+
+void SidebarModel::slotActivateChildAtClickedFeatureIndex() {
+    if (m_clickedFeature) {
+        m_clickedFeature->activateChild(m_clickedIndex);
+    }
+}
+
 void SidebarModel::clicked(const QModelIndex& index) {
     //qDebug() << "SidebarModel::clicked() index=" << index;
 
@@ -236,8 +251,12 @@ void SidebarModel::clicked(const QModelIndex& index) {
         } else {
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
             if (tree_item) {
-                LibraryFeature* feature = tree_item->feature();
-                feature->activateChild(index);
+                onFeatureIndexClicked(tree_item->feature(), index);
+                DEBUG_ASSERT(m_clickedFeature);
+                // Deferred activation is required for smooth scrolling when using
+                // encoder knobs
+                m_clickedChildActivationTimer->start(
+                        m_clickedFeature->clickedChildActivationTimeoutMillis());
             }
         }
     }
@@ -249,8 +268,9 @@ void SidebarModel::doubleClicked(const QModelIndex& index) {
         } else {
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
             if (tree_item) {
-                LibraryFeature* feature = tree_item->feature();
-                feature->onLazyChildExpandation(index);
+                onFeatureIndexClicked(tree_item->feature(), index);
+                DEBUG_ASSERT(m_clickedFeature);
+                m_clickedFeature->onLazyChildExpandation(m_clickedIndex);
             }
         }
     }
@@ -267,9 +287,10 @@ void SidebarModel::rightClicked(const QPoint& globalPos, const QModelIndex& inde
         {
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
             if (tree_item) {
-                LibraryFeature* feature = tree_item->feature();
-                feature->activateChild(index);
-                feature->onRightClickChild(globalPos, index);
+                onFeatureIndexClicked(tree_item->feature(), index);
+                DEBUG_ASSERT(m_clickedFeature);
+                m_clickedFeature->activateChild(m_clickedIndex);
+                m_clickedFeature->onRightClickChild(globalPos, m_clickedIndex);
             }
         }
     }
