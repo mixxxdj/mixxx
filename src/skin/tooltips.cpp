@@ -533,6 +533,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Recording Duration")
             << tr("Displays the duration of the running recording.");
 
+	// Toggle between half or full waveform width
+	add("toogle_wave_width")
+		<< tr("Toogle waveform width, half or full");
+
     // For legacy reasons also add tooltips for "shoutcast_enabled".
     for (const char* key : {"shoutcast_enabled", "broadcast_enabled"}) {
         add(key)

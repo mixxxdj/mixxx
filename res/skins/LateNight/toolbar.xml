@@ -305,6 +305,29 @@
               <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
             </Connection>
           </PushButton>
+
+          <PushButton>
+            <Size>66f,24f</Size>
+            <TooltipId>toogle_wave_width</TooltipId>
+            <ObjectName>GuiToggleButton</ObjectName>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>WAVE 1/2</Text>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>WAVE 1/2</Text>
+            </State>
+            <Connection>
+              <ConfigKey>[Skin],half_waveform</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+            <Connection>
+              <ConfigKey>[Skin],half_waveform</ConfigKey>
+            </Connection>
+          </PushButton>
+
         </Children>
         <Connection>
           <ConfigKey>[Master],maximize_library</ConfigKey>

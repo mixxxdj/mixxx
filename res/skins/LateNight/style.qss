@@ -450,6 +450,11 @@ WEffectButtonParameter*/
   margin: 0px 5px;
 }
 
+#WaveformDivider {
+  background: transparent;
+}
+
+
 #RecBox {
   qproperty-layoutAlignment: 'AlignCenter';
   border: 1px solid #585858;
