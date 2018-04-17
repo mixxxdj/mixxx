@@ -203,6 +203,28 @@ DJ202.Deck = function (deckNumbers, offset) {
     
     
     // ========================== PERFORMANCE PADS ==============================
+
+    this.setPadState = function (channel, control, value, status, group) {
+        switch (value) {
+        case 0x13:              // Loop mode button.
+            if (this.padState == 'loop') {
+                var isRolling = engine.getValue(group, 'beatlooproll_activate');
+                engine.setValue(group, 'beatlooproll_activate', !isRolling);
+            } else {
+                this.padState = 'loop';
+            }
+            return
+        case 0x3:               // Hot-cue mode button.
+            if (this.padState == 'hotcue') {
+                var isLooping = engine.getValue(group, 'loop_enabled');
+                script.triggerControl(group, isLooping ? 'reloop_toggle' : 'beatloop_activate');
+            } else {
+                this.padState = 'hotcue';
+            }
+            return
+        }
+    };
+
     this.hotcueButton = [];
     this.samplerButton = [];
     this.loopButton = [];
