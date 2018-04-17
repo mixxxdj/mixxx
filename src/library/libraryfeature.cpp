@@ -7,10 +7,19 @@
 // The reason for this is that LibraryFeature uses slots/signals and for this
 // to work the code has to be precompiles by moc
 
+namespace {
+
+// The time between selecting and activating a feature item in the left
+// pane. This is required to allow smooth and responsive scrolling through
+// a list of items with an encoder!
+const int kDefaultClickedChildActivationTimeoutMillis = 250;
+
+} // anonymous namespace
+
 LibraryFeature::LibraryFeature(
         QObject *parent)
         : QObject(parent),
-          m_clickedChildActivationTimeoutMillis(0) {
+          m_clickedChildActivationTimeoutMillis(kDefaultClickedChildActivationTimeoutMillis) {
 }
 
 LibraryFeature::LibraryFeature(
@@ -26,7 +35,7 @@ LibraryFeature::LibraryFeature(
         QObject* parent)
         : QObject(parent),
           m_pConfig(pConfig),
-          m_clickedChildActivationTimeoutMillis(0) {
+          m_clickedChildActivationTimeoutMillis(kDefaultClickedChildActivationTimeoutMillis) {
 }
 
 LibraryFeature::LibraryFeature(
