@@ -252,8 +252,51 @@ DJ202.Deck = function (deckNumbers, offset) {
 
     
     // ============================= TRANSPORT ==================================
-    this.play = new components.PlayButton([0x90 + offset, 0x00]); // LED doesn't stay on
     this.cue = new components.CueButton([0x90 + offset, 0x01]);
+    this.play = new components.Button({
+        outKey: 'play_indicator',
+        unshift: function () {
+            this.inKey = 'play';
+            this.input = function (channel, control, value, status, group) {
+
+                if (value) {                                    // Button press.
+                    this.longPressStart = new Date();
+                    this.longPressTimer = engine.beginTimer(
+                        this.longPressTimeout,
+                        function () { this.longPressed = true; },
+                        true
+                    );
+                    return;
+                }                                       // Else: Button release.
+
+                var isPlaying = engine.getValue(group, 'play');
+
+                if (this.longPressed) {             // Release after long press.
+                    var deck = script.deckFromGroup(group);
+                    var pressDuration = new Date() - this.longPressStart;
+                    if (isPlaying) {
+                        engine.brake(deck, true, 1000 / pressDuration);
+                    } else {
+                        engine.softStart(deck, true, 1000 / pressDuration);
+                    }
+                    this.longPressed = false;
+                    return;
+                }                            // Else: Release after short press.
+
+                script.toggleControl(group, 'play', !isPlaying);
+
+                if (this.longPressTimer) {
+                    engine.stopTimer(this.longPressTimer);
+                    this.longPressTimer = null;
+                }
+            };
+        },
+        shift: function () {
+            this.inKey = 'reverse';
+            this.input = components.Button.prototype.input;
+        }
+    });
+
     var SyncButton = function (options) {
         components.SyncButton.call(this, options);
     };
