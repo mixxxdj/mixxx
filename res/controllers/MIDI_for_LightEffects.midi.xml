@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    MIDI for light effects
+
+    send midi information about the musing to generate light effects with a light control app like QLCplus
+
+    This file should be placed into /usr/share/mixxx/controllers
+-->
+<MixxxMIDIPreset mixxxVersion="1.10+" schemaVersion="1">
+	<info>
+		<name>MIDI for LightEffects</name>
+		<author>DG3NEC / Michael Stahl - Markus Baertschi</author>
+		<description>MIDI-Output for light effects</description>
+		<forums>http://www.mixxx.org/forums</forums>
+	</info>
+	<controller id="MIDI_for_LightEffects Control">
+		<scriptfiles>
+			<file filename="MIDI_for_LightEffects.js" functionprefix="MIDI_for_LightEffects"/>
+		</scriptfiles>
+
+		<controls>
+		</controls>
+
+		<outputs>
+		</outputs>
+	</controller>
+</MixxxMIDIPreset>

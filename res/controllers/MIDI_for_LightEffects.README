@@ -1,0 +1,133 @@
+
+MIDI_for_LightEffects
+---------------------
+
+The MIDI_for_LightEffects script for Mixxx provides MIDI information about the sound
+geared towards light effects. The intent is to feed this information to your favorite
+light controller to create or synchronize light effects with the music.
+
+
+History
+-------
+
+This script is based on the script 'midi_for_light.js' by DG3NEC / Michael Stahl.
+I have the original logic by Michael remains entirely in place, but I have done
+a lot of cleanup: Added/translated comments and variable names to english. Redone
+callback calls to be more elegant and straightforward. Changed some midi notes
+to be more logical.
+
+Changes
+-------
+
+2014     DG3NEC / Michael Stahl                Initial implementation
+2015     Markus baertschi, markus@markus.org   Rework
+
+
+Installation
+------------
+
+Place the js file and the xml file in the /usr/share/mixxx/controllers directory.
+(C:\Program Files\Mixxx on Windows).
+
+
+Mixxx configuration
+-------------------
+
+If you have an external light controller: 
+
+- Connect it via MIDI to your computer
+- Select it in 'Preferences' - 'Controller' and load the 'MIDI_for_LightEffects' script
+
+Light controller software on the same PC:
+
+- Start Mixxx with the '--delevoper' option to enable the 'Midi Through' interface
+- Select 'Midi Through' in 'Preferences' - 'Controller' and load the 'MIDI_for_LightController' script
+
+
+Controller configuration
+------------------------
+
+You will have to configure all the MIDI information for your controller yourself.
+If you use QLCplus, then an input profile is available.
+
+
+Midi values sent by MIDI_for_LightController
+--------------------------------------------
+
+Basic values:
+
+Deck Change:   48, note 3C, sent on each deck change
+Beat:          50, note 3D, sent on each beat
+BPM change:    52, note 3E, sent on each beat, contains the BPM as parameter
+
+Mono volume (sum of both channels)
+
+    Current sound volume: 64, note 4E
+
+    Average sound volume over the last 2 seconds:
+    Lowest: 65, note 4F
+    Medium: 66, note 4F#
+    Loudest: 67, note 4G
+
+    Difference between average and current volume
+    Current delta: 68, note 4G#
+
+    There are four VU channels for four sound levels
+    Meter 1: 69, note 4A
+    Meter 2: 70, note 4A#
+    Meter 3: 71, note 4B
+    Meter 4: 72, note 5C
+
+    There are four delta VU channels with the difference to the 2s average
+    Meter 1 delta: 73, note 5C#
+    Meter 2 delta: 74, note 5D
+    Meter 3 delta: 75, note 5D#
+    Meter 3 delta: 76, note 5E
+
+    Left channel
+
+    Current left volume: 80, note 5G#
+
+    Average sound volume over the last 2 seconds:
+    Lowest: 81, note 5A
+    Medium: 82, note 5A#
+    Loudest: 83, note 5B
+
+    Difference between average and current volume
+    Current delta: 84, note 6C
+
+    There are four VU channels for four sound levels
+    Meter 1: 85, note 6C#
+    Meter 2: 86, note 6D
+    Meter 3: 87, note 6D#
+    Meter 4: 88, note 6E
+
+    There are four delta VU channels with the difference to the 2s average
+    Meter 1 delta: 89, note 6F
+    Meter 2 delta: 90, note 6F#
+    Meter 3 delta: 91, note 6G
+    Meter 4 delta: 92, note 6G#
+
+    Right channel
+
+    Current right volume: 96, note 7C
+
+    Lowest: 97, note 7C#
+    Medium: 98, note 7D
+    Highest: 99, note 7D#
+
+    Difference between average and current volume
+    Current delta: 100, note 7E
+
+    There are four VU channels for four sound levels
+    Meter 1: 101, note 7F
+    Meter 2: 102, note 7F#
+    Meter 3: 103, note 7G
+    Meter 4: 104, note 7G#
+
+    There are four delta VU channels with the difference to the 2s average
+    Meter 1 delta: 105, note 7A
+    Meter 2 delta: 106, note 7A#
+    Meter 3 delta: 107, note 7B
+    Meter 4 delta: 108, note 8C
+
