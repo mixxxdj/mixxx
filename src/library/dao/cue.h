@@ -21,6 +21,7 @@ class Cue : public QObject {
         BEAT    = 3,
         LOOP    = 4,
         JUMP    = 5,
+        PREVIEW = 6,
     };
 
     ~Cue() override;
