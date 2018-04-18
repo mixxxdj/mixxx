@@ -757,6 +757,7 @@ class MixxxCore(Feature):
                    "engine/enginefilterlinkwitzriley4.cpp",
                    "engine/enginefilterlinkwitzriley8.cpp",
                    "engine/enginefilter.cpp",
+                   "engine/enginefilteriir.cpp",
                    "engine/engineobject.cpp",
                    "engine/enginepregain.cpp",
                    "engine/enginechannel.cpp",
@@ -788,7 +789,8 @@ class MixxxCore(Feature):
                    "engine/cachingreaderchunk.cpp",
                    "engine/cachingreaderworker.cpp",
 
-                   "analyzer/analyzerqueue.cpp",
+                   "analyzer/trackanalysisscheduler.cpp",
+                   "analyzer/analyzerthread.cpp",
                    "analyzer/analyzerwaveform.cpp",
                    "analyzer/analyzergain.cpp",
                    "analyzer/analyzerebur128.cpp",
@@ -1168,6 +1170,8 @@ class MixxxCore(Feature):
                    "util/autohidpi.cpp",
                    "util/screensaver.cpp",
                    "util/indexrange.cpp",
+                   "util/workerthread.cpp",
+                   "util/workerthreadscheduler.cpp",
 
                    '#res/mixxx.qrc'
                    ]

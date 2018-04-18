@@ -63,7 +63,7 @@ Library::Library(
         QObject* parent,
         UserSettingsPointer pConfig,
         mixxx::DbConnectionPoolPtr pDbConnectionPool,
-        PlayerManagerInterface* pPlayerManager,
+        PlayerManager* pPlayerManager,
         RecordingManager* pRecordingManager)
     : m_pConfig(pConfig),
       m_pDbConnectionPool(pDbConnectionPool),
@@ -124,12 +124,20 @@ Library::Library(
     addFeature(browseFeature);
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, pRecordingManager));
     addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
-    m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection);
+
+    m_pAnalysisFeature = new AnalysisFeature(this, pConfig);
     connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
             m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
     connect(m_pCrateFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
             m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
     addFeature(m_pAnalysisFeature);
+    // Suspend a batch analysis while an ad-hoc analysis of
+    // loaded tracks is in progress and resume it afterwards.
+    connect(pPlayerManager, SIGNAL(trackAnalyzerProgress(TrackId, AnalyzerProgress)),
+            m_pAnalysisFeature, SLOT(suspendAnalysis()));
+    connect(pPlayerManager, SIGNAL(trackAnalyzerIdle()),
+            m_pAnalysisFeature, SLOT(resumeAnalysis()));
+
     //iTunes and Rhythmbox should be last until we no longer have an obnoxious
     //messagebox popup when you select them. (This forces you to reach for your
     //mouse or keyboard if you're using MIDI control and you scroll through them...)

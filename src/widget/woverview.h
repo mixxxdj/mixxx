@@ -20,32 +20,36 @@
 
 #include "track/track.h"
 #include "widget/wwidget.h"
+#include "analyzer/analyzerprogress.h"
 
 #include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/renderers/waveformmarkset.h"
 #include "waveform/renderers/waveformmarkrange.h"
 #include "skin/skincontext.h"
 
-// Waveform overview display
-// @author Tue Haste Andersen
-class Waveform;
+class PlayerManager;
 
 class WOverview : public WWidget {
     Q_OBJECT
   public:
-    WOverview(const char* pGroup, UserSettingsPointer pConfig, QWidget* parent=nullptr);
-
     void setup(const QDomNode& node, const SkinContext& context);
 
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue) override;
     void slotTrackLoaded(TrackPointer pTrack);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
+    void onTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
 
   signals:
     void trackDropped(QString filename, QString group);
 
   protected:
+    WOverview(
+            const char* group,
+            PlayerManager* pPlayerManager,
+            UserSettingsPointer pConfig,
+            QWidget* parent = nullptr);
+
     void mouseMoveEvent(QMouseEvent *e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
     void mousePressEvent(QMouseEvent *e) override;
@@ -86,7 +90,6 @@ class WOverview : public WWidget {
     void onMarkRangeChange(double v);
 
     void slotWaveformSummaryUpdated();
-    void slotAnalyzerProgress(int progress);
 
   private:
     // Append the waveform overview pixmap according to available data in waveform
@@ -129,8 +132,7 @@ class WOverview : public WWidget {
     double m_a;
     double m_b;
 
-    double m_dAnalyzerProgress;
-    bool m_bAnalyzerFinalizing;
+    AnalyzerProgress m_analyzerProgress;
     bool m_trackLoaded;
     double m_scaleFactor;
 };

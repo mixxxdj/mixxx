@@ -5,7 +5,11 @@
 
 class WOverviewRGB : public WOverview {
   public:
-    WOverviewRGB(const char *pGroup, UserSettingsPointer pConfig, QWidget* parent);
+    WOverviewRGB(
+            const char* group,
+            PlayerManager* pPlayerManager,
+            UserSettingsPointer pConfig,
+            QWidget* parent = nullptr);
 
   private:
     bool drawNextPixmapPart() override;

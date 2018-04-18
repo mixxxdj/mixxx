@@ -16,6 +16,7 @@
 ***************************************************************************/
 
 #include "engine/enginefilter.h"
+#include "engine/enginefilteriir.h"
 #include <QtDebug>
 
 
@@ -45,7 +46,7 @@ EngineFilter::EngineFilter(char * conf, int predefinedType)
         fbuf2 = buf2;
         break;
     default:
-        ff = fid_design(conf, 44100., -1., -1., 1, NULL);
+        ff = EngineFilterIIRBase::fid_design(conf, 44100., -1., -1., 1, NULL);
         qDebug() << "Filter " << conf << " Setup: 0x" << ff;
         run = fid_run_new(ff, &funcp);
         fbuf1 = fid_run_newbuf(run);
