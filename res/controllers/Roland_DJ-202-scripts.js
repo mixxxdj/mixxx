@@ -1,6 +1,16 @@
 var DJ202 = {};
 
-DJ202.tempoRange = [0.08, 0.16, 0.5]
+/////////////////
+// Tweakables. //
+/////////////////
+
+DJ202.stripSearchScaling = 100;
+DJ202.tempoRange = [0.08, 0.16, 0.5];
+
+
+///////////
+// Code. //
+///////////
 
 DJ202.init = function () {
 
@@ -176,8 +186,6 @@ DJ202.Deck = function (deckNumbers, offset) {
         }
     }
 
-    this.stripSearchScaling = 100;
-
     this.wheelTurn = function (channel, control, value, status, group) {
         var newValue = value - 64;
         var deck = script.deckFromGroup(this.currentDeck);
@@ -193,7 +201,7 @@ DJ202.Deck = function (deckNumbers, offset) {
             // of time given a constant turning angle.
             var duration = engine.getValue(this.currentDeck, 'duration');
             newValue = newValue / duration;
-            var newPos = Math.max(0, oldPos + newValue * this.stripSearchScaling);
+            var newPos = Math.max(0, oldPos + newValue * DJ202.stripSearchScaling);
             engine.setValue(this.currentDeck, 'playposition', newPos);
         } else {
             engine.setValue(this.currentDeck, 'jog', newValue); // Pitch bend
