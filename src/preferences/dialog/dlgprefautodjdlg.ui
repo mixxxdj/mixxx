@@ -126,6 +126,23 @@
        </property>
       </widget>
      </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="textAutoDjSyncBpm">
+       <property name="text">
+        <string>Sync BPM during crossfade</string>
+       </property>
+       <property name="buddy">
+        <cstring>ComboBoxAutoDjSyncBpm</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QComboBox" name="ComboBoxAutoDjSyncBpm">
+       <property name="toolTip">
+        <string>Adjust BPM while crossfading</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item row="1" column="0">

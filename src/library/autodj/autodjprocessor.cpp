@@ -541,6 +541,11 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                         otherDeck.setPlayPosition(maxPlaypos);
                     }
                 }
+                // Store the initial speed of the target deck, to compute
+                // adjustments later.
+                ControlProxy* toRate = new ControlProxy(otherDeck.group, "rate");
+                this->initialSyncRate = toRate->get();
+                delete toRate;
                 otherDeck.play();
             }
 
@@ -565,12 +570,23 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             // posThreshold+fadeDuration, we move the crossfader linearly with
             // movements in this track's play position.
 
+            double percentage = (thisPlayPosition - thisDeck.posThreshold) /
+                    (posFadeEnd - thisDeck.posThreshold);
+
+            // Adjust rate of target deck to approach 0% difference to target
+            // deck's speed
+            if (m_pConfig->getValueString(ConfigKey(kConfigKey, "SyncBpm")).toInt() == 1) {
+                double newRate = (1.0 - percentage) * this->initialSyncRate;
+                ControlProxy* m_pCORate = new ControlProxy(otherDeck.group, "rate");
+                m_pCORate->set(newRate);
+                delete m_pCORate;
+            }
+
             // If thisDeck is left, the new crossfade value is -1 plus the
             // adjustment.  If thisDeck is right, the new value is 1.0 minus the
             // adjustment.
             double crossfadeEdgeValue = -1.0;
-            double adjustment = 2 * (thisPlayPosition - thisDeck.posThreshold) /
-                    (posFadeEnd - thisDeck.posThreshold);
+            double adjustment = percentage * 2;
             bool isLeft = thisDeck.isLeft();
             if (!isLeft) {
                 crossfadeEdgeValue = 1.0;

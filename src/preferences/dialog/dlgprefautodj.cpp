@@ -59,6 +59,13 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
             SLOT(slotEnableAutoDJRandomQueue(int)));
     connect(autoDJRandomQueueMinimumSpinBox, SIGNAL(valueChanged(int)), this,
             SLOT(slotSetAutoDJRandomQueueMin(int)));
+
+    // Sync BPM during crossfade
+    ComboBoxAutoDjSyncBpm->addItem(tr("Off"));
+    ComboBoxAutoDjSyncBpm->addItem(tr("On"));
+    ComboBoxAutoDjSyncBpm->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Auto DJ]", "SyncBpm")).toInt());
+    connect(ComboBoxAutoDjSyncBpm, SIGNAL(activated(int)),
+            this, SLOT(slotSetAutoDjSyncBpm(int)));
 }
 
 DlgPrefAutoDJ::~DlgPrefAutoDJ() {
@@ -88,6 +95,8 @@ void DlgPrefAutoDJ::slotApply() {
     m_pConfig->setValue(ConfigKey("[Auto DJ]", "EnableRandomQueue"),
             m_pConfig->getValue(
                     ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"), 0));
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", "SyncBpm"),
+            m_pConfig->getValue(ConfigKey("[Auto DJ]", "SyncBpmBuff"), 0));
 }
 
 void DlgPrefAutoDJ::slotCancel() {
@@ -128,6 +137,11 @@ void DlgPrefAutoDJ::slotCancel() {
                     ConfigKey("[Auto DJ]", "EnableRandomQueue"), 0));
     slotEnableAutoDJRandomQueueComboBox(
             m_pConfig->getValue<int>(ConfigKey("[Auto DJ]", "Requeue")));
+    ComboBoxAutoDjRequeue->setCurrentIndex(
+            m_pConfig->getValue(ConfigKey("[Auto DJ]", "Requeue"), 0));
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", "SyncBpmBuff"),
+            m_pConfig->getValue(ConfigKey("[Auto DJ]", "SyncBpm"), 0));
+
 }
 
 void DlgPrefAutoDJ::slotResetToDefaults() {
@@ -147,6 +161,9 @@ void DlgPrefAutoDJ::slotResetToDefaults() {
     m_pConfig->set(ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),QString("0"));
     autoDJRandomQueueMinimumSpinBox->setEnabled(false);
     ComboBoxAutoDjRandomQueue->setEnabled(true);
+
+    ComboBoxAutoDjSyncBpm->setCurrentIndex(0);
+    m_pConfig->set(ConfigKey("[Auto DJ]", "SyncBpmBuff"),ConfigValue(0));
 }
 
 void DlgPrefAutoDJ::slotSetAutoDjRequeue(int) {
@@ -206,4 +223,9 @@ void DlgPrefAutoDJ::slotEnableAutoDJRandomQueue(int a_iValue) {
         m_pConfig->set(ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),
                 ConfigValue(1));
     }
+}
+
+void DlgPrefAutoDJ::slotSetAutoDjSyncBpm(int) {
+    m_pConfig->set(ConfigKey("[Auto DJ]", "SyncBpmBuff"),
+            ConfigValue(ComboBoxAutoDjSyncBpm->currentIndex()));
 }

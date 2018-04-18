@@ -204,6 +204,7 @@ class AutoDJProcessor : public QObject {
 
     ControlProxy* m_pCOCrossfader;
     ControlProxy* m_pCOCrossfaderReverse;
+    double initialSyncRate;
 
     ControlPushButton* m_pSkipNext;
     ControlPushButton* m_pFadeNow;
