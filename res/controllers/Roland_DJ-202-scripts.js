@@ -127,9 +127,9 @@ DJ202.Deck = function (deckNumbers, offset) {
 
     this.keylock = new components.Button({
         midi: [0x90 + offset, 0x0D],
-        shiftOffset: 1,
-        shiftControl: true,
         sendShifted: true,
+        shiftChannel: true,
+        shiftOffset: 2,
         outKey: 'keylock',
         currentRangeIndex: 0,
         unshift: function () {
@@ -145,13 +145,12 @@ DJ202.Deck = function (deckNumbers, offset) {
                     engine.stopTimer(this.longPressTimer);
                     this.is_held = false;
                 }
+                // The DJ-202 disables the keylock LED when the button is
+                // pressed shifted. Restore the LED when shift is released.
+                this.trigger();
             };
             this.inKey = 'keylock';
             this.outKey = 'keylock';
-            // The DJ-202 disables the keylock LED when the button is pressed
-            // shifted. Restore the LED when shift is released.
-            this.send(this.outGetValue());
-            midi.sendShortMsg(0x84, 0x00, 0x3);
         },
         shift: function () {
             this.inKey = 'rateRange';
