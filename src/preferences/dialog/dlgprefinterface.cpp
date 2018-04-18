@@ -39,13 +39,11 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
     // Iterate through the available locales and add them to the combobox
     // Borrowed following snippet from http://qt-project.org/wiki/How_to_create_a_multi_language_application
     QString translationsFolder = m_pConfig->getResourcePath() + "translations/";
-    QString currentLocale = pConfig->getValueString(ConfigKey("[Config]", "Locale"));
 
     QDir translationsDir(translationsFolder);
     QStringList fileNames = translationsDir.entryList(QStringList("mixxx_*.qm"));
     fileNames.push_back("mixxx_en_US.qm"); // add source language as a fake value
 
-    bool indexFlag = false; // it'll indicate if the selected index changed.
     for (int i = 0; i < fileNames.size(); ++i) {
         // Extract locale from filename
         QString locale = fileNames[i];
@@ -60,19 +58,9 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
         }
         lang = QString("%1 (%2)").arg(lang).arg(country);
         ComboBoxLocale->addItem(lang, locale); // locale as userdata (for storing to config)
-        if (locale == currentLocale) { // Set the currently selected locale
-            ComboBoxLocale->setCurrentIndex(ComboBoxLocale->count() - 1);
-            indexFlag = true;
-        }
     }
     ComboBoxLocale->model()->sort(0); // Sort languages list
-
     ComboBoxLocale->insertItem(0, "System", ""); // System default locale - insert at the top
-    if (!indexFlag) { // if selectedIndex didn't change - select system default
-        ComboBoxLocale->setCurrentIndex(0);
-    }
-    connect(ComboBoxLocale, SIGNAL(activated(int)),
-            this, SLOT(slotSetLocale(int)));
 
     //
     // Skin configurations
@@ -278,10 +266,6 @@ void DlgPrefInterface::slotResetToDefaults() {
     radioButtonKeepMetaknobPosition->setChecked(true);
 }
 
-void DlgPrefInterface::slotSetLocale(int pos) {
-    m_locale = ComboBoxLocale->itemData(pos).toString();
-}
-
 void DlgPrefInterface::slotSetScaleFactor(double newValue) {
     // The spinbox shows a percentage, but Mixxx stores a multiplication factor
     // with 1.00 as no change.
@@ -345,7 +329,9 @@ void DlgPrefInterface::slotApply() {
     m_pConfig->set(ConfigKey("[Config]", "ResizableSkin"), m_skin);
     m_pConfig->set(ConfigKey("[Config]", "Scheme"), m_colorScheme);
 
-    m_pConfig->set(ConfigKey("[Config]", "Locale"), m_locale);
+    QString locale = ComboBoxLocale->itemData(
+            ComboBoxLocale->currentIndex()).toString();
+    m_pConfig->set(ConfigKey("[Config]", "Locale"), locale);
 
     m_pConfig->setValue(
             ConfigKey("[Config]", "ScaleFactorAuto"), m_bUseAutoScaleFactor);
@@ -373,10 +359,10 @@ void DlgPrefInterface::slotApply() {
                 static_cast<mixxx::ScreenSaverPreference>(screensaverComboBoxState));
     }
 
-    if (m_locale != m_localeOnUpdate) {
+    if (locale != m_localeOnUpdate) {
         notifyRebootNecessary();
         // hack to prevent showing the notification when pressing "Okay" after "Apply"
-        m_localeOnUpdate = m_locale;
+        m_localeOnUpdate = locale;
     }
 
     if (m_bRebootMixxxView) {

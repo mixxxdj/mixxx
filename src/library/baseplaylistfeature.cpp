@@ -19,11 +19,17 @@
 #include "widget/wlibrarytextbrowser.h"
 #include "util/assert.h"
 
+namespace {
+
+const int kClickedChildActivationTimeoutMillis = 100;
+
+} // anonymous namespace
+
 BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
                                          UserSettingsPointer pConfig,
                                          TrackCollection* pTrackCollection,
                                          QString rootViewName)
-        : LibraryFeature(pConfig, parent),
+        : LibraryFeature(pConfig, kClickedChildActivationTimeoutMillis, parent),
           m_pTrackCollection(pTrackCollection),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_trackDao(pTrackCollection->getTrackDAO()),

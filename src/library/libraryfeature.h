@@ -29,11 +29,23 @@ class KeyboardEventFilter;
 class LibraryFeature : public QObject {
   Q_OBJECT
   public:
-    LibraryFeature(QObject* parent = NULL);
+    explicit LibraryFeature(
+          QObject* parent);
+    explicit LibraryFeature(
+            int clickedChildActivationTimeoutMillis,
+            QObject* parent = nullptr);
+    explicit LibraryFeature(
+            UserSettingsPointer pConfig,
+            QObject* parent = nullptr);
+    explicit LibraryFeature(
+            UserSettingsPointer pConfig,
+            int clickedChildActivationTimeoutMillis,
+            QObject* parent = nullptr);
+    ~LibraryFeature() override = default;
 
-    LibraryFeature(UserSettingsPointer pConfig,
-                   QObject* parent = NULL);
-    virtual ~LibraryFeature();
+    int clickedChildActivationTimeoutMillis() const {
+        return m_clickedChildActivationTimeoutMillis;
+    }
 
     virtual QVariant title() = 0;
     virtual QIcon getIcon() = 0;
@@ -124,6 +136,7 @@ class LibraryFeature : public QObject {
   private: 
     QStringList getPlaylistFiles(QFileDialog::FileMode mode) const;
 
+    const int m_clickedChildActivationTimeoutMillis;
 };
 
 #endif /* LIBRARYFEATURE_H */
