@@ -928,11 +928,11 @@ QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
     // "RGB" = "2", "HSV" = "1" or "Filtered" = "0" (LMH) waveform overview type
     int type = m_pConfig->getValue(ConfigKey("[Waveform]","WaveformOverviewType"), 2);
     if (type == 0) {
-        overviewWidget = new WOverviewLMH(pSafeChannelStr, m_pConfig, m_pParent);
+        overviewWidget = new WOverviewLMH(pSafeChannelStr, m_pPlayerManager, m_pConfig, m_pParent);
     } else if (type == 1) {
-        overviewWidget = new WOverviewHSV(pSafeChannelStr, m_pConfig, m_pParent);
+        overviewWidget = new WOverviewHSV(pSafeChannelStr, m_pPlayerManager, m_pConfig, m_pParent);
     } else {
-        overviewWidget = new WOverviewRGB(pSafeChannelStr, m_pConfig, m_pParent);
+        overviewWidget = new WOverviewRGB(pSafeChannelStr, m_pPlayerManager, m_pConfig, m_pParent);
     }
 
     connect(overviewWidget, SIGNAL(trackDropped(QString, QString)),

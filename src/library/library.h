@@ -34,7 +34,7 @@ class PlaylistFeature;
 class CrateFeature;
 class LibraryControl;
 class KeyboardEventFilter;
-class PlayerManagerInterface;
+class PlayerManager;
 
 class Library: public QObject,
     public virtual /*implements*/ GlobalTrackCacheSaver {
@@ -48,12 +48,17 @@ class Library: public QObject,
     Library(QObject* parent,
             UserSettingsPointer pConfig,
             mixxx::DbConnectionPoolPtr pDbConnectionPool,
-            PlayerManagerInterface* pPlayerManager,
+            PlayerManager* pPlayerManager,
             RecordingManager* pRecordingManager);
     ~Library() override;
 
     mixxx::DbConnectionPoolPtr dbConnectionPool() const {
         return m_pDbConnectionPool;
+    }
+
+    TrackCollection& trackCollection() {
+        DEBUG_ASSERT(m_pTrackCollection);
+        return *m_pTrackCollection;
     }
 
     void bindWidget(WLibrary* libraryWidget,
