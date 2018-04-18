@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MixxxControllerPreset mixxxVersion="2.1.0-beta1" schemaVersion="1">
+  <info>
+    <name>Krüger &amp; Matz Dj-001</name>
+    <description>Krüger &amp; Matz Dj-001 for mixxx 2.1.0</description>
+    <author>Jairo Master Zion</author>
+    <forums>https://github.com/masterzion/mixxx-KrugerMatz_Dj-001/pulls</forums>
+    <wiki>https://github.com/masterzion/mixxx-KrugerMatz_Dj-001/wiki</wiki>
+  </info>
+  <controller id="KrugerMatzDJ001">
+    <scriptfiles>
+       <file filename="KrugerMatz-Dj-001-scripts.js" functionprefix="KrugerMatzDJ001"/>
+    </scriptfiles>
+    <controls>
+
+      <control>
+        <group>[Channel1]</group>
+        <key>KrugerMatzDJ001.wheelTouch</key>
+        <status>0x80</status>
+        <midino>0x4D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>KrugerMatzDJ001.wheelTurn</key>
+        <status>0xB0</status>
+        <midino>0x19</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
+
+      <control>
+        <group>[Channel2]</group>
+        <key>KrugerMatzDJ001.wheelTouch</key>
+        <status>0x80</status>
+        <midino>0x4E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>KrugerMatzDJ001.wheelTurn</key>
+        <status>0xB0</status>
+        <midino>0x18</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
+      <control>
+        <group>[Library]</group>
+        <key>KrugerMatzDJ001.rotarySelector</key>
+        <description>MIDI Learned from 218 messages.</description>
+        <status>0xB0</status>
+        <midino>0x1A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
+
+      <control>
+          <group>[Library]</group>
+          <key>MoveFocus</key>
+          <description>MIDI Learned from 2 messages.</description>
+          <status>0x90</status>
+          <midino>0x0D</midino>
+          <options>
+              <normal/>
+          </options>
+      </control>
+
+
+      <control>
+        <group>[Channel2]</group>
+        <key>loop_out</key>
+        <description>MIDI Learned from 2 messages.</description>
+        <status>0x90</status>
+        <midino>0x3C</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>volume</key>
+        <description>MIDI Learned from 632 messages.</description>
+        <status>0xB0</status>
+        <midino>0x09</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter2</key>
+        <description>MIDI Learned from 239 messages.</description>
+        <status>0xB0</status>
+        <midino>0x15</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>group_[Channel1]_enable</key>
+        <description>MIDI Learned from 2 messages.</description>
+        <status>0x90</status>
+        <midino>0x48</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>volume</key>
+        <description>MIDI Learned from 344 messages.</description>
+        <status>0xB0</status>
+        <midino>0x08</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>cue_gotoandplay</key>
+        <description>MIDI Learned from 2 messages.</description>
+        <status>0x90</status>
+        <midino>0x3B</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter1</key>
+        <description>MIDI Learned from 234 messages.</description>
+        <status>0xB0</status>
+        <midino>0x14</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>loop_in</key>
+        <description>MIDI Learned from 2 messages.</description>
+        <status>0x90</status>
+        <midino>0x47</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>group_[Channel2]_enable</key>
+        <description>MIDI Learned from 2 messages.</description>
+        <status>0x80</status>
+        <midino>0x35</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>LoadSelectedTrack</key>
+        <description>MIDI Learned from 2 messages.</description>
+        <status>0x80</status>
+        <midino>0x34</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter1</key>
+        <description>MIDI Learned from 371 messages.</description>
+        <status>0xB0</status>
+        <midino>0x11</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>LoadSelectedTrack</key>
+        <description>MIDI Learned from 2 messages.</description>
+        <status>0x80</status>
+        <midino>0x4B</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter2</key>
+        <description>MIDI Learned from 247 messages.</description>
+        <status>0xB0</status>
+        <midino>0x10</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>cue_gotoandplay</key>
+        <description>MIDI Learned from 2 messages.</description>
+        <status>0x90</status>
+        <midino>0x42</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>group_[Channel2]_enable</key>
+        <description>MIDI Learned from 2 messages.</description>
+        <status>0x90</status>
+        <midino>0x35</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>group_[Channel1]_enable</key>
+        <description>MIDI Learned from 2 messages.</description>
+        <status>0x80</status>
+        <midino>0x48</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[QuickEffectRack1_[Channel1]]</group>
+        <key>super1_set_default</key>
+        <description>MIDI Learned from 239 messages.</description>
+        <status>0x90</status>
+        <midino>0x4D</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>LoadSelectedTrack</key>
+        <description>MIDI Learned from 2 messages.</description>
+        <status>0x90</status>
+        <midino>0x34</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>loop_in</key>
+        <description>MIDI Learned from 2 messages.</description>
+        <status>0x90</status>
+        <midino>0x40</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>play</key>
+        <description>MIDI Learned from 2 messages.</description>
+        <status>0x90</status>
+        <midino>0x4C</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>loop_out</key>
+        <description>MIDI Learned from 2 messages.</description>
+        <status>0x90</status>
+        <midino>0x33</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>LoadSelectedTrack</key>
+        <description>MIDI Learned from 2 messages.</description>
+        <status>0x90</status>
+        <midino>0x4B</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>play</key>
+        <description>MIDI Learned from 2 messages.</description>
+        <status>0x90</status>
+        <midino>0x4A</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>gain</key>
+        <description>MIDI Learned from 243 messages.</description>
+        <status>0xB0</status>
+        <midino>0x17</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel1]</group>
+        <key>rate_perm_up_small</key>
+        <description>MIDI Learned from 2 messages.</description>
+        <status>0x90</status>
+        <midino>0x44</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>rate_perm_down_small</key>
+        <description>MIDI Learned from 2 messages.</description>
+        <status>0x90</status>
+        <midino>0x43</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel2]</group>
+        <key>rate_perm_up_small</key>
+        <description>MIDI Learned from 2 messages.</description>
+        <status>0x90</status>
+        <midino>0x46</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>rate_perm_down_small</key>
+        <description>MIDI Learned from 2 messages.</description>
+        <status>0x90</status>
+        <midino>0x45</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+
+
+      <control>
+        <group>[Master]</group>
+        <key>crossfader</key>
+        <description>MIDI Learned from 380 messages.</description>
+        <status>0xB0</status>
+        <midino>0x0A</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+    </controls>
+    <outputs>
+      <output>
+        <group>[Channel2]</group>
+        <key>cue_indicator</key>
+        <status>0x90</status>
+        <midino>0x42</midino>
+        <on>0x01</on>
+        <minimum>0.01</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>cue_indicator</key>
+        <status>0x90</status>
+        <midino>0x3B</midino>
+        <on>0x01</on>
+        <minimum>0.01</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>group_[Channel2]_enable</key>
+        <status>0x90</status>
+        <midino>0x35</midino>
+        <on>0x01</on>
+        <minimum>0.01</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>play_indicator</key>
+        <status>0x90</status>
+        <midino>0x4C</midino>
+        <on>0x01</on>
+        <minimum>0.01</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>play_indicator</key>
+        <status>0x90</status>
+        <midino>0x4A</midino>
+        <on>0x01</on>
+        <minimum>0.01</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>loop_enabled</key>
+        <status>0x90</status>
+        <midino>0x40</midino>
+        <on>0x01</on>
+        <minimum>0.01</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>loop_enabled</key>
+        <status>0x90</status>
+        <midino>0x47</midino>
+        <on>0x01</on>
+        <minimum>0.01</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>group_[Channel1]_enable</key>
+        <status>0x90</status>
+        <midino>0x48</midino>
+        <on>0x01</on>
+        <minimum>0.01</minimum>
+      </output>
+    </outputs>
+  </controller>
+</MixxxControllerPreset>
