@@ -438,6 +438,48 @@ DJ202.Deck = function (deckNumbers, offset) {
         inKey: 'volume',
     });
 
+    this.setDeck = new components.Button({
+        midi: [0x90 + offset, 0x08],
+        deck: this,
+        input: function (channel, control, value, status, group) {
+            var currentDeck = script.deckFromGroup(this.deck.currentDeck);
+            var otherDeck = currentDeck == deckNumbers[0] ? deckNumbers[1] : deckNumbers[0];
+
+            otherDeck = '[Channel' + otherDeck + ']';
+
+            if (value) {                                        // Button press.
+                this.longPressTimer = engine.beginTimer(
+                    this.longPressTimeout,
+                    function () { this.isLongPressed = true },
+                    true
+                );
+                this.deck.setCurrentDeck(otherDeck);
+                return;
+            }                                           // Else: Button release.
+
+            if (this.longPressTimer) {
+                engine.stopTimer(this.longPressTimer);
+                this.longPressTimer = null;
+            }
+
+            // Since we are in the release phase, currentDeck still reflects the
+            // switched decks. So if we are now using deck 1/3, we were
+            // originally using deck 2/4 and vice versa.
+            var deckWasVanilla = currentDeck == deckNumbers[1]
+
+            if (this.isLongPressed) {                     // Release long press.
+                this.isLongPressed = false;
+                // Return to the original state.
+                this.send(deckWasVanilla ? 0 : 0x7f);
+                this.deck.setCurrentDeck(otherDeck);
+                return;
+            }                                      // Else: Release short press.
+
+            // Invert the deck state.
+            this.send(deckWasVanilla ? 0x7f : 0);
+        }
+    });
+
     this.reconnectComponents(function (component) {
         if (component.group === undefined) {
             component.group = this.currentDeck;
