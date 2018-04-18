@@ -6,6 +6,7 @@ var DJ202 = {};
 
 DJ202.stripSearchScaling = 100;
 DJ202.tempoRange = [0.08, 0.16, 0.5];
+DJ202.autoFocusEffects = false;
 
 
 ///////////
@@ -502,7 +503,11 @@ DJ202.EffectUnit = function (unitNumber) {
                 } else {
                     if (!this.isLongPressed) {
                         var effectGroup = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + this.buttonNumber + ']';
+                        var wasEnabled = engine.getValue(effectGroup, 'enabled');
                         script.toggleControl(effectGroup, 'enabled');
+                        if (!wasEnabled && DJ202.autoFocusEffects) {
+                            engine.setValue(eu.group, 'focused_effect', this.buttonNumber);
+                        }
                     }
                     this.isLongPressed = false;
                     engine.stopTimer(this.longPressTimer);
