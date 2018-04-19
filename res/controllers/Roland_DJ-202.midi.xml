@@ -543,7 +543,7 @@
             <!-- Deck 1, Loop-Mode, Param⁻ -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <key>DJ202.leftDeck.paramPlusMinus.input</key>
                 <status>0x94</status>
                 <midino>0x41</midino>
                 <options>
@@ -553,7 +553,7 @@
             <!-- Deck 1, Loop-Mode, Param⁺ -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <key>DJ202.leftDeck.paramPlusMinus.input</key>
                 <status>0x94</status>
                 <midino>0x42</midino>
                 <options>
@@ -563,7 +563,7 @@
             <!-- Deck 1, Hot-Cue-Mode, Param- -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <key>DJ202.leftDeck.paramPlusMinus.input</key>
                 <status>0x94</status>
                 <midino>0x43</midino>
                 <options>
@@ -573,7 +573,7 @@
             <!-- Deck 1, Hot-Cue-Mode, Param⁺ -->
             <control>
               <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <key>DJ202.leftDeck.paramPlusMinus.input</key>
                 <status>0x94</status>
                 <midino>0x44</midino>
                 <options>
@@ -583,7 +583,7 @@
             <!-- Deck1, Sampler-Mode, Param⁻ -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <key>DJ202.leftDeck.paramPlusMinus.input</key>
                 <status>0x94</status>
                 <midino>0x45</midino>
                 <options>
@@ -593,7 +593,7 @@
             <!-- Deck1, Sampler-Mode, Param⁺ -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <key>DJ202.leftDeck.paramPlusMinus.input</key>
                 <status>0x94</status>
                 <midino>0x46</midino>
                 <options>
@@ -603,7 +603,7 @@
             <!-- Deck 1, Loop-Mode, Shift+Param⁻ -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <key>DJ202.leftDeck.paramPlusMinus.input</key>
                 <status>0x94</status>
                 <midino>0x49</midino>
                 <options>
@@ -613,7 +613,7 @@
             <!-- Deck 1, Loop-Mode, Shift+Param⁺ -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <key>DJ202.leftDeck.paramPlusMinus.input</key>
                 <status>0x94</status>
                 <midino>0x4A</midino>
                 <options>
@@ -623,7 +623,7 @@
             <!-- Deck 1, Hot-Cue-Mode, Shift+Param⁻ -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <key>DJ202.leftDeck.paramPlusMinus.input</key>
                 <status>0x94</status>
                 <midino>0x4B</midino>
                 <options>
@@ -633,7 +633,7 @@
             <!-- Deck 1, Hot-Cue-Mode, Shift+Param⁺ -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <key>DJ202.leftDeck.paramPlusMinus.input</key>
                 <status>0x94</status>
                 <midino>0x4C</midino>
                 <options>
@@ -643,7 +643,7 @@
             <!-- Deck 1, Sampler-Mode, Shift+Param⁻ -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <key>DJ202.leftDeck.paramPlusMinus.input</key>
                 <status>0x94</status>
                 <midino>0x4D</midino>
                 <options>
@@ -653,7 +653,7 @@
             <!-- Deck 1, Sample-Mode, Shift+Param⁺ -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <key>DJ202.leftDeck.paramPlusMinus.input</key>
                 <status>0x94</status>
                 <midino>0x4E</midino>
                 <options>
@@ -1208,7 +1208,7 @@
             <!-- Deck 3, Loop-Mode, Param⁻ -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <key>DJ202.leftDeck.paramPlusMinus.input</key>
                 <status>0x96</status>
                 <midino>0x41</midino>
                 <options>
@@ -1218,7 +1218,7 @@
             <!-- Deck 3, Loop-Mode, Param⁺ -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <key>DJ202.leftDeck.paramPlusMinus.input</key>
                 <status>0x96</status>
                 <midino>0x42</midino>
                 <options>
@@ -1228,7 +1228,7 @@
             <!-- Deck 3, Hot-Cue-Mode, Param- -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <key>DJ202.leftDeck.paramPlusMinus.input</key>
                 <status>0x96</status>
                 <midino>0x43</midino>
                 <options>
@@ -1238,7 +1238,7 @@
             <!-- Deck 3, Hot-Cue-Mode, Param⁺ -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <key>DJ202.leftDeck.paramPlusMinus.input</key>
                 <status>0x96</status>
                 <midino>0x44</midino>
                 <options>
@@ -1248,7 +1248,7 @@
             <!-- Deck1, Sampler-Mode, Param⁻ -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <key>DJ202.leftDeck.paramPlusMinus.input</key>
                 <status>0x96</status>
                 <midino>0x45</midino>
                 <options>
@@ -1258,7 +1258,7 @@
             <!-- Deck1, Sampler-Mode, Param⁺ -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <key>DJ202.leftDeck.paramPlusMinus.input</key>
                 <status>0x96</status>
                 <midino>0x46</midino>
                 <options>
@@ -1268,7 +1268,7 @@
             <!-- Deck 3, Loop-Mode, Shift+Param⁻ -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <key>DJ202.leftDeck.paramPlusMinus.input</key>
                 <status>0x96</status>
                 <midino>0x49</midino>
                 <options>
@@ -1278,7 +1278,7 @@
             <!-- Deck 3, Loop-Mode, Shift+Param⁺ -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <key>DJ202.leftDeck.paramPlusMinus.input</key>
                 <status>0x96</status>
                 <midino>0x4A</midino>
                 <options>
@@ -1288,7 +1288,7 @@
             <!-- Deck 3, Hot-Cue-Mode, Shift+Param⁻ -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <key>DJ202.leftDeck.paramPlusMinus.input</key>
                 <status>0x96</status>
                 <midino>0x4B</midino>
                 <options>
@@ -1298,7 +1298,7 @@
             <!-- Deck 3, Hot-Cue-Mode, Shift+Param⁺ -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <key>DJ202.leftDeck.paramPlusMinus.input</key>
                 <status>0x96</status>
                 <midino>0x4C</midino>
                 <options>
@@ -1308,7 +1308,7 @@
             <!-- Deck 3, Sampler-Mode, Shift+Param⁻ -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <key>DJ202.leftDeck.paramPlusMinus.input</key>
                 <status>0x96</status>
                 <midino>0x4D</midino>
                 <options>
@@ -1318,7 +1318,7 @@
             <!-- Deck 3, Sample-Mode, Shift+Param⁺ -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.paramPlusMinus</key>
+                <key>DJ202.leftDeck.paramPlusMinus.input</key>
                 <status>0x96</status>
                 <midino>0x4E</midino>
                 <options>
@@ -1955,7 +1955,7 @@
             <!-- Deck 2, Loop-Mode, Param⁻ -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <key>DJ202.rightDeck.paramPlusMinus.input</key>
                 <status>0x95</status>
                 <midino>0x41</midino>
                 <options>
@@ -1965,7 +1965,7 @@
             <!-- Deck 2, Loop-Mode, Param⁺ -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <key>DJ202.rightDeck.paramPlusMinus.input</key>
                 <status>0x95</status>
                 <midino>0x42</midino>
                 <options>
@@ -1975,7 +1975,7 @@
             <!-- Deck 2, Hot-Cue-Mode, Param⁻ -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <key>DJ202.rightDeck.paramPlusMinus.input</key>
                 <status>0x95</status>
                 <midino>0x43</midino>
                 <options>
@@ -1985,7 +1985,7 @@
             <!-- Deck 2, Hot-Cue-Mode, Param⁺ -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <key>DJ202.rightDeck.paramPlusMinus.input</key>
                 <status>0x95</status>
                 <midino>0x44</midino>
                 <options>
@@ -1995,7 +1995,7 @@
             <!-- Deck 2, Sampler-Mode, Param⁻ -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <key>DJ202.rightDeck.paramPlusMinus.input</key>
                 <status>0x95</status>
                 <midino>0x45</midino>
                 <options>
@@ -2005,7 +2005,7 @@
             <!-- Deck 2, Sampler-Mode, Param⁺ -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <key>DJ202.rightDeck.paramPlusMinus.input</key>
                 <status>0x95</status>
                 <midino>0x46</midino>
                 <options>
@@ -2015,7 +2015,7 @@
             <!-- Deck 2, Loop-Mode, Shift+Param⁻ -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <key>DJ202.rightDeck.paramPlusMinus.input</key>
                 <status>0x95</status>
                 <midino>0x49</midino>
                 <options>
@@ -2025,7 +2025,7 @@
             <!-- Deck 2, Loop-Mode, Shift+Param⁺ -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <key>DJ202.rightDeck.paramPlusMinus.input</key>
                 <status>0x95</status>
                 <midino>0x4A</midino>
                 <options>
@@ -2035,7 +2035,7 @@
             <!-- Deck 2, Hot-Cue-Mode, Shift+Param⁻ -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <key>DJ202.rightDeck.paramPlusMinus.input</key>
                 <status>0x95</status>
                 <midino>0x4B</midino>
                 <options>
@@ -2045,7 +2045,7 @@
             <!-- Deck 2, Hot-Cue-Mode, Shift+Param⁺ -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <key>DJ202.rightDeck.paramPlusMinus.input</key>
                 <status>0x95</status>
                 <midino>0x4C</midino>
                 <options>
@@ -2055,7 +2055,7 @@
             <!-- Deck 2, Sampler-Mode, Shift+Param⁻ -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <key>DJ202.rightDeck.paramPlusMinus.input</key>
                 <status>0x95</status>
                 <midino>0x4D</midino>
                 <options>
@@ -2065,7 +2065,7 @@
             <!-- Deck 2, Sample-Mode, Shift+Param⁺ -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <key>DJ202.rightDeck.paramPlusMinus.input</key>
                 <status>0x95</status>
                 <midino>0x4E</midino>
                 <options>
@@ -2620,7 +2620,7 @@
             <!-- Deck 4, Loop-Mode, Param⁻ -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <key>DJ202.rightDeck.paramPlusMinus.input</key>
                 <status>0x97</status>
                 <midino>0x41</midino>
                 <options>
@@ -2630,7 +2630,7 @@
             <!-- Deck 4, Loop-Mode, Param⁺ -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <key>DJ202.rightDeck.paramPlusMinus.input</key>
                 <status>0x97</status>
                 <midino>0x42</midino>
                 <options>
@@ -2640,7 +2640,7 @@
             <!-- Deck 4, Hot-Cue-Mode, Param⁻ -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <key>DJ202.rightDeck.paramPlusMinus.input</key>
                 <status>0x97</status>
                 <midino>0x43</midino>
                 <options>
@@ -2650,7 +2650,7 @@
             <!-- Deck 4, Hot-Cue-Mode, Param⁺ -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <key>DJ202.rightDeck.paramPlusMinus.input</key>
                 <status>0x97</status>
                 <midino>0x44</midino>
                 <options>
@@ -2660,7 +2660,7 @@
             <!-- Deck 4, Sampler-Mode, Param⁻ -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <key>DJ202.rightDeck.paramPlusMinus.input</key>
                 <status>0x97</status>
                 <midino>0x45</midino>
                 <options>
@@ -2670,7 +2670,7 @@
             <!-- Deck 4, Sampler-Mode, Param⁺ -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <key>DJ202.rightDeck.paramPlusMinus.input</key>
                 <status>0x97</status>
                 <midino>0x46</midino>
                 <options>
@@ -2680,7 +2680,7 @@
             <!-- Deck 4, Loop-Mode, Shift+Param⁻ -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <key>DJ202.rightDeck.paramPlusMinus.input</key>
                 <status>0x97</status>
                 <midino>0x49</midino>
                 <options>
@@ -2690,7 +2690,7 @@
             <!-- Deck 4, Loop-Mode, Shift+Param⁺ -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <key>DJ202.rightDeck.paramPlusMinus.input</key>
                 <status>0x97</status>
                 <midino>0x4A</midino>
                 <options>
@@ -2700,7 +2700,7 @@
             <!-- Deck 4, Hot-Cue-Mode, Shift+Param⁻ -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <key>DJ202.rightDeck.paramPlusMinus.input</key>
                 <status>0x97</status>
                 <midino>0x4B</midino>
                 <options>
@@ -2710,7 +2710,7 @@
             <!-- Deck 4, Hot-Cue-Mode, Shift+Param⁺ -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <key>DJ202.rightDeck.paramPlusMinus.input</key>
                 <status>0x97</status>
                 <midino>0x4C</midino>
                 <options>
@@ -2720,7 +2720,7 @@
             <!-- Deck 4, Sampler-Mode, Shift+Param⁻ -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <key>DJ202.rightDeck.paramPlusMinus.input</key>
                 <status>0x97</status>
                 <midino>0x4D</midino>
                 <options>
@@ -2730,7 +2730,7 @@
             <!-- Deck 4, Sample-Mode, Shift+Param⁺ -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.paramPlusMinus</key>
+                <key>DJ202.rightDeck.paramPlusMinus.input</key>
                 <status>0x97</status>
                 <midino>0x4E</midino>
                 <options>
