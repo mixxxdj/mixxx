@@ -4,7 +4,7 @@ var DJ202 = {};
 // Tweakables. //
 /////////////////
 
-DJ202.stripSearchScaling = 100;
+DJ202.stripSearchScaling = 50;
 DJ202.tempoRange = [0.08, 0.16, 0.5];
 DJ202.autoFocusEffects = false;
 
