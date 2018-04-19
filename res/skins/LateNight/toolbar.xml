@@ -160,29 +160,6 @@
             </Connection>
           </PushButton>
 
-          <WidgetGroup>
-            <ObjectName>ToolbarDivider</ObjectName>
-            <Size>13f,9min</Size>
-          </WidgetGroup>
-
-          <PushButton>
-            <Size>69f,24f</Size>
-            <TooltipId>skin_settings</TooltipId>
-            <ObjectName>GuiToggleButton</ObjectName>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>SETTINGS</Text>
-           </State>
-           <State>
-              <Number>1</Number>
-              <Text>SETTINGS</Text>
-          </State>
-          <Connection>
-            <ConfigKey persist="true">[Latenight],skin_settings</ConfigKey>
-          </Connection>
-         </PushButton>
-
         </Children>
         <Connection>
           <ConfigKey>[Master],maximize_library</ConfigKey>
@@ -241,6 +218,29 @@
           </Template>
         </Children>
       </WidgetGroup><!-- /Recording button & recording duration label -->
+
+      <WidgetGroup>
+        <ObjectName>ToolbarDivider</ObjectName>
+        <Size>15f,9min</Size>
+      </WidgetGroup>
+
+          <PushButton>
+            <Size>69f,24f</Size>
+            <TooltipId>skin_settings</TooltipId>
+            <ObjectName>GuiToggleButton</ObjectName>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>SETTINGS</Text>
+           </State>
+           <State>
+              <Number>1</Number>
+              <Text>SETTINGS</Text>
+          </State>
+          <Connection>
+            <ConfigKey persist="true">[Latenight],skin_settings</ConfigKey>
+          </Connection>
+         </PushButton>
 
       <WidgetGroup> <!-- Spacer -->
         <Layout>horizontal</Layout>

@@ -181,6 +181,37 @@ Description:
                 </Children>
               </WidgetGroup><!-- /EQ Kill -->
 
+              <WidgetGroup><!-- crossfader -->
+                <Layout>stacked</Layout>
+                <MinimumSize>182,13</MinimumSize>
+                <MaximumSize>182,17</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <MinimumSize>182,13</MinimumSize>
+                    <MaximumSize>182,17</MaximumSize>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Connection>
+                      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="state_1_text">      Crossfader</SetVariable>
+                    <SetVariable name="state_0_text"> &#10004; Crossfader</SetVariable>
+                    <SetVariable name="Setting">[Master],show_xfader</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup><!-- /crossfader -->
+
             </Children>
           </WidgetGroup><!-- /Mixer -->
 
