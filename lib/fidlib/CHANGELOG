@@ -4,3 +4,4 @@
 
 * Thu Apr 19 2018 Uwe Klotz <uklotz@mixxx.org>
 - Thread-safe invocation of code for generating filters
+- Fix compiler warnings
