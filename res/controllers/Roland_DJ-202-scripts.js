@@ -79,6 +79,16 @@ DJ202.Deck = function (deckNumbers, offset) {
         },
     });
 
+    this.slipModeButton = new components.Button({
+        inKey: 'slip_enabled',
+        outKey: 'slip_enabled',
+        connect: function () {
+            var deck = script.deckFromGroup(this.group);
+            this.midi = [0x90 + deck - 1, 0x7];
+            components.Button.prototype.connect.call(this);
+        }
+    });
+
     this.paramPlusMinus = new components.Button({
         deck: this,
         input: function (channel, control, value, status, group) {
