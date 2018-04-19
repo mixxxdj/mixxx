@@ -241,7 +241,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.leftDeck.samplerButton[1].input</key>
                 <status>0x94</status>
                 <midino>0x21</midino>
@@ -250,7 +250,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.leftDeck.samplerButton[2].input</key>
                 <status>0x94</status>
                 <midino>0x22</midino>
@@ -259,7 +259,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.leftDeck.samplerButton[3].input</key>
                 <status>0x94</status>
                 <midino>0x23</midino>
@@ -268,7 +268,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.leftDeck.samplerButton[4].input</key>
                 <status>0x94</status>
                 <midino>0x24</midino>
@@ -277,7 +277,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.leftDeck.samplerButton[5].input</key>
                 <status>0x94</status>
                 <midino>0x25</midino>
@@ -286,7 +286,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.leftDeck.samplerButton[6].input</key>
                 <status>0x94</status>
                 <midino>0x26</midino>
@@ -295,7 +295,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.leftDeck.samplerButton[7].input</key>
                 <status>0x94</status>
                 <midino>0x27</midino>
@@ -304,7 +304,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.leftDeck.samplerButton[8].input</key>
                 <status>0x94</status>
                 <midino>0x28</midino>
@@ -386,7 +386,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.leftDeck.samplerButton[1].input</key>
                 <status>0x94</status>
                 <midino>0x29</midino>
@@ -395,7 +395,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.leftDeck.samplerButton[2].input</key>
                 <status>0x94</status>
                 <midino>0x2A</midino>
@@ -404,7 +404,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.leftDeck.samplerButton[3].input</key>
                 <status>0x94</status>
                 <midino>0x2B</midino>
@@ -413,7 +413,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.leftDeck.samplerButton[4].input</key>
                 <status>0x94</status>
                 <midino>0x2C</midino>
@@ -422,7 +422,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.leftDeck.samplerButton[5].input</key>
                 <status>0x94</status>
                 <midino>0x2D</midino>
@@ -431,7 +431,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.leftDeck.samplerButton[6].input</key>
                 <status>0x94</status>
                 <midino>0x2E</midino>
@@ -440,7 +440,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.leftDeck.samplerButton[7].input</key>
                 <status>0x94</status>
                 <midino>0x2F</midino>
@@ -449,7 +449,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.leftDeck.samplerButton[8].input</key>
                 <status>0x94</status>
                 <midino>0x30</midino>
@@ -906,72 +906,72 @@
                 </options>
             </control>
             <control>
-                <group>[Channel3]</group>
-                <key>DJ202.leftDeck.samplerButton[1].input</key>
-                <status>0x96</status>
+                <group>[Sampler]</group>
+                <key>DJ202.rightDeck.samplerButton[1].input</key>
+                <status>0x95</status>
                 <midino>0x21</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel3]</group>
-                <key>DJ202.leftDeck.samplerButton[2].input</key>
-                <status>0x96</status>
+                <group>[Sampler]</group>
+                <key>DJ202.rightDeck.samplerButton[2].input</key>
+                <status>0x95</status>
                 <midino>0x22</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel3]</group>
-                <key>DJ202.leftDeck.samplerButton[3].input</key>
-                <status>0x96</status>
+                <group>[Sampler]</group>
+                <key>DJ202.rightDeck.samplerButton[3].input</key>
+                <status>0x95</status>
                 <midino>0x23</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel3]</group>
-                <key>DJ202.leftDeck.samplerButton[4].input</key>
-                <status>0x96</status>
+                <group>[Sampler]</group>
+                <key>DJ202.rightDeck.samplerButton[4].input</key>
+                <status>0x95</status>
                 <midino>0x24</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel3]</group>
-                <key>DJ202.leftDeck.samplerButton[5].input</key>
-                <status>0x96</status>
+                <group>[Sampler]</group>
+                <key>DJ202.rightDeck.samplerButton[5].input</key>
+                <status>0x95</status>
                 <midino>0x25</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel3]</group>
-                <key>DJ202.leftDeck.samplerButton[6].input</key>
-                <status>0x96</status>
+                <group>[Sampler]</group>
+                <key>DJ202.rightDeck.samplerButton[6].input</key>
+                <status>0x95</status>
                 <midino>0x26</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel3]</group>
-                <key>DJ202.leftDeck.samplerButton[7].input</key>
-                <status>0x96</status>
+                <group>[Sampler]</group>
+                <key>DJ202.rightDeck.samplerButton[7].input</key>
+                <status>0x95</status>
                 <midino>0x27</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel3]</group>
-                <key>DJ202.leftDeck.samplerButton[8].input</key>
-                <status>0x96</status>
+                <group>[Sampler]</group>
+                <key>DJ202.rightDeck.samplerButton[8].input</key>
+                <status>0x95</status>
                 <midino>0x28</midino>
                 <options>
                     <script-binding/>
@@ -1051,72 +1051,72 @@
                 </options>
             </control>
             <control>
-                <group>[Channel3]</group>
-                <key>DJ202.leftDeck.samplerButton[1].input</key>
-                <status>0x96</status>
+                <group>[Sampler]</group>
+                <key>DJ202.rightDeck.samplerButton[1].input</key>
+                <status>0x95</status>
                 <midino>0x29</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel3]</group>
-                <key>DJ202.leftDeck.samplerButton[2].input</key>
-                <status>0x96</status>
+                <group>[Sampler]</group>
+                <key>DJ202.rightDeck.samplerButton[2].input</key>
+                <status>0x95</status>
                 <midino>0x2A</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel3]</group>
-                <key>DJ202.leftDeck.samplerButton[3].input</key>
-                <status>0x96</status>
+                <group>[Sampler]</group>
+                <key>DJ202.rightDeck.samplerButton[3].input</key>
+                <status>0x95</status>
                 <midino>0x2B</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel3]</group>
-                <key>DJ202.leftDeck.samplerButton[4].input</key>
-                <status>0x96</status>
+                <group>[Sampler]</group>
+                <key>DJ202.rightDeck.samplerButton[4].input</key>
+                <status>0x95</status>
                 <midino>0x2C</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel3]</group>
-                <key>DJ202.leftDeck.samplerButton[5].input</key>
-                <status>0x96</status>
+                <group>[Sampler]</group>
+                <key>DJ202.rightDeck.samplerButton[5].input</key>
+                <status>0x95</status>
                 <midino>0x2D</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel3]</group>
-                <key>DJ202.leftDeck.samplerButton[6].input</key>
-                <status>0x96</status>
+                <group>[Sampler]</group>
+                <key>DJ202.rightDeck.samplerButton[6].input</key>
+                <status>0x95</status>
                 <midino>0x2E</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel3]</group>
-                <key>DJ202.leftDeck.samplerButton[7].input</key>
-                <status>0x96</status>
+                <group>[Sampler]</group>
+                <key>DJ202.rightdeck.samplerButton[7].input</key>
+                <status>0x95</status>
                 <midino>0x2F</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel3]</group>
-                <key>DJ202.leftDeck.samplerButton[8].input</key>
-                <status>0x96</status>
+                <group>[Sampler]</group>
+                <key>DJ202.rightDeck.samplerButton[8].input</key>
+                <status>0x95</status>
                 <midino>0x30</midino>
                 <options>
                     <script-binding/>
@@ -1653,72 +1653,72 @@
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>DJ202.rightDeck.samplerButton[1].input</key>
-                <status>0x95</status>
+                <group>[Sampler]</group>
+                <key>DJ202.leftDeck.samplerButton[1].input</key>
+                <status>0x96</status>
                 <midino>0x21</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>DJ202.rightDeck.samplerButton[2].input</key>
-                <status>0x95</status>
+                <group>[Sampler]</group>
+                <key>DJ202.leftDeck.samplerButton[2].input</key>
+                <status>0x96</status>
                 <midino>0x22</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>DJ202.rightDeck.samplerButton[3].input</key>
-                <status>0x95</status>
+                <group>[Sampler]</group>
+                <key>DJ202.leftDeck.samplerButton[3].input</key>
+                <status>0x96</status>
                 <midino>0x23</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>DJ202.rightDeck.samplerButton[4].input</key>
-                <status>0x95</status>
+                <group>[Sampler]</group>
+                <key>DJ202.leftDeck.samplerButton[4].input</key>
+                <status>0x96</status>
                 <midino>0x24</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>DJ202.rightDeck.samplerButton[5].input</key>
-                <status>0x95</status>
+                <group>[Sampler]</group>
+                <key>DJ202.leftDeck.samplerButton[5].input</key>
+                <status>0x96</status>
                 <midino>0x25</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>DJ202.rightDeck.samplerButton[6].input</key>
-                <status>0x95</status>
+                <group>[Sampler]</group>
+                <key>DJ202.leftDeck.samplerButton[6].input</key>
+                <status>0x96</status>
                 <midino>0x26</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>DJ202.rightDeck.samplerButton[7].input</key>
-                <status>0x95</status>
+                <group>[Sampler]</group>
+                <key>DJ202.leftDeck.samplerButton[7].input</key>
+                <status>0x96</status>
                 <midino>0x27</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>DJ202.rightDeck.samplerButton[8].input</key>
-                <status>0x95</status>
+                <group>[Sampler]</group>
+                <key>DJ202.leftDeck.samplerButton[8].input</key>
+                <status>0x96</status>
                 <midino>0x28</midino>
                 <options>
                     <script-binding/>
@@ -1798,72 +1798,72 @@
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>DJ202.rightDeck.samplerButton[1].input</key>
-                <status>0x95</status>
+                <group>[Sampler]</group>
+                <key>DJ202.leftDeck.samplerButton[1].input</key>
+                <status>0x96</status>
                 <midino>0x29</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>DJ202.rightDeck.samplerButton[2].input</key>
-                <status>0x95</status>
+                <group>[Sampler]</group>
+                <key>DJ202.leftDeck.samplerButton[2].input</key>
+                <status>0x96</status>
                 <midino>0x2A</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>DJ202.rightDeck.samplerButton[3].input</key>
-                <status>0x95</status>
+                <group>[Sampler]</group>
+                <key>DJ202.leftDeck.samplerButton[3].input</key>
+                <status>0x96</status>
                 <midino>0x2B</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>DJ202.rightDeck.samplerButton[4].input</key>
-                <status>0x95</status>
+                <group>[Sampler]</group>
+                <key>DJ202.leftDeck.samplerButton[4].input</key>
+                <status>0x96</status>
                 <midino>0x2C</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>DJ202.rightDeck.samplerButton[5].input</key>
-                <status>0x95</status>
+                <group>[Sampler]</group>
+                <key>DJ202.leftDeck.samplerButton[5].input</key>
+                <status>0x96</status>
                 <midino>0x2D</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>DJ202.rightDeck.samplerButton[6].input</key>
-                <status>0x95</status>
+                <group>[Sampler]</group>
+                <key>DJ202.leftDeck.samplerButton[6].input</key>
+                <status>0x96</status>
                 <midino>0x2E</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>DJ202.rightDeck.samplerButton[7].input</key>
-                <status>0x95</status>
+                <group>[Sampler]</group>
+                <key>DJ202.leftDeck.samplerButton[7].input</key>
+                <status>0x96</status>
                 <midino>0x2F</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>DJ202.rightDeck.samplerButton[8].input</key>
-                <status>0x95</status>
+                <group>[Sampler]</group>
+                <key>DJ202.leftDeck.samplerButton[8].input</key>
+                <status>0x96</status>
                 <midino>0x30</midino>
                 <options>
                     <script-binding/>
@@ -2318,7 +2318,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel4]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.rightDeck.samplerButton[1].input</key>
                 <status>0x97</status>
                 <midino>0x21</midino>
@@ -2327,7 +2327,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel4]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.rightDeck.samplerButton[2].input</key>
                 <status>0x97</status>
                 <midino>0x22</midino>
@@ -2336,7 +2336,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel4]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.rightDeck.samplerButton[3].input</key>
                 <status>0x97</status>
                 <midino>0x23</midino>
@@ -2345,7 +2345,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel4]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.rightDeck.samplerButton[4].input</key>
                 <status>0x97</status>
                 <midino>0x24</midino>
@@ -2354,7 +2354,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel4]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.rightDeck.samplerButton[5].input</key>
                 <status>0x97</status>
                 <midino>0x25</midino>
@@ -2363,7 +2363,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel4]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.rightDeck.samplerButton[6].input</key>
                 <status>0x97</status>
                 <midino>0x26</midino>
@@ -2372,7 +2372,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel4]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.rightDeck.samplerButton[7].input</key>
                 <status>0x97</status>
                 <midino>0x27</midino>
@@ -2381,7 +2381,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel4]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.rightDeck.samplerButton[8].input</key>
                 <status>0x97</status>
                 <midino>0x28</midino>
@@ -2463,7 +2463,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel4]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.rightDeck.samplerButton[1].input</key>
                 <status>0x97</status>
                 <midino>0x29</midino>
@@ -2472,7 +2472,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel4]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.rightDeck.samplerButton[2].input</key>
                 <status>0x97</status>
                 <midino>0x2A</midino>
@@ -2481,7 +2481,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel4]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.rightDeck.samplerButton[3].input</key>
                 <status>0x97</status>
                 <midino>0x2B</midino>
@@ -2490,7 +2490,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel4]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.rightDeck.samplerButton[4].input</key>
                 <status>0x97</status>
                 <midino>0x2C</midino>
@@ -2499,7 +2499,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel4]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.rightDeck.samplerButton[5].input</key>
                 <status>0x97</status>
                 <midino>0x2D</midino>
@@ -2508,7 +2508,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel4]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.rightDeck.samplerButton[6].input</key>
                 <status>0x97</status>
                 <midino>0x2E</midino>
@@ -2517,7 +2517,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel4]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.rightDeck.samplerButton[7].input</key>
                 <status>0x97</status>
                 <midino>0x2F</midino>
@@ -2526,7 +2526,7 @@
                 </options>
             </control>
             <control>
-                <group>[Channel4]</group>
+                <group>[Sampler]</group>
                 <key>DJ202.rightDeck.samplerButton[8].input</key>
                 <status>0x97</status>
                 <midino>0x30</midino>

@@ -246,11 +246,7 @@ DJ202.Deck = function (deckNumbers, offset) {
     this.hotcueButton = [];
     this.samplerButton = [];
     this.loopButton = [];
-    
-    samplerNumber = [];
-    samplerNumber[1] = [1,2,3,4, 9,10,11,12]
-    samplerNumber[2] = [5,6,7,8, 13,14,15,16]
-    
+
     for (var i = 1; i <= 8; i++) {
         this.hotcueButton[i] = new components.HotcueButton({
             sendShifted: true,
@@ -266,12 +262,20 @@ DJ202.Deck = function (deckNumbers, offset) {
         }
 
         this.samplerButton[i] = new components.SamplerButton({
-            midi: [0x94 + offset, 0x20 + i],
             sendShifted: true,
             shiftControl: true,
             shiftOffset: 8,
-            number: samplerNumber[channel][i-1],
+            number: i + offset * 8,
         });
+
+        this.samplerButton[i].send = function (value) {
+            var isLeftDeck = this.number <= 8;
+            var channel = isLeftDeck ? 0x94 : 0x95;
+            this.midi = [channel, 0x20 + this.number - (isLeftDeck ? 0 : 8)];
+            components.SamplerButton.prototype.send.call(this, value);
+            this.midi = [channel + 2, 0x20 + this.number - (isLeftDeck ? 0 : 8)];
+            components.SamplerButton.prototype.send.call(this, value);
+        }
     }
     
 
