@@ -758,41 +758,41 @@ search_peak(FidFilter *ff, double f0, double f3) {
 #define MZ 1
 
 static FidFilter*
-do_lowpass(int mz, double freq) {
+do_lowpass(struct mk_filter_context* ctx, int mz, double freq) {
    FidFilter *rv;
-   lowpass(prewarp(freq));
-   if (mz) s2z_matchedZ(); else s2z_bilinear();
-   rv= z2fidfilter(1.0, ~0);	// FIR is constant
+   lowpass(ctx, prewarp(freq));
+   if (mz) s2z_matchedZ(ctx); else s2z_bilinear(ctx);
+   rv= z2fidfilter(ctx, 1.0, ~0);	// FIR is constant
    rv->val[0]= 1.0 / fid_response(rv, 0.0);
    return rv;
 }
 
 static FidFilter*
-do_highpass(int mz, double freq) {
+do_highpass(struct mk_filter_context* ctx, int mz, double freq) {
    FidFilter *rv;
-   highpass(prewarp(freq));
-   if (mz) s2z_matchedZ(); else s2z_bilinear();
-   rv= z2fidfilter(1.0, ~0);	// FIR is constant
+   highpass(ctx, prewarp(freq));
+   if (mz) s2z_matchedZ(ctx); else s2z_bilinear(ctx);
+   rv= z2fidfilter(ctx, 1.0, ~0);	// FIR is constant
    rv->val[0]= 1.0 / fid_response(rv, 0.5);
    return rv;
 }
 
 static FidFilter*
-do_bandpass(int mz, double f0, double f1) {
+do_bandpass(struct mk_filter_context* ctx, int mz, double f0, double f1) {
    FidFilter *rv;
-   bandpass(prewarp(f0), prewarp(f1));
-   if (mz) s2z_matchedZ(); else s2z_bilinear();
-   rv= z2fidfilter(1.0, ~0);	// FIR is constant
+   bandpass(ctx, prewarp(f0), prewarp(f1));
+   if (mz) s2z_matchedZ(ctx); else s2z_bilinear(ctx);
+   rv= z2fidfilter(ctx, 1.0, ~0);	// FIR is constant
    rv->val[0]= 1.0 / fid_response(rv, search_peak(rv, f0, f1));
    return rv;
 }
 
 static FidFilter*
-do_bandstop(int mz, double f0, double f1) {
+do_bandstop(struct mk_filter_context* ctx, int mz, double f0, double f1) {
    FidFilter *rv;
-   bandstop(prewarp(f0), prewarp(f1));
-   if (mz) s2z_matchedZ(); else s2z_bilinear();
-   rv= z2fidfilter(1.0, 5);	// FIR second coefficient is *non-const* for bandstop
+   bandstop(ctx, prewarp(f0), prewarp(f1));
+   if (mz) s2z_matchedZ(ctx); else s2z_bilinear(ctx);
+   rv= z2fidfilter(ctx, 1.0, 5);	// FIR second coefficient is *non-const* for bandstop
    rv->val[0]= 1.0 / fid_response(rv, 0.0);	// Use 0Hz response as reference
    return rv;
 }
@@ -829,8 +829,9 @@ des_bpre(double rate, double f0, double f1, int order, int n_arg, double *arg) {
    (void)f1;
    (void)order; 
    (void)n_arg;       
-   bandpass_res(f0, arg[0]);
-   return z2fidfilter(1.0, ~0);	// FIR constant
+   struct mk_filter_context ctx;
+   bandpass_res(&ctx, f0, arg[0]);
+   return z2fidfilter(&ctx, 1.0, ~0);	// FIR constant
 }
 
 static FidFilter*
@@ -839,8 +840,9 @@ des_bsre(double rate, double f0, double f1, int order, int n_arg, double *arg) {
    (void)f1;
    (void)order; 
    (void)n_arg;     
-   bandstop_res(f0, arg[0]);
-   return z2fidfilter(1.0, 0);	// FIR not constant, depends on freq
+   struct mk_filter_context ctx;
+   bandstop_res(&ctx, f0, arg[0]);
+   return z2fidfilter(&ctx, 1.0, 0);	// FIR not constant, depends on freq
 }
 
 static FidFilter*
@@ -849,8 +851,9 @@ des_apre(double rate, double f0, double f1, int order, int n_arg, double *arg) {
    (void)f1;
    (void)order; 
    (void)n_arg;     
-   allpass_res(f0, arg[0]);
-   return z2fidfilter(1.0, 0);	// FIR not constant, depends on freq
+   struct mk_filter_context ctx;
+   allpass_res(&ctx, f0, arg[0]);
+   return z2fidfilter(&ctx, 1.0, 0);	// FIR not constant, depends on freq
 }
 
 static FidFilter*
@@ -860,9 +863,10 @@ des_pi(double rate, double f0, double f1, int order, int n_arg, double *arg) {
    (void)order; 
    (void)n_arg;   
    (void)arg;    
-   prop_integral(prewarp(f0));
-   s2z_bilinear();
-   return z2fidfilter(1.0, 0);	// FIR not constant, depends on freq
+   struct mk_filter_context ctx;
+   prop_integral(&ctx, prewarp(f0));
+   s2z_bilinear(&ctx);
+   return z2fidfilter(&ctx, 1.0, 0);	// FIR not constant, depends on freq
 }
 
 static FidFilter*
@@ -872,9 +876,10 @@ des_piz(double rate, double f0, double f1, int order, int n_arg, double *arg) {
    (void)order; 
    (void)n_arg;   
    (void)arg;    
-   prop_integral(prewarp(f0));
-   s2z_matchedZ();
-   return z2fidfilter(1.0, 0);	// FIR not constant, depends on freq
+   struct mk_filter_context ctx;
+   prop_integral(&ctx, prewarp(f0));
+   s2z_matchedZ(&ctx);
+   return z2fidfilter(&ctx, 1.0, 0);	// FIR not constant, depends on freq
 }
 
 static FidFilter*
@@ -883,8 +888,9 @@ des_lpbe(double rate, double f0, double f1, int order, int n_arg, double *arg) {
    (void)f1; 
    (void)n_arg;   
    (void)arg;    
-   bessel(order);
-   return do_lowpass(BL, f0);
+   struct mk_filter_context ctx;
+   bessel(&ctx, order);
+   return do_lowpass(&ctx, BL, f0);
 }
 
 static FidFilter*
@@ -893,8 +899,9 @@ des_hpbe(double rate, double f0, double f1, int order, int n_arg, double *arg) {
    (void)f1; 
    (void)n_arg;   
    (void)arg; 
-   bessel(order);
-   return do_highpass(BL, f0);
+   struct mk_filter_context ctx;
+   bessel(&ctx, order);
+   return do_highpass(&ctx, BL, f0);
 }
 
 static FidFilter*
@@ -902,8 +909,9 @@ des_bpbe(double rate, double f0, double f1, int order, int n_arg, double *arg) {
    (void)rate;
    (void)n_arg;   
    (void)arg; 
-   bessel(order);
-   return do_bandpass(BL, f0, f1);
+   struct mk_filter_context ctx;
+   bessel(&ctx, order);
+   return do_bandpass(&ctx, BL, f0, f1);
 }
 
 static FidFilter*
@@ -911,8 +919,9 @@ des_bsbe(double rate, double f0, double f1, int order, int n_arg, double *arg) {
    (void)rate;
    (void)n_arg;   
    (void)arg; 
-   bessel(order);
-   return do_bandstop(BL, f0, f1);
+   struct mk_filter_context ctx;
+   bessel(&ctx, order);
+   return do_bandstop(&ctx, BL, f0, f1);
 }
 
 static FidFilter*
@@ -921,8 +930,9 @@ des_lpbez(double rate, double f0, double f1, int order, int n_arg, double *arg) 
    (void)f1; 
    (void)n_arg;   
    (void)arg; 
-   bessel(order);
-   return do_lowpass(MZ, f0);
+   struct mk_filter_context ctx;
+   bessel(&ctx, order);
+   return do_lowpass(&ctx, MZ, f0);
 }
 
 static FidFilter*
@@ -931,8 +941,9 @@ des_hpbez(double rate, double f0, double f1, int order, int n_arg, double *arg) 
    (void)f1; 
    (void)n_arg;   
    (void)arg; 
-   bessel(order);
-   return do_highpass(MZ, f0);
+   struct mk_filter_context ctx;
+   bessel(&ctx, order);
+   return do_highpass(&ctx, MZ, f0);
 }
 
 static FidFilter*
@@ -940,8 +951,9 @@ des_bpbez(double rate, double f0, double f1, int order, int n_arg, double *arg) 
    (void)rate;
    (void)n_arg;   
    (void)arg; 
-   bessel(order);
-   return do_bandpass(MZ, f0, f1);
+   struct mk_filter_context ctx;
+   bessel(&ctx, order);
+   return do_bandpass(&ctx, MZ, f0, f1);
 }
 
 static FidFilter*
@@ -949,8 +961,9 @@ des_bsbez(double rate, double f0, double f1, int order, int n_arg, double *arg) 
    (void)rate;
    (void)n_arg;   
    (void)arg; 
-   bessel(order);
-   return do_bandstop(MZ, f0, f1);
+   struct mk_filter_context ctx;
+   bessel(&ctx, order);
+   return do_bandstop(&ctx, MZ, f0, f1);
 }
 
 static FidFilter*	// Butterworth-Bessel cross
@@ -960,11 +973,12 @@ des_lpbube(double rate, double f0, double f1, int order, int n_arg, double *arg)
    (void)n_arg; 
    double tmp[MAXPZ];
    int a;
-   bessel(order); memcpy(tmp, pol, order * sizeof(double));
-   butterworth(order);
-   for (a= 0; a<order; a++) pol[a] += (tmp[a]-pol[a]) * 0.01 * arg[0];
-   //for (a= 1; a<order; a+=2) pol[a] += arg[1] * 0.01;
-   return do_lowpass(BL, f0);
+   struct mk_filter_context ctx;
+   bessel(&ctx, order); memcpy(tmp, ctx.pol, order * sizeof(double));
+   butterworth(&ctx, order);
+   for (a= 0; a<order; a++) ctx.pol[a] += (tmp[a]-ctx.pol[a]) * 0.01 * arg[0];
+   //for (a= 1; a<order; a+=2) ctx.pol[a] += arg[1] * 0.01;
+   return do_lowpass(&ctx, BL, f0);
 }
 
 static FidFilter*
@@ -973,8 +987,9 @@ des_lpbu(double rate, double f0, double f1, int order, int n_arg, double *arg) {
    (void)f1; 
    (void)n_arg;   
    (void)arg;    
-   butterworth(order);
-   return do_lowpass(BL, f0);
+   struct mk_filter_context ctx;
+   butterworth(&ctx, order);
+   return do_lowpass(&ctx, BL, f0);
 }
 
 static FidFilter*
@@ -983,8 +998,9 @@ des_hpbu(double rate, double f0, double f1, int order, int n_arg, double *arg) {
    (void)f1; 
    (void)n_arg;   
    (void)arg; 
-   butterworth(order);
-   return do_highpass(BL, f0);
+   struct mk_filter_context ctx;
+   butterworth(&ctx, order);
+   return do_highpass(&ctx, BL, f0);
 }
 
 static FidFilter*
@@ -992,8 +1008,9 @@ des_bpbu(double rate, double f0, double f1, int order, int n_arg, double *arg) {
    (void)rate;
    (void)n_arg;   
    (void)arg; 
-   butterworth(order);
-   return do_bandpass(BL, f0, f1);
+   struct mk_filter_context ctx;
+   butterworth(&ctx, order);
+   return do_bandpass(&ctx, BL, f0, f1);
 }
 
 static FidFilter*
@@ -1001,8 +1018,9 @@ des_bsbu(double rate, double f0, double f1, int order, int n_arg, double *arg) {
    (void)rate;
    (void)n_arg;   
    (void)arg; 
-   butterworth(order);
-   return do_bandstop(BL, f0, f1);
+   struct mk_filter_context ctx;
+   butterworth(&ctx, order);
+   return do_bandstop(&ctx, BL, f0, f1);
 }
 
 static FidFilter*
@@ -1011,8 +1029,9 @@ des_lpbuz(double rate, double f0, double f1, int order, int n_arg, double *arg) 
    (void)f1; 
    (void)n_arg;   
    (void)arg; 
-   butterworth(order);
-   return do_lowpass(MZ, f0);
+   struct mk_filter_context ctx;
+   butterworth(&ctx, order);
+   return do_lowpass(&ctx, MZ, f0);
 }
 
 static FidFilter*
@@ -1021,8 +1040,9 @@ des_hpbuz(double rate, double f0, double f1, int order, int n_arg, double *arg) 
    (void)f1; 
    (void)n_arg;   
    (void)arg;   
-   butterworth(order);
-   return do_highpass(MZ, f0);
+   struct mk_filter_context ctx;
+   butterworth(&ctx, order);
+   return do_highpass(&ctx, MZ, f0);
 }
 
 static FidFilter*
@@ -1030,8 +1050,9 @@ des_bpbuz(double rate, double f0, double f1, int order, int n_arg, double *arg) 
    (void)rate;
    (void)n_arg;   
    (void)arg;
-   butterworth(order);
-   return do_bandpass(MZ, f0, f1);
+   struct mk_filter_context ctx;
+   butterworth(&ctx, order);
+   return do_bandpass(&ctx, MZ, f0, f1);
 }
 
 static FidFilter*
@@ -1039,8 +1060,9 @@ des_bsbuz(double rate, double f0, double f1, int order, int n_arg, double *arg) 
    (void)rate;
    (void)n_arg;   
    (void)arg;
-   butterworth(order);
-   return do_bandstop(MZ, f0, f1);
+   struct mk_filter_context ctx;
+   butterworth(&ctx, order);
+   return do_bandstop(&ctx, MZ, f0, f1);
 }
 
 static FidFilter*
@@ -1048,8 +1070,9 @@ des_lpch(double rate, double f0, double f1, int order, int n_arg, double *arg) {
    (void)rate;
    (void)f1;   
    (void)n_arg;
-   chebyshev(order, arg[0]);
-   return do_lowpass(BL, f0);
+   struct mk_filter_context ctx;
+   chebyshev(&ctx, order, arg[0]);
+   return do_lowpass(&ctx, BL, f0);
 }
 
 static FidFilter*
@@ -1057,24 +1080,27 @@ des_hpch(double rate, double f0, double f1, int order, int n_arg, double *arg) {
    (void)rate;
    (void)f1;   
    (void)n_arg;   
-   chebyshev(order, arg[0]);
-   return do_highpass(BL, f0);
+   struct mk_filter_context ctx;
+   chebyshev(&ctx, order, arg[0]);
+   return do_highpass(&ctx, BL, f0);
 }
 
 static FidFilter*
 des_bpch(double rate, double f0, double f1, int order, int n_arg, double *arg) {
    (void)rate;
    (void)n_arg;
-   chebyshev(order, arg[0]);
-   return do_bandpass(BL, f0, f1);
+   struct mk_filter_context ctx;
+   chebyshev(&ctx, order, arg[0]);
+   return do_bandpass(&ctx, BL, f0, f1);
 }
 
 static FidFilter*
 des_bsch(double rate, double f0, double f1, int order, int n_arg, double *arg) {
    (void)rate;  
    (void)n_arg;
-   chebyshev(order, arg[0]);
-   return do_bandstop(BL, f0, f1);
+   struct mk_filter_context ctx;
+   chebyshev(&ctx, order, arg[0]);
+   return do_bandstop(&ctx, BL, f0, f1);
 }
 
 static FidFilter*
@@ -1082,8 +1108,9 @@ des_lpchz(double rate, double f0, double f1, int order, int n_arg, double *arg) 
    (void)rate;
    (void)f1;   
    (void)n_arg; 
-   chebyshev(order, arg[0]);
-   return do_lowpass(MZ, f0);
+   struct mk_filter_context ctx;
+   chebyshev(&ctx, order, arg[0]);
+   return do_lowpass(&ctx, MZ, f0);
 }
 
 static FidFilter*
@@ -1091,24 +1118,27 @@ des_hpchz(double rate, double f0, double f1, int order, int n_arg, double *arg) 
    (void)rate;
    (void)f1;   
    (void)n_arg;
-   chebyshev(order, arg[0]);
-   return do_highpass(MZ, f0);
+   struct mk_filter_context ctx;
+   chebyshev(&ctx, order, arg[0]);
+   return do_highpass(&ctx, MZ, f0);
 }
 
 static FidFilter*
 des_bpchz(double rate, double f0, double f1, int order, int n_arg, double *arg) {
    (void)rate;   
    (void)n_arg;
-   chebyshev(order, arg[0]);
-   return do_bandpass(MZ, f0, f1);
+   struct mk_filter_context ctx;
+   chebyshev(&ctx, order, arg[0]);
+   return do_bandpass(&ctx, MZ, f0, f1);
 }
 
 static FidFilter*
 des_bschz(double rate, double f0, double f1, int order, int n_arg, double *arg) {
    (void)rate;   
    (void)n_arg; 
-   chebyshev(order, arg[0]);
-   return do_bandstop(MZ, f0, f1);
+   struct mk_filter_context ctx;
+   chebyshev(&ctx, order, arg[0]);
+   return do_bandstop(&ctx, MZ, f0, f1);
 }
 
 static FidFilter*
