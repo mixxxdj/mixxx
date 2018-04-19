@@ -314,10 +314,10 @@ Description:
             </Children>
           </WidgetGroup><!-- /Effects -->
 
-          <Label><!-- Extras -->
+          <Label><!-- Misc -->
             <ObjectName>CategoryLabel</ObjectName>
             <Size>200f,21f</Size>
-            <Text>Extras</Text>
+            <Text>Misc</Text>
           </Label>
           <WidgetGroup><!-- 4 buttons -->
             <ObjectName>SkinSettingsCategory</ObjectName>
