@@ -305,18 +305,28 @@ DJ202.Deck = function (deckNumbers, offset) {
 
                 var isPlaying = engine.getValue(group, 'play');
 
+                // Normalize ‘isPlaying’ – we consider the braking state
+                // equivalent to being stopped, so that pressing play again can
+                // trigger a soft-startup even before the brake is complete.
+                if (this.isBraking !== undefined) {
+                    isPlaying = isPlaying && !this.isBraking
+                }
+
                 if (this.longPressed) {             // Release after long press.
                     var deck = script.deckFromGroup(group);
                     var pressDuration = new Date() - this.longPressStart;
-                    if (isPlaying) {
+                    if (isPlaying && !this.isBraking) {
                         engine.brake(deck, true, 1000 / pressDuration);
+                        this.isBraking = true;
                     } else {
                         engine.softStart(deck, true, 1000 / pressDuration);
+                        this.isBraking = false;
                     }
                     this.longPressed = false;
                     return;
                 }                            // Else: Release after short press.
 
+                this.isBraking = false;
                 script.toggleControl(group, 'play', !isPlaying);
 
                 if (this.longPressTimer) {
