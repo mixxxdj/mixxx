@@ -253,13 +253,18 @@ DJ202.Deck = function (deckNumbers, offset) {
     
     for (var i = 1; i <= 8; i++) {
         this.hotcueButton[i] = new components.HotcueButton({
-            midi: [0x94 + offset, 0x00 + i],
             sendShifted: true,
             shiftControl: true,
             shiftOffset: 8,
             number: i,
         });
-        
+
+        this.hotcueButton[i].connect = function () {
+            var deck = script.deckFromGroup(this.group);
+            this.midi = [0x94 + deck - 1, this.number];
+            components.HotcueButton.prototype.connect.call(this);
+        }
+
         this.samplerButton[i] = new components.SamplerButton({
             midi: [0x94 + offset, 0x20 + i],
             sendShifted: true,
