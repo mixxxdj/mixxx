@@ -53,6 +53,10 @@ class AutoDJFeature : public LibraryFeature {
 
     QPointer<TreeItemModel> getChildModel();
 
+    bool hasTrackTable() override {
+        return true;
+    }
+
   public slots:
     void activate();
 

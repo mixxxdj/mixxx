@@ -1,14 +1,18 @@
 <!--
 Description:
   2-state button for skin settings menu.
+  Can be squeezed so that all skin settings categories fit on small screens.
 Variables:
+  width         :
   state_X_text  : label text for state X
   Setting       : persistent left-click control
 -->
 <Template>
   <PushButton>
     <ObjectName>SkinSettingsButton</ObjectName>
-    <Size>182f,15f</Size>
+    <MinimumSize><Variable name="width"/>,13</MinimumSize>
+    <MaximumSize>182,17</MaximumSize>
+    <SizePolicy>min,me</SizePolicy>
     <NumberStates>2</NumberStates>
     <RightClickIsPushButton>false</RightClickIsPushButton>
     <State>

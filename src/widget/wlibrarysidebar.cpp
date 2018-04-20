@@ -205,6 +205,10 @@ bool WLibrarySidebar::isDividerSelected() {
     return false;
 }
 
+bool WLibrarySidebar::isLeafNodeSelected() {
+    return true;
+}
+
 void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     qDebug() << "WLibrarySidebar::keyPressEvent" << event;
     if (event == QKeySequence::Copy) {
@@ -241,6 +245,10 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
         if (isDividerSelected()) {
             QTreeView::keyPressEvent(event);
         }
+    //} else if (event->key() == Qt::Key_Enter && (event->modifiers() & Qt::AltModifier)) {
+    //    // encoder click via "GoToItem"
+    //    qDebug() << "GoToItem";
+    //    TODO(xxx) decide what todo here instead of in librarycontrol
     } else {
         // QTreeView::keyPressEvent(event) will consume all key events due to
         // it's keyboardSearch feature.

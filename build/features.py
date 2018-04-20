@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import os
-import util
-from mixxx import Feature
+from . import util
+from .mixxx import Feature
 import SCons.Script as SCons
-import depends
+from . import depends
 
 class OpenGLES(Feature):
     def description(self):
@@ -12,7 +12,7 @@ class OpenGLES(Feature):
 
     def enabled(self, build):
         build.flags['opengles'] = util.get_flags(build.env, 'opengles', 0)
-	return int(build.flags['opengles'])
+        return int(build.flags['opengles'])
 
     def add_options(self, build, vars):
         vars.Add('opengles', 'Set to 1 to enable OpenGL-ES >= 2.0 support [Experimental]', 0)
@@ -20,8 +20,8 @@ class OpenGLES(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-	if build.flags['opengles']:
-	    build.env.Append(CPPDEFINES='__OPENGLES__')
+        if build.flags['opengles']:
+            build.env.Append(CPPDEFINES='__OPENGLES__')
 
     def sources(self, build):
         return []
@@ -246,6 +246,7 @@ class CoreAudio(Feature):
 
     def sources(self, build):
         return ['sources/soundsourcecoreaudio.cpp',
+                'sources/v1/legacyaudiosourceadapter.cpp',
                 '#lib/apple/CAStreamBasicDescription.cpp']
 
 
@@ -334,7 +335,7 @@ class VinylControl(Feature):
                                                      'vinylcontrol', 0)
         # Existence of the macappstore option forces vinylcontrol off due to
         # licensing issues.
-        if build.flags.has_key('macappstore') and int(build.flags['macappstore']):
+        if 'macappstore' in build.flags and int(build.flags['macappstore']):
             return False
         if int(build.flags['vinylcontrol']):
             return True
@@ -371,7 +372,7 @@ class VinylControl(Feature):
 
 class Vamp(Feature):
     INTERNAL_LINK = False
-    INTERNAL_VAMP_PATH = '#lib/vamp-2.6'
+    INTERNAL_VAMP_PATH = '#lib/vamp'
 
     def description(self):
         return "Vamp Analyzer support"
@@ -392,9 +393,10 @@ class Vamp(Feature):
         build.env.Append(CPPDEFINES='__VAMP__')
         build.env.Append(CPPDEFINES='kiss_fft_scalar=double')
 
-        # If there is no system vamp-hostdk installed, then we'll directly link
-        # the vamp-hostsdk.
-        if not conf.CheckLib(['vamp-hostsdk']):
+        # If there is no system vamp-hostsdk is installed or if the version
+        # of the installed vamp-hostsdk is less than the bundled version,
+        # then we'll directly link the bundled vamp-hostsdk
+        if not conf.CheckLib('vamp-hostsdk') or not conf.CheckForPKG('vamp-plugin-sdk', '2.7.1'):
             # For header includes
             build.env.Append(CPPPATH=[self.INTERNAL_VAMP_PATH])
             self.INTERNAL_LINK = True
@@ -853,7 +855,7 @@ class LiveBroadcasting(Feature):
         depends.Qt.uic(build)('preferences/dialog/dlgprefbroadcastdlg.ui')
         return ['preferences/dialog/dlgprefbroadcast.cpp',
                 'broadcast/broadcastmanager.cpp',
-                'engine/sidechain/enginebroadcast.cpp']
+                'engine/sidechain/shoutconnection.cpp']
 
 
 class Opus(Feature):
@@ -1300,3 +1302,27 @@ class Battery(Feature):
 
     def depends(self, build):
         return [depends.IOKit, depends.UPower]
+
+class QtKeychain(Feature):
+    def description(self):
+        return "Secure credentials storage support for Live Broadcasting profiles"
+
+    def enabled(self, build):
+        build.flags['qtkeychain'] = util.get_flags(build.env, 'qtkeychain', 0)
+        if int(build.flags['qtkeychain']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('qtkeychain', 'Set to 1 to enable secure credentials storage support for Live Broadcasting profiles', 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+        build.env.Append(CPPDEFINES='__QTKEYCHAIN__')
+
+    def sources(self, build):
+        return []
+
+    def depends(self, build):
+        return [depends.QtKeychain]

@@ -13,8 +13,8 @@ To get started with Mixxx:
 
 ## Roadmap
 
-The Mixxx team is hard at work on Mixxx 2.1. The best place to keep track of
-2.1 development is the [2.1.0 milestone page on Launchpad][launchpad 2.1.0].
+The Mixxx team is hard at work on Mixxx 2.2. The best place to keep track of
+2.2 development is the [2.2.0 milestone page on Launchpad][launchpad 2.2.0].
 
 A more general roadmap can be found on [the wiki][wiki roadmap].
 
@@ -66,11 +66,11 @@ Help to spread Mixxx with translations into more languages, as well as to update
 Mixxx is a vibrant community of hackers, DJs and artists. To keep track of
 development and community news:
 
+- Chat with us on [Zulip][zulip].
 - Follow us on [Twitter], [Facebook], and [G+].
 - Subscribe to the [Mixxx Development Blog][blog].
 - Join the developer [mailing list].
 - Post on the [Mixxx forums][forums].
-- Join our [#mixxx on Freenode IRC][irc channel] to chat with us.
 
 ## License
 
@@ -96,7 +96,7 @@ license.
 [mailing list]: https://lists.sourceforge.net/lists/listinfo/mixxx-devel
 [irc channel]: http://mixxx.org/irc.php
 [SCons]: http://www.scons.org/
-[launchpad 2.1.0]: https://launchpad.net/mixxx/+milestone/2.1.0
+[launchpad 2.2.0]: https://launchpad.net/mixxx/+milestone/2.2.0
 [wiki roadmap]: http://mixxx.org/wiki/doku.php/development_roadmap
 [easybugs]: https://bugs.launchpad.net/mixxx/+bugs?field.searchtext=&orderby=-importance&search=Search&field.status%3Alist=NEW&field.status%3Alist=CONFIRMED&field.status%3Alist=TRIAGED&field.status%3Alist=INPROGRESS&field.status%3Alist=INCOMPLETE_WITH_RESPONSE&field.status%3Alist=INCOMPLETE_WITHOUT_RESPONSE&assignee_option=any&field.assignee=&field.bug_reporter=&field.bug_commenter=&field.subscriber=&field.structural_subscriber=&field.tag=easy&field.tags_combinator=ANY&field.has_cve.used=&field.omit_dupes.used=&field.omit_dupes=on&field.affects_me.used=&field.has_patch.used=&field.has_branches.used=&field.has_branches=on&field.has_no_branches.used=&field.has_no_branches=on&field.has_blueprints.used=&field.has_blueprints=on&field.has_no_blueprints.used=&field.has_no_blueprints=on
 [creating skins]: http://mixxx.org/wiki/doku.php/creating_skins
@@ -105,3 +105,4 @@ license.
 [Mixxx localization forum]: http://mixxx.org/forums/viewforum.php?f=10
 [Mixxx glossary]: https://www.transifex.com/projects/p/mixxxdj/glossary/l/en/
 [hardware compatibility]: http://mixxx.org/wiki/doku.php/hardware_compatibility
+[zulip]: https://mixxx.zulipchat.com/

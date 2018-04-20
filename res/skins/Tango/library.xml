@@ -1,13 +1,45 @@
 <!--
 Description:
   The Library container.
-  Left side contains preview deck, CoverArt and tree view.
-  Right side contains table view and mixerbar at the bottom.
-  Mixerbar can be diplayed below tracks table so that tree pane has maximum
-  space. With a toggler it can be set use full screen width below library
-  if necessary.
+  Left: Preview deck, CoverArt and Tree view (collapsible)
+  Right: Tracks table.
 -->
 <Template>
+  <SingletonDefinition>
+    <ObjectName>LibraryBreadCrumbSingleton</ObjectName>
+    <Children>
+      <LibraryBreadCrumb>
+        <ObjectName>LibraryBreadCrumb</ObjectName>
+        <SizePolicy>me,min</SizePolicy>
+        <Id>1</Id>
+      </LibraryBreadCrumb>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>LibrarySearchBoxSingleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <SizePolicy>me,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+
+          <SearchBox>
+            <Id>1</Id>
+          </SearchBox>
+
+          <WidgetGroup>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
   <WidgetGroup>
 <!-- Finally fixed: library can shrink to noting!
     Solution was to define SizePolicy as 'xx,i'.
@@ -17,123 +49,189 @@ Description:
     <Layout>vertical</Layout>
     <Children>
 
-      <!-- margin-top has no effect
-      <WidgetGroup><Size>1me,3f</Size></WidgetGroup> -->
-      <WidgetGroup><Size>1me,5f</Size></WidgetGroup>
+      <WidgetGroup>
+        <Size>1me,2f</Size>
+        <Connection>
+          <ConfigKey persist="true">[Master],maximize_library</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
 
-      <Splitter>
+      <Splitter><!-- Library -->
         <ObjectName>LibrarySplitter</ObjectName>
         <SizePolicy>me,me</SizePolicy>
         <SplitSizes>1,6</SplitSizes>
-        <SplitSizesConfigKey>[Tango],splitter__tree_lib</SplitSizesConfigKey>
+        <SplitSizesConfigKey>[Tango],lib_cover_feature_splitter</SplitSizesConfigKey>
         <Orientation>horizontal</Orientation>
         <Collapsible>1,0</Collapsible>
         <Children>
 
-          <WidgetGroup><!-- Preview Search Cover Tree -->
+          <!-- SidebarButtons + [Preview + FeaturePane + CoverArt] -->
+          <WidgetGroup>
             <Layout>vertical</Layout>
             <!-- minSize so that 8 Preview HotCues fit nicely, 23+1px each -->
-            <Size>159min,74me</Size>
+            <Size>132min,74me</Size>
             <Children>
-              <Template src="skin:preview_deck.xml"/>
-              <Splitter><!-- Splitter to make CoverArt resizeable -->
-                <ObjectName>LibrarySplitter</ObjectName>
-                <SizePolicy>me,me</SizePolicy>
-                <SplitSizes>1,3</SplitSizes>
-                <SplitSizesConfigKey>[Tango],splitter__coverArt_tree</SplitSizesConfigKey>
-                <Orientation>vertical</Orientation>
-                <Collapsible>0,0</Collapsible>
-                <Children>
-                  <CoverArt>
-                    <Size>30min,30min</Size>
-                    <Connection>
-                      <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </CoverArt>
 
-                  <WidgetGroup><!-- Preview Deck, Search, Tree View -->
+              <Template src="skin:library_sidebar_tester.xml"/>
+
+              <Template src="skin:preview_deck.xml"/>
+
+              <WidgetGroup>
+                <Size>0min,5f</Size>
+                <Connection>
+                  <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+
+                  <WidgetGroup>
+                    <ObjectName>SidebarButtonsContainer</ObjectName>
+                    <SizePolicy>min,min</SizePolicy>
                     <Layout>vertical</Layout>
-                    <SizePolicy>me,min</SizePolicy>
                     <Children>
-                      <WidgetGroup><!-- Search, Cover button, Maxi button -->
+                      <!-- Show expand toggle above Sidebar buttons
+                      if PreviewDeck is hidden -->
+                      <WidgetGroup>
                         <Layout>horizontal</Layout>
-                        <SizePolicy>me,min</SizePolicy>
+                        <SizePolicy>min,min</SizePolicy>
                         <Children>
-                          <SearchBox></SearchBox>
-                          <Template src="skin:button_2state_persist.xml">
-                            <SetVariable name="ObjectName">LibCoverbutton</SetVariable>
-                            <!-- Icon size is 48x48px (24x24px), margin: left 2px, bottom 4px -->
-                            <SetVariable name="Size">26f,28f</SetVariable>
-                            <SetVariable name="ConfigKeyPerm">[Library],show_coverart</SetVariable>
-                          </Template>
+                          <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
                           <Template src="skin:button_2state_persist.xml">
                             <SetVariable name="ObjectName">LibMiniMaxiButton</SetVariable>
-                            <SetVariable name="Size">19f,28f</SetVariable>
-                            <SetVariable name="ConfigKeyPerm">[Master],maximize_library</SetVariable>
+                            <SetVariable name="Size">22f,22f</SetVariable>
+                            <SetVariable name="ConfigKey">[Master],maximize_library</SetVariable>
                           </Template>
+                          <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
                         </Children>
-                      </WidgetGroup><!-- /Search, Cover button, Maxi button -->
-
-                      <!-- Tree View -->
-                      <LibrarySidebar></LibrarySidebar>
-                      <!-- Draw a 1px line with Library border color if Mixerbar
-                          is displayed below Library -->
-
-                      <WidgetGroup>
-                        <ObjectName>Spacer58</ObjectName>
-                        <Size>1me,1f</Size>
                         <Connection>
-                          <ConfigKey>[Tango],mixerbar_below_library</ConfigKey>
+                          <ConfigKey>[Tango],lib_sidebar_collapsed</ConfigKey>
+                          <Transform><Not/></Transform>
                           <BindProperty>visible</BindProperty>
                         </Connection>
                       </WidgetGroup>
 
-                    </Children>
-                  </WidgetGroup><!-- /Preview Deck, Search, Tree View -->
-                </Children>
-              </Splitter><!-- /Splitter to make CoverArt resizeable -->
-            </Children>
-          </WidgetGroup><!-- /Preview Search Cover Tree -->
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Children>
+                          <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
+                          <Template src="skin:button_2state_persist.xml">
+                            <SetVariable name="ObjectName">LibCoverArtButton</SetVariable>
+                            <!-- Icon size is 48x48px (24x24px), margin: left 2px, bottom 4px -->
+                            <SetVariable name="Size">26f,28f</SetVariable>
+                            <SetVariable name="ConfigKey">[Library],show_coverart</SetVariable>
+                          </Template>
+                          <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
+                        </Children>
+                      </WidgetGroup>
 
-          <WidgetGroup><!-- Library Table -->
+                      <LibrarySidebarButtons>
+                        <SizePolicy>min,me</SizePolicy>
+                        <ObjectName>LibrarySidebarButtons</ObjectName>
+                      </LibrarySidebarButtons>
+
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup><!-- Preview + FeaturePane + CoverArt -->
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,me</SizePolicy>
+                    <Children>
+
+                      <SingletonContainer>
+                        <ObjectName>LibraryBreadCrumbSingleton</ObjectName>
+                        <Connection>
+                          <ConfigKey>[Tango],lib_sidebar_collapsed</ConfigKey>
+                          <Transform><Not/></Transform>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </SingletonContainer>
+
+                      <Splitter><!-- Splitter to make CoverArt resizeable -->
+                        <ObjectName>LibrarySplitter</ObjectName>
+                        <SizePolicy>me,me</SizePolicy>
+                        <SplitSizes>1,3</SplitSizes>
+                        <SplitSizesConfigKey>[Tango],splitter__coverArt_tree</SplitSizesConfigKey>
+                        <Orientation>vertical</Orientation>
+                        <Collapsible>0,1</Collapsible>
+                        <Children>
+                          <LibrarySidebarExpanded>
+                            <ObjectName>LibrarySidebarExpanded</ObjectName>
+                            <Id>1</Id>
+                          </LibrarySidebarExpanded>
+
+                          <CoverArt>
+                            <Size>30min,30min</Size>
+                            <Connection>
+                              <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </CoverArt>
+                        </Children>
+                      </Splitter><!-- /Splitter to make CoverArt resizeable -->
+
+                    </Children>
+                  </WidgetGroup><!-- /Preview + FeaturePane + CoverArt -->
+
+                </Children>
+              </WidgetGroup><!-- SidebarButtons + [Preview + FeaturePane + CoverArt] -->
+
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <SizePolicy>me,min</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
-              <Library>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <Size>180min,-1min</Size>
+                    <Children>
+                      <Template src="skin:button_2state_persist.xml">
+                        <SetVariable name="ObjectName">LibMiniMaxiButton</SetVariable>
+                        <SetVariable name="Size">22f,28f</SetVariable>
+                        <SetVariable name="ConfigKey">[Master],maximize_library</SetVariable>
+                      </Template>
+
+                      <WidgetGroup><Size>5f,0min</Size></WidgetGroup>
+
+                      <SingletonContainer>
+                        <ObjectName>LibraryBreadCrumbSingleton</ObjectName>
+                      </SingletonContainer>
+                    </Children><!-- -->
+                    <Connection>
+                      <ConfigKey>[Tango],lib_sidebar_collapsed</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <SingletonContainer>
+                    <ObjectName>LibrarySearchBoxSingleton</ObjectName>
+                  </SingletonContainer>
+                </Children>
+              </WidgetGroup>
+
+              <LibraryPane>
                 <BgColor>#585858</BgColor>
                 <FgColor>#eece33</FgColor>
-              </Library>
-          <!-- Display Mixerbar here if it fits.
-              If not, display it below Library -->
-              <WidgetGroup>
-                <SizePolicy>min,min</SizePolicy>
-                <Layout>horizontal</Layout>
-                <Children>
-                  <Template src="skin:mixerbar.xml"/>
-                </Children>
-                <Connection>
-                  <ConfigKey>[Tango],mixerbar_below_library</ConfigKey>
-                  <Transform><Not/></Transform>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup><!-- /Mixerbar -->
+                <Id>1</Id>
+              </LibraryPane>
             </Children>
-          </WidgetGroup><!-- /Library Table -->
+          </WidgetGroup>
+
         </Children>
-      </Splitter>
-  <!-- Display Mixerbar here if it needs more h-space.
-      If not, display it next to TreeView -->
-      <WidgetGroup>
-        <SizePolicy>min,min</SizePolicy>
-        <Layout>vertical</Layout>
-        <Children>
-          <Template src="skin:mixerbar.xml"/>
-        </Children>
-        <Connection>
-          <ConfigKey>[Tango],mixerbar_below_library</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup><!-- /Mixerbar -->
+      </Splitter><!-- /Split Tree / Tracks table -->
+
     </Children>
     <Connection>
       <ConfigKey persist="true">[Library],show_library</ConfigKey>

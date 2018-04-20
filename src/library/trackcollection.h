@@ -75,7 +75,14 @@ class TrackCollection : public QObject,
     bool purgeTracks(const QList<TrackId>& trackIds);
     bool purgeTracks(const QDir& dir);
 
+    // Might be called from any thread
+    void exportTrackMetadata(Track* pTrack) const;
+
+    // Must be called from the main thread
+    void saveTrack(Track* pTrack);
   private:
+    UserSettingsPointer m_pConfig;
+
     QSqlDatabase m_database;
 
     PlaylistDAO m_playlistDao;

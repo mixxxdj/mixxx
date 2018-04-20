@@ -56,6 +56,10 @@ class CrateTracks : public virtual DAO {
     CrateTrackSelectResult selectTracksSortedByCrateNameLike(
             const QString& crateNameLike) const;
 
+    
+    CrateSummarySelectResult selectCratesWithTrackCount(
+            const QList<TrackId>& trackIds) const;
+
     // Returns the set of crate ids for crates that contain any of the
     // provided track ids.
     QSet<CrateId> collectCrateIdsOfTracks(

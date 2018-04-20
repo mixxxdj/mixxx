@@ -18,8 +18,8 @@ class MetaLinkTest : public BaseEffectTest {
               m_headphone(m_factory.getOrCreateHandle("[Headphone]"), "[Headphone]") {
         mixxx::Time::setTestMode(true);
         mixxx::Time::setTestElapsedTime(mixxx::Duration::fromNanos(0));
-        m_pEffectsManager->registerChannel(m_master);
-        m_pEffectsManager->registerChannel(m_headphone);
+        m_pEffectsManager->registerInputChannel(m_master);
+        m_pEffectsManager->registerInputChannel(m_headphone);
         registerTestBackend();
 
         EffectChainPointer pChain(new EffectChain(m_pEffectsManager.data(),
@@ -29,9 +29,9 @@ class MetaLinkTest : public BaseEffectTest {
         int iEffectNumber = 0;
 
         StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
-        m_pChainSlot = pRack->addEffectChainSlot();
-        m_pChainSlot->loadEffectChain(pChain);
-        m_pEffectSlot = m_pChainSlot->getEffectSlot(0);
+        m_pChainSlot = pRack->getEffectChainSlot(iChainNumber);
+        m_pChainSlot->loadEffectChainToSlot(pChain);
+        m_pEffectSlot = m_pChainSlot->getEffectSlot(iEffectNumber);
 
         QString group = StandardEffectRack::formatEffectSlotGroupString(
             iRackNumber, iChainNumber, iEffectNumber);
@@ -39,6 +39,7 @@ class MetaLinkTest : public BaseEffectTest {
         EffectManifest manifest;
         manifest.setId("org.mixxx.test.effect");
         manifest.setName("Test Effect");
+        manifest.setMetaknobDefault(0.0);
 
         EffectManifestParameter* low = manifest.addParameter();
         low->setId("low");
@@ -57,7 +58,7 @@ class MetaLinkTest : public BaseEffectTest {
         // Check the controls reflect the state of their loaded effect.
         EffectPointer pEffect = m_pEffectsManager->instantiateEffect(manifest.id());
 
-        m_pEffectSlot->loadEffect(pEffect);
+        m_pEffectSlot->loadEffect(pEffect, false);
 
         QString itemPrefix = EffectParameterSlot::formatItemPrefix(0);
 
@@ -220,7 +221,7 @@ TEST_F(MetaLinkTest, HalfLinkTakeover) {
     registerTestEffect(manifest, false);
     // Check the controls reflect the state of their loaded effect.
     EffectPointer pEffect = m_pEffectsManager->instantiateEffect(manifest.id());
-    m_pEffectSlot->loadEffect(pEffect);
+    m_pEffectSlot->loadEffect(pEffect, false);
     QString itemPrefix = EffectParameterSlot::formatItemPrefix(0);
     m_pControlValue.reset(new ControlProxy(group, itemPrefix));
     m_pControlLinkType.reset(new ControlProxy(group,

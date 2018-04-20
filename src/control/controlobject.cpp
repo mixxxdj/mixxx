@@ -80,7 +80,7 @@ ControlObject* ControlObject::getControl(const ConfigKey& key, bool warn) {
 
 void ControlObject::setValueFromMidi(MidiOpCode o, double v) {
     if (m_pControl) {
-        m_pControl->setMidiParameter(o, v);
+        m_pControl->setValueFromMidi(o, v);
     }
 }
 
@@ -102,8 +102,8 @@ double ControlObject::getParameterForValue(double value) const {
     return m_pControl ? m_pControl->getParameterForValue(value) : 0.0;
 }
 
-double ControlObject::getParameterForMidiValue(double midiValue) const {
-    return m_pControl ? m_pControl->getParameterForMidiValue(midiValue) : 0.0;
+double ControlObject::getParameterForMidi(double midiParameter) const {
+    return m_pControl ? m_pControl->getParameterForMidi(midiParameter) : 0.0;
 }
 
 void ControlObject::setParameter(double v) {

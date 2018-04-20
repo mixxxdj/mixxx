@@ -161,6 +161,7 @@ public:
 
 private:
     friend class CrateStorage;
+    friend class CrateTracks;
     CrateSummarySelectResult() = default;
     explicit CrateSummarySelectResult(FwdSqlQuery&& query)
         : FwdSqlQuerySelectResult(std::move(query)),

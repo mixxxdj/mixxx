@@ -35,9 +35,11 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
         qDebug() << "Key detection is deactivated";
         return false;
     }
-
     m_bPreferencesFastAnalysisEnabled = m_pConfig->getValue<bool>(
             ConfigKey(KEY_CONFIG_KEY, KEY_FAST_ANALYSIS));
+    m_bPreferencesReanalyzeEnabled = m_pConfig->getValue<bool>(
+            ConfigKey(KEY_CONFIG_KEY, KEY_REANALYZE_WHEN_SETTINGS_CHANGE));
+
     QString library = m_pConfig->getValue(
             ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_LIBRARY),
             // TODO(rryan) this default really doesn't belong here.

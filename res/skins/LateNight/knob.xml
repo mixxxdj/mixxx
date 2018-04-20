@@ -14,23 +14,27 @@
         <Layout>horizontal</Layout>
         <ObjectName>KnobCentered</ObjectName>
         <Children>
+
           <KnobComposed>
-            <TooltipId><Variable name="tooltip"/></TooltipId>
-            <Size>40f,34f</Size>
+            <TooltipId><Variable name="TooltipId"/></TooltipId>
+            <Size><Variable name="Size"/></Size>
             <Knob>knob_indicator.svg</Knob>
             <BackPath>knob_bg.svg</BackPath>
-            <MinAngle>-135</MinAngle>
-            <MaxAngle>135</MaxAngle>
+            <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+            <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+            <KnobCenterYOffset>1.602</KnobCenterYOffset>
             <Connection>
               <ConfigKey><Variable name="group"/>,<Variable name="control"/></ConfigKey>
             </Connection>
           </KnobComposed>
         </Children>
       </WidgetGroup>
+
       <Label>
         <ObjectName>KnobLabel</ObjectName>
         <Text><Variable name="label"/></Text>
       </Label>
+
     </Children>
   </WidgetGroup>
 </Template>

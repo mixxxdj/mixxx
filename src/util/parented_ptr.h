@@ -23,7 +23,7 @@ class parented_ptr {
     template <typename U>
     parented_ptr(parented_ptr<U>&& u, typename std::enable_if<std::is_convertible<U*, T*>::value, void>::type * = 0)
             : m_pObject(u.get()) {
-        if (u != nullptr) {
+        if (!u.get()) {
             DEBUG_ASSERT(u->parent() != nullptr);
         }
     }

@@ -409,7 +409,7 @@
                Description="!(loc.FeaturePDBDescription)"
                AllowAdvertise='no'
                InstallDefault='local'
-               Level="10">
+               Level="1">
           <ComponentGroupRef Id='mainPDBCompGroup' />
         </Feature>
       <?endif?>

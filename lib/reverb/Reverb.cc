@@ -438,7 +438,7 @@ void MixxxPlateX2::processBuffer(const sample_t* in, sample_t* out, const uint f
 	// set bandwidth
 	input.bandwidth.set(exp(-M_PI * (1. - (.005 + .994*bandwidthParam))));
 	// set decay
-	sample_t decay = .749*decayParam;
+	sample_t decay = .890*decayParam;
 	// set damping
 	double damp = exp(-M_PI * (.0005+.9995*dampingParam));
 	tank.damping[0].set(damp);

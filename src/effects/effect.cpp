@@ -40,25 +40,48 @@ Effect::~Effect() {
     }
 }
 
-void Effect::addToEngine(EngineEffectChain* pChain, int iIndex) {
-    if (m_pEngineEffect) {
+EffectState* Effect::createState(const mixxx::EngineParameters& bufferParameters) {
+    return m_pEngineEffect->createState(bufferParameters);
+}
+
+void Effect::addToEngine(EngineEffectChain* pChain, int iIndex,
+                         const QSet<ChannelHandleAndGroup>& activeInputChannels) {
+    VERIFY_OR_DEBUG_ASSERT(pChain) {
         return;
     }
+    VERIFY_OR_DEBUG_ASSERT(m_pEngineEffect == nullptr) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(!m_bAddedToEngine) {
+        return;
+    }
+
     m_pEngineEffect = new EngineEffect(m_manifest,
-            m_pEffectsManager->registeredChannels(),
+            activeInputChannels,
+            m_pEffectsManager,
             m_pInstantiator);
+
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::ADD_EFFECT_TO_CHAIN;
     request->pTargetChain = pChain;
     request->AddEffectToChain.pEffect = m_pEngineEffect;
     request->AddEffectToChain.iIndex = iIndex;
     m_pEffectsManager->writeRequest(request);
+
+    m_bAddedToEngine = true;
 }
 
 void Effect::removeFromEngine(EngineEffectChain* pChain, int iIndex) {
-    if (!m_pEngineEffect) {
+    VERIFY_OR_DEBUG_ASSERT(pChain) {
         return;
     }
+    VERIFY_OR_DEBUG_ASSERT(m_pEngineEffect != nullptr) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_bAddedToEngine) {
+        return;
+    }
+
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::REMOVE_EFFECT_FROM_CHAIN;
     request->pTargetChain = pChain;
@@ -66,6 +89,8 @@ void Effect::removeFromEngine(EngineEffectChain* pChain, int iIndex) {
     request->RemoveEffectFromChain.iIndex = iIndex;
     m_pEffectsManager->writeRequest(request);
     m_pEngineEffect = NULL;
+
+    m_bAddedToEngine = false;
 }
 
 void Effect::updateEngineState() {
@@ -184,4 +209,8 @@ EffectPointer Effect::createFromXml(EffectsManager* pEffectsManager,
     QString effectId = XmlParse::selectNodeQString(element, EffectXml::EffectId);
     EffectPointer pEffect = pEffectsManager->instantiateEffect(effectId);
     return pEffect;
+}
+
+double Effect::getMetaknobDefault() {
+    return m_manifest.metaknobDefault();
 }

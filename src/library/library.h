@@ -15,8 +15,8 @@
 
 #include "library/scanner/libraryscanner.h"
 #include "preferences/usersettings.h"
+#include "track/globaltrackcache.h"
 #include "recording/recordingmanager.h"
-#include "track/track.h"
 #include "util/parented_ptr.h"
 #include "util/memory.h"
 #include "util/db/dbconnectionpool.h"
@@ -41,7 +41,8 @@ class WButtonBar;
 class WSearchLineEdit;
 class TreeItem;
 
-class Library : public QObject {
+class Library: public QObject,
+    public virtual /*implements*/ GlobalTrackCacheSaver {
     Q_OBJECT
 public:
     enum RemovalType {
@@ -104,6 +105,10 @@ public:
 
     void focusSearch();
 
+    void setFont(const QFont& font);
+    void setRowHeight(int rowHeight);
+    void setEditMedatataSelectedClick(bool enable);
+
   public slots:
 
     void slotActivateFeature(LibraryFeature* pFeature);
@@ -120,8 +125,6 @@ public:
     void slotRequestRemoveDir(QString directory, Library::RemovalType removalType);
     void slotRequestRelocateDir(QString previousDirectory, QString newDirectory);
     void onSkinLoadFinished();
-    void slotSetTrackTableFont(const QFont& font);
-    void slotSetTrackTableRowHeight(int rowHeight);
 
     void slotSetHoveredFeature(LibraryFeature* pFeature);
     void slotResetHoveredFeature(LibraryFeature* pFeature);
@@ -142,13 +145,13 @@ public:
 
     void setTrackTableFont(const QFont& font);
     void setTrackTableRowHeight(int rowHeight);
+    void setSelectedClick(bool enable);
 
     // Emitted when a library scan starts and finishes.
     void scanStarted();
     void scanFinished();
 
   private:
-
     // If the pane exists returns it, otherwise it creates the pane
     LibraryPaneManager* getOrCreatePane(int paneId);
     LibraryPaneManager* getFocusedPane();
@@ -162,6 +165,10 @@ public:
 
     void handleFocus();
     void handlePreselection();
+
+    // Callback for GlobalTrackCache
+    void saveCachedTrack(Track* pTrack) noexcept override;
+
 
     const UserSettingsPointer m_pConfig;
 
@@ -177,6 +184,7 @@ public:
     LibraryScanner m_scanner;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
+    bool m_editMetadataSelectedClick;
     QScopedPointer<ControlObject> m_pKeyNotation;
 
     QHash<int, LibraryPaneManager*> m_panes;

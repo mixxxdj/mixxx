@@ -51,6 +51,10 @@ class TracksFeature : public LibraryFeature {
     parented_ptr<QWidget> createInnerSidebarWidget(KeyboardEventFilter*,
                                                    QWidget* parent) override;
 
+    bool hasTrackTable() override {
+        return true;
+    }
+
   public slots:
     void activate() override;
     void activateChild(const QModelIndex& index) override;

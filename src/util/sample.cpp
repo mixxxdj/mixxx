@@ -193,6 +193,16 @@ void SampleUtil::applyRampingAlternatingGain(CSAMPLE* pBuffer,
 }
 
 // static
+void SampleUtil::add(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc,
+        SINT numSamples) {
+    // note: LOOP VECTORIZED.
+    for (SINT i = 0; i < numSamples; ++i) {
+        pDest[i] += pSrc[i];
+    }
+}
+
+// static
 void SampleUtil::addWithGain(CSAMPLE* M_RESTRICT pDest,
         const CSAMPLE* M_RESTRICT pSrc,
         CSAMPLE_GAIN gain, SINT numSamples) {
@@ -484,8 +494,11 @@ void SampleUtil::addMonoToStereo(CSAMPLE* M_RESTRICT pDest,
 }
 
 // static
-void SampleUtil::stripMultiToStereo(CSAMPLE* pBuffer, SINT numFrames,
+void SampleUtil::stripMultiToStereo(
+        CSAMPLE* pBuffer,
+        SINT numFrames,
         int numChannels) {
+    DEBUG_ASSERT(numChannels > 2);
     // forward loop
     for (SINT i = 0; i < numFrames; ++i) {
         pBuffer[i * 2] = pBuffer[i * numChannels];
@@ -494,9 +507,12 @@ void SampleUtil::stripMultiToStereo(CSAMPLE* pBuffer, SINT numFrames,
 }
 
 // static
-void SampleUtil::copyMultiToStereo(CSAMPLE* M_RESTRICT pDest,
+void SampleUtil::copyMultiToStereo(
+        CSAMPLE* M_RESTRICT pDest,
         const CSAMPLE* M_RESTRICT pSrc,
-        SINT numFrames, int numChannels) {
+        SINT numFrames,
+        int numChannels) {
+    DEBUG_ASSERT(numChannels > 2);
     // forward loop
     for (SINT i = 0; i < numFrames; ++i) {
         pDest[i * 2] = pSrc[i * numChannels];

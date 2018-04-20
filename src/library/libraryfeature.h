@@ -80,6 +80,10 @@ class LibraryFeature : public QObject {
     virtual void restoreQuery(int id);
     virtual QList<SavedSearchQuery> getSavedQueries() const;
 
+    virtual bool hasTrackTable() {
+        return false;
+    }
+
   public slots:
     // called when you single click on the root item
     virtual void activate() = 0;

@@ -16,12 +16,21 @@
 #include "util/sample.h"
 #include "util/types.h"
 
-struct ReverbGroupState {
-    float sampleRate  = 0;
+class ReverbGroupState : public EffectState {
+  public:
+    ReverbGroupState(const mixxx::EngineParameters& bufferParameters)
+        : EffectState(bufferParameters) {
+    }
+
+    void engineParametersChanged(const mixxx::EngineParameters& bufferParameters) {
+        sampleRate = bufferParameters.sampleRate();
+    }
+
+    float sampleRate;
     MixxxPlateX2 reverb{};
 };
 
-class ReverbEffect : public PerChannelEffectProcessor<ReverbGroupState> {
+class ReverbEffect : public EffectProcessorImpl<ReverbGroupState> {
   public:
     ReverbEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~ReverbEffect();
@@ -33,9 +42,8 @@ class ReverbEffect : public PerChannelEffectProcessor<ReverbGroupState> {
     void processChannel(const ChannelHandle& handle,
                         ReverbGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE* pOutput,
-                        const unsigned int numSamples,
-                        const unsigned int sampleRate,
-                        const EffectProcessor::EnableState enableState,
+                        const mixxx::EngineParameters& bufferParameters,
+                        const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatures);
 
   private:

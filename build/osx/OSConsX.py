@@ -283,7 +283,7 @@ def build_app(target, source, env):
 
 
     print "Installing embedded libs:"
-    for ref, (abs, embedded) in locals.iteritems():
+    for ref, (abs, embedded) in locals.items():
         real_abs = os.path.realpath(abs)
         print "installing", real_abs, "to", embedded
         # NOTE(rryan): abs can be a symlink. we want to copy the binary it is
@@ -438,7 +438,7 @@ def emit_app(target, source, env):
             target = Dir(os.path.join(str(target), path))
         if isinstance(i, SCons.Node.FS.Dir):
             InstallDir(target, i, env)
-        elif isinstance(i, SCons.Node.FS.File) or isinstance(i, basestring):
+        elif isinstance(i, SCons.Node.FS.File) or isinstance(i, str):
             env.Install(target, i)
 
     plugins = env['PLUGINS']
@@ -522,7 +522,7 @@ def build_plist(target, source, env):
     </plist>"""
     inner_template = """<key>%s</key><string>%s</string>"""
 
-    inner = str.join('\n', [inner_template % (k,v) for k,v in d.iteritems()])
+    inner = str.join('\n', [inner_template % (k,v) for k,v in d.items()])
     plist = outer_template % inner
 
     f = open(str(target), "w")

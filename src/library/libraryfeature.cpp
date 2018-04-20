@@ -198,6 +198,8 @@ parented_ptr<WTrackTableView> LibraryFeature::createTableWidget(int paneId, QWid
             pTrackTableView.get(), SLOT(setTrackTableFont(QFont)));
     connect(m_pLibrary, SIGNAL(setTrackTableRowHeight(int)),
             pTrackTableView.get(), SLOT(setTrackTableRowHeight(int)));
+    connect(m_pLibrary, SIGNAL(setSelectedClick(bool)),
+            pTrackTableView.get(), SLOT(setSelectedClick(bool)));
 
     return pTrackTableView;
 }

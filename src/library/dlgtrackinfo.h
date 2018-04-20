@@ -38,7 +38,6 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void apply();
     void cancel();
     void trackUpdated();
-    void fetchTag();
 
     void cueActivate();
     void cueDelete();
@@ -56,12 +55,14 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     void slotKeyTextChanged();
 
-    void reloadTrackMetadata();
+    void slotImportMetadataFromFile();
+    void slotImportMetadataFromMusicBrainz();
+
     void updateTrackMetadata();
     void slotOpenInFileBrowser();
 
     void slotCoverFound(const QObject* pRequestor,
-                        const CoverInfo& info, QPixmap pixmap, bool fromCache);
+                        const CoverInfoRelative& info, QPixmap pixmap, bool fromCache);
     void slotCoverInfoSelected(const CoverInfo& coverInfo);
     void slotReloadCoverArt();
 

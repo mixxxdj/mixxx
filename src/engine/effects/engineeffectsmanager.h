@@ -3,6 +3,7 @@
 
 #include <QScopedPointer>
 
+#include "util/samplebuffer.h"
 #include "util/types.h"
 #include "util/fifo.h"
 #include "engine/effects/message.h"
@@ -27,14 +28,35 @@ class EngineEffectsManager : public EffectsRequestHandler {
     // represented as stereo interleaved samples. There are numSamples total
     // samples, so numSamples/2 left channel samples and numSamples/2 right
     // channel samples.
-    virtual void process(const ChannelHandle& handle,
-                         CSAMPLE* pInOut,
-                         const unsigned int numSamples,
-                         const unsigned int sampleRate,
-                         const GroupFeatureState& groupFeatures);
+    void processPreFaderInPlace(
+        const ChannelHandle& inputHandle,
+        const ChannelHandle& outputHandle,
+        CSAMPLE* pInOut,
+        const unsigned int numSamples,
+        const unsigned int sampleRate);
+
+    void processPostFaderInPlace(
+        const ChannelHandle& inputHandle,
+        const ChannelHandle& outputHandle,
+        CSAMPLE* pInOut,
+        const unsigned int numSamples,
+        const unsigned int sampleRate,
+        const GroupFeatureState& groupFeatures,
+        const CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
+        const CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE);
+
+    void processPostFaderAndMix(
+        const ChannelHandle& inputHandle,
+        const ChannelHandle& outputHandle,
+        CSAMPLE* pIn, CSAMPLE* pOut,
+        const unsigned int numSamples,
+        const unsigned int sampleRate,
+        const GroupFeatureState& groupFeatures,
+        const CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
+        const CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE);
 
     bool processEffectsRequest(
-        const EffectsRequest& message,
+        EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe);
 
   private:
@@ -42,13 +64,32 @@ class EngineEffectsManager : public EffectsRequestHandler {
         return QString("EngineEffectsManager");
     }
 
-    bool addEffectRack(EngineEffectRack* pRack);
-    bool removeEffectRack(EngineEffectRack* pRack);
+    bool addEffectRack(EngineEffectRack* pRack, SignalProcessingStage stage);
+    bool removeEffectRack(EngineEffectRack* pRack, SignalProcessingStage stage);
+
+    bool addPreFaderEffectRack(EngineEffectRack* pRack);
+    bool removePreFaderEffectRack(EngineEffectRack* pRack);
+
+    bool addPostFaderEffectRack(EngineEffectRack* pRack);
+    bool removePostFaderEffectRack(EngineEffectRack* pRack);
+
+    void processInner(const SignalProcessingStage stage,
+                      const ChannelHandle& inputHandle,
+                      const ChannelHandle& outputHandle,
+                      CSAMPLE* pIn, CSAMPLE* pOut,
+                      const unsigned int numSamples,
+                      const unsigned int sampleRate,
+                      const GroupFeatureState& groupFeatures,
+                      const CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
+                      const CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE);
 
     QScopedPointer<EffectsResponsePipe> m_pResponsePipe;
-    QList<EngineEffectRack*> m_racks;
+    QHash<SignalProcessingStage, QList<EngineEffectRack*>> m_racksByStage;
     QList<EngineEffectChain*> m_chains;
     QList<EngineEffect*> m_effects;
+
+    mixxx::SampleBuffer m_buffer1;
+    mixxx::SampleBuffer m_buffer2;
 };
 
 

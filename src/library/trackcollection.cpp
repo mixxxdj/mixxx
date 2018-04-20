@@ -1,8 +1,10 @@
 #include <QStringBuilder>
+#include <QThread>
 
 #include "library/trackcollection.h"
 
-#include "track/track.h"
+#include "sources/soundsourceproxy.h"
+#include "track/globaltrackcache.h"
 #include "util/logger.h"
 #include "util/db/sqltransaction.h"
 
@@ -15,7 +17,8 @@ namespace {
 
 TrackCollection::TrackCollection(
         const UserSettingsPointer& pConfig)
-        : m_analysisDao(pConfig),
+        : m_pConfig(pConfig),
+          m_analysisDao(pConfig),
           m_trackDao(m_cueDao, m_playlistDao,
                      m_analysisDao, m_libraryHashDao, pConfig) {
 }
@@ -27,10 +30,14 @@ TrackCollection::~TrackCollection() {
 }
 
 void TrackCollection::repairDatabase(QSqlDatabase database) {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+
     m_crates.repairDatabase(database);
 }
 
 void TrackCollection::connectDatabase(QSqlDatabase database) {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+
     m_database = database;
     m_trackDao.initialize(database);
     m_playlistDao.initialize(database);
@@ -43,12 +50,16 @@ void TrackCollection::connectDatabase(QSqlDatabase database) {
 }
 
 void TrackCollection::disconnectDatabase() {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+
     m_database = QSqlDatabase();
     m_trackDao.finish();
     m_crates.disconnectDatabase();
 }
 
 void TrackCollection::setTrackSource(QSharedPointer<BaseTrackCache> pTrackSource) {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+
     VERIFY_OR_DEBUG_ASSERT(m_pTrackSource.isNull()) {
         return;
     }
@@ -56,6 +67,8 @@ void TrackCollection::setTrackSource(QSharedPointer<BaseTrackCache> pTrackSource
 }
 
 void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+
     // We only call this method if the user has picked a relocated directory via
     // a file dialog. This means the system sandboxer (if we are sandboxed) has
     // granted us permission to this folder. Create a security bookmark while we
@@ -68,12 +81,14 @@ void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
     QSet<TrackId> movedIds(
             m_directoryDao.relocateDirectory(oldDir, newDir));
 
-    // Clear cache to that all TIO with the old dir information get updated
-    m_trackDao.clearCache();
     m_trackDao.databaseTracksMoved(std::move(movedIds), QSet<TrackId>());
+
+    GlobalTrackCacheLocker().relocateCachedTracks(&m_trackDao);
 }
 
 bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+
     // Warn if tracks have a playlist membership
     QSet<int> allPlaylistIds;
     for (const auto& trackId: trackIds) {
@@ -138,6 +153,8 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
 }
 
 bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+
     // Transactional
     SqlTransaction transaction(m_database);
     VERIFY_OR_DEBUG_ASSERT(transaction) {
@@ -166,6 +183,8 @@ bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
 
 bool TrackCollection::purgeTracks(
         const QList<TrackId>& trackIds) {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+
     // Transactional
     SqlTransaction transaction(m_database);
     VERIFY_OR_DEBUG_ASSERT(transaction) {
@@ -205,4 +224,26 @@ bool TrackCollection::purgeTracks(
         const QDir& dir) {
     QList<TrackId> trackIds(m_trackDao.getTrackIds(dir));
     return purgeTracks(trackIds);
+}
+void TrackCollection::exportTrackMetadata(Track* pTrack) const {
+    DEBUG_ASSERT(pTrack);
+
+    // Write audio meta data, if explicitly requested by the user
+    // for individual tracks or enabled in the preferences for all
+    // tracks.
+    //
+    // This must be done before updating the database, because
+    // a timestamp is used to keep track of when metadata has been
+    // last synchronized. Exporting metadata will update this time
+    // stamp on the track object!
+    if (pTrack->isMarkedForMetadataExport() ||
+            (pTrack->isDirty() && m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","SyncTrackMetadataExport")).toInt() == 1)) {
+        SoundSourceProxy::exportTrackMetadataBeforeSaving(pTrack);
+    }
+}
+
+void TrackCollection::saveTrack(Track* pTrack) {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+
+    m_trackDao.saveTrack(pTrack);
 }

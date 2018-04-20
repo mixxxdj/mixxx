@@ -21,7 +21,6 @@
 #include "engine/enginemaster.h"
 #include "mixer/playermanager.h"
 #include "soundio/soundmanager.h"
-#include "soundio/sounddevice.h"
 #include "util/rlimit.h"
 #include "util/scopedoverridecursor.h"
 #include "control/controlproxy.h"
@@ -74,6 +73,13 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     connect(deviceSyncComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(syncBuffersChanged(int)));
 
+    engineClockComboBox->clear();
+    engineClockComboBox->addItem(tr("Soundcard Clock"));
+    engineClockComboBox->addItem(tr("Network Clock"));
+    engineClockComboBox->setCurrentIndex(0);
+    connect(engineClockComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(engineClockChanged(int)));
+
     keylockComboBox->clear();
     for (int i = 0; i < EngineBuffer::KEYLOCK_ENGINE_COUNT; ++i) {
         keylockComboBox->addItem(
@@ -125,6 +131,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     connect(audioBufferComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(settingChanged()));
     connect(deviceSyncComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(settingChanged()));
+    connect(engineClockComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(settingChanged()));
     connect(keylockComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(settingChanged()));
@@ -281,8 +289,8 @@ void DlgPrefSound::addPath(AudioOutput output) {
         toInsert = new DlgPrefSoundItem(outputTab, type,
             m_outputDevices, false);
     }
-    connect(this, SIGNAL(refreshOutputDevices(const QList<SoundDevice*>&)),
-            toInsert, SLOT(refreshDevices(const QList<SoundDevice*>&)));
+    connect(this, SIGNAL(refreshOutputDevices(const QList<SoundDevicePointer>&)),
+            toInsert, SLOT(refreshDevices(const QList<SoundDevicePointer>&)));
     insertItem(toInsert, outputVLayout);
     connectSoundItem(toInsert);
 }
@@ -312,8 +320,8 @@ void DlgPrefSound::addPath(AudioInput input) {
         toInsert = new DlgPrefSoundItem(inputTab, type,
             m_inputDevices, true);
     }
-    connect(this, SIGNAL(refreshInputDevices(const QList<SoundDevice*>&)),
-            toInsert, SLOT(refreshDevices(const QList<SoundDevice*>&)));
+    connect(this, SIGNAL(refreshInputDevices(const QList<SoundDevicePointer>&)),
+            toInsert, SLOT(refreshDevices(const QList<SoundDevicePointer>&)));
     insertItem(toInsert, inputVLayout);
     connectSoundItem(toInsert);
 }
@@ -396,6 +404,12 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
     } else {
         // "Default (long delay)" = 2 buffer
         deviceSyncComboBox->setCurrentIndex(0);
+    }
+
+    if (m_config.getForceNetworkClock()) {
+        engineClockComboBox->setCurrentIndex(1);
+    } else {
+        engineClockComboBox->setCurrentIndex(0);
     }
 
     // Default keylock is Rubberband.
@@ -483,6 +497,16 @@ void DlgPrefSound::syncBuffersChanged(int index) {
     } else {
         // "Disabled (short delay)")) = 1 buffer
         m_config.setSyncBuffers(1);
+    }
+}
+
+void DlgPrefSound::engineClockChanged(int index) {
+    if (index == 0) {
+        // "Soundcard Clock"
+        m_config.setForceNetworkClock(false);
+    } else {
+        // "Network Clock"
+        m_config.setForceNetworkClock(true);
     }
 }
 

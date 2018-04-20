@@ -17,7 +17,7 @@ namespace {
 
 const mixxx::Logger kLogger("CrateStorage");
 
-} // anonymus namespace
+} // anonymous namespace
 
 void CrateStorage::initialize(const QSqlDatabase& database) {
     m_database = database;

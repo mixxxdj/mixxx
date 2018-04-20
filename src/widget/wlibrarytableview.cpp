@@ -20,10 +20,12 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
           m_savedSortColumn(-1),
           m_savedSortOrder(Qt::AscendingOrder) {
 
+    loadVScrollBarPosState();
+
     // Setup properties for table
 
     // Editing starts when clicking on an already selected item.
-    setEditTriggers(QAbstractItemView::SelectedClicked);
+    setEditTriggers(QAbstractItemView::SelectedClicked|QAbstractItemView::EditKeyPressed);
 
     //Enable selection by rows and extended selection (ctrl/shift click)
     setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -44,8 +46,6 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     setAlternatingRowColors(true);
 
-    loadVScrollBarPosState();
-
     connect(verticalScrollBar(), SIGNAL(valueChanged(int)),
             this, SIGNAL(scrollValueChanged(int)));
 
@@ -53,7 +53,6 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
 }
 
 WLibraryTableView::~WLibraryTableView() {
-    saveVScrollBarPosState();
 }
 
 void WLibraryTableView::loadVScrollBarPosState() {
@@ -73,7 +72,7 @@ void WLibraryTableView::restoreView() {
 }
 
 void WLibraryTableView::saveView() {
-    // Save the scrollbar's position and sorting order so we can return here 
+    // Save the scrollbar's position and sorting order so we can return here
     // after a search is cleared.
     m_iSavedVScrollBarPos = verticalScrollBar()->value();
     m_savedSortColumn = horizontalHeader()->sortIndicatorSection();
@@ -119,23 +118,38 @@ void WLibraryTableView::moveSelection(int delta) {
 
 void WLibraryTableView::restoreQuery(const SavedSearchQuery& query) {
     verticalScrollBar()->setValue(query.vScrollBarPos);
-    
+
     Qt::SortOrder order;
     if (query.sortAscendingOrder) {
         order = Qt::AscendingOrder;
     } else {
         order = Qt::DescendingOrder;
     }
-    
+
     horizontalHeader()->setSortIndicator(query.sortColumn, order);
 }
 
 SavedSearchQuery WLibraryTableView::saveQuery(SavedSearchQuery query) const {
     query.vScrollBarPos = verticalScrollBar()->value();
     query.sortColumn = horizontalHeader()->sortIndicatorSection();
-    query.sortAscendingOrder = 
+    query.sortAscendingOrder =
             horizontalHeader()->sortIndicatorOrder() == Qt::AscendingOrder;
     return query;
+}
+
+void WLibraryTableView::saveVScrollBarPos(TrackModel* key){
+    m_vScrollBarPosValues[key] = verticalScrollBar()->value();
+}
+
+void WLibraryTableView::restoreVScrollBarPos(TrackModel* key){
+    updateGeometries();
+
+    if (m_vScrollBarPosValues.contains(key)){
+        verticalScrollBar()->setValue(m_vScrollBarPosValues[key]);
+    }else{
+        m_vScrollBarPosValues[key] = 0;
+        verticalScrollBar()->setValue(0);
+    }
 }
 
 void WLibraryTableView::setTrackTableFont(const QFont& font) {
@@ -147,5 +161,13 @@ void WLibraryTableView::setTrackTableRowHeight(int rowHeight) {
     QFontMetrics metrics(font());
     int fontHeightPx = metrics.height();
     verticalHeader()->setDefaultSectionSize(math_max(
-            rowHeight, fontHeightPx));
+                                                rowHeight, fontHeightPx));
+}
+
+void WLibraryTableView::setSelectedClick(bool enable) {
+    if (enable) {
+        setEditTriggers(QAbstractItemView::SelectedClicked|QAbstractItemView::EditKeyPressed);
+    } else {
+        setEditTriggers(QAbstractItemView::EditKeyPressed);
+    }
 }

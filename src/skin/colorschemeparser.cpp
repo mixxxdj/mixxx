@@ -10,9 +10,11 @@
 #include "skin/imgloader.h"
 #include "skin/imgcolor.h"
 #include "skin/imginvert.h"
+#include "skin/legacyskinparser.h"
 
 void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
-                                                UserSettingsPointer pConfig) {
+                                                UserSettingsPointer pConfig,
+                                                QString* pStyle) {
     QDomNode colsch = docElem.namedItem("Schemes");
 
     bool found = false;
@@ -41,6 +43,10 @@ void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
             WPixmapStore::setLoader(imsrc);
             WImageStore::setLoader(imsrc);
             WSkinColor::setLoader(imsrc);
+
+            if (pStyle) {
+                *pStyle = LegacySkinParser::getStyleFromNode(sch);
+            }
         }
     }
     if (!found) {

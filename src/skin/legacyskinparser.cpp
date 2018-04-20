@@ -315,7 +315,7 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
     qDebug() << "LegacySkinParser loading skin:" << skinPath;
 
     m_pContext = std::make_unique<SkinContext>(m_pConfig, skinPath + "/skin.xml");
-    m_pContext->setSkinBasePath(skinPath + "/");
+    m_pContext->setSkinBasePath(skinPath);
 
     if (m_pParent) {
         qDebug() << "ERROR: Somehow a parent already exists -- you are probably re-using a LegacySkinParser which is not advisable!";
@@ -371,16 +371,22 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
 
         if (created) {
             created_attributes.append(pControl);
-        }
-        if (!attribute.persist()) {
-            // Only set the value if the control wasn't set up through
-            // the persist logic.  Skin attributes are always
-            // set on skin load.
-            pControl->set(value);
+            if (!attribute.persist()) {
+                // Only set the value if the control wasn't set up through
+                // the persist logic.  Skin attributes are always
+                // set on skin load.
+                pControl->set(value);
+            }
+        } else {
+            if (!attribute.persist()) {
+                // Set the value using the static function, so the
+                // value changes singal is transmitted to the owner.
+                ControlObject::set(configKey, value);
+            }
         }
     }
 
-    ColorSchemeParser::setupLegacyColorSchemes(skinDocument, m_pConfig);
+    ColorSchemeParser::setupLegacyColorSchemes(skinDocument, m_pConfig, &m_style);
     
     // Setup Library Icons color
     QString colorName = m_pContext->selectString(skinDocument, "LibraryIconsColor");
@@ -392,9 +398,6 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
     } else {
         WPixmapStore::setLibraryIconLoader(QSharedPointer<ImgMonoColor>());
     }
-    
-    QStringList skinPaths(skinPath);
-    QDir::setSearchPaths("skin", skinPaths);
 
     // don't parent till here so the first opengl waveform doesn't screw
     // up --bkgood
@@ -853,7 +856,7 @@ QWidget* LegacySkinParser::parseBackground(const QDomElement& node,
 
     QString filename = m_pContext->selectString(node, "Path");
     QPixmap* background = WPixmapStore::getPixmapNoCache(
-        m_pContext->getSkinPath(filename), m_pContext->getScaleFactor());
+        m_pContext->makeSkinPath(filename), m_pContext->getScaleFactor());
 
     bg->move(0, 0);
     if (background != NULL && !background->isNull()) {
@@ -1177,8 +1180,10 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
         dummy->setText(tr("Safe Mode Enabled"));
         return dummy;
     }
+
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
     WSpinny* spinny = new WSpinny(m_pParent, channelStr, m_pConfig,
-                                  m_pVCManager);
+                                  m_pVCManager, pPlayer);
     if (!spinny->isValid()) {
         delete spinny;
         WLabel* dummy = new WLabel(m_pParent);
@@ -1191,16 +1196,6 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
     WaveformWidgetFactory::instance()->addTimerListener(spinny);
     connect(spinny, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
-
-    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
-    if (pPlayer != NULL) {
-        connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
-                spinny, SLOT(slotLoadTrack(TrackPointer)));
-        connect(pPlayer, SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
-                spinny, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
-        // just in case a track is already loaded
-        spinny->slotLoadTrack(pPlayer->getLoadedTrack());
-    }
 
     spinny->setup(node, *m_pContext);
     spinny->installEventFilter(m_pKeyboard);
@@ -1232,7 +1227,7 @@ QWidget* LegacySkinParser::parseCoverArt(const QDomElement& node) {
     QString channel = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channel);
 
-    WCoverArt* pCoverArt = new WCoverArt(m_pParent, m_pConfig, channel);
+    WCoverArt* pCoverArt = new WCoverArt(m_pParent, m_pConfig, channel, pPlayer);
     commonWidgetSetup(node, pCoverArt);
     pCoverArt->setup(node, *m_pContext);
 
@@ -1243,16 +1238,9 @@ QWidget* LegacySkinParser::parseCoverArt(const QDomElement& node) {
                 pCoverArt, SLOT(slotEnable(bool)));
         connect(m_pLibrary, SIGNAL(trackSelected(TrackPointer)),
                 pCoverArt, SLOT(slotLoadTrack(TrackPointer)));
-    } else if (pPlayer != NULL) {
-        connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
-                pCoverArt, SLOT(slotLoadTrack(TrackPointer)));
-        connect(pPlayer, SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
-                pCoverArt, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
+    } else if (pPlayer != nullptr) {
         connect(pCoverArt, SIGNAL(trackDropped(QString, QString)),
                 m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
-
-        // just in case a track is already loaded
-        pCoverArt->slotLoadTrack(pPlayer->getLoadedTrack());
     }
 
     return pCoverArt;
@@ -1654,6 +1642,7 @@ QDomElement LegacySkinParser::loadTemplate(const QString& path) {
     }
 
     m_templateCache[absolutePath] = tmpl.documentElement();
+    m_pContext->setSkinTemplatePath(templateFileInfo.absoluteDir().absolutePath());
     return tmpl.documentElement();
 }
 
@@ -1667,10 +1656,14 @@ QList<QWidget*> LegacySkinParser::parseTemplate(const QDomElement& node) {
 
     QString path = node.attribute("src");
 
+    std::unique_ptr<SkinContext> pOldContext = std::move(m_pContext);
+    m_pContext = std::make_unique<SkinContext>(*pOldContext);
+
     QDomElement templateNode = loadTemplate(path);
 
     if (templateNode.isNull()) {
         SKIN_WARNING(node, *m_pContext) << "Template instantiation for template failed:" << path;
+        m_pContext = std::move(pOldContext);
         return QList<QWidget*>();
     }
 
@@ -1678,8 +1671,6 @@ QList<QWidget*> LegacySkinParser::parseTemplate(const QDomElement& node) {
         qDebug() << "BEGIN TEMPLATE" << path;
     }
 
-    std::unique_ptr<SkinContext> pOldContext = std::move(m_pContext);
-    m_pContext = std::make_unique<SkinContext>(*pOldContext);
     // Take any <SetVariable> elements from this node and update the context
     // with them.
     m_pContext->updateVariables(node);
@@ -1994,8 +1985,9 @@ void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
     }
 }
 
+//static
 QString LegacySkinParser::getStyleFromNode(const QDomNode& node) {
-    QDomElement styleElement = m_pContext->selectElement(node, "Style");
+    QDomElement styleElement = SkinContext::selectElement(node, "Style");
 
     if (styleElement.isNull()) {
         return QString();
@@ -2011,6 +2003,26 @@ QString LegacySkinParser::getStyleFromNode(const QDomNode& node) {
 
             style = QString::fromLocal8Bit(fileBytes.constData(),
                                            fileBytes.length());
+        }
+
+        QString platformSpecificAttribute;
+#if defined(Q_OS_MAC)
+        platformSpecificAttribute = "src-mac";
+#elif defined(__WINDOWS__)
+        platformSpecificAttribute = "src-windows";
+#else
+        platformSpecificAttribute = "src-linux";
+#endif
+
+        if (styleElement.hasAttribute(platformSpecificAttribute)) {
+            QString platformSpecificSrc = styleElement.attribute(platformSpecificAttribute);
+            QFile platformSpecificFile(platformSpecificSrc);
+            if (platformSpecificFile.open(QIODevice::ReadOnly)) {
+                QByteArray fileBytes = platformSpecificFile.readAll();
+
+                style += QString::fromLocal8Bit(fileBytes.constData(),
+                                                fileBytes.length());
+            }
         }
 
 // This section can be enabled on demand. It is useful to tweak
@@ -2116,6 +2128,11 @@ void LegacySkinParser::setupWidget(const QDomNode& node,
     // Check if we should apply legacy library styling to this node.
     if (m_pContext->selectBool(node, "LegacyTableViewStyle", false)) {
         style = getLibraryStyle(node);
+    }
+    // check if we have a style from color schema: 
+    if (!m_style.isEmpty()) {
+        style.append(m_style);
+        m_style.clear(); // only apply color scheme to the first widget
     }
     if (!style.isEmpty()) {
         pWidget->setStyleSheet(style);

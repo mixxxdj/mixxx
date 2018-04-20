@@ -1,76 +1,57 @@
 <Template>
-    <SizeAwareStack currentpage="[Master],lower_half_size" persist="true">
+  <SizeAwareStack>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>UILowerHalf</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <MinimumSize>0,0</MinimumSize>
+        <MaximumSize>-1,300</MaximumSize>
         <Children>
-            <WidgetGroup>
-                <ObjectName>UILowerHalf</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>min,i</SizePolicy>
-                <MinimumSize>0,0</MinimumSize>
-                <MaximumSize>1920,249</MaximumSize>
-                <Children>
-                    <Template src="skin:fx_samplers_container_small.xml"/>
-                    <Template src="skin:toolbar_small.xml"/>
-                </Children>
-            </WidgetGroup>
-            <WidgetGroup>
-                <ObjectName>UILowerHalf</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>min,i</SizePolicy>
-                <MinimumSize>0,250</MinimumSize>
-                <MaximumSize>1920,419</MaximumSize>
-                <Children>
-                    <Template src="skin:fx_samplers_container_med.xml"/>
-                    <SingletonContainer>
-                        <ObjectName>LibrarySingleton</ObjectName>
-                        <Connection>
-                            <ConfigKey persist="true">[Library],show_library</ConfigKey>
-                            <BindProperty>visible</BindProperty>
-                        </Connection>
-                    </SingletonContainer>
-                    <WidgetGroup>
-                        <Layout>horizontal</Layout>
-                        <SizePolicy>me,me</SizePolicy>
-                        <Children/>
-                        <Connection>
-                            <ConfigKey persist="true">[Library],show_library</ConfigKey>
-                            <BindProperty>visible</BindProperty>
-                            <Transform>
-                              <Not/>
-                            </Transform>
-                        </Connection>
-                    </WidgetGroup>
-                    <Template src="skin:toolbar_med.xml"/>
-                </Children>
-            </WidgetGroup>
-            <WidgetGroup>
-                <ObjectName>UILowerHalf</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>min,i</SizePolicy>
-                <MinimumSize>0,420</MinimumSize>
-                <Children>
-                    <Template src="skin:fx_samplers_container_full.xml"/>
-                    <SingletonContainer>
-                        <ObjectName>LibrarySingleton</ObjectName>
-                        <Connection>
-                            <ConfigKey persist="true">[Library],show_library</ConfigKey>
-                            <BindProperty>visible</BindProperty>
-                        </Connection>
-                    </SingletonContainer>
-                    <WidgetGroup>
-                        <Layout>horizontal</Layout>
-                        <SizePolicy>me,me</SizePolicy>
-                        <Children/>
-                        <Connection>
-                            <ConfigKey persist="true">[Library],show_library</ConfigKey>
-                            <BindProperty>visible</BindProperty>
-                            <Transform>
-                              <Not/>
-                            </Transform>
-                        </Connection>
-                    </WidgetGroup>
-                    <Template src="skin:toolbar_full.xml"/>
-                </Children>
-            </WidgetGroup>
+          <Template src="skin:mic_samplers_container.xml"/>
+
+          <SingletonContainer>
+            <ObjectName>LibrarySingleton</ObjectName>
+          </SingletonContainer>
         </Children>
-    </SizeAwareStack>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>UILowerHalf</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <MinimumSize>0,301</MinimumSize>
+        <Children>
+
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Children>
+              <Template src="skin:mic_aux_container.xml"/>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Children>
+              <Template src="skin:samplers_container.xml"/>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <SingletonContainer>
+            <ObjectName>LibrarySingleton</ObjectName>
+          </SingletonContainer>
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </SizeAwareStack>
 </Template>

@@ -201,7 +201,7 @@ QString ExactFilterNode::toSql() const {
         QString escapedArgument = escaper.escapeString(m_argument);
 
         for (const QString& sqlColumn : m_sqlColumns) {
-            searchClauses << QString("%1 GLOB %2").arg(sqlColumn, escapedArgument);
+            searchClauses << QString("%1 = %2").arg(sqlColumn, escapedArgument);
         }
         concatOp = "OR";
     }
