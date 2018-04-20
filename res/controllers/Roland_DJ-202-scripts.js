@@ -396,7 +396,13 @@ DJ202.Deck = function (deckNumbers, offset) {
         },
         shift: function () {
             this.inKey = 'reverse';
-            this.input = components.Button.prototype.input;
+            this.input = function (channel, control, value, status, group) {
+                components.Button.prototype.input.apply(this, arguments);
+                if(!value) {
+                    this.trigger();
+                }
+
+            };
         }
     });
 
