@@ -582,88 +582,16 @@ DJ202.EffectUnit = function (unitNumber) {
         this.knob.unshift();
     };
 
-    this.EffectButton = function (buttonNumber) {
-        this.buttonNumber = buttonNumber;
-
-        this.group = eu.group;
-        this.midi = [0x98 + unitNumber-1, 0x00 + buttonNumber-1];
-
-        components.Button.call(this);
-    };
-
-    // FIXME The LED should only be toggled *after* a long press was registered,
-    // so one immediately sees that focus has switched without looking at the
-    // GUI. If the hardware always flashes immediately upon button-down, one
-    // could indicate focus switch by toggling it off for a second before
-    // re-enabling it.
-    this.EffectButton.prototype = new components.Button({
-        unshift: function() {
-            this.input = function (channel, control, value, status) {
-                if (this.isPress(channel, control, value, status)) {
-                    this.isLongPressed = false;
-                    this.longPressTimer = engine.beginTimer(this.longPressTimeout, function () {
-                        var focusedEffect = engine.getValue(eu.group, 'focused_effect');
-                        if (focusedEffect === this.buttonNumber) {
-                            engine.setValue(eu.group, 'focused_effect', 0);
-                        } else {
-                            engine.setValue(eu.group, 'focused_effect', this.buttonNumber);
-                        }
-                        this.isLongPressed = true;
-                    }, true);
-                } else {
-                    if (!this.isLongPressed) {
-                        var effectGroup = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + this.buttonNumber + ']';
-                        var wasEnabled = engine.getValue(effectGroup, 'enabled');
-                        script.toggleControl(effectGroup, 'enabled');
-                        if (!wasEnabled && DJ202.autoFocusEffects) {
-                            engine.setValue(eu.group, 'focused_effect', this.buttonNumber);
-                        }
-                    }
-                    this.isLongPressed = false;
-                    engine.stopTimer(this.longPressTimer);
-                }
-            }
-            this.outKey = 'focused_effect';
-            this.output = function (value, group, control) {
-                this.send((value === this.buttonNumber) ? this.on : this.off);
-            };
-            this.sendShifted = true;
-            this.shiftOffset = 0x0B;
-        },
-        shift: function () {
-            this.input = function (channel, control, value, status) {
-                var group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + this.buttonNumber + ']';
-                script.toggleControl(group, 'next_effect');
-            };
-        }
-    });
-
     this.button = [];
     for (var i = 1; i <= 3; i++) {
-        this.button[i] = new this.EffectButton(i);
-
+        this.button[i] = new DJ202.EffectButton(unitNumber, i);
         var effectGroup = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + i + ']';
         engine.softTakeover(effectGroup, 'meta', true);
         engine.softTakeover(eu.group, 'mix', true);
         engine.softTakeover(eu.group, 'super1', true);
     }
 
-    this.headphones = new components.Button({
-        group: '[EffectRack1_EffectUnit' + unitNumber + ']',
-        midi: [0x98, 0x04],
-        unshift: function() {
-            this.outKey = 'group_[Headphone]_enable';
-            this.inKey = this.outKey;
-            this.input = function (channel, control, value, status) {
-                // FIXME Trigger *after* release, to work-around the device
-                // disabling the LED on release. Refactor this once a customized
-                // ‘Button’ class is available.
-                if (!value) {
-                    script.toggleControl(this.group, this.outKey);
-                };
-            };
-        }
-    });
+    this.headphones = new DJ202.HeadPhonesButton(unitNumber);
 
     this.knob = new components.Pot({
         unshift: function () {
@@ -697,4 +625,149 @@ DJ202.EffectUnit = function (unitNumber) {
             engine.softTakeoverIgnoreNextValue(effectGroup, 'meta');
         }
     });
+};
+
+
+////////////////////////
+// Custom components. //
+////////////////////////
+DJ202.FlashingButton = function () {
+    components.Button.call(this);
+    this.flashFreq = 50;
+};
+
+DJ202.FlashingButton.prototype = Object.create(components.Button.prototype);
+
+DJ202.FlashingButton.prototype.flash = function (cycles) {
+    if (cycles == 0) {
+        // Reset to correct value after flashing phase ends.
+        this.trigger();
+        return
+    }
+
+    if (cycles === undefined) {
+        cycles = 10;
+    }
+
+    var value = cycles % 2 == 0 ? 0x7f : 0;
+    this.send(value);
+
+    engine.beginTimer(
+        this.flashFreq,
+        function () {
+            var value = value ? 0 : 0x7f;
+            this.send(value);
+            this.flash(cycles - 1);
+        },
+        true
+    );
+};
+
+DJ202.EffectButton = function (effectUnitNumber, effectNumber) {
+    this.effectUnitNumber = effectUnitNumber;
+    this.effectNumber = effectNumber;
+    this.effectUnitGroup = '[EffectRack1_EffectUnit' + effectUnitNumber + ']';
+    this.group = '[EffectRack1_EffectUnit' + effectUnitNumber + '_Effect' + effectNumber + ']';
+    this.midi = [0x98 + effectUnitNumber - 1, 0x00 + effectNumber - 1];
+    this.sendShifted = true;
+    this.shiftOffset = 0x0B;
+    this.outKey = 'enabled';
+    DJ202.FlashingButton.call(this);
+};
+
+DJ202.EffectButton.prototype = Object.create(DJ202.FlashingButton.prototype);
+
+DJ202.EffectButton.prototype.unshift = function() {
+    this.input = function (channel, control, value, status) {
+        if (this.isPress(channel, control, value, status)) {
+            this.isLongPressed = false;
+            this.longPressTimer = engine.beginTimer(
+                this.longPressTimeout,
+                function () {
+                    engine.setValue(
+                        this.effectUnitGroup,
+                        'focused_effect',
+                        this.effectNumber
+                    );
+                    this.isLongPressed = true;
+                    this.flash();
+                },
+                true
+            );
+            return;
+        }                                            // Else: on button release.
+
+        if (this.longPressTimer) {
+            engine.stopTimer(this.longPressTimer);
+            this.longPressTimer = null;
+        }
+
+        // Work-around the indicator LED self-disabling itself on release.
+        this.trigger();
+
+        if (!this.isLongPressed) {                  // Release after long press.
+            var wasEnabled = engine.getValue(this.group, 'enabled');
+            script.toggleControl(this.group, 'enabled');
+            if (!wasEnabled && DJ202.autoFocusEffects) {
+                engine.setValue(this.effectUnitGroup, 'focused_effect', this.effectNumber);
+                this.flash();
+            }
+            return;
+        }                                    // Else: release after short press.
+
+        this.isLongPressed = false;
+    }
+};
+
+DJ202.EffectButton.prototype.shift = function () {
+    this.input = function (channel, control, value, status) {
+        script.toggleControl(this.group, 'next_effect');
+        // Work-around the indicator LED self-disabling itself on release.
+        if (!value) {
+            this.trigger();
+        }
+    };
+};
+
+DJ202.HeadPhonesButton = function (effectUnitNumber) {
+    this.effectUnitNumber = effectUnitNumber;
+    this.group = '[EffectRack1_EffectUnit' + effectUnitNumber + ']';
+    this.outKey = 'group_[Headphone]_enable';
+    this.inKey = this.outKey;
+    this.midi = [0x98 + effectUnitNumber - 1, 0x04];
+    DJ202.FlashingButton.call(this);
+};
+
+DJ202.HeadPhonesButton.prototype = Object.create(DJ202.FlashingButton.prototype);
+
+DJ202.HeadPhonesButton.prototype.input = function (channel, control, value, status) {
+
+    if (value) {                                                // Button press.
+        this.isLongPressed = false;
+        this.longPressTimer = engine.beginTimer(
+            this.longPressTimeout,
+            function () {
+                this.isLongPressed = true;
+                this.longPressTimer = null;
+                engine.setValue(this.group, 'focused_effect', 0);
+                this.flash();
+            },
+            true
+        );
+        return;
+    }                                                   // Else: Button release.
+
+    // Work-around the indicator LED self-disabling itself on release.
+    this.trigger();
+
+    if (this.longPressTimer) {
+        engine.stopTimer(this.longPressTimer)
+        this.longPressTimer = null;
+    }
+
+    if (this.isLongPressed) {                       // Release after long press.
+        return
+    }                                        // Else: Release after short press.
+
+    script.toggleControl(this.group, this.outKey);
 };
