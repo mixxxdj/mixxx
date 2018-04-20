@@ -8,6 +8,7 @@ DJ202.stripSearchScaling = 50;
 DJ202.tempoRange = [0.08, 0.16, 0.5];
 DJ202.autoFocusEffects = false;
 DJ202.autoShowFourDecks = false;
+DJ202.bindSamplerControls = false;
 
 
 ///////////
@@ -17,7 +18,7 @@ DJ202.autoShowFourDecks = false;
 DJ202.init = function () {
 
     DJ202.shiftButton = function (channel, control, value, status, group) {
-        DJ202.deck.concat(DJ202.effectUnit).forEach(
+        DJ202.deck.concat(DJ202.effectUnit, DJ202.sampler).forEach(
             value
                 ? function (module) { module.shift(); }
                 : function (module) { module.unshift(); }
@@ -27,6 +28,9 @@ DJ202.init = function () {
     DJ202.leftDeck = new DJ202.Deck([1,3], 0);
     DJ202.rightDeck = new DJ202.Deck([2,4], 1);
     DJ202.deck = [DJ202.leftDeck, DJ202.rightDeck];
+
+    DJ202.sampler = new DJ202.Sampler();
+    DJ202.sampler.reconnectComponents();
 
     DJ202.effectUnit = [];
     DJ202.effectUnit[1] = new DJ202.EffectUnit(1);
@@ -270,8 +274,6 @@ DJ202.Deck = function (deckNumbers, offset) {
     };
 
     this.hotcueButton = [];
-    this.samplerButton = [];
-    this.loopButton = [];
 
     for (var i = 1; i <= 8; i++) {
         this.hotcueButton[i] = new components.HotcueButton({
@@ -285,25 +287,10 @@ DJ202.Deck = function (deckNumbers, offset) {
             var deck = script.deckFromGroup(this.group);
             this.midi = [0x94 + deck - 1, this.number];
             components.HotcueButton.prototype.connect.call(this);
-        }
+        };
+    };
 
-        this.samplerButton[i] = new components.SamplerButton({
-            sendShifted: true,
-            shiftControl: true,
-            shiftOffset: 8,
-            number: i + offset * 8,
-        });
-
-        this.samplerButton[i].send = function (value) {
-            var isLeftDeck = this.number <= 8;
-            var channel = isLeftDeck ? 0x94 : 0x95;
-            this.midi = [channel, 0x20 + this.number - (isLeftDeck ? 0 : 8)];
-            components.SamplerButton.prototype.send.call(this, value);
-            this.midi = [channel + 2, 0x20 + this.number - (isLeftDeck ? 0 : 8)];
-            components.SamplerButton.prototype.send.call(this, value);
-        }
-    }
-    
+    this.loopButton = [];
 
     for (var i = 1; i <= 4; i++) {
         this.loopButton[i] = new components.Button({
@@ -605,6 +592,79 @@ DJ202.EffectUnit = function (unitNumber) {
         }
     });
 };
+
+//////////////////////////////
+// Sampler.                 //
+//////////////////////////////
+
+DJ202.Sampler = function () {
+    components.ComponentContainer.call(this);
+
+    this.button = [];
+
+    for (var i=1; i<=16; i++) {
+        this.button[i] = new components.SamplerButton({
+            sendShifted: true,
+            shiftControl: true,
+            shiftOffset: 8,
+            number: i
+        });
+
+        this.button[i].send = function (value) {
+            var isLeftDeck = this.number <= 8;
+            var channel = isLeftDeck ? 0x94 : 0x95;
+            this.midi = [channel, 0x20 + this.number - (isLeftDeck ? 0 : 8)];
+            components.SamplerButton.prototype.send.call(this, value);
+            this.midi = [channel + 2, 0x20 + this.number - (isLeftDeck ? 0 : 8)];
+            components.SamplerButton.prototype.send.call(this, value);
+        }
+    }
+
+    this.level = new components.Pot({
+        inValueScale: function (value) {
+            // FIXME: The sampler gain knob has a dead zone and appears to scale
+            // non-linearly.
+            return components.Pot.prototype.inValueScale.call(this, value) * 4;
+        },
+        input: function (channel, control, value, status, group) {
+            if (!DJ202.bindSamplerControls) {
+                return
+            }
+            for (var i=1; i<=16; i++) {
+                var group = '[Sampler' + i + ']';
+                engine.setValue(group, 'pregain', this.inValueScale(value));
+            }
+        }
+    })
+
+    this.pfl = new components.Button({
+        sampler: this,
+        midi: [0x9f, 0x1d],
+        connect: function () {
+            if (!DJ202.bindSamplerControls) {
+                return
+            }
+            components.Button.prototype.connect.call(this);
+            // Ensure a consistent state between mixxx and device.
+            for (var i=1; i<=16; i++) {
+                var group = '[Sampler' + i + ']';
+                engine.setValue(group, 'pfl', false);
+            }
+            this.send(0);
+        },
+        input: function (channel, control, value, status, group) {
+            if (!value || !DJ202.bindSamplerControls) {
+                return;
+            }
+            for (var i=1; i<=16; i++) {
+                var group = '[Sampler' + i + ']';
+                script.toggleControl(group, 'pfl');
+            }
+        }
+    })
+}
+
+DJ202.Sampler.prototype = Object.create(components.ComponentContainer.prototype);
 
 
 ////////////////////////
