@@ -606,19 +606,21 @@ DJ202.EffectUnit = function (unitNumber) {
 
                 var focusedEffect = engine.getValue(eu.group, 'focused_effect');
                 if (focusedEffect === 0) {
-                    engine.setParameter(eu.group, 'mix', value / this.max);
+                    engine.setParameter(eu.group, 'super1', value / this.max);
                 } else {
                     var effectGroup = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + focusedEffect + ']';
                     engine.setParameter(effectGroup, 'meta', value / this.max);
                 }
-                engine.softTakeoverIgnoreNextValue(eu.group, 'super1');
+                engine.softTakeoverIgnoreNextValue(eu.group, 'mix');
             };
         },
         shift: function() {
             this.input = function (channel, control, value, status) {
-                var group = '[EffectRack1_EffectUnit' + unitNumber + ']';
-                engine.setParameter(group, 'super1', value / 0x7f);
-                engine.softTakeoverIgnoreNextValue(group, 'mix');
+                engine.setParameter(eu.group, 'mix', value / 0x7f);
+                var focusedEffect = engine.getValue(eu.group, 'focused_effect');
+                var effectGroup = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + focusedEffect + ']';
+                engine.softTakeoverIgnoreNextValue(effectGroup, 'meta');
+                engine.softTakeoverIgnoreNextValue(eu.group, 'super1');
             }
         }
     });
