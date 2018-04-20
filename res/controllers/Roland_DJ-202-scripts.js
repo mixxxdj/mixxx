@@ -645,6 +645,7 @@ DJ202.EffectUnit = function (unitNumber) {
         var effectGroup = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + i + ']';
         engine.softTakeover(effectGroup, 'meta', true);
         engine.softTakeover(eu.group, 'mix', true);
+        engine.softTakeover(eu.group, 'super1', true);
     }
 
     this.headphones = new components.Button({
@@ -676,12 +677,14 @@ DJ202.EffectUnit = function (unitNumber) {
                     var effectGroup = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + focusedEffect + ']';
                     engine.setParameter(effectGroup, 'meta', value / this.max);
                 }
+                engine.softTakeoverIgnoreNextValue(eu.group, 'super1');
             };
         },
         shift: function() {
             this.input = function (channel, control, value, status) {
                 var group = '[EffectRack1_EffectUnit' + unitNumber + ']';
                 engine.setParameter(group, 'super1', value / 0x7f);
+                engine.softTakeoverIgnoreNextValue(group, 'mix');
             }
         }
     });
