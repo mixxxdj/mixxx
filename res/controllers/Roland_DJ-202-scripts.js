@@ -317,7 +317,17 @@ DJ202.Deck = function (deckNumbers, offset) {
         sendShifted: true,
         shiftChannel: true,
         shiftOffset: 2,
-        reverseRollOnShift: true
+        reverseRollOnShift: true,
+        input: function (channel, control, value, status, group) {
+            components.CueButton.prototype.input.call(this, channel, control, value, status, group);
+            if (value) {
+                return
+            }
+            var state = engine.getValue(group, 'cue_indicator');
+            if (state) {
+                this.trigger();
+            }
+        }
     });
 
     this.play = new components.Button({
