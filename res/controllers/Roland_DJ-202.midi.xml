@@ -1418,9 +1418,18 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.effectUnit[1].headphones.input</key>
+                <key>DJ202.effectUnit[1].effectMode.input</key>
                 <status>0x98</status>
                 <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.effectUnit[1].effectMode.input</key>
+                <status>0x98</status>
+                <midino>0x0A</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -2848,9 +2857,18 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.effectUnit[2].headphones.input</key>
+                <key>DJ202.effectUnit[2].effectMode.input</key>
                 <status>0x99</status>
                 <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJ202.effectUnit[2].effectMode.input</key>
+                <status>0x99</status>
+                <midino>0x0A</midino>
                 <options>
                     <script-binding/>
                 </options>

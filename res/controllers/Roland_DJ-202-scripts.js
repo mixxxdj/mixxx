@@ -578,6 +578,7 @@ DJ202.EffectUnit = function (unitNumber) {
         this.button.forEach(function (button) {
             button.shift();
         });
+        this.effectMode.shift();
         this.knob.shift();
     };
 
@@ -585,6 +586,7 @@ DJ202.EffectUnit = function (unitNumber) {
         this.button.forEach(function (button) {
             button.unshift();
         });
+        this.effectMode.unshift();
         this.knob.unshift();
     };
 
@@ -594,10 +596,9 @@ DJ202.EffectUnit = function (unitNumber) {
         var effectGroup = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + i + ']';
         engine.softTakeover(effectGroup, 'meta', true);
         engine.softTakeover(eu.group, 'mix', true);
-        engine.softTakeover(eu.group, 'super1', true);
     }
 
-    this.headphones = new DJ202.HeadPhonesButton(unitNumber);
+    this.effectMode = new DJ202.EffectModeButton(unitNumber);
 
     this.knob = new components.Pot({
         unshift: function () {
@@ -605,9 +606,7 @@ DJ202.EffectUnit = function (unitNumber) {
                 value = (this.MSB << 7) + value;
 
                 var focusedEffect = engine.getValue(eu.group, 'focused_effect');
-                if (focusedEffect === 0) {
-                    engine.setParameter(eu.group, 'super1', value / this.max);
-                } else {
+                if (focusedEffect !== 0) {
                     var effectGroup = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + focusedEffect + ']';
                     engine.setParameter(effectGroup, 'meta', value / this.max);
                 }
@@ -620,7 +619,6 @@ DJ202.EffectUnit = function (unitNumber) {
                 var focusedEffect = engine.getValue(eu.group, 'focused_effect');
                 var effectGroup = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + focusedEffect + ']';
                 engine.softTakeoverIgnoreNextValue(effectGroup, 'meta');
-                engine.softTakeoverIgnoreNextValue(eu.group, 'super1');
             }
         }
     });
@@ -729,7 +727,6 @@ DJ202.EffectButton.prototype.unshift = function() {
 
 DJ202.EffectButton.prototype.shift = function () {
     this.input = function (channel, control, value, status) {
-        script.toggleControl(this.group, 'next_effect');
         // Work-around the indicator LED self-disabling itself on release.
         if (!value) {
             this.trigger();
@@ -737,7 +734,7 @@ DJ202.EffectButton.prototype.shift = function () {
     };
 };
 
-DJ202.HeadPhonesButton = function (effectUnitNumber) {
+DJ202.EffectModeButton = function (effectUnitNumber) {
     this.effectUnitNumber = effectUnitNumber;
     this.group = '[EffectRack1_EffectUnit' + effectUnitNumber + ']';
     this.outKey = 'group_[Headphone]_enable';
@@ -746,9 +743,9 @@ DJ202.HeadPhonesButton = function (effectUnitNumber) {
     DJ202.FlashingButton.call(this);
 };
 
-DJ202.HeadPhonesButton.prototype = Object.create(DJ202.FlashingButton.prototype);
+DJ202.EffectModeButton.prototype = Object.create(DJ202.FlashingButton.prototype);
 
-DJ202.HeadPhonesButton.prototype.input = function (channel, control, value, status) {
+DJ202.EffectModeButton.prototype.input = function (channel, control, value, status) {
 
     if (value) {                                                // Button press.
         this.isLongPressed = false;
@@ -757,8 +754,6 @@ DJ202.HeadPhonesButton.prototype.input = function (channel, control, value, stat
             function () {
                 this.isLongPressed = true;
                 this.longPressTimer = null;
-                engine.setValue(this.group, 'focused_effect', 0);
-                this.flash();
             },
             true
         );
@@ -774,8 +769,23 @@ DJ202.HeadPhonesButton.prototype.input = function (channel, control, value, stat
     }
 
     if (this.isLongPressed) {                       // Release after long press.
+        script.toggleControl(this.group, this.outKey);
         return
     }                                        // Else: Release after short press.
 
-    script.toggleControl(this.group, this.outKey);
+    var focusedEffect = engine.getValue(this.group, 'focused_effect');
+    if (!focusedEffect) {
+        return
+    }
+
+    var effectGroup = '[EffectRack1_EffectUnit' + this.effectUnitNumber + '_Effect' + focusedEffect +']';
+    engine.setValue(effectGroup, 'effect_selector',  this.shifted ? -1 : 1);
 };
+
+DJ202.EffectModeButton.prototype.shift = function () {
+    this.shifted = true;
+}
+
+DJ202.EffectModeButton.prototype.unshift = function () {
+    this.shifted = false;
+}
