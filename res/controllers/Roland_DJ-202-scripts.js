@@ -7,6 +7,7 @@ var DJ202 = {};
 DJ202.stripSearchScaling = 50;
 DJ202.tempoRange = [0.08, 0.16, 0.5];
 DJ202.autoFocusEffects = false;
+DJ202.autoShowFourDecks = false;
 
 
 ///////////
@@ -30,12 +31,23 @@ DJ202.init = function () {
     DJ202.effectUnit = [];
     DJ202.effectUnit[1] = new DJ202.EffectUnit(1);
     DJ202.effectUnit[2] = new DJ202.EffectUnit(2);
-    
-    
+
+    engine.makeConnection('[Channel3]', 'track_loaded', DJ202.autoShowDecks);
+    engine.makeConnection('[Channel4]', 'track_loaded', DJ202.autoShowDecks);
+
     if (engine.getValue('[Master]', 'num_samplers') < 16) {
         engine.setValue('[Master]', 'num_samplers', 16);
     }
 };
+
+DJ202.autoShowDecks = function (value, group, control) {
+    var any_loaded = engine.getValue('[Channel3]', 'track_loaded')
+        || engine.getValue('[Channel4]', 'track_loaded')
+    if (!DJ202.autoShowFourDecks) {
+        return
+    }
+    engine.setValue('[Master]', 'show_4decks', any_loaded);
+}
 
 DJ202.shutdown = function () {
 };
