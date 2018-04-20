@@ -38,7 +38,8 @@ EffectManifest BalanceEffect::getManifest() {
     EffectManifestParameter* midSide = manifest.addParameter();
     midSide->setId("midSide");
     midSide->setName(QObject::tr("Mid/Side"));
-    midSide->setDescription(QObject::tr("Adjust stereo width by changing balance between middle and side of the signal. Fully left is mono, fully right is only side ambiance, and centered does not change the original signal."));
+    midSide->setDescription(QObject::tr("Adjust stereo width by changing balance between middle and side of the signal.\n"
+        "Fully left is mono, fully right is only side ambiance, and centered does not change the original signal."));
     midSide->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     midSide->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     midSide->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);

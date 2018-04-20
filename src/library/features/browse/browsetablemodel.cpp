@@ -40,7 +40,7 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
     header_data.insert(COLUMN_TYPE, tr("Type"));
     header_data.insert(COLUMN_BITRATE, tr("Bitrate"));
     header_data.insert(COLUMN_REPLAYGAIN, tr("ReplayGain"));
-    header_data.insert(COLUMN_LOCATION, tr("Location"));
+    header_data.insert(COLUMN_NATIVELOCATION, tr("Location"));
     header_data.insert(COLUMN_ALBUMARTIST, tr("Album Artist"));
     header_data.insert(COLUMN_GROUPING, tr("Grouping"));
     header_data.insert(COLUMN_FILE_MODIFIED_TIME, tr("File Modified"));
@@ -116,8 +116,10 @@ TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
 QString BrowseTableModel::getTrackLocation(const QModelIndex& index) const {
     int row = index.row();
 
-    QModelIndex index2 = this->index(row, COLUMN_LOCATION);
-    return data(index2).toString();
+    QModelIndex index2 = this->index(row, COLUMN_NATIVELOCATION);
+    QString nativeLocation = data(index2).toString();
+    QString location = QDir::fromNativeSeparators(nativeLocation);
+    return location;
 }
 
 TrackId BrowseTableModel::getTrackId(const QModelIndex& index) const {
@@ -150,7 +152,7 @@ bool BrowseTableModel::isColumnHiddenByDefault(int column) {
             column == COLUMN_TRACK_NUMBER ||
             column == COLUMN_YEAR ||
             column == COLUMN_GROUPING ||
-            column == COLUMN_LOCATION ||
+            column == COLUMN_NATIVELOCATION ||
             column == COLUMN_ALBUMARTIST ||
             column == COLUMN_FILE_CREATION_TIME ||
             column == COLUMN_REPLAYGAIN) {
@@ -345,7 +347,7 @@ void BrowseTableModel::trackLoaded(QString group, TrackPointer pTrack) {
         if (pTrack) {
             for (int row = 0; row < rowCount(); ++row) {
                 QModelIndex i = index(row, COLUMN_PREVIEW);
-                QString location = index(row, COLUMN_LOCATION).data().toString();
+                QString location = getTrackLocation(i);
                 if (location == pTrack->getLocation()) {
                     QStandardItem* item = itemFromIndex(i);
                     item->setText("1");

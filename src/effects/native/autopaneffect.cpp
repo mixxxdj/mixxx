@@ -22,7 +22,7 @@ EffectManifest AutoPanEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr("Bounce the sound from a channel "
-            "to another, roughly or softly, fully or partially, fastly or slowly. "
+            "to another, roughly or softly, fully or partially, fastly or slowly.\n"
             "A delay, inversed on each side, is added to increase the "
             "spatial move and the period can be synced with the BPM."));
 

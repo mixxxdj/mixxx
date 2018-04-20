@@ -389,7 +389,7 @@ void WTrackTableView::createActions() {
     connect(m_pFileBrowserAct, SIGNAL(triggered()),
             this, SLOT(slotOpenInFileBrowser()));
 
-    m_pAutoDJBottomAct = new QAction(tr("Add to Auto-DJ Queue (bottom)"), this);
+    m_pAutoDJBottomAct = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
     connect(m_pAutoDJBottomAct, SIGNAL(triggered()),
             this, SLOT(slotSendToAutoDJBottom()));
 
@@ -397,7 +397,7 @@ void WTrackTableView::createActions() {
     connect(m_pAutoDJTopAct, SIGNAL(triggered()),
             this, SLOT(slotSendToAutoDJTop()));
 
-    m_pAutoDJReplaceAct = new QAction(tr("Add to Auto-DJ Queue (replace)"), this);
+    m_pAutoDJReplaceAct = new QAction(tr("Add to Auto DJ Queue (replace)"), this);
     connect(m_pAutoDJReplaceAct, SIGNAL(triggered()),
             this, SLOT(slotSendToAutoDJReplace()));
 
