@@ -564,9 +564,8 @@ DJ202.Deck = function (deckNumbers, offset) {
         }
     });
 };
-DJ202.Deck.prototype = new components.Deck();
 
-
+DJ202.Deck.prototype = Object.create(components.Deck.prototype);
 
 
 ///////////////////////////////////////////////////////////////
