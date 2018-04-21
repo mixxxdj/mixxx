@@ -158,13 +158,14 @@ DJ202.Deck = function (deckNumbers, offset) {
     this.paramButtonsActive = [false, false];
 
     this.keylock = new components.Button({
-        midi: [0x90 + offset, 0x0D],
         sendShifted: true,
         shiftChannel: true,
         shiftOffset: 2,
         outKey: 'keylock',
         currentRangeIndex: 0,
         unshift: function () {
+            this.midi = [0x90 + offset, 0x0D];
+            this.trigger();
             this.input = function (channel, control, value, status, group) {
                 if (value) {
                     this.longPressTimer = engine.beginTimer(this.longPressTimeout, function () {
@@ -182,20 +183,23 @@ DJ202.Deck = function (deckNumbers, offset) {
                 this.trigger();
             };
             this.inKey = 'keylock';
-            this.outKey = 'keylock';
         },
         shift: function () {
+            this.midi = [0x90 + offset, 0x0E];
+            this.send(0);
             this.inKey = 'rateRange';
             this.type = undefined;
             this.input = function (channel, control, value, status, group) {
                 if (this.isPress(channel, control, value, status)) {
-                    print(this.currentRangeIndex)
+                    this.send(0x7f);
                     this.currentRangeIndex++;
                     if (this.currentRangeIndex >= DJ202.tempoRange.length) {
                         this.currentRangeIndex = 0;
                     }
                     this.inSetValue(DJ202.tempoRange[this.currentRangeIndex]);
+                    return;
                 }
+                this.send(0);
             }
         }
     });
