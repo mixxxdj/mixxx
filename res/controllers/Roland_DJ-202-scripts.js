@@ -434,6 +434,9 @@ DJ202.Deck = function (deckNumbers, offset) {
     });
 
     this.pfl = new components.Button({
+        sendShifted: true,
+        shiftChannel: true,
+        shiftOffset: 2,
         midi: [0x90 + offset, 0x1B],
         type: components.Button.prototype.types.toggle,
         inKey: 'pfl',
