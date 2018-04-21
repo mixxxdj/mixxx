@@ -235,7 +235,9 @@ fid_run_new(FidFilter *filt, double (**funcpp)(void *,double)) {
 
    // Generate command and coefficient lists
    while (filt->len) {
-      int n_iir, n_fir, cnt;
+      int n_fir = 0;
+      int n_iir = 0;
+      int cnt;
       double *iir, *fir;
       double adj;
       if (filt->typ == 'F' && filt->len == 1) {
@@ -244,12 +246,12 @@ fid_run_new(FidFilter *filt, double (**funcpp)(void *,double)) {
 	 continue;
       }
       if (filt->typ == 'F') {
-	 iir= 0; n_iir= 0;
+	 iir= 0;
 	 fir= filt->val; n_fir= filt->len;
 	 filt= FFNEXT(filt);
       } else if (filt->typ == 'I') {
 	 iir= filt->val; n_iir= filt->len;
-	 fir= 0; n_fir= 0;
+	 fir= 0;
 	 filt= FFNEXT(filt);
 	 while (filt->typ == 'F' && filt->len == 1) {
 	    gain *= filt->val[0]; 
