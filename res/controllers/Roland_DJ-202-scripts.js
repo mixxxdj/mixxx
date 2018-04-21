@@ -410,60 +410,7 @@ DJ202.Deck = function (deckNumbers, offset) {
         }
     });
 
-    var SyncButton = function (options) {
-        components.SyncButton.call(this, options);
-    };
-
-    SyncButton.prototype = new components.SyncButton({
-        doubleTapTimeout: 500,
-        unshift: function () {
-            this.input = function (channel, control, value, status, group) {
-                if (this.isPress(channel, control, value, status)) {
-                    if (this.isDoubleTap) {
-                        var fileBPM = engine.getValue(this.group, 'file_bpm');
-                        engine.setValue(this.group, 'bpm', fileBPM);
-                    } else if (engine.getValue(this.group, 'sync_enabled') === 0) {
-                        engine.setValue(this.group, 'beatsync', 1);
-                        this.longPressTimer = engine.beginTimer(this.longPressTimeout, function () {
-                            engine.setValue(this.group, 'sync_enabled', 1);
-                            this.longPressTimer = 0;
-                        }, true);
-                        this.isDoubleTap = true; // For the next call.
-                        this.doubleTapTimer = engine.beginTimer(this.doubleTapTimeout, function () {
-                            this.isDoubleTap = false;
-                        }, true);
-                    } else {
-                        engine.setValue(this.group, 'sync_enabled', 0);
-                    };
-                } else {
-                    if (this.longPressTimer !== 0) {
-                        engine.stopTimer(this.longPressTimer);
-                        this.longPressTimer = 0;
-                    };
-                    // Apparently some DJ-202 button LEDS reset themselves when
-                    // a button is released, so we need to re-enable the LED
-                    // again.
-                    if(engine.getValue(group, 'sync_enabled')) {
-                        midi.sendShortMsg(0x90 + offset, 0x02, 0x7f);
-                    }
-                };
-            };
-
-            var ledControl = engine.getValue(this.group, 'sync_enabled') ? 0x02 : 0x03;
-            this.output = function (value, group, control) {
-                // To disable the sync LED, the note must be shifted. This
-                // corresponds to the DJ-202 surface, which has sync off on the
-                // shift layer.
-                midi.sendShortMsg(0x90 + offset, ledControl, 0x7f);
-            };
-            // Pressing shift + sync off on the controller will disable the sync
-            // LED even when sync is still enabled within mixxx.
-            midi.sendShortMsg(0x90 + offset, ledControl, 0x7f);
-        },
-
-    });
-
-    this.sync = new SyncButton();
+    this.sync = new DJ202.SyncButton({group: this.currentDeck});
 
     // =============================== MIXER ====================================
     this.pregain = new components.Pot({
@@ -792,3 +739,96 @@ DJ202.EffectModeButton.prototype.shift = function () {
 DJ202.EffectModeButton.prototype.unshift = function () {
     this.shifted = false;
 }
+
+DJ202.SyncButton = function (options) {
+    components.SyncButton.call(this, options);
+    this.doubleTapTimeout = 500;
+};
+
+DJ202.SyncButton.prototype = Object.create(components.SyncButton.prototype);
+
+DJ202.SyncButton.prototype.connect = function () {
+    this.connections = [
+        engine.makeConnection(this.group, 'sync_enabled', this.output),
+        engine.makeConnection(this.group, 'quantize', this.output)
+    ];
+    this.deck = script.deckFromGroup(this.group);
+    this.midi_enable = [0x90 + this.deck - 1, 0x02];
+    this.midi_disable = [0x90 + this.deck - 1, 0x03];
+};
+
+DJ202.SyncButton.prototype.send = function (value) {
+    var midi_ = value ? this.midi_enable : this.midi_disable;
+    midi.sendShortMsg(midi_[0], midi_[1], 0x7f);
+};
+
+DJ202.SyncButton.prototype.output = function (value, group, control) {
+    // Multiplex between several keys without forcing a reconnect.
+    if (control != this.outKey) {
+        return
+    }
+    this.send(value);
+}
+
+DJ202.SyncButton.prototype.unshift = function () {
+    this.inKey = 'sync_enabled';
+    this.outKey = 'sync_enabled';
+    this.trigger();
+    this.input = function (channel, control, value, status, group) {
+        if (this.isPress(channel, control, value, status)) {
+            if (this.isDoubleTap) {                               // Double tap.
+                var fileBPM = engine.getValue(this.group, 'file_bpm');
+                engine.setValue(this.group, 'bpm', fileBPM);
+                return
+            }                                               // Else: Single tap.
+
+            var syncEnabled = engine.getValue(this.group, 'sync_enabled');
+
+            if (!syncEnabled) {                // Single tap when sync disabled.
+                engine.setValue(this.group, 'beatsync', 1);
+                this.longPressTimer = engine.beginTimer(
+                    this.longPressTimeout,
+                    function () {
+                        engine.setValue(this.group, 'sync_enabled', 1);
+                        this.longPressTimer = null;
+                    },
+                    true
+                );
+                // For the next call.
+                this.isDoubleTap = true;
+                this.doubleTapTimer = engine.beginTimer(
+                    this.doubleTapTimeout,
+                    function () { this.isDoubleTap = false },
+                    true
+                );
+                return
+            }                                          // Else: Sync is enabled.
+
+            engine.setValue(this.group, 'sync_enabled', 0);
+            return;
+        }                                            // Else: On button release.
+
+        if (this.longPressTimer) {
+            engine.stopTimer(this.longPressTimer);
+            this.longPressTimer = null;
+        };
+
+        // Work-around button LED disabling itself on release.
+        this.trigger();
+    };
+};
+
+
+DJ202.SyncButton.prototype.shift = function () {
+    this.outKey = 'quantize';
+    this.inKey = 'quantize';
+    this.trigger();
+    this.input = function (channel, control, value, status, group) {
+        if (value) {
+            this.inToggle();
+        } else {
+            // Work-around LED self-disable issue.
+            this.trigger();
+        }
+    };
+};
