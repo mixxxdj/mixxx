@@ -9,34 +9,14 @@
 
 LibraryFeature::LibraryFeature(
         QObject *parent)
-        : QObject(parent),
-          m_clickedChildActivationTimeoutMillis(0) {
-}
-
-LibraryFeature::LibraryFeature(
-        int clickedChildActivationTimeoutMillis,
-        QObject *parent)
-        : QObject(parent),
-          m_clickedChildActivationTimeoutMillis(clickedChildActivationTimeoutMillis) {
-    DEBUG_ASSERT(m_clickedChildActivationTimeoutMillis >= 0);
+        : QObject(parent) {
 }
 
 LibraryFeature::LibraryFeature(
         UserSettingsPointer pConfig,
         QObject* parent)
         : QObject(parent),
-          m_pConfig(pConfig),
-          m_clickedChildActivationTimeoutMillis(0) {
-}
-
-LibraryFeature::LibraryFeature(
-        UserSettingsPointer pConfig,
-        int clickedChildActivationTimeoutMillis,
-        QObject* parent)
-        : QObject(parent),
-          m_pConfig(pConfig),
-          m_clickedChildActivationTimeoutMillis(clickedChildActivationTimeoutMillis) {
-    DEBUG_ASSERT(m_clickedChildActivationTimeoutMillis >= 0);
+          m_pConfig(pConfig) {
 }
 
 QStringList LibraryFeature::getPlaylistFiles(QFileDialog::FileMode mode) const {
