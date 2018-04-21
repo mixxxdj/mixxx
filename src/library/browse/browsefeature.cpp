@@ -286,8 +286,15 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 // This is called whenever you double click or use the triangle symbol to expand
 // the subtree. The method will read the subfolders.
 void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
+    if (!index.isValid()) {
+        return;
+    }
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-    if (!item) {
+    if (!(item && item->getData().isValid())) {
+        // Them tem might have been removed just before
+        // NOTE(2018-04-21, uklotzde): When not checking if the QVariant
+        // stored in the item is valid Mixxx will crash.
+        // See also: https://bugs.launchpad.net/mixxx/+bug/1510068
         return;
     }
 
