@@ -39,7 +39,7 @@ Description:
                 <SetVariable name="TooltipId">skin_settings</SetVariable>
                 <SetVariable name="ObjectName">SkinSettingsClose</SetVariable>
                 <SetVariable name="Size">20f,24f</SetVariable>
-                <SetVariable name="ConfigKey">[Latenight],skin_settings</SetVariable>
+                <SetVariable name="ConfigKey">[Master],skin_settings</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
@@ -415,7 +415,7 @@ Description:
       </WidgetGroup><!-- /SkinSettings -->
     </Children>
     <Connection>
-      <ConfigKey>[Latenight],skin_settings</ConfigKey>
+      <ConfigKey>[Master],skin_settings</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

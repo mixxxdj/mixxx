@@ -238,7 +238,7 @@
               <Text>SETTINGS</Text>
           </State>
           <Connection>
-            <ConfigKey persist="true">[Latenight],skin_settings</ConfigKey>
+            <ConfigKey persist="true">[Master],skin_settings</ConfigKey>
           </Connection>
          </PushButton>
 
