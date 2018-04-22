@@ -743,10 +743,10 @@ Description:
             </Children>
           </WidgetGroup><!-- /Effects -->
 
-          <Label><!-- Extras -->
+          <Label><!-- Misc -->
             <ObjectName>CategoryLabel</ObjectName>
             <Size>200f,21f</Size>
-            <Text>Extras</Text>
+            <Text>Misc</Text>
           </Label>
           <WidgetGroup>
             <ObjectName>SkinSettingsCategory</ObjectName>
@@ -841,7 +841,7 @@ Description:
                 </Children>
               </WidgetGroup><!-- /Load/Save Sampler Bank -->
             </Children>
-          </WidgetGroup><!-- /Extras -->
+          </WidgetGroup><!-- /Misc -->
         </Children>
       </WidgetGroup><!-- /SkinSettings -->
     </Children>

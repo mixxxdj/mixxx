@@ -38,6 +38,7 @@ class SidebarModel : public QAbstractItemModel {
     bool hasTrackTable(const QModelIndex& index) const;
 
   public slots:
+    void pressed(const QModelIndex& index);
     void clicked(const QModelIndex& index);
     void doubleClicked(const QModelIndex& index);
     void rightClicked(const QPoint& globalPos, const QModelIndex& index);
@@ -67,7 +68,7 @@ class SidebarModel : public QAbstractItemModel {
     void selectIndex(const QModelIndex& index);
 
   private slots:
-    void slotActivateChildAtClickedFeatureIndex();
+    void slotPressedUntilClickedTimeout();
 
   private:
     QModelIndex translateSourceIndex(const QModelIndex& parent);
@@ -75,13 +76,11 @@ class SidebarModel : public QAbstractItemModel {
     QList<LibraryFeature*> m_sFeatures;
     unsigned int m_iDefaultSelectedIndex; /** Index of the item in the sidebar model to select at startup. */
 
-    QTimer* const m_clickedChildActivationTimer;
-    LibraryFeature* m_clickedFeature;
-    QModelIndex m_clickedIndex;
+    QTimer* const m_pressedUntilClickedTimer;
+    QModelIndex m_pressedIndex;
 
-    void onFeatureIndexClicked(
-            LibraryFeature* feature,
-            QModelIndex index);
+    void startPressedUntilClickedTimer(QModelIndex pressedIndex);
+    void stopPressedUntilClickedTimer();
 };
 
 #endif /* SIDEBARMODEL_H */

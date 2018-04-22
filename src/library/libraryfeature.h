@@ -30,22 +30,11 @@ class LibraryFeature : public QObject {
   Q_OBJECT
   public:
     explicit LibraryFeature(
-          QObject* parent);
-    explicit LibraryFeature(
-            int clickedChildActivationTimeoutMillis,
-            QObject* parent = nullptr);
+          QObject* parent = nullptr);
     explicit LibraryFeature(
             UserSettingsPointer pConfig,
-            QObject* parent = nullptr);
-    explicit LibraryFeature(
-            UserSettingsPointer pConfig,
-            int clickedChildActivationTimeoutMillis,
             QObject* parent = nullptr);
     ~LibraryFeature() override = default;
-
-    int clickedChildActivationTimeoutMillis() const {
-        return m_clickedChildActivationTimeoutMillis;
-    }
 
     virtual QVariant title() = 0;
     virtual QIcon getIcon() = 0;
@@ -135,8 +124,6 @@ class LibraryFeature : public QObject {
 
   private: 
     QStringList getPlaylistFiles(QFileDialog::FileMode mode) const;
-
-    const int m_clickedChildActivationTimeoutMillis;
 };
 
 #endif /* LIBRARYFEATURE_H */
