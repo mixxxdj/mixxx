@@ -492,9 +492,8 @@ TagLib::ID3v2::CommentsFrame* findFirstCommentsFrame(
 }
 
 TagLib::ID3v2::CommentsFrame* findFirstCommentsFrameWithoutDescription(
-        const TagLib::ID3v2::Tag& tag,
-        bool preferNotEmpty = true) {
-    return findFirstCommentsFrame(tag, QString(), preferNotEmpty);
+        const TagLib::ID3v2::Tag& tag) {
+    return findFirstCommentsFrame(tag, QString());
 }
 
 // Finds the first text frame that with a matching description (case-insensitive).
@@ -538,10 +537,9 @@ TagLib::ID3v2::UserTextIdentificationFrame* findFirstUserTextIdentificationFrame
 inline
 QString readFirstUserTextIdentificationFrame(
         const TagLib::ID3v2::Tag& tag,
-        const QString& description,
-        bool preferNotEmpty = true) {
+        const QString& description) {
     const TagLib::ID3v2::UserTextIdentificationFrame* pTextFrame =
-            findFirstUserTextIdentificationFrame(tag, description, preferNotEmpty);
+            findFirstUserTextIdentificationFrame(tag, description);
     if (pTextFrame && (pTextFrame->fieldList().size() > 1)) {
         // The actual value is stored in the 2nd field
         return toQString(pTextFrame->fieldList()[1]);
@@ -628,7 +626,7 @@ void writeID3v2CommentsFrame(
         const QString& description,
         bool isNumericOrURL = false) {
     TagLib::ID3v2::CommentsFrame* pFrame =
-            findFirstCommentsFrame(*pTag, description);
+            findFirstCommentsFrame(*pTag, description, true);
     if (pFrame) {
         // Modify existing frame
         if (text.isEmpty()) {
