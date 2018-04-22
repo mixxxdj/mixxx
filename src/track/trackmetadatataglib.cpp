@@ -227,13 +227,7 @@ bool parseBpm(TrackMetadata* pTrackMetadata, QString sBpm) {
 
 inline
 QString formatReplayGainGain(const ReplayGain& replayGain) {
-    const double gainRatio(replayGain.getRatio());
-    return ReplayGain::ratioToString(gainRatio);
-}
-
-inline
-bool hasTrackGain(const TrackMetadata& trackMetadata) {
-    return trackMetadata.getTrackInfo().getReplayGain().hasRatio();
+    return ReplayGain::ratioToString(replayGain.getRatio());
 }
 
 inline
@@ -1860,13 +1854,15 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
 
     writeID3v2TextIdentificationFrame(pTag, "TKEY", trackMetadata.getTrackInfo().getKey());
 
-    if (hasTrackGain(trackMetadata)) {
-        writeID3v2UserTextIdentificationFrame(
-                pTag,
-                "REPLAYGAIN_TRACK_GAIN",
-                formatTrackGain(trackMetadata),
-                true);
-    }
+    writeID3v2UserTextIdentificationFrame(
+            pTag,
+            "REPLAYGAIN_TRACK_GAIN",
+            formatTrackGain(trackMetadata),
+            true);
+    // NOTE(uklotzde, 2018-04-22): The analyzers currently doesn't
+    // calculate a peak value, so leave it untouched in the file if
+    // the value is invalid/absent. Otherwise the ID3 frame would
+    // be deleted.
     if (hasTrackPeak(trackMetadata)) {
         writeID3v2UserTextIdentificationFrame(
                 pTag,
@@ -2000,10 +1996,12 @@ bool exportTrackMetadataIntoAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& 
     writeAPEItem(pTag, "INITIALKEY",
             toTagLibString(trackMetadata.getTrackInfo().getKey()));
 
-    if (hasTrackGain(trackMetadata)) {
-        writeAPEItem(pTag, "REPLAYGAIN_TRACK_GAIN",
-                toTagLibString(formatTrackGain(trackMetadata)));
-    }
+    writeAPEItem(pTag, "REPLAYGAIN_TRACK_GAIN",
+            toTagLibString(formatTrackGain(trackMetadata)));
+    // NOTE(uklotzde, 2018-04-22): The analyzers currently doesn't
+    // calculate a peak value, so leave it untouched in the file if
+    // the value is invalid/absent. Otherwise the APE item would be
+    // deleted.
     if (hasTrackPeak(trackMetadata)) {
         writeAPEItem(pTag, "REPLAYGAIN_TRACK_PEAK",
                 toTagLibString(formatTrackPeak(trackMetadata)));
@@ -2149,10 +2147,12 @@ bool exportTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
     writeXiphCommentField(pTag, "INITIALKEY", key); // recommended field
     updateXiphCommentField(pTag, "KEY", key); // alternative field
 
-    if (hasTrackGain(trackMetadata)) {
-        writeXiphCommentField(pTag, "REPLAYGAIN_TRACK_GAIN",
-                toTagLibString(formatTrackGain(trackMetadata)));
-    }
+    writeXiphCommentField(pTag, "REPLAYGAIN_TRACK_GAIN",
+            toTagLibString(formatTrackGain(trackMetadata)));
+    // NOTE(uklotzde, 2018-04-22): The analyzers currently doesn't
+    // calculate a peak value, so leave it untouched in the file if
+    // the value is invalid/absent. Otherwise the comment field would
+    // be deleted.
     if (hasTrackPeak(trackMetadata)) {
         writeXiphCommentField(pTag, "REPLAYGAIN_TRACK_PEAK",
                 toTagLibString(formatTrackPeak(trackMetadata)));
@@ -2282,10 +2282,12 @@ bool exportTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& 
     writeMP4Atom(pTag, "----:com.apple.iTunes:initialkey", key); // preferred
     updateMP4Atom(pTag, "----:com.apple.iTunes:KEY", key); // alternative
 
-    if (hasTrackGain(trackMetadata)) {
-        writeMP4Atom(pTag, "----:com.apple.iTunes:replaygain_track_gain",
-                toTagLibString(formatTrackGain(trackMetadata)));
-    }
+    writeMP4Atom(pTag, "----:com.apple.iTunes:replaygain_track_gain",
+            toTagLibString(formatTrackGain(trackMetadata)));
+    // NOTE(uklotzde, 2018-04-22): The analyzers currently doesn't
+    // calculate a peak value, so leave it untouched in the file if
+    // the value is invalid/absent. Otherwise the MP4 atom would be
+    // deleted.
     if (hasTrackPeak(trackMetadata)) {
         writeMP4Atom(pTag, "----:com.apple.iTunes:replaygain_track_peak",
                 toTagLibString(formatTrackPeak(trackMetadata)));
