@@ -303,16 +303,15 @@ Description:
                 <SetVariable name="TooltipId">skin_settings</SetVariable>
                 <SetVariable name="ObjectName">SkinSettingsToggler</SetVariable>
                 <SetVariable name="Size">24f,24f</SetVariable>
-                <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>
+                <SetVariable name="ConfigKey">[Master],skin_settings</SetVariable>
               </Template>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],skin_settings</ConfigKey>
+              <ConfigKey persist="true">[Master],skin_settings</ConfigKey>
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
-
 
         </Children>
       </WidgetGroup><!-- /Skin toggles, Rec, Broadcast, Clock, Skin menu toggle -->
