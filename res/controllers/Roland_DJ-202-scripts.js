@@ -515,6 +515,12 @@ DJ202.Deck = function (deckNumbers, offset) {
         }
     });
 
+    this.setCurrentDeck = function (deck) {
+        components.Deck.prototype.setCurrentDeck.call(this, deck);
+        DJ202.effectUnit[offset + 1].focusedDeck = script.deckFromGroup(deck);
+        DJ202.effectUnit[offset + 1].reconnect();
+    }
+
     this.reconnectComponents(function (component) {
         if (component.group === undefined) {
             component.group = this.currentDeck;
@@ -530,7 +536,11 @@ DJ202.Deck.prototype = Object.create(components.Deck.prototype);
 ///////////////////////////////////////////////////////////////
 
 DJ202.EffectUnit = function (unitNumber) {
+    components.ComponentContainer.call(this);
+
     var eu = this;
+    this.unitNumber = unitNumber;
+    this.focusedDeck = unitNumber;
     this.group = '[EffectRack1_EffectUnit' + unitNumber + ']';
     engine.setValue(this.group, 'show_focus', 1);
 
@@ -552,7 +562,7 @@ DJ202.EffectUnit = function (unitNumber) {
 
     this.button = [];
     for (var i = 1; i <= 3; i++) {
-        this.button[i] = new DJ202.EffectButton(unitNumber, i);
+        this.button[i] = new DJ202.EffectButton(this, i);
         var effectGroup = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + i + ']';
         engine.softTakeover(effectGroup, 'meta', true);
         engine.softTakeover(eu.group, 'mix', true);
@@ -593,6 +603,16 @@ DJ202.EffectUnit = function (unitNumber) {
     });
 };
 
+DJ202.EffectUnit.prototype = Object.create(components.ComponentContainer.prototype);
+
+DJ202.EffectUnit.prototype.reconnect = function () {
+    this.forEachComponent(
+        function (component) {
+            component.disconnect();
+            component.connect();
+        }
+    );
+}
 //////////////////////////////
 // Sampler.                 //
 //////////////////////////////
@@ -702,12 +722,19 @@ DJ202.FlashingButton.prototype.flash = function (cycles) {
     );
 };
 
-DJ202.EffectButton = function (effectUnitNumber, effectNumber) {
-    this.effectUnitNumber = effectUnitNumber;
+DJ202.EffectButton = function (effectUnit, effectNumber) {
+    this.effectUnit = effectUnit;
+    this.effectUnitNumber = effectUnit.unitNumber;
     this.effectNumber = effectNumber;
-    this.effectUnitGroup = '[EffectRack1_EffectUnit' + effectUnitNumber + ']';
-    this.group = '[EffectRack1_EffectUnit' + effectUnitNumber + '_Effect' + effectNumber + ']';
-    this.midi = [0x98 + effectUnitNumber - 1, 0x00 + effectNumber - 1];
+    this.effectUnitGroup = '[EffectRack1_EffectUnit' + this.effectUnitNumber + ']';
+    this.effectGroup = (
+        '[EffectRack1_EffectUnit'
+            + this.effectUnitNumber
+            + '_Effect'
+            + this.effectNumber
+            + ']'
+    );
+    this.midi = [0x98 + this.effectUnitNumber - 1, 0x00 + effectNumber - 1];
     this.sendShifted = true;
     this.shiftOffset = 0x0B;
     this.outKey = 'enabled';
@@ -716,7 +743,39 @@ DJ202.EffectButton = function (effectUnitNumber, effectNumber) {
 
 DJ202.EffectButton.prototype = Object.create(DJ202.FlashingButton.prototype);
 
-DJ202.EffectButton.prototype.unshift = function() {
+DJ202.EffectButton.prototype.connect = function () {
+    if (this.effectNumber == 3) {
+        this.routingGroup = this.effectUnitGroup;
+    } else {
+        this.routingGroup = '[EffectRack1_EffectUnit' + this.effectNumber + ']';
+    }
+
+    var deck = this.effectUnit.focusedDeck;
+
+    this.routingControl = (
+        'group_'
+            + (this.effectNumber == 3 ? '[Headphone]' : '[Channel' + deck + ']')
+            + '_enable'
+    );
+
+    this.connections = [
+        engine.makeConnection(this.effectGroup, 'enabled', this.output),
+        engine.makeConnection(this.routingGroup, this.routingControl, this.output)
+    ];
+};
+
+DJ202.EffectButton.prototype.output = function (value, group, control) {
+    if (control != this.outKey) {
+        return
+    }
+    DJ202.FlashingButton.prototype.output.apply(this, arguments);
+};
+
+DJ202.EffectButton.prototype.unshift = function () {
+    this.group = this.effectGroup;
+    this.outKey = 'enabled';
+    this.inKey = this.outKey;
+    this.trigger();
     this.input = function (channel, control, value, status) {
         if (this.isPress(channel, control, value, status)) {
             this.isLongPressed = false;
@@ -759,9 +818,15 @@ DJ202.EffectButton.prototype.unshift = function() {
 };
 
 DJ202.EffectButton.prototype.shift = function () {
+    this.group = this.routingGroup;
+    this.outKey = this.routingControl;
+    this.inKey = this.outKey;
+    this.trigger();
     this.input = function (channel, control, value, status) {
-        // Work-around the indicator LED self-disabling itself on release.
-        if (!value) {
+        if (value) {
+            this.inToggle();
+        } else {
+            // Work-around the indicator LED self-disabling itself on release.
             this.trigger();
         }
     };
@@ -770,8 +835,6 @@ DJ202.EffectButton.prototype.shift = function () {
 DJ202.EffectModeButton = function (effectUnitNumber) {
     this.effectUnitNumber = effectUnitNumber;
     this.group = '[EffectRack1_EffectUnit' + effectUnitNumber + ']';
-    this.outKey = 'group_[Headphone]_enable';
-    this.inKey = this.outKey;
     this.midi = [0x98 + effectUnitNumber - 1, 0x04];
     DJ202.FlashingButton.call(this);
 };
@@ -781,30 +844,11 @@ DJ202.EffectModeButton.prototype = Object.create(DJ202.FlashingButton.prototype)
 DJ202.EffectModeButton.prototype.input = function (channel, control, value, status) {
 
     if (value) {                                                // Button press.
-        this.isLongPressed = false;
-        this.longPressTimer = engine.beginTimer(
-            this.longPressTimeout,
-            function () {
-                this.isLongPressed = true;
-                this.longPressTimer = null;
-            },
-            true
-        );
         return;
     }                                                   // Else: Button release.
 
     // Work-around the indicator LED self-disabling itself on release.
     this.trigger();
-
-    if (this.longPressTimer) {
-        engine.stopTimer(this.longPressTimer)
-        this.longPressTimer = null;
-    }
-
-    if (this.isLongPressed) {                       // Release after long press.
-        script.toggleControl(this.group, this.outKey);
-        return
-    }                                        // Else: Release after short press.
 
     var focusedEffect = engine.getValue(this.group, 'focused_effect');
     if (!focusedEffect) {
