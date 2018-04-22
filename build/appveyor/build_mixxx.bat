@@ -140,7 +140,8 @@ set CXXFLAGS=/MP /FS /EHsc /Zc:threadSafeInit-
 set CFLAGS=/MP /FS /EHsc /Zc:threadSafeInit-
 
 set PATH=%BIN_DIR%;%PATH%
-scons.py mixxx makerelease toolchain=msvs winlib=%WINLIB_DIR% build=%BUILD_TYPE% staticlibs=1 staticqt=1 debug_assertions_fatal=1 verbose=0 machine=%MACHINE_TYPE% qtdir=%QTDIR% hss1394=1 mediafoundation=1 opus=1 localecompare=1 optimize=fastbuild virtualize=0 test=1 qt_sqlite_plugin=0 mssdk_dir="%MSSDK_DIR%" build_number_in_title_bar=0 bundle_pdbs=1
+REM TODO(rryan): Windows is stuck on Qt4 until mixxxdj/buildserver#36 is fixed.
+scons.py mixxx makerelease qt5=0 toolchain=msvs winlib=%WINLIB_DIR% build=%BUILD_TYPE% staticlibs=1 staticqt=1 debug_assertions_fatal=1 verbose=0 machine=%MACHINE_TYPE% qtdir=%QTDIR% hss1394=1 mediafoundation=1 opus=1 localecompare=1 optimize=fastbuild virtualize=0 test=1 qt_sqlite_plugin=0 mssdk_dir="%MSSDK_DIR%" build_number_in_title_bar=0 bundle_pdbs=1
 
 IF ERRORLEVEL 1 (
 echo ==============================
