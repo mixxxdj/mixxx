@@ -191,15 +191,15 @@ class Qt(Dependence):
 
     DEFAULT_QT5DIRS64 = {'linux': '/usr/lib/x86_64-linux-gnu/qt5',
                          'osx': '/Library/Frameworks',
-                         'windows': 'C:\\qt\\5.0.1'}
+                         'windows': 'C:\\qt\\5.10.1'}
 
     DEFAULT_QT5DIRS32 = {'linux': '/usr/lib/i386-linux-gnu/qt5',
                          'osx': '/Library/Frameworks',
-                         'windows': 'C:\\qt\\5.0.1'}
+                         'windows': 'C:\\qt\\5.10.1'}
 
     @staticmethod
     def qt5_enabled(build):
-        return int(util.get_flags(build.env, 'qt5', 0))
+        return int(util.get_flags(build.env, 'qt5', 1))
 
     @staticmethod
     def uic(build):
