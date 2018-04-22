@@ -62,6 +62,11 @@ TraktorS4MK2 = new function() {
                                             "[Channel2]" : 0,
                                             "[Channel3]" : 0,
                                             "[Channel4]" : 0};
+  // Autoslip mode
+  this.controller.autoSlipMode = {"[Channel1]" : false,
+                                  "[Channel2]" : false,
+                                  "[Channel3]" : false,
+                                  "[Channel4]" : false};
 
   // TODO: convert to Object()s for easier logic.
   this.controller.last_tick_val = [0, 0];
@@ -101,7 +106,7 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("deck1", "!remix4", 0x0E, "B", 0x10);
   MessageShort.addControl("deck1", "loop_out", 0x0E, "B", 0x08);
   MessageShort.addControl("deck1", "loop_in", 0x0E, "B", 0x04);
-  MessageShort.addControl("deck1", "slip_enabled", 0x0E, "B", 0x02);
+  MessageShort.addControl("deck1", "!slip_mode", 0x0E, "B", 0x02);
   MessageShort.addControl("deck1", "reset_key", 0x0E, "B", 0x01);
   MessageShort.addControl("deck1", "!loop_set", 0x13, "B", 0x02);
   MessageShort.addControl("deck1", "!loop_activate", 0x13, "B", 0x01);
@@ -129,7 +134,7 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("deck2", "!remix4", 0x0B, "B", 0x10);
   MessageShort.addControl("deck2", "loop_out", 0x0B, "B", 0x08);
   MessageShort.addControl("deck2", "loop_in", 0x0B, "B", 0x04);
-  MessageShort.addControl("deck2", "slip_enabled", 0x0B, "B", 0x02);
+  MessageShort.addControl("deck2", "!slip_mode", 0x0B, "B", 0x02);
   MessageShort.addControl("deck2", "reset_key", 0x0B, "B", 0x01);
   MessageShort.addControl("deck2", "!loop_set", 0x13, "B", 0x10);
   MessageShort.addControl("deck2", "!loop_activate", 0x13, "B", 0x08);
@@ -207,6 +212,8 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.setCallback("deck2", "!remix2", this.remixHandler);
   MessageShort.setCallback("deck2", "!remix3", this.remixHandler);
   MessageShort.setCallback("deck2", "!remix4", this.remixHandler);
+  MessageShort.setCallback("deck1", "!slip_mode", this.slipHandler);
+  MessageShort.setCallback("deck2", "!slip_mode", this.slipHandler);
   MessageShort.setCallback("[PreviewDeck1]", "!previewdeck", this.previewDeckHandler);
   MessageShort.setCallback("[Master]", "!quantize", this.quantizeHandler);
   MessageShort.setCallback("[Master]", "!snap", this.snapHandler);
@@ -989,6 +996,9 @@ TraktorS4MK2.jogTouchHandler = function(field) {
   }
   if (field.value !== 0) {
     var deckNumber = TraktorS4MK2.controller.resolveDeck(group);
+    if (TraktorS4MK2.controller.autoSlipMode){
+        engine.setValue(field.group, "slip_enabled", 1);
+    }
     engine.scratchEnable(deckNumber, 1024, 33.3333, 0.125, 0.125/8, true);
   } else {
     // The wheel touch sensor can be overly sensitive, so don't release scratch mode right away.
@@ -1032,6 +1042,9 @@ TraktorS4MK2.finishJogTouch = function(group) {
       TraktorS4MK2.controller.wheelTouchInertiaTimer[group] = engine.beginTimer(
               100, "TraktorS4MK2.finishJogTouch(\"" + group + "\")", true);
     }
+  }
+  if (TraktorS4MK2.controller.autoSlipMode){
+      engine.setValue(field.group, "slip_enabled", 0);
   }
 }
 
@@ -1600,4 +1613,18 @@ TraktorS4MK2.onRecordingChanged = function(value, group, control) {
   TraktorS4MK2.outputChannelCallback(value, "[Recording]", "status");
   TraktorS4MK2.controller.setOutput("deck1", "!on_air", value*0x7F);
   TraktorS4MK2.controller.setOutput("deck2", "!on_air", value*0x7F);
+}
+
+TraktorS4MK2.slipHandler = function(field){
+    // Change on touchdown
+    if (field.value === 0x01){
+      var group = field.id.split(".")[0];
+      if (TraktorS4MK2.controller.shift_pressed[group]) {
+          print('shift pressed' + field.group);
+          TraktorS4MK2.controller.autoSlipMode[field.group] ^= true;
+      } else {
+        engine.setValue(field.group, "slip_enabled", !engine.getValue(field.group, "slip_enabled"));
+      }
+    }
+    // Do nothing on touchup
 }
