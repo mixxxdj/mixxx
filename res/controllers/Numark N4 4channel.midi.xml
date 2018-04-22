@@ -766,7 +766,15 @@
           <script-binding />
         </options>
       </control>
-
+      <control>
+        <group>[Master]</group>
+        <key>NumarkN4.Mixer.pflVuMeter</key>
+        <status>0xB0</status>
+        <midino>0x5C</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>NumarkN4.Decks[1].loadButton.input</key>

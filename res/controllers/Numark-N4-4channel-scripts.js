@@ -25,6 +25,8 @@ NumarkN4.ShutoffSequence=[0xF0,0x00,0x01,0x3F,0x7F,0x47,0xB0,0x39,0x00,0x01,0xF7
 
 NumarkN4.vinylTouched = [false,false,false,false,];
 
+NumarkN4.pflVuMeterConnections = [-1,-1];
+
 components.Encoder.prototype.input = function (channel, control, value, status, group) {
   this.inSetParameter(
     this.inGetParameter()+(
@@ -69,7 +71,7 @@ NumarkN4.init = function (id) {
   NumarkN4.Mixer = new NumarkN4.MixerTemplate();
 
   //query controller for component status
-  //midi.sendSysexMsg(NumarkN4.QueryStatusMessage,NumarkN4.QueryStatusMessage.length)
+  midi.sendSysexMsg(NumarkN4.QueryStatusMessage,NumarkN4.QueryStatusMessage.length)
 
 };
 
@@ -222,6 +224,18 @@ NumarkN4.MixerTemplate = function () {
     midi.sendShortMsg(status,control,value);
     //just "echos" the midi since the controller knows the deck its on itself but doesnt update the corresponing leds.
   };
+  this.pflVuMeter = function (channel, control, value, status, group) {
+    print("calledPflVuMeter")
+    for (var i=0;i<NumarkN4.pflVuMeterConnections.length;i++) {
+      if (NumarkN4.pflVuMeterConnections[i]!==-1) {NumarkN4.pflVuMeterConnections[i].disconnect();}
+      NumarkN4.pflVuMeterConnections[i] = engine.makeConnection("[Channel"+value+"]","VuMeter"+(i===0)?"L":"R",
+      function (callbackValue){
+        print("called channel vumeter: "+value)
+        midi.sendShortMsg(0xB0,0x34+i,Math.round(value*8+0,5)); // Vu bar range=[0;8]
+      });
+      NumarkN4.pflVuMeterConnections[i].trigger();
+    }
+  }
   this.channelInputSwitcher = function (channel, control, value, status, group) { // can't be done in pure XML
     engine.setParameter(group,"mute",value); // TODO: Test
   };
