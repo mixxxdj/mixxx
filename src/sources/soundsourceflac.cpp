@@ -437,7 +437,7 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
             // not set before
             m_bitsPerSample = bitsPerSample;
             m_sampleScaleFactor = CSAMPLE_PEAK
-                    / CSAMPLE(FLAC__int32(1) << bitsPerSample);
+                    / CSAMPLE(FLAC__int32(1) << (bitsPerSample - 1));
         } else {
             // already set before -> check for consistency
             if (bitsPerSample != m_bitsPerSample) {
