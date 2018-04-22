@@ -433,7 +433,7 @@ METADATA
     </description>
     <sql>
       <!-- Reset replay gain values to default -->
-      UPDATE library SET (replaygain,replaygain_peak)=(0.0,-1.0) WHERE filetype='flac';
+      UPDATE library SET (replaygain,replaygain_peak)=(0.0,-1.0) WHERE filetype='flac' COLLATE NOCASE;
     </sql>
   </revision>
 </schema>
