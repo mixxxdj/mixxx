@@ -295,6 +295,24 @@ Description:
 
           <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="TooltipId">skin_settings</SetVariable>
+                <SetVariable name="ObjectName">SkinSettingsToggler</SetVariable>
+                <SetVariable name="Size">24f,24f</SetVariable>
+                <SetVariable name="ConfigKey">[Master],skin_settings</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Master],skin_settings</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
         </Children>
       </WidgetGroup><!-- /Skin toggles, Rec, Broadcast, Clock, Skin menu toggle -->
 
