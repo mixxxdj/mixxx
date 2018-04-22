@@ -36,7 +36,7 @@
         <SizePolicy>min,me</SizePolicy>
         <Children>
 
-          <!-- There's a spacer & VU configuration for every posible combination
+          <!-- There's a spacer & VU configuration for every possible combination
               of split/parallel waveforms, in/visible EQ knob and in/visible
               volume faders -->
 

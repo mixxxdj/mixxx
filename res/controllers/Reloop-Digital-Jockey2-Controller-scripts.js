@@ -23,7 +23,7 @@ DigitalJockey2Controller.CUP_Button1_IsActive = false;
 DigitalJockey2Controller.CUP_Button2_IsActive = false;
 
 DigitalJockey2Controller.init = function(id){
-    //print ("Initalizing Reloop Digital Jockey 2 Controler Edition.");
+    //print ("Initializing Reloop Digital Jockey 2 Controller Edition.");
 	DigitalJockey2Controller.resetLEDs();
 
 	engine.connectControl("[Channel1]","play","DigitalJockey2Controller.isChannel1_Playing");
@@ -442,7 +442,7 @@ DigitalJockey2Controller.SearchSensitivity = 0.01;
 
 DigitalJockey2Controller.JogWheel = function (channel, control, value){
 	/*
-	 * The JogWheels of the controler work as follows.
+	 * The JogWheels of the controller work as follows.
 	 * Spinning around in reverse order produces decimal values of 63 or lower
 	 * depending on the the speed you drag the wheel.
 	 * 

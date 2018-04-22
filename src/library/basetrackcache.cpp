@@ -520,7 +520,7 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
         qDebug() << "Rows returned:" << rows;
     }
 
-    m_trackOrder.resize(0); // keeps alocated memory
+    m_trackOrder.resize(0); // keeps allocated memory
     trackToIndex->clear();
     if (rows > 0) {
         trackToIndex->reserve(rows);

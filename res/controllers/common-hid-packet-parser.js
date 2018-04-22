@@ -424,7 +424,7 @@ HIDPacket.prototype.addControl = function(group,name,offset,pack,bitmask,isEncod
 // Output control bit:
 //    Output with with bitmask, controls Output with a single bit
 //
-// It is recommended to define callbacks after packet creationg with
+// It is recommended to define callbacks after packet creation with
 // setCallback instead of adding it directly here. But you can do it.
 HIDPacket.prototype.addOutput = function(group,name,offset,pack,bitmask,callback) {
     var control_group = this.getGroup(group,true);
@@ -1281,7 +1281,7 @@ HIDController.prototype.enableScratch = function(group,status) {
 // functions, depending on isScratchEnabled value above (see enableScratch())
 //
 // Since most controllers require value scaling for jog and scratch functions,
-// you  are warned if following scaling function names are not registered:
+// you are warned if following scaling function names are not registered:
 //
 // jog
 //      Scaling function from 'jog_wheel' for rate bend events with mixxx 'jog'

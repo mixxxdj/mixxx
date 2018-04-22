@@ -140,7 +140,7 @@ void AutoPanEffect::processChannel(
     //       1  / ( 1 - 2 * stepfrac)
     float a = smoothing != 0.5f ? 1.0f / (1.0f - smoothing * 2.0f) : 1.0f;
 
-    // size of a segment of slope (controled by the "smoothing" parameter)
+    // size of a segment of slope (controlled by the "smoothing" parameter)
     float u = (0.5f - smoothing) / 2.0f;
 
     gs.frac.setRampingThreshold(kPositionRampingThreshold);

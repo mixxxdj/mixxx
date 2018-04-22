@@ -60,7 +60,7 @@ typedef QSharedPointer<SettingsManager> SettingsManagerPointer;
 class MixxxMainWindow : public QMainWindow {
     Q_OBJECT
   public:
-    // Construtor. files is a list of command line arguments
+    // Constructor. files is a list of command line arguments
     MixxxMainWindow(QApplication *app, const CmdlineArgs& args);
     ~MixxxMainWindow() override;
 

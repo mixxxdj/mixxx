@@ -1131,7 +1131,7 @@ class Optimize(Feature):
                 optimize_level = Optimize.LEVEL_PORTABLE
 
             # Common flags to all optimizations.
-            # -ffast-math will pevent a performance penalty by denormals
+            # -ffast-math will prevent a performance penalty by denormals
             # (floating point values almost Zero are treated as Zero)
             # unfortunately that work only on 64 bit CPUs or with sse2 enabled
 
@@ -1185,7 +1185,7 @@ class Optimize(Feature):
                 # http://en.chys.info/2010/04/what-exactly-marchnative-means/
                 # Note: requires gcc >= 4.2.0
                 # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
-                # are set automaticaly
+                # are set automatically
                 if build.architecture_is_x86 and not build.machine_is_64bit:
                     # For 32 bit builds using gcc < 5.0, the mfpmath=sse is
                     # not set by default (not supported on arm builds)

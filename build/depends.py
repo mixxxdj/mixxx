@@ -561,7 +561,7 @@ class TagLib(Dependence):
                 "Could not find libtag or its development headers.")
 
         # Karmic seems to have an issue with mp4tag.h where they don't include
-        # the files correctly. Adding this folder ot the include path should fix
+        # the files correctly. Adding this folder to the include path should fix
         # it, though might cause issues. This is safe to remove once we
         # deprecate Karmic support. rryan 2/2011
         build.env.Append(CPPPATH='/usr/include/taglib/')
@@ -599,7 +599,7 @@ class FpClassify(Dependence):
     def enabled(self, build):
         return build.toolchain_is_gnu
 
-    # This is a wrapper arround the fpclassify function that pevents inlining
+    # This is a wrapper around the fpclassify function that prevents inlining
     # It is compiled without optimization and allows to use these function
     # from -ffast-math optimized objects
     def sources(self, build):

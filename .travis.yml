@@ -91,7 +91,7 @@ install:
 
 script:
   # NOTE(sblaisot): 2018-01-02 removing gdb wrapper on linux due to a bug in
-  # return code in order to avoid having a sucessful build when a test fail.
+  # return code in order to avoid having a successful build when a test fail.
   # https://bugs.launchpad.net/mixxx/+bug/1699689
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./mixxx-test ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then lldb ./mixxx-test --batch -o run -o quit -k 'thread backtrace all' -k quit ; fi
