@@ -123,6 +123,8 @@ BpmControl::BpmControl(QString group,
     // Measures distance from last beat in percentage: 0.5 = half-beat away.
     m_pThisBeatDistance = new ControlProxy(group, "beat_distance", this);
     m_pSyncMode = ControlObject::getControl(ConfigKey(group, "sync_mode"));
+    m_masterBpm = new ControlProxy("[InternalClock]", "bpm", this);
+    m_masterBeatDistance = new ControlProxy("[InternalClock]", "beat_distance", this);
 }
 
 BpmControl::~BpmControl() {
@@ -829,8 +831,13 @@ void BpmControl::resetSyncAdjustment() {
 }
 
 void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
-    // Without a beatgrid we don't know any beat details.
+    // Without a beatgrid we can sync it with the master clock.
     if (!m_pBeats) {
+        pGroupFeatures->has_beat_length_sec = true;
+        pGroupFeatures->beat_length_sec = 60 / m_masterBpm->get();
+
+        pGroupFeatures->has_beat_fraction = true;
+        pGroupFeatures->beat_fraction = m_masterBeatDistance->get();
         return;
     }
 

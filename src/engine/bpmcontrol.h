@@ -156,6 +156,10 @@ class BpmControl : public EngineControl {
     FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
     double m_dUserOffset;
 
+    // Internal Clock values
+    ControlProxy* m_masterBpm;
+    ControlProxy* m_masterBeatDistance;
+
     TapFilter m_tapFilter;
 
     TrackPointer m_pTrack;
