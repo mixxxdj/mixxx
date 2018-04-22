@@ -314,15 +314,27 @@ DJ202.Deck = function (deckNumbers, offset) {
     
     this.loopIn = new components.Button({
         midi: [0x94 + offset, 0x15],
+        sendShifted: true,
+        shiftChannel: true,
+        shiftOffset: 2,
         inKey: 'loop_in',
+        outKey: 'loop_start_position'
     });
     this.loopOut = new components.Button({
         midi: [0x94 + offset, 0x16],
+        sendShifted: true,
+        shiftChannel: true,
+        shiftOffset: 2,
         inKey: 'loop_out',
+        outKey: 'loop_end_position',
     });
     this.loopToggle = new components.Button({
         midi: [0x94 + offset, 0x18],
+        sendShifted: true,
+        shiftChannel: true,
+        shiftOffset: 2,
         inKey: 'reloop_toggle',
+        outKey: 'loop_enabled'
     });
 
     
