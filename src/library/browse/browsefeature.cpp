@@ -286,15 +286,20 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 // This is called whenever you double click or use the triangle symbol to expand
 // the subtree. The method will read the subfolders.
 void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
+    // The selected item might have been removed just before this function
+    // is invoked!
+    // NOTE(2018-04-21, uklotzde): The following checks prevent a crash
+    // that would otherwise occur after a quick link has been removed.
+    // Especially the check of QVariant::isValid() seems to be essential.
+    // See also: https://bugs.launchpad.net/mixxx/+bug/1510068
+    // After migration to Qt5 the implementation of all LibraryFeatures
+    // should be revisited, because I consider these checks only as a
+    // temporary workaround.
     if (!index.isValid()) {
         return;
     }
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
     if (!(item && item->getData().isValid())) {
-        // Them tem might have been removed just before
-        // NOTE(2018-04-21, uklotzde): When not checking if the QVariant
-        // stored in the item is valid Mixxx will crash.
-        // See also: https://bugs.launchpad.net/mixxx/+bug/1510068
         return;
     }
 
