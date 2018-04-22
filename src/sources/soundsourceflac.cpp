@@ -436,8 +436,11 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
         if (kBitsPerSampleDefault == m_bitsPerSample) {
             // not set before
             m_bitsPerSample = bitsPerSample;
-            m_sampleScaleFactor = CSAMPLE_PEAK
-                    / CSAMPLE(FLAC__int32(1) << (bitsPerSample - 1));
+            // Range of signed(!) sample values: [2 ^ (bitsPerSample - 1), 2 ^ (bitsPerSample - 1) - 1]
+            // See also: https://bugs.launchpad.net/mixxx/+bug/1766042
+            const auto maxAbsSampleValue = FLAC__int32(1) << (bitsPerSample - 1);
+            // Scaled range of samples values: [-1.0, 1.0)
+            m_sampleScaleFactor = CSAMPLE_PEAK / CSAMPLE(maxAbsSampleValue);
         } else {
             // already set before -> check for consistency
             if (bitsPerSample != m_bitsPerSample) {
