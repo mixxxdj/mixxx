@@ -336,6 +336,14 @@ DJ202.Deck = function (deckNumbers, offset) {
         inKey: 'reloop_toggle',
         outKey: 'loop_enabled'
     });
+    this.loopExit = new components.Button({
+        midi: [0x94 + offset, 0x17],
+        sendShifted: true,
+        shiftChannel: true,
+        shiftOffset: 2,
+        inKey: 'reloop_andstop',
+        outKey: 'reloop_andstop'
+    });
 
     
     // ============================= TRANSPORT ==================================

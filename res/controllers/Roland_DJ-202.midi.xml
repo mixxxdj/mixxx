@@ -233,6 +233,15 @@
             </control>
             <control>
                 <group>[Channel1]</group>
+                <key>DJ202.leftDeck.loopExit.input</key>
+                <status>0x94</status>
+                <midino>0x17</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
                 <key>DJ202.leftDeck.loopToggle.input</key>
                 <status>0x94</status>
                 <midino>0x18</midino>
@@ -892,6 +901,15 @@
                 <key>DJ202.leftDeck.loopOut.input</key>
                 <status>0x96</status>
                 <midino>0x16</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>DJ202.leftDeck.loopExit.input</key>
+                <status>0x96</status>
+                <midino>0x17</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1654,6 +1672,15 @@
             </control>
             <control>
                 <group>[Channel2]</group>
+                <key>DJ202.rightDeck.loopExit.input</key>
+                <status>0x95</status>
+                <midino>0x17</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
                 <key>DJ202.rightDeck.loopToggle.input</key>
                 <status>0x95</status>
                 <midino>0x18</midino>
@@ -2313,6 +2340,15 @@
                 <key>DJ202.rightDeck.loopOut.input</key>
                 <status>0x97</status>
                 <midino>0x16</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>DJ202.rightDeck.loopExit.input</key>
+                <status>0x97</status>
+                <midino>0x17</midino>
                 <options>
                     <script-binding/>
                 </options>
