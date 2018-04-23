@@ -435,13 +435,13 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
         DEBUG_ASSERT(kBitsPerSampleDefault != bitsPerSample);
         if (kBitsPerSampleDefault == m_bitsPerSample) {
             // not set before
-            if (bitsPerSample > 0) {
+            if ((bitsPerSample >= 8) && (bitsPerSample <= 32)) {
                 m_bitsPerSample = bitsPerSample;
-                // Range of signed(!) sample values: [2 ^ (bitsPerSample - 1), 2 ^ (bitsPerSample - 1) - 1]
-                // See also: https://bugs.launchpad.net/mixxx/+bug/1766042
-                const auto maxAbsSampleValue = FLAC__int32(1) << (bitsPerSample - 1);
-                // Scaled range of samples values: [-1.0, 1.0)
-                m_sampleScaleFactor = CSAMPLE_PEAK / CSAMPLE(maxAbsSampleValue);
+                // Range of signed) sample values: [-2 ^ (bitsPerSample - 1), 2 ^ (bitsPerSample - 1) - 1]
+                const uint32_t absSamplePeak = 1u << (bitsPerSample - 1);
+                DEBUG_ASSERT(absSamplePeak > 0);
+                // Scaled range of samples values: [-CSAMPLE_PEAK, CSAMPLE_PEAK)
+                m_sampleScaleFactor = CSAMPLE_PEAK / absSamplePeak;
             } else {
                 kLogger.warning()
                         << "Invalid bits per sample:"
