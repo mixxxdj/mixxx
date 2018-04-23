@@ -327,7 +327,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey>[Deere],show_xfader</ConfigKey>
+              <ConfigKey>[Master],show_xfader</ConfigKey>
             </Connection>
           </PushButton>
 
