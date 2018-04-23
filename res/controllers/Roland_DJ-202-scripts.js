@@ -107,6 +107,54 @@ DJ202.Deck = function (deckNumbers, offset) {
 
     this.paramPlusMinus = new components.Button({
         deck: this,
+        songKeyMode: false,
+        setLEDs: function (plusValue, minusValue) {
+            var deck = script.deckFromGroup(this.deck.currentDeck);
+            var channel = 0x94 + deck - 1;
+            [0, 2, 4, 8, 10].forEach(
+                function (offSet) {
+                    midi.sendShortMsg(channel, 0x41 + offSet, plusValue);
+                    midi.sendShortMsg(channel, 0x42 + offSet, minusValue);
+                }
+            );
+        },
+        connect: function () {
+            components.Button.prototype.connect.call(this);
+            var keyConnection = engine.makeConnection(this.group, 'pitch_adjust', this.output);
+            this.connections.push(keyConnection);
+        },
+        output: function (value, group, control) {
+            if (!this.isSongKeyMode) {
+                return;
+            }
+
+            if (this.isSongKeyMode && control != 'pitch_adjust') {
+                return;
+            }
+
+            var deck = script.deckFromGroup(this.deck.currentDeck);
+
+            // The control value returned has floating point jitter, so 0 can be
+            // 0.00…1 and 1 can be 0.99.
+            if (value < 0.5 && value > -0.5) {
+                this.setLEDs(0, 0);
+            }
+            if (value < -0.5) {
+                this.setLEDs(0x7f, 0);
+                return;
+            }
+            if (value > 0.5) {
+                this.setLEDs(0, 0x7f);
+            }
+        },
+        songKeyMode: function (toggle) {
+            this.isSongKeyMode = toggle;
+            if(toggle) {
+                this.trigger();
+            } else {
+                this.setLEDs(0, 0);
+            }
+        },
         input: function (channel, control, value, status, group) {
 
             var isPlus = control % 2 == 0;
@@ -120,6 +168,8 @@ DJ202.Deck = function (deckNumbers, offset) {
             midi.sendShortMsg(0x94 + deck - 1, control, value);
 
             if (!value) {
+                // Work-around LED self-reset on release.
+                this.trigger();
                 return
             }
 
@@ -167,12 +217,14 @@ DJ202.Deck = function (deckNumbers, offset) {
         shiftOffset: 2,
         outKey: 'keylock',
         currentRangeIndex: 0,
+        deck: this,
         unshift: function () {
             this.midi = [0x90 + offset, 0x0D];
             this.trigger();
             this.input = function (channel, control, value, status, group) {
                 if (value) {
                     this.longPressTimer = engine.beginTimer(this.longPressTimeout, function () {
+                        this.deck.paramPlusMinus.songKeyMode(true);
                         this.is_held = true;
                     }, true);
                 } else {
@@ -180,6 +232,7 @@ DJ202.Deck = function (deckNumbers, offset) {
                         script.toggleControl(this.group, this.outKey);
                     };
                     engine.stopTimer(this.longPressTimer);
+                    this.deck.paramPlusMinus.songKeyMode(false);
                     this.is_held = false;
                 }
                 // The DJ-202 disables the keylock LED when the button is
