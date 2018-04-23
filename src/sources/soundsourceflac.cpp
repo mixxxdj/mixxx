@@ -435,7 +435,7 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
         DEBUG_ASSERT(kBitsPerSampleDefault != bitsPerSample);
         if (kBitsPerSampleDefault == m_bitsPerSample) {
             // not set before
-            if ((bitsPerSample >= 8) && (bitsPerSample <= 32)) {
+            if ((bitsPerSample >= 4) && (bitsPerSample <= 32)) {
                 m_bitsPerSample = bitsPerSample;
                 // Range of signed) sample values: [-2 ^ (bitsPerSample - 1), 2 ^ (bitsPerSample - 1) - 1]
                 const uint32_t absSamplePeak = 1u << (bitsPerSample - 1);
