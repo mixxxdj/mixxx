@@ -994,10 +994,12 @@ TraktorS4MK2.jogTouchHandler = function(field) {
     engine.stopTimer(TraktorS4MK2.controller.wheelTouchInertiaTimer[field.group]);
     TraktorS4MK2.controller.wheelTouchInertiaTimer[field.group] = 0;
   }
+  var play = engine.getValue(group, "play");
+
   if (field.value !== 0) {
     var deckNumber = TraktorS4MK2.controller.resolveDeck(group);
-    if (TraktorS4MK2.controller.autoSlipMode){
-        engine.setValue(field.group, "slip_enabled", 1);
+    if (play != 0) {
+      TraktorS4MK2.slipAutoHandler(field, 1);
     }
     engine.scratchEnable(deckNumber, 1024, 33.3333, 0.125, 0.125/8, true);
   } else {
@@ -1030,6 +1032,7 @@ TraktorS4MK2.finishJogTouch = function(group) {
   if (play != 0) {
     // If we are playing, just hand off to the engine.
     engine.scratchDisable(deckNumber, true);
+    TraktorS4MK2.slipAutoHandler(field, 0);
   } else {
     // If things are paused, there will be a non-smooth handoff between scratching and jogging.
     // Instead, keep scratch on until the platter is not moving.
@@ -1037,15 +1040,14 @@ TraktorS4MK2.finishJogTouch = function(group) {
     if (scratchRate < 0.01) {
       // The platter is basically stopped, now we can disable scratch and hand off to jogging.
       engine.scratchDisable(deckNumber, false);
+      // Handle auto slip mode
     } else {
       // Check again soon.
       TraktorS4MK2.controller.wheelTouchInertiaTimer[group] = engine.beginTimer(
               100, "TraktorS4MK2.finishJogTouch(\"" + group + "\")", true);
     }
   }
-  if (TraktorS4MK2.controller.autoSlipMode){
-      engine.setValue(field.group, "slip_enabled", 0);
-  }
+
 }
 
 TraktorS4MK2.jogMoveHandler = function(field) {
@@ -1287,7 +1289,11 @@ TraktorS4MK2.loopActivateHandler = function(field) {
     engine.setValue(field.group, "reloop_andstop", field.value);
   } else {
     engine.setValue(field.group, "reloop_toggle", field.value);
+    if (field.value === 1){
+      TraktorS4MK2.slipAutoHandler(field, 0);
+    }
   }
+
 }
 
 TraktorS4MK2.sendLoopSizeMessage = function(deck, firstChar, secondChar, firstDot, secondDot) {
@@ -1392,6 +1398,9 @@ TraktorS4MK2.loopSetHandler = function(field) {
     engine.setValue(field.group, "pitch_adjust_set_default", field.value);
   } else {
     engine.setValue(field.group, "beatloop_activate", field.value);
+    if (field.value === 1){
+      TraktorS4MK2.slipAutoHandler(field, 1);
+    }
   }
 }
 
@@ -1620,11 +1629,16 @@ TraktorS4MK2.slipHandler = function(field){
     if (field.value === 0x01){
       var group = field.id.split(".")[0];
       if (TraktorS4MK2.controller.shift_pressed[group]) {
-          print('shift pressed' + field.group);
           TraktorS4MK2.controller.autoSlipMode[field.group] ^= true;
       } else {
         engine.setValue(field.group, "slip_enabled", !engine.getValue(field.group, "slip_enabled"));
       }
     }
     // Do nothing on touchup
+}
+
+TraktorS4MK2.slipAutoHandler = function(field, on){
+  if (TraktorS4MK2.controller.autoSlipMode[field.group] === 1){
+      engine.setValue(field.group, "slip_enabled", on);
+  }
 }
