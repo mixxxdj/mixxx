@@ -276,7 +276,7 @@ DJ202.Deck = function (deckNumbers, offset) {
     this.hotcueButton = [];
 
     for (var i = 1; i <= 8; i++) {
-        this.hotcueButton[i] = new components.HotcueButton({
+        this.hotcueButton[i] = new DJ202.HotcueButton({
             sendShifted: true,
             shiftControl: true,
             shiftOffset: 8,
@@ -956,6 +956,32 @@ DJ202.SyncButton.prototype.shift = function () {
         } else {
             // Work-around LED self-disable issue.
             this.trigger();
+        }
+    };
+};
+
+
+DJ202.HotcueButton = function () {
+    components.HotcueButton.apply(this, arguments);
+};
+
+DJ202.HotcueButton.prototype = Object.create(components.HotcueButton.prototype);
+
+DJ202.HotcueButton.prototype.unshift = function () {
+    this.inKey = 'hotcue_' + this.number + '_activate';
+    this.input = function (channel, control, value, status, group) {
+        components.HotcueButton.prototype.input.apply(this, arguments);
+    }
+}
+
+DJ202.HotcueButton.prototype.shift = function ()  {
+    this.input = function (channel, control, value, status, group) {
+        if (!value) {
+            return;
+        }
+        script.triggerControl(this.group, 'hotcue_' + this.number + '_clear');
+        if (engine.getValue(this.group, 'play')) {
+            script.triggerControl(this.group, 'hotcue_' + this.number + '_set');
         }
     };
 };
