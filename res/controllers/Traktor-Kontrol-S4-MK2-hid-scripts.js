@@ -1474,7 +1474,7 @@ TraktorS4MK2.resolveDeckIfActive = function(group) {
 }
 
 TraktorS4MK2.outputChannelCallback = function(value,group,key) {
-  var led_value = 0x19;
+  var led_value = 0x09;
   if (value) {
     led_value = 0x7F;
   }
@@ -1495,7 +1495,7 @@ TraktorS4MK2.outputCallback = function(value,group,key) {
     return;
   }
 
-  var led_value = 0x1F;
+  var led_value = 0x09;
   if (value) {
     led_value = 0x7F;
   }
@@ -1508,7 +1508,7 @@ TraktorS4MK2.outputCallbackLoop = function(value,group,key) {
     return;
   }
 
-  var led_value = 0x1F;
+  var led_value = 0x09;
   if (engine.getValue(group, "loop_enabled")) {
     led_value = 0x7F;
   }
@@ -1538,13 +1538,13 @@ TraktorS4MK2.outputCueCallback = function(value, group, key) {
   // Use different colors for decks 1/2 and 3/4 that match LateNight (red and blue).
   if (group === "[Channel1]" || group === "[Channel2]") {
     if (value === 1) {
-      RGB_value = [0x7F, 0x02, 0x02];
+      RGB_value = [0x7F, 0x04, 0x04];
     } else {
-      RGB_value = [0x1F, 0x02, 0x02];
+      RGB_value = [0x08, 0x01, 0x01];
     }
   } else {
     if (value === 1) {
-      RGB_value = [0x04, 0x1F, 0x7F];
+      RGB_value = [0x04, 0x04, 0x7F];
     } else {
       RGB_value = [0x01, 0x01, 0x08];
     }
