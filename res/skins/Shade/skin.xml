@@ -58,18 +58,31 @@
 		<language>en</language>
 		<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
 		<attributes>
+            <!-- Set skin defaults (common over all skins -->
 			<attribute config_key="[Master],num_decks">2</attribute>
 			<attribute config_key="[Master],num_samplers">8</attribute>
 			<attribute config_key="[Master],num_preview_decks">1</attribute>
+            <!-- no option to hide xfader in shade -->
+            <!-- no option to hide eqs in shade -->
+            <!-- no option to hide ew_kill_buttons in shade -->
+            <!-- no option to show 4 decks in shade -->
+            <!-- no option to show 4 effectunits in shade -->
+            <!-- no option to hide superknob in shade -->
+            <attribute config_key="[Master],maximize_library">0</attribute>
+
+			<attribute persist="false" config_key="[Microphone],show_microphone">0</attribute>
+			<attribute persist="false" config_key="[EffectRack1],show">0</attribute>
+			<attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
+			<attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
+			<attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
+			<attribute persist="true" config_key="[Library],show_coverart">0</attribute>
+            <!-- no option to show 8 hotcue on shade -->
+
+            <!-- non common skin settings --> 
+
 			<!--Optionally, make elements visible on skin load-->
 			<attribute persist="true" config_key="[Spinny1],show_spinny">1</attribute>
 			<attribute persist="true" config_key="[Spinny2],show_spinny">1</attribute>
-			<attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
-			<attribute persist="false" config_key="[EffectRack1],show">0</attribute>
-			<attribute persist="false" config_key="[Microphone],show_microphone">0</attribute>
-			<attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
-			<attribute persist="true" config_key="[Library],show_coverart">0</attribute>
-			<attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
 			<attribute persist="false" config_key="[Shade],looping">0</attribute>
 
 			<!--Disable hidden effect routing Buttons-->

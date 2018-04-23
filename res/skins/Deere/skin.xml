@@ -8,37 +8,44 @@
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
+
+
+      <!-- Set skin defaults (common over all skins -->
       <attribute config_key="[Master],num_decks">4</attribute>
       <attribute config_key="[Master],num_samplers">16</attribute>
       <attribute config_key="[Master],num_preview_decks">1</attribute>
+      <attribute persist="true" config_key="[Deere],show_crossfader">1</attribute>  <!-- RENAME -->
+      <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
+      <attribute persist="true" config_key="[Master],show_eqs">1</attribute>
+      <attribute persist="true" config_key="[Master],show_killswitches">0</attribute>  <!-- RENAME -->
+      <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
+      <attribute persist="true" config_key="[Master],show_4effectunits">0</attribute>
+      <attribute persist="true" config_key="[Master],show_superknobs">0</attribute>
+      <attribute config_key="[Master],maximize_library">0</attribute>
+      <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
+
+      <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
+      <attribute persist="true" config_key="[EffectRack1],show">1</attribute>
+      <attribute persist="true" config_key="[Samplers],show_samplers">1</attribute>
+      <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
+      <attribute persist="true" config_key="[Master],show_coverart">1</attribute>
       <attribute config_key="[Library],show_library">1</attribute>
+      <!-- no option to show 8 hotcue on deere -->
+
+      <!-- non common skin settings --> 
+      <attribute persist="true" config_key="[Samplers],show_expanded">0</attribute>
+
 
       <!--Skin settings-->
       <attribute persist="true" config_key="[Deere],show_parallel_waveforms">1</attribute>
-      <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
-      <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
 
-      <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
-      <attribute persist="true" config_key="[Master],show_4effectunits">0</attribute>
-      <attribute persist="true" config_key="[Master],show_coverart">1</attribute>
       <attribute persist="true" config_key="[Master],show_spinnies">0</attribute>
       <attribute persist="true" config_key="[Deere],show_starrating">0</attribute>
       <attribute persist="true" config_key="[Deere],show_track_info">1</attribute>
       <attribute persist="true" config_key="[Deere],show_bpm_info">1</attribute>
       <attribute persist="true" config_key="[Deere],show_more_hotcues">0</attribute>
 
-      <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
-      <attribute persist="true" config_key="[Deere],show_crossfader">1</attribute>
-      <attribute persist="true" config_key="[Master],show_eqs">1</attribute>
-      <attribute persist="true" config_key="[Master],show_killswitches">0</attribute>
       <attribute persist="true" config_key="[Master],show_faders">1</attribute>
-      <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
-
-      <attribute persist="true" config_key="[Samplers],show_samplers">1</attribute>
-      <attribute persist="true" config_key="[Samplers],show_expanded">0</attribute>
-
-      <attribute persist="true" config_key="[EffectRack1],show">1</attribute>
-      <attribute persist="true" config_key="[Master],show_superknobs">0</attribute>
 
       <!--Disable hidden effect routing Buttons-->
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MasterOutput]_enable">0</attribute>

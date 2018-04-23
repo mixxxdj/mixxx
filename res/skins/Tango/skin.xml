@@ -37,17 +37,31 @@
   -->
     <attributes>
       <!-- Set skin defaults. -->
+
+      <!-- Set skin defaults (common over all skins -->
       <attribute config_key="[Master],num_decks">4</attribute>
       <attribute config_key="[Master],num_samplers">16</attribute>
+      <attribute config_key="[Master],num_preview_decks">1</attribute>
+      <!-- no option to hide xfader in tango -->
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
       <attribute persist="true" config_key="[Master],show_eqs">1</attribute>
+      <!-- no option to hide ew_kill_buttons in shade -->
       <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
-      <attribute config_key="[Library],show_library">1</attribute>
+      <attribute persist="true" config_key="[Tango],4_FxUnits">0</attribute> <!-- RENAME -->
+      <!-- no option to hide superknob in tango -->
       <attribute config_key="[Master],maximize_library">0</attribute>
-      <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
+
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
-      <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
+      <!-- no option to show effectrack1 in tango -->
       <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
+      <!-- no option to show show_vinylcontrol in tango -->
+      <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
+      <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
+      <attribute config_key="[Library],show_library">1</attribute>
+      <attribute persist="true" config_key="[Tango],8_hotcues">0</attribute> <!-- RENAME -->
+
+      <!-- non common skin settings -->  
+
       <!-- item index in skin_settings_sampler_rows.xml, '1' enables 2 sampler rows -->
       <attribute persist="true" config_key="[Tango],sampler_rows">1</attribute>
       <attribute persist="true" config_key="[SamplerRow1],expanded">0</attribute>
@@ -60,7 +74,7 @@
       <attribute persist="true" config_key="[SamplerRow8],expanded">0</attribute>
       <!-- [Tango] specific defaults -->
       <attribute persist="true" config_key="[Tango],master_mixer">1</attribute>
-      <attribute persist="true" config_key="[Tango],4_FxUnits">0</attribute>
+
       <!--attribute persist="true" config_key="[Tango],sampler_fx_buttons">1</attribute-->
       <attribute persist="true" config_key="[Tango],beatgrid_buttons">0</attribute>
       <attribute persist="true" config_key="[Tango],deck_controls_expanded">0</attribute>
@@ -74,7 +88,7 @@
       <attribute persist="true" config_key="[Tango],always_visible_quantize">1</attribute>
       <attribute persist="true" config_key="[Tango],separate_cue_button">1</attribute>
       <attribute persist="true" config_key="[Tango],hotcues">1</attribute>
-      <attribute persist="true" config_key="[Tango],8_hotcues">0</attribute>
+      
       <attribute persist="true" config_key="[Tango],key_display_match">1</attribute>
       <attribute persist="true" config_key="[Tango],rate_key_controls">0</attribute>
       <attribute persist="true" config_key="[Tango],loop_beatjump_controls">1</attribute>
