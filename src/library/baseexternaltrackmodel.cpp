@@ -58,18 +58,31 @@ TrackPointer BaseExternalTrackModel::getTrack(const QModelIndex& index) const {
     TrackPointer pTrack = m_pTrackCollection->getTrackDAO()
             .getOrAddTrack(location, true, &track_already_in_library);
 
-    // If this track was not in the Mixxx library it is now added and will be
-    // saved with the metadata from iTunes. If it was already in the library
-    // then we do not touch it so that we do not over-write the user's metadata.
-    if (pTrack && !track_already_in_library) {
-        pTrack->setArtist(artist);
-        pTrack->setTitle(title);
-        pTrack->setAlbum(album);
-        pTrack->setYear(year);
-        pTrack->setGenre(genre);
-        pTrack->setBpm(bpm);
+    if (pTrack) {
+        // If this track was not in the Mixxx library it is now added and will be
+        // saved with the metadata from iTunes. If it was already in the library
+        // then we do not touch it so that we do not over-write the user's metadata.
+        if (!track_already_in_library) {
+            pTrack->setArtist(artist);
+            pTrack->setTitle(title);
+            pTrack->setAlbum(album);
+            pTrack->setYear(year);
+            pTrack->setGenre(genre);
+            pTrack->setBpm(bpm);
+        }
+    } else {
+        qWarning() << "Failed to load external track" << location;
     }
     return pTrack;
+}
+
+TrackId BaseExternalTrackModel::getTrackId(const QModelIndex& index) const {
+    const auto track = getTrack(index);
+    if (track) {
+        return track->getId();
+    } else {
+        return TrackId();
+    }
 }
 
 void BaseExternalTrackModel::trackLoaded(QString group, TrackPointer pTrack) {
