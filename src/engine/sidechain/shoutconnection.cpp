@@ -26,6 +26,7 @@
 #include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
 #include "track/track.h"
+#include "util/compatibility.h"
 #include "util/logger.h"
 
 #include <engine/sidechain/shoutconnection.h>
@@ -899,7 +900,7 @@ QSharedPointer<FIFO<CSAMPLE>> ShoutConnection::getOutputFifo() {
 }
 
 bool ShoutConnection::threadWaiting() {
-    return m_threadWaiting;
+    return load_atomic(m_threadWaiting);
 }
 
 void ShoutConnection::run() {
@@ -996,4 +997,3 @@ void ShoutConnection::ignoreSigpipe() {
 #endif
 }
 #endif
-
