@@ -36,7 +36,25 @@
 #include "util/timer.h"
 #include "util/math.h"
 
+
+namespace {
+
 enum { UndefinedRecordIndex = -2 };
+
+void markTrackLocationsAsDeleted(QSqlDatabase database, const QString& directory) {
+    //qDebug() << "TrackDAO::markTrackLocationsAsDeleted" << QThread::currentThread() << m_database.connectionName();
+    QSqlQuery query(database);
+    query.prepare("UPDATE track_locations "
+                  "SET fs_deleted=1 "
+                  "WHERE directory=:directory");
+    query.bindValue(":directory", directory);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query)
+                << "Couldn't mark tracks in" << directory << "as deleted.";
+    }
+}
+
+} // anonymous namespace
 
 TrackDAO::TrackDAO(CueDAO& cueDao,
                    PlaylistDAO& playlistDao,
@@ -84,7 +102,7 @@ void TrackDAO::finish() {
     // directories as deleted.
     // TODO(XXX) This doesn't handle sub-directories of deleted directories.
     for (const auto& dir: deletedHashDirs) {
-        markTrackLocationsAsDeleted(dir);
+        markTrackLocationsAsDeleted(m_database, dir);
     }
     transaction.commit();
 }
@@ -1499,19 +1517,6 @@ void TrackDAO::markUnverifiedTracksAsDeleted() {
     if (!query.exec()) {
         LOG_FAILED_QUERY(query)
                 << "Couldn't mark unverified tracks as deleted.";
-    }
-}
-
-void TrackDAO::markTrackLocationsAsDeleted(const QString& directory) {
-    //qDebug() << "TrackDAO::markTrackLocationsAsDeleted" << QThread::currentThread() << m_database.connectionName();
-    QSqlQuery query(m_database);
-    query.prepare("UPDATE track_locations "
-                  "SET fs_deleted=1 "
-                  "WHERE directory=:directory");
-    query.bindValue(":directory", directory);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query)
-                << "Couldn't mark tracks in" << directory << "as deleted.";
     }
 }
 

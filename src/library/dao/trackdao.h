@@ -90,7 +90,6 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     void markTracksInDirectoriesAsVerified(const QStringList& directories);
     void invalidateTrackLocationsInLibrary();
     void markUnverifiedTracksAsDeleted();
-    void markTrackLocationsAsDeleted(const QString& directory);
     bool detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
                           QSet<TrackId>* pTracksMovedSetNew,
                           const QStringList& addedTracks,
