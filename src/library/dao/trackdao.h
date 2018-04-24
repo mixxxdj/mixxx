@@ -43,8 +43,6 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     QList<TrackId> getTrackIds(const QList<QFileInfo>& files);
     QList<TrackId> getTrackIds(const QDir& dir);
 
-    bool trackExistsInDatabase(const QString& absoluteFilePath);
-
     // WARNING: Only call this from the main thread instance of TrackDAO.
     TrackPointer getTrack(TrackId trackId) const;
 

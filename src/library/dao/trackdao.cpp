@@ -179,14 +179,6 @@ QString TrackDAO::getTrackLocation(TrackId trackId) {
     return trackLocation;
 }
 
-/** Check if a track exists in the library table already.
-    @param file_location The full path to the track on disk, including the filename.
-    @return true if the track is found in the library table, false otherwise.
-*/
-bool TrackDAO::trackExistsInDatabase(const QString& absoluteFilePath) {
-    return getTrackId(absoluteFilePath).isValid();
-}
-
 void TrackDAO::saveTrack(Track* pTrack) {
     DEBUG_ASSERT(pTrack);
     if (pTrack->isDirty()) {
