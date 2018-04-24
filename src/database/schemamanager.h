@@ -29,7 +29,7 @@ class SchemaManager {
     bool isBackwardsCompatibleWithVersion(int targetVersion) const;
 
     Result upgradeToSchemaVersion(
-            const QString& schemaFilename,
+            const QString& schemaBaseName,
             int targetVersion);
 
   private:

@@ -13,13 +13,13 @@ class MixxxDb : public QObject {
     Q_OBJECT
 
   public:
-    static const QString kDefaultSchemaFile;
+    static const QString kDefaultSchemaBaseName;
 
     static const int kRequiredSchemaVersion;
 
     static bool initDatabaseSchema(
             const QSqlDatabase& database,
-            const QString& schemaFile = kDefaultSchemaFile,
+            const QString& schemaBaseName = kDefaultSchemaBaseName,
             int schemaVersion = kRequiredSchemaVersion);
 
     explicit MixxxDb(

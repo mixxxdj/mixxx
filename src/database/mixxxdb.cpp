@@ -8,7 +8,7 @@
 
 // The schema XML is baked into the binary via Qt resources.
 //static
-const QString MixxxDb::kDefaultSchemaFile(":/schema.xml");
+const QString MixxxDb::kDefaultSchemaBaseName(":/schema");
 
 //static
 const int MixxxDb::kRequiredSchemaVersion = 27;
@@ -38,7 +38,7 @@ MixxxDb::MixxxDb(
 
 bool MixxxDb::initDatabaseSchema(
         const QSqlDatabase& database,
-        const QString& schemaFile,
+        const QString& schemaBaseName,
         int schemaVersion) {
     QString okToExit = tr("Click OK to exit.");
     QString upgradeFailed = tr("Cannot upgrade database schema");
@@ -48,7 +48,7 @@ bool MixxxDb::initDatabaseSchema(
     QString helpEmail = tr("For help with database issues contact:") + "\n" +
                            "mixxx-devel@lists.sourceforge.net";
 
-    switch (SchemaManager(database).upgradeToSchemaVersion(schemaFile, schemaVersion)) {
+    switch (SchemaManager(database).upgradeToSchemaVersion(schemaBaseName, schemaVersion)) {
         case SchemaManager::Result::CurrentVersion:
         case SchemaManager::Result::UpgradeSucceeded:
         case SchemaManager::Result::NewerVersionBackwardsCompatible:

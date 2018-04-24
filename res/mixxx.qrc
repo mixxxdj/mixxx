@@ -50,6 +50,7 @@
         <file>images/preferences/ic_preferences_waveforms.png</file>
         <file>images/templates/logo_mixxx.png</file>
         <file>schema.xml</file>
+        <file>schema_v0-to-v27.sql</file>
         <file>shaders/filteredsignal.frag</file>
         <file>shaders/passthrough.vert</file>
         <file>shaders/rgbsignal.frag</file>
