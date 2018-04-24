@@ -121,6 +121,8 @@ TrackId TrackDAO::getTrackId(const QString& absoluteFilePath) {
     if (query.exec()) {
         if (query.next()) {
             trackId = TrackId(query.value(query.record().indexOf("id")));
+        } else {
+            qDebug() << "TrackDAO::getTrackId(): Track location not found in library:" << absoluteFilePath;
         }
     } else {
         LOG_FAILED_QUERY(query);
@@ -150,6 +152,10 @@ QList<TrackId> TrackDAO::getTrackIds(const QList<QFileInfo>& files) {
         const int idColumn = query.record().indexOf("id");
         while (query.next()) {
             trackIds.append(TrackId(query.value(idColumn)));
+        }
+        DEBUG_ASSERT(trackIds.size() <= files.size());
+        if (trackIds.size() < files.size()) {
+            qDebug() << "TrackDAO::getTrackIds(): Found only" << trackIds.size() << "of" << files.size() << "tracks in library";
         }
     } else {
         LOG_FAILED_QUERY(query);
@@ -1904,36 +1910,38 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
 TrackPointer TrackDAO::getOrAddTrack(const QString& trackLocation,
                                      bool processCoverArt,
                                      bool* pAlreadyInLibrary) {
-    const TrackId trackId(getTrackId(trackLocation));
+    const TrackId trackId = getTrackId(trackLocation);
     const bool trackAlreadyInLibrary = trackId.isValid();
+    if (pAlreadyInLibrary) {
+        *pAlreadyInLibrary = trackAlreadyInLibrary;
+    }
 
     TrackPointer pTrack;
     if (trackAlreadyInLibrary) {
         pTrack = getTrack(trackId);
+        if (!pTrack) {
+            qWarning() << "Failed to load track"
+                    << trackLocation;
+            return pTrack;
+        }
     } else {
         // Add Track to library -- unremove if it was previously removed.
         pTrack = addSingleTrack(trackLocation, true);
-    }
-
-    // addTrack or getTrack may fail.
-    if (!pTrack) {
-        qWarning() << "Failed to load track"
-                << trackLocation;
-        return pTrack;
-    }
-
-    // If the track wasn't in the library already then it has not yet been
-    // checked for cover art. If processCoverArt is true then we should request
-    // cover processing via CoverArtCache asynchronously.
-    if (processCoverArt && !trackAlreadyInLibrary) {
-        CoverArtCache* pCache = CoverArtCache::instance();
-        if (pCache != nullptr) {
-            pCache->requestGuessCover(pTrack);
+        if (!pTrack) {
+            qWarning() << "Failed to add track"
+                    << trackLocation;
+            return pTrack;
         }
-    }
-
-    if (pAlreadyInLibrary != nullptr) {
-        *pAlreadyInLibrary = trackAlreadyInLibrary;
+        DEBUG_ASSERT(pTrack);
+        // If the track wasn't in the library already then it has not yet been
+        // checked for cover art. If processCoverArt is true then we should request
+        // cover processing via CoverArtCache asynchronously.
+        if (processCoverArt) {
+            CoverArtCache* pCache = CoverArtCache::instance();
+            if (pCache != nullptr) {
+                pCache->requestGuessCover(pTrack);
+            }
+        }
     }
 
     return pTrack;
