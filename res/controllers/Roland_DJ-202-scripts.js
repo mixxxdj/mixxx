@@ -346,9 +346,9 @@ DJ202.Deck = function (deckNumbers, offset) {
     this.loopButton = [];
 
     for (var i = 1; i <= 4; i++) {
-        this.loopButton[i] = new components.Button({
-            midi: [0x94 + offset, 0x10 + i],
-            inKey: 'beatloop_'+ Math.pow(2,i-1) +'_activate',
+        this.loopButton[i] = new DJ202.LoopButton({
+            number: i,
+            deck: this
         });
     }
     
@@ -1037,4 +1037,18 @@ DJ202.HotcueButton.prototype.shift = function ()  {
             script.triggerControl(this.group, 'hotcue_' + this.number + '_set');
         }
     };
+};
+
+DJ202.LoopButton = function () {
+    components.Button.apply(this, arguments);
+};
+
+DJ202.LoopButton.prototype = Object.create(components.Button.prototype);
+
+DJ202.LoopButton.prototype.connect = function () {
+    var deck = script.deckFromGroup(this.deck.currentDeck);
+    this.midi = [0x94 + deck - 1, 0x10 + this.number];
+    this.inKey = 'beatloop_'+ Math.pow(2, this.number - 1) + '_activate';
+    this.outKey = this.inKey;
+    components.Button.prototype.connect.apply(this, arguments);
 };
