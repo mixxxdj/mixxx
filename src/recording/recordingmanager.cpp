@@ -23,8 +23,8 @@
 #include "recording/defs_recording.h"
 #include "recording/recordingmanager.h"
 
-// one gigabyte
-#define MIN_DISK_FREE (qint64)1024*1024*1024
+// one gibibyte
+#define MIN_DISK_FREE 1024 * 1024 * 1024ll
 
 RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMaster* pEngine)
         : m_pConfig(pConfig),
@@ -271,8 +271,8 @@ void RecordingManager::slotBytesRecorded(int bytes)
         // FIXME(poelzi) temporary display a error message. Replace this with Message Infrastructure when ready
         QMessageBox::warning(
             NULL,
-            tr("Free Space Warning"),
-            tr("There is less then 1 gb of useable space in the recording folder"));
+            tr("Low Disk Space Warning"),
+            tr("There is less then 1 GiB of useable space in the recording folder"));
     }
 }
 
