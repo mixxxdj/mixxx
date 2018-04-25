@@ -3,7 +3,16 @@
 #include <QMutex>
 #include <QDir>
 #include <QtDebug>
+#include <QDebug>
+#include <QMessageBox>
 #include <climits>
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
+#include <QStorageInfo>
+#elif not __WINDOWS__
+#include <sys/statvfs.h>
+#endif
+
 
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
@@ -13,6 +22,9 @@
 #include "errordialoghandler.h"
 #include "recording/defs_recording.h"
 #include "recording/recordingmanager.h"
+
+// one gigabyte
+#define MIN_DISK_FREE (qint64)1024*1024*1024
 
 RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMaster* pEngine)
         : m_pConfig(pConfig),
@@ -84,6 +96,25 @@ void RecordingManager::slotToggleRecording(double v) {
     }
 }
 
+qint64 RecordingManager::getFreeSpace() {
+    // returns the free space on the recording location in bytes
+    // return -1 if the free space could not be determined
+    qint64 rv = -1;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
+    QStorageInfo storage(getRecordingDir());
+    if (storage.isValid()) {
+        rv = storage.bytesAvailable();
+    }
+#elif not __WINDOWS__
+    struct statvfs stats;
+    QByteArray bpath = getRecordingDir().toUtf8();
+    const char *path = bpath.data();
+    statvfs(path, &stats);
+    rv = stats.f_bsize * stats.f_bavail;
+#endif
+    return rv;
+}
+
 void RecordingManager::startRecording() {
     QString encodingType = m_pConfig->getValueString(
             ConfigKey(RECORDING_PREF_KEY, "Encoding"));
@@ -92,6 +123,8 @@ void RecordingManager::startRecording() {
     m_secondsRecordedSplit=0;
     m_iNumberOfBytesRecorded = 0;
     m_secondsRecorded=0;
+    m_dfSilence=0;
+    m_dfCounter=0;
     m_split_size = getFileSplitSize();
     m_split_time = getFileSplitSeconds();
     if (m_split_time < INT_MAX) {
@@ -212,6 +245,35 @@ void RecordingManager::slotBytesRecorded(int bytes)
         splitContinueRecording();
     }
     emit(bytesRecorded(m_iNumberOfBytesRecorded));
+
+    // check for free space
+
+    // we only check every 1 MB of data to minimize syscalls
+    m_dfCounter -= bytes;
+
+    if (m_dfCounter > 0) {
+        return;
+    }
+
+    qint64 dfree = getFreeSpace();
+    // reset counter
+    m_dfCounter = 1024 * 1024;
+    if (dfree == -1) {
+        qDebug() << "can't determine free space";
+        return;
+    }
+    if (dfree > MIN_DISK_FREE) {
+        m_dfSilence = false;
+    } else if (m_dfSilence != true) {
+        // surpress further warnings until the situation has cleared
+        m_dfSilence = true;
+        // we run out of diskspace and should warn the user.
+        // FIXME(poelzi) temporary display a error message. Replace this with Message Infrastructure when ready
+        QMessageBox::warning(
+            NULL,
+            tr("Free Space Warning"),
+            tr("There is less then 1 gb of useable space in the recording folder"));
+    }
 }
 
 void RecordingManager::slotIsRecording(bool isRecordingActive, bool error) {
