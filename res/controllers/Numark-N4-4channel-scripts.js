@@ -16,7 +16,8 @@ NumarkN4.blinkInterval=1000; //blinkInterval for the triangular Leds over the ch
 NumarkN4.encoderResolution=0.05; // 1/encoderResolution = number of steps going from 0% to 100%
 
 // possible ranges (0.0..3.0 where 0.06=6%)
-NumarkN4.rateRanges = [0.06,// one semitone
+NumarkN4.rateRanges = [0,   // default (gets set via script later)
+                       0.06,// one semitone
                        0.24,// for maximum freedom
                      ];
 NumarkN4.loopSizes=[0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64];
@@ -25,7 +26,9 @@ NumarkN4.ShutoffSequence=[0xF0,0x00,0x01,0x3F,0x7F,0x47,0xB0,0x39,0x00,0x01,0xF7
 
 NumarkN4.vinylTouched = [false,false,false,false,];
 
-NumarkN4.pflVuMeterConnections = [-1,-1];
+NumarkN4.globalShift = false;
+
+NumarkN4.pflVuMeterConnections = [0,0];
 
 components.Encoder.prototype.input = function (channel, control, value, status, group) {
   this.inSetParameter(
@@ -60,6 +63,7 @@ components.Component.prototype.send = function (value) {
 };
 
 NumarkN4.init = function (id) {
+  NumarkN4.rateRanges[0]=engine.getValue("[Channel1]","rateRange");
   NumarkN4.Decks=[];
   for (var iterator=1;iterator<=4;iterator++){
     print("instancing Deck"+iterator);
@@ -141,17 +145,9 @@ NumarkN4.topContainer = function (channel) {
   this.hotcueButtons=[];
 
   for (var counter=0;counter<=3;counter++){
-    this.hotcueButtons[counter] = new components.Button({
+    this.hotcueButtons[counter] = new components.HotcueButton({
       midi: [0x90+channel,0x27+counter,0xB0+channel,0x18+counter],
-      number: counter,
-      shift: function () {
-        this.inKey="hotcue_"+(this.number+5)+"_activate";
-        this.outKey="hotcue_"+(this.number+5)+"_enabled";
-      },
-      unshift: function () {
-        this.inKey="hotcue_"+(this.number+1)+"_activate";
-        this.outKey="hotcue_"+(this.number+1)+"_enabled";
-      },
+      number: counter+1,
     });
   }
   this.encFxParam1 = new components.Encoder({
@@ -177,21 +173,49 @@ NumarkN4.topContainer = function (channel) {
   this.encSample3 = new components.Encoder({
     midi: [0xB0+channel,0x5A],
     currentLoopSizeIndex: 7,
+    hotCuePage: 0,
     shift: function () {
       this.group=theContainer.group;
       this.inKey="beatloop_size";
       this.input = function (channel, control, value, status, group) {
-        var valueChange=(value===1)?1:-1;
-        if ((this.currentLoopSizeIndex+valueChange)>=0&&(this.currentLoopSizeIndex+valueChange)<NumarkN4.loopSizes.length) {
-          this.currentLoopSizeIndex+=valueChange;
-          this.inSetValue(NumarkN4.loopSizes[this.currentLoopSizeIndex]);
-        }
+        this.currentLoopSizeIndex=
+        Math.min(
+          Math.max(
+            this.currentLoopSizeIndex+(value===0x01?1:-1),
+            NumarkN4.loopSizes.length
+          ),
+          0
+        );
+        this.inSetValue(NumarkN4.loopSizes[this.currentLoopSizeIndex]);
       };
     },
     unshift: function () {
-      this.input=components.Encoder.prototype.input;
-      this.group="[QuickEffectRack1_"+theContainer.group+"]";
-      this.inKey="super1";
+      this.input = function (channel, control, value, status, group) {
+        if (this.timer) {engine.stopTimer(this.timer)};
+        this.hotCuePage=
+        Math.max(
+          Math.min(
+            this.hotCuePage+(value===0x01?1:-1),
+            3
+          ),
+          0
+        );
+        var number = 0;
+        for (var i=0;i<theContainer.hotcueButtons.length;++i) {
+          number = (i+1)+theContainer.hotcueButtons.length*this.hotCuePage;
+          print(number);
+          theContainer.hotcueButtons[i].disconnect();
+          theContainer.hotcueButtons[i].number=number;
+          theContainer.hotcueButtons[i].outKey='hotcue_' + number + '_enabled';
+          theContainer.hotcueButtons[i].unshift(); // for setting inKey based on number property.
+          theContainer.hotcueButtons[i].connect();
+          theContainer.hotcueButtons[i].trigger();
+        }
+        for (var i=0;i<4;++i) {
+          midi.sendShortMsg(0xB0+channel,0x0B+i,(i-this.hotCuePage)?0x00:0x7F);
+        }
+        this.timer=engine.beginTimer(1000,function () {theContainer.reconnectComponents()},true);
+      }
     },
   });
   this.encSample4 = new components.Encoder({
@@ -200,11 +224,8 @@ NumarkN4.topContainer = function (channel) {
     shift: function () {
       this.inKey="beatjump_size";
       this.input = function (channel, control, value, status, group) {
-        var valueChange=(value===1)?1:-1;
-        if ((this.currentJumpSizeIndex+valueChange)>=0&&(this.currentJumpSizeIndex+valueChange)<NumarkN4.loopSizes.length) {
-          this.currentJumpSizeIndex+=valueChange;
-          this.inSetValue(NumarkN4.loopSizes[this.currentJumpSizeIndex]);
-        }
+        this.currentJumpSizeIndex=Math.max(Math.min(this.currentJumpSizeIndex+(value===0x01?1:-1)NumarkN4.loopSizes.length),0);
+        this.inSetValue(NumarkN4.loopSizes[this.currentJumpSizeIndex]);
       };
     },
     unshift: function () {
@@ -224,17 +245,22 @@ NumarkN4.MixerTemplate = function () {
     midi.sendShortMsg(status,control,value);
     //just "echos" the midi since the controller knows the deck its on itself but doesnt update the corresponing leds.
   };
+  // NOTE: Unable to control Volume Bar via software.
   this.pflVuMeter = function (channel, control, value, status, group) {
-    print("calledPflVuMeter")
-    for (var i=0;i<NumarkN4.pflVuMeterConnections.length;i++) {
-      if (NumarkN4.pflVuMeterConnections[i]!==-1) {NumarkN4.pflVuMeterConnections[i].disconnect();}
-      NumarkN4.pflVuMeterConnections[i] = engine.makeConnection("[Channel"+value+"]","VuMeter"+(i===0)?"L":"R",
-      function (callbackValue){
-        print("called channel vumeter: "+value)
-        midi.sendShortMsg(0xB0,0x34+i,Math.round(value*8+0,5)); // Vu bar range=[0;8]
-      });
-      NumarkN4.pflVuMeterConnections[i].trigger();
-    }
+    // print("calledPflVuMeter");
+    // print(NumarkN4.pflVuMeterConnections);
+    // for (var i=0;i<NumarkN4.pflVuMeterConnections.length;i++) {
+    //   print(i);
+    //   if (NumarkN4.pflVuMeterConnections[i]) {NumarkN4.pflVuMeterConnections[i].disconnect();}
+    //   if (value) {
+    //     NumarkN4.pflVuMeterConnections[i] = engine.makeConnection("[Channel"+value+"]",("VuMeter"+((i===0)?"L":"R")),
+    //     function (callbackValue){
+    //       print("called channel vumeter: "+callbackValue)
+    //       midi.sendShortMsg(0xB0,0x34+i,Math.round(callbackValue*8+0,5)); // Vu bar range=[0;8]
+    //     });
+    //   }
+    //   NumarkN4.pflVuMeterConnections[i].trigger();
+    // }
   }
   this.channelInputSwitcher = function (channel, control, value, status, group) { // can't be done in pure XML
     engine.setParameter(group,"mute",value); // TODO: Test
@@ -312,7 +338,14 @@ NumarkN4.Deck = function (channel) {
   }
   this.gainKnob = new components.Pot({
     midi: [0xB0, 0x2C + 5*(channel-1)],
-    inKey: "pregain",
+    shift: function () {
+      this.group="[QuickEffectRack1_"+theDeck.group+"]";
+      this.inKey="super1";
+    },
+    unshift: function () {
+      this.group=theDeck.group;
+      this.inKey="pregain";
+    }
   })
   // REVIEW: this.blinkTimer=engine.beginTimer(NumarkN4.blinkInterval,"NumarkN4.Deck"+channel+".manageChannelIndicator");
   //timer is more efficent is this case than a callback because it would be called too often.
@@ -385,10 +418,17 @@ NumarkN4.Deck = function (channel) {
   this.pflButton = new components.Button({
     midi: [0x90,0x30+channel,0xB0,0x3F+channel],
     key: "pfl",
+    flickerSafetyTimeout: true,
     input: function (channel, control, value, status, group) {
-      value/=0x7F;
-      if (this.inGetParameter()!==value){
-        this.inSetParameter(value);
+      if (this.flickerSafetyTimeout) {
+        this.flickerSafetyTimeout=false;
+        value/=0x7F;
+        if (this.inGetParameter()!==value){
+          this.inSetParameter(value);
+        }
+        engine.beginTimer(100,function () {
+          this.flickerSafetyTimeout=true;
+        },true);
       }
     },
   });
@@ -489,11 +529,11 @@ NumarkN4.Deck = function (channel) {
     midi: [0xB0+channel,0x01,0xB0+channel,0x37], //only specifing input MSB
     inKey: "rate",
     invert: true,
-    group: theDeck.group,
   });
   this.pitchLedHandler = engine.makeConnection(this.group,"rate",function (value){
     midi.sendShortMsg(0xB0+channel,0x37,!value); //inexplicit cast to bool; turns on if value===0;
   });
+  this.pitchLedHandler.trigger();
 
 
   this.pitchRange = new components.Button({
