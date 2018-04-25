@@ -22,7 +22,7 @@ NumarkN4.rateRanges = [0,   // default (gets set via script later)
                      ];
 NumarkN4.loopSizes=[0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64];
 NumarkN4.QueryStatusMessage=[0xF0,0x00,0x01,0x3F,0x7F,0x47,0x60,0x00,0x01,0x54,0x01,0x00,0x00,0x00,0x00,0xF7];
-NumarkN4.ShutoffSequence=[0xF0,0x00,0x01,0x3F,0x7F,0x47,0xB0,0x39,0x00,0x01,0xF7];
+//NumarkN4.ShutoffSequence=[0xF0,0x00,0x01,0x3F,0x7F,0x47,0xB0,0x39,0x00,0x01,0xF7]; // Invalid Midibyte?
 
 NumarkN4.vinylTouched = [false,false,false,false,];
 
@@ -66,9 +66,7 @@ NumarkN4.init = function (id) {
   NumarkN4.rateRanges[0]=engine.getValue("[Channel1]","rateRange");
   NumarkN4.Decks=[];
   for (var iterator=1;iterator<=4;iterator++){
-    print("instancing Deck"+iterator);
     NumarkN4.Decks[iterator] = new NumarkN4.Deck(iterator);
-    print("finished instancing Deck"+iterator);
 
   }
 
@@ -82,7 +80,6 @@ NumarkN4.init = function (id) {
 NumarkN4.topContainer = function (channel) {
   this.group = '[Channel'+channel+']';
   var theContainer = this;
-  print("instancing topContainer"+channel);
 
   this.btnEffect1 = new components.Button({
     midi: [0x90+channel,0x13,0xB0+channel,0x0B],
@@ -114,7 +111,6 @@ NumarkN4.topContainer = function (channel) {
       this.outKey="loop_out";
     },
   });
-  print("instancing btnSample3");
   this.btnSample3 = new components.Button({
     midi: [0x90+channel,0x15,0xB0+channel,0x0D],
     shift: function () {
@@ -203,7 +199,6 @@ NumarkN4.topContainer = function (channel) {
         var number = 0;
         for (var i=0;i<theContainer.hotcueButtons.length;++i) {
           number = (i+1)+theContainer.hotcueButtons.length*this.hotCuePage;
-          print(number);
           theContainer.hotcueButtons[i].disconnect();
           theContainer.hotcueButtons[i].number=number;
           theContainer.hotcueButtons[i].outKey='hotcue_' + number + '_enabled';
@@ -234,7 +229,6 @@ NumarkN4.topContainer = function (channel) {
       };
     },
   });
-  print("finished instancing topContainer"+channel);
 };
 NumarkN4.topContainer.prototype = new components.ComponentContainer();
 
@@ -347,15 +341,14 @@ NumarkN4.Deck = function (channel) {
       this.inKey="pregain";
     }
   })
-  // REVIEW: this.blinkTimer=engine.beginTimer(NumarkN4.blinkInterval,"NumarkN4.Deck"+channel+".manageChannelIndicator");
+  this.blinkTimer=engine.beginTimer(NumarkN4.blinkInterval,"NumarkN4.Deck"+channel+".manageChannelIndicator");
   //timer is more efficent is this case than a callback because it would be called too often.
-  // REVIEW: engine.makeConnection(this.group,"track_loaded",function (value) {midi.sendShortMsg(0xB0,0x1D+channel,value?0x7F:0x00)});
+  engine.makeConnection(this.group,"track_loaded",function (value) {midi.sendShortMsg(0xB0,0x1D+channel,value?0x7F:0x00)});
   this.shiftButton = new components.Button({
     midi: [0x90+channel,0x12,0xB0+channel,0x15],
     type: components.Button.prototype.types.powerWindow,
     state: false, //custom property
     inToggle: function () {
-      print("topContainer.group: "+theDeck.topContainer.group);
       this.state=!this.state;
       if (this.state) {
         theDeck.shift();
@@ -560,79 +553,14 @@ NumarkN4.Deck = function (channel) {
            c.group = this.currentDeck;
        }
    });
-   print("assigning Deck"+channel);
 };
 
 NumarkN4.Deck.prototype = new components.Deck();
 
-print("assigned Deck constructor");
 NumarkN4.shutdown = function () {
+  if (delete NumarkN4.Decks) {
+    print("gracefull shutdown failed")
+  }
   //destroy mixer, decks, and their timers.
+  // midi.sendSysexMsg(NumarkN4.ShutoffSequence,NumarkN4.ShutoffSequence.length);
 };
-
-
-
-//Deck
-//  [x] shift
-//  [x] play
-//  [x] cue
-//  [x] PitchBend+-
-//  [x] Sync
-//  [x] Tap
-//  [x] keyLock
-//  [x] PitchRange
-//  [x] BPM MSB
-//  [x] JOGWHEEL
-//  [x] Scratch/Search
-//  ComponentContainer
-//    Normal:
-//      [x] loop_in = loop_in
-//      [x] loop_out = loop_out
-//      [x] reloop = reloop
-//      [x] time elapsed = loop at this location.
-//      [x] FX1 On = hotcue 1 / 5
-//      [x] FX2 On = hotcue 2 / 6
-//      [x] FX3 On = hotcue 3 / 7
-//      [x] FX Auto/Tap = hotcue 4 / 8
-//      [x] FX1 Param = FX1 Super
-//      [x] FX2 Param = FX2 Super
-//      [x] FX3 Param = beatjump (imitates two buttons)
-//      [x] FX Beats multi =  filter
-//    Shift:
-//      [x] loop_in = FX1 toggle
-//      [x] loop_out = FX2 toggle
-//      [x] reloop = slip
-//      [x] time elapsed = repeat track
-//      [x] FX1 On = hotcue
-//      [x] FX2 On = hotcue
-//      [x] FX3 On = hotcue
-//      [x] FX Auto/Tap = hotcue
-//      [x] FX1 Param = FX1 Mix
-//      [x] FX2 Param = FX2 Mix
-//      [x] FX3 Param = beatjump_size
-//      [x] FX Beats multi = loop length box
-
-//MIXER: (MSB)
-//  [ ] Nav Encoder Layer;
-//    [ ] unshift:
-//      [ ] Btn: maximize_library
-//      [ ] Enc: MoveVertical
-//    [ ] shift:
-//      [ ] Btn:
-//        [ ] short press: [Library] GoToItem
-//        [ ] long press: set enc.inKey="MoveFocus"
-//      [ ] Enc: MoveVertical / ^^C
-//  [x] Crossfader
-//  [x] InputSwitches (MixxxControl: "mute")
-//  [x] crossfaderCurve BUG: wierd behavior.
-//  [x] DeckStateLeds NOTE: blinks when < (NumarkN4.warnAfterPosition)% remaining
-//  [x] whichDecLedsIndicators
-//  Channel:
-//    [x] LOAD
-//    [x] Orientation
-//    [x] gainKnob
-//    [x] highknob
-//    [x] midknob
-//    [x] lowknob
-//    [x] pfl
-//    [x] Volume
