@@ -123,6 +123,7 @@ class LibraryFeature : public QObject {
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer);
+    void trackSelection(QList<TrackPointer>);
 
     void hovered(LibraryFeature* pLibraryFeature);
     void leaved(LibraryFeature* pLibraryFeature);

@@ -48,6 +48,7 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     void loadTrackToPlayer(TrackPointer pTrack, QString group,
             bool play = false);
     void trackSelected(TrackPointer pTrack);
+    void trackSelection(QList<TrackPointer>);
     void onlyCachedCoverArt(bool);
     void scrollValueChanged(int);
     

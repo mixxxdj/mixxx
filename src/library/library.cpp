@@ -255,6 +255,8 @@ void Library::addFeature(LibraryFeature* feature) {
             this, SIGNAL(enableCoverArtDisplay(bool)));
     connect(feature, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
+    connect(feature, SIGNAL(trackSelection(QList<TrackPointer>)),
+            this, SIGNAL(trackSelection(QList<TrackPointer>)));
 
     connect(feature, SIGNAL(hovered(LibraryFeature*)),
             this, SLOT(slotSetHoveredFeature(LibraryFeature*)));

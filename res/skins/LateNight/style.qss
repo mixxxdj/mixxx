@@ -1507,13 +1507,19 @@ WBaseLibrary QLabel {
   margin: 0px;
 }
 
-QTreeView::item:selected:active, 
+QListView::item {
+  color: #cfb32c;
+}
+
+QTreeView::item:selected:active,
+QListView::item:selected:active,
 QTableView::item:selected:active {
   color: #cfb32c;
   background-color: #725309;
 }
 
 QTreeView::item:selected:!active,
+QListView::item:selected:!active,
 QTableView::item:selected:!active {
   color: #cfb32c;
   background-color: #4c3b11;
@@ -1676,6 +1682,15 @@ WCoverArt {
   background: transparent;
   color: #ACACAC;
 }
+
+WCrateList {
+  border-left: 2px solid #585858;
+  background-color: #0e0e0e;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  /*border-top: 1px solid #585858;*/
+}
+
 
 /* splitter between treeview and library */
 #LibrarySplitter::handle {
@@ -1840,3 +1855,37 @@ QToolTip {
   border: 1px solid #333;
   border-radius: 2px;
 }
+
+/* Spacing between treeview and searchbar */
+QListView { margin: 10px 0px 0px 0px; }
+QListView:focus { border: 1px solid #8E5C00; }
+
+/* triangle for closed/opened branches in treeview */
+QListView { show-decoration-selected: 0; background-color: #151515; } /*  Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588 */
+QListView::branch:has-children:!has-siblings:closed,
+QListView::branch:closed:has-children:has-siblings { border-image: none; image: url(skin:/style/style_branch_closed.png);
+  background-color:#0f0f0f;
+}
+QListView::branch:open:has-children:!has-siblings,
+QListView::branch:open:has-children:has-siblings { border-image: none; image: url(skin:/style/style_branch_open.png);
+  background-color:#0f0f0f;
+}
+QListView::branch:has-children:!has-siblings:closed:selected,
+QListView::branch:closed:has-children:has-siblings:selected { border-image: none; image: url(skin:/style/style_branch_closed.png);
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
+}
+QListView::branch:open:has-children:!has-siblings:selected,
+QListView::branch:open:has-children:has-siblings:selected { border-image: none; image: url(skin:/style/style_branch_open.png);
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
+}
+
+QListView WCrateItemSome {
+  background-color: #FF0000;
+  color: black;
+}
+
+QListView WCrateItemSome {
+  background-color: #FF0000;
+  color: black;
+}
+

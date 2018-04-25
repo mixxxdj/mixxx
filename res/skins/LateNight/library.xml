@@ -45,15 +45,48 @@
                     <Children>
                       <!--Library Tree View-->
                       <LibrarySidebar></LibrarySidebar>
-                      <!--Cover Art-->
-                      <CoverArt>
-                        <SizePolicy>me,me</SizePolicy>
-                        <MinimumSize>40,40</MinimumSize>
-                        <Connection>
-                          <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
-                          <BindProperty>visible</BindProperty>
-                        </Connection>
-                      </CoverArt>
+                      <!--Cover Art / Crates-->
+                      <Splitter>
+                        <ObjectName>CratesSplitter</ObjectName>
+                        <Size>me,me</Size>
+                        <SplitSizes>1,1</SplitSizes>
+                        <SplitSizesConfigKey>[LateNight],CratesSplitSize</SplitSizesConfigKey>
+                        <Orientation>horizontal</Orientation>
+                        <Collapsible>0,0</Collapsible>
+                        <Children>
+                          <WidgetGroup>
+                            <Layout>vertical</Layout>
+                            <SizePolicy>min,me</SizePolicy>
+                            <MinimumSize>100,-1</MinimumSize>
+                            <Connection>
+                              <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                            <Children>
+                              <CoverArt>
+                              <SizePolicy>me,me</SizePolicy>
+                              <MinimumSize>40,40</MinimumSize>
+                              </CoverArt>
+                             </Children>
+                          </WidgetGroup>
+                          <WidgetGroup>
+                            <Layout>vertical</Layout>
+                            <SizePolicy>min,me</SizePolicy>
+                            <MinimumSize>100,-1</MinimumSize>
+                            <Connection>
+                              <ConfigKey persist="true">[Library],show_crates</ConfigKey>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                            <Children>
+                              <CrateList>
+                                <SizePolicy>me,me</SizePolicy>
+                                <MinimumSize>40,40</MinimumSize>
+                                <Group>[Library]</Group>
+                              </CrateList>
+                             </Children>
+                          </WidgetGroup>
+                        </Children>
+                      </Splitter>
                     </Children>
                   </Splitter>
 

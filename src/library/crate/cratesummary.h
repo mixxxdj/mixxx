@@ -42,5 +42,6 @@ private:
     double m_trackDuration;
 };
 
+Q_DECLARE_METATYPE(CrateSummary);
 
 #endif // MIXXX_CRATESUMMARY_H

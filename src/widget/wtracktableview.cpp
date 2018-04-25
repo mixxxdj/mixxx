@@ -217,6 +217,16 @@ void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
                     if (pTrack) {
                         emit(trackSelected(pTrack));
                     }
+                    // emit list of all selected track
+                    auto signal_data = QList<TrackPointer>();
+                    signal_data.reserve(indices.size());
+                    foreach (auto track, indices) {
+                        pTrack = trackModel->getTrack(track);
+                        if (pTrack) {
+                            signal_data.append(pTrack);
+                        }
+                    }
+                    emit(trackSelection(signal_data));
                 }
             } else {
                 emit(trackSelected(TrackPointer()));

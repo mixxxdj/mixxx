@@ -786,6 +786,9 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addControl("[Master]", "maximize_library",
                tr("Library Maximize/Restore"),
                tr("Maximize the track library to take up all the available screen space."), guiMenu);
+    addControl("[Library]", "show_crates",
+              tr("Crates List Show/Hide"),
+              tr("Show/hide list of crates"), guiMenu);
 
     QString spinnyTitle = tr("Vinyl Spinner Show/Hide");
     QString spinnyDescription = tr("Show/hide spinning vinyl widget");

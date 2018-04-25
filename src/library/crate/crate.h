@@ -35,5 +35,6 @@ private:
     bool m_autoDjSource;
 };
 
+Q_DECLARE_METATYPE(Crate);
 
 #endif // MIXXX_CRATE_H

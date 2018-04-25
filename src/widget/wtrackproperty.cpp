@@ -1,6 +1,7 @@
 
 #include <QDebug>
 #include <QUrl>
+#include <QMetaType>
 
 #include "control/controlobject.h"
 #include "widget/wtrackproperty.h"

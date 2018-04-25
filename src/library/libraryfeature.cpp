@@ -191,6 +191,8 @@ parented_ptr<WTrackTableView> LibraryFeature::createTableWidget(int paneId, QWid
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
     connect(pTrackTableView.get(), SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
+    connect(pTrackTableView.get(), SIGNAL(trackSelection(QList<TrackPointer>)),
+            this, SIGNAL(trackSelection(QList<TrackPointer>)));
     connect(pTrackTableView.get(), SIGNAL(tableChanged()),
             this, SLOT(restoreSaveButton()));
 

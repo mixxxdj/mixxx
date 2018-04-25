@@ -37,6 +37,7 @@ class WBaseLibrary;
 class WLibraryPane;
 class WLibrarySidebar;
 class WLibraryBreadCrumb;
+class WCrateList;
 class WButtonBar;
 class WSearchLineEdit;
 class TreeItem;
@@ -92,6 +93,10 @@ public:
         return m_trackTableFont;
     }
 
+    inline TrackCollection* getTrackCollection() {
+        return m_pTrackCollection;
+    }
+
     void switchToFeature(LibraryFeature* pFeature);
     void showBreadCrumb(int paneId, TreeItem* pTree);
     void showBreadCrumb(int paneId, const QString& text, const QIcon& icon);
@@ -142,6 +147,7 @@ public:
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);
+    void trackSelection(QList<TrackPointer> pTrack);
 
     void setTrackTableFont(const QFont& font);
     void setTrackTableRowHeight(int rowHeight);

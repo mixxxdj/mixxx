@@ -230,6 +230,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Cover Art")
             << tr("Show/hide Cover Art.");
 
+    add("show_crates")
+            << tr("Crates List")
+            << tr("Show/hide Crates List.");
+
     add("toggle_4decks")
             << tr("Toggle 4 Decks")
             << tr("Switches between showing 2 decks and 4 decks.");

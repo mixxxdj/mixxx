@@ -39,6 +39,7 @@
 #include "widget/controlwidgetconnection.h"
 #include "widget/wbasewidget.h"
 #include "widget/wcoverart.h"
+#include "widget/wcratelist.h"
 #include "widget/wwidget.h"
 #include "widget/wknob.h"
 #include "widget/wknobcomposed.h"
@@ -534,6 +535,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseText(node));
     } else if (nodeName == "TrackProperty") {
         result = wrapWidget(parseTrackProperty(node));
+    } else if (nodeName == "CrateList") {
+        result = wrapWidget(parseCrateList(node));
     } else if (nodeName == "StarRating") {
         result = wrapWidget(parseStarRating(node));
     } else if (nodeName == "VuMeter") {
@@ -1225,6 +1228,7 @@ QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
 
 QWidget* LegacySkinParser::parseCoverArt(const QDomElement& node) {
     QString channel = lookupNodeGroup(node);
+
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channel);
 
     WCoverArt* pCoverArt = new WCoverArt(m_pParent, m_pConfig, channel, pPlayer);
@@ -1244,6 +1248,44 @@ QWidget* LegacySkinParser::parseCoverArt(const QDomElement& node) {
     }
 
     return pCoverArt;
+}
+
+
+QWidget* LegacySkinParser::parseCrateList(const QDomElement& node) {
+    QString channelStr = lookupNodeGroup(node);
+    const char* pSafeChannelStr = safeChannelString(channelStr);
+
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
+
+    if (!pPlayer && channelStr.compare("[Library]", Qt::CaseInsensitive) != 0) {
+        SKIN_WARNING(node, *m_pContext)
+              << "CrateList widget requires a Deck or Library group";
+        return NULL;
+    }
+
+    WCrateList* p = new WCrateList(pSafeChannelStr, m_pConfig, m_pLibrary->getTrackCollection(), m_pParent);
+
+    commonWidgetSetup(node, p);
+    p->setup(node, *m_pContext);
+
+    if (pPlayer) {
+        connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
+                p, SLOT(slotTrackLoaded(TrackPointer)));
+        connect(pPlayer, SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
+                p, SLOT(slotTrackLoaded(TrackPointer)));
+
+        TrackPointer pTrack = pPlayer->getLoadedTrack();
+        if (pTrack) {
+            p->slotTrackLoaded(pTrack);
+        }
+    } else {
+        // hookup to library
+        connect(m_pLibrary, SIGNAL(switchToView(const QString&)),
+                p, SLOT(slotReset()));
+        connect(m_pLibrary, SIGNAL(trackSelection(QList<TrackPointer>)),
+                p, SLOT(slotTrackSelection(QList<TrackPointer>)));
+    }
+    return p;
 }
 
 void LegacySkinParser::parseSingletonDefinition(const QDomElement& node) {
