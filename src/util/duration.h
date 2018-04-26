@@ -73,6 +73,10 @@ class DurationBase {
     static QString formatSeconds(
             double dSeconds,
             Precision precision = Precision::SECONDS);
+    // Alternative format for duration based on kilo seconds
+    static QString formatKiloSeconds(
+            double dSeconds,
+            Precision precision = Precision::SECONDS);
 
     static constexpr qint64 kMillisPerSecond = 1000;
     static constexpr qint64 kMicrosPerSecond = kMillisPerSecond * 1000;

@@ -106,6 +106,24 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     connect(buttonGroupTrackTime, SIGNAL(buttonClicked(QAbstractButton*)),
             this, SLOT(slotSetTrackTimeDisplay(QAbstractButton *)));
 
+    // display time format
+
+    m_pControlTrackTimeFormat = new ControlObject(
+            ConfigKey("[Controls]", "TimeFormat"));
+    connect(m_pControlTrackTimeDisplay, SIGNAL(valueChanged(double)),
+            this, SLOT(slotTimeFormatChanged(double)));
+
+    // Track Display model
+    comboBoxTimeFormat->clear();
+    comboBoxTimeFormat->addItem(tr("hh:mm:ss.zzz"),
+                                static_cast<int>(TrackTime::DisplayFormat::DEFAULT));
+    comboBoxTimeFormat->addItem(tr("k.sss:zz"),
+                                static_cast<int>(TrackTime::DisplayFormat::KILO_SECOND));
+    connect(comboBoxTimeFormat, SIGNAL(activated(int)),
+            this, SLOT(slotTimeFormatChanged(int)));
+    slotTimeFormatChanged((double)m_pConfig->getValue(ConfigKey("[Controls]", "TimeFormat"),
+                          static_cast<int>(TrackTime::DisplayFormat::DEFAULT)));
+
     // Override Playing Track on Track Load
     // The check box reflects the opposite of the config value
     m_bDisallowTrackLoadToPlayingDeck = !m_pConfig->getValue(
@@ -495,10 +513,30 @@ void DlgPrefDeck::slotRateRampingModeLinearButton(bool checked) {
     }
 }
 
+void DlgPrefDeck::slotTimeFormatChanged(double v) {
+    int i = static_cast<int>(v);
+    m_timeDisplayFormat = static_cast<TrackTime::DisplayFormat>(i);
+
+    m_pConfig->set(ConfigKey("[Controls]","TimeFormat"), ConfigValue(v));
+    comboBoxTimeFormat->setCurrentIndex(
+                comboBoxTimeFormat->findData(i));
+
+}
+
+void DlgPrefDeck::slotTimeFormatChanged(int index) {
+    int mode = comboBoxTimeFormat->itemData(index).toInt();
+    m_timeDisplayFormat = static_cast<TrackTime::DisplayFormat>(mode);
+}
+
 void DlgPrefDeck::slotApply() {
     double timeDisplay = static_cast<double>(m_timeDisplayMode);
     m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(timeDisplay));
     m_pControlTrackTimeDisplay->set(timeDisplay);
+
+    // time format
+    double timeFormat = static_cast<double>(m_timeDisplayFormat);
+    m_pConfig->set(ConfigKey("[Controls]","TimeFormat"), ConfigValue(timeFormat));
+    m_pControlTrackTimeFormat->set(timeFormat);
 
     // Set cue mode for every deck
     for (ControlProxy* pControl : m_cueControls) {

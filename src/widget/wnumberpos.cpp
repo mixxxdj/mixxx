@@ -21,6 +21,13 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
     m_pShowTrackTimeRemaining->connectValueChanged(
             SLOT(slotSetDisplayMode(double)));
     slotSetDisplayMode(m_pShowTrackTimeRemaining->get());
+
+    m_pTimeFormat = new ControlProxy(
+            "[Controls]", "TimeFormat", this);
+    m_pTimeFormat->connectValueChanged(
+            SLOT(slotSetTimeFormat(double)));
+    slotSetTimeFormat(m_pTimeFormat->get());
+
 }
 
 void WNumberPos::mousePressEvent(QMouseEvent* pEvent) {
@@ -51,30 +58,37 @@ void WNumberPos::setValue(double dValue) {
 
 void WNumberPos::slotSetTimeElapsed(double dTimeElapsed) {
     double dTimeRemaining = m_pTimeRemaining->get();
+    QString (*formatter)(double dSeconds, mixxx::Duration::Precision precision);
+
+    if (m_displayFormat == TrackTime::DisplayFormat::KILO_SECOND) {
+        formatter = &mixxx::Duration::formatKiloSeconds;
+    } else {
+        formatter = &mixxx::Duration::formatSeconds;
+    }
 
     if (m_displayMode == TrackTime::DisplayMode::Elapsed) {
         if (dTimeElapsed >= 0.0) {
-            setText(mixxx::Duration::formatSeconds(
+            setText(formatter(
                         dTimeElapsed, mixxx::Duration::Precision::CENTISECONDS));
         } else {
-            setText(QLatin1String("-") % mixxx::Duration::formatSeconds(
+            setText(QLatin1String("-") % formatter(
                         -dTimeElapsed, mixxx::Duration::Precision::CENTISECONDS));
         }
     } else if (m_displayMode == TrackTime::DisplayMode::Remaining) {
-        setText(QLatin1String("-") % mixxx::Duration::formatSeconds(
+        setText(QLatin1String("-") % formatter(
                     dTimeRemaining, mixxx::Duration::Precision::CENTISECONDS));
     } else if (m_displayMode == TrackTime::DisplayMode::ElapsedAndRemaining) {
         if (dTimeElapsed >= 0.0) {
-            setText(mixxx::Duration::formatSeconds(
+            setText(formatter(
                         dTimeElapsed, mixxx::Duration::Precision::CENTISECONDS)
                     % QLatin1String("  -") %
-                    mixxx::Duration::formatSeconds(
+                    formatter(
                         dTimeRemaining, mixxx::Duration::Precision::CENTISECONDS));
         } else {
-            setText(QLatin1String("-") % mixxx::Duration::formatSeconds(
+            setText(QLatin1String("-") % formatter(
                         -dTimeElapsed, mixxx::Duration::Precision::CENTISECONDS)
                     % QLatin1String("  -") %
-                    mixxx::Duration::formatSeconds(
+                    formatter(
                         dTimeRemaining, mixxx::Duration::Precision::CENTISECONDS));
         }
     }
@@ -100,6 +114,11 @@ void WNumberPos::slotSetDisplayMode(double remain) {
     } else {
         m_displayMode = TrackTime::DisplayMode::Elapsed;
     }
+
+    slotSetTimeElapsed(m_dOldTimeElapsed);
+}
+void WNumberPos::slotSetTimeFormat(double v) {
+    m_displayFormat = static_cast<TrackTime::DisplayFormat>(static_cast<int>(v));
 
     slotSetTimeElapsed(m_dOldTimeElapsed);
 }
