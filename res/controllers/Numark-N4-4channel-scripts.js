@@ -219,7 +219,7 @@ NumarkN4.topContainer = function (channel) {
     shift: function () {
       this.inKey="beatjump_size";
       this.input = function (channel, control, value, status, group) {
-        this.currentJumpSizeIndex=Math.max(Math.min(this.currentJumpSizeIndex+(value===0x01?1:-1)NumarkN4.loopSizes.length),0);
+        this.currentJumpSizeIndex=Math.max(Math.min(this.currentJumpSizeIndex+(value===0x01?1:-1),NumarkN4.loopSizes.length),0);
         this.inSetValue(NumarkN4.loopSizes[this.currentJumpSizeIndex]);
       };
     },
