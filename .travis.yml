@@ -94,7 +94,9 @@ script:
   # return code in order to avoid having a sucessful build when a test fail.
   # https://bugs.launchpad.net/mixxx/+bug/1699689
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./mixxx-test ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then lldb ./mixxx-test --batch -o run -o quit -k 'thread backtrace all' -k quit ; fi
+  # lldb doesn't provide an easy way to exit 1 on error:
+  # https://bugs.llvm.org/show_bug.cgi?id=27326
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then lldb ./mixxx-test --batch -o run -o quit -k 'thread backtrace all' -k "script import os; os._exit(1)" ; fi
 
 notifications:
   webhooks:
