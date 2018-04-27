@@ -534,15 +534,14 @@ NumarkN4.Deck = function (channel) {
   this.keylockButton = new components.Button({
     midi: [0x90+channel,0x1B,0xB0+channel,0x10],
     type: components.Button.prototype.types.toggle,
-    key: "quantize",
-    // shift: function () {
+    // shift: function () { NOTE: may implement sync_key
     //   this.inKey="quantize";
     //   this.outKey="quantize";
     // },
-    // unshift: function () {
-    //   this.inKey="keylock";
-    //   this.outKey="keylock";
-    // }
+    unshift: function () {
+      this.inKey="keylock";
+      this.outKey="keylock";
+    }
   });
   this.bpmSlider = new components.Pot({
     midi: [0xB0+channel,0x01,0xB0+channel,0x37], //only specifing input MSB
