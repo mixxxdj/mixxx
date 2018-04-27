@@ -546,7 +546,7 @@ NumarkN4.Deck = function (channel) {
   this.bpmSlider = new components.Pot({
     midi: [0xB0+channel,0x01,0xB0+channel,0x37], //only specifing input MSB
     inKey: "rate",
-    invert: true,
+    invert: false,
   });
   this.pitchLedHandler = engine.makeConnection(this.group,"rate",function (value){
     midi.sendShortMsg(0xB0+channel,0x37,!value); //inexplicit cast to bool; turns on if value===0;
