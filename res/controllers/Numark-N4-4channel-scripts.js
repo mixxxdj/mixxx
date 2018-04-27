@@ -15,6 +15,8 @@ NumarkN4.blinkInterval=1000; //blinkInterval for the triangular Leds over the ch
 
 NumarkN4.encoderResolution=0.05; // 1/encoderResolution = number of steps going from 0% to 100%
 
+NumarkN4.cueReverseRoll=true;
+
 // possible ranges (0.0..3.0 where 0.06=6%)
 NumarkN4.rateRanges = [0,   // default (gets set via script later)
                        0.06,// one semitone
@@ -440,6 +442,7 @@ NumarkN4.Deck = function (channel) {
 
   this.cueButton = new components.CueButton({
     midi: [0x90+channel,0x10,0xB0+channel,0x08],
+    reverseRollOnShift: NumarkN4.cueReverseRoll,
   });
 
   this.jogWheelScratchEnable = function (channelmidi, control, value, status, group) {
