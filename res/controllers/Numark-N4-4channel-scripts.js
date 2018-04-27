@@ -18,10 +18,14 @@ NumarkN4.encoderResolution=0.05; // 1/encoderResolution = number of steps going 
 NumarkN4.cueReverseRoll=true;
 
 // possible ranges (0.0..3.0 where 0.06=6%)
-NumarkN4.rateRanges = [0,   // default (gets set via script later)
+NumarkN4.rateRanges = [0,   // default (gets set via script later; don't modifify)
                        0.06,// one semitone
                        0.24,// for maximum freedom
                      ];
+
+//
+// CONSTANTS DO NOT CHANGE (if you don't know what you are doing)
+//
 NumarkN4.loopSizes=[0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64];
 NumarkN4.QueryStatusMessage=[0xF0,0x00,0x01,0x3F,0x7F,0x47,0x60,0x00,0x01,0x54,0x01,0x00,0x00,0x00,0x00,0xF7];
 //NumarkN4.ShutoffSequence=[0xF0,0x00,0x01,0x3F,0x7F,0x47,0xB0,0x39,0x00,0x01,0xF7]; // Invalid Midibyte?
@@ -30,7 +34,7 @@ NumarkN4.vinylTouched = [false,false,false,false,];
 
 NumarkN4.globalShift = false;
 
-NumarkN4.pflVuMeterConnections = [0,0];
+//NumarkN4.pflVuMeterConnections = [0,0];
 
 components.Encoder.prototype.input = function (channel, control, value, status, group) {
   this.inSetParameter(
@@ -66,6 +70,10 @@ components.Component.prototype.send = function (value) {
 
 NumarkN4.init = function (id) {
   NumarkN4.rateRanges[0]=engine.getValue("[Channel1]","rateRange");
+  //PFL-Master-Mix & headGain are not being controlled by the controller,
+  //this sets them in engine to something reasonable so the user doesn't get confused if there is not sound.
+  engine.setParameter("[Master]","headGain",Math.max(engine.getParameter("[Master]","headGain"),0.8));
+  engine.setParameter("[Master]","headMix",0); //Headphone out = 100% pfl signal.
   NumarkN4.Decks=[];
   for (var iterator=1;iterator<=4;iterator++){
     NumarkN4.Decks[iterator] = new NumarkN4.Deck(iterator);
@@ -189,7 +197,7 @@ NumarkN4.topContainer = function (channel) {
     },
     unshift: function () {
       this.input = function (channel, control, value, status, group) {
-        if (this.timer) {engine.stopTimer(this.timer)};
+        if (this.timer) {engine.stopTimer(this.timer)}
         this.hotCuePage=
         Math.max(
           Math.min(
@@ -291,6 +299,7 @@ NumarkN4.MixerTemplate = function () {
         engine.setValue("[Mixer Profile]","xFaderCalibration",0.5); // REVIEW: value yet to review
       }
       this.inSetParameter(!value);
+    }
   });
 
   this.navigationEncoderTick = new components.Encoder({
@@ -309,14 +318,14 @@ NumarkN4.MixerTemplate = function () {
   });
   this.navigationEncoderButton = new components.Button({
     shift: function () {
-      this.type=components.Button.prototype.types.push;
-      this.group="[Library]";
-      this.inKey="GoToItem";
-    },
-    unshift: function () {
       this.type=components.Button.prototype.types.toggle;
       this.group="[Master]";
       this.inKey="maximize_library";
+    },
+    unshift: function () {
+      this.type=components.Button.prototype.types.push;
+      this.group="[Library]";
+      this.inKey="GoToItem";
     },
   });
 };
@@ -469,8 +478,8 @@ NumarkN4.Deck = function (channel) {
       } else {
         engine.scratchDisable(channel);
       }
-    };
-  });
+    },
+   });
 
   this.searchButton = new components.Button({
     midi: [0x90+channel,0x00,0xB0+channel,0x12],
@@ -529,7 +538,8 @@ NumarkN4.Deck = function (channel) {
         bpm.tapButton(channel);
       }
       this.output(value);
-    };
+    },
+  });
 
   this.keylockButton = new components.Button({
     midi: [0x90+channel,0x1B,0xB0+channel,0x10],
