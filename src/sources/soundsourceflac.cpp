@@ -435,9 +435,18 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
         DEBUG_ASSERT(kBitsPerSampleDefault != bitsPerSample);
         if (kBitsPerSampleDefault == m_bitsPerSample) {
             // not set before
-            m_bitsPerSample = bitsPerSample;
-            m_sampleScaleFactor = CSAMPLE_PEAK
-                    / CSAMPLE(FLAC__int32(1) << bitsPerSample);
+            if ((bitsPerSample >= 4) && (bitsPerSample <= 32)) {
+                m_bitsPerSample = bitsPerSample;
+                // Range of signed) sample values: [-2 ^ (bitsPerSample - 1), 2 ^ (bitsPerSample - 1) - 1]
+                const uint32_t absSamplePeak = 1u << (bitsPerSample - 1);
+                DEBUG_ASSERT(absSamplePeak > 0);
+                // Scaled range of samples values: [-CSAMPLE_PEAK, CSAMPLE_PEAK)
+                m_sampleScaleFactor = CSAMPLE_PEAK / absSamplePeak;
+            } else {
+                kLogger.warning()
+                        << "Invalid bits per sample:"
+                        << bitsPerSample;
+            }
         } else {
             // already set before -> check for consistency
             if (bitsPerSample != m_bitsPerSample) {
