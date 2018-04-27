@@ -237,10 +237,21 @@ NumarkN4.topContainer.prototype = new components.ComponentContainer();
 NumarkN4.MixerTemplate = function () {
   var theMixer=this;
   //channel will always be 0 it can be "hardcoded" into the components
-  this.deckChange = function (channel, control, value, status, group) {
-    midi.sendShortMsg(status,control,value);
-    //just "echos" the midi since the controller knows the deck its on itself but doesnt update the corresponing leds.
-  };
+  this.deckChangeL = new components.Button ({
+    midi: [0xB0,0x50],
+    input: function (channel, control, value, status, group) {
+      this.output(value);
+      //just "echos" the midi since the controller knows the deck its on itself but doesnt update the corresponing leds.
+    },
+  });
+  this.deckChangeR = new components.Button ({
+    midi: [0xB0,0x51],
+    input: function (channel, control, value, status, group) {
+      this.output(value);
+    },
+  });
+
+
   // NOTE: Unable to control Volume Bar via software.
   this.pflVuMeter = function (channel, control, value, status, group) {
     // print("calledPflVuMeter");
@@ -258,22 +269,30 @@ NumarkN4.MixerTemplate = function () {
     //   NumarkN4.pflVuMeterConnections[i].trigger();
     // }
   }
-  this.channelInputSwitcher = function (channel, control, value, status, group) { // can't be done in pure XML
-    engine.setParameter(group,"mute",value); // TODO: Test
-  };
+  this.channelInputSwitcherL = new components.Button({
+    midi: [0x90,0x49],
+    inKey: "mute",
+  });
+  this.channelInputSwitcherR = new components.Button({
+    midi: [0x90,0x4A],
+    inKey: "mute",
+  });
 
   // NOTE: [Mixer Profile] is not a documented group. Taken from script.crossfaderCurve
   // BUG: Help on Mixxx forum is needed
-  this.changeCrossfaderContour = function (channel, control, value, status, group) {
+  this.changeCrossfaderContour = new components.Button({
+    midi: [0x90,0x4B],
+    group: "[Mixer Profile]",
+    inKey: "xFaderMode",
+    input: function (channel, control, value, status, group) {
+      if (this.isPress(channel,control, value, status)) {
+        engine.setValue("[Mixer Profile]","xFaderCurve",2); // REVIEW: value yet to review
+      } else {
+        engine.setValue("[Mixer Profile]","xFaderCalibration",0.5); // REVIEW: value yet to review
+      }
+      this.inSetParameter(!value);
+  });
 
-    if (value===0x00){
-      engine.setValue("[Mixer Profile]","xFaderMode",1);
-      engine.setValue("[Mixer Profile]","xFaderCalibration",0.5);
-    } else {
-      engine.setValue("[Mixer Profile]","xFaderMode",0);
-      engine.setValue("[Mixer Profile]","xFaderCurve",2);
-    }
-  };
   this.navigationEncoderTick = new components.Encoder({
     midi: [0xB0, 0x44],
     group: "[Library]",
@@ -293,16 +312,9 @@ NumarkN4.MixerTemplate = function () {
       this.type=components.Button.prototype.types.push;
       this.group="[Library]";
       this.inKey="GoToItem";
-    //   this.input=function (midiChannel,control,value,status,group) {
-    //     if (value==0x7F) {
-    //     theMixer.navigationEncoderTick.stepsize = (value==0x7F?NumarkN4.LibraryStepSizeSpeedup:1);
-    //   } else {
-    //     this.inSetValue(this.isPress(midiChannel, control, value, status));
-    //   }
     },
     unshift: function () {
       this.type=components.Button.prototype.types.toggle;
-      // this.input=components.Button.prototype.input;
       this.group="[Master]";
       this.inKey="maximize_library";
     },
@@ -343,7 +355,7 @@ NumarkN4.Deck = function (channel) {
       this.inKey="pregain";
     }
   })
-  this.blinkTimer=engine.beginTimer(NumarkN4.blinkInterval,"NumarkN4.Deck"+channel+".manageChannelIndicator");
+  this.blinkTimer=engine.beginTimer(NumarkN4.blinkInterval,this.manageChannelIndicator);
   //timer is more efficent is this case than a callback because it would be called too often.
   engine.makeConnection(this.group,"track_loaded",function (value) {midi.sendShortMsg(0xB0,0x1D+channel,value?0x7F:0x00)});
   this.shiftButton = new components.Button({
@@ -445,17 +457,21 @@ NumarkN4.Deck = function (channel) {
     reverseRollOnShift: NumarkN4.cueReverseRoll,
   });
 
-  this.jogWheelScratchEnable = function (channelmidi, control, value, status, group) {
-    if (value===0x7F) {
-      engine.scratchEnable(channel,
-                           NumarkN4.scratchSettings.jogResolution,
-                           NumarkN4.scratchSettings.vinylSpeed,
-                           NumarkN4.scratchSettings.alpha,
-                           NumarkN4.scratchSettings.beta);
-    } else {
-      engine.scratchDisable(channel);
-    }
-  };
+  this.jogWheelScratchEnable = new components.Button({
+    midi:[0x90+channel,0x2C],
+    input: function (channelmidi, control, value, status, group) {
+      if (this.isPress(channel, control, value, status)) {
+        engine.scratchEnable(channel,
+                             NumarkN4.scratchSettings.jogResolution,
+                             NumarkN4.scratchSettings.vinylSpeed,
+                             NumarkN4.scratchSettings.alpha,
+                             NumarkN4.scratchSettings.beta);
+      } else {
+        engine.scratchDisable(channel);
+      }
+    };
+  });
+
   this.searchButton = new components.Button({
     midi: [0x90+channel,0x00,0xB0+channel,0x12],
     input: function (channelmidi, control, value, status, group) {
@@ -464,18 +480,23 @@ NumarkN4.Deck = function (channel) {
     },
   });
 
-  this.jogWheelTurn = function (channelmidi, control, value, status, group) {
-    value=(value<0x40?value:value-0x7F);
-    if (theDeck.isSearching) {value*=NumarkN4.searchAmplification;}
-    if (engine.isScratching(channel)) {
-      engine.scratchTick(channel,value);
-    } else {
-      engine.setValue(theDeck.group,"jog",value);
-    }
-  };
+  this.jogWheelTurn = new component.Pot({
+    midi: [0xB0+channel,0x2C],
+    inKey: "jog",
+    input: function (channelmidi, control, value, status, group) {
+      value=(value<0x40?value:value-0x7F); // centers values at 0
+      if (theDeck.isSearching) {value*=NumarkN4.searchAmplification;}
+      if (engine.isScratching(channel)) {
+        engine.scratchTick(channel,value);
+      } else {
+        this.inSetValue(value);
+      }
+    },
+  });
+
   this.manageChannelIndicator = function () {
     this.alternating=!this.alternating; //mimics a static variable
-    //midi.sendShortMsg(0xB0,0x1D+channel,((engine.getValue(theDeck.group,"playposition")>NumarkN4.warnAfterPosition)&&this.alternating?0x7F:0x0));
+    midi.sendShortMsg(0xB0,0x1D+channel,((engine.getValue(theDeck.group,"playposition")>NumarkN4.warnAfterPosition)&&this.alternating?0x7F:0x0));
   };
 
   this.pitchBendMinus = new components.Button({
@@ -501,12 +522,14 @@ NumarkN4.Deck = function (channel) {
   this.syncButton = new components.SyncButton({
     midi: [0x90+channel,0x0F,0xB0+channel,0x07],
   });
-  this.tapButton = function (channelmidi, control, value, status, group) {
-    if (value===0x7F) {
-      bpm.tapButton(channel);
-    }
-    midi.sendShortMsg(0xB0+channel,control,value);
-  };
+  this.tapButton = new component.Button({
+    midi: [0x90+channel,0x1E,0xB0+channel,0x16],
+    input: function (channelmidi, control, value, status, group) {
+      if (value) {
+        bpm.tapButton(channel);
+      }
+      this.output(value);
+    };
 
   this.keylockButton = new components.Button({
     midi: [0x90+channel,0x1B,0xB0+channel,0x10],
