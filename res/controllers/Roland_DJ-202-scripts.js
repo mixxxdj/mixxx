@@ -260,7 +260,27 @@ DJ202.Deck = function (deckNumbers, offset) {
     engine.setValue(this.currentDeck, "rate_dir", -1);
     this.tempoFader = new components.Pot({
         midi: [0xB0 + offset, 0x09],
-        inKey: 'rate',
+        connect: function () {
+            engine.softTakeover(this.group, 'pitch', true);
+            engine.softTakeover(this.group, 'rate', true);
+            components.Pot.prototype.connect.apply(this, arguments);
+        },
+        unshift: function () {
+            this.inKey = 'rate';
+            this.inSetParameter = components.Pot.prototype.inSetParameter;
+            engine.softTakeoverIgnoreNextValue(this.group, 'pitch');
+        },
+        shift: function () {
+            this.inKey = 'pitch';
+            this.inSetParameter = function (value) {
+                // Scale to interval ]-7…7[; invert direction as per controller
+                // labeling.
+                value = 14 * value - 7;
+                value *= -1;
+                components.Pot.prototype.inSetValue.call(this, value);
+            };
+            engine.softTakeoverIgnoreNextValue(this.group, 'rate');
+        }
     });
     
     
