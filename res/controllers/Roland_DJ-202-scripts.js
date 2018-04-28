@@ -207,55 +207,8 @@ DJ202.Deck = function (deckNumbers, offset) {
 
     this.paramButtonsActive = [false, false];
 
-    this.keylock = new components.Button({
-        sendShifted: true,
-        shiftChannel: true,
-        shiftOffset: 2,
-        outKey: 'keylock',
-        currentRangeIndex: 0,
-        deck: this,
-        unshift: function () {
-            this.midi = [0x90 + offset, 0x0D];
-            this.trigger();
-            this.input = function (channel, control, value, status, group) {
-                if (value) {
-                    this.longPressTimer = engine.beginTimer(this.longPressTimeout, function () {
-                        this.deck.paramPlusMinus.songKeyMode(true);
-                        this.is_held = true;
-                    }, true);
-                } else {
-                    if (!this.is_held) {
-                        script.toggleControl(this.group, this.outKey);
-                    };
-                    engine.stopTimer(this.longPressTimer);
-                    this.deck.paramPlusMinus.songKeyMode(false);
-                    this.is_held = false;
-                }
-                // The DJ-202 disables the keylock LED when the button is
-                // pressed shifted. Restore the LED when shift is released.
-                this.trigger();
-            };
-            this.inKey = 'keylock';
-        },
-        shift: function () {
-            this.midi = [0x90 + offset, 0x0E];
-            this.send(0);
-            this.inKey = 'rateRange';
-            this.type = undefined;
-            this.input = function (channel, control, value, status, group) {
-                if (this.isPress(channel, control, value, status)) {
-                    this.send(0x7f);
-                    this.currentRangeIndex++;
-                    if (this.currentRangeIndex >= DJ202.tempoRange.length) {
-                        this.currentRangeIndex = 0;
-                    }
-                    this.inSetValue(DJ202.tempoRange[this.currentRangeIndex]);
-                    return;
-                }
-                this.send(0);
-            }
-        }
-    });
+    this.keylock = new DJ202.KeylockButton(this);
+
     
     engine.setValue(this.currentDeck, "rate_dir", -1);
     this.tempoFader = new components.Pot({
@@ -1112,4 +1065,80 @@ DJ202.SlipModeButton.prototype.input = function (channel, control, value, status
         },
         true
     );
+};
+
+
+DJ202.KeylockButton = function (deck) {
+    components.Button.call(this, {
+        sendShifted: true,
+        shiftChannel: true,
+        shiftOffset: 2,
+        outKey: 'keylock',
+        currentRangeIndex: 0,
+        deck: deck,
+        doubleTapTimeout: 500,
+        group: deck.currentDeck
+    });
+};
+
+DJ202.KeylockButton.prototype = Object.create(components.Button.prototype);
+
+DJ202.KeylockButton.prototype.unshift = function () {
+    var deck = script.deckFromGroup(this.group);
+    this.midi = [0x90 + deck - 1, 0x0D];
+    this.trigger();
+    this.input = function (channel, control, value, status, group) {
+        if (value) {                                            // Button press.
+
+            this.longPressTimer = engine.beginTimer(
+                this.longPressTimeout,
+                function () {
+                    this.deck.paramPlusMinus.songKeyMode(true);
+                    this.is_held = true;
+                },
+                true
+            );
+
+            return;
+        }                                               // Else: Button release.
+
+        // The DJ-202 disables the keylock LED when the button is pressed
+        // shifted. Restore the LED when shift is released.
+        this.trigger();
+
+        if (this.longPressTimer) {
+            engine.stopTimer(this.longPressTimer);
+            this.longPressTimer = null;
+        }
+
+        if (this.is_held) {                               // Release after hold.
+            this.deck.paramPlusMinus.songKeyMode(false);
+            this.is_held = false;
+            return;
+        }                                      // Else: release after short tap.
+
+        script.toggleControl(this.group, this.outKey);
+    };
+    this.inKey = 'keylock';
+};
+
+
+DJ202.KeylockButton.prototype.shift = function () {
+    var deck = script.deckFromGroup(this.group);
+    this.midi = [0x90 + deck - 1, 0x0E];
+    this.send(0);
+    this.inKey = 'rateRange';
+    this.type = undefined;
+    this.input = function (channel, control, value, status, group) {
+        if (this.isPress(channel, control, value, status)) {
+            this.send(0x7f);
+            this.currentRangeIndex++;
+            if (this.currentRangeIndex >= DJ202.tempoRange.length) {
+                this.currentRangeIndex = 0;
+            }
+            this.inSetValue(DJ202.tempoRange[this.currentRangeIndex]);
+            return;
+        }
+        this.send(0);
+    };
 };
