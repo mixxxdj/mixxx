@@ -945,12 +945,12 @@ TraktorS4MK2.cueHandler = function(field) {
   var splitted = field.id.split(".");
   var group = splitted[0];
   if (TraktorS4MK2.controller.shift_pressed[group]) {
-    if (TraktorS4MK2.ShiftCueButtonAction == "REWIND") {
+    if (TraktorS4MK2.ShiftCueButtonAction === "REWIND") {
       if (field.value === 0) {
         return;
       }
       engine.setValue(field.group, "start_stop", 1);
-    } else if (TraktorS4MK2.ShiftCueButtonAction == "REVERSEROLL") {
+    } else if (TraktorS4MK2.ShiftCueButtonAction === "REVERSEROLL") {
       engine.setValue(field.group, "reverseroll", field.value);
     } else {
       print ("Traktor S4 WARNING: Invalid ShiftCueButtonAction picked.  Must be either REWIND " +
