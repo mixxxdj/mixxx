@@ -373,7 +373,7 @@ TraktorS4MK2.registerOutputPackets = function() {
   Output2.addOutput("deck1", "keylock", 0x2F, "B");
   Output2.addOutput("deck1", "slip_enabled", 0x39, "B");
   Output2.addOutput("deck1", "!on_air", 0x2D, "B");
-
+  Output2.addOutput("deck1", "!remix", 0x30, "B");
   Output2.addOutput("deck2", "!shift", 0x25, "B");
   Output2.addOutput("deck2", "sync_enabled", 0x26, "B");
   Output2.addOutput("deck2", "cue_indicator", 0x27, "B");
@@ -395,7 +395,7 @@ TraktorS4MK2.registerOutputPackets = function() {
   Output2.addOutput("deck2", "keylock", 0x35, "B");
   Output2.addOutput("deck2", "slip_enabled", 0x3B, "B");
   Output2.addOutput("deck2", "!on_air", 0x33, "B");
-
+  Output2.addOutput("deck2", "!remix", 0x36, "B");
   Output2.addOutput("[Channel1]", "!deck_A", 0x2E, "B");
   Output2.addOutput("[Channel2]", "!deck_B", 0x34, "B");
   Output2.addOutput("[Channel3]", "!deck_C", 0x31, "B");
@@ -616,21 +616,25 @@ TraktorS4MK2.lightDeck = function(group) {
     TraktorS4MK2.controller.setOutput("[Channel3]", "!deck_C", 0x00, false);
     TraktorS4MK2.controller.setOutput("deck1", "!deckLight", 0x05, false);
     TraktorS4MK2.loopSizeSet(group);
+    TraktorS4MK2.lightSlipAuto(group);
   } else if (group === "[Channel2]") {
     TraktorS4MK2.controller.setOutput("[Channel2]", "!deck_B", 0x7F, false);
     TraktorS4MK2.controller.setOutput("[Channel4]", "!deck_D", 0x00, false);
     TraktorS4MK2.controller.setOutput("deck2", "!deckLight", 0x05, false);
     TraktorS4MK2.loopSizeSet(group);
+    TraktorS4MK2.lightSlipAuto(group);
   } else if (group === "[Channel3]") {
     TraktorS4MK2.controller.setOutput("[Channel3]", "!deck_C", 0x7F, false);
     TraktorS4MK2.controller.setOutput("[Channel1]", "!deck_A", 0x00, false);
     TraktorS4MK2.controller.setOutput("deck1", "!deckLight", 0x7F, false);
     TraktorS4MK2.loopSizeSet(group);
+    TraktorS4MK2.lightSlipAuto(group);
   } else if (group === "[Channel4]") {
     TraktorS4MK2.controller.setOutput("[Channel4]", "!deck_D", 0x7F, false);
     TraktorS4MK2.controller.setOutput("[Channel2]", "!deck_B", 0x00, false);
     TraktorS4MK2.controller.setOutput("deck2", "!deckLight", 0x7F, false);
     TraktorS4MK2.loopSizeSet(group);
+    TraktorS4MK2.lightSlipAuto(group);
   }
 
   this.controller.freeze_lights = false;
@@ -769,7 +773,7 @@ TraktorS4MK2.shutdown = function() {
 // Called by Mixxx -- mandatory function to receive anything from HID
 TraktorS4MK2.incomingData = function(data, length) {
   // Packets of 21 bytes are message 0x01 and can be handed off right away
-  if (length === 21) {
+  if (length === 21 || length == 79) {
     TraktorS4MK2.controller.parsePacket(data, length);
     return;
   }
@@ -999,7 +1003,7 @@ TraktorS4MK2.jogTouchHandler = function(field) {
   if (field.value !== 0) {
     var deckNumber = TraktorS4MK2.controller.resolveDeck(group);
     if (play != 0) {
-      TraktorS4MK2.slipAutoHandler(field, 1);
+      TraktorS4MK2.slipAutoHandler(field.group, 1);
     }
     engine.scratchEnable(deckNumber, 1024, 33.3333, 0.125, 0.125/8, true);
   } else {
@@ -1032,7 +1036,7 @@ TraktorS4MK2.finishJogTouch = function(group) {
   if (play != 0) {
     // If we are playing, just hand off to the engine.
     engine.scratchDisable(deckNumber, true);
-    TraktorS4MK2.slipAutoHandler(field, 0);
+    TraktorS4MK2.slipAutoHandler(field.group, 0);
   } else {
     // If things are paused, there will be a non-smooth handoff between scratching and jogging.
     // Instead, keep scratch on until the platter is not moving.
@@ -1125,11 +1129,13 @@ TraktorS4MK2.scalerJog = function(tick_delta, time_delta) {
 TraktorS4MK2.hotcueHandler = function(field) {
   var group = field.id.split(".")[0];
   var buttonNumber = parseInt(field.name[field.name.length - 1]);
+  TraktorS4MK2.slipAutoHandler(field.group, field.value);
   if (TraktorS4MK2.controller.shift_pressed[group]) {
     engine.setValue(field.group, "hotcue_" + buttonNumber + "_clear", field.value);
   } else {
     engine.setValue(field.group, "hotcue_" + buttonNumber + "_activate", field.value);
   }
+
 }
 
 TraktorS4MK2.remixHandler = function(field) {
@@ -1288,10 +1294,12 @@ TraktorS4MK2.loopActivateHandler = function(field) {
   if (TraktorS4MK2.controller.shift_pressed[group]) {
     engine.setValue(field.group, "reloop_andstop", field.value);
   } else {
-    engine.setValue(field.group, "reloop_toggle", field.value);
+    var looping = engine.getValue(field.group, "loop_enabled");
     if (field.value === 1){
-      TraktorS4MK2.slipAutoHandler(field, 0);
+      TraktorS4MK2.slipAutoHandler(field.group, !looping);
     }
+    engine.setValue(field.group, "reloop_toggle", field.value);
+
   }
 
 }
@@ -1398,9 +1406,6 @@ TraktorS4MK2.loopSetHandler = function(field) {
     engine.setValue(field.group, "pitch_adjust_set_default", field.value);
   } else {
     engine.setValue(field.group, "beatloop_activate", field.value);
-    if (field.value === 1){
-      TraktorS4MK2.slipAutoHandler(field, 1);
-    }
   }
 }
 
@@ -1588,6 +1593,8 @@ TraktorS4MK2.onVuMeterChanged = function(value, group, key) {
 TraktorS4MK2.onLoopEnabledChanged = function(value, group, key) {
   TraktorS4MK2.outputCallbackLoop(value, group, "loop_in");
   TraktorS4MK2.outputCallbackLoop(value, group, "loop_out");
+  print('Loop enabled or disabled');
+  TraktorS4MK2.slipAutoHandler(group, value);
 }
 
 TraktorS4MK2.onLoopSizeChanged = function(value, group, key) {
@@ -1620,8 +1627,8 @@ TraktorS4MK2.loopSizeSet = function(group) {
 
 TraktorS4MK2.onRecordingChanged = function(value, group, control) {
   TraktorS4MK2.outputChannelCallback(value, "[Recording]", "status");
-  TraktorS4MK2.controller.setOutput("deck1", "!on_air", value*0x7F);
-  TraktorS4MK2.controller.setOutput("deck2", "!on_air", value*0x7F);
+  TraktorS4MK2.controller.setOutput("deck1", "!on_air", value*0x7F, !TraktorS4MK2.controller.freeze_lights);
+  TraktorS4MK2.controller.setOutput("deck2", "!on_air", value*0x7F, !TraktorS4MK2.controller.freeze_lights);
 }
 
 TraktorS4MK2.slipHandler = function(field){
@@ -1630,15 +1637,29 @@ TraktorS4MK2.slipHandler = function(field){
       var group = field.id.split(".")[0];
       if (TraktorS4MK2.controller.shift_pressed[group]) {
           TraktorS4MK2.controller.autoSlipMode[field.group] ^= true;
+          TraktorS4MK2.lightSlipAuto(field.group);
       } else {
         engine.setValue(field.group, "slip_enabled", !engine.getValue(field.group, "slip_enabled"));
       }
     }
     // Do nothing on touchup
+
+
 }
 
-TraktorS4MK2.slipAutoHandler = function(field, on){
-  if (TraktorS4MK2.controller.autoSlipMode[field.group] === 1){
-      engine.setValue(field.group, "slip_enabled", on);
+TraktorS4MK2.lightSlipAuto = function(group){
+  var decknum = TraktorS4MK2.resolveDeckIfActive(group);
+  if (TraktorS4MK2.controller.autoSlipMode[group] === 1){
+    print(decknum);
+    TraktorS4MK2.controller.setOutput(decknum, "!remix", 0x7F, !TraktorS4MK2.controller.freeze_lights);
+  } else {
+    print('Turning off light');
+    TraktorS4MK2.controller.setOutput(decknum, "!remix", 0x00, !TraktorS4MK2.controller.freeze_lights);
+  }
+}
+
+TraktorS4MK2.slipAutoHandler = function(group, on){
+  if (TraktorS4MK2.controller.autoSlipMode[group] === 1){
+      engine.setValue(group, "slip_enabled", on);
   }
 }
