@@ -1593,7 +1593,6 @@ TraktorS4MK2.onVuMeterChanged = function(value, group, key) {
 TraktorS4MK2.onLoopEnabledChanged = function(value, group, key) {
   TraktorS4MK2.outputCallbackLoop(value, group, "loop_in");
   TraktorS4MK2.outputCallbackLoop(value, group, "loop_out");
-  print('Loop enabled or disabled');
   TraktorS4MK2.slipAutoHandler(group, value);
 }
 
