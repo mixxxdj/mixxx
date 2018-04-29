@@ -9,6 +9,7 @@
 #include <QDesktopServices>
 
 #include "library/traktor/traktorfeature.h"
+#include "library/traktor/traktor_cue.h"
 
 #include "library/librarytablemodel.h"
 #include "library/missingtablemodel.h"
@@ -48,6 +49,52 @@ bool TraktorPlaylistModel::isColumnHiddenByDefault(int column) {
         return true;
     }
     return BaseSqlTableModel::isColumnHiddenByDefault(column);
+}
+
+void addCuesToTrack(TrackPointer pTrack, QString traktorTrackId, const QSqlDatabase &m_database) {
+    QList<CuePointer> cues;
+    QSqlQuery query(m_database);
+    query.prepare("SELECT * FROM traktor_cues WHERE track_id = :track_id");
+    query.bindValue(":track_id", traktorTrackId);
+    if (query.exec()) {
+        while (query.next()) {
+            TraktorCue cue(query.record(), query);
+            CuePointer pCue = cue.toCue(pTrack->getSampleRate());
+            if (pCue) {
+                cues.push_back(pCue);
+            }
+        }
+        qDebug() << "Found " << cues.count() << " cues";
+        pTrack->setCuePoints(cues);
+    } else {
+        LOG_FAILED_QUERY(query);
+    }
+}
+
+TrackPointer TraktorTrackModel::getTrack(const QModelIndex& index) const {
+    QString id = index.sibling(index.row(), fieldIndex("id")).data().toString();
+    QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
+    bool track_already_in_library = m_pTrackCollection->getTrackDAO().trackExistsInDatabase(location);
+    TrackPointer pTrack = BaseExternalTrackModel::getTrack(index);
+
+    if (pTrack && !track_already_in_library) {
+        addCuesToTrack(pTrack, id, m_database);
+    }
+
+    return pTrack;
+}
+
+TrackPointer TraktorPlaylistModel::getTrack(const QModelIndex& index) const {
+    QString id = index.sibling(index.row(), fieldIndex("track_id")).data().toString();
+    QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
+    bool track_already_in_library = m_pTrackCollection->getTrackDAO().trackExistsInDatabase(location);
+    TrackPointer pTrack = BaseExternalPlaylistModel::getTrack(index);
+
+    if (pTrack && !track_already_in_library) {
+        addCuesToTrack(pTrack, id, m_database);
+    }
+
+    return pTrack;
 }
 
 TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollection)
@@ -187,6 +234,7 @@ TreeItem* TraktorFeature::importLibrary(QString file) {
     clearTable("traktor_playlist_tracks");
     clearTable("traktor_library");
     clearTable("traktor_playlists");
+    clearTable("traktor_cues");
     transaction.commit();
 
     transaction.transaction();
@@ -196,6 +244,8 @@ TreeItem* TraktorFeature::importLibrary(QString file) {
                   "rating,key) VALUES (:artist, :title, :album, :year,:genre,"
                   ":comment, :tracknumber,:bpm, :bitrate,:duration, :location,"
                   ":rating,:key)");
+    QSqlQuery cue_query(m_database);
+    cue_query.prepare(TRAKTOR_CUE_QUERY);
 
     //Parse Trakor XML file using SAX (for performance)
     QFile traktor_file(file);
@@ -218,7 +268,7 @@ TreeItem* TraktorFeature::importLibrary(QString file) {
             // Each "ENTRY" tag in <COLLECTION> represents a track
             if (inCollectionTag && xml.name() == "ENTRY") {
                 //parse track
-                parseTrack(xml, query);
+                parseTrack(xml, query, cue_query);
                 ++nAudioFiles; //increment number of files in the music collection
             }
             if (xml.name() == "PLAYLISTS") {
@@ -259,7 +309,7 @@ TreeItem* TraktorFeature::importLibrary(QString file) {
     return root;
 }
 
-void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
+void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query, QSqlQuery &cue_query) {
     QString title;
     QString artist;
     QString album;
@@ -278,6 +328,7 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
     int rating = 0;
     QString comment;
     QString tracknumber;
+    QList<TraktorCue> cues;
 
     //get XML attributes of starting ENTRY tag
     QXmlStreamAttributes attr = xml.attributes ();
@@ -337,6 +388,10 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
                 bpm = attr.value("BPM").toString().toFloat();
                 continue;
             }
+            if (xml.name() == "CUE_V2") {
+                cues.push_back(TraktorCue(xml.attributes()));
+                continue;
+            }
         }
         //We leave the infinite loop, if twe have the closing tag "ENTRY"
         if (xml.name() == "ENTRY" && xml.isEndElement()) {
@@ -360,11 +415,26 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
     query.bindValue(":bpm", bpm);
     query.bindValue(":bitrate", bitrate);
 
+
     bool success = query.exec();
     if (!success) {
-        qDebug() << "SQL Error in TraktorTableModel.cpp: line"
+        qDebug() << "SQL Error in TraktorFeature.cpp: line"
                  << __LINE__ << " " << query.lastError();
         return;
+    }
+    //Insert Cues to traktor_cue table
+    QVariant id = query.lastInsertId();
+    if (id.isValid()) {
+        int id_ = id.toInt();
+        for (TraktorCue &cue : cues) {
+            cue.fillQuery(id_, cue_query);
+            bool success = cue_query.exec();
+            if (!success) {
+                qDebug() << "SQL Error in TraktorFeature.cpp: line"
+                         << __LINE__ << cue_query.executedQuery() << " " << cue_query.lastError();
+                return;
+            }
+        }
     }
 }
 

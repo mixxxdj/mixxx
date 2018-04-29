@@ -973,6 +973,7 @@ class MixxxCore(Feature):
 
                    "library/itunes/itunesfeature.cpp",
                    "library/traktor/traktorfeature.cpp",
+                   "library/traktor/traktor_cue.cpp",
 
                    "library/sidebarmodel.cpp",
                    "library/library.cpp",
