@@ -852,8 +852,6 @@ void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
 
         pGroupFeatures->has_bpm = true;
         pGroupFeatures->bpm = getBpm();
-
-        pGroupFeatures->isPlaying = m_pPlayButton->get();
     }
 }
 

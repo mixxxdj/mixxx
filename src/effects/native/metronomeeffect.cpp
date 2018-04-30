@@ -103,10 +103,7 @@ void MetronomeEffect::processChannel(
                     currentFrame > clickSize &&
                     currentFrame < maxFrames - clickSize &&
                     gs->m_framesSinceClickStart > clickSize &&
-                    (
-                        groupFeatures.isPlaying ||
-                        currentFrame != gs->m_previousFrame
-                    )) {
+                    currentFrame != gs->m_previousFrame) {
                 // plays a single click on low speed
                 gs->m_framesSinceClickStart = currentFrame;
             }
