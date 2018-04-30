@@ -488,8 +488,7 @@ NumarkN4.Deck = function (channel) {
       this.output(theDeck.isSearching?0x7F:0x00)
     },
   });
-
-  this.jogWheelTurn = new component.Pot({
+  this.jogWheelTurn = new components.Pot({
     midi: [0xB0+channel,0x2C],
     inKey: "jog",
     input: function (channelmidi, control, value, status, group) {
@@ -531,7 +530,7 @@ NumarkN4.Deck = function (channel) {
   this.syncButton = new components.SyncButton({
     midi: [0x90+channel,0x0F,0xB0+channel,0x07],
   });
-  this.tapButton = new component.Button({
+  this.tapButton = new components.Button({
     midi: [0x90+channel,0x1E,0xB0+channel,0x16],
     input: function (channelmidi, control, value, status, group) {
       if (value) {
