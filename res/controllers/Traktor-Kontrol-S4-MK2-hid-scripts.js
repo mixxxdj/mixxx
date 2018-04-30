@@ -52,21 +52,35 @@ TraktorS4MK2 = new function() {
                                  "[Channel3]" : 0,
                                  "[Channel4]" : 0};
   this.controller.prev_browse = 0;
+  this.controller.play_shift_pressed = false;
   this.controller.prev_loopmove = {"deck1" : 0,
                                    "deck2" : 0};
   this.controller.prev_loopsize = {"deck1" : 0,
                                    "deck2" : 0};
   this.controller.shift_pressed = {"deck1" : false,
                                    "deck2" : false};
-  this.controller.wheelTouchInertiaTimer = {"[Channel1]" : 0,
-                                            "[Channel2]" : 0,
-                                            "[Channel3]" : 0,
-                                            "[Channel4]" : 0};
+  this.controller.wheelTouchInertiaTimer = {
+    "[Channel1]" : 0,
+    "[Channel2]" : 0,
+    "[Channel3]" : 0,
+    "[Channel4]" : 0,
+  };
   // Autoslip mode
-  this.controller.autoSlipMode = {"[Channel1]" : false,
-                                  "[Channel2]" : false,
-                                  "[Channel3]" : false,
-                                  "[Channel4]" : false};
+  this.controller.autoSlipMode = {
+    "[Channel1]" : false,
+    "[Channel2]" : false,
+    "[Channel3]" : false,
+    "[Channel4]" : false,
+  };
+  //speed slider range (useful for doing those ridiculous BPM transitions)
+  this.controller.tempoRange = {
+    "[Channel1]" : 0,
+    "[Channel1]" : 0,
+    "[Channel1]" : 0,
+    "[Channel1]" : 0,
+  }
+
+  this.controller.tempoRangeList = [8, 16, 24, 50, 90]
 
   // TODO: convert to Object()s for easier logic.
   this.controller.last_tick_val = [0, 0];
@@ -107,7 +121,7 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("deck1", "loop_out", 0x0E, "B", 0x08);
   MessageShort.addControl("deck1", "loop_in", 0x0E, "B", 0x04);
   MessageShort.addControl("deck1", "!slip_mode", 0x0E, "B", 0x02);
-  MessageShort.addControl("deck1", "reset_key", 0x0E, "B", 0x01);
+  MessageShort.addControl("deck1", "!reset_key", 0x0E, "B", 0x01);
   MessageShort.addControl("deck1", "!loop_set", 0x13, "B", 0x02);
   MessageShort.addControl("deck1", "!loop_activate", 0x13, "B", 0x01);
   MessageShort.addControl("deck1", "!jog_touch", 0x11, "B", 0x01);
@@ -135,7 +149,7 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("deck2", "loop_out", 0x0B, "B", 0x08);
   MessageShort.addControl("deck2", "loop_in", 0x0B, "B", 0x04);
   MessageShort.addControl("deck2", "!slip_mode", 0x0B, "B", 0x02);
-  MessageShort.addControl("deck2", "reset_key", 0x0B, "B", 0x01);
+  MessageShort.addControl("deck2", "!reset_key", 0x0B, "B", 0x01);
   MessageShort.addControl("deck2", "!loop_set", 0x13, "B", 0x10);
   MessageShort.addControl("deck2", "!loop_activate", 0x13, "B", 0x08);
   MessageShort.addControl("deck2", "!jog_touch", 0x11, "B", 0x02);
@@ -171,6 +185,7 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("[Playlist]", "LoadSelectedIntoFirstStopped", 0x13, "B", 0x04);
   MessageShort.addControl("[PreviewDeck1]", "!previewdeck", 0x0F, "B", 0x01);
   MessageShort.addControl("[Recording]", "toggle_recording", 0x0F, "B", 0x04);
+  MessageShort.addControl("[Master]", "!play_shifter", 0x0F, "B", 0x06);
 
 
   MessageShort.addControl("[Master]", "!quantize", 0x0A, "B", 0x08);
@@ -214,9 +229,13 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.setCallback("deck2", "!remix4", this.remixHandler);
   MessageShort.setCallback("deck1", "!slip_mode", this.slipHandler);
   MessageShort.setCallback("deck2", "!slip_mode", this.slipHandler);
+  MessageShort.setCallback("deck1", "!reset_key", this.resetHandler);
+  MessageShort.setCallback("deck2", "!reset_key", this.resetHandler);
+
   MessageShort.setCallback("[PreviewDeck1]", "!previewdeck", this.previewDeckHandler);
   MessageShort.setCallback("[Master]", "!quantize", this.quantizeHandler);
   MessageShort.setCallback("[Master]", "!snap", this.snapHandler);
+  MessageShort.setCallback("[Master]", "!play_shifter", this.playLRButtonHandler);
 
   MessageShort.setCallback("[EffectRack1_EffectUnit1_Effect1]", "!FXButton", this.FXButtonHandler);
   MessageShort.setCallback("[EffectRack1_EffectUnit1_Effect2]", "!FXButton", this.FXButtonHandler);
@@ -1634,16 +1653,48 @@ TraktorS4MK2.slipHandler = function(field){
     // Change on touchdown
     if (field.value === 0x01){
       var group = field.id.split(".")[0];
-      if (TraktorS4MK2.controller.shift_pressed[group]) {
+      if (TraktorS4MK2.controller.play_shift_pressed === 1) {
           TraktorS4MK2.controller.autoSlipMode[field.group] ^= true;
           TraktorS4MK2.lightSlipAuto(field.group);
+      } else if (TraktorS4MK2.controller.shift_pressed[group] === 1)   {
+          var prev_range = TraktorS4MK2.controller.tempoRange[field.group];
+          print('Previous range ' + prev_range);
+          if (prev_range <= 0){
+            prev_range = 0;
+            TraktorS4MK2.controller.tempoRange[field.group] = 0;
+          } else if (prev_range > 0) {
+            var new_range = prev_range - 1;
+            var range_value = TraktorS4MK2.controller.tempoRangeList[new_range] / 100;
+            TraktorS4MK2.controller.tempoRange[field.group] = new_range;
+            engine.setValue(field.group, "rateRange", range_value);
+          }
+
       } else {
         engine.setValue(field.group, "slip_enabled", !engine.getValue(field.group, "slip_enabled"));
       }
     }
     // Do nothing on touchup
+}
 
-
+TraktorS4MK2.resetHandler = function(field){
+  var group = field.id.split(".")[0];
+  if (field.value === 0x01){
+    if (TraktorS4MK2.controller.shift_pressed[group] === 1){
+      var prev_range = TraktorS4MK2.controller.tempoRange[field.group];
+      print('Previous range ' + prev_range);
+      if (prev_range >= TraktorS4MK2.controller.tempoRangeList.length - 1){
+        prev_range = TraktorS4MK2.controller.tempoRangeList.length - 1;
+        TraktorS4MK2.controller.tempoRange[field.group] = prev_range;
+      } else {
+        var new_range = prev_range + 1;
+        var range_value = TraktorS4MK2.controller.tempoRangeList[new_range] / 100;
+        TraktorS4MK2.controller.tempoRange[field.group] = new_range;
+        engine.setValue(field.group, "rateRange", range_value);
+      }
+    } else {
+      engine.setValue(field.group, "reset_key", field.value);
+    }
+  }
 }
 
 TraktorS4MK2.lightSlipAuto = function(group){
@@ -1661,4 +1712,8 @@ TraktorS4MK2.slipAutoHandler = function(group, on){
   if (TraktorS4MK2.controller.autoSlipMode[group] === 1){
       engine.setValue(group, "slip_enabled", on);
   }
+}
+
+TraktorS4MK2.playLRButtonHandler = function(field){
+  TraktorS4MK2.controller.play_shift_pressed = field.value;
 }
