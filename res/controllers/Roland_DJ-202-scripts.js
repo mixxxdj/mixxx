@@ -42,6 +42,10 @@ DJ202.init = function () {
     if (engine.getValue('[Master]', 'num_samplers') < 16) {
         engine.setValue('[Master]', 'num_samplers', 16);
     }
+
+    midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x00, 0xF7], 6) //request initial state
+    midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x01, 0xF7], 6) //unlock pad layers
+
 };
 
 DJ202.autoShowDecks = function (value, group, control) {
