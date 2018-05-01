@@ -2343,7 +2343,6 @@ PioneerDDJSX.slicerBeatActive = function(value, group, control) {
             }
         }
     } else {
-        engine.setValue(group, "slip_enabled", false);
         PioneerDDJSX.slicerAlreadyJumped[deck] = false;
         PioneerDDJSX.slicerPreviousBeatsPassed[deck] = 0;
         PioneerDDJSX.slicerActive[deck] = false;
