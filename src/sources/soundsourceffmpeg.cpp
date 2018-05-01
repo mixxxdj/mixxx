@@ -736,7 +736,7 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
 
     char *l_pBuffer = (char *)buffer;
 
-    // If cache is empty then retun without crash.
+    // If cache is empty then return without crash.
     if (m_SCache.isEmpty()) {
         kLogger.debug() << "getBytesFromCache: Cache is empty can't return bytes";
         if(l_pBuffer != nullptr)
