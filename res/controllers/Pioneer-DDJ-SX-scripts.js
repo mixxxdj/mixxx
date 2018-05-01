@@ -11,11 +11,11 @@ var PioneerDDJSX = function() {};
 
 /*
 	Author: 		DJMaxergy
-	Version: 		1.18, 06/13/2017
+	Version: 		1.19, 05/01/2018
 	Description: 	Pioneer DDJ-SX Controller Mapping for Mixxx
     Source: 		http://github.com/DJMaxergy/mixxx/tree/pioneerDDJSX_mapping
     
-    Copyright (c) 2017 DJMaxergy, licensed under GPL version 2 or later
+    Copyright (c) 2018 DJMaxergy, licensed under GPL version 2 or later
     Copyright (c) 2014-2015 various contributors, base for this mapping, licensed under MIT license
     
     Contributors:
@@ -951,16 +951,16 @@ PioneerDDJSX.playButton = function(channel, control, value, status, group) {
         playing = engine.getValue(group, "play");
 
     if (value) {
-        if (!PioneerDDJSX.toggledBrake[deck]) {
-            script.toggleControl(group, "play");
-        }
         if (playing) {
             script.brake(channel, control, value, status, group);
             PioneerDDJSX.toggledBrake[deck] = true;
+        } else {
+            script.toggleControl(group, "play");
         }
     } else {
         if (PioneerDDJSX.toggledBrake[deck]) {
             script.brake(channel, control, value, status, group);
+            script.toggleControl(group, "play");
             PioneerDDJSX.toggledBrake[deck] = false;
         }
     }
