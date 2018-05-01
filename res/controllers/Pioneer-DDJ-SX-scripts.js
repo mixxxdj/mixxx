@@ -2258,7 +2258,11 @@ PioneerDDJSX.rotarySelectorClick = function(channel, control, value, status) {
 
 PioneerDDJSX.rotarySelectorShiftedClick = function(channel, control, value, status) {
     if (PioneerDDJSX.useNewLibraryControls) {
-        script.toggleControl("[Library]", "GoToItem");
+        if (PioneerDDJSX.autoDJAddTop) {
+            script.toggleControl("[Library]", "AutoDjAddTop");
+        } else {
+            script.toggleControl("[Library]", "AutoDjAddBottom");
+        }
     } else {
         script.toggleControl("[Playlist]", "ToggleSelectedSidebarItem");
     }
