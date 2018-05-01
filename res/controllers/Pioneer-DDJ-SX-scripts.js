@@ -1390,10 +1390,10 @@ PioneerDDJSX.shiftKeyLockButton = function(channel, control, value, status, grou
 
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.shiftKeyLock, value);
 
-    if (range === 1.00) {
+    if (range === 0.90) {
         range = PioneerDDJSX.setUpSpeedSliderRange[deck];
-    } else if ((range * 2) > 1.00) {
-        range = 1.00;
+    } else if ((range * 2) > 0.90) {
+        range = 0.90;
     } else {
         range = range * 2;
     }
