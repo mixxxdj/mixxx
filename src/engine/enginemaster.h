@@ -275,6 +275,8 @@ class EngineMaster : public QObject, public AudioSource {
     void applyMasterEffects();
     void processHeadphones(const double masterMixGainInHeadphones);
 
+    void collectMasterSyncFeatures(GroupFeatureState* features);
+
     EngineEffectsManager* m_pEngineEffectsManager;
 
     // List of channels added to the engine.
@@ -358,6 +360,10 @@ class EngineMaster : public QObject, public AudioSource {
 
     volatile bool m_bBusOutputConnected[3];
     bool m_bExternalRecordBroadcastInputConnected;
+
+    // Internal Clock values
+    ControlProxy* m_masterBpm;
+    ControlProxy* m_masterBeatDistance;
 };
 
 #endif

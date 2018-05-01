@@ -188,6 +188,9 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
     m_pHeadphoneEnabled = new ControlObject(ConfigKey(group, "headEnabled"));
     m_pHeadphoneEnabled->setReadOnly();
 
+    m_masterBpm = new ControlProxy("[InternalClock]", "bpm", this);
+    m_masterBeatDistance = new ControlProxy("[InternalClock]", "beat_distance", this);
+
     // Note: the EQ Rack is set in EffectsManager::setupDefaults();
 }
 
@@ -356,6 +359,7 @@ void EngineMaster::processChannels(int iBufferSize) {
         if (m_pEngineEffectsManager) {
             GroupFeatureState features;
             pChannel->collectFeatures(&features);
+            collectMasterSyncFeatures(&features);
             pChannelInfo->m_features = features;
         }
     }
@@ -684,6 +688,7 @@ void EngineMaster::process(const int iBufferSize) {
             GroupFeatureState masterFeatures;
             masterFeatures.has_gain = true;
             masterFeatures.gain = m_pMasterGain->get();
+            collectMasterSyncFeatures(&masterFeatures);
             m_pEngineEffectsManager->processPostFaderInPlace(
                     m_masterOutputHandle.handle(),
                     m_masterHandle.handle(),
@@ -743,6 +748,7 @@ void EngineMaster::applyMasterEffects() {
         GroupFeatureState masterFeatures;
         masterFeatures.has_gain = true;
         masterFeatures.gain = m_pMasterGain->get();
+        collectMasterSyncFeatures(&masterFeatures);
         m_pEngineEffectsManager->processPostFaderInPlace(m_masterHandle.handle(),
                                                          m_masterHandle.handle(),
                                                          m_pMaster,
@@ -970,4 +976,14 @@ void EngineMaster::registerNonEngineChannelSoundIO(SoundManager* pSoundManager) 
         pSoundManager->registerOutput(AudioOutput(AudioOutput::BUS, 0, 2, o), this);
     }
     pSoundManager->registerOutput(AudioOutput(AudioOutput::RECORD_BROADCAST, 0, 2), this);
+}
+
+void EngineMaster::collectMasterSyncFeatures(GroupFeatureState* features) {
+    if (!features->has_beat_length_sec) {
+        features->has_beat_length_sec = true;
+        features->beat_length_sec = 60 / m_masterBpm->get();
+
+        features->has_beat_fraction = true;
+        features->beat_fraction = m_masterBeatDistance->get();
+    }
 }
