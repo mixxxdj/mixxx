@@ -9,6 +9,9 @@
 #include "util/db/dbconnectionpooled.h"
 #include "track/globaltrackcache.h"
 
+namespace {
+    const bool kInMemoryDbConnection = true;
+} // anonymous namespace
 
 class LibraryTest : public MixxxTest,
     public virtual /*implements*/ GlobalTrackCacheSaver {
@@ -21,7 +24,7 @@ class LibraryTest : public MixxxTest,
 
   protected:
     LibraryTest()
-        : m_mixxxDb(config()),
+        : m_mixxxDb(config(), kInMemoryDbConnection),
           m_dbConnectionPooler(m_mixxxDb.connectionPool()),
           m_dbConnection(mixxx::DbConnectionPooled(m_mixxxDb.connectionPool())),
           m_trackCollection(config()) {

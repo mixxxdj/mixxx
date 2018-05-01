@@ -11,7 +11,7 @@
 const QString MixxxDb::kDefaultSchemaFile(":/schema.xml");
 
 //static
-const int MixxxDb::kRequiredSchemaVersion = 27;
+const int MixxxDb::kRequiredSchemaVersion = 28;
 
 namespace {
 
@@ -19,11 +19,12 @@ const mixxx::Logger kLogger("MixxxDb");
 
 // The connection parameters for the main Mixxx DB
 mixxx::DbConnection::Params dbConnectionParams(
-        const UserSettingsPointer& pConfig) {
+        const UserSettingsPointer& pConfig,
+        bool inMemoryConnection) {
     mixxx::DbConnection::Params params;
     params.type = "QSQLITE";
     params.hostName = "localhost";
-    params.filePath = QDir(pConfig->getSettingsPath()).filePath("mixxxdb.sqlite");
+    params.filePath = inMemoryConnection ? QString(":memory:") : QDir(pConfig->getSettingsPath()).filePath("mixxxdb.sqlite");
     params.userName = "mixxx";
     params.password = "mixxx";
     return params;
@@ -32,8 +33,9 @@ mixxx::DbConnection::Params dbConnectionParams(
 } // anonymous namespace
 
 MixxxDb::MixxxDb(
-        const UserSettingsPointer& pConfig)
-    : m_pDbConnectionPool(std::make_shared<mixxx::DbConnectionPool>(dbConnectionParams(pConfig), "MIXXX")) {
+        const UserSettingsPointer& pConfig,
+        bool inMemoryConnection)
+    : m_pDbConnectionPool(std::make_shared<mixxx::DbConnectionPool>(dbConnectionParams(pConfig, inMemoryConnection), "MIXXX")) {
 }
 
 bool MixxxDb::initDatabaseSchema(

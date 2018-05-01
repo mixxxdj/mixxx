@@ -77,9 +77,18 @@ SoundSource::OpenResult SoundSourceWV::tryOpen(
         m_sampleScaleFactor = CSAMPLE_PEAK;
     } else {
         const int bitsPerSample = WavpackGetBitsPerSample(m_wpc);
-        const uint32_t wavpackPeakSampleValue = 1u
-                << (bitsPerSample - 1);
-        m_sampleScaleFactor = CSAMPLE_PEAK / wavpackPeakSampleValue;
+        if ((bitsPerSample >= 8) && (bitsPerSample <= 32)) {
+            // Range of signed sample values: [-2 ^ (bitsPerSample - 1), 2 ^ (bitsPerSample - 1) - 1]
+            const uint32_t absSamplePeak = 1u << (bitsPerSample - 1);
+            DEBUG_ASSERT(absSamplePeak > 0);
+            // Scaled range of sample values: [-CSAMPLE_PEAK, CSAMPLE_PEAK)
+            m_sampleScaleFactor = CSAMPLE_PEAK / absSamplePeak;
+        } else {
+            kLogger.warning()
+                    << "Invalid bits per sample:"
+                    << bitsPerSample;
+            return OpenResult::Aborted;
+        }
     }
 
     m_curFrameIndex = frameIndexMin();
