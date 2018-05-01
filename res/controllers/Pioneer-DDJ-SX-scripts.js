@@ -97,8 +97,8 @@ PioneerDDJSX.samplerCueGotoAndPlay = false;
 PioneerDDJSX.autoPFL = true;
 
 // If true, new in Mixxx 2.1 introduced library controls will be used,
-// else old playlist controls will be used (default: false).
-PioneerDDJSX.useNewLibraryControls = false;
+// else old playlist controls will be used (default: true).
+PioneerDDJSX.useNewLibraryControls = true;
 
 
 ///////////////////////////////////////////////////////////////
@@ -2246,7 +2246,7 @@ PioneerDDJSX.rotarySelectorShifted = function(channel, control, value, status) {
 
 PioneerDDJSX.rotarySelectorClick = function(channel, control, value, status) {
     if (PioneerDDJSX.useNewLibraryControls) {
-        script.toggleControl("[Library]", "MoveFocusForward");
+        script.toggleControl("[Library]", "GoToItem");
     } else {
         if (PioneerDDJSX.autoDJAddTop) {
             script.toggleControl("[Library]", "AutoDjAddTop");
