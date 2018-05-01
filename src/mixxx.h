@@ -19,6 +19,7 @@
 #define MIXXX_H
 
 #include <QMainWindow>
+#include <QSharedPointer>
 #include <QString>
 
 #include "preferences/configobject.h"
@@ -30,6 +31,7 @@
 #include "util/db/dbconnectionpool.h"
 #include "soundio/sounddeviceerror.h"
 
+class ChannelHandleFactory;
 class ControlPushButton;
 class ControllerManager;
 class DlgDeveloperTools;
@@ -48,6 +50,8 @@ class SkinLoader;
 class SoundManager;
 class VinylControlManager;
 class WMainMenuBar;
+
+typedef QSharedPointer<SettingsManager> SettingsManagerPointer;
 
 // This Class is the base class for Mixxx. It sets up the main
 // window and providing a menubar.
@@ -136,6 +140,8 @@ class MixxxMainWindow : public QMainWindow {
     LaunchImage* m_pLaunchImage;
 
     SettingsManager* m_pSettingsManager;
+
+    ChannelHandleFactory* m_pChannelHandleFactory;
 
     // The effects processing system
     EffectsManager* m_pEffectsManager;

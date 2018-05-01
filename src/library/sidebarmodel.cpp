@@ -8,13 +8,23 @@
 #include "library/browse/browsefeature.h"
 #include "util/assert.h"
 
-SidebarModel::SidebarModel(QObject* parent)
+namespace {
+
+// The time between selecting and activating (= clicking) a feature item
+// in the sidebar tree. This is essential to allow smooth scrolling through
+// a list of items with an encoder or the keyboard! A value of 300 ms has
+// been chosen as a compromise between usability and responsiveness.
+const int kPressedUntilClickedTimeoutMillis = 300;
+
+} // anonymous namespace
+
+SidebarModel::SidebarModel(
+        QObject* parent)
         : QAbstractItemModel(parent),
-          m_iDefaultSelectedIndex(0) {
-}
-
-SidebarModel::~SidebarModel() {
-
+          m_iDefaultSelectedIndex(0),
+          m_pressedUntilClickedTimer(new QTimer(this)) {
+    m_pressedUntilClickedTimer->setSingleShot(true);
+    connect(m_pressedUntilClickedTimer, SIGNAL(timeout()), this, SLOT(slotPressedUntilClickedTimeout()));
 }
 
 void SidebarModel::addLibraryFeature(LibraryFeature* feature) {
@@ -28,6 +38,8 @@ void SidebarModel::addLibraryFeature(LibraryFeature* feature) {
 
     QAbstractItemModel* model = feature->getChildModel();
 
+    connect(model, SIGNAL(modelAboutToBeReset()),
+            this, SLOT(slotModelAboutToBeReset()));
     connect(model, SIGNAL(modelReset()),
             this, SLOT(slotModelReset()));
     connect(model, SIGNAL(dataChanged(const QModelIndex&,const QModelIndex&)),
@@ -219,28 +231,57 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
     return QVariant();
 }
 
-void SidebarModel::clicked(const QModelIndex& index) {
-    //qDebug() << "SidebarModel::clicked() index=" << index;
+void SidebarModel::startPressedUntilClickedTimer(QModelIndex pressedIndex) {
+    m_pressedIndex = pressedIndex;
+    m_pressedUntilClickedTimer->start(kPressedUntilClickedTimeoutMillis);
+}
 
-    // We use clicked() for keyboard and mouse control, and the
-    // following code breaks that for us:
-    /*if (QApplication::mouseButtons() != Qt::LeftButton) {
-        return;
-    }*/
+void SidebarModel::stopPressedUntilClickedTimer() {
+    m_pressedUntilClickedTimer->stop();
+    m_pressedIndex = QModelIndex();
+}
 
+void SidebarModel::slotPressedUntilClickedTimeout() {
+    if (m_pressedIndex.isValid()) {
+        QModelIndex clickedIndex = m_pressedIndex;
+        stopPressedUntilClickedTimer();
+        clicked(clickedIndex);
+    }
+}
+
+void SidebarModel::pressed(const QModelIndex& index) {
+    stopPressedUntilClickedTimer();
     if (index.isValid()) {
         if (index.internalPointer() == this) {
             m_sFeatures[index.row()]->activate();
         } else {
-            TreeItem* tree_item = (TreeItem*)index.internalPointer();
+            startPressedUntilClickedTimer(index);
+        }
+    }
+}
+
+void SidebarModel::clicked(const QModelIndex& index) {
+    // When triggered by a mouse event pressed() has been
+    // invoked immediately before. That doesn't matter,
+    // because we stop any running timer before handling
+    // this event.
+    stopPressedUntilClickedTimer();
+    if (index.isValid()) {
+        if (index.internalPointer() == this) {
+            m_sFeatures[index.row()]->activate();
+        } else {
+            TreeItem* tree_item = static_cast<TreeItem*>(index.internalPointer());
             if (tree_item) {
                 LibraryFeature* feature = tree_item->feature();
+                DEBUG_ASSERT(feature);
                 feature->activateChild(index);
             }
         }
     }
 }
+
 void SidebarModel::doubleClicked(const QModelIndex& index) {
+    stopPressedUntilClickedTimer();
     if (index.isValid()) {
         if (index.internalPointer() == this) {
            return;
@@ -255,7 +296,7 @@ void SidebarModel::doubleClicked(const QModelIndex& index) {
 }
 
 void SidebarModel::rightClicked(const QPoint& globalPos, const QModelIndex& index) {
-    //qDebug() << "SidebarModel::rightClicked() index=" << index;
+    stopPressedUntilClickedTimer();
     if (index.isValid()) {
         if (index.internalPointer() == this) {
             m_sFeatures[index.row()]->activate();
@@ -290,6 +331,14 @@ bool SidebarModel::dropAccept(const QModelIndex& index, QList<QUrl> urls,
     }
     return result;
 }
+
+bool SidebarModel::hasTrackTable(const QModelIndex& index) const {
+    if (index.internalPointer() == this) {
+     return m_sFeatures[index.row()]->hasTrackTable();
+    }
+    return false;
+}
+
 
 bool SidebarModel::dragMoveAccept(const QModelIndex& index, QUrl url) {
     //qDebug() << "SidebarModel::dragMoveAccept() index=" << index << url;
@@ -381,10 +430,12 @@ void SidebarModel::slotRowsRemoved(const QModelIndex& parent, int start, int end
     endRemoveRows();
 }
 
+void SidebarModel::slotModelAboutToBeReset() {
+    beginResetModel();
+}
+
 void SidebarModel::slotModelReset() {
-    // If a child model is reset, we can't really do anything but reset(). This
-    // will close any open items.
-    reset();
+    endResetModel();
 }
 
 /*

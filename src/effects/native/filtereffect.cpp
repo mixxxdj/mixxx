@@ -16,17 +16,19 @@ EffectManifestPointer FilterEffect::getManifest() {
     EffectManifestPointer pManifest(new EffectManifest());
     pManifest->setId(getId());
     pManifest->setName(QObject::tr("Filter"));
+    pManifest->setShortName(QObject::tr("Filter"));
     pManifest->setAuthor("The Mixxx Team");
     pManifest->setVersion("1.0");
-    pManifest->setDescription(QObject::tr("The filter changes the tone of the "
-                                        "music by allowing only high or low "
-                                        "frequencies to pass through."));
+    pManifest->setDescription(QObject::tr(
+        "Allows only high or low frequencies to play."));
     pManifest->setEffectRampsFromDry(true);
 
     EffectManifestParameterPointer lpf = pManifest->addParameter();
     lpf->setId("lpf");
-    lpf->setName(QObject::tr("LPF"));
-    lpf->setDescription(QObject::tr("Corner frequency ratio of the low pass filter"));
+    lpf->setName(QObject::tr("Low Pass Filter Cutoff"));
+    lpf->setShortName(QObject::tr("LPF"));
+    lpf->setDescription(QObject::tr(
+        "Corner frequency ratio of the low pass filter"));
     lpf->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     lpf->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     lpf->setUnitsHint(EffectManifestParameter::UnitsHint::HERTZ);
@@ -40,7 +42,9 @@ EffectManifestPointer FilterEffect::getManifest() {
     q->setId("q");
     q->setName(QObject::tr("Resonance"));
     q->setShortName(QObject::tr("Q"));
-    q->setDescription(QObject::tr("Resonance of the filters, default = Flat top"));
+    q->setDescription(QObject::tr(
+        "Resonance of the filters\n"
+        "Default: flat top")); // What does this mean?
     q->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     q->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     q->setUnitsHint(EffectManifestParameter::UnitsHint::SAMPLERATE);
@@ -50,8 +54,10 @@ EffectManifestPointer FilterEffect::getManifest() {
 
     EffectManifestParameterPointer hpf = pManifest->addParameter();
     hpf->setId("hpf");
-    hpf->setName(QObject::tr("HPF"));
-    hpf->setDescription(QObject::tr("Corner frequency ratio of the high pass filter"));
+    hpf->setName(QObject::tr("High Pass Filter Cutoff"));
+    hpf->setShortName(QObject::tr("HPF"));
+    hpf->setDescription(QObject::tr(
+        "Corner frequency ratio of the high pass filter"));
     hpf->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     hpf->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     hpf->setUnitsHint(EffectManifestParameter::UnitsHint::HERTZ);
@@ -64,17 +70,17 @@ EffectManifestPointer FilterEffect::getManifest() {
     return pManifest;
 }
 
-FilterGroupState::FilterGroupState()
-        : m_loFreq(kMaxCorner / 44100),
+FilterGroupState::FilterGroupState(const mixxx::EngineParameters& bufferParameters)
+        : EffectState(bufferParameters),
+          m_loFreq(kMaxCorner / bufferParameters.sampleRate()),
           m_q(0.707106781),
-          m_hiFreq(kMinCorner / 44100) {
-    m_pBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
+          m_hiFreq(kMinCorner / bufferParameters.sampleRate()) {
+    m_buffer = mixxx::SampleBuffer(bufferParameters.samplesPerBuffer());
     m_pLowFilter = new EngineFilterBiquad1Low(1, m_loFreq, m_q, true);
     m_pHighFilter = new EngineFilterBiquad1High(1, m_hiFreq, m_q, true);
 }
 
 FilterGroupState::~FilterGroupState() {
-    SampleUtil::free(m_pBuf);
     delete m_pLowFilter;
     delete m_pHighFilter;
 }
@@ -92,28 +98,26 @@ FilterEffect::~FilterEffect() {
 void FilterEffect::processChannel(const ChannelHandle& handle,
                                   FilterGroupState* pState,
                                   const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                  const unsigned int numSamples,
-                                  const unsigned int sampleRate,
-                                  const EffectProcessor::EnableState enableState,
+                                  const mixxx::EngineParameters& bufferParameters,
+                                  const EffectEnableState enableState,
                                   const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
-    Q_UNUSED(sampleRate);
 
     double hpf;
     double lpf;
     double q = m_pQ->value();
 
-    const double minCornerNormalized = kMinCorner / sampleRate;
-    const double maxCornerNormalized = kMaxCorner / sampleRate;
+    const double minCornerNormalized = kMinCorner / bufferParameters.sampleRate();
+    const double maxCornerNormalized = kMaxCorner / bufferParameters.sampleRate();
 
-    if (enableState == EffectProcessor::DISABLING) {
+    if (enableState == EffectEnableState::Disabling) {
         // Ramp to dry, when disabling, this will ramp from dry when enabling as well
         hpf = minCornerNormalized;
         lpf = maxCornerNormalized;
     } else {
-        hpf = m_pHPF->value() / sampleRate;
-        lpf = m_pLPF->value() / sampleRate;
+        hpf = m_pHPF->value() / bufferParameters.sampleRate();
+        lpf = m_pLPF->value() / bufferParameters.sampleRate();
     }
 
     if ((pState->m_loFreq != lpf) ||
@@ -138,8 +142,8 @@ void FilterEffect::processChannel(const ChannelHandle& handle,
         pState->m_pHighFilter->setFrequencyCorners(1, hpf, clampedQ);
     }
 
-    const CSAMPLE* pLpfInput = pState->m_pBuf;
-    CSAMPLE* pHpfOutput = pState->m_pBuf;
+    const CSAMPLE* pLpfInput = pState->m_buffer.data();
+    CSAMPLE* pHpfOutput = pState->m_buffer.data();
     if (lpf >= maxCornerNormalized && pState->m_loFreq >= maxCornerNormalized) {
         // Lpf disabled Hpf can write directly to output
         pHpfOutput = pOutput;
@@ -148,11 +152,11 @@ void FilterEffect::processChannel(const ChannelHandle& handle,
 
     if (hpf > minCornerNormalized) {
         // hpf enabled, fade-in is handled in the filter when starting from pause
-        pState->m_pHighFilter->process(pInput, pHpfOutput, numSamples);
+        pState->m_pHighFilter->process(pInput, pHpfOutput, bufferParameters.samplesPerBuffer());
     } else if (pState->m_hiFreq > minCornerNormalized) {
             // hpf disabling
             pState->m_pHighFilter->processAndPauseFilter(pInput,
-                    pHpfOutput, numSamples);
+                    pHpfOutput, bufferParameters.samplesPerBuffer());
     } else {
         // paused LP uses input directly
         pLpfInput = pInput;
@@ -160,16 +164,16 @@ void FilterEffect::processChannel(const ChannelHandle& handle,
 
     if (lpf < maxCornerNormalized) {
         // lpf enabled, fade-in is handled in the filter when starting from pause
-        pState->m_pLowFilter->process(pLpfInput, pOutput, numSamples);
+        pState->m_pLowFilter->process(pLpfInput, pOutput, bufferParameters.samplesPerBuffer());
     } else if (pState->m_loFreq < maxCornerNormalized) {
         // hpf disabling
         pState->m_pLowFilter->processAndPauseFilter(pLpfInput,
-                pOutput, numSamples);
+                pOutput, bufferParameters.samplesPerBuffer());
     } else if (pLpfInput == pInput) {
         // Both disabled
         if (pOutput != pInput) {
             // We need to copy pInput pOutput
-            SampleUtil::copy(pOutput, pInput, numSamples);
+            SampleUtil::copy(pOutput, pInput, bufferParameters.samplesPerBuffer());
         }
     }
 

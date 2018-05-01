@@ -10,21 +10,44 @@
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/types.h"
+#include "util/rampingvalue.h"
 
-struct FlangerGroupState {
-    FlangerGroupState()
-            : delayPos(0),
-              time(0) {
-        SampleUtil::applyGain(delayLeft, 0, MAX_BUFFER_LEN);
-        SampleUtil::applyGain(delayRight, 0, MAX_BUFFER_LEN);
+namespace {
+constexpr double kMaxDelayMs = 13.0;
+constexpr double kMinDelayMs = 0.22;
+constexpr double kCenterDelayMs = (kMaxDelayMs - kMinDelayMs) / 2 + kMinDelayMs;
+constexpr double kMaxLfoWidthMs = kMaxDelayMs - kMinDelayMs;
+// using + 1.0 instead of ceil() for Mac OS
+constexpr SINT kBufferLenth = static_cast<SINT>(kMaxDelayMs + 1.0)  * 96; // for 96 kHz
+constexpr double kMinLfoBeats = 1/4.0;
+constexpr double kMaxLfoBeats = 32.0;
+} // anonymous namespace
+
+struct FlangerGroupState : public EffectState {
+    FlangerGroupState(const mixxx::EngineParameters& bufferParameters)
+            : EffectState(bufferParameters),
+              delayPos(0),
+              lfoFrames(0),
+              previousPeriodFrames(-1),
+              prev_regen(0),
+              prev_mix(0),
+              prev_width(0),
+              prev_manual(kCenterDelayMs) {
+        SampleUtil::clear(delayLeft, kBufferLenth);
+        SampleUtil::clear(delayRight, kBufferLenth);
     }
-    CSAMPLE delayRight[MAX_BUFFER_LEN];
-    CSAMPLE delayLeft[MAX_BUFFER_LEN];
+    CSAMPLE delayLeft[kBufferLenth];
+    CSAMPLE delayRight[kBufferLenth];
     unsigned int delayPos;
-    unsigned int time;
+    unsigned int lfoFrames;
+    double previousPeriodFrames;
+    CSAMPLE_GAIN prev_regen;
+    CSAMPLE_GAIN prev_mix;
+    CSAMPLE_GAIN prev_width;
+    CSAMPLE_GAIN prev_manual;
 };
 
-class FlangerEffect : public PerChannelEffectProcessor<FlangerGroupState> {
+class FlangerEffect : public EffectProcessorImpl<FlangerGroupState> {
   public:
     FlangerEffect(EngineEffect* pEffect);
     virtual ~FlangerEffect();
@@ -36,9 +59,8 @@ class FlangerEffect : public PerChannelEffectProcessor<FlangerGroupState> {
     void processChannel(const ChannelHandle& handle,
                         FlangerGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE* pOutput,
-                        const unsigned int numSamples,
-                        const unsigned int sampleRate,
-                        const EffectProcessor::EnableState enableState,
+                        const mixxx::EngineParameters& bufferParameters,
+                        const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatures);
 
   private:
@@ -46,8 +68,11 @@ class FlangerEffect : public PerChannelEffectProcessor<FlangerGroupState> {
         return getId();
     }
 
-    EngineEffectParameter* m_pPeriodParameter;
-    EngineEffectParameter* m_pDepthParameter;
+    EngineEffectParameter* m_pSpeedParameter;
+    EngineEffectParameter* m_pWidthParameter;
+    EngineEffectParameter* m_pManualParameter;
+    EngineEffectParameter* m_pRegenParameter;
+    EngineEffectParameter* m_pMixParameter;
     EngineEffectParameter* m_pTripletParameter;
 
     DISALLOW_COPY_AND_ASSIGN(FlangerEffect);

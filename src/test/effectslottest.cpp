@@ -10,6 +10,8 @@
 #include "effects/effectchainslot.h"
 #include "effects/effectsmanager.h"
 #include "effects/effectmanifest.h"
+#include "effects/effectrack.h"
+#include "effects/effectslot.h"
 
 #include "test/baseeffecttest.h"
 
@@ -21,8 +23,6 @@ class EffectSlotTest : public BaseEffectTest {
     EffectSlotTest()
             : m_master(m_factory.getOrCreateHandle("[Master]"), "[Master]"),
               m_headphone(m_factory.getOrCreateHandle("[Headphone]"), "[Headphone]") {
-        m_pEffectsManager->registerChannel(m_master);
-        m_pEffectsManager->registerChannel(m_headphone);
         registerTestBackend();
     }
 
@@ -39,8 +39,8 @@ TEST_F(EffectSlotTest, ControlsReflectSlotState) {
     int iEffectNumber = 0;
 
     StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
-    EffectChainSlotPointer pChainSlot = pRack->addEffectChainSlot();
-    pChainSlot->loadEffectChain(pChain);
+    EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(iChainNumber);
+    pChainSlot->loadEffectChainToSlot(pChain);
     // StandardEffectRack::addEffectChainSlot automatically adds 4 effect
     // slots. In the future we will probably remove this so this will just start
     // segfaulting.
@@ -61,7 +61,7 @@ TEST_F(EffectSlotTest, ControlsReflectSlotState) {
     EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(group, "enabled")));
     EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(group, "num_parameters")));
 
-    pEffectSlot->loadEffect(pEffect);
+    pEffectSlot->loadEffect(pEffect, false);
     EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(group, "enabled")));
     EXPECT_DOUBLE_EQ(1, ControlObject::get(ConfigKey(group, "num_parameters")));
 

@@ -10,34 +10,42 @@
   <SetVariable name="group">[Auxiliary<Variable name="i"/>]</SetVariable>
   <WidgetGroup>
     <ObjectName>AuxiliaryContainer</ObjectName>
-    <Layout>vertical</Layout>
-    <SizePolicy>max,max</SizePolicy>
+    <Layout>horizontal</Layout>
+    <SizePolicy>max,min</SizePolicy>
     <Children>
-
-      <WidgetGroup>
-        <Layout>horizontal</Layout>
-        <ObjectName>AuxLabelContainer</ObjectName>
-        <Children>
-          <Label>
-            <ObjectName>AuxLabel</ObjectName>
-            <Text>Aux <Variable name="i"/></Text>
-          </Label>
-        </Children>
-      </WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>AuxiliaryControls</ObjectName>
         <Layout>horizontal</Layout>
         <Children>
 
-          <Template src="skin:knob_with_button.xml">
-            <SetVariable name="TooltipId">microphone_pregain</SetVariable>
-            <SetVariable name="control">pregain</SetVariable>
-            <SetVariable name="color">red</SetVariable>
-            <SetVariable name="button_TooltipId">mute</SetVariable>
-            <SetVariable name="button_control">mute</SetVariable>
-            <SetVariable name="label">Gain</SetVariable>
-          </Template>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <ObjectName>AuxiliaryControls</ObjectName>
+            <Children>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <ObjectName>AuxLabelContainer</ObjectName>
+                <Children>
+                  <Label>
+                    <ObjectName>AuxLabel</ObjectName>
+                    <Text>Aux <Variable name="i"/></Text>
+                  </Label>
+                </Children>
+              </WidgetGroup>
+
+
+              <Template src="skin:knob_with_button.xml">
+                <SetVariable name="TooltipId">microphone_pregain</SetVariable>
+                <SetVariable name="control">pregain</SetVariable>
+                <SetVariable name="color">green</SetVariable>
+                <SetVariable name="button_TooltipId">mute</SetVariable>
+                <SetVariable name="button_control">mute</SetVariable>
+                <SetVariable name="label">Gain</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
 
           <WidgetGroup>
             <ObjectName>AuxiliaryButtonsAndMeter</ObjectName>
@@ -64,7 +72,9 @@
                     <SetVariable name="left_connection_control"><Variable name="group"/>,pfl</SetVariable>
                   </Template>
 
-                  <Template src="skin:crossfader_orientation_button.xml" />
+                  <Template src="skin:crossfader_orientation_button.xml">
+                    <SetVariable name="Unit">Aux</SetVariable>
+                  </Template>
 
                 </Children>
               </WidgetGroup>

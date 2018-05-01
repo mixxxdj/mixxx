@@ -13,17 +13,19 @@
 #include "util/types.h"
 
 
-class MetronomeGroupState final {
+class MetronomeGroupState final : public EffectState {
   public:
-    MetronomeGroupState()
-      : m_framesSinceClickStart(0) {
+    MetronomeGroupState(const mixxx::EngineParameters& bufferParameters)
+      : EffectState(bufferParameters),
+        m_framesSinceClickStart(0) {
     }
     ~MetronomeGroupState() {
     }
+
     unsigned int m_framesSinceClickStart;
 };
 
-class MetronomeEffect : public PerChannelEffectProcessor<MetronomeGroupState> {
+class MetronomeEffect : public EffectProcessorImpl<MetronomeGroupState> {
   public:
     MetronomeEffect(EngineEffect* pEffect);
     virtual ~MetronomeEffect();
@@ -35,9 +37,8 @@ class MetronomeEffect : public PerChannelEffectProcessor<MetronomeGroupState> {
     void processChannel(const ChannelHandle& handle,
                         MetronomeGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE* pOutput,
-                        const unsigned int numSamples,
-                        const unsigned int sampleRate,
-                        const EffectProcessor::EnableState enableState,
+                        const mixxx::EngineParameters& bufferParameters,
+                        const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatures);
   private:
     EngineEffectParameter* m_pBpmParameter;

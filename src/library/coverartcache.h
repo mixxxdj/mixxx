@@ -55,7 +55,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
 
   signals:
     void coverFound(const QObject* requestor,
-                    const CoverInfo& info, QPixmap pixmap, bool fromCache);
+                    const CoverInfoRelative& info, QPixmap pixmap, bool fromCache);
 
   protected:
     CoverArtCache();

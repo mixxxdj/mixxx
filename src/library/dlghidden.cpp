@@ -41,13 +41,15 @@ DlgHidden::DlgHidden(QWidget* parent, UserSettingsPointer pConfig,
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this,
             SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
-
     connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
+
     connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
             m_pTrackTableView, SLOT(setTrackTableFont(QFont)));
     connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
             m_pTrackTableView, SLOT(setTrackTableRowHeight(int)));
+    connect(pLibrary, SIGNAL(setSelectedClick(bool)),
+            m_pTrackTableView, SLOT(setSelectedClick(bool)));
 }
 
 DlgHidden::~DlgHidden() {
@@ -85,14 +87,6 @@ void DlgHidden::selectionChanged(const QItemSelection &selected,
                                  const QItemSelection &deselected) {
     Q_UNUSED(deselected);
     activateButtons(!selected.indexes().isEmpty());
-}
-
-void DlgHidden::setTrackTableFont(const QFont& font) {
-    m_pTrackTableView->setTrackTableFont(font);
-}
-
-void DlgHidden::setTrackTableRowHeight(int rowHeight) {
-    m_pTrackTableView->setTrackTableRowHeight(rowHeight);
 }
 
 bool DlgHidden::hasFocus() const {

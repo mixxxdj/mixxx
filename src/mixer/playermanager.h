@@ -29,6 +29,8 @@ class SoundManager;
 // For mocking PlayerManager.
 class PlayerManagerInterface {
   public:
+    virtual ~PlayerManagerInterface() {};
+
     // Get a BaseTrackPlayer (i.e. a Deck or a Sampler) by its group
     virtual BaseTrackPlayer* getPlayer(QString group) const = 0;
 
@@ -169,6 +171,10 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
         return QString("[Auxiliary%1]").arg(i + 1);
     }
 
+    static QAtomicPointer<ControlProxy> m_pCOPNumDecks;
+    static QAtomicPointer<ControlProxy> m_pCOPNumSamplers;
+    static QAtomicPointer<ControlProxy> m_pCOPNumPreviewDecks;
+
   public slots:
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck
     void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
@@ -239,8 +245,6 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     AnalyzerQueue* m_pAnalyzerQueue;
     ControlObject* m_pCONumDecks;
     ControlObject* m_pCONumSamplers;
-    ControlObject* m_pCOSamplerBankLoad;
-    ControlObject* m_pCOSamplerBankSave;
     ControlObject* m_pCONumPreviewDecks;
     ControlObject* m_pCONumMicrophones;
     ControlObject* m_pCONumAuxiliaries;

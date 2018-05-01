@@ -22,6 +22,7 @@
 #include "preferences/dialog/dlgprefeq.h"
 #include "effects/native/biquadfullkilleqeffect.h"
 #include "effects/native/filtereffect.h"
+#include "effects/effectslot.h"
 #include "engine/enginefilterbessel4.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -56,6 +57,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
           m_bGainAutoReset(false) {
     m_pEQEffectRack = m_pEffectsManager->getEqualizerRack(0);
     m_pQuickEffectRack = m_pEffectsManager->getQuickEffectRack(0);
+    m_pOutputEffectRack = m_pEffectsManager->getOutputsEffectRack();
 
     setupUi(this);
     // Connection
@@ -680,7 +682,6 @@ void DlgPrefEQ::setUpMasterEQ() {
         masterEqIndex = availableMasterEQEffects.size(); // selects "None"
     }
     comboBoxMasterEq->setCurrentIndex(masterEqIndex);
-    slotMasterEqEffectChanged(masterEqIndex);
 
     // Load parameters from preferences:
     EffectPointer effect(m_pEffectMasterEQ);
@@ -718,18 +719,18 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
         pbResetMasterEq->show();
     }
 
-    EffectChainSlotPointer pChainSlot =
-            m_pEQEffectRack->getGroupEffectChainSlot("[Master]");
+    EffectChainSlotPointer pChainSlot = m_pOutputEffectRack->getEffectChainSlot(0);
 
     if (pChainSlot) {
-        EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
+        EffectChainPointer pChain = pChainSlot->getEffectChain();
+        VERIFY_OR_DEBUG_ASSERT(pChain) {
+            pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
+        }
         EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
         pChain->replaceEffect(0, pEffect);
 
-        QString group = m_pEQEffectRack->formatEffectSlotGroupString(0, "[Master]");
-        ControlObject::set(ConfigKey(group, "enabled"), 1);
-
         if (pEffect) {
+            pEffect->setEnabled(true);
             m_pEffectMasterEQ = pEffect;
 
             int knobNum = pEffect->numKnobParameters();

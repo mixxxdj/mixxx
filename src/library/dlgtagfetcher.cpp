@@ -5,7 +5,6 @@
 
 DlgTagFetcher::DlgTagFetcher(QWidget *parent)
         : QDialog(parent),
-          m_track(NULL),
           m_TagFetcher(parent),
           m_networkError(NOERROR) {
     init();

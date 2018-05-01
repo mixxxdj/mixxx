@@ -14,9 +14,9 @@
 #include "util/sample.h"
 #include "util/types.h"
 
-class LinkwitzRiley8EQEffectGroupState {
+class LinkwitzRiley8EQEffectGroupState : public EffectState {
   public:
-    LinkwitzRiley8EQEffectGroupState();
+    LinkwitzRiley8EQEffectGroupState(const mixxx::EngineParameters& bufferParameters);
     virtual ~LinkwitzRiley8EQEffectGroupState();
 
     void setFilters(int sampleRate, int lowFreq, int highFreq);
@@ -39,7 +39,7 @@ class LinkwitzRiley8EQEffectGroupState {
     int m_hiFreq;
 };
 
-class LinkwitzRiley8EQEffect : public PerChannelEffectProcessor<LinkwitzRiley8EQEffectGroupState> {
+class LinkwitzRiley8EQEffect : public EffectProcessorImpl<LinkwitzRiley8EQEffectGroupState> {
   public:
     LinkwitzRiley8EQEffect(EngineEffect* pEffect);
     virtual ~LinkwitzRiley8EQEffect();
@@ -51,9 +51,8 @@ class LinkwitzRiley8EQEffect : public PerChannelEffectProcessor<LinkwitzRiley8EQ
     void processChannel(const ChannelHandle& handle,
                         LinkwitzRiley8EQEffectGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
-                        const unsigned int numSamples,
-                        const unsigned int sampleRate,
-                        const EffectProcessor::EnableState enableState,
+                        const mixxx::EngineParameters& bufferParameters,
+                        const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatureState);
 
   private:

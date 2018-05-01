@@ -8,9 +8,6 @@
 
 #include "effects/effectmanifestparameter.h"
 
-class EffectManifest;
-typedef QSharedPointer<EffectManifest> EffectManifestPointer;
-
 // An EffectManifest is a full description of the metadata associated with an
 // effect (e.g. name, author, version, description, etc.) and the parameters of
 // the effect that are intended to be exposed to the rest of Mixxx for user or
@@ -28,7 +25,8 @@ class EffectManifest final {
     EffectManifest()
         : m_isMixingEQ(false),
           m_isMasterEQ(false),
-          m_effectRampsFromDry(false) {
+          m_effectRampsFromDry(false),
+          m_metaknobDefault(0.5) {
     }
 
     const QString& id() const {
@@ -78,7 +76,7 @@ class EffectManifest final {
         return m_description;
     }
 
-    bool isMixingEQ() const {
+    const bool& isMixingEQ() const {
         return m_isMixingEQ;
     }
 
@@ -86,7 +84,7 @@ class EffectManifest final {
         m_isMixingEQ = value;
     }
 
-    bool isMasterEQ() const {
+    const bool& isMasterEQ() const {
         return m_isMasterEQ;
     }
 
@@ -120,6 +118,13 @@ class EffectManifest final {
         m_effectRampsFromDry = effectFadesFromDry;
     }
 
+    double metaknobDefault() const {
+        return m_metaknobDefault;
+    }
+    void setMetaknobDefault(double metaknobDefault) {
+        m_metaknobDefault = metaknobDefault;
+    }
+
   private:
     QString debugString() const {
         return QString("EffectManifest(%1)").arg(m_id);
@@ -136,6 +141,7 @@ class EffectManifest final {
     bool m_isMasterEQ;
     QList<EffectManifestParameterPointer> m_parameters;
     bool m_effectRampsFromDry;
+    double m_metaknobDefault;
 };
 
 #endif /* EFFECTMANIFEST_H */

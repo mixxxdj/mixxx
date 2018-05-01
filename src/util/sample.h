@@ -161,6 +161,9 @@ class SampleUtil {
             CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain,
             SINT numSamples);
 
+    // Add pSrc to pDest
+    static void add(CSAMPLE* pDest, const CSAMPLE* pSrc, SINT numSamples);
+
     // Add each sample of pSrc, multiplied by the gain, to pDest
     static void addWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
             CSAMPLE_GAIN gain, SINT numSamples);

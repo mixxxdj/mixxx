@@ -11,25 +11,23 @@
 #include "preferences/usersettings.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
-#include "effects/effect.h"
-#include "effects/effectchain.h"
-#include "effects/effectchainmanager.h"
-#include "effects/effectchainslot.h"
-#include "effects/effectrack.h"
-#include "effects/effectsbackend.h"
 #include "engine/channelhandle.h"
 #include "engine/effects/message.h"
 #include "util/class.h"
 #include "util/fifo.h"
 
 class EngineEffectsManager;
+class EffectChainManager;
+class EffectManifest;
+class EffectsBackend;
 
 class EffectsManager : public QObject {
     Q_OBJECT
   public:
     typedef bool (*EffectManifestFilterFnc)(EffectManifest* pManifest);
 
-    EffectsManager(QObject* pParent, UserSettingsPointer pConfig);
+    EffectsManager(QObject* pParent, UserSettingsPointer pConfig,
+                   ChannelHandleFactory* pChannelHandleFactory);
     virtual ~EffectsManager();
 
     EngineEffectsManager* getEngineEffectsManager() {
@@ -40,12 +38,18 @@ class EffectsManager : public QObject {
         return m_pEffectChainManager;
     }
 
+    const ChannelHandle getMasterHandle() {
+        return m_pChannelHandleFactory->getOrCreateHandle("[Master]");
+    }
+
     // Add an effect backend to be managed by EffectsManager. EffectsManager
     // takes ownership of the backend, and will delete it when EffectsManager is
     // being deleted. Not thread safe -- use only from the GUI thread.
     void addEffectsBackend(EffectsBackend* pEffectsBackend);
-    void registerChannel(const ChannelHandleAndGroup& handle_group);
-    const QSet<ChannelHandleAndGroup>& registeredChannels() const;
+    void registerInputChannel(const ChannelHandleAndGroup& handle_group);
+    void registerOutputChannel(const ChannelHandleAndGroup& handle_group);
+    const QSet<ChannelHandleAndGroup>& registeredInputChannels() const;
+    const QSet<ChannelHandleAndGroup>& registeredOutputChannels() const;
 
     StandardEffectRackPointer addStandardEffectRack();
     StandardEffectRackPointer getStandardEffectRack(int rack);
@@ -55,6 +59,11 @@ class EffectsManager : public QObject {
 
     QuickEffectRackPointer addQuickEffectRack();
     QuickEffectRackPointer getQuickEffectRack(int rack);
+
+    OutputEffectRackPointer addOutputsEffectRack();
+    OutputEffectRackPointer getOutputsEffectRack();
+
+    void loadEffectChains();
 
     EffectRackPointer getEffectRack(const QString& group);
     EffectSlotPointer getEffectSlot(const QString& group);
@@ -102,6 +111,9 @@ class EffectsManager : public QObject {
     }
 
     void processEffectsResponses();
+    void collectGarbage(const EffectsRequest* pResponse);
+
+    ChannelHandleFactory* m_pChannelHandleFactory;
 
     EffectChainManager* m_pEffectChainManager;
     QList<EffectsBackend*> m_effectsBackends;

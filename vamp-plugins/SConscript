@@ -5,6 +5,8 @@ import sys
 import SCons
 import shutil
 
+from build import util
+
 Import('build')
 Import('mixxxminimal_depends')
 
@@ -46,12 +48,14 @@ mixxxminimal_sources = [
 #=========================
 if int(build.flags['vamp']):
     env = build.env.Clone()
-    conf = Configure(env)
+    conf = Configure(env, custom_tests = { 'CheckForPKGConfig' : util.CheckForPKGConfig,
+                                       'CheckForPKG' : util.CheckForPKG })
 
-    # If there is no system vamp-hostdk installed, then we'll directly link
-    # the vamp-hostsdk.
-    if not conf.CheckLib('vamp-sdk'):
-        INTERNAL_VAMP_PATH = '#lib/vamp-2.6'
+    # If there is no system vamp-sdk is installed or if the version
+    # of the installed vamp-sdk is less than the bundled version,
+    # then we'll directly link the bundled vamp-sdk.
+    if not conf.CheckLib('vamp-sdk') or not conf.CheckForPKG('vamp-plugin-sdk', '2.7.1'):
+        INTERNAL_VAMP_PATH = '#lib/vamp'
         # For header includes
         env.Append(CPPPATH=[INTERNAL_VAMP_PATH])
         sdk_src_path = '%s/src/vamp-sdk' % INTERNAL_VAMP_PATH

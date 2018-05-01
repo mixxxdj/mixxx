@@ -60,10 +60,10 @@ public:
         BOOTH,
         BUS,
         DECK,
-        RECORD_BROADCAST,
         VINYLCONTROL,
         MICROPHONE,
         AUXILIARY,
+        RECORD_BROADCAST,
         INVALID, // if this isn't last bad things will happen -bkgood
     };
     AudioPath(unsigned char channelBase, unsigned char channels);

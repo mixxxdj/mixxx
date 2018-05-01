@@ -4,11 +4,8 @@
 #include <QSharedPointer>
 
 #include "effects/effectmanifest.h"
-#include "effects/effectprocessor.h"
 #include "effects/lv2/lv2effectprocessor.h"
 #include <lilv-0/lilv/lilv.h>
-
-class EngineEffect;
 
 class EffectInstantiator {
   public:
@@ -34,18 +31,18 @@ class LV2EffectProcessorInstantiator : public EffectInstantiator {
                                    QList<int> audioPortIndices,
                                    QList<int> controlPortIndices)
             : m_pPlugin(plugin),
-              audioPortIndices(audioPortIndices),
-              controlPortIndices(controlPortIndices) { }
+              m_audioPortIndices(audioPortIndices),
+              m_controlPortIndices(controlPortIndices) { }
 
     EffectProcessor* instantiate(EngineEffect* pEngineEffect,
                                  EffectManifestPointer pManifest) {
         return new LV2EffectProcessor(pEngineEffect, pManifest, m_pPlugin,
-                                      audioPortIndices, controlPortIndices);
+                                      m_audioPortIndices, m_controlPortIndices);
     }
   private:
     const LilvPlugin* m_pPlugin;
-    QList<int> audioPortIndices;
-    QList<int> controlPortIndices;
+    const QList<int> m_audioPortIndices;
+    const QList<int> m_controlPortIndices;
 
 };
 

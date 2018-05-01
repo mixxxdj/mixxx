@@ -6,7 +6,6 @@
 #include "util/math.h"
 
 constexpr int EchoGroupState::kMaxDelaySeconds;
-constexpr int EchoGroupState::kChannelCount;
 
 namespace {
 
@@ -30,16 +29,21 @@ EffectManifestPointer EchoEffect::getManifest() {
     EffectManifestPointer pManifest(new EffectManifest());
     pManifest->setId(getId());
     pManifest->setName(QObject::tr("Echo"));
+    pManifest->setShortName(QObject::tr("Echo"));
     pManifest->setAuthor("The Mixxx Team");
     pManifest->setVersion("1.0");
-    pManifest->setDescription(QObject::tr("Simple Echo with pingpong"));
+    pManifest->setDescription(QObject::tr(
+      "Stores the input signal in a temporary buffer and outputs it after a short time"));
+    pManifest->setMetaknobDefault(db2ratio(-3.0));
 
     EffectManifestParameterPointer delay = pManifest->addParameter();
     delay->setId("delay_time");
     delay->setName(QObject::tr("Time"));
-    delay->setDescription(QObject::tr("Delay time\n"
-        "1/8 - 2 beats if tempo is detected (decks and samplers) \n"
-        "1/8 - 2 seconds if no tempo is detected (mic & aux inputs, master mix)"));
+    delay->setShortName(QObject::tr("Time"));
+    delay->setDescription(QObject::tr(
+        "Delay time\n"
+        "1/8 - 2 beats if tempo is detected\n"
+        "1/8 - 2 seconds if no tempo is detected"));
     delay->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     delay->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     delay->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
@@ -50,8 +54,9 @@ EffectManifestPointer EchoEffect::getManifest() {
     EffectManifestParameterPointer feedback = pManifest->addParameter();
     feedback->setId("feedback_amount");
     feedback->setName(QObject::tr("Feedback"));
-    feedback->setDescription(
-            QObject::tr("Amount the echo fades each time it loops"));
+    feedback->setShortName(QObject::tr("Feedback"));
+    feedback->setDescription(QObject::tr(
+        "Amount the echo fades each time it loops"));
     feedback->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     feedback->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     feedback->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -62,10 +67,9 @@ EffectManifestPointer EchoEffect::getManifest() {
     EffectManifestParameterPointer pingpong = pManifest->addParameter();
     pingpong->setId("pingpong_amount");
     pingpong->setName(QObject::tr("Ping Pong"));
-    pingpong->setDescription(
-            QObject::tr("As the ping pong amount increases, increasing amounts "
-                        "of the echoed signal is bounced between the left and "
-                        "right speakers."));
+    pingpong->setShortName(QObject::tr("Ping Pong"));
+    pingpong->setDescription(QObject::tr(
+        "How much the echoed sound bounces between the left and right sides of the stereo field"));
     pingpong->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     pingpong->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     pingpong->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -76,8 +80,9 @@ EffectManifestPointer EchoEffect::getManifest() {
     EffectManifestParameterPointer send = pManifest->addParameter();
     send->setId("send_amount");
     send->setName(QObject::tr("Send"));
-    send->setDescription(
-            QObject::tr("How much of the signal to send into the delay buffer"));
+    send->setShortName(QObject::tr("Send"));
+    send->setDescription(QObject::tr(
+        "How much of the signal to send into the delay buffer"));
     send->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     send->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     send->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -88,9 +93,10 @@ EffectManifestPointer EchoEffect::getManifest() {
 
     EffectManifestParameterPointer quantize = pManifest->addParameter();
     quantize->setId("quantize");
-    quantize->setName("Quantize");
-    quantize->setShortName("Quantize");
-    quantize->setDescription("Round the Time parameter to the nearest 1/4 beat.");
+    quantize->setName(QObject::tr("Quantize"));
+    quantize->setShortName(QObject::tr("Quantize"));
+    quantize->setDescription(QObject::tr(
+        "Round the Time parameter to the nearest 1/4 beat."));
     quantize->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     quantize->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     quantize->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -100,8 +106,10 @@ EffectManifestPointer EchoEffect::getManifest() {
 
     EffectManifestParameterPointer triplet = pManifest->addParameter();
     triplet->setId("triplet");
-    triplet->setName("Triplets");
-    triplet->setDescription("When the Quantize parameter is enabled, divide rounded 1/4 beats of Time parameter by 3.");
+    triplet->setName(QObject::tr("Triplets"));
+    triplet->setShortName(QObject::tr("Triplets"));
+    triplet->setDescription(QObject::tr(
+        "When the Quantize parameter is enabled, divide rounded 1/4 beats of Time parameter by 3."));
     triplet->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -121,18 +129,14 @@ EchoEffect::EchoEffect(EngineEffect* pEffect)
           m_pTripletParameter(pEffect->getParameterById("triplet")) {
  }
 
-EchoEffect::~EchoEffect() {
-}
-
 void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGroupState,
                                 const CSAMPLE* pInput,
-                                CSAMPLE* pOutput, const unsigned int numSamples,
-                                const unsigned int sampleRate,
-                                const EffectProcessor::EnableState enableState,
+                                CSAMPLE* pOutput,
+                                const mixxx::EngineParameters& bufferParameters,
+                                const EffectEnableState enableState,
                                 const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
 
-    DEBUG_ASSERT(0 == (numSamples % EchoGroupState::kChannelCount));
     EchoGroupState& gs = *pGroupState;
     // The minimum of the parameter is zero so the exact center of the knob is 1 beat.
     double period = m_pDelayParameter->value();
@@ -151,17 +155,17 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         } else if (period < 1/8.0) {
             period = 1/8.0;
         }
-        delay_frames = period * groupFeatures.beat_length_sec * sampleRate;
+        delay_frames = period * groupFeatures.beat_length_sec * bufferParameters.sampleRate();
     } else {
         // period is a number of seconds
         period = std::max(period, 1/8.0);
-        delay_frames = period * sampleRate;
+        delay_frames = period * bufferParameters.sampleRate();
     }
     VERIFY_OR_DEBUG_ASSERT(delay_frames > 0) {
         delay_frames = 1;
     }
 
-    int delay_samples = delay_frames * EchoGroupState::kChannelCount;
+    int delay_samples = delay_frames * bufferParameters.channelCount();
     VERIFY_OR_DEBUG_ASSERT(delay_samples <= gs.delay_buf.size()) {
         delay_samples = gs.delay_buf.size();
     }
@@ -173,31 +177,35 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
 
     // Feedback the delay buffer and then add the new input.
     const CSAMPLE_GAIN send_delta = (send_amount - gs.prev_send) /
-            (numSamples / EchoGroupState::kChannelCount);
+            bufferParameters.framesPerBuffer();
     const CSAMPLE_GAIN send_start = gs.prev_send + send_delta;
 
     const CSAMPLE_GAIN feedback_delta = (feedback_amount - gs.prev_feedback) /
-            (numSamples / EchoGroupState::kChannelCount);
+            bufferParameters.framesPerBuffer();
     const CSAMPLE_GAIN feedback_start = gs.prev_feedback + feedback_delta;
 
-    for (unsigned int i = 0; i < numSamples; i += EchoGroupState::kChannelCount) {
+    //TODO: rewrite to remove assumption of stereo buffer
+    for (unsigned int i = 0;
+            i < bufferParameters.samplesPerBuffer();
+            i += bufferParameters.channelCount()) {
         CSAMPLE_GAIN send_ramped = send_start
-                + send_delta * i / EchoGroupState::kChannelCount;
+                + send_delta * i / bufferParameters.channelCount();
         CSAMPLE_GAIN feedback_ramped = feedback_start
-                + feedback_delta * i / EchoGroupState::kChannelCount;
+                + feedback_delta * i / bufferParameters.channelCount();
 
         CSAMPLE bufferedSampleLeft = gs.delay_buf[read_position];
         CSAMPLE bufferedSampleRight = gs.delay_buf[read_position + 1];
         if (read_position != prev_read_position) {
-            double frac = static_cast<double>(i) / numSamples;            
+            double frac = static_cast<double>(i)
+                / bufferParameters.samplesPerBuffer();
             bufferedSampleLeft *= frac;
             bufferedSampleRight *= frac;
             bufferedSampleLeft += gs.delay_buf[prev_read_position] * (1 - frac);
             bufferedSampleRight += gs.delay_buf[prev_read_position + 1] * (1 - frac);
-            incrementRing(&prev_read_position, EchoGroupState::kChannelCount,
+            incrementRing(&prev_read_position, bufferParameters.channelCount(),
                     gs.delay_buf.size());
         }
-        incrementRing(&read_position, EchoGroupState::kChannelCount,
+        incrementRing(&read_position, bufferParameters.channelCount(),
                 gs.delay_buf.size());
 
         // Actual delays distort and saturate, so clamp the buffer here.
@@ -230,7 +238,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
                     (1 + pingpong_frac));
         }
 
-        incrementRing(&gs.write_position, EchoGroupState::kChannelCount,
+        incrementRing(&gs.write_position, bufferParameters.channelCount(),
                 gs.delay_buf.size());
 
         ++gs.ping_pong;
@@ -239,7 +247,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         }
     }
 
-    if (enableState == EffectProcessor::DISABLING) {
+    if (enableState == EffectEnableState::Disabling) {
         gs.delay_buf.clear();
     }
 

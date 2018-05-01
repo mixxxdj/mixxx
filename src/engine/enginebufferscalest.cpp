@@ -33,8 +33,8 @@ EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager)
       buffer_back(SampleUtil::alloc(buffer_back_size)),
       m_bBackwards(false) {
     DEBUG_ASSERT(getAudioSignal().verifyReadable());
-    m_pSoundTouch->setChannels(getAudioSignal().getChannelCount());
-    m_pSoundTouch->setSampleRate(getAudioSignal().getSamplingRate());
+    m_pSoundTouch->setChannels(getAudioSignal().channelCount());
+    m_pSoundTouch->setSampleRate(getAudioSignal().sampleRate());
     m_pSoundTouch->setRate(m_dBaseRate);
     m_pSoundTouch->setPitch(1.0);
     m_pSoundTouch->setSetting(SETTING_USE_QUICKSEEK, 1);
@@ -151,8 +151,6 @@ double EngineBufferScaleST::scaleBuffer(
             } else {
                 if (last_read_failed) {
                     m_pSoundTouch->flush();
-                    qWarning() << __FILE__ << "- only wrote" << total_received_frames
-                             << "frames instead of requested" << getAudioSignal().samples2frames(iOutputBufferSize);
                     break; // exit loop after failure
                 }
                 last_read_failed = true;

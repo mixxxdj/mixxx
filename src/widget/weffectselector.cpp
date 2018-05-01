@@ -7,7 +7,7 @@
 
 WEffectSelector::WEffectSelector(QWidget* pParent, EffectsManager* pEffectsManager)
         : QComboBox(pParent),
-          WBaseWidget(pParent),
+          WBaseWidget(this),
           m_pEffectsManager(pEffectsManager),
           m_scaleFactor(1.0) {
     // Prevent this widget from getting focused to avoid

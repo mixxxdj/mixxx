@@ -16,6 +16,11 @@ var smartPFL = true;
 //Disable Play on Sync button Double Press
 var noPlayOnSyncDoublePress = false;
 
+// Shift+Filter control behavior
+// true (default) - FX parameter 4 (when the FX is focused)
+// false - Channel Gain
+var ShiftFilterFX4 = true; 
+
 // allow pitch bend with wheel when wheel is not active 
 var PitchBendOnWheelOff = true;
 
@@ -77,11 +82,12 @@ var loopsize = [2, 4, 8, 16, 0.125, 0.25, 0.5, 1];
  * 2016-09-14 (1.31) - Stefan Mikolajczyk - https://github.com/mixxxdj/mixxx/pull/1012
  * 2016-04-08 (1.4) to 2017-01-05 (2.2) - Stéphane Morin - https://github.com/mixxxdj/mixxx/pull/1014
  * 2017-02-10 (2.3) - Radu Suciu - https://github.com/mixxxdj/mixxx/pull/1180
+ * 2018-01-20 (2.4) - NTMusic - Shift+Filter can control either FX4 or channel gain
  *
  ***********************************************************************
  *                           GPL v2 licence
  *                           -------------- 
- * Numark Mixtrack Pro 3 controller script 2.3 for Mixxx 2.1+
+ * Numark Mixtrack Pro 3 controller script 2.4 for Mixxx 2.1+
  * Copyright (C) 2016 Stéphane Morin
  *
  * This program is free software; you can redistribute it and/or
@@ -1074,27 +1080,20 @@ NumarkMixtrack3.PlayButton = function(channel, control, value, status, group) {
     }
 };
 
-/******************     Browse Button/Knob :
- * Track list mode.....:
- * - Turn         : Select a track in the play list
- * - Push         : Load Selected track into first stopped deck
- * Directory mode...... :
- * - SHIFT + Turn : Select Play List/Side bar item
- * - SHIFT + Push : Open/Close selected side bar item.
- *                   Load the selected track (if any) and play.
- * *********************************************************************/
 NumarkMixtrack3.BrowseButton = function(channel, control, value, status, group) {
     var shifted = (NumarkMixtrack3.decks.D1.shiftKey || NumarkMixtrack3.decks
         .D2.shiftKey || NumarkMixtrack3.decks.D3.shiftKey || NumarkMixtrack3.decks.D4.shiftKey);
 
-    if (shifted && value === ON) {
-        // SHIFT + BROWSE push : directory mode -- > Open/Close selected side bar item
-        engine.setValue('[Library]', 'ChooseItem', true);
-    } else {
-        // Browse push : maximize/minimize library view
-        if (value === ON) {
-            script.toggleControl('[Master]', 'maximize_library');
-        }
+    if (value === ON) {
+	    if (shifted) {
+	        // SHIFT + BROWSE push : directory mode -- > Open/Close selected side bar item
+	        engine.setValue('[Library]', 'GoToItem', true);
+	    } else {
+	        // Browse push : maximize/minimize library view
+	        if (value === ON) {
+	            script.toggleControl('[Master]', 'maximize_library');
+	        }
+	    }
     }
 };
 
@@ -1857,10 +1856,17 @@ NumarkMixtrack3.FilterKnob = function(channel, control, value, status, group) {
 
     // default behavior is to control filter
     // when shifted, change parameters of focused effect
-    if (deck.shiftKey && focusedEffect) {
-        parameterSoftTakeOver(
-            "[EffectRack1_EffectUnit" + decknum + "_Effect" + focusedEffect + "]", "parameter4", value
-        );
+    if (deck.shiftKey) {
+		// Default behavior for Shift+Filter is to change FX4 
+		// for the currently focused effect
+		if(focusedEffect && ShiftFilterFX4) {
+			parameterSoftTakeOver(
+				"[EffectRack1_EffectUnit" + decknum + "_Effect" + focusedEffect + "]", "parameter4", value
+			);
+		} else {			
+			// Shift+Filter is mapped to channel gain otherwise
+			parameterSoftTakeOver("[Channel" + decknum + "]", "pregain", value);
+		}
     } else {
         parameterSoftTakeOver("[QuickEffectRack1_[Channel" + decknum + "]]", "super1", value);
     }

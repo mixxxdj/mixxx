@@ -4,18 +4,18 @@
 #include <QSharedPointer>
 #include <QDomDocument>
 
+#include "engine/channelhandle.h"
+#include "engine/engine.h"
 #include "effects/effectmanifest.h"
 #include "effects/effectparameter.h"
 #include "effects/effectinstantiator.h"
 #include "util/class.h"
 
+class EffectState;
 class EffectProcessor;
 class EngineEffectChain;
 class EngineEffect;
 class EffectsManager;
-
-class Effect;
-typedef QSharedPointer<Effect> EffectPointer;
 
 // The Effect class is the main-thread representation of an instantiation of an
 // effect. This class is NOT thread safe and must only be used by the main
@@ -30,6 +30,8 @@ class Effect : public QObject {
            EffectManifestPointer pManifest,
            EffectInstantiatorPointer pInstantiator);
     virtual ~Effect();
+
+    EffectState* createState(const mixxx::EngineParameters& bufferParameters);
 
     EffectManifestPointer getManifest() const;
 
@@ -52,12 +54,15 @@ class Effect : public QObject {
 
     EngineEffect* getEngineEffect();
 
-    void addToEngine(EngineEffectChain* pChain, int iIndex);
+    void addToEngine(EngineEffectChain* pChain, int iIndex,
+                     const QSet<ChannelHandleAndGroup>& activeInputChannels);
     void removeFromEngine(EngineEffectChain* pChain, int iIndex);
     void updateEngineState();
 
     static EffectPointer createFromXml(EffectsManager* pEffectsManager,
                                  const QDomElement& element);
+
+    double getMetaknobDefault();
 
   signals:
     void enabledChanged(bool enabled);

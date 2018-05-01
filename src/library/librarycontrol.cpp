@@ -11,6 +11,7 @@
 #include "mixer/playermanager.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "widget/wtracktableview.h"
 #include "library/library.h"
 #include "library/libraryview.h"
 
@@ -63,7 +64,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
     // Controls to navigate vertically within currently focussed widget (up/down buttons)
     m_pMoveUp = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveUp"));
     m_pMoveDown = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveDown"));
-    m_pMoveVertical = std::make_unique<ControlObject>(ConfigKey("[Library]", "MoveVertical"), false);
+    m_pMoveVertical = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "MoveVertical"), false);
     connect(m_pMoveUp.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveUp(double)));
     connect(m_pMoveDown.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveDown(double)));
     connect(m_pMoveVertical.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveVertical(double)));
@@ -71,7 +72,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
     // Controls to navigate vertically within currently focussed widget (up/down buttons)
     m_pScrollUp = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "ScrollUp"));
     m_pScrollDown = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "ScrollDown"));
-    m_pScrollVertical = std::make_unique<ControlObject>(ConfigKey("[Library]", "ScrollVertical"), false);
+    m_pScrollVertical = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "ScrollVertical"), false);
     connect(m_pScrollUp.get(), SIGNAL(valueChanged(double)),this, SLOT(slotScrollUp(double)));
     connect(m_pScrollDown.get(), SIGNAL(valueChanged(double)),this, SLOT(slotScrollDown(double)));
     connect(m_pScrollVertical.get(), SIGNAL(valueChanged(double)),this, SLOT(slotScrollVertical(double)));
@@ -79,7 +80,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
     // Controls to navigate horizontally within currently selected item (left/right buttons)
     m_pMoveLeft = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveLeft"));
     m_pMoveRight = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveRight"));
-    m_pMoveHorizontal = std::make_unique<ControlObject>(ConfigKey("[Library]", "MoveHorizontal"), false);
+    m_pMoveHorizontal = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "MoveHorizontal"), false);
     connect(m_pMoveLeft.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveLeft(double)));
     connect(m_pMoveRight.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveRight(double)));
     connect(m_pMoveHorizontal.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveHorizontal(double)));
@@ -87,14 +88,14 @@ LibraryControl::LibraryControl(Library* pLibrary)
     // Control to navigate between widgets (tab/shit+tab button)
     m_pMoveFocusForward = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveFocusForward"));
     m_pMoveFocusBackward = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveFocusBackward"));
-    m_pMoveFocus = std::make_unique<ControlObject>(ConfigKey("[Library]", "MoveFocus"), false);
+    m_pMoveFocus = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "MoveFocus"), false);
     connect(m_pMoveFocusForward.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveFocusForward(double)));
     connect(m_pMoveFocusBackward.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveFocusBackward(double)));
     connect(m_pMoveFocus.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveFocus(double)));
 
-    // Control to choose the currently selected item in focussed widget (double click)
-    m_pChooseItem = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "ChooseItem"));
-    connect(m_pChooseItem.get(), SIGNAL(valueChanged(double)), this, SLOT(slotChooseItem(double)));
+    // Control to "goto" the currently selected item in focussed widget (context dependent)
+    m_pGoToItem = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "GoToItem"));
+    connect(m_pGoToItem.get(), SIGNAL(valueChanged(double)), this, SLOT(slotGoToItem(double)));
 
     // Auto DJ controls
     m_pAutoDjAddTop = std::make_unique<ControlPushButton>(ConfigKey("[Library]","AutoDjAddTop"));
@@ -315,8 +316,6 @@ void LibraryControl::slotSelectTrack(double v) {
     activeView->moveSelection(i);
 }
 
-
-
 void LibraryControl::slotMoveUp(double v) {
     if (v > 0) {
         emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Up, Qt::NoModifier});
@@ -453,8 +452,7 @@ void LibraryControl::slotToggleSelectedSidebarItem(double v) {
     }
 }
 
-void LibraryControl::slotChooseItem(double v) {
-    // XXX: Make this more generic? If Enter key is mapped correctly maybe we can use that
+void LibraryControl::slotGoToItem(double v) {
     if (!m_pLibraryWidget) {
         return;
     }
@@ -463,8 +461,21 @@ void LibraryControl::slotChooseItem(double v) {
     if (activeView && activeView->hasFocus()) {
         return slotLoadSelectedIntoFirstStopped(v);
     }
-    // Otherwise toggle the sidebar item expanded state (like a double-click)
-    slotToggleSelectedSidebarItem(v);
+
+    // Focus the library if this is a leaf node in the tree
+    if (m_pSidebarWidget->hasFocus()) {
+        if (m_pSidebarWidget && v > 0
+                && m_pSidebarWidget->isLeafNodeSelected()) {
+            setLibraryFocus();
+        } else {
+            // Otherwise toggle the sidebar item expanded state
+            slotToggleSelectedSidebarItem(v);
+        }
+    }
+    // TODO(xxx) instead of remote control the widgets individual, we should 
+    // translate this into Alt+Return and handle it at each library widget 
+    // individual https://bugs.launchpad.net/mixxx/+bug/1758618
+    //emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Return, Qt::AltModifier});
 }
 
 void LibraryControl::slotFontSize(double v) {
@@ -473,7 +484,7 @@ void LibraryControl::slotFontSize(double v) {
     }
     QFont font = m_pLibrary->getTrackTableFont();
     font.setPointSizeF(font.pointSizeF() + v);
-    m_pLibrary->slotSetTrackTableFont(font);
+    m_pLibrary->setFont(font);
 }
 
 void LibraryControl::slotIncrementFontSize(double v) {

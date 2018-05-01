@@ -1,38 +1,18 @@
 <Template>
+  <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
 	<WidgetGroup>
     <ObjectName>Waveform</ObjectName>
-		<Layout>vertical</Layout>
-		<SizePolicy>me,min</SizePolicy>
-        <!-- The waveform is at least 50px tall, but the spinnies or the spinny
-        margins can make them larger -->
-		<MinimumSize>200,50</MinimumSize>
+		<Layout>horizontal</Layout>
+		<SizePolicy>me,me</SizePolicy>
 		<Children>
-			<!--If you want the waveforms center to adjust when resizing in a collapsing widget
-			(e.g. to display spinning vinyl widget like in this skin) don't put the Waveform in a widget group,
-			and don't specify the Waveform's <Size>. So you would have:
-			Parent WidgetGroup
-				Waveform Widget (no Widgetgroup)
-				Child WidgetGroup for Spinny
-					Spinny Widget
-			-->
-			<!--
-			**********************************************
-			Visual- Waveform
-			**********************************************
-			-->
 			<Visual>
 				<TooltipId>waveform_display</TooltipId>
-				<Style></Style>
 				<Channel><Variable name="channum"/></Channel>
-				<Pos>0,0</Pos>
-				<!--See comment about <Size> above-->
-				<!--<Size>i,110</Size>-->
 				<BgColor><Variable name="SignalBgColor"/></BgColor>
-				<!--<BgPixmap>style/style_bg_waveform1.png</BgPixmap>-->
 				<SignalColor><Variable name="signal_color"/></SignalColor>
-                <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
-                <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
-                <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
+        <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
+        <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
+        <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
 				<BeatColor>#ffffff</BeatColor>
 				<BeatHighlightColor></BeatHighlightColor>
 				<PlayPosColor>#00FF00</PlayPosColor>
@@ -77,6 +57,82 @@
 					<TextColor>#FFFFFF</TextColor>
 				</Mark>
 			</Visual>
+
+      <WidgetGroup><!-- Transparent container for beatgrid buttons -->
+        <ObjectName>BeatgridButtons</ObjectName>
+        <Layout>vertical</Layout>
+        <!-- Horizontal size is 82px and we'll add the WaveformContainer's negative margin
+            (shifts waveform center mark) so that all buttons are visible -->
+        <SizePolicy>f,f</SizePolicy>
+        <Children>
+          <WidgetGroup><Size>1me,0me</Size></WidgetGroup>
+
+          <WidgetGroup><!-- beat grid buttons row -->
+            <ObjectName>Spacer0f</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>f,f</SizePolicy>
+            <Children>
+              <Template src="skin:button_1state.xml">
+                <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
+                <SetVariable name="ObjectName">BeatCurpos</SetVariable>
+                <SetVariable name="Icon">beat_curpos_large</SetVariable>
+                <SetVariable name="Size">28f,56f</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_curpos</SetVariable>
+              </Template>
+
+              <WidgetGroup><!-- beats earlier & faster -->
+                <Layout>vertical</Layout>
+                <SizePolicy>f,f</SizePolicy>
+                <Children>
+                  <Template src="skin:button_1state.xml">
+                    <SetVariable name="TooltipId">beats_translate_earlier</SetVariable>
+                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                    <SetVariable name="Icon">beats_earlier</SetVariable>
+                    <SetVariable name="Size">28f,28f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_earlier</SetVariable>
+                  </Template>
+
+                  <Template src="skin:button_1state.xml">
+                    <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
+                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                    <SetVariable name="Icon">beats_faster</SetVariable>
+                    <SetVariable name="Size">28f,28f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,beats_adjust_faster</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup><!-- /beats earlier & faster -->
+
+              <WidgetGroup><!-- beats later & slower -->
+                <Layout>vertical</Layout>
+                <SizePolicy>f,f</SizePolicy>
+                <Children>
+                  <Template src="skin:button_1state.xml">
+                    <SetVariable name="TooltipId">beats_translate_later</SetVariable>
+                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                    <SetVariable name="Icon">beats_later</SetVariable>
+                    <SetVariable name="Size">28f,28f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_later</SetVariable>
+                  </Template>
+
+                  <Template src="skin:button_1state.xml">
+                    <SetVariable name="TooltipId">beats_adjust_slower</SetVariable>
+                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                    <SetVariable name="Icon">beats_slower</SetVariable>
+                    <SetVariable name="Size">28f,28f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,beats_adjust_slower</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup><!-- /beats later & slower -->
+            </Children>
+          </WidgetGroup><!-- /beat grid buttons row -->
+
+          <WidgetGroup><Size>1me,0me</Size></WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],beatgrid_buttons</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Transparent container for beatgrid buttons -->
 		</Children>
 	</WidgetGroup>
 </Template>

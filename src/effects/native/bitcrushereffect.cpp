@@ -11,18 +11,21 @@ QString BitCrusherEffect::getId() {
 EffectManifestPointer BitCrusherEffect::getManifest() {
     EffectManifestPointer pManifest(new EffectManifest());
     pManifest->setId(getId());
-    pManifest->setName(QObject::tr("BitCrusher"));
+    pManifest->setName(QObject::tr("Bitcrusher"));
+    pManifest->setShortName(QObject::tr("Bitcrusher"));
     pManifest->setAuthor("The Mixxx Team");
     pManifest->setVersion("1.0");
     pManifest->setDescription(QObject::tr(
-        "The BitCrusher is an effect that adds quantisation noise to the signal "
-        "by the reduction of the resolution or bandwidth of the samples."));
+        "Adds noise by the reducing the bit depth and sample rate"));
     pManifest->setEffectRampsFromDry(true);
+    pManifest->setMetaknobDefault(0.0);
 
     EffectManifestParameterPointer depth = pManifest->addParameter();
     depth->setId("bit_depth");
     depth->setName(QObject::tr("Bit Depth"));
-    depth->setDescription(QObject::tr("Adjusts the bit depth of the samples."));
+    depth->setShortName(QObject::tr("Bit Depth"));
+    depth->setDescription(QObject::tr(
+        "The bit depth of the samples"));
     depth->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     depth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -39,7 +42,8 @@ EffectManifestPointer BitCrusherEffect::getManifest() {
     frequency->setId("downsample");
     frequency->setName(QObject::tr("Downsampling"));
     frequency->setShortName(QObject::tr("Down"));
-    frequency->setDescription(QObject::tr("Adjusts the sample rate, to which the signal is downsampled."));
+    frequency->setDescription(QObject::tr(
+        "The sample rate to which the signal is downsampled"));
     frequency->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     frequency->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     frequency->setUnitsHint(EffectManifestParameter::UnitsHint::SAMPLERATE);
@@ -65,13 +69,11 @@ BitCrusherEffect::~BitCrusherEffect() {
 void BitCrusherEffect::processChannel(const ChannelHandle& handle,
                                       BitCrusherGroupState* pState,
                                       const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                      const unsigned int numSamples,
-                                      const unsigned int sampleRate,
-                                      const EffectProcessor::EnableState enableState,
+                                      const mixxx::EngineParameters& bufferParameters,
+                                      const EffectEnableState enableState,
                                       const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
-    Q_UNUSED(sampleRate); // we are normalized to 1
     Q_UNUSED(enableState); // no need to ramp, it is just a bitcrusher ;-)
 
     const CSAMPLE downsample = m_pDownsampleParameter ?
@@ -86,8 +88,9 @@ void BitCrusherEffect::processChannel(const ChannelHandle& handle,
     // rarely used, to achieve equal loudness and maximum dynamic
     const CSAMPLE gainCorrection = (17 - bit_depth) / 8;
 
-    const int kChannels = 2;
-    for (unsigned int i = 0; i < numSamples; i += kChannels) {
+    for (unsigned int i = 0;
+            i < bufferParameters.samplesPerBuffer();
+            i += bufferParameters.channelCount()) {
         pState->accumulator += downsample;
 
         if (pState->accumulator >= 1.0) {

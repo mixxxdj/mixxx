@@ -2,6 +2,7 @@
 #define LV2MANIFEST_H
 
 #include "effects/effectmanifest.h"
+#include "effects/defs.h"
 #include <lilv-0/lilv/lilv.h>
 
 class LV2Manifest {

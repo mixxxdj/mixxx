@@ -1,6 +1,8 @@
 #include "preferences/dialog/dlgprefeffects.h"
 
 #include "effects/effectsmanager.h"
+#include "effects/effectmanifest.h"
+#include "effects/effectsbackend.h"
 
 DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
                                UserSettingsPointer pConfig,
