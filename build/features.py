@@ -372,7 +372,7 @@ class VinylControl(Feature):
 
 class Vamp(Feature):
     INTERNAL_LINK = False
-    INTERNAL_VAMP_PATH = '#lib/vamp-2.6'
+    INTERNAL_VAMP_PATH = '#lib/vamp'
 
     def description(self):
         return "Vamp Analyzer support"
@@ -393,9 +393,10 @@ class Vamp(Feature):
         build.env.Append(CPPDEFINES='__VAMP__')
         build.env.Append(CPPDEFINES='kiss_fft_scalar=double')
 
-        # If there is no system vamp-hostdk installed, then we'll directly link
-        # the vamp-hostsdk.
-        if not conf.CheckLib(['vamp-hostsdk']):
+        # If there is no system vamp-hostsdk is installed or if the version
+        # of the installed vamp-hostsdk is less than the bundled version,
+        # then we'll directly link the bundled vamp-hostsdk
+        if not conf.CheckLib('vamp-hostsdk') or not conf.CheckForPKG('vamp-plugin-sdk', '2.7.1'):
             # For header includes
             build.env.Append(CPPPATH=[self.INTERNAL_VAMP_PATH])
             self.INTERNAL_LINK = True
@@ -1130,7 +1131,7 @@ class Optimize(Feature):
                 optimize_level = Optimize.LEVEL_PORTABLE
 
             # Common flags to all optimizations.
-            # -ffast-math will pevent a performance penalty by denormals
+            # -ffast-math will prevent a performance penalty by denormals
             # (floating point values almost Zero are treated as Zero)
             # unfortunately that work only on 64 bit CPUs or with sse2 enabled
 
@@ -1184,11 +1185,11 @@ class Optimize(Feature):
                 # http://en.chys.info/2010/04/what-exactly-marchnative-means/
                 # Note: requires gcc >= 4.2.0
                 # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
-                # are set automaticaly
+                # are set automatically
                 if build.architecture_is_x86 and not build.machine_is_64bit:
                     # For 32 bit builds using gcc < 5.0, the mfpmath=sse is
                     # not set by default (not supported on arm builds)
-                    # If -msse is not implicite set, it falls back to mfpmath=387
+                    # If -msse is not implicitly set, it falls back to mfpmath=387
                     # and a compiler warning is issued (tested with gcc 4.8.4)
                     build.env.Append(CCFLAGS='-mfpmath=sse')
                 elif build.architecture_is_arm:

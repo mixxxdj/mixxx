@@ -84,7 +84,7 @@ class AiffFile: public TagLib::RIFF::AIFF::File {
 QDateTime getMetadataSynchronized(QFileInfo fileInfo) {
     const QDateTime metadataSynchronized = fileInfo.lastModified();
     VERIFY_OR_DEBUG_ASSERT(!metadataSynchronized.isNull()) {
-        return QDateTime::currentDateTime();
+        return QDateTime::currentDateTimeUtc();
     }
     return metadataSynchronized;
 }
@@ -378,7 +378,7 @@ private:
                 // Only write ID3v2 tag if it already exists
                 pID3v2Tag = pFile->ID3v2Tag(false);
             } else {
-                // Get or create  ID3v2 tag
+                // Get or create ID3v2 tag
                 pID3v2Tag = pFile->ID3v2Tag(true);
             }
             if (taglib::exportTrackMetadataIntoID3v2Tag(pID3v2Tag, trackMetadata)) {

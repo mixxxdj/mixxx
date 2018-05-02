@@ -138,7 +138,7 @@ class EffectChainSlot : public QObject {
     ControlObject* m_pControlChainMix;
     ControlObject* m_pControlChainSuperParameter;
     ControlPushButton* m_pControlChainInsertionType;
-    ControlObject* m_pControlChainSelector;
+    ControlEncoder* m_pControlChainSelector;
     ControlPushButton* m_pControlChainNextPreset;
     ControlPushButton* m_pControlChainPrevPreset;
 
@@ -152,7 +152,7 @@ class EffectChainSlot : public QObject {
     **/
     ControlPushButton* m_pControlChainShowFocus;
     ControlPushButton* m_pControlChainShowParameters;
-    ControlObject* m_pControlChainFocusedEffect;
+    ControlPushButton* m_pControlChainFocusedEffect;
 
     struct ChannelInfo {
         // Takes ownership of pEnabled.

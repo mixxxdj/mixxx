@@ -224,6 +224,8 @@ TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
     EXPECT_EQ("TITLE2", trackMetadata.getTrackInfo().getArtist());
     EXPECT_EQ("ARTIST", trackMetadata.getAlbumInfo().getTitle());
     EXPECT_EQ("TITLE", trackMetadata.getAlbumInfo().getArtist());
+    // The COMM:iTunPGAP comment should not be read
+    EXPECT_TRUE(trackMetadata.getTrackInfo().getComment().isNull());
 }
 
 TEST_F(SoundSourceProxyTest, seekForwardBackward) {

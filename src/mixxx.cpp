@@ -444,6 +444,10 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         m_pLibrary->scan();
     }
 
+    // This has to be done before m_pSoundManager->setupDevices()
+    // https://bugs.launchpad.net/mixxx/+bug/1758189
+    m_pPlayerManager->loadSamplers();
+
     // Try open player device If that fails, the preference panel is opened.
     bool retryClicked;
     do {
@@ -486,8 +490,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i+1);
         }
     }
-
-    m_pPlayerManager->loadSamplers();
 
     connect(&PlayerInfo::instance(),
             SIGNAL(currentPlayingTrackChanged(TrackPointer)),
@@ -581,19 +583,16 @@ void MixxxMainWindow::finalize() {
     delete m_pPlayerManager;
 
     // Evict all remaining tracks from the cache to trigger
-    // updating of modified tracks.
-    GlobalTrackCache::instance().evictAll();
+    // updating of modified tracks. We assume that no other
+    // components are accessing those files at this point.
+    qDebug() << t.elapsed(false) << "deactivating GlobalTrackCache";
+    GlobalTrackCacheLocker().deactivateCache();
 
     // Delete the library after the view so there are no dangling pointers to
     // the data models.
     // Depends on RecordingManager and PlayerManager
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting Library";
     delete m_pLibrary;
-
-    // The GlobalTrackCache singleton must be destroyed immediately
-    // after the library has been destroyed!
-    qDebug() << "Destroying GlobalTrackCache" << t.elapsed(false);
-    GlobalTrackCache::destroyInstance();
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "closing database connection(s)";
     m_pDbConnectionPool->destroyThreadLocalConnection();

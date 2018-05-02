@@ -59,7 +59,7 @@ Variables:
                     </Children>
                   </WidgetGroup><!-- /Beatjump backw/forw -->
 
-                  <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
+                  <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
                   <BeatSpinBox>
                     <TooltipId>beatjump_size</TooltipId>
@@ -111,22 +111,13 @@ Variables:
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <Template src="skin:button_2state_persist.xml">
-                    <SetVariable name="ObjectName">FxSamplersMiniMaxi</SetVariable>
-                    <SetVariable name="Size">16f,16f</SetVariable>
-                    <SetVariable name="ConfigKey">[Tango],loop_sizes</SetVariable>
-                  </Template>
-
-                  <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
 
                   <Template src="skin:button_2state_right.xml">
                     <SetVariable name="TooltipId">beatloop_activate</SetVariable>
-                    <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
+                    <SetVariable name="ObjectName">LoopActivateButton</SetVariable>
                     <SetVariable name="Size">30f,22f</SetVariable>
-                    <SetVariable name="state_0_pressed">loop_on.svg</SetVariable>
-                    <SetVariable name="state_0_unpressed">loop.svg</SetVariable>
-                    <SetVariable name="state_1_pressed">loop_on.svg</SetVariable>
-                    <SetVariable name="state_1_unpressed">loop_on.svg</SetVariable>
+                    <SetVariable name="state_0_icon">loop.svg</SetVariable>
+                    <SetVariable name="state_1_icon">loop_on.svg</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,beatloop_activate</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatlooproll_activate</SetVariable>
                   </Template>
@@ -138,7 +129,7 @@ Variables:
                     <Value><Variable name="group"/>,beatloop_size</Value>
                   </BeatSpinBox>
 
-                  <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
+                  <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
                   <WidgetGroup>
                     <ObjectName>Spacer0f</ObjectName>
@@ -148,11 +139,9 @@ Variables:
                       <Template src="skin:button_2state_right_display.xml">
                         <SetVariable name="TooltipId">reloop_toggle</SetVariable>
                         <SetVariable name="ObjectName">ReloopButton</SetVariable>
-                        <SetVariable name="Size">30f,22f</SetVariable>
-                        <SetVariable name="state_0_pressed">reloop_off.svg</SetVariable>
-                        <SetVariable name="state_0_unpressed">reloop_off.svg</SetVariable>
-                        <SetVariable name="state_1_pressed">reloop_on.svg</SetVariable>
-                        <SetVariable name="state_1_unpressed">reloop_on.svg</SetVariable>
+                        <SetVariable name="Size">22f,22f</SetVariable>
+                        <SetVariable name="state_0_icon">reloop_off.svg</SetVariable>
+                        <SetVariable name="state_1_icon">reloop_on.svg</SetVariable>
                         <SetVariable name="ConfigKey"><Variable name="group"/>,reloop_toggle</SetVariable>
                         <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reloop_andstop</SetVariable>
                         <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,loop_enabled</SetVariable>
@@ -183,11 +172,19 @@ Variables:
                       </Template>
                     </Children>
                   </WidgetGroup>
+
+                  <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
+
+                  <Template src="skin:button_2state_persist.xml">
+                    <SetVariable name="ObjectName">FxSamplersMiniMaxi</SetVariable>
+                    <SetVariable name="Size">14f,16f</SetVariable>
+                    <SetVariable name="ConfigKey">[Tango],loop_sizes</SetVariable>
+                  </Template>
                 </Children>
               </WidgetGroup><!-- /Beatloop controls 2.1 -->
 
               <!-- Fixed-size beatloop buttons -->
-              <Template src="skin:loop_sizes_right.xml"/>
+              <Template src="skin:loop_sizes_left.xml"/>
 
             </Children>
           </WidgetGroup><!-- /Beatloop controls -->

@@ -218,7 +218,7 @@ class EngineBuffer : public EngineObject {
     void readToCrossfadeBuffer(const int iBufferSize);
 
     // Reset buffer playpos and set file playpos.
-    void setNewPlaypos(double playpos);
+    void setNewPlaypos(double playpos, bool adjustingPhase);
 
     void processSyncRequests();
     void processSeek(bool paused);
@@ -295,7 +295,7 @@ class EngineBuffer : public EngineObject {
     // Copy of file sample rate
     int m_trackSampleRateOld;
 
-    // Mutex controlling weather the process function is in pause mode. This happens
+    // Mutex controlling whether the process function is in pause mode. This happens
     // during seek and loading of a new track
     QMutex m_pause;
     // Used in update of playpos slider

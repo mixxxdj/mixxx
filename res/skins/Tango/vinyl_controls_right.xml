@@ -12,7 +12,7 @@ Variables:
   <WidgetGroup>
     <ObjectName>Spacer0f</ObjectName>
     <Layout>vertical</Layout>
-    <Size>1min,50f</Size>
+    <Size>-1max,50f</Size>
     <Children>
 
       <WidgetGroup>
@@ -24,9 +24,10 @@ Variables:
         </Connection>
       </WidgetGroup>
 
+      <!-- Vinyl / Passthrough -->
       <WidgetGroup>
         <Layout>horizontal</Layout>
-        <Size>80f,24f</Size>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
 
           <WidgetGroup><!-- Toggle Vinyl Control, statuslight underneath -->
@@ -51,6 +52,8 @@ Variables:
             </Children>
           </WidgetGroup><!-- /Toggle Vinyl Control, statuslight underneath -->
 
+          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
           <Template src="skin:button_2state.xml">
             <SetVariable name="TooltipId">passthrough_enabled</SetVariable>
             <SetVariable name="ObjectName">PassthroughButton</SetVariable>
@@ -60,14 +63,17 @@ Variables:
             <SetVariable name="ConfigKey"><Variable name="group"/>,passthrough</SetVariable>
           </Template>
 
+          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- Vinyl / Passthrough -->
 
-      <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
+      <WidgetGroup><Size>1f,1f</Size></WidgetGroup>
 
+      <!-- Vinyl mode / Cue mode -->
       <WidgetGroup>
         <Layout>horizontal</Layout>
-        <Size>80f,23min</Size>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
 
           <Template src="skin:button_3state_persist.xml">
@@ -80,9 +86,11 @@ Variables:
             <SetVariable name="ConfigKey"><Variable name="group"/>,vinylcontrol_mode</SetVariable>
           </Template>
 
+          <WidgetGroup><Size>1f,1f</Size></WidgetGroup>
+
           <WidgetGroup><!-- Cue mode button with translucent cover -->
             <Layout>stacked</Layout>
-            <Size>40f,23me</Size>
+            <Size>40f,24f</Size>
             <Children>
               <!-- index 0 due to bug -->
               <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
@@ -91,7 +99,7 @@ Variables:
               <WidgetGroup>
                 <ObjectName>SubmenuCover</ObjectName>
                 <Layout>vertical</Layout>
-                <Size>40f,23me</Size>
+                <Size>40f,24f</Size>
                 <Connection>
                   <ConfigKey persist="true"><Variable name="group"/>,vinylcontrol_mode</ConfigKey>
                   <Transform><IsEqual>1</IsEqual><Not/></Transform>
@@ -102,7 +110,7 @@ Variables:
               <Template src="skin:button_3state_persist.xml">
                 <SetVariable name="TooltipId">vinylcontrol_cueing</SetVariable>
                 <SetVariable name="ObjectName">VinylModeButton</SetVariable>
-                <SetVariable name="Size">40f,23me</SetVariable>
+                <SetVariable name="Size">40f,24f</SetVariable>
                 <SetVariable name="state_0_text">CUE</SetVariable>
                 <SetVariable name="state_1_text">CUE</SetVariable>
                 <SetVariable name="state_2_text">HOT</SetVariable>
@@ -111,8 +119,10 @@ Variables:
             </Children>
           </WidgetGroup><!-- /Cue mode button with translucent covers -->
 
+          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
         </Children>
-      </WidgetGroup>
+      </WidgetGroup> <!-- /Vinyl mode / Cue mode -->
 
       <WidgetGroup>
         <Size>1min,1f</Size>

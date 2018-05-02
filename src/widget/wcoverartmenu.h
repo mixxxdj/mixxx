@@ -23,7 +23,7 @@ class WCoverArtMenu : public QMenu {
     void setCoverArt(const CoverInfo& coverInfo);
 
   signals:
-    void coverInfoSelected(const CoverInfo& coverInfo);
+    void coverInfoSelected(const CoverInfoRelative& coverInfo);
     void reloadCoverArt();
 
   private slots:

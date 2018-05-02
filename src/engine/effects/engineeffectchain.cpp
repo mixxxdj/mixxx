@@ -189,7 +189,7 @@ bool EngineEffectChain::disableForInputChannel(const ChannelHandle* inputHandle)
     // Do not call deleteStatesForInputChannel here because the EngineEffects'
     // process() method needs to run one last time before deleting the states.
     // deleteStatesForInputChannel needs to be called from the main thread after
-    // the succesful EffectsResponse is returned by the MessagePipe FIFO.
+    // the successful EffectsResponse is returned by the MessagePipe FIFO.
     return true;
 }
 
@@ -243,8 +243,13 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
     ChannelStatus& channelStatus = m_chainStatusForChannelMatrix[inputHandle][outputHandle];
     EffectEnableState effectiveChainEnableState = channelStatus.enable_state;
 
-    if (m_enableState != EffectEnableState::Enabled) {
-        effectiveChainEnableState = m_enableState;
+    // If the channel is fully disabled, do not let intermediate
+    // enabling/disabing signals from the chain's enable switch override
+    // the channel's state.
+    if (effectiveChainEnableState != EffectEnableState::Disabled) {
+        if (m_enableState != EffectEnableState::Enabled) {
+            effectiveChainEnableState = m_enableState;
+        }
     }
 
     CSAMPLE currentWetGain = m_dMix;

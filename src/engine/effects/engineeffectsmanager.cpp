@@ -198,7 +198,7 @@ void EngineEffectsManager::processInner(
         // 2. Process temporary buffer with each effect rack in series
         // 3. Mix the temporary buffer into pOut
         //    ChannelMixer::applyEffectsAndMixChannels use
-        //    this to mix channels into pOut regardless of whether any effects were processsed.
+        //    this to mix channels into pOut regardless of whether any effects were processed.
         CSAMPLE* pIntermediateInput = m_buffer1.data();
         if (oldGain == CSAMPLE_GAIN_ONE && newGain == CSAMPLE_GAIN_ONE) {
             // Avoid an unnecessary copy. EngineEffectRack::process does not modify the

@@ -25,7 +25,7 @@
               <Template src="skin:knob_with_button_left.xml">
                 <SetVariable name="TooltipId">pregain</SetVariable>
                 <SetVariable name="control">pregain</SetVariable>
-                <SetVariable name="color">grey</SetVariable>
+                <SetVariable name="color">green</SetVariable>
                 <SetVariable name="button_TooltipId">mute</SetVariable>
                 <SetVariable name="button_control">mute</SetVariable>
               </Template>
@@ -48,7 +48,7 @@
               <Template src="skin:knob.xml">
                 <SetVariable name="TooltipId">pregain</SetVariable>
                 <SetVariable name="control">pregain</SetVariable>
-                <SetVariable name="color">grey</SetVariable>
+                <SetVariable name="color">green</SetVariable>
               </Template>
             </Children>
             <Connection>
@@ -105,28 +105,18 @@
 
       <Template src="skin:equalizer_rack_parameter_left.xml">
         <SetVariable name="parameter">4</SetVariable>
-        <SetVariable name="color">orange</SetVariable>
       </Template>
 
       <Template src="skin:equalizer_rack_parameter_left.xml">
-        <SetVariable name="TooltipId">EqualizerRack_effect_parameter</SetVariable>
-        <SetVariable name="button_TooltipId">EqualizerRack_effect_button_parameter</SetVariable>
         <SetVariable name="parameter">3</SetVariable>
-        <SetVariable name="color">orange</SetVariable>
       </Template>
 
       <Template src="skin:equalizer_rack_parameter_left.xml">
-        <SetVariable name="TooltipId">EqualizerRack_effect_parameter</SetVariable>
-        <SetVariable name="button_TooltipId">EqualizerRack_effect_button_parameter</SetVariable>
         <SetVariable name="parameter">2</SetVariable>
-        <SetVariable name="color">orange</SetVariable>
       </Template>
 
       <Template src="skin:equalizer_rack_parameter_left.xml">
-        <SetVariable name="TooltipId">EqualizerRack_effect_parameter</SetVariable>
-        <SetVariable name="button_TooltipId">EqualizerRack_effect_button_parameter</SetVariable>
         <SetVariable name="parameter">1</SetVariable>
-        <SetVariable name="color">orange</SetVariable>
       </Template>
 
       <Template src="skin:quick_effect_superknob_left.xml">

@@ -39,13 +39,11 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
     // Iterate through the available locales and add them to the combobox
     // Borrowed following snippet from http://qt-project.org/wiki/How_to_create_a_multi_language_application
     QString translationsFolder = m_pConfig->getResourcePath() + "translations/";
-    QString currentLocale = pConfig->getValueString(ConfigKey("[Config]", "Locale"));
 
     QDir translationsDir(translationsFolder);
     QStringList fileNames = translationsDir.entryList(QStringList("mixxx_*.qm"));
     fileNames.push_back("mixxx_en_US.qm"); // add source language as a fake value
 
-    bool indexFlag = false; // it'll indicate if the selected index changed.
     for (int i = 0; i < fileNames.size(); ++i) {
         // Extract locale from filename
         QString locale = fileNames[i];
@@ -60,19 +58,9 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
         }
         lang = QString("%1 (%2)").arg(lang).arg(country);
         ComboBoxLocale->addItem(lang, locale); // locale as userdata (for storing to config)
-        if (locale == currentLocale) { // Set the currently selected locale
-            ComboBoxLocale->setCurrentIndex(ComboBoxLocale->count() - 1);
-            indexFlag = true;
-        }
     }
     ComboBoxLocale->model()->sort(0); // Sort languages list
-
     ComboBoxLocale->insertItem(0, "System", ""); // System default locale - insert at the top
-    if (!indexFlag) { // if selectedIndex didn't change - select system default
-        ComboBoxLocale->setCurrentIndex(0);
-    }
-    connect(ComboBoxLocale, SIGNAL(activated(int)),
-            this, SLOT(slotSetLocale(int)));
 
     //
     // Skin configurations
@@ -82,6 +70,7 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
     warningLabel->setText(warningString);
 
     ComboBoxSkinconf->clear();
+    skinPreviewLabel->setText("");
 
     QList<QDir> skinSearchPaths = m_pSkinLoader->getSkinSearchPaths();
     QList<QFileInfo> skins;
@@ -104,6 +93,7 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
         if (skinInfo.absoluteFilePath() == configuredSkinPath) {
             m_skin = skinInfo.fileName();
             ComboBoxSkinconf->setCurrentIndex(index);
+            skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin));
             if (size_ok) {
                 warningLabel->hide();
             } else {
@@ -122,52 +112,34 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     AutoHiDpi autoHiDpi;
     m_dScaleFactorAuto = autoHiDpi.getScaleFactor();
-    double scaleFactor = m_dScaleFactorAuto;
-    if (scaleFactor > 0) {
+    m_dScaleFactor = m_dScaleFactorAuto;
+    if (m_dScaleFactor > 0) {
         // we got a valid auto scale factor
         bool scaleFactorAuto = m_pConfig->getValue(
                 ConfigKey("[Config]", "ScaleFactorAuto"), true);
         checkBoxScaleFactorAuto->setChecked(scaleFactorAuto);
         if (scaleFactorAuto) {
-            comboBoxScaleFactor->setEnabled(false);
+            spinBoxScaleFactor->setEnabled(false);
             m_pConfig->setValue(
                     ConfigKey("[Config]", "ScaleFactor"), m_dScaleFactorAuto);
         } else {
-            scaleFactor = m_pConfig->getValue(
+            m_dScaleFactor = m_pConfig->getValue(
                         ConfigKey("[Config]", "ScaleFactor"), 1.0);
         }
     } else {
         checkBoxScaleFactorAuto->setEnabled(false);
-        scaleFactor = m_pConfig->getValue(
+        m_dScaleFactor = m_pConfig->getValue(
                     ConfigKey("[Config]", "ScaleFactor"), 1.0);
     }
+
     connect(checkBoxScaleFactorAuto, SIGNAL(toggled(bool)),
             this, SLOT(slotSetScaleFactorAuto(bool)));
+    connect(spinBoxScaleFactor, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSetScaleFactor(double)));
 
-    //: Entry of the HiDPI scale combo box. %1 is the scale factor in percent
-    comboBoxScaleFactor->addItem(QString(tr("%1 %")).arg(50), 0.5);
-    comboBoxScaleFactor->addItem(QString(tr("%1 %")).arg(100), 1);
-    comboBoxScaleFactor->addItem(QString(tr("%1 %")).arg(200), 2);
-    comboBoxScaleFactor->addItem(QString(tr("%1 %")).arg(300), 3);
-    comboBoxScaleFactor->addItem(QString(tr("%1 %")).arg(400), 4);
-    int i;
-    for (i = 0; i < comboBoxScaleFactor->count(); ++i) {
-        if (scaleFactor == comboBoxScaleFactor->itemData(i)) {
-            comboBoxScaleFactor->setCurrentIndex(i);
-            break;
-        }
-    }
-    if (i == comboBoxScaleFactor->count()) {
-        // no default scale, add custom scale
-        comboBoxScaleFactor->addItem(
-                QString(tr("%1 % (Experimental)")).arg(scaleFactor * 100), scaleFactor);
-        comboBoxScaleFactor->setCurrentIndex(i);
-    }
-    connect(comboBoxScaleFactor, SIGNAL(activated(int)),
-            this, SLOT(slotSetScaleFactor(int)));
 #else
     checkBoxScaleFactorAuto->hide();
-    comboBoxScaleFactor->hide();
+    spinBoxScaleFactor->hide();
     labelScaleFactor->hide();
 #endif
 
@@ -234,6 +206,9 @@ void DlgPrefInterface::slotUpdateSchemes() {
 
 void DlgPrefInterface::slotUpdate() {
     m_skinOnUpdate = m_pConfig->getValueString(ConfigKey("[Config]", "ResizableSkin"));
+    if (m_skinOnUpdate.isEmpty()) {
+        m_skinOnUpdate = m_pSkinLoader->getDefaultSkinName();
+    }
     ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findText(m_skinOnUpdate));
     slotUpdateSchemes();
     m_bRebootMixxxView = false;
@@ -244,9 +219,10 @@ void DlgPrefInterface::slotUpdate() {
     checkBoxScaleFactorAuto->setChecked(m_pConfig->getValue(
             ConfigKey("[Config]", "ScaleFactorAuto"), m_bUseAutoScaleFactor));
 
-    comboBoxScaleFactor->setCurrentIndex(comboBoxScaleFactor->findData(
-            m_pConfig->getValue(
-                    ConfigKey("[Config]", "ScaleFactor"), m_dScaleFactorAuto)));
+    // The spinbox shows a percentage but Mixxx stores a multiplication factor
+    // with 1.00 as no scaling, so multiply the stored value by 100.
+    spinBoxScaleFactor->setValue(m_pConfig->getValue(
+                    ConfigKey("[Config]", "ScaleFactor"), m_dScaleFactor) * 100);
 
     checkBoxStartFullScreen->setChecked(m_pConfig->getValue(
             ConfigKey("[Config]", "StartInFullscreen"), m_bStartWithFullScreen));
@@ -255,6 +231,11 @@ void DlgPrefInterface::slotUpdate() {
 
     int inhibitsettings = static_cast<int>(m_mixxx->getInhibitScreensaver());
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(inhibitsettings));
+
+    bool effectAdoptMetaknobValue = m_pConfig->getValue(
+            ConfigKey("[Effects]", "AdoptMetaknobValue"), true);
+    radioButtonKeepMetaknobPosition->setChecked(effectAdoptMetaknobValue);
+    radioButtonMetaknobLoadDefault->setChecked(!effectAdoptMetaknobValue);
 }
 
 void DlgPrefInterface::slotResetToDefaults() {
@@ -266,7 +247,8 @@ void DlgPrefInterface::slotResetToDefaults() {
     ComboBoxLocale->setCurrentIndex(0);
 
     // Default to normal size widgets
-    comboBoxScaleFactor->setCurrentIndex(1); // 100 %
+    // The spinbox shows a percentage with 100% as no scaling.
+    spinBoxScaleFactor->setValue(100);
     if (m_dScaleFactorAuto > 0) {
         checkBoxScaleFactorAuto->setChecked(true);
     }
@@ -280,16 +262,16 @@ void DlgPrefInterface::slotResetToDefaults() {
 
     // Tooltips on everywhere.
     radioButtonTooltipsLibraryAndSkin->setChecked(true);
+
+    radioButtonKeepMetaknobPosition->setChecked(true);
 }
 
-void DlgPrefInterface::slotSetLocale(int pos) {
-    m_locale = ComboBoxLocale->itemData(pos).toString();
-}
-
-void DlgPrefInterface::slotSetScaleFactor(int index) {
-    double newScaleFactor = comboBoxScaleFactor->itemData(index).toDouble();
-    if (m_dScaleFactor != newScaleFactor) {
-        m_dScaleFactor = newScaleFactor;
+void DlgPrefInterface::slotSetScaleFactor(double newValue) {
+    // The spinbox shows a percentage, but Mixxx stores a multiplication factor
+    // with 1.00 as no change.
+    newValue /= 100.0;
+    if (m_dScaleFactor != newValue) {
+        m_dScaleFactor = newValue;
         m_bRebootMixxxView = true;
     }
 }
@@ -300,11 +282,11 @@ void DlgPrefInterface::slotSetScaleFactorAuto(bool newValue) {
             m_bRebootMixxxView = true;
         }
     } else {
-        slotSetScaleFactor(comboBoxScaleFactor->currentIndex());
+        slotSetScaleFactor(newValue);
     }
 
     m_bUseAutoScaleFactor = newValue;
-    comboBoxScaleFactor->setEnabled(!newValue);
+    spinBoxScaleFactor->setEnabled(!newValue);
 }
 
 void DlgPrefInterface::slotSetTooltips() {
@@ -333,6 +315,7 @@ void DlgPrefInterface::slotSetScheme(int) {
 
 void DlgPrefInterface::slotSetSkin(int) {
     QString newSkin = ComboBoxSkinconf->currentText();
+    skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(newSkin));
     if (newSkin != m_skin) {
         m_skin = newSkin;
         m_bRebootMixxxView = newSkin != m_skinOnUpdate;
@@ -346,7 +329,9 @@ void DlgPrefInterface::slotApply() {
     m_pConfig->set(ConfigKey("[Config]", "ResizableSkin"), m_skin);
     m_pConfig->set(ConfigKey("[Config]", "Scheme"), m_colorScheme);
 
-    m_pConfig->set(ConfigKey("[Config]", "Locale"), m_locale);
+    QString locale = ComboBoxLocale->itemData(
+            ComboBoxLocale->currentIndex()).toString();
+    m_pConfig->set(ConfigKey("[Config]", "Locale"), locale);
 
     m_pConfig->setValue(
             ConfigKey("[Config]", "ScaleFactorAuto"), m_bUseAutoScaleFactor);
@@ -360,6 +345,9 @@ void DlgPrefInterface::slotApply() {
     m_pConfig->set(ConfigKey("[Config]", "StartInFullscreen"),
             ConfigValue(checkBoxStartFullScreen->isChecked()));
 
+    m_pConfig->set(ConfigKey("[Effects]", "AdoptMetaknobValue"),
+            ConfigValue(radioButtonKeepMetaknobPosition->isChecked()));
+
     m_mixxx->setToolTipsCfg(m_tooltipMode);
 
     // screensaver mode update
@@ -371,10 +359,10 @@ void DlgPrefInterface::slotApply() {
                 static_cast<mixxx::ScreenSaverPreference>(screensaverComboBoxState));
     }
 
-    if (m_locale != m_localeOnUpdate) {
+    if (locale != m_localeOnUpdate) {
         notifyRebootNecessary();
         // hack to prevent showing the notification when pressing "Okay" after "Apply"
-        m_localeOnUpdate = m_locale;
+        m_localeOnUpdate = locale;
     }
 
     if (m_bRebootMixxxView) {

@@ -78,6 +78,7 @@ Variables:
                 <Children>
                   <Template src="skin:button_2state.xml">
                     <SetVariable name="ObjectName">VinylTogglerLeftPassthrough</SetVariable>
+                    <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
                     <SetVariable name="Size">15f,50f</SetVariable>
                     <SetVariable name="ConfigKey">[Tango],vinylControlsDeck<Variable name="chanNum"/></SetVariable>
                   </Template>
@@ -94,6 +95,7 @@ Variables:
                 <Children>
                   <Template src="skin:button_2state.xml">
                     <SetVariable name="ObjectName">VinylTogglerLeft</SetVariable>
+                    <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
                     <SetVariable name="Size">15f,50f</SetVariable>
                     <SetVariable name="ConfigKey">[Tango],vinylControlsDeck<Variable name="chanNum"/></SetVariable>
                   </Template>

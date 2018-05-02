@@ -29,11 +29,12 @@ class KeyboardEventFilter;
 class LibraryFeature : public QObject {
   Q_OBJECT
   public:
-    LibraryFeature(QObject* parent = NULL);
-
-    LibraryFeature(UserSettingsPointer pConfig,
-                   QObject* parent = NULL);
-    virtual ~LibraryFeature();
+    explicit LibraryFeature(
+          QObject* parent = nullptr);
+    explicit LibraryFeature(
+            UserSettingsPointer pConfig,
+            QObject* parent = nullptr);
+    ~LibraryFeature() override = default;
 
     virtual QVariant title() = 0;
     virtual QIcon getIcon() = 0;
@@ -64,6 +65,10 @@ class LibraryFeature : public QObject {
     virtual void bindWidget(WLibrary* /* libraryWidget */,
                             KeyboardEventFilter* /* keyboard */) {}
     virtual TreeItemModel* getChildModel() = 0;
+
+    virtual bool hasTrackTable() {
+        return false;
+    }
 
   protected:
     QStringList getPlaylistFiles() const {
@@ -119,7 +124,6 @@ class LibraryFeature : public QObject {
 
   private: 
     QStringList getPlaylistFiles(QFileDialog::FileMode mode) const;
-
 };
 
 #endif /* LIBRARYFEATURE_H */

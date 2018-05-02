@@ -51,6 +51,10 @@
                 </Connection>
               </PushButton>
             </Children>
+            <Connection>
+              <ConfigKey>[Master],show_eq_kill_buttons</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
 
         </Children>
@@ -63,7 +67,6 @@
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <SizePolicy>me,f</SizePolicy>
-        <!--MaximumSize>64,12</MaximumSize-->
         <Children>
           <EffectName>
             <ObjectName>KnobLabel</ObjectName>

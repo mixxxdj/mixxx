@@ -32,6 +32,10 @@
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
+              <Template src="skin:spacer_hx.xml">
+                <SetVariable name="width">9f,-1</SetVariable>
+              </Template>
+
               <Template src="skin:left_2state_button.xml">
                 <SetVariable name="TooltipId">pfl</SetVariable>
                 <SetVariable name="ObjectName">DeckPFLButton</SetVariable>
@@ -49,6 +53,10 @@
             </Children>
           </WidgetGroup><!-- PFL -->
 
+          <Template src="skin:spacer_vx.xml">
+            <SetVariable name="height">-1,3f</SetVariable>
+          </Template>
+
           <WidgetGroup><!-- VU + Vol fader -->
             <GroupName>CondensedVolumeAndMonoMeter</GroupName>
             <Layout>horizontal</Layout>
@@ -61,7 +69,7 @@
                 <MinimumSize>40,50</MinimumSize>
                 <MaximumSize>40,-1</MaximumSize>
                 <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
-                <Handle scalemode="STRETCH_ASPECT">handle-vertical-grey.svg</Handle>
+                <Handle scalemode="STRETCH_ASPECT">handle-vertical-orange.svg</Handle>
                 <Horizontal>false</Horizontal>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,volume</ConfigKey>
@@ -127,11 +135,18 @@
             </Connection>
           </WidgetGroup><!-- VU + spacer -->
 
+          <Template src="skin:spacer_vx.xml">
+            <SetVariable name="height">-1,3f</SetVariable>
+          </Template>
+
           <WidgetGroup>
             <ObjectName>CondensedButtonContainerRight</ObjectName>
             <SizePolicy>me,min</SizePolicy>
-            <Layout>vertical</Layout>
+            <Layout>horizontal</Layout>
             <Children>
+              <Template src="skin:spacer_hx.xml">
+               <SetVariable name="width">9f,-1</SetVariable>
+              </Template>
 
               <Template src="skin:crossfader_orientation_button.xml">
                 <SetVariable name="Unit">Deck<Variable name="i"/></SetVariable>

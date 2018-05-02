@@ -51,7 +51,7 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
     slotEnableAutoDJRandomQueue(
             m_pConfig->getValue<int>(
                     ConfigKey("[Auto DJ]", "EnableRandomQueue")));
-    // Be ready to enable disable the random enque as reque is modified
+    // Be ready to enable disable the random enqueue as reque is modified
     connect(ComboBoxAutoDjRequeue, SIGNAL(activated(int)), this,
             SLOT(slotEnableAutoDJRandomQueueComboBox(int)));
     // Be ready to enable and modify the minimum number and enable disable the spinbox

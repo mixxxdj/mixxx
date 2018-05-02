@@ -30,6 +30,15 @@ class ControlNumericBehavior {
             MidiOpCode o, double dParam, ControlDoublePrivate* pControl);
 };
 
+// ControlEncoderBehavior passes the midi value directly to the internal parameter value.  It's
+// useful for selector knobs that pass +1 in one direction and -1 in the other.
+class ControlEncoderBehavior : public ControlNumericBehavior {
+  public:
+    ControlEncoderBehavior() {}
+    double midiToParameter(double midiValue) override;
+    double valueToMidiParameter(double dValue) override;
+};
+
 class ControlPotmeterBehavior : public ControlNumericBehavior {
   public:
     ControlPotmeterBehavior(double dMinValue, double dMaxValue,
@@ -107,7 +116,7 @@ class ControlAudioTaperPotBehavior : public ControlPotmeterBehavior {
     double m_offset;
     // ensures that the neutral position on a integer midi value
     // This value is subtracted from the Midi value at neutral position
-    // and is allways < 1
+    // and is always < 1
     double m_midiCorrection;
 };
 

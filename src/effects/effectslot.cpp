@@ -4,6 +4,7 @@
 #include <QDebug>
 
 #include "control/controlpushbutton.h"
+#include "control/controlencoder.h"
 #include "control/controlproxy.h"
 #include "util/math.h"
 #include "util/xml.h"
@@ -48,7 +49,7 @@ EffectSlot::EffectSlot(const QString& group,
             this, SLOT(slotPrevEffect(double)));
 
     // Ignoring no-ops is important since this is for +/- tickers.
-    m_pControlEffectSelector = new ControlObject(ConfigKey(m_group, "effect_selector"), false);
+    m_pControlEffectSelector = new ControlEncoder(ConfigKey(m_group, "effect_selector"), false);
     connect(m_pControlEffectSelector, SIGNAL(valueChanged(double)),
             this, SLOT(slotEffectSelector(double)));
 
@@ -149,7 +150,7 @@ EffectButtonParameterSlotPointer EffectSlot::getEffectButtonParameterSlot(unsign
     return m_buttonParameters[slotNumber];
 }
 
-void EffectSlot::loadEffect(EffectPointer pEffect) {
+void EffectSlot::loadEffect(EffectPointer pEffect, bool adoptMetaknobPosition) {
     //qDebug() << debugString() << "loadEffect"
     //         << (pEffect ? pEffect->getManifest().name() : "(null)");
     if (pEffect) {
@@ -181,6 +182,14 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
         }
         for (const auto& pParameter : m_buttonParameters) {
             pParameter->loadEffect(pEffect);
+        }
+
+
+        if (adoptMetaknobPosition) {
+            slotEffectMetaParameter(m_pControlMetaParameter->get(), true);
+        } else {
+            m_pControlMetaParameter->set(pEffect->getMetaknobDefault());
+            slotEffectMetaParameter(pEffect->getMetaknobDefault(), true);
         }
 
         emit(effectLoaded(pEffect, m_iEffectNumber));

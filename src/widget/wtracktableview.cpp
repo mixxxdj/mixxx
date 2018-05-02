@@ -100,14 +100,10 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pCoverMenu = new WCoverArtMenu(this);
     m_pCoverMenu->setTitle(tr("Cover Art"));
 
-    connect(m_pCoverMenu, SIGNAL(coverInfoSelected(const CoverInfo&)),
-            this, SLOT(slotCoverInfoSelected(const CoverInfo&)));
+    connect(m_pCoverMenu, SIGNAL(coverInfoSelected(const CoverInfoRelative&)),
+            this, SLOT(slotCoverInfoSelected(const CoverInfoRelative&)));
     connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
             this, SLOT(slotReloadCoverArt()));
-
-
-    // Disable editing
-    //setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     // Create all the context m_pMenu->actions (stuff that shows up when you
     //right-click)
@@ -264,7 +260,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         newModel = trackModel;
         saveVScrollBarPos(getTrackModel());
         //saving current vertical bar position
-        //using adress of track model as key
+        //using address of track model as key
     }
 
     // The "coverLocation" and "hash" column numbers are required very often
@@ -345,7 +341,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         /* If Mixxx starts the first time or the header states have been cleared
          * due to database schema evolution we gonna hide all columns that may
          * contain a potential large number of NULL values.  This will hide the
-         * key colum by default unless the user brings it to front
+         * key column by default unless the user brings it to front
          */
         if (trackModel->isColumnHiddenByDefault(i) &&
             !header->hasPersistedHeaderState()) {
@@ -408,7 +404,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
     restoreVScrollBarPos(newModel);
     // restoring scrollBar position using model pointer as key
-    // scrollbar positions with respect  to different models are backed by map
+    // scrollbar positions with respect to different models are backed by map
 }
 
 void WTrackTableView::createActions() {
@@ -539,28 +535,32 @@ void WTrackTableView::createActions() {
 
 // slot
 void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
-    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTODECK)) {
-        return;
-    }
     // Read the current TrackLoadAction settings
-    int action = DlgPrefLibrary::LOAD_TRACK_DECK; // default action
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
-        action = m_pConfig->getValueString(ConfigKey("[Library]","TrackLoadAction")).toInt();
-    }
-    switch (action) {
-    case DlgPrefLibrary::ADD_TRACK_BOTTOM:
-            sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM); // add track to Auto-DJ Queue (bottom)
-            break;
-    case DlgPrefLibrary::ADD_TRACK_TOP:
-            sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP); // add track to Auto-DJ Queue (top)
-            break;
-    default: // load track to next available deck
-            TrackModel* trackModel = getTrackModel();
-            TrackPointer pTrack;
-            if (trackModel && (pTrack = trackModel->getTrack(index))) {
-                emit(loadTrack(pTrack));
-            }
-            break;
+    int doubleClickActionConfigValue = m_pConfig->getValue(
+            ConfigKey("[Library]","TrackLoadAction"),
+            static_cast<int>(DlgPrefLibrary::LOAD_TO_DECK));
+    DlgPrefLibrary::TrackDoubleClickAction doubleClickAction =
+            static_cast<DlgPrefLibrary::TrackDoubleClickAction>(doubleClickActionConfigValue);
+
+    if (doubleClickAction == DlgPrefLibrary::LOAD_TO_DECK
+        && modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTODECK)) {
+        TrackModel* trackModel = getTrackModel();
+        VERIFY_OR_DEBUG_ASSERT(trackModel) {
+            return;
+        }
+
+        TrackPointer pTrack = trackModel->getTrack(index);
+        VERIFY_OR_DEBUG_ASSERT(pTrack) {
+            return;
+        }
+
+        emit(loadTrack(pTrack));
+    } else if (doubleClickAction == DlgPrefLibrary::ADD_TO_AUTODJ_BOTTOM
+        && modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
+        sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM);
+    } else if (doubleClickAction == DlgPrefLibrary::ADD_TO_AUTODJ_TOP
+        && modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
+        sendToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP);
     }
 }
 
@@ -1166,8 +1166,8 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     // The user usually drops on the seam between two rows.
     // We take the row below the seam for reference.
     int dropRow = rowAt(event->pos().y());
-    int hight = rowHeight(dropRow);
-    QPoint pointOfRowBelowSeam(event->pos().x(), event->pos().y() + hight / 2);
+    int height = rowHeight(dropRow);
+    QPoint pointOfRowBelowSeam(event->pos().x(), event->pos().y() + height / 2);
     QModelIndex destIndex = indexAt(pointOfRowBelowSeam);
 
     //qDebug() << "destIndex.row() is" << destIndex.row();
@@ -1496,6 +1496,7 @@ void WTrackTableView::slotExportTrackMetadataIntoFileTags() {
             // corresponding track object have been dropped. Otherwise
             // writing to files that are still used for playback might
             // cause crashes or at least audible glitches!
+            mixxx::DlgTrackMetadataExport::showMessageBoxOncePerSession();
             pTrack->markForMetadataExport();
         }
     }
@@ -1627,6 +1628,17 @@ void WTrackTableView::slotPopulateCrateMenu() {
         pCheckBox->setProperty("crateId",
                                 QVariant::fromValue(crate.getId()));
         pCheckBox->setEnabled(!crate.isLocked());
+        // Strangely, the normal styling of QActions does not automatically
+        // apply to QWidgetActions. The :selected pseudo-state unfortunately
+        // does not work with QWidgetAction. :hover works for selecting items
+        // with the mouse, but not with the keyboard. :focus works for the
+        // keyboard but with the mouse, the last clicked item keeps the style
+        // after the mouse cursor is moved to hover over another item.
+        pCheckBox->setStyleSheet(
+            QString("QCheckBox {color: %1;}").arg(
+                    pCheckBox->palette().text().color().name()) + "\n" +
+            QString("QCheckBox:hover {background-color: %1;}").arg(
+                    pCheckBox->palette().highlight().color().name()));
         pAction->setEnabled(!crate.isLocked());
         pAction->setDefaultWidget(pCheckBox.get());
 
@@ -1915,7 +1927,7 @@ void WTrackTableView::slotClearAllMetadata() {
     slotClearWaveform();
 }
 
-void WTrackTableView::slotCoverInfoSelected(const CoverInfo& coverInfo) {
+void WTrackTableView::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
     TrackModel* trackModel = getTrackModel();
     if (trackModel == nullptr) {
         return;

@@ -65,6 +65,7 @@ class AnalysisFeature : public LibraryFeature {
     void setTitleProgress(int trackNum, int totalNum);
 
     UserSettingsPointer m_pConfig;
+    Library* m_pLibrary;
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
     TrackCollection* m_pTrackCollection;
     AnalyzerQueue* m_pAnalyzerQueue;

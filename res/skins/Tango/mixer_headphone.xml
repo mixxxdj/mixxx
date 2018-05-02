@@ -8,7 +8,7 @@ Description:
 	Mixerbar is alsways at bottom edge of screen.
 	It is centered if Library is hidden.
 	With Library visible, it can either show up below tracks table to save
-	space for treeview on the left, or full-width below Libary if many
+	space for treeview on the left, or full-width below Library if many
 	Mics/AUX are enabled.
 -->
 <Template>
@@ -56,8 +56,8 @@ Description:
             <TooltipId>headMix</TooltipId>
             <ObjectName>MixerbarSlider</ObjectName>
             <SizePolicy>min,min</SizePolicy>
-            <Handle>skin:/knobs_sliders/headMix_handle.svg</Handle>
-            <Slider>skin:/knobs_sliders/headMix_scale.svg</Slider>
+            <Handle>knobs_sliders/headMix_handle.svg</Handle>
+            <Slider>knobs_sliders/headMix_scale.svg</Slider>
             <Horizontal>true</Horizontal>
             <Connection>
               <ConfigKey>[Master],headMix</ConfigKey>
@@ -70,10 +70,8 @@ Description:
             <SetVariable name="TooltipId">headSplit</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">32f,24f</SetVariable>
-            <SetVariable name="state_0_unpressed">headSplit_off.svg</SetVariable>
-            <SetVariable name="state_0_pressed">headSplit_off.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">headSplit_on.svg</SetVariable>
-            <SetVariable name="state_1_pressed">headSplit_on.svg</SetVariable>
+            <SetVariable name="state_0_icon">headSplit_off.svg</SetVariable>
+            <SetVariable name="state_1_icon">headSplit_on.svg</SetVariable>
             <SetVariable name="ConfigKey">[Master],headSplit</SetVariable>
           </Template>
 

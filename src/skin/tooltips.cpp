@@ -767,6 +767,16 @@ void Tooltips::addStandardTooltips() {
             << tr("Route the master mix through this effect unit.")
             << effectsWithinUnit;
 
+    add("EffectUnit_BusLeft_enabled")
+            << tr("Assign Effect Unit")
+            << tr("Route the left crossfader bus through this effect unit.")
+            << effectsWithinUnit;
+
+    add("EffectUnit_BusRight_enabled")
+            << tr("Assign Effect Unit")
+            << tr("Route the right crossfader bus through this effect unit.")
+            << effectsWithinUnit;
+
     add("EffectUnit_deck_enabled")
             << tr("Assign Effect Unit")
             << tr("Route this deck through the indicated effect unit.")
@@ -869,4 +879,13 @@ void Tooltips::addStandardTooltips() {
     add("skin_settings")
             << tr("Skin Settings Menu")
             << tr("Show/hide skin settings menu");
+
+    // Sampler Bank Controls
+    add("SaveSamplerBank")
+            << tr("Save Sampler Bank")
+            << tr("Save the collection of samples loaded in the samplers.");
+    
+    add("LoadSamplerBank")
+            << tr("Load Sampler Bank")
+            << tr("Load a previously saved collection of samples into the samplers.");
 }

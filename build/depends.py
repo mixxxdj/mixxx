@@ -427,7 +427,6 @@ class Qt(Dependence):
             qtdir = build.env['QTDIR']
             framework_path = Qt.find_framework_libdir(qtdir, qt5)
             if os.path.isdir(framework_path):
-                build.env.Append(LINKFLAGS="-Wl,-rpath," + framework_path)
                 build.env.Append(LINKFLAGS="-L" + framework_path)
 
         # Mixxx requires C++11 support. Windows enables C++11 features by
@@ -455,11 +454,11 @@ class FidLib(Dependence):
         else:
             symbol = 'T_LINUX'
 
-        return [build.env.StaticObject('#lib/fidlib-0.9.10/fidlib.c',
+        return [build.env.StaticObject('#lib/fidlib/fidlib.c',
                                        CPPDEFINES=symbol)]
 
     def configure(self, build, conf):
-        build.env.Append(CPPPATH='#lib/fidlib-0.9.10/')
+        build.env.Append(CPPPATH='#lib/fidlib/')
 
 
 class ReplayGain(Dependence):
@@ -472,7 +471,7 @@ class ReplayGain(Dependence):
 
 
 class Ebur128Mit(Dependence):
-    INTERNAL_PATH = '#lib/libebur128-1.2.3'
+    INTERNAL_PATH = '#lib/libebur128'
     INTERNAL_LINK = False
 
     def sources(self, build):
@@ -562,7 +561,7 @@ class TagLib(Dependence):
                 "Could not find libtag or its development headers.")
 
         # Karmic seems to have an issue with mp4tag.h where they don't include
-        # the files correctly. Adding this folder ot the include path should fix
+        # the files correctly. Adding this folder to the include path should fix
         # it, though might cause issues. This is safe to remove once we
         # deprecate Karmic support. rryan 2/2011
         build.env.Append(CPPPATH='/usr/include/taglib/')
@@ -600,7 +599,7 @@ class FpClassify(Dependence):
     def enabled(self, build):
         return build.toolchain_is_gnu
 
-    # This is a wrapper arround the fpclassify function that pevents inlining
+    # This is a wrapper around the fpclassify function that prevents inlining
     # It is compiled without optimization and allows to use these function
     # from -ffast-math optimized objects
     def sources(self, build):
@@ -662,6 +661,7 @@ class MixxxCore(Feature):
                    "control/controlproxy.cpp",
                    "control/controlpushbutton.cpp",
                    "control/controlttrotary.cpp",
+                   "control/controlencoder.cpp",
 
                    "controllers/dlgcontrollerlearning.cpp",
                    "controllers/dlgprefcontroller.cpp",

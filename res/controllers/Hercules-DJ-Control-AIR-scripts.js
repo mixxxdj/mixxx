@@ -51,7 +51,7 @@ HerculesAir.init = function(id) {
 	engine.connectControl("[Channel2]", "beat_active", "HerculesAir.beatProgressDeckB")
 	engine.connectControl("[Channel2]", "play", "HerculesAir.playDeckB")
     
-    print ("Hercules DJ Controll AIR: "+id+" initialized.");
+    print ("Hercules DJ Control AIR: "+id+" initialized.");
 }
 
 HerculesAir.shutdown = function() {

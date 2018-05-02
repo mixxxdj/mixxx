@@ -139,7 +139,7 @@ void TraktorFeature::activate() {
 
     if (!m_isActivated) {
         m_isActivated =  true;
-        // Ususally the maximum number of threads
+        // Usually the maximum number of threads
         // is > 2 depending on the CPU cores
         // Unfortunately, within VirtualBox
         // the maximum number of allowed threads
@@ -338,7 +338,7 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
                 continue;
             }
         }
-        //We leave the infinte loop, if twe have the closing tag "ENTRY"
+        //We leave the infinite loop, if twe have the closing tag "ENTRY"
         if (xml.name() == "ENTRY" && xml.isEndElement()) {
             break;
         }
@@ -438,7 +438,7 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
 
                 current_path.remove(lastSlash, path_length - lastSlash);
             }
-            //We leave the infinte loop, if twe have the closing "PLAYLIST" tag
+            //We leave the infinite loop, if twe have the closing "PLAYLIST" tag
             if (xml.name() == "PLAYLISTS") {
                 break;
             }
@@ -526,7 +526,7 @@ void TraktorFeature::parsePlaylistEntries(
             }
         }
         if (xml.isEndElement()) {
-            //We leave the infinte loop, if twe have the closing "PLAYLIST" tag
+            //We leave the infinite loop, if twe have the closing "PLAYLIST" tag
             if (xml.name() == "PLAYLIST") {
                 break;
             }

@@ -8,7 +8,7 @@
 function StantonSCS1d() {}
 
 // ----------   Customization variables ----------
-//      See http://mixxx.org/wiki/doku.php/stanton_scs.1d_mixxx_user_guide  for details
+//      See http://mixxx.org/wiki/doku.php/stanton_scs.1d_mixxx_user_guide for details
 StantonSCS1d.pitchRanges = [ 0.08, 0.16, 0.25, 0.5 ];   // Available pitch ranges. You can add more (in ascending order.)
 StantonSCS1d.fastDeckChange = false;    // Skip the flashy lights if true, for juggling
 StantonSCS1d.globalMode = false;        // Stay in the current modes on deck changes if true
@@ -610,7 +610,7 @@ StantonSCS1d.ffwd = function (channel, control, value, status) {
     // If in vinyl mode and button down
     if ((status & 0xF0) == 0x90) {
         if (StantonSCS1d.platterMode["[Channel"+StantonSCS1d.deck+"]"] == "vinyl") {
-            midi.sendShortMsg(0xB0+channel,1,'2'.toInt());   // 45 RPM foreward
+            midi.sendShortMsg(0xB0+channel,1,'2'.toInt());   // 45 RPM forward
             midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 35, 1.5, 5, 0, 0, 0xF7]),11);  // Motor full speed
             midi.sendShortMsg(0xB0+channel,1,'o'.toInt());   // Start platter
         }
@@ -1579,8 +1579,8 @@ StantonSCS1d.reverse = function (value) {
         else midi.sendShortMsg(CC,1,'3'.toInt());   // 33 RPM backward
         return;
     }
-    if (StantonSCS1d.platterSpeed==1) midi.sendShortMsg(CC,1,'2'.toInt());   // 45 RPM foreward
-    else midi.sendShortMsg(CC,1,'1'.toInt());   // 33 RPM foreward
+    if (StantonSCS1d.platterSpeed==1) midi.sendShortMsg(CC,1,'2'.toInt());   // 45 RPM forward
+    else midi.sendShortMsg(CC,1,'1'.toInt());   // 33 RPM forward
 }
 
 StantonSCS1d.pitchChange = function (value,noScratchEnable) {

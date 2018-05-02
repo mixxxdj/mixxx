@@ -175,6 +175,10 @@ QTableView {
   gridline-color: red;
 }
 
+QTableView:focus, QTreeView:focus {
+  border: 1px solid #FF6600;
+}
+
 /* Colors aren't applied to selected items, define them manually */
 QTableView::item:selected,
 QTreeView::item:selected,
@@ -977,7 +981,20 @@ WEffectSelector {
   WEffectSelector QAbstractItemView {
     color: #c1cabe;
     background-color: #201f1f;
-    selection-background-color: #184880;
+  }
+
+  WEffectSelector::item:!selected {
+    background-color: #201f1f;
+  }
+
+  WEffectSelector::item:selected {
+    background-color: #08080;
+  }
+
+  /* currently loaded effect */
+  WEffectSelector::checked {
+    color: #4495F4;
+    font-weight: bold;
   }
 
 #EffectKnob {
@@ -1126,7 +1143,7 @@ WNumberRate {
   /* background-color: #911661; */
 }
 
-/* pad 4 deck mixer colums left/right
+/* pad 4 deck mixer columns left/right
 to avoid EQ kill buttons from shifting center of rest of column */
 #4DecksMixerCol2ContainerRight {
   qproperty-layoutAlignment: 'AlignLeft';
@@ -1145,12 +1162,10 @@ to avoid EQ kill buttons from shifting center of rest of column */
 
 #CondensedButtonContainerRight {
   qproperty-layoutAlignment: 'AlignLeft';
-  padding: 3px 0px 3px 9px;
 }
 
 #CondensedButtonContainerLeft {
   qproperty-layoutAlignment: 'AlignRight';
-  padding: 3px 9px 3px 0px;
 }
 
 #4DecksMixerCondensedMonoMeterLeft {

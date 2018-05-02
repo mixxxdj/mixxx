@@ -385,12 +385,26 @@ double LoopingControl::nextTrigger(bool reverse,
                 // should be moved with it
                 *pTarget = seekInsideAdjustedLoop(currentSample,
                         m_oldLoopSamples.start, loopSamples.start, loopSamples.end);
+            } else {
+                bool movedOut = false;
+                // Check if we have moved out of the loop, before we could enable it
+                if (reverse) {
+                    if (loopSamples.start > currentSample) {
+                        movedOut = true;
+                    }
+                } else {
+                    if (loopSamples.end < currentSample) {
+                        movedOut = true;
+                    }
+                }
+                if (movedOut) {
+                    *pTarget = seekInsideAdjustedLoop(currentSample,
+                            loopSamples.start, loopSamples.start, loopSamples.end);
+                }
             }
             m_oldLoopSamples = loopSamples;
             if (*pTarget != kNoTrigger) {
                 // jump immediately
-                qDebug() << currentSample <<
-                        m_oldLoopSamples.start << loopSamples.start << loopSamples.end;
                 return currentSample;
             }
         }
@@ -752,12 +766,13 @@ void LoopingControl::slotLoopEndPos(double pos) {
 }
 
 // This is called from the engine thread
-void LoopingControl::notifySeek(double dNewPlaypos) {
+void LoopingControl::notifySeek(double dNewPlaypos, bool adjustingPhase) {
     LoopSamples loopSamples = m_loopSamples.getValue();
     double currentSample = m_currentSample.getValue();
-    if (m_bLoopingEnabled) {
+    if (m_bLoopingEnabled && !adjustingPhase) {
         // Disable loop when we jumping out, or over a catching loop,
         // using hot cues or waveform overview.
+        // Do not jump out of a loop if we adjust a phase (lp1743010)
         if (currentSample >= loopSamples.start &&
                 currentSample <= loopSamples.end &&
                 dNewPlaypos < loopSamples.start) {
@@ -965,17 +980,8 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     }
 
     newloopSamples.end = m_pBeats->findNBeatsFromSample(newloopSamples.start, beats);
-
-    if (newloopSamples.start == newloopSamples.end) {
-        if ((newloopSamples.end + 2) > samples) {
-            newloopSamples.start -= 2;
-        } else {
-            newloopSamples.end += 2;
-        }
-    }
-
-    // Do not allow beat loops to go beyond the end of the track
-    if (newloopSamples.end > samples) {
+    if (newloopSamples.start >= newloopSamples.end // happens when the call above fails
+            || newloopSamples.end > samples) { // Do not allow beat loops to go beyond the end of the track
         // If a track is loaded with beatloop_size larger than
         // the distance between the loop in point and
         // the end of the track, let beatloop_size be set to
@@ -1124,10 +1130,9 @@ void LoopingControl::slotLoopMove(double beats) {
 }
 
 // Must be called from the engine thread only
-int LoopingControl::seekInsideAdjustedLoop(
+double LoopingControl::seekInsideAdjustedLoop(
         double currentSample, double old_loop_in,
         double new_loop_in, double new_loop_out) {
-    // Copy on stack since m_iCurrentSample sample can change under us.
     if (currentSample >= new_loop_in && currentSample <= new_loop_out) {
         // playposition already is inside the loop
         return kNoTrigger;

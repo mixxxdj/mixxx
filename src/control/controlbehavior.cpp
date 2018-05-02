@@ -31,6 +31,14 @@ void ControlNumericBehavior::setValueFromMidi(
     pControl->set(parameterToValue(dNorm), NULL);
 }
 
+double ControlEncoderBehavior::midiToParameter(double midiValue) {
+    return midiValue;
+}
+
+double ControlEncoderBehavior::valueToMidiParameter(double dValue) {
+    return dValue;
+}
+
 ControlPotmeterBehavior::ControlPotmeterBehavior(double dMinValue, double dMaxValue,
                                                  bool allowOutOfBounds)
         : m_dMinValue(dMinValue),
@@ -230,7 +238,7 @@ double ControlAudioTaperPotBehavior::midiToParameter(double midiValue) {
             dParam = midiValue /
                     (127.0 + m_midiCorrection / m_neutralParameter);
         } else {
-            // m_midicorrection is allways < 1, so NaN check required
+            // m_midicorrection is always < 1, so NaN check required
             dParam = (midiValue - m_midiCorrection / m_neutralParameter) /
                     (127.0 - m_midiCorrection / m_neutralParameter);
         }

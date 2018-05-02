@@ -36,8 +36,8 @@ class WCoverArt : public QWidget, public WBaseWidget {
 
   private slots:
     void slotCoverFound(const QObject* pRequestor,
-                        const CoverInfo& info, QPixmap pixmap, bool fromCache);
-    void slotCoverInfoSelected(const CoverInfo& coverInfo);
+                        const CoverInfoRelative& info, QPixmap pixmap, bool fromCache);
+    void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();
     void slotTrackCoverArtUpdated();
 

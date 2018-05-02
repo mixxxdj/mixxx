@@ -17,7 +17,7 @@ Variables:
   <WidgetGroup>
     <ObjectName>FxToggleSelector</ObjectName>
     <Layout>stacked</Layout>
-    <SizePolicy>min,min</SizePolicy>
+    <Size>82f,20f</Size>
     <Children>
       <!-- invisible, clickable Overlay to toggle Effect -->
       <Template src="skin:button_2state.xml">
@@ -51,10 +51,11 @@ Variables:
       </Template>
 
       <EffectSelector>
-        <Size>82f,20f</Size>
         <EffectRack><Variable name="FxRack"/></EffectRack>
         <EffectUnit><Variable name="FxUnit"/></EffectUnit>
         <Effect><Variable name="FxNum"/></Effect>
+        <Elide>right</Elide>
+        <Size>82f,20f</Size>
       </EffectSelector>
 
     </Children>

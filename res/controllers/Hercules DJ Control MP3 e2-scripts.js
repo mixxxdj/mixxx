@@ -10,7 +10,7 @@ function HerculesMP3e2() {}
 
 // Control schema: http://blog.ebruni.it/blog/wp-content/uploads/2010/01/Hercules-mp3e2-schema-comandi.jpg
 // Image: http://www.hablarcom.com.br/Imagens/arquivos/jptech/DJ_control_MP3_2_frente.jpg
-// Explaination: http://www.mixxx.org/wiki/doku.php/hercules_dj_control_mp3_e2
+// Explanation: http://www.mixxx.org/wiki/doku.php/hercules_dj_control_mp3_e2
 
 // Number of the standard RPM value. Lower values increase de sensitivity as the really records.
 var standardRpm = 33.33;
@@ -465,7 +465,7 @@ HerculesMP3e2.keyButton = function(midino, control, value, status, group) {
 
 HerculesMP3e2.pitch = function(midino, control, value, status, group) {
     // Simple: pitch slider
-    // Shifted: Headphone volume and pre/main (this are 4-deck independant)
+    // Shifted: Headphone volume and pre/main (these are 4-deck independent)
     // Supershifted: QuickEffect Filter knob
 
     var sign;
@@ -568,7 +568,7 @@ HerculesMP3e2.pitchbend = function(midino, control, value, status, group) {
 HerculesMP3e2.cue = function(channel, control, value, status, group) {
     var deck = HerculesMP3e2.switchDeck(group);
 
-    // Don't set Cue accidentaly at the end of the song
+    // Don't set Cue accidentally at the end of the song
     if (engine.getValue(deck, "playposition") <= 0.97) {
         engine.setValue(deck, "cue_default", value ? 1 : 0);
     } else {
@@ -604,7 +604,7 @@ HerculesMP3e2.scratch = function(midino, control, value, status, group) {
         // Normal scratch function
         if (value) {
             if (scratchMode === 0) {
-                // Enable the scratch mode on the corrisponding deck and start the timer
+                // Enable the scratch mode on the corresponding deck and start the timer
                 scratchMode = 1;
                 scratchTimer = engine.beginTimer(scratchResetTime, "HerculesMP3e2.wheelOnOff()");
                 midi.sendShortMsg(0x90, 45, 0x7F); // Switch-on the Scratch led
@@ -613,7 +613,7 @@ HerculesMP3e2.scratch = function(midino, control, value, status, group) {
                 engine.setValue("[Channel3]", "keylock", 0);
                 engine.setValue("[Channel4]", "keylock", 0);
             } else {
-                // Disable the scratch mode on the corrisponding deck and stop the timer
+                // Disable the scratch mode on the corresponding deck and stop the timer
                 scratchMode = 0;
                 engine.stopTimer(scratchTimer);
                 midi.sendShortMsg(0x90, 45, 0x00); // Switch-off the Scratch led

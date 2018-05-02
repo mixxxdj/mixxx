@@ -8,6 +8,7 @@
 #include "preferences/dialog/ui_dlgpreflibrarydlg.h"
 #include "preferences/usersettings.h"
 #include "library/library.h"
+#include "library/library_preferences.h"
 #include "preferences/dlgpreferencepage.h"
 
 /**
@@ -17,10 +18,10 @@
 class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     Q_OBJECT
   public:
-    enum TrackLoadAction {
-        LOAD_TRACK_DECK,  // Load track to next available deck.
-        ADD_TRACK_BOTTOM, // Add track to Auto-DJ Queue (bottom).
-        ADD_TRACK_TOP     // Add track to Auto-DJ Queue (top).
+    enum TrackDoubleClickAction {
+        LOAD_TO_DECK,
+        ADD_TO_AUTODJ_BOTTOM,
+        ADD_TO_AUTODJ_TOP
     };
 
     DlgPrefLibrary(
@@ -50,8 +51,6 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     void requestAddDir(QString dir);
     void requestRemoveDir(QString dir, Library::RemovalType removalType);
     void requestRelocateDir(QString currentDir, QString newDir);
-    void setTrackTableFont(const QFont& font);
-    void setTrackTableRowHeight(int rowHeight);
 
   private slots:
     void slotRowHeightValueChanged(int);
