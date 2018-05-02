@@ -125,8 +125,8 @@ void SetlogFeature::buildPlaylistList() {
     QSqlTableModel playlistTableModel(this, m_pTrackCollection->database());
     playlistTableModel.setTable("Playlists");
     playlistTableModel.setFilter("hidden=2"); // PLHT_SET_LOG
-    playlistTableModel.setSort(playlistTableModel.fieldIndex("id"),
-                               Qt::AscendingOrder);
+    playlistTableModel.setSort(playlistTableModel.fieldIndex("date_created"),
+                               Qt::DescendingOrder);
     playlistTableModel.select();
     while (playlistTableModel.canFetchMore()) {
         playlistTableModel.fetchMore();
@@ -142,6 +142,55 @@ void SetlogFeature::buildPlaylistList() {
             playlistTableModel.index(row, nameColumn)).toString();
         m_playlistList.append(qMakePair(id, name));
     }
+}
+
+/**
+  * Purpose: When inserting or removing playlists,
+  * we require the sidebar model not to reset.
+  * This method queries the database and does dynamic insertion
+*/
+QModelIndex SetlogFeature::constructChildModel(int selected_id) {
+    buildPlaylistList();
+    QList<TreeItem*> data_list;
+    int selected_row = -1;
+
+    TreeItem* older = new TreeItem(this, tr("Older"), -1);
+    QList<TreeItem*> older_list;
+
+    int row = 0;
+    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
+         it != m_playlistList.end(); ++it, ++row) {
+        int playlist_id = it->first;
+        QString playlist_name = it->second;
+
+        if (selected_id == playlist_id) {
+            // save index for selection
+            selected_row = row;
+            m_childModel.index(selected_row, 0);
+        }
+
+
+        // Create the TreeItem whose parent is the invisible root item
+        TreeItem* item = new TreeItem(this, playlist_name, playlist_id);
+        item->setBold(m_playlistsSelectedTrackIsIn.contains(playlist_id));
+
+        decorateChild(item, playlist_id);
+        if (row < 10) {
+            data_list.append(item);
+        } else {
+            older_list.append(item);
+        }
+    }
+    // put all the older playlists into the older folder
+    older->insertChildren(older_list, 0, older_list.count());
+    data_list.append(older);
+    // Append all the newly created TreeItems in a dynamic way to the childmodel
+    m_childModel.insertTreeItemRows(data_list, 0);
+
+    if (selected_row == -1) {
+        return QModelIndex();
+    }
+    return m_childModel.index(selected_row, 0);
 }
 
 void SetlogFeature::decorateChild(TreeItem* item, int playlist_id) {
