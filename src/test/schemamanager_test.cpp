@@ -64,7 +64,6 @@ TEST_F(SchemaManagerTest, BackwardsCompatibleVersion) {
         EXPECT_EQ(SchemaManager::Result::UpgradeSucceeded, result);
 
         SettingsDAO settings(dbConnection());
-        settings.initialize();
 
         // Pretend the database version is one past the required version but
         // min_compatible is the required version.
@@ -90,7 +89,6 @@ TEST_F(SchemaManagerTest, BackwardsIncompatibleVersion) {
         EXPECT_EQ(SchemaManager::Result::UpgradeSucceeded, result);
 
         SettingsDAO settings(dbConnection());
-        settings.initialize();
 
         // Pretend the database version is one past the required version and
         // min_compatible is one past the required version.
