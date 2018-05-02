@@ -678,11 +678,20 @@
                    <script-binding/>
                </options>
            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>DJ202.leftDeck.volume.input</key>
+           <control>
+               <group>[Channel1]</group>
+               <key>DJ202.leftDeck.volume.inputMSB</key>
+               <status>0xB0</status>
+               <midino>0x1C</midino>
+               <options>
+                    <script-binding/>
+               </options>
+           </control>
+           <control>
+               <group>[Channel1]</group>
+                <key>DJ202.leftDeck.volume.inputLSB</key>
                 <status>0xB0</status>
-                <midino>0x1C</midino>
+                <midino>0x3A</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1354,9 +1363,18 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.volume.input</key>
+                <key>DJ202.leftDeck.volume.inputMSB</key>
                 <status>0xB2</status>
                 <midino>0x1C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>DJ202.leftDeck.volume.inputLSB</key>
+                <status>0xB2</status>
+                <midino>0x3A</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -2119,10 +2137,28 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.volume.input</key>
+                <key>DJ202.rightDeck.volume.inputMSB</key>
                 <status>0xB1</status>
                 <midino>0x1C</midino>
                 <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJ202.rightDeck.volume.inputLSB</key>
+                <status>0xB1</status>
+                <midino>0x3A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+              <group>[Channel2]</group>
+              <key>DJ202.rightDeck.volume.inputLSB</key>
+              <status>0xB1</status>
+              <midino>0x3A</midino>
+              <options>
                     <script-binding/>
                 </options>
             </control>
@@ -2793,9 +2829,18 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.volume.input</key>
+                <key>DJ202.rightDeck.volume.inputMSB</key>
                 <status>0xB3</status>
                 <midino>0x1C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>DJ202.rightDeck.volume.inputLSB</key>
+                <status>0xB3</status>
+                <midino>0x3A</midino>
                 <options>
                     <script-binding/>
                 </options>
