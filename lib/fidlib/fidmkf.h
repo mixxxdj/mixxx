@@ -192,7 +192,7 @@ c_exp(double *aa) {
 }
 
 //
-//	Global temp buffer for generating filters.  *NOT THREAD SAFE*
+//	Context for generating filters.
 //
 //	Note that the poles and zeros are stored in a strange way.
 //	Rather than storing both a pole (or zero) and its complex
@@ -210,13 +210,14 @@ c_exp(double *aa) {
 
 #define MAXPZ 64 
 
-static int n_pol;		// Number of poles
-static double pol[MAXPZ];	// Pole values (see above)
-static char poltyp[MAXPZ];	// Pole value types: 1 real, 2 first of complex pair, 0 second
-static int n_zer;		// Same for zeros ...
-static double zer[MAXPZ];
-static char zertyp[MAXPZ];	
-
+struct mk_filter_context {
+   int n_pol;		// Number of poles
+   double pol[MAXPZ];	// Pole values (see above)
+   char poltyp[MAXPZ];	// Pole value types: 1 real, 2 first of complex pair, 0 second
+   int n_zer;		// Same for zeros ...
+   double zer[MAXPZ];
+   char zertyp[MAXPZ];
+};
 
 //
 //	Pre-warp a frequency
@@ -303,19 +304,19 @@ static double *bessel_poles[10]= {
 //
 
 static void 
-bessel(int order) {
+bessel(struct mk_filter_context* ctx, int order) {
    int a;
 
    if (order > 10) error("Maximum Bessel order is 10");
-   n_pol= order;
-   memcpy(pol, bessel_poles[order-1], n_pol * sizeof(double));
+   ctx->n_pol= order;
+   memcpy(ctx->pol, bessel_poles[order-1], ctx->n_pol * sizeof(double));
 
    for (a= 0; a<order-1; ) {
-      poltyp[a++]= 2;
-      poltyp[a++]= 0;
+      ctx->poltyp[a++]= 2;
+      ctx->poltyp[a++]= 0;
    }
    if (a < order) 
-      poltyp[a++]= 1;
+      ctx->poltyp[a++]= 1;
 }
 
 //
@@ -325,19 +326,19 @@ bessel(int order) {
 //
 
 static void 
-butterworth(int order) {
+butterworth(struct mk_filter_context* ctx, int order) {
    int a;
    if (order > MAXPZ) 
       error("Maximum butterworth/chebyshev order is %d", MAXPZ);
-   n_pol= order;
+   ctx->n_pol= order;
    for (a= 0; a<order-1; a += 2) {
-      poltyp[a]= 2;
-      poltyp[a+1]= 0;
-      cexpj(pol+a, M_PI - (order-a-1) * 0.5 * M_PI / order);
+      ctx->poltyp[a]= 2;
+      ctx->poltyp[a+1]= 0;
+      cexpj(ctx->pol+a, M_PI - (order-a-1) * 0.5 * M_PI / order);
    }
    if (a < order) {
-      poltyp[a]= 1;
-      pol[a]= -1.0;
+      ctx->poltyp[a]= 1;
+      ctx->pol[a]= -1.0;
    }
 }
 
@@ -346,12 +347,12 @@ butterworth(int order) {
 //
 
 static void 
-chebyshev(int order, double ripple) {
+chebyshev(struct mk_filter_context* ctx, int order, double ripple) {
    double eps, y;
    double sh, ch;
    int a;
 
-   butterworth(order);
+   butterworth(ctx, order);
    if (ripple >= 0.0) error("Chebyshev ripple in dB should be -ve");
 
    eps= sqrt(-1.0 + pow(10.0, -0.1 * ripple));
@@ -360,12 +361,12 @@ chebyshev(int order, double ripple) {
    sh= sinh(y);
    ch= cosh(y);
 
-   for (a= 0; a<n_pol; ) {
-      if (poltyp[a] == 1)
-	 pol[a++] *= sh;
+   for (a= 0; a<ctx->n_pol; ) {
+      if (ctx->poltyp[a] == 1)
+	 ctx->pol[a++] *= sh;
       else {
-	 pol[a++] *= sh;
-	 pol[a++] *= ch;
+	 ctx->pol[a++] *= sh;
+	 ctx->pol[a++] *= ch;
       }
    }
 }
@@ -376,19 +377,19 @@ chebyshev(int order, double ripple) {
 //
 
 static void 
-lowpass(double freq) {
+lowpass(struct mk_filter_context* ctx, double freq) {
    int a;
 
    // Adjust poles
    freq *= TWOPI;
-   for (a= 0; a<n_pol; a++)
-      pol[a] *= freq;
+   for (a= 0; a<ctx->n_pol; a++)
+      ctx->pol[a] *= freq;
 
    // Add zeros
-   n_zer= n_pol;
-   for (a= 0; a<n_zer; a++) {
-      zer[a]= -INF;
-      zertyp[a]= 1;
+   ctx->n_zer= ctx->n_pol;
+   for (a= 0; a<ctx->n_zer; a++) {
+      ctx->zer[a]= -INF;
+      ctx->zertyp[a]= 1;
    }
 }
 
@@ -397,27 +398,27 @@ lowpass(double freq) {
 //
 
 static void 
-highpass(double freq) {
+highpass(struct mk_filter_context* ctx, double freq) {
    int a;
 
    // Adjust poles
    freq *= TWOPI;
-   for (a= 0; a<n_pol; ) {
-      if (poltyp[a] == 1) {
-	 pol[a]= freq / pol[a];
+   for (a= 0; a<ctx->n_pol; ) {
+      if (ctx->poltyp[a] == 1) {
+	 ctx->pol[a]= freq / ctx->pol[a];
 	 a++;
       } else {
-	 crecip(pol + a);
-	 pol[a++] *= freq;
-	 pol[a++] *= freq;
+	 crecip(ctx->pol + a);
+	 ctx->pol[a++] *= freq;
+	 ctx->pol[a++] *= freq;
       }
    }
 
    // Add zeros
-   n_zer= n_pol;
-   for (a= 0; a<n_zer; a++) {
-      zer[a]= 0.0;
-      zertyp[a]= 1;
+   ctx->n_zer= ctx->n_pol;
+   for (a= 0; a<ctx->n_zer; a++) {
+      ctx->zer[a]= 0.0;
+      ctx->zertyp[a]= 1;
    }
 }
 
@@ -427,58 +428,58 @@ highpass(double freq) {
 //
 
 static void 
-bandpass(double freq1, double freq2) {
+bandpass(struct mk_filter_context* ctx, double freq1, double freq2) {
    double w0= TWOPI * sqrt(freq1*freq2);
    double bw= 0.5 * TWOPI * (freq2-freq1);
    int a, b;
 
-   if (n_pol * 2 > MAXPZ) 
+   if (ctx->n_pol * 2 > MAXPZ) 
       error("Maximum order for bandpass filters is %d", MAXPZ/2);
    
    // Run through the list backwards, expanding as we go
-   for (a= n_pol, b= n_pol*2; a>0; ) {
+   for (a= ctx->n_pol, b= ctx->n_pol*2; a>0; ) {
       // hba= pole * bw;
       // temp= c_sqrt(1.0 - square(w0 / hba));
       // pole1= hba * (1.0 + temp);
       // pole2= hba * (1.0 - temp);
 
-      if (poltyp[a-1] == 1) {
+      if (ctx->poltyp[a-1] == 1) {
 	 double hba;
 	 a--; b -= 2;
-	 poltyp[b]= 2; poltyp[b+1]= 0;
-	 hba= pol[a] * bw;
-	 cassz(pol+b, 1.0 - (w0 / hba) * (w0 / hba), 0.0);
-	 c_sqrt(pol+b);
-	 caddz(pol+b, 1.0, 0.0);
-	 cmulr(pol+b, hba);
+	 ctx->poltyp[b]= 2; ctx->poltyp[b+1]= 0;
+	 hba= ctx->pol[a] * bw;
+	 cassz(ctx->pol+b, 1.0 - (w0 / hba) * (w0 / hba), 0.0);
+	 c_sqrt(ctx->pol+b);
+	 caddz(ctx->pol+b, 1.0, 0.0);
+	 cmulr(ctx->pol+b, hba);
       } else {		// Assume poltyp[] data is valid
 	 double hba[2];
 	 a -= 2; b -= 4;
-	 poltyp[b]= 2; poltyp[b+1]= 0;
-	 poltyp[b+2]= 2; poltyp[b+3]= 0;
-	 cass(hba, pol+a);
+	 ctx->poltyp[b]= 2; ctx->poltyp[b+1]= 0;
+	 ctx->poltyp[b+2]= 2; ctx->poltyp[b+3]= 0;
+	 cass(hba, ctx->pol+a);
 	 cmulr(hba, bw);
-	 cass(pol+b, hba);
-	 crecip(pol+b);
-	 cmulr(pol+b, w0);
-	 csqu(pol+b);
-	 cneg(pol+b);
-	 caddz(pol+b, 1.0, 0.0);
-	 c_sqrt(pol+b);
-	 cmul(pol+b, hba);
-	 cass(pol+b+2, pol+b);
-	 cneg(pol+b+2);
-	 cadd(pol+b, hba);
-	 cadd(pol+b+2, hba);
+	 cass(ctx->pol+b, hba);
+	 crecip(ctx->pol+b);
+	 cmulr(ctx->pol+b, w0);
+	 csqu(ctx->pol+b);
+	 cneg(ctx->pol+b);
+	 caddz(ctx->pol+b, 1.0, 0.0);
+	 c_sqrt(ctx->pol+b);
+	 cmul(ctx->pol+b, hba);
+	 cass(ctx->pol+b+2, ctx->pol+b);
+	 cneg(ctx->pol+b+2);
+	 cadd(ctx->pol+b, hba);
+	 cadd(ctx->pol+b+2, hba);
       } 
    }
-   n_pol *= 2;
+   ctx->n_pol *= 2;
    
    // Add zeros
-   n_zer= n_pol; 
-   for (a= 0; a<n_zer; a++) {
-      zertyp[a]= 1;
-      zer[a]= (a<n_zer/2) ? 0.0 : -INF;
+   ctx->n_zer= ctx->n_pol; 
+   for (a= 0; a<ctx->n_zer; a++) {
+      ctx->zertyp[a]= 1;
+      ctx->zer[a]= (a<ctx->n_zer/2) ? 0.0 : -INF;
    }
 }
 
@@ -488,59 +489,59 @@ bandpass(double freq1, double freq2) {
 //
 
 static void 
-bandstop(double freq1, double freq2) {
+bandstop(struct mk_filter_context* ctx, double freq1, double freq2) {
    double w0= TWOPI * sqrt(freq1*freq2);
    double bw= 0.5 * TWOPI * (freq2-freq1);
    int a, b;
 
-   if (n_pol * 2 > MAXPZ) 
+   if (ctx->n_pol * 2 > MAXPZ) 
       error("Maximum order for bandstop filters is %d", MAXPZ/2);
 
    // Run through the list backwards, expanding as we go
-   for (a= n_pol, b= n_pol*2; a>0; ) {
+   for (a= ctx->n_pol, b= ctx->n_pol*2; a>0; ) {
       // hba= bw / pole;
       // temp= c_sqrt(1.0 - square(w0 / hba));
       // pole1= hba * (1.0 + temp);
       // pole2= hba * (1.0 - temp);
 
-      if (poltyp[a-1] == 1) {
+      if (ctx->poltyp[a-1] == 1) {
 	 double hba;
 	 a--; b -= 2;
-	 poltyp[b]= 2; poltyp[b+1]= 0;
-	 hba= bw / pol[a];
-	 cassz(pol+b, 1.0 - (w0 / hba) * (w0 / hba), 0.0);
-	 c_sqrt(pol+b);
-	 caddz(pol+b, 1.0, 0.0);
-	 cmulr(pol+b, hba);
+	 ctx->poltyp[b]= 2; ctx->poltyp[b+1]= 0;
+	 hba= bw / ctx->pol[a];
+	 cassz(ctx->pol+b, 1.0 - (w0 / hba) * (w0 / hba), 0.0);
+	 c_sqrt(ctx->pol+b);
+	 caddz(ctx->pol+b, 1.0, 0.0);
+	 cmulr(ctx->pol+b, hba);
       } else {		// Assume poltyp[] data is valid
 	 double hba[2];
 	 a -= 2; b -= 4;
-	 poltyp[b]= 2; poltyp[b+1]= 0;
-	 poltyp[b+2]= 2; poltyp[b+3]= 0;
-	 cass(hba, pol+a);
+	 ctx->poltyp[b]= 2; ctx->poltyp[b+1]= 0;
+	 ctx->poltyp[b+2]= 2; ctx->poltyp[b+3]= 0;
+	 cass(hba, ctx->pol+a);
 	 crecip(hba);
 	 cmulr(hba, bw);
-	 cass(pol+b, hba);
-	 crecip(pol+b);
-	 cmulr(pol+b, w0);
-	 csqu(pol+b);
-	 cneg(pol+b);
-	 caddz(pol+b, 1.0, 0.0);
-	 c_sqrt(pol+b);
-	 cmul(pol+b, hba);
-	 cass(pol+b+2, pol+b);
-	 cneg(pol+b+2);
-	 cadd(pol+b, hba);
-	 cadd(pol+b+2, hba);
+	 cass(ctx->pol+b, hba);
+	 crecip(ctx->pol+b);
+	 cmulr(ctx->pol+b, w0);
+	 csqu(ctx->pol+b);
+	 cneg(ctx->pol+b);
+	 caddz(ctx->pol+b, 1.0, 0.0);
+	 c_sqrt(ctx->pol+b);
+	 cmul(ctx->pol+b, hba);
+	 cass(ctx->pol+b+2, ctx->pol+b);
+	 cneg(ctx->pol+b+2);
+	 cadd(ctx->pol+b, hba);
+	 cadd(ctx->pol+b+2, hba);
       } 
    }
-   n_pol *= 2;
+   ctx->n_pol *= 2;
    
    // Add zeros
-   n_zer= n_pol; 
-   for (a= 0; a<n_zer; a+=2) {
-      zertyp[a]= 2; zertyp[a+1]= 0;
-      zer[a]= 0.0; zer[a+1]= w0;
+   ctx->n_zer= ctx->n_pol; 
+   for (a= 0; a<ctx->n_zer; a+=2) {
+      ctx->zertyp[a]= 2; ctx->zertyp[a+1]= 0;
+      ctx->zer[a]= 0.0; ctx->zer[a+1]= w0;
    }
 }
 
@@ -550,41 +551,41 @@ bandstop(double freq1, double freq2) {
 //
 
 static void 
-s2z_bilinear() {
+s2z_bilinear(struct mk_filter_context* ctx) {
    int a;
-   for (a= 0; a<n_pol; ) {
+   for (a= 0; a<ctx->n_pol; ) {
       // Calculate (2 + val) / (2 - val)
-      if (poltyp[a] == 1) {
-	 if (pol[a] == -INF) 
-	    pol[a]= -1.0;
+      if (ctx->poltyp[a] == 1) {
+	 if (ctx->pol[a] == -INF) 
+	    ctx->pol[a]= -1.0;
 	 else 
-	    pol[a]= (2 + pol[a]) / (2 - pol[a]);
+	    ctx->pol[a]= (2 + ctx->pol[a]) / (2 - ctx->pol[a]);
 	 a++;
       } else {
 	 double val[2];
-	 cass(val, pol+a);
+	 cass(val, ctx->pol+a);
 	 cneg(val);
 	 caddz(val, 2, 0);
-	 caddz(pol+a, 2, 0);
-	 cdiv(pol+a, val);
+	 caddz(ctx->pol+a, 2, 0);
+	 cdiv(ctx->pol+a, val);
 	 a += 2;
       }
    }
-   for (a= 0; a<n_zer; ) {
+   for (a= 0; a<ctx->n_zer; ) {
       // Calculate (2 + val) / (2 - val)
-      if (zertyp[a] == 1) {
-	 if (zer[a] == -INF) 
-	    zer[a]= -1.0;
+      if (ctx->zertyp[a] == 1) {
+	 if (ctx->zer[a] == -INF) 
+	    ctx->zer[a]= -1.0;
 	 else 
-	    zer[a]= (2 + zer[a]) / (2 - zer[a]);
+	    ctx->zer[a]= (2 + ctx->zer[a]) / (2 - ctx->zer[a]);
 	 a++;
       } else {
 	 double val[2];
-	 cass(val, zer+a);
+	 cass(val, ctx->zer+a);
 	 cneg(val);
 	 caddz(val, 2, 0);
-	 caddz(zer+a, 2, 0);
-	 cdiv(zer+a, val);
+	 caddz(ctx->zer+a, 2, 0);
+	 cdiv(ctx->zer+a, val);
 	 a += 2;
       }
    }
@@ -595,33 +596,33 @@ s2z_bilinear() {
 //
     
 static void 
-s2z_matchedZ() {
+s2z_matchedZ(struct mk_filter_context* ctx) {
    int a;
    
-   for (a= 0; a<n_pol; ) {
+   for (a= 0; a<ctx->n_pol; ) {
       // Calculate cexp(val)
-      if (poltyp[a] == 1) {
-	 if (pol[a] == -INF) 
-	    pol[a]= 0.0;
+      if (ctx->poltyp[a] == 1) {
+	 if (ctx->pol[a] == -INF) 
+	    ctx->pol[a]= 0.0;
 	 else 
-	    pol[a]= exp(pol[a]);
+	    ctx->pol[a]= exp(ctx->pol[a]);
 	 a++;
       } else {
-	 c_exp(pol+a);
+	 c_exp(ctx->pol+a);
 	 a += 2;
       }
    }
 
-   for (a= 0; a<n_zer; ) {
+   for (a= 0; a<ctx->n_zer; ) {
       // Calculate cexp(val)
-      if (zertyp[a] == 1) {
-	 if (zer[a] == -INF) 
-	    zer[a]= 0.0;
+      if (ctx->zertyp[a] == 1) {
+	 if (ctx->zer[a] == -INF) 
+	    ctx->zer[a]= 0.0;
 	 else 
-	    zer[a]= exp(zer[a]);
+	    ctx->zer[a]= exp(ctx->zer[a]);
 	 a++;
       } else {
-	 c_exp(zer+a);
+	 c_exp(ctx->zer+a);
 	 a += 2;
       }
    }
@@ -645,14 +646,14 @@ s2z_matchedZ() {
 //
 
 static FidFilter*
-z2fidfilter(double gain, int cbm) {
+z2fidfilter(struct mk_filter_context* ctx, double gain, int cbm) {
    int n_head, n_val;
    int a;
    FidFilter *rv;
    FidFilter *ff;
 
-   n_head= 1 + n_pol + n_zer;	 // Worst case: gain + 2-element IIR/FIR
-   n_val= 1 + 2 * (n_pol+n_zer); //   for each pole/zero
+   n_head= 1 + ctx->n_pol + ctx->n_zer;	 // Worst case: gain + 2-element IIR/FIR
+   n_val= 1 + 2 * (ctx->n_pol+ctx->n_zer); //   for each pole/zero
 
    rv= ff= FFALLOC(n_head, n_val);
 
@@ -662,49 +663,49 @@ z2fidfilter(double gain, int cbm) {
    ff= FFNEXT(ff);
 
    // Output as much as possible as 2x2 IIR/FIR filters
-   for (a= 0; a <= n_pol-2 && a <= n_zer-2; a += 2) {
+   for (a= 0; a <= ctx->n_pol-2 && a <= ctx->n_zer-2; a += 2) {
       // Look for a pair of values for an IIR
-      if (poltyp[a] == 1 && poltyp[a+1] == 1) {
+      if (ctx->poltyp[a] == 1 && ctx->poltyp[a+1] == 1) {
 	 // Two real values
          ff->typ= 'I';
          ff->len= 3;
          ff->val[0]= 1;
-         ff->val[1]= -(pol[a] + pol[a+1]);
-         ff->val[2]= pol[a] * pol[a+1];
+         ff->val[1]= -(ctx->pol[a] + ctx->pol[a+1]);
+         ff->val[2]= ctx->pol[a] * ctx->pol[a+1];
 	 ff= FFNEXT(ff); 
-      } else if (poltyp[a] == 2) {
+      } else if (ctx->poltyp[a] == 2) {
 	 // A complex value and its conjugate pair
          ff->typ= 'I';
          ff->len= 3;
          ff->val[0]= 1;
-         ff->val[1]= -2 * pol[a];
-         ff->val[2]= pol[a] * pol[a] + pol[a+1] * pol[a+1];
+         ff->val[1]= -2 * ctx->pol[a];
+         ff->val[2]= ctx->pol[a] * ctx->pol[a] + ctx->pol[a+1] * ctx->pol[a+1];
 	 ff= FFNEXT(ff); 
       } else error("Internal error -- bad poltyp[] values for z2fidfilter()");	 
 
       // Look for a pair of values for an FIR
-      if (zertyp[a] == 1 && zertyp[a+1] == 1) {
+      if (ctx->zertyp[a] == 1 && ctx->zertyp[a+1] == 1) {
 	 // Two real values
 	 // Skip if constant and 0/0
-	 if (!cbm || zer[a] != 0.0 || zer[a+1] != 0.0) {
+	 if (!cbm || ctx->zer[a] != 0.0 || ctx->zer[a+1] != 0.0) {
 	    ff->typ= 'F';
 	    ff->cbm= cbm;
 	    ff->len= 3;
 	    ff->val[0]= 1;
-	    ff->val[1]= -(zer[a] + zer[a+1]);
-	    ff->val[2]= zer[a] * zer[a+1];
+	    ff->val[1]= -(ctx->zer[a] + ctx->zer[a+1]);
+	    ff->val[2]= ctx->zer[a] * ctx->zer[a+1];
 	    ff= FFNEXT(ff); 
 	 }
-      } else if (zertyp[a] == 2) {
+      } else if (ctx->zertyp[a] == 2) {
 	 // A complex value and its conjugate pair
 	 // Skip if constant and 0/0
-	 if (!cbm || zer[a] != 0.0 || zer[a+1] != 0.0) {
+	 if (!cbm || ctx->zer[a] != 0.0 || ctx->zer[a+1] != 0.0) {
 	    ff->typ= 'F';
 	    ff->cbm= cbm;
 	    ff->len= 3;
 	    ff->val[0]= 1;
-	    ff->val[1]= -2 * zer[a];
-	    ff->val[2]= zer[a] * zer[a] + zer[a+1] * zer[a+1];
+	    ff->val[1]= -2 * ctx->zer[a];
+	    ff->val[2]= ctx->zer[a] * ctx->zer[a] + ctx->zer[a+1] * ctx->zer[a+1];
 	    ff= FFNEXT(ff); 
 	 }
       } else error("Internal error -- bad zertyp[] values");	 
@@ -712,24 +713,24 @@ z2fidfilter(double gain, int cbm) {
 
    // Clear up any remaining bits and pieces.  Should only be a 1x1
    // IIR/FIR.
-   if (n_pol-a == 0 && n_zer-a == 0) 
+   if (ctx->n_pol-a == 0 && ctx->n_zer-a == 0) 
       ;
-   else if (n_pol-a == 1 && n_zer-a == 1) {
-      if (poltyp[a] != 1 || zertyp[a] != 1) 
+   else if (ctx->n_pol-a == 1 && ctx->n_zer-a == 1) {
+      if (ctx->poltyp[a] != 1 || ctx->zertyp[a] != 1) 
 	 error("Internal error; bad poltyp or zertyp for final pole/zero");
       ff->typ= 'I';
       ff->len= 2;
       ff->val[0]= 1;
-      ff->val[1]= -pol[a];
+      ff->val[1]= -ctx->pol[a];
       ff= FFNEXT(ff); 
 
       // Skip FIR if it is constant and zero
-      if (!cbm || zer[a] != 0.0) {
+      if (!cbm || ctx->zer[a] != 0.0) {
 	 ff->typ= 'F';
 	 ff->cbm= cbm;
 	 ff->len= 2;
 	 ff->val[0]= 1;
-	 ff->val[1]= -zer[a];
+	 ff->val[1]= -ctx->zer[a];
 	 ff= FFNEXT(ff); 
       }
    } else 
@@ -752,7 +753,7 @@ z2fidfilter(double gain, int cbm) {
 //
 
 static void 
-bandpass_res(double freq, double qfact) {
+bandpass_res(struct mk_filter_context* ctx, double freq, double qfact) {
    double mag;
    double th0, th1, th2;
    double theta= freq * TWOPI;
@@ -760,14 +761,14 @@ bandpass_res(double freq, double qfact) {
    double tmp1[2], tmp2[2], tmp3[2], tmp4[2];
    int cnt;
 
-   n_pol= 2;
-   poltyp[0]= 2; poltyp[1]= 0;
-   n_zer= 2;
-   zertyp[0]= 1; zertyp[1]= 1;
-   zer[0]= 1; zer[1]= -1;
+   ctx->n_pol= 2;
+   ctx->poltyp[0]= 2; ctx->poltyp[1]= 0;
+   ctx->n_zer= 2;
+   ctx->zertyp[0]= 1; ctx->zertyp[1]= 1;
+   ctx->zer[0]= 1; ctx->zer[1]= -1;
 
    if (qfact == 0.0) {
-      cexpj(pol, theta);
+      cexpj(ctx->pol, theta);
       return;
    }
 
@@ -777,8 +778,8 @@ bandpass_res(double freq, double qfact) {
    th0= 0; th2= M_PI;
    for (cnt= 60; cnt > 0; cnt--) {
       th1= 0.5 * (th0 + th2);
-      cexpj(pol, th1);
-      cmulr(pol, mag);
+      cexpj(ctx->pol, th1);
+      cmulr(ctx->pol, mag);
       
       // Evaluate response of filter for Z= val
       memcpy(tmp1, val, 2*sizeof(double));
@@ -788,8 +789,8 @@ bandpass_res(double freq, double qfact) {
       csubz(tmp1, 1, 0);
       csubz(tmp2, -1, 0);
       cmul(tmp1, tmp2);
-      csub(tmp3, pol); cconj(pol);
-      csub(tmp4, pol); cconj(pol);
+      csub(tmp3, ctx->pol); cconj(ctx->pol);
+      csub(tmp4, ctx->pol); cconj(ctx->pol);
       cmul(tmp3, tmp4);
       cdiv(tmp1, tmp3);
       
@@ -809,10 +810,10 @@ bandpass_res(double freq, double qfact) {
 //
 
 static void 
-bandstop_res(double freq, double qfact) {
-   bandpass_res(freq, qfact);
-   zertyp[0]= 2; zertyp[1]= 0;
-   cexpj(zer, TWOPI * freq);
+bandstop_res(struct mk_filter_context* ctx, double freq, double qfact) {
+   bandpass_res(ctx, freq, qfact);
+   ctx->zertyp[0]= 2; ctx->zertyp[1]= 0;
+   cexpj(ctx->zer, TWOPI * freq);
 }
 
 //
@@ -820,11 +821,11 @@ bandstop_res(double freq, double qfact) {
 //
 
 static void 
-allpass_res(double freq, double qfact) {
-   bandpass_res(freq, qfact);
-   zertyp[0]= 2; zertyp[1]= 0;
-   memcpy(zer, pol, 2*sizeof(double));
-   cmulr(zer, 1.0 / (zer[0]*zer[0] + zer[1]*zer[1]));
+allpass_res(struct mk_filter_context* ctx, double freq, double qfact) {
+   bandpass_res(ctx, freq, qfact);
+   ctx->zertyp[0]= 2; ctx->zertyp[1]= 0;
+   memcpy(ctx->zer, ctx->pol, 2*sizeof(double));
+   cmulr(ctx->zer, 1.0 / (ctx->zer[0]*ctx->zer[0] + ctx->zer[1]*ctx->zer[1]));
 }
 
 //
@@ -832,13 +833,13 @@ allpass_res(double freq, double qfact) {
 //
 
 static void 
-prop_integral(double freq) {
-   n_pol= 1;
-   poltyp[0]= 1;
-   pol[0]= 0.0;
-   n_zer= 1;
-   zertyp[0]= 1;
-   zer[0]= -TWOPI * freq;
+prop_integral(struct mk_filter_context* ctx, double freq) {
+   ctx->n_pol= 1;
+   ctx->poltyp[0]= 1;
+   ctx->pol[0]= 0.0;
+   ctx->n_zer= 1;
+   ctx->zertyp[0]= 1;
+   ctx->zer[0]= -TWOPI * freq;
 }
    
 // END //
