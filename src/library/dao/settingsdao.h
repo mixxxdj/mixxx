@@ -14,7 +14,7 @@
 // All library-specific preferences go in the library settings table
 class SettingsDAO final : public QObject {
   public:
-    SettingsDAO(const QSqlDatabase& db);
+    explicit SettingsDAO(const QSqlDatabase& db);
     ~SettingsDAO() override = default;
 
     QString getValue(const QString& name, QString defaultValue = QString()) const;
