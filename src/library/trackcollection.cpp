@@ -20,7 +20,7 @@ TrackCollection::TrackCollection(
         : m_pConfig(pConfig),
           m_analysisDao(pConfig),
           m_trackDao(m_cueDao, m_playlistDao,
-          m_analysisDao, m_libraryHashDao, pConfig) {
+                     m_analysisDao, m_libraryHashDao, pConfig) {
 }
 
 TrackCollection::~TrackCollection() {
