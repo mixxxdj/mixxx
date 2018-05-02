@@ -25,7 +25,9 @@ std::once_flag initFFmpegLibFlag;
 
 // This function must be called once during startup.
 void initFFmpegLib() {
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58, 9, 100)
     av_register_all();
+#endif
     avcodec_register_all();
 }
 
