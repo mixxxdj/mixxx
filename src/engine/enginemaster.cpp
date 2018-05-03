@@ -441,6 +441,7 @@ void EngineMaster::process(const int iBufferSize) {
             if (m_activeHeadphoneChannels.size() == 1) {
                 headphoneFeatures = m_activeHeadphoneChannels.at(0)->m_features;
             }
+            collectMasterSyncFeatures(&headphoneFeatures);
             m_pEngineEffectsManager->processPostFaderInPlace(
                 m_headphoneHandle.handle(),
                 m_headphoneHandle.handle(),
@@ -461,6 +462,7 @@ void EngineMaster::process(const int iBufferSize) {
     // Process effects on all microphones mixed together
     // We have no metadata for mixed effect buses, so use an empty GroupFeatureState.
     GroupFeatureState busFeatures;
+    collectMasterSyncFeatures(&busFeatures);
     m_pEngineEffectsManager->processPostFaderInPlace(
             m_busTalkoverHandle.handle(),
             m_masterHandle.handle(),
