@@ -360,10 +360,6 @@ class EngineMaster : public QObject, public AudioSource {
 
     volatile bool m_bBusOutputConnected[3];
     bool m_bExternalRecordBroadcastInputConnected;
-
-    // Internal Clock values
-    ControlProxy* m_masterBpm;
-    ControlProxy* m_masterBeatDistance;
 };
 
 #endif

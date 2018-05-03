@@ -41,6 +41,14 @@ class BaseSyncableListener : public SyncableListener {
     virtual void notifyPlaying(Syncable* pSyncable, bool playing) = 0;
     virtual void notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm) = 0;
 
+    // Return the current BPM of the master Syncable. If no master syncable is
+    // set then returns the BPM of the internal clock.
+    double masterBpm() const;
+
+    // Returns the current beat distance of the master Syncable. If no master
+    // Syncable is set, then returns the beat distance of the internal clock.
+    double masterBeatDistance() const;
+
   protected:
     // Choices about master selection can hinge on if any decks have sync
     // mode enabled.  This utility method returns true if it finds a deck
@@ -51,14 +59,6 @@ class BaseSyncableListener : public SyncableListener {
     // back. This utility method counts the number of decks not in SYNC_NONE
     // mode that are playing.
     int playingSyncDeckCount() const;
-
-    // Return the current BPM of the master Syncable. If no master syncable is
-    // set then returns the BPM of the internal clock.
-    double masterBpm() const;
-
-    // Returns the current beat distance of the master Syncable. If no master
-    // Syncable is set, then returns the beat distance of the internal clock.
-    double masterBeatDistance() const;
 
     // Returns the current BPM of the master Syncable if it were playing
     // at 1.0 rate.
