@@ -3074,9 +3074,18 @@
             </control>
             <control>
                 <group>[Master]</group>
-                <key>DJ202.crossfader.input</key>
+                <key>DJ202.crossfader.inputMSB</key>
                 <status>0xBF</status>
                 <midino>0x08</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ202.crossfader.inputLSB</key>
+                <status>0xBF</status>
+                <midino>0x58</midino>
                 <options>
                     <script-binding/>
                 </options>
