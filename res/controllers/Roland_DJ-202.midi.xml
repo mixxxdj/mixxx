@@ -497,7 +497,7 @@
             <!-- mixer -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.pregain.input</key>
+                <key>DJ202.leftDeck.pregain.inputMSB</key>
                 <status>0xB0</status>
                 <midino>0x16</midino>
                 <options>
@@ -505,8 +505,17 @@
                 </options>
             </control>
             <control>
+                <group>[Channel1]</group>
+                <key>DJ202.leftDeck.pregain.inputLSB</key>
+                <status>0xB0</status>
+                <midino>0x34</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>DJ202.leftDeck.eqKnob[3].input</key>
+                <key>DJ202.leftDeck.eqKnob[3].inputMSB</key>
                 <status>0xB0</status>
                 <midino>0x17</midino>
                 <options>
@@ -515,7 +524,16 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>DJ202.leftDeck.eqKnob[2].input</key>
+                <key>DJ202.leftDeck.eqKnob[3].inputLSB</key>
+                <status>0xB0</status>
+                <midino>0x35</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>DJ202.leftDeck.eqKnob[2].inputMSB</key>
                 <status>0xB0</status>
                 <midino>0x18</midino>
                 <options>
@@ -524,9 +542,27 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>DJ202.leftDeck.eqKnob[1].input</key>
+                <key>DJ202.leftDeck.eqKnob[2].inputLSB</key>
+                <status>0xB0</status>
+                <midino>0x36</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>DJ202.leftDeck.eqKnob[1].inputMSB</key>
                 <status>0xB0</status>
                 <midino>0x19</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>DJ202.leftDeck.eqKnob[1].inputLSB</key>
+                <status>0xB0</status>
+                <midino>0x37</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1180,7 +1216,7 @@
             <!-- mixer -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.pregain.input</key>
+                <key>DJ202.leftDeck.pregain.inputMSB</key>
                 <status>0xB2</status>
                 <midino>0x16</midino>
                 <options>
@@ -1188,8 +1224,17 @@
                 </options>
             </control>
             <control>
+                <group>[Channel3]</group>
+                <key>DJ202.leftDeck.pregain.inputLSB</key>
+                <status>0xB2</status>
+                <midino>0x34</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>DJ202.leftDeck.eqKnob[3].input</key>
+                <key>DJ202.leftDeck.eqKnob[3].inputMSB</key>
                 <status>0xB2</status>
                 <midino>0x17</midino>
                 <options>
@@ -1198,7 +1243,16 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>DJ202.leftDeck.eqKnob[2].input</key>
+                <key>DJ202.leftDeck.eqKnob[3].inputLSB</key>
+                <status>0xB2</status>
+                <midino>0x35</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>DJ202.leftDeck.eqKnob[2].inputMSB</key>
                 <status>0xB2</status>
                 <midino>0x18</midino>
                 <options>
@@ -1207,9 +1261,27 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>DJ202.leftDeck.eqKnob[1].input</key>
+                <key>DJ202.leftDeck.eqKnob[2].inputLSB</key>
+                <status>0xB2</status>
+                <midino>0x36</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>DJ202.leftDeck.eqKnob[1].inputMSB</key>
                 <status>0xB2</status>
                 <midino>0x19</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>DJ202.leftDeck.eqKnob[1].inputLSB</key>
+                <status>0xB2</status>
+                <midino>0x37</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1954,7 +2026,7 @@
             <!-- mixer -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.pregain.input</key>
+                <key>DJ202.rightDeck.pregain.inputMSB</key>
                 <status>0xB1</status>
                 <midino>0x16</midino>
                 <options>
@@ -1962,8 +2034,17 @@
                 </options>
             </control>
             <control>
+                <group>[Channel2]</group>
+                <key>DJ202.rightDeck.pregain.inputLSB</key>
+                <status>0xB1</status>
+                <midino>0x34</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>DJ202.rightDeck.eqKnob[3].input</key>
+                <key>DJ202.rightDeck.eqKnob[3].inputMSB</key>
                 <status>0xB1</status>
                 <midino>0x17</midino>
                 <options>
@@ -1972,7 +2053,16 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>DJ202.rightDeck.eqKnob[2].input</key>
+                <key>DJ202.rightDeck.eqKnob[3].inputLSB</key>
+                <status>0xB1</status>
+                <midino>0x35</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>DJ202.rightDeck.eqKnob[2].inputMSB</key>
                 <status>0xB1</status>
                 <midino>0x18</midino>
                 <options>
@@ -1981,9 +2071,27 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>DJ202.rightDeck.eqKnob[1].input</key>
+                <key>DJ202.rightDeck.eqKnob[2].inputLSB</key>
+                <status>0xB1</status>
+                <midino>0x36</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>DJ202.rightDeck.eqKnob[1].inputMSB</key>
                 <status>0xB1</status>
                 <midino>0x19</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>DJ202.rightDeck.eqKnob[1].inputLSB</key>
+                <status>0xB1</status>
+                <midino>0x37</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -2646,7 +2754,7 @@
             <!-- mixer -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.pregain.input</key>
+                <key>DJ202.rightDeck.pregain.inputMSB</key>
                 <status>0xB3</status>
                 <midino>0x16</midino>
                 <options>
@@ -2654,8 +2762,17 @@
                 </options>
             </control>
             <control>
+                <group>[Channel4]</group>
+                <key>DJ202.rightDeck.pregain.inputLSB</key>
+                <status>0xB3</status>
+                <midino>0x34</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>DJ202.rightDeck.eqKnob[3].input</key>
+                <key>DJ202.rightDeck.eqKnob[3].inputMSB</key>
                 <status>0xB3</status>
                 <midino>0x17</midino>
                 <options>
@@ -2664,7 +2781,16 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>DJ202.rightDeck.eqKnob[2].input</key>
+                <key>DJ202.rightDeck.eqKnob[3].inputLSB</key>
+                <status>0xB3</status>
+                <midino>0x35</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>DJ202.rightDeck.eqKnob[2].inputMSB</key>
                 <status>0xB3</status>
                 <midino>0x18</midino>
                 <options>
@@ -2673,9 +2799,27 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>DJ202.rightDeck.eqKnob[1].input</key>
+                <key>DJ202.rightDeck.eqKnob[2].inputLSB</key>
+                <status>0xB3</status>
+                <midino>0x36</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>DJ202.rightDeck.eqKnob[1].inputMSB</key>
                 <status>0xB3</status>
                 <midino>0x19</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>DJ202.rightDeck.eqKnob[1].inputLSB</key>
+                <status>0xB3</status>
+                <midino>0x37</midino>
                 <options>
                     <script-binding/>
                 </options>
