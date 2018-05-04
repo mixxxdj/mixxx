@@ -70,9 +70,18 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.tempoFader.input</key>
+                <key>DJ202.leftDeck.tempoFader.inputMSB</key>
                 <status>0xB0</status>
                 <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJ202.leftDeck.tempoFader.inputLSB</key>
+                <status>0xB0</status>
+                <midino>0x3B</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -789,9 +798,18 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.tempoFader.input</key>
+                <key>DJ202.leftDeck.tempoFader.inputMSB</key>
                 <status>0xB2</status>
                 <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>DJ202.leftDeck.tempoFader.inputLSB</key>
+                <status>0xB2</status>
+                <midino>0x3B</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1599,9 +1617,18 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.tempoFader.input</key>
+                <key>DJ202.rightDeck.tempoFader.inputMSB</key>
                 <status>0xB1</status>
                 <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJ202.rightDeck.tempoFader.inputLSB</key>
+                <status>0xB1</status>
+                <midino>0x3B</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -2327,9 +2354,18 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.tempoFader.input</key>
+                <key>DJ202.rightDeck.tempoFader.inputMSB</key>
                 <status>0xB3</status>
                 <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>DJ202.rightDeck.tempoFader.inputLSB</key>
+                <status>0xB3</status>
+                <midino>0x3B</midino>
                 <options>
                     <script-binding/>
                 </options>
