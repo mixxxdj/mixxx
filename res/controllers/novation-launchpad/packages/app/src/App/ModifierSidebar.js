@@ -1,11 +1,10 @@
 /* @flow */
-import { Buttons, Colors } from '../Launchpad'
+import type { MidiMessage } from '../'
+import type { MidiBus } from '../MidiBus'
 
-import type { MidiMessage } from '../Launchpad'
+import MidiComponent from '../Controls/MidiComponent'
 
-import Component from '../Component'
-
-import type MidiComponent, { MidiComponentBuilder } from '../Controls/MidiComponent'
+import MidiButtonComponent from '../Controls/MidiButtonComponent'
 
 export type ModifierState = {
   ctrl: boolean,
@@ -16,29 +15,29 @@ export interface Modifier {
   getState (): ModifierState
 }
 
-export default class ModifierSidebar extends Component implements Modifier {
-  shift: MidiComponent
-  ctrl: MidiComponent
+export default class ModifierSidebar extends MidiComponent implements Modifier {
+  shift: MidiButtonComponent
+  ctrl: MidiButtonComponent
   state: {| shift: boolean, ctrl: boolean |}
   listener: (MidiMessage) => void
 
-  constructor (midiComponentBuilder: MidiComponentBuilder) {
-    super()
-    this.shift = midiComponentBuilder(Buttons.solo)
-    this.ctrl = midiComponentBuilder(Buttons.arm)
+  constructor (midibus: MidiBus) {
+    super(midibus)
+    this.shift = new MidiButtonComponent(this.midibus, this.device.buttons.solo)
+    this.ctrl = new MidiButtonComponent(this.midibus, this.device.buttons.arm)
 
     this.state = {
       shift: false,
       ctrl: false
     }
 
-    this.listener = ({ value, button }) => {
+    this.listener = ({ value, button, device }) => {
       if (value) {
-        button.sendColor(Colors.hi_red)
+        button.sendColor(device.colors.hi_red)
       } else {
-        button.sendColor(Colors.black)
+        button.sendColor(device.colors.black)
       }
-      if (button.def.name === Buttons.solo.def.name) {
+      if (button.def.name === this.device.buttons.solo.def.name) {
         this.state.shift = !!value
         this.emit('shift', value)
       } else {
@@ -68,9 +67,6 @@ export default class ModifierSidebar extends Component implements Modifier {
     return this.state
   }
 }
-
-export const makeModifierSidebar =
-  (midiComponentBuilder: MidiComponentBuilder) => new ModifierSidebar(midiComponentBuilder)
 
 export const modes = (ctx: ModifierState, n?: () => void, c?: () => void, s?: () => void, cs?: () => void) => {
   if (ctx.shift && ctx.ctrl) {

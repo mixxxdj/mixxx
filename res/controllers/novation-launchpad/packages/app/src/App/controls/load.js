@@ -1,20 +1,19 @@
 /* @flow */
 
-import type { ChannelControl, ControlMessage } from '../../Mixxx'
-import { Colors } from '../../Launchpad'
-import type { MidiMessage } from '../../Launchpad'
+import type { ChannelControl, ControlMessage } from '@mixxx-launchpad/mixxx'
+import type { LaunchpadDevice, MidiMessage } from '../../'
 
 import { modes } from '../ModifierSidebar'
 import type { Modifier } from '../ModifierSidebar'
 
-export default (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => {
+export default (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => (device: LaunchpadDevice) => {
   const onStateChanged = (loaded, playing, bindings) => {
     if (loaded && playing) {
-      bindings.button.button.sendColor(Colors.lo_red)
+      bindings.button.button.sendColor(device.colors.lo_red)
     } else if (loaded) {
-      bindings.button.button.sendColor(Colors.lo_yellow)
+      bindings.button.button.sendColor(device.colors.lo_yellow)
     } else {
-      bindings.button.button.sendColor(Colors.lo_green)
+      bindings.button.button.sendColor(device.colors.lo_green)
     }
   }
   return {

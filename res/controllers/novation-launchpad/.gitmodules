@@ -1,0 +1,3 @@
+[submodule "blogpost"]
+	path = blogpost
+	url = git@gist.github.com:b195090daa8ed343254b90f73f6e911f

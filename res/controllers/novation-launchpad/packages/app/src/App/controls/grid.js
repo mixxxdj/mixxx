@@ -1,24 +1,23 @@
 /* @flow */
 
-import { Colors } from '../../Launchpad'
-import type { MidiMessage } from '../../Launchpad'
+import type { LaunchpadDevice, MidiMessage } from '../../'
 
 import { modes } from '../ModifierSidebar'
 import type { Modifier } from '../ModifierSidebar'
-import type { ChannelControl } from '../../Mixxx'
+import type { ChannelControl } from '@mixxx-launchpad/mixxx'
 
-export default (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => {
+export default (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => (device: LaunchpadDevice) => {
   const onGrid = (dir) => ({ value }: MidiMessage, { bindings, state }: Object) => {
     if (!value) {
-      bindings[dir].button.sendColor(Colors.black)
+      bindings[dir].button.sendColor(device.colors.black)
     } else {
       modes(modifier.getState(),
         () => {
-          bindings[dir].button.sendColor(Colors.hi_yellow)
+          bindings[dir].button.sendColor(device.colors.hi_yellow)
           state[dir].normal.setValue(1)
         },
         () => {
-          bindings[dir].button.sendColor(Colors.hi_amber)
+          bindings[dir].button.sendColor(device.colors.hi_amber)
           state[dir].ctrl.setValue(1)
         })
     }

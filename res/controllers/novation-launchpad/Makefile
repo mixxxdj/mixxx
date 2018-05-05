@@ -1,4 +1,4 @@
-SHELL := $(shell which zsh || which bash)
+SHELL := $(shell which bash) -O globstar -c
 
 empty :=
 space := $(empty) $(empty)
@@ -15,26 +15,29 @@ package := ./package.json
 buildDir := ./dist
 version := $(shell jq -r .version package.json)
 
+scriptFiles = $(shell ls packages/**/*.js) 
+mappingFiles = $(package) packages/$(1)/buttons.js packages/$(1)/template.xml.ejs
+
 targets := $(shell jq -r '.controllers | join (" ")' package.json)
 
 define targetScriptRules
-$(call script,$(1)) : $(shell ls packages/**/*.js)
+$(call script,$(1)) : $(scriptFiles)
 	./scripts/compile-scripts.js $(1) "$$@"
 endef
 
 define targetMappingRules
-$(call mapping,$(1)) : $(package) packages/$(1)/buttons.js packages/$(1)/template.xml.ejs
+$(call mapping,$(1)) : $(mappingFiles)
 	./scripts/compile-mapping.js $(1) "$$@"
 endef
 
 define compileRule
 compile : $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target)))
-.DEFAULT : compile
 .PHONY : compile
 endef
 
 define installRule
 install : install_$(arch)
+.PHONY : install
 
 install_Darwin : $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target)))
 	cp $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target))) $$(HOME)/Library/Application\ Support/Mixxx/controllers
@@ -51,6 +54,9 @@ mixxx-launchpad-$(version) : $(foreach target,$(1),$(call mapping,$(target)) $(c
 	zip -9 $$@.zip $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target)))
 endef
 
+default : compile
+.PHONY : default
+
 $(foreach target,$(targets),$(eval $(call targetScriptRules,$(target))))
 $(foreach target,$(targets),$(eval $(call targetMappingRules,$(target))))
 $(eval $(call compileRule,$(targets)))
@@ -65,6 +71,20 @@ test :
 	npm run check
 .PHONY : test
 
+watch_install :
+	@echo Stop watching with Ctrl-C
+	@sleep 1 # Wait a bit so users can read
+	@$(MAKE) install
+	@trap exit SIGINT; fswatch -o $(scriptFiles) $(mappingFiles) | while read; do $(MAKE) install; done	
+.PHONY : watch_install
+
+watch :
+	@echo Stop watching with Ctrl-C
+	@sleep 1 # Wait a bit so users can read
+	@$(MAKE)
+	@trap exit SIGINT; fswatch -o $(scriptFiles) $(mappingFiles) | while read; do $(MAKE); done	
+.PHONY : watch
+
 clean :
-	rm -rf dist
+	rm -rf dist tmp
 .PHONY : clean
