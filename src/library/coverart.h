@@ -7,7 +7,8 @@
 #include <QtDebug>
 #include <QtGlobal>
 
-struct CoverInfo {
+class CoverInfoRelative {
+  public:
     // DO NOT CHANGE THESE CONSTANT VALUES. THEY ARE STORED IN THE DATABASE.
     enum Source {
         // We don't know where we got this cover.
@@ -28,51 +29,57 @@ struct CoverInfo {
         FILE = 2
     };
 
-    static const quint16 kNullImageHash;
-
-    CoverInfo() : source(UNKNOWN),
-                  type(NONE),
-                  coverLocation(QString()),
-                  trackLocation(QString()),
-                  // This default value is fine: qChecksum(NULL, 0) is 0.
-                  hash(CoverInfo::kNullImageHash) {}
-
-    bool operator==(const CoverInfo& other) const {
-        return other.source == source &&
-                other.type == type &&
-                other.coverLocation == coverLocation &&
-                other.trackLocation == trackLocation &&
-                other.hash == hash;
-    }
-    bool operator!=(const CoverInfo& other) const {
-        return !(*this == other);
-    }
+    CoverInfoRelative();
+    virtual ~CoverInfoRelative() {};
 
     Source source;
     Type type;
-    QString coverLocation; // Relative path, starting from trackLocation
-    QString trackLocation;
+    QString coverLocation; // relative path, from track location
     quint16 hash;
 };
 
-struct CoverArt {
-    CoverArt() {}
+bool operator==(const CoverInfoRelative& a, const CoverInfoRelative& b);
+bool operator!=(const CoverInfoRelative& a, const CoverInfoRelative& b);
+QDebug operator<<(QDebug dbg, const CoverInfoRelative& info);
 
-    bool operator==(const CoverArt& other) const {
-        // Only count image in the equality if both are non-null.
-        return other.info == info &&
-                (other.image.isNull() || image.isNull() ||
-                 other.image == image);
-    }
-    bool operator!=(const CoverArt& other) const {
-        return !(*this == other);
+class CoverInfo : public CoverInfoRelative {
+  public:
+    CoverInfo() {}
+
+    CoverInfo(const CoverInfoRelative& base, const QString& tl)
+        : CoverInfoRelative(base),
+          trackLocation(tl) {
     }
 
-    CoverInfo info;
-    QImage image;
+    virtual ~CoverInfo() {};
+
+    QString trackLocation;
 };
 
+bool operator==(const CoverInfo& a, const CoverInfo& b);
+bool operator!=(const CoverInfo& a, const CoverInfo& b);
 QDebug operator<<(QDebug dbg, const CoverInfo& info);
+
+class CoverArt : public CoverInfo {
+  public:
+    CoverArt()
+        : resizedToWidth(0) {
+    }
+
+    CoverArt(const CoverInfo& base, const QImage& img, int rtw)
+        : CoverInfo(base),
+          image(img),
+          resizedToWidth(rtw) {
+    }
+
+    virtual ~CoverArt() {};
+
+    // it is not a QPixmap, because it is not safe to use pixmaps 
+    // outside the GUI thread
+    QImage image; 
+    int resizedToWidth;
+};
+
 QDebug operator<<(QDebug dbg, const CoverArt& art);
 
 #endif /* COVERART_H */

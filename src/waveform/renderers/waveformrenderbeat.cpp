@@ -64,6 +64,8 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     beatPen.setWidthF(1);
     painter->setPen(beatPen);
 
+    const Qt::Orientation orientation = m_waveformRenderer->getOrientation();
+    const float rendererWidth = m_waveformRenderer->getWidth();
     const float rendererHeight = m_waveformRenderer->getHeight();
 
     int beatCount = 0;
@@ -79,7 +81,11 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
             m_beats.resize(m_beats.size() * 2);
         }
 
-        m_beats[beatCount++].setLine(xBeatPoint, 0.0f, xBeatPoint, rendererHeight);
+        if (orientation == Qt::Horizontal) {
+            m_beats[beatCount++].setLine(xBeatPoint, 0.0f, xBeatPoint, rendererHeight);
+        } else {
+            m_beats[beatCount++].setLine(0.0f, xBeatPoint, rendererWidth, xBeatPoint);
+        }
     }
 
     // Make sure to use constData to prevent detaches!

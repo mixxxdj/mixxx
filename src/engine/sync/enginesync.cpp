@@ -397,3 +397,19 @@ EngineChannel* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const
     // had a BPM.
     return pFirstNonplayingDeck;
 }
+
+bool EngineSync::otherSyncedPlaying(const QString& group) {
+    bool othersInSync = false;
+    for (Syncable* theSyncable : m_syncables) {
+        if (theSyncable->getGroup() == group) {
+            if (theSyncable->getSyncMode() == SYNC_NONE) {
+                return false;
+            }
+            continue;
+        }
+        if (theSyncable->isPlaying() && (theSyncable->getSyncMode() != SYNC_NONE)) {
+            othersInSync = true;
+        }
+    }
+    return othersInSync;
+}

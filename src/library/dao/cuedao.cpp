@@ -62,8 +62,9 @@ CuePointer CueDAO::cueFromRow(const QSqlQuery& query) const {
     int length = record.value(record.indexOf("length")).toInt();
     int hotcue = record.value(record.indexOf("hotcue")).toInt();
     QString label = record.value(record.indexOf("label")).toString();
+    QColor color = QColor::fromRgba(record.value(record.indexOf("color")).toInt());
     CuePointer pCue(new Cue(id, trackId, (Cue::CueType)type,
-                       position, length, hotcue, label));
+                       position, length, hotcue, label, color));
     m_cues[id] = pCue;
     return pCue;
 }
@@ -148,13 +149,14 @@ bool CueDAO::saveCue(Cue* cue) {
     if (cue->getId() == -1) {
         // New cue
         QSqlQuery query(m_database);
-        query.prepare("INSERT INTO " CUE_TABLE " (track_id, type, position, length, hotcue, label) VALUES (:track_id, :type, :position, :length, :hotcue, :label)");
+        query.prepare("INSERT INTO " CUE_TABLE " (track_id, type, position, length, hotcue, label, color) VALUES (:track_id, :type, :position, :length, :hotcue, :label, :color)");
         query.bindValue(":track_id", cue->getTrackId().toVariant());
         query.bindValue(":type", cue->getType());
         query.bindValue(":position", cue->getPosition());
         query.bindValue(":length", cue->getLength());
         query.bindValue(":hotcue", cue->getHotCue());
         query.bindValue(":label", cue->getLabel());
+        query.bindValue(":color", cue->getColor().rgba());
 
         if (query.exec()) {
             int id = query.lastInsertId().toInt();
@@ -172,7 +174,8 @@ bool CueDAO::saveCue(Cue* cue) {
                         "position = :position,"
                         "length = :length,"
                         "hotcue = :hotcue,"
-                        "label = :label"
+                        "label = :label,"
+                        "color = :color"
                         " WHERE id = :id");
         query.bindValue(":id", cue->getId());
         query.bindValue(":track_id", cue->getTrackId().toVariant());
@@ -181,6 +184,7 @@ bool CueDAO::saveCue(Cue* cue) {
         query.bindValue(":length", cue->getLength());
         query.bindValue(":hotcue", cue->getHotCue());
         query.bindValue(":label", cue->getLabel());
+        query.bindValue(":color", cue->getColor().rgba());
 
         if (query.exec()) {
             cue->setDirty(false);

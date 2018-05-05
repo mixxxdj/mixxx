@@ -7,6 +7,10 @@
 #include "library/dao/cue.h"
 #include "util/assert.h"
 
+namespace {
+    const QColor kDefaultColor = QColor("#FF0000");
+}
+
 Cue::~Cue() {
     qDebug() << "~Cue()" << m_iId;
 }
@@ -19,12 +23,13 @@ Cue::Cue(TrackId trackId)
           m_iPosition(-1),
           m_iLength(0),
           m_iHotCue(-1),
-          m_label("") {
+          m_label(),
+          m_color(kDefaultColor) {
 }
 
 
 Cue::Cue(int id, TrackId trackId, Cue::CueType type, int position, int length,
-         int hotCue, QString label)
+         int hotCue, QString label, QColor color)
         : m_bDirty(false),
           m_iId(id),
           m_trackId(trackId),
@@ -32,7 +37,8 @@ Cue::Cue(int id, TrackId trackId, Cue::CueType type, int position, int length,
           m_iPosition(position),
           m_iLength(length),
           m_iHotCue(hotCue),
-          m_label(label) {
+          m_label(label),
+          m_color(color) {
 }
 
 int Cue::getId() const {
@@ -129,6 +135,19 @@ void Cue::setLabel(const QString label) {
     //qDebug() << "setLabel()" << m_label << "-" << label;
     QMutexLocker lock(&m_mutex);
     m_label = label;
+    m_bDirty = true;
+    lock.unlock();
+    emit(updated());
+}
+
+QColor Cue::getColor() const {
+    QMutexLocker lock(&m_mutex);
+    return m_color;
+}
+
+void Cue::setColor(const QColor color) {
+    QMutexLocker lock(&m_mutex);
+    m_color = color;
     m_bDirty = true;
     lock.unlock();
     emit(updated());

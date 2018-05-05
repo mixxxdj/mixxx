@@ -13,28 +13,28 @@
     <message>
         <location filename="../../src/library/analysisfeature.cpp" line="28"/>
         <source>Analyze</source>
-        <translation>Analyze</translation>
+        <translation>Analitza</translation>
     </message>
 </context>
 <context>
     <name>AutoDJFeature</name>
     <message>
-        <location filename="../../src/library/autodj/autodjfeature.cpp" line="58"/>
+        <location filename="../../src/library/autodj/autodjfeature.cpp" line="60"/>
         <source>Crates</source>
         <translation>Caixes</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/autodjfeature.cpp" line="79"/>
+        <location filename="../../src/library/autodj/autodjfeature.cpp" line="81"/>
         <source>Remove Crate as Track Source</source>
         <translation>Esborra la caixa com a font de pistes</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/autodjfeature.cpp" line="90"/>
+        <location filename="../../src/library/autodj/autodjfeature.cpp" line="92"/>
         <source>Auto DJ</source>
         <translation>DJ automàtic</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/autodjfeature.cpp" line="350"/>
+        <location filename="../../src/library/autodj/autodjfeature.cpp" line="352"/>
         <source>Add Crate as Track Source</source>
         <translation>Afegeix la caixa com a font de pistes</translation>
     </message>
@@ -51,7 +51,7 @@
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="75"/>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="84"/>
         <source>Error loading Banshee database</source>
-        <translation>Hi ha hagut un error al carregar la base de dades del Banshee</translation>
+        <translation>S&apos;ha produït un error al carregar la base de dades del Banshee</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="76"/>
@@ -122,17 +122,17 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="44"/>
         <source>Remove</source>
-        <translation>Elimina</translation>
+        <translation>Suprimeix</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="48"/>
         <source>Rename</source>
-        <translation>Canvia-li el nom</translation>
+        <translation>Reanomena</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="52"/>
         <source>Lock</source>
-        <translation>Bloqueja els canvis</translation>
+        <translation>Bloca els canvis</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="56"/>
@@ -158,7 +158,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="182"/>
         <source>Enter new name for playlist:</source>
-        <translation>Escriviu un nom nou per a la llista de reproducció:</translation>
+        <translation>Inseriu un nom nou per a la llista de reproducció:</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="222"/>
@@ -169,7 +169,7 @@
         <location filename="../../src/library/baseplaylistfeature.cpp" line="223"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="279"/>
         <source>Enter name for new playlist:</source>
-        <translation>Introduïu el nom de la nova llista de reproducció:</translation>
+        <translation>Inseriu el nom de la llista nova de reproducció:</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="68"/>
@@ -239,127 +239,127 @@
 <context>
     <name>BaseSqlTableModel</name>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="64"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="62"/>
         <source>Played</source>
         <translation>Reproduït</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="66"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="64"/>
         <source>Artist</source>
         <translation>Artista</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="68"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="66"/>
         <source>Title</source>
         <translation>Tí­tol</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="70"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="68"/>
         <source>Album</source>
         <translation>Àlbum</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="72"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="70"/>
         <source>Album Artist</source>
         <translation>Artista de l&apos;àlbum</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="74"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="72"/>
         <source>Genre</source>
         <translation>Gènere</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="76"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="74"/>
         <source>Composer</source>
         <translation>Compositor</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="78"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="76"/>
         <source>Grouping</source>
         <translation>Grup</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="80"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="78"/>
         <source>Year</source>
         <translation>Any</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="82"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="80"/>
         <source>Type</source>
         <translation>Tipus</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="84"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="82"/>
         <source>Location</source>
         <translation>Ubicació</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="86"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="84"/>
         <source>Comment</source>
         <translation>Comentari</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="88"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="86"/>
         <source>Duration</source>
         <translation>Durada</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="90"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="88"/>
         <source>Rating</source>
         <translation>Puntuació</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="92"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="90"/>
         <source>Bitrate</source>
         <translation>Taxa de bits</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="94"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="92"/>
         <source>BPM</source>
         <translation>BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="96"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="94"/>
         <source>Track #</source>
         <translation>Núm. de pista</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="98"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="96"/>
         <source>Date Added</source>
         <translation>Afegida el dia</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="100"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="98"/>
         <source>#</source>
         <translation>Núm.</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="102"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="100"/>
         <source>Timestamp</source>
         <translation>Marca de temps</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="104"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="102"/>
         <source>Key</source>
         <translation>Clau musical</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="106"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="104"/>
         <source>BPM Lock</source>
         <translation>Bloqueig de BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="108"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="106"/>
         <source>Preview</source>
         <translation>Pre-escolta</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="110"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="108"/>
         <source>Cover Art</source>
         <translation>Caràtula</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="112"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="110"/>
         <source>ReplayGain</source>
         <translation>ReplayGain</translation>
     </message>
@@ -367,7 +367,7 @@
 <context>
     <name>BaseTrackPlayerImpl</name>
     <message>
-        <location filename="../../src/mixer/basetrackplayer.cpp" line="205"/>
+        <location filename="../../src/mixer/basetrackplayer.cpp" line="207"/>
         <source>Couldn&apos;t load track.</source>
         <translation>No s&apos;ha pogut carregar la pista.</translation>
     </message>
@@ -382,7 +382,7 @@
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="41"/>
         <source>Remove from Quick Links</source>
-        <translation>Elimina de les Dreceres</translation>
+        <translation>Suprimeix de les dreceres</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="44"/>
@@ -2223,7 +2223,7 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="180"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="181"/>
         <source>Kill %1</source>
-        <translation>Elimina %1</translation>
+        <translation>Suprimeix %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="451"/>
@@ -2540,7 +2540,7 @@
     <message>
         <location filename="../../src/library/cratefeature.cpp" line="40"/>
         <source>Remove</source>
-        <translation>Elimina</translation>
+        <translation>Suprimeix</translation>
     </message>
     <message>
         <location filename="../../src/library/cratefeature.cpp" line="36"/>
@@ -2558,7 +2558,7 @@
         <location filename="../../src/library/cratefeature.cpp" line="48"/>
         <location filename="../../src/library/cratefeature.cpp" line="253"/>
         <source>Lock</source>
-        <translation>Bloqueja els canvis</translation>
+        <translation>Bloca els canvis</translation>
     </message>
     <message>
         <location filename="../../src/library/cratefeature.cpp" line="64"/>
@@ -2649,7 +2649,7 @@
     <message>
         <location filename="../../src/library/cratefeature.cpp" line="665"/>
         <source>Crate Creation Failed</source>
-        <translation type="unfinished"/>
+        <translation>No s&apos;ha pogut crear la caixa</translation>
     </message>
     <message>
         <location filename="../../src/library/cratefeature.cpp" line="699"/>
@@ -3185,12 +3185,12 @@ Heu intentat aprendre: %1,%2</translation>
     <message>
         <location filename="../../src/library/dlghidden.ui" line="75"/>
         <source>Purge selected tracks from the library.</source>
-        <translation>Elimina de la Biblioteca les pistes seleccionades</translation>
+        <translation>Suprimeix de la Biblioteca les pistes seleccionades</translation>
     </message>
     <message>
         <location filename="../../src/library/dlghidden.ui" line="78"/>
         <source>Purge</source>
-        <translation>Elimina</translation>
+        <translation>Suprimeix</translation>
     </message>
     <message>
         <location filename="../../src/library/dlghidden.ui" line="88"/>
@@ -3228,12 +3228,12 @@ Heu intentat aprendre: %1,%2</translation>
     <message>
         <location filename="../../src/library/dlgmissing.ui" line="75"/>
         <source>Purge selected tracks from the library.</source>
-        <translation>Elimina de la Biblioteca les pistes seleccionades</translation>
+        <translation>Suprimeix de la Biblioteca les pistes seleccionades</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgmissing.ui" line="78"/>
         <source>Purge</source>
-        <translation>Elimina</translation>
+        <translation>Suprimeix</translation>
     </message>
 </context>
 <context>
@@ -3261,7 +3261,7 @@ Heu intentat aprendre: %1,%2</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="32"/>
         <source>Add a track to the end of the Auto DJ playlist once it is played, instead of removing it.</source>
-        <translation>Afegeix la pista al final de la llista de reproducció del DJ automàtic un cop s&apos;hagi reproduït, en comptes d&apos;eliminar-la.</translation>
+        <translation>Afegeix la pista al final de la llista de reproducció del DJ automàtic un cop s&apos;hagi reproduït, en comptes de suprimir-la.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="79"/>
@@ -3348,28 +3348,28 @@ Heu intentat aprendre: %1,%2</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="74"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="181"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="185"/>
         <source>This stream is online for testing purposes!</source>
         <translation>Aquest stream està a la xarxa en mode de proves!</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="81"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="182"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="82"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="186"/>
         <source>Live Mix</source>
         <translation>Sessió en viu</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="120"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="122"/>
         <source>MP3</source>
         <translation>MP3</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="121"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="123"/>
         <source>Ogg Vorbis</source>
         <translation>Ogg Vorbis</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="131"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="133"/>
         <source>Stereo</source>
         <translation>Estèreo</translation>
     </message>
@@ -3682,7 +3682,7 @@ Volue aplicar la configuració i continuar?</translation>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="439"/>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="492"/>
         <source>Remove</source>
-        <translation>Elimina</translation>
+        <translation>Suprimeix</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="312"/>
@@ -3718,7 +3718,7 @@ Volue aplicar la configuració i continuar?</translation>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="396"/>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="459"/>
         <source>Clear All</source>
-        <translation>Elimina&apos;ls tots</translation>
+        <translation>Suprimeix-ho tot</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="407"/>
@@ -4594,7 +4594,7 @@ i permet que es pugui ajustar el to per a una mescla harmònica.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="223"/>
         <source>Confirm Directory Removal</source>
-        <translation>Confirma l&apos;eliminació de la carpeta</translation>
+        <translation>Confirma la supressió de la carpeta</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="225"/>
@@ -4647,12 +4647,12 @@ i permet que es pugui ajustar el to per a una mescla harmònica.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="54"/>
         <source>If removed, Mixxx will no longer watch this directory and its subdirectories for new tracks.</source>
-        <translation>Si s&apos;elimina, el Mixxx no revisarà més la carpeta i les subcarpetes per trobar noves pistes.</translation>
+        <translation>Si se suprimeix, el Mixxx no revisarà més la carpeta i les subcarpetes per trobar noves pistes.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="57"/>
         <source>Remove</source>
-        <translation>Elimina</translation>
+        <translation>Suprimeix</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="83"/>
@@ -5583,14 +5583,14 @@ milliseconds</extracomment>
         <translation>OpenGL no està disponible</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="211"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="216"/>
         <source>dropped frames</source>
         <translation>fotogrames descartats</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="236"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="241"/>
         <source>Cached waveforms occupy %1 MiB on disk.</source>
-        <translation type="unfinished"/>
+        <translation>La memòria cau dels gràfics d&apos;ona ocupa %1 MiB en disc.</translation>
     </message>
 </context>
 <context>
@@ -5726,22 +5726,27 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="416"/>
         <source>Caching</source>
+        <translation>Memoria cau</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="435"/>
+        <source>Mixxx caches the waveforms of your tracks on disk the first time you load a track. This reduces CPU usage when you are playing live but requires extra disk space.</source>
+        <translation>El Mixxx emmagatzema a la memòria cau els gràfics d&apos;ona de les vostres pistes a disc el primer cop que carregueu la pista en un plat. Això redueix el consum de CPU les posteriors vegades, però requereix espai addicional de disc.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="455"/>
+        <source>Enable waveform caching</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="462"/>
+        <source>Generate waveforms when analyzing library</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="428"/>
-        <source>Mixxx caches the waveforms of your tracks on disk the first time you load a track. This reduces CPU usage when you are playing live but requires extra disk space.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="438"/>
         <source>Clear Cached Waveforms</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="445"/>
-        <source>Enable Waveform Caching</source>
-        <translation type="unfinished"/>
+        <translation>Esborra la memòria cau dels gràfics d&apos;ona</translation>
     </message>
 </context>
 <context>
@@ -6370,142 +6375,142 @@ milliseconds</extracomment>
 <context>
     <name>EngineBroadcast</name>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="69"/>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="73"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="70"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="74"/>
         <source>Mixxx encountered a problem</source>
         <translation>Mixxx ha trobat un problema</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="69"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="70"/>
         <source>Could not allocate shout_t</source>
         <translation>No es pot assignar shout_t</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="73"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="74"/>
         <source>Could not allocate shout_metadata_t</source>
         <translation>No es pot assignar shout_metadata_t</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="78"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="79"/>
         <source>Error setting non-blocking mode:</source>
         <translation>Error activant el mode no bloquejant:</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="211"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="250"/>
         <source>Error setting hostname!</source>
         <translation>Error establint el nom del host!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="217"/>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="328"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="256"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="368"/>
         <source>Error setting protocol!</source>
         <translation>Error establint el protocol!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="222"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="262"/>
         <source>Error setting port!</source>
         <translation>Error establint el port!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="227"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="268"/>
         <source>Error setting password!</source>
         <translation>Error establint la contrasenya!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="232"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="273"/>
         <source>Error setting mount!</source>
         <translation>Error establint el muntatge!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="238"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="278"/>
         <source>Error setting username!</source>
         <translation>Error establint el nom d&apos;usuari!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="243"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="283"/>
         <source>Error setting stream name!</source>
         <translation>Error establint el nom del stream!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="248"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="288"/>
         <source>Error setting stream description!</source>
         <translation>Error establint la descripció del stream!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="253"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="293"/>
         <source>Error setting stream genre!</source>
         <translation>Error establint el gènere del stream!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="258"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="298"/>
         <source>Error setting stream url!</source>
         <translation>Error establint la URL del stream!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="263"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="303"/>
         <source>Error setting stream public!</source>
         <translation>Error establint la emissió com a pública!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="292"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="332"/>
         <source>Broadcasting at 96kHz with Ogg Vorbis is not currently supported. Please try a different sample-rate or switch to a different encoding.</source>
         <translation>Transmetre a 96kHz amb Ogg Vorbis no està suportat actualment. Per favor proveu amb una freqüència de mostreig diferent o canvieu a una codificació diferent.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="295"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="335"/>
         <source>See https://bugs.launchpad.net/mixxx/+bug/686212 for more information.</source>
         <translation>Consulteu https://bugs.launchpad.net/mixxx/+bug/686212 per a més informació.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="301"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="341"/>
         <source>Error setting bitrate</source>
         <translation>Error establint la taxa de bits.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="317"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="357"/>
         <source>Error: unknown server protocol!</source>
         <translation>Error: protocol del servidor desconegut!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="322"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="362"/>
         <source>Error: libshout only supports Shoutcast with MP3 format!</source>
         <translation>Error: libshout només suporta Shoutcast amb el format MP3!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="453"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="500"/>
         <source>Mixxx has successfully connected to the streaming server</source>
         <translation>Mixxx s&apos;ha connectat amb èxit al servidor d&apos;emissió</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="496"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="545"/>
         <source>Mixxx has successfully disconnected from the streaming server</source>
         <translation>Mixxx s&apos;ha desconectat correctament del servidor d&apos;emissió</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="535"/>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="557"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="584"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="606"/>
         <source>Lost connection to streaming server and the attempt to reconnect failed</source>
         <translation>S&apos;ha perdut la retransmissió al servidor i ha fallat la reconnexió</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="537"/>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="559"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="586"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="608"/>
         <source>Please check your connection to the Internet</source>
         <translation>Verifiqueu la connexió a Internet i torneu a provar</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="734"/>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="747"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="783"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="796"/>
         <source>Live broadcasting</source>
         <translation>Emissió en viu</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="783"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="832"/>
         <source>Can&apos;t connect to streaming server</source>
         <translation>No s&apos;ha pogut connectar al servidor d&apos;emissió</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="785"/>
+        <location filename="../../src/engine/sidechain/enginebroadcast.cpp" line="834"/>
         <source>Please check your connection to the Internet and verify that your username and password are correct.</source>
         <translation>Per favor, comproveu la connexió cap a Internet i verifiqueu que el nom d&apos;usuari i la contrasenya són correctes.</translation>
     </message>
@@ -6513,17 +6518,17 @@ milliseconds</extracomment>
 <context>
     <name>EngineBuffer</name>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="167"/>
+        <location filename="../../src/engine/enginebuffer.h" line="155"/>
         <source>Soundtouch (faster)</source>
         <translation>Soundtouch (ràpid)</translation>
     </message>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="169"/>
+        <location filename="../../src/engine/enginebuffer.h" line="157"/>
         <source>Rubberband (better)</source>
         <translation>Rubberband (més qualitat)</translation>
     </message>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="171"/>
+        <location filename="../../src/engine/enginebuffer.h" line="159"/>
         <source>Unknown (bad value)</source>
         <translation>Desconegut (valor incorrecte)</translation>
     </message>
@@ -7136,7 +7141,7 @@ Si us plau, seleccioneu primer un dispositiu d&apos;entrada a les preferències 
     <message>
         <location filename="../../src/library/playlistfeature.cpp" line="66"/>
         <source>Lock</source>
-        <translation>Bloqueja els canvis</translation>
+        <translation>Bloca els canvis</translation>
     </message>
     <message>
         <location filename="../../src/library/playlistfeature.cpp" line="39"/>
@@ -7708,14 +7713,14 @@ Per descartar aquesta acció, premeu Cancel·la.</translation>
         <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="36"/>
         <location filename="../../src/effects/native/linkwitzriley8eqeffect.cpp" line="39"/>
         <source>Kill Low</source>
-        <translation>Elimina greus</translation>
+        <translation>Suprimeix greus</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="37"/>
         <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="37"/>
         <location filename="../../src/effects/native/linkwitzriley8eqeffect.cpp" line="40"/>
         <source>Kill the Low Filter</source>
-        <translation>Filtre que elimina els greus</translation>
+        <translation>Filtre que suprimeix les freqüències greus</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="47"/>
@@ -7736,14 +7741,14 @@ Per descartar aquesta acció, premeu Cancel·la.</translation>
         <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="59"/>
         <location filename="../../src/effects/native/linkwitzriley8eqeffect.cpp" line="62"/>
         <source>Kill Mid</source>
-        <translation>Elimina mitjos</translation>
+        <translation>Suprimeix mitjos</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="60"/>
         <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="60"/>
         <location filename="../../src/effects/native/linkwitzriley8eqeffect.cpp" line="63"/>
         <source>Kill the Mid Filter</source>
-        <translation>Filtre que elimina les freqüències de mitjos</translation>
+        <translation>Filtre que suprimeix les freqüències de mitjos</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="70"/>
@@ -7765,14 +7770,14 @@ Per descartar aquesta acció, premeu Cancel·la.</translation>
         <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="82"/>
         <location filename="../../src/effects/native/linkwitzriley8eqeffect.cpp" line="85"/>
         <source>Kill High</source>
-        <translation>Elimina aguts</translation>
+        <translation>Suprimeix aguts</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="83"/>
         <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="83"/>
         <location filename="../../src/effects/native/linkwitzriley8eqeffect.cpp" line="86"/>
         <source>Kill the High Filter</source>
-        <translation>Filtre que elimina les freqüències d&apos;aguts</translation>
+        <translation>Filtre que suprimeix les freqüències d&apos;aguts</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/graphiceqeffect.cpp" line="15"/>
@@ -8123,7 +8128,7 @@ Per descartar aquesta acció, premeu Cancel·la.</translation>
     <message>
         <location filename="../../src/library/setlogfeature.cpp" line="87"/>
         <source>Lock</source>
-        <translation>Bloqueja els canvis</translation>
+        <translation>Bloca els canvis</translation>
     </message>
     <message>
         <location filename="../../src/library/setlogfeature.cpp" line="325"/>
@@ -8702,7 +8707,7 @@ Per descartar aquesta acció, premeu Cancel·la.</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="303"/>
         <source>High EQ Kill</source>
-        <translation>Elimina els aguts</translation>
+        <translation>Suprimeix els aguts</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="304"/>
@@ -8712,7 +8717,7 @@ Per descartar aquesta acció, premeu Cancel·la.</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="308"/>
         <source>Mid EQ Kill</source>
-        <translation>Elimina els mitjos</translation>
+        <translation>Suprimeix els mitjos</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="309"/>
@@ -8722,7 +8727,7 @@ Per descartar aquesta acció, premeu Cancel·la.</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="313"/>
         <source>Low EQ Kill</source>
-        <translation>Elimina els greus</translation>
+        <translation>Suprimeix els greus</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="314"/>
@@ -8915,7 +8920,7 @@ Per descartar aquesta acció, premeu Cancel·la.</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="702"/>
         <source>Clear the current effect.</source>
-        <translation>Elimina l&apos;efecte actual.</translation>
+        <translation>Suprimeix l&apos;efecte actual.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="705"/>
@@ -10219,12 +10224,12 @@ Feu click a Acceptar per sortir.</translation>
         <translation>Recarrega del fitxer/carpeta</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wcoverartmenu.cpp" line="63"/>
+        <location filename="../../src/widget/wcoverartmenu.cpp" line="60"/>
         <source>Image Files</source>
         <translation>Fitxers d&apos;image</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wcoverartmenu.cpp" line="68"/>
+        <location filename="../../src/widget/wcoverartmenu.cpp" line="65"/>
         <source>Change Cover Art</source>
         <translation>Canvia la caràtula</translation>
     </message>
@@ -10825,7 +10830,7 @@ Feu click a Acceptar per sortir.</translation>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="364"/>
         <source>Remove</source>
-        <translation>Elimina</translation>
+        <translation>Suprimeix</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="367"/>
@@ -10840,7 +10845,7 @@ Feu click a Acceptar per sortir.</translation>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="373"/>
         <source>Purge from Library</source>
-        <translation>Elimina de la biblioteca</translation>
+        <translation>Suprimeix de la biblioteca</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="376"/>
@@ -10864,77 +10869,77 @@ Feu click a Acceptar per sortir.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="795"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1403"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1392"/>
         <source>Create New Playlist</source>
         <translation>Crea una nova llista de reproducció</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="825"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1465"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1454"/>
         <source>Create New Crate</source>
         <translation>Crea una nova caixa</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1404"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1393"/>
         <source>Enter name for new playlist:</source>
         <translation>Introduïu el nom de la nova llista de reproducció:</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1406"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1395"/>
         <source>New Playlist</source>
         <translation>Llista de reproducció nova</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1413"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1417"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1426"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1402"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1406"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1415"/>
         <source>Playlist Creation Failed</source>
         <translation>Ha fallat la creació de la llista de reproducció</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1414"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1403"/>
         <source>A playlist by that name already exists.</source>
         <translation>Ja existeix una llista de reproducció amb aquest nom.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1418"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1407"/>
         <source>A playlist cannot have a blank name.</source>
         <translation>El nom de la llista de reproducció no pot quedar en blanc</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1427"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1416"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>S&apos;ha produït un error desconegut en crear la llista de reproducció: </translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1466"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1455"/>
         <source>Enter name for new crate:</source>
         <translation>Introdueix el nom de la nova caixa:</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1467"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1456"/>
         <source>New Crate</source>
         <translation>Caixa Nova</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1475"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1464"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1469"/>
         <location filename="../../src/widget/wtracktableview.cpp" line="1480"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1491"/>
         <source>Creating Crate Failed</source>
         <translation>No s&apos;ha pogut crear la caixa</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1476"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1465"/>
         <source>A crate by that name already exists.</source>
         <translation>Ja existeix una caixa amb aquest nom</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1481"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1470"/>
         <source>A crate cannot have a blank name.</source>
         <translation>Una caixa no pot tenir un nom en blanc.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1492"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1481"/>
         <source>An unknown error occurred while creating crate: </source>
         <translation>Hi ha hagut un error desconegut a l&apos;hora de crear la caixa:</translation>
     </message>
@@ -10961,12 +10966,12 @@ Feu click a Acceptar per sortir.</translation>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="410"/>
         <source>Lock BPM</source>
-        <translation>Bloqueja BPM</translation>
+        <translation>Bloca els BPM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="411"/>
         <source>Unlock BPM</source>
-        <translation>Desbloqueja BPM</translation>
+        <translation>Desbloca els BPM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="418"/>
@@ -10991,7 +10996,7 @@ Feu click a Acceptar per sortir.</translation>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="437"/>
         <source>Clear BPM and Beatgrid</source>
-        <translation>Elimina el BPM i la graella de ritme</translation>
+        <translation>Suprimeix els BPM i la graella de ritme</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="441"/>

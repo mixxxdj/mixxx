@@ -5,9 +5,11 @@
 
 #include <QScopedPointer>
 
+#include "control/controlproxy.h"
 #include "library/trackcollection.h"
 #include "library/searchqueryparser.h"
 #include "library/queryutil.h"
+#include "track/keyutils.h"
 #include "util/performancetimer.h"
 
 namespace {
@@ -41,6 +43,7 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
                     << "title"
                     << "genre";
 
+    m_pKeyNotationCP = new ControlProxy("[Library]", "key_notation", this);
     // Convert all the search column names to their field indexes because we use
     // them a bunch.
     m_searchColumnIndices.resize(m_searchColumns.size());
@@ -328,7 +331,7 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
                fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) == column) {
         // For sorting, we give COLUMN_LIBRARYTABLE_COVERART the same value as
         // the cover hash.
-        trackValue.setValue(pTrack->getCoverInfo().hash);
+        trackValue.setValue(pTrack->getCoverHash());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) == column) {
         trackValue.setValue(static_cast<int>(pTrack->getCoverInfo().source));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE) == column) {
@@ -619,6 +622,19 @@ int BaseTrackCache::compareColumnValues(int sortColumn, Qt::SortOrder sortOrder,
             result = 1;
         else
             result = -1;
+    } else if (sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY)) {
+        double notation = m_pKeyNotationCP->get();
+        int key1 = KeyUtils::keyToCircleOfFithsOrder(
+                       KeyUtils::guessKeyFromText(val1.toString()), notation);
+        int key2 = KeyUtils::keyToCircleOfFithsOrder(
+                       KeyUtils::guessKeyFromText(val2.toString()), notation);
+        if (key1 > key2) {
+            result = 1;
+        } else if (key1 < key2) {
+            result = -1;
+        } else if (key1 == key2) {
+            result = 0;
+        }
     } else {
         result = val1.toString().localeAwareCompare(val2.toString());
     }

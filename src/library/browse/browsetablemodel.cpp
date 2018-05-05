@@ -316,7 +316,7 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
 
     QStandardItem* item = itemFromIndex(index);
     QString track_location(getTrackLocation(index));
-    if (OK == writeTrackMetadataIntoFile(trackMetadata, track_location)) {
+    if (OK == mixxx::taglib::writeTrackMetadataIntoFile(trackMetadata, track_location)) {
         // Modify underlying interalPointer object
         item->setText(value.toString());
         item->setToolTip(item->text());

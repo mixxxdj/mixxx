@@ -457,6 +457,9 @@ AnalyzerQueue* AnalyzerQueue::createAnalysisFeatureAnalyzerQueue(
         UserSettingsPointer pConfig, TrackCollection* pTrackCollection) {
     AnalyzerQueue* ret = new AnalyzerQueue(pTrackCollection);
 
+    if (pConfig->getValue<bool>(ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"))) {
+        ret->addAnalyzer(new AnalyzerWaveform(pConfig));
+    }
     ret->addAnalyzer(new AnalyzerGain(pConfig));
     ret->addAnalyzer(new AnalyzerEbur128(pConfig));
 #ifdef __VAMP__

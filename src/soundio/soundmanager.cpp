@@ -167,8 +167,6 @@ void SoundManager::closeDevices(bool sleepAfterClosing) {
 #endif
     }
 
-    m_pErrorDevice = NULL;
-
     // TODO(rryan): Should we do this before SoundDevice::close()? No! Because
     // then the callback may be running when we call
     // onInputDisconnected/onOutputDisconnected.
@@ -216,6 +214,7 @@ void SoundManager::clearDeviceList(bool sleepAfterClosing) {
         SoundDevice* dev = m_devices.takeLast();
         delete dev;
     }
+    m_pErrorDevice = NULL;
 
 #ifdef __PORTAUDIO__
     if (m_paInitialized) {

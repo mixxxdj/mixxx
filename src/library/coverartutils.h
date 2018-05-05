@@ -11,6 +11,9 @@
 #include "track/track.h"
 #include "util/sandbox.h"
 
+class CoverInfo;
+class CoverInfoRelative;
+
 class CoverArtUtils {
   public:
     static QString defaultCoverLocation();
@@ -42,23 +45,21 @@ class CoverArtUtils {
         NONE
     };
 
-    // Guesses the cover art for the provided track. Does not modify the
-    // provided track.
-    static CoverArt guessCoverArt(
-            TrackPointer pTrack);
+    // Guesses the cover art for the provided track.
+    static CoverInfo guessCoverInfo(const Track& track);
 
     static QLinkedList<QFileInfo> findPossibleCoversInFolder(
             const QString& folder);
 
     // Selects an appropriate cover file from provided list of image files.
-    static CoverArt selectCoverArtForTrack(
-            Track* pTrack,
+    static CoverInfo selectCoverArtForTrack(
+            const Track& track,
             const QLinkedList<QFileInfo>& covers);
 
     // Selects an appropriate cover file from provided list of image
     // files. Assumes a SecurityTokenPointer is held by the caller for all files
     // in 'covers'.
-    static CoverArt selectCoverArtForTrack(
+    static CoverInfoRelative selectCoverArtForTrack(
             const QString& trackBaseName,
             const QString& albumName,
             const QLinkedList<QFileInfo>& covers);

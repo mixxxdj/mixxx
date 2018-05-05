@@ -93,9 +93,9 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     m_marks.setup(m_group, node, context, m_signalColors);
 
     for (int i = 0; i < m_marks.size(); ++i) {
-        WaveformMark& mark = m_marks[i];
-        if (mark.m_pPointCos) {
-            mark.m_pPointCos->connectValueChanged(this,
+        const WaveformMarkPointer& mark = m_marks[i];
+        if (mark->m_pPointCos) {
+            mark->m_pPointCos->connectValueChanged(this,
                     SLOT(onMarkChanged(double)));
         }
     }
@@ -121,6 +121,13 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
             }
         }
         child = child.nextSibling();
+    }
+
+    QString orientationString = context.selectString(node, "Orientation").toLower();
+    if (orientationString == "vertical") {
+        m_orientation = Qt::Vertical;
+    } else {
+        m_orientation = Qt::Horizontal;
     }
 
     //qDebug() << "WOverview : m_marks" << m_marks.size();
@@ -249,7 +256,11 @@ void WOverview::onMarkRangeChange(double /*v*/) {
 }
 
 void WOverview::mouseMoveEvent(QMouseEvent* e) {
-    m_iPos = math_clamp(e->x(), 0, width() - 1);
+    if (m_orientation == Qt::Horizontal) {
+        m_iPos = math_clamp(e->x(), 0, width() - 1);
+    } else {
+        m_iPos = math_clamp(e->y(), 0, height() - 1);
+    }
     //qDebug() << "WOverview::mouseMoveEvent" << e->pos() << m_iPos;
     update();
 }
@@ -294,7 +305,11 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
 
         // Draw Axis
         painter.setPen(QPen(m_signalColors.getAxesColor(), 1));
-        painter.drawLine(0, height()/2, width(), height()/2);
+        if (m_orientation == Qt::Horizontal) {
+            painter.drawLine(0, height() / 2, width(), height() / 2);
+        } else {
+            painter.drawLine(width() / 2 , 0, width() / 2, height());
+        }
 
         // Draw waveform pixmap
         WaveformWidgetFactory* widgetFactory = WaveformWidgetFactory::instance();
@@ -311,8 +326,13 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
             if (m_diffGain != diffGain || m_waveformImageScaled.isNull()) {
                 QRect sourceRect(0, diffGain, m_pWaveformSourceImage->width(),
                     m_pWaveformSourceImage->height() - 2 * diffGain);
-                m_waveformImageScaled = m_pWaveformSourceImage->copy(
-                    sourceRect).scaled(size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+                QImage croppedImage = m_pWaveformSourceImage->copy(sourceRect);
+                if (m_orientation == Qt::Vertical) {
+                    // Rotate pixmap
+                    croppedImage = croppedImage.transformed(QTransform(0, 1, 1, 0, 0, 0));
+                }
+                m_waveformImageScaled = croppedImage.scaled(size(), Qt::IgnoreAspectRatio,
+                                                            Qt::SmoothTransformation);
                 m_diffGain = diffGain;
             }
 
@@ -322,8 +342,13 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
         if (m_dAnalyzerProgress < 1.0) {
             // Paint analyzer Progress
             painter.setPen(QPen(m_signalColors.getAxesColor(), 3));
-            painter.drawLine(m_dAnalyzerProgress * width(), height() / 2,
-                             width(), height() / 2);
+            if (m_orientation == Qt::Horizontal) {
+                painter.drawLine(m_dAnalyzerProgress * width(), height() / 2,
+                                 width(), height() / 2);
+            } else {
+                painter.drawLine(width() / 2 , m_dAnalyzerProgress * height(),
+                                 width() / 2, height());
+            }
         }
 
         if (m_dAnalyzerProgress <= 0.5) { // remove text after progress by wf is recognizable
@@ -343,7 +368,7 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
         if (m_trackLoaded && trackSamples > 0) {
             //qDebug() << "WOverview::paintEvent trackSamples > 0";
             const float offset = 1.0f;
-            const float gain = static_cast<float>(width()-2) / trackSamples;
+            const float gain = static_cast<float>(length() - 2) / trackSamples;
 
             // Draw range (loop)
             for (auto&& currentMarkRange : m_markRanges) {
@@ -375,8 +400,13 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
                 }
 
                 // let top and bottom of the rect out of the widget
-                painter.drawRect(QRectF(QPointF(startPosition, -2.0),
-                                        QPointF(endPosition,height() + 1.0)));
+                if (m_orientation == Qt::Horizontal) {
+                    painter.drawRect(QRectF(QPointF(startPosition, -2.0),
+                                            QPointF(endPosition, height() + 1.0)));
+                } else {
+                    painter.drawRect(QRectF(QPointF(-2.0, startPosition),
+                                            QPointF(width() + 1.0, endPosition)));
+                }
             }
 
             // Draw markers (Cue & hotcues)
@@ -392,58 +422,97 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
             painter.setOpacity(0.9);
 
             for (int i = 0; i < m_marks.size(); ++i) {
-                WaveformMark& currentMark = m_marks[i];
-                if (currentMark.m_pPointCos && currentMark.m_pPointCos->get() >= 0.0) {
+                const WaveformMarkPointer currentMark = m_marks[i];
+                const WaveformMarkProperties& markProperties = currentMark->getProperties();
+                if (currentMark->m_pPointCos && currentMark->m_pPointCos->get() >= 0.0) {
                     //const float markPosition = 1.0 +
                     //        (currentMark.m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
-                    const float markPosition = offset + currentMark.m_pPointCos->get() * gain;
+                    const float markPosition = offset + currentMark->m_pPointCos->get() * gain;
 
-                    const QLineF line(markPosition, 0.0, markPosition, static_cast<float>(height()));
+                    QLineF line;
+                    if (m_orientation == Qt::Horizontal) {
+                        line.setLine(markPosition, 0.0, markPosition, static_cast<float>(height()));
+                    } else {
+                        line.setLine(0.0, markPosition, static_cast<float>(width()), markPosition);
+                    }
                     painter.setPen(shadowPen);
                     painter.drawLine(line);
 
-                    painter.setPen(currentMark.m_color);
+                    painter.setPen(markProperties.m_color);
                     painter.drawLine(line);
 
-                    if (!currentMark.m_text.isEmpty()) {
+                    if (!markProperties.m_text.isEmpty()) {
+                        Qt::Alignment halign = markProperties.m_align & Qt::AlignHorizontal_Mask;
+                        Qt::Alignment valign = markProperties.m_align & Qt::AlignVertical_Mask;
+                        QFontMetricsF metric(markerFont);
+                        QRectF textRect = metric.tightBoundingRect(markProperties.m_text);
                         QPointF textPoint;
-                        textPoint.setX(markPosition + 0.5f);
+                        if (m_orientation == Qt::Horizontal) {
+                            if (halign == Qt::AlignLeft) {
+                                textPoint.setX(markPosition - textRect.width());
+                            } else if (halign == Qt::AlignHCenter) {
+                                textPoint.setX(markPosition - textRect.width() / 2);
+                            } else {  // AlignRight
+                                textPoint.setX(markPosition + 0.5f);
+                            }
 
-                        if (currentMark.m_align == Qt::AlignTop) {
-                            QFontMetricsF metric(markerFont);
-                            textPoint.setY(metric.tightBoundingRect(currentMark.m_text).height()+0.5f);
-                        } else {
-                            textPoint.setY(float(height())-0.5f);
+                            if (valign == Qt::AlignTop) {
+                                textPoint.setY(textRect.height() + 0.5f);
+                            } else if (valign == Qt::AlignVCenter) {
+                                textPoint.setY((textRect.height() + height()) / 2);
+                            } else {  // AlignBottom
+                                textPoint.setY(float(height()) - 0.5f);
+                            }
+                        } else {  // Vertical
+                            if (halign == Qt::AlignLeft) {
+                                textPoint.setX(1.0f);
+                            } else if (halign == Qt::AlignHCenter) {
+                                textPoint.setX((width() - textRect.width()) / 2);
+                            } else {  // AlignRight
+                                textPoint.setX(width() - textRect.width());
+                            }
+
+                            if (valign == Qt::AlignTop) {
+                                textPoint.setY(markPosition - 1.0f);
+                            } else if (valign == Qt::AlignVCenter) {
+                                textPoint.setY(markPosition + textRect.height() / 2);
+                            } else {  // AlignBottom
+                                textPoint.setY(markPosition + metric.ascent());
+                            }
                         }
 
                         painter.setPen(shadowPen);
                         painter.setFont(shadowFont);
-                        painter.drawText(textPoint,currentMark.m_text);
+                        painter.drawText(textPoint,markProperties.m_text);
 
-                        painter.setPen(currentMark.m_textColor);
+                        painter.setPen(markProperties.m_textColor);
                         painter.setFont(markerFont);
-                        painter.drawText(textPoint,currentMark.m_text);
+                        painter.drawText(textPoint,markProperties.m_text);
                     }
                 }
+            }
+
+            if (m_orientation == Qt::Vertical) {
+                painter.setTransform(QTransform(0, 1, 1, 0, 0, 0));
             }
 
             // draw current position
             painter.setPen(QPen(QBrush(m_qColorBackground),1));
             painter.setOpacity(0.5);
-            painter.drawLine(m_iPos + 1, 0, m_iPos + 1, height());
-            painter.drawLine(m_iPos - 1, 0, m_iPos - 1, height());
+            painter.drawLine(m_iPos + 1, 0, m_iPos + 1, breadth());
+            painter.drawLine(m_iPos - 1, 0, m_iPos - 1, breadth());
 
             painter.setPen(QPen(m_signalColors.getPlayPosColor(),1));
             painter.setOpacity(1.0);
-            painter.drawLine(m_iPos, 0, m_iPos, height());
+            painter.drawLine(m_iPos, 0, m_iPos, breadth());
 
             painter.drawLine(m_iPos - 2, 0, m_iPos, 2);
             painter.drawLine(m_iPos, 2, m_iPos + 2, 0);
             painter.drawLine(m_iPos - 2, 0, m_iPos + 2, 0);
 
-            painter.drawLine(m_iPos - 2, height() - 1, m_iPos, height() - 3);
-            painter.drawLine(m_iPos, height() - 3, m_iPos + 2, height() - 1);
-            painter.drawLine(m_iPos - 2, height() - 1, m_iPos + 2, height() - 1);
+            painter.drawLine(m_iPos - 2, breadth() - 1, m_iPos, breadth() - 3);
+            painter.drawLine(m_iPos, breadth() - 3, m_iPos + 2, breadth() - 1);
+            painter.drawLine(m_iPos - 2, breadth() - 1, m_iPos + 2, breadth() - 1);
         }
     }
     painter.end();
@@ -457,16 +526,20 @@ void WOverview::paintText(const QString &text, QPainter *painter) {
     QFont font = painter->font();
     QFontMetrics fm(font);
     int textWidth = fm.width(text);
-    if (textWidth > width()) {
+    if (textWidth > length()) {
         qreal pointSize = font.pointSizeF();
-        pointSize = pointSize * (width() - 5) / textWidth;
+        pointSize = pointSize * (length() - 5) / textWidth;
         if (pointSize < 6) {
             pointSize = 6;
         }
         font.setPointSizeF(pointSize);
         painter->setFont(font);
     }
+    if (m_orientation == Qt::Vertical) {
+        painter->setTransform(QTransform(0, 1, -1, 0, width(), 0));
+    }
     painter->drawText(10, 12, text);
+    painter->resetTransform();
 }
 
 void WOverview::resizeEvent(QResizeEvent * /*unused*/) {
@@ -481,7 +554,7 @@ void WOverview::resizeEvent(QResizeEvent * /*unused*/) {
 
     // These coeficients convert between widget space and normalized value
     // space.
-    m_a = (width() - 1) / (one - zero);
+    m_a = (length() - 1) / (one - zero);
     m_b = zero * m_a;
 
     m_waveformImageScaled = QImage();

@@ -242,6 +242,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     ComboBoxCueDefault->addItem(tr("Pioneer mode"), 1);
     ComboBoxCueDefault->addItem(tr("Denon mode"), 2);
     ComboBoxCueDefault->addItem(tr("Numark mode"), 3);
+    ComboBoxCueDefault->addItem(tr("CUP mode"), 5);
     const int cueDefaultIndex = cueDefaultIndexByData(cueDefaultValue);
     ComboBoxCueDefault->setCurrentIndex(cueDefaultIndex);
     slotSetCueDefault(cueDefaultIndex);

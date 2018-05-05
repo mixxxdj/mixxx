@@ -16,10 +16,10 @@ class WCoverArtLabel : public QLabel {
     explicit WCoverArtLabel(QWidget* parent = nullptr);
     ~WCoverArtLabel() override;
 
-    void setCoverArt(const QString& trackLocation, const CoverInfo& coverInfo, QPixmap px);
+    void setCoverArt(const CoverInfo& coverInfo, QPixmap px);
 
   signals:
-    void coverArtSelected(const CoverArt& art);
+    void coverInfoSelected(const CoverInfo& coverInfo);
     void reloadCoverArt();
 
   protected:

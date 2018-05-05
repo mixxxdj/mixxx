@@ -265,7 +265,7 @@ void WSpinny::slotCoverFound(const QObject* pRequestor,
     Q_UNUSED(fromCache);
 
     if (pRequestor == this && m_loadedTrack &&
-            m_loadedTrack->getCoverInfo().hash == info.hash) {
+            m_loadedTrack->getCoverHash() == info.hash) {
         qDebug() << "WSpinny::slotCoverFound" << pRequestor << info
                  << pixmap.size();
         m_loadedCover = pixmap;

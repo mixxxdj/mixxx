@@ -81,6 +81,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void setReplayGain(double value);
 
     UserSettingsPointer m_pConfig;
+    EngineMaster* m_pEngineMaster;
     TrackPointer m_pLoadedTrack;
 
     // Waveform display related controls

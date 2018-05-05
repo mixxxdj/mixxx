@@ -50,6 +50,11 @@ void WaveformRendererHSV::draw(QPainter* painter,
     painter->setWorldMatrixEnabled(false);
     painter->resetTransform();
 
+    // Rotate if drawing vertical waveforms
+    if (m_waveformRenderer->getOrientation() == Qt::Vertical) {
+        painter->setTransform(QTransform(0, 1, 1, 0, 0, 0));
+    }
+
     const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
     const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
 
@@ -57,7 +62,7 @@ void WaveformRendererHSV::draw(QPainter* painter,
 
     // Represents the # of waveform data points per horizontal pixel.
     const double gain = (lastVisualIndex - firstVisualIndex) /
-            (double)m_waveformRenderer->getWidth();
+            (double)m_waveformRenderer->getLength();
 
     float allGain(1.0);
     getGains(&allGain, NULL, NULL, NULL);
@@ -73,15 +78,16 @@ void WaveformRendererHSV::draw(QPainter* painter,
     QColor color;
     float lo, hi, total;
 
-    const float halfHeight = (float)m_waveformRenderer->getHeight()/2.0;
+    const int breadth = m_waveformRenderer->getBreadth();
+    const float halfBreadth = (float)breadth / 2.0;
 
-    const float heightFactor = allGain*halfHeight/255.0;
+    const float heightFactor = allGain * halfBreadth / 255.0;
 
     //draw reference line
     painter->setPen(m_pColors->getAxesColor());
-    painter->drawLine(0,halfHeight,m_waveformRenderer->getWidth(),halfHeight);
+    painter->drawLine(0, halfBreadth, m_waveformRenderer->getLength(), halfBreadth);
 
-    for (int x = 0; x < m_waveformRenderer->getWidth(); ++x) {
+    for (int x = 0; x < m_waveformRenderer->getLength(); ++x) {
         // Width of the x position in visual indices.
         const double xSampleWidth = gain * x;
 
@@ -152,19 +158,21 @@ void WaveformRendererHSV::draw(QPainter* painter,
             painter->setPen(color);
             switch (m_alignment) {
                 case Qt::AlignBottom :
+                case Qt::AlignRight :
                     painter->drawLine(
-                        x, m_waveformRenderer->getHeight(),
-                        x, m_waveformRenderer->getHeight() - (int)(heightFactor*(float)math_max(maxAll[0],maxAll[1])));
+                        x, breadth,
+                        x, breadth - (int)(heightFactor * (float)math_max(maxAll[0],maxAll[1])));
                     break;
                 case Qt::AlignTop :
+                case Qt::AlignLeft :
                     painter->drawLine(
                         x, 0,
-                        x, (int)(heightFactor*(float)math_max(maxAll[0],maxAll[1])));
+                        x, (int)(heightFactor * (float)math_max(maxAll[0],maxAll[1])));
                     break;
                 default :
                     painter->drawLine(
-                        x, (int)(halfHeight-heightFactor*(float)maxAll[0]),
-                        x, (int)(halfHeight+heightFactor*(float)maxAll[1]));
+                        x, (int)(halfBreadth - heightFactor * (float)maxAll[0]),
+                        x, (int)(halfBreadth + heightFactor * (float)maxAll[1]));
             }
         }
     }

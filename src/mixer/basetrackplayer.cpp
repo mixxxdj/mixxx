@@ -17,6 +17,7 @@
 #include "util/sandbox.h"
 #include "effects/effectsmanager.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
+#include "engine/sync/enginesync.h"
 
 BaseTrackPlayer::BaseTrackPlayer(QObject* pParent, const QString& group)
         : BasePlayer(pParent, group) {
@@ -32,6 +33,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
                                          bool defaultHeadphones)
         : BaseTrackPlayer(pParent, group),
           m_pConfig(pConfig),
+          m_pEngineMaster(pMixingEngine),
           m_pLoadedTrack(),
           m_pLowFilter(NULL),
           m_pMidFilter(NULL),
@@ -289,24 +291,19 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         int reset = m_pConfig->getValueString(ConfigKey(
                 "[Controls]", "SpeedAutoReset"),
                 QString("%1").arg(RESET_PITCH)).toInt();
-        switch (reset) {
-          case RESET_PITCH_AND_SPEED:
-            // Note: speed may affect pitch
-            if (m_pRateSlider != NULL) {
-                m_pRateSlider->set(0.0);
+        if (reset == RESET_SPEED || reset == RESET_PITCH_AND_SPEED) {
+            // Avoid reseting speed if master sync is enabled and other decks with sync enabled
+            // are playing, as this would change the speed of already playing decks.
+            if (! m_pEngineMaster->getEngineSync()->otherSyncedPlaying(getGroup())) {
+                if (m_pRateSlider != NULL) {
+                    m_pRateSlider->set(0.0);
+                }
             }
-            M_FALLTHROUGH_INTENDED;
-          case RESET_PITCH:
+        }
+        if (reset == RESET_PITCH || reset == RESET_PITCH_AND_SPEED) {
             if (m_pPitchAdjust != NULL) {
                 m_pPitchAdjust->set(0.0);
             }
-            break;
-          case RESET_SPEED:
-            // Note: speed may affect pitch
-            if (m_pRateSlider != NULL) {
-                m_pRateSlider->set(0.0);
-            }
-            break;
         }
         emit(newTrackLoaded(m_pLoadedTrack));
     } else {
