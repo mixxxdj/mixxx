@@ -1,21 +1,23 @@
 /* @flow */
 import { assign, isEqual, findIndex } from 'lodash-es'
 
+import { channelControls } from '@mixxx-launchpad/mixxx'
+
 import Grande from './presets/Grande'
 import Juggler from './presets/Juggler'
 import Sampler from './presets/Sampler'
 import Short from './presets/Short'
 import Tall from './presets/Tall'
-
-import Component from '../Component'
-import type { MidiMessage } from '../Launchpad'
-import { Buttons, Colors } from '../Launchpad'
-
+import MidiComponent from '../Controls/MidiComponent'
 import { modes, retainAttackMode } from './ModifierSidebar'
+
+import type { MidiMessage } from '../'
 import type { Preset } from './Preset'
 import type { Modifier } from './ModifierSidebar'
 import type { ControlComponentBuilder } from '../Controls/ControlComponent'
-import type MidiComponent, { MidiComponentBuilder } from '../Controls/MidiComponent'
+import type { MidiBus } from '../MidiBus'
+import MidiButtonComponent from '../Controls/MidiButtonComponent'
+import { makePresetFromPartialTemplate } from './Preset'
 
 type Size = 'short' | 'tall' | 'grande'
 type Block = {|
@@ -58,11 +60,10 @@ const onMidi = (selectorBar, channel, modifier: Modifier) => retainAttackMode(mo
   )
 })
 
-class SelectorBar extends Component {
+class SelectorBar extends MidiComponent {
   id: string
-  bindings: [MidiComponent, Function][]
+  bindings: [MidiButtonComponent, Function][]
   controlComponentBuilder: ControlComponentBuilder
-  midiComponentBuilder: MidiComponentBuilder
   modifier: Modifier
   chord: number[]
   layout: { [key: string]: Block }
@@ -72,16 +73,15 @@ class SelectorBar extends Component {
 
   static channels = [0, 1, 2, 3, 4, 5, 6, 7]
 
-  constructor (controlComponentBuilder: ControlComponentBuilder, midiComponentBuilder: MidiComponentBuilder, modifier: Modifier, id: string) {
-    super()
+  constructor (midibus: MidiBus, controlComponentBuilder: ControlComponentBuilder, modifier: Modifier, id: string) {
+    super(midibus)
     this.id = id
     this.bindings = SelectorBar.buttons
       .map((v, i) => {
-        const binding = midiComponentBuilder(Buttons[v])
+        const binding = new MidiButtonComponent(this.midibus, this.device.buttons[v])
         return [binding, onMidi(this, i, modifier)]
       })
     this.controlComponentBuilder = controlComponentBuilder
-    this.midiComponentBuilder = midiComponentBuilder
     this.modifier = modifier
     this.chord = []
     this.layout = { }
@@ -100,18 +100,19 @@ class SelectorBar extends Component {
     const removedChannels = diff[0].map((block) => block.channel)
     removedChannels.forEach((ch) => {
       delete this.layout[String(ch)]
-      this.bindings[ch][0].button.sendColor(Colors.black)
+      this.bindings[ch][0].button.sendColor(this.device.colors.black)
       this.mountedPresets[ch].unmount()
     })
     const addedBlocks = diff[1]
     addedBlocks.forEach((block) => {
       this.layout[String(block.channel)] = block
       if (block.index) {
-        this.bindings[block.channel][0].button.sendColor(Colors.hi_orange)
+        this.bindings[block.channel][0].button.sendColor(this.device.colors.hi_orange)
       } else {
-        this.bindings[block.channel][0].button.sendColor(Colors.hi_green)
+        this.bindings[block.channel][0].button.sendColor(this.device.colors.hi_green)
       }
-      this.mountedPresets[block.channel] = cycled[block.size][block.index](this.controlComponentBuilder)(this.midiComponentBuilder)(this.modifier)(`${this.id}.deck.${block.channel}`)(block.channel)(block.offset)
+      this.mountedPresets[block.channel] =
+        makePresetFromPartialTemplate(`${this.id}.deck.${block.channel}`, cycled[block.size][block.index], block.offset)(channelControls[block.channel])(this.controlComponentBuilder)(this.midibus)(this.modifier)
       this.mountedPresets[block.channel].mount()
     })
   }
@@ -121,13 +122,13 @@ class SelectorBar extends Component {
     this.chord.forEach((ch) => {
       const found = findIndex(layout, (b) => b.channel === ch)
       if (found === -1) {
-        this.bindings[ch][0].button.sendColor(Colors.black)
+        this.bindings[ch][0].button.sendColor(this.device.colors.black)
       } else {
         const block = layout[found]
         if (block.index) {
-          this.bindings[ch][0].button.sendColor(Colors.hi_orange)
+          this.bindings[ch][0].button.sendColor(this.device.colors.hi_orange)
         } else {
-          this.bindings[ch][0].button.sendColor(Colors.hi_green)
+          this.bindings[ch][0].button.sendColor(this.device.colors.hi_green)
         }
       }
       this.chord = []
@@ -139,18 +140,18 @@ class SelectorBar extends Component {
       const rem = this.chord.shift()
       const found = findIndex(this.layout, (b) => b.channel === rem)
       if (found === -1) {
-        this.bindings[rem][0].button.sendColor(Colors.black)
+        this.bindings[rem][0].button.sendColor(this.device.colors.black)
       } else {
         const layout = this.layout[found]
         if (layout.index) {
-          this.bindings[rem][0].button.sendColor(Colors.hi_orange)
+          this.bindings[rem][0].button.sendColor(this.device.colors.hi_orange)
         } else {
-          this.bindings[rem][0].button.sendColor(Colors.hi_green)
+          this.bindings[rem][0].button.sendColor(this.device.colors.hi_green)
         }
       }
     }
     this.chord.push(channel)
-    this.bindings[channel][0].button.sendColor(Colors.hi_red)
+    this.bindings[channel][0].button.sendColor(this.device.colors.hi_red)
   }
 
   getChord () {
@@ -172,12 +173,12 @@ class SelectorBar extends Component {
   }
 }
 
-export default class Layout extends Component {
+export default class Layout extends MidiComponent {
   selectorBar: SelectorBar
 
-  constructor (controlComponentBuilder: ControlComponentBuilder, midiComponentBuilder: MidiComponentBuilder, modifier: Modifier, id: string) {
-    super()
-    this.selectorBar = new SelectorBar(controlComponentBuilder, midiComponentBuilder, modifier, `${id}.selectorBar`)
+  constructor (midibus: MidiBus, controlComponentBuilder: ControlComponentBuilder, modifier: Modifier, id: string) {
+    super(midibus)
+    this.selectorBar = new SelectorBar(midibus, controlComponentBuilder, modifier, `${id}.selectorBar`)
   }
   onMount () {
     this.selectorBar.mount()
@@ -190,14 +191,6 @@ export default class Layout extends Component {
     this.selectorBar.unmount()
   }
 }
-
-export const makeLayout =
-  (controlComponentBuilder: ControlComponentBuilder) =>
-    (midiComponentBuilder: MidiComponentBuilder) =>
-      (modifier: Modifier) =>
-        (id: string) => {
-          return new Layout(controlComponentBuilder, midiComponentBuilder, modifier, `${id}.selectorBar`)
-        }
 
 const offsets = [
   [0, 0],
@@ -280,8 +273,8 @@ const reorganize = (current: Block[], selectedChannels: number[]): Diff => {
     const [neg, pos] = diff
     const matched = findIndex(pos, (b) => isEqual(block, b))
     return matched === -1
-    ? [neg.concat([block]), pos]
-    : [neg, pos.slice(0, matched).concat(pos.slice(matched + 1, pos.length))]
+      ? [neg.concat([block]), pos]
+      : [neg, pos.slice(0, matched).concat(pos.slice(matched + 1, pos.length))]
   }, [[], next])
 }
 

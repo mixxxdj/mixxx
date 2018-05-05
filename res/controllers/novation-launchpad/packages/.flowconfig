@@ -1,9 +1,9 @@
 [ignore]
 
 [include]
-src
+*/src
 
 [libs]
-flow-typed
+*/flow-typed
 
 [options]
