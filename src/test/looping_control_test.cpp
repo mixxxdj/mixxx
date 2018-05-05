@@ -862,7 +862,7 @@ TEST_F(LoopingControlTest, LoopEscape) {
     m_pButtonReloopToggle->set(0.0);
     ProcessBuffer();
     EXPECT_TRUE(isLoopEnabled());
-    // seek outside a loop schould disable it
+    // seek outside a loop should disable it
     seekToSampleAndProcess(300);
     EXPECT_FALSE(isLoopEnabled());
 
@@ -870,7 +870,7 @@ TEST_F(LoopingControlTest, LoopEscape) {
     m_pButtonReloopToggle->set(0.0);
     ProcessBuffer();
     EXPECT_TRUE(isLoopEnabled());
-    // seek outside a loop schould disable it
+    // seek outside a loop should disable it
     seekToSampleAndProcess(50);
     EXPECT_FALSE(isLoopEnabled());
 }

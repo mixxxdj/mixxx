@@ -203,7 +203,7 @@ void RecordingManager::slotBytesRecorded(int bytes)
     m_iNumberOfBytesRecordedSplit += bytes;
 
     //Split before reaching the max size. m_split_size has some headroom, as
-    //seen in the constant defintions in defs_recording.h. Also, note that
+    //seen in the constant definitions in defs_recording.h. Also, note that
     //bytes are increased in the order of 10s of KBs each call.
     if(m_iNumberOfBytesRecordedSplit >= m_split_size)
     {

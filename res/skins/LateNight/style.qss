@@ -1296,7 +1296,7 @@ WEffectSelector {
     background-color: #CDCDCD;
   }
 #FxSuperLinkButton[value="2"] {	/*
-  a simple way to achive a partitioning in thirds	*/
+  a simple way to achieve a partitioning in thirds	*/
   background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
     stop: 0 #A5A5A5,
     stop: 0.33 #A5A5A5,

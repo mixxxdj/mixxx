@@ -40,7 +40,7 @@
     https://qt-project.org/doc/qt-4.8/stylesheet.html
 
     Debugging:
-    To outline WidgetGroups change all occurrences (exept this one ;-) of
+    To outline WidgetGroups change all occurrences (except this one ;-) of
     "QGroupBox { border: 0px solid" to "QGroupBox { border: 1px solid"
 
     Parent WidgedGroups are outlined one pixel solid red;

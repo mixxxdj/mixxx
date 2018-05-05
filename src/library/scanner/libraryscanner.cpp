@@ -387,7 +387,7 @@ void LibraryScanner::cancel() {
 
 
     // we need to make a local copy because cancel is called
-    // from any thread  but m_scannerGlobal may be cleared
+    // from any thread but m_scannerGlobal may be cleared
     // in the LibraryScanner thread in the meanwhile
     ScannerGlobalPointer scanner = m_scannerGlobal;
     if (scanner) {
@@ -498,14 +498,14 @@ void LibraryScanner::slotAddNewTrack(const QString& trackPath) {
 bool LibraryScanner::changeScannerState(ScannerState newState) {
     switch (newState) {
     case IDLE:
-        // we are leaving STARTING  or CANCELING state
+        // we are leaving STARTING or CANCELING state
         // m_state is already IDLE if a scan was canceled
         m_state = IDLE;
         m_stateSema.release();
         return true;
     case STARTING:
         // we need to hold the m_stateSema during the STARTING state
-        // to prevent loosing cancel commands or start the scanner
+        // to prevent losing cancel commands or start the scanner
         // twice
         if (m_stateSema.tryAcquire()) {
             if (m_state != IDLE) {

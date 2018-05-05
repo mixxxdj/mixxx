@@ -1,7 +1,7 @@
 <!--
 Description:
   An extra line below/above waveform overview that contains FX asssign buttons and
-  track commment (optional)
+  track comment (optional)
 Variables:
   chanNum : the channel number
 -->

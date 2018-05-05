@@ -24,7 +24,7 @@
 #include "errordialoghandler.h"
 
 // Automatic thresholds for switching the encoder to mono
-// They have been choosen by testing and to keep the same number
+// They have been chosen by testing and to keep the same number
 // of values for the slider.
 // The threshold of bitrate (CBR/ABR) at which the encoder
 // with switch to mono encoding
@@ -393,7 +393,7 @@ int EncoderMp3::initEncoder(int samplerate, QString errorMessage) {
     }
 
     unsigned long samplerate_in = samplerate;
-    // samplerate_out 0 means "let LAME pick the appropiate one"
+    // samplerate_out 0 means "let LAME pick the appropriate one"
     unsigned long samplerate_out = (samplerate_in > 48000 ? 48000 : 0);
 
     m_lameFlags = lame_init();

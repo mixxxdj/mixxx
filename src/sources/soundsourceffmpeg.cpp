@@ -374,7 +374,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
     // Se timebase correct
     av_codec_set_pkt_timebase(pCodecContext, pAudioStream->time_base);
 
-    // Make sure that Codecs are identical or  avcodec_open2 fails.
+    // Make sure that Codecs are identical or avcodec_open2 fails.
     pCodecContext->codec_id = pDecoder->id;
 
     const OpenResult openAudioStreamResult = openAudioStream(pCodecContext, pDecoder);
@@ -637,7 +637,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
                             if (m_SJumpPoints.size() > 0) {
                                 l_STestObj = m_SJumpPoints.last();
                             }
-                            // Check wether we have this jumppoint stored allready or not
+                            // Check whether we have this jumppoint stored already or not
                             // We should have jumppoints below that pos
                             if (l_STestObj == nullptr || l_STestObj->pos < l_SPacket.pos) {
                                 struct ffmpegLocationObject  *l_SJmp = (struct ffmpegLocationObject  *)malloc(
@@ -736,7 +736,7 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
 
     char *l_pBuffer = (char *)buffer;
 
-    // If cache is empty then retun without crash.
+    // If cache is empty then return without crash.
     if (m_SCache.isEmpty()) {
         kLogger.debug() << "getBytesFromCache: Cache is empty can't return bytes";
         if(l_pBuffer != nullptr)
@@ -749,7 +749,7 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
     // Is offset bigger than start of cache
     if (offset >= m_lCacheStartFrame) {
         int l_lTmpLen = 0;
-        // If last pos is (which is shouldn't) use caches end
+        // If last pos is (which it shouldn't) use caches end
         if (m_lCacheLastPos == 0) {
             m_lCacheLastPos = m_SCache.size() - 1;
         }
@@ -771,12 +771,12 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
         }
 
         // Because we step 5 backward we can end up to below zero
-        // We can't go futher so hope for the best
+        // We can't go further so hope for the best
         if (l_lPos < 0) {
             l_lPos = 0;
         }
 
-        // This shouldn't never happen.. because it's nearly imposible
+        // This shouldn't never happen.. because it's nearly impossible
         // but because it can happen double check
         if (l_lPos >= m_SCache.size()) {
             l_lPos = m_SCache.size() - 1;
