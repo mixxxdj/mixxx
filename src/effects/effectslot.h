@@ -53,9 +53,6 @@ class EffectSlot : public QObject {
     // Request that this EffectSlot load the given Effect
     void loadEffect(EffectPointer pEffect);
 
-    void slotLoaded(double v);
-    void slotNumParameters(double v);
-    void slotNumParameterSlots(double v);
     void slotEnabled(double v);
     void slotNextEffect(double v);
     void slotPrevEffect(double v);

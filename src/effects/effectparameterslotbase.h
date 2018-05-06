@@ -30,11 +30,6 @@ class EffectParameterSlotBase : public QObject {
     // Signal that indicates that the EffectParameterSlotBase has been updated.
     void updated();
 
-  protected slots:
-    // Solely for handling control changes
-    void slotLoaded(double v);
-    void slotValueType(double v);
-
   protected:
     const unsigned int m_iParameterSlotNumber;
     QString m_group;

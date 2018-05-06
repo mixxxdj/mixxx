@@ -94,12 +94,20 @@ class ControlObject : public QObject {
             m_pControl->set(value, this);
         }
     }
+
     // Sets the ControlObject value and confirms it.
     inline void setAndConfirm(double value) {
         if (m_pControl) {
             m_pControl->setAndConfirm(value, this);
         }
     }
+
+    // Forces the control to 'value', regardless of whether it has a change
+    // request handler attached (identical to setAndConfirm).
+    inline void forceSet(double value) {
+        setAndConfirm(value);
+    }
+
     // Instantly sets the value of the ControlObject
     static void set(const ConfigKey& key, const double& value);
 
@@ -144,6 +152,9 @@ class ControlObject : public QObject {
     bool connectValueChangeRequest(const QObject* receiver,
                                    const char* method, Qt::ConnectionType type = Qt::AutoConnection);
 
+    // Installs a value-change request handler that ignores all sets.
+    void setReadOnly();
+
   signals:
     void valueChanged(double);
     void valueChangedFromEngine(double);
@@ -161,6 +172,7 @@ class ControlObject : public QObject {
 
   private slots:
     void privateValueChanged(double value, QObject* pSetter);
+    void readOnlyHandler(double v);
 
   private:
     void initialize(ConfigKey key, bool bIgnoreNops, bool bTrack,

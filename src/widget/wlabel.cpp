@@ -74,7 +74,7 @@ void WLabel::setup(const QDomNode& node, const SkinContext& context) {
         }
     }
 
-    // Adds an ellipsis to turncated text
+    // Adds an ellipsis to truncated text
     QString elide;
     if (context.hasNodeSelectString(node, "Elide", &elide)) {
         elide = elide.toLower();

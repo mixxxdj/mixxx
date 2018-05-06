@@ -15,24 +15,19 @@ EffectSlot::EffectSlot(const QString& group,
           m_iEffectNumber(iEffectnumber),
           m_group(group) {
     m_pControlLoaded = new ControlObject(ConfigKey(m_group, "loaded"));
-    m_pControlLoaded->connectValueChangeRequest(
-        this, SLOT(slotLoaded(double)));
+    m_pControlLoaded->setReadOnly();
 
     m_pControlNumParameters = new ControlObject(ConfigKey(m_group, "num_parameters"));
-    m_pControlNumParameters->connectValueChangeRequest(
-        this, SLOT(slotNumParameters(double)));
+    m_pControlNumParameters->setReadOnly();
 
     m_pControlNumParameterSlots = new ControlObject(ConfigKey(m_group, "num_parameterslots"));
-    m_pControlNumParameterSlots->connectValueChangeRequest(
-        this, SLOT(slotNumParameterSlots(double)));
+    m_pControlNumParameterSlots->setReadOnly();
 
     m_pControlNumButtonParameters = new ControlObject(ConfigKey(m_group, "num_button_parameters"));
-    m_pControlNumButtonParameters->connectValueChangeRequest(
-        this, SLOT(slotNumParameters(double)));
+    m_pControlNumButtonParameters->setReadOnly();
 
     m_pControlNumButtonParameterSlots = new ControlObject(ConfigKey(m_group, "num_button_parameterslots"));
-    m_pControlNumButtonParameterSlots->connectValueChangeRequest(
-        this, SLOT(slotNumParameterSlots(double)));
+    m_pControlNumButtonParameterSlots->setReadOnly();
 
     m_pControlEnabled = new ControlPushButton(ConfigKey(m_group, "enabled"));
     m_pControlEnabled->setButtonMode(ControlPushButton::POWERWINDOW);
@@ -87,7 +82,7 @@ EffectParameterSlotPointer EffectSlot::addEffectParameterSlot() {
     EffectParameterSlotPointer pParameter = EffectParameterSlotPointer(
             new EffectParameterSlot(m_group, m_parameters.size()));
     m_parameters.append(pParameter);
-    m_pControlNumParameterSlots->setAndConfirm(
+    m_pControlNumParameterSlots->forceSet(
             m_pControlNumParameterSlots->get() + 1);
     return pParameter;
 }
@@ -96,7 +91,7 @@ EffectButtonParameterSlotPointer EffectSlot::addEffectButtonParameterSlot() {
     EffectButtonParameterSlotPointer pParameter = EffectButtonParameterSlotPointer(
             new EffectButtonParameterSlot(m_group, m_buttonParameters.size()));
     m_buttonParameters.append(pParameter);
-    m_pControlNumButtonParameterSlots->setAndConfirm(
+    m_pControlNumButtonParameterSlots->forceSet(
             m_pControlNumButtonParameterSlots->get() + 1);
     return pParameter;
 }
@@ -111,24 +106,6 @@ unsigned int EffectSlot::numParameterSlots() const {
 
 unsigned int EffectSlot::numButtonParameterSlots() const {
     return m_buttonParameters.size();
-}
-
-void EffectSlot::slotLoaded(double v) {
-    Q_UNUSED(v);
-    //qDebug() << debugString() << "slotLoaded" << v;
-    qWarning() << "WARNING: loaded is a read-only control.";
-}
-
-void EffectSlot::slotNumParameters(double v) {
-    Q_UNUSED(v);
-    //qDebug() << debugString() << "slotNumParameters" << v;
-    qWarning() << "WARNING: num_parameters is a read-only control.";
-}
-
-void EffectSlot::slotNumParameterSlots(double v) {
-    Q_UNUSED(v);
-    //qDebug() << debugString() << "slotNumParameterSlots" << v;
-    qWarning() << "WARNING: num_parameterslots is a read-only control.";
 }
 
 void EffectSlot::slotEnabled(double v) {
@@ -165,9 +142,9 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
     //         << (pEffect ? pEffect->getManifest().name() : "(null)");
     if (pEffect) {
         m_pEffect = pEffect;
-        m_pControlLoaded->setAndConfirm(1.0);
-        m_pControlNumParameters->setAndConfirm(pEffect->numKnobParameters());
-        m_pControlNumButtonParameters->setAndConfirm(pEffect->numButtonParameters());
+        m_pControlLoaded->forceSet(1.0);
+        m_pControlNumParameters->forceSet(pEffect->numKnobParameters());
+        m_pControlNumButtonParameters->forceSet(pEffect->numButtonParameters());
 
         // Enabled is a persistent property of the effect slot, not of the
         // effect. Propagate the current setting to the effect.
@@ -205,9 +182,9 @@ void EffectSlot::clear() {
     if (m_pEffect) {
         m_pEffect->disconnect(this);
     }
-    m_pControlLoaded->setAndConfirm(0.0);
-    m_pControlNumParameters->setAndConfirm(0.0);
-    m_pControlNumButtonParameters->setAndConfirm(0.0);
+    m_pControlLoaded->forceSet(0.0);
+    m_pControlNumParameters->forceSet(0.0);
+    m_pControlNumButtonParameters->forceSet(0.0);
     foreach (EffectParameterSlotPointer pParameter, m_parameters) {
         pParameter->clear();
     }

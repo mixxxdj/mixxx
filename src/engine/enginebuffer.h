@@ -332,6 +332,7 @@ class EngineBuffer : public EngineObject {
     ControlProxy* m_pPassthroughEnabled;
 
     ControlPushButton* m_pEject;
+    ControlObject* m_pTrackLoaded;
 
     // Whether or not to repeat the track when at the end
     ControlPushButton* m_pRepeat;
