@@ -887,9 +887,6 @@ DJ202.KeylockButton = function (paramButtons) {
         outKey: 'keylock',
         currentRangeIndex: 0,
         doubleTapTimeout: 500,
-        // FIXME: Group must be a valid string, since ‘unshift’ is run right
-        // after instanciation and uses ‘this.group’.
-        group: '',
         paramPlusMinus: paramButtons
     });
 };
@@ -897,9 +894,10 @@ DJ202.KeylockButton = function (paramButtons) {
 DJ202.KeylockButton.prototype = Object.create(components.Button.prototype);
 
 DJ202.KeylockButton.prototype.unshift = function () {
-    var deck = script.deckFromGroup(this.group);
-    this.midi = [0x90 + deck - 1, 0x0D];
-    this.trigger();
+    if (this.deck) {
+        this.midi = [0x90 + this.deck - 1, 0x0D];
+        this.trigger();
+    }
     this.input = function (channel, control, value, status, group) {
         if (value) {                                            // Button press.
 
@@ -935,10 +933,17 @@ DJ202.KeylockButton.prototype.unshift = function () {
     this.inKey = 'keylock';
 };
 
+DJ202.KeylockButton.prototype.connect = function () {
+    this.deck = script.deckFromGroup(this.group);
+    components.Button.prototype.connect.call(this);
+    // components.Component automatically unshifts upon component instanciation.
+    // However, we need to trigger side-effects upon unshifting (button LED
+    // issue). Hence, we need to unshift again after we are connected.
+    this.unshift();
+}
 
 DJ202.KeylockButton.prototype.shift = function () {
-    var deck = script.deckFromGroup(this.group);
-    this.midi = [0x90 + deck - 1, 0x0E];
+    this.midi = [0x90 + this.deck - 1, 0x0E];
     this.send(0);
     this.inKey = 'rateRange';
     this.type = undefined;
