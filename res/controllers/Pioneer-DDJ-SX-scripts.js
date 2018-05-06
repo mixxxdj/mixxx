@@ -71,7 +71,7 @@ PioneerDDJSX.jogwheelShiftMultiplier = 10;
 
 // If true, vu meters twinkle if AutoDJ is enabled (default: true).
 PioneerDDJSX.twinkleVumeterAutodjOn = true;
-// If true, selected track will be added to AutoDJ queue-top on pressing rotary selector,
+// If true, selected track will be added to AutoDJ queue-top on pressing shift + rotary selector,
 // else track will be added to AutoDJ queue-bottom (default: false).
 PioneerDDJSX.autoDJAddTop = false;
 // Sets the duration of sleeping between AutoDJ actions if AutoDJ is enabled [ms] (default: 1000).
@@ -95,10 +95,6 @@ PioneerDDJSX.samplerCueGotoAndPlay = false;
 
 // If true, PFL / Cue (headphone) is being activated by loading a track into certain deck (default: true).
 PioneerDDJSX.autoPFL = true;
-
-// If true, new in Mixxx 2.1 introduced library controls will be used,
-// else old playlist controls will be used (default: true).
-PioneerDDJSX.useNewLibraryControls = true;
 
 
 ///////////////////////////////////////////////////////////////
@@ -2198,11 +2194,7 @@ PioneerDDJSX.loadPrepareButton = function(channel, control, value, status) {
 };
 
 PioneerDDJSX.backButton = function(channel, control, value, status) {
-    if (PioneerDDJSX.useNewLibraryControls) {
-        script.toggleControl("[Library]", "MoveFocusBackward");
-    } else {
-        script.toggleControl("AutoDJ", "skip_next");
-    }
+    script.toggleControl("[Library]", "MoveFocusBackward");
 };
 
 PioneerDDJSX.shiftBackButton = function(channel, control, value, status) {
@@ -2224,47 +2216,26 @@ PioneerDDJSX.getRotaryDelta = function(value) {
 PioneerDDJSX.rotarySelector = function(channel, control, value, status) {
     var delta = PioneerDDJSX.getRotaryDelta(value);
 
-    if (PioneerDDJSX.useNewLibraryControls) {
-        engine.setValue("[Library]", "MoveVertical", delta);
-        PioneerDDJSX.rotarySelectorChanged = true;
-    } else {
-        engine.setValue("[Playlist]", "SelectTrackKnob", delta);
-        PioneerDDJSX.rotarySelectorChanged = true;
-    }
+    engine.setValue("[Library]", "MoveVertical", delta);
+    PioneerDDJSX.rotarySelectorChanged = true;
 };
 
 PioneerDDJSX.rotarySelectorShifted = function(channel, control, value, status) {
     var delta = PioneerDDJSX.getRotaryDelta(value),
         f = (delta > 0 ? "SelectNextPlaylist" : "SelectPrevPlaylist");
 
-    if (PioneerDDJSX.useNewLibraryControls) {
-        engine.setValue("[Library]", "MoveHorizontal", delta);
-    } else {
-        engine.setValue("[Playlist]", f, Math.abs(delta));
-    }
+    engine.setValue("[Library]", "MoveHorizontal", delta);
 };
 
 PioneerDDJSX.rotarySelectorClick = function(channel, control, value, status) {
-    if (PioneerDDJSX.useNewLibraryControls) {
-        script.toggleControl("[Library]", "GoToItem");
-    } else {
-        if (PioneerDDJSX.autoDJAddTop) {
-            script.toggleControl("[Library]", "AutoDjAddTop");
-        } else {
-            script.toggleControl("[Library]", "AutoDjAddBottom");
-        }
-    }
+    script.toggleControl("[Library]", "GoToItem");
 };
 
 PioneerDDJSX.rotarySelectorShiftedClick = function(channel, control, value, status) {
-    if (PioneerDDJSX.useNewLibraryControls) {
-        if (PioneerDDJSX.autoDJAddTop) {
-            script.toggleControl("[Library]", "AutoDjAddTop");
-        } else {
-            script.toggleControl("[Library]", "AutoDjAddBottom");
-        }
+    if (PioneerDDJSX.autoDJAddTop) {
+        script.toggleControl("[Library]", "AutoDjAddTop");
     } else {
-        script.toggleControl("[Playlist]", "ToggleSelectedSidebarItem");
+        script.toggleControl("[Library]", "AutoDjAddBottom");
     }
 };
 
