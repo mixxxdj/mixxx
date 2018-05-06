@@ -35,7 +35,8 @@ DlgPrefSoundItem::DlgPrefSoundItem(QWidget *parent, AudioPathType type,
           m_type(type),
           m_index(index),
           m_devices(devices),
-          m_isInput(isInput) {
+          m_isInput(isInput),
+          m_inhibitSettingChanged(false) {
     setupUi(this);
     typeLabel->setText(AudioPath::getTrStringFromType(type, index));
 
@@ -43,7 +44,7 @@ DlgPrefSoundItem::DlgPrefSoundItem(QWidget *parent, AudioPathType type,
     connect(deviceComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(deviceChanged(int)));
     connect(channelComboBox, SIGNAL(currentIndexChanged(int)),
-            this, SIGNAL(settingChanged()));
+            this, SLOT(channelChanged()));
     refreshDevices(m_devices);
 }
 
@@ -127,7 +128,15 @@ void DlgPrefSoundItem::deviceChanged(int index) {
         }
     }
 emitAndReturn:
-    emit(settingChanged());
+    if (m_inhibitSettingChanged == false) {
+        emit(settingChanged());
+    }
+}
+
+void DlgPrefSoundItem::channelChanged() {
+    if (m_inhibitSettingChanged == false) {
+        emit(settingChanged());
+    }
 }
 
 /**
@@ -249,9 +258,12 @@ SoundDevice* DlgPrefSoundItem::getDevice() const {
 void DlgPrefSoundItem::setDevice(const QString &deviceName) {
     int index = deviceComboBox->findData(deviceName);
     if (index != -1) {
+        m_inhibitSettingChanged = true;
         deviceComboBox->setCurrentIndex(index);
+        m_inhibitSettingChanged = false;
     } else {
         deviceComboBox->setCurrentIndex(0); // None
+        emit(settingChanged());
     }
 }
 
@@ -266,9 +278,12 @@ void DlgPrefSoundItem::setChannel(unsigned int channelBase,
     // count.
     int index = channelComboBox->findData(QPoint(channelBase, channels));
     if (index != -1) {
+        m_inhibitSettingChanged = true;
         channelComboBox->setCurrentIndex(index);
+        m_inhibitSettingChanged = false;
     } else {
         channelComboBox->setCurrentIndex(0); // 1
+        emit(settingChanged());
     }
 }
 
