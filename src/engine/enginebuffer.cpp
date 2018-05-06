@@ -489,20 +489,14 @@ void EngineBuffer::slotTrackLoading() {
     m_pTrackSamples->set(0); // Stop renderer
 }
 
-TrackPointer EngineBuffer::loadFakeTrack(double filebpm) {
-    TrackPointer pTrack(Track::newTemporary());
-    pTrack->setSampleRate(44100);
-    // 10 seconds
-    pTrack->setDuration(10);
-    if (filebpm > 0) {
-        double bpm = pTrack->setBpm(filebpm);
-        BeatsPointer pBeats = BeatFactory::makeBeatGrid(*pTrack, bpm, 0.0);
-        pTrack->setBeats(pBeats);
+void EngineBuffer::loadFakeTrack(TrackPointer pTrack, bool bPlay) {
+    if (bPlay) {
+        m_playButton->set((double)bPlay);
     }
-    slotTrackLoaded(pTrack, 44100, 44100 * 10);
-    m_pSyncControl->setLocalBpm(filebpm);
+    slotTrackLoaded(pTrack, pTrack->getSampleRate(),
+                    pTrack->getSampleRate() * pTrack->getDurationInt());
+    m_pSyncControl->setLocalBpm(pTrack->getBpm());
     m_pSyncControl->trackLoaded(pTrack, TrackPointer());
-    return pTrack;
 }
 
 // WARNING: Always called from the EngineWorker thread pool

@@ -135,8 +135,8 @@ ControlObject* LegacySkinParser::controlFromConfigNode(const QDomElement& elemen
     return controlFromConfigKey(key, bPersist, created);
 }
 
-LegacySkinParser::LegacySkinParser()
-        : m_pConfig(NULL),
+LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig)
+        : m_pConfig(pConfig),
           m_pKeyboard(NULL),
           m_pTooltipUpdater(NULL),
           m_pPlayerManager(NULL),
@@ -393,6 +393,10 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
 }
 
 LaunchImage* LegacySkinParser::parseLaunchImage(const QString& skinPath, QWidget* pParent) {
+    delete m_pContext;
+    m_pContext = new SkinContext(m_pConfig, skinPath + "/skin.xml");
+    m_pContext->setSkinBasePath(skinPath + "/");
+
     QDomElement skinDocument = openSkin(skinPath);
     if (skinDocument.isNull()) {
         return NULL;

@@ -5,14 +5,7 @@
 
 #include "library/queryutil.h"
 
-class QueryUtilTest : public testing::Test {
-  protected:
-    virtual void SetUp() {
-    }
-
-    virtual void TearDown() {
-    }
-};
+class QueryUtilTest : public testing::Test {};
 
 TEST_F(QueryUtilTest, FieldEscaperEscapesQuotes) {
     QTemporaryFile databaseFile("mixxxdb.sqlite");

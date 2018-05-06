@@ -100,7 +100,7 @@ class ReadAheadManagerTest : public MixxxTest {
   public:
     ReadAheadManagerTest() : m_pBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) { }
   protected:
-    virtual void SetUp() {
+    void SetUp() override {
         SampleUtil::clear(m_pBuffer, MAX_BUFFER_LEN);
         m_pReader.reset(new StubReader());
         m_pLoopControl.reset(new StubLoopControl());

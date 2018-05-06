@@ -10,16 +10,6 @@ const double kBpmValueMax = 300.0;
 
 class MetadataTest : public testing::Test {
   protected:
-
-    MetadataTest() {
-    }
-
-    virtual void SetUp() {
-    }
-
-    virtual void TearDown() {
-    }
-
     double parseBpm(QString inputValue, bool expectedResult, double expectedValue) {
         //qDebug() << "parseBpm" << inputValue << expectedResult << expectedValue;
 

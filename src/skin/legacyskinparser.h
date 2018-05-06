@@ -30,7 +30,7 @@ class WWidgetGroup;
 class LegacySkinParser : public QObject, public SkinParser {
     Q_OBJECT
   public:
-    LegacySkinParser();
+    LegacySkinParser(UserSettingsPointer pConfig);
     LegacySkinParser(UserSettingsPointer pConfig, KeyboardEventFilter *pKeyboard, TooltipShortcutUpdater *pTooltipUpdater,
                          PlayerManager *pPlayerManager, ControllerManager *pControllerManager, Library *pLibrary,
                          VinylControlManager *pVCMan, EffectsManager *pEffectsManager);

@@ -34,11 +34,11 @@ void extractEmbeddedCover(
 // construct the default QPixmap in CoverArtCache
 class CoverArtUtilTest : public MixxxTest, public CoverArtCache {
   protected:
-    virtual void SetUp() {
+    void SetUp() override {
         m_pTrackCollection = new TrackCollection(config());
     }
 
-    virtual void TearDown() {
+    void TearDown() override {
         // make sure we clean up the db
         QSqlQuery query(m_pTrackCollection->getDatabase());
         query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE);

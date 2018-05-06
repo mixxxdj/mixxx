@@ -17,7 +17,6 @@ class WaveformMarkSet {
     void setup(const QString& group, const QDomNode& node,
                const SkinContext& context,
                const WaveformSignalColors& signalColors);
-    void clear();
 
     int size() const { return m_marks.size();}
     WaveformMarkPointer operator[] (int i) const { return m_marks[i]; };
@@ -27,7 +26,8 @@ class WaveformMarkSet {
     void setHotCueMark(int hotCue, WaveformMarkPointer pMark);
 
   private:
-    WaveformMark m_defaultMark;
+    void clear(){ m_marks.clear(); }
+    std::unique_ptr<WaveformMark> m_pDefaultMark;
     QList<WaveformMarkPointer> m_marks;
     int m_iFirstHotCue;
     DISALLOW_COPY_AND_ASSIGN(WaveformMarkSet);

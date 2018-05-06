@@ -10,9 +10,6 @@ PixmapSource::PixmapSource(const QString& filepath) {
     setPath(filepath);
 }
 
-PixmapSource::~PixmapSource() {
-}
-
 QByteArray PixmapSource::getData() const {
     return m_baData;
 }

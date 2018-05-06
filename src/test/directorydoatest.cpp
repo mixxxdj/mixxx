@@ -22,12 +22,12 @@ namespace {
 
 class DirectoryDAOTest : public MixxxTest {
   protected:
-    virtual void SetUp() {
+    void SetUp() override {
         m_pTrackCollection = new TrackCollection(config());
         m_supportedFileExt = "." % SoundSourceProxy::getSupportedFileExtensions().first();
     }
 
-    virtual void TearDown() {
+    void TearDown() override {
         // make sure we clean up the db
         QSqlQuery query(m_pTrackCollection->getDatabase());
         query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE);

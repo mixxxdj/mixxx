@@ -10,16 +10,6 @@ namespace {
 
 class MathUtilTest : public testing::Test {
   protected:
-
-    MathUtilTest() {
-    }
-
-    virtual void SetUp() {
-    }
-
-    virtual void TearDown() {
-    }
-
     static const int MIN;
     static const int MAX;
 

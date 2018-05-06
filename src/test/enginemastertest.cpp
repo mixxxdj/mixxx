@@ -39,13 +39,13 @@ class EngineChannelMock : public EngineChannel {
 
 class EngineMasterTest : public MixxxTest {
   protected:
-    virtual void SetUp() {
+    void SetUp() override {
         m_pMaster = new EngineMaster(config(), "[Master]", NULL, false, false);
         m_pMasterEnabled = new ControlProxy(ConfigKey("[Master]", "enabled"));
         m_pMasterEnabled->set(1);
     }
 
-    virtual void TearDown() {
+    void TearDown() override {
         delete m_pMaster;
         delete m_pMasterEnabled;
     }

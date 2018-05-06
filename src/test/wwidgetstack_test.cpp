@@ -17,7 +17,7 @@ class WWidgetStackTest : public MixxxTest {
     }
 
   protected:
-    virtual void SetUp() {
+    void SetUp() override {
         // Create a widget stack with three pages, and *before* the pages
         // are added, set the current page control to the second page.
         m_pPrevControl.reset(

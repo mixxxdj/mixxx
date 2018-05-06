@@ -26,11 +26,8 @@ class MockMidiController : public MidiController {
 
 class MidiControllerTest : public MixxxTest {
   protected:
-    virtual void SetUp() {
+    void SetUp() override {
         m_pController.reset(new MockMidiController());
-    }
-
-    virtual void TearDown() {
     }
 
     void addMapping(MidiInputMapping mapping) {

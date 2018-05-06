@@ -13,7 +13,7 @@
 
 class ControllerEngineTest : public MixxxTest {
   protected:
-    virtual void SetUp() {
+    void SetUp() override {
         mixxx::Time::setTestMode(true);
         mixxx::Time::setTestElapsedTime(mixxx::Duration::fromMillis(10));
         QThread::currentThread()->setObjectName("Main");
@@ -22,7 +22,7 @@ class ControllerEngineTest : public MixxxTest {
         cEngine->setPopups(false);
     }
 
-    virtual void TearDown() {
+    void TearDown() override {
         cEngine->gracefulShutdown();
         delete cEngine;
         mixxx::Time::setTestMode(false);

@@ -264,7 +264,7 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         int control1_max_abs_diff =
                 (stats_by_control[control1].abs_diff_histogram.end() - 1).key();
         int control2_max_abs_diff =
-                (stats_by_control[control1].abs_diff_histogram.end() - 1).key();
+                (stats_by_control[control2].abs_diff_histogram.end() - 1).key();
 
         // The control with the larger abs difference in messages is the LSB. If
         // they are equal we choose one arbitrarily (depends on QSet iteration

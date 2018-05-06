@@ -4,20 +4,14 @@
 
 #include "mixxxtest.h"
 #include "library/scanner/libraryscanner.h"
+#include "util/memory.h"
 
 class LibraryScannerTest : public MixxxTest {
   protected:
-    virtual void SetUp() {
-        m_pLibraryScanner = new LibraryScanner(NULL, config());
+    void SetUp() override {
+        m_pLibraryScanner = std::make_unique<LibraryScanner>(nullptr, config());
     }
-
-    virtual void TearDown() {
-        delete m_pLibraryScanner;
-    }
-
-    LibraryScanner* m_pLibraryScanner;
-
-    FRIEND_TEST(FooTest, BarReturnsZeroOnNull);
+    std::unique_ptr<LibraryScanner> m_pLibraryScanner;
 };
 
 TEST_F(LibraryScannerTest, ScannerRoundtrip) {
