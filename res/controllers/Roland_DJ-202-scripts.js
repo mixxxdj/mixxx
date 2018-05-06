@@ -46,6 +46,9 @@ DJ202.init = function () {
     midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x00, 0xF7], 6) //request initial state
     midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x01, 0xF7], 6) //unlock pad layers
 
+    DJ202.leftDeck.setCurrentDeck('[Channel1]');
+    DJ202.rightDeck.setCurrentDeck('[Channel2]');
+
 };
 
 DJ202.autoShowDecks = function (value, group, control) {
@@ -359,11 +362,6 @@ DJ202.Deck = function (deckNumbers, offset) {
         DJ202.effectUnit[offset + 1].reconnect();
     }
 
-    this.reconnectComponents(function (component) {
-        if (component.group === undefined) {
-            component.group = this.currentDeck;
-        }
-    });
 };
 
 DJ202.Deck.prototype = Object.create(components.Deck.prototype);
