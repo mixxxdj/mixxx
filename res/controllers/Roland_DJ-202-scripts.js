@@ -103,9 +103,6 @@ DJ202.Deck = function (deckNumbers, offset) {
     });
 
     this.slipModeButton = new DJ202.SlipModeButton();
-
-    this.keylock = new DJ202.KeylockButton(this);
-
     
     engine.setValue(this.currentDeck, "rate_dir", -1);
     this.tempoFader = new components.Pot({
@@ -172,7 +169,7 @@ DJ202.Deck = function (deckNumbers, offset) {
     // ========================== PERFORMANCE PADS ==============================
 
     this.padSection = new DJ202.PadSection(this);
-
+    this.keylock = new DJ202.KeylockButton(this.padSection.paramPlusMinus);
     
     // ============================= TRANSPORT ==================================
 
@@ -829,7 +826,7 @@ DJ202.LoopButton = function () {
 DJ202.LoopButton.prototype = Object.create(components.Button.prototype);
 
 DJ202.LoopButton.prototype.connect = function () {
-    var deck = script.deckFromGroup(this.deck.currentDeck);
+    var deck = script.deckFromGroup(this.group);
     this.midi = [0x94 + deck - 1, 0x10 + this.number];
     this.inKey = 'beatloop_'+ Math.pow(2, this.number - 1) + '_activate';
     this.outKey = this.inKey;
@@ -882,16 +879,18 @@ DJ202.SlipModeButton.prototype.input = function (channel, control, value, status
 };
 
 
-DJ202.KeylockButton = function (deck) {
+DJ202.KeylockButton = function (paramButtons) {
     components.Button.call(this, {
         sendShifted: true,
         shiftChannel: true,
         shiftOffset: 2,
         outKey: 'keylock',
         currentRangeIndex: 0,
-        deck: deck,
         doubleTapTimeout: 500,
-        group: deck.currentDeck
+        // FIXME: Group must be a valid string, since ‘unshift’ is run right
+        // after instanciation and uses ‘this.group’.
+        group: '',
+        paramPlusMinus: paramButtons
     });
 };
 
@@ -907,7 +906,7 @@ DJ202.KeylockButton.prototype.unshift = function () {
             this.longPressTimer = engine.beginTimer(
                 this.longPressTimeout,
                 function () {
-                    this.deck.padSection.paramPlusMinus.songKeyMode(true);
+                    this.paramPlusMinus.songKeyMode(true);
                     this.is_held = true;
                 },
                 true
@@ -926,7 +925,7 @@ DJ202.KeylockButton.prototype.unshift = function () {
         }
 
         if (this.is_held) {                               // Release after hold.
-            this.deck.padSection.paramPlusMinus.songKeyMode(false);
+            this.paramPlusMinus.songKeyMode(false);
             this.is_held = false;
             return;
         }                                      // Else: release after short tap.
@@ -967,7 +966,7 @@ DJ202.ParamButtons = function () {
 DJ202.ParamButtons.prototype = Object.create(components.Button.prototype);
 
 DJ202.ParamButtons.prototype.setLEDs = function (plusValue, minusValue) {
-    var deck = script.deckFromGroup(this.deck.currentDeck);
+    var deck = script.deckFromGroup(this.group);
     var channel = 0x94 + deck - 1;
     [0, 2, 4, 8, 10].forEach(
         function (offSet) {
@@ -992,7 +991,7 @@ DJ202.ParamButtons.prototype.output = function (value, group, control) {
         return;
     }
 
-    var deck = script.deckFromGroup(this.deck.currentDeck);
+    var deck = script.deckFromGroup(this.group);
 
     // The control value returned has floating point jitter, so 0 can be
     // 0.00…1 and 1 can be 0.99.
@@ -1040,7 +1039,7 @@ DJ202.ParamButtons.prototype.input = function (channel, control, value, status, 
         return;
     }
 
-    if (this.deck.keylock.is_held) {
+    if (this.isSongKeyMode) {
         var adjust = engine.getValue(group, 'pitch_adjust');
         var new_adjust = isPlus ? Math.min(7, adjust + 1) : Math.max(-7, adjust - 1);
         engine.setValue(group, 'pitch_adjust', new_adjust);
@@ -1098,8 +1097,7 @@ DJ202.PadSection = function (deck) {
 
     for (var i = 1; i <= 4; i++) {
         this.loopButton[i] = new DJ202.LoopButton({
-            number: i,
-            deck: deck
+            number: i
         });
     }
 
@@ -1146,7 +1144,7 @@ DJ202.PadSection = function (deck) {
         outKey: 'reloop_andstop'
     });
 
-    this.paramPlusMinus = new DJ202.ParamButtons({deck: deck});
+    this.paramPlusMinus = new DJ202.ParamButtons();
 };
 
 DJ202.PadSection.prototype = Object.create(components.ComponentContainer.prototype);
