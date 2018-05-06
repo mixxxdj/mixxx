@@ -101,111 +101,7 @@ DJ202.Deck = function (deckNumbers, offset) {
 
     this.slipModeButton = new DJ202.SlipModeButton();
 
-    this.paramPlusMinus = new components.Button({
-        deck: this,
-        songKeyMode: false,
-        setLEDs: function (plusValue, minusValue) {
-            var deck = script.deckFromGroup(this.deck.currentDeck);
-            var channel = 0x94 + deck - 1;
-            [0, 2, 4, 8, 10].forEach(
-                function (offSet) {
-                    midi.sendShortMsg(channel, 0x41 + offSet, plusValue);
-                    midi.sendShortMsg(channel, 0x42 + offSet, minusValue);
-                }
-            );
-        },
-        connect: function () {
-            components.Button.prototype.connect.call(this);
-            var keyConnection = engine.makeConnection(this.group, 'pitch_adjust', this.output);
-            this.connections.push(keyConnection);
-        },
-        output: function (value, group, control) {
-            if (!this.isSongKeyMode) {
-                return;
-            }
-
-            if (this.isSongKeyMode && control != 'pitch_adjust') {
-                return;
-            }
-
-            var deck = script.deckFromGroup(this.deck.currentDeck);
-
-            // The control value returned has floating point jitter, so 0 can be
-            // 0.00…1 and 1 can be 0.99.
-            if (value < 0.5 && value > -0.5) {
-                this.setLEDs(0, 0);
-            }
-            if (value < -0.5) {
-                this.setLEDs(0x7f, 0);
-                return;
-            }
-            if (value > 0.5) {
-                this.setLEDs(0, 0x7f);
-            }
-        },
-        songKeyMode: function (toggle) {
-            this.isSongKeyMode = toggle;
-            if(toggle) {
-                this.trigger();
-            } else {
-                this.setLEDs(0, 0);
-            }
-        },
-        input: function (channel, control, value, status, group) {
-
-            var isPlus = control % 2 == 0;
-
-            this.deck.paramButtonsActive[isPlus ? 0 : 1] = Boolean(value);
-
-            // FIXME: This make the LEDs light up on press, but doesn’t properly
-            // connect the output controls, so the buttons won’t light when
-            // manipulated from within the GUI.
-            var deck = script.deckFromGroup(group);
-            midi.sendShortMsg(0x94 + deck - 1, control, value);
-
-            if (!value) {
-                // Work-around LED self-reset on release.
-                this.trigger();
-                return
-            }
-
-            if (this.deck.paramButtonsActive.every(Boolean)) {
-                script.triggerControl(group, 'reset_key');
-                return;
-            }
-
-            if (this.deck.keylock.is_held) {
-                var adjust = engine.getValue(group, 'pitch_adjust');
-                var new_adjust = isPlus ? Math.min(7, adjust + 1) : Math.max(-7, adjust - 1);
-                engine.setValue(group, 'pitch_adjust', new_adjust);
-                return;
-            }
-
-            var beatjumpSize = engine.getValue(group, 'beatjump_size');
-            var beatloopSize = engine.getValue(group, 'beatloop_size');
-
-            switch (control) {
-            case 0x41:                                                 // Loop mode.
-            case 0x42:
-                engine.setValue(group, 'loop_move', isPlus ? beatjumpSize : -beatjumpSize);
-                break;
-            case 0x43:                                              // Hot-Cue mode.
-            case 0x44:
-                script.triggerControl(group, isPlus ? 'beatjump_forward' : 'beatjump_backward');
-                break;
-            case 0x49:                                       // Loop mode (shifted).
-            case 0x4A:
-                engine.setValue(group, 'beatloop_size', isPlus ? beatloopSize*2 : beatloopSize/2);
-                break;
-            case 0x4B:                                    // Hot-Cue mode (shifted).
-            case 0x4C:
-                engine.setValue(group, 'beatjump_size', isPlus ? beatjumpSize*2 : beatjumpSize/2);
-                break;
-            }
-        }
-    });
-
-    this.paramButtonsActive = [false, false];
+    this.paramPlusMinus = new DJ202.ParamButtons({deck: this});
 
     this.keylock = new DJ202.KeylockButton(this);
 
@@ -1141,4 +1037,117 @@ DJ202.KeylockButton.prototype.shift = function () {
         }
         this.send(0);
     };
+};
+
+
+DJ202.ParamButtons = function () {
+    components.Button.apply(this, arguments);
+    this.isSongKeyMode = false;
+    this.active = [false, false];
+}
+
+DJ202.ParamButtons.prototype = Object.create(components.Button.prototype);
+
+DJ202.ParamButtons.prototype.setLEDs = function (plusValue, minusValue) {
+    var deck = script.deckFromGroup(this.deck.currentDeck);
+    var channel = 0x94 + deck - 1;
+    [0, 2, 4, 8, 10].forEach(
+        function (offSet) {
+            midi.sendShortMsg(channel, 0x41 + offSet, plusValue);
+            midi.sendShortMsg(channel, 0x42 + offSet, minusValue);
+        }
+    );
+};
+
+DJ202.ParamButtons.prototype.connect = function () {
+    components.Button.prototype.connect.call(this);
+    var keyConnection = engine.makeConnection(this.group, 'pitch_adjust', this.output);
+    this.connections.push(keyConnection);
+};
+
+DJ202.ParamButtons.prototype.output = function (value, group, control) {
+    if (!this.isSongKeyMode) {
+        return;
+    }
+
+    if (this.isSongKeyMode && control != 'pitch_adjust') {
+        return;
+    }
+
+    var deck = script.deckFromGroup(this.deck.currentDeck);
+
+    // The control value returned has floating point jitter, so 0 can be
+    // 0.00…1 and 1 can be 0.99.
+    if (value < 0.5 && value > -0.5) {
+        this.setLEDs(0, 0);
+    }
+    if (value < -0.5) {
+        this.setLEDs(0x7f, 0);
+        return;
+    }
+    if (value > 0.5) {
+        this.setLEDs(0, 0x7f);
+    }
+};
+
+DJ202.ParamButtons.prototype.songKeyMode = function (toggle) {
+    this.isSongKeyMode = toggle;
+    if(toggle) {
+        this.trigger();
+    } else {
+        this.setLEDs(0, 0);
+    }
+};
+
+DJ202.ParamButtons.prototype.input = function (channel, control, value, status, group) {
+
+    var isPlus = control % 2 == 0;
+
+    this.active[isPlus ? 0 : 1] = Boolean(value);
+
+    // FIXME: This make the LEDs light up on press, but doesn’t properly
+    // connect the output controls, so the buttons won’t light when
+    // manipulated from within the GUI.
+    var deck = script.deckFromGroup(group);
+    midi.sendShortMsg(0x94 + deck - 1, control, value);
+
+    if (!value) {
+        // Work-around LED self-reset on release.
+        this.trigger();
+        return
+    }
+
+    if (this.active.every(Boolean)) {
+        script.triggerControl(group, 'reset_key');
+        return;
+    }
+
+    if (this.deck.keylock.is_held) {
+        var adjust = engine.getValue(group, 'pitch_adjust');
+        var new_adjust = isPlus ? Math.min(7, adjust + 1) : Math.max(-7, adjust - 1);
+        engine.setValue(group, 'pitch_adjust', new_adjust);
+        return;
+    }
+
+    var beatjumpSize = engine.getValue(group, 'beatjump_size');
+    var beatloopSize = engine.getValue(group, 'beatloop_size');
+
+    switch (control) {
+    case 0x41:                                                 // Loop mode.
+    case 0x42:
+        engine.setValue(group, 'loop_move', isPlus ? beatjumpSize : -beatjumpSize);
+        break;
+    case 0x43:                                              // Hot-Cue mode.
+    case 0x44:
+        script.triggerControl(group, isPlus ? 'beatjump_forward' : 'beatjump_backward');
+        break;
+    case 0x49:                                       // Loop mode (shifted).
+    case 0x4A:
+        engine.setValue(group, 'beatloop_size', isPlus ? beatloopSize*2 : beatloopSize/2);
+        break;
+    case 0x4B:                                    // Hot-Cue mode (shifted).
+    case 0x4C:
+        engine.setValue(group, 'beatjump_size', isPlus ? beatjumpSize*2 : beatjumpSize/2);
+        break;
+    }
 };
