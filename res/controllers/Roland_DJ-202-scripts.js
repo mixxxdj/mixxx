@@ -796,9 +796,18 @@ DJ202.SyncButton.prototype.shift = function () {
 
 DJ202.HotcueButton = function () {
     components.HotcueButton.apply(this, arguments);
+    this.sendShifted = true;
+    this.shiftControl = true;
+    this.shiftOffset = 8;
 };
 
 DJ202.HotcueButton.prototype = Object.create(components.HotcueButton.prototype);
+
+DJ202.HotcueButton.prototype.connect = function () {
+    var deck = script.deckFromGroup(this.group);
+    this.midi = [0x94 + deck - 1, this.number];
+    components.HotcueButton.prototype.connect.call(this);
+}
 
 DJ202.HotcueButton.prototype.unshift = function () {
     this.inKey = 'hotcue_' + this.number + '_activate';
@@ -1094,20 +1103,7 @@ DJ202.PadSection = function (deck) {
     this.hotcueButton = [];
 
     for (var i = 1; i <= 8; i++) {
-
-        this.hotcueButton[i] = new DJ202.HotcueButton({
-            sendShifted: true,
-            shiftControl: true,
-            shiftOffset: 8,
-            number: i
-        });
-
-        this.hotcueButton[i].connect = function () {
-            var deck = script.deckFromGroup(this.group);
-            this.midi = [0x94 + deck - 1, this.number];
-            components.HotcueButton.prototype.connect.call(this);
-        };
-
+        this.hotcueButton[i] = new DJ202.HotcueButton({number: i});
     }
 
     this.loopButton = [];
