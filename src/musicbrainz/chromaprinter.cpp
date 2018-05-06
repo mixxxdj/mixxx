@@ -12,6 +12,16 @@
 
 namespace
 {
+    // Type declarations of *fprint and *encoded pointers need to account for Chromaprint API version
+    // (void* -> uint32_t*) and (void* -> char*) changed in versions v1.4.0 or later -- alyptik 12/2016
+    #if (CHROMAPRINT_VERSION_MINOR > 3) || (CHROMAPRINT_VERSION_MAJOR > 1)
+        typedef uint32_t* uint32_p;
+        typedef char* char_p;
+    #else
+        typedef void* uint32_p;
+        typedef void* char_p;
+    #endif
+
     // this is worth 2min of audio
     // AcoustID only stores a fingerprint for the first two minutes of a song
     // on their server so we need only a fingerprint of the first two minutes
@@ -67,12 +77,12 @@ namespace
             return QString();
         }
 
-        void* fprint = NULL;
+        uint32_p fprint = NULL;
         int size = 0;
         int ret = chromaprint_get_raw_fingerprint(ctx, &fprint, &size);
         QByteArray fingerprint;
         if (ret == 1) {
-            void* encoded = NULL;
+            char_p encoded = NULL;
             int encoded_size = 0;
             chromaprint_encode_fingerprint(fprint, size,
                                            CHROMAPRINT_ALGORITHM_DEFAULT,

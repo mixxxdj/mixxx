@@ -62,7 +62,7 @@ void DlgPrefCrossfader::loadSettings() {
             EngineXfader::kTransformMax - EngineXfader::kTransformMin + 1,
             SliderXFader->minimum(),
             SliderXFader->maximum());
-    SliderXFader->setValue(sliderVal);
+    SliderXFader->setValue(static_cast<int>(sliderVal + 0.5));
 
     m_xFaderMode =
             m_config->getValueString(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderMode")).toInt();

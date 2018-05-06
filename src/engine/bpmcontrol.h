@@ -86,7 +86,6 @@ class BpmControl : public EngineControl {
     void slotAdjustBeatsSlower(double);
     void slotTranslateBeatsEarlier(double);
     void slotTranslateBeatsLater(double);
-    void slotControlPlay(double);
     void slotControlBeatSync(double);
     void slotControlBeatSyncPhase(double);
     void slotControlBeatSyncTempo(double);
@@ -109,6 +108,7 @@ class BpmControl : public EngineControl {
 
     // ControlObjects that come from EngineBuffer
     ControlProxy* m_pPlayButton;
+    QAtomicInt m_oldPlayButton;
     ControlProxy* m_pReverseButton;
     ControlProxy* m_pRateSlider;
     ControlObject* m_pQuantize;
@@ -124,8 +124,6 @@ class BpmControl : public EngineControl {
     ControlProxy* m_pLoopEnabled;
     ControlProxy* m_pLoopStartPosition;
     ControlProxy* m_pLoopEndPosition;
-
-    ControlProxy* m_pVCEnabled;
 
     // The current loaded file's detected BPM
     ControlObject* m_pFileBpm;

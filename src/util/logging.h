@@ -3,11 +3,13 @@
 
 namespace mixxx {
 
+static const int kDebugLevelMin = 0;
+static const int kDebugLevelDefault = 1;
+
 class Logging {
   public:
     static void initialize();
     static void shutdown();
-
   private:
     Logging() = delete;
 };

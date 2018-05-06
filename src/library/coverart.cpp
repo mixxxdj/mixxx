@@ -1,5 +1,5 @@
 #include <QtDebug>
-#include <QLatin1Literal>
+#include <QStringBuilder>
 
 #include "library/coverart.h"
 #include "library/coverartutils.h"
@@ -32,15 +32,15 @@ QString typeToString(CoverInfo::Type type) {
 }
 
 QString coverInfoRelativeToString(const CoverInfoRelative& infoRelative) {
-    return typeToString(infoRelative.type) % QLatin1Literal(",") %
-           sourceToString(infoRelative.source) % QLatin1Literal(",") %
-           infoRelative.coverLocation % QLatin1Literal(",") %
-           QLatin1Literal("0x") % QString::number(infoRelative.hash, 16);
+    return typeToString(infoRelative.type) % "," %
+           sourceToString(infoRelative.source) % "," %
+           infoRelative.coverLocation % "," %
+           "0x" % QString::number(infoRelative.hash, 16);
 }
 
 QString coverInfoToString(const CoverInfo& info) {
-    return coverInfoRelativeToString(info) % QLatin1Literal(",") %
-           info.trackLocation % QLatin1Literal(",");
+    return coverInfoRelativeToString(info) % "," %
+           info.trackLocation % ",";
 }
 } // anonymous namespace
 

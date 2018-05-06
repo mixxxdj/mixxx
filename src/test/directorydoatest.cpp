@@ -94,7 +94,7 @@ TEST_F(DirectoryDAOTest, addDirTest) {
 
 TEST_F(DirectoryDAOTest, removeDirTest) {
     DirectoryDAO m_DirectoryDao = m_pTrackCollection->getDirectoryDAO();
-    QString testdir = QDir::currentPath().append("/src/test/test_data");
+    QString testdir = getTestDataDir().path();
 
     // check if directory doa adds and thinks everything is ok
     m_DirectoryDao.addDirectory(testdir);

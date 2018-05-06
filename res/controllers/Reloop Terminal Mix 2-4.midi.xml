@@ -732,11 +732,10 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>rate</key>
+                <key>TerminalMix.pitchSlider</key>
                 <status>0xE0</status>
                 <options>
-                    <invert/>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1384,11 +1383,10 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>rate</key>
+                <key>TerminalMix.pitchSlider</key>
                 <status>0xE1</status>
                 <options>
-                    <invert/>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -2089,11 +2087,10 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>rate</key>
+                <key>TerminalMix.pitchSlider</key>
                 <status>0xE2</status>
                 <options>
-                    <invert/>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -2706,11 +2703,10 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>rate</key>
+                <key>TerminalMix.pitchSlider</key>
                 <status>0xE3</status>
                 <options>
-                    <invert/>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
             <control>

@@ -118,10 +118,10 @@ void WCoverArt::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
 
 void WCoverArt::slotReset() {
     if (m_loadedTrack) {
-        disconnect(m_loadedTrack.data(), SIGNAL(coverArtUpdated()),
+        disconnect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
                    this, SLOT(slotTrackCoverArtUpdated()));
     }
-    m_loadedTrack = TrackPointer();
+    m_loadedTrack.reset();
     m_lastRequestedCover = CoverInfo();
     m_loadedCover = QPixmap();
     m_loadedCoverScaled = QPixmap();
@@ -129,7 +129,9 @@ void WCoverArt::slotReset() {
 }
 
 void WCoverArt::slotTrackCoverArtUpdated() {
-    CoverArtCache::requestCover(m_loadedTrack.data(), this);
+    if (m_loadedTrack) {
+        CoverArtCache::requestCover(*m_loadedTrack, this);
+    }
 }
 
 void WCoverArt::slotCoverFound(const QObject* pRequestor,
@@ -153,7 +155,7 @@ void WCoverArt::slotCoverFound(const QObject* pRequestor,
 
 void WCoverArt::slotLoadTrack(TrackPointer pTrack) {
     if (m_loadedTrack) {
-        disconnect(m_loadedTrack.data(), SIGNAL(coverArtUpdated()),
+        disconnect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
                    this, SLOT(slotTrackCoverArtUpdated()));
     }
     m_lastRequestedCover = CoverInfo();
@@ -161,7 +163,7 @@ void WCoverArt::slotLoadTrack(TrackPointer pTrack) {
     m_loadedCoverScaled = QPixmap();
     m_loadedTrack = pTrack;
     if (m_loadedTrack) {
-        connect(m_loadedTrack.data(), SIGNAL(coverArtUpdated()),
+        connect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
                 this, SLOT(slotTrackCoverArtUpdated()));
     }
 

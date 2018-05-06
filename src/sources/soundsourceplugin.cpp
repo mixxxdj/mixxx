@@ -13,7 +13,7 @@ void deleteSoundSourcePlugin(SoundSource* pSoundSource) {
 } // namespace mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT const char* Mixxx_getVersion() {
-    return VERSION;
+    return MIXXX_VERSION;
 }
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT int Mixxx_SoundSourcePluginAPI_getVersion() {

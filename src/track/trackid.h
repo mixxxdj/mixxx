@@ -20,6 +20,7 @@ public:
 #endif
 };
 
+Q_DECLARE_TYPEINFO(TrackId, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(TrackId)
 
 

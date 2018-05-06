@@ -210,7 +210,7 @@ void DlgTrackInfo::reloadTrackBeats(const Track& track) {
 void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
     clear();
 
-    if (pTrack.isNull()) {
+    if (!pTrack) {
         return;
     }
 
@@ -221,7 +221,7 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
 
     // We already listen to changed() so we don't need to listen to individual
     // signals such as cuesUpdates, coverArtUpdated(), etc.
-    connect(pTrack.data(), SIGNAL(changed(Track*)),
+    connect(pTrack.get(), SIGNAL(changed(Track*)),
             this, SLOT(updateTrackMetadata()));
 }
 
@@ -255,7 +255,7 @@ void DlgTrackInfo::slotCoverInfoSelected(const CoverInfo& coverInfo) {
 }
 
 void DlgTrackInfo::slotOpenInFileBrowser() {
-    if (m_pLoadedTrack.isNull()) {
+    if (!m_pLoadedTrack) {
         return;
     }
 
@@ -347,7 +347,7 @@ void DlgTrackInfo::saveTrack() {
 
     // First, disconnect the track changed signal. Otherwise we signal ourselves
     // and repopulate all these fields.
-    disconnect(m_pLoadedTrack.data(), SIGNAL(changed(Track*)),
+    disconnect(m_pLoadedTrack.get(), SIGNAL(changed(Track*)),
                this, SLOT(updateTrackMetadata()));
 
     m_pLoadedTrack->setTitle(txtTrackName->text());
@@ -425,7 +425,7 @@ void DlgTrackInfo::saveTrack() {
     m_pLoadedTrack->setCoverInfo(m_loadedCoverInfo);
 
     // Reconnect changed signals now.
-    connect(m_pLoadedTrack.data(), SIGNAL(changed(Track*)),
+    connect(m_pLoadedTrack.get(), SIGNAL(changed(Track*)),
             this, SLOT(updateTrackMetadata()));
 }
 
@@ -443,7 +443,7 @@ void DlgTrackInfo::unloadTrack(bool save) {
 void DlgTrackInfo::clear() {
 
     disconnect(this, SLOT(updateTrackMetadata()));
-    m_pLoadedTrack.clear();
+    m_pLoadedTrack.reset();
 
     txtTrackName->setText("");
     txtArtist->setText("");
@@ -524,8 +524,8 @@ void DlgTrackInfo::slotBpmConstChanged(int state) {
             // The cue point should be set on a beat, so this seams
             // to be a good alternative
             double cue = m_pLoadedTrack->getCuePoint();
-            m_pBeatsClone = BeatFactory::makeBeatGrid(m_pLoadedTrack.data(),
-                    spinBpm->value(), cue);
+            m_pBeatsClone = BeatFactory::makeBeatGrid(
+                    *m_pLoadedTrack, spinBpm->value(), cue);
         } else {
             m_pBeatsClone.clear();
         }
@@ -558,8 +558,8 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
 
     if (!m_pBeatsClone) {
         double cue = m_pLoadedTrack->getCuePoint();
-        m_pBeatsClone = BeatFactory::makeBeatGrid(m_pLoadedTrack.data(),
-                value, cue);
+        m_pBeatsClone = BeatFactory::makeBeatGrid(
+                *m_pLoadedTrack, value, cue);
     }
 
     double oldValue = m_pBeatsClone->getBpm();
@@ -608,14 +608,14 @@ void DlgTrackInfo::reloadTrackMetadata() {
                 m_pLoadedTrack->getFileInfo(),
                 m_pLoadedTrack->getSecurityToken()));
         SoundSourceProxy(pTrack).loadTrackMetadata();
-        if (!pTrack.isNull()) {
+        if (pTrack) {
             populateFields(*pTrack);
         }
     }
 }
 
 void DlgTrackInfo::updateTrackMetadata() {
-    if (!m_pLoadedTrack.isNull()) {
+    if (m_pLoadedTrack) {
         populateFields(*m_pLoadedTrack);
     }
 }

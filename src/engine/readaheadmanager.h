@@ -27,7 +27,7 @@ class RateControl;
 class ReadAheadManager {
   public:
     ReadAheadManager(); // Only for testing: ReadAheadManagerMock
-     ReadAheadManager(CachingReader* reader,
+    ReadAheadManager(CachingReader* reader,
                               LoopingControl* pLoopingControl);
     virtual ~ReadAheadManager();
 
@@ -45,17 +45,18 @@ class ReadAheadManager {
     void addRateControl(RateControl* pRateControl);
 
     // Get the current read-ahead position in samples.
-    virtual inline SINT getPlaypos() const {
-        return m_iCurrentPosition;
+    // unused in Mixxx, but needed for testing 
+    virtual inline double getPlaypos() const {
+        return m_currentPosition;
     }
 
-    virtual void notifySeek(SINT iSeekPosition);
+    virtual void notifySeek(double seekPosition);
 
     // hintReader allows the ReadAheadManager to provide hints to the reader to
     // indicate that the given portion of a song is about to be read.
     virtual void hintReader(double dRate, HintVector* hintList);
 
-    virtual SINT getEffectiveVirtualPlaypositionFromLog(double currentVirtualPlayposition,
+    virtual double getFilePlaypositionFromLog(double currentFilePlayposition,
                                                        double numConsumedSamples);
 
     virtual void setReader(CachingReader* pReader) {
@@ -90,13 +91,14 @@ class ReadAheadManager {
         }
 
         // Moves the start position forward or backward (depending on
-        // direction()) by numSamples. Returns the total number of samples
-        // consumed. Caller should check if length() is 0 after consumption in
+        // direction()) by numSamples.
+        // Caller should check if length() is 0 after consumption in
         // order to expire the ReadLogEntry.
-        double consume(double numSamples) {
-            double available = math_min(numSamples, length());
+        double advancePlayposition(double* pNumConsumedSamples) {
+            double available = math_min(*pNumConsumedSamples, length());
             virtualPlaypositionStart += (direction() ? 1 : -1) * available;
-            return available;
+            *pNumConsumedSamples -= available;
+            return virtualPlaypositionStart;
         }
 
         bool merge(const ReadLogEntry& other) {
@@ -120,7 +122,7 @@ class ReadAheadManager {
     LoopingControl* m_pLoopingControl;
     RateControl* m_pRateControl;
     QLinkedList<ReadLogEntry> m_readAheadLog;
-    SINT m_iCurrentPosition;
+    double m_currentPosition;
     CachingReader* m_pReader;
     CSAMPLE* m_pCrossFadeBuffer;
 };

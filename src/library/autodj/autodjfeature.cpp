@@ -56,13 +56,14 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
 
 
     // Create the "Crates" tree-item under the root item.
-    TreeItem* root = m_childModel.getItem(QModelIndex());
-    m_pCratesTreeItem = new TreeItem(tr("Crates"), "", this, root);
+    auto pRootItem = std::make_unique<TreeItem>(this);
+    m_pCratesTreeItem = pRootItem->appendChild(tr("Crates"));
     m_pCratesTreeItem->setIcon(QIcon(":/images/library/ic_library_crates.png"));
-    root->appendChild(m_pCratesTreeItem);
 
     // Create tree-items under "Crates".
     constructCrateChildModel();
+
+    m_childModel.setRootItem(std::move(pRootItem));
 
     // Be notified when the status of crates changes.
     connect(&m_crateDao, SIGNAL(added(int)),
@@ -222,13 +223,9 @@ void AutoDJFeature::slotCrateAutoDjChanged(int crateId, bool added) {
         // Add our record of this crate-ID and name.
         m_crateList.append(qMakePair(crateId, strName));
 
-        // Create a tree-item for this crate.
-        TreeItem* item = new TreeItem(strName, strName, this,
-                                      m_pCratesTreeItem);
-
         // Prepare to add it to the "Crates" tree-item.
         QList<TreeItem*> lstItems;
-        lstItems.append(item);
+        lstItems.append(new TreeItem(this, strName));
 
         // Add it to the "Crates" tree-item.
         QModelIndex oCratesIndex = m_childModel.index(0, 0);
@@ -326,8 +323,7 @@ void AutoDJFeature::constructCrateChildModel() {
         m_crateList.append(qMakePair(id, name));
 
         // Create the TreeItem for this crate.
-        TreeItem* item = new TreeItem(name, name, this, m_pCratesTreeItem);
-        m_pCratesTreeItem->appendChild(item);
+        m_pCratesTreeItem->appendChild(name);
     }
 }
 
@@ -337,7 +333,7 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
     m_lastRightClickedIndex = index;
 
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-    QString crateName = item->dataPath().toString();
+    QString crateName = item->getLabel();
     if (crateName.length() > 0) {
         // A crate was right-clicked.
         // Bring up the context menu.

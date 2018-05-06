@@ -126,25 +126,20 @@ SINT EngineBufferScaleRubberBand::retrieveAndDeinterleave(
     SINT frames_available = m_pRubberBand->available();
     SINT frames_to_read = math_min(frames_available, frames);
     SINT received_frames = m_pRubberBand->retrieve(
-        (float* const*)m_retrieve_buffer, frames_to_read);
+            (float* const*)m_retrieve_buffer, frames_to_read);
 
-    for (SINT i = 0; i < received_frames; ++i) {
-        pBuffer[i*2] = m_retrieve_buffer[0][i];
-        pBuffer[i*2+1] = m_retrieve_buffer[1][i];
-    }
-
+    SampleUtil::interleaveBuffer(pBuffer,
+                                 m_retrieve_buffer[0],
+                                 m_retrieve_buffer[1],
+                                 received_frames);
     return received_frames;
 }
 
 void EngineBufferScaleRubberBand::deinterleaveAndProcess(
-    const CSAMPLE* pBuffer,
-    SINT frames,
-    bool flush) {
+        const CSAMPLE* pBuffer, SINT frames, bool flush) {
 
-    for (SINT i = 0; i < frames; ++i) {
-        m_retrieve_buffer[0][i] = pBuffer[i*2];
-        m_retrieve_buffer[1][i] = pBuffer[i*2+1];
-    }
+    SampleUtil::deinterleaveBuffer(
+            m_retrieve_buffer[0], m_retrieve_buffer[1], pBuffer, frames);
 
     m_pRubberBand->process((const float* const*)m_retrieve_buffer,
                            frames, flush);
@@ -198,7 +193,7 @@ double EngineBufferScaleRubberBand::scaleBuffer(
                 iLenFramesRequired = kRubberBandBlockSize;
             }
         }
-        //qDebug() << "iLenFramesRequired" << iLenFramesRequired;
+        qDebug() << "iLenFramesRequired" << iLenFramesRequired;
 
         if (remaining_frames > 0 && iLenFramesRequired > 0) {
             SINT iAvailSamples = m_pReadAheadManager->getNextSamples(

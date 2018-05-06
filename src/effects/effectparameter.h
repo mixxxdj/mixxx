@@ -32,6 +32,7 @@ class EffectParameter : public QObject {
     const EffectManifestParameter& manifest() const;
     const QString id() const;
     const QString name() const;
+    const QString shortName() const;
     const QString description() const;
 
     ///////////////////////////////////////////////////////////////////////////
@@ -39,6 +40,7 @@ class EffectParameter : public QObject {
     ///////////////////////////////////////////////////////////////////////////
 
     EffectManifestParameter::LinkType getDefaultLinkType() const;
+    EffectManifestParameter::LinkInversion getDefaultLinkInversion() const;
     double getNeutralPointOnScale() const;
 
     double getValue() const;

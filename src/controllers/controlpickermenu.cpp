@@ -213,7 +213,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                    tr("Cue button (CDJ mode)"), cueMenu);
     addDeckControl("play_stutter", tr("Stutter Cue"),
                    tr("Stutter cue"), cueMenu);
-    addDeckControl("cue_play", tr("Cue (Cue Play)"),
+    addDeckControl("cue_play", tr("CUP (Cue + Play)"),
                        tr("Go to cue point and play after release"), cueMenu);
 
     // Hotcues

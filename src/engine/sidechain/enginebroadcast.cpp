@@ -423,7 +423,7 @@ bool EngineBroadcast::processConnect() {
     // clear metadata, to make sure the first track is not skipped
     // because it was sent via an previous connection (see metaDataHasChanged)
     if(m_pMetaData) {
-        m_pMetaData.clear();
+        m_pMetaData.reset();
     }
     // If static metadata is available, we only need to send metadata one time
     m_firstCall = false;
@@ -872,20 +872,28 @@ bool EngineBroadcast::threadWaiting() {
 }
 
 #ifndef __WINDOWS__
-void EngineBroadcast::ignoreSigpipe()
-{
-    // shout_send_raw() can cause SIGPIPE, which is passed to this theread
-    // and which will finally crash Mixxx if it remains unhandled.
-    // Each thread has its own signal mask, so it is safe to do this for the
-    // broadcast thread only
+void EngineBroadcast::ignoreSigpipe() {
+    // If the remote connection is closed, shout_send_raw() can cause a
+    // SIGPIPE. If it is unhandled then Mixxx will quit immediately.
+#ifdef Q_OS_MAC
+    // The per-thread approach using pthread_sigmask below does not seem to work
+    // on macOS.
+    struct sigaction sa;
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_handler = SIG_IGN;
+    if (sigaction(SIGPIPE, &sa, NULL) != 0) {
+        qDebug() << "EngineBroadcast::ignoreSigpipe() failed";
+    }
+#else
     // http://www.microhowto.info/howto/ignore_sigpipe_without_affecting_other_threads_in_a_process.html
     sigset_t sigpipe_mask;
     sigemptyset(&sigpipe_mask);
     sigaddset(&sigpipe_mask, SIGPIPE);
     sigset_t saved_mask;
-    if (pthread_sigmask(SIG_BLOCK, &sigpipe_mask, &saved_mask) == -1) {
+    if (pthread_sigmask(SIG_BLOCK, &sigpipe_mask, &saved_mask) != 0) {
         qDebug() << "EngineBroadcast::ignoreSigpipe() failed";
     }
+#endif
 }
 #endif
 

@@ -30,6 +30,7 @@ EffectManifest FilterEffect::getManifest() {
     lpf->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     lpf->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     lpf->setDefaultLinkType(EffectManifestParameter::LINK_LINKED_LEFT);
+    lpf->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
     lpf->setNeutralPointOnScale(1);
     lpf->setDefault(kMaxCorner);
     lpf->setMinimum(kMinCorner);
@@ -37,7 +38,8 @@ EffectManifest FilterEffect::getManifest() {
 
     EffectManifestParameter* q = manifest.addParameter();
     q->setId("q");
-    q->setName(QObject::tr("Q"));
+    q->setName(QObject::tr("Resonance"));
+    q->setShortName(QObject::tr("Q"));
     q->setDescription(QObject::tr("Resonance of the filters, default = Flat top"));
     q->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     q->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);

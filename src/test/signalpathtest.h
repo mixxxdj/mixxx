@@ -78,9 +78,12 @@ class SignalPathTest : public MixxxTest {
 
         m_pEngineSync = m_pEngineMaster->getEngineSync();
 
-        loadTrack(m_pChannel1, QDir::currentPath() + "/src/test/sine-30.wav");
-        loadTrack(m_pChannel2, QDir::currentPath() + "/src/test/sine-30.wav");
-        loadTrack(m_pChannel3, QDir::currentPath() + "/src/test/sine-30.wav");
+        const QString kTrackLocationTest = QDir::currentPath() + "/src/test/sine-30.wav";
+        TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
+
+        loadTrack(m_pChannel1, pTrack);
+        loadTrack(m_pChannel2, pTrack);
+        loadTrack(m_pChannel3, pTrack);
 
         ControlObject::set(ConfigKey("[Master]", "enabled"), 1.0);
     }
@@ -96,16 +99,13 @@ class SignalPathTest : public MixxxTest {
         m_pNumDecks->set(m_pNumDecks->get() + 1);
     }
 
-    void loadTrack(EngineDeck* pDeck, QString path) {
-        const QString kTrackLocationTest(path);
-        TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
+    void loadTrack(EngineDeck* pDeck, TrackPointer pTrack) {
         pDeck->getEngineBuffer()->loadTrack(pTrack, true);
 
         // Wait for the track to load.
         ProcessBuffer();
-        for (int i = 0; i < 10 && !pDeck->getEngineBuffer()->isTrackLoaded();
-                ++i) {
-            QTest::qSleep(1000); // millis
+        while (!pDeck->getEngineBuffer()->isTrackLoaded()) {
+            QTest::qSleep(1); // millis
         }
         ASSERT_TRUE(pDeck->getEngineBuffer()->isTrackLoaded());
         // For some reason the tracks play by default.  Turn them off.

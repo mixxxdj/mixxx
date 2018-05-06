@@ -8,14 +8,15 @@ class LibraryTableModel : public BaseSqlTableModel {
   public:
     LibraryTableModel(QObject* parent, TrackCollection* pTrackCollection,
                       const char* settingsNamespace);
-    virtual ~LibraryTableModel();
+    ~LibraryTableModel() override;
+
     void setTableModel(int id =-1);
-    bool isColumnInternal(int column);
+
+    bool isColumnInternal(int column) final;
     // Takes a list of locations and add the tracks to the library. Returns the
     // number of successful additions.
-    int addTracks(const QModelIndex& index, const QList<QString>& locations);
-    TrackModel::CapabilitiesFlags getCapabilities() const;
-    static const QString DEFAULT_LIBRARYFILTER;
+    int addTracks(const QModelIndex& index, const QList<QString>& locations) final;
+    TrackModel::CapabilitiesFlags getCapabilities() const final;
 };
 
 #endif

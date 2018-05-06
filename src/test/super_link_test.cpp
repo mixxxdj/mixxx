@@ -146,6 +146,7 @@ TEST_F(SuperLinkTest, HalfLinkTakeover) {
     low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    low->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
     low->setNeutralPointOnScale(1.0);
     low->setDefault(1.0);
     low->setMinimum(0);

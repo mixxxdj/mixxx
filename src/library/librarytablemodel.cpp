@@ -3,8 +3,12 @@
 #include "library/queryutil.h"
 #include "mixer/playermanager.h"
 
-const QString LibraryTableModel::DEFAULT_LIBRARYFILTER =
+namespace {
+
+const QString kDefaultLibraryFilter =
         "mixxx_deleted=0 AND fs_deleted=0";
+
+} // anonymous namespace
 
 LibraryTableModel::LibraryTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection,
@@ -32,7 +36,7 @@ void LibraryTableModel::setTableModel(int id) {
             "SELECT " + columns.join(", ") +
             " FROM library INNER JOIN track_locations "
             "ON library.location = track_locations.id "
-            "WHERE (" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
+            "WHERE (" + kDefaultLibraryFilter + ")";
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);

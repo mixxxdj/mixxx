@@ -122,6 +122,7 @@ bool operator!=(const TrackNumbers& lhs, const TrackNumbers& rhs) {
     return !(lhs == rhs);
 }
 
+Q_DECLARE_TYPEINFO(TrackNumbers, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(TrackNumbers)
 
 #endif // TRACKNUMBERS_H

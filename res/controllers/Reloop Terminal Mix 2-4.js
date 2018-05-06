@@ -44,6 +44,7 @@ TerminalMix.init = function (id,debug) {
         engine.softTakeover("[Channel"+i+"]","filterHigh",true);
         engine.softTakeover("[Channel"+i+"]","filterMid",true);
         engine.softTakeover("[Channel"+i+"]","filterLow",true);
+        engine.softTakeover("[Channel"+i+"]","rate",true);
     }
 
     engine.softTakeover("[Master]","crossfader",true);
@@ -119,6 +120,11 @@ TerminalMix.samplerVolume = function (channel, control, value) {
         engine.setValue("[Sampler"+i+"]","pregain",
                         script.absoluteNonLin(value, 0.0, 1.0, 4.0));
     }
+}
+
+TerminalMix.pitchSlider = function (channel, control, value, status, group) {
+    // invert pitch slider (down=faster) so it matches the labels on controller
+    engine.setValue(group,"rate",-script.midiPitch(control, value, status));
 }
 
 TerminalMix.pitchRange = function (channel, control, value, status, group) {

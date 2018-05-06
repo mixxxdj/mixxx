@@ -51,6 +51,10 @@ const QString EffectParameter::name() const {
     return m_parameter.name();
 }
 
+const QString EffectParameter::shortName() const {
+    return m_parameter.shortName();
+}
+
 const QString EffectParameter::description() const {
     return m_parameter.description();
 }
@@ -86,6 +90,10 @@ bool EffectParameter::clampRanges() {
 
 EffectManifestParameter::LinkType EffectParameter::getDefaultLinkType() const {
     return m_parameter.defaultLinkType();
+}
+
+EffectManifestParameter::LinkInversion EffectParameter::getDefaultLinkInversion() const {
+    return m_parameter.defaultLinkInversion();
 }
 
 double EffectParameter::getNeutralPointOnScale() const {

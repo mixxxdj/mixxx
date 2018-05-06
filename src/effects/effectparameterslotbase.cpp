@@ -30,6 +30,13 @@ QString EffectParameterSlotBase::name() const {
     return QString();
 }
 
+QString EffectParameterSlotBase::shortName() const {
+    if (m_pEffectParameter) {
+        return m_pEffectParameter->shortName();
+    }
+    return QString();
+}
+
 QString EffectParameterSlotBase::description() const {
     if (m_pEffectParameter) {
         return m_pEffectParameter->description();

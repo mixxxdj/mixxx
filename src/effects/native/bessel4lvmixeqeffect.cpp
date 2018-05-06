@@ -11,6 +11,7 @@ EffectManifest Bessel4LVMixEQEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
     manifest.setName(QObject::tr("Bessel4 LV-Mix EQ"));
+    manifest.setShortName(QObject::tr("Bessel4 EQ"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(

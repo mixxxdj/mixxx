@@ -117,6 +117,7 @@ private:
     value_type m_value;
 };
 
+Q_DECLARE_TYPEINFO(DbId, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(DbId)
 
 

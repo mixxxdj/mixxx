@@ -215,7 +215,7 @@ void AnalyzerBeats::finalize(TrackPointer tio) {
     QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
         m_pluginId, m_bPreferencesFastAnalysis);
     BeatsPointer pBeats = BeatFactory::makePreferredBeats(
-        tio, beats, extraVersionInfo,
+        *tio, beats, extraVersionInfo,
         m_bPreferencesFixedTempo, m_bPreferencesOffsetCorrection,
         m_iSampleRate, m_iTotalSamples,
         m_iMinBpm, m_iMaxBpm);

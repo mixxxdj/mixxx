@@ -22,6 +22,7 @@ class EffectParameterSlotBase : public QObject {
     virtual ~EffectParameterSlotBase();
 
     QString name() const;
+    QString shortName() const;
     QString description() const;
     const EffectManifestParameter getManifest();
 

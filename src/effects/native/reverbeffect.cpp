@@ -26,11 +26,14 @@ EffectManifest ReverbEffect::getManifest() {
     EffectManifestParameter* time = manifest.addParameter();
     time->setId("bandwidth");
     time->setName(QObject::tr("Bandwidth"));
+    time->setShortName(QObject::tr("BW"));
     time->setDescription(QObject::tr("Higher bandwidth values cause more "
             "bright (high-frequency) tones to be included"));
     time->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     time->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     time->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    time->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    time->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
     time->setMinimum(0.0005);
     time->setDefault(0.5);
     time->setMaximum(1.0);

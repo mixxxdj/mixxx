@@ -630,20 +630,12 @@ bool AutoDJProcessor::loadNextTrackFromQueue(const DeckAttributes& deck, bool pl
 }
 
 bool AutoDJProcessor::removeLoadedTrackFromTopOfQueue(const DeckAttributes& deck) {
-    // Get loaded track for this group.
-    TrackPointer loadedTrack = deck.getLoadedTrack();
-
-    // No loaded track in this group.
-    if (loadedTrack.isNull()) {
-        return false;
-    }
-
-    return removeTrackFromTopOfQueue(loadedTrack);
+    return removeTrackFromTopOfQueue(deck.getLoadedTrack());
 }
 
 bool AutoDJProcessor::removeTrackFromTopOfQueue(TrackPointer pTrack) {
     // No track to test for.
-    if (pTrack.isNull()) {
+    if (!pTrack) {
         return false;
     }
 
@@ -769,7 +761,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTrack) {
     if (sDebug) {
         qDebug() << this << "playerTrackLoaded" << pDeck->group
-                 << (pTrack.isNull() ? "(null)" : pTrack->getLocation());
+                 << (pTrack ? pTrack->getLocation() : "(null)");
     }
 
     double duration = pTrack->getDuration();
@@ -791,8 +783,8 @@ void AutoDJProcessor::playerLoadingTrack(DeckAttributes* pDeck,
         TrackPointer pNewTrack, TrackPointer pOldTrack) {
     if (sDebug) {
         qDebug() << this << "playerLoadingTrack" << pDeck->group
-                 << "new:"<< (pNewTrack.isNull() ? "(null)" : pNewTrack->getLocation())
-                 << "old:"<< (pOldTrack.isNull() ? "(null)" : pOldTrack->getLocation());
+                 << "new:"<< (pNewTrack ? pNewTrack->getLocation() : "(null)")
+                 << "old:"<< (pOldTrack ? pOldTrack->getLocation() : "(null)");
     }
 
     // The Deck is loading an new track
@@ -805,7 +797,7 @@ void AutoDJProcessor::playerLoadingTrack(DeckAttributes* pDeck,
     // 4) We have just completed fading from one deck to another. Mode is
     //    ADJ_IDLE.
 
-    if (pNewTrack.isNull()) {
+    if (!pNewTrack) {
         // If a track is ejected because of a manual eject command or a load failure
         // this track seams to be undesired. Remove the bad track from the queue.
         removeTrackFromTopOfQueue(pOldTrack);

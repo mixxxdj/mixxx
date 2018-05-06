@@ -20,8 +20,7 @@ class WStarRating : public WWidget {
     QSize sizeHint() const override;
 
   public slots:
-    void slotTrackLoaded(TrackPointer track);
-    void slotTrackUnloaded(TrackPointer track);
+    void slotTrackLoaded(TrackPointer pTrack = TrackPointer());
 
   private slots:
     void updateRating(Track*);

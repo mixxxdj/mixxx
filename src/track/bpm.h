@@ -63,6 +63,7 @@ bool operator!=(const Bpm& lhs, const Bpm& rhs) {
 
 }
 
+Q_DECLARE_TYPEINFO(mixxx::Bpm, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(mixxx::Bpm)
 
 #endif // MIXXX_BPM_H
