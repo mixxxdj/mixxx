@@ -107,7 +107,7 @@
             <!-- Deck 1, Pad-state buttons (Hot-cue mode, loop mode, sampler mode) -->
             <control>
               <group>[Channel1]</group>
-              <key>DJ202.leftDeck.setPadState</key>
+              <key>DJ202.leftDeck.padSection.setState</key>
               <status>0x94</status>
               <midino>0x00</midino>
               <options>
@@ -116,7 +116,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.hotcueButton[1].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[1].input</key>
                 <status>0x94</status>
                 <midino>0x01</midino>
                 <options>
@@ -125,7 +125,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.hotcueButton[2].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[2].input</key>
                 <status>0x94</status>
                 <midino>0x02</midino>
                 <options>
@@ -134,7 +134,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.hotcueButton[3].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[3].input</key>
                 <status>0x94</status>
                 <midino>0x03</midino>
                 <options>
@@ -143,7 +143,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.hotcueButton[4].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[4].input</key>
                 <status>0x94</status>
                 <midino>0x04</midino>
                 <options>
@@ -152,7 +152,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.hotcueButton[5].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[5].input</key>
                 <status>0x94</status>
                 <midino>0x05</midino>
                 <options>
@@ -161,7 +161,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.hotcueButton[6].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[6].input</key>
                 <status>0x94</status>
                 <midino>0x06</midino>
                 <options>
@@ -170,7 +170,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.hotcueButton[7].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[7].input</key>
                 <status>0x94</status>
                 <midino>0x07</midino>
                 <options>
@@ -179,7 +179,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.hotcueButton[8].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[8].input</key>
                 <status>0x94</status>
                 <midino>0x08</midino>
                 <options>
@@ -188,7 +188,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.loopButton[1].input</key>
+                <key>DJ202.leftDeck.padSection.loopButton[1].input</key>
                 <status>0x94</status>
                 <midino>0x11</midino>
                 <options>
@@ -197,7 +197,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.loopButton[2].input</key>
+                <key>DJ202.leftDeck.padSection.loopButton[2].input</key>
                 <status>0x94</status>
                 <midino>0x12</midino>
                 <options>
@@ -206,7 +206,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.loopButton[3].input</key>
+                <key>DJ202.leftDeck.padSection.loopButton[3].input</key>
                 <status>0x94</status>
                 <midino>0x13</midino>
                 <options>
@@ -215,7 +215,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.loopButton[4].input</key>
+                <key>DJ202.leftDeck.padSection.loopButton[4].input</key>
                 <status>0x94</status>
                 <midino>0x14</midino>
                 <options>
@@ -224,7 +224,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.loopIn.input</key>
+                <key>DJ202.leftDeck.padSection.loopIn.input</key>
                 <status>0x94</status>
                 <midino>0x15</midino>
                 <options>
@@ -233,7 +233,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.loopOut.input</key>
+                <key>DJ202.leftDeck.padSection.loopOut.input</key>
                 <status>0x94</status>
                 <midino>0x16</midino>
                 <options>
@@ -242,7 +242,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.loopExit.input</key>
+                <key>DJ202.leftDeck.padSection.loopExit.input</key>
                 <status>0x94</status>
                 <midino>0x17</midino>
                 <options>
@@ -251,7 +251,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.loopToggle.input</key>
+                <key>DJ202.leftDeck.padSection.loopToggle.input</key>
                 <status>0x94</status>
                 <midino>0x18</midino>
                 <options>
@@ -333,7 +333,7 @@
             <!-- shifted performance buttons -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.hotcueButton[1].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[1].input</key>
                 <status>0x94</status>
                 <midino>0x09</midino>
                 <options>
@@ -342,7 +342,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.hotcueButton[2].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[2].input</key>
                 <status>0x94</status>
                 <midino>0x0A</midino>
                 <options>
@@ -351,7 +351,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.hotcueButton[3].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[3].input</key>
                 <status>0x94</status>
                 <midino>0x0B</midino>
                 <options>
@@ -360,7 +360,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.hotcueButton[4].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[4].input</key>
                 <status>0x94</status>
                 <midino>0x0C</midino>
                 <options>
@@ -369,7 +369,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.hotcueButton[5].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[5].input</key>
                 <status>0x94</status>
                 <midino>0x0D</midino>
                 <options>
@@ -378,7 +378,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.hotcueButton[6].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[6].input</key>
                 <status>0x94</status>
                 <midino>0x0E</midino>
                 <options>
@@ -387,7 +387,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.hotcueButton[7].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[7].input</key>
                 <status>0x94</status>
                 <midino>0x0F</midino>
                 <options>
@@ -396,7 +396,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.hotcueButton[8].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[8].input</key>
                 <status>0x94</status>
                 <midino>0x10</midino>
                 <options>
@@ -597,7 +597,7 @@
             <!-- Deck 1, Loop-Mode, Param⁻ -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramPlusMinus.input</key>
+                <key>DJ202.leftDeck.padSection.paramPlusMinus.input</key>
                 <status>0x94</status>
                 <midino>0x41</midino>
                 <options>
@@ -607,7 +607,7 @@
             <!-- Deck 1, Loop-Mode, Param⁺ -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramPlusMinus.input</key>
+                <key>DJ202.leftDeck.padSection.paramPlusMinus.input</key>
                 <status>0x94</status>
                 <midino>0x42</midino>
                 <options>
@@ -617,7 +617,7 @@
             <!-- Deck 1, Hot-Cue-Mode, Param- -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramPlusMinus.input</key>
+                <key>DJ202.leftDeck.padSection.paramPlusMinus.input</key>
                 <status>0x94</status>
                 <midino>0x43</midino>
                 <options>
@@ -627,7 +627,7 @@
             <!-- Deck 1, Hot-Cue-Mode, Param⁺ -->
             <control>
               <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramPlusMinus.input</key>
+                <key>DJ202.leftDeck.padSection.paramPlusMinus.input</key>
                 <status>0x94</status>
                 <midino>0x44</midino>
                 <options>
@@ -637,7 +637,7 @@
             <!-- Deck1, Sampler-Mode, Param⁻ -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramPlusMinus.input</key>
+                <key>DJ202.leftDeck.padSection.paramPlusMinus.input</key>
                 <status>0x94</status>
                 <midino>0x45</midino>
                 <options>
@@ -647,7 +647,7 @@
             <!-- Deck1, Sampler-Mode, Param⁺ -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramPlusMinus.input</key>
+                <key>DJ202.leftDeck.padSection.paramPlusMinus.input</key>
                 <status>0x94</status>
                 <midino>0x46</midino>
                 <options>
@@ -657,7 +657,7 @@
             <!-- Deck 1, Loop-Mode, Shift+Param⁻ -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramPlusMinus.input</key>
+                <key>DJ202.leftDeck.padSection.paramPlusMinus.input</key>
                 <status>0x94</status>
                 <midino>0x49</midino>
                 <options>
@@ -667,7 +667,7 @@
             <!-- Deck 1, Loop-Mode, Shift+Param⁺ -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramPlusMinus.input</key>
+                <key>DJ202.leftDeck.padSection.paramPlusMinus.input</key>
                 <status>0x94</status>
                 <midino>0x4A</midino>
                 <options>
@@ -677,7 +677,7 @@
             <!-- Deck 1, Hot-Cue-Mode, Shift+Param⁻ -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramPlusMinus.input</key>
+                <key>DJ202.leftDeck.padSection.paramPlusMinus.input</key>
                 <status>0x94</status>
                 <midino>0x4B</midino>
                 <options>
@@ -687,7 +687,7 @@
             <!-- Deck 1, Hot-Cue-Mode, Shift+Param⁺ -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramPlusMinus.input</key>
+                <key>DJ202.leftDeck.padSection.paramPlusMinus.input</key>
                 <status>0x94</status>
                 <midino>0x4C</midino>
                 <options>
@@ -697,7 +697,7 @@
             <!-- Deck 1, Sampler-Mode, Shift+Param⁻ -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramPlusMinus.input</key>
+                <key>DJ202.leftDeck.padSection.paramPlusMinus.input</key>
                 <status>0x94</status>
                 <midino>0x4D</midino>
                 <options>
@@ -707,7 +707,7 @@
             <!-- Deck 1, Sample-Mode, Shift+Param⁺ -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.paramPlusMinus.input</key>
+                <key>DJ202.leftDeck.padSection.paramPlusMinus.input</key>
                 <status>0x94</status>
                 <midino>0x4E</midino>
                 <options>
@@ -835,7 +835,7 @@
             <!-- Deck 3, Pad-state buttons (Hot-cue mode, loop mode, sampler mode) -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.setPadState</key>
+                <key>DJ202.leftDeck.padSection.setState</key>
                 <status>0x96</status>
                 <midino>0x00</midino>
                 <options>
@@ -844,7 +844,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.hotcueButton[1].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[1].input</key>
                 <status>0x96</status>
                 <midino>0x01</midino>
                 <options>
@@ -853,7 +853,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.hotcueButton[2].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[2].input</key>
                 <status>0x96</status>
                 <midino>0x02</midino>
                 <options>
@@ -862,7 +862,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.hotcueButton[3].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[3].input</key>
                 <status>0x96</status>
                 <midino>0x03</midino>
                 <options>
@@ -871,7 +871,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.hotcueButton[4].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[4].input</key>
                 <status>0x96</status>
                 <midino>0x04</midino>
                 <options>
@@ -880,7 +880,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.hotcueButton[5].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[5].input</key>
                 <status>0x96</status>
                 <midino>0x05</midino>
                 <options>
@@ -889,7 +889,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.hotcueButton[6].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[6].input</key>
                 <status>0x96</status>
                 <midino>0x06</midino>
                 <options>
@@ -898,7 +898,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.hotcueButton[7].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[7].input</key>
                 <status>0x96</status>
                 <midino>0x07</midino>
                 <options>
@@ -907,7 +907,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.hotcueButton[8].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[8].input</key>
                 <status>0x96</status>
                 <midino>0x08</midino>
                 <options>
@@ -916,7 +916,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.loopButton[1].input</key>
+                <key>DJ202.leftDeck.padSection.loopButton[1].input</key>
                 <status>0x96</status>
                 <midino>0x11</midino>
                 <options>
@@ -925,7 +925,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.loopButton[2].input</key>
+                <key>DJ202.leftDeck.padSection.loopButton[2].input</key>
                 <status>0x96</status>
                 <midino>0x12</midino>
                 <options>
@@ -934,7 +934,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.loopButton[3].input</key>
+                <key>DJ202.leftDeck.padSection.loopButton[3].input</key>
                 <status>0x96</status>
                 <midino>0x13</midino>
                 <options>
@@ -943,7 +943,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.loopButton[4].input</key>
+                <key>DJ202.leftDeck.padSection.loopButton[4].input</key>
                 <status>0x96</status>
                 <midino>0x14</midino>
                 <options>
@@ -952,7 +952,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.loopIn.input</key>
+                <key>DJ202.leftDeck.padSection.loopIn.input</key>
                 <status>0x96</status>
                 <midino>0x15</midino>
                 <options>
@@ -961,7 +961,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.loopOut.input</key>
+                <key>DJ202.leftDeck.padSection.loopOut.input</key>
                 <status>0x96</status>
                 <midino>0x16</midino>
                 <options>
@@ -970,7 +970,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.loopExit.input</key>
+                <key>DJ202.leftDeck.padSection.loopExit.input</key>
                 <status>0x96</status>
                 <midino>0x17</midino>
                 <options>
@@ -979,7 +979,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.loopToggle.input</key>
+                <key>DJ202.leftDeck.padSection.loopToggle.input</key>
                 <status>0x96</status>
                 <midino>0x18</midino>
                 <options>
@@ -1061,7 +1061,7 @@
             <!-- shifted performance buttons -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.hotcueButton[1].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[1].input</key>
                 <status>0x96</status>
                 <midino>0x09</midino>
                 <options>
@@ -1070,7 +1070,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.hotcueButton[2].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[2].input</key>
                 <status>0x96</status>
                 <midino>0x0A</midino>
                 <options>
@@ -1079,7 +1079,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.hotcueButton[3].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[3].input</key>
                 <status>0x96</status>
                 <midino>0x0B</midino>
                 <options>
@@ -1088,7 +1088,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.hotcueButton[4].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[4].input</key>
                 <status>0x96</status>
                 <midino>0x0C</midino>
                 <options>
@@ -1097,7 +1097,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.hotcueButton[5].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[5].input</key>
                 <status>0x96</status>
                 <midino>0x0D</midino>
                 <options>
@@ -1106,7 +1106,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.hotcueButton[6].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[6].input</key>
                 <status>0x96</status>
                 <midino>0x0E</midino>
                 <options>
@@ -1115,7 +1115,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.hotcueButton[7].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[7].input</key>
                 <status>0x96</status>
                 <midino>0x0F</midino>
                 <options>
@@ -1124,7 +1124,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.hotcueButton[8].input</key>
+                <key>DJ202.leftDeck.padSection.hotcueButton[8].input</key>
                 <status>0x96</status>
                 <midino>0x10</midino>
                 <options>
@@ -1325,7 +1325,7 @@
             <!-- Deck 3, Loop-Mode, Param⁻ -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.paramPlusMinus.input</key>
+                <key>DJ202.leftDeck.padSection.paramPlusMinus.input</key>
                 <status>0x96</status>
                 <midino>0x41</midino>
                 <options>
@@ -1335,7 +1335,7 @@
             <!-- Deck 3, Loop-Mode, Param⁺ -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.paramPlusMinus.input</key>
+                <key>DJ202.leftDeck.padSection.paramPlusMinus.input</key>
                 <status>0x96</status>
                 <midino>0x42</midino>
                 <options>
@@ -1345,7 +1345,7 @@
             <!-- Deck 3, Hot-Cue-Mode, Param- -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.paramPlusMinus.input</key>
+                <key>DJ202.leftDeck.padSection.paramPlusMinus.input</key>
                 <status>0x96</status>
                 <midino>0x43</midino>
                 <options>
@@ -1355,7 +1355,7 @@
             <!-- Deck 3, Hot-Cue-Mode, Param⁺ -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.paramPlusMinus.input</key>
+                <key>DJ202.leftDeck.padSection.paramPlusMinus.input</key>
                 <status>0x96</status>
                 <midino>0x44</midino>
                 <options>
@@ -1365,7 +1365,7 @@
             <!-- Deck1, Sampler-Mode, Param⁻ -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.paramPlusMinus.input</key>
+                <key>DJ202.leftDeck.padSection.paramPlusMinus.input</key>
                 <status>0x96</status>
                 <midino>0x45</midino>
                 <options>
@@ -1375,7 +1375,7 @@
             <!-- Deck1, Sampler-Mode, Param⁺ -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.paramPlusMinus.input</key>
+                <key>DJ202.leftDeck.padSection.paramPlusMinus.input</key>
                 <status>0x96</status>
                 <midino>0x46</midino>
                 <options>
@@ -1385,7 +1385,7 @@
             <!-- Deck 3, Loop-Mode, Shift+Param⁻ -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.paramPlusMinus.input</key>
+                <key>DJ202.leftDeck.padSection.paramPlusMinus.input</key>
                 <status>0x96</status>
                 <midino>0x49</midino>
                 <options>
@@ -1395,7 +1395,7 @@
             <!-- Deck 3, Loop-Mode, Shift+Param⁺ -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.paramPlusMinus.input</key>
+                <key>DJ202.leftDeck.padSection.paramPlusMinus.input</key>
                 <status>0x96</status>
                 <midino>0x4A</midino>
                 <options>
@@ -1405,7 +1405,7 @@
             <!-- Deck 3, Hot-Cue-Mode, Shift+Param⁻ -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.paramPlusMinus.input</key>
+                <key>DJ202.leftDeck.padSection.paramPlusMinus.input</key>
                 <status>0x96</status>
                 <midino>0x4B</midino>
                 <options>
@@ -1415,7 +1415,7 @@
             <!-- Deck 3, Hot-Cue-Mode, Shift+Param⁺ -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.paramPlusMinus.input</key>
+                <key>DJ202.leftDeck.padSection.paramPlusMinus.input</key>
                 <status>0x96</status>
                 <midino>0x4C</midino>
                 <options>
@@ -1425,7 +1425,7 @@
             <!-- Deck 3, Sampler-Mode, Shift+Param⁻ -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.paramPlusMinus.input</key>
+                <key>DJ202.leftDeck.padSection.paramPlusMinus.input</key>
                 <status>0x96</status>
                 <midino>0x4D</midino>
                 <options>
@@ -1435,7 +1435,7 @@
             <!-- Deck 3, Sample-Mode, Shift+Param⁺ -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.paramPlusMinus.input</key>
+                <key>DJ202.leftDeck.padSection.paramPlusMinus.input</key>
                 <status>0x96</status>
                 <midino>0x4E</midino>
                 <options>
@@ -1654,7 +1654,7 @@
             <!-- Deck 2, Pad-state buttons (Hot-cue mode, loop mode, sampler mode) -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.setPadState</key>
+                <key>DJ202.rightDeck.padSection.setState</key>
                 <status>0x95</status>
                 <midino>0x00</midino>
                 <options>
@@ -1663,7 +1663,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.hotcueButton[1].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[1].input</key>
                 <status>0x95</status>
                 <midino>0x01</midino>
                 <options>
@@ -1672,7 +1672,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.hotcueButton[2].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[2].input</key>
                 <status>0x95</status>
                 <midino>0x02</midino>
                 <options>
@@ -1681,7 +1681,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.hotcueButton[3].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[3].input</key>
                 <status>0x95</status>
                 <midino>0x03</midino>
                 <options>
@@ -1690,7 +1690,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.hotcueButton[4].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[4].input</key>
                 <status>0x95</status>
                 <midino>0x04</midino>
                 <options>
@@ -1699,7 +1699,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.hotcueButton[5].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[5].input</key>
                 <status>0x95</status>
                 <midino>0x05</midino>
                 <options>
@@ -1708,7 +1708,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.hotcueButton[6].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[6].input</key>
                 <status>0x95</status>
                 <midino>0x06</midino>
                 <options>
@@ -1717,7 +1717,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.hotcueButton[7].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[7].input</key>
                 <status>0x95</status>
                 <midino>0x07</midino>
                 <options>
@@ -1726,7 +1726,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.hotcueButton[8].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[8].input</key>
                 <status>0x95</status>
                 <midino>0x08</midino>
                 <options>
@@ -1735,7 +1735,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.loopButton[1].input</key>
+                <key>DJ202.rightDeck.padSection.loopButton[1].input</key>
                 <status>0x95</status>
                 <midino>0x11</midino>
                 <options>
@@ -1744,7 +1744,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.loopButton[2].input</key>
+                <key>DJ202.rightDeck.padSection.loopButton[2].input</key>
                 <status>0x95</status>
                 <midino>0x12</midino>
                 <options>
@@ -1753,7 +1753,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.loopButton[3].input</key>
+                <key>DJ202.rightDeck.padSection.loopButton[3].input</key>
                 <status>0x95</status>
                 <midino>0x13</midino>
                 <options>
@@ -1762,7 +1762,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.loopButton[4].input</key>
+                <key>DJ202.rightDeck.padSection.loopButton[4].input</key>
                 <status>0x95</status>
                 <midino>0x14</midino>
                 <options>
@@ -1771,7 +1771,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.loopIn.input</key>
+                <key>DJ202.rightDeck.padSection.loopIn.input</key>
                 <status>0x95</status>
                 <midino>0x15</midino>
                 <options>
@@ -1780,7 +1780,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.loopOut.input</key>
+                <key>DJ202.rightDeck.padSection.loopOut.input</key>
                 <status>0x95</status>
                 <midino>0x16</midino>
                 <options>
@@ -1789,7 +1789,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.loopExit.input</key>
+                <key>DJ202.rightDeck.padSection.loopExit.input</key>
                 <status>0x95</status>
                 <midino>0x17</midino>
                 <options>
@@ -1798,7 +1798,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.loopToggle.input</key>
+                <key>DJ202.rightDeck.padSection.loopToggle.input</key>
                 <status>0x95</status>
                 <midino>0x18</midino>
                 <options>
@@ -1880,7 +1880,7 @@
             <!-- shifted performance buttons -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.hotcueButton[1].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[1].input</key>
                 <status>0x95</status>
                 <midino>0x09</midino>
                 <options>
@@ -1889,7 +1889,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.hotcueButton[2].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[2].input</key>
                 <status>0x95</status>
                 <midino>0x0A</midino>
                 <options>
@@ -1898,7 +1898,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.hotcueButton[3].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[3].input</key>
                 <status>0x95</status>
                 <midino>0x0B</midino>
                 <options>
@@ -1907,7 +1907,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.hotcueButton[4].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[4].input</key>
                 <status>0x95</status>
                 <midino>0x0C</midino>
                 <options>
@@ -1916,7 +1916,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.hotcueButton[5].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[5].input</key>
                 <status>0x95</status>
                 <midino>0x0D</midino>
                 <options>
@@ -1925,7 +1925,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.hotcueButton[6].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[6].input</key>
                 <status>0x95</status>
                 <midino>0x0E</midino>
                 <options>
@@ -1934,7 +1934,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.hotcueButton[7].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[7].input</key>
                 <status>0x95</status>
                 <midino>0x0F</midino>
                 <options>
@@ -1943,7 +1943,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.hotcueButton[8].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[8].input</key>
                 <status>0x95</status>
                 <midino>0x10</midino>
                 <options>
@@ -2144,7 +2144,7 @@
             <!-- Deck 2, Loop-Mode, Param⁻ -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramPlusMinus.input</key>
+                <key>DJ202.rightDeck.padSection.paramPlusMinus.input</key>
                 <status>0x95</status>
                 <midino>0x41</midino>
                 <options>
@@ -2154,7 +2154,7 @@
             <!-- Deck 2, Loop-Mode, Param⁺ -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramPlusMinus.input</key>
+                <key>DJ202.rightDeck.padSection.paramPlusMinus.input</key>
                 <status>0x95</status>
                 <midino>0x42</midino>
                 <options>
@@ -2164,7 +2164,7 @@
             <!-- Deck 2, Hot-Cue-Mode, Param⁻ -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramPlusMinus.input</key>
+                <key>DJ202.rightDeck.padSection.paramPlusMinus.input</key>
                 <status>0x95</status>
                 <midino>0x43</midino>
                 <options>
@@ -2174,7 +2174,7 @@
             <!-- Deck 2, Hot-Cue-Mode, Param⁺ -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramPlusMinus.input</key>
+                <key>DJ202.rightDeck.padSection.paramPlusMinus.input</key>
                 <status>0x95</status>
                 <midino>0x44</midino>
                 <options>
@@ -2184,7 +2184,7 @@
             <!-- Deck 2, Sampler-Mode, Param⁻ -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramPlusMinus.input</key>
+                <key>DJ202.rightDeck.padSection.paramPlusMinus.input</key>
                 <status>0x95</status>
                 <midino>0x45</midino>
                 <options>
@@ -2194,7 +2194,7 @@
             <!-- Deck 2, Sampler-Mode, Param⁺ -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramPlusMinus.input</key>
+                <key>DJ202.rightDeck.padSection.paramPlusMinus.input</key>
                 <status>0x95</status>
                 <midino>0x46</midino>
                 <options>
@@ -2204,7 +2204,7 @@
             <!-- Deck 2, Loop-Mode, Shift+Param⁻ -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramPlusMinus.input</key>
+                <key>DJ202.rightDeck.padSection.paramPlusMinus.input</key>
                 <status>0x95</status>
                 <midino>0x49</midino>
                 <options>
@@ -2214,7 +2214,7 @@
             <!-- Deck 2, Loop-Mode, Shift+Param⁺ -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramPlusMinus.input</key>
+                <key>DJ202.rightDeck.padSection.paramPlusMinus.input</key>
                 <status>0x95</status>
                 <midino>0x4A</midino>
                 <options>
@@ -2224,7 +2224,7 @@
             <!-- Deck 2, Hot-Cue-Mode, Shift+Param⁻ -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramPlusMinus.input</key>
+                <key>DJ202.rightDeck.padSection.paramPlusMinus.input</key>
                 <status>0x95</status>
                 <midino>0x4B</midino>
                 <options>
@@ -2234,7 +2234,7 @@
             <!-- Deck 2, Hot-Cue-Mode, Shift+Param⁺ -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramPlusMinus.input</key>
+                <key>DJ202.rightDeck.padSection.paramPlusMinus.input</key>
                 <status>0x95</status>
                 <midino>0x4C</midino>
                 <options>
@@ -2244,7 +2244,7 @@
             <!-- Deck 2, Sampler-Mode, Shift+Param⁻ -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramPlusMinus.input</key>
+                <key>DJ202.rightDeck.padSection.paramPlusMinus.input</key>
                 <status>0x95</status>
                 <midino>0x4D</midino>
                 <options>
@@ -2254,7 +2254,7 @@
             <!-- Deck 2, Sample-Mode, Shift+Param⁺ -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.paramPlusMinus.input</key>
+                <key>DJ202.rightDeck.padSection.paramPlusMinus.input</key>
                 <status>0x95</status>
                 <midino>0x4E</midino>
                 <options>
@@ -2391,7 +2391,7 @@
             <!-- Deck 4, Pad-state buttons (Hot-cue mode, loop mode, sampler mode) -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.setPadState</key>
+                <key>DJ202.rightDeck.padSection.setState</key>
                 <status>0x97</status>
                 <midino>0x00</midino>
                 <options>
@@ -2400,7 +2400,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.hotcueButton[1].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[1].input</key>
                 <status>0x97</status>
                 <midino>0x01</midino>
                 <options>
@@ -2409,7 +2409,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.hotcueButton[2].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[2].input</key>
                 <status>0x97</status>
                 <midino>0x02</midino>
                 <options>
@@ -2418,7 +2418,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.hotcueButton[3].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[3].input</key>
                 <status>0x97</status>
                 <midino>0x03</midino>
                 <options>
@@ -2427,7 +2427,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.hotcueButton[4].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[4].input</key>
                 <status>0x97</status>
                 <midino>0x04</midino>
                 <options>
@@ -2436,7 +2436,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.hotcueButton[5].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[5].input</key>
                 <status>0x97</status>
                 <midino>0x05</midino>
                 <options>
@@ -2445,7 +2445,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.hotcueButton[6].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[6].input</key>
                 <status>0x97</status>
                 <midino>0x06</midino>
                 <options>
@@ -2454,7 +2454,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.hotcueButton[7].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[7].input</key>
                 <status>0x97</status>
                 <midino>0x07</midino>
                 <options>
@@ -2463,7 +2463,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.hotcueButton[8].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[8].input</key>
                 <status>0x97</status>
                 <midino>0x08</midino>
                 <options>
@@ -2472,7 +2472,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.loopButton[1].input</key>
+                <key>DJ202.rightDeck.padSection.loopButton[1].input</key>
                 <status>0x97</status>
                 <midino>0x11</midino>
                 <options>
@@ -2481,7 +2481,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.loopButton[2].input</key>
+                <key>DJ202.rightDeck.padSection.loopButton[2].input</key>
                 <status>0x97</status>
                 <midino>0x12</midino>
                 <options>
@@ -2490,7 +2490,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.loopButton[3].input</key>
+                <key>DJ202.rightDeck.padSection.loopButton[3].input</key>
                 <status>0x97</status>
                 <midino>0x13</midino>
                 <options>
@@ -2499,7 +2499,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.loopButton[4].input</key>
+                <key>DJ202.rightDeck.padSection.loopButton[4].input</key>
                 <status>0x97</status>
                 <midino>0x14</midino>
                 <options>
@@ -2508,7 +2508,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.loopIn.input</key>
+                <key>DJ202.rightDeck.padSection.loopIn.input</key>
                 <status>0x97</status>
                 <midino>0x15</midino>
                 <options>
@@ -2517,7 +2517,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.loopOut.input</key>
+                <key>DJ202.rightDeck.padSection.loopOut.input</key>
                 <status>0x97</status>
                 <midino>0x16</midino>
                 <options>
@@ -2526,7 +2526,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.loopExit.input</key>
+                <key>DJ202.rightDeck.padSection.loopExit.input</key>
                 <status>0x97</status>
                 <midino>0x17</midino>
                 <options>
@@ -2535,7 +2535,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.loopToggle.input</key>
+                <key>DJ202.rightDeck.padSection.loopToggle.input</key>
                 <status>0x97</status>
                 <midino>0x18</midino>
                 <options>
@@ -2617,7 +2617,7 @@
             <!-- shifted performance buttons -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.hotcueButton[1].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[1].input</key>
                 <status>0x97</status>
                 <midino>0x09</midino>
                 <options>
@@ -2626,7 +2626,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.hotcueButton[2].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[2].input</key>
                 <status>0x97</status>
                 <midino>0x0A</midino>
                 <options>
@@ -2635,7 +2635,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.hotcueButton[3].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[3].input</key>
                 <status>0x97</status>
                 <midino>0x0B</midino>
                 <options>
@@ -2644,7 +2644,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.hotcueButton[4].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[4].input</key>
                 <status>0x97</status>
                 <midino>0x0C</midino>
                 <options>
@@ -2653,7 +2653,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.hotcueButton[5].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[5].input</key>
                 <status>0x97</status>
                 <midino>0x0D</midino>
                 <options>
@@ -2662,7 +2662,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.hotcueButton[6].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[6].input</key>
                 <status>0x97</status>
                 <midino>0x0E</midino>
                 <options>
@@ -2671,7 +2671,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.hotcueButton[7].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[7].input</key>
                 <status>0x97</status>
                 <midino>0x0F</midino>
                 <options>
@@ -2680,7 +2680,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.hotcueButton[8].input</key>
+                <key>DJ202.rightDeck.padSection.hotcueButton[8].input</key>
                 <status>0x97</status>
                 <midino>0x10</midino>
                 <options>
@@ -2881,7 +2881,7 @@
             <!-- Deck 4, Loop-Mode, Param⁻ -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.paramPlusMinus.input</key>
+                <key>DJ202.rightDeck.padSection.paramPlusMinus.input</key>
                 <status>0x97</status>
                 <midino>0x41</midino>
                 <options>
@@ -2891,7 +2891,7 @@
             <!-- Deck 4, Loop-Mode, Param⁺ -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.paramPlusMinus.input</key>
+                <key>DJ202.rightDeck.padSection.paramPlusMinus.input</key>
                 <status>0x97</status>
                 <midino>0x42</midino>
                 <options>
@@ -2901,7 +2901,7 @@
             <!-- Deck 4, Hot-Cue-Mode, Param⁻ -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.paramPlusMinus.input</key>
+                <key>DJ202.rightDeck.padSection.paramPlusMinus.input</key>
                 <status>0x97</status>
                 <midino>0x43</midino>
                 <options>
@@ -2911,7 +2911,7 @@
             <!-- Deck 4, Hot-Cue-Mode, Param⁺ -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.paramPlusMinus.input</key>
+                <key>DJ202.rightDeck.padSection.paramPlusMinus.input</key>
                 <status>0x97</status>
                 <midino>0x44</midino>
                 <options>
@@ -2921,7 +2921,7 @@
             <!-- Deck 4, Sampler-Mode, Param⁻ -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.paramPlusMinus.input</key>
+                <key>DJ202.rightDeck.padSection.paramPlusMinus.input</key>
                 <status>0x97</status>
                 <midino>0x45</midino>
                 <options>
@@ -2931,7 +2931,7 @@
             <!-- Deck 4, Sampler-Mode, Param⁺ -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.paramPlusMinus.input</key>
+                <key>DJ202.rightDeck.padSection.paramPlusMinus.input</key>
                 <status>0x97</status>
                 <midino>0x46</midino>
                 <options>
@@ -2941,7 +2941,7 @@
             <!-- Deck 4, Loop-Mode, Shift+Param⁻ -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.paramPlusMinus.input</key>
+                <key>DJ202.rightDeck.padSection.paramPlusMinus.input</key>
                 <status>0x97</status>
                 <midino>0x49</midino>
                 <options>
@@ -2951,7 +2951,7 @@
             <!-- Deck 4, Loop-Mode, Shift+Param⁺ -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.paramPlusMinus.input</key>
+                <key>DJ202.rightDeck.padSection.paramPlusMinus.input</key>
                 <status>0x97</status>
                 <midino>0x4A</midino>
                 <options>
@@ -2961,7 +2961,7 @@
             <!-- Deck 4, Hot-Cue-Mode, Shift+Param⁻ -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.paramPlusMinus.input</key>
+                <key>DJ202.rightDeck.padSection.paramPlusMinus.input</key>
                 <status>0x97</status>
                 <midino>0x4B</midino>
                 <options>
@@ -2971,7 +2971,7 @@
             <!-- Deck 4, Hot-Cue-Mode, Shift+Param⁺ -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.paramPlusMinus.input</key>
+                <key>DJ202.rightDeck.padSection.paramPlusMinus.input</key>
                 <status>0x97</status>
                 <midino>0x4C</midino>
                 <options>
@@ -2981,7 +2981,7 @@
             <!-- Deck 4, Sampler-Mode, Shift+Param⁻ -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.paramPlusMinus.input</key>
+                <key>DJ202.rightDeck.padSection.paramPlusMinus.input</key>
                 <status>0x97</status>
                 <midino>0x4D</midino>
                 <options>
@@ -2991,7 +2991,7 @@
             <!-- Deck 4, Sample-Mode, Shift+Param⁺ -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.paramPlusMinus.input</key>
+                <key>DJ202.rightDeck.padSection.paramPlusMinus.input</key>
                 <status>0x97</status>
                 <midino>0x4E</midino>
                 <options>

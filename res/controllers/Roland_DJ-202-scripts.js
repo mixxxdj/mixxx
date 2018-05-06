@@ -101,8 +101,6 @@ DJ202.Deck = function (deckNumbers, offset) {
 
     this.slipModeButton = new DJ202.SlipModeButton();
 
-    this.paramPlusMinus = new DJ202.ParamButtons({deck: this});
-
     this.keylock = new DJ202.KeylockButton(this);
 
     
@@ -170,85 +168,7 @@ DJ202.Deck = function (deckNumbers, offset) {
     
     // ========================== PERFORMANCE PADS ==============================
 
-    this.setPadState = function (channel, control, value, status, group) {
-        switch (value) {
-        case 0x13:              // Loop mode button.
-            if (this.padState == 'loop') {
-                var isRolling = engine.getValue(group, 'beatlooproll_activate');
-                engine.setValue(group, 'beatlooproll_activate', !isRolling);
-            } else {
-                this.padState = 'loop';
-            }
-            return
-        case 0x3:               // Hot-cue mode button.
-            if (this.padState == 'hotcue') {
-                var isLooping = engine.getValue(group, 'loop_enabled');
-                script.triggerControl(group, isLooping ? 'reloop_toggle' : 'beatloop_activate');
-            } else {
-                this.padState = 'hotcue';
-            }
-            return
-        }
-    };
-
-    this.hotcueButton = [];
-
-    for (var i = 1; i <= 8; i++) {
-        this.hotcueButton[i] = new DJ202.HotcueButton({
-            sendShifted: true,
-            shiftControl: true,
-            shiftOffset: 8,
-            number: i,
-        });
-
-        this.hotcueButton[i].connect = function () {
-            var deck = script.deckFromGroup(this.group);
-            this.midi = [0x94 + deck - 1, this.number];
-            components.HotcueButton.prototype.connect.call(this);
-        };
-    };
-
-    this.loopButton = [];
-
-    for (var i = 1; i <= 4; i++) {
-        this.loopButton[i] = new DJ202.LoopButton({
-            number: i,
-            deck: this
-        });
-    }
-    
-    this.loopIn = new components.Button({
-        midi: [0x94 + offset, 0x15],
-        sendShifted: true,
-        shiftChannel: true,
-        shiftOffset: 2,
-        inKey: 'loop_in',
-        outKey: 'loop_start_position'
-    });
-    this.loopOut = new components.Button({
-        midi: [0x94 + offset, 0x16],
-        sendShifted: true,
-        shiftChannel: true,
-        shiftOffset: 2,
-        inKey: 'loop_out',
-        outKey: 'loop_end_position',
-    });
-    this.loopToggle = new components.Button({
-        midi: [0x94 + offset, 0x18],
-        sendShifted: true,
-        shiftChannel: true,
-        shiftOffset: 2,
-        inKey: 'reloop_toggle',
-        outKey: 'loop_enabled'
-    });
-    this.loopExit = new components.Button({
-        midi: [0x94 + offset, 0x17],
-        sendShifted: true,
-        shiftChannel: true,
-        shiftOffset: 2,
-        inKey: 'reloop_andstop',
-        outKey: 'reloop_andstop'
-    });
+    this.padSection = new DJ202.PadSection(this);
 
     
     // ============================= TRANSPORT ==================================
@@ -989,7 +909,7 @@ DJ202.KeylockButton.prototype.unshift = function () {
             this.longPressTimer = engine.beginTimer(
                 this.longPressTimeout,
                 function () {
-                    this.deck.paramPlusMinus.songKeyMode(true);
+                    this.deck.padSection.paramPlusMinus.songKeyMode(true);
                     this.is_held = true;
                 },
                 true
@@ -1008,7 +928,7 @@ DJ202.KeylockButton.prototype.unshift = function () {
         }
 
         if (this.is_held) {                               // Release after hold.
-            this.deck.paramPlusMinus.songKeyMode(false);
+            this.deck.padSection.paramPlusMinus.songKeyMode(false);
             this.is_held = false;
             return;
         }                                      // Else: release after short tap.
@@ -1149,5 +1069,107 @@ DJ202.ParamButtons.prototype.input = function (channel, control, value, status, 
     case 0x4C:
         engine.setValue(group, 'beatjump_size', isPlus ? beatjumpSize*2 : beatjumpSize/2);
         break;
+    }
+};
+
+
+DJ202.PadSection = function (deck) {
+
+    components.ComponentContainer.call(this);
+
+    this.hotcueButton = [];
+
+    for (var i = 1; i <= 8; i++) {
+
+        this.hotcueButton[i] = new DJ202.HotcueButton({
+            sendShifted: true,
+            shiftControl: true,
+            shiftOffset: 8,
+            number: i
+        });
+
+        this.hotcueButton[i].connect = function () {
+            var deck = script.deckFromGroup(this.group);
+            this.midi = [0x94 + deck - 1, this.number];
+            components.HotcueButton.prototype.connect.call(this);
+        };
+
+    }
+
+    this.loopButton = [];
+
+    for (var i = 1; i <= 4; i++) {
+        this.loopButton[i] = new DJ202.LoopButton({
+            number: i,
+            deck: deck
+        });
+    }
+
+    var connectButton = function () {
+        var deck = script.deckFromGroup(this.group);
+        this.midi = [0x94 + deck - 1, this.cc];
+        components.Button.prototype.connect.call(this)
+    };
+
+    this.loopIn = new components.Button({
+        cc: 0x15,
+        connect: connectButton,
+        sendShifted: true,
+        shiftChannel: true,
+        shiftOffset: 2,
+        inKey: 'loop_in',
+        outKey: 'loop_start_position'
+    });
+    this.loopOut = new components.Button({
+        cc: 0x16,
+        connect: connectButton,
+        sendShifted: true,
+        shiftChannel: true,
+        shiftOffset: 2,
+        inKey: 'loop_out',
+        outKey: 'loop_end_position',
+    });
+    this.loopToggle = new components.Button({
+        cc: 0x18,
+        connect: connectButton,
+        sendShifted: true,
+        shiftChannel: true,
+        shiftOffset: 2,
+        inKey: 'reloop_toggle',
+        outKey: 'loop_enabled'
+    });
+    this.loopExit = new components.Button({
+        cc: 0x17,
+        connect: connectButton,
+        sendShifted: true,
+        shiftChannel: true,
+        shiftOffset: 2,
+        inKey: 'reloop_andstop',
+        outKey: 'reloop_andstop'
+    });
+
+    this.paramPlusMinus = new DJ202.ParamButtons({deck: deck});
+};
+
+DJ202.PadSection.prototype = Object.create(components.ComponentContainer.prototype);
+
+DJ202.PadSection.prototype.setState = function (channel, control, value, status, group) {
+    switch (value) {
+    case 0x13:                                              // Loop mode button.
+        if (this.state == 'loop') {
+            var isRolling = engine.getValue(group, 'beatlooproll_activate');
+            engine.setValue(group, 'beatlooproll_activate', !isRolling);
+        } else {
+            this.state = 'loop';
+        }
+        return
+    case 0x3:                                            // Hot-cue mode button.
+        if (this.state == 'hotcue') {
+            var isLooping = engine.getValue(group, 'loop_enabled');
+            script.triggerControl(group, isLooping ? 'reloop_toggle' : 'beatloop_activate');
+        } else {
+            this.state = 'hotcue';
+        }
+        return
     }
 };
