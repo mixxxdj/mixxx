@@ -71,7 +71,6 @@ class BulkController : public Controller {
     }
 
     bool matchPreset(const PresetInfo& preset) override;
-    virtual bool matchProductInfo(const ProductInfo& product);
 
   protected:
     Q_INVOKABLE void send(QList<int> data, unsigned int length);
@@ -85,15 +84,13 @@ class BulkController : public Controller {
     // 0x0.
     void send(QByteArray data) override;
 
-    bool isPolling() const override {
-        return false;
-    }
-
     // Returns a pointer to the currently loaded controller preset. For internal
     // use only.
     ControllerPreset* preset() override {
         return &m_preset;
     }
+
+    bool matchProductInfo(const ProductInfo& product);
 
     libusb_context* m_context;
     libusb_device_handle *m_phandle;

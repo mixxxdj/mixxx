@@ -131,15 +131,6 @@ TEST_F(SoundSourceProxyTest, seekForward) {
         SampleBuffer contReadData(readSampleCount);
         SampleBuffer seekReadData(readSampleCount);
 
-#ifdef __FFMPEGFILE__
-        if (dynamic_cast<mixxx::SoundSourceFFmpeg*>(&*pContReadSource)) {
-            if (filePath.endsWith(".mp3")) {
-                qDebug() << "Skip test since it will fail using SoundSourceFFmpeg";
-                continue;
-            }
-        }
-#endif
-
         for (SINT contFrameIndex = 0;
                 pContReadSource->isValidFrameIndex(contFrameIndex);
                 contFrameIndex += kReadFrameCount) {

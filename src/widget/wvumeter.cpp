@@ -51,7 +51,7 @@ WVuMeter::WVuMeter(QWidget* parent)
 void WVuMeter::setup(const QDomNode& node, const SkinContext& context) {
     // Set pixmaps
     bool bHorizontal = false;
-    context.hasNodeSelectBool(node, "Horizontal", &bHorizontal);
+    (void)context.hasNodeSelectBool(node, "Horizontal", &bHorizontal);
 
     // Set background pixmap if available
     QDomElement backPathNode = context.selectElement(node, "PathBack");

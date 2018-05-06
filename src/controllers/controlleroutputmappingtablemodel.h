@@ -13,7 +13,7 @@ class ControllerOutputMappingTableModel : public ControllerMappingTableModel {
     Q_OBJECT
   public:
     ControllerOutputMappingTableModel(QObject* pParent);
-    virtual ~ControllerOutputMappingTableModel();
+    ~ControllerOutputMappingTableModel() override;
 
     // Apply the changes to the loaded preset.
     void apply();
@@ -34,14 +34,14 @@ class ControllerOutputMappingTableModel : public ControllerMappingTableModel {
     ////////////////////////////////////////////////////////////////////////////
     // QAbstractItemModel methods
     ////////////////////////////////////////////////////////////////////////////
-    int rowCount(const QModelIndex& parent = QModelIndex()) const;
+    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
     int columnCount(const QModelIndex& parent = QModelIndex()) const;
-    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
     bool setData(const QModelIndex& index, const QVariant& value,
-                 int role = Qt::EditRole);
+                 int role = Qt::EditRole) override;
 
   protected:
-    void onPresetLoaded();
+    void onPresetLoaded() override;
 
   private:
     enum MidiColumn {

@@ -69,8 +69,6 @@ class HidController : public Controller {
     }
 
     bool matchPreset(const PresetInfo& preset) override;
-    bool matchProductInfo(const ProductInfo& product);
-    void guessDeviceCategory();
 
     static QString safeDecodeWideString(const wchar_t* pStr, size_t max_length);
 
@@ -87,16 +85,14 @@ class HidController : public Controller {
     void send(QByteArray data) override;
     virtual void send(QByteArray data, unsigned int reportID);
 
-    bool isPolling() const override {
-        return false;
-    }
-
     // Returns a pointer to the currently loaded controller preset. For internal
     // use only.
     ControllerPreset* preset() override {
         return &m_preset;
     }
 
+    bool matchProductInfo(const ProductInfo& product);
+    void guessDeviceCategory();
 
     // Local copies of things we need from hid_device_info
     int hid_interface_number;
