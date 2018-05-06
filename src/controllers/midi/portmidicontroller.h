@@ -70,8 +70,12 @@ class PortMidiController : public MidiController {
     int close() override;
     bool poll() override;
 
+  protected:
+    // MockPortMidiController needs this to not be private.
+    void sendShortMsg(unsigned char status, unsigned char byte1,
+                      unsigned char byte2) override;
+
   private:
-    void sendWord(unsigned int word) override;
     // The sysex data must already contain the start byte 0xf0 and the end byte
     // 0xf7.
     void send(QByteArray data) override;

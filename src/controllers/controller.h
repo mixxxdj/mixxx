@@ -90,7 +90,9 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     void stopLearning();
 
   protected:
-    Q_INVOKABLE void send(QList<int> data, unsigned int length);
+    // The length parameter is here for backwards compatibility for when scripts
+    // were required to specify it.
+    Q_INVOKABLE void send(QList<int> data, unsigned int length = 0);
 
     // To be called in sub-class' open() functions after opening the device but
     // before starting any input polling/processing.
