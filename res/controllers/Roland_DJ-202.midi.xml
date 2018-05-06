@@ -224,7 +224,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.padSection.loopIn.input</key>
+                <key>DJ202.leftDeck.padSection.loopButton[5].input</key>
                 <status>0x94</status>
                 <midino>0x15</midino>
                 <options>
@@ -233,7 +233,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.padSection.loopOut.input</key>
+                <key>DJ202.leftDeck.padSection.loopButton[6].input</key>
                 <status>0x94</status>
                 <midino>0x16</midino>
                 <options>
@@ -242,7 +242,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.padSection.loopExit.input</key>
+                <key>DJ202.leftDeck.padSection.loopButton[7].input</key>
                 <status>0x94</status>
                 <midino>0x17</midino>
                 <options>
@@ -251,7 +251,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ202.leftDeck.padSection.loopToggle.input</key>
+                <key>DJ202.leftDeck.padSection.loopButton[8].input</key>
                 <status>0x94</status>
                 <midino>0x18</midino>
                 <options>
@@ -952,7 +952,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.padSection.loopIn.input</key>
+                <key>DJ202.leftDeck.padSection.loopButton[5].input</key>
                 <status>0x96</status>
                 <midino>0x15</midino>
                 <options>
@@ -961,7 +961,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.padSection.loopOut.input</key>
+                <key>DJ202.leftDeck.padSection.loopButton[6].input</key>
                 <status>0x96</status>
                 <midino>0x16</midino>
                 <options>
@@ -970,7 +970,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.padSection.loopExit.input</key>
+                <key>DJ202.leftDeck.padSection.loopButton[7].input</key>
                 <status>0x96</status>
                 <midino>0x17</midino>
                 <options>
@@ -979,7 +979,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ202.leftDeck.padSection.loopToggle.input</key>
+                <key>DJ202.leftDeck.padSection.loopButton[8].input</key>
                 <status>0x96</status>
                 <midino>0x18</midino>
                 <options>
@@ -1771,7 +1771,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.padSection.loopIn.input</key>
+                <key>DJ202.rightDeck.padSection.loopButton[5].input</key>
                 <status>0x95</status>
                 <midino>0x15</midino>
                 <options>
@@ -1780,7 +1780,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.padSection.loopOut.input</key>
+                <key>DJ202.rightDeck.padSection.loopButton[6].input</key>
                 <status>0x95</status>
                 <midino>0x16</midino>
                 <options>
@@ -1789,7 +1789,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.padSection.loopExit.input</key>
+                <key>DJ202.rightDeck.padSection.loopButton[7].input</key>
                 <status>0x95</status>
                 <midino>0x17</midino>
                 <options>
@@ -1798,7 +1798,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ202.rightDeck.padSection.loopToggle.input</key>
+                <key>DJ202.rightDeck.padSection.loopButton[8].input</key>
                 <status>0x95</status>
                 <midino>0x18</midino>
                 <options>
@@ -2508,7 +2508,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.padSection.loopIn.input</key>
+                <key>DJ202.rightDeck.padSection.loopButton[5].input</key>
                 <status>0x97</status>
                 <midino>0x15</midino>
                 <options>
@@ -2517,7 +2517,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.padSection.loopOut.input</key>
+                <key>DJ202.rightDeck.padSection.loopButton[6].input</key>
                 <status>0x97</status>
                 <midino>0x16</midino>
                 <options>
@@ -2526,7 +2526,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.padSection.loopExit.input</key>
+                <key>DJ202.rightDeck.padSection.loopButton[7].input</key>
                 <status>0x97</status>
                 <midino>0x17</midino>
                 <options>
@@ -2535,7 +2535,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ202.rightDeck.padSection.loopToggle.input</key>
+                <key>DJ202.rightDeck.padSection.loopButton[8].input</key>
                 <status>0x97</status>
                 <midino>0x18</midino>
                 <options>

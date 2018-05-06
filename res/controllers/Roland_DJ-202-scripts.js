@@ -1114,22 +1114,22 @@ DJ202.PadSection = function (deck) {
         });
     }
 
-    this.loopIn = new DJ202.ManualLoopButton({
+    this.loopIn = this.loopButton[5] = new DJ202.ManualLoopButton({
         cc: 0x15,
         inKey: 'loop_in',
         outKey: 'loop_start_position'
     });
-    this.loopOut = new DJ202.ManualLoopButton({
+    this.loopOut = this.loopButton[6] = new DJ202.ManualLoopButton({
         cc: 0x16,
         inKey: 'loop_out',
         outKey: 'loop_end_position',
     });
-    this.loopToggle = new DJ202.ManualLoopButton({
+    this.loopToggle = this.loopButton[8] = new DJ202.ManualLoopButton({
         cc: 0x18,
         inKey: 'reloop_toggle',
         outKey: 'loop_enabled'
     });
-    this.loopExit = new DJ202.ManualLoopButton({
+    this.loopExit = this.loopButton[7] = new DJ202.ManualLoopButton({
         cc: 0x17,
         inKey: 'reloop_andstop',
         outKey: 'reloop_andstop'
