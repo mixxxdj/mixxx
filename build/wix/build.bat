@@ -41,9 +41,17 @@ if exist subdirs\*.* del /Q subdirs\*.*
 echo.
 echo *** Building intermediate files
 
-FOR %%d IN (controllers,fonts,imageformats,keyboard,plugins,skins,translations) DO (
-  "%WIX%"\bin\heat.exe dir ..\..\dist%BITWIDTH%\%%d -nologo -sfrag -suid -ag -srd -cg %%dComp -dr %%dDir -out subdirs\%%d.wxs -sw5150 -var var.%%dVar  
+FOR %%d IN (controllers,fonts,keyboard,plugins,skins,translations) DO (
+  "%WIX%"\bin\heat.exe dir ..\..\dist%BITWIDTH%\%%d -nologo -sfrag -suid -ag -srd -cg %%dComp -dr %%dDir -out subdirs\%%d.wxs -sw5150 -var var.%%dVar
   "%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=%ARCH% -d%%dVar=..\..\dist%BITWIDTH%\%%d -arch %ARCH% -out subdirs\%%d.wixobj subdirs\%%d.wxs
+)
+
+SET imageformats=no
+
+IF EXIST ..\..\dist%BITWIDTH%\imageformats (
+  set imageformats=YES
+  "%WIX%"\bin\heat.exe dir ..\..\dist%BITWIDTH%\imageformats -nologo -sfrag -suid -ag -srd -cg imageformatsComp -dr imageformatsDir -out subdirs\imageformats.wxs -sw5150 -var var.imageformatsVar
+  "%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=%ARCH% -dimageformatsVar=..\..\dist%BITWIDTH%\imageformats -arch %ARCH% -out subdirs\imageformats.wixobj subdirs\imageformats.wxs
 )
 
 SET promo=no
@@ -59,11 +67,13 @@ REM Harvest main DLL from install dir
 "%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=%ARCH% -dSourceDir=..\..\dist%BITWIDTH% -arch %ARCH% -out subdirs\mainDLL.wixobj subdirs\mainDLL.wxs
 
 "%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=%ARCH% -arch %ARCH% warningDlg.wxs
-"%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=%ARCH% -dPromo=%promo% -arch %ARCH% mixxx.wxs
+"%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=%ARCH% -dPromo=%promo% -dImageformats=%imageformats% -arch %ARCH% mixxx.wxs
 
 echo.
 echo *** Building package for default language %DefaultLanguage%
 "%WIX%"\bin\light.exe -nologo -sw1076 -ext WixUIExtension -cultures:%DefaultLanguage% -loc Localization\mixxx_%DefaultLanguage%.wxl -out mixxx-%BITWIDTH%-multilingual.msi *.wixobj subdirs\*.wixobj
+
+SETLOCAL ENABLEDELAYEDEXPANSION
 
 FOR %%G IN (Localization\*.wxl) DO (
   REM skip 19 chars (Localization\mixxx_), keep until end -4 char (.wxl)
@@ -75,10 +85,11 @@ FOR %%G IN (Localization\*.wxl) DO (
     echo.
     echo *** Building package transform for locale !_locale! LangID !_LangID!
     "%WIX%"\bin\light.exe -nologo -sw1076 -ext WixUIExtension -cultures:!_locale! -loc %%G -out mixxx-%BITWIDTH%-!_locale!.msi *.wixobj subdirs\*.wixobj
-    "%WIX%"\bin\torch.exe -nologo mixxx-%BITWIDTH%-multilingual.msi mixxx-%BITWIDTH%-!_locale!.msi -o !_locale!.mst
+    "%WIX%"\bin\torch.exe -nologo -t language mixxx-%BITWIDTH%-multilingual.msi mixxx-%BITWIDTH%-!_locale!.msi -o !_locale!.mst
     cscript "%ProgramFiles%\Microsoft SDKs\Windows\%WinSDKVersion%\Samples\sysmgmt\msi\scripts\wisubstg.vbs" mixxx-%BITWIDTH%-multilingual.msi !_locale!.mst !_LangID!
     SET LangIDs=!LangIDs!,!_LangID!
     del /Q mixxx-%BITWIDTH%-!_locale!.msi
+	del /Q mixxx-%BITWIDTH%-!_locale!.wixpdb
     del /Q !_locale!.mst
   )
 )

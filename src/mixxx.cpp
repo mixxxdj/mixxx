@@ -461,7 +461,9 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // million different variables the first waveform may be horribly
     // corrupted. See bug 521509 -- bkgood ?? -- vrince
     setCentralWidget(m_pWidgetParent);
-    // The old central widget is automatically disposed.
+    // The launch image widget is automatically disposed, but we still have a
+    // pointer to it.
+    m_pLaunchImage = nullptr;
 }
 
 void MixxxMainWindow::finalize() {
@@ -474,7 +476,23 @@ void MixxxMainWindow::finalize() {
     m_pSettingsManager->settings()->set(ConfigKey("[MainWindow]", "state"),
         QString(saveState().toBase64()));
 
-    setCentralWidget(NULL);
+    qDebug() << "Destroying MixxxMainWindow";
+
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "saving configuration";
+    m_pSettingsManager->save();
+
+    // GUI depends on KeyboardEventFilter, PlayerManager, Library
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting skin";
+    m_pWidgetParent = nullptr;
+    QPointer<QWidget> pSkin(centralWidget());
+    setCentralWidget(nullptr);
+    if (!pSkin.isNull()) {
+        QCoreApplication::sendPostedEvents(pSkin, QEvent::DeferredDelete);
+    }
+    // Our central widget is now deleted.
+    DEBUG_ASSERT_AND_HANDLE(pSkin.isNull()) {
+        qWarning() << "Central widget was not deleted by our sendPostedEvents trick.";
+    }
 
     // TODO(rryan): WMainMenuBar holds references to controls so we need to delete it
     // before MixxxMainWindow is destroyed. QMainWindow calls deleteLater() in
@@ -482,26 +500,20 @@ void MixxxMainWindow::finalize() {
     // DeferredDelete events to be processed for it. Once Mixxx shutdown lives
     // outside of MixxxMainWindow the parent relationship will directly destroy
     // the WMainMenuBar and this will no longer be a problem.
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting menubar";
     QPointer<QWidget> pMenuBar(menuBar());
-    setMenuBar(new QMenuBar());
-    QCoreApplication::sendPostedEvents(pMenuBar, QEvent::DeferredDelete);
+    setMenuBar(nullptr);
+    if (!pMenuBar.isNull()) {
+        QCoreApplication::sendPostedEvents(pMenuBar, QEvent::DeferredDelete);
+    }
     // Our main menu is now deleted.
     DEBUG_ASSERT_AND_HANDLE(pMenuBar.isNull()) {
         qWarning() << "WMainMenuBar was not deleted by our sendPostedEvents trick.";
     }
 
-    qDebug() << "Destroying MixxxMainWindow";
-
-    qDebug() << t.elapsed(false).debugMillisWithUnit() << "saving configuration";
-    m_pSettingsManager->save();
-
     // SoundManager depend on Engine and Config
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting SoundManager";
     delete m_pSoundManager;
-
-    // GUI depends on KeyboardEventFilter, PlayerManager, Library
-    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting Skin";
-    delete m_pWidgetParent;
 
     // ControllerManager depends on Config
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting ControllerManager";
@@ -1254,6 +1266,8 @@ bool MixxxMainWindow::confirmExit() {
 }
 
 void MixxxMainWindow::launchProgress(int progress) {
-    m_pLaunchImage->progress(progress);
+    if (m_pLaunchImage) {
+        m_pLaunchImage->progress(progress);
+    }
     qApp->processEvents();
 }

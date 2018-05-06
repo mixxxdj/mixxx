@@ -214,6 +214,8 @@ int WWidgetGroup::getHighlight() const {
 
 void WWidgetGroup::setHighlight(int highlight) {
     m_highlight = highlight;
+    style()->unpolish(this);
+    style()->polish(this);
     update();
     emit highlightChanged(m_highlight);
 }
