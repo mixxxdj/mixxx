@@ -840,6 +840,18 @@ DJ202.SlipModeButton = function () {
     this.doubleTapTimeout = 500;
 };
 
+DJ202.ManualLoopButton = function () {
+    DJ202.LoopButton.apply(this, arguments);
+}
+
+DJ202.ManualLoopButton.prototype = Object.create(DJ202.LoopButton.prototype);
+
+DJ202.ManualLoopButton.prototype.connect = function () {
+    var deck = script.deckFromGroup(this.group);
+    this.midi = [0x94 + deck - 1, this.cc];
+    components.Button.prototype.connect.call(this)
+};
+
 DJ202.SlipModeButton.prototype = Object.create(components.Button.prototype);
 
 DJ202.SlipModeButton.prototype.connect = function () {
@@ -1106,45 +1118,23 @@ DJ202.PadSection = function (deck) {
         });
     }
 
-    var connectButton = function () {
-        var deck = script.deckFromGroup(this.group);
-        this.midi = [0x94 + deck - 1, this.cc];
-        components.Button.prototype.connect.call(this)
-    };
-
-    this.loopIn = new components.Button({
+    this.loopIn = new DJ202.ManualLoopButton({
         cc: 0x15,
-        connect: connectButton,
-        sendShifted: true,
-        shiftChannel: true,
-        shiftOffset: 2,
         inKey: 'loop_in',
         outKey: 'loop_start_position'
     });
-    this.loopOut = new components.Button({
+    this.loopOut = new DJ202.ManualLoopButton({
         cc: 0x16,
-        connect: connectButton,
-        sendShifted: true,
-        shiftChannel: true,
-        shiftOffset: 2,
         inKey: 'loop_out',
         outKey: 'loop_end_position',
     });
-    this.loopToggle = new components.Button({
+    this.loopToggle = new DJ202.ManualLoopButton({
         cc: 0x18,
-        connect: connectButton,
-        sendShifted: true,
-        shiftChannel: true,
-        shiftOffset: 2,
         inKey: 'reloop_toggle',
         outKey: 'loop_enabled'
     });
-    this.loopExit = new components.Button({
+    this.loopExit = new DJ202.ManualLoopButton({
         cc: 0x17,
-        connect: connectButton,
-        sendShifted: true,
-        shiftChannel: true,
-        shiftOffset: 2,
         inKey: 'reloop_andstop',
         outKey: 'reloop_andstop'
     });
