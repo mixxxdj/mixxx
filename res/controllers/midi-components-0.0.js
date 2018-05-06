@@ -578,11 +578,11 @@
             this.currentDeck = newGroup;
             this.reconnectComponents(function (component) {
                 if (component.group.search(script.channelRegEx) !== -1) {
-                    component.group = this.currentDeck;
+                    component.group = newGroup;
                 } else if (component.group.search(script.eqRegEx) !== -1) {
-                    component.group = '[EqualizerRack1_' + this.currentDeck + '_Effect1]';
+                    component.group = '[EqualizerRack1_' + newGroup + '_Effect1]';
                 } else if (component.group.search(script.quickEffectRegEx) !== -1) {
-                    component.group = '[QuickEffectRack1_' + this.currentDeck + ']';
+                    component.group = '[QuickEffectRack1_' + newGroup + ']';
                 }
                 // Do not alter the Component's group if it does not match any of those RegExs.
 
