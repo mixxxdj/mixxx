@@ -6,9 +6,6 @@
 
 #include "util/math.h"
 
-// TODO(uklotzde): Replace 'const' with 'constexpr' after
-// switching to Visual Studio 2015 on Windows.
-
 // Signed integer type for POT array indices, sizes and pointer
 // arithmetic. Its size (32-/64-bit) depends on the CPU architecture.
 // This should be used for all CSAMLE operations since it is fast and
@@ -19,9 +16,9 @@ typedef std::ptrdiff_t SINT;
 // 16-bit integer sample data within the asymmetric
 // range [SHRT_MIN, SHRT_MAX].
 typedef short int SAMPLE;
-const SAMPLE SAMPLE_ZERO = 0;
-const SAMPLE SAMPLE_MIN = SHRT_MIN;
-const SAMPLE SAMPLE_MAX = SHRT_MAX;
+constexpr SAMPLE SAMPLE_ZERO = 0;
+constexpr SAMPLE SAMPLE_MIN = SHRT_MIN;
+constexpr SAMPLE SAMPLE_MAX = SHRT_MAX;
 
 // Limits the range of a SAMPLE value to [SAMPLE_MIN, SAMPLE_MAX].
 inline
@@ -41,9 +38,9 @@ SAMPLE SAMPLE_clampSymmetric(SAMPLE in) {
 // emphasize the symmetric value range of CSAMPLE
 // data!
 typedef float CSAMPLE;
-const CSAMPLE CSAMPLE_ZERO = 0.0f;
-const CSAMPLE CSAMPLE_ONE = 1.0f;
-const CSAMPLE CSAMPLE_PEAK = CSAMPLE_ONE;
+constexpr CSAMPLE CSAMPLE_ZERO = 0.0f;
+constexpr CSAMPLE CSAMPLE_ONE = 1.0f;
+constexpr CSAMPLE CSAMPLE_PEAK = CSAMPLE_ONE;
 
 // Limits the range of a CSAMPLE value to [-CSAMPLE_PEAK, CSAMPLE_PEAK].
 inline
@@ -55,10 +52,10 @@ CSAMPLE CSAMPLE_clamp(CSAMPLE in) {
 // data in the range [0.0, 1.0]. Same data type as
 // CSAMPLE to avoid type conversions in calculations.
 typedef CSAMPLE CSAMPLE_GAIN;
-const float CSAMPLE_GAIN_ZERO = CSAMPLE_ZERO;
-const float CSAMPLE_GAIN_ONE = CSAMPLE_ONE;
-const float CSAMPLE_GAIN_MIN = CSAMPLE_GAIN_ZERO;
-const float CSAMPLE_GAIN_MAX = CSAMPLE_GAIN_ONE;
+constexpr float CSAMPLE_GAIN_ZERO = CSAMPLE_ZERO;
+constexpr float CSAMPLE_GAIN_ONE = CSAMPLE_ONE;
+constexpr float CSAMPLE_GAIN_MIN = CSAMPLE_GAIN_ZERO;
+constexpr float CSAMPLE_GAIN_MAX = CSAMPLE_GAIN_ONE;
 
 // Limits the range of a CSAMPLE_GAIN value to [CSAMPLE_GAIN_MIN, CSAMPLE_GAIN_MAX].
 inline

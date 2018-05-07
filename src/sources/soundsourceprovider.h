@@ -55,11 +55,11 @@ public:
     virtual SoundSourcePointer newSoundSource(const QUrl& url) = 0;
 };
 
-typedef QSharedPointer<SoundSourceProvider> SoundSourceProviderPointer;
+typedef std::shared_ptr<SoundSourceProvider> SoundSourceProviderPointer;
 
 template<typename T>
 static SoundSourceProviderPointer newSoundSourceProvider() {
-    return SoundSourceProviderPointer(new T);
+    return std::make_shared<T>();
 }
 
 } // namespace mixxx

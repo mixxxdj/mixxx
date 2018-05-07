@@ -3,10 +3,10 @@
 
 #include <QObject>
 #include <QMutex>
-#include <QSharedPointer>
 #include <QColor>
 
 #include "track/trackid.h"
+#include "util/memory.h"
 
 class CueDAO;
 class Track;
@@ -74,20 +74,11 @@ class Cue : public QObject {
     friend class CueDAO;
 };
 
-class CuePointer: public QSharedPointer<Cue> {
+class CuePointer: public std::shared_ptr<Cue> {
   public:
     CuePointer() {}
     explicit CuePointer(Cue* pCue)
-          : QSharedPointer<Cue>(pCue, deleteLater) {
-    }
-
-    // TODO(uklotzde): Remove these functions after migration
-    // from QSharedPointer to std::shared_ptr
-    Cue* get() const {
-        return data();
-    }
-    void reset() {
-        clear();
+          : std::shared_ptr<Cue>(pCue, deleteLater) {
     }
 
   private:

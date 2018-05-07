@@ -20,7 +20,6 @@ EffectManifest FilterEffect::getManifest() {
                                         "music by allowing only high or low "
                                         "frequencies to pass through."));
     manifest.setEffectRampsFromDry(true);
-    manifest.setIsForFilterKnob(true);
 
     EffectManifestParameter* lpf = manifest.addParameter();
     lpf->setId("lpf");

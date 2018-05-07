@@ -132,9 +132,15 @@ void SoundSourceMediaFoundation::close() {
 
 SINT SoundSourceMediaFoundation::seekSampleFrame(
         SINT frameIndex) {
-    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
+    DEBUG_ASSERT(isValidFrameIndex(m_currentFrameIndex));
 
-    if (m_currentFrameIndex < frameIndex) {
+    if (frameIndex >= getMaxFrameIndex()) {
+        // EOF
+        m_currentFrameIndex = getMaxFrameIndex();
+        return m_currentFrameIndex;
+    }
+
+    if (frameIndex > m_currentFrameIndex) {
         // seeking forward
         SINT skipFramesCount = frameIndex - m_currentFrameIndex;
         // When to prefer skipping over seeking:
@@ -151,15 +157,8 @@ SINT SoundSourceMediaFoundation::seekSampleFrame(
             skipSampleFrames(skipFramesCount);
         }
     }
-
-    if (m_currentFrameIndex == frameIndex) {
-        // already there
+    if (frameIndex == m_currentFrameIndex) {
         return m_currentFrameIndex;
-    }
-
-    if (m_pSourceReader == nullptr) {
-        // reader is dead -> jump to end of stream
-        return getMaxFrameIndex();
     }
 
     // Discard decoded samples
@@ -167,6 +166,11 @@ SINT SoundSourceMediaFoundation::seekSampleFrame(
 
     // Invalidate current position (end of stream)
     m_currentFrameIndex = getMaxFrameIndex();
+
+    if (m_pSourceReader == nullptr) {
+        // reader is dead
+        return m_currentFrameIndex;
+    }
 
     // Jump to a position before the actual seeking position.
     // Prefetching a certain number of frames is necessary for

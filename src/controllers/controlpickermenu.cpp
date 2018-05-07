@@ -388,7 +388,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                        m_libraryStr, libraryMenu);
     addPrefixedControl("[Library]", "MoveHorizontal",
                        tr("Move left/right"),
-                       tr("Move horizontall in either direction using a knob, as if pressing LEFT/RIGHT keys"),
+                       tr("Move horizontally in either direction using a knob, as if pressing LEFT/RIGHT keys"),
                        m_libraryStr, libraryMenu);
     addPrefixedControl("[Library]", "MoveFocusForward",
                        tr("Move focus to right pane"),

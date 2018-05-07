@@ -10,11 +10,8 @@ namespace mixxx {
 // DTO for storing BPM information.
 class Bpm final {
 public:
-    // TODO(uklotzde): Replace 'const' with 'constexpr'
-    // (and copy initialization from .cpp file) after switching to
-    // Visual Studio 2015 on Windows.
-    static const double kValueUndefined;
-    static const double kValueMin; // lower bound (exclusive)
+    static constexpr double kValueUndefined = 0.0;
+    static constexpr double kValueMin = 0.0; // lower bound (exclusive)
 
     Bpm()
         : Bpm(kValueUndefined) {

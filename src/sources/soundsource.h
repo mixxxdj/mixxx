@@ -25,11 +25,17 @@ public:
     enum class OpenResult {
         SUCCEEDED,
         FAILED,
-        // If a SoundSource supports only some of the file formats
-        // behind a supported file extension it may return the
-        // following error. This is not really a failure as it
-        // only indicates a lack of functionality.
-        UNSUPPORTED_FORMAT
+        // If a SoundSource is not able to open a file because of
+        // internal errors of if the format of the content is not
+        // supported it should return the following error. This
+        // gives SoundSources with a lower priority the chance to
+        // open the same file.
+        // Example: A SoundSourceProvider has been registered for
+        // files with a certain extension, but the corresponding
+        // SoundSource does only support a subset of all possible
+        // data formats that might be stored in files with this
+        // extension.
+        ABORTED,
     };
 
     // Opens the AudioSource for reading audio data.
@@ -75,11 +81,11 @@ private:
     const QString m_type;
 };
 
-typedef QSharedPointer<SoundSource> SoundSourcePointer;
+typedef std::shared_ptr<SoundSource> SoundSourcePointer;
 
 template<typename T>
 SoundSourcePointer newSoundSourceFromUrl(const QUrl& url) {
-    return SoundSourcePointer(new T(url));
+    return std::make_shared<T>(url);
 }
 
 } //namespace mixxx

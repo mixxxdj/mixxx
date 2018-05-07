@@ -3,8 +3,10 @@
 #include "track/tracknumbers.h"
 #include "util/assert.h"
 
-// static
-const QString TrackNumbers::kSeparator("/");
+/*static*/ constexpr int TrackNumbers::kValueUndefined;
+/*static*/ constexpr int TrackNumbers::kValueMin;
+
+/*static*/ const QString TrackNumbers::kSeparator("/");
 
 //static
 bool TrackNumbers::parseValueFromString(

@@ -13,39 +13,35 @@
 #include "preferences/usersettings.h"
 #include "library/dao/directorydao.h"
 #include "library/dao/trackdao.h"
-#include "library/trackcollection.h"
-#include "test/mixxxtest.h"
+
+#include "test/librarytest.h"
 
 using ::testing::ElementsAre;
 
 namespace {
 
-class DirectoryDAOTest : public MixxxTest {
+class DirectoryDAOTest : public LibraryTest {
   protected:
     void SetUp() override {
-        m_pTrackCollection = new TrackCollection(config());
         m_supportedFileExt = "." % SoundSourceProxy::getSupportedFileExtensions().first();
     }
 
     void TearDown() override {
         // make sure we clean up the db
-        QSqlQuery query(m_pTrackCollection->getDatabase());
+        QSqlQuery query(collection()->getDatabase());
         query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE);
         query.exec();
         query.prepare("DELETE FROM library");
         query.exec();
         query.prepare("DELETE FROM track_locations");
         query.exec();
-
-        delete m_pTrackCollection;
     }
 
-    TrackCollection* m_pTrackCollection;
     QString m_supportedFileExt;
 };
 
 TEST_F(DirectoryDAOTest, addDirTest) {
-    DirectoryDAO m_DirectoryDao = m_pTrackCollection->getDirectoryDAO();
+    DirectoryDAO m_DirectoryDao = collection()->getDirectoryDAO();
     // prepend dir with '/' so that QT thinks the dir starts at the root
     QString testdir(QDir::tempPath() + "/TestDir/a");
     QString testChild(QDir::tempPath() + "/TestDir/a/child");
@@ -77,7 +73,7 @@ TEST_F(DirectoryDAOTest, addDirTest) {
     success = m_DirectoryDao.addDirectory(testParent);
     EXPECT_EQ(ALL_FINE, success);
 
-    QSqlQuery query(m_pTrackCollection->getDatabase());
+    QSqlQuery query(collection()->getDatabase());
     query.prepare("SELECT " % DIRECTORYDAO_DIR % " FROM " % DIRECTORYDAO_TABLE);
     success = query.exec();
 
@@ -93,7 +89,7 @@ TEST_F(DirectoryDAOTest, addDirTest) {
 }
 
 TEST_F(DirectoryDAOTest, removeDirTest) {
-    DirectoryDAO m_DirectoryDao = m_pTrackCollection->getDirectoryDAO();
+    DirectoryDAO m_DirectoryDao = collection()->getDirectoryDAO();
     QString testdir = getTestDataDir().path();
 
     // check if directory doa adds and thinks everything is ok
@@ -103,7 +99,7 @@ TEST_F(DirectoryDAOTest, removeDirTest) {
     EXPECT_EQ(ALL_FINE, success);
 
     // we do not trust what directory dao thinks and better check up on it
-    QSqlQuery query(m_pTrackCollection->getDatabase());
+    QSqlQuery query(collection()->getDatabase());
     query.prepare("SELECT " % DIRECTORYDAO_DIR % " FROM " % DIRECTORYDAO_TABLE);
     success = query.exec();
     QStringList dirs;
@@ -116,7 +112,7 @@ TEST_F(DirectoryDAOTest, removeDirTest) {
 }
 
 TEST_F(DirectoryDAOTest, getDirTest) {
-    DirectoryDAO m_DirectoryDao = m_pTrackCollection->getDirectoryDAO();
+    DirectoryDAO m_DirectoryDao = collection()->getDirectoryDAO();
     QString testdir = "/a/c";
     QString testdir2 = "b/d";
 
@@ -131,7 +127,7 @@ TEST_F(DirectoryDAOTest, getDirTest) {
 }
 
 TEST_F(DirectoryDAOTest, relocateDirTest) {
-    DirectoryDAO &directoryDao = m_pTrackCollection->getDirectoryDAO();
+    DirectoryDAO &directoryDao = collection()->getDirectoryDAO();
 
     // use a temp dir so that we always use a real existing system path
     QString testdir(QDir::tempPath() + "/TestDir");
@@ -141,7 +137,7 @@ TEST_F(DirectoryDAOTest, relocateDirTest) {
     directoryDao.addDirectory(testdir);
     directoryDao.addDirectory(test2);
 
-    TrackDAO &trackDAO = m_pTrackCollection->getTrackDAO();
+    TrackDAO &trackDAO = collection()->getTrackDAO();
     // ok now lets create some tracks here
     trackDAO.addTracksPrepare();
     trackDAO.addTracksAddTrack(Track::newTemporary(testdir + "/a" + m_supportedFileExt), false);

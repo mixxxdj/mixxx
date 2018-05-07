@@ -35,10 +35,15 @@
   <!-- Custom Warning Dialog -->
   <String Id="WarningDlgTitle">{\WixUI_Font_Title}Attenzione</String>
 
+  <!-- Custom exit dialog -->
+  <String Id="StartOnExit">Launch Mixxx when setup exits.</String>
+
   <!-- Features translations -->
   <String Id="FeatureCompleteDescription">Il pacchetto software completo.</String>
   <String Id="FeatureMainProgramTitle">Applicazione principale</String>
   <String Id="FeatureMainProgramDescription">The core Mixxx application including controller presets.</String>
+  <String Id="FeaturePDBTitle">PDB debug files</String>
+  <String Id="FeaturePDBDescription">Install Mixxx PDB files to use with a debugger. This is useful to debug Mixxx and provide readable backtraces to the development team.</String>
   <String Id="FeatureDesktopShortcutTitle">Collegamento sul Desktop</String>
   <String Id="FeatureDesktopShortcutDescription">Aggiunge un collegamento a Mixxx sul tuo desktop</String>
   <String Id="FeatureManualTitle">Manuale Utente</String>

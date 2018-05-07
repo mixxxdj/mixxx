@@ -3,12 +3,13 @@
 # Benny Beat <bennybeat@gmail.com>, 2016
 # Ferran Pujol Camins <ferranpujolcamins@gmail.com>, 2016
 # Josep Maria Antolin <josepma@gmail.com>, 2016
+# Josep Maria Antolin <josepma@gmail.com>, 2016
 # S.Brandt <s.brandt@mixxx.org>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2016-01-11 14:04+0000\n"
-"Last-Translator: Benny Beat <bennybeat@gmail.com>\n"
+"PO-Revision-Date: 2017-01-22 20:14+0000\n"
+"Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
 "Language-Team: Catalan (Spain) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/ca_ES/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -98,6 +99,11 @@ msgctxt "WarningDlgTitle"
 msgid "{\\WixUI_Font_Title}Warning"
 msgstr "{\\WixUI_Font_Title}Avís"
 
+#.  Custom exit dialog
+msgctxt "StartOnExit"
+msgid "Launch Mixxx when setup exits."
+msgstr "Inicia el Mixxx en acabar la instal·lació."
+
 #.  Features translations
 msgctxt "FeatureCompleteDescription"
 msgid "The complete package."
@@ -110,6 +116,16 @@ msgstr "L'aplicació."
 msgctxt "FeatureMainProgramDescription"
 msgid "The core Mixxx application including controller presets."
 msgstr "L'aplicació Mixxx incloent les configuracions per defecte de diversos controladors."
+
+msgctxt "FeaturePDBTitle"
+msgid "PDB debug files"
+msgstr ""
+
+msgctxt "FeaturePDBDescription"
+msgid ""
+"Install Mixxx PDB files to use with a debugger. This is useful to debug "
+"Mixxx and provide readable backtraces to the development team."
+msgstr ""
 
 msgctxt "FeatureDesktopShortcutTitle"
 msgid "Desktop Shortcut"

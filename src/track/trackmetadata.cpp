@@ -2,7 +2,7 @@
 
 namespace mixxx {
 
-/*static*/ const int TrackMetadata::kCalendarYearInvalid = 0;
+/*static*/ constexpr int TrackMetadata::kCalendarYearInvalid;
 
 int TrackMetadata::parseCalendarYear(QString year, bool* pValid) {
     const QDateTime dateTime(parseDateTime(year));

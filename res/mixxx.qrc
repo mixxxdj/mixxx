@@ -6,14 +6,14 @@
         <file>images/library/cross.png</file>
         <file>images/library/ic_library_autodj.png</file>
         <file>images/library/ic_library_banshee.png</file>
-        <file>images/library/ic_library_browse.png</file>
+        <file>images/library/ic_library_computer.png</file> <!-- from Gnome high contrast icons LGPL 2.1 -->
         <file>images/library/ic_library_checked.png</file>
         <file>images/library/ic_library_crates.png</file>
         <file>images/library/ic_library_drag_and_drop.png</file>
         <file>images/library/ic_library_history.png</file>
         <file>images/library/ic_library_history_current.png</file>
         <file>images/library/ic_library_itunes.png</file>
-        <file>images/library/ic_library_library.png</file>
+        <file>images/library/ic_library_tracks.png</file> <!-- from Gnome high contrast icons LGPL 2.1 -->
         <file>images/library/ic_library_locked.png</file>
         <file>images/library/ic_library_playlist.png</file>
         <file>images/library/ic_library_prepare.png</file>

@@ -9,9 +9,8 @@
 // Both numbers are 1-based and 0 indicates an undefined value.
 class TrackNumbers final {
 public:
-    // TODO(uklotzde): Replace 'const' with 'constexpr'
-    static const int kValueUndefined = 0;
-    static const int kValueMin = 1; // lower bound (inclusive)
+    static constexpr int kValueUndefined = 0;
+    static constexpr int kValueMin = 1; // lower bound (inclusive)
 
     // Separates the total number of tracks from the actual
     // track number in the textual format.

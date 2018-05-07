@@ -26,6 +26,37 @@ EffectManifest AutoPanEffect::getManifest() {
             "A delay, inversed on each side, is added to increase the "
             "spatial move and the period can be synced with the BPM."));
 
+    // Period
+    // The maximum is at 128 + 1 allowing 128 as max value and
+    // enabling us to pause time when the parameter is above
+    EffectManifestParameter* period = manifest.addParameter();
+    period->setId("period");
+    period->setName(QObject::tr("Period"));
+    period->setDescription(QObject::tr("How fast the sound goes from a side to another,"
+            " following a logarithmic scale"));
+    period->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
+    period->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    period->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    period->setMinimum(0.0625);     // 1 / 16
+    period->setMaximum(129.0);      // 128 + 1
+    period->setDefault(3.0);
+
+    // This parameter controls the easing of the sound from a side to another.
+    EffectManifestParameter* smoothing = manifest.addParameter();
+    smoothing->setId("smoothing");
+    smoothing->setName(QObject::tr("Smoothing"));
+    smoothing->setShortName(QObject::tr("Smooth"));
+    smoothing->setDescription(
+            QObject::tr("How fast the signal goes from a channel to another"));
+    smoothing->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
+    smoothing->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    smoothing->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    smoothing->setMinimum(0.0);
+    smoothing->setMaximum(0.5);  // there are two steps per period so max is half
+    smoothing->setDefault(0.5);
+    // TODO(Ferran Pujol): when KnobComposedMaskedRing branch is merged to master,
+    //                     make the scaleStartParameter for this be 1.
+
     // Width : applied on the channel with gain reducing.
     EffectManifestParameter* width = manifest.addParameter();
     width->setId("width");
@@ -50,39 +81,6 @@ EffectManifest AutoPanEffect::getManifest() {
     periodUnit->setDefault(1);
     periodUnit->setMinimum(0);
     periodUnit->setMaximum(1);
-
-    // Period
-    // The maximum is at 128 + 1 allowing 128 as max value and
-    // enabling us to pause time when the parameter is above
-    EffectManifestParameter* period = manifest.addParameter();
-    period->setId("period");
-    period->setName(QObject::tr("Period"));
-    period->setDescription(QObject::tr("How fast the sound goes from a side to another,"
-            " following a logarithmic scale"));
-    period->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    period->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    period->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    period->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
-    period->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
-    period->setMinimum(0.0625);     // 1 / 16
-    period->setMaximum(129.0);      // 128 + 1
-    period->setDefault(3.0);
-
-    // This parameter controls the easing of the sound from a side to another.
-    EffectManifestParameter* smoothing = manifest.addParameter();
-    smoothing->setId("smoothing");
-    smoothing->setName(QObject::tr("Smoothing"));
-    smoothing->setShortName(QObject::tr("Smooth"));
-    smoothing->setDescription(
-            QObject::tr("How fast the signal goes from a channel to another"));
-    smoothing->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    smoothing->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    smoothing->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    smoothing->setMinimum(0.0);
-    smoothing->setMaximum(0.5);  // there are two steps per period so max is half
-    smoothing->setDefault(0.25);
-    // TODO(Ferran Pujol): when KnobComposedMaskedRing branch is merged to master,
-    //                     make the scaleStartParameter for this be 1.
 
     return manifest;
 }

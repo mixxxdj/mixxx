@@ -134,3 +134,9 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
     }
     m_fPrevGain = totalGain;
 }
+
+void EnginePregain::collectFeatures(GroupFeatureState* pGroupFeatures) const {
+    pGroupFeatures->gain = m_pPotmeterPregain->get();
+    pGroupFeatures->has_gain = true;
+}
+

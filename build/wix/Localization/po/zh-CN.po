@@ -1,12 +1,13 @@
 # 
 # Translators:
+# Chee Kin Weng <rhytanbernama@gmail.com>, 2016
 # Nya Chan (喵酱) <dlj2013@gmail.com>, 2016
-# Sébastien BLAISOT <sebastien@blaisot.org>, 2016
+# Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2016-05-22 20:01+0000\n"
-"Last-Translator: Nya Chan (喵酱) <dlj2013@gmail.com>\n"
+"PO-Revision-Date: 2017-01-22 20:14+0000\n"
+"Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -96,6 +97,11 @@ msgctxt "WarningDlgTitle"
 msgid "{\\WixUI_Font_Title}Warning"
 msgstr "{\\WixUI_Font_Title}警告"
 
+#.  Custom exit dialog
+msgctxt "StartOnExit"
+msgid "Launch Mixxx when setup exits."
+msgstr "退出安装程序后，启动Mixxx"
+
 #.  Features translations
 msgctxt "FeatureCompleteDescription"
 msgid "The complete package."
@@ -108,6 +114,16 @@ msgstr "核心程序"
 msgctxt "FeatureMainProgramDescription"
 msgid "The core Mixxx application including controller presets."
 msgstr "核心Mixxx程序包含控制器预设"
+
+msgctxt "FeaturePDBTitle"
+msgid "PDB debug files"
+msgstr ""
+
+msgctxt "FeaturePDBDescription"
+msgid ""
+"Install Mixxx PDB files to use with a debugger. This is useful to debug "
+"Mixxx and provide readable backtraces to the development team."
+msgstr ""
 
 msgctxt "FeatureDesktopShortcutTitle"
 msgid "Desktop Shortcut"

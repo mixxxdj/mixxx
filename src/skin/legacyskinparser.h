@@ -79,6 +79,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseEffectParameterName(const QDomElement& node);
     QWidget* parseEffectButtonParameterName(const QDomElement& node);
     QWidget* parseEffectPushButton(const QDomElement& node);
+    QWidget* parseEffectSelector(const QDomElement& node);
 
     // Legacy pre-1.12.0 skin support.
     QWidget* parseBackground(const QDomElement& node, QWidget* pOuterWidget, QWidget* pInnerWidget);

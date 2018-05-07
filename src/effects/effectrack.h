@@ -40,6 +40,10 @@ class EffectRack : public QObject {
     int numEffectChainSlots() const;
     EffectChainSlotPointer getEffectChainSlot(int i);
 
+    void maybeLoadEffect(const unsigned int iChainSlotNumber,
+                         const unsigned int iEffectSlotNumber,
+                         const QString& id);
+
     unsigned int getRackNumber() const {
         return m_iRackNumber;
     }

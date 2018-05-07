@@ -77,7 +77,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
     m_visualGain[Mid] = 1.0;
     m_visualGain[High] = 1.0;
 
-    if (QGLFormat::hasOpenGL()) {
+    if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
         QGLFormat glFormat;
         glFormat.setDirectRendering(true);
         glFormat.setDoubleBuffer(true);
@@ -168,7 +168,8 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
 
         QGLWidget* glWidget = new QGLWidget(); // create paint device
         // QGLShaderProgram::hasOpenGLShaderPrograms(); valgind error
-        m_openGLShaderAvailable = QGLShaderProgram::hasOpenGLShaderPrograms(glWidget->context());
+        m_openGLShaderAvailable =
+                QGLShaderProgram::hasOpenGLShaderPrograms(glWidget->context());
         delete glWidget;
     }
 

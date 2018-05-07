@@ -193,7 +193,7 @@ double EngineBufferScaleRubberBand::scaleBuffer(
                 iLenFramesRequired = kRubberBandBlockSize;
             }
         }
-        qDebug() << "iLenFramesRequired" << iLenFramesRequired;
+        //qDebug() << "iLenFramesRequired" << iLenFramesRequired;
 
         if (remaining_frames > 0 && iLenFramesRequired > 0) {
             SINT iAvailSamples = m_pReadAheadManager->getNextSamples(

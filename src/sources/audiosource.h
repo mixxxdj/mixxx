@@ -1,10 +1,9 @@
 #ifndef MIXXX_AUDIOSOURCE_H
 #define MIXXX_AUDIOSOURCE_H
 
-#include <QSharedPointer>
-
 #include "sources/urlresource.h"
 #include "util/audiosignal.h"
+#include "util/memory.h"
 #include "util/result.h"
 #include "util/samplebuffer.h"
 
@@ -31,7 +30,7 @@ class AudioSourceConfig;
 // closed upon destruction.
 class AudioSource: public UrlResource, public AudioSignal {
   public:
-    static const SampleLayout kSampleLayout = SampleLayout::Interleaved;
+    static constexpr SampleLayout kSampleLayout = SampleLayout::Interleaved;
 
     // Returns the total number of sample frames.
     inline SINT getFrameCount() const {
@@ -200,14 +199,14 @@ class AudioSource: public UrlResource, public AudioSignal {
   private:
     friend class AudioSourceConfig;
 
-    static const SINT kFrameCountZero = 0;
-    static const SINT kFrameCountDefault = kFrameCountZero;
+    static constexpr SINT kFrameCountZero = 0;
+    static constexpr SINT kFrameCountDefault = kFrameCountZero;
 
     // 0-based indexing of sample frames
-    static const SINT kFrameIndexMin = 0;
+    static constexpr SINT kFrameIndexMin = 0;
 
-    static const SINT kBitrateZero = 0;
-    static const SINT kBitrateDefault = kBitrateZero;
+    static constexpr SINT kBitrateZero = 0;
+    static constexpr SINT kBitrateDefault = kBitrateZero;
 
     SINT m_frameCount;
 
@@ -231,7 +230,7 @@ class AudioSourceConfig : public AudioSignal {
     using AudioSignal::resetSamplingRate;
 };
 
-typedef QSharedPointer<AudioSource> AudioSourcePointer;
+typedef std::shared_ptr<AudioSource> AudioSourcePointer;
 
 } // namespace mixxx
 

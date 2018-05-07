@@ -35,10 +35,15 @@
   <!-- Custom Warning Dialog -->
   <String Id="WarningDlgTitle">{\WixUI_Font_Title}警告</String>
 
+  <!-- Custom exit dialog -->
+  <String Id="StartOnExit">退出安装程序后，启动Mixxx</String>
+
   <!-- Features translations -->
   <String Id="FeatureCompleteDescription">完整软件包</String>
   <String Id="FeatureMainProgramTitle">核心程序</String>
   <String Id="FeatureMainProgramDescription">核心Mixxx程序包含控制器预设</String>
+  <String Id="FeaturePDBTitle">PDB debug files</String>
+  <String Id="FeaturePDBDescription">Install Mixxx PDB files to use with a debugger. This is useful to debug Mixxx and provide readable backtraces to the development team.</String>
   <String Id="FeatureDesktopShortcutTitle">桌面快捷方式</String>
   <String Id="FeatureDesktopShortcutDescription">添加Mixxx的快捷方式到您的桌面</String>
   <String Id="FeatureManualTitle">用户手册</String>

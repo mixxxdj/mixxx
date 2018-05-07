@@ -305,6 +305,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audio
         // Abort
         return OpenResult::FAILED;
     }
+    DEBUG_ASSERT(m_seekFrameList.front().frameIndex == getMinFrameIndex());
 
     int mostCommonSamplingRateIndex = kSamplingRateCount; // invalid
     int mostCommonSamplingRateCount = 0;
@@ -351,13 +352,12 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audio
 
     // Terminate m_seekFrameList
     addSeekFrame(m_curFrameIndex, 0);
-
-    // Reset positions
-    m_curFrameIndex = getMinFrameIndex();
+    DEBUG_ASSERT(m_seekFrameList.back().frameIndex == getMaxFrameIndex());
 
     // Restart decoding at the beginning of the audio stream
-    m_curFrameIndex = restartDecoding(m_seekFrameList.front());
-    if (m_curFrameIndex != m_seekFrameList.front().frameIndex) {
+    restartDecoding(m_seekFrameList.front());
+
+    if (m_curFrameIndex != getMinFrameIndex()) {
         qWarning() << "Failed to start decoding:" << m_file.fileName();
         // Abort
         return OpenResult::FAILED;
@@ -383,7 +383,7 @@ void SoundSourceMp3::close() {
     initDecoding();
 }
 
-SINT SoundSourceMp3::restartDecoding(
+void SoundSourceMp3::restartDecoding(
         const SeekFrameType& seekFrame) {
     qDebug() << "restartDecoding @" << seekFrame.frameIndex;
 
@@ -415,14 +415,13 @@ SINT SoundSourceMp3::restartDecoding(
         mad_synth_mute(&m_madSynth);
     }
 
-    if (!decodeFrameHeader(&m_madFrame.header, &m_madStream, false)) {
-        if (!isStreamValid(m_madStream)) {
-            // Failure -> Seek to EOF
-            return getFrameCount();
-        }
+    if (decodeFrameHeader(&m_madFrame.header, &m_madStream, false)
+            && isStreamValid(m_madStream)) {
+        m_curFrameIndex = seekFrame.frameIndex;
+    } else {
+        // Failure -> Seek to EOF
+        m_curFrameIndex = getMaxFrameIndex();
     }
-
-    return seekFrame.frameIndex;
 }
 
 void SoundSourceMp3::addSeekFrame(
@@ -485,17 +484,14 @@ SINT SoundSourceMp3::findSeekFrameIndex(
 
 SINT SoundSourceMp3::seekSampleFrame(SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
 
-    // Handle trivial case
-    if (m_curFrameIndex == frameIndex) {
-        // Nothing to do
-        return m_curFrameIndex;
-    }
-    // Handle edge case
-    if (getMaxFrameIndex() <= frameIndex) {
+    if (frameIndex >= getMaxFrameIndex()) {
         // EOF reached
         m_curFrameIndex = getMaxFrameIndex();
+        return m_curFrameIndex;
+    }
+
+    if (frameIndex == m_curFrameIndex) {
         return m_curFrameIndex;
     }
 
@@ -513,8 +509,6 @@ SINT SoundSourceMp3::seekSampleFrame(SINT frameIndex) {
             (seekFrameIndex > (curSeekFrameIndex + kMp3SeekFramePrefetchCount))) { // jump forward
 
         // Adjust the seek frame index for prefetching
-        // Implementation note: The type SINT is unsigned so
-        // need to be careful when subtracting!
         if (kMp3SeekFramePrefetchCount < seekFrameIndex) {
             // Restart decoding kMp3SeekFramePrefetchCount seek frames
             // before the expected sync position
@@ -524,24 +518,22 @@ SINT SoundSourceMp3::seekSampleFrame(SINT frameIndex) {
             seekFrameIndex = 0;
         }
 
-        m_curFrameIndex = restartDecoding(m_seekFrameList[seekFrameIndex]);
-        if (getMaxFrameIndex() <= m_curFrameIndex) {
-            // out of range -> abort
-            return m_curFrameIndex;
-        }
+        restartDecoding(m_seekFrameList[seekFrameIndex]);
+
         DEBUG_ASSERT(findSeekFrameIndex(m_curFrameIndex) == seekFrameIndex);
     }
 
-    // Decoding starts before the actual target position
+    // Decoding starts at or before the actual target position
     DEBUG_ASSERT(m_curFrameIndex <= frameIndex);
 
     // Skip (= decode and discard) all samples up to the target position
-    const SINT prefetchFrameCount = frameIndex - m_curFrameIndex;
-    const SINT skipFrameCount = skipSampleFrames(prefetchFrameCount);
-    DEBUG_ASSERT(skipFrameCount <= prefetchFrameCount);
-    if (skipFrameCount < prefetchFrameCount) {
-        qWarning() << "Failed to prefetch sample data while seeking"
-                << skipFrameCount << "<" << prefetchFrameCount;
+    if (m_curFrameIndex < frameIndex) {
+        skipSampleFrames(frameIndex - m_curFrameIndex);
+        DEBUG_ASSERT(m_curFrameIndex <= frameIndex);
+        if (m_curFrameIndex < frameIndex) {
+            qWarning() << "Failed to prefetch sample data while seeking:"
+                    << m_curFrameIndex << "<" << frameIndex;
+        }
     }
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
@@ -590,7 +582,12 @@ SINT SoundSourceMp3::readSampleFrames(
             if (mad_frame_decode(&m_madFrame, &m_madStream)) {
                 // Something went wrong when decoding the frame...
                 if (MAD_ERROR_BUFLEN == m_madStream.error) {
-                    // Abort
+                    // Abort when reaching the end of the stream
+                    DEBUG_ASSERT(isUnrecoverableError(m_madStream));
+                    if (m_curFrameIndex < getMaxFrameIndex()) {
+                        qWarning() << "End of MP3 stream is unreachable:"
+                                << m_curFrameIndex << "<" << getMaxFrameIndex();
+                    }
                     break;
                 }
                 if (isUnrecoverableError(m_madStream)) {

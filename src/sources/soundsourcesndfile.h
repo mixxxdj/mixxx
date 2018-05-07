@@ -29,6 +29,8 @@ private:
     OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     SNDFILE* m_pSndFile;
+
+    SINT m_curFrameIndex;
 };
 
 class SoundSourceProviderSndFile: public SoundSourceProvider {

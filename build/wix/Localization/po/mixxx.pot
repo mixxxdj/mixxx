@@ -72,6 +72,11 @@ msgctxt "WarningDlgTitle"
 msgid "{\\WixUI_Font_Title}Warning"
 msgstr ""
 
+#.  Custom exit dialog 
+msgctxt "StartOnExit"
+msgid "Launch Mixxx when setup exits."
+msgstr ""
+
 #.  Features translations 
 msgctxt "FeatureCompleteDescription"
 msgid "The complete package."
@@ -83,6 +88,14 @@ msgstr ""
 
 msgctxt "FeatureMainProgramDescription"
 msgid "The core Mixxx application including controller presets."
+msgstr ""
+
+msgctxt "FeaturePDBTitle"
+msgid "PDB debug files"
+msgstr ""
+
+msgctxt "FeaturePDBDescription"
+msgid "Install Mixxx PDB files to use with a debugger. This is useful to debug Mixxx and provide readable backtraces to the development team."
 msgstr ""
 
 msgctxt "FeatureDesktopShortcutTitle"

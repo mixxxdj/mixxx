@@ -6,7 +6,6 @@
 #include <QList>
 #include <QMutex>
 #include <QObject>
-#include <QSharedPointer>
 
 #include "library/dao/cue.h"
 #include "library/coverart.h"
@@ -16,13 +15,14 @@
 #include "track/trackid.h"
 #include "track/playcounter.h"
 #include "track/trackmetadata.h"
+#include "util/memory.h"
 #include "util/sandbox.h"
 #include "util/duration.h"
 #include "waveform/waveform.h"
 
 class Track;
 class TrackPointer;
-typedef QWeakPointer<Track> TrackWeakPointer;
+typedef std::weak_ptr<Track> TrackWeakPointer;
 
 class Track : public QObject {
     Q_OBJECT
@@ -415,26 +415,17 @@ class Track : public QObject {
     friend class TrackDAO;
 };
 
-class TrackPointer: public QSharedPointer<Track> {
+class TrackPointer: public std::shared_ptr<Track> {
   public:
     TrackPointer() {}
     explicit TrackPointer(const TrackWeakPointer& pTrack)
-        : QSharedPointer<Track>(pTrack) {
+        : std::shared_ptr<Track>(pTrack.lock()) {
     }
     explicit TrackPointer(Track* pTrack)
-        : QSharedPointer<Track>(pTrack, deleteLater) {
+        : std::shared_ptr<Track>(pTrack, deleteLater) {
     }
     TrackPointer(Track* pTrack, void (*deleter)(Track*))
-        : QSharedPointer<Track>(pTrack, deleter) {
-    }
-
-    // TODO(uklotzde): Remove these functions after migration
-    // from QSharedPointer to std::shared_ptr
-    Track* get() const {
-        return data();
-    }
-    void reset() {
-        clear();
+        : std::shared_ptr<Track>(pTrack, deleter) {
     }
 
   private:

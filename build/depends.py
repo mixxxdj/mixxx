@@ -381,8 +381,34 @@ class Qt(Dependence):
                 # QtOpenGL
                 build.env.Append(LIBS = 'glu32')
                 build.env.Append(LIBS = 'opengl32')
+
                 # QtNetwork openssl-linked
                 build.env.Append(LIBS = 'crypt32')
+
+                # NOTE(rryan): If you are adding a plugin here, you must also
+                # update src/mixxxapplication.cpp to define a Q_IMPORT_PLUGIN
+                # for it. Not all imageformats plugins are built as .libs when
+                # building Qt statically on Windows. Check the build environment
+                # to see exactly what's available as a standalone .lib vs linked
+                # into Qt .libs by default.
+
+                # iconengines plugins
+                build.env.Append(LIBPATH=[
+                    os.path.join(build.env['QTDIR'],'plugins/iconengines')])
+                build.env.Append(LIBS = 'qsvgicon')
+
+                # imageformats plugins
+                build.env.Append(LIBPATH=[
+                    os.path.join(build.env['QTDIR'],'plugins/imageformats')])
+                build.env.Append(LIBS = 'qico')
+                build.env.Append(LIBS = 'qsvg')
+                build.env.Append(LIBS = 'qtga')
+
+                # accessibility plugins
+                build.env.Append(LIBPATH=[
+                    os.path.join(build.env['QTDIR'],'plugins/accessible')])
+                build.env.Append(LIBS = 'qtaccessiblewidgets')
+
 
         # Set the rpath for linux/bsd/osx.
         # This is not supported on OS X before the 10.5 SDK.
@@ -676,6 +702,8 @@ class MixxxCore(Feature):
                    "effects/native/linkwitzriley8eqeffect.cpp",
                    "effects/native/bessel4lvmixeqeffect.cpp",
                    "effects/native/bessel8lvmixeqeffect.cpp",
+                   "effects/native/threebandbiquadeqeffect.cpp",
+                   "effects/native/loudnesscontoureffect.cpp",
                    "effects/native/graphiceqeffect.cpp",
                    "effects/native/flangereffect.cpp",
                    "effects/native/filtereffect.cpp",
@@ -823,6 +851,7 @@ class MixxxCore(Feature):
                    "widget/wstarrating.cpp",
                    "widget/weffectchain.cpp",
                    "widget/weffect.cpp",
+                   "widget/weffectselector.cpp",
                    "widget/weffectparameter.cpp",
                    "widget/weffectbuttonparameter.cpp",
                    "widget/weffectparameterbase.cpp",
@@ -1205,10 +1234,8 @@ class MixxxCore(Feature):
             build.env.Append(CCFLAGS='-g')
         elif build.toolchain_is_msvs:
             # Validate the specified winlib directory exists
-            mixxx_lib_path = SCons.ARGUMENTS.get(
-                'winlib', '..\\..\\..\\mixxx-win32lib-msvc100-release')
+            mixxx_lib_path = build.winlib_path
             if not os.path.exists(mixxx_lib_path):
-                print mixxx_lib_path
                 raise Exception("Winlib path does not exist! Please specify your winlib directory"
                                 "path by running 'scons winlib=[path]'")
                 Script.Exit(1)
