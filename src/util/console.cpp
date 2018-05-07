@@ -26,27 +26,54 @@ Console::Console() {
     // LOCALE_IDEFAULTCODEPAGE "850" // OEM Codepage Console
 
     m_shouldResetCodePage = false;
-    if(AttachConsole(ATTACH_PARENT_PROCESS)) {
+    if (AttachConsole(ATTACH_PARENT_PROCESS)) {
         // we are started from a console porcess
-        int fd;
-        FILE *fp;
+        HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+        if (hStdOut != INVALID_HANDLE_VALUE) {
+            int fd = _open_osfhandle((intptr_t)hStdOut, 0);
+            if (fd != -1) {
+                FILE* fp = _fdopen(fd, "w");
+                if (fp != nullptr) {
+                    *stdout = *fp;
+                    if (setvbuf(stdout, NULL, _IONBF, 0) != 0) {
+                        qWarning() << "Setting no buffer for stdout failed.";
+                    }
+                } else {
+                    qWarning() << "Could not open stdout fd:" << fd;
+                }
+            } else {
+                qWarning() << "Could not convert stdout handle to an FD handle." << hStdOut;
+            }
+        } else {
+            qWarning() << "Could not get stdout handle. Error code:" << GetLastError();
+        }
 
-        fd = _open_osfhandle((long) GetStdHandle(STD_OUTPUT_HANDLE), 0);
-        fp = _fdopen(fd, "w");
-        *stdout = *fp;
-        setvbuf(stdout, NULL, _IONBF, 0);
-
-        fd = _open_osfhandle((long) GetStdHandle(STD_ERROR_HANDLE), 0);
-        fp = _fdopen(fd, "w");
-        *stderr = *fp;
-        setvbuf(stderr, NULL, _IONBF, 0);
+        HANDLE hStdErr = GetStdHandle(STD_ERROR_HANDLE);
+        if (hStdOut != INVALID_HANDLE_VALUE) {
+            int fd = _open_osfhandle((intptr_t)hStdErr, 0);
+            if (fd != -1) {
+                FILE* fp = _fdopen(fd, "w");
+                if (fp != nullptr) {
+                    *stderr = *fp;
+                    if (setvbuf(stderr, NULL, _IONBF, 0) != 0) {
+                        qWarning() << "Setting no buffer for stderr failed.";
+                    }
+                } else {
+                    qWarning() << "Could not open stderr fd:" << fd;
+                }
+            } else {
+                qWarning() << "Could not convert stderr handle to an FD handle." << hStdOut;
+            }
+        } else {
+            qWarning() << "Could not get stderr handle. Error code:" << GetLastError();
+        }
 
         // Save current code page
         m_oldCodePage = GetConsoleOutputCP();
         m_shouldResetCodePage = true;
 
         HMODULE kernel32_dll = LoadLibraryW(L"kernel32.dll");
-        if (kernel32_dll) {
+        if (kernel32_dll && hStdOut != INVALID_HANDLE_VALUE) {
             pfSetCurrentConsoleFontEx pfSCCFX = (pfSetCurrentConsoleFontEx)GetProcAddress(kernel32_dll, "SetCurrentConsoleFontEx");
             if (pfSCCFX) {
                 // Use a unicode font
@@ -58,7 +85,7 @@ Console::Console() {
                 newFont.FontFamily = FF_DONTCARE;
                 newFont.FontWeight = FW_NORMAL;
                 wcscpy_s(newFont.FaceName, L"Consolas");
-                pfSCCFX(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &newFont);
+                pfSCCFX(hStdOut, FALSE, &newFont);
             } else {
                 // This happens on Windows XP
                 qWarning() << "The console font may not support non ANSI characters." <<
@@ -68,11 +95,14 @@ Console::Console() {
 
         // set console to the default ANSI Code Page
         UINT defaultCodePage;
-        GetLocaleInfo(LOCALE_USER_DEFAULT,
-                      LOCALE_RETURN_NUMBER | LOCALE_IDEFAULTANSICODEPAGE,
-                      reinterpret_cast<LPWSTR>(&defaultCodePage),
-                      sizeof(defaultCodePage));
-        SetConsoleOutputCP(defaultCodePage);
+        if (GetLocaleInfo(LOCALE_USER_DEFAULT,
+                          LOCALE_RETURN_NUMBER | LOCALE_IDEFAULTANSICODEPAGE,
+                          reinterpret_cast<LPWSTR>(&defaultCodePage),
+                          sizeof(defaultCodePage)) != 0) {
+            SetConsoleOutputCP(defaultCodePage);
+        } else {
+            qWarning() << "GetLocaleInfo failed. Error code:" << GetLastError();
+        }
     } else {
         // started by double click
         // no need to deal with a console

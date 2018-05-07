@@ -11,9 +11,21 @@ MixxxApplication::MixxxApplication(int& argc, char** argv)
           m_fakeMouseWidget(NULL),
           m_activeTouchButton(Qt::NoButton),
           m_pTouchShift(NULL) {
+    registerMetaTypes();
 }
 
 MixxxApplication::~MixxxApplication() {
+}
+
+void MixxxApplication::registerMetaTypes() {
+    // Register custom data types for signal processing
+    qRegisterMetaType<TrackId>("TrackId");
+    qRegisterMetaType<QSet<TrackId>>("QSet<TrackId>");
+    qRegisterMetaType<TrackPointer>("TrackPointer");
+    qRegisterMetaType<mixxx::ReplayGain>("mixxx::ReplayGain");
+    qRegisterMetaType<mixxx::Bpm>("mixxx::Bpm");
+    qRegisterMetaType<mixxx::Duration>("mixxx::Duration");
+    qRegisterMetaType<ConfigKey>("ConfigKey");
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
