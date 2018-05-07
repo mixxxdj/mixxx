@@ -77,6 +77,12 @@
         <Layout>horizontal</Layout>
         <ObjectName>ButtonGrid</ObjectName>
         <Children>
+          <Template src="skin:knob.xml">
+            <SetVariable name="TooltipId">pregain</SetVariable>
+            <SetVariable name="control">pregain</SetVariable>
+            <SetVariable name="color">green</SetVariable>
+          </Template>
+
           <Template src="skin:left_right_1state_button.xml">
             <SetVariable name="TooltipId">beatsync_beatsync_tempo</SetVariable>
             <SetVariable name="ObjectName">BeatsyncButton</SetVariable>
