@@ -34,9 +34,11 @@ class ControlObject : public QObject {
     // bIgnoreNops: Don't emit a signal if the CO is set to its current value.
     // bTrack: Record statistics about this control.
     // bPersist: Store value on exit, load on startup.
+    // defaultValue: default value of CO. If CO is persistent and there is no valid
+    //               value found in the config, this is also the initial value.
     ControlObject(ConfigKey key,
-                  bool bIgnoreNops=true, bool bTrack=false,
-                  bool bPersist=false);
+                  bool bIgnoreNops = true, bool bTrack = false,
+                  bool bPersist = false, double defaultValue = 0.0);
     virtual ~ControlObject();
 
     // Returns a pointer to the ControlObject matching the given ConfigKey
@@ -176,7 +178,7 @@ class ControlObject : public QObject {
 
   private:
     void initialize(ConfigKey key, bool bIgnoreNops, bool bTrack,
-                    bool bPersist);
+                    bool bPersist, double defaultValue);
     inline bool ignoreNops() const {
         return m_pControl ? m_pControl->ignoreNops() : true;
     }

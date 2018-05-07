@@ -18,20 +18,25 @@ class WOverview;
 class WaveformMark {
   public:
     static const int kDefaultHotCue = -1;
-    WaveformMark(const QString& group,
-                               const QDomNode& node,
-                               const SkinContext& context,
-                               const WaveformSignalColors& signalColors,
-                               int hotCue = kDefaultHotCue, 
-                               QString item = "");
+    WaveformMark(
+            const QString& group,
+            const QDomNode& node,
+            const SkinContext& context,
+            const WaveformSignalColors& signalColors,
+            int hotCue = kDefaultHotCue,
+            QString item = "");
 
 
     // Disable copying
     WaveformMark(const WaveformMark&) = delete;
     WaveformMark& operator=(const WaveformMark&) = delete;
 
-    const WaveformMarkProperties& getProperties() const { return m_properties; };
-    void setProperties(const WaveformMarkProperties& properties) { m_properties = properties; };
+    const WaveformMarkProperties& getProperties() const {
+        return m_properties;
+    };
+    void setProperties(const WaveformMarkProperties& properties) {
+        m_properties = properties;
+    };
 
     int getHotCue() const { return m_iHotCue; };
     void setHotCue(int hotCue) { m_iHotCue = hotCue; };
@@ -40,7 +45,9 @@ class WaveformMark {
     bool isValid() const { return m_pPointCos && m_pPointCos->valid(); }
     void connectSamplePositionChanged(const QObject *, const char *) const;
     double getSamplePosition() const { return m_pPointCos->get(); }
-    void setHotcueNumber(int i) { m_properties.m_text = m_properties.m_text.arg(i); }
+    void setHotcueNumber(int i) {
+        m_properties.m_text = m_properties.m_text.arg(i);
+    }
     
 
   private:

@@ -223,3 +223,7 @@ void DlgAutoDJ::updateSelectionInfo() {
         labelSelectionInfo->setEnabled(false);
     }
 }
+
+bool DlgAutoDJ::hasFocus() const {
+    return QWidget::hasFocus();
+}

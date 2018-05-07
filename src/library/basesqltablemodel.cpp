@@ -185,6 +185,41 @@ bool BaseSqlTableModel::isColumnHiddenByDefault(int column) {
     return false;
 }
 
+void BaseSqlTableModel::clearRows() {
+    DEBUG_ASSERT(m_rowInfo.empty() == m_trackIdToRows.empty());
+    DEBUG_ASSERT(m_rowInfo.size() >= m_trackIdToRows.size());
+    if (!m_rowInfo.isEmpty()) {
+        beginRemoveRows(QModelIndex(), 0, m_rowInfo.size() - 1);
+        m_rowInfo.clear();
+        m_trackIdToRows.clear();
+        endRemoveRows();
+    }
+    DEBUG_ASSERT(m_rowInfo.isEmpty());
+    DEBUG_ASSERT(m_trackIdToRows.isEmpty());
+}
+
+void BaseSqlTableModel::replaceRows(
+            QVector<RowInfo>&& rows,
+            TrackId2Rows&& trackIdToRows) {
+    // NOTE(uklotzde): Use r-value references for parameters here, because
+    // conceptually those parameters should replace the corresponding internal
+    // member variables. Currently Qt4/5 doesn't support move semantics and
+    // instead prevents unnecessary deep copying by implicit sharing (COW)
+    // behind the scenes. Moving would be more efficient, although implicit
+    // sharing meets all requirements. If Qt will ever add move support for
+    // its container types in the future this code becomes even more efficient.
+    DEBUG_ASSERT(rows.empty() == trackIdToRows.empty());
+    DEBUG_ASSERT(rows.size() >= trackIdToRows.size());
+    if (rows.isEmpty()) {
+        clearRows();
+    } else {
+        beginInsertRows(QModelIndex(), 0, rows.size() - 1);
+        m_rowInfo = rows;
+        m_trackIdToRows = trackIdToRows;
+        endInsertRows();
+    }
+}
+
 void BaseSqlTableModel::select() {
     if (!m_bInitialized) {
         return;
@@ -219,27 +254,23 @@ void BaseSqlTableModel::select() {
     // This causes a memory savings since QSqlCachedResult (what QtSQLite uses)
     // won't allocate a giant in-memory table that we won't use at all.
     query.setForwardOnly(true);
-    query.prepare(queryString);
-
+    if (!query.prepare(queryString)) {
+        LOG_FAILED_QUERY(query);
+        return;
+    }
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return;
     }
 
-    // Remove all the rows from the table. We wait to do this until after the
-    // table query has succeeded. See Bug #1090888.
+    // Remove all the rows from the table after(!) the query has been
+    // executed successfully. See Bug #1090888.
     // TODO(rryan) we could edit the table in place instead of clearing it?
-    if (!m_rowInfo.isEmpty()) {
-        beginRemoveRows(QModelIndex(), 0, m_rowInfo.size() - 1);
-        m_rowInfo.clear();
-        m_trackIdToRows.clear();
-        endRemoveRows();
-    }
-    // sqlite does not set size and m_rowInfo was just cleared
-    //if (sDebug) {
-    //    qDebug() << "Rows returned" << rows << m_rowInfo.size();
-    //}
+    clearRows();
 
+    // The size of the result set is not known in advance for a
+    // forward-only query, so we cannot reserve memory for rows
+    // in advance.
     QVector<RowInfo> rowInfo;
     QSet<TrackId> trackIds;
     while (query.next()) {
@@ -293,7 +324,7 @@ void BaseSqlTableModel::select() {
     // should not disturb that if we are only removing tracks.
     qStableSort(rowInfo.begin(), rowInfo.end());
 
-    m_trackIdToRows.clear();
+    TrackId2Rows trackIdToRows;
     for (int i = 0; i < rowInfo.size(); ++i) {
         const RowInfo& row = rowInfo[i];
 
@@ -303,19 +334,18 @@ void BaseSqlTableModel::select() {
             rowInfo.resize(i);
             break;
         }
-        QLinkedList<int>& rows = m_trackIdToRows[row.trackId];
-        rows.push_back(i);
+        trackIdToRows[row.trackId].push_back(i);
     }
 
     // We're done! Issue the update signals and replace the master maps.
-    if (!rowInfo.isEmpty()) {
-        beginInsertRows(QModelIndex(), 0, rowInfo.size() - 1);
-        m_rowInfo = rowInfo;
-        endInsertRows();
-    }
+    replaceRows(
+            std::move(rowInfo),
+            std::move(trackIdToRows));
+    // Both rowInfo and trackIdToRows (might) have been moved and
+    // must not be used afterwards!
 
     qDebug() << this << "select() took" << time.elapsed().debugMillisWithUnit()
-             << rowInfo.size();
+             << m_rowInfo.size();
 }
 
 void BaseSqlTableModel::setTable(const QString& tableName,

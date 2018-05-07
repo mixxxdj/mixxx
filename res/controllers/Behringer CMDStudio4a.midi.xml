@@ -1,0 +1,3544 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset mixxxVersion="2.0.0+" schemaVersion="1">
+    <info>
+        <name>Behringer CMD STUDIO 4a</name>
+        <author>Craig Easton</author>
+        <description>Controller mapping for the Behringer CMD STUDIO 4a. V 1.4 Created Jan 2016 for Mixxx 2.0.0</description>
+        <wiki>http://www.mixxx.org/wiki/doku.php/behringer_cmd_studio_4a</wiki>
+        <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=7868</forums>
+    </info>
+    <controller id="Behringer CMD STUDIO 4a">
+        <scriptfiles>
+            <file functionprefix="BehringerCMDStudio4a" filename="Behringer-CMDStudio4a-scripts.js"/>
+        </scriptfiles>
+        <controls>
+        <!-- Playlist functions. -->
+            <control>
+                <group>[Playlist]</group>
+                <key>SelectTrackKnob</key>
+                <description>Browse knob.</description>
+                <status>0xB0</status>
+                <midino>0x01</midino>
+                <options>
+                    <spread64/>
+                </options>
+            </control>
+            <control>
+                <group>[Playlist]</group>
+                <key>ToggleSelectedSidebarItem</key>
+                <description>ENTER button.</description>
+                <status>0x90</status>
+                <midino>0x01</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Playlist]</group>
+                <key>BehringerCMDStudio4a.browseLR</key>
+                <description>Browse left button.</description>
+                <status>0x90</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Playlist]</group>
+                <key>BehringerCMDStudio4a.browseLR</key>
+                <description>Browse right button.</description>
+                <status>0x90</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+        <!-- Deck Functions. -->
+            <!-- Gain. -->
+            <control>
+                <group>[Channel1]</group>
+                <key>pregain</key>
+                <description>Deck A Gain.</description>
+                <status>0xB0</status>
+                <midino>0x10</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>pregain</key>
+                <description>Deck B Gain.</description>
+                <status>0xB1</status>
+                <midino>0x30</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>pregain</key>
+                <description>Deck C Gain.</description>
+                <status>0xB2</status>
+                <midino>0x10</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>pregain</key>
+                <description>Deck D Gain.</description>
+                <status>0xB3</status>
+                <midino>0x30</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <!-- Slip. -->
+            <control>
+                <group>[Channel1]</group>
+                <key>slip_enabled</key>
+                <description>Deck A FX 1 button.</description>
+                <status>0x90</status>
+                <midino>0x10</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>slip_enabled</key>
+                <description>Deck B FX 1 button.</description>
+                <status>0x91</status>
+                <midino>0x30</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>slip_enabled</key>
+                <description>Deck C FX 1 button.</description>
+                <status>0x92</status>
+                <midino>0x10</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>slip_enabled</key>
+                <description>Deck D FX 1 button.</description>
+                <status>0x93</status>
+                <midino>0x30</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <!-- Repeat. -->
+            <control>
+                <group>[Channel1]</group>
+                <key>repeat</key>
+                <description>Deck A FX 2 button.</description>
+                <status>0x90</status>
+                <midino>0x11</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>repeat</key>
+                <description>Deck B FX 2 button.</description>
+                <status>0x91</status>
+                <midino>0x31</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>repeat</key>
+                <description>Deck C FX 2 button.</description>
+                <status>0x92</status>
+                <midino>0x11</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>repeat</key>
+                <description>Deck D FX 2 button.</description>
+                <status>0x93</status>
+                <midino>0x31</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <!-- Beat grid. -->
+            <control>
+                <group>[Channel1]</group>
+                <key>beats_translate_curpos</key>
+                <description>Deck A FX 3 button push.</description>
+                <status>0x90</status>
+                <midino>0x12</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>beats_translate_curpos</key>
+                <description>Deck A FX 3 button release.</description>
+                <status>0x80</status>
+                <midino>0x12</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>beats_translate_curpos</key>
+                <description>Deck B FX 3 button push.</description>
+                <status>0x91</status>
+                <midino>0x32</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>beats_translate_curpos</key>
+                <description>Deck B FX 3 button release.</description>
+                <status>0x81</status>
+                <midino>0x32</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>beats_translate_curpos</key>
+                <description>Deck C FX 3 button push.</description>
+                <status>0x92</status>
+                <midino>0x12</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>beats_translate_curpos</key>
+                <description>Deck C FX 3 button release.</description>
+                <status>0x82</status>
+                <midino>0x12</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>beats_translate_curpos</key>
+                <description>Deck D FX 3 button push. </description>
+                <status>0x93</status>
+                <midino>0x32</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>beats_translate_curpos</key>
+                <description>Deck D FX 3 button release.</description>
+                <status>0x83</status>
+                <midino>0x32</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <!-- Quantize. -->
+            <control>
+                <group>[Channel1]</group>
+                <key>quantize</key>
+                <description>Deck A FX 4 button.</description>
+                <status>0x90</status>
+                <midino>0x13</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>quantize</key>
+                <description>Deck B FX 4 button.</description>
+                <status>0x91</status>
+                <midino>0x33</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>quantize</key>
+                <description>Deck C FX 4 button.</description>
+                <status>0x92</status>
+                <midino>0x13</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>quantize</key>
+                <description>Deck D FX 4 button.</description>
+                <status>0x93</status>
+                <midino>0x33</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <!-- FX super knobs. -->
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>super1</key>
+                <description>Deck A FX knob 2.</description>
+                <status>0xB0</status>
+                <midino>0x11</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>super1</key>
+                <description>Deck A FX knob 3.</description>
+                <status>0xB0</status>
+                <midino>0x12</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit3]</group>
+                <key>super1</key>
+                <description>Deck B FX knob 2.</description>
+                <status>0xB1</status>
+                <midino>0x31</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+           <control>
+                <group>[EffectRack1_EffectUnit4]</group>
+                <key>super1</key>
+                <description>Deck B FX knob 3.</description>
+                <status>0xB1</status>
+                <midino>0x32</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>super1</key>
+                <description>Deck C FX knob 2.</description>
+                <status>0xB2</status>
+                <midino>0x11</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>super1</key>
+                <description>Deck C FX knob 3.</description>
+                <status>0xB2</status>
+                <midino>0x12</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit3]</group>
+                <key>super1</key>
+                <description>Deck D FX knob 2.</description>
+                <status>0xB3</status>
+                <midino>0x31</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit4]</group>
+                <key>super1</key>
+                <description>Deck D FX knob 3.</description>
+                <status>0xB3</status>
+                <midino>0x32</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <!-- Quick FX. -->
+            <control>
+                <group>[QuickEffectRack1_[Channel1]]</group>
+                <key>super1</key>
+                <description>Deck A FX knob 4.</description>
+                <status>0xB0</status>
+                <midino>0x13</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel2]]</group>
+                <key>super1</key>
+                <description>Deck B FX knob 4.</description>
+                <status>0xB1</status>
+                <midino>0x33</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel3]]</group>
+                <key>super1</key>
+                <description>Deck C FX knob 4.</description>
+                <status>0xB2</status>
+                <midino>0x13</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel4]]</group>
+                <key>super1</key>
+                <description>Deck D FX knob 4.</description>
+                <status>0xB3</status>
+                <midino>0x33</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <!-- Scratch. -->
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.scratch</key>
+                <description>Deck A Scratch button.</description>
+                <status>0x90</status>
+                <midino>0x16</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.scratch</key>
+                <description>Deck B Scratch button.</description>
+                <status>0x91</status>
+                <midino>0x36</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.scratch</key>
+                <description>Deck C Scratch button.</description>
+                <status>0x92</status>
+                <midino>0x16</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.scratch</key>
+                <description>Deck D Scratch button.</description>
+                <status>0x93</status>
+                <midino>0x36</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- Loop stuff. -->
+            <control>
+                <group>[Channel1]</group>
+                <key>loop_in</key>
+                <description>Deck A loop start push.</description>
+                <status>0x90</status>
+                <midino>0x17</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>loop_in</key>
+                <description>Deck A loop start release.</description>
+                <status>0x80</status>
+                <midino>0x17</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>loop_out</key>
+                <description>Deck A loop end push.</description>
+                <status>0x90</status>
+                <midino>0x18</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>loop_out</key>
+                <description>Deck A loop end release.</description>
+                <status>0x80</status>
+                <midino>0x18</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>reloop_exit</key>
+                <description>Deck A loop ON/OFF.</description>
+                <status>0x90</status>
+                <midino>0x19</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>loop_in</key>
+                <description>Deck B loop start push.</description>
+                <status>0x91</status>
+                <midino>0x38</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>loop_in</key>
+                <description>Deck B loop start release.</description>
+                <status>0x81</status>
+                <midino>0x38</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>loop_out</key>
+                <description>Deck B loop end push.</description>
+                <status>0x91</status>
+                <midino>0x37</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>loop_out</key>
+                <description>Deck B loop end release.</description>
+                <status>0x81</status>
+                <midino>0x37</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>reloop_exit</key>
+                <description>Deck B loop ON/OFF.</description>
+                <status>0x91</status>
+                <midino>0x39</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>loop_in</key>
+                <description>Deck C loop start push.</description>
+                <status>0x92</status>
+                <midino>0x17</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>loop_in</key>
+                <description>Deck C loop start release.</description>
+                <status>0x82</status>
+                <midino>0x17</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>loop_out</key>
+                <description>Deck C loop end push.</description>
+                <status>0x92</status>
+                <midino>0x18</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>loop_out</key>
+                <description>Deck C loop end release.</description>
+                <status>0x82</status>
+                <midino>0x18</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>reloop_exit</key>
+                <description>Deck C loop ON/OFF.</description>
+                <status>0x92</status>
+                <midino>0x19</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>loop_in</key>
+                <description>Deck D loop start push.</description>
+                <status>0x93</status>
+                <midino>0x38</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>loop_in</key>
+                <description>Deck D loop start release.</description>
+                <status>0x83</status>
+                <midino>0x38</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>loop_out</key>
+                <description>Deck D loop end push.</description>
+                <status>0x93</status>
+                <midino>0x37</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>loop_out</key>
+                <description>Deck D loop end release.</description>
+                <status>0x83</status>
+                <midino>0x37</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>reloop_exit</key>
+                <description>Deck D loop ON/OFF.</description>
+                <status>0x93</status>
+                <midino>0x39</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <!-- Wheel Stuff. -->
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.wheelTouch</key>
+                <description>Deck A wheel toutch.</description>
+                <status>0x90</status>
+                <midino>0x1A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.wheelTouch</key>
+                <description>Deck A wheel release.</description>
+                <status>0x80</status>
+                <midino>0x1A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.wheelTurn</key>
+                <description>Deck A wheel turn.</description>
+                <status>0xB0</status>
+                <midino>0x1A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.wheelTouch</key>
+                <description>Deck B wheel toutch.</description>
+                <status>0x91</status>
+                <midino>0x3A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.wheelTouch</key>
+                <description>Deck B wheel release.</description>
+                <status>0x81</status>
+                <midino>0x3A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.wheelTurn</key>
+                <description>Deck B wheel turn.</description>
+                <status>0xB1</status>
+                <midino>0x3A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.wheelTouch</key>
+                <description>Deck C wheel toutch.</description>
+                <status>0x92</status>
+                <midino>0x1A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.wheelTouch</key>
+                <description>Deck C wheel release.</description>
+                <status>0x82</status>
+                <midino>0x1A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.wheelTurn</key>
+                <description>Deck C wheel turn.</description>
+                <status>0xB2</status>
+                <midino>0x1A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.wheelTouch</key>
+                <description>Deck D wheel toutch.</description>
+                <status>0x93</status>
+                <midino>0x3A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.wheelTouch</key>
+                <description>Deck D wheel release.</description>
+                <status>0x83</status>
+                <midino>0x3A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.wheelTurn</key>
+                <description>Deck D wheel turn.</description>
+                <status>0xB3</status>
+                <midino>0x3A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- Keylock. -->
+            <control>
+                <group>[Channel1]</group>
+                <key>keylock</key>
+                <description>Deck A LOCK button.</description>
+                <status>0x90</status>
+                <midino>0x1B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>keylock</key>
+                <description>Deck B LOCK button.</description>
+                <status>0x91</status>
+                <midino>0x3B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>keylock</key>
+                <description>Deck C LOCK button.</description>
+                <status>0x92</status>
+                <midino>0x1B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>keylock</key>
+                <description>Deck D LOCK button.</description>
+                <status>0x93</status>
+                <midino>0x3B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <!-- Pitch stuff.-->
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.pitch</key>
+                <description>Deck A pitch- push.</description>
+                <status>0x90</status>
+                <midino>0x20</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.pitch</key>
+                <description>Deck A pitch- release.</description>
+                <status>0x80</status>
+                <midino>0x20</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.pitch</key>
+                <description>Deck A pitch+ push.</description>
+                <status>0x90</status>
+                <midino>0x21</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.pitch</key>
+                <description>Deck A pitch+ release.</description>
+                <status>0x80</status>
+                <midino>0x21</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.pitch</key>
+                <description>Deck B pitch- push.</description>
+                <status>0x91</status>
+                <midino>0x40</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.pitch</key>
+                <description>Deck B pitch- release.</description>
+                <status>0x81</status>
+                <midino>0x40</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.pitch</key>
+                <description>Deck B pitch+ push.</description>
+                <status>0x91</status>
+                <midino>0x41</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.pitch</key>
+                <description>Deck B pitch+ release.</description>
+                <status>0x81</status>
+                <midino>0x41</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.pitch</key>
+                <description>Deck C pitch- push.</description>
+                <status>0x92</status>
+                <midino>0x20</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.pitch</key>
+                <description>Deck C pitch- release.</description>
+                <status>0x82</status>
+                <midino>0x20</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.pitch</key>
+                <description>Deck C pitch+ push.</description>
+                <status>0x92</status>
+                <midino>0x21</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.pitch</key>
+                <description>Deck C pitch+ release.</description>
+                <status>0x82</status>
+                <midino>0x21</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.pitch</key>
+                <description>Deck D pitch- push.</description>
+                <status>0x93</status>
+                <midino>0x40</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.pitch</key>
+                <description>Deck D pitch- release.</description>
+                <status>0x83</status>
+                <midino>0x40</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.pitch</key>
+                <description>Deck D pitch+ push.</description>
+                <status>0x93</status>
+                <midino>0x41</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.pitch</key>
+                <description>Deck D pitch+ release.</description>
+                <status>0x83</status>
+                <midino>0x41</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- Hotcue stuff. -->
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck A hotcue 1 push.</description>
+                <status>0x90</status>
+                <midino>0x22</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck A hotcue 1 release.</description>
+                <status>0x80</status>
+                <midino>0x22</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck A hotcue 2 push.</description>
+                <status>0x90</status>
+                <midino>0x23</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck A hotcue 2 release.</description>
+                <status>0x80</status>
+                <midino>0x23</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck A hotcue 3 push.</description>
+                <status>0x90</status>
+                <midino>0x24</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck A hotcue 3 release.</description>
+                <status>0x80</status>
+                <midino>0x24</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck A hotcue 4 push.</description>
+                <status>0x90</status>
+                <midino>0x25</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck A hotcue 4 release.</description>
+                <status>0x80</status>
+                <midino>0x25</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck A hotcue 5 push.</description>
+                <status>0x90</status>
+                <midino>0x26</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck A hotcue 5 release.</description>
+                <status>0x80</status>
+                <midino>0x26</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck A hotcue 6 push.</description>
+                <status>0x90</status>
+                <midino>0x27</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck A hotcue 6 release.</description>
+                <status>0x80</status>
+                <midino>0x27</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck A hotcue 7 push.</description>
+                <status>0x90</status>
+                <midino>0x28</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck A hotcue 7 release.</description>
+                <status>0x80</status>
+                <midino>0x28</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck A hotcue 8 push.</description>
+                <status>0x90</status>
+                <midino>0x29</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck A hotcue 8 release.</description>
+                <status>0x80</status>
+                <midino>0x29</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck B hotcue 1 push.</description>
+                <status>0x91</status>
+                <midino>0x42</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck B hotcue 1 release.</description>
+                <status>0x81</status>
+                <midino>0x42</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck B hotcue 2 push.</description>
+                <status>0x91</status>
+                <midino>0x43</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck B hotcue 2 release.</description>
+                <status>0x81</status>
+                <midino>0x43</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck B hotcue 3 push.</description>
+                <status>0x91</status>
+                <midino>0x44</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck B hotcue 3 release.</description>
+                <status>0x81</status>
+                <midino>0x44</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck B hotcue 4 push.</description>
+                <status>0x91</status>
+                <midino>0x45</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck B hotcue 4 release.</description>
+                <status>0x81</status>
+                <midino>0x45</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck B hotcue 5 push.</description>
+                <status>0x91</status>
+                <midino>0x46</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck B hotcue 5 release.</description>
+                <status>0x81</status>
+                <midino>0x46</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck B hotcue 6 push.</description>
+                <status>0x91</status>
+                <midino>0x47</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck B hotcue 6 release.</description>
+                <status>0x81</status>
+                <midino>0x47</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck B hotcue 7 push.</description>
+                <status>0x91</status>
+                <midino>0x48</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck B hotcue 7 release.</description>
+                <status>0x81</status>
+                <midino>0x48</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck B hotcue 8 push.</description>
+                <status>0x91</status>
+                <midino>0x49</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck B hotcue 8 release.</description>
+                <status>0x81</status>
+                <midino>0x49</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck C hotcue 1 push.</description>
+                <status>0x92</status>
+                <midino>0x22</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck C hotcue 1 release.</description>
+                <status>0x82</status>
+                <midino>0x22</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck C hotcue 2 push.</description>
+                <status>0x92</status>
+                <midino>0x23</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck C hotcue 2 release.</description>
+                <status>0x82</status>
+                <midino>0x23</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck C hotcue 3 push.</description>
+                <status>0x92</status>
+                <midino>0x24</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck C hotcue 3 release.</description>
+                <status>0x82</status>
+                <midino>0x24</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck C hotcue 4 push.</description>
+                <status>0x92</status>
+                <midino>0x25</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck C hotcue 4 release.</description>
+                <status>0x82</status>
+                <midino>0x25</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck C hotcue 5 push.</description>
+                <status>0x92</status>
+                <midino>0x26</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck C hotcue 5 release.</description>
+                <status>0x82</status>
+                <midino>0x26</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck C hotcue 6 push.</description>
+                <status>0x92</status>
+                <midino>0x27</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck C hotcue 6 release.</description>
+                <status>0x82</status>
+                <midino>0x27</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck C hotcue 7 push.</description>
+                <status>0x92</status>
+                <midino>0x28</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck C hotcue 7 release.</description>
+                <status>0x82</status>
+                <midino>0x28</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck C hotcue 8 push.</description>
+                <status>0x92</status>
+                <midino>0x29</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck C hotcue 8 release.</description>
+                <status>0x82</status>
+                <midino>0x29</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck D hotcue 1 push.</description>
+                <status>0x93</status>
+                <midino>0x42</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck D hotcue 1 release.</description>
+                <status>0x83</status>
+                <midino>0x42</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck D hotcue 2 push.</description>
+                <status>0x93</status>
+                <midino>0x43</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck D hotcue 2 release.</description>
+                <status>0x83</status>
+                <midino>0x43</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck D hotcue 3 push.</description>
+                <status>0x93</status>
+                <midino>0x44</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck D hotcue 3 release.</description>
+                <status>0x83</status>
+                <midino>0x44</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck D hotcue 4 push.</description>
+                <status>0x93</status>
+                <midino>0x45</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck D hotcue 4 release.</description>
+                <status>0x83</status>
+                <midino>0x45</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck D hotcue 5 push.</description>
+                <status>0x93</status>
+                <midino>0x46</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck D hotcue 5 release.</description>
+                <status>0x83</status>
+                <midino>0x46</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck D hotcue 6 push.</description>
+                <status>0x93</status>
+                <midino>0x47</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck D hotcue 6 release.</description>
+                <status>0x83</status>
+                <midino>0x47</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck D hotcue 7 push.</description>
+                <status>0x93</status>
+                <midino>0x48</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck D hotcue 7 release.</description>
+                <status>0x83</status>
+                <midino>0x48</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck D hotcue 8 push.</description>
+                <status>0x93</status>
+                <midino>0x49</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.hotcue</key>
+                <description>Deck D hotcue 8 release.</description>
+                <status>0x83</status>
+                <midino>0x49</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- DEL "shift" buttons.-->
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.del</key>
+                <description>Deck A DEL button push.</description>
+                <status>0x90</status>
+                <midino>0x2A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.del</key>
+                <description>Deck A DEL button release.</description>
+                <status>0x80</status>
+                <midino>0x2A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.del</key>
+                <description>Deck B DEL button push.</description>
+                <status>0x91</status>
+                <midino>0x4A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.del</key>
+                <description>Deck B DEL button release.</description>
+                <status>0x81</status>
+                <midino>0x4A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.del</key>
+                <description>Deck C DEL button push.</description>
+                <status>0x92</status>
+                <midino>0x2A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.del</key>
+                <description>Deck C DEL button release.</description>
+                <status>0x82</status>
+                <midino>0x2A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.del</key>
+                <description>Deck D DEL button push.</description>
+                <status>0x93</status>
+                <midino>0x4A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.del</key>
+                <description>Deck D DEL button release.</description>
+                <status>0x83</status>
+                <midino>0x4A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- Cue. -->
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.cue</key>
+                <description>Deck A CUE push.</description>
+                <status>0x90</status>
+                <midino>0x2B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.cue</key>
+                <description>Deck A CUE release.</description>
+                <status>0x80</status>
+                <midino>0x2B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.cue</key>
+                <description>Deck B CUE push.</description>
+                <status>0x91</status>
+                <midino>0x4B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.cue</key>
+                <description>Deck B CUE release.</description>
+                <status>0x81</status>
+                <midino>0x4B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.cue</key>
+                <description>Deck C CUE push.</description>
+                <status>0x92</status>
+                <midino>0x2B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.cue</key>
+                <description>Deck C CUE release.</description>
+                <status>0x82</status>
+                <midino>0x2B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.cue</key>
+                <description>Deck D CUE push.</description>
+                <status>0x93</status>
+                <midino>0x4B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.cue</key>
+                <description>Deck D CUE release.</description>
+                <status>0x83</status>
+                <midino>0x4B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- Play. -->
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.play</key>
+                <description>Deck A PLAY push.</description>
+                <status>0x90</status>
+                <midino>0x2C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.play</key>
+                <description>Deck A PLAY release.</description>
+                <status>0x80</status>
+                <midino>0x2C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.play</key>
+                <description>Deck B PLAY push.</description>
+                <status>0x91</status>
+                <midino>0x4C</midino>
+                <options>
+                     <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.play</key>
+                <description>Deck B PLAY release.</description>
+                <status>0x81</status>
+                <midino>0x4C</midino>
+                <options>
+                     <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.play</key>
+                <description>Deck C PLAY push.</description>
+                <status>0x92</status>
+                <midino>0x2C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.play</key>
+                <description>Deck C PLAY release.</description>
+                <status>0x82</status>
+                <midino>0x2C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.play</key>
+                <description>Deck D PLAY push.</description>
+                <status>0x93</status>
+                <midino>0x4C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.play</key>
+                <description>Deck D PLAY release.</description>
+                <status>0x83</status>
+                <midino>0x4C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- Sync. -->
+            <control>
+                <group>[Channel1]</group>
+                <key>sync_enabled</key>
+                <description>Deck A Sync button.</description>
+                <status>0x90</status>
+                <midino>0x2D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>sync_enabled</key>
+                <description>Deck B Sync button.</description>
+                <status>0x91</status>
+                <midino>0x4D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>sync_enabled</key>
+                <description>Deck C Sync button.</description>
+                <status>0x92</status>
+                <midino>0x2D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>sync_enabled</key>
+                <description>Deck D Sync button.</description>
+                <status>0x93</status>
+                <midino>0x4D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <!-- Load. -->
+            <control>
+                <group>[Channel1]</group>
+                <key>LoadSelectedTrack</key>
+                <description>Deck A LOAD button.</description>
+                <status>0x90</status>
+                <midino>0x50</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>LoadSelectedTrack</key>
+                <description>Deck B LOAD button.</description>
+                <status>0x91</status>
+                <midino>0x51</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>LoadSelectedTrack</key>
+                <description>Deck C LOAD button.</description>
+                <status>0x92</status>
+                <midino>0x50</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>LoadSelectedTrack</key>
+                <description>Deck D LOAD button.</description>
+                <status>0x93</status>
+                <midino>0x51</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <!-- FX assign. -->
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck A FX Assign 1 push.</description>
+                <status>0x90</status>
+                <midino>0x52</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck A FX Assign 1 release.</description>
+                <status>0x80</status>
+                <midino>0x52</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck A FX Assign 2 push.</description>
+                <status>0x90</status>
+                <midino>0x53</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck A FX Assign 2 release.</description>
+                <status>0x80</status>
+                <midino>0x53</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit3]</group>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck B FX Assign 1 push.</description>
+                <status>0x91</status>
+                <midino>0x54</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit3]</group>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck B FX Assign 1 release.</description>
+                <status>0x81</status>
+                <midino>0x54</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit4]</group>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck B FX Assign 2 push.</description>
+                <status>0x91</status>
+                <midino>0x55</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit4]</group>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck B FX Assign 2 release.</description>
+                <status>0x81</status>
+                <midino>0x55</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck C FX Assign 1 push.</description>
+                <status>0x92</status>
+                <midino>0x52</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck C FX Assign 1 release.</description>
+                <status>0x82</status>
+                <midino>0x52</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck C FX Assign 2 push.</description>
+                <status>0x92</status>
+                <midino>0x53</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck C FX Assign 2 release.</description>
+                <status>0x82</status>
+                <midino>0x53</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit3]</group>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck D FX Assign 1 push.</description>
+                <status>0x93</status>
+                <midino>0x54</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit3]</group>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck D FX Assign 1 release.</description>
+                <status>0x83</status>
+                <midino>0x54</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit4]</group>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck D FX Assign 2 push.</description>
+                <status>0x93</status>
+                <midino>0x55</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit4]</group>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck D FX Assign 2 release.</description>
+                <status>0x83</status>
+                <midino>0x55</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- EQ -->
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter3</key>
+                <description>Deck A Hi knob.</description>
+                <status>0xB0</status>
+                <midino>0x60</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter2</key>
+                <description>Deck A Mid knob.</description>
+                <status>0xB0</status>
+                <midino>0x61</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter1</key>
+                <description>Deck A Low knob.</description>
+                <status>0xB0</status>
+                <midino>0x62</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>button_parameter3</key>
+                <description>Deck A Hi KILL.</description>
+                <status>0x90</status>
+                <midino>0x60</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>button_parameter2</key>
+                <description>Deck A Mid KILL.</description>
+                <status>0x90</status>
+                <midino>0x61</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>button_parameter1</key>
+                <description>Deck A Low KILL.</description>
+                <status>0x90</status>
+                <midino>0x62</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter3</key>
+                <description>Deck B Hi knob.</description>
+                <status>0xB1</status>
+                <midino>0x63</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter2</key>
+                <description>Deck B Mid knob.</description>
+                <status>0xB1</status>
+                <midino>0x64</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter1</key>
+                <description>Deck B Low knob.</description>
+                <status>0xB1</status>
+                <midino>0x65</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>button_parameter3</key>
+                <description>Deck B Hi KILL.</description>
+                <status>0x91</status>
+                <midino>0x63</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>button_parameter2</key>
+                <description>Deck B Mid KILL.</description>
+                <status>0x91</status>
+                <midino>0x64</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>button_parameter1</key>
+                <description>Deck B Low KILL.</description>
+                <status>0x91</status>
+                <midino>0x65</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>button_parameter3</key>
+                <description>Deck C Hi knob.</description>
+                <status>0x92</status>
+                <midino>0x60</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>button_parameter2</key>
+                <description>Deck C Mid knob.</description>
+                <status>0x92</status>
+                <midino>0x61</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>button_parameter1</key>
+                <description>Deck C Low knob.</description>
+                <status>0x92</status>
+                <midino>0x62</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>parameter3</key>
+                <description>Deck C Hi KILL.</description>
+                <status>0xB2</status>
+                <midino>0x60</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>parameter2</key>
+                <description>Deck C Mid KILL.</description>
+                <status>0xB2</status>
+                <midino>0x61</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>parameter1</key>
+                <description>Deck C Low KILL.</description>
+                <status>0xB2</status>
+                <midino>0x62</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>button_parameter3</key>
+                <description>Deck D Hi knob.</description>
+                <status>0x93</status>
+                <midino>0x63</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>button_parameter2</key>
+                <description>Deck D Mid knob.</description>
+                <status>0x93</status>
+                <midino>0x64</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>button_parameter1</key>
+                <description>Deck D Low knob.</description>
+                <status>0x93</status>
+                <midino>0x65</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>parameter3</key>
+                <description>Deck D Hi KILL.</description>
+                <status>0xB3</status>
+                <midino>0x63</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>parameter2</key>
+                <description>Deck D Mid KILL.</description>
+                <status>0xB3</status>
+                <midino>0x64</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>parameter1</key>
+                <description>Deck D Low KILL.</description>
+                <status>0xB3</status>
+                <midino>0x65</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <!-- Phones -->
+            <control>
+                <group>[Channel1]</group>
+                <key>pfl</key>
+                <description>Deck A PHONES button.</description>
+                <status>0x90</status>
+                <midino>0x6A</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>pfl</key>
+                <description>Deck B PHONES button.</description>
+                <status>0x91</status>
+                <midino>0x6B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>pfl</key>
+                <description>Deck C PHONES button.</description>
+                <status>0x92</status>
+                <midino>0x6A</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>pfl</key>
+                <description>Deck D PHONES button.</description>
+                <status>0x93</status>
+                <midino>0x6B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <!-- Faders -->
+            <control>
+                <group>[Channel1]</group>
+                <key>volume</key>
+                <description>Deck A Fader.</description>
+                <status>0xB0</status>
+                <midino>0x70</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>volume</key>
+                <description>Deck B Fader.</description>
+                <status>0xB1</status>
+                <midino>0x71</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>volume</key>
+                <description>Deck C Fader.</description>
+                <status>0xB2</status>
+                <midino>0x70</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>volume</key>
+                <description>Deck D Fader.</description>
+                <status>0xB3</status>
+                <midino>0x71</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <!-- Playback rate. -->
+            <control>
+                <group>[Channel1]</group>
+                <key>rate</key>
+                <description>Deck A Pitch Slider.</description>
+                <status>0xE0</status>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>rate</key>
+                <description>Deck B Pitch Slider.</description>
+                <status>0xE1</status>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>rate</key>
+                <description>Deck C Pitch Slider.</description>
+                <status>0xE2</status>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>rate</key>
+                <description>Deck D Pitch Slider.</description>
+                <status>0xE3</status>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <!-- Master stuff.-->
+            <control>
+                <group>[Master]</group>
+                <key>gain</key>
+                <description>Main knob.</description>
+                <status>0xB0</status>
+                <midino>0x2F</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>crossfader</key>
+                <description>Crossfader.</description>
+                <status>0xB0</status>
+                <midino>0x72</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>headMix</key>
+                <description>PHONES MIX knob.</description>
+                <status>0xB0</status>
+                <midino>0x7A</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>headGain</key>
+                <description>PHONES VOLUME knob.</description>
+                <status>0xB0</status>
+                <midino>0x7B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+        </controls>
+        <!-- Outputs. -->       
+        <outputs>
+            <!-- Slip indicators. -->
+            <output>
+                <group>[Channel1]</group>
+                <key>slip_enabled</key>
+                <description>Deck A FX 1 button.</description>
+                <status>0x90</status>
+                <midino>0x10</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>slip_enabled</key>
+                <description>Deck B FX 1 button.</description>
+                <status>0x91</status>
+                <midino>0x30</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>slip_enabled</key>
+                <description>Deck C FX 1 button.</description>
+                <status>0x92</status>
+                <midino>0x10</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>slip_enabled</key>
+                <description>Deck D FX 1 button.</description>
+                <status>0x93</status>
+                <midino>0x30</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <!-- Repeat indicators. -->
+            <output>
+                <group>[Channel1]</group>
+                <key>repeat</key>
+                <description>Deck A FX 4 button.</description>
+                <status>0x90</status>
+                <midino>0x11</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>repeat</key>
+                <description>Deck B FX 4 button.</description>
+                <status>0x91</status>
+                <midino>0x31</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>repeat</key>
+                <description>Deck C FX 4 button.</description>
+                <status>0x92</status>
+                <midino>0x11</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>repeat</key>
+                <description>Deck D FX 4 button.</description>
+                <status>0x93</status>
+                <midino>0x31</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <!-- Quantize indicators. -->
+            <output>
+                <group>[Channel1]</group>
+                <key>quantize</key>
+                <description>Deck A FX 4 button.</description>
+                <status>0x90</status>
+                <midino>0x13</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>quantize</key>
+                <description>Deck B FX 4 button.</description>
+                <status>0x91</status>
+                <midino>0x33</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+           <output>
+                <group>[Channel3]</group>
+                <key>quantize</key>
+                <description>Deck C FX 4 button.</description>
+                <status>0x92</status>
+                <midino>0x13</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>quantize</key>
+                <description>Deck D FX 4 button.</description>
+                <status>0x93</status>
+                <midino>0x33</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <!-- Loop indicators. -->
+            <output>
+                <group>[Channel1]</group>
+                <key>loop_start_position</key>
+                <description>Deck A loop start.</description>
+                <description></description>
+                <status>0x90</status>
+                <midino>0x17</midino>
+                <on>0x02</on>
+                <off>0x01</off>
+                <maximum>1e+09</maximum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>loop_end_position</key>
+                <description>Deck A loop stop.</description>
+                <description></description>
+                <status>0x90</status>
+                <midino>0x18</midino>
+                <on>0x02</on>
+                <off>0x01</off>
+                <maximum>1e+09</maximum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>loop_enabled</key>
+                <description>Deck A loop ON/OFF.</description>
+                <status>0x90</status>
+                <midino>0x19</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>loop_start_position</key>
+                <description>Deck B loop start.</description>
+                <description>Indicates loop position has been set.</description>
+                <status>0x91</status>
+                <midino>0x38</midino>
+                <on>0x02</on>
+                <off>0x01</off>
+                <maximum>1e+09</maximum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>loop_end_position</key>
+                <description>Deck B loop stop.</description>
+                <description></description>
+                <status>0x91</status>
+                <midino>0x37</midino>
+                <on>0x02</on>
+                <off>0x01</off>
+                <maximum>1e+09</maximum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>loop_enabled</key>
+                <description>Deck B loop ON/OFF.</description>
+                <status>0x91</status>
+                <midino>0x39</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>loop_start_position</key>
+                <description>Deck C loop start.</description>
+                <description></description>
+                <status>0x92</status>
+                <midino>0x17</midino>
+                <on>0x02</on>
+                <off>0x01</off>
+                <maximum>1e+09</maximum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>loop_end_position</key>
+                <description>Deck C loop stop.</description>
+                <description>Indicates loop position has been set.</description>
+                <status>0x92</status>
+                <midino>0x18</midino>
+                <on>0x02</on>
+                <off>0x01</off>
+                <maximum>1e+09</maximum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>loop_enabled</key>
+                <description>Deck C loop ON/OFF.</description>
+                <status>0x92</status>
+                <midino>0x19</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>loop_start_position</key>
+                <description>Deck D loop start.</description>
+                <description>Indicates loop position has been set.</description>
+                <status>0x93</status>
+                <midino>0x38</midino>
+                <on>0x02</on>
+                <off>0x01</off>
+                <maximum>1e+09</maximum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>loop_end_position</key>
+                <description>Deck D loop stop.</description>
+                <description>Indicates loop position has been set.</description>
+                <status>0x93</status>
+                <midino>0x37</midino>
+                <on>0x02</on>
+                <off>0x01</off>
+                <maximum>1e+09</maximum>
+            </output>
+           <output>
+                <group>[Channel4]</group>
+                <key>loop_enabled</key>
+                <description>Deck D loop ON/OFF.</description>
+                <status>0x93</status>
+                <midino>0x39</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <!-- Keylock indicators. -->
+            <output>
+                <group>[Channel1]</group>
+                <key>keylock</key>
+                <description>Deck A LOCK button.</description>
+                <status>0x90</status>
+                <midino>0x1B</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>keylock</key>
+                <description>Deck B LOCK button.</description>
+                <status>0x91</status>
+                <midino>0x3B</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>keylock</key>
+                <description>Deck C LOCK button.</description>
+                <status>0x92</status>
+                <midino>0x1B</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>keylock</key>
+                <description>Deck D LOCK button.</description>
+                <status>0x93</status>
+                <midino>0x3B</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <!-- Pitch indicators. -->
+            <output>
+                <group>[Channel1]</group>
+                <key>pitch</key>
+                <description>Deck A pitch-.</description>
+                <status>0x90</status>
+                <midino>0x20</midino>
+                <on>0x02</on>
+                <off>0x01</off>
+                <maximum>-0.01</maximum>
+                <minimum>-10</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>pitch</key>
+                <description>Deck A pitch+.</description>
+                <status>0x90</status>
+                <midino>0x21</midino>
+                <on>0x02</on>
+                <off>0x01</off>
+                <maximum>10</maximum>
+                <minimum>0.01</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>pitch</key>
+                <description>Deck B pitch-.</description>
+                <status>0x91</status>
+                <midino>0x41</midino>
+                <on>0x02</on>
+                <off>0x01</off>
+                <maximum>-0.01</maximum>
+                <minimum>-10</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>pitch</key>
+                <description>Deck B pitch+.</description>
+                <status>0x91</status>
+                <midino>0x40</midino>
+                <on>0x02</on>
+                <off>0x01</off>
+                <maximum>10</maximum>
+                <minimum>0.01</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>pitch</key>
+                <description>Deck C pitch-.</description>
+                <status>0x92</status>
+                <midino>0x20</midino>
+                <on>0x02</on>
+                <off>0x01</off>
+                <maximum>-0.01</maximum>
+                <minimum>-10</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>pitch</key>
+                <description>Deck C pitch+.</description>
+                <status>0x92</status>
+                <midino>0x21</midino>
+                <on>0x02</on>
+                <off>0x01</off>
+                <maximum>10</maximum>
+                <minimum>0.01</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>pitch</key>
+                <description>Deck D pitch-.</description>
+                <status>0x93</status>
+                <midino>0x41</midino>
+                <on>0x02</on>
+                <off>0x01</off>
+                <maximum>-0.01</maximum>
+                <minimum>-10</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>pitch</key>
+                <description>Deck D pitch+.</description>
+                <status>0x93</status>
+                <midino>0x40</midino>
+                <on>0x02</on>
+                <off>0x01</off>
+                <maximum>10</maximum>
+                <minimum>0.01</minimum>
+            </output>
+            <!-- Hotcue indicators. -->
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_1_enabled</key>
+                <description>Deck A hotcue 1.</description>
+                <status>0x90</status>
+                <midino>0x22</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_2_enabled</key>
+                <description>Deck A hotcue 2.</description>
+                <status>0x90</status>
+                <midino>0x23</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_3_enabled</key>
+                <description>Deck A hotcue 3.</description>
+                <status>0x90</status>
+                <midino>0x24</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_4_enabled</key>
+                <description>Deck A hotcue 4.</description>
+                <status>0x90</status>
+                <midino>0x25</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_5_enabled</key>
+                <description>Deck A hotcue 5.</description>
+                <status>0x90</status>
+                <midino>0x26</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_6_enabled</key>
+                <description>Deck A hotcue 6.</description>
+                <status>0x90</status>
+                <midino>0x27</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_7_enabled</key>
+                <description>Deck A hotcue 7.</description>
+                <status>0x90</status>
+                <midino>0x28</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_8_enabled</key>
+                <description>Deck A hotcue 8.</description>
+                <status>0x90</status>
+                <midino>0x29</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_1_enabled</key>
+                <description>Deck B hotcue 1.</description>
+                <status>0x91</status>
+                <midino>0x42</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_2_enabled</key>
+                <description>Deck B hotcue 2.</description>
+                <status>0x91</status>
+                <midino>0x43</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_3_enabled</key>
+                <description>Deck B hotcue 3.</description>
+                <status>0x91</status>
+                <midino>0x44</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_4_enabled</key>
+                <description>Deck B hotcue 4.</description>
+                <status>0x91</status>
+                <midino>0x45</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_5_enabled</key>
+                <description>Deck B hotcue 5.</description>
+                <status>0x91</status>
+                <midino>0x46</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_6_enabled</key>
+                <description>Deck B hotcue 6.</description>
+                <status>0x91</status>
+                <midino>0x47</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_7_enabled</key>
+                <description>Deck B hotcue 7.</description>
+                <status>0x91</status>
+                <midino>0x48</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_8_enabled</key>
+                <description>Deck B hotcue 8.</description>
+                <status>0x91</status>
+                <midino>0x49</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>hotcue_1_enabled</key>
+                <description>Deck C hotcue 1.</description>
+                <status>0x92</status>
+                <midino>0x22</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>hotcue_2_enabled</key>
+                <description>Deck C hotcue 2.</description>
+                <status>0x92</status>
+                <midino>0x23</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>hotcue_3_enabled</key>
+                <description>Deck C hotcue 3.</description>
+                <status>0x92</status>
+                <midino>0x24</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>hotcue_4_enabled</key>
+                <description>Deck C hotcue 4.</description>
+                <status>0x92</status>
+                <midino>0x25</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>hotcue_5_enabled</key>
+                <description>Deck C hotcue 5.</description>
+                <status>0x92</status>
+                <midino>0x26</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>hotcue_6_enabled</key>
+                <description>Deck C hotcue 6.</description>
+                <status>0x92</status>
+                <midino>0x27</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>hotcue_7_enabled</key>
+                <description>Deck C hotcue 7.</description>
+                <status>0x92</status>
+                <midino>0x28</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>hotcue_8_enabled</key>
+                <description>Deck C hotcue 8.</description>
+                <status>0x92</status>
+                <midino>0x29</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>hotcue_1_enabled</key>
+                <description>Deck D hotcue 1.</description>
+                <status>0x93</status>
+                <midino>0x42</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>hotcue_2_enabled</key>
+                <description>Deck D hotcue 2.</description>
+                <status>0x93</status>
+                <midino>0x43</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>hotcue_3_enabled</key>
+                <description>Deck D hotcue 3.</description>
+                <status>0x93</status>
+                <midino>0x44</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>hotcue_4_enabled</key>
+                <description>Deck D hotcue 4.</description>
+                <status>0x93</status>
+                <midino>0x45</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>hotcue_5_enabled</key>
+                <description>Deck D hotcue 5.</description>
+                <status>0x93</status>
+                <midino>0x46</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>hotcue_6_enabled</key>
+                <description>Deck D hotcue 6.</description>
+                <status>0x93</status>
+                <midino>0x47</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>hotcue_7_enabled</key>
+                <description>Deck D hotcue 7.</description>
+                <status>0x93</status>
+                <midino>0x48</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>hotcue_8_enabled</key>
+                <description>Deck D hotcue 8.</description>
+                <status>0x93</status>
+                <midino>0x49</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <!-- Cue indicators -->
+            <output>
+                <group>[Channel1]</group>
+                <key>cue_indicator</key>
+                <description>Deck A CUE button.</description>
+                <status>0x90</status>
+                <midino>0x2B</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>cue_indicator</key>
+                <description>Deck B CUE button.</description>
+                <status>0x91</status>
+                <midino>0x4B</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>cue_indicator</key>
+                <description>Deck C CUE button.</description>
+                <status>0x92</status>
+                <midino>0x2B</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>cue_indicator</key>
+                <description>Deck D CUE button.</description>
+                <status>0x93</status>
+                <midino>0x4B</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <!-- Play indicators. -->
+            <output>
+                <group>[Channel1]</group>
+                <key>play_indicator</key>
+                <description>Deck A PLAY button.</description>
+                <status>0x90</status>
+                <midino>0x2C</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>play_indicator</key>
+                <description>Deck B PLAY button.</description>
+                <status>0x91</status>
+                <midino>0x4C</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>play_indicator</key>
+                <description>Deck C PLAY button.</description>
+                <status>0x92</status>
+                <midino>0x2C</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>play_indicator</key>
+                <description>Deck D PLAY button.</description>
+                <status>0x93</status>
+                <midino>0x4C</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <!-- Sync indicators. -->
+            <output>
+                <group>[Channel1]</group>
+                <key>sync_enabled</key>
+                <description>Deck A Sync button.</description>
+                <status>0x90</status>
+                <midino>0x2D</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>sync_enabled</key>
+                <description>Deck B Sync button.</description>
+                <status>0x91</status>
+                <midino>0x4D</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>sync_enabled</key>
+                <description>Deck C Sync button.</description>
+                <status>0x92</status>
+                <midino>0x2D</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>sync_enabled</key>
+                <description>Deck D Sync button.</description>
+                <status>0x93</status>
+                <midino>0x4D</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <!-- Load indicators. -->
+            <output>
+                <group>[Channel1]</group>
+                <key>duration</key>
+                <description>Deck A LOAD button.</description>
+                <status>0x90</status>
+                <midino>0x50</midino>
+                <on>0x01</on>
+                <maximum>999999</maximum>
+                <minimum>1</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>duration</key>
+                <description>Deck B LOAD button.</description>
+                <status>0x91</status>
+                <midino>0x51</midino>
+                <on>0x01</on>
+                <maximum>999999</maximum>
+                <minimum>1</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>duration</key>
+                <description>Deck C LOAD button.</description>
+                <status>0x92</status>
+                <midino>0x50</midino>
+                <on>0x01</on>
+                <maximum>999999</maximum>
+                <minimum>1</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>duration</key>
+                <description>Deck D LOAD button.</description>
+                <status>0x93</status>
+                <midino>0x51</midino>
+                <on>0x01</on>
+                <maximum>999999</maximum>
+                <minimum>1</minimum>
+            </output>
+            <!-- FX. -->
+            <output>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel1]_enable</key>
+                <description>Deck A FX Assign 1.</description>
+                <status>0x90</status>
+                <midino>0x52</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel1]_enable</key>
+                <description>Deck A FX Assign 2.</description>
+                <status>0x90</status>
+                <midino>0x53</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit3]</group>
+                <key>group_[Channel2]_enable</key>
+                <description>Deck B FX Assign 1.</description>
+                <status>0x91</status>
+                <midino>0x54</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit4]</group>
+                <key>group_[Channel2]_enable</key>
+                <description>Deck B FX Assign 2.</description>
+                <status>0x91</status>
+                <midino>0x55</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel3]_enable</key>
+                <description>Deck C FX Assign 1.</description>
+                <status>0x92</status>
+                <midino>0x52</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel3]_enable</key>
+                <description>Deck C FX Assign 2.</description>
+                <status>0x92</status>
+                <midino>0x53</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit3]</group>
+                <key>group_[Channel4]_enable</key>
+                <description>Deck D FX Assign 1.</description>
+                <status>0x93</status>
+                <midino>0x54</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit4]</group>
+                <key>group_[Channel4]_enable</key>
+                <description>Deck D FX Assign 2.</description>
+                <status>0x93</status>
+                <midino>0x55</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <!-- EQ. -->
+            <output>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>button_parameter3</key>
+                <description>Deck A Hi KILL.</description>
+                <status>0x90</status>
+                <midino>0x60</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>button_parameter2</key>
+                <description>Deck A Mid KILL.</description>
+                <status>0x90</status>
+                <midino>0x61</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>button_parameter1</key>
+                <description>Deck A Low KILL.</description>
+                <status>0x90</status>
+                <midino>0x62</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>button_parameter3</key>
+                <description>Deck B Hi KILL.</description>
+                <status>0x91</status>
+                <midino>0x63</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>button_parameter2</key>
+                <description>Deck B Mid KILL.</description>
+                <status>0x91</status>
+                <midino>0x64</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>button_parameter1</key>
+                <description>Deck B Low KILL.</description>
+                <status>0x91</status>
+                <midino>0x65</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>button_parameter3</key>
+                <description>Deck C Hi KILL.</description>
+                <status>0x92</status>
+                <midino>0x60</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>button_parameter2</key>
+                <description>Deck C Mid KILL.</description>
+                <status>0x92</status>
+                <midino>0x61</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>button_parameter1</key>
+                <description>Deck C Low KILL.</description>
+                <status>0x92</status>
+                <midino>0x62</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>button_parameter3</key>
+                <description>Deck D Hi KILL.</description>
+                <status>0x93</status>
+                <midino>0x63</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>button_parameter2</key>
+                <description>Deck D Mid KILL.</description>
+                <status>0x93</status>
+                <midino>0x64</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>button_parameter1</key>
+                <description>Deck D Low KILL.</description>
+                <status>0x93</status>
+                <midino>0x65</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <!-- Phones -->
+            <output>
+                <group>[Channel1]</group>
+                <key>pfl</key>
+                <description>Deck A PHONES button.</description>
+                <status>0x90</status>
+                <midino>0x6A</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>pfl</key>
+                <description>Deck B PHONES button.</description>
+                <status>0x91</status>
+                <midino>0x6B</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>pfl</key>
+                <description>Deck C PHONES button.</description>
+                <status>0x92</status>
+                <midino>0x6A</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>pfl</key>
+                <description>Deck D PHONES button.</description>
+                <status>0x93</status>
+                <midino>0x6B</midino>
+                <on>0x01</on>
+                <minimum>0.1</minimum>
+            </output>
+        </outputs>
+    </controller>
+</MixxxControllerPreset>

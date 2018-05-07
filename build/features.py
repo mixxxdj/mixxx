@@ -550,27 +550,41 @@ class ColorDiagnostics(Feature):
         build.env.Append(CCFLAGS='-fcolor-diagnostics')
 
 
-class AddressSanitizer(Feature):
+class Sanitizers(Feature):
+    # Known sanitizers, their names, and their -fsanitize=foo argument.
+    SANITIZERS = [('asan', 'AddressSanitizer', 'address'),
+                  ('ubsan', 'UndefinedBehaviorSanitizer', 'undefined'),
+                  ('tsan', 'ThreadSanitizer', 'thread')]
     def description(self):
-        return "Address Sanitizer"
+        return "Clang Sanitizers (asan, ubsan, tsan, etc.)"
 
     def enabled(self, build):
-        build.flags['asan'] = util.get_flags(build.env, 'asan', 0)
-        return bool(int(build.flags['asan']))
+        any_enabled = False
+        for keyword, _, _ in Sanitizers.SANITIZERS:
+            build.flags[keyword] = util.get_flags(build.env, keyword, 0)
+            any_enabled = any_enabled or bool(int(build.flags[keyword]))
+        return any_enabled
 
     def add_options(self, build, vars):
-        vars.Add("asan", "Set to 1 to enable linking against the Clang AddressSanitizer.", 0)
+        for keyword, name, _ in Sanitizers.SANITIZERS:
+            vars.Add(keyword, "Set to 1 to enable the Clang %s." % name, 0)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
 
         if not build.compiler_is_clang:
-            raise Exception('Address Sanitizer is only available using clang.')
+            raise Exception('Sanitizers are only available when using clang.')
 
-        # -fno-omit-frame-pointer gets much better stack traces in asan output.
-        build.env.Append(CCFLAGS="-fsanitize=address -fno-omit-frame-pointer")
-        build.env.Append(LINKFLAGS="-fsanitize=address -fno-omit-frame-pointer")
+        sanitizers = []
+        for keyword, _, fsanitize in Sanitizers.SANITIZERS:
+            if bool(int(build.flags[keyword])):
+                sanitizers.append(fsanitize)
+
+        # The Optimize feature below checks whether we are enabled and prevents
+        # -fomit-frame-pointer if any sanitizer is enabled.
+        build.env.Append(CCFLAGS="-fsanitize=%s" % ','.join(sanitizers))
+        build.env.Append(LINKFLAGS="-fsanitize=%s" % ','.join(sanitizers))
 
 
 class PerfTools(Feature):
@@ -1109,10 +1123,11 @@ class Optimize(Feature):
             build.env.Append(CCFLAGS='-ffast-math')
             build.env.Append(CCFLAGS='-funroll-loops')
 
-            # set -fomit-frame-pointer when we don't profile.
+            # set -fomit-frame-pointer when we don't profile and are not using
+            # Clang sanitizers.
             # Note: It is only included in -O on machines where it does not
             # interfere with debugging
-            if not int(build.flags['profiling']):
+            if not int(build.flags['profiling']) and not Sanitizers().enabled(build):
                 build.env.Append(CCFLAGS='-fomit-frame-pointer')
 
             if optimize_level == Optimize.LEVEL_PORTABLE:
@@ -1150,9 +1165,11 @@ class Optimize(Feature):
                 # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
                 # are set automaticaly
                 if build.architecture_is_x86 and not build.machine_is_64bit:
-                    # the sse flags are not set by default on 32 bit builds
-                    # but are not supported on arm builds
-                    build.env.Append(CCFLAGS='-msse2 -mfpmath=sse')
+                    # For 32 bit builds using gcc < 5.0, the mfpmath=sse is 
+                    # not set by default (not supported on arm builds)
+                    # If -msse is not implicite set, it falls back to mfpmath=387
+                    # and a compiler warning is issued (tested with gcc 4.8.4) 
+                    build.env.Append(CCFLAGS='-mfpmath=sse')
                 elif build.architecture_is_arm:
                     self.status = "portable"
                     build.env.Append(CCFLAGS='-mfloat-abi=hard -mfpu=neon')

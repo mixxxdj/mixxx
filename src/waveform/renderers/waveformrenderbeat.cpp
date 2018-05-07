@@ -71,8 +71,9 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     int beatCount = 0;
 
     while (it->hasNext()) {
-        int beatPosition = it->next();
-        double xBeatPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(beatPosition);
+        double beatPosition = it->next();
+        double xBeatPoint =
+                m_waveformRenderer->transformSamplePositionInRendererWorld(beatPosition);
 
         xBeatPoint = qRound(xBeatPoint);
 

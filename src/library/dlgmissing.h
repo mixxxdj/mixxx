@@ -17,10 +17,11 @@ class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
     DlgMissing(QWidget* parent, UserSettingsPointer pConfig,
                Library* pLibrary, TrackCollection* pTrackCollection,
                KeyboardEventFilter* pKeyboard);
-    virtual ~DlgMissing();
+    ~DlgMissing() override;
 
-    void onShow();
-    void onSearch(const QString& text);
+    void onShow() override;
+    bool hasFocus() const override;
+    void onSearch(const QString& text) override;
 
   public slots:
     void clicked();

@@ -142,7 +142,7 @@ void EffectParameterSlot::slotLinkInverseChanged(double v) {
     m_pSoftTakeover->ignoreNext();
 }
 
-void EffectParameterSlot::onChainSuperParameterChanged(double parameter, bool force) {
+void EffectParameterSlot::onEffectMetaParameterChanged(double parameter, bool force) {
     m_dChainParameter = parameter;
     if (m_pEffectParameter != NULL) {
         // Intermediate cast to integer is needed for VC++.
@@ -165,7 +165,7 @@ void EffectParameterSlot::onChainSuperParameterChanged(double parameter, bool fo
                             neutral = 1.0 - neutral;
                         }
                         // Knob is already a split knob
-                        // Match to center position of Super knob
+                        // Match to center position of meta knob
                         if (parameter <= 0.5) {
                             parameter /= 0.5;
                             parameter *= neutral;
@@ -180,10 +180,9 @@ void EffectParameterSlot::onChainSuperParameterChanged(double parameter, bool fo
                 break;
             case EffectManifestParameter::LINK_LINKED_LEFT:
                 if (parameter >= 0.5 && parameter <= 1.0) {
-                    parameter = 0;
+                    parameter = 1;
                 } else if (parameter >= 0.0 && parameter <= 0.5) {
                     parameter *= 2;
-                    parameter = 1.0 - parameter;
                 } else {
                     return;
                 }
@@ -218,7 +217,7 @@ void EffectParameterSlot::onChainSuperParameterChanged(double parameter, bool fo
             parameter = 1.0 - parameter;
         }
 
-        //qDebug() << "onChainParameterChanged" << parameter;
+        //qDebug() << "onEffectMetaParameterChanged" << debugString() << parameter << "force?" << force;
         if (force) {
             m_pControlValue->setParameterFrom(parameter, NULL);
             // This ensures that softtakover is in sync for following updates

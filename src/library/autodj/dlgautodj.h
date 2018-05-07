@@ -23,13 +23,14 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
               Library* pLibrary,
               AutoDJProcessor* pProcessor, TrackCollection* pTrackCollection,
               KeyboardEventFilter* pKeyboard);
-    virtual ~DlgAutoDJ();
+    ~DlgAutoDJ() override;
 
-    void onShow();
-    void onSearch(const QString& text);
-    void loadSelectedTrack();
-    void loadSelectedTrackToGroup(QString group, bool play);
-    void moveSelection(int delta);
+    void onShow() override;
+    bool hasFocus() const override;
+    void onSearch(const QString& text) override;
+    void loadSelectedTrack() override;
+    void loadSelectedTrackToGroup(QString group, bool play) override;
+    void moveSelection(int delta) override;
 
   public slots:
     void shufflePlaylistButton(bool buttonChecked);

@@ -50,9 +50,10 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
             generateMarkImage(mark.data());
         }
 
-        int samplePosition = mark->getSamplePosition();
-        if (samplePosition > 0.0) {
-            double currentMarkPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(samplePosition);
+        double samplePosition = mark->getSamplePosition();
+        if (samplePosition != -1.0) {
+            double currentMarkPoint =
+                    m_waveformRenderer->transformSamplePositionInRendererWorld(samplePosition);
 
             if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
                 // NOTE: vRince I guess image width is odd to display the center on the exact line !
@@ -61,7 +62,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
                 // Check if the current point need to be displayed
                 if (currentMarkPoint > -markHalfWidth && currentMarkPoint < m_waveformRenderer->getWidth() + markHalfWidth) {
-                    painter->drawImage(QPoint(currentMarkPoint - markHalfWidth,0), mark->m_image);
+                    painter->drawImage(QPoint(currentMarkPoint - markHalfWidth, 0), mark->m_image);
                 }
             } else {
                 const int markHalfHeight = mark->m_image.height() / 2.0;

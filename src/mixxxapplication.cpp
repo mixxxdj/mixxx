@@ -1,15 +1,9 @@
-
-
 #include <QtDebug>
 #include <QTouchEvent>
 
 #include "mixxxapplication.h"
 #include "control/controlproxy.h"
 #include "mixxx.h"
-
-extern void qt_translateRawTouchEvent(QWidget *window,
-        QTouchEvent::DeviceType deviceType,
-        const QList<QTouchEvent::TouchPoint> &touchPoints);
 
 MixxxApplication::MixxxApplication(int& argc, char** argv)
         : QApplication(argc, argv),
@@ -23,6 +17,11 @@ MixxxApplication::~MixxxApplication() {
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+
+extern void qt_translateRawTouchEvent(QWidget *window,
+        QTouchEvent::DeviceType deviceType,
+        const QList<QTouchEvent::TouchPoint> &touchPoints);
+
 bool MixxxApplication::notify(QObject* target, QEvent* event) {
     switch (event->type()) {
     case QEvent::TouchBegin:

@@ -29,8 +29,8 @@
 	02111-1307, USA or point your web browser to http://www.gnu.org.
 */
 
-#ifndef _BASICS_H_
-#define _BASICS_H_
+#ifndef BASICS_H
+#define BASICS_H
 
 // NOTE(rryan): 3/2014 Added for MSVC support. (missing M_PI)
 #define _USE_MATH_DEFINES
@@ -59,9 +59,9 @@ typedef quint32 uint32;
 typedef qint64 int64;
 typedef quint64 uint64;
 
-#define MIN_GAIN .000001 /* -120 dB */
+#define MIN_GAIN 1e-6 /* -120 dB */
 /* smallest non-denormal 32 bit IEEE float is 1.18e-38 */
-#define NOISE_FLOOR .00000000000005 /* -266 dB */
+#define NOISE_FLOOR 1e-20 /* -400 dB */
 
 /* //////////////////////////////////////////////////////////////////////// */
 
@@ -71,29 +71,9 @@ typedef unsigned long ulong;
 /* prototype that takes a sample and yields a sample */
 typedef CSAMPLE (*clip_func_t) (CSAMPLE);
 
-/* flavours for sample store functions run() and run_adding() */
-typedef void (*yield_func_t) (CSAMPLE *, uint, CSAMPLE, CSAMPLE);
-
-inline void
-adding_func (CSAMPLE * s, uint i, CSAMPLE x, CSAMPLE gain)
-{
-	s[i] += gain * x;
-}
-
 #ifndef max
-
-template <class X, class Y>
-X min (X x, Y y)
-{
-	return x < y ? x : (X) y;
-}
-
-template <class X, class Y>
-X max (X x, Y y)
-{
-	return x > y ? x : (X) y;
-}
-
+template <class X, class Y> X min (X x, Y y) { return x < (X)y ? x : (X)y; }
+template <class X, class Y> X max (X x, Y y) { return x > (X)y ? x : (X)y; }
 #endif /* ! max */
 
 template <class T>
@@ -104,11 +84,8 @@ T clamp (T value, T lower, T upper)
 	return value;
 }
 
-static inline float
-frandom()
-{
-	return (float) rand() / (float) RAND_MAX;
-}
+// (timrae) change random() to rand() for MSVC support
+static inline float frandom() { return (float) rand() / (float) RAND_MAX; }
 
 /* NB: also true if 0  */
 inline bool
@@ -144,18 +121,9 @@ next_power_of_2 (uint n)
 	return ++n;
 }
 
-inline double
-db2lin (double db)
-{
-	return pow(10, db*.05);
-}
-
-inline double
-lin2db (double lin)
-{
-	return 20*log10(lin);
-}
+inline double db2lin (double db) { return pow(10, .05*db); }
+inline double lin2db (double lin) { return 20*log10(lin); }
 
 /* //////////////////////////////////////////////////////////////////////// */
 
-#endif /* _BASICS_H_ */
+#endif /* BASICS_H */

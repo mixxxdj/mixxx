@@ -72,6 +72,10 @@ void DlgAnalysis::onShow() {
     m_pAnalysisLibraryTableModel->select();
 }
 
+bool DlgAnalysis::hasFocus() const {
+    return QWidget::hasFocus();
+}
+
 void DlgAnalysis::onSearch(const QString& text) {
     m_pAnalysisLibraryTableModel->search(text);
 }

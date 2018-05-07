@@ -32,6 +32,7 @@ class WTrackTableView : public WLibraryTableView {
     void contextMenuEvent(QContextMenuEvent * event) override;
     void onSearch(const QString& text) override;
     void onShow() override;
+    bool hasFocus() const override;
     void keyPressEvent(QKeyEvent* event) override;
     void loadSelectedTrack() override;
     void loadSelectedTrackToGroup(QString group, bool play) override;
@@ -151,6 +152,8 @@ class WTrackTableView : public WLibraryTableView {
     QAction *m_pBpmHalveAction;
     QAction *m_pBpmTwoThirdsAction;
     QAction *m_pBpmThreeFourthsAction;
+    QAction *m_pBpmFourThirdsAction;
+    QAction *m_pBpmThreeHalvesAction;
 
     // Clear track beats
     QAction* m_pClearBeatsAction;

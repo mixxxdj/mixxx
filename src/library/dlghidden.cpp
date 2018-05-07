@@ -94,3 +94,7 @@ void DlgHidden::setTrackTableFont(const QFont& font) {
 void DlgHidden::setTrackTableRowHeight(int rowHeight) {
     m_pTrackTableView->setTrackTableRowHeight(rowHeight);
 }
+
+bool DlgHidden::hasFocus() const {
+    return QWidget::hasFocus();
+}

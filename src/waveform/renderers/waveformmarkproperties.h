@@ -13,7 +13,6 @@ class WaveformMarkProperties final {
     WaveformMarkProperties(const QDomNode& node,
                            const SkinContext& context,
                            const WaveformSignalColors& signalColors);
-    void setHotCueNumber(int i) { m_text = m_text.arg(i); }
 
     QColor m_color;
     QColor m_textColor;

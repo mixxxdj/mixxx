@@ -1,10 +1,7 @@
 /*
 	Reverb.cc
 
-	Copyright 2002-13 Tim Goetze <tim@quitte.de>
-
-	Port from LADSPA to Mixxx 2014 by Owen Williams <owilliams@mixxx.org>,
-	Mostly just deleting excess code.
+	Copyright 2002-14 Tim Goetze <tim@quitte.de>
 
 	http://quitte.de/dsp/
 
@@ -45,7 +42,144 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 	02111-1307, USA or point your web browser to http://www.gnu.org.
 */
+
+#include "basics.h"
+
 #include "Reverb.h"
+//#include "Descriptor.h"
+
+#if 0
+int JVRev_length[9] = { 4199, 4999, 5399, 5801, 1051, 337, 113, 573, 487 };
+
+void
+JVRev::init()
+{
+	double s = fs/44100.;
+
+	for (int i = 0; i < 9; ++i)
+	{
+		int v = (int) (s * JVRev_length[i]);
+		v |= 1;
+		while (!DSP::isprime(v))
+			v += 2;
+		length[i] = v;
+	}
+
+	for (int i = 0; i < 4; ++i)
+		comb[i].init (length[i]);
+
+	for (int i = 0; i < 3; ++i)
+		allpass[i].init (length[i+4]);
+
+	left.init (length[7]);
+	right.init (length[8]);
+
+	/* such a simple number, yet I couldn't find a better one. */
+	apc = .7;
+}
+
+void
+JVRev::set_t60 (sample_t t)
+{
+	t60 = t;
+
+	t = max(.00001, t);
+	t = -3/(t*fs);
+
+	for (int i=0; i<4; ++i)
+		comb[i].c = pow (10, t*length[i]);
+}
+
+void
+JVRev::activate()
+{
+	bandwidth.reset();
+	tone.reset();
+
+	for (int i=0; i<3; ++i)
+		allpass[i].reset();
+
+	for (int i=0; i<4; ++i)
+		comb[i].reset();
+
+	left.reset();
+	right.reset();
+
+	set_t60(getport(1));
+	tone.set_f(1800*over_fs);
+}
+
+void
+JVRev::cycle (uint frames)
+{
+	sample_t bw = .005 + .994*getport(0);
+	bandwidth.set(exp(-M_PI*(1. - bw)));
+
+	if (t60 != *ports[1])
+		set_t60(getport(1));
+
+	double wet = getport(2);
+	wet = .38*wet*wet;
+	double dry = 1 - wet;
+
+	sample_t * s = ports[3];
+
+	sample_t * dl = ports[4];
+	sample_t * dr = ports[5];
+
+	for (uint i = 0; i < frames; ++i)
+	{
+		sample_t x = s[i], a = x + normal;
+
+		a = bandwidth.process(a);
+		x *= dry;
+
+		/* diffusors */
+		a = allpass[0].process(a,-apc);
+		a = allpass[1].process(a,-apc);
+		a = allpass[2].process(a,-apc);
+
+		/* tank */
+		sample_t t = 0;
+		a -= normal;
+
+		for (int j=0; j<4; ++j)
+			t += comb[j].process(a);
+
+		t = tone.process(t);
+
+		dl[i] = x + wet*left.putget(t);
+		dr[i] = x + wet*right.putget(t);
+	}
+}
+
+/* //////////////////////////////////////////////////////////////////////// */
+
+PortInfo
+JVRev::port_info [] =
+{
+	{ "bandwidth", INPUT | CONTROL, {DEFAULT_MID, 0, 1} },
+	{ "t60 (s)", INPUT | CONTROL | GROUP, {DEFAULT_MID, 0, 5.6} },
+	{ "blend", INPUT | CONTROL, {DEFAULT_LOW, 0, 1} },
+
+	{ "in", INPUT | AUDIO },
+	{ "out.l", OUTPUT | AUDIO },
+	{ "out.r", OUTPUT | AUDIO }
+};
+
+template <> void
+Descriptor<JVRev>::setup()
+{
+	Label = "JVRev";
+
+	Name = CAPS "JVRev - Stanford-style reverb from STK";
+	Maker = "Tim Goetze <tim@quitte.de>";
+	Copyright = "2004-12";
+
+	/* fill port info and vtable */
+	autogen();
+}
+#endif
 
 /* //////////////////////////////////////////////////////////////////////// */
 
@@ -53,8 +187,6 @@ void
 PlateStub::init()
 {
 	f_lfo = -1;
-	// TODO(owilliams): use actual sample rate.
-	fs = 44100;
 
 #	define L(i) ((int) (l[i] * fs))
 	static float l[] = {
@@ -158,4 +290,173 @@ PlateStub::process (sample_t x, sample_t decay, sample_t * _xl, sample_t * _xr)
 
 	*_xl = xl;
 	*_xr = xr;
+}
+
+/* //////////////////////////////////////////////////////////////////////// */
+#if 0
+void
+Plate::cycle (uint frames)
+{
+	sample_t bw = .005 + .994*getport(0);
+	input.bandwidth.set (exp (-M_PI * (1. - bw)));
+
+	sample_t decay = .749*getport(1);
+
+	double damp = exp (-M_PI * (.0005+.9995*getport(2)));
+	tank.damping[0].set (damp);
+	tank.damping[1].set (damp);
+
+	sample_t blend = getport(3);
+	blend = pow (blend, 1.6); /* linear is not a good choice for this pot */
+	sample_t dry = 1 - blend;
+
+	sample_t * s = ports[4];
+
+	sample_t * dl = ports[5];
+	sample_t * dr = ports[6];
+
+	/* modulated lattice interpolation needs float truncation */
+	DSP::FPTruncateMode _truncate;
+
+	for (uint i = 0; i < frames; ++i)
+	{
+		normal = -normal;
+		sample_t x = s[i] + normal;
+
+		sample_t xl, xr;
+
+		PlateStub::process (x, decay, &xl, &xr);
+
+		x = dry * s[i];
+
+		dl[i] = x + blend*xl;
+		dr[i] = x + blend*xr;
+	}
+}
+
+/* //////////////////////////////////////////////////////////////////////// */
+
+PortInfo
+Plate::port_info [] =
+{
+	{"bandwidth", INPUT | CONTROL, {DEFAULT_HIGH, 0, 1} /* .9995 */ },
+	{"tail", INPUT | CONTROL | GROUP, {DEFAULT_MID, 0, 1} /* .5 */ },
+	{"damping", INPUT | CONTROL, {DEFAULT_LOW, 0, 1} /* .0005 */ },
+	{"blend", INPUT | CONTROL | GROUP, {DEFAULT_LOW, 0, 1} },
+
+	{"in", INPUT | AUDIO},
+	{"out.l", OUTPUT | AUDIO},
+	{"out.r",	OUTPUT | AUDIO}
+};
+
+template <> void
+Descriptor<Plate>::setup()
+{
+	Label = "Plate";
+
+	Name = CAPS "Plate - Versatile plate reverb";
+	Maker = "Tim Goetze <tim@quitte.de>";
+	Copyright = "2004-11";
+
+	/* fill port info and vtable */
+	autogen();
+}
+
+/* //////////////////////////////////////////////////////////////////////// */
+
+void
+PlateX2::cycle (uint frames)
+{
+	sample_t bw = .005 + .994*getport(0);
+	input.bandwidth.set (exp (-M_PI * (1. - bw)));
+
+	sample_t decay = .749*getport(1);
+
+	double damp = exp (-M_PI * (.0005+.9995*getport(2)));
+	tank.damping[0].set (damp);
+	tank.damping[1].set (damp);
+
+	sample_t blend = getport(3);
+	blend = pow (blend, 1.53);
+	sample_t dry = 1 - blend;
+
+	sample_t * sl = ports[4];
+	sample_t * sr = ports[5];
+	sample_t * dl = ports[6];
+	sample_t * dr = ports[7];
+
+	/* the modulated lattices interpolate, which needs truncated float */
+	DSP::FPTruncateMode _truncate;
+
+	for (uint i = 0; i < frames; ++i)
+	{
+		normal = -normal;
+		sample_t x = (sl[i] + sr[i] + normal) * .5;
+
+		sample_t xl, xr;
+		PlateStub::process (x, decay, &xl, &xr);
+
+		dl[i] = blend*xl + dry*sl[i];
+		dr[i] = blend*xr + dry*sr[i];
+	}
+}
+
+/* //////////////////////////////////////////////////////////////////////// */
+PortInfo
+PlateX2::port_info [] =
+{
+	{"bandwidth", INPUT | CONTROL, {DEFAULT_HIGH, 0, 1} /* .9995 */ },
+	{"tail", INPUT | CONTROL | GROUP, {DEFAULT_MID, 0, 1} /* .5 */ },
+	{"damping", INPUT | CONTROL, {DEFAULT_LOW, 0, 1} /* .0005 */ },
+	{"blend", INPUT | CONTROL | GROUP, {DEFAULT_LOW, 0, 1} },
+
+	{"in.l", INPUT | AUDIO},
+	{"in.r", INPUT | AUDIO},
+	{"out.l", OUTPUT | AUDIO},
+	{"out.r",	OUTPUT | AUDIO}
+};
+
+template <> void
+Descriptor<PlateX2>::setup()
+{
+	Label = "PlateX2";
+
+	Name = CAPS "PlateX2 - Versatile plate reverb, stereo inputs";
+	Maker = "Tim Goetze <tim@quitte.de>";
+	Copyright = "2004-11";
+
+	/* fill port info and vtable */
+	autogen();
+}
+#endif
+
+
+
+// (timrae) we have our left / right samples interleaved in the same array, so use slightly modified version of PlateX2::cycle
+void MixxxPlateX2::processBuffer(const sample_t* in, sample_t* out, const uint frames, const sample_t bandwidthParam,
+								const sample_t decayParam, const sample_t dampingParam, const sample_t blendParam) {
+	// set bandwidth
+	input.bandwidth.set(exp(-M_PI * (1. - (.005 + .994*bandwidthParam))));
+	// set decay
+	sample_t decay = .749*decayParam;
+	// set damping
+	double damp = exp(-M_PI * (.0005+.9995*dampingParam));
+	tank.damping[0].set(damp);
+	tank.damping[1].set(damp);
+	// set blend
+	sample_t blend = pow(blendParam, 1.53);
+	sample_t dry = 1 - blend;
+
+	// the modulated lattices interpolate, which needs truncated float
+	DSP::FPTruncateMode _truncate;
+
+	// loop through the buffer, processing each sample
+	// note (timrae):treat the effect as SEND type instead of INSERT type for smoother parameter changes
+	for (uint i = 0; i + 1 < frames; i += 2) {
+		sample_t mono_sample = blend*(in[i] + in[i + 1]) / 2;
+		sample_t xl, xr;
+		PlateStub::process(mono_sample, decay, &xl, &xr);
+		out[i] = xl + dry*in[i];
+		out[i + 1] = xr + dry*in[i + 1];
+	}
 }

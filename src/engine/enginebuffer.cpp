@@ -594,9 +594,8 @@ void EngineBuffer::doSeekFractional(double fractionalPos, enum SeekRequest seekT
     if (isnan(fractionalPos)) {
         return;
     }
-    // Find new play frame, restrict to valid ranges.
-    double newPlayFrame = round(fractionalPos * m_trackSamplesOld / kSamplesPerFrame);
-    doSeekPlayPos(newPlayFrame * kSamplesPerFrame, seekType);
+    double newSamplePosition = fractionalPos * m_trackSamplesOld;
+    doSeekPlayPos(newSamplePosition, seekType);
 }
 
 void EngineBuffer::doSeekPlayPos(double new_playpos, enum SeekRequest seekType) {

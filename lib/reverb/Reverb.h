@@ -44,14 +44,14 @@
 	02111-1307, USA or point your web browser to http://www.gnu.org.
 */
 
-#ifndef _REVERB_H_
-#define _REVERB_H_
+#ifndef REVERB_H
+#define REVERB_H
 
 #include <stdio.h>
 
 #include "basics.h"
 #include "dsp/Delay.h"
-#include "dsp/OnePole.h"
+#include "dsp/IIR1.h"
 #include "dsp/Sine.h"
 #include "dsp/util.h"
 
@@ -60,16 +60,59 @@ class Lattice
 : public DSP::Delay
 {
 	public:
-		inline sample_t
-		process (sample_t x, double d)
+		sample_t process (sample_t x, double d)
 			{
 				sample_t y = get();
-				x -= d * y;
-				put (x);
-				return d * x + y;
+				x -= d*y;
+				put(x);
+				return d*x + y;
 			}
 };
 
+/* helper for JVRev */
+#if 0
+class JVComb
+: public DSP::Delay
+{
+	public:
+		float c;
+
+		sample_t process (sample_t x)
+			{
+				x += c*get();
+				put(x);
+				return x;
+			}
+};
+
+class JVRev
+: public Plugin
+{
+	public:
+		DSP::LP1<sample_t> bandwidth, tone;
+
+		sample_t t60;
+
+		int length[9];
+
+		Lattice allpass[3];
+		JVComb comb[4];
+
+		DSP::Delay left, right;
+
+		double apc;
+
+		void cycle (uint frames);
+
+		void set_t60 (sample_t t);
+
+	public:
+		static PortInfo port_info [];
+
+		void init();
+		void activate();
+};
+#endif
 /* /////////////////////////////////////////////////////////////////////// */
 
 class ModLattice
@@ -103,14 +146,14 @@ class ModLattice
 };
 
 class PlateStub
+
 {
 	public:
 		sample_t f_lfo;
-
 		sample_t indiff1, indiff2, dediff1, dediff2;
 
 		struct {
-			DSP::OnePoleLP<sample_t> bandwidth;
+			DSP::LP1<sample_t> bandwidth;
 			Lattice lattice[4];
 		} input;
 
@@ -118,7 +161,7 @@ class PlateStub
 			ModLattice mlattice[2];
 			Lattice lattice[2];
 			DSP::Delay delay[4];
-			DSP::OnePoleLP<sample_t> damping[2];
+			DSP::LP1<sample_t> damping[2];
 			int taps[12];
 		} tank;
 
@@ -145,30 +188,49 @@ class PlateStub
 				tank.mlattice[1].lfo.set_f (1.2, fs, .5 * M_PI);
 			}
 
-		// Process a single mono sample, returning a left and right reverbed
-		// sample.
 		void process (sample_t x, sample_t decay,
-					  sample_t * xl, sample_t * xr);
-
-	private:
-		float fs; // sameple rate;
+					sample_t * xl, sample_t * xr);
+	protected:
+		float fs = 44100; // (timrae) define sample rate
 };
 
+/* /////////////////////////////////////////////////////////////////////// */
+/// (timrae) Disable the default classes as we use our own interface for Mixxx
+#if 0
+class Plate
+: public PlateStub
+{
+	public:
+		void cycle (uint frames);
+
+	public:
+		static PortInfo port_info [];
+};
+
+/* /////////////////////////////////////////////////////////////////////// */
+
+class PlateX2
+: public PlateStub
+{
+	public:
+		void cycle (uint frames);
+
+	public:
+		static PortInfo port_info [];
+};
+#endif
+
+/// (timrae) Define our own interface instead of using the original LADSPA plugin interface
 class MixxxPlateX2 : public PlateStub {
-  public:
-    void setBandwidth(double bandwidth) {
-         input.bandwidth.set(exp(-M_PI * (1. - bandwidth)));
-    }
+	public:
+		void processBuffer(const sample_t* in, sample_t* out, const uint frames, const sample_t bandwidthParam,
+									const sample_t decayParam, const sample_t dampingParam, const sample_t blendParam);
 
-    void setDecay(double decay_control) {
-        double damp = exp(-M_PI * decay_control);
-        tank.damping[0].set(damp);
-        tank.damping[1].set(damp);
-    }
-
-    void process(sample_t x, sample_t decay, sample_t * xl, sample_t * xr) {
-        PlateStub::process(x, decay, xl, xr);
-    }
+		void init(float sampleRate) {
+			fs = sampleRate;
+			PlateStub::init();
+			PlateStub::activate();
+		}
 };
 
-#endif /* _REVERB_H_ */
+#endif /* REVERB_H */

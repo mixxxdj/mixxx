@@ -22,15 +22,16 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     DlgRecording(QWidget *parent, UserSettingsPointer pConfig,
                  Library* pLibrary, TrackCollection* pTrackCollection,
                  RecordingManager* pRecManager, KeyboardEventFilter* pKeyboard);
-    virtual ~DlgRecording();
+    ~DlgRecording() override;
 
-    virtual void onSearch(const QString& text);
-    virtual void onShow();
-    virtual void loadSelectedTrack();
-    virtual void slotSendToAutoDJ();
-    virtual void slotSendToAutoDJTop();
-    virtual void loadSelectedTrackToGroup(QString group, bool play);
-    virtual void moveSelection(int delta);
+    void onSearch(const QString& text) override;
+    void onShow() override;
+    bool hasFocus() const override;
+    void loadSelectedTrack() override;
+    void slotSendToAutoDJ() override;
+    void slotSendToAutoDJTop() override;
+    void loadSelectedTrackToGroup(QString group, bool play) override;
+    void moveSelection(int delta) override;
     inline const QString currentSearch() { return m_proxyModel.currentSearch(); }
 
   public slots:

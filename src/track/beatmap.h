@@ -98,6 +98,7 @@ class BeatMap : public QObject, public Beats {
 
     void scaleDouble();
     void scaleTriple();
+    void scaleQuadruple();
     void scaleHalve();
     void scaleThird();
     void scaleFourth();

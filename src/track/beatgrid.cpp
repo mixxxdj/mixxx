@@ -358,6 +358,12 @@ void BeatGrid::scale(enum BPMScale scale) {
     case THREEFOURTHS:
         bpm *= 3.0 / 4;
         break;
+    case FOURTHIRDS:
+        bpm *= 4.0 / 3;
+        break;
+    case THREEHALVES:
+        bpm *= 3.0 / 2;
+        break;
     default:
         DEBUG_ASSERT(!"scale value invalid");
         return;
