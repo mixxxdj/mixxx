@@ -189,7 +189,7 @@ bool EngineEffectChain::disableForInputChannel(const ChannelHandle* inputHandle)
     // Do not call deleteStatesForInputChannel here because the EngineEffects'
     // process() method needs to run one last time before deleting the states.
     // deleteStatesForInputChannel needs to be called from the main thread after
-    // the succesful EffectsResponse is returned by the MessagePipe FIFO.
+    // the successful EffectsResponse is returned by the MessagePipe FIFO.
     return true;
 }
 

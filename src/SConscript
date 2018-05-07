@@ -295,7 +295,7 @@ image_files = Glob('#res/images/preferences/*')  # These are compiled in to the 
 # all files on 2+ builds after a clean.
 dll_files = []
 if build.toolchain_is_msvs and not build.static_dependencies:
-        # skip the MSVC DLLs incase they're in there too
+        # skip the MSVC DLLs in case they're in there too
         dll_files.extend(Glob('%s/*.dll' % build.winlib_path))
         dll_files.extend(Glob('%s/lib/*.dll' % build.winlib_path))
 

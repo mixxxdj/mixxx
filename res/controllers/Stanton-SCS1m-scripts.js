@@ -8,7 +8,7 @@
 function StantonSCS1m() {}
 
 // ----------   Customization variables ----------
-//      See http://mixxx.org/wiki/doku.php/stanton_SCS.1m_mixxx_user_guide  for details
+//      See http://mixxx.org/wiki/doku.php/stanton_SCS.1m_mixxx_user_guide for details
 
 StantonSCS1m.faderStart = false;    // Allows decks to start when their channel or cross fader is opened (toggleable with the top button)
 StantonSCS1m.scratchFactor = 2;     // Adjusts the speed of scratching with the select knob

@@ -504,7 +504,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
 
     // we have two selects for sorting, since keeping the select history
     // across the two selects is hard, we do this only for the trackSource
-    // this is OK, because the colums of the table are virtual in case of
+    // this is OK, because the columns of the table are virtual in case of
     // preview column or individual like playlist track number so that we
     // do not need the history anyway.
 

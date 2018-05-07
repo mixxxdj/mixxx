@@ -639,7 +639,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadSuccess) {
 
     PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
     // The first track is loaded into deck 1 and the second track is loaded into
-    // deck 2 afer we fade to deck 1.
+    // deck 2 after we fade to deck 1.
     pAutoDJTableModel->appendTrack(testId);
     pAutoDJTableModel->appendTrack(testId);
 
@@ -719,7 +719,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadFailed) {
 
     PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
     // The first track is loaded into deck 1, the second track is loaded into
-    // deck 2 (fails) afer we fade to deck 1, and the third is loaded into deck
+    // deck 2 (fails) after we fade to deck 1, and the third is loaded into deck
     // 2 (succeeds).
     pAutoDJTableModel->appendTrack(testId);
     pAutoDJTableModel->appendTrack(testId);
@@ -815,7 +815,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadSuccess) {
 
     PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
     // The first track is loaded into deck 2 and the second track is loaded into
-    // deck 1 afer we fade to deck 2.
+    // deck 1 after we fade to deck 2.
     pAutoDJTableModel->appendTrack(testId);
     pAutoDJTableModel->appendTrack(testId);
 
@@ -895,7 +895,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadFailed) {
 
     PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
     // The first track is loaded into deck 2, the second track is loaded into
-    // deck 1 (fails) afer we fade to deck 2, and the third is loaded into deck
+    // deck 1 (fails) after we fade to deck 2, and the third is loaded into deck
     // 1 (succeeds).
     pAutoDJTableModel->appendTrack(testId);
     pAutoDJTableModel->appendTrack(testId);
@@ -1019,7 +1019,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Long_Transition) {
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
 
-    // Seek track to 45 % is shoud not fade
+    // Seek track to 45 % it should not fade
     deck1.playposition.set(0.45);
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
     EXPECT_DOUBLE_EQ(-1.0, master.crossfader.get());

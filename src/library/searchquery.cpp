@@ -67,9 +67,9 @@ QString QueryNode::concatSqlClauses(
     case 1:
         return sqlClauses.front();
     default:
-        // The component terms need to be wrapped into parantheses,
+        // The component terms need to be wrapped into parentheses,
         // but the whole expression does not. The composite node is
-        // always responsible for proper wrapping into parantheses!
+        // always responsible for proper wrapping into parentheses!
         return "(" % sqlClauses.join(") " % sqlConcatOp % " (") % ")";
     }
 }
@@ -135,9 +135,9 @@ QString NotNode::toSql() const {
     if (sql.isEmpty()) {
         return QString();
     } else {
-        // The component term needs to be wrapped into parantheses,
+        // The component term needs to be wrapped into parentheses,
         // but the whole expression does not. The composite node is
-        // always responsible for proper wrapping into parantheses!
+        // always responsible for proper wrapping into parentheses!
         return "NOT (" % sql % ")";
     }
 }

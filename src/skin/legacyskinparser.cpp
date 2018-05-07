@@ -380,7 +380,7 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
         } else {
             if (!attribute.persist()) {
                 // Set the value using the static function, so the
-                // value changes singal is transmitted to the owner.
+                // value changes signal is transmitted to the owner.
                 ControlObject::set(configKey, value);
             }
         }
@@ -2206,7 +2206,7 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
 
             if (!directionOptionSet) {
                 // default:
-                // no direction option is explicite set
+                // no direction option is explicit set
                 // Set default flag to allow the widget to change this during setup
                 directionOption |= ControlParameterWidgetConnection::DIR_DEFAULT;
             }

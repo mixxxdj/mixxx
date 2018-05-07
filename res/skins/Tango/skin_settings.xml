@@ -39,7 +39,7 @@ Description:
                 <SetVariable name="TooltipId">skin_settings</SetVariable>
                 <SetVariable name="ObjectName">SkinSettingsClose</SetVariable>
                 <SetVariable name="Size">20f,24f</SetVariable>
-                <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>
+                <SetVariable name="ConfigKey">[Master],skin_settings</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
@@ -48,7 +48,7 @@ Description:
               in order to let them grow reasonably on big screens, as well as to
               allow good-looking compression of items on small screens.
               <SizePolicy> is very hard to handle in many places here due to
-              translucent covers and submenus, defining button sizes explicitely helps.
+              translucent covers and submenus, defining button sizes explicitly helps.
 
               Each categroy has a padding: top 2px, bottom 2px
               For every button we need to provide space (13-17px):
@@ -743,10 +743,10 @@ Description:
             </Children>
           </WidgetGroup><!-- /Effects -->
 
-          <Label><!-- Extras -->
+          <Label><!-- Misc -->
             <ObjectName>CategoryLabel</ObjectName>
             <Size>200f,21f</Size>
-            <Text>Extras</Text>
+            <Text>Misc</Text>
           </Label>
           <WidgetGroup>
             <ObjectName>SkinSettingsCategory</ObjectName>
@@ -839,12 +839,12 @@ Description:
                 </Children>
               </WidgetGroup><!-- /Load/Save Sampler Bank -->
             </Children>
-          </WidgetGroup><!-- /Extras -->
+          </WidgetGroup><!-- /Misc -->
         </Children>
       </WidgetGroup><!-- /SkinSettings -->
     </Children>
     <Connection>
-      <ConfigKey>[Tango],skin_settings</ConfigKey>
+      <ConfigKey>[Master],skin_settings</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

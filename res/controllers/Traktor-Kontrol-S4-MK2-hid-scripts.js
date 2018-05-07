@@ -790,7 +790,11 @@ TraktorS4MK2.incomingData = function(data, length) {
     this.partial_packet = Object();
     return;
   }
-
+  if (length == 79) {
+    // Windows seems to get the packet of length 79, so parse as one:
+    TraktorS4MK2.controller.parsePacket(data, data.length);
+    return;
+  }
   HIDDebug("Traktor S4MK2: Unhandled packet size: " + length);
 }
 

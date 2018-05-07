@@ -326,17 +326,18 @@
                 <SetVariable name="state_1_text"></SetVariable>
                 <SetVariable name="state_1_pressed">icon/ic_settings_48px.svg</SetVariable>
                 <SetVariable name="state_1_unpressed">icon/ic_settings_48px.svg</SetVariable>
-                <SetVariable name="left_connection_control">[Deere],show_skin_settings</SetVariable>
+                <SetVariable name="left_connection_control">[Master],skin_settings</SetVariable>
               </Template>
             </Children>
             <Connection>
-              <ConfigKey>[Deere],show_skin_settings</ConfigKey>
+              <ConfigKey>[Master],skin_settings</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform>
                 <Not/>
               </Transform>
             </Connection>
           </WidgetGroup>
+
 
         </Children>
       </WidgetGroup>
