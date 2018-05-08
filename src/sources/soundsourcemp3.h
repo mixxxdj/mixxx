@@ -76,6 +76,8 @@ private:
     mad_synth m_madSynth;
 
     SINT m_madSynthCount; // left overs from the previous read
+
+    std::vector<unsigned char> m_leftoverBuffer;
 };
 
 class SoundSourceProviderMp3: public SoundSourceProvider {

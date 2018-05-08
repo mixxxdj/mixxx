@@ -123,13 +123,17 @@
         },
         disconnect: function () {
             if (this.connections[0] !== undefined) {
-                this.connections.forEach(function (connection) {
-                    connection.disconnect();
+                this.connections.forEach(function (conn) {
+                    conn.disconnect();
                 });
             }
         },
         trigger: function() {
-            engine.trigger(this.group, this.outKey);
+            if (this.connections[0] !== undefined) {
+                this.connections.forEach(function (conn) {
+                    conn.trigger();
+                });
+            }
         },
         shiftOffset: 0,
         sendShifted: false,
@@ -181,9 +185,16 @@
     PlayButton.prototype = new Button({
         unshift: function () {
             this.inKey = 'play';
+            this.input = Button.prototype.input;
+            // Stop reversing playback if the user releases the shift button before releasing this PlayButton.
+            if (engine.getValue(this.group, 'reverse') === 1) {
+                engine.setValue(this.group, 'reverse', 0);
+            }
         },
         shift: function () {
-            this.inKey = 'start_stop';
+            this.input = function (channel, control, value, status, group) {
+                engine.setValue(this.group, 'reverse', this.isPress(channel, control, value, status));
+            };
         },
         outKey: 'play_indicator',
     });
@@ -192,9 +203,16 @@
         Button.call(this, options);
     };
     CueButton.prototype = new Button({
-        inKey: 'cue_default',
+        unshift: function () {
+            this.inKey = 'cue_default';
+        },
+        shift: function () {
+            this.inKey = 'start_stop';
+        },
+        input: function (channel, control, value, status, group) {
+            this.inSetValue(this.isPress(channel, control, value, status));
+        },
         outKey: 'cue_indicator',
-        onlyOnPress: false,
     });
 
     var SyncButton = function (options) {
@@ -219,9 +237,6 @@
             return 1;
         },
         outKey: 'loop_enabled',
-        outValueScale: function (value) {
-            return (value) ? this.on : this.off;
-        },
     });
 
     var HotcueButton = function (options) {

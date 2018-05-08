@@ -100,8 +100,10 @@ class WTrackTableView : public WLibraryTableView {
     void mouseMoveEvent(QMouseEvent *pEvent) override;
 
     // Returns the current TrackModel, or returns NULL if none is set.
-    TrackModel* getTrackModel();
-    bool modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities);
+    TrackModel* getTrackModel() const;
+    bool modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) const;
+
+    QList<TrackId> getSelectedTrackIds() const;
 
     UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;

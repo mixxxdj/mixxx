@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <signal.h>
 
 #include <QByteArray>
 #include <QFile>
@@ -15,6 +16,7 @@
 #include <QtGlobal>
 
 #include "util/cmdlineargs.h"
+#include "util/assert.h"
 
 namespace mixxx {
 namespace {
@@ -132,11 +134,45 @@ void MessageHandler(QtMsgType type,
         }
         break;
     case QtCriticalMsg:
-        // Critical errors are always shown on the console.
-        fprintf(stderr, "Critical %s", ba.constData());
-        if (Logfile.isOpen()) {
-            Logfile.write("Critical ");
-            Logfile.write(ba);
+        {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+            bool debugAssert = strncmp(input, kDebugAssertPrefix,
+                                           strlen(kDebugAssertPrefix)) == 0;
+#else
+            bool debugAssert = input.startsWith(QLatin1String(kDebugAssertPrefix));
+#endif
+            if (debugAssert) {
+                if (CmdlineArgs::Instance().getDebugAssertBreak()) {
+                    fputs(ba.constData(), stderr);
+                    if (Logfile.isOpen()) {
+                        Logfile.write(ba);
+                    }
+                    raise(SIGINT);
+                } else {
+#ifdef MIXXX_DEBUG_ASSERTIONS_FATAL
+                    // re-send as fatal
+                    locker.unlock();
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+                    qFatal(input);
+#else
+                    qFatal(input.toLocal8Bit());
+#endif
+                    return;
+#else
+                    fputs(ba.constData(), stderr);
+                    if (Logfile.isOpen()) {
+                        Logfile.write(ba);
+                    }
+#endif
+                }
+            } else {
+                // Critical errors are always shown on the console.
+                fprintf(stderr, "Critical %s", ba.constData());
+                if (Logfile.isOpen()) {
+                    Logfile.write("Critical ");
+                    Logfile.write(ba);
+                }
+            }
         }
         break;
     case QtFatalMsg:
