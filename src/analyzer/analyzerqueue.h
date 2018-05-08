@@ -16,6 +16,7 @@
 #include "util/memory.h"
 
 class Analyzer;
+class AnalysisDao;
 
 class AnalyzerQueue : public QThread {
     Q_OBJECT
@@ -60,6 +61,8 @@ class AnalyzerQueue : public QThread {
 
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
 
+    std::unique_ptr<AnalysisDao> m_pAnalysisDao;
+
     typedef std::unique_ptr<Analyzer> AnalyzerPtr;
     std::vector<AnalyzerPtr> m_pAnalyzers;
 
@@ -70,6 +73,7 @@ class AnalyzerQueue : public QThread {
     bool doAnalysis(TrackPointer tio, mixxx::AudioSourcePointer pAudioSource);
     void emitUpdateProgress(TrackPointer tio, int progress);
     void emptyCheck();
+    void updateSize();
 
     bool m_exit;
     QAtomicInt m_aiCheckPriorities;
@@ -77,7 +81,7 @@ class AnalyzerQueue : public QThread {
     SampleBuffer m_sampleBuffer;
 
     // The processing queue and associated mutex
-    QQueue<TrackPointer> m_tioq;
+    QQueue<TrackPointer> m_queuedTracks;
     QMutex m_qm;
     QWaitCondition m_qwait;
     struct progress_info m_progressInfo;
