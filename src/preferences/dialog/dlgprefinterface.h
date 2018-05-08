@@ -20,7 +20,8 @@
 
 #include <QWidget>
 
-#include "preferences/dialog/ui_dlgprefcontrolsdlg.h"
+#include "preferences/constants.h"
+#include "preferences/dialog/ui_dlgprefinterfacedlg.h"
 #include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
 
@@ -31,65 +32,33 @@ class PlayerManager;
 class MixxxMainWindow;
 class ControlObject;
 
-namespace TrackTime {
-    enum class DisplayMode {
-        Elapsed,
-        Remaining,
-        ElapsedAndRemaining,
-    };
-}
-
 /**
   *@author Tue & Ken Haste Andersen
   */
 
-class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg  {
+class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg  {
     Q_OBJECT
   public:
-    DlgPrefControls(QWidget *parent, MixxxMainWindow *mixxx,
-                    SkinLoader* pSkinLoader, PlayerManager* pPlayerManager,
-                    UserSettingsPointer pConfig);
-    virtual ~DlgPrefControls();
+    DlgPrefInterface(QWidget *parent, MixxxMainWindow *mixxx,
+                    SkinLoader* pSkinLoader, UserSettingsPointer pConfig);
+    virtual ~DlgPrefInterface();
 
   public slots:
     void slotUpdate();
     void slotApply();
     void slotResetToDefaults();
 
-    void slotSetRateRange(int pos);
-    void slotSetRateRangePercent(int rateRangePercent);
-    void slotSetRateDir(bool invert);
-    void slotSetRateDir(int pos);
-    void slotKeyLockMode(QAbstractButton*);
-    void slotKeyUnlockMode(QAbstractButton*);
-    void slotSetRateTempLeft(double);
-    void slotSetRateTempRight(double);
-    void slotSetRatePermLeft(double);
-    void slotSetRatePermRight(double);
     void slotSetTooltips();
     void slotSetSkin(int);
     void slotSetScheme(int);
     void slotUpdateSchemes();
-    void slotSetTrackTimeDisplay(QAbstractButton*);
-    void slotSetTrackTimeDisplay(double);
-    void slotSetAllowTrackLoadToPlayingDeck(bool);
-    void slotSetCueDefault(int);
-    void slotSetCueRecall(bool);
-    void slotSetRateRamp(bool);
-    void slotSetRateRampSensitivity(int);
     void slotSetLocale(int);
     void slotSetScaleFactor(int index);
     void slotSetScaleFactorAuto(bool checked);
-    void slotSetStartInFullScreen(bool b);
-
-    void slotNumDecksChanged(double);
-    void slotNumSamplersChanged(double);
-
-    void slotUpdateSpeedAutoReset(bool);
-    void slotUpdatePitchAutoReset(bool);
 
   private:
     void notifyRebootNecessary();
+    void loadTooltipPreferenceFromConfig();
     bool checkSkinResolution(QString skin);
 
     // Because the CueDefault list is out of order, we have to set the combo
@@ -100,26 +69,23 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
 
     UserSettingsPointer m_pConfig;
     ControlObject* m_pControlTrackTimeDisplay;
-    ControlProxy* m_pNumDecks;
-    ControlProxy* m_pNumSamplers;
-    QList<ControlProxy*> m_cueControls;
-    QList<ControlProxy*> m_rateControls;
-    QList<ControlProxy*> m_rateDirControls;
-    QList<ControlProxy*> m_rateRangeControls;
-    QList<ControlProxy*> m_keylockModeControls;
-    QList<ControlProxy*> m_keyunlockModeControls;
     MixxxMainWindow *m_mixxx;
     SkinLoader* m_pSkinLoader;
     PlayerManager* m_pPlayerManager;
 
-    int m_iNumConfiguredDecks;
-    int m_iNumConfiguredSamplers;
+    QString m_skin;
+    QString m_skinOnUpdate;
+    QString m_colorScheme;
+    QString m_locale;
+    QString m_localeOnUpdate;
+    mixxx::TooltipsPreference m_tooltipMode;
+    double m_dScaleFactorAuto;
+    bool m_bUseAutoScaleFactor;
+    double m_dScaleFactor;
+    bool m_bStartWithFullScreen;
+    mixxx::ScreenSaverPreference m_screensaverMode;
 
-    bool m_speedAutoReset;
-    bool m_pitchAutoReset;
-    int m_keylockMode;
-    int m_keyunlockMode;
-    double m_autoScaleFactor;
+    bool m_bRebootMixxxView;
 };
 
 #endif

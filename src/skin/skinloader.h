@@ -24,28 +24,27 @@ class SkinLoader : public QObject {
     SkinLoader(UserSettingsPointer pConfig);
     virtual ~SkinLoader();
 
-    QWidget* loadDefaultSkin(QWidget* pParent,
-                             KeyboardEventFilter* pKeyboard,
-                             PlayerManager* pPlayerManager,
-                             ControllerManager* pControllerManager,
-                             Library* pLibrary,
-                             VinylControlManager* pVCMan,
-                             EffectsManager* pEffectsManager,
-                             RecordingManager* pRecordingManager);
+    QWidget* loadConfiguredSkin(QWidget* pParent,
+                                KeyboardEventFilter* pKeyboard,
+                                PlayerManager* pPlayerManager,
+                                ControllerManager* pControllerManager,
+                                Library* pLibrary,
+                                VinylControlManager* pVCMan,
+                                EffectsManager* pEffectsManager,
+                                RecordingManager* pRecordingManager);
 
     LaunchImage* loadLaunchImage(QWidget* pParent);
 
-    QString getSkinPath();
-    QList<QDir> getSkinSearchPaths();
+    QString getSkinPath(const QString& skinName) const;
+    QString getConfiguredSkinPath() const;
+    QString getDefaultSkinName() const;
+    QList<QDir> getSkinSearchPaths() const;
     inline const TooltipShortcutUpdater *getTooltipUpdater() {
         return &m_TooltipUpdater;
     };
 
   private:
-    QString getConfiguredSkinPath();
-    QString getDefaultSkinName() const;
-    QString getDefaultSkinPath();
-    QString pickResizableSkin(QString oldSkin);
+    QString pickResizableSkin(QString oldSkin) const;
     TooltipShortcutUpdater m_TooltipUpdater;
     UserSettingsPointer m_pConfig;
 };
