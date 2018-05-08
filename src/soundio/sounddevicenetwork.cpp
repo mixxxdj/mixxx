@@ -264,5 +264,6 @@ void SoundDeviceNetwork::writeProcess() {
                     size2 / m_iNumOutputChannels);
         }
         m_outputFifo->releaseReadRegions(copyCount);
+        m_pNetworkStream->writingDone(copyCount);
     }
 }

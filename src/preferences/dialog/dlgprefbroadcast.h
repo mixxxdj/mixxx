@@ -8,6 +8,7 @@
 #include "preferences/usersettings.h"
 #include "broadcast/defs_broadcast.h"
 #include "preferences/dlgpreferencepage.h"
+#include "preferences/broadcastsettings.h"
 
 class ControlProxy;
 
@@ -23,12 +24,15 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     void slotUpdate();
     void slotResetToDefaults();
     void broadcastEnabledChanged(double value);
+    void checkBoxEnableReconnectChanged(int value);
+    void checkBoxLimitReconnectsChanged(int value);
+    void enableCustomMetadataChanged(int value);
 
   signals:
     void apply(const QString &);
 
   private:
-    UserSettingsPointer m_pConfig;
+    BroadcastSettings m_settings;
     ControlProxy* m_pBroadcastEnabled;
 };
 

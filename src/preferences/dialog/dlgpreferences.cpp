@@ -144,8 +144,10 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
 
 DlgPreferences::~DlgPreferences() {
     // store last geometry in mixxx.cfg
-    m_pConfig->set(ConfigKey("[Preferences]","geometry"),
-                   m_geometry.join(","));
+    if (m_geometry.size() == 4) {
+        m_pConfig->set(ConfigKey("[Preferences]","geometry"),
+                       m_geometry.join(","));
+    }
 
     // Need to explicitly delete rather than relying on child auto-deletion
     // because otherwise the QStackedWidget will delete the controller
@@ -351,24 +353,19 @@ void DlgPreferences::onHide() {
 }
 
 void DlgPreferences::onShow() {
-    //
-    // Read last geometry (size and position) of preferences panel
-    // Bug#1299949
-    //
     // init m_geometry
     if (m_geometry.length() < 4) {
         // load default values (optimum size)
-        QRect defaultGeometry = getDefaultGeometry();
-        QString defaultGeometryStr = QString("%1,%2,%3,%4")
-                                          .arg(defaultGeometry.left())
-                                            .arg(defaultGeometry.top())
-                                            .arg(defaultGeometry.width())
-                                            .arg(defaultGeometry.height());
-
-        // get last geometry OR use default values from
-        m_geometry = m_pConfig->getValueString(
-                    ConfigKey("[Preferences]", "geometry"),
-                    defaultGeometryStr).split(",");
+        m_geometry = m_pConfig->getValue(
+                    ConfigKey("[Preferences]", "geometry")).split(",");
+        if (m_geometry.length() < 4) {
+            QRect defaultGeometry = getDefaultGeometry();
+            m_geometry.clear();
+            m_geometry.append(QString::number(defaultGeometry.left()));
+            m_geometry.append(QString::number(defaultGeometry.top()));
+            m_geometry.append(QString::number(defaultGeometry.width()));
+            m_geometry.append(QString::number(defaultGeometry.height()));
+        }
     }
 
     // Update geometry with last values

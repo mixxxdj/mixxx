@@ -15,20 +15,20 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
 
     // The minimum available for randomly-selected tracks
     autoDjMinimumAvailableSpinBox->setValue(
-            m_pConfig->getValueString(
-                    ConfigKey("[Auto DJ]", "MinimumAvailable"), "20").toInt());
+            m_pConfig->getValue(
+                    ConfigKey("[Auto DJ]", "MinimumAvailable"), 20));
     connect(autoDjMinimumAvailableSpinBox, SIGNAL(valueChanged(int)), this,
             SLOT(slotSetAutoDjMinimumAvailable(int)));
 
     // The auto-DJ replay-age for randomly-selected tracks
     autoDjIgnoreTimeCheckBox->setChecked(
-            (bool) m_pConfig->getValueString(
-                    ConfigKey("[Auto DJ]", "UseIgnoreTime"), "0").toInt());
+            (bool) m_pConfig->getValue(
+                    ConfigKey("[Auto DJ]", "UseIgnoreTime"), 0));
     connect(autoDjIgnoreTimeCheckBox, SIGNAL(stateChanged(int)), this,
             SLOT(slotSetAutoDjUseIgnoreTime(int)));
     autoDjIgnoreTimeEdit->setTime(
             QTime::fromString(
-                    m_pConfig->getValueString(
+                    m_pConfig->getValue(
                             ConfigKey("[Auto DJ]", "IgnoreTime"), "23:59"),
                     autoDjIgnoreTimeEdit->displayFormat()));
     autoDjIgnoreTimeEdit->setEnabled(
@@ -40,17 +40,17 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
     ComboBoxAutoDjRandomQueue->addItem(tr("Off"));
     ComboBoxAutoDjRandomQueue->addItem(tr("On"));
     ComboBoxAutoDjRandomQueue->setCurrentIndex(
-            m_pConfig->getValueString(
-                    ConfigKey("[Auto DJ]", "EnableRandomQueue"),"0").toInt());
+            m_pConfig->getValue(
+                    ConfigKey("[Auto DJ]", "EnableRandomQueue"), 0));
     // 5-arbitrary
     autoDJRandomQueueMinimumSpinBox->setValue(
-            m_pConfig->getValueString(
-                    ConfigKey("[Auto DJ]", "RandomQueueMinimumAllowed"),"5").toInt());
+            m_pConfig->getValue(
+                    ConfigKey("[Auto DJ]", "RandomQueueMinimumAllowed"), 5));
     slotEnableAutoDJRandomQueueComboBox(
             m_pConfig->getValueString(ConfigKey("[Auto DJ]", "Requeue")).toInt());
     slotEnableAutoDJRandomQueue(
-            m_pConfig->getValueString(
-                    ConfigKey("[Auto DJ]", "EnableRandomQueue")).toInt());
+            m_pConfig->getValue<int>(
+                    ConfigKey("[Auto DJ]", "EnableRandomQueue")));
     // Be ready to enable disable the random enque as reque is modified
     connect(ComboBoxAutoDjRequeue, SIGNAL(activated(int)), this,
             SLOT(slotEnableAutoDJRandomQueueComboBox(int)));
@@ -69,65 +69,65 @@ void DlgPrefAutoDJ::slotUpdate() {
 
 void DlgPrefAutoDJ::slotApply() {
     //Copy from Buffer to actual values
-    m_pConfig->set(ConfigKey("[Auto DJ]", "Requeue"),
-            m_pConfig->getValueString(ConfigKey("[Auto DJ]", "RequeueBuff"),"0"));
-    m_pConfig->set(ConfigKey("[Auto DJ]","MinimumAvailable"),
-            m_pConfig->getValueString(
-                    ConfigKey("[Auto DJ]", "MinimumAvailableBuff"), "20"));
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", "Requeue"),
+            m_pConfig->getValue(ConfigKey("[Auto DJ]", "RequeueBuff"), 0));
+    m_pConfig->setValue(ConfigKey("[Auto DJ]","MinimumAvailable"),
+            m_pConfig->getValue(
+                    ConfigKey("[Auto DJ]", "MinimumAvailableBuff"), 20));
 
-    m_pConfig->set(ConfigKey("[Auto DJ]", "IgnoreTime"),
-            m_pConfig->getValueString(
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", "IgnoreTime"),
+            m_pConfig->getValue(
                     ConfigKey("[Auto DJ]", "IgnoreTimeBuff"), "23:59"));
-    m_pConfig->set(ConfigKey("[Auto DJ]", "UseIgnoreTime"),
-            m_pConfig->getValueString(
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", "UseIgnoreTime"),
+            m_pConfig->getValue(
                     ConfigKey("[Auto DJ]", "UseIgnoreTimeBuff"), "0"));
 
-    m_pConfig->set(ConfigKey("[Auto DJ]", "RandomQueueMinimumAllowed"),
-            m_pConfig->getValueString(
-                    ConfigKey("[Auto DJ]", "RandomQueueMinimumAllowedBuff"),"5"));
-    m_pConfig->set(ConfigKey("[Auto DJ]", "EnableRandomQueue"),
-            m_pConfig->getValueString(
-                    ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),"0"));
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", "RandomQueueMinimumAllowed"),
+            m_pConfig->getValue(
+                    ConfigKey("[Auto DJ]", "RandomQueueMinimumAllowedBuff"), 5));
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", "EnableRandomQueue"),
+            m_pConfig->getValue(
+                    ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"), 0));
 }
 
 void DlgPrefAutoDJ::slotCancel() {
     // Load actual values and reset Buffer Values where ever needed
     ComboBoxAutoDjRequeue->setCurrentIndex(
-            m_pConfig->getValueString(ConfigKey("[Auto DJ]", "Requeue"),"0").toInt());
-    m_pConfig->set(ConfigKey("[Auto DJ]", "RequeueBuff"),
-            m_pConfig->getValueString(ConfigKey("[Auto DJ]", "Requeue"),"0"));
+            m_pConfig->getValue(ConfigKey("[Auto DJ]", "Requeue"), 0));
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", "RequeueBuff"),
+            m_pConfig->getValue(ConfigKey("[Auto DJ]", "Requeue"), 0));
     autoDjMinimumAvailableSpinBox->setValue(
-            m_pConfig->getValueString(
-                      ConfigKey("[Auto DJ]", "MinimumAvailable"), "20").toInt());
+            m_pConfig->getValue(
+                      ConfigKey("[Auto DJ]", "MinimumAvailable"), 20));
 
     autoDjIgnoreTimeEdit->setTime(
             QTime::fromString(
-            m_pConfig->getValueString(
+            m_pConfig->getValue(
                       ConfigKey("[Auto DJ]", "IgnoreTime"), "23:59"),
                                 autoDjIgnoreTimeEdit->displayFormat()));
     autoDjIgnoreTimeCheckBox->setChecked(
-            (bool) m_pConfig->getValueString(
-                    ConfigKey("[Auto DJ]", "UseIgnoreTime"), "0").toInt());
+            m_pConfig->getValue(
+                    ConfigKey("[Auto DJ]", "UseIgnoreTime"), false));
     autoDjIgnoreTimeEdit->setEnabled(
             autoDjIgnoreTimeCheckBox->checkState() == Qt::Checked);
-    m_pConfig->set(ConfigKey("[Auto DJ]", "UseIgnoreTimeBuff"),
-            m_pConfig->getValueString(
-                    ConfigKey("[Auto DJ]", "UseIgnoreTime"), "0"));
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", "UseIgnoreTimeBuff"),
+            m_pConfig->getValue(
+                    ConfigKey("[Auto DJ]", "UseIgnoreTime"), 0));
 
     autoDJRandomQueueMinimumSpinBox->setValue(
-            m_pConfig->getValueString(
-                    ConfigKey("[Auto DJ]", "RandomQueueMinimumAllowed"),"5").toInt());
+            m_pConfig->getValue(
+                    ConfigKey("[Auto DJ]", "RandomQueueMinimumAllowed"), 5));
     ComboBoxAutoDjRandomQueue->setCurrentIndex(
-            m_pConfig->getValueString(
-                    ConfigKey("[Auto DJ]", "EnableRandomQueue"),"0").toInt());
-    m_pConfig->set(ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),
-            m_pConfig->getValueString(
-                    ConfigKey("[Auto DJ]", "EnableRandomQueue"), "0"));
+            m_pConfig->getValue(
+                    ConfigKey("[Auto DJ]", "EnableRandomQueue"), 0));
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),
+            m_pConfig->getValue(
+                    ConfigKey("[Auto DJ]", "EnableRandomQueue"), 0));
     slotEnableAutoDJRandomQueue(
-            m_pConfig->getValueString(
-                    ConfigKey("[Auto DJ]", "EnableRandomQueue")).toInt());
+            m_pConfig->getValue(
+                    ConfigKey("[Auto DJ]", "EnableRandomQueue"), 0));
     slotEnableAutoDJRandomQueueComboBox(
-            m_pConfig->getValueString(ConfigKey("[Auto DJ]", "Requeue")).toInt());
+            m_pConfig->getValue<int>(ConfigKey("[Auto DJ]", "Requeue")));
 }
 
 void DlgPrefAutoDJ::slotResetToDefaults() {
@@ -190,8 +190,8 @@ void DlgPrefAutoDJ::slotEnableAutoDJRandomQueueComboBox(int a_iValue) {
     } else {
         ComboBoxAutoDjRandomQueue->setEnabled(true);
         autoDJRandomQueueMinimumSpinBox->setEnabled(
-                m_pConfig->getValueString(
-                        ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),"0").toInt());
+                m_pConfig->getValue(
+                        ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"), false));
     }
 }
 

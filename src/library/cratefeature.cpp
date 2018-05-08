@@ -687,7 +687,7 @@ void CrateFeature::slotExportPlaylist() {
     QString crateName = m_crateDao.crateName(crateId);
     qDebug() << "Export crate" << crateId << crateName;
 
-    QString lastCrateDirectory = m_pConfig->getValueString(
+    QString lastCrateDirectory = m_pConfig->getValue(
             ConfigKey("[Library]", "LastImportExportCrateDirectory"),
             QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
 
@@ -712,9 +712,8 @@ void CrateFeature::slotExportPlaylist() {
     // register a security bookmark.
 
     // check config if relative paths are desired
-    bool useRelativePath = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey("[Library]", "UseRelativePathOnExport")).toInt());
+    bool useRelativePath = m_pConfig->getValue<bool>(
+            ConfigKey("[Library]", "UseRelativePathOnExport"));
 
     // Create list of files of the crate
     QList<QString> playlist_items;

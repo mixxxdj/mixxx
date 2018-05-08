@@ -371,8 +371,8 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
     }
 
     // Default keylock is Rubberband.
-    int keylock_engine = m_pConfig->getValueString(
-            ConfigKey("[Master]", "keylock_engine"), "1").toInt();
+    int keylock_engine = m_pConfig->getValue(
+            ConfigKey("[Master]", "keylock_engine"), 1);
     keylockComboBox->setCurrentIndex(keylock_engine);
 
     m_loading = false;

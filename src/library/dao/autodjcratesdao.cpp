@@ -43,8 +43,8 @@ void AutoDJCratesDAO::initialize() {
 void AutoDJCratesDAO::createAutoDjCratesDatabase() {
     // If the use of tracks that haven't been played in a while has changed,
     // then the active-tracks view must be recreated.
-    bool bUseIgnoreTime = (bool) m_pConfig->getValueString(
-            ConfigKey("[Auto DJ]", "UseIgnoreTime"), "0").toInt();
+    bool bUseIgnoreTime = m_pConfig->getValue(
+            ConfigKey("[Auto DJ]", "UseIgnoreTime"), false);
     if (m_bAutoDjCratesDbCreated) {
         if (m_bUseIgnoreTime != bUseIgnoreTime) {
             // Do all this in a single transaction.
@@ -444,8 +444,8 @@ int AutoDJCratesDAO::getRandomTrackId(void) {
     }
 
     // Get the active percentage (default 20%).
-    int iMinimumAvailable = m_pConfig->getValueString (ConfigKey("[Auto DJ]",
-        "MinimumAvailable"), "20").toInt();
+    int iMinimumAvailable = m_pConfig->getValue(
+            ConfigKey("[Auto DJ]", "MinimumAvailable"), 20);
 
     // Calculate the number of active-tracks.  This is either the number of
     // auto-DJ-crate tracks that have never been played, or the active
@@ -464,8 +464,8 @@ int AutoDJCratesDAO::getRandomTrackId(void) {
         QDateTime timCurrent = QDateTime::currentDateTime().toUTC();
 
         // Subtract the replay age.
-        QTime timIgnoreTime = (QTime::fromString(m_pConfig->getValueString
-            (ConfigKey("[Auto DJ]", "IgnoreTime"), "23:59"), "hh:mm"));
+        QTime timIgnoreTime = (QTime::fromString(m_pConfig->getValue(
+                ConfigKey("[Auto DJ]", "IgnoreTime"), "23:59"), "hh:mm"));
         timCurrent = timCurrent.addSecs(-(timIgnoreTime.hour() * 3600
             + timIgnoreTime.minute() * 60));
 

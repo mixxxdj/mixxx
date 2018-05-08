@@ -52,9 +52,9 @@ DlgPrefCrossfader::~DlgPrefCrossfader() {
 // Loads the config keys and sets the widgets in the dialog to match
 void DlgPrefCrossfader::loadSettings() {
     // Range xFaderCurve EngineXfader::kTransformMin .. EngineXfader::kTransformMax
-    m_transform = m_config->getValueString(
+    m_transform = m_config->getValue(
             ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderCurve"),
-            QString::number(EngineXfader::kTransformDefault)).toDouble();
+            EngineXfader::kTransformDefault);
 
     // Range SliderXFader 0 .. 100
     double sliderVal = RescalerUtils::oneByXToLinear(

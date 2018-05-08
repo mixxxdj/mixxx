@@ -163,23 +163,23 @@ void DlgPrefLibrary::slotResetToDefaults() {
 
 void DlgPrefLibrary::slotUpdate() {
     initializeDirList();
-    checkBox_library_scan->setChecked((bool)m_pconfig->getValueString(
-            ConfigKey("[Library]","RescanOnStartup")).toInt());
-    checkbox_ID3_sync->setChecked((bool)m_pconfig->getValueString(
-            ConfigKey("[Library]","WriteAudioTags")).toInt());
-    checkBox_use_relative_path->setChecked((bool)m_pconfig->getValueString(
-            ConfigKey("[Library]","UseRelativePathOnExport")).toInt());
-    checkBox_show_rhythmbox->setChecked((bool)m_pconfig->getValueString(
-            ConfigKey("[Library]","ShowRhythmboxLibrary"),"1").toInt());
-    checkBox_show_banshee->setChecked((bool)m_pconfig->getValueString(
-            ConfigKey("[Library]","ShowBansheeLibrary"),"1").toInt());
-    checkBox_show_itunes->setChecked((bool)m_pconfig->getValueString(
-            ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt());
-    checkBox_show_traktor->setChecked((bool)m_pconfig->getValueString(
-            ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt());
+    checkBox_library_scan->setChecked(m_pconfig->getValue(
+            ConfigKey("[Library]","RescanOnStartup"), false));
+    checkbox_ID3_sync->setChecked(m_pconfig->getValue(
+            ConfigKey("[Library]","WriteAudioTags"), false));
+    checkBox_use_relative_path->setChecked(m_pconfig->getValue(
+            ConfigKey("[Library]","UseRelativePathOnExport"), false));
+    checkBox_show_rhythmbox->setChecked(m_pconfig->getValue(
+            ConfigKey("[Library]","ShowRhythmboxLibrary"), true));
+    checkBox_show_banshee->setChecked(m_pconfig->getValue(
+            ConfigKey("[Library]","ShowBansheeLibrary"), true));
+    checkBox_show_itunes->setChecked(m_pconfig->getValue(
+            ConfigKey("[Library]","ShowITunesLibrary"), true));
+    checkBox_show_traktor->setChecked(m_pconfig->getValue(
+            ConfigKey("[Library]","ShowTraktorLibrary"), true));
 
-    switch (m_pconfig->getValueString(ConfigKey("[Library]","TrackLoadAction"),
-                                      QString::number(LOAD_TRACK_DECK)).toInt()) {
+    switch (m_pconfig->getValue<int>(
+            ConfigKey("[Library]","TrackLoadAction"), LOAD_TRACK_DECK)) {
     case ADD_TRACK_BOTTOM:
             radioButton_dbclick_bottom->setChecked(true);
             break;

@@ -21,7 +21,7 @@ LibraryFeature::~LibraryFeature() {
 }
 
 QStringList LibraryFeature::getPlaylistFiles(QFileDialog::FileMode mode) {
-    QString lastPlaylistDirectory = m_pConfig->getValueString(
+    QString lastPlaylistDirectory = m_pConfig->getValue(
             ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
             QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
 
