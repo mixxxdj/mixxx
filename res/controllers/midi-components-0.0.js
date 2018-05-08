@@ -123,7 +123,7 @@
                 undefined !== this.outKey &&
                 undefined !== this.output &&
                 typeof this.output === 'function') {
-                this.connections[0] = engine.connectControl(this.group, this.outKey, this.output);
+                this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output);
             }
         },
         disconnect: function () {
@@ -332,28 +332,44 @@
                     } else {
                         engine.setValue(this.group, 'eject', 1);
                     }
+                } else {
+                    if (engine.getValue(this.group, 'play') === 0) {
+                        engine.setValue(this.group, 'eject', 0);
+                    }
                 }
             };
         },
         output: function (value, group, control) {
             if (engine.getValue(this.group, 'track_loaded') === 1) {
-                if (this.playing === undefined) {
+                if (this.loaded === undefined) {
                     this.send(this.on);
                 } else {
                     if (engine.getValue(this.group, 'play') === 1) {
-                        this.send(this.on);
+                        if (this.looping !== undefined &&
+                            engine.getValue(this.group, 'repeat') === 1) {
+                            this.send(this.looping);
+                        } else {
+                            this.send(this.playing);
+                        }
                     } else {
-                        this.send(this.playing);
+                        this.send(this.loaded);
                     }
                 }
             } else {
-                this.send(this.off);
+                if (this.empty === undefined) {
+                    this.send(this.off);
+                } else {
+                    this.send(this.empty);
+                }
             }
         },
         connect: function() {
-            this.connections[0] = engine.connectControl(this.group, 'track_loaded', this.output);
+            this.connections[0] = engine.makeConnection(this.group, 'track_loaded', this.output);
             if (this.playing !== undefined) {
-                this.connections[1] = engine.connectControl(this.group, 'play', this.output);
+                this.connections[1] = engine.makeConnection(this.group, 'play', this.output);
+            }
+            if (this.looping !== undefined) {
+                this.connections[2] = engine.connectControl(this.group, 'repeat', this.output);
             }
         },
         outKey: null, // hack to get Component constructor to call connect()
@@ -472,12 +488,22 @@
         isShifted: false,
         shift: function () {
             this.forEachComponent(function (component) {
+                // Controls for push type Buttons depend on getting reset to 0 when the
+                // Button is released for correct behavior. If there is a skin button
+                // that lights up with the inKey, the skin button would stay lit if the
+                // inKey does not get reset to 0. So, if a push type Button is held down
+                // when shift is pressed, when the Button is released, the MIDI signal
+                // for the Button release will be processed when the Button is in the
+                // shifted state, and the unshifted inKey would not get reset to 0.
+                // To work around this, reset push Buttons' inKey to 0 when the shift
+                // button is pressed.
                 if (typeof component.shift === 'function') {
                     if (component instanceof Button
                         && (component.type === Button.prototype.types.push
                             || component.type === undefined)
-                        && component.inKey !== undefined
-                        && component.input === Button.prototype.input) {
+                        && component.input === Button.prototype.input
+                        && typeof component.inKey === 'string'
+                        && typeof component.group === 'string') {
                         if (engine.getValue(component.group, component.inKey) !== 0) {
                             engine.setValue(component.group, component.inKey, 0);
                         }
@@ -490,12 +516,14 @@
         },
         unshift: function () {
             this.forEachComponent(function (component) {
+                // Refer to comment in ComponentContainer.shift() above for explanation
                 if (typeof component.unshift === 'function') {
                     if (component instanceof Button
                         && (component.type === Button.prototype.types.push
                             || component.type === undefined)
-                        && component.inKey !== undefined
-                        && component.input === Button.prototype.input) {
+                        && component.input === Button.prototype.input
+                        && typeof component.inKey === 'string'
+                        && typeof component.group === 'string') {
                         if (engine.getValue(component.group, component.inKey) !== 0) {
                             engine.setValue(component.group, component.inKey, 0);
                         }
@@ -605,6 +633,11 @@
                                     this.previouslyFocusedEffect);
                 }
             }
+            if (this.enableButtons !== undefined) {
+                this.enableButtons.reconnectComponents(function (button) {
+                    button.stopEffectFocusChooseMode();
+                });
+            }
         };
 
         this.setCurrentUnit = function (newNumber) {
@@ -627,7 +660,7 @@
                 // setting show_focus when effectFocusButton is pressed so
                 // show_focus is always in the correct state, even if the user
                 // presses the skin button for show_parameters.
-                this.showParametersConnection = engine.connectControl(this.group,
+                this.showParametersConnection = engine.makeConnection(this.group,
                                                     'show_parameters',
                                                     this.onShowParametersChange);
                 this.showParametersConnection.trigger();
@@ -770,7 +803,7 @@
             },
             outKey: "focused_effect",
             connect: function () {
-                this.connections[0] = engine.connectControl(eu.group, "focused_effect",
+                this.connections[0] = engine.makeConnection(eu.group, "focused_effect",
                                                             this.onFocusChange);
             },
             disconnect: function () {
@@ -802,14 +835,50 @@
             Button.call(this);
         };
         this.EffectEnableButton.prototype = new Button({
+            type: Button.prototype.types.powerWindow,
+            // NOTE: This function is only connected when not in focus choosing mode.
+            onFocusChange: function (value, group, control) {
+                if (value === 0) {
+                    this.group = '[EffectRack1_EffectUnit' +
+                                  eu.currentUnitNumber + '_Effect' +
+                                  this.number + ']';
+                    this.inKey = 'enabled';
+                    this.outKey = 'enabled';
+                } else {
+                    this.group = '[EffectRack1_EffectUnit' + eu.currentUnitNumber +
+                                 '_Effect' + value + ']';
+                    this.inKey = 'button_parameter' + this.number;
+                    this.outKey = 'button_parameter' + this.number;
+                }
+            },
             stopEffectFocusChooseMode: function () {
-                this.inKey = 'enabled';
                 this.type = Button.prototype.types.powerWindow;
                 this.input = Button.prototype.input;
-
-                this.outKey = 'enabled';
-                this.connect = Button.prototype.connect;
                 this.output = Button.prototype.output;
+
+                this.connect = function () {
+                    this.connections[0] = engine.makeConnection(eu.group, "focused_effect",
+                                                                this.onFocusChange);
+                    // this.onFocusChange sets this.group and this.outKey, so trigger it
+                    // before making the connection for LED output
+                    this.connections[0].trigger();
+                    this.connections[1] = engine.makeConnection(this.group, this.outKey, this.output);
+                };
+
+                this.unshift = function () {
+                    this.disconnect();
+                    this.connect();
+                    this.trigger();
+                };
+                this.shift = function () {
+                    this.group = '[EffectRack1_EffectUnit' +
+                                  eu.currentUnitNumber + '_Effect' +
+                                  this.number + ']';
+                    this.inKey = 'enabled';
+                };
+                if (this.isShifted) {
+                    this.shift();
+                }
             },
             startEffectFocusChooseMode: function () {
                 this.input = function (channel, control, value, status, group) {
@@ -823,13 +892,18 @@
                         }
                     }
                 };
-                this.connect = function () {
-                    this.connections[0] = engine.connectControl(eu.group,
-                                                                "focused_effect",
-                                                                this.output);
-                };
                 this.output = function (value, group, control) {
                     this.send((value === this.number) ? this.on : this.off);
+                };
+                this.connect = function () {
+                    // Outside of focus choose mode, the this.connections array
+                    // has two members. Connections can be triggered when they
+                    // are disconnected, so overwrite the whole array here instead
+                    // of assigning to this.connections[0] to avoid
+                    // Component.prototype.trigger() triggering the disconnected connection.
+                    this.connections = [engine.makeConnection(eu.group,
+                                                              "focused_effect",
+                                                              this.output)];
                 };
             },
         });

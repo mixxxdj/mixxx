@@ -63,6 +63,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Spinning Vinyl")
             << tr("Rotates during playback and shows the position of a track.")
             << scratchMouse
+            << tr("Right click to show cover art of loaded track.")
             << dropTracksHere
             << tr("If Vinyl control is enabled, displays time-coded vinyl signal quality (see Preferences -> Vinyl Control).");
 
@@ -163,6 +164,11 @@ void Tooltips::addStandardTooltips() {
     add("master_gain")
             << tr("Master Gain")
             << tr("Adjusts the master output gain.")
+            << QString("%1: %2").arg(rightClick, resetToDefault);
+
+    add("booth_gain")
+            << tr("Booth Gain")
+            << tr("Adjusts the booth output gain.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("crossfader")
@@ -810,11 +816,11 @@ void Tooltips::addStandardTooltips() {
     add("EffectSlot_parameter_link_type")
             << tr("Meta Knob Link")
             << tr("Set how this parameter is linked to the effect's Meta Knob.")
-            << tr("Empty bar: not linked")
-            << tr("Solid bar: moves with Meta Knob")
-            << tr("Left side: moves with left half of Meta Knob")
-            << tr("Right side: moves with right half of Meta Knob")
-            << tr("Left and right: moves across range with half of Meta Knob and back with the other half");
+            << tr("Inactive: parameter not linked")
+            << tr("Active: parameter moves with Meta Knob")
+            << tr("Left side active: parameter moves with left half of Meta Knob turn")
+            << tr("Right side active: parameter moves with right half of Meta Knob turn ")
+            << tr("Left and right side active: parameter moves across range with half of Meta Knob turn and back with the other half");
 
     add("EffectSlot_parameter_inversion")
             << tr("Meta Knob Link Inversion")

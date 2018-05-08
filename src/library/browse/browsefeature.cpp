@@ -19,6 +19,7 @@
 #include "widget/wlibrary.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "util/sandbox.h"
+#include "util/memory.h"
 
 const QString kQuickLinksSeparator = "-+-";
 
@@ -133,7 +134,14 @@ void BrowseFeature::slotAddQuickLink() {
     QVariant vpath = m_pLastRightClickedItem->getData();
     QString spath = vpath.toString();
     QString name = extractNameFromPath(spath);
-    m_pQuickLinkItem->appendChild(name, vpath);
+
+    QModelIndex parent = m_childModel.index(m_pQuickLinkItem->parentRow(), 0);
+    auto pNewChild = std::make_unique<TreeItem>(this, name, vpath);
+    QList<TreeItem*> rows;
+    rows.append(pNewChild.get());
+    pNewChild.release();
+    m_childModel.insertTreeItemRows(rows, m_pQuickLinkItem->childRows(), parent);
+
     m_quickLinkList.append(spath);
     saveQuickLinks();
 }
@@ -182,7 +190,10 @@ void BrowseFeature::slotRemoveQuickLink() {
     if (index == -1) {
         return;
     }
-    m_pQuickLinkItem->removeChild(index);
+
+    QModelIndex parent = m_childModel.index(m_pQuickLinkItem->parentRow(), 0);
+    m_childModel.removeRow(index, parent);
+
     m_quickLinkList.removeAt(index);
     saveQuickLinks();
 }
@@ -286,7 +297,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
     QString path = item->getData().toString();
 
     // If the item is a build-in node, e.g., 'QuickLink' return
-    if (path == QUICK_LINK_NODE) {
+    if (path.isEmpty() || path == QUICK_LINK_NODE) {
         return;
     }
 

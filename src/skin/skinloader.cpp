@@ -77,12 +77,7 @@ QString SkinLoader::getConfiguredSkinPath() {
 }
 
 QString SkinLoader::getDefaultSkinName() const {
-    QRect screenGeo = QApplication::desktop()->screenGeometry();
-    if (screenGeo.width() >= 1280 && screenGeo.height() >= 800) {
-        return "LateNight";
-    } else {
-        return "Shade";
-    }
+    return "Deere";
 }
 
 QString SkinLoader::getDefaultSkinPath() {

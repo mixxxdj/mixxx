@@ -214,7 +214,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
 
 #ifdef __BROADCAST__
-    m_pBroadcastManager = new BroadcastManager(pConfig, m_pSoundManager);
+    m_pBroadcastManager = new BroadcastManager(m_pSettingsManager,
+                                               m_pSoundManager);
 #endif
 
     launchProgress(11);
@@ -291,6 +292,9 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             m_pRecordingManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);
 
+    // Create the singular TrackCache instance
+    TrackCache::createInstance(m_pLibrary);
+
     launchProgress(40);
 
     // Get Music dir
@@ -357,7 +361,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
                                     m_pControllerManager, m_pVCManager, m_pEffectsManager,
-                                    pConfig, m_pLibrary);
+                                    m_pSettingsManager, m_pLibrary);
     m_pPrefDlg->setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
     m_pPrefDlg->setHidden(true);
 
@@ -573,19 +577,30 @@ void MixxxMainWindow::finalize() {
     // CoverArtCache is fairly independent of everything else.
     CoverArtCache::destroy();
 
+    // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
+    // The player manager has to be deleted before the library to ensure
+    // that all modified track metadata of loaded tracks is saved.
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting PlayerManager";
+    delete m_pPlayerManager;
+
+    // Evict all remaining tracks from the cache to trigger
+    // updating of modified tracks.
+    TrackCache::instance().evictAll();
+
     // Delete the library after the view so there are no dangling pointers to
     // the data models.
     // Depends on RecordingManager and PlayerManager
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting Library";
     delete m_pLibrary;
 
+    // The TrackCache singleton must be destroyed immediately
+    // after the library has been destroyed!
+    qDebug() << "Destroying TrackCache" << t.elapsed(false);
+    TrackCache::destroyInstance();
+
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "closing database connection(s)";
     m_pDbConnectionPool->destroyThreadLocalConnection();
     m_pDbConnectionPool.reset(); // should drop the last reference
-
-    // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
-    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting PlayerManager";
-    delete m_pPlayerManager;
 
     // RecordingManager depends on config, engine
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting RecordingManager";
@@ -660,7 +675,6 @@ void MixxxMainWindow::finalize() {
     Sandbox::shutdown();
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting SettingsManager";
-    delete m_pSettingsManager;
 
     delete m_pKeyboard;
     delete m_pKbdConfig;
@@ -1154,10 +1168,14 @@ void MixxxMainWindow::rebootMixxxView() {
     qDebug() << "Now in rebootMixxxView...";
 
     QPoint initPosition = pos();
-    // this->frameSize()  : Window size including all borders and only if the window manager works.
-    // this->size() : Window without the borders nor title, but including the Menu!
-    // this->centralWidget()->size() : Size of the internal window Widget.
-    QSize initSize = this->centralWidget()->size();
+    // frameSize()  : Window size including all borders and only if the window manager works.
+    // size() : Window without the borders nor title, but including the Menu!
+    // centralWidget()->size() : Size of the internal window Widget.
+    QSize initSize;
+    QWidget* pWidget = centralWidget(); // can be null if previous skin loading fails
+    if (pWidget) {
+        initSize = centralWidget()->size();
+    }
 
     // We need to tell the menu bar that we are about to delete the old skin and
     // create a new one. It holds "visibility" controls (e.g. "Show Samplers")
@@ -1202,7 +1220,7 @@ void MixxxMainWindow::rebootMixxxView() {
 
     if (wasFullScreen) {
         slotViewFullScreen(true);
-    } else {
+    } else if (!initSize.isEmpty()) {
         // Not all OSs and/or window managers keep the window inside of the screen, so force it.
         int newX = initPosition.x() + (initSize.width() - m_pWidgetParent->width()) / 2;
         int newY = initPosition.y() + (initSize.height() - m_pWidgetParent->height()) / 2;

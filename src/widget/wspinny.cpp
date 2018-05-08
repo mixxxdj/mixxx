@@ -19,7 +19,8 @@
 // The SampleBuffers format enables antialiasing.
 WSpinny::WSpinny(QWidget* parent, const QString& group,
                  UserSettingsPointer pConfig,
-                 VinylControlManager* pVCMan)
+                 VinylControlManager* pVCMan,
+                 BaseTrackPlayer* pPlayer)
         : QGLWidget(QGLFormat(QGL::SampleBuffers), parent, SharedGLContext::getWidget()),
           WBaseWidget(this),
           m_group(group),
@@ -59,7 +60,10 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
           m_dRotationsPerSecond(0.),
           m_bClampFailedWarning(false),
           m_bGhostPlayback(false),
-          m_bWidgetDirty(false) {
+          m_bWidgetDirty(false),
+          m_pPlayer(pPlayer),
+          m_pDlgCoverArt(new DlgCoverArtFullSize(parent, pPlayer)),
+          m_pCoverMenu(new WCoverArtMenu(this)) {
 #ifdef __VINYLCONTROL__
     m_pVCManager = pVCMan;
 #endif
@@ -77,6 +81,19 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
                                           const CoverInfo&, QPixmap, bool)));
     }
 
+    if (m_pPlayer != nullptr) {
+        connect(m_pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
+                this, SLOT(slotLoadTrack(TrackPointer)));
+        connect(m_pPlayer, SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
+                this, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
+        // just in case a track is already loaded
+        slotLoadTrack(m_pPlayer->getLoadedTrack());
+    }
+
+    connect(m_pCoverMenu, SIGNAL(coverInfoSelected(const CoverInfo&)),
+        this, SLOT(slotCoverInfoSelected(const CoverInfo&)));
+    connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
+        this, SLOT(slotReloadCoverArt()));
 }
 
 WSpinny::~WSpinny() {
@@ -280,6 +297,21 @@ void WSpinny::slotCoverFound(const QObject* pRequestor,
     }
 }
 
+void WSpinny::slotCoverInfoSelected(const CoverInfo& coverInfo) {
+    if (m_loadedTrack != nullptr) {
+        // Will trigger slotTrackCoverArtUpdated().
+        m_loadedTrack->setCoverInfo(coverInfo);
+    }
+}
+
+void WSpinny::slotReloadCoverArt() {
+    if (m_loadedTrack != nullptr) {
+        CoverArtCache* pCache = CoverArtCache::instance();
+        if (pCache) {
+            pCache->requestGuessCover(m_loadedTrack);
+        }
+    }
+}
 
 void WSpinny::paintEvent(QPaintEvent *e) {
     Q_UNUSED(e); //ditch unused param warning
@@ -544,38 +576,56 @@ void WSpinny::mouseMoveEvent(QMouseEvent * e) {
 }
 
 void WSpinny::mousePressEvent(QMouseEvent * e) {
-    int y = e->y();
-    int x = e->x();
-
-    m_iStartMouseX = x;
-    m_iStartMouseY = y;
-
-    //don't do anything if vinyl control is active
-    if (m_bVinylActive) {
+    if (m_loadedTrack == nullptr) {
         return;
     }
 
-    if (e->button() == Qt::LeftButton || e->button() == Qt::RightButton) {
-        QApplication::setOverrideCursor(QCursor(Qt::ClosedHandCursor));
+    if (m_pDlgCoverArt->isVisible()) {
+        m_pDlgCoverArt->close();
+        return;
+    }
 
-        // Coordinates from center of widget
-        double c_x = x - width()/2;
-        double c_y = y - height()/2;
-        double theta = (180.0/M_PI)*atan2(c_x, -c_y);
-        m_dPrevTheta = theta;
-        m_iFullRotations = calculateFullRotations(m_pPlayPos->get());
-        theta += m_iFullRotations * 360.0;
-        m_dInitialPos = calculatePositionFromAngle(theta) * m_pTrackSamples->get();
+    if (m_pCoverMenu->isVisible()) {
+        m_pCoverMenu->close();
+        return;
+    }
 
-        m_pScratchPos->set(0);
-        m_pScratchToggle->set(1.0);
+    if (e->button() == Qt::LeftButton) {
+        int y = e->y();
+        int x = e->x();
 
-        if (e->button() == Qt::RightButton) {
-            m_pSlipEnabled->set(1.0);
+        m_iStartMouseX = x;
+        m_iStartMouseY = y;
+
+        //don't do anything if vinyl control is active
+        if (m_bVinylActive) {
+            return;
         }
 
-        // Trigger a mouse move to immediately line up the vinyl with the cursor
-        mouseMoveEvent(e);
+        if (e->button() == Qt::LeftButton || e->button() == Qt::RightButton) {
+            QApplication::setOverrideCursor(QCursor(Qt::ClosedHandCursor));
+
+            // Coordinates from center of widget
+            double c_x = x - width()/2;
+            double c_y = y - height()/2;
+            double theta = (180.0/M_PI)*atan2(c_x, -c_y);
+            m_dPrevTheta = theta;
+            m_iFullRotations = calculateFullRotations(m_pPlayPos->get());
+            theta += m_iFullRotations * 360.0;
+            m_dInitialPos = calculatePositionFromAngle(theta) * m_pTrackSamples->get();
+
+            m_pScratchPos->set(0);
+            m_pScratchToggle->set(1.0);
+
+            // Trigger a mouse move to immediately line up the vinyl with the cursor
+            mouseMoveEvent(e);
+        }
+    } else {
+        if (!m_loadedCover.isNull()) {
+            m_pDlgCoverArt->init(m_loadedTrack);
+        } else if (!m_pDlgCoverArt->isVisible()) {
+            m_pCoverMenu->popup(e->pos());
+        }
     }
 }
 
@@ -585,9 +635,6 @@ void WSpinny::mouseReleaseEvent(QMouseEvent * e)
         QApplication::restoreOverrideCursor();
         m_pScratchToggle->set(0.0);
         m_iFullRotations = 0;
-        if (e->button() == Qt::RightButton) {
-            m_pSlipEnabled->set(0.0);
-        }
     }
 }
 

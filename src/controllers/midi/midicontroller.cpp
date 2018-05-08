@@ -354,28 +354,29 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
     if (mapping.options.soft_takeover) {
         // This is the only place to enable it if it isn't already.
         m_st.enable(pCO);
-        if (m_st.ignore(pCO, pCO->getParameterForMidiValue(newValue))) {
+        if (m_st.ignore(pCO, pCO->getParameterForMidi(newValue))) {
             return;
         }
     }
     pCO->setValueFromMidi(static_cast<MidiOpCode>(opCode), newValue);
 }
 
-double MidiController::computeValue(MidiOptions options, double _prevmidivalue, double _newmidivalue) {
+double MidiController::computeValue(
+        MidiOptions options, double prevmidivalue, double newmidivalue) {
     double tempval = 0.;
     double diff = 0.;
 
     if (options.all == 0) {
-        return _newmidivalue;
+        return newmidivalue;
     }
 
     if (options.invert) {
-        return 127. - _newmidivalue;
+        return 127. - newmidivalue;
     }
 
     if (options.rot64 || options.rot64_inv) {
-        tempval = _prevmidivalue;
-        diff = _newmidivalue - 64.;
+        tempval = prevmidivalue;
+        diff = newmidivalue - 64.;
         if (diff == -1 || diff == 1)
             diff /= 16;
         else
@@ -388,8 +389,8 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
     }
 
     if (options.rot64_fast) {
-        tempval = _prevmidivalue;
-        diff = _newmidivalue - 64.;
+        tempval = prevmidivalue;
+        diff = newmidivalue - 64.;
         diff *= 1.5;
         tempval += diff;
         return (tempval < 0. ? 0. : (tempval > 127. ? 127.0 : tempval));
@@ -397,19 +398,19 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
 
     if (options.diff) {
         //Interpret 7-bit signed value using two's compliment.
-        if (_newmidivalue >= 64.)
-            _newmidivalue = _newmidivalue - 128.;
+        if (newmidivalue >= 64.)
+            newmidivalue = newmidivalue - 128.;
         //Apply sensitivity to signed value. FIXME
        // if(sensitivity > 0)
         //    _newmidivalue = _newmidivalue * ((double)sensitivity / 50.);
         //Apply new value to current value.
-        _newmidivalue = _prevmidivalue + _newmidivalue;
+        newmidivalue = prevmidivalue + newmidivalue;
     }
 
     if (options.selectknob) {
         //Interpret 7-bit signed value using two's compliment.
-        if (_newmidivalue >= 64.)
-            _newmidivalue = _newmidivalue - 128.;
+        if (newmidivalue >= 64.)
+            newmidivalue = newmidivalue - 128.;
         //Apply sensitivity to signed value. FIXME
         //if(sensitivity > 0)
         //    _newmidivalue = _newmidivalue * ((double)sensitivity / 50.);
@@ -417,11 +418,11 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
     }
 
     if (options.button) {
-        _newmidivalue = _newmidivalue != 0;
+        newmidivalue = newmidivalue != 0;
     }
 
     if (options.sw) {
-        _newmidivalue = 1;
+        newmidivalue = 1;
     }
 
     if (options.spread64) {
@@ -430,32 +431,32 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
         // Uses a similar non-linear scaling formula as ControlTTRotary::getValueFromWidget()
         // but with added sensitivity adjustment. This formula is still experimental.
 
-        _newmidivalue = _newmidivalue - 64.;
+        newmidivalue = newmidivalue - 64.;
         //FIXME
         //double distance = _newmidivalue - 64.;
         // _newmidivalue = distance * distance * sensitivity / 50000.;
         //if (distance < 0.)
-        //    _newmidivalue = -_newmidivalue;
+        //    _newmidivalue = -newmidivalue;
 
-        //qDebug() << "Spread64: in " << distance << "  out " << _newmidivalue;
+        //qDebug() << "Spread64: in " << distance << "  out " << newmidivalue;
     }
 
     if (options.herc_jog) {
-        if (_newmidivalue > 64.) {
-            _newmidivalue -= 128.;
+        if (newmidivalue > 64.) {
+            newmidivalue -= 128.;
         }
-        _newmidivalue += _prevmidivalue;
-        //if (_prevmidivalue != 0.0) { qDebug() << "AAAAAAAAAAAA" << _prevmidivalue; }
+        newmidivalue += prevmidivalue;
+        //if (_prevmidivalue != 0.0) { qDebug() << "AAAAAAAAAAAA" << prevmidivalue; }
     }
 
     if (options.herc_jog_fast) {
-        if (_newmidivalue > 64.) {
-            _newmidivalue -= 128.;
+        if (newmidivalue > 64.) {
+            newmidivalue -= 128.;
         }
-        _newmidivalue = _prevmidivalue + (_newmidivalue * 3);
+        newmidivalue = prevmidivalue + (newmidivalue * 3);
     }
 
-    return _newmidivalue;
+    return newmidivalue;
 }
 
 void MidiController::receive(QByteArray data, mixxx::Duration timestamp) {

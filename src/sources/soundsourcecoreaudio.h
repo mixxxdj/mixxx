@@ -3,6 +3,8 @@
 
 #include "sources/soundsourceprovider.h"
 
+#include "sources/v1/legacyaudiosourceadapter.h"
+
 #include <AudioToolbox/AudioToolbox.h>
 //In our tree at lib/apple/
 #include "CAStreamBasicDescription.h"
@@ -20,7 +22,7 @@
 
 namespace mixxx {
 
-class SoundSourceCoreAudio : public mixxx::SoundSource {
+class SoundSourceCoreAudio: public SoundSource, public virtual /*implements*/ LegacyAudioSource, public LegacyAudioSourceAdapter {
 public:
     explicit SoundSourceCoreAudio(QUrl url);
     ~SoundSourceCoreAudio() override;
@@ -33,7 +35,9 @@ public:
             CSAMPLE* sampleBuffer) override;
 
 private:
-    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+    OpenResult tryOpen(
+            OpenMode mode,
+            const OpenParams& params) override;
 
     bool m_bFileIsMp3;
     ExtAudioFileRef m_audioFile;

@@ -12,6 +12,7 @@
   <WidgetGroup>
       <ObjectName>vumeter_v</ObjectName>
       <Layout>vertical</Layout>
+      <Size>8f,-1</Size>
       <Children>
           <StatusLight>
             <ObjectName>PeakIndicator</ObjectName>

@@ -1,9 +1,9 @@
 <!--
 Description:
-  An indicator displayed in decks' artist/title container when loop is enabled.
+  A loop indicator in decks' artist/title container, visible when loop is enabled
+  but loop controls are hidden.
 Variables:
   group   : [ChannelN]
-  chanNum : channel number
 -->
 <Template>
   <WidgetGroup>
@@ -23,7 +23,7 @@ Variables:
           </Template>
         </Children>
         <Connection>
-          <ConfigKey>[Channel<Variable name="chanNum"/>],loop_enabled</ConfigKey>
+          <ConfigKey><Variable name="group"/>,loop_enabled</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>

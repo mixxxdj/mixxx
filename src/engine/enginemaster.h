@@ -358,11 +358,12 @@ class EngineMaster : public QObject, public AudioSource {
     PflGainCalculator m_headphoneGain;
     TalkoverGainCalculator m_talkoverGain;
     OrientationVolumeGainCalculator m_masterGain;
-    CSAMPLE m_masterGainOld;
-    CSAMPLE m_boothGainOld;
-    CSAMPLE m_headphoneMasterGainOld;
-    CSAMPLE m_headphoneGainOld;
-
+    CSAMPLE_GAIN m_masterGainOld;
+    CSAMPLE_GAIN m_boothGainOld;
+    CSAMPLE_GAIN m_headphoneMasterGainOld;
+    CSAMPLE_GAIN m_headphoneGainOld;
+    CSAMPLE_GAIN m_balleftOld;
+    CSAMPLE_GAIN m_balrightOld;
     const ChannelHandleAndGroup m_masterHandle;
     const ChannelHandleAndGroup m_headphoneHandle;
     const ChannelHandleAndGroup m_busLeftHandle;

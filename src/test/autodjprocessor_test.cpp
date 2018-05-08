@@ -143,7 +143,7 @@ class AutoDJProcessorTest : public LibraryTest {
     static TrackPointer newTestTrack(TrackId trackId) {
         TrackPointer pTrack(
                 Track::newDummy(kTrackLocationTest, trackId));
-        SoundSourceProxy(pTrack).updateTrack();
+        SoundSourceProxy(pTrack).updateTrackFromSource();
         return pTrack;
     }
 
@@ -279,7 +279,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped) {
 
     // Load the track and mark it playing (as the loadTrackToPlayer signal would
     // have connected to this eventually).
-    TrackPointer pTrack = collection()->getTrackDAO().getTrack(testId, false);
+    TrackPointer pTrack = collection()->getTrackDAO().getTrack(testId);
     deck1.slotLoadTrack(pTrack, true);
 
     // Signal that the request to load pTrack succeeded.

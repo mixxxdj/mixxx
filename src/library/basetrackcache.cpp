@@ -10,6 +10,7 @@
 #include "library/searchqueryparser.h"
 #include "library/queryutil.h"
 #include "track/keyutils.h"
+#include "track/trackcache.h"
 #include "util/performancetimer.h"
 
 namespace {
@@ -144,12 +145,16 @@ void BaseTrackCache::setSearchColumns(const QStringList& columns) {
 }
 
 TrackPointer BaseTrackCache::lookupCachedTrack(TrackId trackId) const {
-    // Only get the track from the TrackDAO if it's in the cache and marked as
-    // dirty.
-    if (m_bIsCaching && m_dirtyTracks.contains(trackId)) {
-        return m_trackDAO.getTrack(trackId, true);
+    TrackCacheLocker cacheLocker(
+            TrackCache::instance().lookupById(trackId));
+    auto pTrack = cacheLocker.getTrack();
+    if (pTrack && pTrack->isDirty()) {
+        m_dirtyTracks.insert(trackId);
+        return pTrack;
+    } else {
+        m_dirtyTracks.remove(trackId);
+        return TrackPointer();
     }
-    return TrackPointer();
 }
 
 bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
@@ -208,7 +213,15 @@ bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
         record.resize(numColumns);
 
         for (int i = 0; i < numColumns; ++i) {
-            record[i] = query.value(i);
+            if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION) == i) {
+                // Database stores all locations with Qt separators: "/"
+                // Here we want to cache the display string with native separators.
+                QString location = query.value(i).toString();
+                record[i] = QDir::toNativeSeparators(location);
+            }
+            else {
+                record[i] = query.value(i);
+            }
         }
     }
 
@@ -301,7 +314,7 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
         trackValue.setValue(pTrack->getType());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER) == column) {
         trackValue.setValue(pTrack->getTrackNumber());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOCATION) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION) == column) {
         trackValue.setValue(QDir::toNativeSeparators(pTrack->getLocation()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT) == column) {
         trackValue.setValue(pTrack->getComment());
@@ -352,7 +365,7 @@ QVariant BaseTrackCache::data(TrackId trackId, int column) const {
         getTrackValueForColumn(pTrack, column, result);
     }
 
-    // If the track lookup failed (could happen for track properties we dont
+    // If the track lookup failed (could happen for track properties we don't
     // keep track of in Track, like playlist position) look up the value in
     // the track info cache.
 

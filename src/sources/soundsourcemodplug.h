@@ -14,10 +14,10 @@ namespace mixxx {
 // Class for reading tracker files using libmodplug.
 // The whole file is decoded at once and saved
 // in RAM to allow seeking and smooth operation in Mixxx.
-class SoundSourceModPlug: public mixxx::SoundSource {
-public:
-     static constexpr SINT kChannelCount = kChannelCountStereo;
-     static constexpr SINT kSamplingRate = 44100;
+class SoundSourceModPlug: public SoundSource {
+  public:
+     static constexpr SINT kChannelCount = 2;
+     static constexpr SINT kSampleRate = 44100;
      static constexpr SINT kBitsPerSample = 16;
 
     // apply settings for decoding
@@ -27,29 +27,28 @@ public:
     explicit SoundSourceModPlug(const QUrl& url);
     ~SoundSourceModPlug() override;
 
-    Result parseTrackMetadataAndCoverArt(
+    std::pair<ImportResult, QDateTime> importTrackMetadataAndCoverImage(
             TrackMetadata* pTrackMetadata,
             QImage* pCoverArt) const override;
 
     void close() override;
 
-    SINT seekSampleFrame(SINT frameIndex) override;
+  protected:
+    ReadableSampleFrames readSampleFramesClamped(
+            WritableSampleFrames sampleFrames) override;
 
-    SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) override;
-
-private:
-    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+  private:
+    OpenResult tryOpen(
+            OpenMode mode,
+            const OpenParams& params) override;
 
     static unsigned int s_bufferSizeLimit; // max track buffer length (bytes)
 
     ModPlug::ModPlugFile *m_pModFile; // modplug file descriptor
     QByteArray m_fileBuf; // original module file data
 
-    typedef std::vector<SAMPLE> SampleBuffer;
-    SampleBuffer m_sampleBuf;
-
-    SINT m_seekPos; // current read position
+    typedef std::vector<SAMPLE> ModSampleBuffer;
+    ModSampleBuffer m_sampleBuf;
 };
 
 class SoundSourceProviderModPlug: public SoundSourceProvider {

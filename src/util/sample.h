@@ -144,6 +144,10 @@ class SampleUtil {
     static void applyAlternatingGain(CSAMPLE* pBuffer, CSAMPLE_GAIN gain1,
             CSAMPLE_GAIN gain2, SINT numSamples);
 
+    static void applyRampingAlternatingGain(CSAMPLE* pBuffer,
+            CSAMPLE gain1, CSAMPLE gain2,
+            CSAMPLE gain1Old, CSAMPLE gain2Old, SINT numSamples);
+
     // Multiply every sample in pBuffer ramping from gain1 to gain2.
     // We use ramping as often as possible to prevent soundwave discontinuities
     // which can cause audible clicks and pops.
@@ -240,6 +244,13 @@ class SampleUtil {
     // (numFrames) samples will be read from pSrc
     // (numFrames * 2) samples will be written into pDest
     static void copyMonoToDualMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
+            SINT numFrames);
+
+    // Adds and doubles the mono samples in pSrc to dual mono samples
+    // to pDest.
+    // (numFrames) samples will be read from pSrc
+    // (numFrames * 2) samples will be added to pDest
+    static void addMonoToStereo(CSAMPLE* pDest, const CSAMPLE* pSrc,
             SINT numFrames);
 
     // In-place strips interleaved multi-channel samples in pBuffer with

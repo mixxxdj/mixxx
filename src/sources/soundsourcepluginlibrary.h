@@ -41,7 +41,7 @@ protected:
 
 private:
     static QMutex s_loadedPluginLibrariesMutex;
-    static QMap<QString, mixxx::SoundSourcePluginLibraryPointer> s_loadedPluginLibraries;
+    static QMap<QString, SoundSourcePluginLibraryPointer> s_loadedPluginLibraries;
 
     bool initFailedForIncompatiblePlugin() const;
 

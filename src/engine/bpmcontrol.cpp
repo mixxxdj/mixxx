@@ -792,17 +792,6 @@ void BpmControl::setCurrentSample(const double dCurrentSample, const double dTot
     EngineControl::setCurrentSample(dCurrentSample, dTotalSamples);
 }
 
-double BpmControl::process(const double dRate,
-                           const double dCurrentSample,
-                           const double dTotalSamples,
-                           const int iBufferSize) {
-    Q_UNUSED(dRate);
-    Q_UNUSED(dCurrentSample);
-    Q_UNUSED(dTotalSamples);
-    Q_UNUSED(iBufferSize);
-    return kNoTrigger;
-}
-
 double BpmControl::updateLocalBpm() {
     double prev_local_bpm = m_pLocalBpm->get();
     double local_bpm = 0;
@@ -848,18 +837,6 @@ void BpmControl::resetSyncAdjustment() {
 }
 
 void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
-    double fileBpm = m_pFileBpm->get();
-    if (fileBpm > 0) {
-        pGroupFeatures->has_file_bpm = true;
-        pGroupFeatures->file_bpm = fileBpm;
-    }
-
-    double bpm = m_pEngineBpm->get();
-    if (bpm > 0) {
-        pGroupFeatures->has_bpm = true;
-        pGroupFeatures->bpm = bpm;
-    }
-
     // Without a beatgrid we don't know any beat details.
     if (!m_pBeats) {
         return;
@@ -874,14 +851,9 @@ void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     if (getBeatContextNoLookup(dThisPosition,
                        dThisPrevBeat, dThisNextBeat,
                        &dThisBeatLength, &dThisBeatFraction)) {
-        pGroupFeatures->has_prev_beat = true;
-        pGroupFeatures->prev_beat = dThisPrevBeat;
-
-        pGroupFeatures->has_next_beat = true;
-        pGroupFeatures->next_beat = dThisNextBeat;
-
-        pGroupFeatures->has_beat_length = true;
-        pGroupFeatures->beat_length = dThisBeatLength;
+        pGroupFeatures->has_beat_length_sec = true;
+        // Note: dThisBeatLength is fractional frames count * 2 (stereo samples)  
+        pGroupFeatures->beat_length_sec = dThisBeatLength / m_pTrack->getSampleRate() / 2 * calcRateRatio();
 
         pGroupFeatures->has_beat_fraction = true;
         pGroupFeatures->beat_fraction = dThisBeatFraction;
