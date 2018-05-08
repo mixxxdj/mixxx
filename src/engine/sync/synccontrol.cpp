@@ -218,7 +218,7 @@ void SyncControl::setMasterBaseBpm(double bpm) {
 }
 
 void SyncControl::setMasterBpm(double bpm) {
-    //qDebug() << "SyncControl::setMasterBpm" << getGroup() << bpm;
+    // qDebug() << "SyncControl::setMasterBpm" << getGroup() << bpm;
 
     if (getSyncMode() == SYNC_NONE) {
         qDebug() << "WARNING: Logic Error: setBpm called on SYNC_NONE syncable.";

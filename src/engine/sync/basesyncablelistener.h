@@ -93,6 +93,8 @@ class BaseSyncableListener : public SyncableListener {
     // The list of all Syncables registered with BaseSyncableListener via
     // addSyncableDeck.
     QList<Syncable*> m_syncables;
+    // The earliest playing syncable
+    Syncable* m_pFirstPlayingDeck;
 };
 
 #endif /* BASESYNCABLELISTENER_H */

@@ -93,7 +93,6 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
 }
 
 void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
-    //qDebug() << "EngineSync::requestEnableSync" << pSyncable->getGroup() << bEnabled;
     if (bEnabled) {
         // Already enabled?  Do nothing.
         if (pSyncable->getSyncMode() != SYNC_NONE) {
@@ -181,7 +180,46 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
 
 void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
     Q_UNUSED(playing);
-    //qDebug() << "EngineSync::notifyPlaying" << pSyncable->getGroup() << playing;
+
+    if (playing) {
+        Syncable *currentSyncable = pSyncable;
+
+        // Rearrange the syncables with the playing syncables clustered in the beginning
+        // and appending the current syncable in the end of the playing syncables
+        for (int i=0 ; i<m_syncables.length() ; ++i) {
+            Syncable* temporarySyncable = m_syncables[i];
+            if (temporarySyncable->isPlaying()) {
+                if (temporarySyncable == pSyncable)
+                    break;
+                continue;
+            }
+            m_syncables[i] = currentSyncable;
+            currentSyncable = temporarySyncable;
+            if (temporarySyncable == pSyncable)
+                break;
+        }
+
+        m_pFirstPlayingDeck = m_syncables[0];
+    }
+    else {
+        // Maintain the playing syncables clustering in the beginning
+        for (int i=0 ; i<m_syncables.length()-1 ; ++i) {
+            Syncable* temporarySyncable = m_syncables[i];
+            if (temporarySyncable == pSyncable && m_syncables[i+1]->isPlaying()) {
+                m_syncables[i] = m_syncables[i+1];
+                m_syncables[i+1] = temporarySyncable;
+            }
+            else if (!temporarySyncable->isPlaying())
+                break;
+        }
+        m_pFirstPlayingDeck = (m_syncables[0]->isPlaying() ? m_syncables[0] : nullptr);
+    }
+
+    if (!syncDeckExists() && m_pFirstPlayingDeck) {
+        setMasterBpm(m_pFirstPlayingDeck, m_pFirstPlayingDeck->getBpm());
+        setMasterBeatDistance(m_pFirstPlayingDeck, m_pFirstPlayingDeck->getBeatDistance());
+    }
+
     // For now we don't care if the deck is now playing or stopping.
     if (pSyncable->getSyncMode() == SYNC_NONE) {
         return;
@@ -218,7 +256,6 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
 }
 
 void EngineSync::notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm) {
-    //qDebug() << "EngineSync::notifyTrackLoaded";
     // If there are no other sync decks, initialize master based on this.
     // If there is, make sure to set our rate based on that.
 
@@ -252,10 +289,14 @@ void EngineSync::notifyScratching(Syncable* pSyncable, bool scratching) {
 }
 
 void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChanged) {
-    //qDebug() << "EngineSync::notifyBpmChanged" << pSyncable->getGroup() << bpm
-    //         << fileChanged;
-
     SyncMode syncMode = pSyncable->getSyncMode();
+
+    if (!syncDeckExists() && pSyncable == m_pFirstPlayingDeck) {
+        setMasterBpm(pSyncable, bpm);
+        setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
+        return;
+    }
+
     if (syncMode == SYNC_NONE) {
         return;
     }
@@ -282,7 +323,11 @@ void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChan
 }
 
 void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) {
-    //qDebug() << "EngineSync::notifyInstantaneousBpmChanged" << pSyncable->getGroup() << bpm;
+    if (!syncDeckExists() && pSyncable == m_pFirstPlayingDeck) {
+        setMasterInstantaneousBpm(pSyncable, bpm);
+        return;
+    }
+
     if (pSyncable->getSyncMode() != SYNC_MASTER) {
         return;
     }
@@ -293,7 +338,11 @@ void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) 
 }
 
 void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beat_distance) {
-    //qDebug() << "EngineSync::notifyBeatDistanceChanged" << pSyncable->getGroup() << beat_distance;
+    if (!syncDeckExists() && pSyncable == m_pFirstPlayingDeck) {
+        setMasterBeatDistance(pSyncable, beat_distance);
+        return;
+    }
+
     if (pSyncable->getSyncMode() != SYNC_MASTER) {
         return;
     }
@@ -334,7 +383,7 @@ void EngineSync::activateMaster(Syncable* pSyncable) {
         activateFollower(pOldChannelMaster);
     }
 
-    //qDebug() << "Setting up master " << pSyncable->getGroup();
+    // qDebug() << "Setting up master " << pSyncable->getGroup();
     m_pMasterSyncable = pSyncable;
     pSyncable->notifySyncModeChanged(SYNC_MASTER);
 
