@@ -126,7 +126,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 
     // Only record stats in developer mode.
     if (m_cmdLineArgs.getDeveloper()) {
-        StatsManager::create();
+        StatsManager::createInstance();
     }
 
     m_pSettingsManager = new SettingsManager(this, args.getSettingsPath());
@@ -268,7 +268,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     delete pModplugPrefs; // not needed anymore
 #endif
 
-    CoverArtCache::create();
+    CoverArtCache::createInstance();
 
     m_pDbConnectionPool = MixxxDb(pConfig).connectionPool();
     if (!m_pDbConnectionPool) {
@@ -338,7 +338,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     launchProgress(47);
 
-    WaveformWidgetFactory::create(); // takes a long time
+    WaveformWidgetFactory::createInstance(); // takes a long time
     WaveformWidgetFactory::instance()->startVSync(m_pGuiTick);
     WaveformWidgetFactory::instance()->setConfig(pConfig);
 

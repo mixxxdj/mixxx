@@ -178,21 +178,6 @@ void WMainMenuBar::initialize() {
     QMenu* pViewMenu = new QMenu(tr("&View"));
 
     QString mayNotBeSupported = tr("May not be supported on all skins.");
-    QString showSamplersTitle = tr("Show Samplers");
-    QString showSamplersText = tr("Show the sample deck section of the Mixxx interface.") +
-            " " + mayNotBeSupported;
-    auto pViewShowSamplers = new QAction(showSamplersTitle, this);
-    pViewShowSamplers->setCheckable(true);
-    m_pKbdShortcutsUpdater->addWatcher(new ShortcutChangeWatcher(
-            pViewShowSamplers,
-            ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowSamplers"),
-            tr("Ctrl+1", "Menubar|View|Show Samplers")
-    ));
-    pViewShowSamplers->setStatusTip(showSamplersText);
-    pViewShowSamplers->setWhatsThis(buildWhatsThis(showSamplersTitle, showSamplersText));
-    createVisibilityControl(pViewShowSamplers, ConfigKey("[Samplers]", "show_samplers"));
-    pViewMenu->addAction(pViewShowSamplers);
-
     QString showMicrophoneTitle = tr("Show Microphone Section");
     QString showMicrophoneText = tr("Show the microphone section of the Mixxx interface.") +
             " " + mayNotBeSupported;
@@ -239,21 +224,6 @@ void WMainMenuBar::initialize() {
     pViewShowPreviewDeck->setWhatsThis(buildWhatsThis(showPreviewDeckTitle, showPreviewDeckText));
     createVisibilityControl(pViewShowPreviewDeck, ConfigKey("[PreviewDeck]", "show_previewdeck"));
     pViewMenu->addAction(pViewShowPreviewDeck);
-
-    QString showEffectsTitle = tr("Show Effect Rack");
-    QString showEffectsText = tr("Show the effect rack in the Mixxx interface.") +
-    " " + mayNotBeSupported;
-    auto pViewShowEffects = new QAction(showEffectsTitle, this);
-    pViewShowEffects->setCheckable(true);
-    m_pKbdShortcutsUpdater->addWatcher(new ShortcutChangeWatcher(
-            pViewShowEffects,
-            ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowEffects"),
-            tr("Ctrl+5", "Menubar|View|Show Effect Rack")
-    ));
-    pViewShowEffects->setStatusTip(showEffectsText);
-    pViewShowEffects->setWhatsThis(buildWhatsThis(showEffectsTitle, showEffectsText));
-    createVisibilityControl(pViewShowEffects, ConfigKey("[EffectRack1]", "show"));
-    pViewMenu->addAction(pViewShowEffects);
 
 
     QString showCoverArtTitle = tr("Show Cover Art");
