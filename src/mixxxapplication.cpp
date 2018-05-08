@@ -1,6 +1,8 @@
 #include <QtDebug>
 #include <QTouchEvent>
 #include "mixxxapplication.h"
+
+#include "library/crate/crateid.h"
 #include "control/controlproxy.h"
 #include "mixxx.h"
 
@@ -34,7 +36,11 @@ MixxxApplication::~MixxxApplication() {
 void MixxxApplication::registerMetaTypes() {
     // Register custom data types for signal processing
     qRegisterMetaType<TrackId>("TrackId");
+    qRegisterMetaType<QList<TrackId>>("QList<TrackId>");
     qRegisterMetaType<QSet<TrackId>>("QSet<TrackId>");
+    qRegisterMetaType<CrateId>("CrateId");
+    qRegisterMetaType<QList<CrateId>>("QList<CrateId>");
+    qRegisterMetaType<QSet<CrateId>>("QSet<CrateId>");
     qRegisterMetaType<TrackPointer>("TrackPointer");
     qRegisterMetaType<mixxx::ReplayGain>("mixxx::ReplayGain");
     qRegisterMetaType<mixxx::Bpm>("mixxx::Bpm");

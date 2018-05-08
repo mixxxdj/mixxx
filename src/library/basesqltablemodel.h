@@ -95,7 +95,6 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     virtual Qt::ItemFlags readWriteFlags(const QModelIndex &index) const;
 
     TrackCollection* m_pTrackCollection;
-    TrackDAO& m_trackDAO;
     QSqlDatabase m_database;
 
     QString m_previewDeckGroup;
@@ -118,7 +117,6 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     // names in the table provided to setTable. Must be called after setTable is
     // called.
     QString orderByClause() const;
-    QSqlDatabase database() const;
 
     struct RowInfo {
         TrackId trackId;

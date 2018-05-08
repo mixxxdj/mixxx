@@ -246,6 +246,23 @@ bool PlaylistDAO::isPlaylistLocked(const int playlistId) const {
     return false;
 }
 
+bool PlaylistDAO::removeTracksFromPlaylist(const int playlistId, const int startIndex) {
+    // Retain the first track if it is loaded in a deck
+    ScopedTransaction transaction(m_database);
+    QSqlQuery query(m_database);
+    query.prepare("DELETE FROM PlaylistTracks "
+                  "WHERE playlist_id=:id AND position>=:pos");
+    query.bindValue(":id", playlistId);
+    query.bindValue(":pos", startIndex);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return false;
+    }
+    transaction.commit();
+    emit(changed(playlistId));
+    return true;
+}
+
 bool PlaylistDAO::appendTracksToPlaylist(const QList<TrackId>& trackIds, const int playlistId) {
     // qDebug() << "PlaylistDAO::appendTracksToPlaylist"
     //          << QThread::currentThread() << m_database.connectionName();
@@ -1011,21 +1028,28 @@ void PlaylistDAO::setAutoDJProcessor(AutoDJProcessor* pAutoDJProcessor) {
     m_pAutoDJProcessor = pAutoDJProcessor;
 }
 
-void PlaylistDAO::sendToAutoDJ(const QList<TrackId>& trackIds, bool bTop) {
+void PlaylistDAO::sendToAutoDJ(const QList<TrackId>& trackIds, AutoDJSendLoc loc) {
     int iAutoDJPlaylistId = getPlaylistIdFromName(AUTODJ_TABLE);
     if (iAutoDJPlaylistId == -1) {
         return;
     }
 
-    if (bTop) {
-        int position = 1;
-        if (m_pAutoDJProcessor && m_pAutoDJProcessor->nextTrackLoaded()) {
-            // Load track to position two because position one is
-            // already loaded to the player
-            position = 2;
-        }
-        insertTracksIntoPlaylist(trackIds, iAutoDJPlaylistId, position);
-    } else {
-        appendTracksToPlaylist(trackIds, iAutoDJPlaylistId);
+    // If the first track is already loaded to the player,
+    // alter the playlist only below the first track
+    int position =
+        (m_pAutoDJProcessor && m_pAutoDJProcessor->nextTrackLoaded()) ? 2 : 1;
+
+    switch (loc) {
+        case AutoDJSendLoc::TOP:
+            insertTracksIntoPlaylist(trackIds, iAutoDJPlaylistId, position);
+            break;
+        case AutoDJSendLoc::BOTTOM:
+            appendTracksToPlaylist(trackIds, iAutoDJPlaylistId);
+            break;
+        case AutoDJSendLoc::REPLACE:
+            if (removeTracksFromPlaylist(iAutoDJPlaylistId, position)) {
+                appendTracksToPlaylist(trackIds, iAutoDJPlaylistId);
+            }
+            break;
     }
 }

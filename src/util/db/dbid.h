@@ -1,5 +1,5 @@
-#ifndef DBID_H
-#define DBID_H
+#ifndef MIXXX_DBID_H
+#define MIXXX_DBID_H
 
 
 #include <ostream>
@@ -121,4 +121,4 @@ Q_DECLARE_TYPEINFO(DbId, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(DbId)
 
 
-#endif // DBID_H
+#endif // MIXXX_DBID_H

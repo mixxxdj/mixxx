@@ -35,7 +35,7 @@ EngineSync::~EngineSync() {
 void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     //qDebug() << "EngineSync::requestSyncMode" << pSyncable->getGroup() << mode;
     // Based on the call hierarchy I don't think this is possible. (Famous last words.)
-    DEBUG_ASSERT_AND_HANDLE(pSyncable) {
+    VERIFY_OR_DEBUG_ASSERT(pSyncable) {
         return;
     }
 

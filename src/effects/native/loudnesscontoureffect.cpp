@@ -12,7 +12,7 @@ static const double kHiShelveGainDiv = 3.0;
 static const double kLoPleakQ = 0.2;
 static const double kHiShelveQ = 0.7;
 
-} // anonymous namesspace
+} // anonymous namespace
 
 
 // static

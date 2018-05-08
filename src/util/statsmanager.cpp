@@ -9,7 +9,7 @@
 #include "util/cmdlineargs.h"
 
 // In practice we process stats pipes about once a minute @1ms latency.
-const int kStatsPipeSize = 1 << 20;
+const int kStatsPipeSize = 1 << 10;
 const int kProcessLength = kStatsPipeSize * 4 / 5;
 
 // static
@@ -188,6 +188,12 @@ bool StatsManager::maybeWriteReport(const StatReport& report) {
     int space = pStatsPipe->writeAvailable();
     if (space < kProcessLength) {
         m_statsPipeCondition.wakeAll();
+    }
+    static bool warnedAboutOverflow = false;
+    if (!success && !warnedAboutOverflow) {
+        qWarning() << "StatsManager FIFO for thread overflowed at least once."
+                   << "Some stats are lost. Your measurements may be affected.";
+        warnedAboutOverflow = true;
     }
     return success;
 }

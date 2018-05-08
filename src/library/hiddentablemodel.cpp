@@ -1,5 +1,8 @@
 #include "library/hiddentablemodel.h"
 
+#include "library/dao/trackschema.h"
+
+
 HiddenTableModel::HiddenTableModel(QObject* parent,
                                    TrackCollection* pTrackCollection)
         : BaseSqlTableModel(parent, pTrackCollection, "mixxx.db.model.missing") {
@@ -48,7 +51,7 @@ void HiddenTableModel::purgeTracks(const QModelIndexList& indices) {
         trackIds.append(getTrackId(index));
     }
 
-    m_trackDAO.purgeTracks(trackIds);
+    m_pTrackCollection->purgeTracks(trackIds);
 
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.
@@ -62,7 +65,7 @@ void HiddenTableModel::unhideTracks(const QModelIndexList& indices) {
         trackIds.append(getTrackId(index));
     }
 
-    m_trackDAO.unhideTracks(trackIds);
+    m_pTrackCollection->unhideTracks(trackIds);
 
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.

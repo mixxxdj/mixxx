@@ -67,6 +67,7 @@ if int(build.flags['vamp']):
         mixxxminimal_sources.extend(depend_source)
 
     env = conf.Finish()
+    results = []
     if build.platform_is_linux:
         env["LINKFLAGS"].append("-Wl,--version-script=vamp-plugins/vamp-plugin.map")
     if build.platform_is_windows:
@@ -79,9 +80,15 @@ if int(build.flags['vamp']):
         #env["LINKFLAGS"].append("/DEFAULTLIB:LIBCMT.lib")
         #env["LINKFLAGS"].append("/DEFAULTLIB:LIBCPMT.lib")
         mixxxminimal_bin = env.SharedLibrary('libmixxxminimal', mixxxminimal_sources)
+        results.append("mixxxminimal_bin")
+        if build.bundle_pdbs:
+            mixxxminimal_pdb = env.SideEffect('libmixxxminimal.pdb', mixxxminimal_bin)
+            results.append("mixxxminimal_pdb")
+
     else:
-    	mixxxminimal_bin = env.SharedLibrary('mixxxminimal', mixxxminimal_sources)
+        mixxxminimal_bin = env.SharedLibrary('mixxxminimal', mixxxminimal_sources)
+        results.append("mixxxminimal_bin")
     #Pass this library object file back to the SConscript above us.
-    Return("mixxxminimal_bin")
+    Return(results)
 else:
     Return("")

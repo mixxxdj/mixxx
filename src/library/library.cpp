@@ -15,7 +15,7 @@
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"
 #include "library/browse/browsefeature.h"
-#include "library/cratefeature.h"
+#include "library/crate/cratefeature.h"
 #include "library/rhythmbox/rhythmboxfeature.h"
 #include "library/banshee/bansheefeature.h"
 #include "library/recording/recordingfeature.h"
@@ -220,7 +220,7 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
 }
 
 void Library::addFeature(LibraryFeature* feature) {
-    DEBUG_ASSERT_AND_HANDLE(feature) {
+    VERIFY_OR_DEBUG_ASSERT(feature) {
         return;
     }
     m_features.push_back(feature);
@@ -244,7 +244,7 @@ void Library::addFeature(LibraryFeature* feature) {
 void Library::slotShowTrackModel(QAbstractItemModel* model) {
     //qDebug() << "Library::slotShowTrackModel" << model;
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
-    DEBUG_ASSERT_AND_HANDLE(trackModel) {
+    VERIFY_OR_DEBUG_ASSERT(trackModel) {
         return;
     }
     emit(showTrackModel(model));
@@ -327,7 +327,7 @@ void Library::slotRequestRemoveDir(QString dir, RemovalType removalType) {
             break;
         case Library::PurgeTracks:
             // The user requested that we purge all metadata.
-            m_pTrackCollection->getTrackDAO().purgeTracks(dir);
+            m_pTrackCollection->purgeTracks(dir);
             break;
         case Library::LeaveTracksUnchanged:
         default:

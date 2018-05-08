@@ -484,7 +484,7 @@ void MixxxMainWindow::finalize() {
         QCoreApplication::sendPostedEvents(pSkin, QEvent::DeferredDelete);
     }
     // Our central widget is now deleted.
-    DEBUG_ASSERT_AND_HANDLE(pSkin.isNull()) {
+    VERIFY_OR_DEBUG_ASSERT(pSkin.isNull()) {
         qWarning() << "Central widget was not deleted by our sendPostedEvents trick.";
     }
 
@@ -501,7 +501,7 @@ void MixxxMainWindow::finalize() {
         QCoreApplication::sendPostedEvents(pMenuBar, QEvent::DeferredDelete);
     }
     // Our main menu is now deleted.
-    DEBUG_ASSERT_AND_HANDLE(pMenuBar.isNull()) {
+    VERIFY_OR_DEBUG_ASSERT(pMenuBar.isNull()) {
         qWarning() << "WMainMenuBar was not deleted by our sendPostedEvents trick.";
     }
 

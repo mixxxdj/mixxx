@@ -253,7 +253,7 @@ unsigned int SoundManagerConfig::getAudioBufferSizeIndex() const {
 unsigned int SoundManagerConfig::getFramesPerBuffer() const {
     // endless loop otherwise
     unsigned int audioBufferSizeIndex = m_audioBufferSizeIndex;
-    DEBUG_ASSERT_AND_HANDLE(audioBufferSizeIndex > 0) {
+    VERIFY_OR_DEBUG_ASSERT(audioBufferSizeIndex > 0) {
         audioBufferSizeIndex = kDefaultAudioBufferSizeIndex;
     }
     unsigned int framesPerBuffer = 1;

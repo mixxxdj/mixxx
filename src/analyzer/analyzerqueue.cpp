@@ -407,8 +407,7 @@ void AnalyzerQueue::emitUpdateProgress(TrackPointer track, int progress) {
 //slot
 void AnalyzerQueue::slotUpdateProgress() {
     if (m_progressInfo.current_track) {
-        m_progressInfo.current_track->setAnalyzerProgress(
-        		m_progressInfo.track_progress);
+        m_progressInfo.current_track->setAnalyzerProgress(m_progressInfo.track_progress);
         m_progressInfo.current_track.reset();
     }
     emit(trackProgress(m_progressInfo.track_progress / 10));

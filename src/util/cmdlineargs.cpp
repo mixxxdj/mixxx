@@ -4,7 +4,6 @@
 #include "util/version.h"
 
 #include "sources/soundsourceproxy.h"
-#include "util/logging.h"
 
 
 CmdlineArgs::CmdlineArgs()
@@ -13,7 +12,7 @@ CmdlineArgs::CmdlineArgs()
       m_developer(false),
       m_safeMode(false),
       m_settingsPathSet(false),
-      m_debugLevel(mixxx::kDebugLevelDefault),
+      m_logLevel(mixxx::Logging::kLogLevelDefault),
 // We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see lp:1463273
 #ifdef __LINUX__
     m_settingsPath(QDir::homePath().append("/").append(SETTINGS_PATH)) {
@@ -25,6 +24,7 @@ CmdlineArgs::CmdlineArgs()
 }
 
 bool CmdlineArgs::Parse(int &argc, char **argv) {
+    bool logLevelSet = false;
     for (int i = 0; i < argc; ++i) {
         if (   argv[i] == QString("-h")
             || argv[i] == QString("--h")
@@ -54,13 +54,19 @@ bool CmdlineArgs::Parse(int &argc, char **argv) {
         } else if (argv[i] == QString("--timelinePath") && i+1 < argc) {
             m_timelinePath = QString::fromLocal8Bit(argv[i+1]);
             i++;
-        } else if (argv[i] == QString("--debugLevel") && i+1 < argc) {
-            bool isInt = false;
-            int debugLevelRq = QString::fromLocal8Bit(argv[i+1]).toInt(&isInt);
-            if (isInt) {
-                m_debugLevel = debugLevelRq;
+        } else if (argv[i] == QString("--logLevel") && i+1 < argc) {
+            logLevelSet = true;
+            auto level = QLatin1String(argv[i+1]);
+            if (level == "debug") {
+                m_logLevel = mixxx::Logging::LogLevel::Debug;
+            } else if (level == "info") {
+                m_logLevel = mixxx::Logging::LogLevel::Info;
+            } else if (level == "warning") {
+                m_logLevel = mixxx::Logging::LogLevel::Warning;
+            } else if (level == "critical") {
+                m_logLevel = mixxx::Logging::LogLevel::Critical;
             } else {
-                fputs("\ndebugLevel argument wasn't a number! Mixxx will only output\n\
+                fputs("\nlogLevel argument wasn't 'debug', 'info', 'warning', or 'critical'! Mixxx will only output\n\
 warnings and errors to the console unless this is set properly.\n", stdout);
             }
             i++;
@@ -75,6 +81,13 @@ warnings and errors to the console unless this is set properly.\n", stdout);
             m_musicFiles += QString::fromLocal8Bit(argv[i]);
         }
     }
+
+    // If --logLevel was unspecified and --developer is enabled then set
+    // logLevel to debug.
+    if (m_developer && !logLevelSet) {
+        m_logLevel = mixxx::Logging::LogLevel::Debug;
+    }
+
     return true;
 }
 
@@ -124,10 +137,11 @@ void CmdlineArgs::printUsage() {
 \n\
 -f, --fullScreen        Starts Mixxx in full-screen mode\n\
 \n\
---debugLevel LEVEL      Sets the verbosity of command line debug messages\n\
-                        0 - Critical/Fatal only\n\
-                        1 - Above + Warnings\n\
-                        2 - Above + Debug/Developer messages\n\
+--logLevel LEVEL        Sets the verbosity of command line logging\n\
+                        critical - Critical/Fatal only\n\
+                        warning - Above + Warnings\n\
+                        info - Above + Informational messages\n\
+                        debug - Above + Debug/Developer messages\n\
 \n\
 -h, --help              Display this help message and exit", stdout);
 

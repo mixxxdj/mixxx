@@ -171,7 +171,7 @@ void DlgPrefBroadcast::slotResetToDefaults() {
     mountpoint->setText(m_settings.getDefaultMountpoint());
     host->setText(m_settings.getDefaultHost());
     int iPort = m_settings.getDefaultPort();
-    DEBUG_ASSERT_AND_HANDLE(iPort != 0 && iPort <= 0xffff) {
+    VERIFY_OR_DEBUG_ASSERT(iPort != 0 && iPort <= 0xffff) {
         port->setText(QString());
     } else {
         port->setText(QString::number(iPort));

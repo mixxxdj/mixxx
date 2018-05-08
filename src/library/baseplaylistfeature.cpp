@@ -324,7 +324,7 @@ void BasePlaylistFeature::slotDeletePlaylist() {
     }
 
     if (m_lastRightClickedIndex.isValid()) {
-        DEBUG_ASSERT_AND_HANDLE(playlistId >= 0) {
+        VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
             return;
         }
 
@@ -643,7 +643,7 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
-    m_childModel.insertRows(data_list, 0, m_playlistList.size());
+    m_childModel.insertTreeItemRows(data_list, 0);
     if (selected_row == -1) {
         return QModelIndex();
     }

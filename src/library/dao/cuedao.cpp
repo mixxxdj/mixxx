@@ -143,7 +143,7 @@ bool CueDAO::deleteCuesForTracks(const QList<TrackId>& trackIds) {
 
 bool CueDAO::saveCue(Cue* cue) {
     //qDebug() << "CueDAO::saveCue" << QThread::currentThread() << m_database.connectionName();
-    DEBUG_ASSERT_AND_HANDLE(cue) {
+    VERIFY_OR_DEBUG_ASSERT(cue) {
         return false;
     }
     if (cue->getId() == -1) {

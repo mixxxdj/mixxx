@@ -326,7 +326,7 @@ void PlayerManager::addConfiguredDecks() {
 void PlayerManager::addDeckInner() {
     // Do not lock m_mutex here.
     QString group = groupForDeck(m_decks.count());
-    DEBUG_ASSERT_AND_HANDLE(!m_players.contains(group)) {
+    VERIFY_OR_DEBUG_ASSERT(!m_players.contains(group)) {
         return;
     }
 
@@ -389,7 +389,7 @@ void PlayerManager::addSamplerInner() {
     // Do not lock m_mutex here.
     QString group = groupForSampler(m_samplers.count());
 
-    DEBUG_ASSERT_AND_HANDLE(!m_players.contains(group)) {
+    VERIFY_OR_DEBUG_ASSERT(!m_players.contains(group)) {
         return;
     }
 
@@ -416,7 +416,7 @@ void PlayerManager::addPreviewDeck() {
 void PlayerManager::addPreviewDeckInner() {
     // Do not lock m_mutex here.
     QString group = groupForPreviewDeck(m_preview_decks.count());
-    DEBUG_ASSERT_AND_HANDLE(!m_players.contains(group)) {
+    VERIFY_OR_DEBUG_ASSERT(!m_players.contains(group)) {
         return;
     }
 

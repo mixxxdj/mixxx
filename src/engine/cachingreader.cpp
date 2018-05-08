@@ -233,12 +233,12 @@ SINT CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPL
     }
 
     // Check for bad inputs
-    DEBUG_ASSERT_AND_HANDLE(sample % CachingReaderChunk::kChannels == 0) {
+    VERIFY_OR_DEBUG_ASSERT(sample % CachingReaderChunk::kChannels == 0) {
         // This problem is easy to fix, but this type of call should be
         // complained about loudly.
         --sample;
     }
-    DEBUG_ASSERT_AND_HANDLE(numSamples % CachingReaderChunk::kChannels == 0) {
+    VERIFY_OR_DEBUG_ASSERT(numSamples % CachingReaderChunk::kChannels == 0) {
         --numSamples;
     }
     if (numSamples < 0 || !buffer) {

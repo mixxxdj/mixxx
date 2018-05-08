@@ -78,7 +78,7 @@ bool getFrameCountOfStream(AVStream* pStream, SINT* pFrameCount) {
     }
     DEBUG_ASSERT(getSamplingRateOfStream(pStream) > 0);
     int64val *= getSamplingRateOfStream(pStream);
-    DEBUG_ASSERT_AND_HANDLE(int64val > 0) {
+    VERIFY_OR_DEBUG_ASSERT(int64val > 0) {
         // Integer overflow
         qWarning() << "[SoundSourceFFmpeg]"
                 << "Integer overflow during calculation of frame count";
@@ -86,7 +86,7 @@ bool getFrameCountOfStream(AVStream* pStream, SINT* pFrameCount) {
     }
     DEBUG_ASSERT(pStream->time_base.num > 0);
     int64val *= pStream->time_base.num;
-    DEBUG_ASSERT_AND_HANDLE(int64val > 0) {
+    VERIFY_OR_DEBUG_ASSERT(int64val > 0) {
         // Integer overflow
         qWarning() << "[SoundSourceFFmpeg]"
                 << "Integer overflow during calculation of frame count";
@@ -95,7 +95,7 @@ bool getFrameCountOfStream(AVStream* pStream, SINT* pFrameCount) {
     DEBUG_ASSERT(pStream->time_base.den > 0);
     int64val /= pStream->time_base.den;
     SINT frameCount = int64val;
-    DEBUG_ASSERT_AND_HANDLE(static_cast<int64_t>(frameCount) == int64val) {
+    VERIFY_OR_DEBUG_ASSERT(static_cast<int64_t>(frameCount) == int64val) {
         // Integer truncation
         qWarning() << "[SoundSourceFFmpeg]"
                 << "Integer truncation during calculation of frame count";
