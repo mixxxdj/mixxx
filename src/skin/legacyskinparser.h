@@ -13,6 +13,7 @@
 #include "skin/tooltips.h"
 #include "proto/skin.pb.h"
 #include "tooltipupdater.h"
+#include "util/memory.h"
 
 class WBaseWidget;
 class Library;
