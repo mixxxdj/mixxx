@@ -25,7 +25,6 @@ const int kLocalBpmSpan = 4;
 BpmControl::BpmControl(QString group,
                        UserSettingsPointer pConfig) :
         EngineControl(group, pConfig),
-        m_dPreviousSample(0),
         m_dSyncTargetBeatDistance(0.0),
         m_dSyncInstantaneousBpm(0.0),
         m_dLastSyncAdjustment(1.0),
@@ -219,10 +218,8 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
 
     // (60 seconds per minute) * (1000 milliseconds per second) / (X millis per
     // beat) = Y beats/minute
-    double averageBpm = 60.0 * 1000.0 / averageLength;
-    double dRate = calcRateRatio();
-    m_pFileBpm->set(averageBpm / dRate);
-    slotUpdateEngineBpm();
+    double averageBpm = 60.0 * 1000.0 / averageLength / calcRateRatio();
+    m_pBeats->setBpm(averageBpm);
 }
 
 void BpmControl::slotControlBeatSyncPhase(double v) {
@@ -787,11 +784,6 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
     }
 }
 
-void BpmControl::setCurrentSample(const double dCurrentSample, const double dTotalSamples) {
-    m_dPreviousSample = dCurrentSample;
-    EngineControl::setCurrentSample(dCurrentSample, dTotalSamples);
-}
-
 double BpmControl::updateLocalBpm() {
     double prev_local_bpm = m_pLocalBpm->get();
     double local_bpm = 0;
@@ -812,7 +804,7 @@ double BpmControl::updateLocalBpm() {
 }
 
 double BpmControl::updateBeatDistance() {
-    double beat_distance = getBeatDistance(m_dPreviousSample);
+    double beat_distance = getBeatDistance(getCurrentSample());
     m_pThisBeatDistance->set(beat_distance);
     if (getSyncMode() == SYNC_NONE) {
         m_dUserOffset = 0.0;

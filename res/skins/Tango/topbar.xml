@@ -36,19 +36,19 @@ Description:
               </WidgetGroup>
 
               <PushButton>
-                <MinimumSize>50,24</MinimumSize>
+                <MinimumSize>51,12</MinimumSize>
                 <MaximumSize>102,24</MaximumSize>
-                <SizePolicy>me,f</SizePolicy>
+                <SizePolicy>me,min</SizePolicy>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_logo_102x24_grey.svg</Pressed>
-                  <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_logo_102x24_grey.svg</Unpressed>
+                  <Pressed scalemode="STRETCH_ASPECT">buttons/btn_logo_102x24_grey.svg</Pressed>
+                  <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_logo_102x24_grey.svg</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_logo_102x24.svg</Pressed>
-                  <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_logo_102x24.svg</Unpressed>
+                  <Pressed scalemode="STRETCH_ASPECT">buttons/btn_logo_102x24.svg</Pressed>
+                  <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_logo_102x24.svg</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey persist="true">[Tango],colorLogo</ConfigKey>
@@ -56,7 +56,30 @@ Description:
                 </Connection>
               </PushButton>
 
-              <WidgetGroup><Size>0min,1min</Size></WidgetGroup>
+              <WidgetGroup><!-- Master & Headphone mixer -->
+                <Size>22f,28f</Size>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Label>
+                    <Size>22f,28f</Size>
+                    <ObjectName>MasterHeadMixerLabel</ObjectName>
+                  </Label>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Tango],master_mixer</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <Template src="skin:button_2state_persist.xml">
+                <SetVariable name="ObjectName">MasterHeadMixerToggle</SetVariable>
+                <!-- Size needs to be changed in size_detector_stars.xml, too -->
+                <SetVariable name="Size">15f,28f</SetVariable>
+                <SetVariable name="ConfigKey">[Tango],master_mixer</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
               <Template src="skin:mixer_master_booth.xml"/>
 
@@ -68,50 +91,39 @@ Description:
 
               <Template src="skin:mixer_headphone.xml"/>
 
+              <WidgetGroup><Size>0min,1min</Size></WidgetGroup>
+
             </Children>
           </WidgetGroup>
         </Children>
       </WidgetGroup><!-- /Logo + Master, Headphone & Booth Mixer -->
 
-      <WidgetGroup><!-- Crossfader (if enabled) + responsive spacer underneath -->
-        <ObjectName>AlignHCenter</ObjectName>
+      <WidgetGroup><!-- Crossfader -->
         <SizePolicy>min,min</SizePolicy>
-        <Layout>vertical</Layout>
+        <Layout>horizontal</Layout>
         <Children>
-
-          <WidgetGroup><!-- Crossfader -->
-            <SizePolicy>min,min</SizePolicy>
-            <Layout>horizontal</Layout>
+          <WidgetGroup>
+            <ObjectName>CrossfaderContainer</ObjectName>
+            <SizePolicy>min,f</SizePolicy>
+            <Layout>vertical</Layout>
             <Children>
-              <WidgetGroup>
-                <ObjectName>CrossfaderContainer</ObjectName>
-                <SizePolicy>min,f</SizePolicy>
-                <Layout>vertical</Layout>
-                <Children>
-                  <SliderComposed>
-                    <TooltipId>crossfader</TooltipId>
-                    <Handle>skin:/knobs_sliders/crossfader_handle.svg</Handle>
-                    <Slider>skin:/knobs_sliders/crossfader_scale.svg</Slider>
-                    <Horizontal>true</Horizontal>
-                    <Connection>
-                      <ConfigKey>[Master],crossfader</ConfigKey>
-                    </Connection>
-                  </SliderComposed>
-                </Children>
-              </WidgetGroup>
+              <SliderComposed>
+                <TooltipId>crossfader</TooltipId>
+                <Handle>knobs_sliders/crossfader_handle.svg</Handle>
+                <Slider>knobs_sliders/crossfader_scale.svg</Slider>
+                <Horizontal>true</Horizontal>
+                <Connection>
+                  <ConfigKey>[Master],crossfader</ConfigKey>
+                </Connection>
+              </SliderComposed>
             </Children>
-            <Connection>
-              <ConfigKey persist="true">[Tango],crossfader</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup><!-- /Crossfader -->
-
-          <!-- Zero-height spacers below Crossfader ensures left and right toolbars
-              are aligned with deck edges. -->
-          <Template src="skin:spacer_topbar.xml"/>
-
+          </WidgetGroup>
         </Children>
-      </WidgetGroup><!-- /Crossfader (if enabled) + responsive spacer underneath -->
+        <Connection>
+          <ConfigKey persist="true">[Tango],crossfader</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Crossfader -->
 
       <WidgetGroup><!-- Skin toggles, Rec, Broadcast, Clock, Skin menu toggle -->
         <Layout>horizontal</Layout>
@@ -119,17 +131,17 @@ Description:
         <SizePolicy>me,min</SizePolicy>
         <Children>
 
+          <WidgetGroup><Size>10me,1min</Size></WidgetGroup>
+
           <Template src="skin:button_2state_persist.xml"><!-- Waveforms -->
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">30f,20f</SetVariable>
-            <SetVariable name="state_0_pressed">wave_off.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">wave_off.svg</SetVariable>
-            <SetVariable name="state_1_pressed">wave_on.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">wave_on.svg</SetVariable>
+            <SetVariable name="state_0_icon">wave_off.svg</SetVariable>
+            <SetVariable name="state_1_icon">wave_on.svg</SetVariable>
             <SetVariable name="ConfigKey">[Tango],stacked_waveforms</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+          <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml"><!-- FX -->
             <SetVariable name="TooltipId">show_effects</SetVariable>
@@ -146,23 +158,19 @@ Description:
             <SetVariable name="TooltipId">show_samplers</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">30f,20f</SetVariable>
-            <SetVariable name="state_0_pressed">samplers_off.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">samplers_off.svg</SetVariable>
-            <SetVariable name="state_1_pressed">samplers_on.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">samplers_on.svg</SetVariable>
+            <SetVariable name="state_0_icon">samplers_off.svg</SetVariable>
+            <SetVariable name="state_1_icon">samplers_on.svg</SetVariable>
             <SetVariable name="ConfigKey">[Samplers],show_samplers</SetVariable>
           </Template>
 
           <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
-          <Template src="skin:button_2state_persist.xml"><!-- Library -->
+          <Template src="skin:button_2state_persist.xml">
             <SetVariable name="TooltipId">show_microphone</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">30f,20f</SetVariable>
-            <SetVariable name="state_0_pressed">mic_aux_off.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">mic_aux_off.svg</SetVariable>
-            <SetVariable name="state_1_pressed">mic_aux_on.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">mic_aux_on.svg</SetVariable>
+            <SetVariable name="state_0_icon">mic_aux_off.svg</SetVariable>
+            <SetVariable name="state_1_icon">mic_aux_on.svg</SetVariable>
             <SetVariable name="ConfigKey">[Microphone],show_microphone</SetVariable>
           </Template>
 
@@ -172,10 +180,8 @@ Description:
             <SetVariable name="TooltipId">show_mixer</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">20f,20f</SetVariable>
-            <SetVariable name="state_0_pressed">mixer_off.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">mixer_off.svg</SetVariable>
-            <SetVariable name="state_1_pressed">mixer_on.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">mixer_on.svg</SetVariable>
+            <SetVariable name="state_0_icon">mixer_off.svg</SetVariable>
+            <SetVariable name="state_1_icon">mixer_on.svg</SetVariable>
             <SetVariable name="ConfigKey">[Master],show_mixer</SetVariable>
           </Template>
 
@@ -184,24 +190,9 @@ Description:
           <Template src="skin:button_2state_persist.xml"><!-- Loop/Beatjump -->
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">20f,20f</SetVariable>
-            <SetVariable name="state_0_unpressed">loop_beatjump_off.svg</SetVariable>
-            <SetVariable name="state_0_pressed">loop_beatjump_off.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">loop_beatjump_on.svg</SetVariable>
-            <SetVariable name="state_1_pressed">loop_beatjump_on.svg</SetVariable>
+            <SetVariable name="state_0_icon">loop_beatjump_off.svg</SetVariable>
+            <SetVariable name="state_1_icon">loop_beatjump_on.svg</SetVariable>
             <SetVariable name="ConfigKey">[Tango],loop_beatjump_controls</SetVariable>
-          </Template>
-
-          <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
-
-          <Template src="skin:button_2state_persist.xml"><!-- Library -->
-            <SetVariable name="TooltipId">show_library</SetVariable>
-            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">20f,20f</SetVariable>
-            <SetVariable name="state_0_pressed">lib_off.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">lib_off.svg</SetVariable>
-            <SetVariable name="state_1_pressed">lib_on.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">lib_on.svg</SetVariable>
-            <SetVariable name="ConfigKey">[Library],show_library</SetVariable>
           </Template>
 
           <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
@@ -210,14 +201,12 @@ Description:
             <SetVariable name="ObjectName">GuiToggleButton2</SetVariable>
             <SetVariable name="Size">20f,20f</SetVariable>
             <SetVariable name="TooltipId">toggle_4decks</SetVariable>
-            <SetVariable name="state_0_pressed">2decks.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">2decks.svg</SetVariable>
-            <SetVariable name="state_1_pressed">4decks.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">4decks.svg</SetVariable>
+            <SetVariable name="state_0_icon">2decks.svg</SetVariable>
+            <SetVariable name="state_1_icon">4decks.svg</SetVariable>
             <SetVariable name="ConfigKey">[Master],show_4decks</SetVariable>
           </Template>
 
-          <WidgetGroup><Size>10me,1min</Size></WidgetGroup>
+          <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
 
           <WidgetGroup><!-- Recording button & recording duration label -->
             <ObjectName>RecBox</ObjectName>
@@ -288,8 +277,8 @@ Description:
               <VuMeter><!-- latency usage -->
                 <Size>31f,3f</Size>
                 <TooltipId>audio_latency_usage</TooltipId>
-                <PathVu>skin:/graphics/latency_usage_over.png</PathVu>
-                <PathBack>skin:/graphics/latency_usage.png</PathBack>
+                <PathVu>graphics/latency_usage_over.svg</PathVu>
+                <PathBack>graphics/latency_usage.svg</PathBack>
                 <Horizontal>true</Horizontal>
                 <PeakHoldSize>5</PeakHoldSize>
                 <PeakHoldTime>1000</PeakHoldTime>
@@ -311,6 +300,7 @@ Description:
             <SizePolicy>min,min</SizePolicy>
             <Children>
               <Template src="skin:button_2state.xml">
+                <SetVariable name="TooltipId">skin_settings</SetVariable>
                 <SetVariable name="ObjectName">SkinSettingsToggler</SetVariable>
                 <SetVariable name="Size">24f,24f</SetVariable>
                 <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>

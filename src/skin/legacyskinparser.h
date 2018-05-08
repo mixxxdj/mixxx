@@ -53,6 +53,8 @@ class LegacySkinParser : public QObject, public SkinParser {
     static Qt::MouseButton parseButtonState(const QDomNode& node,
                                             const SkinContext& context);
 
+    static QString getStyleFromNode(const QDomNode& node);
+
   private:
     static QDomElement openSkin(const QString& skinPath);
 
@@ -124,7 +126,6 @@ class LegacySkinParser : public QObject, public SkinParser {
                      bool setupPosition=true);
     void setupConnections(const QDomNode& node, WBaseWidget* pWidget);
     QString getLibraryStyle(const QDomNode& node);
-    QString getStyleFromNode(const QDomNode& node);
 
     QString lookupNodeGroup(const QDomElement& node);
     static const char* safeChannelString(const QString& channelStr);
@@ -146,6 +147,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     RecordingManager* m_pRecordingManager;
     QWidget* m_pParent;
     std::unique_ptr<SkinContext> m_pContext;
+    QString m_style;
     Tooltips m_tooltips;
     QHash<QString, QDomElement> m_templateCache;
     static QList<const char*> s_channelStrs;

@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   height="48"
-   width="48"
    version="1.1"
-   viewBox="0 0 48 48.000001"
-   id="svg2"
-   inkscape:version="0.91 r13725"
-   sodipodi:docname="ic_slip_48px.svg">
+   width="25"
+   height="18"
+   viewBox="0 0 25 18"
+   id="svg2">
   <metadata
      id="metadata10">
     <rdf:RDF>
@@ -22,34 +20,19 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <defs
      id="defs8" />
-  <sodipodi:namedview
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="1366"
-     inkscape:window-height="702"
-     id="namedview6"
-     showgrid="false"
-     inkscape:zoom="4.9166667"
-     inkscape:cx="25.220339"
-     inkscape:cy="24"
-     inkscape:window-x="0"
-     inkscape:window-y="27"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="svg2" />
   <path
-     d="M 5,14 17,36 23.5,24.084 30,36 43,14 29,14 18,14 5,14 Z M 26.818,18 36,18 30,27.965 25.871,19.736 26.818,18 Z"
-     id="path4"
-     inkscape:connector-curvature="0"
-     style="fill:#d2d2d2;fill-opacity:1" />
+     d="M -3.9999998,12 -10.928203,1.8564049e-7 2.9282031,-1.8564049e-7 z"
+     transform="matrix(0.91413792,0,0,0.91413792,12.989885,4.000345)"
+     id="path5170"
+     style="color:#000000;fill:#585858;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2.25;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+  <path
+     d="M 9.333333,4.0003449 15.666667,14.964928 22,4.0003449 l -12.666667,0 z m 2.929167,1.7020833 6.808333,0 L 15.666667,11.600344 12.2625,5.7024282 z"
+     id="path5170-9"
+     style="color:#000000;fill:#585858;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2.25;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
 </svg>

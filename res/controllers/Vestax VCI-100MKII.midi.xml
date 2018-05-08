@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxMIDIPreset mixxxVersion="2.0.0+" schemaVersion="1">
+<MixxxMIDIPreset mixxxVersion="2.1.0+" schemaVersion="1">
   <info>
     <name>Vestax VCI-100MKII</name>
     <author>Takeshi Soejima</author>
-    <description>2016-12-1</description>
+    <description>2018-4-15</description>
     <wiki>http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii</wiki>
   </info>
   <controller id="VCI-100MKII">
@@ -31,7 +31,7 @@
       </control>
       <control>
         <group>[Master]</group>
-        <key>headVolume</key>
+        <key>headGain</key>
         <status>0xB4</status>
         <midino>0x12</midino>
         <options>
@@ -46,7 +46,7 @@
       </control>
       <control>
         <group>[Master]</group>
-        <key>volume</key>
+        <key>gain</key>
         <status>0xB4</status>
         <midino>0x14</midino>
         <options>
@@ -72,14 +72,14 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
-        <key>maximize_library</key>
+        <group>[Library]</group>
+        <key>GoToItem</key>
         <status>0x94</status>
         <midino>0x36</midino>
       </control>
       <control>
-        <group>[Playlist]</group>
-        <key>VCI102.SelectPrevTrack</key>
+        <group>[Library]</group>
+        <key>VCI102.selectPrev</key>
         <status>0x94</status>
         <midino>0x37</midino>
         <options>
@@ -87,8 +87,8 @@
         </options>
       </control>
       <control>
-        <group>[Playlist]</group>
-        <key>VCI102.SelectNextTrack</key>
+        <group>[Library]</group>
+        <key>VCI102.selectNext</key>
         <status>0x94</status>
         <midino>0x38</midino>
         <options>
@@ -97,27 +97,39 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>LoadSelectedTrack</key>
+        <key>VCI102.LoadSelectedTrack</key>
         <status>0x90</status>
         <midino>0x37</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>LoadSelectedTrack</key>
+        <key>VCI102.LoadSelectedTrack</key>
         <status>0x91</status>
         <midino>0x37</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>LoadSelectedTrack</key>
+        <key>VCI102.LoadSelectedTrack</key>
         <status>0x92</status>
         <midino>0x37</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>LoadSelectedTrack</key>
+        <key>VCI102.LoadSelectedTrack</key>
         <status>0x93</status>
         <midino>0x37</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[Channel1]</group>
@@ -552,7 +564,7 @@
         </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <group>[EffectRack1_EffectUnit1]</group>
         <key>VCI102.parameter1</key>
         <status>0xB0</status>
         <midino>0x16</midino>
@@ -561,7 +573,7 @@
         </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit2_Effect1]</group>
+        <group>[EffectRack1_EffectUnit2]</group>
         <key>VCI102.parameter1</key>
         <status>0xB1</status>
         <midino>0x17</midino>
@@ -570,7 +582,7 @@
         </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit3_Effect1]</group>
+        <group>[EffectRack1_EffectUnit3]</group>
         <key>VCI102.parameter1</key>
         <status>0xB2</status>
         <midino>0x16</midino>
@@ -579,7 +591,7 @@
         </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit4_Effect1]</group>
+        <group>[EffectRack1_EffectUnit4]</group>
         <key>VCI102.parameter1</key>
         <status>0xB3</status>
         <midino>0x17</midino>
@@ -588,7 +600,7 @@
         </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <group>[EffectRack1_EffectUnit1]</group>
         <key>VCI102.parameter2</key>
         <status>0xB0</status>
         <midino>0x17</midino>
@@ -597,7 +609,7 @@
         </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit2_Effect1]</group>
+        <group>[EffectRack1_EffectUnit2]</group>
         <key>VCI102.parameter2</key>
         <status>0xB1</status>
         <midino>0x18</midino>
@@ -606,7 +618,7 @@
         </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit3_Effect1]</group>
+        <group>[EffectRack1_EffectUnit3]</group>
         <key>VCI102.parameter2</key>
         <status>0xB2</status>
         <midino>0x17</midino>
@@ -615,7 +627,7 @@
         </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit4_Effect1]</group>
+        <group>[EffectRack1_EffectUnit4]</group>
         <key>VCI102.parameter2</key>
         <status>0xB3</status>
         <midino>0x18</midino>
@@ -624,964 +636,868 @@
         </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <group>[EffectRack1_EffectUnit1]</group>
         <key>VCI102.parameter3</key>
         <status>0xB0</status>
         <midino>0x18</midino>
         <options>
           <script-binding/>
         </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>VCI102.parameter3</key>
+        <status>0xB1</status>
+        <midino>0x19</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit3]</group>
+        <key>VCI102.parameter3</key>
+        <status>0xB2</status>
+        <midino>0x18</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit4]</group>
+        <key>VCI102.parameter3</key>
+        <status>0xB3</status>
+        <midino>0x19</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>VCI102.parameter4</key>
+        <status>0xB0</status>
+        <midino>0x19</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>VCI102.parameter4</key>
+        <status>0xB1</status>
+        <midino>0x1A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit3]</group>
+        <key>VCI102.parameter4</key>
+        <status>0xB2</status>
+        <midino>0x19</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit4]</group>
+        <key>VCI102.parameter4</key>
+        <status>0xB3</status>
+        <midino>0x1A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[QuickEffectRack1_[Channel1]]</group>
+        <key>VCI102.super1</key>
+        <status>0xB0</status>
+        <midino>0x1A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[QuickEffectRack1_[Channel2]]</group>
+        <key>VCI102.super1</key>
+        <status>0xB1</status>
+        <midino>0x1B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[QuickEffectRack1_[Channel3]]</group>
+        <key>VCI102.super1</key>
+        <status>0xB2</status>
+        <midino>0x1A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[QuickEffectRack1_[Channel4]]</group>
+        <key>VCI102.super1</key>
+        <status>0xB3</status>
+        <midino>0x1B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>VCI102.no_slot</key>
+        <status>0x90</status>
+        <midino>0x20</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>VCI102.no_slot</key>
+        <status>0x91</status>
+        <midino>0x20</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit3]</group>
+        <key>VCI102.no_slot</key>
+        <status>0x92</status>
+        <midino>0x20</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit4]</group>
+        <key>VCI102.no_slot</key>
+        <status>0x93</status>
+        <midino>0x20</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>VCI102.next_slot</key>
+        <status>0x90</status>
+        <midino>0x21</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>VCI102.next_slot</key>
+        <status>0x91</status>
+        <midino>0x21</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit3]</group>
+        <key>VCI102.next_slot</key>
+        <status>0x92</status>
+        <midino>0x21</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit4]</group>
+        <key>VCI102.next_slot</key>
+        <status>0x93</status>
+        <midino>0x21</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>play</key>
+        <status>0x90</status>
+        <midino>0x22</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>play</key>
+        <status>0x91</status>
+        <midino>0x22</midino>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>play</key>
+        <status>0x92</status>
+        <midino>0x22</midino>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>play</key>
+        <status>0x93</status>
+        <midino>0x22</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>reverse</key>
+        <status>0x90</status>
+        <midino>0x42</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>reverse</key>
+        <status>0x91</status>
+        <midino>0x42</midino>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>reverse</key>
+        <status>0x92</status>
+        <midino>0x42</midino>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>reverse</key>
+        <status>0x93</status>
+        <midino>0x42</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>cue_default</key>
+        <status>0x90</status>
+        <midino>0x23</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>cue_default</key>
+        <status>0x91</status>
+        <midino>0x23</midino>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>cue_default</key>
+        <status>0x92</status>
+        <midino>0x23</midino>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>cue_default</key>
+        <status>0x93</status>
+        <midino>0x23</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x90</status>
+        <midino>0x43</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x91</status>
+        <midino>0x43</midino>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x92</status>
+        <midino>0x43</midino>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>cue_gotoandplay</key>
+        <status>0x93</status>
+        <midino>0x43</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_1_activate</key>
+        <status>0x90</status>
+        <midino>0x2A</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_1_activate</key>
+        <status>0x91</status>
+        <midino>0x2A</midino>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>hotcue_1_activate</key>
+        <status>0x92</status>
+        <midino>0x2A</midino>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>hotcue_1_activate</key>
+        <status>0x93</status>
+        <midino>0x2A</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_1_clear</key>
+        <status>0x90</status>
+        <midino>0x4A</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_1_clear</key>
+        <status>0x91</status>
+        <midino>0x4A</midino>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>hotcue_1_clear</key>
+        <status>0x92</status>
+        <midino>0x4A</midino>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>hotcue_1_clear</key>
+        <status>0x93</status>
+        <midino>0x4A</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_2_activate</key>
+        <status>0x90</status>
+        <midino>0x2B</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_2_activate</key>
+        <status>0x91</status>
+        <midino>0x2B</midino>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>hotcue_2_activate</key>
+        <status>0x92</status>
+        <midino>0x2B</midino>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>hotcue_2_activate</key>
+        <status>0x93</status>
+        <midino>0x2B</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_2_clear</key>
+        <status>0x90</status>
+        <midino>0x4B</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_2_clear</key>
+        <status>0x91</status>
+        <midino>0x4B</midino>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>hotcue_2_clear</key>
+        <status>0x92</status>
+        <midino>0x4B</midino>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>hotcue_2_clear</key>
+        <status>0x93</status>
+        <midino>0x4B</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>sync_enabled</key>
+        <status>0x90</status>
+        <midino>0x24</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>sync_enabled</key>
+        <status>0x91</status>
+        <midino>0x24</midino>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>sync_enabled</key>
+        <status>0x92</status>
+        <midino>0x24</midino>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>sync_enabled</key>
+        <status>0x93</status>
+        <midino>0x24</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>beats_translate_curpos</key>
+        <status>0x90</status>
+        <midino>0x44</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>beats_translate_curpos</key>
+        <status>0x91</status>
+        <midino>0x44</midino>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>beats_translate_curpos</key>
+        <status>0x92</status>
+        <midino>0x44</midino>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>beats_translate_curpos</key>
+        <status>0x93</status>
+        <midino>0x44</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>keylock</key>
+        <status>0x90</status>
+        <midino>0x2D</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>keylock</key>
+        <status>0x91</status>
+        <midino>0x2D</midino>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>keylock</key>
+        <status>0x92</status>
+        <midino>0x2D</midino>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>keylock</key>
+        <status>0x93</status>
+        <midino>0x2D</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>quantize</key>
+        <status>0x90</status>
+        <midino>0x4D</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>quantize</key>
+        <status>0x91</status>
+        <midino>0x4D</midino>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>quantize</key>
+        <status>0x92</status>
+        <midino>0x4D</midino>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>quantize</key>
+        <status>0x93</status>
+        <midino>0x4D</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VCI102.loop</key>
+        <status>0x90</status>
+        <midino>0x26</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VCI102.loop</key>
+        <status>0x91</status>
+        <midino>0x33</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>VCI102.loop</key>
+        <status>0x92</status>
+        <midino>0x26</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>VCI102.loop</key>
+        <status>0x93</status>
+        <midino>0x33</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VCI102.reloop</key>
+        <status>0x90</status>
+        <midino>0x46</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VCI102.reloop</key>
+        <status>0x91</status>
+        <midino>0x53</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>VCI102.reloop</key>
+        <status>0x92</status>
+        <midino>0x46</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>VCI102.reloop</key>
+        <status>0x93</status>
+        <midino>0x53</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VCI102.loop_halve</key>
+        <status>0x90</status>
+        <midino>0x33</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VCI102.loop_halve</key>
+        <status>0x91</status>
+        <midino>0x29</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>VCI102.loop_halve</key>
+        <status>0x92</status>
+        <midino>0x33</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>VCI102.loop_halve</key>
+        <status>0x93</status>
+        <midino>0x29</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>beatjump_backward</key>
+        <status>0x90</status>
+        <midino>0x53</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>beatjump_backward</key>
+        <status>0x91</status>
+        <midino>0x49</midino>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>beatjump_backward</key>
+        <status>0x92</status>
+        <midino>0x53</midino>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>beatjump_backward</key>
+        <status>0x93</status>
+        <midino>0x49</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VCI102.loop_double</key>
+        <status>0x90</status>
+        <midino>0x29</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VCI102.loop_double</key>
+        <status>0x91</status>
+        <midino>0x26</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>VCI102.loop_double</key>
+        <status>0x92</status>
+        <midino>0x29</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>VCI102.loop_double</key>
+        <status>0x93</status>
+        <midino>0x26</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>beatjump_forward</key>
+        <status>0x90</status>
+        <midino>0x49</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>beatjump_forward</key>
+        <status>0x91</status>
+        <midino>0x46</midino>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>beatjump_forward</key>
+        <status>0x92</status>
+        <midino>0x49</midino>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>beatjump_forward</key>
+        <status>0x93</status>
+        <midino>0x46</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>enabled</key>
+        <status>0x90</status>
+        <midino>0x2C</midino>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect1]</group>
-        <key>VCI102.parameter3</key>
-        <status>0xB1</status>
-        <midino>0x19</midino>
-        <options>
-          <script-binding/>
-        </options>
+        <key>enabled</key>
+        <status>0x91</status>
+        <midino>0x28</midino>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit3_Effect1]</group>
-        <key>VCI102.parameter3</key>
-        <status>0xB2</status>
-        <midino>0x18</midino>
-        <options>
-          <script-binding/>
-        </options>
+        <key>enabled</key>
+        <status>0x92</status>
+        <midino>0x2C</midino>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit4_Effect1]</group>
-        <key>VCI102.parameter3</key>
-        <status>0xB3</status>
-        <midino>0x19</midino>
-        <options>
-          <script-binding/>
-        </options>
+        <key>enabled</key>
+        <status>0x93</status>
+        <midino>0x28</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>next_effect</key>
+        <status>0x90</status>
+        <midino>0x4C</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2_Effect1]</group>
+        <key>next_effect</key>
+        <status>0x91</status>
+        <midino>0x48</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit3_Effect1]</group>
+        <key>next_effect</key>
+        <status>0x92</status>
+        <midino>0x4C</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit4_Effect1]</group>
+        <key>next_effect</key>
+        <status>0x93</status>
+        <midino>0x48</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1_Effect2]</group>
+        <key>enabled</key>
+        <status>0x90</status>
+        <midino>0x25</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2_Effect2]</group>
+        <key>enabled</key>
+        <status>0x91</status>
+        <midino>0x25</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit3_Effect2]</group>
+        <key>enabled</key>
+        <status>0x92</status>
+        <midino>0x25</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit4_Effect2]</group>
+        <key>enabled</key>
+        <status>0x93</status>
+        <midino>0x25</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1_Effect2]</group>
+        <key>next_effect</key>
+        <status>0x90</status>
+        <midino>0x45</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2_Effect2]</group>
+        <key>next_effect</key>
+        <status>0x91</status>
+        <midino>0x45</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit3_Effect2]</group>
+        <key>next_effect</key>
+        <status>0x92</status>
+        <midino>0x45</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit4_Effect2]</group>
+        <key>next_effect</key>
+        <status>0x93</status>
+        <midino>0x45</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1_Effect3]</group>
+        <key>enabled</key>
+        <status>0x90</status>
+        <midino>0x27</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2_Effect3]</group>
+        <key>enabled</key>
+        <status>0x91</status>
+        <midino>0x27</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit3_Effect3]</group>
+        <key>enabled</key>
+        <status>0x92</status>
+        <midino>0x27</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit4_Effect3]</group>
+        <key>enabled</key>
+        <status>0x93</status>
+        <midino>0x27</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1_Effect3]</group>
+        <key>next_effect</key>
+        <status>0x90</status>
+        <midino>0x47</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2_Effect3]</group>
+        <key>next_effect</key>
+        <status>0x91</status>
+        <midino>0x47</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit3_Effect3]</group>
+        <key>next_effect</key>
+        <status>0x92</status>
+        <midino>0x47</midino>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit4_Effect3]</group>
+        <key>next_effect</key>
+        <status>0x93</status>
+        <midino>0x47</midino>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>VCI102.super1</key>
-        <status>0xB0</status>
-        <midino>0x19</midino>
+        <key>VCI102.mix_toggle</key>
+        <status>0x90</status>
+        <midino>0x28</midino>
         <options>
           <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2]</group>
-        <key>VCI102.super1</key>
-        <status>0xB1</status>
-        <midino>0x1A</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[EffectRack1_EffectUnit3]</group>
-        <key>VCI102.super1</key>
-        <status>0xB2</status>
-        <midino>0x19</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[EffectRack1_EffectUnit4]</group>
-        <key>VCI102.super1</key>
-        <status>0xB3</status>
-        <midino>0x1A</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[QuickEffectRack1_[Channel1]_Effect1]</group>
-        <key>parameter3</key>
-        <status>0xB0</status>
-        <midino>0x1A</midino>
-      </control>
-      <control>
-        <group>[QuickEffectRack1_[Channel2]_Effect1]</group>
-        <key>parameter3</key>
-        <status>0xB1</status>
-        <midino>0x1B</midino>
-      </control>
-      <control>
-        <group>[QuickEffectRack1_[Channel3]_Effect1]</group>
-        <key>parameter3</key>
-        <status>0xB2</status>
-        <midino>0x1A</midino>
-      </control>
-      <control>
-        <group>[QuickEffectRack1_[Channel4]_Effect1]</group>
-        <key>parameter3</key>
-        <status>0xB3</status>
-        <midino>0x1B</midino>
-      </control>
-      <control>
-        <group>[EffectRack1_EffectUnit1]</group>
-        <key>VCI102.prev_chain</key>
-        <status>0x90</status>
-        <midino>0x20</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[EffectRack1_EffectUnit2]</group>
-        <key>VCI102.prev_chain</key>
+        <key>VCI102.mix_toggle</key>
         <status>0x91</status>
-        <midino>0x20</midino>
+        <midino>0x2C</midino>
         <options>
           <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit3]</group>
-        <key>VCI102.prev_chain</key>
+        <key>VCI102.mix_toggle</key>
         <status>0x92</status>
-        <midino>0x20</midino>
+        <midino>0x28</midino>
         <options>
           <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit4]</group>
-        <key>VCI102.prev_chain</key>
+        <key>VCI102.mix_toggle</key>
         <status>0x93</status>
-        <midino>0x20</midino>
+        <midino>0x2C</midino>
         <options>
           <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>VCI102.next_chain</key>
+        <key>next_chain</key>
         <status>0x90</status>
-        <midino>0x21</midino>
-        <options>
-          <script-binding/>
-        </options>
+        <midino>0x48</midino>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2]</group>
-        <key>VCI102.next_chain</key>
+        <key>next_chain</key>
         <status>0x91</status>
-        <midino>0x21</midino>
-        <options>
-          <script-binding/>
-        </options>
+        <midino>0x4C</midino>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit3]</group>
-        <key>VCI102.next_chain</key>
+        <key>next_chain</key>
         <status>0x92</status>
-        <midino>0x21</midino>
-        <options>
-          <script-binding/>
-        </options>
+        <midino>0x48</midino>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit4]</group>
-        <key>VCI102.next_chain</key>
-        <status>0x93</status>
-        <midino>0x21</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>play</key>
-        <status>0x90</status>
-        <midino>0x22</midino>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>play</key>
-        <status>0x91</status>
-        <midino>0x22</midino>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>play</key>
-        <status>0x92</status>
-        <midino>0x22</midino>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>play</key>
-        <status>0x93</status>
-        <midino>0x22</midino>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>reverse</key>
-        <status>0x90</status>
-        <midino>0x42</midino>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>reverse</key>
-        <status>0x91</status>
-        <midino>0x42</midino>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>reverse</key>
-        <status>0x92</status>
-        <midino>0x42</midino>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>reverse</key>
-        <status>0x93</status>
-        <midino>0x42</midino>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>cue_default</key>
-        <status>0x90</status>
-        <midino>0x23</midino>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>cue_default</key>
-        <status>0x91</status>
-        <midino>0x23</midino>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>cue_default</key>
-        <status>0x92</status>
-        <midino>0x23</midino>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>cue_default</key>
-        <status>0x93</status>
-        <midino>0x23</midino>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>beats_translate_curpos</key>
-        <status>0x90</status>
-        <midino>0x43</midino>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>beats_translate_curpos</key>
-        <status>0x91</status>
-        <midino>0x43</midino>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>beats_translate_curpos</key>
-        <status>0x92</status>
-        <midino>0x43</midino>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>beats_translate_curpos</key>
-        <status>0x93</status>
-        <midino>0x43</midino>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>cue_gotoandplay</key>
-        <status>0x90</status>
-        <midino>0x2A</midino>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>cue_gotoandplay</key>
-        <status>0x91</status>
-        <midino>0x2A</midino>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>cue_gotoandplay</key>
-        <status>0x92</status>
-        <midino>0x2A</midino>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>cue_gotoandplay</key>
-        <status>0x93</status>
-        <midino>0x2A</midino>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>beats_translate_match_alignment</key>
-        <status>0x90</status>
-        <midino>0x4A</midino>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>beats_translate_match_alignment</key>
-        <status>0x91</status>
-        <midino>0x4A</midino>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>beats_translate_match_alignment</key>
-        <status>0x92</status>
-        <midino>0x4A</midino>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>beats_translate_match_alignment</key>
-        <status>0x93</status>
-        <midino>0x4A</midino>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>sync_enabled</key>
-        <status>0x90</status>
-        <midino>0x2B</midino>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>sync_enabled</key>
-        <status>0x91</status>
-        <midino>0x2B</midino>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>sync_enabled</key>
-        <status>0x92</status>
-        <midino>0x2B</midino>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>sync_enabled</key>
-        <status>0x93</status>
-        <midino>0x2B</midino>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>sync_key</key>
-        <status>0x90</status>
-        <midino>0x4B</midino>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>sync_key</key>
-        <status>0x91</status>
-        <midino>0x4B</midino>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>sync_key</key>
-        <status>0x92</status>
-        <midino>0x4B</midino>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>sync_key</key>
-        <status>0x93</status>
-        <midino>0x4B</midino>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>quantize</key>
-        <status>0x90</status>
-        <midino>0x24</midino>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>quantize</key>
-        <status>0x91</status>
-        <midino>0x24</midino>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>quantize</key>
-        <status>0x92</status>
-        <midino>0x24</midino>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>quantize</key>
-        <status>0x93</status>
-        <midino>0x24</midino>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>waveform_zoom_up</key>
-        <status>0x90</status>
-        <midino>0x44</midino>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>waveform_zoom_up</key>
-        <status>0x91</status>
-        <midino>0x44</midino>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>waveform_zoom_up</key>
-        <status>0x92</status>
-        <midino>0x44</midino>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>waveform_zoom_up</key>
-        <status>0x93</status>
-        <midino>0x44</midino>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>keylock</key>
-        <status>0x90</status>
-        <midino>0x2D</midino>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>keylock</key>
-        <status>0x91</status>
-        <midino>0x2D</midino>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>keylock</key>
-        <status>0x92</status>
-        <midino>0x2D</midino>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>keylock</key>
-        <status>0x93</status>
-        <midino>0x2D</midino>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>waveform_zoom_down</key>
-        <status>0x90</status>
-        <midino>0x4D</midino>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>waveform_zoom_down</key>
-        <status>0x91</status>
-        <midino>0x4D</midino>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>waveform_zoom_down</key>
-        <status>0x92</status>
-        <midino>0x4D</midino>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>waveform_zoom_down</key>
-        <status>0x93</status>
-        <midino>0x4D</midino>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>VCI102.loop</key>
-        <status>0x90</status>
-        <midino>0x26</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>VCI102.loop</key>
-        <status>0x91</status>
-        <midino>0x33</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>VCI102.loop</key>
-        <status>0x92</status>
-        <midino>0x26</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>VCI102.loop</key>
-        <status>0x93</status>
-        <midino>0x33</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>VCI102.reloop</key>
-        <status>0x90</status>
-        <midino>0x46</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>VCI102.reloop</key>
-        <status>0x91</status>
-        <midino>0x53</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>VCI102.reloop</key>
-        <status>0x92</status>
-        <midino>0x46</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>VCI102.reloop</key>
-        <status>0x93</status>
-        <midino>0x53</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>VCI102.loop_halve</key>
-        <status>0x90</status>
-        <midino>0x33</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>VCI102.loop_halve</key>
-        <status>0x91</status>
-        <midino>0x29</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>VCI102.loop_halve</key>
-        <status>0x92</status>
-        <midino>0x33</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>VCI102.loop_halve</key>
-        <status>0x93</status>
-        <midino>0x29</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>VCI102.move_backward</key>
-        <status>0x90</status>
-        <midino>0x53</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>VCI102.move_backward</key>
-        <status>0x91</status>
-        <midino>0x49</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>VCI102.move_backward</key>
-        <status>0x92</status>
-        <midino>0x53</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>VCI102.move_backward</key>
-        <status>0x93</status>
-        <midino>0x49</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>VCI102.loop_double</key>
-        <status>0x90</status>
-        <midino>0x29</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>VCI102.loop_double</key>
-        <status>0x91</status>
-        <midino>0x26</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>VCI102.loop_double</key>
-        <status>0x92</status>
-        <midino>0x29</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>VCI102.loop_double</key>
-        <status>0x93</status>
-        <midino>0x26</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>VCI102.move_forward</key>
-        <status>0x90</status>
-        <midino>0x49</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>VCI102.move_forward</key>
-        <status>0x91</status>
-        <midino>0x46</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>VCI102.move_forward</key>
-        <status>0x92</status>
-        <midino>0x49</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>VCI102.move_forward</key>
-        <status>0x93</status>
-        <midino>0x46</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>VCI102.hotcue_1_activate</key>
-        <status>0x90</status>
-        <midino>0x2C</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>VCI102.hotcue_1_activate</key>
-        <status>0x91</status>
-        <midino>0x28</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>VCI102.hotcue_1_activate</key>
-        <status>0x92</status>
-        <midino>0x2C</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>VCI102.hotcue_1_activate</key>
-        <status>0x93</status>
-        <midino>0x28</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>VCI102.hotcue_1_clear</key>
-        <status>0x90</status>
-        <midino>0x4C</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>VCI102.hotcue_1_clear</key>
-        <status>0x91</status>
-        <midino>0x48</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>VCI102.hotcue_1_clear</key>
-        <status>0x92</status>
-        <midino>0x4C</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>VCI102.hotcue_1_clear</key>
-        <status>0x93</status>
-        <midino>0x48</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>VCI102.hotcue_2_activate</key>
-        <status>0x90</status>
-        <midino>0x25</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>VCI102.hotcue_2_activate</key>
-        <status>0x91</status>
-        <midino>0x25</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>VCI102.hotcue_2_activate</key>
-        <status>0x92</status>
-        <midino>0x25</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>VCI102.hotcue_2_activate</key>
-        <status>0x93</status>
-        <midino>0x25</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>VCI102.hotcue_2_clear</key>
-        <status>0x90</status>
-        <midino>0x45</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>VCI102.hotcue_2_clear</key>
-        <status>0x91</status>
-        <midino>0x45</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>VCI102.hotcue_2_clear</key>
-        <status>0x92</status>
-        <midino>0x45</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>VCI102.hotcue_2_clear</key>
-        <status>0x93</status>
-        <midino>0x45</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>VCI102.hotcue_3_activate</key>
-        <status>0x90</status>
-        <midino>0x27</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>VCI102.hotcue_3_activate</key>
-        <status>0x91</status>
-        <midino>0x27</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>VCI102.hotcue_3_activate</key>
-        <status>0x92</status>
-        <midino>0x27</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>VCI102.hotcue_3_activate</key>
-        <status>0x93</status>
-        <midino>0x27</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>VCI102.hotcue_3_clear</key>
-        <status>0x90</status>
-        <midino>0x47</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>VCI102.hotcue_3_clear</key>
-        <status>0x91</status>
-        <midino>0x47</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>VCI102.hotcue_3_clear</key>
-        <status>0x92</status>
-        <midino>0x47</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>VCI102.hotcue_3_clear</key>
-        <status>0x93</status>
-        <midino>0x47</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>VCI102.hotcue_4_activate</key>
-        <status>0x90</status>
-        <midino>0x28</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>VCI102.hotcue_4_activate</key>
-        <status>0x91</status>
-        <midino>0x2C</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>VCI102.hotcue_4_activate</key>
-        <status>0x92</status>
-        <midino>0x28</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>VCI102.hotcue_4_activate</key>
-        <status>0x93</status>
-        <midino>0x2C</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>VCI102.hotcue_4_clear</key>
-        <status>0x90</status>
-        <midino>0x48</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>VCI102.hotcue_4_clear</key>
-        <status>0x91</status>
-        <midino>0x4C</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>VCI102.hotcue_4_clear</key>
-        <status>0x92</status>
-        <midino>0x48</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>VCI102.hotcue_4_clear</key>
+        <key>next_chain</key>
         <status>0x93</status>
         <midino>0x4C</midino>
-        <options>
-          <script-binding/>
-        </options>
       </control>
       <control>
         <group>[Channel1]</group>
@@ -1859,114 +1775,86 @@
       </output>
       <output>
         <group>[Channel1]</group>
-        <key>cue_gotoandplay</key>
+        <key>hotcue_1_enabled</key>
         <status>0x90</status>
         <midino>0x2A</midino>
         <minimum>1</minimum>
       </output>
       <output>
         <group>[Channel2]</group>
-        <key>cue_gotoandplay</key>
+        <key>hotcue_1_enabled</key>
         <status>0x91</status>
         <midino>0x2A</midino>
         <minimum>1</minimum>
       </output>
       <output>
         <group>[Channel3]</group>
-        <key>cue_gotoandplay</key>
+        <key>hotcue_1_enabled</key>
         <status>0x92</status>
         <midino>0x2A</midino>
         <minimum>1</minimum>
       </output>
       <output>
         <group>[Channel4]</group>
-        <key>cue_gotoandplay</key>
+        <key>hotcue_1_enabled</key>
         <status>0x93</status>
         <midino>0x2A</midino>
         <minimum>1</minimum>
       </output>
       <output>
         <group>[Channel1]</group>
-        <key>sync_enabled</key>
+        <key>hotcue_2_enabled</key>
         <status>0x90</status>
         <midino>0x2B</midino>
         <minimum>1</minimum>
       </output>
       <output>
         <group>[Channel2]</group>
-        <key>sync_enabled</key>
+        <key>hotcue_2_enabled</key>
         <status>0x91</status>
         <midino>0x2B</midino>
         <minimum>1</minimum>
       </output>
       <output>
         <group>[Channel3]</group>
-        <key>sync_enabled</key>
+        <key>hotcue_2_enabled</key>
         <status>0x92</status>
         <midino>0x2B</midino>
         <minimum>1</minimum>
       </output>
       <output>
         <group>[Channel4]</group>
-        <key>sync_enabled</key>
+        <key>hotcue_2_enabled</key>
         <status>0x93</status>
         <midino>0x2B</midino>
         <minimum>1</minimum>
       </output>
       <output>
         <group>[Channel1]</group>
-        <key>quantize</key>
+        <key>sync_enabled</key>
         <status>0x90</status>
         <midino>0x24</midino>
         <minimum>1</minimum>
       </output>
       <output>
         <group>[Channel2]</group>
-        <key>quantize</key>
+        <key>sync_enabled</key>
         <status>0x91</status>
         <midino>0x24</midino>
         <minimum>1</minimum>
       </output>
       <output>
         <group>[Channel3]</group>
-        <key>quantize</key>
+        <key>sync_enabled</key>
         <status>0x92</status>
         <midino>0x24</midino>
         <minimum>1</minimum>
       </output>
       <output>
         <group>[Channel4]</group>
-        <key>quantize</key>
+        <key>sync_enabled</key>
         <status>0x93</status>
         <midino>0x24</midino>
-        <minimum>1</minimum>
-      </output>
-      <output>
-        <group>[Channel1]</group>
-        <key>keylock</key>
-        <status>0x90</status>
-        <midino>0x2D</midino>
-        <minimum>1</minimum>
-      </output>
-      <output>
-        <group>[Channel2]</group>
-        <key>keylock</key>
-        <status>0x91</status>
-        <midino>0x2D</midino>
-        <minimum>1</minimum>
-      </output>
-      <output>
-        <group>[Channel3]</group>
-        <key>keylock</key>
-        <status>0x92</status>
-        <midino>0x2D</midino>
-        <minimum>1</minimum>
-      </output>
-      <output>
-        <group>[Channel4]</group>
-        <key>keylock</key>
-        <status>0x93</status>
-        <midino>0x2D</midino>
         <minimum>1</minimum>
       </output>
       <output>
@@ -1995,6 +1883,90 @@
         <key>loop_enabled</key>
         <status>0x93</status>
         <midino>0x33</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>enabled</key>
+        <status>0x90</status>
+        <midino>0x2C</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit2_Effect1]</group>
+        <key>enabled</key>
+        <status>0x91</status>
+        <midino>0x28</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit3_Effect1]</group>
+        <key>enabled</key>
+        <status>0x92</status>
+        <midino>0x2C</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit4_Effect1]</group>
+        <key>enabled</key>
+        <status>0x93</status>
+        <midino>0x28</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit1_Effect2]</group>
+        <key>enabled</key>
+        <status>0x90</status>
+        <midino>0x25</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit2_Effect2]</group>
+        <key>enabled</key>
+        <status>0x91</status>
+        <midino>0x25</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit3_Effect2]</group>
+        <key>enabled</key>
+        <status>0x92</status>
+        <midino>0x25</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit4_Effect2]</group>
+        <key>enabled</key>
+        <status>0x93</status>
+        <midino>0x25</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit1_Effect3]</group>
+        <key>enabled</key>
+        <status>0x90</status>
+        <midino>0x27</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit2_Effect3]</group>
+        <key>enabled</key>
+        <status>0x91</status>
+        <midino>0x27</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit3_Effect3]</group>
+        <key>enabled</key>
+        <status>0x92</status>
+        <midino>0x27</midino>
+        <minimum>1</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit4_Effect3]</group>
+        <key>enabled</key>
+        <status>0x93</status>
+        <midino>0x27</midino>
         <minimum>1</minimum>
       </output>
       <output>

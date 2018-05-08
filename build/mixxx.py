@@ -164,7 +164,7 @@ class MixxxBuild(object):
             if any(os.access(os.path.join(path, 'pkg-config'), os.X_OK) for path in os.environ["PATH"].split(os.pathsep)):
                 import subprocess
                 try:
-                    default_qtdir = subprocess.Popen(["pkg-config", "--variable=includedir", "Qt5Core"], stdout = subprocess.PIPE).communicate()[0].rstrip()
+                    default_qtdir = subprocess.Popen(["pkg-config", "--variable=includedir", "Qt5Core"], stdout = subprocess.PIPE).communicate()[0].rstrip().decode()
                 finally:
                     pass
 
@@ -174,7 +174,7 @@ class MixxxBuild(object):
 
         # Validate the specified qtdir exists
         if not os.path.isdir(qtdir):
-            logging.error("QT path does not exist or QT4 is not installed.")
+            logging.error("QT path (%s) does not exist or QT4 is not installed." % qtdir)
             logging.error(
                 "Please specify your QT path by running 'scons qtdir=[path]'")
             Script.Exit(1)
@@ -385,7 +385,7 @@ class MixxxBuild(object):
         if 'CC' in os.environ:
             self.env['CC'] = os.environ['CC']
         if 'CFLAGS' in os.environ:
-            self.env['CFLAGS'] += SCons.Util.CLVar(os.environ['CFLAGS'])
+            self.env['CCFLAGS'] += SCons.Util.CLVar(os.environ['CFLAGS'])
         if 'CXX' in os.environ:
             self.env['CXX'] = os.environ['CXX']
         if 'CXXFLAGS' in os.environ:

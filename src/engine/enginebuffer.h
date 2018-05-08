@@ -218,7 +218,7 @@ class EngineBuffer : public EngineObject {
     void readToCrossfadeBuffer(const int iBufferSize);
 
     // Reset buffer playpos and set file playpos.
-    void setNewPlaypos(double playpos);
+    void setNewPlaypos(double playpos, bool adjustingPhase);
 
     void processSyncRequests();
     void processSeek(bool paused);

@@ -23,7 +23,7 @@ double RateControl::m_dTemporaryRateChangeFine;
 double RateControl::m_dPermanentRateChangeCoarse;
 double RateControl::m_dPermanentRateChangeFine;
 int RateControl::m_iRateRampSensitivity;
-enum RateControl::RampMode RateControl::m_eRateRampMode;
+RateControl::RampMode RateControl::m_eRateRampMode;
 
 const double RateControl::kWheelMultiplier = 40.0;
 const double RateControl::kPausedJogMultiplier = 18.0;
@@ -669,6 +669,7 @@ void RateControl::resetRateTemp(void)
     setRateTemp(0.0);
 }
 
-void RateControl::notifySeek(double playPos) {
+void RateControl::notifySeek(double playPos, bool adjustingPhase) {
+    Q_UNUSED(adjustingPhase);
     m_pScratchController->notifySeek(playPos);
 }

@@ -30,8 +30,8 @@ class MetadataSourceTagLib: public MetadataSource {
             const TrackMetadata& trackMetadata) const override;
 
   private:
-    std::pair<ImportResult, QDateTime> afterImportSucceeded() const;
-    std::pair<ExportResult, QDateTime> afterExportSucceeded() const;
+    std::pair<ImportResult, QDateTime> afterImport(ImportResult importResult) const;
+    std::pair<ExportResult, QDateTime> afterExport(ExportResult exportResult) const;
 
     QString m_fileName;
     taglib::FileType m_fileType;

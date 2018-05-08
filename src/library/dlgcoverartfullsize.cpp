@@ -12,16 +12,16 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlay
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != nullptr) {
         connect(pCache, SIGNAL(coverFound(const QObject*,
-                                          const CoverInfo&, QPixmap, bool)),
+                                          const CoverInfoRelative&, QPixmap, bool)),
                 this, SLOT(slotCoverFound(const QObject*,
-                                          const CoverInfo&, QPixmap, bool)));
+                                          const CoverInfoRelative&, QPixmap, bool)));
     }
 
     setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(slotCoverMenu(QPoint)));
-    connect(m_pCoverMenu, SIGNAL(coverInfoSelected(const CoverInfo&)),
-            this, SLOT(slotCoverInfoSelected(const CoverInfo&)));
+    connect(m_pCoverMenu, SIGNAL(coverInfoSelected(const CoverInfoRelative&)),
+            this, SLOT(slotCoverInfoSelected(const CoverInfoRelative&)));
     connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
             this, SLOT(slotReloadCoverArt()));
 
@@ -93,7 +93,7 @@ void DlgCoverArtFullSize::slotTrackCoverArtUpdated() {
 }
 
 void DlgCoverArtFullSize::slotCoverFound(const QObject* pRequestor,
-                                         const CoverInfo& info, QPixmap pixmap,
+                                         const CoverInfoRelative& info, QPixmap pixmap,
                                          bool fromCache) {
     Q_UNUSED(info);
     Q_UNUSED(fromCache);
@@ -136,13 +136,13 @@ void DlgCoverArtFullSize::slotCoverFound(const QObject* pRequestor,
 // slots to handle signals from the context menu
 void DlgCoverArtFullSize::slotReloadCoverArt() {
     if (m_pLoadedTrack != nullptr) {
-        CoverInfo coverInfo =
+        auto coverInfo =
                 CoverArtUtils::guessCoverInfo(*m_pLoadedTrack);
         slotCoverInfoSelected(coverInfo);
     }
 }
 
-void DlgCoverArtFullSize::slotCoverInfoSelected(const CoverInfo& coverInfo) {
+void DlgCoverArtFullSize::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
     // qDebug() << "DlgCoverArtFullSize::slotCoverInfoSelected" << coverInfo;
     if (m_pLoadedTrack != nullptr) {
         m_pLoadedTrack->setCoverInfo(coverInfo);

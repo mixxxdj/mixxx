@@ -24,10 +24,10 @@ Variables:
             <Size>50f,50f</Size>
             <TooltipId>spinny</TooltipId>
             <Group><Variable name="group"/></Group>
-            <PathBackground scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_bg.svg</PathBackground>
-            <PathForeground scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_indicator.svg</PathForeground>
-            <PathMask scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_<Variable name="chanNum"/>_mask.svg</PathMask>
-            <PathGhost scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_indicator_ghost.svg</PathGhost>
+            <PathBackground scalemode="STRETCH_ASPECT">graphics/spinnyMini_bg.svg</PathBackground>
+            <PathForeground scalemode="STRETCH_ASPECT">graphics/spinnyMini_indicator.svg</PathForeground>
+            <PathMask scalemode="STRETCH_ASPECT">graphics/spinnyMini_<Variable name="chanNum"/>_mask.svg</PathMask>
+            <PathGhost scalemode="STRETCH_ASPECT">graphics/spinnyMini_indicator_ghost.svg</PathGhost>
             <ShowCover>false</ShowCover>
             <Connection>
               <ConfigKey persist="true">[Tango],spinnyWithCoverArt</ConfigKey>
@@ -41,10 +41,10 @@ Variables:
             <Size>50f,50f</Size>
             <TooltipId>spinny</TooltipId>
             <Group><Variable name="group"/></Group>
-            <PathBackground scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_bg.svg</PathBackground>
-            <PathForeground scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_indicator.svg</PathForeground>
-            <PathMask scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_<Variable name="chanNum"/>_mask.svg</PathMask>
-            <PathGhost scalemode="STRETCH_ASPECT">skin:/graphics/spinnyMini_indicator_ghost.svg</PathGhost>
+            <PathBackground scalemode="STRETCH_ASPECT">graphics/spinnyMini_bg.svg</PathBackground>
+            <PathForeground scalemode="STRETCH_ASPECT">graphics/spinnyMini_indicator.svg</PathForeground>
+            <PathMask scalemode="STRETCH_ASPECT">graphics/spinnyMini_<Variable name="chanNum"/>_mask.svg</PathMask>
+            <PathGhost scalemode="STRETCH_ASPECT">graphics/spinnyMini_indicator_ghost.svg</PathGhost>
             <ShowCover>true</ShowCover>
             <Connection>
               <ConfigKey persist="true">[Tango],spinnyWithCoverArt</ConfigKey>

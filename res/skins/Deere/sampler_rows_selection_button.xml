@@ -4,6 +4,7 @@
     <ObjectName><Variable name="ObjectName"/></ObjectName>
     <Size>80me,20f</Size>
     <NumberStates>1</NumberStates>
+    <RightClickIsPushButton>true</RightClickIsPushButton>
     <State>
       <Number>0</Number>
       <Text>[<Variable name="current"/>] Rows</Text>

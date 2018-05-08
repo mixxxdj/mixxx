@@ -60,9 +60,21 @@ void importCoverImageFromMP4Tag(QImage* pCoverArt, const TagLib::MP4::Tag& tag);
 QImage importCoverImageFromVorbisCommentPictureList(const TagLib::List<TagLib::FLAC::Picture*>& pictures);
 
 // Low-level tag read/write functions are exposed only for testing purposes!
+
+// Bitmask of optional tag fields that should NOT be read from the
+// common part of the tag through TagLib::Tag.
+// Usage: The write functions for ID3v2, MP4, APE and XiphComment tags
+// have specialized code for some or all of the corresponding tag fields
+// and the common implementation sometime doesn't work as expected.
+enum ReadTagMask {
+    READ_TAG_OMIT_NONE         = 0x00,
+    READ_TAG_OMIT_COMMENT      = 0x01,
+};
+
 void importTrackMetadataFromTag(
         TrackMetadata* pTrackMetadata,
-        const TagLib::Tag& tag);
+        const TagLib::Tag& tag,
+        int readMask = READ_TAG_OMIT_NONE);
 void importTrackMetadataFromID3v2Tag(
         TrackMetadata* pTrackMetadata,
         const TagLib::ID3v2::Tag& tag);

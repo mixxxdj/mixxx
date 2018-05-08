@@ -941,10 +941,10 @@
                     <selectknob/>
                 </options>
             </control>
-            <!-- Library encoder button push maps to ChooseItem -->
+            <!-- Library encoder button push maps to GoToItem -->
             <control>
                 <group>[Library]</group>
-                <key>ChooseItem</key>
+                <key>GoToItem</key>
                 <status>0x9F</status>
                 <midino>0x1F</midino>
                 <options>

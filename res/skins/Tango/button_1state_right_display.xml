@@ -24,8 +24,8 @@ Variables:
       <Number>0</Number>
       <Text><Variable name="state_0_text"/></Text>
       <Alignment><Variable name="Align"/></Alignment>
-      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_0_pressed"/></Pressed>
-      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_0_unpressed"/></Unpressed>
+      <Pressed scalemode="STRETCH_ASPECT">buttons/btn_<Variable name="state_0_pressed"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_<Variable name="state_0_unpressed"/></Unpressed>
     </State>
     <Connection>
       <ConfigKey><Variable name="ConfigKey"/></ConfigKey>

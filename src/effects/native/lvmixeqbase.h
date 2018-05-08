@@ -1,6 +1,7 @@
 #ifndef BESSELLVMIXEQBASE_H
 #define BESSELLVMIXEQBASE_H
 
+#include "effects/effectprocessor.h"
 #include "engine/enginefilterdelay.h"
 #include "util/defs.h"
 #include "util/math.h"
@@ -9,31 +10,31 @@
 
 static const int kMaxDelay = 3300; // allows a 30 Hz filter at 97346;
 static const int kRampDone = -1;
-static const unsigned int kStartupSamplerate = 44100;
 static const double kStartupLoFreq = 246;
 static const double kStartupHiFreq = 2484;
 
 
 template<class LPF>
-class LVMixEQEffectGroupState {
+class LVMixEQEffectGroupState : public EffectState {
   public:
-    LVMixEQEffectGroupState()
-        : m_oldLow(1.0),
+    LVMixEQEffectGroupState(const mixxx::EngineParameters& bufferParameters)
+        : EffectState(bufferParameters),
+          m_oldLow(1.0),
           m_oldMid(1.0),
           m_oldHigh(1.0),
           m_rampHoldOff(kRampDone),
-          m_oldSampleRate(kStartupSamplerate),
+          m_oldSampleRate(bufferParameters.sampleRate()),
           m_loFreq(kStartupLoFreq),
           m_hiFreq(kStartupHiFreq) {
-        m_pLowBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
-        m_pBandBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
-        m_pHighBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
+        m_pLowBuf = SampleUtil::alloc(bufferParameters.samplesPerBuffer());
+        m_pBandBuf = SampleUtil::alloc(bufferParameters.samplesPerBuffer());
+        m_pHighBuf = SampleUtil::alloc(bufferParameters.samplesPerBuffer());
 
-        m_low1 = new LPF(kStartupSamplerate, kStartupLoFreq);
-        m_low2 = new LPF(kStartupSamplerate, kStartupHiFreq);
+        m_low1 = new LPF(bufferParameters.sampleRate(), kStartupLoFreq);
+        m_low2 = new LPF(bufferParameters.sampleRate(), kStartupHiFreq);
         m_delay2 = new EngineFilterDelay<kMaxDelay>();
         m_delay3 = new EngineFilterDelay<kMaxDelay>();
-        setFilters(kStartupSamplerate, kStartupLoFreq, kStartupHiFreq);
+        setFilters(bufferParameters.sampleRate(), kStartupLoFreq, kStartupHiFreq);
     }
 
     virtual ~LVMixEQEffectGroupState() {

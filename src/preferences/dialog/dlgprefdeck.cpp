@@ -198,13 +198,13 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
             this, SLOT(slotRatePermFineSpinbox(double)));
 
     m_dRateTempCoarse = m_pConfig->getValue(ConfigKey("[Controls]", "RateTempLeft"),
-            kDefaultPermanentRateChangeCoarse);
-    m_dRateTempFine = m_pConfig->getValue(ConfigKey("[Controls]", "RateTempRight"),
-            kDefaultPermanentRateChangeFine);
-    m_dRatePermCoarse = m_pConfig->getValue(ConfigKey("[Controls]", "RatePermLeft"),
             kDefaultTemporaryRateChangeCoarse);
-    m_dRatePermFine = m_pConfig->getValue(ConfigKey("[Controls]", "RatePermRight"),
+    m_dRateTempFine = m_pConfig->getValue(ConfigKey("[Controls]", "RateTempRight"),
             kDefaultTemporaryRateChangeFine);
+    m_dRatePermCoarse = m_pConfig->getValue(ConfigKey("[Controls]", "RatePermLeft"),
+            kDefaultPermanentRateChangeCoarse);
+    m_dRatePermFine = m_pConfig->getValue(ConfigKey("[Controls]", "RatePermRight"),
+            kDefaultPermanentRateChangeFine);
 
     spinBoxTemporaryRateCoarse->setValue(m_dRateTempCoarse);
     spinBoxTemporaryRateFine->setValue(m_dRateTempFine);
@@ -456,7 +456,7 @@ void DlgPrefDeck::slotSetTrackTimeDisplay(QAbstractButton* b) {
 }
 
 void DlgPrefDeck::slotSetTrackTimeDisplay(double v) {
-    m_timeDisplayMode = static_cast<TrackTime::DisplayMode>(v);
+    m_timeDisplayMode = static_cast<TrackTime::DisplayMode>(static_cast<int>(v));
     m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(v));
     if (m_timeDisplayMode == TrackTime::DisplayMode::Remaining) {
         radioButtonRemaining->setChecked(true);

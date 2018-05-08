@@ -10,6 +10,7 @@ Variables:
 <Template>
   <SetVariable name="sourceType">auxiliary</SetVariable>
   <SetVariable name="group">[Auxiliary<Variable name="auxNum"/>]</SetVariable>
+  <SetVariable name="FxRack">1</SetVariable>
   <WidgetGroup>
     <ObjectName>AlignCenter</ObjectName>
     <Layout>horizontal</Layout>
@@ -42,32 +43,9 @@ Variables:
 
           <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
-          <WidgetGroup>
-            <ObjectName>VUMeterMicAux</ObjectName>
-            <Size>5f,29f</Size>
-            <Layout>stacked</Layout>
-            <Children>
-              <StatusLight>
-                <PathStatusLight scalemode="STRETCH">skin:/graphics/vumeter_mini_clipping_over.png</PathStatusLight>
-                <PathBack scalemode="STRETCH">skin:/graphics/vumeter_mini_clipping.png</PathBack>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
-                </Connection>
-              </StatusLight>
-              <VuMeter>
-                <PathVu scalemode="STRETCH">skin:/graphics/vumeter_mini_over.png</PathVu>
-                <PathBack scalemode="STRETCH">skin:/graphics/vumeter_mini.png</PathBack>
-                <Horizontal>false</Horizontal>
-                <PeakHoldSize>5</PeakHoldSize>
-                <PeakHoldTime>500</PeakHoldTime>
-                <PeakFallTime>50</PeakFallTime>
-                <PeakFallStep>2</PeakFallStep>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
-                </Connection>
-              </VuMeter>
-            </Children>
-          </WidgetGroup>
+          <Template src="skin:vumeter_mini.xml">
+            <SetVariable name="Size">5f,29f</SetVariable>
+          </Template>
 
           <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
@@ -90,10 +68,8 @@ Variables:
                 <SetVariable name="TooltipId">pfl</SetVariable>
                 <SetVariable name="ObjectName">PflButton</SetVariable>
                 <SetVariable name="Size">18f,18f</SetVariable>
-                <SetVariable name="state_0_pressed">pfl_off.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">pfl_off.svg</SetVariable>
-                <SetVariable name="state_1_pressed">pfl_on.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">pfl_on.svg</SetVariable>
+                <SetVariable name="state_0_icon">pfl_off.svg</SetVariable>
+                <SetVariable name="state_1_icon">pfl_on.svg</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
               </Template>
 
@@ -101,12 +77,9 @@ Variables:
                 <SetVariable name="TooltipId">orientation</SetVariable>
                 <SetVariable name="ObjectName">AuxXfaderButton</SetVariable>
                 <SetVariable name="Size">18f,15f</SetVariable>
-                <SetVariable name="state_0_pressed">aux_xfader_left.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">aux_xfader_left.svg</SetVariable>
-                <SetVariable name="state_1_pressed">aux_xfader_center.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">aux_xfader_center.svg</SetVariable>
-                <SetVariable name="state_2_pressed">aux_xfader_right.svg</SetVariable>
-                <SetVariable name="state_2_unpressed">aux_xfader_right.svg</SetVariable>
+                <SetVariable name="state_0_icon">aux_xfader_left.svg</SetVariable>
+                <SetVariable name="state_1_icon">aux_xfader_center.svg</SetVariable>
+                <SetVariable name="state_2_icon">aux_xfader_right.svg</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
               </Template>
             </Children>
@@ -128,12 +101,12 @@ Variables:
                 <Children>
                   <Template src="skin:fx_assign_button.xml">
                     <SetVariable name="Size">26f,16f</SetVariable>
-                    <SetVariable name="FxUnitNum">1</SetVariable>
+                    <SetVariable name="FxUnit">1</SetVariable>
                   </Template>
                     <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
                   <Template src="skin:fx_assign_button.xml">
                     <SetVariable name="Size">26f,16f</SetVariable>
-                    <SetVariable name="FxUnitNum">3</SetVariable>
+                    <SetVariable name="FxUnit">3</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup>
@@ -146,12 +119,12 @@ Variables:
                 <Children>
                   <Template src="skin:fx_assign_button.xml">
                     <SetVariable name="Size">26f,16f</SetVariable>
-                    <SetVariable name="FxUnitNum">2</SetVariable>
+                    <SetVariable name="FxUnit">2</SetVariable>
                   </Template>
                     <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
                   <Template src="skin:fx_assign_button.xml">
                     <SetVariable name="Size">26f,16f</SetVariable>
-                    <SetVariable name="FxUnitNum">4</SetVariable>
+                    <SetVariable name="FxUnit">4</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup>

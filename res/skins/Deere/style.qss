@@ -28,7 +28,7 @@
 }
 
 #CrossfaderContainer {
-  padding: 3px;
+  padding: 3px 3px 0px 3px;
 }
 
 #DeckTextRow {
@@ -131,9 +131,7 @@ TEST1 {
 }
 
 #SampleDecksContainer {
-  border-color: #222;
-  border-style: solid;
-  border-width: 1px 0px 2px 0px;
+  border: 0px;
 }
 
 #SamplerRows {
@@ -175,6 +173,10 @@ QTableView {
   selection-color: #D6D6D6;
   border: 1px solid #1A1A1A;
   gridline-color: red;
+}
+
+QTableView:focus, QTreeView:focus {
+  border: 1px solid #FF6600;
 }
 
 /* Colors aren't applied to selected items, define them manually */
@@ -635,6 +637,10 @@ QScrollBar::sub-line:horizontal, QScrollBar::sub-line:vertical {
   font-family: "Open Sans";
 }
 
+#WaveformSplitter {
+  background-color: #222;
+}
+
 WWidget, QLabel {
   font-family: "Open Sans";
   font-size: 8px;
@@ -653,7 +659,7 @@ WWidget, QLabel {
 }
 
 #OverviewRow {
-  qproperty-layoutSpacing: 5;
+  qproperty-layoutSpacing: 2;
 }
 /* End spacing for Deck overview row */
 
@@ -682,16 +688,21 @@ WWidget, QLabel {
 
 /* Start spacing for Deck controls row (transport, beatgrid, looping, hotcue, vinylcontrol) */
 
-#HotcueGrid, #HotcueGridExtended,
-#VinylControlsContainer {
-  background-color: #333;
+#HotcueGrid,
+#VinylControlsGrid {
   padding: 1px;
   qproperty-layoutSpacing: 2;
 }
 
-#HotcueGrid WWidgetGroup, #HotcueGridExtended WWidgetGroup,
-#VinylControlsContainer WWidgetGroup {
+#HotcueGrid WWidgetGroup,
+#VinylControlsGrid WWidgetGroup,
+#DeckControlsGrid WWidgetGroup {
   qproperty-layoutSpacing: 2;
+}
+
+#DeckControlsGrid {
+  qproperty-layoutSpacing: 2;
+  padding: 0px;
 }
 
 WBeatSpinBox {
@@ -970,7 +981,20 @@ WEffectSelector {
   WEffectSelector QAbstractItemView {
     color: #c1cabe;
     background-color: #201f1f;
-    selection-background-color: #184880;
+  }
+
+  WEffectSelector::item:!selected {
+    background-color: #201f1f;
+  }
+
+  WEffectSelector::item:selected {
+    background-color: #08080;
+  }
+
+  /* currently loaded effect */
+  WEffectSelector::checked {
+    color: #4495F4;
+    font-weight: bold;
   }
 
 #EffectKnob {
@@ -1077,6 +1101,7 @@ WNumberRate {
   qproperty-layoutAlignment: 'AlignTop';
   background-color: #333;
   margin: 0px 1.5px 3px 1.5px;
+  padding: 0px 0px 3px 0px;
 }
 
 #DeckMixer {
@@ -1137,12 +1162,10 @@ to avoid EQ kill buttons from shifting center of rest of column */
 
 #CondensedButtonContainerRight {
   qproperty-layoutAlignment: 'AlignLeft';
-  padding: 3px 0px 3px 9px;
 }
 
 #CondensedButtonContainerLeft {
   qproperty-layoutAlignment: 'AlignRight';
-  padding: 3px 9px 3px 0px;
 }
 
 #4DecksMixerCondensedMonoMeterLeft {

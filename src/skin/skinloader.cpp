@@ -56,6 +56,14 @@ QString SkinLoader::getSkinPath(const QString& skinName) const {
     return QString();
 }
 
+QPixmap SkinLoader::getSkinPreview(const QString& skinName) const {
+    QPixmap preview(getSkinPath(skinName) + "/preferences_preview_screenshot.png");
+    if (!preview.isNull()){
+        return preview;
+    }
+    return QPixmap(":/images/skin_preview_placeholder.png");
+}
+
 QString SkinLoader::getConfiguredSkinPath() const {
     QString configSkin = m_pConfig->getValueString(ConfigKey("[Config]", "ResizableSkin"));
 

@@ -35,6 +35,7 @@
             <Group><Variable name="group"/></Group>
             <SizePolicy>me,me</SizePolicy>
             <BgColor>#333333</BgColor>
+            <PlayedOverlayColor>#88000000</PlayedOverlayColor>
             <SignalHighColor>#FFE300</SignalHighColor>
             <SignalMidColor>#0099FF</SignalMidColor>
             <SignalLowColor>#FF0035</SignalLowColor>
@@ -76,19 +77,6 @@
         <Layout>horizontal</Layout>
         <ObjectName>ButtonGrid</ObjectName>
         <Children>
-
-          <Template src="skin:left_display_2state_button.xml">
-            <SetVariable name="TooltipId">cueset</SetVariable>
-            <SetVariable name="ObjectName">SamplerCueButton</SetVariable>
-            <SetVariable name="MinimumSize"><Variable name="WideButtonMinimumSize"/></SetVariable>
-            <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>
-            <SetVariable name="SizePolicy"><Variable name="WideButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text">CUE</SetVariable>
-            <SetVariable name="state_1_text">CUE</SetVariable>
-            <SetVariable name="left_connection_control"><Variable name="group"/>,cue_set</SetVariable>
-            <SetVariable name="display_connection_control"><Variable name="group"/>,cue_indicator</SetVariable>
-          </Template>
-
           <Template src="skin:left_right_1state_button.xml">
             <SetVariable name="TooltipId">beatsync_beatsync_tempo</SetVariable>
             <SetVariable name="ObjectName">BeatsyncButton</SetVariable>
@@ -117,9 +105,8 @@
             <SetVariable name="state_0_unpressed">icon/ic_eject_48px.svg</SetVariable>
             <SetVariable name="left_connection_control"><Variable name="group"/>,eject</SetVariable>
           </Template>
-
-          </Children>
-        </WidgetGroup>
+        </Children>
+      </WidgetGroup>
 
     </Children>
   </WidgetGroup>

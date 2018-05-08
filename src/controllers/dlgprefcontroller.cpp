@@ -21,26 +21,6 @@
 #include "preferences/usersettings.h"
 #include "util/version.h"
 
-namespace {
-
-QString nameForPreset(const PresetInfo& preset) {
-    QString name = preset.getName();
-    if (name.length() == 0) {
-        QFileInfo file(preset.getPath());
-        name = file.baseName();
-    }
-    return name;
-}
-
-bool presetInfoNameComparator(const PresetInfo &a, const PresetInfo &b) {
-    // the comparison function for PresetInfo objects
-    // this function is used to sort the list of
-    // presets in the combo box
-    return nameForPreset(a) < nameForPreset(b);
-}
-
-} // The anonymous namespace
-
 DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
                                      ControllerManager* controllerManager,
                                      UserSettingsPointer pConfig)
@@ -272,11 +252,10 @@ void DlgPrefController::enumeratePresets() {
     // Making the list of presets in the alphabetical order
     QList<PresetInfo> presets = pie->getPresetsByExtension(
         m_pController->presetExtension());
-    qSort(presets.begin(), presets.end(), presetInfoNameComparator);
 
     PresetInfo match;
     for (const PresetInfo& preset : presets) {
-        m_ui.comboBoxPreset->addItem(nameForPreset(preset), preset.getPath());
+        m_ui.comboBoxPreset->addItem(preset.getName(), preset.getPath());
         if (m_pController->matchPreset(preset)) {
             match = preset;
         }
@@ -284,7 +263,7 @@ void DlgPrefController::enumeratePresets() {
 
     // Jump to matching device in list if it was found.
     if (match.isValid()) {
-        int index = m_ui.comboBoxPreset->findText(nameForPreset(match));
+        int index = m_ui.comboBoxPreset->findText(match.getName());
         if (index != -1) {
             m_ui.comboBoxPreset->setCurrentIndex(index);
         }
@@ -387,6 +366,10 @@ void DlgPrefController::slotLoadPreset(int chosenIndex) {
 
     ControllerPresetPointer pPreset = ControllerPresetFileHandler::loadPreset(
         presetPath, ControllerManager::getPresetPaths(m_pConfig));
+
+    if (!pPreset) {
+        return;
+    }
 
     // Import the preset scripts to the user scripts folder.
     for (QList<ControllerPreset::ScriptFileInfo>::iterator it =

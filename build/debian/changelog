@@ -1,3 +1,9 @@
+mixxx (2.1.0-0ubuntu1) artful; urgency=medium
+
+  * New upstream release.
+
+ -- RJ Ryan <rryan@mixxx.org>  Sun, 15 Apr 2018 15:06:39 -0700
+
 mixxx (2.0.0-0ubuntu1) precise; urgency=medium
 
   * New upstream release.

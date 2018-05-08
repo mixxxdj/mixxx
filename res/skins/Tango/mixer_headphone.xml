@@ -56,8 +56,8 @@ Description:
             <TooltipId>headMix</TooltipId>
             <ObjectName>MixerbarSlider</ObjectName>
             <SizePolicy>min,min</SizePolicy>
-            <Handle>skin:/knobs_sliders/headMix_handle.svg</Handle>
-            <Slider>skin:/knobs_sliders/headMix_scale.svg</Slider>
+            <Handle>knobs_sliders/headMix_handle.svg</Handle>
+            <Slider>knobs_sliders/headMix_scale.svg</Slider>
             <Horizontal>true</Horizontal>
             <Connection>
               <ConfigKey>[Master],headMix</ConfigKey>
@@ -70,10 +70,8 @@ Description:
             <SetVariable name="TooltipId">headSplit</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">32f,24f</SetVariable>
-            <SetVariable name="state_0_unpressed">headSplit_off.svg</SetVariable>
-            <SetVariable name="state_0_pressed">headSplit_off.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">headSplit_on.svg</SetVariable>
-            <SetVariable name="state_1_pressed">headSplit_on.svg</SetVariable>
+            <SetVariable name="state_0_icon">headSplit_off.svg</SetVariable>
+            <SetVariable name="state_1_icon">headSplit_on.svg</SetVariable>
             <SetVariable name="ConfigKey">[Master],headSplit</SetVariable>
           </Template>
 
@@ -82,5 +80,9 @@ Description:
         </Children>
       </WidgetGroup><!-- /actual headphone controls -->
     </Children>
+    <Connection>
+      <ConfigKey>[Tango],master_mixer</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
   </WidgetGroup><!-- /Headphone Mixer -->
 </Template>

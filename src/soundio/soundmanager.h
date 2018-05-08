@@ -29,9 +29,9 @@
 #include "engine/sidechain/enginenetworkstream.h"
 #include "soundio/soundmanagerconfig.h"
 #include "soundio/sounddevice.h"
-#include "soundio/sounddeviceerror.h"
 #include "util/types.h"
 #include "util/cmdlineargs.h"
+
 
 class EngineMaster;
 class AudioOutput;
@@ -53,6 +53,7 @@ class SoundDeviceNotFound;
 #define SOUNDMANAGER_CONNECTING 1
 #define SOUNDMANAGER_CONNECTED 2
 
+
 class SoundManager : public QObject {
     Q_OBJECT
   public:
@@ -62,7 +63,8 @@ class SoundManager : public QObject {
     // Returns a list of all devices we've enumerated that match the provided
     // filterApi, and have at least one output or input channel if the
     // bOutputDevices or bInputDevices are set, respectively.
-    QList<SoundDevice*> getDeviceList(QString filterAPI, bool bOutputDevices, bool bInputDevices);
+    QList<SoundDevicePointer> getDeviceList(
+            QString filterAPI, bool bOutputDevices, bool bInputDevices) const;
 
     // Creates a list of sound devices
     void clearAndQueryDevices();
@@ -78,7 +80,7 @@ class SoundManager : public QObject {
     void setConfiguredDeckCount(int count);
     int getConfiguredDeckCount() const;
 
-    SoundDevice* getErrorDevice() const;
+    SoundDevicePointer getErrorDevice() const;
     QString getErrorDeviceName() const;
     QString getLastErrorMessage(SoundDeviceError err) const;
 
@@ -102,8 +104,8 @@ class SoundManager : public QObject {
                           const SINT iFramesPerBuffer);
 
 
-    void writeProcess();
-    void readProcess();
+    void writeProcess() const;
+    void readProcess() const;
 
     void registerOutput(AudioOutput output, AudioSource *src);
     void registerInput(AudioInput input, AudioDestination *dest);
@@ -149,12 +151,12 @@ class SoundManager : public QObject {
     bool m_paInitialized;
     unsigned int m_jackSampleRate;
 #endif
-    QList<SoundDevice*> m_devices;
+    QList<SoundDevicePointer> m_devices;
     QList<unsigned int> m_samplerates;
     QList<CSAMPLE*> m_inputBuffers;
 
     SoundManagerConfig m_config;
-    SoundDevice* m_pErrorDevice;
+    SoundDevicePointer m_pErrorDevice;
     QHash<AudioOutput, AudioSource*> m_registeredSources;
     QHash<AudioInput, AudioDestination*> m_registeredDestinations;
     ControlObject* m_pControlObjectSoundStatusCO;
@@ -166,8 +168,6 @@ class SoundManager : public QObject {
     int m_underflowUpdateCount;
     ControlProxy* m_pMasterAudioLatencyOverloadCount;
     ControlProxy* m_pMasterAudioLatencyOverload;
-
-    std::unique_ptr<SoundDeviceNotFound> m_soundDeviceNotFound;
 };
 
 #endif

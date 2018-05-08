@@ -10,7 +10,6 @@
 #include "library/browse/browsetablemodel.h"
 
 #include "sources/soundsourceproxy.h"
-#include "track/trackcache.h"
 #include "util/trace.h"
 
 
@@ -154,18 +153,10 @@ void BrowseThread::populateModel() {
 
         const QString filepath = fileIt.next();
         {
-            TrackCacheLocker cacheLocker(
-                    TrackCache::instance().lookupOrCreateTemporaryForFile(
-                            filepath, thisPath.token()));
-            auto pTrack = cacheLocker.getTrack();
-            if (!pTrack) {
-                qWarning() << "Skipping inaccessible file"
-                        << filepath;
-                continue;
-            }
-
-            // Import metadata from file
-            SoundSourceProxy(pTrack).updateTrackFromSource();
+            const TrackPointer pTrack =
+                    SoundSourceProxy::importTemporaryTrack(
+                            filepath,
+                            thisPath.token());
 
             item = new QStandardItem(pTrack->getFileName());
             item->setToolTip(item->text());

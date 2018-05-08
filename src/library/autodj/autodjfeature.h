@@ -48,6 +48,10 @@ class AutoDJFeature : public LibraryFeature {
 
     TreeItemModel* getChildModel();
 
+    bool hasTrackTable() override {
+        return true;
+    }
+
   public slots:
     void activate();
 

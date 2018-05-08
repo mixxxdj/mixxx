@@ -1,38 +1,38 @@
-	<!--
-	LateNight, Resizable skin for Mixxx 1.12
-	www.mixxx.org
-	Copyright (C) 2010-2013 jus <s.brandt@mixxx.org>, 2014 Owen Williams <owilliams@mixxx.org>
-	"LateNight" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
-	http://creativecommons.org/licenses/by-sa/3.0/
+  <!--
+  LateNight, Resizable skin for Mixxx 2.1.x
+  www.mixxx.org
+  Copyright (C) 2010-2013 jus <s.brandt@mixxx.org>, 2014 Owen Williams <owilliams@mixxx.org>
+  "LateNight" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
+  http://creativecommons.org/licenses/by-sa/3.0/
 
-	With every copy of the work, you are required to either provide a copy of the license it self
-	or a link (URI). Failure to do this is a failure to complete the terms of the CC license.
+  With every copy of the work, you are required to either provide a copy of the license it self
+  or a link (URI). Failure to do this is a failure to complete the terms of the CC license.
 
-	You are free:
-	to Share - to copy, distribute and transmit the work
-	to Remix - to adapt the work
+  You are free:
+  to Share - to copy, distribute and transmit the work
+  to Remix - to adapt the work
 
-	Under the following conditions:
-	Attribution - You must attribute the work in the manner specified by the author or licensor
-	(but not in any way that suggests that they endorse you or your use of the work).
-	A attribution should include the following: The name of the author and/or licensor,
-	the title of the work, the URL that is associated with the work.
+  Under the following conditions:
+  Attribution - You must attribute the work in the manner specified by the author or licensor
+  (but not in any way that suggests that they endorse you or your use of the work).
+  A attribution should include the following: The name of the author and/or licensor,
+  the title of the work, the URL that is associated with the work.
 
-	Share Alike - If you alter, transform, or build upon this work, you may distribute
-	the resulting work only under the same or similar license to this one.
+  Share Alike - If you alter, transform, or build upon this work, you may distribute
+  the resulting work only under the same or similar license to this one.
 
-	See CHANGELOG.txt for the list of changes.
+  See CHANGELOG.txt for the list of changes.
 
-	TODO: Remove "persist" attributes throughout the skin and confirm that declaring
-	them in the attributes section instead works.
-	-->
+  TODO: Remove "persist" attributes throughout the skin and confirm that declaring
+  them in the attributes section instead works.
+  -->
 
 <!DOCTYPE skin>
 <skin>
   <manifest>
     <title>LateNight</title>
     <author>owilliams</author>
-    <version>1.12.0.01</version>
+    <version>2.1.0.01</version>
     <description>A nighttime-compatible skin</description>
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
@@ -40,40 +40,69 @@
       <!-- Set skin defaults. -->
       <attribute config_key="[Master],num_decks">4</attribute>
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
-      <attribute persist="true" config_key="[MicrophoneRack],show">0</attribute>
       <attribute persist="true" config_key="[EffectRack1],show">0</attribute>
       <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
       <attribute persist="true" config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
       <attribute persist="true" config_key="[Master],show_eqs">1</attribute>
-      <attribute persist="true" config_key="[Master],show_mics">0</attribute>
-      <attribute persist="true" config_key="[Master],view_curpage">2</attribute>
+      <attribute persist="true" config_key="[Master],show_eq_kill_buttons">1</attribute>
       <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
-      <attribute persist="true" config_key="[Library],show_current">1</attribute>
       <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
+      <attribute persist="true" config_key="[Master],show_4effectunits">0</attribute>
       <attribute persist="true" config_key="[Spinny],show_spinnies">1</attribute>
       <attribute persist="true" config_key="[Library],show_library">1</attribute>
       <attribute persist="true" config_key="[Master],show_xfader">1</attribute>
+      <attribute persist="true" config_key="[Skin],8_hotcues">0</attribute>
       <attribute config_key="[Master],maximize_library">0</attribute>
+      <!--Disable hidden effect routing Buttons-->
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusLeft]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusCenter]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusRight]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusTalkover]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusLeft]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusCenter]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusRight]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusTalkover]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusLeft]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusCenter]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusRight]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusTalkover]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusLeft]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusCenter]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusRight]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusTalkover]_enable">0</attribute>
     </attributes>
   </manifest>
 
   <ObjectName>Mixxx</ObjectName>
-  <Style src="skin:style.qss"/>
+  <Style src="skin:style.qss" src-mac="skin:style-mac.qss"/>
 
   <!-- MinimumSize should not be an exact monitor resolution. There needs
   to be space for the title bar or other chrome at full screen -->
-  <MinimumSize>1270,666</MinimumSize>
+  <MinimumSize>1270,550</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>
 
   <Children>
     <SetVariable name="PotiMinAngle">-135</SetVariable>
     <SetVariable name="PotiMaxAngle">135</SetVariable>
+    <SetVariable name="PlayedOverlayColor">#bb000000</SetVariable>
     <!-- Define singletons as early in the skin as possible.  Note that the
     library doesn't actually appear here, it's just instantiated and configured.
     -->
+
+    <SingletonDefinition>
+      <ObjectName>WaveformsSingleton</ObjectName>
+      <Children>
+        <Template src="skin:waveforms_singleton.xml"/>
+      </Children>
+    </SingletonDefinition>
+
     <SingletonDefinition>
       <ObjectName>LibrarySingleton</ObjectName>
       <Children>
@@ -81,16 +110,9 @@
       </Children>
     </SingletonDefinition>
 
-    <SingletonDefinition>
-      <ObjectName>ClockRecLogo</ObjectName>
-      <Children>
-        <Template src="skin:toolbar_clock_rec_logo.xml"/>
-      </Children>
-    </SingletonDefinition>
-
     <WidgetGroup>
       <ObjectName>SkinContainer</ObjectName>
-      <Layout>horizontal</Layout>
+      <Layout>vertical</Layout>
       <SizePolicy>me,me</SizePolicy>
       <Children>
 
@@ -123,7 +145,7 @@
                         <Template src="skin:decks_right.xml"/>
                       </Children>
                     </WidgetGroup>
-                    <Template src="skin:fx_units_12.xml"/>
+                    <Template src="skin:fx.xml"/>
                     <Template src="skin:lower_half.xml"/>
                   </Children>
                 </WidgetGroup>
@@ -139,12 +161,13 @@
                 <SingletonContainer>
                   <ObjectName>LibrarySingleton</ObjectName>
                 </SingletonContainer>
-                <Template src="skin:toolbar_big_library.xml"/>
               </Children>
             </WidgetGroup>
 
           </Children>
         </WidgetStack>
+
+        <Template src="skin:toolbar.xml"/>
       </Children>
     </WidgetGroup>
   </Children>

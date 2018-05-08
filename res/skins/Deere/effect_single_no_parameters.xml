@@ -35,6 +35,7 @@ Variables:
             <EffectRack><Variable name="EffectRack"/></EffectRack>
             <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
             <Effect><Variable name="Effect"/></Effect>
+            <Size>120f,-1</Size>
           </EffectSelector>
 
         </Children>
@@ -82,6 +83,7 @@ Variables:
             <EffectRack><Variable name="EffectRack"/></EffectRack>
             <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
             <Effect><Variable name="Effect"/></Effect>
+            <Size>120f,-1</Size>
           </EffectSelector>
 
         </Children>

@@ -1269,15 +1269,6 @@
       <!-- Mixer main-->
       <control>
 	<group>[Master]</group>
-	<key>crossfader</key>
-	<status>0xB0</status>
-	<midino>0x1F</midino>
-	<options>
-	  <invert/>
-	</options>
-      </control>
-      <control>
-	<group>[Master]</group>
 	<key>headMix</key>
 	<status>0xB0</status>
 	<midino>0x22</midino>
@@ -1350,15 +1341,6 @@
 	</options>
       </control>
       <control>
-	<group>[Channel1]</group>
-	<key>volume</key>
-	<status>0xB0</status>
-	<midino>0x04</midino>
-	<options>
-	  <!-- soft-takeover /-->
-	</options>
-      </control>
-      <control>
 	<!-- on -->
 	<group>[Channel1]</group>
 	<key>pfl</key>
@@ -1411,15 +1393,6 @@
 	<key>filterLow</key>
 	<status>0xB0</status>
 	<midino>0x08</midino>
-	<options>
-	  <!-- soft-takeover /-->
-	</options>
-      </control>
-      <control>
-	<group>[Channel2]</group>
-	<key>volume</key>
-	<status>0xB0</status>
-	<midino>0x09</midino>
 	<options>
 	  <!-- soft-takeover /-->
 	</options>

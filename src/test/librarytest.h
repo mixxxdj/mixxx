@@ -7,14 +7,15 @@
 #include "library/trackcollection.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/db/dbconnectionpooled.h"
-#include "track/trackcache.h"
+#include "track/globaltrackcache.h"
 
 
 class LibraryTest : public MixxxTest,
-    public virtual /*implements*/ TrackCacheEvictor {
+    public virtual /*implements*/ GlobalTrackCacheSaver {
 
   public:
-    void onEvictingTrackFromCache(Track* pTrack) override {
+    void saveCachedTrack(Track* pTrack) noexcept override {
+        m_trackCollection.exportTrackMetadata(pTrack);
         m_trackCollection.saveTrack(pTrack);
     }
 
@@ -26,11 +27,10 @@ class LibraryTest : public MixxxTest,
           m_trackCollection(config()) {
         MixxxDb::initDatabaseSchema(m_dbConnection);
         m_trackCollection.connectDatabase(m_dbConnection);
-        TrackCache::createInstance(this);
+        GlobalTrackCache::createInstance(this);
     }
     ~LibraryTest() override {
-        TrackCache::instance().evictAll();
-        TrackCache::destroyInstance();
+        GlobalTrackCache::destroyInstance();
         m_trackCollection.disconnectDatabase();
     }
 

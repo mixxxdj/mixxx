@@ -4,7 +4,6 @@
 
 #include "library/dlgtrackinfo.h"
 #include "sources/soundsourceproxy.h"
-#include "track/track.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/dao/cue.h"
@@ -20,7 +19,6 @@ const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 
 
 DlgTrackInfo::DlgTrackInfo(QWidget* parent)
             : QDialog(parent),
-              m_pLoadedTrack(NULL),
               m_pTapFilter(new TapFilter(this, kFilterLength, kMaxInterval)),
               m_dLastTapedBpm(-1.),
               m_pWCoverArtLabel(new WCoverArtLabel(this)) {
@@ -90,11 +88,11 @@ void DlgTrackInfo::init() {
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
-        connect(pCache, SIGNAL(coverFound(const QObject*, const CoverInfo&, QPixmap, bool)),
-                this, SLOT(slotCoverFound(const QObject*, const CoverInfo&, QPixmap, bool)));
+        connect(pCache, SIGNAL(coverFound(const QObject*, const CoverInfoRelative&, QPixmap, bool)),
+                this, SLOT(slotCoverFound(const QObject*, const CoverInfoRelative&, QPixmap, bool)));
     }
-    connect(m_pWCoverArtLabel, SIGNAL(coverInfoSelected(const CoverInfo&)),
-            this, SLOT(slotCoverInfoSelected(const CoverInfo&)));
+    connect(m_pWCoverArtLabel, SIGNAL(coverInfoSelected(const CoverInfoRelative&)),
+            this, SLOT(slotCoverInfoSelected(const CoverInfoRelative&)));
     connect(m_pWCoverArtLabel, SIGNAL(reloadCoverArt()),
             this, SLOT(slotReloadCoverArt()));
 }
@@ -177,7 +175,7 @@ void DlgTrackInfo::populateFields(const Track& track) {
 
     reloadTrackBeats(track);
 
-    m_loadedCoverInfo = track.getCoverInfo();
+    m_loadedCoverInfo = track.getCoverInfoWithLocation();
     m_pWCoverArtLabel->setCoverArt(m_loadedCoverInfo, QPixmap());
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
@@ -227,7 +225,7 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
 }
 
 void DlgTrackInfo::slotCoverFound(const QObject* pRequestor,
-                                  const CoverInfo& info,
+                                  const CoverInfoRelative& info,
                                   QPixmap pixmap, bool fromCache) {
     Q_UNUSED(fromCache);
     if (pRequestor == this && m_pLoadedTrack &&
@@ -619,13 +617,11 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
         // We cannot reuse m_pLoadedTrack, because it might already been
         // modified and we want to read fresh metadata directly from the
         // file. Otherwise the changes in m_pLoadedTrack would be lost.
-        TrackPointer pTrack = Track::newTemporary(
+        TrackPointer pTrack = SoundSourceProxy::importTemporaryTrack(
                 m_pLoadedTrack->getFileInfo(),
                 m_pLoadedTrack->getSecurityToken());
-        if (pTrack) {
-            SoundSourceProxy(pTrack).updateTrackFromSource();
-            populateFields(*pTrack);
-        }
+        DEBUG_ASSERT(pTrack);
+        populateFields(*pTrack);
     }
 }
 

@@ -14,6 +14,8 @@ var loopEnabledDot = false;
 // Assign samplers on left side of the controller to left side of the crossfader
 // and samplers on right side of the controller to the right side of the crossfader
 var samplerCrossfaderAssign = true;
+// Toggle effect units between 1 & 3 on left and 2 & 4 on right when toggling decks
+var toggleEffectUnitsWithDecks = false;
 
 /**
  * Hercules P32 DJ controller script for Mixxx 2.1
@@ -112,6 +114,9 @@ P32.slipButton = new components.Button({
             // reconnecting the output works.
             P32.leftDeck.pfl.unshift();
             P32.leftDeck.toggle();
+            if (toggleEffectUnitsWithDecks) {
+                P32.leftDeck.effectUnit.toggle();
+            }
             this.pressedToToggleDeck = true;
         } else if (P32.rightDeck.isShifted && value === 127) {
             // PFL button is controlling effect unit assignment to headphones while
@@ -119,6 +124,9 @@ P32.slipButton = new components.Button({
             // reconnecting the output works.
             P32.rightDeck.pfl.unshift();
             P32.rightDeck.toggle();
+            if (toggleEffectUnitsWithDecks) {
+                P32.rightDeck.effectUnit.toggle();
+            }
             this.pressedToToggleDeck = true;
         } else {
             if (this.pressedToToggleDeck && value === 0) {

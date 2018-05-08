@@ -36,6 +36,7 @@ Description:
               <WidgetGroup><Size>1me,1me</Size></WidgetGroup>
 
               <Template src="skin:button_2state.xml">
+                <SetVariable name="TooltipId">skin_settings</SetVariable>
                 <SetVariable name="ObjectName">SkinSettingsClose</SetVariable>
                 <SetVariable name="Size">20f,24f</SetVariable>
                 <SetVariable name="ConfigKey">[Tango],skin_settings</SetVariable>
@@ -177,14 +178,14 @@ Description:
                         <SetVariable name="state_0_text">      Key/Key Match</SetVariable>
                         <SetVariable name="state_1_text"> &#10004; Key/Key Match</SetVariable>
                         <SetVariable name="width">182</SetVariable>
-                        <SetVariable name="Setting">[Tango],key_controls</SetVariable>
+                        <SetVariable name="Setting">[Tango],key_display_match</SetVariable>
                       </Template>
 
                       <Template src="skin:skin_settings_button_2state.xml">
                         <SetVariable name="state_0_text">      Rate/Key Adjustment Buttons</SetVariable>
                         <SetVariable name="state_1_text"> &#10004; Rate/Key Adjustment Buttons</SetVariable>
                         <SetVariable name="width">182</SetVariable>
-                        <SetVariable name="Setting">[Tango],rate_key_buttons</SetVariable>
+                        <SetVariable name="Setting">[Tango],rate_key_controls</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup>
@@ -199,6 +200,7 @@ Description:
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
                   <Label>
+                    <ObjectName>SkinSettingsLabel</ObjectName>
                     <MinimumSize>182,13</MinimumSize>
                     <MaximumSize>182,17</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
@@ -214,60 +216,48 @@ Description:
                       <Template src="skin:button_2state_persist.xml"><!-- Keylock -->
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
-                        <SetVariable name="state_0_pressed">keylock_off.svg</SetVariable>
-                        <SetVariable name="state_0_unpressed">keylock_off.svg</SetVariable>
-                        <SetVariable name="state_1_pressed">keylock_on.svg</SetVariable>
-                        <SetVariable name="state_1_unpressed">keylock_on.svg</SetVariable>
+                        <SetVariable name="state_0_icon">keylock_off.svg</SetVariable>
+                        <SetVariable name="state_1_icon">keylock_on.svg</SetVariable>
                         <SetVariable name="ConfigKey">[Tango],always_visible_keylock</SetVariable>
                       </Template>
 
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
-                        <SetVariable name="state_0_pressed">eject.svg</SetVariable>
-                        <SetVariable name="state_0_unpressed">eject.svg</SetVariable>
-                        <SetVariable name="state_1_pressed">eject_pressed.svg</SetVariable>
-                        <SetVariable name="state_1_unpressed">eject_pressed.svg</SetVariable>
+                        <SetVariable name="state_0_icon">eject.svg</SetVariable>
+                        <SetVariable name="state_1_icon">eject_pressed.svg</SetVariable>
                         <SetVariable name="ConfigKey">[Tango],always_visible_eject</SetVariable>
                       </Template>
 
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
-                        <SetVariable name="state_0_pressed">slipmode_hidden.svg</SetVariable>
-                        <SetVariable name="state_0_unpressed">slipmode_hidden.svg</SetVariable>
-                        <SetVariable name="state_1_pressed">slipmode_visible.svg</SetVariable>
-                        <SetVariable name="state_1_unpressed">slipmode_visible.svg</SetVariable>
+                        <SetVariable name="state_0_icon">slipmode_hidden.svg</SetVariable>
+                        <SetVariable name="state_1_icon">slipmode_visible.svg</SetVariable>
                         <SetVariable name="ConfigKey">[Tango],always_visible_slip_enabled</SetVariable>
                       </Template>
 
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
-                        <SetVariable name="state_0_pressed">repeat_hidden.svg</SetVariable>
-                        <SetVariable name="state_0_unpressed">repeat_hidden.svg</SetVariable>
-                        <SetVariable name="state_1_pressed">repeat_visible.svg</SetVariable>
-                        <SetVariable name="state_1_unpressed">repeat_visible.svg</SetVariable>
+                        <SetVariable name="state_0_icon">repeat_hidden.svg</SetVariable>
+                        <SetVariable name="state_1_icon">repeat_visible.svg</SetVariable>
                         <SetVariable name="ConfigKey">[Tango],always_visible_repeat</SetVariable>
                       </Template>
 
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
-                        <SetVariable name="state_0_pressed">xfader_center.svg</SetVariable>
-                        <SetVariable name="state_0_unpressed">xfader_center.svg</SetVariable>
-                        <SetVariable name="state_1_pressed">xfader_visible.svg</SetVariable>
-                        <SetVariable name="state_1_unpressed">xfader_visible.svg</SetVariable>
+                        <SetVariable name="state_0_icon">xfader_center.svg</SetVariable>
+                        <SetVariable name="state_1_icon">xfader_visible.svg</SetVariable>
                         <SetVariable name="ConfigKey">[Tango],always_visible_orientation</SetVariable>
                       </Template>
 
                       <Template src="skin:button_2state_persist.xml">
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
-                        <SetVariable name="state_0_pressed">quantize_hidden.svg</SetVariable>
-                        <SetVariable name="state_0_unpressed">quantize_hidden.svg</SetVariable>
-                        <SetVariable name="state_1_pressed">quantize_visible.svg</SetVariable>
-                        <SetVariable name="state_1_unpressed">quantize_visible.svg</SetVariable>
+                        <SetVariable name="state_0_icon">quantize_hidden.svg</SetVariable>
+                        <SetVariable name="state_1_icon">quantize_visible.svg</SetVariable>
                         <SetVariable name="ConfigKey">[Tango],always_visible_quantize</SetVariable>
                       </Template>
 
@@ -294,10 +284,8 @@ Description:
                           <Template src="skin:button_2state_persist.xml">
                             <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                             <SetVariable name="Size">16f,15f</SetVariable>
-                            <SetVariable name="state_0_pressed">stars_hidden.svg</SetVariable>
-                            <SetVariable name="state_0_unpressed">stars_hidden.svg</SetVariable>
-                            <SetVariable name="state_1_pressed">stars_visible.svg</SetVariable>
-                            <SetVariable name="state_1_unpressed">stars_visible.svg</SetVariable>
+                            <SetVariable name="state_0_icon">stars_hidden.svg</SetVariable>
+                            <SetVariable name="state_1_icon">stars_visible.svg</SetVariable>
                             <SetVariable name="ConfigKey">[Tango],stars</SetVariable>
                           </Template>
                         </Children>
@@ -365,7 +353,7 @@ Description:
                             <SizePolicy>me,f</SizePolicy>
                             <Text>!</Text>
                             <Connection>
-                              <ConfigKey persist="true">[Master],show_mixerr</ConfigKey>
+                              <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
                               <BindProperty>visible</BindProperty>
                             </Connection>
                           </Label>
@@ -401,7 +389,7 @@ Description:
                     <MaximumSize>182,17</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
                     <Connection>
-                      <ConfigKey persist="true">[Master],show_mixerr</ConfigKey>
+                      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
                       <Transform><Not/></Transform>
                       <BindProperty>visible</BindProperty>
                     </Connection>
@@ -410,7 +398,7 @@ Description:
                   <Template src="skin:skin_settings_button_2state.xml">
                     <SetVariable name="state_0_text">      EQ Knobs</SetVariable>
                     <SetVariable name="state_1_text"> &#10004; EQ Knobs</SetVariable>
-                    <SetVariable name="Setting">[Tango],eq_knobs</SetVariable>
+                    <SetVariable name="Setting">[Master],show_eqs</SetVariable>
                   </Template>
 
                 </Children>
@@ -432,7 +420,7 @@ Description:
                     <MaximumSize>182,17</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
                     <Connection>
-                      <ConfigKey persist="true">[Master],show_mixerr</ConfigKey>
+                      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
@@ -527,7 +515,7 @@ Description:
                           <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
                         </Children>
                         <Connection>
-                          <ConfigKey persist="true">[Master],show_mixerr</ConfigKey>
+                          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
                       </WidgetGroup><!-- /hint: enforced small cover/spinny with mixer-->
@@ -700,13 +688,13 @@ Description:
                             <SetVariable name="state_x_text"> [ 2 ] </SetVariable>
                             <SetVariable name="width">26</SetVariable>
                             <SetVariable name="stateX">0</SetVariable>
-                            <SetVariable name="Setting">[Tango],4_fx_units</SetVariable>
+                            <SetVariable name="Setting">[Tango],4_FxUnits</SetVariable>
                           </Template>
                           <Template src="skin:skin_settings_button_multi.xml">
                             <SetVariable name="state_x_text"> [ 4 ] </SetVariable>
                             <SetVariable name="width">26</SetVariable>
                             <SetVariable name="stateX">1</SetVariable>
-                            <SetVariable name="Setting">[Tango],4_fx_units</SetVariable>
+                            <SetVariable name="Setting">[Tango],4_FxUnits</SetVariable>
                           </Template>
                           <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
                         </Children>
@@ -739,7 +727,7 @@ Description:
                   <Template src="skin:skin_settings_button_2state.xml">
                     <SetVariable name="state_0_text">      Super Knobs</SetVariable>
                     <SetVariable name="state_1_text"> &#10004; Super Knobs</SetVariable>
-                    <SetVariable name="Setting">[Tango],fx_super_knob</SetVariable>
+                    <SetVariable name="Setting">[Master],show_superknobs</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup><!-- /Super Knobs -->
@@ -755,10 +743,10 @@ Description:
             </Children>
           </WidgetGroup><!-- /Effects -->
 
-          <Label><!-- Extras -->
+          <Label><!-- Misc -->
             <ObjectName>CategoryLabel</ObjectName>
             <Size>200f,21f</Size>
-            <Text>Extras</Text>
+            <Text>Misc</Text>
           </Label>
           <WidgetGroup>
             <ObjectName>SkinSettingsCategory</ObjectName>
@@ -810,13 +798,17 @@ Description:
                         </Connection>
                       </WidgetGroup>
 
-                      <Template src="skin:skin_settings_sampler_rows.xml"/>
+                      <!--Template src="skin:skin_settings_sampler_rows.xml"/-->
+
+                      <SingletonContainer>
+                        <ObjectName>SamplerRowsButton_Singleton</ObjectName>
+                      </SingletonContainer>
 
                     </Children>
                   </WidgetGroup><!-- /Sampler row buttons -->
                 </Children>
               </WidgetGroup><!-- /Sampler rows -->
-          
+
               <WidgetGroup><!-- Load/Save Sampler Bank -->
                 <ObjectName>AlignLeft</ObjectName>
                 <Layout>horizontal</Layout>
@@ -826,6 +818,7 @@ Description:
                 <Children>
                   <WidgetGroup><Size>14f,13me</Size></WidgetGroup>
                   <Template src="skin:button_1state.xml">
+                    <SetVariable name="TooltipId">LoadSamplerBank</SetVariable>
                     <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
                     <SetVariable name="Size">31f,17f</SetVariable>
                     <SetVariable name="state_0_text"> Load /</SetVariable>
@@ -836,6 +829,7 @@ Description:
                     <Text> / </Text>
                   </Label>
                   <Template src="skin:button_1state.xml">
+                    <SetVariable name="TooltipId">SaveSamplerBank</SetVariable>
                     <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
                     <SetVariable name="Size">110me,17f</SetVariable>
                     <SetVariable name="state_0_text"> Save Sampler Bank</SetVariable>
@@ -845,7 +839,7 @@ Description:
                 </Children>
               </WidgetGroup><!-- /Load/Save Sampler Bank -->
             </Children>
-          </WidgetGroup><!-- /Extras -->
+          </WidgetGroup><!-- /Misc -->
         </Children>
       </WidgetGroup><!-- /SkinSettings -->
     </Children>

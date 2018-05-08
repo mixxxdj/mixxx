@@ -10,28 +10,29 @@
 #include "util/types.h"
 
 
-struct TremoloGroupState {
+class TremoloState : public EffectState {
+  public:
+    TremoloState(const mixxx::EngineParameters& bufferParameters)
+        : EffectState(bufferParameters) {};
     double gain;
     unsigned int currentFrame;
     bool quantizeEnabled = false;
     bool tripletEnabled = false;
 };
 
-class TremoloEffect : public PerChannelEffectProcessor<TremoloGroupState> {
+class TremoloEffect : public EffectProcessorImpl<TremoloState> {
   public:
     TremoloEffect(EngineEffect* pEffect, const EffectManifest& manifest);
-    ~TremoloEffect() override;
 
     static QString getId();
     static EffectManifest getManifest();
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,
-                        TremoloGroupState* pState,
+                        TremoloState* pState,
                         const CSAMPLE* pInput, CSAMPLE* pOutput,
-                        const unsigned int numSamples,
-                        const unsigned int sampleRate,
-                        const EffectProcessor::EnableState enableState,
+                        const mixxx::EngineParameters& bufferParameters,
+                        const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatures) override;
 
   private:

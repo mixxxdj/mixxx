@@ -130,9 +130,15 @@ QString BrowseTableModel::getTrackLocation(const QModelIndex& index) const {
 }
 
 TrackId BrowseTableModel::getTrackId(const QModelIndex& index) const {
-    Q_UNUSED(index);
-    // We can't implement this as it stands.
-    return TrackId();
+    TrackPointer pTrack = getTrack(index);
+    if (pTrack) {
+        return pTrack->getId();
+    } else {
+        qWarning()
+                << "Track is not available in library"
+                << getTrackLocation(index);
+        return TrackId();
+    }
 }
 
 const QLinkedList<int> BrowseTableModel::getTrackRows(TrackId trackId) const {
@@ -339,10 +345,11 @@ void BrowseTableModel::trackLoaded(QString group, TrackPointer pTrack) {
             }
         }
         if (pTrack) {
+            QString trackLocation = pTrack->getLocation();
             for (int row = 0; row < rowCount(); ++row) {
                 QModelIndex i = index(row, COLUMN_PREVIEW);
                 QString location = getTrackLocation(i);
-                if (location == pTrack->getLocation()) {
+                if (location == trackLocation) {
                     QStandardItem* item = itemFromIndex(i);
                     item->setText("1");
                     break;

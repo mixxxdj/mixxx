@@ -73,8 +73,11 @@ QString computeResourcePath() {
 }
 
 QString computeSettingsPath(const QString& configFilename) {
-    QFileInfo configFileInfo(configFilename);
-    return configFileInfo.absoluteDir().absolutePath();
+    if (!configFilename.isEmpty()) {
+        QFileInfo configFileInfo(configFilename);
+        return configFileInfo.absoluteDir().absolutePath();
+    }
+    return QString();
 }
 
 }  // namespace
