@@ -52,6 +52,8 @@ class EffectRack : public QObject {
         return m_group;
     }
 
+    QDomElement toXml(QDomDocument* doc) const;
+
   public slots:
     void slotClearRack(double v);
 
@@ -70,7 +72,6 @@ class EffectRack : public QObject {
 
   protected:
     void addEffectChainSlotInternal(EffectChainSlotPointer pChainSlot);
-    virtual EffectChainPointer makeEmptyChain();
 
     // We could make accessors for these for sub-classes. Doesn't really matter.
     EffectsManager* m_pEffectsManager;

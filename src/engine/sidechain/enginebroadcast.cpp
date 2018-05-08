@@ -17,10 +17,11 @@
 #include "broadcast/defs_broadcast.h"
 #include "control/controlpushbutton.h"
 #include "encoder/encoder.h"
-#include "encoder/encodermp3.h"
-#include "encoder/encodervorbis.h"
+#include "encoder/encoderbroadcastsettings.h"
 #include "mixer/playerinfo.h"
 #include "preferences/usersettings.h"
+#include "recording/defs_recording.h"
+
 #include "track/track.h"
 
 static const int kConnectRetries = 30;
@@ -38,6 +39,7 @@ EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig)
           m_iShoutStatus(0),
           m_iShoutFailures(0),
           m_settings(pConfig),
+          m_pConfig(pConfig),
           m_encoder(nullptr),
           m_pMasterSamplerate(new ControlProxy("[Master]", "samplerate")),
           m_custom_metadata(false),
@@ -147,12 +149,10 @@ void EngineBroadcast::updateFromPreferences() {
 
     setState(NETWORKSTREAMWORKER_STATE_BUSY);
 
-    // delete m_encoder if it has been initialized (with maybe) different
-    // bitrate
+    // Delete m_encoder if it has been initialized (with maybe) different bitrate.
     // delete m_encoder calls write() check if it will be exit early
     DEBUG_ASSERT(m_iShoutStatus != SHOUTERR_CONNECTED);
-    delete m_encoder;
-    m_encoder = nullptr;
+    m_encoder.reset();
 
     m_format_is_mp3 = false;
     m_format_is_ov = false;
@@ -364,10 +364,15 @@ void EngineBroadcast::updateFromPreferences() {
     }
 
     // Initialize m_encoder
+    EncoderBroadcastSettings broadcastSettings(m_settings);
     if (m_format_is_mp3) {
-        m_encoder = new EncoderMp3(this);
+        m_encoder = EncoderFactory::getFactory().getNewEncoder(
+            EncoderFactory::getFactory().getFormatFor(ENCODING_MP3), m_pConfig, this);
+        m_encoder->setEncoderSettings(broadcastSettings);
     } else if (m_format_is_ov) {
-        m_encoder = new EncoderVorbis(this);
+        m_encoder = EncoderFactory::getFactory().getNewEncoder(
+            EncoderFactory::getFactory().getFormatFor(ENCODING_OGG), m_pConfig, this);
+        m_encoder->setEncoderSettings(broadcastSettings);
     } else {
         qDebug() << "**** Unknown Encoder Format";
         setState(NETWORKSTREAMWORKER_STATE_ERROR);
@@ -375,14 +380,15 @@ void EngineBroadcast::updateFromPreferences() {
         return;
     }
 
-    if (m_encoder->initEncoder(iBitrate, iMasterSamplerate) < 0) {
+    QString errorMsg;
+    if(m_encoder->initEncoder(iMasterSamplerate, errorMsg) < 0) {
         // e.g., if lame is not found
         // init m_encoder itself will display a message box
         qDebug() << "**** Encoder init failed";
+        qWarning() << errorMsg;
         // delete m_encoder calls write() make sure it will be exit early
         DEBUG_ASSERT(m_iShoutStatus != SHOUTERR_CONNECTED);
-        delete m_encoder;
-        m_encoder = nullptr;
+        m_encoder.reset();
         setState(NETWORKSTREAMWORKER_STATE_ERROR);
         m_lastErrorStr = "Encoder error";
         return;
@@ -518,8 +524,7 @@ bool EngineBroadcast::processConnect() {
     shout_close(m_pShout);
     // delete m_encoder calls write() check if it will be exit early
     DEBUG_ASSERT(m_iShoutStatus != SHOUTERR_CONNECTED);
-    delete m_encoder;
-    m_encoder = nullptr;
+    m_encoder.reset();
     if (m_pBroadcastEnabled->toBool()) {
         m_pStatusCO->forceSet(STATUSCO_FAILURE);
     } else {
@@ -542,12 +547,12 @@ bool EngineBroadcast::processDisconnect() {
     }
     // delete m_encoder calls write() check if it will be exit early
     DEBUG_ASSERT(m_iShoutStatus != SHOUTERR_CONNECTED);
-    delete m_encoder;
-    m_encoder = nullptr;
+    m_encoder.reset();
     return disconnected;
+
 }
 
-void EngineBroadcast::write(unsigned char *header, unsigned char *body,
+void EngineBroadcast::write(const unsigned char *header, const unsigned char *body,
                             int headerLen, int bodyLen) {
     setFunctionCode(7);
     if (!m_pShout || m_iShoutStatus != SHOUTERR_CONNECTED) {
@@ -576,6 +581,22 @@ void EngineBroadcast::write(unsigned char *header, unsigned char *body,
             tryReconnect();
         }
     }
+}
+// These are not used for streaming, but the interface requires them
+int EngineBroadcast::tell() {
+    if (!m_pShout) {
+        return -1;
+    }
+    return -1;
+}
+// These are not used for streaming, but the interface requires them
+void EngineBroadcast::seek(int pos) {
+    Q_UNUSED(pos)
+    return;
+}
+// These are not used for streaming, but the interface requires them
+int EngineBroadcast::filelen() {
+    return 0;
 }
 
 bool EngineBroadcast::writeSingle(const unsigned char* data, size_t len) {

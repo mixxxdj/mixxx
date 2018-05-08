@@ -25,6 +25,19 @@ const QString AutoDJFeature::m_sAutoDJViewName = QString("Auto DJ");
 
 namespace {
     const int kMaxRetrieveAttempts = 3;
+
+    int findOrCrateAutoDjPlaylistId(PlaylistDAO& playlistDAO) {
+        int playlistId = playlistDAO.getPlaylistIdFromName(AUTODJ_TABLE);
+        // If the AutoDJ playlist does not exist yet then create it.
+        if (playlistId < 0) {
+            playlistId = playlistDAO.createPlaylist(
+                    AUTODJ_TABLE, PlaylistDAO::PLHT_AUTO_DJ);
+            VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
+                qWarning() << "Failed to create Auto DJ playlist!";
+            }
+        }
+        return playlistId;
+    }
 } // anonymous namespace
 
 AutoDJFeature::AutoDJFeature(Library* pLibrary,
@@ -36,22 +49,10 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
           m_pLibrary(pLibrary),
           m_pTrackCollection(pTrackCollection),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
-          m_iAutoDJPlaylistId(-1),
+          m_iAutoDJPlaylistId(findOrCrateAutoDjPlaylistId(m_playlistDao)),
           m_pAutoDJProcessor(NULL),
           m_pAutoDJView(NULL),
-          m_autoDjCratesDao(pTrackCollection, pConfig) {
-    m_iAutoDJPlaylistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
-    // If the AutoDJ playlist does not exist yet then create it.
-    if (m_iAutoDJPlaylistId < 0) {
-        m_iAutoDJPlaylistId = m_playlistDao.createPlaylist(
-                AUTODJ_TABLE, PlaylistDAO::PLHT_AUTO_DJ);
-        VERIFY_OR_DEBUG_ASSERT(m_iAutoDJPlaylistId >= 0) {
-            qWarning() << "Failed to create Auto DJ playlist!";
-        }
-    }
-    // The AutoDJCratesDAO expects that the dedicated AutoDJ playlist
-    // has already been created.
-    m_autoDjCratesDao.initialize();
+          m_autoDjCratesDao(m_iAutoDJPlaylistId, pTrackCollection, pConfig) {
 
     qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
     m_pAutoDJProcessor = new AutoDJProcessor(
@@ -215,17 +216,20 @@ void AutoDJFeature::slotAddRandomTrack() {
     if (m_iAutoDJPlaylistId >= 0) {
         TrackPointer pRandomTrack;
         for (int failedRetrieveAttempts = 0;
-                !pRandomTrack &&
-                (failedRetrieveAttempts < 2 * kMaxRetrieveAttempts); // 2 rounds
+                !pRandomTrack && (failedRetrieveAttempts < 2 * kMaxRetrieveAttempts); // 2 rounds
                 ++failedRetrieveAttempts) {
             TrackId randomTrackId;
-            if (failedRetrieveAttempts < kMaxRetrieveAttempts) {
-                // 1st round: from crates
-                randomTrackId = m_autoDjCratesDao.getRandomTrackId();
+            if (m_crateList.isEmpty()) {
+                // Fetch Track from Library since we have no assigned crates
+                randomTrackId = m_autoDjCratesDao.getRandomTrackIdFromLibrary(
+                        m_iAutoDJPlaylistId);
             } else {
-                // 2nd round: from whole library
-                randomTrackId = m_autoDjCratesDao.getRandomTrackIdFromLibrary(m_iAutoDJPlaylistId);
+                // Fetch track from crates.
+                // We do not fall back to Library if this fails because this
+                // may add banned tracks
+                randomTrackId = m_autoDjCratesDao.getRandomTrackId();
             }
+
             if (randomTrackId.isValid()) {
                 pRandomTrack = m_pTrackCollection->getTrackDAO().getTrack(randomTrackId);
                 VERIFY_OR_DEBUG_ASSERT(pRandomTrack) {

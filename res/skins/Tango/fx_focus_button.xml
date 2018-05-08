@@ -1,0 +1,39 @@
+<!--
+Description:
+  A button that displays focus state of an effect slot.
+  Left-click sets focus, right-click removes focus from all effects
+Variables:
+  fxGroup   : [EffectRack1_EffectUnitN]
+  Effectnum : effect number
+-->
+<Template>
+  <PushButton>
+    <TooltipId>EffectSlot_focus</TooltipId>
+    <ObjectName>EffectFocusButton</ObjectName>
+    <Size>11f,30me</Size>
+    <NumberStates>2</NumberStates>
+    <RightClickIsPushButton>true</RightClickIsPushButton>
+    <State>
+      <Number>0</Number>
+    </State>
+    <State>
+      <Number>1</Number>
+    </State>
+    <Connection>
+      <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
+      <ButtonState>LeftButton</ButtonState>
+      <EmitOnDownPress>true</EmitOnDownPress>
+      <Transform><IsEqual><Variable name="EffectNum"/></IsEqual></Transform>
+    </Connection>
+    <Connection>
+      <ConfigKey>[<Variable name="fxGroup"/>],focused_effect</ConfigKey>
+      <ButtonState>RightButton</ButtonState>
+      <EmitOnDownPress>true</EmitOnDownPress>
+      <Transform><IsEqual><Variable name="EffectNum"/></IsEqual><Not/></Transform>
+    </Connection>
+    <Connection>
+      <ConfigKey>[<Variable name="fxGroup"/>],show_focus</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </PushButton>
+</Template>

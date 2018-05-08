@@ -30,6 +30,9 @@ void Tooltips::addStandardTooltips() {
     QString leftClick = tr("Left-click");
     QString rightClick = tr("Right-click");
     QString scrollWheel = tr("Scroll-wheel");
+    QString loopActive = "(" + tr("loop active") + ")";
+    QString loopInactive = "(" + tr("loop inactive") + ")";
+    QString effectsWithinChain = tr("Effects within the chain must be enabled to hear them.");
 
     add("waveform_overview")
             << tr("Waveform Overview")
@@ -508,6 +511,11 @@ void Tooltips::addStandardTooltips() {
             << tr("Record Mix")
             << tr("Toggle mix recording.");
 
+    // Status displays and toggle buttons
+    add("recording_duration")
+            << tr("Recording Duration")
+            << tr("Displays the duration of the running recording.");
+
     // For legacy reasons also add tooltips for "shoutcast_enabled".
     for (const char* key : {"shoutcast_enabled", "broadcast_enabled"}) {
         add(key)
@@ -548,13 +556,21 @@ void Tooltips::addStandardTooltips() {
 
     add("loop_in")
             << tr("Loop-In Marker")
-            << tr("Sets the deck loop-in position to the current play position.")
-            << quantizeSnap;
+            << QString("%1: %2").arg(leftClick + " " + loopInactive,
+                      tr("Sets the track Loop-In Marker to the current play position."))
+            << quantizeSnap
+            << QString("%1: %2").arg(leftClick + " " + loopActive,
+                      tr("Press and hold to move Loop-In Marker."))
+            << QString("%1: %2").arg(rightClick, tr("Jump to Loop-In Marker."));
 
     add("loop_out")
             << tr("Loop-Out Marker")
-            << tr("Sets the deck loop-out position to the current play position.")
-            << quantizeSnap;
+            << QString("%1: %2").arg(leftClick + " " + loopInactive,
+                      tr("Sets the track Loop-Out Marker to the current play position."))
+            << quantizeSnap
+            << QString("%1: %2").arg(leftClick + " " + loopActive,
+                      tr("Press and hold to move Loop-Out Marker."))
+            << QString("%1: %2").arg(rightClick, tr("Jump to Loop-Out Marker."));
 
     add("loop_halve")
             << tr("Loop Halve")
@@ -565,31 +581,54 @@ void Tooltips::addStandardTooltips() {
             << tr("Loop Double")
             << tr("Doubles the current loop's length by moving the end marker.");
 
+    add("beatloop_size")
+            << tr("Beatloop Size")
+            << tr("Select the size of the loop in beats to set with the Beatloop button.")
+            << tr("Changing this resizes the loop if the loop already matches this size.");
+
+    add("beatloop_halve")
+            << tr("Halve the size of an existing beatloop, or halve the size of the next beatloop set with the Beatloop button.");
+
+    add("beatloop_double")
+            << tr("Double the size of an existing beatloop, or double the size of the next beatloop set with the Beatloop button.");
+
     //beatloop and beatlooproll
-    add("beatloop")
+    add("beatloop_activate")
             << tr("Beatloop")
-            << QString("%1: %2").arg(leftClick, tr("Setup a loop over the set number of beats."))
+            << QString("%1: %2").arg(leftClick, tr("Start a loop over the set number of beats."))
             << quantizeSnap
-            << QString("%1: %2").arg(rightClick, tr("Temporarily setup a rolling loop over the set number of beats."))
+            << QString("%1: %2").arg(rightClick, tr("Temporarily enable a rolling loop over the set number of beats."))
             << tr("Playback will resume where the track would have been if it had not entered the loop.");
 
-    add("beatjump")
-            << tr("Beatjump")
-            << QString("%1: %2").arg(leftClick, tr("Jump forward or backward by the set number of beats."));
+    add("beatjump_size")
+            << tr("Beatjump/Loop Move Size")
+            << tr("Select the number of beats to jump or move the loop with the Beatjump Forward/Backward buttons.");
 
-    add("loop_move")
-            << tr("Loop Move")
-            << QString("%1: %2").arg(leftClick, tr("Adjust the loop in and out points by the set number of beats."));
+    add("beatjump_forward")
+            << tr("Beatjump Forward")
+            << QString("%1: %2").arg(leftClick + " " + loopInactive, tr("Jump forward by the set number of beats."))
+            << QString("%1: %2").arg(leftClick + " " + loopActive, tr("Move the loop forward by the set number of beats."))
+            << QString("%1: %2").arg(rightClick + " " + loopInactive, tr("Jump forward by 1 beat."))
+            << QString("%1: %2").arg(rightClick + " " + loopActive, tr("Move the loop forward by 1 beat."));
+
+    add("beatjump_backward")
+            << tr("Beatjump Backward")
+            << QString("%1: %2").arg(leftClick + " " + loopInactive, tr("Jump backward by the set number of beats."))
+            << QString("%1: %2").arg(leftClick + " " + loopActive, tr("Move the loop backward by the set number of beats."))
+            << QString("%1: %2").arg(rightClick + " " + loopInactive, tr("Jump backward by 1 beat."))
+            << QString("%1: %2").arg(rightClick + " " + loopActive, tr("Move the loop backward by 1 beat."));
 
     add("loop_exit")
             << tr("Loop Exit")
             << tr("Turns the current loop off.")
             << tr("Works only if Loop-In and Loop-Out marker are set.");
 
-    add("reloop_exit")
-            << tr("Reloop/Exit")
-            << tr("Toggles the current loop on or off.")
-            << tr("Works only if Loop-In and Loop-Out marker are set.");
+    add("reloop_toggle")
+            << tr("Reloop")
+            << QString("%1: %2").arg(leftClick, tr("Toggles the current loop on or off."))
+            << tr("If the loop is ahead of the current position, looping will start when the loop is reached.")
+            << tr("Works only if Loop-In and Loop-Out Marker are set.")
+            << QString("%1: %2").arg(rightClick, tr("Enable loop, jump to Loop-In Marker, and stop playback."));
 
     add("slip_mode")
             << tr("Slip Mode")
@@ -598,8 +637,8 @@ void Tooltips::addStandardTooltips() {
 
     add("track_time")
             << tr("Track Time")
-            << tr("Displays the elapsed or remaining time of the track loaded.")
-            << tr("Click to toggle between time elapsed/remaining time.");
+            << tr("Displays the elapsed and/or remaining time of the track loaded.")
+            << tr("Click to toggle between time elapsed/remaining time/both.");
 
     add("track_duration")
             << tr("Track Duration")
@@ -660,21 +699,24 @@ void Tooltips::addStandardTooltips() {
 
     // Effect Unit Controls
     add("EffectUnit_clear")
-            << tr("Clear Unit")
-            << tr("Clear effect unit.");
+            << tr("Clear Chain")
+            << tr("Clear effect chain.");
+
+    add("EffectUnit_show_parameters")
+            << tr("Show Effect Parameters")
+            << tr("Show/hide parameters for effects in this chain.");
 
     add("EffectUnit_enabled")
-            << tr("Toggle Unit")
-            << tr("Enable or disable effect processing.");
-
+            << tr("Toggle Chain")
+            << tr("Enable or disable this whole effect chain.");
     add("EffectUnit_mix")
             << tr("Dry/Wet")
-            << tr("Adjust the balance between the original (dry) and processed (wet) signal.")
+            << tr("Adjust the balance between the original (dry) and processed (wet) signal for the whole effect chain.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("EffectUnit_super1")
             << tr("Super Knob")
-            << tr("Super Knob (control linked effect parameters).")
+            << tr("Controls the Meta Knob of all effects in this chain together.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("EffectUnit_insertion_type")
@@ -683,19 +725,50 @@ void Tooltips::addStandardTooltips() {
 
     add("EffectUnit_next_chain")
             << tr("Next Chain")
-            << tr("Next chain preset.");
+            << tr("Next effect chain preset.");
 
     add("EffectUnit_prev_chain")
             << tr("Previous Chain")
-            << tr("Previous chain preset.");
+            << tr("Previous effect chain preset.");
 
     add("EffectUnit_chain_selector")
             << tr("Next/Previous Chain")
-            << tr("Next or previous chain preset.");
+            << tr("Next or previous effect chain preset.");
 
     add("EffectUnit_group_enabled")
             << tr("Assign Effect Chain")
-            << tr("Assign effect unit to the channel output.");
+            << tr("Assign this effect chain to the channel output.")
+            << effectsWithinChain;
+
+    add("EffectUnit_headphones_enabled")
+            << tr("Assign Effect Chain")
+            << tr("Route the headphone channel through this effect chain.")
+            << effectsWithinChain;
+
+    add("EffectUnit_master_enabled")
+            << tr("Assign Effect Chain")
+            << tr("Route the master mix through this effect chain.")
+            << effectsWithinChain;
+
+    add("EffectUnit_deck_enabled")
+            << tr("Assign Effect Chain")
+            << tr("Route this deck through the indicated effect chain.")
+            << effectsWithinChain;
+
+    add("EffectUnit_sampler_enabled")
+            << tr("Assign Effect Chain")
+            << tr("Route this sampler through the indicated effect chain.")
+            << effectsWithinChain;
+
+    add("EffectUnit_microphone_enabled")
+            << tr("Assign Effect Chain")
+            << tr("Route this microphone through the indicated effect chain.")
+            << effectsWithinChain;
+
+    add("EffectUnit_auxiliary_enabled")
+            << tr("Assign Effect Chain")
+            << tr("Route this auxiliary input through the indicated effect chain.")
+            << effectsWithinChain;
 
     // Effect Slot Controls
     add("EffectSlot_clear")
@@ -703,8 +776,8 @@ void Tooltips::addStandardTooltips() {
             << tr("Clear the current effect.");
 
     add("EffectSlot_enabled")
-            << tr("Toggle")
-            << tr("Toggle the current effect.");
+            << tr("Enable Effect")
+            << tr("This effect chain must also be assigned to a deck or other sound source to hear the effect.");
 
     add("EffectSlot_next_effect")
             << tr("Next")
@@ -718,18 +791,34 @@ void Tooltips::addStandardTooltips() {
             << tr("Next or Previous")
             << tr("Switch to either the next or previous effect.");
 
+    add("EffectSlot_metaknob")
+            << tr("Meta Knob")
+            << tr("Controls linked parameters of this effect")
+            << QString("%1: %2").arg(rightClick, resetToDefault);
+
+    add("EffectSlot_focus")
+            << tr("Effect Focus Button")
+            << QString("%1: %2").arg(leftClick, tr("Focuses this effect."))
+            << QString("%1: %2").arg(rightClick, tr("Unfocuses this effect."))
+            << tr("Refer to the web page on the Mixxx wiki for your controller for more information.");
+
     add("EffectSlot_parameter")
             << tr("Effect Parameter")
             << tr("Adjusts a parameter of the effect.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("EffectSlot_parameter_link_type")
-            << tr("Super Knob Mode")
-            << tr("Set how linked effect parameters change when turning the Super Knob.");
+            << tr("Meta Knob Link")
+            << tr("Set how this parameter is linked to the effect's Meta Knob.")
+            << tr("Empty bar: not linked")
+            << tr("Solid bar: moves with Meta Knob")
+            << tr("Left side: moves with left half of Meta Knob")
+            << tr("Right side: moves with right half of Meta Knob")
+            << tr("Left and right: moves across range with half of Meta Knob and back with the other half");
 
     add("EffectSlot_parameter_inversion")
-            << tr("Super Knob Inversion")
-            << tr("Inverts how linked effect parameters change when turning the Super Knob.");
+            << tr("Meta Knob Link Inversion")
+            << tr("Inverts the direction this parameter moves when turning the effect's Meta Knob.");
 
     add("EffectSlot_button_parameter")
             << tr("Equalizer Parameter Kill")

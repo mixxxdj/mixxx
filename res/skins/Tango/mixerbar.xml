@@ -1,0 +1,382 @@
+<!--
+Description:
+	The mixerbar, containing collapsible sections for
+	* Master
+	* Headphones (if enabled)
+	* Microphones (if enabled)
+	* Auxiliary (if enabled)
+	Mixerbar is alsways at bottom edge of screen.
+	It is centered if Library is hidden.
+	With Library visible, it can either show up below tracks table to save
+	space for treeview on the left, or full-width below Libary if many
+	Mics/AUX are enabled.
+-->
+<Template>
+  <WidgetGroup><!-- Mixer Bar -->
+    <ObjectName>MixerBar</ObjectName>
+    <Layout>horizontal</Layout>
+    <Size>1me,36f</Size>
+    <Children>
+    <!-- Together with expanding spacer at the far right, this
+      centers MixerBar when Library is hidden -->
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+          <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey>[Library],show_library</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup><!-- Toggler to shift Mixerbar below Library -->
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
+            <SetVariable name="ObjectName">MixerBar_BelowLibrary</SetVariable>
+            <SetVariable name="Size">12f,32f</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Tango],mixerbar_below_library</SetVariable>
+          </Template>
+        </Children>
+        <Connection>
+          <ConfigKey>[Library],show_library</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Toggler to shift Mixerbar below Library -->
+
+      <WidgetGroup><!-- Master Mixer -->
+        <ObjectName>MixerBarSection</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>-1min,36f</Size>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>MixerBar_MasterSectionLabel</ObjectName>
+            <Size>32f,32f</Size>
+          </WidgetGroup>
+
+          <WidgetGroup><!-- Volume fader + VU Meter -->
+            <SizePolicy>max,max</SizePolicy>
+            <Layout>vertical</Layout>
+            <Children>
+              <SliderComposed><!-- Volume fader -->
+                <TooltipId></TooltipId>
+                <ObjectName>MixerBarSlider</ObjectName>
+                <SizePolicy>max,max</SizePolicy>
+                <Handle>skin:/knobs_sliders/slider_volume_h_handle.svg</Handle>
+                <Slider>skin:/knobs_sliders/slider_volume_h_scale.svg</Slider>
+                <Horizontal>true</Horizontal>
+                <Connection>
+                  <ConfigKey>[Master],volume</ConfigKey>
+                </Connection>
+              </SliderComposed>
+              <WidgetGroup><!-- VU Meter -->
+                <ObjectName>VUMeterFloating_h</ObjectName>
+                <SizePolicy>max,max</SizePolicy>
+                <Layout>stacked</Layout>
+                <Children>
+                  <StatusLight>
+                    <PathStatusLight>skin:/graphics/vumeter_h_floating_clipping_over.png</PathStatusLight>
+                    <PathBack>skin:/graphics/vumeter_h_floating_clipping.png</PathBack>
+                    <Connection>
+                      <ConfigKey>[Master],PeakIndicator</ConfigKey>
+                    </Connection>
+                  </StatusLight>
+                  <VuMeter>
+                    <PathVu>skin:/graphics/vumeter_h_floating_over.png</PathVu>
+                    <PathBack>skin:/graphics/vumeter_h_floating.png</PathBack>
+                    <Horizontal>true</Horizontal>
+                    <PeakHoldSize>5</PeakHoldSize>
+                    <PeakHoldTime>500</PeakHoldTime>
+                    <PeakFallTime>50</PeakFallTime>
+                    <PeakFallStep>2</PeakFallStep>
+                    <Connection>
+                      <ConfigKey>[Master],VuMeter</ConfigKey>
+                    </Connection>
+                  </VuMeter>
+                </Children>
+              </WidgetGroup><!-- /VU Meter -->
+            </Children>
+          </WidgetGroup><!-- /Volume fader + VU Meter -->
+
+          <!-- All spacers left of MixerBarSliders are necessary
+          because margin/padding won't give a proper offset to neighbours,
+          just a shift of border/background while maintaining hover area.
+          This looks odd. -->
+          <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
+
+          <WidgetGroup><!-- Balance fader + V-Spacer -->
+            <SizePolicy>max,max</SizePolicy>
+            <Layout>vertical</Layout>
+            <Children>
+              <SliderComposed>
+                <TooltipId>balance</TooltipId>
+                <ObjectName>MixerBarSlider</ObjectName>
+                <SizePolicy>min,min</SizePolicy>
+                <Handle>skin:/knobs_sliders/slider_balance_handle.svg</Handle>
+                <Slider>skin:/knobs_sliders/slider_balance_scale.svg</Slider>
+                <Horizontal>true</Horizontal>
+                <Connection>
+                  <ConfigKey>[Master],balance</ConfigKey>
+                </Connection>
+              </SliderComposed>
+              <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup><!-- Master Mixer -->
+
+      <WidgetGroup><!-- Headphone Mixer -->
+        <ObjectName>MixerBarSection</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>-1min,36f</Size>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>MixerBar_HeadSectionLabel</ObjectName>
+            <Size>32f,32f</Size>
+          </WidgetGroup>
+
+          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+          <Template src="skin:button_2state_persist.xml"><!-- Toggle extra deck buttons -->
+            <SetVariable name="ObjectName">MixerBarToggler</SetVariable>
+            <SetVariable name="Size">11f,32f</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Tango],mixerbar_headphone</SetVariable>
+          </Template>
+
+          <WidgetGroup><!-- Headphone expanded -->
+            <SizePolicy>max,max</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+
+              <WidgetGroup><!-- Volume fader + V-Spacer -->
+                <SizePolicy>max,max</SizePolicy>
+                <Layout>vertical</Layout>
+                <Children>
+                  <SliderComposed><!-- Volume fader -->
+                    <TooltipId></TooltipId>
+                    <ObjectName>MixerBarSlider</ObjectName>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Handle>skin:/knobs_sliders/slider_volume_h_handle.svg</Handle>
+                    <Slider>skin:/knobs_sliders/slider_volume_h_scale.svg</Slider>
+                    <Horizontal>true</Horizontal>
+                    <Connection>
+                      <ConfigKey>[Master],headVolume</ConfigKey>
+                    </Connection>
+                  </SliderComposed>
+                  <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
+                </Children>
+              </WidgetGroup><!-- /Volume fader + V-Spacer -->
+
+              <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
+
+              <WidgetGroup>
+                <SizePolicy>max,max</SizePolicy>
+                <Layout>vertical</Layout>
+                <Children>
+                  <SliderComposed>
+                    <TooltipId>headMix</TooltipId>
+                    <ObjectName>MixerBarSlider</ObjectName>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Handle>skin:/knobs_sliders/slider_headMix_handle.svg</Handle>
+                    <Slider>skin:/knobs_sliders/slider_headMix_scale.svg</Slider>
+                    <Horizontal>true</Horizontal>
+                    <Connection>
+                      <ConfigKey>[Master],headMix</ConfigKey>
+                    </Connection>
+                  </SliderComposed>
+                  <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+              <WidgetGroup>
+                <SizePolicy>max,max</SizePolicy>
+                <Layout>vertical</Layout>
+                <Children>
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="TooltipId">headSplit</SetVariable>
+                    <SetVariable name="ObjectName">MixerBarButton</SetVariable>
+                    <SetVariable name="Size">38f,24f</SetVariable>
+                    <SetVariable name="state_0_unpressed">headSplit_off.svg</SetVariable>
+                    <SetVariable name="state_0_pressed">headSplit_off.svg</SetVariable>
+                    <SetVariable name="state_1_unpressed">headSplit_on.svg</SetVariable>
+                    <SetVariable name="state_1_pressed">headSplit_on.svg</SetVariable>
+                    <SetVariable name="ConfigKey">[Master],headSplit</SetVariable>
+                  </Template>
+                  <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
+                </Children>
+              </WidgetGroup>
+
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Tango],mixerbar_headphone</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /Headphone expanded -->
+
+        </Children>
+      </WidgetGroup><!-- Headphone Mixer -->
+
+      <WidgetGroup><!-- Microphone Mixer -->
+        <ObjectName>MixerBarSection</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>-1min,36f</Size>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>MixerBar_MicSectionLabel</ObjectName>
+            <Size>22f,32f</Size>
+          </WidgetGroup>
+
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="ObjectName">MixerBarToggler</SetVariable>
+            <SetVariable name="Size">11f,32f</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Tango],mixerbar_mic</SetVariable>
+          </Template>
+
+          <WidgetGroup><!-- MICs expanded -->
+            <SizePolicy>max,max</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+            <!-- MIC Duck controls -->
+              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+              <WidgetGroup>
+                <SizePolicy>max,max</SizePolicy>
+                <Layout>vertical</Layout>
+                <Children>
+                  <Template src="skin:button_3state_persist.xml">
+                    <SetVariable name="ObjectName">MixerBarButton</SetVariable>
+                    <SetVariable name="Size">42f,24f</SetVariable>
+                    <SetVariable name="state_0_text">DUCK</SetVariable>
+                    <SetVariable name="state_1_text">AUTO</SetVariable>
+                    <SetVariable name="state_2_text">MAN</SetVariable>
+                    <SetVariable name="ConfigKeyPerm">[Master],talkoverDucking</SetVariable>
+                  </Template>
+                  <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+              <WidgetGroup><!-- Duck strength, hidden when Auto-Duck is OFF -->
+                <Layout>stacked</Layout>
+                <Size>28f,28f</Size>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+                  <WidgetGroup><!-- translucent cover when Spinny/Cover is hidden -->
+                    <ObjectName>MixerBarCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Children/>
+                    <Connection>
+                      <ConfigKey persist="true">[Master],talkoverDucking</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                      <Transform><Not/></Transform>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <Template src="skin:knob_textless.xml">
+                    <SetVariable name="TooltipId"></SetVariable>
+                    <SetVariable name="ObjectName">MixerBarKnob</SetVariable>
+                    <SetVariable name="Size">28f,28f</SetVariable>
+                    <SetVariable name="group">[Master]</SetVariable>
+                    <SetVariable name="ConfigKey">duckStrength</SetVariable>
+                    <SetVariable name="Color">blue</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup><!-- /Duck strength, hidden when Auto-Duck is OFF -->
+              <!-- /MIC Duck controls -->
+
+              <Template src="skin:mixerbar_mic.xml">
+                <SetVariable name="MicLabel">1</SetVariable>
+              </Template>
+
+              <Template src="skin:mixerbar_mic.xml">
+                <SetVariable name="MicLabel">2</SetVariable>
+                <SetVariable name="MicNumber">2</SetVariable>
+              </Template>
+
+              <Template src="skin:mixerbar_mic.xml">
+                <SetVariable name="MicLabel">3</SetVariable>
+                <SetVariable name="MicNumber">3</SetVariable>
+              </Template>
+
+              <Template src="skin:mixerbar_mic.xml">
+                <SetVariable name="MicLabel">4</SetVariable>
+                <SetVariable name="MicNumber">4</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Tango],mixerbar_mic</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /MICs expanded -->
+
+        </Children>
+      </WidgetGroup><!-- /Microphone Mixer -->
+
+      <WidgetGroup><!-- Auxiliary Mixer -->
+        <ObjectName>MixerBarSection</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>-1min,36f</Size>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>MixerBar_AuxSectionLabel</ObjectName>
+            <Size>18f,32f</Size>
+          </WidgetGroup>
+
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="ObjectName">MixerBarToggler</SetVariable>
+            <SetVariable name="Size">11f,32f</SetVariable>
+            <SetVariable name="ConfigKeyPerm">[Tango],mixerbar_aux</SetVariable>
+          </Template>
+
+          <WidgetGroup><!-- AUX expanded -->
+            <SizePolicy>max,max</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+
+              <Template src="skin:mixerbar_aux.xml">
+                <SetVariable name="AuxNumber">1</SetVariable>
+              </Template>
+
+              <Template src="skin:mixerbar_aux.xml">
+                <SetVariable name="AuxNumber">2</SetVariable>
+              </Template>
+
+              <Template src="skin:mixerbar_aux.xml">
+                <SetVariable name="AuxNumber">3</SetVariable>
+              </Template>
+
+              <Template src="skin:mixerbar_aux.xml">
+                <SetVariable name="AuxNumber">4</SetVariable>
+              </Template>
+
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Tango],mixerbar_aux</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /Aux expanded -->
+
+        </Children>
+      </WidgetGroup><!-- /Auxiliary Mixer -->
+
+      <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Tango],mixerbar</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

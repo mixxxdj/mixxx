@@ -4,11 +4,12 @@
 #include <QDateTime>
 #include <QObject>
 #include <QString>
+#include <QList>
 
 #include "preferences/usersettings.h"
 #include "control/controlobject.h"
 #include "recording/defs_recording.h"
-
+#include "encoder/encoder.h"
 //
 // The RecordingManager is a central class and manages
 // the recording feature of Mixxx.
@@ -37,12 +38,12 @@ class RecordingManager : public QObject
     // The method computes the filename based on date/time information.
     void startRecording();
     void stopRecording();
-    bool isRecordingActive();
+    bool isRecordingActive() const;
     void setRecordingDir();
     QString& getRecordingDir();
     // Returns the currently recording file
-    QString& getRecordingFile();
-    QString& getRecordingLocation();
+    const QString& getRecordingFile() const;
+    const QString& getRecordingLocation() const;
 
   signals:
     // Emits the cumulative number of bytes currently recorded.

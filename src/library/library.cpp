@@ -6,6 +6,8 @@
 #include <QTranslator>
 #include <QDir>
 
+#include "database/mixxxdb.h"
+
 #include "mixer/playermanager.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
@@ -26,7 +28,9 @@
 #include "library/traktor/traktorfeature.h"
 #include "library/librarycontrol.h"
 #include "library/setlogfeature.h"
+#include "util/db/dbconnectionpooled.h"
 #include "util/sandbox.h"
+#include "util/logger.h"
 #include "util/assert.h"
 
 #include "widget/wtracktableview.h"
@@ -34,6 +38,19 @@
 #include "widget/wlibrarysidebar.h"
 
 #include "controllers/keyboard/keyboardeventfilter.h"
+
+
+namespace {
+
+const mixxx::Logger kLogger("Library");
+
+} // anonymous namespace
+
+//static
+const QString Library::kConfigGroup("[Library]");
+
+//static
+const ConfigKey Library::kConfigKeyRepairDatabaseOnNextRestart(kConfigGroup, "RepairDatabaseOnNextRestart");
 
 // This is is the name which we use to register the WTrackTableView with the
 // WLibrary
@@ -46,14 +63,50 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
                  PlayerManagerInterface* pPlayerManager,
                  RecordingManager* pRecordingManager) :
         m_pConfig(pConfig),
+        m_mixxxDb(pConfig),
+        m_dbConnectionPooler(m_mixxxDb.connectionPool()),
         m_pSidebarModel(new SidebarModel(parent)),
         m_pTrackCollection(new TrackCollection(pConfig)),
         m_pLibraryControl(new LibraryControl(this)),
         m_pRecordingManager(pRecordingManager),
-        m_scanner(m_pTrackCollection, pConfig) {
+        m_scanner(m_mixxxDb.connectionPool(), m_pTrackCollection, pConfig) {
+    kLogger.info() << "Opening datbase connection";
+
+    const mixxx::DbConnectionPooled dbConnectionPooled(m_mixxxDb.connectionPool());
+    if (!dbConnectionPooled) {
+        QMessageBox::critical(0, tr("Cannot open database"),
+                            tr("Unable to establish a database connection.\n"
+                                "Mixxx requires QT with SQLite support. Please read "
+                                "the Qt SQL driver documentation for information on how "
+                                "to build it.\n\n"
+                                "Click OK to exit."), QMessageBox::Ok);
+        // TODO(XXX) something a little more elegant
+        exit(-1);
+    }
+    QSqlDatabase dbConnection(dbConnectionPooled);
+    DEBUG_ASSERT(dbConnection.isOpen());
+
+    kLogger.info() << "Initializing or upgrading database schema";
+    if (!MixxxDb::initDatabaseSchema(dbConnection)) {
+        // TODO(XXX) something a little more elegant
+        exit(-1);
+    }
+
+    // TODO(XXX): Add a checkbox in the library preferences for checking
+    // and repairing the database on the next restart of the application.
+    if (pConfig->getValue(kConfigKeyRepairDatabaseOnNextRestart, false)) {
+        kLogger.info() << "Checking and repairing database (if necessary)";
+        m_pTrackCollection->repairDatabase(dbConnection);
+        // Reset config value
+        pConfig->setValue(kConfigKeyRepairDatabaseOnNextRestart, false);
+    }
+
+    kLogger.info() << "Connecting database";
+    m_pTrackCollection->connectDatabase(dbConnection);
+
     qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
 
-    m_pKeyNotation.reset(new ControlObject(ConfigKey("[Library]", "key_notation")));
+    m_pKeyNotation.reset(new ControlObject(ConfigKey(kConfigGroup, "key_notation")));
 
     connect(&m_scanner, SIGNAL(scanStarted()),
             this, SIGNAL(scanStarted()));
@@ -95,21 +148,21 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
     //messagebox popup when you select them. (This forces you to reach for your
     //mouse or keyboard if you're using MIDI control and you scroll through them...)
     if (RhythmboxFeature::isSupported() &&
-        pConfig->getValue(ConfigKey("[Library]","ShowRhythmboxLibrary"), true)) {
+        pConfig->getValue(ConfigKey(kConfigGroup,"ShowRhythmboxLibrary"), true)) {
         addFeature(new RhythmboxFeature(this, m_pTrackCollection));
     }
-    if (pConfig->getValue(ConfigKey("[Library]","ShowBansheeLibrary"), true)) {
+    if (pConfig->getValue(ConfigKey(kConfigGroup,"ShowBansheeLibrary"), true)) {
         BansheeFeature::prepareDbPath(pConfig);
         if (BansheeFeature::isSupported()) {
             addFeature(new BansheeFeature(this, m_pTrackCollection, pConfig));
         }
     }
     if (ITunesFeature::isSupported() &&
-        pConfig->getValue(ConfigKey("[Library]","ShowITunesLibrary"), true)) {
+        pConfig->getValue(ConfigKey(kConfigGroup,"ShowITunesLibrary"), true)) {
         addFeature(new ITunesFeature(this, m_pTrackCollection));
     }
     if (TraktorFeature::isSupported() &&
-        pConfig->getValue(ConfigKey("[Library]","ShowTraktorLibrary"), true)) {
+        pConfig->getValue(ConfigKey(kConfigGroup,"ShowTraktorLibrary"), true)) {
         addFeature(new TraktorFeature(this, m_pTrackCollection));
     }
 
@@ -126,8 +179,8 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
     }
 
     m_iTrackTableRowHeight = m_pConfig->getValue(
-            ConfigKey("[Library]", "RowHeight"), kDefaultRowHeightPx);
-    QString fontStr = m_pConfig->getValueString(ConfigKey("[Library]", "Font"));
+            ConfigKey(kConfigGroup, "RowHeight"), kDefaultRowHeightPx);
+    QString fontStr = m_pConfig->getValueString(ConfigKey(kConfigGroup, "Font"));
     if (!fontStr.isEmpty()) {
         m_trackTableFont.fromString(fontStr);
     } else {
@@ -147,6 +200,10 @@ Library::~Library() {
     }
 
     delete m_pLibraryControl;
+
+    kLogger.info() << "Disconnecting database";
+    m_pTrackCollection->disconnectDatabase();
+
     //IMPORTANT: m_pTrackCollection gets destroyed via the QObject hierarchy somehow.
     //           Qt does it for us due to the way RJ wrote all this stuff.
     //Update:  - OR NOT! As of Dec 8, 2009, this pointer must be destroyed manually otherwise

@@ -28,6 +28,7 @@
 #include "dialog/dlgabout.h"
 #include "preferences/dialog/dlgpreferences.h"
 #include "preferences/dialog/dlgprefeq.h"
+#include "preferences/constants.h"
 #include "dialog/dlgdevelopertools.h"
 #include "engine/enginemaster.h"
 #include "effects/effectsmanager.h"
@@ -64,6 +65,7 @@
 #include "skin/launchimage.h"
 #include "preferences/settingsmanager.h"
 #include "widget/wmainmenubar.h"
+#include "util/screensaver.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/vinylcontrolmanager.h"
@@ -189,8 +191,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     NativeBackend* pNativeBackend = new NativeBackend(m_pEffectsManager);
     m_pEffectsManager->addEffectsBackend(pNativeBackend);
 
-    // Sets up the default EffectChains and EffectRacks (long)
-    m_pEffectsManager->setupDefaults();
+    // Sets up the EffectChains and EffectRacks (long)
+    m_pEffectsManager->setup();
 
     launchProgress(8);
 
@@ -317,6 +319,17 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     connect(this, SIGNAL(newSkinLoaded()),
             m_pLibrary, SLOT(onSkinLoadFinished()));
 
+    // Inhibit the screensaver if the option is set. (Do it before creating the preferences dialog)
+    int inhibit = pConfig->getValue<int>(ConfigKey("[Config]","InhibitScreensaver"),-1);
+    if (inhibit == -1) {
+        inhibit = static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON);
+        pConfig->setValue<int>(ConfigKey("[Config]","InhibitScreensaver"), inhibit);
+    }
+    m_inhibitScreensaver = static_cast<mixxx::ScreenSaverPreference>(inhibit);
+    if (m_inhibitScreensaver == mixxx::ScreenSaverPreference::PREVENT_ON) {
+        mixxx::ScreenSaverHelper::inhibit();
+    }
+
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
                                     m_pControllerManager, m_pVCManager, m_pEffectsManager,
@@ -380,6 +393,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         slotViewFullScreen(true);
     }
     emit(newSkinLoaded());
+
 
     // Wait until all other ControlObjects are set up before initializing
     // controllers
@@ -448,9 +462,15 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         }
     }
 
+    m_pPlayerManager->loadSamplers();
+
     connect(&PlayerInfo::instance(),
             SIGNAL(currentPlayingTrackChanged(TrackPointer)),
             this, SLOT(slotUpdateWindowTitle(TrackPointer)));
+
+    connect(&PlayerInfo::instance(),
+            SIGNAL(currentPlayingDeckChanged(int)),
+            this, SLOT(slotChangedPlayingDeck(int)));
 
     // this has to be after the OpenGL widgets are created or depending on a
     // million different variables the first waveform may be horribly
@@ -465,7 +485,12 @@ void MixxxMainWindow::finalize() {
     Timer t("MixxxMainWindow::~finalize");
     t.start();
 
-    // Save the current window state (position, maximized, etc)
+    if (m_inhibitScreensaver != mixxx::ScreenSaverPreference::PREVENT_OFF) {
+        mixxx::ScreenSaverHelper::uninhibit();
+    }
+
+
+   // Save the current window state (position, maximized, etc)
     m_pSettingsManager->settings()->set(ConfigKey("[MainWindow]", "geometry"),
         QString(saveGeometry().toBase64()));
     m_pSettingsManager->settings()->set(ConfigKey("[MainWindow]", "state"),
@@ -1019,7 +1044,8 @@ void MixxxMainWindow::slotViewFullScreen(bool toggle) {
 }
 
 void MixxxMainWindow::slotOptionsPreferences() {
-    m_pPrefDlg->setHidden(false);
+    m_pPrefDlg->show();
+    m_pPrefDlg->raise();
     m_pPrefDlg->activateWindow();
 }
 
@@ -1056,6 +1082,17 @@ void MixxxMainWindow::slotNoMicrophoneInputConfigured() {
     m_pPrefDlg->showSoundHardwarePage();
 }
 
+void MixxxMainWindow::slotChangedPlayingDeck(int deck) {
+    if (m_inhibitScreensaver == mixxx::ScreenSaverPreference::PREVENT_ON_PLAY) {
+        if (deck==-1) {
+            // If no deck is playing, allow the screensaver to run.
+            mixxx::ScreenSaverHelper::uninhibit();
+        } else {
+            mixxx::ScreenSaverHelper::inhibit();
+        }
+    }
+}
+
 void MixxxMainWindow::slotHelpAbout() {
     DlgAbout* about = new DlgAbout(this);
     about->show();
@@ -1072,7 +1109,10 @@ void MixxxMainWindow::rebootMixxxView() {
     qDebug() << "Now in rebootMixxxView...";
 
     QPoint initPosition = pos();
-    QSize initSize = size();
+    // this->frameSize()  : Window size including all borders and only if the window manager works.
+    // this->size() : Window without the borders nor title, but including the Menu!
+    // this->centralWidget()->size() : Size of the internal window Widget.
+    QSize initSize = this->centralWidget()->size();
 
     // We need to tell the menu bar that we are about to delete the old skin and
     // create a new one. It holds "visibility" controls (e.g. "Show Samplers")
@@ -1118,8 +1158,12 @@ void MixxxMainWindow::rebootMixxxView() {
     if (wasFullScreen) {
         slotViewFullScreen(true);
     } else {
-        move(initPosition.x() + (initSize.width() - m_pWidgetParent->width()) / 2,
-             initPosition.y() + (initSize.height() - m_pWidgetParent->height()) / 2);
+        // Not all OSs and/or window managers keep the window inside of the screen, so force it.
+        int newX = initPosition.x() + (initSize.width() - m_pWidgetParent->width()) / 2;
+        int newY = initPosition.y() + (initSize.height() - m_pWidgetParent->height()) / 2;
+        newX = std::max(0, std::min(newX, QApplication::desktop()->screenGeometry().width() - m_pWidgetParent->width()));
+        newY = std::max(0, std::min(newY, QApplication::desktop()->screenGeometry().height() - m_pWidgetParent->height()));
+        move(newX,newY);
     }
 
     qDebug() << "rebootMixxxView DONE";
@@ -1259,6 +1303,30 @@ bool MixxxMainWindow::confirmExit() {
     }
 
     return true;
+}
+
+void MixxxMainWindow::setInhibitScreensaver(mixxx::ScreenSaverPreference newInhibit)
+{
+    UserSettingsPointer pConfig = m_pSettingsManager->settings();
+
+    if (m_inhibitScreensaver != mixxx::ScreenSaverPreference::PREVENT_OFF) {
+        mixxx::ScreenSaverHelper::uninhibit();
+    }
+
+    if (newInhibit == mixxx::ScreenSaverPreference::PREVENT_ON) {
+        mixxx::ScreenSaverHelper::inhibit();
+    } else if (newInhibit == mixxx::ScreenSaverPreference::PREVENT_ON_PLAY
+            && PlayerInfo::instance().getCurrentPlayingDeck()!=-1) {
+        mixxx::ScreenSaverHelper::inhibit();
+    }
+    int inhibit_int = static_cast<int>(newInhibit);
+    pConfig->setValue<int>(ConfigKey("[Config]","InhibitScreensaver"), inhibit_int);
+    m_inhibitScreensaver = newInhibit;
+}
+
+mixxx::ScreenSaverPreference MixxxMainWindow::getInhibitScreensaver()
+{
+    return m_inhibitScreensaver;
 }
 
 void MixxxMainWindow::launchProgress(int progress) {

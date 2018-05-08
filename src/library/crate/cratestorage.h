@@ -9,13 +9,10 @@
 #include "library/crate/cratesummary.h"
 #include "track/trackid.h"
 
-#include "util/db/sqlstorage.h"
 #include "util/db/fwdsqlqueryselectresult.h"
 #include "util/db/sqlsubselectmode.h"
+#include "util/db/sqlstorage.h"
 
-
-// forward declaration(s)
-class SqlTransaction;
 
 class CrateQueryFields {
   public:
@@ -179,21 +176,17 @@ private:
     CrateTrackQueryFields m_queryFields;
 };
 
-class CrateStorage: public SqlStorage {
+class CrateStorage: public virtual /*implements*/ SqlStorage {
   public:
-    ~CrateStorage() final = default;
+    CrateStorage() = default;
+    ~CrateStorage() override = default;
 
+    void repairDatabase(
+            QSqlDatabase database) override;
 
-    /////////////////////////////////////////////////////////////////////////
-    // Inherited operations (non-const)
-    // Only invoked by TrackCollection!
-    /////////////////////////////////////////////////////////////////////////
-
-    void repairDatabase(QSqlDatabase database) final;
-
-    void attachDatabase(QSqlDatabase database) final;
-    void detachDatabase() final;
-
+    void connectDatabase(
+            QSqlDatabase database) override;
+    void disconnectDatabase() override;
 
     /////////////////////////////////////////////////////////////////////////
     // Crate write operations (transactional, non-const)
@@ -213,30 +206,24 @@ class CrateStorage: public SqlStorage {
     /////////////////////////////////////////////////////////////////////////
 
     bool onInsertingCrate(
-            SqlTransaction& transaction,
             const Crate& crate,
             CrateId* pCrateId = nullptr);
 
     bool onUpdatingCrate(
-            SqlTransaction& transaction,
             const Crate& crate);
 
     bool onDeletingCrate(
-            SqlTransaction& transaction,
             CrateId crateId);
 
     bool onAddingCrateTracks(
-            SqlTransaction& transaction,
             CrateId crateId,
             const QList<TrackId>& trackIds);
 
     bool onRemovingCrateTracks(
-            SqlTransaction& transaction,
             CrateId crateId,
             const QList<TrackId>& trackIds);
 
     bool onPurgingTracks(
-            SqlTransaction& transaction,
             const QList<TrackId>& trackIds);
 
 
@@ -279,6 +266,8 @@ class CrateStorage: public SqlStorage {
     static QString formatSubselectQueryForCrateTrackIds(
             CrateId crateId); // no db access
 
+    static QString formatQueryForTrackIdsByCrateNameLike(
+            const QString& crateNameLike); // no db access
     // Select the track ids of a crate or the crate ids of a track respectively.
     // The results are sorted (ascending) by the target id, i.e. the id that is
     // not provided for filtering. This enables the caller to perform efficient
@@ -287,6 +276,8 @@ class CrateStorage: public SqlStorage {
             CrateId crateId) const;
     CrateTrackSelectResult selectTrackCratesSorted(
             TrackId trackId) const;
+    CrateTrackSelectResult selectTracksSortedByCrateNameLike(
+            const QString& crateNameLike) const;
 
     // Returns the set of crate ids for crates that contain any of the
     // provided track ids.

@@ -36,12 +36,11 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain) {
     int iChainNumber = 0;
 
     StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
-    EffectChainSlotPointer pSlot = pRack->addEffectChainSlot();
-    pSlot->clear();
+    EffectChainSlotPointer pChainSlot = pRack->addEffectChainSlot();
 
     QString group = StandardEffectRack::formatEffectChainSlotGroupString(
         iRackNumber, iChainNumber);
-    pSlot->loadEffectChain(pChain);
+    pChainSlot->loadEffectChain(pChain);
 
     pChain->setEnabled(true);
     EXPECT_LT(0.0, ControlObject::get(ConfigKey(group, "enabled")));
@@ -89,7 +88,8 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain_StartsWithChainLoaded) {
     int iChainNumber = 0;
 
     StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
-    EffectChainSlotPointer pSlot = pRack->addEffectChainSlot();
+    EffectChainSlotPointer pChainSlot = pRack->addEffectChainSlot();
+    pChainSlot->loadEffectChain(pChain); 
     QString group = StandardEffectRack::formatEffectChainSlotGroupString(
         iRackNumber, iChainNumber);
     EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(group, "loaded")));
@@ -103,15 +103,12 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain_Clear) {
     int iChainNumber = 0;
 
     StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
-    EffectChainSlotPointer pSlot = pRack->addEffectChainSlot();
-
-    // Clear the default chain.
-    pSlot->clear();
+    EffectChainSlotPointer pChainSlot = pRack->addEffectChainSlot();
 
     QString group = StandardEffectRack::formatEffectChainSlotGroupString(
         iRackNumber, iChainNumber);
     EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(group, "loaded")));
-    pSlot->loadEffectChain(pChain);
+    pChainSlot->loadEffectChain(pChain);
     EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(group, "loaded")));
     ControlObject::set(ConfigKey(group, "clear"), 1.0);
     EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(group, "loaded")));

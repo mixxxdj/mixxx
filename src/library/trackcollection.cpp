@@ -1,127 +1,56 @@
-#include <QtSql>
-#include <QtDebug>
+#include <QStringBuilder>
 
 #include "library/trackcollection.h"
 
-#include "library/librarytablemodel.h"
-#include "library/schemamanager.h"
-#include "library/crate/cratestorage.h"
 #include "track/track.h"
+#include "util/logger.h"
 #include "util/db/sqltransaction.h"
 
 #include "util/assert.h"
 
-// static
-const int TrackCollection::kRequiredSchemaVersion = 27;
 
-TrackCollection::TrackCollection(UserSettingsPointer pConfig)
-        : m_pConfig(pConfig),
-          m_dbConnection(m_pConfig->getSettingsPath()),
-          m_playlistDao(database()),
-          m_cueDao(database()),
-          m_directoryDao(database()),
-          m_analysisDao(database(), pConfig),
-          m_libraryHashDao(database()),
-          m_trackDao(database(), m_cueDao, m_playlistDao,
+namespace {
+    mixxx::Logger kLogger("TrackCollection");
+} // anonymous namespace
+
+TrackCollection::TrackCollection(
+        const UserSettingsPointer& pConfig)
+        : m_analysisDao(pConfig),
+          m_trackDao(m_cueDao, m_playlistDao,
                      m_analysisDao, m_libraryHashDao, pConfig) {
-    // Check for tables and create them if missing
-    if (!checkForTables()) {
-        // TODO(XXX) something a little more elegant
-        exit(-1);
-    }
 }
 
 TrackCollection::~TrackCollection() {
-    qDebug() << "~TrackCollection()";
+    kLogger.debug() << "~TrackCollection()";
+    // The database should have been detached earlier
+    DEBUG_ASSERT(!m_database.isOpen());
+}
+
+void TrackCollection::repairDatabase(QSqlDatabase database) {
+    m_crates.repairDatabase(database);
+}
+
+void TrackCollection::connectDatabase(QSqlDatabase database) {
+    m_database = database;
+    m_trackDao.initialize(database);
+    m_playlistDao.initialize(database);
+    m_cueDao.initialize(database);
+    m_directoryDao.initialize(database);
+    m_libraryHashDao.initialize(database);
+    m_crates.connectDatabase(database);
+}
+
+void TrackCollection::disconnectDatabase() {
+    m_database = QSqlDatabase();
     m_trackDao.finish();
-    m_crates.detachDatabase();
+    m_crates.disconnectDatabase();
 }
 
-bool TrackCollection::checkForTables() {
-    if (!m_dbConnection) {
-        QMessageBox::critical(0, tr("Cannot open database"),
-                            tr("Unable to establish a database connection.\n"
-                                "Mixxx requires QT with SQLite support. Please read "
-                                "the Qt SQL driver documentation for information on how "
-                                "to build it.\n\n"
-                                "Click OK to exit."), QMessageBox::Ok);
-        return false;
-    }
-
-    // The schema XML is baked into the binary via Qt resources.
-    QString schemaFilename(":/schema.xml");
-    QString okToExit = tr("Click OK to exit.");
-    QString upgradeFailed = tr("Cannot upgrade database schema");
-    QString upgradeToVersionFailed =
-            tr("Unable to upgrade your database schema to version %1")
-            .arg(QString::number(kRequiredSchemaVersion));
-    QString helpEmail = tr("For help with database issues contact:") + "\n" +
-                           "mixxx-devel@lists.sourceforge.net";
-
-    SchemaManager::Result result = SchemaManager::upgradeToSchemaVersion(
-            schemaFilename, database(), kRequiredSchemaVersion);
-    switch (result) {
-        case SchemaManager::RESULT_BACKWARDS_INCOMPATIBLE:
-            QMessageBox::warning(
-                    0, upgradeFailed,
-                    upgradeToVersionFailed + "\n" +
-                    tr("Your mixxxdb.sqlite file was created by a newer "
-                       "version of Mixxx and is incompatible.") +
-                    "\n\n" + okToExit,
-                    QMessageBox::Ok);
-            return false;
-        case SchemaManager::RESULT_UPGRADE_FAILED:
-            QMessageBox::warning(
-                    0, upgradeFailed,
-                    upgradeToVersionFailed + "\n" +
-                    tr("Your mixxxdb.sqlite file may be corrupt.") + "\n" +
-                    tr("Try renaming it and restarting Mixxx.") + "\n" +
-                    helpEmail + "\n\n" + okToExit,
-                    QMessageBox::Ok);
-            return false;
-        case SchemaManager::RESULT_SCHEMA_ERROR:
-            QMessageBox::warning(
-                    0, upgradeFailed,
-                    upgradeToVersionFailed + "\n" +
-                    tr("The database schema file is invalid.") + "\n" +
-                    helpEmail + "\n\n" + okToExit,
-                    QMessageBox::Ok);
-            return false;
-        case SchemaManager::RESULT_OK:
-        default:
-            break;
-    }
-
-    m_trackDao.initialize();
-    m_playlistDao.initialize();
-    m_cueDao.initialize();
-    m_directoryDao.initialize();
-    m_libraryHashDao.initialize();
-    m_crates.attachDatabase(database());
-    return true;
-}
-
-TrackDAO& TrackCollection::getTrackDAO() {
-    return m_trackDao;
-}
-
-PlaylistDAO& TrackCollection::getPlaylistDAO() {
-    return m_playlistDao;
-}
-
-DirectoryDAO& TrackCollection::getDirectoryDAO() {
-    return m_directoryDao;
-}
-
-QSharedPointer<BaseTrackCache> TrackCollection::getTrackSource() {
-    return m_defaultTrackSource;
-}
-
-void TrackCollection::setTrackSource(QSharedPointer<BaseTrackCache> trackSource) {
-    VERIFY_OR_DEBUG_ASSERT(m_defaultTrackSource.isNull()) {
+void TrackCollection::setTrackSource(QSharedPointer<BaseTrackCache> pTrackSource) {
+    VERIFY_OR_DEBUG_ASSERT(m_pTrackSource.isNull()) {
         return;
     }
-    m_defaultTrackSource = trackSource;
+    m_pTrackSource = pTrackSource;
 }
 
 void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
@@ -180,11 +109,11 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
      }
 
     // Transactional
-    SqlTransaction transaction(database());
+    SqlTransaction transaction(m_database);
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_trackDao.onHidingTracks(transaction, trackIds)) {
+    VERIFY_OR_DEBUG_ASSERT(m_trackDao.onHidingTracks(trackIds)) {
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
@@ -208,11 +137,11 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
 
 bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
     // Transactional
-    SqlTransaction transaction(database());
+    SqlTransaction transaction(m_database);
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_trackDao.onUnhidingTracks(transaction, trackIds)) {
+    VERIFY_OR_DEBUG_ASSERT(m_trackDao.onUnhidingTracks(trackIds)) {
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
@@ -236,11 +165,11 @@ bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
 bool TrackCollection::purgeTracks(
         const QList<TrackId>& trackIds) {
     // Transactional
-    SqlTransaction transaction(database());
+    SqlTransaction transaction(m_database);
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_trackDao.onPurgingTracks(transaction, trackIds)) {
+    VERIFY_OR_DEBUG_ASSERT(m_trackDao.onPurgingTracks(trackIds)) {
         return false;
     }
     // Collect crates of tracks that will be purged before actually purging
@@ -248,7 +177,7 @@ bool TrackCollection::purgeTracks(
     // all crates on purging.
     QSet<CrateId> modifiedCrateSummaries(
             m_crates.collectCrateIdsOfTracks(trackIds));
-    VERIFY_OR_DEBUG_ASSERT(m_crates.onPurgingTracks(transaction, trackIds)) {
+    VERIFY_OR_DEBUG_ASSERT(m_crates.onPurgingTracks(trackIds)) {
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
@@ -280,12 +209,12 @@ bool TrackCollection::insertCrate(
         const Crate& crate,
         CrateId* pCrateId) {
     // Transactional
-    SqlTransaction transaction(database());
+    SqlTransaction transaction(m_database);
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
     CrateId crateId;
-    VERIFY_OR_DEBUG_ASSERT(m_crates.onInsertingCrate(transaction, crate, &crateId)) {
+    VERIFY_OR_DEBUG_ASSERT(m_crates.onInsertingCrate(crate, &crateId)) {
         return false;
     }
     DEBUG_ASSERT(crateId.isValid());
@@ -305,11 +234,11 @@ bool TrackCollection::insertCrate(
 bool TrackCollection::updateCrate(
         const Crate& crate) {
     // Transactional
-    SqlTransaction transaction(database());
+    SqlTransaction transaction(m_database);
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_crates.onUpdatingCrate(transaction, crate)) {
+    VERIFY_OR_DEBUG_ASSERT(m_crates.onUpdatingCrate(crate)) {
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
@@ -325,11 +254,11 @@ bool TrackCollection::updateCrate(
 bool TrackCollection::deleteCrate(
         CrateId crateId) {
     // Transactional
-    SqlTransaction transaction(database());
+    SqlTransaction transaction(m_database);
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_crates.onDeletingCrate(transaction, crateId)) {
+    VERIFY_OR_DEBUG_ASSERT(m_crates.onDeletingCrate(crateId)) {
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
@@ -346,11 +275,11 @@ bool TrackCollection::addCrateTracks(
         CrateId crateId,
         const QList<TrackId>& trackIds) {
     // Transactional
-    SqlTransaction transaction(database());
+    SqlTransaction transaction(m_database);
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_crates.onAddingCrateTracks(transaction, crateId, trackIds)) {
+    VERIFY_OR_DEBUG_ASSERT(m_crates.onAddingCrateTracks(crateId, trackIds)) {
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
@@ -367,11 +296,11 @@ bool TrackCollection::removeCrateTracks(
         CrateId crateId,
         const QList<TrackId>& trackIds) {
     // Transactional
-    SqlTransaction transaction(database());
+    SqlTransaction transaction(m_database);
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_crates.onRemovingCrateTracks(transaction, crateId, trackIds)) {
+    VERIFY_OR_DEBUG_ASSERT(m_crates.onRemovingCrateTracks(crateId, trackIds)) {
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {

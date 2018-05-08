@@ -1,10 +1,12 @@
 #include "effects/effectchainslot.h"
 
 #include "effects/effectrack.h"
+#include "effects/effectxmlelements.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
 #include "mixer/playermanager.h"
 #include "util/math.h"
+#include "util/xml.h"
 
 EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
                                  unsigned int iChainNumber)
@@ -34,10 +36,10 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
     connect(m_pControlChainEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainEnabled(double)));
 
-    m_pControlChainMix = new ControlPotmeter(ConfigKey(m_group, "mix"), 0.0, 1.0);
+    m_pControlChainMix = new ControlPotmeter(ConfigKey(m_group, "mix"), 0.0, 1.0,
+                                             false, true, false, true, 1.0);
     connect(m_pControlChainMix, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainMix(double)));
-    m_pControlChainMix->set(1.0);
 
     m_pControlChainSuperParameter = new ControlPotmeter(ConfigKey(m_group, "super1"), 0.0, 1.0);
     connect(m_pControlChainSuperParameter, SIGNAL(valueChanged(double)),
@@ -242,6 +244,18 @@ EffectChainPointer EffectChainSlot::getEffectChain() const {
     return m_pEffectChain;
 }
 
+EffectChainPointer EffectChainSlot::getOrCreateEffectChain(
+        EffectsManager* pEffectsManager) {
+    if (!m_pEffectChain) {
+        EffectChainPointer pEffectChain(
+                new EffectChain(pEffectsManager, QString()));
+        //: Name for an empty effect chain, that is created after eject
+        pEffectChain->setName(tr("Empty Chain"));
+        loadEffectChain(pEffectChain);
+    }
+    return m_pEffectChain;
+}
+
 void EffectChainSlot::clear() {
     // Stop listening to signals from any loaded effect
     if (m_pEffectChain) {
@@ -429,4 +443,66 @@ void EffectChainSlot::slotChannelStatusChanged(const QString& group) {
 
 unsigned int EffectChainSlot::getChainSlotNumber() const {
     return m_iChainSlotNumber;
+}
+
+QDomElement EffectChainSlot::toXml(QDomDocument* doc) const {
+    QDomElement chainElement = doc->createElement(EffectXml::Chain);
+    if (m_pEffectChain == nullptr) {
+        // ejected chains are stored empty <EffectChain/>
+        return chainElement;
+    }
+
+    XmlParse::addElement(*doc, chainElement, EffectXml::ChainId,
+            m_pEffectChain->id());
+    XmlParse::addElement(*doc, chainElement, EffectXml::ChainName,
+            m_pEffectChain->name());
+    XmlParse::addElement(*doc, chainElement, EffectXml::ChainDescription,
+            m_pEffectChain->description());
+    XmlParse::addElement(*doc, chainElement, EffectXml::ChainInsertionType,
+            EffectChain::insertionTypeToString(
+                    static_cast<EffectChain::InsertionType>(
+                            static_cast<int>(m_pControlChainInsertionType->get()))));
+    XmlParse::addElement(*doc, chainElement, EffectXml::ChainSuperParameter,
+            QString::number(m_pControlChainSuperParameter->get()));
+
+    QDomElement effectsElement = doc->createElement(EffectXml::EffectsRoot);
+    for (const auto& pEffectSlot : m_slots) {
+        QDomElement effectNode;
+        if (pEffectSlot->getEffect()) {
+            effectNode = pEffectSlot->toXml(doc);
+        } else {
+            // Create empty element to ensure effects stay in order
+            // if there are empty slots before loaded slots.
+            effectNode = doc->createElement(EffectXml::Effect);
+        }
+        effectsElement.appendChild(effectNode);
+    }
+    chainElement.appendChild(effectsElement);
+
+    return chainElement;
+}
+
+void EffectChainSlot::loadChainSlotFromXml(const QDomElement& effectChainElement) {
+    if (!effectChainElement.hasChildNodes()) {
+        return;
+    }
+
+    // Note: insertion type is set in EffectChain::createFromXml
+
+    m_pControlChainSuperParameter->set(XmlParse::selectNodeDouble(
+                                          effectChainElement,
+                                          EffectXml::ChainSuperParameter));
+
+    QDomElement effectsElement = XmlParse::selectElement(effectChainElement,
+                                                         EffectXml::EffectsRoot);
+    QDomNodeList effectsNodeList = effectsElement.childNodes();
+    for (int i = 0; i < m_slots.size(); ++i) {
+        if (m_slots[i] != nullptr) {
+            QDomNode effectNode = effectsNodeList.at(i);
+            if (effectNode.isElement()) {
+                QDomElement effectElement = effectNode.toElement();
+                m_slots[i]->loadEffectSlotFromXml(effectElement);
+            }
+        }
+    }
 }

@@ -2,18 +2,32 @@
 
 #include <QSqlRecord>
 
-#include <QtDebug>
-
+#include "util/performancetimer.h"
+#include "util/logger.h"
 #include "util/assert.h"
 
 
 namespace {
 
-inline
+const mixxx::Logger kLogger("FwdSqlQuery");
+
 bool prepareQuery(QSqlQuery& query, const QString& statement) {
     DEBUG_ASSERT(!query.isActive());
     query.setForwardOnly(true);
-    return query.prepare(statement);
+    PerformanceTimer timer;
+    if (kLogger.traceEnabled()) {
+        timer.start();
+    }
+    if (query.prepare(statement)) {
+        if (kLogger.traceEnabled()) {
+            kLogger.tracePerformance(
+                    QString("Preparing \"%1\"").arg(statement),
+                    timer);
+        }
+        return true;
+    } else {
+        return false;
+    }
 }
 
 } // anonymous namespace
@@ -25,9 +39,10 @@ FwdSqlQuery::FwdSqlQuery(
       m_prepared(prepareQuery(*this, statement)) {
     if (!m_prepared) {
         DEBUG_ASSERT(!database.isOpen() || hasError());
-        qCritical() << "Failed to prepare SQL query"
-                << "for [" << statement << "]"
-                << "on [" << database.connectionName() << "]:"
+        kLogger.critical()
+                << "Failed to prepare"
+                << statement
+                << ":"
                 << lastError();
     }
 }
@@ -35,7 +50,18 @@ FwdSqlQuery::FwdSqlQuery(
 bool FwdSqlQuery::execPrepared() {
     DEBUG_ASSERT(isPrepared());
     DEBUG_ASSERT(!hasError());
+    PerformanceTimer timer;
+    if (kLogger.traceEnabled()) {
+        timer.start();
+    }
     if (exec()) {
+        if (kLogger.traceEnabled()) {
+            if (kLogger.traceEnabled()) {
+                kLogger.tracePerformance(
+                        QString("Executing \"%1\"").arg(executedQuery()),
+                        timer);
+            }
+        }
         DEBUG_ASSERT(!hasError());
         // Verify our assumption that the size of the result set
         // is unavailable for forward-only queries. Otherwise we
@@ -43,16 +69,11 @@ bool FwdSqlQuery::execPrepared() {
         DEBUG_ASSERT(size() < 0);
         return true;
     } else {
-        if (lastQuery() == executedQuery()) {
-            qCritical() << "Failed to execute prepared SQL query"
-                    << "lastQuery [" << lastQuery() << "]:"
-                    << lastError();
-        } else {
-            qCritical() << "Failed to execute prepared SQL query"
-                    << "lastQuery [" << lastQuery() << "]"
-                    << "executedQuery [" << executedQuery() << "]:"
-                    << lastError();
-        }
+        kLogger.warning()
+                << "Failed to execute"
+                << lastQuery()
+                << ":"
+                << lastError();
         DEBUG_ASSERT(hasError());
         return false;
     }
@@ -63,9 +84,9 @@ DbFieldIndex FwdSqlQuery::fieldIndex(const QString& fieldName) const {
     DEBUG_ASSERT(isSelect());
     DbFieldIndex fieldIndex(record().indexOf(fieldName));
     VERIFY_OR_DEBUG_ASSERT(fieldIndex.isValid()) {
-        qCritical() << "Field named"
-                << fieldName
-                << "not found in record of SQL query"
+        kLogger.critical()
+                << "Field named" << fieldName
+                << "not found in result from"
                 << executedQuery();
     }
     DEBUG_ASSERT(!hasError());
@@ -85,12 +106,16 @@ namespace {
         bool ok = false;
         int value = variant.toInt(&ok);
         VERIFY_OR_DEBUG_ASSERT(ok) {
-            qWarning() << "Invalid boolean value in database:" << variant;
+            kLogger.critical()
+                    << "Invalid boolean value in database:"
+                    << variant;
         }
         VERIFY_OR_DEBUG_ASSERT(
                 (value == FwdSqlQuery::BOOLEAN_FALSE) ||
                 (value == FwdSqlQuery::BOOLEAN_TRUE)) {
-            qWarning() << "Invalid boolean value in database:" << value;
+            kLogger.critical()
+                    << "Invalid boolean value in database:"
+                    << value;
         }
         // C-style conversion from int to bool
         DEBUG_ASSERT(FwdSqlQuery::BOOLEAN_FALSE == 0);

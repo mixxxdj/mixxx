@@ -2,12 +2,15 @@
 #include "sources/mp3decoding.h"
 
 #include "util/math.h"
+#include "util/logger.h"
 
 #include <id3tag.h>
 
 namespace mixxx {
 
 namespace {
+
+const Logger kLogger("SoundSourceMP3");
 
 // MP3 does only support 1 or 2 channels
 const SINT kChannelCountMax = AudioSource::kChannelCountStereo;
@@ -123,14 +126,14 @@ bool decodeFrameHeader(
         }
         if (isUnrecoverableError(*pMadStream)) {
             DEBUG_ASSERT(!isStreamValid(*pMadStream));
-            qWarning() << "Unrecoverable MP3 header decoding error:"
+            kLogger.warning() << "Unrecoverable MP3 header decoding error:"
                     << mad_stream_errorstr(pMadStream);
             return false;
         }
     #ifndef QT_NO_DEBUG_OUTPUT
         // Logging of MP3 frame headers should only be enabled
         // for debugging purposes.
-        //logFrameHeader(qDebug(), *pMadHeader);
+        logFrameHeader(kLogger.debug(), *pMadHeader);
     #endif
         if (isRecoverableError(*pMadStream)) {
             if ((MAD_ERROR_LOSTSYNC == pMadStream->error) && skipId3Tag) {
@@ -144,9 +147,9 @@ bool decodeFrameHeader(
                     return false;
                 }
             }
-            qWarning() << "Recoverable MP3 header decoding error:"
+            kLogger.warning() << "Recoverable MP3 header decoding error:"
                     << mad_stream_errorstr(pMadStream);
-            logFrameHeader(qWarning(), *pMadHeader);
+            logFrameHeader(kLogger.warning(), *pMadHeader);
             return false;
         }
     }
@@ -193,7 +196,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audio
 
     DEBUG_ASSERT(!m_file.isOpen());
     if (!m_file.open(QIODevice::ReadOnly)) {
-        qWarning() << "Failed to open file:" << m_file.fileName();
+        kLogger.warning() << "Failed to open file:" << m_file.fileName();
         return OpenResult::FAILED;
     }
 
@@ -249,7 +252,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audio
 
         const long madFrameLength = mad_timer_count(madHeader.duration, madUnits);
         if (0 >= madFrameLength) {
-            qWarning() << "Skipping MP3 frame with invalid length"
+            kLogger.warning() << "Skipping MP3 frame with invalid length"
                     << madFrameLength
                     << "in:" << m_file.fileName();
             // Skip frame
@@ -258,7 +261,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audio
 
         const SINT madChannelCount = MAD_NCHANNELS(&madHeader);
         if (isValidChannelCount(maxChannelCount) && (madChannelCount != maxChannelCount)) {
-            qWarning() << "Differing number of channels"
+            kLogger.warning() << "Differing number of channels"
                     << madChannelCount << "<>" << maxChannelCount
                     << "in some MP3 frame headers:"
                     << m_file.fileName();
@@ -267,7 +270,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audio
 
         const int samplingRateIndex = getIndexBySamplingRate(madSampleRate);
         if (samplingRateIndex >= kSamplingRateCount) {
-            qWarning() << "Invalid sample rate:" << m_file.fileName()
+            kLogger.warning() << "Invalid sample rate:" << m_file.fileName()
                     << madSampleRate;
             // Abort
             mad_header_finish(&madHeader);
@@ -294,7 +297,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audio
         // Unreachable code for recoverable errors
         DEBUG_ASSERT(!MAD_RECOVERABLE(m_madStream.error));
         if (MAD_ERROR_BUFLEN != m_madStream.error) {
-            qWarning() << "Unrecoverable MP3 header error:"
+            kLogger.warning() << "Unrecoverable MP3 header error:"
                     << mad_stream_errorstr(&m_madStream);
             // Abort
             return OpenResult::FAILED;
@@ -303,7 +306,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audio
 
     if (m_seekFrameList.empty()) {
         // This is not a working MP3 file.
-        qWarning() << "SSMP3: This is not a working MP3 file:"
+        kLogger.warning() << "SSMP3: This is not a working MP3 file:"
                 << m_file.fileName();
         // Abort
         return OpenResult::FAILED;
@@ -323,23 +326,23 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audio
     }
 
     if (differentRates > 1) {
-        qWarning() << "Differing sampling rate in some headers:"
+        kLogger.warning() << "Differing sampling rate in some headers:"
                    << m_file.fileName();
         for (int i = 0; i < kSamplingRateCount; ++i) {
             if (0 < headerPerSamplingRate[i]) {
-                qWarning() << headerPerSamplingRate[i] << "MP3 headers with sampling rate" << getSamplingRateByIndex(i);
+                kLogger.warning() << headerPerSamplingRate[i] << "MP3 headers with sampling rate" << getSamplingRateByIndex(i);
             }
         }
 
-        qWarning() << "MP3 files with varying sample rate are not supported!";
-        qWarning() << "Since this happens most likely due to a corrupt file";
-        qWarning() << "Mixxx tries to plays it with the most common sample rate for this file";
+        kLogger.warning() << "MP3 files with varying sample rate are not supported!";
+        kLogger.warning() << "Since this happens most likely due to a corrupt file";
+        kLogger.warning() << "Mixxx tries to plays it with the most common sample rate for this file";
     }
 
     if (mostCommonSamplingRateIndex < kSamplingRateCount) {
         setSamplingRate(getSamplingRateByIndex(mostCommonSamplingRateIndex));
     } else {
-        qWarning() << "No single valid sampling rate in header";
+        kLogger.warning() << "No single valid sampling rate in header";
         // Abort
         return OpenResult::FAILED;
     }
@@ -361,7 +364,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audio
     restartDecoding(m_seekFrameList.front());
 
     if (m_curFrameIndex != getMinFrameIndex()) {
-        qWarning() << "Failed to start decoding:" << m_file.fileName();
+        kLogger.warning() << "Failed to start decoding:" << m_file.fileName();
         // Abort
         return OpenResult::FAILED;
     }
@@ -388,7 +391,7 @@ void SoundSourceMp3::close() {
 
 void SoundSourceMp3::restartDecoding(
         const SeekFrameType& seekFrame) {
-    qDebug() << "restartDecoding @" << seekFrame.frameIndex;
+    kLogger.debug() << "restartDecoding @" << seekFrame.frameIndex;
 
     // Discard decoded output
     m_madSynthCount = 0;
@@ -534,7 +537,7 @@ SINT SoundSourceMp3::seekSampleFrame(SINT frameIndex) {
         skipSampleFrames(frameIndex - m_curFrameIndex);
         DEBUG_ASSERT(m_curFrameIndex <= frameIndex);
         if (m_curFrameIndex < frameIndex) {
-            qWarning() << "Failed to prefetch sample data while seeking:"
+            kLogger.warning() << "Failed to prefetch sample data while seeking:"
                     << m_curFrameIndex << "<" << frameIndex;
         }
     }
@@ -614,14 +617,14 @@ SINT SoundSourceMp3::readSampleFrames(
                             continue;
                         }
                         if (m_curFrameIndex < getMaxFrameIndex()) {
-                            qWarning() << "Failed to decode the end of the MP3 stream"
+                            kLogger.warning() << "Failed to decode the end of the MP3 stream"
                                     << m_curFrameIndex << "<" << getMaxFrameIndex();
                         }
                     }
                     break;
                 }
                 if (isUnrecoverableError(m_madStream)) {
-                    qWarning() << "Unrecoverable MP3 frame decoding error:"
+                    kLogger.warning() << "Unrecoverable MP3 frame decoding error:"
                             << mad_stream_errorstr(&m_madStream);
                     // Abort decoding
                     break;
@@ -632,11 +635,11 @@ SINT SoundSourceMp3::readSampleFrames(
                         // "lost synchronization" warnings) while skipping
                         // over prefetched frames after seeking.
                         if (pSampleBuffer) {
-                            qWarning() << "Recoverable MP3 frame decoding error:"
+                            kLogger.warning() << "Recoverable MP3 frame decoding error:"
                                     << mad_stream_errorstr(&m_madStream);
                         } else {
                             // Decoded samples will simply be discarded
-                            qDebug() << "Recoverable MP3 frame decoding error while skipping:"
+                            kLogger.debug() << "Recoverable MP3 frame decoding error while skipping:"
                                 << mad_stream_errorstr(&m_madStream);
                         }
                     }
@@ -644,7 +647,7 @@ SINT SoundSourceMp3::readSampleFrames(
                 }
             }
             if (pMadThisFrame == m_madStream.this_frame) {
-                qDebug() << "Retry decoding MP3 frame @" << m_curFrameIndex;
+                kLogger.debug() << "Retry decoding MP3 frame @" << m_curFrameIndex;
                 // Retry decoding
                 continue;
             }
@@ -654,7 +657,7 @@ SINT SoundSourceMp3::readSampleFrames(
 #ifndef QT_NO_DEBUG_OUTPUT
             const SINT madFrameChannelCount = MAD_NCHANNELS(&m_madFrame.header);
             if (madFrameChannelCount != getChannelCount()) {
-                qDebug() << "MP3 frame header with mismatching number of channels"
+                kLogger.debug() << "MP3 frame header with mismatching number of channels"
                         << madFrameChannelCount << "<>" << getChannelCount();
             }
 #endif
@@ -664,7 +667,7 @@ SINT SoundSourceMp3::readSampleFrames(
 #ifndef QT_NO_DEBUG_OUTPUT
             const SINT madSynthSampleRate =  m_madSynth.pcm.samplerate;
             if (madSynthSampleRate != getSamplingRate()) {
-                qDebug() << "Reading MP3 data with different sampling rate"
+                kLogger.debug() << "Reading MP3 data with different sampling rate"
                         << madSynthSampleRate << "<>" << getSamplingRate();
             }
 #endif
@@ -684,7 +687,7 @@ SINT SoundSourceMp3::readSampleFrames(
             DEBUG_ASSERT(madSynthChannelCount <= getChannelCount());
 #ifndef QT_NO_DEBUG_OUTPUT
             if (madSynthChannelCount != getChannelCount()) {
-                qDebug() << "Reading MP3 data with different number of channels"
+                kLogger.debug() << "Reading MP3 data with different number of channels"
                         << madSynthChannelCount << "<>" << getChannelCount();
             }
 #endif

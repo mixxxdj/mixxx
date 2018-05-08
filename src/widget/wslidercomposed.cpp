@@ -49,7 +49,10 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
         // The implicit default in <1.12.0 was FIXED so we keep it for backwards
         // compatibility.
         PixmapSource sourceSlider = context.getPixmapSource(slider);
-        setSliderPixmap(sourceSlider, context.selectScaleMode(slider, Paintable::FIXED));
+        setSliderPixmap(
+                sourceSlider,
+                context.selectScaleMode(slider, Paintable::FIXED),
+                context.getScaleFactor());
     }
 
     m_dSliderLength = m_bHorizontal ? width() : height();
@@ -61,7 +64,8 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
     // The implicit default in <1.12.0 was FIXED so we keep it for backwards
     // compatibility.
     setHandlePixmap(h, sourceHandle,
-                    context.selectScaleMode(handle, Paintable::FIXED));
+                    context.selectScaleMode(handle, Paintable::FIXED),
+                    context.getScaleFactor());
 
     QString eventWhileDrag;
     if (context.hasNodeSelectString(node, "EventWhileDrag", &eventWhileDrag)) {
@@ -83,8 +87,9 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
 }
 
 void WSliderComposed::setSliderPixmap(PixmapSource sourceSlider,
-                                      Paintable::DrawMode drawMode) {
-    m_pSlider = WPixmapStore::getPaintable(sourceSlider, drawMode);
+                                      Paintable::DrawMode drawMode,
+                                      double scaleFactor) {
+    m_pSlider = WPixmapStore::getPaintable(sourceSlider, drawMode, scaleFactor);
     if (!m_pSlider) {
         qDebug() << "WSliderComposed: Error loading slider pixmap:" << sourceSlider.getPath();
     } else if (drawMode == Paintable::FIXED) {
@@ -95,10 +100,11 @@ void WSliderComposed::setSliderPixmap(PixmapSource sourceSlider,
 
 void WSliderComposed::setHandlePixmap(bool bHorizontal,
                                       PixmapSource sourceHandle,
-                                      Paintable::DrawMode mode) {
+                                      Paintable::DrawMode mode,
+                                      double scaleFactor) {
     m_bHorizontal = bHorizontal;
     m_handler.setHorizontal(m_bHorizontal);
-    m_pHandle = WPixmapStore::getPaintable(sourceHandle, mode);
+    m_pHandle = WPixmapStore::getPaintable(sourceHandle, mode, scaleFactor);
     m_dHandleLength = calculateHandleLength();
     m_handler.setHandleLength(m_dHandleLength);
     if (!m_pHandle) {

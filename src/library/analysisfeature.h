@@ -13,17 +13,19 @@
 #include <QList>
 
 #include "library/libraryfeature.h"
-#include "preferences/usersettings.h"
-#include "treeitemmodel.h"
 #include "library/dlganalysis.h"
+#include "library/treeitemmodel.h"
+#include "preferences/usersettings.h"
+#include "util/db/dbconnectionpool.h"
 
-class AnalyzerQueue;
+class Library;
 class TrackCollection;
+class AnalyzerQueue;
 
 class AnalysisFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    AnalysisFeature(QObject* parent,
+    AnalysisFeature(Library* parent,
                     UserSettingsPointer pConfig,
                     TrackCollection* pTrackCollection);
     virtual ~AnalysisFeature();
@@ -63,6 +65,7 @@ class AnalysisFeature : public LibraryFeature {
     void setTitleProgress(int trackNum, int totalNum);
 
     UserSettingsPointer m_pConfig;
+    mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
     TrackCollection* m_pTrackCollection;
     AnalyzerQueue* m_pAnalyzerQueue;
     // Used to temporarily enable BPM detection in the prefs before we analyse

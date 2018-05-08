@@ -35,6 +35,7 @@ class EffectChainSlot : public QObject {
 
     void loadEffectChain(EffectChainPointer pEffectChain);
     EffectChainPointer getEffectChain() const;
+    EffectChainPointer getOrCreateEffectChain(EffectsManager* pEffectsManager);
 
     void registerChannel(const ChannelHandleAndGroup& handle_group);
 
@@ -50,6 +51,9 @@ class EffectChainSlot : public QObject {
     const QString& getGroup() const {
         return m_group;
     }
+
+    QDomElement toXml(QDomDocument* doc) const;
+    void loadChainSlotFromXml(const QDomElement& effectChainElement);
 
   signals:
     // Indicates that the effect pEffect has been loaded into slotNumber of

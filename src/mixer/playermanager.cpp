@@ -11,7 +11,6 @@
 #include "engine/enginedeck.h"
 #include "engine/enginemaster.h"
 #include "library/library.h"
-#include "library/trackcollection.h"
 #include "mixer/auxiliary.h"
 #include "mixer/deck.h"
 #include "mixer/microphone.h"
@@ -35,7 +34,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         m_pEngine(pEngine),
         // NOTE(XXX) LegacySkinParser relies on these controls being Controls
         // and not ControlProxies.
-        m_pAnalyzerQueue(NULL),
+        m_pAnalyzerQueue(nullptr),
         m_pCONumDecks(new ControlObject(
             ConfigKey("[Master]", "num_decks"), true, true)),
         m_pCONumSamplers(new ControlObject(
@@ -78,8 +77,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
             Qt::DirectConnection);
 
     // This is parented to the PlayerManager so does not need to be deleted
-    SamplerBank* pSamplerBank = new SamplerBank(this);
-    Q_UNUSED(pSamplerBank);
+    m_pSamplerBank = new SamplerBank(this);
 
     // register the engine's outputs
     m_pSoundManager->registerOutput(AudioOutput(AudioOutput::MASTER, 0, 2),
@@ -96,6 +94,9 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
 
 PlayerManager::~PlayerManager() {
     QMutexLocker locker(&m_mutex);
+
+    m_pSamplerBank->saveSamplerBankToPath(
+        m_pConfig->getSettingsPath() + "/samplers.xml");
     // No need to delete anything because they are all parented to us and will
     // be destroyed when we are destroyed.
     m_players.clear();
@@ -123,8 +124,7 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
     connect(this, SIGNAL(loadLocationToPlayer(QString, QString)),
             pLibrary, SLOT(slotLoadLocationToPlayer(QString, QString)));
 
-    m_pAnalyzerQueue = AnalyzerQueue::createDefaultAnalyzerQueue(m_pConfig,
-            pLibrary->getTrackCollection());
+    m_pAnalyzerQueue = new AnalyzerQueue(pLibrary->dbConnectionPool(), m_pConfig);
 
     // Connect the player to the analyzer queue so that loaded tracks are
     // analysed.
@@ -175,6 +175,23 @@ bool PlayerManager::isDeckGroup(const QString& group, int* number) {
         return false;
     }
     if (number != NULL) {
+        *number = deckNum;
+    }
+    return true;
+}
+
+// static
+bool PlayerManager::isSamplerGroup(const QString& group, int* number) {
+    if (!group.startsWith("[Sampler")) {
+        return false;
+    }
+
+    bool ok = false;
+    int deckNum = group.mid(8,group.lastIndexOf("]")-8).toInt(&ok);
+    if (!ok || deckNum <= 0) {
+        return false;
+    }
+    if (number != nullptr) {
         *number = deckNum;
     }
     return true;
@@ -377,6 +394,11 @@ void PlayerManager::addDeckInner() {
     if (pQuickEffectRack) {
         pQuickEffectRack->addEffectChainSlotForGroup(group);
     }
+}
+
+void PlayerManager::loadSamplers() {
+    m_pSamplerBank->loadSamplerBankFromPath(
+        m_pConfig->getSettingsPath() + "/samplers.xml");
 }
 
 void PlayerManager::addSampler() {

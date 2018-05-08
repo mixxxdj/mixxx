@@ -9,11 +9,13 @@
   <WidgetGroup>
     <ObjectName>VisualRow</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>me,max</SizePolicy>
-    <!-- Because the spinny hides itself and throws off the size
-         calculation we set our minimum size to the spinny size. -->
-    <MinimumSize>-1,101</MinimumSize>
+    <SizePolicy>me,me</SizePolicy>
     <Children>
+
+      <Template src="skin:vinylcontrol.xml"/>
+
+      <Template src="skin:spinny.xml"/>
+
       <Visual>
         <TooltipId>waveform_display</TooltipId>
         <Group><Variable name="group"/></Group>
@@ -147,66 +149,15 @@
             <SetVariable name="left_connection_control"><Variable name="group"/>,waveform_zoom_up</SetVariable>
           </Template>
         </Children>
-      </WidgetGroup>
-
-      <!-- We allow for the following options in the skin settings:
-           : Show no cover
-           : Show cover on spinning vinyl images
-           : Show cover in text row of decks
-      -->
-      <WidgetStack>
-        <ObjectName>SpinnyContainer</ObjectName>
-        <Layout>horizontal</Layout>
-        <SizePolicy>max,max</SizePolicy>
-        <MinimumSize>-1,100</MinimumSize>
-        <NextControl>[Deere],show_coverart</NextControl>
-        <PrevControl></PrevControl>
-        <Children>
-          <WidgetGroup>
-            <ObjectName>SpinnyHolder</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>max,max</SizePolicy>
-            <Children>
-              <Spinny>
-                <TooltipId>spinny</TooltipId>
-                <Group><Variable name="group"/></Group>
-                <PathBackground>image/vinyl_spinny_background.svg</PathBackground>
-                <PathForeground>image/vinyl_spinny_foreground.svg</PathForeground>
-                <PathGhost>image/vinyl_spinny_foreground_ghost.svg</PathGhost>
-                <PathMask>image/vinyl_spinny_cover_mask.svg</PathMask>
-                <ShowCover>false</ShowCover>
-              </Spinny>
-            </Children>
-          </WidgetGroup>
-
-          <WidgetGroup>
-            <ObjectName>SpinnyHolder</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>max,max</SizePolicy>
-            <Children>
-              <Spinny>
-                <TooltipId>spinny</TooltipId>
-                <Group><Variable name="group"/></Group>
-                <PathBackground>image/vinyl_spinny_background.svg</PathBackground>
-                <PathForeground>image/vinyl_spinny_foreground.svg</PathForeground>
-                <PathGhost>image/vinyl_spinny_foreground_ghost.svg</PathGhost>
-                <PathMask>image/vinyl_spinny_cover_mask.svg</PathMask>
-                <!--
-                 If you want to have cover art beneath the spinning vinyl images,
-                 set <ShowCover> to "true" AND make the <PathMask> image semi-transparent.
-                -->
-                <ShowCover>true</ShowCover>
-              </Spinny>
-            </Children>
-          </WidgetGroup>
-        </Children>
+        <!--The zoom buttons shift the center line off center in stacked waveform mode.-->
         <Connection>
-          <ConfigKey persist="true"><Variable name="control_show_spinny"/></ConfigKey>
+          <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
           <BindProperty>visible</BindProperty>
+          <Transform>
+            <Not/>
+          </Transform>
         </Connection>
-      </WidgetStack>
-
-      <Template src="skin:vinylcontrol.xml"/>
+      </WidgetGroup>
 
     </Children>
   </WidgetGroup>

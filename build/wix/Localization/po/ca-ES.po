@@ -2,14 +2,14 @@
 # Translators:
 # Benny Beat <bennybeat@gmail.com>, 2016
 # Ferran Pujol Camins <ferranpujolcamins@gmail.com>, 2016
-# Josep Maria Antolin <josepma@gmail.com>, 2016
+# Josep Maria Antolin <josepma@gmail.com>, 2016-2017
 # Josep Maria Antolin <josepma@gmail.com>, 2016
 # S.Brandt <s.brandt@mixxx.org>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2017-01-22 20:14+0000\n"
-"Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
+"PO-Revision-Date: 2017-05-03 19:38+0000\n"
+"Last-Translator: Benny Beat <bennybeat@gmail.com>\n"
 "Language-Team: Catalan (Spain) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/ca_ES/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -119,13 +119,13 @@ msgstr "L'aplicació Mixxx incloent les configuracions per defecte de diversos c
 
 msgctxt "FeaturePDBTitle"
 msgid "PDB debug files"
-msgstr ""
+msgstr "Fitxers PDB de depuració"
 
 msgctxt "FeaturePDBDescription"
 msgid ""
 "Install Mixxx PDB files to use with a debugger. This is useful to debug "
 "Mixxx and provide readable backtraces to the development team."
-msgstr ""
+msgstr "Instal·la els fitxers PDB del Mixxx per utilitzar-los amb un depurador. Això és útil per depurar el Mixxx i poder enviar traces entenedores a l'equip de desenvolupadors."
 
 msgctxt "FeatureDesktopShortcutTitle"
 msgid "Desktop Shortcut"

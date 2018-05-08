@@ -10,11 +10,11 @@
 
 class LibraryHashDAO : public DAO {
   public:
-    LibraryHashDAO(QSqlDatabase& database);
-    virtual ~LibraryHashDAO();
+    ~LibraryHashDAO() override {}
 
-    void setDatabase(QSqlDatabase& database) { m_database = database; };
-    void initialize();
+    void initialize(const QSqlDatabase& database) {
+        m_database = database;
+    };
 
     QHash<QString, int> getDirectoryHashes();
     int getDirectoryHash(const QString& dirPath);
@@ -30,7 +30,7 @@ class LibraryHashDAO : public DAO {
     QStringList getDeletedDirectories();
 
   private:
-    QSqlDatabase& m_database;
+    QSqlDatabase m_database;
 };
 
 #endif //LIBRARYHASHDAO_H

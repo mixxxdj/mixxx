@@ -7,77 +7,346 @@
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>ControlsRow</ObjectName>
-    <Layout>horizontal</Layout>
+    <ObjectName>SamplerExpansion</ObjectName>
+    <Layout>vertical</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
-      <Template src="skin:left_right_1state_button.xml">
-        <SetVariable name="TooltipId">beatsync_beatsync_tempo</SetVariable>
-        <SetVariable name="ObjectName">BeatsyncButton</SetVariable>
-        <SetVariable name="MinimumSize"><Variable name="WideButtonMinimumSize"/></SetVariable>
-        <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>
-        <SetVariable name="SizePolicy"><Variable name="WideButtonSizePolicy"/></SetVariable>
-        <SetVariable name="state_0_text">Sync</SetVariable>
-        <SetVariable name="state_0_pressed"></SetVariable>
-        <SetVariable name="state_0_unpressed"></SetVariable>
-        <SetVariable name="left_connection_control"><Variable name="group"/>,beatsync</SetVariable>
-        <SetVariable name="right_connection_control"><Variable name="group"/>,beatsync_tempo</SetVariable>
-      </Template>
 
       <WidgetGroup>
-        <ObjectName>HotcueGrid</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>max,max</SizePolicy>
         <Children>
-          <Template src="skin:hotcue_button.xml">
-            <SetVariable name="hotcue">1</SetVariable>
+          <Template src="skin:left_2state_button.xml">
+            <SetVariable name="TooltipId">repeat</SetVariable>
+            <SetVariable name="ObjectName">RepeatButton</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_repeat_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_repeat_48px.svg</SetVariable>
+            <SetVariable name="state_1_text"></SetVariable>
+            <SetVariable name="state_1_pressed">icon/ic_repeat_48px.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">icon/ic_repeat_48px.svg</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,repeat</SetVariable>
           </Template>
-          <Template src="skin:hotcue_button.xml">
-            <SetVariable name="hotcue">2</SetVariable>
-          </Template>
-          <Template src="skin:hotcue_button.xml">
-            <SetVariable name="hotcue">3</SetVariable>
-          </Template>
-          <Template src="skin:hotcue_button.xml">
-            <SetVariable name="hotcue">4</SetVariable>
-          </Template>
+
+          <Overview>
+            <TooltipId>waveform_overview</TooltipId>
+            <Group><Variable name="group"/></Group>
+            <SizePolicy>me,me</SizePolicy>
+            <BgColor>#333333</BgColor>
+            <SignalHighColor>#FFE300</SignalHighColor>
+            <SignalMidColor>#0099FF</SignalMidColor>
+            <SignalLowColor>#FF0035</SignalLowColor>
+            <SignalRGBHighColor></SignalRGBHighColor>
+            <SignalRGBMidColor></SignalRGBMidColor>
+            <SignalRGBLowColor></SignalRGBLowColor>
+            <SignalColor>#FF8000</SignalColor>
+            <PlayPosColor>#00FF00</PlayPosColor>
+            <DefaultMark>
+              <Align>bottom</Align>
+              <Color>#00FF00</Color>
+              <TextColor>#FFFFFF</TextColor>
+              <Text> %1 </Text>
+            </DefaultMark>
+            <MarkRange>
+              <StartControl>loop_start_position</StartControl>
+              <EndControl>loop_end_position</EndControl>
+              <EnabledControl>loop_enabled</EnabledControl>
+              <Color>#00FF00</Color>
+              <DisabledColor>#FFFFFF</DisabledColor>
+            </MarkRange>
+            <Mark>
+              <Control>cue_point</Control>
+              <Align>top</Align>
+              <Color>#FF001C</Color>
+              <TextColor>#FFFFFF</TextColor>
+              <Text>C</Text>
+            </Mark>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+              <EmitOnDownPress>false</EmitOnDownPress>
+            </Connection>
+          </Overview>
+
         </Children>
       </WidgetGroup>
 
-      <Template src="skin:spacer_h.xml"></Template>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
 
-      <Template src="skin:left_2state_button.xml">
-        <SetVariable name="TooltipId">pfl</SetVariable>
-        <SetVariable name="ObjectName">SamplerPflButton</SetVariable>
-        <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-        <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-        <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-        <SetVariable name="state_0_text"></SetVariable>
-        <SetVariable name="state_0_pressed">icon/ic_headphones_48px.svg</SetVariable>
-        <SetVariable name="state_0_unpressed">icon/ic_headphones_48px.svg</SetVariable>
-        <SetVariable name="state_1_text"></SetVariable>
-        <SetVariable name="state_1_pressed">icon/ic_headphones_48px.svg</SetVariable>
-        <SetVariable name="state_1_unpressed">icon/ic_headphones_48px.svg</SetVariable>
-        <SetVariable name="left_connection_control"><Variable name="group"/>,pfl</SetVariable>
-      </Template>
+          <WidgetGroup>
+            <ObjectName>ButtonGrid</ObjectName>
+            <Layout>vertical</Layout>
+            <Children>
+              <Template src="skin:left_display_2state_button.xml">
+                <SetVariable name="TooltipId">cueset</SetVariable>
+                <SetVariable name="ObjectName">SamplerCueButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="WideButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="WideButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text">CUE</SetVariable>
+                <SetVariable name="state_1_text">CUE</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,cue_set</SetVariable>
+                <SetVariable name="display_connection_control"><Variable name="group"/>,cue_indicator</SetVariable>
+              </Template>
 
-      <Template src="skin:knob_with_button.xml">
-        <SetVariable name="TooltipId">pregain</SetVariable>
-        <SetVariable name="group">[Sampler<Variable name="i"/>]</SetVariable>
-        <SetVariable name="control">pregain</SetVariable>
-        <SetVariable name="color">red</SetVariable>
-        <SetVariable name="button_TooltipId">mute</SetVariable>
-        <SetVariable name="button_control">mute</SetVariable>
-        <SetVariable name="label">Gain</SetVariable>
-      </Template>
+              <Template src="skin:left_right_1state_button.xml">
+                <SetVariable name="TooltipId">beatsync_beatsync_tempo</SetVariable>
+                <SetVariable name="ObjectName">BeatsyncButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="WideButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="WideButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text">Sync</SetVariable>
+                <SetVariable name="state_0_pressed"></SetVariable>
+                <SetVariable name="state_0_unpressed"></SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,beatsync</SetVariable>
+                <SetVariable name="right_connection_control"><Variable name="group"/>,beatsync_tempo</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
 
-      <Template src="skin:vumeter_v.xml">
-        <SetVariable name="TooltipId">channel_VuMeter</SetVariable>
-        <SetVariable name="group"><Variable name="group"/></SetVariable>
-        <SetVariable name="control">VuMeter</SetVariable>
-        <SetVariable name="tooltip_meter">sampler_VuMeter</SetVariable>
-        <SetVariable name="tooltip_clip">sampler_PeakIndicator</SetVariable>
-      </Template>
+          <Template src="skin:spacer_h.xml"/>
+
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,max</SizePolicy>
+            <MinimumSize>44,42</MinimumSize>
+            <MaximumSize>600,60</MaximumSize>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>ButtonGrid</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>p,me</SizePolicy>
+                <MinimumSize>44,22</MinimumSize>
+                <MaximumSize>600,30</MaximumSize>
+                <Children>
+
+                  <Template src="skin:left_2state_button.xml">
+                    <SetVariable name="TooltipId">pfl</SetVariable>
+                    <SetVariable name="ObjectName">SamplerPflButton</SetVariable>
+                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                    <SetVariable name="state_0_text"></SetVariable>
+                    <SetVariable name="state_0_pressed">icon/ic_headphones_48px.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">icon/ic_headphones_48px.svg</SetVariable>
+                    <SetVariable name="state_1_text"></SetVariable>
+                    <SetVariable name="state_1_pressed">icon/ic_headphones_48px.svg</SetVariable>
+                    <SetVariable name="state_1_unpressed">icon/ic_headphones_48px.svg</SetVariable>
+                    <SetVariable name="left_connection_control"><Variable name="group"/>,pfl</SetVariable>
+                  </Template>
+
+                  <Template src="skin:left_1state_button.xml">
+                    <SetVariable name="TooltipId">eject</SetVariable>
+                    <SetVariable name="ObjectName">EjectButton</SetVariable>
+                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                    <SetVariable name="state_0_text"></SetVariable>
+                    <SetVariable name="state_0_pressed">icon/ic_eject_48px.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">icon/ic_eject_48px.svg</SetVariable>
+                    <SetVariable name="left_connection_control"><Variable name="group"/>,eject</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>ButtonGrid</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>p,me</SizePolicy>
+                <MinimumSize>44,22</MinimumSize>
+                <MaximumSize>60,30</MaximumSize>
+                <Children>
+
+                  <Template src="skin:left_3state_button.xml">
+                    <SetVariable name="TooltipId">orientation</SetVariable>
+                    <SetVariable name="ObjectName">OrientationButton</SetVariable>
+                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                    <SetVariable name="state_0_text"></SetVariable>
+                    <SetVariable name="state_0_pressed">icon/ic_orientation_left_48px.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">icon/ic_orientation_left_48px.svg</SetVariable>
+                    <SetVariable name="state_1_text"></SetVariable>
+                    <SetVariable name="state_1_pressed">icon/ic_orientation_48px.svg</SetVariable>
+                    <SetVariable name="state_1_unpressed">icon/ic_orientation_48px.svg</SetVariable>
+                    <SetVariable name="state_2_text"></SetVariable>
+                    <SetVariable name="state_2_pressed">icon/ic_orientation_right_48px.svg</SetVariable>
+                    <SetVariable name="state_2_unpressed">icon/ic_orientation_right_48px.svg</SetVariable>
+                    <SetVariable name="left_connection_control"><Variable name="group"/>,orientation</SetVariable>
+                  </Template>
+
+                  <Template src="skin:left_2state_button.xml">
+                    <SetVariable name="TooltipId">keylock</SetVariable>
+                    <SetVariable name="ObjectName">KeylockButton</SetVariable>
+                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                    <SetVariable name="state_0_text"></SetVariable>
+                    <SetVariable name="state_0_pressed">icon/ic_key_48px.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">icon/ic_key_48px.svg</SetVariable>
+                    <SetVariable name="state_1_text"></SetVariable>
+                    <SetVariable name="state_1_pressed">icon/ic_key_48px.svg</SetVariable>
+                    <SetVariable name="state_1_unpressed">icon/ic_key_48px.svg</SetVariable>
+                    <SetVariable name="left_connection_control"><Variable name="group"/>,keylock</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+          <Template src="skin:spacer_h.xml"></Template>
+
+          <WidgetGroup>
+            <ObjectName>ButtonGrid</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>p,me</SizePolicy>
+            <MinimumSize>26,44</MinimumSize>
+            <MaximumSize>26,50</MaximumSize>
+            <Children>
+
+              <Template src="skin:fx_unit_group_assignment_button.xml">
+                <SetVariable name="EffectUnit">1</SetVariable>
+                <SetVariable name="SourceType">sampler</SetVariable>
+              </Template>
+
+              <Template src="skin:fx_unit_group_assignment_button.xml">
+                <SetVariable name="EffectUnit">2</SetVariable>
+                <SetVariable name="SourceType">sampler</SetVariable>
+              </Template>
+
+            </Children>
+            <Connection>
+              <ConfigKey>[Master],show_4effectunits</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform>
+                <Not/>
+              </Transform>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Children>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <KnobComposed>
+                    <TooltipId>pregain</TooltipId>
+                    <Size>24f,20f</Size>
+                    <Knob>knob_red.svg</Knob>
+                    <BackPath>knob_bg.svg</BackPath>
+                    <MinAngle>-135</MinAngle>
+                    <MaxAngle>135</MaxAngle>
+                    <KnobCenterYOffset>0.9423</KnobCenterYOffset>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,pregain</ConfigKey>
+                    </Connection>
+                  </KnobComposed>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>vumeter_v</ObjectName>
+                <Layout>vertical</Layout>
+                <Children>
+                  <StatusLight>
+                    <ObjectName>PeakIndicator</ObjectName>
+                    <TooltipId><Variable name="tooltip_clip"/>sampler_PeakIndicator</TooltipId>
+                    <Size>8f,6f</Size>
+                    <PathStatusLight scalemode="STRETCH">vumeter_clip.svg</PathStatusLight>
+                    <Connection>
+                        <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
+                    </Connection>
+                  </StatusLight>
+
+                  <VuMeter>
+                    <TooltipId>sampler_VuMeter</TooltipId>
+                    <Size>3me,me</Size>
+                    <MinimumSize>8,15</MinimumSize>
+                    <MaximumSize>8,-1</MaximumSize>
+                    <PathVu scalemode="STRETCH">vumeter_v.svg</PathVu>
+                    <Horizontal>false</Horizontal>
+                    <PeakHoldSize>5</PeakHoldSize>
+                    <PeakHoldTime>600</PeakHoldTime>
+                    <PeakFallTime>100</PeakFallTime>
+                    <PeakFallStep>1</PeakFallStep>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
+                    </Connection>
+                  </VuMeter>
+
+                </Children>
+              </WidgetGroup>
+
+              </Children>
+            </WidgetGroup>
+
+            <SliderComposed>
+              <TooltipId>rate</TooltipId>
+              <Size>20f,-1me</Size>
+              <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+              <Handle scalemode="STRETCH_ASPECT">handle-vertical.svg</Handle>
+              <Connection>
+                <ConfigKey><Variable name="group"/>,rate</ConfigKey>
+              </Connection>
+            </SliderComposed>
+
+          </Children>
+        </WidgetGroup>
+
+        <WidgetGroup>
+          <ObjectName>ButtonGrid</ObjectName>
+          <Layout>horizontal</Layout>
+          <Children>
+            <Template src="skin:fx_unit_group_assignment_button.xml">
+              <SetVariable name="EffectUnit">1</SetVariable>
+              <SetVariable name="SourceType">sampler</SetVariable>
+            </Template>
+
+            <Template src="skin:fx_unit_group_assignment_button.xml">
+              <SetVariable name="EffectUnit">2</SetVariable>
+              <SetVariable name="SourceType">sampler</SetVariable>
+            </Template>
+
+            <Template src="skin:fx_unit_group_assignment_button.xml">
+              <SetVariable name="EffectUnit">3</SetVariable>
+              <SetVariable name="SourceType">sampler</SetVariable>
+            </Template>
+
+            <Template src="skin:fx_unit_group_assignment_button.xml">
+              <SetVariable name="EffectUnit">4</SetVariable>
+              <SetVariable name="SourceType">sampler</SetVariable>
+            </Template>
+          </Children>
+          <Connection>
+            <ConfigKey>[Master],show_4effectunits</ConfigKey>
+            <BindProperty>visible</BindProperty>
+          </Connection>
+        </WidgetGroup>
+
+        <WidgetGroup>
+          <ObjectName>ButtonGrid</ObjectName>
+          <Layout>horizontal</Layout>
+          <Children>
+            <Template src="skin:hotcue_button.xml">
+              <SetVariable name="hotcue">1</SetVariable>
+            </Template>
+            <Template src="skin:hotcue_button.xml">
+              <SetVariable name="hotcue">2</SetVariable>
+            </Template>
+            <Template src="skin:hotcue_button.xml">
+              <SetVariable name="hotcue">3</SetVariable>
+            </Template>
+            <Template src="skin:hotcue_button.xml">
+              <SetVariable name="hotcue">4</SetVariable>
+            </Template>
+          </Children>
+        </WidgetGroup>
+
     </Children>
   </WidgetGroup>
 </Template>

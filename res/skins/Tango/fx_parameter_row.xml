@@ -1,0 +1,74 @@
+<!--
+Description:
+  A row of up to 8 effect parameter knobs and up to 8 parameter buttons.
+Variables:
+  fxGroup   : EffectRack1_EffectUnitX
+  EffectNum : effect number
+-->
+<Template>
+  <SetVariable name="Effect">[<Variable name="fxGroup"/>_Effect<Variable name="EffectNum"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>EffectSlotParameters</ObjectName>
+    <Layout>horizontal</Layout>
+    <Size>max,39f</Size>
+    <Children>
+    
+      <Template src="skin:fx_parameter_knob.xml">
+        <SetVariable name="EffectParameter">1</SetVariable>
+      </Template>
+      <Template src="skin:fx_parameter_button.xml">
+        <SetVariable name="EffectButtonParameter">1</SetVariable>
+      </Template>
+        
+      <Template src="skin:fx_parameter_knob.xml">
+        <SetVariable name="EffectParameter">2</SetVariable>
+      </Template>
+      <Template src="skin:fx_parameter_button.xml">
+        <SetVariable name="EffectButtonParameter">2</SetVariable>
+      </Template>
+        
+      <Template src="skin:fx_parameter_knob.xml">
+        <SetVariable name="EffectParameter">3</SetVariable>
+      </Template>
+      <Template src="skin:fx_parameter_button.xml">
+        <SetVariable name="EffectButtonParameter">3</SetVariable>
+      </Template>
+        
+      <Template src="skin:fx_parameter_knob.xml">
+        <SetVariable name="EffectParameter">4</SetVariable>
+      </Template>
+      <Template src="skin:fx_parameter_button.xml">
+        <SetVariable name="EffectButtonParameter">4</SetVariable>
+      </Template>
+        
+      <Template src="skin:fx_parameter_knob.xml">
+        <SetVariable name="EffectParameter">5</SetVariable>
+      </Template>
+      <Template src="skin:fx_parameter_button.xml">
+        <SetVariable name="EffectButtonParameter">5</SetVariable>
+      </Template>
+        
+      <Template src="skin:fx_parameter_knob.xml">
+        <SetVariable name="EffectParameter">6</SetVariable>
+      </Template>
+      <Template src="skin:fx_parameter_button.xml">
+        <SetVariable name="EffectButtonParameter">6</SetVariable>
+      </Template>
+        
+      <Template src="skin:fx_parameter_knob.xml">
+        <SetVariable name="EffectParameter">7</SetVariable>
+      </Template>
+      <Template src="skin:fx_parameter_button.xml">
+        <SetVariable name="EffectButtonParameter">7</SetVariable>
+      </Template>
+        
+      <Template src="skin:fx_parameter_knob.xml">
+        <SetVariable name="EffectParameter">8</SetVariable>
+      </Template>
+      <Template src="skin:fx_parameter_button.xml">
+        <SetVariable name="EffectButtonParameter">8</SetVariable>
+      </Template>
+      
+    </Children>
+  </WidgetGroup>
+</Template>
