@@ -86,6 +86,14 @@ DJ202.crossfader = new components.Pot({
     midi: [0xBF, 0x08],
     group: '[Master]',
     inKey: 'crossfader',
+    input: function () {
+        // We need a weird max. for the crossfader to make it cut cleanly.
+        // However, components.js resets max. to 0x3fff when the first value is
+        // received. Hence, we need to set max. here instead of within the
+        // constructor.
+        this.max = (0x7f<<7) + 0x70;
+        components.Pot.prototype.input.apply(this, arguments);
+    }
 });
 
 DJ202.Deck = function (deckNumbers, offset) {
