@@ -352,14 +352,12 @@ namespace {
 // obsolete once libFLAC is taking care of these issues internally.
 // https://bugs.launchpad.net/mixxx/+bug/1769717
 // https://hydrogenaud.io/index.php/topic,61792.msg559045.html#msg559045
-//
-// We will shift decoded samples left by (32 - m_bitsPerSample) to
-// get rid of the garbage in the most significant bits before scaling.
-// The range of decoded integer sample values then becomes
-// [-2 ^ 31, 2 ^ 31 - 1]. Afterwards this integer range needs to be
-// scaled to [-CSAMPLE_PEAK, CSAMPLE_PEAK).
 
-const CSAMPLE kSampleScaleFactor = CSAMPLE_PEAK / (static_cast<FLAC__int32>(1) << std::numeric_limits<FLAC__int32>::digits);
+// We will shift decoded samples left by (32 - m_bitsPerSample) to
+// get rid of the garbage in the most significant bits before scaling
+// to the range [-CSAMPLE_PEAK, CSAMPLE_PEAK - epsilon] with
+// epsilon = 1 / 2 ^ bitsPerSample.
+constexpr CSAMPLE kSampleScaleFactor = CSAMPLE_PEAK / (static_cast<FLAC__int32>(1) << std::numeric_limits<FLAC__int32>::digits);
 
 inline
 CSAMPLE convertDecodedSample(FLAC__int32 decodedSample, int bitsPerSample) {
