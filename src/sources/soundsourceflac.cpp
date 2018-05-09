@@ -345,6 +345,25 @@ FLAC__bool SoundSourceFLAC::flacEOF() {
     return m_file.atEnd();
 }
 
+inline
+FLAC__int32 adjustDecodedSample(FLAC__int32 decodedSample, SINT bitsPerSample) {
+    // Workaround for improperly encoded FLAC files that may contain
+    // garbage in the most significant, unused bits of decoded samples.
+    // Required at least for libFLAC 1.3.2. This workaround might become
+    // obsolete once libFLAC is taking care of these issues internally.
+    // https://bugs.launchpad.net/mixxx/+bug/1769717
+    // https://hydrogenaud.io/index.php/topic,61792.msg559045.html#msg559045
+    FLAC__int32 signBit = static_cast<FLAC__int32>(1) << (bitsPerSample - 1);
+    FLAC__int32 bitMask = (static_cast<FLAC__int32>(1) << bitsPerSample) - 1; // == (signBit << 1) - 1
+    FLAC__int32 maskedSample = decodedSample & bitMask;
+    if (maskedSample & signBit) {
+        // Sign extension for negative values
+        return maskedSample | ~bitMask;
+    } else {
+        return maskedSample;
+    }
+}
+
 FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
         const FLAC__Frame* frame, const FLAC__int32* const buffer[]) {
     const SINT numChannels = frame->header.channels;
@@ -391,15 +410,15 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
     case 1: {
         // optimized code for 1 channel (mono)
         for (SINT i = 0; i < numWritableFrames; ++i) {
-            *pSampleBuffer++ = buffer[0][i] * m_sampleScaleFactor;
+            *pSampleBuffer++ = adjustDecodedSample(buffer[0][i], m_bitsPerSample) * m_sampleScaleFactor;
         }
         break;
     }
     case 2: {
         // optimized code for 2 channels (stereo)
         for (SINT i = 0; i < numWritableFrames; ++i) {
-            *pSampleBuffer++ = buffer[0][i] * m_sampleScaleFactor;
-            *pSampleBuffer++ = buffer[1][i] * m_sampleScaleFactor;
+            *pSampleBuffer++ = adjustDecodedSample(buffer[0][i], m_bitsPerSample) * m_sampleScaleFactor;
+            *pSampleBuffer++ = adjustDecodedSample(buffer[1][i], m_bitsPerSample) * m_sampleScaleFactor;
         }
         break;
     }
@@ -407,7 +426,7 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
         // generic code for multiple channels
         for (SINT i = 0; i < numWritableFrames; ++i) {
             for (SINT j = 0; j < channelCount(); ++j) {
-                *pSampleBuffer++ = buffer[j][i] * m_sampleScaleFactor;
+                *pSampleBuffer++ = adjustDecodedSample(buffer[j][i], m_bitsPerSample) * m_sampleScaleFactor;
             }
         }
     }
