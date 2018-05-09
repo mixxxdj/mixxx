@@ -181,39 +181,7 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
 void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
     Q_UNUSED(playing);
 
-    if (playing) {
-        Syncable *currentSyncable = pSyncable;
-
-        // Rearrange the syncables with the playing syncables clustered in the beginning
-        // and appending the current syncable in the end of the playing syncables
-        for (int i=0 ; i<m_syncables.length() ; ++i) {
-            Syncable* temporarySyncable = m_syncables[i];
-            if (temporarySyncable->isPlaying()) {
-                if (temporarySyncable == pSyncable)
-                    break;
-                continue;
-            }
-            m_syncables[i] = currentSyncable;
-            currentSyncable = temporarySyncable;
-            if (temporarySyncable == pSyncable)
-                break;
-        }
-
-        m_pFirstPlayingDeck = m_syncables[0];
-    }
-    else {
-        // Maintain the playing syncables clustering in the beginning
-        for (int i=0 ; i<m_syncables.length()-1 ; ++i) {
-            Syncable* temporarySyncable = m_syncables[i];
-            if (temporarySyncable == pSyncable && m_syncables[i+1]->isPlaying()) {
-                m_syncables[i] = m_syncables[i+1];
-                m_syncables[i+1] = temporarySyncable;
-            }
-            else if (!temporarySyncable->isPlaying())
-                break;
-        }
-        m_pFirstPlayingDeck = (m_syncables[0]->isPlaying() ? m_syncables[0] : nullptr);
-    }
+    playing ? setPlayingSyncable(pSyncable) : setPausedSyncable(pSyncable);
 
     if (!syncDeckExists() && m_pFirstPlayingDeck) {
         setMasterBpm(m_pFirstPlayingDeck, m_pFirstPlayingDeck->getBpm());

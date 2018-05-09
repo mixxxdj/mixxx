@@ -184,3 +184,38 @@ void BaseSyncableListener::checkUniquePlayingSyncable() {
         unique_syncable->notifyOnlyPlayingSyncable();
     }
 }
+
+void BaseSyncableListener::setPlayingSyncable(Syncable* pSource) {
+    Syncable *currentSyncable = pSource;
+    // Rearrange the syncables with the playing syncables clustered in the beginning
+    // and appending the current syncable in the end of the playing syncables
+    for (int i=0 ; i<m_syncables.length() ; ++i) {
+        Syncable* temporarySyncable = m_syncables[i];
+        if (temporarySyncable != pSource && temporarySyncable->isPlaying()) {
+            continue;
+        }
+        m_syncables[i] = currentSyncable;
+        currentSyncable = temporarySyncable;
+        if (temporarySyncable == pSource) {
+            break;
+        }
+    }
+
+    m_pFirstPlayingDeck = (m_syncables[0]->isPlaying() ? m_syncables[0] : nullptr);
+}
+
+void BaseSyncableListener::setPausedSyncable(Syncable* pSource) {
+    // Maintain the playing syncables clustering in the beginning
+    for (int i=0 ; i<m_syncables.length()-1 ; ++i) {
+        Syncable* temporarySyncable = m_syncables[i];
+        if (temporarySyncable == pSource && m_syncables[i+1]->isPlaying()) {
+            m_syncables[i] = m_syncables[i+1];
+            m_syncables[i+1] = temporarySyncable;
+        }
+        else if (!temporarySyncable->isPlaying()) {
+            break;
+        }
+    }
+
+    m_pFirstPlayingDeck = (m_syncables[0]->isPlaying() ? m_syncables[0] : nullptr);
+}

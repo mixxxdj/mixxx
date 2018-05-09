@@ -85,6 +85,12 @@ class BaseSyncableListener : public SyncableListener {
     // Check if there is only one playing syncable deck, and notify it if so.
     void checkUniquePlayingSyncable();
 
+    // Set the syncable to playing state and sort m_syncables accordingly
+    void setPlayingSyncable(Syncable* pSource);
+
+    // Set the syncable to paused state and sort m_syncables accordingly
+    void setPausedSyncable(Syncable* pSource);
+
     UserSettingsPointer m_pConfig;
     // The InternalClock syncable.
     InternalClock* m_pInternalClock;
