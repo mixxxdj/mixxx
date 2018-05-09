@@ -46,11 +46,7 @@ void benchmarkNativeEffectDefaultParameters(const mixxx::EngineParameters& buffe
     activeInputChannels.insert(handle_and_group);
     EffectInstantiatorPointer pInstantiator = EffectInstantiatorPointer(
         new EffectProcessorInstantiator<EffectType>());
-<<<<<<< HEAD
-    EngineEffect effect(pManifest, registeredChannels, pInstantiator);
-=======
-    EngineEffect effect(manifest, activeInputChannels, pEffectsManager, pInstantiator);
->>>>>>> upstream/master
+    EngineEffect effect(pManifest, activeInputChannels, pEffectsManager, pInstantiator);
 
     GroupFeatureState featureState;
     EffectEnableState enableState = EffectEnableState::Enabled;
