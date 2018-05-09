@@ -233,12 +233,32 @@ class Qt(Dependence):
     def enabled_modules(build):
         qt5 = Qt.qt5_enabled(build)
         qt_modules = [
-            'QtCore', 'QtGui', 'QtOpenGL', 'QtXml', 'QtSvg',
-            'QtSql', 'QtScript', 'QtNetwork',
-            'QtTest', 'QtScriptTools'
+            # Keep alphabetized.
+            'QtCore',
+            'QtGui',
+            'QtNetwork',
+            'QtOpenGL',
+            'QtScript',
+            'QtScriptTools',
+            'QtSql',
+            'QtSvg',
+            'QtTest',
+            'QtXml',
         ]
         if qt5:
-            qt_modules.extend(['QtWidgets', 'QtConcurrent'])
+            qt_modules.extend([
+                # Keep alphabetized.
+                'QtConcurrent',
+                'QtWidgets',
+            ])
+            if build.platform_is_windows:
+                qt_modules.extend([
+                    # Keep alphabetized.
+                    'QtAccessibilitySupport',
+                    'QtEventDispatcherSupport',
+                    'QtFontDatabaseSupport',
+                    'QtThemeSupport',
+                ])
         return qt_modules
 
     @staticmethod
@@ -391,6 +411,22 @@ class Qt(Dependence):
                 # QtNetwork openssl-linked
                 build.env.Append(LIBS = 'crypt32')
 
+                # New libraries required by Qt5.
+                if qt5:
+                    build.env.Append(LIBS = 'dwmapi')  # qtwindows
+                    build.env.Append(LIBS = 'iphlpapi')  # qt5network
+                    build.env.Append(LIBS = 'libEGL')  # qt5opengl
+                    build.env.Append(LIBS = 'libGLESv2')  # qt5opengl
+                    build.env.Append(LIBS = 'netapi32')  # qt5core
+                    build.env.Append(LIBS = 'userenv')  # qt5core
+                    build.env.Append(LIBS = 'uxtheme')  # ?
+                    build.env.Append(LIBS = 'version')  # ?
+
+                    build.env.Append(LIBS = 'qtfreetype')
+                    build.env.Append(LIBS = 'qtharfbuzz')
+                    build.env.Append(LIBS = 'qtlibpng')
+                    build.env.Append(LIBS = 'qtpcre2')
+
                 # NOTE(rryan): If you are adding a plugin here, you must also
                 # update src/mixxxapplication.cpp to define a Q_IMPORT_PLUGIN
                 # for it. Not all imageformats plugins are built as .libs when
@@ -409,11 +445,27 @@ class Qt(Dependence):
                 build.env.Append(LIBS = 'qico')
                 build.env.Append(LIBS = 'qsvg')
                 build.env.Append(LIBS = 'qtga')
+                build.env.Append(LIBS = 'qgif')
+                build.env.Append(LIBS = 'qjpeg')
 
-                # accessibility plugins
-                build.env.Append(LIBPATH=[
-                    os.path.join(build.env['QTDIR'],'plugins/accessible')])
-                build.env.Append(LIBS = 'qtaccessiblewidgets')
+                # accessibility plugins (gone in Qt5)
+                if not qt5:
+                    build.env.Append(LIBPATH=[
+                        os.path.join(build.env['QTDIR'],'plugins/accessible')])
+                    build.env.Append(LIBS = 'qtaccessiblewidgets')
+
+                # platform plugins (new in Qt5 for Windows)
+                if qt5:
+                    build.env.Append(LIBPATH=[
+                        os.path.join(build.env['QTDIR'],'plugins/platforms')])
+                    build.env.Append(LIBS = 'qwindows')
+
+                # sqldrivers (new in Qt5? or did we just start enabling them)
+                if qt5:
+                    build.env.Append(LIBPATH=[
+                        os.path.join(build.env['QTDIR'],'plugins/sqldrivers')])
+                    build.env.Append(LIBS = 'qsqlite')
+
 
 
         # Set the rpath for linux/bsd/osx.
