@@ -359,12 +359,12 @@ namespace {
 // [-2 ^ 31, 2 ^ 31 - 1]. Afterwards this integer range needs to be
 // scaled to [-CSAMPLE_PEAK, CSAMPLE_PEAK).
 
-const CSAMPLE kSampleScaleFactor = CSAMPLE_PEAK / (static_cast<FLAC__int32>(1) << 31);
+const CSAMPLE kSampleScaleFactor = CSAMPLE_PEAK / (static_cast<FLAC__int32>(1) << std::numeric_limits<FLAC__int32>::digits);
 
 inline
 CSAMPLE convertDecodedSample(FLAC__int32 decodedSample, int bitsPerSample) {
-    DEBUG_ASSERT(sizeof(FLAC__int32) == 32); // exactly 32-bits required!
-    return (decodedSample << (32 - bitsPerSample)) * kSampleScaleFactor;
+    DEBUG_ASSERT(std::numeric_limits<FLAC__int32>::is_signed);
+    return (decodedSample << ((std::numeric_limits<FLAC__int32>::digits + 1) - bitsPerSample)) * kSampleScaleFactor;
 }
 
 } // anonymous namespace
