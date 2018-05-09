@@ -363,6 +363,7 @@ const CSAMPLE kSampleScaleFactor = CSAMPLE_PEAK / (static_cast<FLAC__int32>(1) <
 
 inline
 CSAMPLE convertDecodedSample(FLAC__int32 decodedSample, int bitsPerSample) {
+    DEBUG_ASSERT(sizeof(FLAC__int32) == 32); // exactly 32-bits required!
     return (decodedSample << (32 - bitsPerSample)) * kSampleScaleFactor;
 }
 
