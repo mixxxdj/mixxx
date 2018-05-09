@@ -383,7 +383,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
             // or this is a push button.
             emitValue = 1.0;
         } else {
-            // Toggle thru the states
+            // Toggle through the states
             emitValue = getControlParameterLeft();
             if (!isnan(emitValue) && m_iNoStates > 0) {
                 emitValue = static_cast<int>(emitValue + 1.0) % m_iNoStates;

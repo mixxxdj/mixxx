@@ -35,7 +35,7 @@ void BroadcastSettings::loadProfiles() {
             profilesFolder.entryInfoList(nameFilters, QDir::Files, QDir::Name);
 
     // If *.bcp.xml files exist in the profiles subfolder, those will be loaded
-    // and instanciated in the class' internal profile list for other by it and
+    // and instantiated in the class' internal profile list for other by it and
     // Mixxx subsystems related to Live Broadcasting.
     // If that directory is empty (common reasons: it has been created by the
     // code at the beginning, or all profiles were deleted) then a default

@@ -19,7 +19,7 @@ class DbConnectionPool final {
   public:
     // Creates a new pool of database connections (one per thread) that
     // all use the same connection parameters. Unique connection names
-    // will be  generated based on the given connection name that serves
+    // will be generated based on the given connection name that serves
     // as the base name (= common prefix).
     static DbConnectionPoolPtr create(
             const DbConnection::Params& params,

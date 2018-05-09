@@ -257,7 +257,7 @@ bundle_QT4_plugin() {
 
 
 bundle_QT4_plugin "imageformats" "qgif qjpeg qsvg"; #Left out libqmng and libqtiff to save space.
-bundle_QT4_plugin "iconengines" "qsvg"; #Yeah, theres a libqsvg.dylib iconengine and a libqsvg.dylib imageformat (and they're different)...
+bundle_QT4_plugin "iconengines" "qsvg"; #Yeah, there's a libqsvg.dylib iconengine and a libqsvg.dylib imageformat (and they're different)...
 
 
 cd $WRKDIR

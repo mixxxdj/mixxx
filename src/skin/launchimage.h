@@ -10,7 +10,7 @@ class QProgressBar;
 // It shows a centered Image and a progress bar below.
 // By default a symbolic Mixxx icon and logo is shown.
 // It can be modified in the skin.xml file at <skin> sction,
-// to match the  skin like that:
+// to match the skin like that:
 //    <LaunchImageStyle>
 //        LaunchImage { background-color: #202020; }
 //        QLabel {

@@ -24,7 +24,7 @@ Const TristateTrue = -1
 Dim argCount:argCount = Wscript.Arguments.Count
 If argCount > 0 Then If InStr(1, Wscript.Arguments(0), "?", vbTextCompare) > 0 Then argCount = 0
 If (argCount = 0) Then
-	Wscript.Echo "Windows Installer database substorage managment utility" &_
+	Wscript.Echo "Windows Installer database substorage management utility" &_
 		vbNewLine & " 1st argument is the path to MSI database (installer package)" &_
 		vbNewLine & " 2nd argument is the path to a transform or database to import" &_
 		vbNewLine & " If the 2nd argument is missing, substorages will be listed" &_

@@ -88,7 +88,7 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     QList<TrackId> trackIds;
     trackIds.append(pTrack->getId());
     if (m_pTrackCollection->addCrateTracks(m_selectedCrate, trackIds)) {
-        // TODO(rryan) just add the track dont select
+        // TODO(rryan) just add the track don't select
         select();
         return true;
     } else {

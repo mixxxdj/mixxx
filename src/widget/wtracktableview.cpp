@@ -260,7 +260,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         newModel = trackModel;
         saveVScrollBarPos(getTrackModel());
         //saving current vertical bar position
-        //using adress of track model as key
+        //using address of track model as key
     }
 
     // The "coverLocation" and "hash" column numbers are required very often
@@ -341,7 +341,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         /* If Mixxx starts the first time or the header states have been cleared
          * due to database schema evolution we gonna hide all columns that may
          * contain a potential large number of NULL values.  This will hide the
-         * key colum by default unless the user brings it to front
+         * key column by default unless the user brings it to front
          */
         if (trackModel->isColumnHiddenByDefault(i) &&
             !header->hasPersistedHeaderState()) {
@@ -404,7 +404,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
     restoreVScrollBarPos(newModel);
     // restoring scrollBar position using model pointer as key
-    // scrollbar positions with respect  to different models are backed by map
+    // scrollbar positions with respect to different models are backed by map
 }
 
 void WTrackTableView::createActions() {
@@ -1166,8 +1166,8 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     // The user usually drops on the seam between two rows.
     // We take the row below the seam for reference.
     int dropRow = rowAt(event->pos().y());
-    int hight = rowHeight(dropRow);
-    QPoint pointOfRowBelowSeam(event->pos().x(), event->pos().y() + hight / 2);
+    int height = rowHeight(dropRow);
+    QPoint pointOfRowBelowSeam(event->pos().x(), event->pos().y() + height / 2);
     QModelIndex destIndex = indexAt(pointOfRowBelowSeam);
 
     //qDebug() << "destIndex.row() is" << destIndex.row();

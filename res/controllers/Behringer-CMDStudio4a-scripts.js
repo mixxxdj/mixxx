@@ -135,7 +135,7 @@ BehringerCMDStudio4a.scratch = function (channel, control, value, status, group)
     midi.sendShortMsg(status, control, BehringerCMDStudio4a.scratchButtonState[channel] ? 0x01 : 0x00);
 }
 
-// Function to deal with the FX Assign buttons, (becasue they also act as "shift" buttons).
+// Function to deal with the FX Assign buttons, (because they also act as "shift" buttons).
 BehringerCMDStudio4a.fxAssign = function (channel, control, value, status, group) {
     // FX Assign buttons start at 0x52.
     var fxAssignButton = (control - 0x52) & 1;  // Either 0 or 1 depending on button (1 or 2).
@@ -156,7 +156,7 @@ BehringerCMDStudio4a.fxAssign = function (channel, control, value, status, group
     }
 }
 
-// Function to deal with the browse left/right buttons, (becasue they have an "FX Assign mode" behaviour).
+// Function to deal with the browse left/right buttons, (because they have an "FX Assign mode" behaviour).
 BehringerCMDStudio4a.browseLR = function (channel, control, value, status, group) {
     if (BehringerCMDStudio4a.fxAssignPushed) {
         BehringerCMDStudio4a.fxAssignShiftUsed = true;

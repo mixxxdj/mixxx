@@ -177,7 +177,24 @@ void WMainMenuBar::initialize() {
     // VIEW MENU
     QMenu* pViewMenu = new QMenu(tr("&View"));
 
+    // Skin Settings Menu
     QString mayNotBeSupported = tr("May not be supported on all skins.");
+    QString showSkinSettingsTitle = tr("Show Skin Settings Menu");
+    QString showSkinSettingsText = tr("Show the Skin Settings Menu of the currently selected Skin") +
+            " " + mayNotBeSupported;
+    auto pViewShowSkinSettings = new QAction(showSkinSettingsTitle, this);
+    pViewShowSkinSettings->setCheckable(true);
+    m_pKbdShortcutsUpdater->addWatcher(new ShortcutChangeWatcher(
+            pViewShowSkinSettings,
+            ConfigKey("[Master]", "ViewMenu_ShowSkinSettings"),
+            tr("Ctrl+1", "Menubar|View|Show Skin Settings")
+    ));
+    pViewShowSkinSettings->setStatusTip(showSkinSettingsText);
+    pViewShowSkinSettings->setWhatsThis(buildWhatsThis(showSkinSettingsTitle, showSkinSettingsText));
+    createVisibilityControl(pViewShowSkinSettings, ConfigKey("[Master]", "skin_settings"));
+    pViewMenu->addAction(pViewShowSkinSettings);
+
+    // Microphone Section
     QString showMicrophoneTitle = tr("Show Microphone Section");
     QString showMicrophoneText = tr("Show the microphone section of the Mixxx interface.") +
             " " + mayNotBeSupported;

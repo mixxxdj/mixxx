@@ -67,7 +67,7 @@
                     <Script-Binding/>
                 </options>
             </control>
-        <!-- Main Controlls -->
+        <!-- Main Controls -->
             <control>
                 <group>[Master]</group>
                 <key>crossfader</key>
@@ -313,7 +313,7 @@
                     <normal/>
                 </options>
             </control>
-	<!-- Standard Controlls -->
+	<!-- Standard Controls -->
 	<control>
                 <group>[Channel1]</group>
                 <key>cue_default</key>
@@ -603,7 +603,7 @@
                     <normal/>
                 </options>
             </control>
-	<!-- End of Controlls -->
+	<!-- End of Controls -->
             </controls>
         <outputs>
   	<!-- LED Lighting -->

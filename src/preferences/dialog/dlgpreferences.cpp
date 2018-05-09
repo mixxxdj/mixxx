@@ -412,7 +412,7 @@ void DlgPreferences::onShow() {
     setGeometry(newX,  // x position
                 newY,  // y position
                 m_geometry[2].toInt(),  // width
-                m_geometry[3].toInt()); // heigth
+                m_geometry[3].toInt()); // height
 #endif
     // Move is also needed on linux.
     move(newX, newY);
