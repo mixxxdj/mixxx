@@ -818,6 +818,10 @@ CuePointer Track::findCueByType(Cue::CueType type) const {
 }
 
 void Track::removeCue(const CuePointer& pCue) {
+    if (pCue == nullptr) {
+        return;
+    }
+
     QMutexLocker lock(&m_qMutex);
     disconnect(pCue.get(), 0, this, 0);
     m_cuePoints.removeOne(pCue);
