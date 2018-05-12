@@ -97,7 +97,8 @@ class BaseSyncableListener : public SyncableListener {
     // The current Syncable that is the master.
     Syncable* m_pMasterSyncable;
     // The list of all Syncables registered with BaseSyncableListener via
-    // addSyncableDeck.
+    // addSyncableDeck sorted according to the time of playing to keep 
+    // track of the first playing deck.
     QList<Syncable*> m_syncables;
     // The earliest playing syncable
     Syncable* m_pFirstPlayingDeck;

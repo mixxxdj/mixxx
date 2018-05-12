@@ -187,9 +187,9 @@ void BaseSyncableListener::checkUniquePlayingSyncable() {
 
 void BaseSyncableListener::setPlayingSyncable(Syncable* pSource) {
     Syncable *currentSyncable = pSource;
-    // Rearrange the syncables with the playing syncables clustered in the beginning
-    // and appending the current syncable in the end of the playing syncables
-    for (int i=0 ; i<m_syncables.length() ; ++i) {
+    // Sort the syncables with the playing syncables clustered in the beginning
+    // and appending the current syncable at the end of the playing syncables
+    for (int i = 0; i < m_syncables.length(); ++i) {
         Syncable* temporarySyncable = m_syncables[i];
         if (temporarySyncable != pSource && temporarySyncable->isPlaying()) {
             continue;
@@ -205,14 +205,14 @@ void BaseSyncableListener::setPlayingSyncable(Syncable* pSource) {
 }
 
 void BaseSyncableListener::setPausedSyncable(Syncable* pSource) {
-    // Maintain the playing syncables clustering in the beginning
-    for (int i=0 ; i<m_syncables.length()-1 ; ++i) {
+    // Push the current syncable out the playing syncables group
+    // so that the playing syncables are at the beginning of the list
+    for (int i = 0; i < m_syncables.length()-1; ++i) {
         Syncable* temporarySyncable = m_syncables[i];
         if (temporarySyncable == pSource && m_syncables[i+1]->isPlaying()) {
             m_syncables[i] = m_syncables[i+1];
             m_syncables[i+1] = temporarySyncable;
-        }
-        else if (!temporarySyncable->isPlaying()) {
+        } else if (!temporarySyncable->isPlaying()) {
             break;
         }
     }
