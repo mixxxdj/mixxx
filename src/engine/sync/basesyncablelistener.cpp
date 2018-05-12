@@ -188,7 +188,9 @@ void BaseSyncableListener::checkUniquePlayingSyncable() {
 void BaseSyncableListener::setPlayingSyncable(Syncable* pSource) {
     Syncable *currentSyncable = pSource;
     // Sort the syncables with the playing syncables clustered in the beginning
-    // and appending the current syncable at the end of the playing syncables
+    // and appending the current syncable at the end of the playing syncables.
+    // This allows for keeping track of the first played deck, which is needed 
+    // to keep the InternalClock updated when no decks have sync enabled.
     for (int i = 0; i < m_syncables.length(); ++i) {
         Syncable* temporarySyncable = m_syncables[i];
         if (temporarySyncable != pSource && temporarySyncable->isPlaying()) {
