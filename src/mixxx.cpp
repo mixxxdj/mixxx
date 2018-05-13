@@ -204,7 +204,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     LV2Backend* pLV2Backend = new LV2Backend(m_pEffectsManager);
     m_pEffectsManager->addEffectsBackend(pLV2Backend);
 #else
-    LV2Backend* pLV2Backend = 0;
+    LV2Backend* pLV2Backend = nullptr;
 #endif
 
     // Sets up the EffectChains and EffectRacks (long)
