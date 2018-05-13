@@ -2,8 +2,7 @@
 #include "engine/effects/engineeffect.h"
 #include "control/controlobject.h"
 #include "util/sample.h"
-
-#define MAX_BUFFER_LEN 160000
+#include "util/defs.h"
 
 LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
                                        EffectManifestPointer pManifest,
