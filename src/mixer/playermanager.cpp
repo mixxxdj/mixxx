@@ -22,6 +22,7 @@
 #include "util/assert.h"
 #include "util/stat.h"
 #include "util/sleepableqthread.h"
+#include "broadcast/metadatabroadcast.h"
 
 //static
 QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumDecks;
@@ -51,7 +52,8 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         m_pCONumMicrophones(new ControlObject(
                 ConfigKey("[Master]", "num_microphones"), true, true)),
         m_pCONumAuxiliaries(new ControlObject(
-                ConfigKey("[Master]", "num_auxiliaries"), true, true)) {
+                ConfigKey("[Master]", "num_auxiliaries"), true, true)),
+        m_pMetadataBroadcast(new MetadataBroadcast()){
     connect(m_pCONumDecks, SIGNAL(valueChanged(double)),
             this, SLOT(slotNumDecksControlChanged(double)),
             Qt::DirectConnection);
@@ -109,6 +111,7 @@ PlayerManager::~PlayerManager() {
     delete m_pCONumPreviewDecks;
     delete m_pCONumMicrophones;
     delete m_pCONumAuxiliaries;
+    delete m_pMetadataBroadcast;
     if (m_pAnalyzerQueue) {
         delete m_pAnalyzerQueue;
     }

@@ -387,6 +387,10 @@ void BaseTrackPlayerImpl::slotSetReplayGain(mixxx::ReplayGain replayGain) {
 }
 
 void BaseTrackPlayerImpl::slotPlayToggled(double v) {
+    if (v == 0)
+        PlayerInfo::instance().onTrackPaused(getGroup(),m_pLoadedTrack);
+    else if (v == 1)
+        PlayerInfo::instance().onTrackResumed(getGroup(),m_pLoadedTrack);
     if (!v && m_replaygainPending) {
         setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
     }

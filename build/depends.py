@@ -663,6 +663,8 @@ class MixxxCore(Feature):
                    "control/controlttrotary.cpp",
                    "control/controlencoder.cpp",
 
+                   "broadcast/metadatabroadcast.cpp",
+
                    "controllers/dlgcontrollerlearning.cpp",
                    "controllers/dlgprefcontroller.cpp",
                    "controllers/dlgprefcontrollers.cpp",

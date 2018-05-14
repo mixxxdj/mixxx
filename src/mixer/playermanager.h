@@ -25,6 +25,7 @@ class PreviewDeck;
 class Sampler;
 class SamplerBank;
 class SoundManager;
+class MetadataBroadcast;
 
 // For mocking PlayerManager.
 class PlayerManagerInterface {
@@ -255,6 +256,8 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     QList<Microphone*> m_microphones;
     QList<Auxiliary*> m_auxiliaries;
     QMap<QString, BaseTrackPlayer*> m_players;
+
+    MetadataBroadcast *m_pMetadataBroadcast;
 };
 
 #endif // MIXER_PLAYERMANAGER_H
