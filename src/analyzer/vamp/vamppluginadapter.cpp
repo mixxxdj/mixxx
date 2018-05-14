@@ -138,8 +138,7 @@ std::mutex s_mutex;
 
 Vamp::HostExt::PluginLoader* s_pluginLoader = nullptr;
 
-Vamp::HostExt::PluginLoader* getPluginLoader(
-        const std::lock_guard<std::mutex>&) {
+Vamp::HostExt::PluginLoader* getPluginLoaderLocked() {
     if (!s_pluginLoader) {
         initPluginPaths();
         s_pluginLoader = Vamp::HostExt::PluginLoader::getInstance();
@@ -151,12 +150,11 @@ Vamp::HostExt::PluginLoader* getPluginLoader(
     return s_pluginLoader;
 }
 
-Vamp::Plugin* loadPlugin(
-        const std::lock_guard<std::mutex>& locked,
+Vamp::Plugin* loadPluginLocked(
         Vamp::HostExt::PluginLoader::PluginKey key,
         float inputSampleRate,
         int adapterFlags) {
-    const auto pluginLoader = getPluginLoader(locked);
+    const auto pluginLoader = getPluginLoaderLocked();
     if (pluginLoader) {
         const auto plugin = pluginLoader->loadPlugin(
             key, inputSampleRate, adapterFlags);
@@ -176,7 +174,7 @@ Vamp::Plugin* loadPlugin(
 
 Vamp::HostExt::PluginLoader::PluginKeyList VampPluginAdapter::listPlugins() {
     const std::lock_guard<std::mutex> locked(s_mutex);
-    const auto pluginLoader = getPluginLoader(locked);
+    const auto pluginLoader = getPluginLoaderLocked();
     if (pluginLoader) {
         return pluginLoader->listPlugins();
     } else {
@@ -188,7 +186,7 @@ Vamp::HostExt::PluginLoader::PluginKey VampPluginAdapter::composePluginKey(
         std::string libraryName,
         std::string identifier) {
     const std::lock_guard<std::mutex> locked(s_mutex);
-    const auto pluginLoader = getPluginLoader(locked);
+    const auto pluginLoader = getPluginLoaderLocked();
     if (pluginLoader) {
         return pluginLoader->composePluginKey(
                 std::move(libraryName),
@@ -225,7 +223,7 @@ void VampPluginAdapter::loadPlugin(
         int adapterFlags) {
     std::lock_guard<std::mutex> locked(s_mutex);
     m_plugin.reset();
-    m_plugin.reset(mixxx::loadPlugin(locked, key, inputSampleRate, adapterFlags));
+    m_plugin.reset(loadPluginLocked(key, inputSampleRate, adapterFlags));
     if (m_plugin) {
         m_identifier = m_plugin->getIdentifier();
         m_name = m_plugin->getName();
