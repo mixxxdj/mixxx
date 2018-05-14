@@ -64,8 +64,10 @@ void WNumberPos::slotSetTimeElapsed(double dTimeElapsed) {
         formatter = &mixxx::Duration::formatKiloSeconds;
     } else if (m_displayFormat == TrackTime::DisplayFormat::HECTO_SECOND) {
         formatter = &mixxx::Duration::formatHectoSeconds;
+    } else if (m_displayFormat == TrackTime::DisplayFormat::SECOND) {
+       formatter = &mixxx::Duration::formatSeconds;
     } else {
-        formatter = &mixxx::Duration::formatSeconds;
+        formatter = &mixxx::Duration::formatTime;
     }
 
     if (m_displayMode == TrackTime::DisplayMode::Elapsed) {

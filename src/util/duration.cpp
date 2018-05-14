@@ -21,7 +21,7 @@ static const qint64 kSecondsPerDay = 24 * kSecondsPerHour;
 QString DurationBase::kCentisecondSeperator = QString::fromUtf8("\u2009");
 
 // static
-QString DurationBase::formatSeconds(double dSeconds, Precision precision) {
+QString DurationBase::formatTime(double dSeconds, Precision precision) {
     if (dSeconds < 0.0) {
         // negative durations are not supported
         return "?";
@@ -52,6 +52,25 @@ QString DurationBase::formatSeconds(double dSeconds, Precision precision) {
 
     return durationString;
 }
+
+QString DurationBase::formatSeconds(double dSeconds, Precision precision) {
+    if (dSeconds < 0.0) {
+        // negative durations are not supported
+        return "?";
+    }
+    QString durationString;
+
+    if (Precision::CENTISECONDS == precision) {
+        durationString = QString("%1").arg(dSeconds,1,'f',2,'0');
+    } else if (Precision::MILLISECONDS == precision) {
+        durationString = QString("%1").arg(dSeconds,1,'f',3,'0');
+    } else {
+        durationString = QString("%1").arg(dSeconds,1,'f',0,'0');
+    }
+
+    return durationString;
+}
+
 // static
 QString DurationBase::formatKiloSeconds(double dSeconds, Precision precision) {
     if (dSeconds < 0.0) {

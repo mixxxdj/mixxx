@@ -70,10 +70,13 @@ class DurationBase {
 
     // The standard way of formatting a floating-point duration in seconds.
     // Used for display of track duration, etc.
+    static QString formatTime(
+            double dSeconds,
+            Precision precision = Precision::SECONDS);
+    // Alternative format for duration based on seconds
     static QString formatSeconds(
             double dSeconds,
             Precision precision = Precision::SECONDS);
-    // Alternative format for duration based on kilo seconds
     static QString formatKiloSeconds(
             double dSeconds,
             Precision precision = Precision::SECONDS);

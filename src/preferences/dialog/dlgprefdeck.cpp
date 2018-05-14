@@ -119,6 +119,8 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     comboBoxTimeFormat->clear();
     comboBoxTimeFormat->addItem(tr("hh:mm:ss.zzz - Traditional"),
                                 static_cast<int>(TrackTime::DisplayFormat::TRADITIONAL));
+    comboBoxTimeFormat->addItem(tr("s%1zz - Seconds").arg(mixxx::DurationBase::kCentisecondSeperator),
+                                static_cast<int>(TrackTime::DisplayFormat::SECOND));
     comboBoxTimeFormat->addItem(tr("k.sss%1zz - Kiloseconds").arg(mixxx::DurationBase::kCentisecondSeperator),
                                 static_cast<int>(TrackTime::DisplayFormat::KILO_SECOND));
     comboBoxTimeFormat->addItem(tr("hs.ss%1zz - Hectoseconds").arg(mixxx::DurationBase::kCentisecondSeperator),
