@@ -846,6 +846,9 @@ void Track::removeCuesOfType(Cue::CueType type) {
             dirty = true;
         }
     }
+    if (compareAndSet(&m_record.refCuePoint(), -1.0) || compareAndSet(&m_cueSource, Cue::UNKNOWN)) {
+        dirty = true;
+    }
     if (dirty) {
         markDirtyAndUnlock(&lock);
         emit(cuesUpdated());
