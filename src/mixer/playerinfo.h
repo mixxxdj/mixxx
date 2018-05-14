@@ -22,11 +22,15 @@ class PlayerInfo : public QObject {
     QMap<QString, TrackPointer> getLoadedTracks();
     bool isTrackLoaded(const TrackPointer& pTrack) const;
     bool isFileLoaded(const QString& track_location) const;
+    void onTrackPaused(const QString& group, TrackPointer pTrack);
+    void onTrackResumed(const QString& group, TrackPointer pTrack);
 
   signals:
     void currentPlayingDeckChanged(int deck);
     void currentPlayingTrackChanged(TrackPointer pTrack);
     void trackChanged(const QString& group, TrackPointer pNewTrack, TrackPointer pOldTrack);
+    void trackPaused(const QString& group, TrackPointer pTrack);
+    void trackResumed(const QString& group, TrackPointer pTrack);
 
   private:
     class DeckControls {

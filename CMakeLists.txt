@@ -678,6 +678,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/audio/signalinfo.cpp
   src/audio/streaminfo.cpp
   src/audio/types.cpp
+  src/broadcast/metadatabroadcast.cpp
   src/control/control.cpp
   src/control/controlaudiotaperpot.cpp
   src/control/controlbehavior.cpp
