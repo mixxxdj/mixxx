@@ -313,14 +313,14 @@ VMS4.effectSelect = function(channel, control, value, status, group) {
     
     diff += wrapCount*128;
     
-    engine.setValue("[EffectRack1_EffectUnit"+VMS4.GetDeckNum(group)+"]","chain_selector",diff);
+    engine.setValue("[EffectRack1_EffectUnit"+VMS4.GetDeckNum(group)+"_Effect1]","effect_selector",diff);
 }
 
 VMS4.effectSelectPress = function(channel, control, value, status, group) {
     var deckNum = VMS4.GetDeckNum(group);
     if (value > 0x40) {
-        engine.setValue("[EffectRack1_EffectUnit"+deckNum+"]","enabled",
-                        !engine.getValue("[EffectRack1_EffectUnit"+deckNum+"]","enabled")
+        engine.setValue("[EffectRack1_EffectUnit"+deckNum+"_Effect1]","enabled",
+                        !engine.getValue("[EffectRack1_EffectUnit"+deckNum+"_Effect1]","enabled")
         );
     }
 }
