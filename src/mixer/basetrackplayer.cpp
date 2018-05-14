@@ -949,8 +949,13 @@ void BaseTrackPlayerImpl::slotTrackRatingChangeRequestRelative(int change) {
 }
 
 void BaseTrackPlayerImpl::slotPlayToggled(double value) {
-    if (value == 0 && m_replaygainPending) {
-        setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
+    if (value <= 0) {
+        PlayerInfo::instance().onTrackPaused(getGroup(), m_pLoadedTrack);
+        if (m_replaygainPending) {
+            setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
+        }
+    } else {
+        PlayerInfo::instance().onTrackResumed(getGroup(), m_pLoadedTrack);
     }
 }
 
