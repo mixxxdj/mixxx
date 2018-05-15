@@ -94,6 +94,7 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
     }
 
     m_runningRequests.insert(requestId);
+    // The watcher will be deleted in coverLoaded()
     QFutureWatcher<FutureResult>* watcher = new QFutureWatcher<FutureResult>(this);
     QFuture<FutureResult> future = QtConcurrent::run(
             this, &CoverArtCache::loadCover, requestInfo, pRequestor,
@@ -146,9 +147,13 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
 
 // watcher
 void CoverArtCache::coverLoaded() {
-    QFutureWatcher<FutureResult>* watcher;
-    watcher = reinterpret_cast<QFutureWatcher<FutureResult>*>(sender());
-    FutureResult res = watcher->result();
+    FutureResult res;
+    {
+        QFutureWatcher<FutureResult>* watcher =
+                static_cast<QFutureWatcher<FutureResult>*>(sender());
+        res = watcher->result();
+        watcher->deleteLater();
+    }
 
     if (sDebug) {
         kLogger.debug() << "coverLoaded" << res.cover;

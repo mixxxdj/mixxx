@@ -36,7 +36,25 @@
 #include "util/timer.h"
 #include "util/math.h"
 
+
+namespace {
+
 enum { UndefinedRecordIndex = -2 };
+
+void markTrackLocationsAsDeleted(QSqlDatabase database, const QString& directory) {
+    //qDebug() << "TrackDAO::markTrackLocationsAsDeleted" << QThread::currentThread() << m_database.connectionName();
+    QSqlQuery query(database);
+    query.prepare("UPDATE track_locations "
+                  "SET fs_deleted=1 "
+                  "WHERE directory=:directory");
+    query.bindValue(":directory", directory);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query)
+                << "Couldn't mark tracks in" << directory << "as deleted.";
+    }
+}
+
+} // anonymous namespace
 
 TrackDAO::TrackDAO(CueDAO& cueDao,
                    PlaylistDAO& playlistDao,
@@ -84,7 +102,7 @@ void TrackDAO::finish() {
     // directories as deleted.
     // TODO(XXX) This doesn't handle sub-directories of deleted directories.
     for (const auto& dir: deletedHashDirs) {
-        markTrackLocationsAsDeleted(dir);
+        markTrackLocationsAsDeleted(m_database, dir);
     }
     transaction.commit();
 }
@@ -103,6 +121,8 @@ TrackId TrackDAO::getTrackId(const QString& absoluteFilePath) {
     if (query.exec()) {
         if (query.next()) {
             trackId = TrackId(query.value(query.record().indexOf("id")));
+        } else {
+            qDebug() << "TrackDAO::getTrackId(): Track location not found in library:" << absoluteFilePath;
         }
     } else {
         LOG_FAILED_QUERY(query);
@@ -132,6 +152,10 @@ QList<TrackId> TrackDAO::getTrackIds(const QList<QFileInfo>& files) {
         const int idColumn = query.record().indexOf("id");
         while (query.next()) {
             trackIds.append(TrackId(query.value(idColumn)));
+        }
+        DEBUG_ASSERT(trackIds.size() <= files.size());
+        if (trackIds.size() < files.size()) {
+            qDebug() << "TrackDAO::getTrackIds(): Found only" << trackIds.size() << "of" << files.size() << "tracks in library";
         }
     } else {
         LOG_FAILED_QUERY(query);
@@ -177,14 +201,6 @@ QString TrackDAO::getTrackLocation(TrackId trackId) {
     }
 
     return trackLocation;
-}
-
-/** Check if a track exists in the library table already.
-    @param file_location The full path to the track on disk, including the filename.
-    @return true if the track is found in the library table, false otherwise.
-*/
-bool TrackDAO::trackExistsInDatabase(const QString& absoluteFilePath) {
-    return getTrackId(absoluteFilePath).isValid();
 }
 
 void TrackDAO::saveTrack(Track* pTrack) {
@@ -1510,19 +1526,6 @@ void TrackDAO::markUnverifiedTracksAsDeleted() {
     }
 }
 
-void TrackDAO::markTrackLocationsAsDeleted(const QString& directory) {
-    //qDebug() << "TrackDAO::markTrackLocationsAsDeleted" << QThread::currentThread() << m_database.connectionName();
-    QSqlQuery query(m_database);
-    query.prepare("UPDATE track_locations "
-                  "SET fs_deleted=1 "
-                  "WHERE directory=:directory");
-    query.bindValue(":directory", directory);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query)
-                << "Couldn't mark tracks in" << directory << "as deleted.";
-    }
-}
-
 // Look for moved files. Look for files that have been marked as
 // "deleted on disk" and see if another "file" with the same name and
 // files size exists in the track_locations table. That means the file has
@@ -1907,36 +1910,38 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
 TrackPointer TrackDAO::getOrAddTrack(const QString& trackLocation,
                                      bool processCoverArt,
                                      bool* pAlreadyInLibrary) {
-    const TrackId trackId(getTrackId(trackLocation));
+    const TrackId trackId = getTrackId(trackLocation);
     const bool trackAlreadyInLibrary = trackId.isValid();
+    if (pAlreadyInLibrary) {
+        *pAlreadyInLibrary = trackAlreadyInLibrary;
+    }
 
     TrackPointer pTrack;
     if (trackAlreadyInLibrary) {
         pTrack = getTrack(trackId);
+        if (!pTrack) {
+            qWarning() << "Failed to load track"
+                    << trackLocation;
+            return pTrack;
+        }
     } else {
         // Add Track to library -- unremove if it was previously removed.
         pTrack = addSingleTrack(trackLocation, true);
-    }
-
-    // addTrack or getTrack may fail.
-    if (!pTrack) {
-        qWarning() << "Failed to load track"
-                << trackLocation;
-        return pTrack;
-    }
-
-    // If the track wasn't in the library already then it has not yet been
-    // checked for cover art. If processCoverArt is true then we should request
-    // cover processing via CoverArtCache asynchronously.
-    if (processCoverArt && !trackAlreadyInLibrary) {
-        CoverArtCache* pCache = CoverArtCache::instance();
-        if (pCache != nullptr) {
-            pCache->requestGuessCover(pTrack);
+        if (!pTrack) {
+            qWarning() << "Failed to add track"
+                    << trackLocation;
+            return pTrack;
         }
-    }
-
-    if (pAlreadyInLibrary != nullptr) {
-        *pAlreadyInLibrary = trackAlreadyInLibrary;
+        DEBUG_ASSERT(pTrack);
+        // If the track wasn't in the library already then it has not yet been
+        // checked for cover art. If processCoverArt is true then we should request
+        // cover processing via CoverArtCache asynchronously.
+        if (processCoverArt) {
+            CoverArtCache* pCache = CoverArtCache::instance();
+            if (pCache != nullptr) {
+                pCache->requestGuessCover(pTrack);
+            }
+        }
     }
 
     return pTrack;

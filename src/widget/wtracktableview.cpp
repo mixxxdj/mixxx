@@ -1166,8 +1166,8 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     // The user usually drops on the seam between two rows.
     // We take the row below the seam for reference.
     int dropRow = rowAt(event->pos().y());
-    int hight = rowHeight(dropRow);
-    QPoint pointOfRowBelowSeam(event->pos().x(), event->pos().y() + hight / 2);
+    int height = rowHeight(dropRow);
+    QPoint pointOfRowBelowSeam(event->pos().x(), event->pos().y() + height / 2);
     QModelIndex destIndex = indexAt(pointOfRowBelowSeam);
 
     //qDebug() << "destIndex.row() is" << destIndex.row();

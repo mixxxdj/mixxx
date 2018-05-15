@@ -1189,7 +1189,7 @@ class Optimize(Feature):
                 if build.architecture_is_x86 and not build.machine_is_64bit:
                     # For 32 bit builds using gcc < 5.0, the mfpmath=sse is
                     # not set by default (not supported on arm builds)
-                    # If -msse is not implicite set, it falls back to mfpmath=387
+                    # If -msse is not implicitly set, it falls back to mfpmath=387
                     # and a compiler warning is issued (tested with gcc 4.8.4)
                     build.env.Append(CCFLAGS='-mfpmath=sse')
                 elif build.architecture_is_arm:

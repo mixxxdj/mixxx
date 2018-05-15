@@ -43,7 +43,7 @@ class EvictAndSaveFunctor {
     void operator()(Track* plainPtr) {
         DEBUG_ASSERT(plainPtr == m_cacheEntryPtr->getPlainPtr());
         // Here we move m_cacheEntryPtr and the owned track out of the
-        // functor and the owning refference counting object.
+        // functor and the owning reference counting object.
         // This is required to break a cycle reference from the weak pointer
         // inside the cache entry to the same reference counting object.
         GlobalTrackCache::evictAndSaveCachedTrack(std::move(m_cacheEntryPtr));
@@ -594,7 +594,7 @@ void GlobalTrackCache::evictAndSave(
 
     if (!chacheEntryPtr->getSavingWeakPtr().expired()) {
         // We have handed out (revived) this track again after our reference count
-        // drops to zero and before aquire the lock at the beginning of this function
+        // drops to zero and before acquire the lock at the beginning of this function
         if (debugLogEnabled()) {
             kLogger.debug()
                     << "Skip to evict and save a revived or reallocated track"
@@ -605,7 +605,7 @@ void GlobalTrackCache::evictAndSave(
 
     if (!evict(chacheEntryPtr->getPlainPtr())) {
         // A scond deleter has already evict the track from cache after our
-        // reference count drops to zero and before aquire the lock at the
+        // reference count drops to zero and before acquire the lock at the
         // beginning of this function
         if (debugLogEnabled()) {
             kLogger.debug()
