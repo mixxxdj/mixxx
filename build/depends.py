@@ -417,6 +417,7 @@ class Qt(Dependence):
                     build.env.Append(LIBS = 'iphlpapi')  # qt5network
                     build.env.Append(LIBS = 'libEGL')  # qt5opengl
                     build.env.Append(LIBS = 'libGLESv2')  # qt5opengl
+                    build.env.Append(LIBS = 'mpr')  # qt5core
                     build.env.Append(LIBS = 'netapi32')  # qt5core
                     build.env.Append(LIBS = 'userenv')  # qt5core
                     build.env.Append(LIBS = 'uxtheme')  # ?
