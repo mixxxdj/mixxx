@@ -271,11 +271,11 @@ void RecordingManager::slotBytesRecorded(int bytes)
 }
 
 void RecordingManager::warnFreespace() {
-    qWarning() << "RecordingManager: less then 1 GiB free space";
+    qWarning() << "RecordingManager: less than 1 GiB free space";
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_WARNING);
     props->setTitle(tr("Low Disk Space Warning"));
-    props->setText(tr("There is less then 1 GiB of useable space in the recording folder"));
+    props->setText(tr("There is less than 1 GiB of useable space in the recording folder"));
     props->setKey("RecordingManager::warnFreespace");   // To prevent multiple windows for the same error
 
     // Allow user to suppress further notifications about this particular error
