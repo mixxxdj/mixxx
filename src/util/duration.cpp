@@ -18,7 +18,8 @@ static const qint64 kSecondsPerDay = 24 * kSecondsPerHour;
 } // namespace
 
 // static
-QString DurationBase::kCentisecondSeperator = QString::fromUtf8("\u2009");
+QChar DurationBase::kCentisecondSeperator = QChar(0x2009);
+QChar DurationBase::kHectosecondSeperator = QChar(0x231E);
 
 // static
 QString DurationBase::formatTime(double dSeconds, Precision precision) {
@@ -110,7 +111,7 @@ QString DurationBase::formatHectoSeconds(double dSeconds, Precision precision) {
     double subs = fmod(dSeconds, 1);
 
     QString durationString =
-            QString("%1.%2").arg(hecto, 0, 10).arg(seconds, 2, 'f', 0, QLatin1Char('0'));
+            QString("%1%2%3").arg(hecto, 0, 10).arg(kHectosecondSeperator).arg(seconds, 2, 'f', 0, QLatin1Char('0'));
     if (Precision::SECONDS != precision) {
             durationString += kCentisecondSeperator % QString::number(subs, 'f', 3).right(3);
     }

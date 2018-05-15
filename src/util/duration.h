@@ -89,7 +89,8 @@ class DurationBase {
     static constexpr qint64 kNanosPerSecond  = kMicrosPerSecond * 1000;
     static constexpr qint64 kNanosPerMilli   = kNanosPerSecond / 1000;
     static constexpr qint64 kNanosPerMicro   = kNanosPerMilli / 1000;
-    static QString kCentisecondSeperator;
+    static QChar kCentisecondSeperator;
+    static QChar kHectosecondSeperator;
 
   protected:
     explicit DurationBase(qint64 durationNanos)

@@ -138,17 +138,17 @@ TEST_F(DurationUtilTest, FormatKiloSeconds) {
 }
 
 TEST_F(DurationUtilTest, FormatHectoSeconds) {
-    formatHectoSeconds(QString::fromUtf8("0.00\u2009000"), 0);
-    formatHectoSeconds(QString::fromUtf8("0.01\u2009000"), 1);
-    formatHectoSeconds(QString::fromUtf8("0.01\u2009500"), 1.5);
-    formatHectoSeconds(QString::fromUtf8("0.01\u2009510"), 1.51);
-    formatHectoSeconds(QString::fromUtf8("0.01\u2009490"), 1.49);
-    formatHectoSeconds(QString::fromUtf8("0.59\u2009000"), 59);
-    formatHectoSeconds(QString::fromUtf8("0.60\u2009000"), 60);
-    formatHectoSeconds(QString::fromUtf8("0.61\u2009123"), 61.1234);
-    formatHectoSeconds(QString::fromUtf8("9.99\u2009990"), 999.99);
-    formatHectoSeconds(QString::fromUtf8("10.00\u2009000"), 1000.00);
-    formatHectoSeconds(QString::fromUtf8("864.00\u2009000"), 24 * 3600);
+    formatHectoSeconds(QString::fromUtf8("0\u231E00\u2009000"), 0);
+    formatHectoSeconds(QString::fromUtf8("0\u231E01\u2009000"), 1);
+    formatHectoSeconds(QString::fromUtf8("0\u231E01\u2009500"), 1.5);
+    formatHectoSeconds(QString::fromUtf8("0\u231E01\u2009510"), 1.51);
+    formatHectoSeconds(QString::fromUtf8("0\u231E01\u2009490"), 1.49);
+    formatHectoSeconds(QString::fromUtf8("0\u231E59\u2009000"), 59);
+    formatHectoSeconds(QString::fromUtf8("0\u231E60\u2009000"), 60);
+    formatHectoSeconds(QString::fromUtf8("0\u231E61\u2009123"), 61.1234);
+    formatHectoSeconds(QString::fromUtf8("9\u231E99\u2009990"), 999.99);
+    formatHectoSeconds(QString::fromUtf8("10\u231E00\u2009000"), 1000.00);
+    formatHectoSeconds(QString::fromUtf8("864\u231E00\u2009000"), 24 * 3600);
 }
 
 
