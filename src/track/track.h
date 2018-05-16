@@ -140,6 +140,12 @@ class Track : public QObject {
         return getDurationText(mixxx::Duration::Precision::MILLISECONDS);
     }
 
+    void pausePlayedTime();
+
+    void resumePlayedTime();
+
+    void resetPlayedTime();
+
     // Set BPM
     double setBpm(double);
     // Returns BPM

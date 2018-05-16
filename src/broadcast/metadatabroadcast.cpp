@@ -2,14 +2,14 @@
 #include "mixer/playerinfo.h"
 
 MetadataBroadcast::MetadataBroadcast() {
-    connect(&PlayerInfo::instance(),SIGNAL(trackLoaded(QString,TrackPointer)),
+    /*connect(&PlayerInfo::instance(),SIGNAL(trackLoaded(QString,TrackPointer)),
             this,SLOT(slotTrackLoaded(QString,TrackPointer)));
     connect(&PlayerInfo::instance(),SIGNAL(trackUnloaded(QString,TrackPointer)),
             this,SLOT(slotTrackUnloaded(QString,TrackPointer)));
     connect(&PlayerInfo::instance(),SIGNAL(trackPaused(QString,TrackPointer)),
             this,SLOT(slotTrackPaused(QString,TrackPointer)));
     connect(&PlayerInfo::instance(),SIGNAL(trackResumed(QString,TrackPointer)),
-            this,SLOT(slotTrackResumed(QString,TrackPointer)));
+            this,SLOT(slotTrackResumed(QString,TrackPointer)));*/
 }
 
 void MetadataBroadcast::slotTrackLoaded(QString group, TrackPointer pTrack) {

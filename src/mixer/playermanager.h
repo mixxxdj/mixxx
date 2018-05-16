@@ -238,6 +238,15 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Used to protect access to PlayerManager state across threads.
     mutable QMutex m_mutex;
 
+  private slots:    
+    void slotTrackPaused(TrackPointer pPausedTrack);
+    void slotTrackResumed(TrackPointer pResumedTrack);
+    void slotLoadingTrack(TrackPointer oldTrack, TrackPointer newTrack);
+    void slotNewTrackLoaded(TrackPointer newTrack);
+    void slotPlayerEmpty();
+
+  private:
+  
     UserSettingsPointer m_pConfig;
     SoundManager* m_pSoundManager;
     EffectsManager* m_pEffectsManager;
@@ -255,9 +264,11 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     QList<PreviewDeck*> m_preview_decks;
     QList<Microphone*> m_microphones;
     QList<Auxiliary*> m_auxiliaries;
-    QMap<QString, BaseTrackPlayer*> m_players;
+    QMap<QString, BaseTrackPlayer*> m_players; 
 
+    //Live metadata section
     MetadataBroadcast *m_pMetadataBroadcast;
+    QList<TrackPointer*> m_tracksToBeReset;
 };
 
 #endif // MIXER_PLAYERMANAGER_H

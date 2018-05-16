@@ -388,9 +388,9 @@ void BaseTrackPlayerImpl::slotSetReplayGain(mixxx::ReplayGain replayGain) {
 
 void BaseTrackPlayerImpl::slotPlayToggled(double v) {
     if (v == 0)
-        PlayerInfo::instance().onTrackPaused(getGroup(),m_pLoadedTrack);
+        emit(trackPaused(m_pLoadedTrack));
     else if (v == 1)
-        PlayerInfo::instance().onTrackResumed(getGroup(),m_pLoadedTrack);
+        emit(trackResumed(m_pLoadedTrack));
     if (!v && m_replaygainPending) {
         setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
     }
@@ -475,4 +475,8 @@ void BaseTrackPlayerImpl::slotWaveformZoomSetDefault(double pressed) {
 void BaseTrackPlayerImpl::setReplayGain(double value) {
     m_pReplayGain->set(value);
     m_replaygainPending = false;
+}
+
+bool BaseTrackPlayerImpl::isTrackPaused() const {
+    return m_pPlay->toBool();
 }

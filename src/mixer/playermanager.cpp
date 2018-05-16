@@ -53,7 +53,8 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                 ConfigKey("[Master]", "num_microphones"), true, true)),
         m_pCONumAuxiliaries(new ControlObject(
                 ConfigKey("[Master]", "num_auxiliaries"), true, true)),
-        m_pMetadataBroadcast(new MetadataBroadcast()){
+        m_pMetadataBroadcast(new MetadataBroadcast())
+        {
     connect(m_pCONumDecks, SIGNAL(valueChanged(double)),
             this, SLOT(slotNumDecksControlChanged(double)),
             Qt::DirectConnection);
@@ -369,6 +370,17 @@ void PlayerManager::addDeckInner() {
     connect(pDeck, SIGNAL(noVinylControlInputConfigured()),
             this, SIGNAL(noVinylControlInputConfigured()));
 
+    connect(pDeck,SIGNAL(trackPaused(TrackPointer)),
+            this, SLOT(slotTrackPaused(TrackPointer)));
+    connect(pDeck,SIGNAL(trackResumed(TrackPointer)),
+            this, SLOT(slotTrackResumed(TrackPointer)));
+    connect(pDeck,SIGNAL(newTrackLoaded(TrackPointer)),
+            this, SLOT(slotNewTrackLoaded(TrackPointer)));
+    connect(pDeck,SIGNAL(loadingTrack(TrackPointer,TrackPointer)),
+            this, SLOT(slotLoadingTrack(TrackPointer,TrackPointer))); 
+    connect(pDeck,SIGNAL(playerEmpty()),
+            this, SLOT(slotPlayerEmpty()));   
+
     if (m_pAnalyzerQueue) {
         connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
                 m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
@@ -622,4 +634,32 @@ void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack) {
         }
         ++it;
     }
+}
+
+void PlayerManager::slotTrackPaused(TrackPointer pPausedTrack) {
+    /*bool allPaused = true;
+    foreach (Deck *deck,m_decks) {
+        if (deck->getLoadedTrack() == pPausedTrack && !deck->isTrackPaused()) {
+            allPaused = false;
+            break;
+        } 
+    }
+    if (allPaused)
+        pPausedTrack->pausePlayedTime();*/    
+}
+
+void PlayerManager::slotTrackResumed(TrackPointer pPausedTrack) {
+    //pPausedTrack->resumePlayedTime();
+}
+
+void PlayerManager::slotLoadingTrack(TrackPointer oldTrack, TrackPointer newTrack) {
+
+}
+
+void PlayerManager::slotNewTrackLoaded(TrackPointer newTrack) {
+
+}
+
+void PlayerManager::slotPlayerEmpty() {
+
 }
