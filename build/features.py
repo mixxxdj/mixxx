@@ -416,7 +416,7 @@ class Vamp(Feature):
 
     def sources(self, build):
         sources = ['analyzer/vamp/vampanalyzer.cpp',
-                   'analyzer/vamp/vamppluginloader.cpp',
+                   'analyzer/vamp/vamppluginadapter.cpp',
                    'analyzer/analyzerbeats.cpp',
                    'analyzer/analyzerkey.cpp',
                    'preferences/dialog/dlgprefbeats.cpp',
