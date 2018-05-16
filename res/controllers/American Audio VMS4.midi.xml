@@ -714,6 +714,15 @@ Assumes "Post EQ" mode. (See Wiki for full setup instructions.)</description>
                <Script-Binding/>
             </options>
          </control>
+         <control>  <!-- Shifted -->
+            <group>[EffectRack1_EffectUnit1]</group>
+            <key>VMS4.strip_fx_dw</key>
+            <status>0xB1</status>
+            <midino>0x28</midino>
+            <options>
+               <Script-Binding/>
+            </options>
+         </control>
         <control>
             <group>[Channel1]</group>
             <key>VMS4.strip_touch</key>
@@ -1406,6 +1415,15 @@ Assumes "Post EQ" mode. (See Wiki for full setup instructions.)</description>
             <group>[Library]</group>
             <key>VMS4.strip_scroll</key>
             <status>0xB0</status>
+            <midino>0x2D</midino>
+            <options>
+               <Script-Binding/>
+            </options>
+         </control>
+         <control>  <!-- Shifted -->
+            <group>[EffectRack1_EffectUnit2]</group>
+            <key>VMS4.strip_fx_dw</key>
+            <status>0xB1</status>
             <midino>0x2D</midino>
             <options>
                <Script-Binding/>
