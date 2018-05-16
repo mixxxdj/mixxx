@@ -1375,10 +1375,13 @@ class MixxxCore(Feature):
             build.env.Append(CCFLAGS='/MP')
 
             # Generate debugging information for compilation units and
-            # executables linked regardless of whether we are creating a debug
-            # build. Having PDB files for our releases is helpful for debugging.
-            build.env.Append(LINKFLAGS='/DEBUG')
-            build.env.Append(CCFLAGS='/Zi /Fd${TARGET}.pdb')
+            # executables linked if we are creating a debug build or bundling
+            # PDBs is enabled.  Having PDB files for our releases is helpful for
+            # debugging, but increases link times and memory usage
+            # significantly.
+            if build.build_is_debug or build.bundle_pdbs:
+                build.env.Append(LINKFLAGS='/DEBUG')
+                build.env.Append(CCFLAGS='/Zi /Fd${TARGET}.pdb')
 
             if build.build_is_debug:
                 # Important: We always build Mixxx with the Multi-Threaded DLL
