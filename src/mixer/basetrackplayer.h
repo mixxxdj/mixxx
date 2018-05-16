@@ -59,6 +59,8 @@ class BaseTrackPlayer : public BasePlayer {
     void trackRatingChanged(int rating);
     void trackMenuChangeRequest(bool show);
     void trackRatingChangeRequest(int change);
+    void trackPaused(TrackPointer pPausedTrack);
+    void trackResumed(TrackPointer pResumedTrack);
 };
 
 class BaseTrackPlayerImpl : public BaseTrackPlayer {
@@ -96,6 +98,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
     /// For testing, loads a fake track.
     TrackPointer loadFakeTrack(bool bPlay, double filebpm);
+
+    bool isTrackPaused() const;
 
   public slots:
     void slotLoadTrack(TrackPointer track, bool bPlay) final;

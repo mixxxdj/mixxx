@@ -5,6 +5,7 @@
 #include "track/track.h"
 
 MetadataBroadcast::MetadataBroadcast() {
+    /*
     connect(&PlayerInfo::instance(),
             SIGNAL(trackLoaded(QString, TrackPointer)),
             this,
@@ -21,6 +22,7 @@ MetadataBroadcast::MetadataBroadcast() {
             SIGNAL(trackResumed(QString, TrackPointer)),
             this,
             SLOT(slotTrackResumed(QString, TrackPointer)));
+*/
 }
 
 void MetadataBroadcast::slotTrackLoaded(QString group, TrackPointer pTrack) {
