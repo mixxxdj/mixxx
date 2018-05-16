@@ -429,6 +429,12 @@ void PlayerManager::addDeckInner() {
             this,
             &PlayerManager::slotSaveEjectedTrack);
 
+    connect(pDeck, SIGNAL(trackPaused(TrackPointer)), this, SLOT(slotTrackPaused(TrackPointer)));
+    connect(pDeck, SIGNAL(trackResumed(TrackPointer)), this, SLOT(slotTrackResumed(TrackPointer)));
+    connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)), this, SLOT(slotNewTrackLoaded(TrackPointer)));
+    connect(pDeck, SIGNAL(loadingTrack(TrackPointer, TrackPointer)), this, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
+    connect(pDeck, SIGNAL(playerEmpty()), this, SLOT(slotPlayerEmpty()));
+
     if (m_pTrackAnalysisScheduler) {
         connect(pDeck,
                 &BaseTrackPlayer::newTrackLoaded,
@@ -857,4 +863,29 @@ void PlayerManager::onTrackAnalysisProgress(TrackId trackId, AnalyzerProgress an
 
 void PlayerManager::onTrackAnalysisFinished() {
     emit trackAnalyzerIdle();
+}
+
+void PlayerManager::slotTrackPaused(TrackPointer pPausedTrack) {
+    /*bool allPaused = true;
+    foreach (Deck *deck,m_decks) {
+        if (deck->getLoadedTrack() == pPausedTrack && !deck->isTrackPaused()) {
+            allPaused = false;
+            break;
+        } 
+    }
+    if (allPaused)
+        pPausedTrack->pausePlayedTime();*/
+}
+
+void PlayerManager::slotTrackResumed(TrackPointer pPausedTrack) {
+    //pPausedTrack->resumePlayedTime();
+}
+
+void PlayerManager::slotLoadingTrack(TrackPointer oldTrack, TrackPointer newTrack) {
+}
+
+void PlayerManager::slotNewTrackLoaded(TrackPointer newTrack) {
+}
+
+void PlayerManager::slotPlayerEmpty() {
 }

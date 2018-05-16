@@ -263,6 +263,13 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     void trackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
     void trackAnalyzerIdle();
 
+  private slots:
+    void slotTrackPaused(TrackPointer pPausedTrack);
+    void slotTrackResumed(TrackPointer pResumedTrack);
+    void slotLoadingTrack(TrackPointer oldTrack, TrackPointer newTrack);
+    void slotNewTrackLoaded(TrackPointer newTrack);
+    void slotPlayerEmpty();
+
   private:
     TrackPointer lookupTrack(QString location);
     // Must hold m_mutex before calling this method. Internal method that
@@ -312,5 +319,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     QList<Auxiliary*> m_auxiliaries;
     QMap<ChannelHandle, BaseTrackPlayer*> m_players;
 
+    // Live metadata section
     MetadataBroadcast* m_pMetadataBroadcast;
+    QList<TrackPointer*> m_tracksToBeReset;
 };

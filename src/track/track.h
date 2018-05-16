@@ -138,6 +138,12 @@ class Track : public QObject {
         return getDurationText(mixxx::Duration::Precision::MILLISECONDS);
     }
 
+    void pausePlayedTime();
+
+    void resumePlayedTime();
+
+    void resetPlayedTime();
+
     // Sets the BPM if not locked.
     bool trySetBpm(double bpmValue) {
         return trySetBpm(mixxx::Bpm(bpmValue));
