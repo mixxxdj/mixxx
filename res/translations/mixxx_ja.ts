@@ -380,7 +380,7 @@
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="106"/>
         <source>Please enable at least one connection to use Live Broadcasting.</source>
-        <translation type="unfinished"/>
+        <translation>生放送での利用には少なくとも一つの接続を有効にして下さい</translation>
     </message>
 </context>
 <context>
@@ -388,17 +388,17 @@
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="426"/>
         <source>Can&apos;t use secure password storage: keychain access failed.</source>
-        <translation type="unfinished"/>
+        <translation>キーチェインにアクセス不可のためパスワードを利用できません。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="457"/>
         <source>Secure password retrieval unsuccessful: keychain access failed.</source>
-        <translation type="unfinished"/>
+        <translation>キーチェインにアクセス不可のためパスワードの回復に失敗しました。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="467"/>
         <source>Settings error</source>
-        <translation type="unfinished"/>
+        <translation>設定エラー</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="468"/>
@@ -416,17 +416,17 @@
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="128"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>名前</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="130"/>
         <source>Status</source>
-        <translation type="unfinished"/>
+        <translation>ステータス</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="176"/>
         <source>Disconnected</source>
-        <translation type="unfinished"/>
+        <translation>切断されました</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="178"/>
@@ -436,12 +436,12 @@
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="180"/>
         <source>Connected</source>
-        <translation type="unfinished"/>
+        <translation>接続されました</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="182"/>
         <source>Failed</source>
-        <translation type="unfinished"/>
+        <translation>失敗</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="185"/>
@@ -486,7 +486,7 @@
         <location filename="../../src/library/browse/browsefeature.cpp" line="126"/>
         <location filename="../../src/library/browse/browsefeature.cpp" line="368"/>
         <source>Computer</source>
-        <translation type="unfinished"/>
+        <translation>コンピュータ</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="159"/>
@@ -9362,7 +9362,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="9"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>名前</translation>
     </message>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="10"/>
