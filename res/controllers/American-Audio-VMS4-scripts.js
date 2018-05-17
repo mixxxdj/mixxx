@@ -319,8 +319,7 @@ VMS4.effectSelect = function(channel, control, value, status, group) {
     
     diff += wrapCount*128;
     
-    engine.setValue("[EffectRack1_EffectUnit"+VMS4.GetDeckNum(group)+"_Effect1]",
-                    "effect_selector",diff);
+    engine.setValue("[EffectRack1_EffectUnit"+VMS4.GetDeckNum(group)+"_Effect1]","effect_selector",diff);
 }
 
 VMS4.effectSelectPress = function(channel, control, value, status, group) {
@@ -337,9 +336,11 @@ VMS4.effectControl = function(channel, control, value, status, group) {
     var deck = VMS4.GetDeck(group);
     var deckNum = VMS4.GetDeckNum(group);
     if (deck.controlEffectParameter) {
-        engine.setParameter("[EffectRack1_EffectUnit"+deckNum+"]","super1",value/0x7F);
+        engine.setValue("[EffectRack1_EffectUnit"+deckNum+"]","super1",
+                        script.absoluteLin(value,0,1));
     } else {
-        engine.setParameter("[EffectRack1_EffectUnit"+deckNum+"]","mix",value/0x7F);
+        engine.setValue("[EffectRack1_EffectUnit"+deckNum+"]","mix",
+                        script.absoluteLin(value,0,1));
     }
 }
 
@@ -397,18 +398,27 @@ VMS4.jog_move_msb = function(channel, control, value, status, group) {
    deck.jogMsb = value;
 }
 
-VMS4.strip_fx_dw = function(channel, control, value, status, group) {
-    engine.setParameter(group,"mix",value/0x7F);
-}
+// VMS4.touch_strip = function(channel, control, value, status, group) {
+//    // Only modify the playposition if the deck is NOT playing!
+//    if (engine.getValue(group, "play") === 0) {
+//        engine.setValue(group, "playposition", value/0x7F);
+//    }
+// }
 
 VMS4.strip_touch = function(channel, control, value, status, group) {
     var deck = VMS4.GetDeckNum(group);
     if (deck === 1) {    // Left side
-        if ((status & 0xF0) === 0x80) {    // If button up
+        if ((status & 0xF0) === 0x90) {    // If button down
+            // TODO: Need a CO to focus explicitly on category selection pane
+            //  "[Library]","MoveFocus" just toggles and is frustrating
+        } else {    // Button up
             VMS4.touchStripPos["Left"] = null;
         }
     } else {    // Right side
-        if ((status & 0xF0) === 0x80) {    // If button up
+        if ((status & 0xF0) === 0x90) {    // If button down
+            // TODO: Need a CO to focus explicitly on track selection pane
+            //  "[Library]","MoveFocus" just toggles and is frustrating
+        } else {    // Button up
             VMS4.touchStripPos["Right"] = null;
         }
     }
@@ -419,13 +429,7 @@ VMS4.strip_scroll = function(channel, control, value, status, group) {
     if (VMS4.touchStripPos[side] != null) {
         // Higher on the strip gives a higher value, and up is negative on Library
         //  scroll controls
-        if (side === "Left") {
-            engine.setValue("[Playlist]", "SelectPlaylist", 
-                            VMS4.touchStripPos[side] - value);
-        } else {
-            engine.setValue("[Playlist]", "SelectTrackKnob", 
-                            VMS4.touchStripPos[side] - value);
-        }
+        engine.setValue(group, "MoveVertical", VMS4.touchStripPos[side] - value);
     }
     VMS4.touchStripPos[side] = value;
 }
