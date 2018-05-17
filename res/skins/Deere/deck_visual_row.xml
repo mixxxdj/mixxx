@@ -61,6 +61,22 @@
           <Color>#00FF00</Color>
           <TextColor>#FFFFFF</TextColor>
         </Mark>
+        <Mark>
+          <Control>autodj_start_position</Control>
+          <Source>autodj_start_source</Source>
+          <Text>START</Text>
+          <Align>bottom</Align>
+          <Color>#0000FF</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <Mark>
+          <Control>autodj_end_position</Control>
+          <Source>autodj_end_source</Source>
+          <Text>END</Text>
+          <Align>bottom</Align>
+          <Color>#0000FF</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
         <!--
         The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
         - if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
@@ -68,13 +84,13 @@
         -->
         <Mark>
           <Control>cue_point</Control>
+          <Source>cue_source</Source>
           <Pixmap>image/marker_cue.png</Pixmap>
           <Text>CUE</Text>
           <Align>bottom</Align>
           <Color>#FF001C</Color>
           <TextColor>#FFFFFF</TextColor>
         </Mark>
-
       </Visual>
 
       <WidgetGroup>

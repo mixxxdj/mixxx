@@ -35,6 +35,7 @@
           <Color>#00FF00</Color>
           <DisabledColor>#FFFFFF</DisabledColor>
         </MarkRange>
+        <!--
         <Mark>
           <Control>loop_start_position</Control>
           <Text>IN</Text>
@@ -47,6 +48,21 @@
           <Text>OUT</Text>
           <Align>bottom|right</Align>
           <Color>#00FF00</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        -->
+        <Mark>
+          <Control>autodj_start_position</Control>
+          <Text> S </Text>
+          <Align>bottom|right</Align>
+          <Color>#0000FF</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <Mark>
+          <Control>autodj_end_position</Control>
+          <Text> E </Text>
+          <Align>bottom|left</Align>
+          <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
         </Mark>
         <Mark>
