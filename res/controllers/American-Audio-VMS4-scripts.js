@@ -1,7 +1,7 @@
 /**
- * American Audio VMS4 controller script v2.1 for Mixxx v2.1.x
+ * American Audio VMS4 controller script v2.0 for Mixxx v2.0
  * Copyright (C) 2010  Anders Gunnarsson
- * Copyright (C) 2011-2018  Sean M. Pappalardo
+ * Copyright (C) 2011-2015  Sean M. Pappalardo
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -228,8 +228,6 @@ VMS4.Deck.prototype.keyLockButtonHandler = function(value) {
 }
 
 VMS4.Deck.prototype.effectParamButtonHandler = function(value) {
-    // Couldn't get this to work. The buttons are mapped instead to VMS4.effectParameterButton
-    
 //     if(value == ButtonState.pressed) {
 //         this.controlEffectParameter=!this.controlEffectParameter;
 //         if (this.controlEffectParameter) {
@@ -246,10 +244,6 @@ VMS4.Deck.prototype.effectParamButtonHandler = function(value) {
 VMS4.Decks = {"Left":new VMS4.Deck(1,"[Channel1]"), "Right":new VMS4.Deck(2,"[Channel2]")};
 VMS4.GroupToDeck = {"[Channel1]":"Left", "[Channel2]":"Right"};
 VMS4.GroupToDeckNum = {"[Channel1]":1, "[Channel2]":2, "[Channel3]":3, "[Channel4]":4};
-VMS4.StripToSide = {0x28:"Left", 0x2D:"Right"};
-VMS4.touchStripPos = {"Left":null, "Right":null}; // Stores the position on touch
-                                                  // to convert the absolute sliders
-                                                  // to relative ones
 
 VMS4.GetDeck = function(group) {
    try {
@@ -398,40 +392,11 @@ VMS4.jog_move_msb = function(channel, control, value, status, group) {
    deck.jogMsb = value;
 }
 
-// VMS4.touch_strip = function(channel, control, value, status, group) {
-//    // Only modify the playposition if the deck is NOT playing!
-//    if (engine.getValue(group, "play") === 0) {
-//        engine.setValue(group, "playposition", value/0x7F);
-//    }
-// }
-
-VMS4.strip_touch = function(channel, control, value, status, group) {
-    var deck = VMS4.GetDeckNum(group);
-    if (deck === 1) {    // Left side
-        if ((status & 0xF0) === 0x90) {    // If button down
-            // TODO: Need a CO to focus explicitly on category selection pane
-            //  "[Library]","MoveFocus" just toggles and is frustrating
-        } else {    // Button up
-            VMS4.touchStripPos["Left"] = null;
-        }
-    } else {    // Right side
-        if ((status & 0xF0) === 0x90) {    // If button down
-            // TODO: Need a CO to focus explicitly on track selection pane
-            //  "[Library]","MoveFocus" just toggles and is frustrating
-        } else {    // Button up
-            VMS4.touchStripPos["Right"] = null;
-        }
-    }
-}
-
-VMS4.strip_scroll = function(channel, control, value, status, group) {
-    var side = VMS4.StripToSide[control];
-    if (VMS4.touchStripPos[side] != null) {
-        // Higher on the strip gives a higher value, and up is negative on Library
-        //  scroll controls
-        engine.setValue(group, "MoveVertical", VMS4.touchStripPos[side] - value);
-    }
-    VMS4.touchStripPos[side] = value;
+VMS4.touch_strip = function(channel, control, value, status, group) {
+   // Only modify the playposition if the deck is NOT playing!
+   if (engine.getValue(group, "play") === 0) {
+       engine.setValue(group, "playposition", value/0x7F);
+   }
 }
 
 VMS4.vinyl = function(channel, control, value, status, group) {
