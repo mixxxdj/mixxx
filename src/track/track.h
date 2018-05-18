@@ -6,10 +6,12 @@
 #include <QMutex>
 #include <QObject>
 #include <QElapsedTimer>
+#include <Connection>
 
 #include "library/dao/cue.h"
 #include "track/beats.h"
 #include "track/trackrecord.h"
+#include "track/trackplaytimers.h"
 #include "util/memory.h"
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
@@ -146,6 +148,14 @@ class Track : public QObject {
     void resumePlayedTime();
 
     void resetPlayedTime();
+
+    void setElapsedTimer(ElapsedTimer *elapsedTimer);
+
+    void setTimer(Timer *timer);
+
+    void setMsPlayed(qint64 ms);
+
+    bool isScrobbable();
 
     // Set BPM
     double setBpm(double);
@@ -393,17 +403,20 @@ class Track : public QObject {
 
     QAtomicInt m_analyzerProgress; // in 0.1%
 
-    QElapsedTimer m_playedSincePause;
+    ElapsedTimer *m_pElapsedTimer;
+    Timer *m_pTimer;
 
-    int m_timerId;
+    QMetaObject::Connection m_timerConnection;
 
     qint64 m_msPlayed;
+
+    bool m_isScrobbable;
 
     friend class TrackDAO;
     friend class GlobalTrackCache;
     friend class GlobalTrackCacheResolver;
     friend class SoundSourceProxy;
   
-  protected:
-    void timerEvent(QTimerEvent *timerEvent) override;
+  private slots:
+    void slotCheckIfScrobbable();
 };

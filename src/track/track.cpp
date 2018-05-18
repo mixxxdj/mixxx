@@ -72,7 +72,10 @@ Track::Track(
           m_bDirty(false),
           m_bMarkedForMetadataExport(false),
           m_analyzerProgress(-1),
-          m_msPlayed(0) {
+          m_msPlayed(0),
+          m_pElapsedTimer(new ElapsedTimerQt()),
+          m_pTimer(new TimerQt(this)),
+          m_isScrobbable(false) {
     if (kLogStats && kLogger.debugEnabled()) {
         long numberOfInstancesBefore = s_numberOfInstances.fetch_add(1);
         kLogger.debug()
@@ -94,6 +97,7 @@ Track::~Track() {
                 << "->"
                 << numberOfInstancesBefore - 1;
     }
+    delete m_pElapsedTimer;
 }
 
 //static
@@ -1101,36 +1105,56 @@ Track::ExportMetadataResult Track::exportMetadata(
 
 void Track::pausePlayedTime() {
     QMutexLocker locker(&m_qMutex);
-    if (m_playedSincePause.isValid()) {
-        killTimer(m_timerId);
-        m_msPlayed += m_playedSincePause.elapsed();
-        m_playedSincePause.invalidate();
+    if (m_pElapsedTimer->isValid()) {
+        m_msPlayed += m_pElapsedTimer->elapsed();
+        m_pElapsedTimer->invalidate();
+        disconnect(m_timerConnection);
     }        
 }
 
 void Track::resumePlayedTime() {
     QMutexLocker locker(&m_qMutex);
-    if (!m_playedSincePause.isValid()) {
-        m_timerId = startTimer(1000);
-        m_playedSincePause.start();
+    if (!m_pElapsedTimer->isValid()) {
+        m_pTimer->start(1000);
+        m_timerConnection = connect(m_pTimer,SIGNAL(timeout()),
+                                    SLOT(slotCheckIfScrobbable()));
+        m_pElapsedTimer->start();
     }
 }
 
 void Track::resetPlayedTime() {
     QMutexLocker locker(&m_qMutex);
-    m_playedSincePause.invalidate();
-    killTimer(m_timerId);
+    m_pElapsedTimer->invalidate();
+    disconnect(m_timerConnection);
+    m_msPlayed = 0;
 }
 
-void Track::timerEvent(QTimerEvent *timerEvent) {
-    if(timerEvent->timerId() == m_timerId) {
-        qint64 msInTimer = 0;
-        if (m_playedSincePause.isValid())
-            msInTimer = m_playedSincePause.elapsed();
-        if (static_cast<double>((msInTimer + m_msPlayed) / Q_INT64_C(1000)) >=
-            getDuration(DurationRounding::SECONDS)) 
-                emit(readyToBeScrobbled(this));
-            
-    }
+void Track::setElapsedTimer(ElapsedTimer *elapsedTimer) {
+    delete m_pElapsedTimer;
+    m_pElapsedTimer = elapsedTimer;
+}
+
+void Track::setTimer(Timer *timer) {
+    delete m_pTimer;
+    m_pTimer = timer;
+}
+
+void Track::slotCheckIfScrobbable() {
+    qint64 msInTimer = 0;
+    if (m_pElapsedTimer->isValid())
+        msInTimer = m_pElapsedTimer->elapsed();
+    if (static_cast<double>((msInTimer + m_msPlayed) / Q_INT64_C(1000)) >=
+        getDuration(DurationRounding::SECONDS)) {
+            m_isScrobbable = true;
+            emit(readyToBeScrobbled(this));
+        } 
+}
+
+void Track::setMsPlayed(qint64 ms) {
+    m_msPlayed = ms;
+}
+
+bool Track::isScrobbable() {
+    return m_isScrobbable;
 }
 

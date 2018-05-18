@@ -1095,6 +1095,7 @@ class MixxxCore(Feature):
                    "track/trackinfo.cpp",
                    "track/trackrecord.cpp",
                    "track/trackref.cpp",
+                   "track/trackplaytimers.cpp",
 
                    "mixer/auxiliary.cpp",
                    "mixer/baseplayer.cpp",
