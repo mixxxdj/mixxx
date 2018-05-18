@@ -132,6 +132,10 @@ TEST1 {
   qproperty-layoutAlignment: 'AlignRight';
 }
 
+#AlignCenter {
+  qproperty-layoutAlignment: 'AlignCenter';
+}
+
 #SampleDecksContainer {
   border: 0px;
 }
@@ -233,6 +237,7 @@ QTableView::indicator:unchecked {
 
 #LibrarySidebarButtons, WButtonBar {
   background-color: #4B4B4B;
+  margin: 0px 0px 1px 1px;
 }
 
 QToolButton:focus, 

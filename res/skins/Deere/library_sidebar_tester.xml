@@ -1,0 +1,42 @@
+<!--
+Description:
+  This SizeAwareStack controls where the active library feature's label and
+  the library breadcrumbs are displayed.
+  a) If the library sidebar is big enough they are shown above the tree view.
+  b) If the sidebar is too narrow, they are shown above the tracks table,
+     next to the searchbox 
+  Depending on sidebar size, the WidgetStacks flip '[Tango],lib_sidebar_collapsed'
+  and visibility is set in library.xml accordingly
+
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>TEST2</ObjectName>
+    <Layout>vertical</Layout>
+    <Size>1me,0f</Size>
+    <Children>
+      <SizeAwareStack>
+        <Children>
+
+          <WidgetStack>
+            <SizePolicy>me,f</SizePolicy>
+            <MaximumSize>50,0</MaximumSize>
+            <Children>
+              <WidgetGroup trigger="[Skin],lib_sidebar_collapsed"><Size>2f,0f</Size></WidgetGroup>
+              <WidgetGroup><Size>2f,0f</Size></WidgetGroup>
+            </Children>
+          </WidgetStack>
+
+          <WidgetStack>
+            <SizePolicy>me,f</SizePolicy>
+            <MinimumSize>51,0</MinimumSize>
+            <Children>
+              <WidgetGroup><Size>2f,0f</Size></WidgetGroup>
+              <WidgetGroup trigger="[Skin],lib_sidebar_collapsed"><Size>2f,0f</Size></WidgetGroup>
+            </Children>
+          </WidgetStack>
+        </Children>
+      </SizeAwareStack>
+    </Children>
+  </WidgetGroup>
+</Template>
