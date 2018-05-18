@@ -278,7 +278,6 @@ void RecordingManager::warnFreespace() {
     props->setText(tr("There is less than 1 GiB of useable space in the recording folder"));
     props->setKey("RecordingManager::warnFreespace");   // To prevent multiple windows for the same error
 
-    // Allow user to suppress further notifications about this particular error
     props->addButton(QMessageBox::Ok);
     props->setDefaultButton(QMessageBox::Ok);
     props->setEscapeButton(QMessageBox::Ok);
