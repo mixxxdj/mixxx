@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QElapsedTimer>
 #include <QList>
 #include <QObject>
 #include <QUrl>
@@ -453,6 +454,7 @@ class Track : public QObject {
     void changed(TrackId trackId);
     void dirty(TrackId trackId);
     void clean(TrackId trackId);
+    void readyToBeScrobbled(Track* pTrack);
 
   private slots:
     void slotCueUpdated();
@@ -575,6 +577,12 @@ class Track : public QObject {
     mixxx::BeatsImporterPointer m_pBeatsImporterPending;
     std::unique_ptr<mixxx::CueInfoImporter> m_pCueInfoImporterPending;
 
+    QElapsedTimer m_playedSincePause;
+
+    int m_timerId;
+
+    qint64 m_msPlayed;
+
     friend class TrackDAO;
     void setHeaderParsedFromTrackDAO(bool headerParsed) {
         // Always operating on a newly created, exclusive instance! No need
@@ -591,4 +599,7 @@ class Track : public QObject {
     friend class GlobalTrackCache;
     friend class GlobalTrackCacheResolver;
     friend class SoundSourceProxy;
+
+  protected:
+    void timerEvent(QTimerEvent* timerEvent) override;
 };
