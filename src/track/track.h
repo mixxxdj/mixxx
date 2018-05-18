@@ -2,6 +2,7 @@
 
 #include <QElapsedTimer>
 #include <QList>
+#include <QMetaObject>
 #include <QObject>
 #include <QStack>
 #include <QUrl>
@@ -23,6 +24,8 @@
 #include "util/fileaccess.h"
 #include "util/performancetimer.h"
 #include "waveform/waveform.h"
+
+struct Connection;
 
 class Track : public QObject {
     Q_OBJECT
@@ -631,6 +634,8 @@ class Track : public QObject {
 
     mixxx::BeatsImporterPointer m_pBeatsImporterPending;
     std::unique_ptr<mixxx::CueInfoImporter> m_pCueInfoImporterPending;
+
+    QMetaObject::Connection m_timerConnection;
 
     QElapsedTimer m_playedSincePause;
 

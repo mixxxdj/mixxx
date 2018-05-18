@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QList>
 #include <QObject>
 
 #include "track/track_decl.h"
@@ -8,9 +9,11 @@ class MetadataBroadcast : public QObject {
     Q_OBJECT
   public:
     MetadataBroadcast();
+    const QList<TrackPointer>& getTrackedTracks();
   public slots:
-    void slotTrackLoaded(QString group, TrackPointer pTrack);
-    void slotTrackUnloaded(QString group, TrackPointer pTrack);
-    void slotTrackPaused(QString group, TrackPointer pTrack);
-    void slotTrackResumed(QString group, TrackPointer pTrack);
+    void slotReadyToBeScrobbled(Track* pTrack);
+    void slotNowListening(Track* pTrack);
+
+  private:
+    QList<TrackPointer> m_trackedTracks;
 };
