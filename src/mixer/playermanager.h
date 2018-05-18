@@ -234,6 +234,8 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Must hold m_mutex before calling this method. Internal method that
     // creates a new auxiliary.
     void addAuxiliaryInner();
+    //Resets the played timer in the track a just switched.
+    void resetTrack(Deck *deck);
 
     // Used to protect access to PlayerManager state across threads.
     mutable QMutex m_mutex;
@@ -241,8 +243,8 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
   private slots:    
     void slotTrackPaused(TrackPointer pPausedTrack);
     void slotTrackResumed(TrackPointer pResumedTrack);
-    void slotLoadingTrack(TrackPointer oldTrack, TrackPointer newTrack);
-    void slotNewTrackLoaded(TrackPointer newTrack);
+    void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
+    void slotNewTrackLoaded(TrackPointer pNewTrack);
     void slotPlayerEmpty();
 
   private:
@@ -268,7 +270,13 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
     //Live metadata section
     MetadataBroadcast *m_pMetadataBroadcast;
-    QList<TrackPointer*> m_tracksToBeReset;
+    struct trackDeckPair {
+        TrackPointer pTrack;
+        Deck *pDeck;
+        trackDeckPair(TrackPointer pTrack, Deck *pDeck) :
+        pTrack(pTrack),pDeck(pDeck) {}
+    };
+    QList<trackDeckPair> m_tracksToBeReset;
 };
 
 #endif // MIXER_PLAYERMANAGER_H

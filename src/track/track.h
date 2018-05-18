@@ -5,6 +5,7 @@
 #include <QList>
 #include <QMutex>
 #include <QObject>
+#include <QElapsedTimer>
 
 #include "library/dao/cue.h"
 #include "track/beats.h"
@@ -323,6 +324,7 @@ class Track : public QObject {
     void changed(Track* pTrack);
     void dirty(Track* pTrack);
     void clean(Track* pTrack);
+    void readyToBeScrobbled(Track *pTrack);
 
   private slots:
     void slotCueUpdated();
@@ -391,8 +393,17 @@ class Track : public QObject {
 
     QAtomicInt m_analyzerProgress; // in 0.1%
 
+    QElapsedTimer m_playedSincePause;
+
+    int m_timerId;
+
+    qint64 m_msPlayed;
+
     friend class TrackDAO;
     friend class GlobalTrackCache;
     friend class GlobalTrackCacheResolver;
     friend class SoundSourceProxy;
+  
+  protected:
+    void timerEvent(QTimerEvent *timerEvent) override;
 };
