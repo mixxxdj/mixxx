@@ -866,26 +866,58 @@ void PlayerManager::onTrackAnalysisFinished() {
 }
 
 void PlayerManager::slotTrackPaused(TrackPointer pPausedTrack) {
-    /*bool allPaused = true;
-    foreach (Deck *deck,m_decks) {
+    if (!pPausedTrack)
+        return;
+    QMutexLocker locker(&m_mutex);
+    bool allPaused = true;
+    foreach (Deck* deck, m_decks) {
         if (deck->getLoadedTrack() == pPausedTrack && !deck->isTrackPaused()) {
             allPaused = false;
             break;
-        } 
+        }
     }
     if (allPaused)
-        pPausedTrack->pausePlayedTime();*/
+        pPausedTrack->pausePlayedTime();
 }
 
 void PlayerManager::slotTrackResumed(TrackPointer pPausedTrack) {
-    //pPausedTrack->resumePlayedTime();
+    if (!pPausedTrack)
+        return;
+    QMutexLocker locker(&m_mutex);
+    pPausedTrack->resumePlayedTime();
 }
 
-void PlayerManager::slotLoadingTrack(TrackPointer oldTrack, TrackPointer newTrack) {
+void PlayerManager::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    QMutexLocker locker(&m_mutex);
+    Deck* loadingDeck = qobject_cast<Deck*>(sender());
+    if (pOldTrack) {
+        bool allUnloaded = true;
+        foreach (Deck* deck, m_decks) {
+            if (deck != loadingDeck && deck->getLoadedTrack() == pOldTrack) {
+                allUnloaded = false;
+                break;
+            }
+        }
+        if (allUnloaded)
+            m_tracksToBeReset.append(trackDeckPair(pOldTrack, loadingDeck));
+    }
 }
 
-void PlayerManager::slotNewTrackLoaded(TrackPointer newTrack) {
+void PlayerManager::slotNewTrackLoaded(TrackPointer pNewTrack) {
+    resetTrack(qobject_cast<Deck*>(sender()));
 }
 
 void PlayerManager::slotPlayerEmpty() {
+    resetTrack(qobject_cast<Deck*>(sender()));
+}
+
+void PlayerManager::resetTrack(Deck* pDeck) {
+    QMutexLocker locker(&m_mutex);
+    Deck* loadingDeck = qobject_cast<Deck*>(sender());
+    foreach (trackDeckPair pair, m_tracksToBeReset) {
+        if (loadingDeck == pair.pDeck) {
+            pair.pTrack->resetPlayedTime();
+            break;
+        }
+    }
 }
