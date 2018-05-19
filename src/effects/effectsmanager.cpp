@@ -79,7 +79,10 @@ void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
 
     QList<QString> backendEffects = pBackend->getEffectIds();
     for (const QString& effectId : backendEffects) {
-        m_availableEffectManifests.append(pBackend->getManifest(effectId));
+        const EffectManifestPointer pManifest = pBackend->getManifest(effectId);
+        if (pManifest->isVisible()) {
+            m_availableEffectManifests.append(pManifest);
+        }
     }
 
     m_pNumEffectsAvailable->forceSet(m_availableEffectManifests.size());
