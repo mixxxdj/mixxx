@@ -26,6 +26,7 @@ void EffectsBackend::registerEffect(const QString& id,
     }
 
     m_registeredEffects[id] = RegisteredEffect(pManifest, pInstantiator);
+    // qDebug() << pManifest->id() << "is " << (pManifest->isVisible() ? "visible" : "hidden");
     m_effectIds.append(id);
     emit(effectRegistered(pManifest));
 }

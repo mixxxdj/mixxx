@@ -27,6 +27,8 @@ void LV2Backend::enumeratePlugins() {
             continue;
         }
         LV2Manifest* lv2Manifest = new LV2Manifest(plug, m_properties);
+        lv2Manifest->getEffectManifest()->setVisibility(false);
+        // qDebug() << lv2Manifest->getEffectManifest()->id() << "is " << (lv2Manifest->getEffectManifest()->isVisible() ? "visible" : "hidden");
         m_registeredEffects.insert(lv2Manifest->getEffectManifest()->id(),
                                    lv2Manifest);
     }

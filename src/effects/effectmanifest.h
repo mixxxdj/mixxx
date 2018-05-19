@@ -23,7 +23,8 @@
 class EffectManifest final {
   public:
     EffectManifest()
-        : m_isMixingEQ(false),
+        : m_isVisible(true),
+          m_isMixingEQ(false),
           m_isMasterEQ(false),
           m_effectRampsFromDry(false),
           m_metaknobDefault(0.5) {
@@ -74,6 +75,14 @@ class EffectManifest final {
 
     const QString& description() const {
         return m_description;
+    }
+
+    const bool& isVisible() const {
+        return m_isVisible;
+    }
+
+    void setVisibility(const bool value) {
+        m_isVisible = value;
     }
 
     const bool& isMixingEQ() const {
@@ -136,6 +145,7 @@ class EffectManifest final {
     QString m_author;
     QString m_version;
     QString m_description;
+    bool m_isVisible;
     // This helps us at DlgPrefEQ's basic selection of Equalizers
     bool m_isMixingEQ;
     bool m_isMasterEQ;
