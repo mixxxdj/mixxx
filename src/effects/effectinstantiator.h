@@ -2,10 +2,12 @@
 #define EFFECTINSTANTIATOR_H
 
 #include <QSharedPointer>
-
 #include "effects/effectmanifest.h"
+#include "effects/effectprocessor.h"
+
+#ifdef __LILV__
 #include "effects/lv2/lv2effectprocessor.h"
-#include <lilv-0/lilv/lilv.h>
+#endif /* __LILV__ */
 
 class EffectInstantiator {
   public:
@@ -25,6 +27,7 @@ class EffectProcessorInstantiator : public EffectInstantiator {
     }
 };
 
+#ifdef __LILV__
 class LV2EffectProcessorInstantiator : public EffectInstantiator {
   public:
     LV2EffectProcessorInstantiator(const LilvPlugin* plugin,
@@ -45,5 +48,6 @@ class LV2EffectProcessorInstantiator : public EffectInstantiator {
     const QList<int> m_controlPortIndices;
 
 };
+#endif /* __LILV__ */
 
 #endif /* EFFECTINSTANTIATOR_H */

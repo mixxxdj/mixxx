@@ -1300,7 +1300,8 @@ class Lilv(Feature):
     def sources(self, build):
         return ['effects/lv2/lv2backend.cpp',
                 'effects/lv2/lv2effectprocessor.cpp',
-                'effects/lv2/lv2manifest.cpp']
+                'effects/lv2/lv2manifest.cpp',
+                'preferences/dialog/dlgpreflv2.cpp']
 
 class Battery(Feature):
     def description(self):
