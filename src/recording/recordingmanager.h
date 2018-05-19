@@ -66,6 +66,7 @@ class RecordingManager : public QObject
     // to split the file. The nth filename will follow the date/time
     // name of the first split but with a suffix.
     void splitContinueRecording();
+    void warnFreespace();
     ControlProxy* m_recReady;
     ControlObject* m_recReadyCO;
     ControlPushButton* m_pToggleRecording;
