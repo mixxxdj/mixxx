@@ -1,9 +1,12 @@
 <!--
 Description:
-  Size-aware container that test wether the library sidebar is collapsed
-  (splitter between sidebar and tracks table).
-  If collapsed, the WidgetStack flips '[Tango],lib_sidebar_collapsed' to '1'.
-  Library maximize toggle is then displayed next to BreadCrumbs/search box.
+  This SizeAwareStack controls where the active library feature's label and
+  the library breadcrumbs are displayed.
+  a) If the library sidebar is big enough they are shown above the tree view.
+  b) If the sidebar is too narrow, they are shown above the tracks table,
+     next to the searchbox 
+  Depending on sidebar size, the WidgetStacks flip '[Tango],lib_sidebar_collapsed'
+  and visibility is set in library.xml accordingly
 
 -->
 <Template>
@@ -19,7 +22,7 @@ Description:
             <SizePolicy>me,f</SizePolicy>
             <MaximumSize>139,0</MaximumSize>
             <Children>
-              <WidgetGroup trigger="[Tango],lib_sidebar_collapsed"><Size>2f,0f</Size></WidgetGroup>
+              <WidgetGroup trigger="[Skin],lib_sidebar_collapsed"><Size>2f,0f</Size></WidgetGroup>
               <WidgetGroup><Size>2f,0f</Size></WidgetGroup>
             </Children>
           </WidgetStack>
@@ -29,7 +32,7 @@ Description:
             <MinimumSize>140,0</MinimumSize>
             <Children>
               <WidgetGroup><Size>2f,0f</Size></WidgetGroup>
-              <WidgetGroup trigger="[Tango],lib_sidebar_collapsed"><Size>2f,0f</Size></WidgetGroup>
+              <WidgetGroup trigger="[Skin],lib_sidebar_collapsed"><Size>2f,0f</Size></WidgetGroup>
             </Children>
           </WidgetStack>
         </Children>

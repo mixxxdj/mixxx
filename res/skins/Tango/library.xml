@@ -95,7 +95,7 @@ Description:
                     <Layout>vertical</Layout>
                     <Children>
                       <!-- Show expand toggle above Sidebar buttons
-                      if PreviewDeck is hidden -->
+                      if Sidebar is wide enough (>139px) -->
                       <WidgetGroup>
                         <Layout>horizontal</Layout>
                         <SizePolicy>min,min</SizePolicy>
@@ -109,7 +109,7 @@ Description:
                           <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
                         </Children>
                         <Connection>
-                          <ConfigKey>[Tango],lib_sidebar_collapsed</ConfigKey>
+                          <ConfigKey>[Skin],lib_sidebar_collapsed</ConfigKey>
                           <Transform><Not/></Transform>
                           <BindProperty>visible</BindProperty>
                         </Connection>
@@ -143,10 +143,12 @@ Description:
                     <SizePolicy>min,me</SizePolicy>
                     <Children>
 
+                      <!-- Show BreadCrumbs above tree view
+                      if Sidebar is wide enough (>139px) -->
                       <SingletonContainer>
                         <ObjectName>LibraryBreadCrumbSingleton</ObjectName>
                         <Connection>
-                          <ConfigKey>[Tango],lib_sidebar_collapsed</ConfigKey>
+                          <ConfigKey>[Skin],lib_sidebar_collapsed</ConfigKey>
                           <Transform><Not/></Transform>
                           <BindProperty>visible</BindProperty>
                         </Connection>
@@ -158,7 +160,7 @@ Description:
                         <SplitSizes>1,3</SplitSizes>
                         <SplitSizesConfigKey>[Tango],splitter__coverArt_tree</SplitSizesConfigKey>
                         <Orientation>vertical</Orientation>
-                        <Collapsible>0,1</Collapsible>
+                        <Collapsible>0,0</Collapsible>
                         <Children>
                           <LibrarySidebarExpanded>
                             <ObjectName>LibrarySidebarExpanded</ObjectName>
@@ -193,6 +195,8 @@ Description:
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
+                  <!-- Show expand toggle and BreadCrumbs above tracks table
+                  if Sidebar is too small or collapsed (<140px) -->
                   <WidgetGroup>
                     <Layout>horizontal</Layout>
                     <Size>180min,-1min</Size>
@@ -210,7 +214,7 @@ Description:
                       </SingletonContainer>
                     </Children><!-- -->
                     <Connection>
-                      <ConfigKey>[Tango],lib_sidebar_collapsed</ConfigKey>
+                      <ConfigKey>[Skin],lib_sidebar_collapsed</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>

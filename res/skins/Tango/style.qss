@@ -52,9 +52,11 @@ WWidgetGroup {
 
 /* splitters between
     - waveforms & lower skin part
-    - treeview & library table */
+    - library sidebar & tracks table
+    - library feature tree & cover art */
 #LibrarySplitter::handle:horizontal {
   image: url(skin:/graphics/splitterHori_handle.svg);
+  width: 6px;
   }
   #LibrarySplitter::handle:horizontal:hover,
   #LibrarySplitter::handle:horizontal:pressed {
@@ -64,6 +66,7 @@ WWidgetGroup {
   #LibrarySplitter::handle:vertical,
   #WaveformSplitter::handle:vertical {
     image: url(skin:/graphics/splitterVert_handle.svg);
+    height: 6px;
     }
     #LibrarySplitter::handle:vertical:hover,
     #LibrarySplitter::handle:vertical:pressed,
@@ -71,6 +74,7 @@ WWidgetGroup {
     #WaveformSplitter::handle:vertical:pressed {
       image: url(skin:/graphics/splitterVert_handle_pressed.svg);
     }
+
 
 
 /* ################################################################
@@ -2039,25 +2043,6 @@ QToolTip {
     image: url(skin:/buttons/btn_lib_sideBar_labels_on.svg) no-repeat center center;
   }
 
-/* splitters between treeview and library table */
-#LibrarySplitter::handle:horizontal {
-  image: url(skin:/graphics/splitterHori_handle.png);
-  width: 6px;
-  }
-  #LibrarySplitter::handle:horizontal:hover,
-  #LibrarySplitter::handle:horizontal:pressed {
-    image: url(skin:/graphics/splitterHori_handle_pressed.png);
-  }
-  /* splitter between coverArt and tree view */
-  #LibrarySplitter::handle:vertical {
-    height: 6px;
-    image: url(skin:/graphics/splitterVert_handle.png);
-    }
-    #LibrarySplitter::handle:vertical:hover,
-    #LibrarySplitter::handle:vertical:pressed {
-      image: url(skin:/graphics/splitterVert_handle_pressed.png);
-    }
-
 #SidebarButtonsContainer {
   margin-right: 3px;
 }
@@ -2229,7 +2214,7 @@ QTreeView {
 QTreeView {
   min-height: 90px;
   min-width: 90px;
-  border-width: 1px 1px 1px 0px;
+  border-width: 1px 1px 1px 1px;
   border-style: solid;
   border-color: #585858;
   show-decoration-selected: 0;
@@ -2370,6 +2355,7 @@ QScrollBar:horizontal {
     }
   WLibrarySidebar QScrollBar::handle:vertical {
     min-height: 25px;
+    /* translucent scroll handles to see index letters on scrollbar */
     background-color: rgba(125, 125, 125, 180);
     border-radius: 3px;
     }
@@ -2549,7 +2535,6 @@ WLibrary QSpinBox:editable {
 WSearchLineEdit {
   padding: 2px;
   border: 1px solid #656565;
-  border-left: 0px;
   font-family: Ubuntu;
   font-weight: normal;
   background: #0f0f0f;
