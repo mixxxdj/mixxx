@@ -1711,15 +1711,17 @@ QHeaderView::down-arrow {
   width: 12px;
   padding-left: 3px;
   padding-right: 3px;
-}
-
-QHeaderView::up-arrow {
-  image: url(skin:/style/library_sort_up.svg);
-}
-
-QHeaderView::down-arrow {
-  image: url(skin:/style/library_sort_down.svg);
-}
+  border-right: 1px solid #585858;
+  }
+  QHeaderView::up-arrow {
+    image: url(skin:/style/library_sort_up.svg);
+    }
+    QHeaderView::up-arrow:hover {
+      image: url(skin:/style/library_sort_down.svg);
+    }
+  QHeaderView::down-arrow:hover {
+    image: url(skin:/style/library_sort_up.svg);
+  }
 
 
 /* QScrollbar styling is even harder */

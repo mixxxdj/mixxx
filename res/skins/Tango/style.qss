@@ -2289,27 +2289,20 @@ QHeaderView {
 
   QHeaderView::up-arrow,
   QHeaderView::down-arrow {
-  font-size: 10pt;
+   width: 12px;
+   border-right: 1px solid #585858;
   }
   QHeaderView::up-arrow {
     image: url(skin:/graphics/library_sort_up.svg)
     }
     QHeaderView::up-arrow:hover {
-      image: url(skin:/graphics/library_sort_up_hover.svg)
+      image: url(skin:/graphics/library_sort_down.svg)
     }
   QHeaderView::down-arrow {
     image: url(skin:/graphics/library_sort_down.svg)
     }
     QHeaderView::down-arrow:hover {
-      image: url(skin:/graphics/library_sort_down_hover.svg)
-    }
-
-    QHeaderView::up-arrow {
-      image: url(skin:/image/style_sort_up.svg);
-    }
-
-    QHeaderView::down-arrow {
-      image: url(skin:/image/style_sort_down.svg);
+      image: url(skin:/graphics/library_sort_up.svg)
     }
 
 /* Scroll bars */
