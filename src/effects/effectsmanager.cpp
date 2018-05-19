@@ -98,6 +98,10 @@ void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
 }
 
 void EffectsManager::slotBackendRegisteredEffect(EffectManifestPointer pManifest) {
+    if (!pManifest->isVisible()) {
+        return;
+    }
+    
     auto insertion_point = qLowerBound(m_availableEffectManifests.begin(),
                                        m_availableEffectManifests.end(),
                                        pManifest, alphabetizeEffectManifests);
