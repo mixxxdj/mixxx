@@ -1431,9 +1431,28 @@ WButtonBar QToolButton:focus {
                                       stop:1 #151515);
 }
 
+#LibrarySidebarExpanded QPushButton {
+  margin: 2px 3px 2px 3px; 
+  padding: 0px; 
+  min-width: 65px;
+  min-height: 22px;
+  max-height: 22px;
+  color: #eeeeee;
+  border: 1px solid #585858;
+  border-radius: 2px;
+  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                               stop:0 #252525, 
+                               stop:1 #0f0f0f);
+}
+
 #LibrarySidebarExpanded QPushButton:hover,
 #LibrarySidebarExpanded QPushButton:focus {
   border: 1px solid #c9c9c9;
+}
+
+#LibrarySidebarExpanded QPushButton:!enabled,
+#LibrarySidebarExpanded QWidget:!enabled {
+  color: #666666;
 }
 
 /* exception for Library buttons that start processes */
@@ -1567,24 +1586,6 @@ WButtonBar QToolButton:focus {
                                     stop:1 #252525,
                                     stop:2 #252525);
   }
-
-#LibrarySidebarExpanded QWidget:!enabled {
-  color: #666666;
-}
-
-#LibrarySidebarExpanded QPushButton {
-  margin: 2px 3px 2px 3px; 
-  padding: 0px; 
-  min-width: 65px;
-  min-height: 22px;
-  max-height: 22px;
-  color: #eeeeee;
-  border: 1px solid #585858;
-  border-radius: 2px;
-  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                               stop:0 #252525, 
-                               stop:1 #0f0f0f);
-}
 
 #LibrarySidebarExpanded > QWidget:focus,
 #LibrarySidebarExpanded QAbstractScrollArea > QWidget:focus,
