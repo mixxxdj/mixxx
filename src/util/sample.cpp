@@ -150,6 +150,58 @@ void SampleUtil::applyAlternatingGain(CSAMPLE* pBuffer, CSAMPLE gain1,
     }
 }
 
+
+void SampleUtil::applyRampingAlternatingGain(CSAMPLE* pBuffer,
+        CSAMPLE gain1, CSAMPLE gain2,
+        CSAMPLE gain1Old, CSAMPLE gain2Old, SINT numSamples) {
+    if (gain1 == gain1Old && gain2 == gain2Old){
+        applyAlternatingGain(pBuffer, gain1, gain2, numSamples);
+        return;
+    }
+
+    const CSAMPLE_GAIN gain1Delta = (gain1 - gain1Old)
+            / CSAMPLE_GAIN(numSamples / 2);
+    if (gain1Delta) {
+        const CSAMPLE_GAIN start_gain = gain1Old + gain1Delta;
+        // note: LOOP VECTORIZED.
+        for (int i = 0; i < numSamples / 2; ++i) {
+            const CSAMPLE_GAIN gain = start_gain + gain1Delta * i;
+            pBuffer[i * 2] *= gain;
+        }
+    } else {
+        // note: LOOP VECTORIZED.
+        for (int i = 0; i < numSamples; ++i) {
+            pBuffer[i * 2] *= gain1Old;
+        }
+    }
+
+    const CSAMPLE_GAIN gain2Delta = (gain2 - gain2Old)
+            / CSAMPLE_GAIN(numSamples / 2);
+    if (gain2Delta) {
+        const CSAMPLE_GAIN start_gain = gain2Old + gain2Delta;
+        // note: LOOP VECTORIZED.
+        for (int i = 0; i < numSamples / 2; ++i) {
+            const CSAMPLE_GAIN gain = start_gain + gain2Delta * i;
+            pBuffer[i * 2 + 1] *= gain;
+        }
+    } else {
+        // note: LOOP VECTORIZED.
+        for (int i = 0; i < numSamples; ++i) {
+            pBuffer[i * 2 + 1] *= gain2Old;
+        }
+    }
+}
+
+// static
+void SampleUtil::add(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc,
+        SINT numSamples) {
+    // note: LOOP VECTORIZED.
+    for (SINT i = 0; i < numSamples; ++i) {
+        pDest[i] += pSrc[i];
+    }
+}
+
 // static
 void SampleUtil::addWithGain(CSAMPLE* M_RESTRICT pDest,
         const CSAMPLE* M_RESTRICT pSrc,
@@ -430,8 +482,23 @@ void SampleUtil::copyMonoToDualMono(CSAMPLE* M_RESTRICT pDest,
 }
 
 // static
-void SampleUtil::stripMultiToStereo(CSAMPLE* pBuffer, SINT numFrames,
+void SampleUtil::addMonoToStereo(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc, SINT numFrames) {
+    // forward loop
+    // note: LOOP VECTORIZED
+    for (SINT i = 0; i < numFrames; ++i) {
+        const CSAMPLE s = pSrc[i];
+        pDest[i * 2] += s;
+        pDest[i * 2 + 1] += s;
+    }
+}
+
+// static
+void SampleUtil::stripMultiToStereo(
+        CSAMPLE* pBuffer,
+        SINT numFrames,
         int numChannels) {
+    DEBUG_ASSERT(numChannels > 2);
     // forward loop
     for (SINT i = 0; i < numFrames; ++i) {
         pBuffer[i * 2] = pBuffer[i * numChannels];
@@ -440,9 +507,12 @@ void SampleUtil::stripMultiToStereo(CSAMPLE* pBuffer, SINT numFrames,
 }
 
 // static
-void SampleUtil::copyMultiToStereo(CSAMPLE* M_RESTRICT pDest,
+void SampleUtil::copyMultiToStereo(
+        CSAMPLE* M_RESTRICT pDest,
         const CSAMPLE* M_RESTRICT pSrc,
-        SINT numFrames, int numChannels) {
+        SINT numFrames,
+        int numChannels) {
+    DEBUG_ASSERT(numChannels > 2);
     // forward loop
     for (SINT i = 0; i < numFrames; ++i) {
         pDest[i * 2] = pSrc[i * numChannels];

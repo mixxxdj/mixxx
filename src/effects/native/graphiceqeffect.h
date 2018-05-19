@@ -14,9 +14,9 @@
 #include "util/sample.h"
 #include "util/types.h"
 
-class GraphicEQEffectGroupState {
+class GraphicEQEffectGroupState : public EffectState {
   public:
-    GraphicEQEffectGroupState();
+    GraphicEQEffectGroupState(const mixxx::EngineParameters& bufferParameters);
     virtual ~GraphicEQEffectGroupState();
 
     void setFilters(int sampleRate);
@@ -31,21 +31,19 @@ class GraphicEQEffectGroupState {
     float m_centerFrequencies[8];
 };
 
-class GraphicEQEffect : public PerChannelEffectProcessor<GraphicEQEffectGroupState> {
+class GraphicEQEffect : public EffectProcessorImpl<GraphicEQEffectGroupState> {
   public:
-    GraphicEQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    GraphicEQEffect(EngineEffect* pEffect);
     virtual ~GraphicEQEffect();
 
     static QString getId();
-    static EffectManifest getManifest();
+    static EffectManifestPointer getManifest();
 
-    // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,
                         GraphicEQEffectGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
-                        const unsigned int numSamples,
-                        const unsigned int sampleRate,
-                        const EffectProcessor::EnableState enableState,
+                        const mixxx::EngineParameters& bufferParameters,
+                        const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatureState);
 
   private:

@@ -127,6 +127,25 @@ script.toggleControl = function (group, control) {
 }
 
 /* -------- ------------------------------------------------------
+     script.toggleControl
+   Purpose: Triggers an engine value and resets it back to 0 after a delay
+            This is helpful for mapping encoder turns to controls that are
+            represented by buttons in skins so the skin button lights up
+            briefly but does not stay lit.
+   Input:   Group and control names, delay in milliseconds (optional)
+   Output:  none
+   -------- ------------------------------------------------------ */
+script.triggerControl = function (group, control, delay) {
+    if (typeof delay !== 'number') {
+        delay = 200;
+    }
+    engine.setValue(group, control, 1);
+    engine.beginTimer(delay, function () {
+        engine.setValue(group, control, 0);
+    }, true);
+}
+
+/* -------- ------------------------------------------------------
      script.absoluteLin
    Purpose: Maps an absolute linear control value to a linear Mixxx control
             value (like Volume: 0..1)
@@ -302,12 +321,21 @@ script.midiPitch = function (LSB, MSB, status) {
    Purpose: wrapper around engine.spinback() that can be directly mapped
             from xml for a spinback effect
             e.g: <key>script.spinback</key>
-   Input:   channel, control, value, status, group
+   Input:   channel, control, value, status, group, factor (optional), start rate (optional)
    Output:  none
    -------- ------------------------------------------------------ */
-script.spinback = function(channel, control, value, status, group) {
+script.spinback = function(channel, control, value, status, group, factor, rate) {
+    // if brake is called without defined factor and rate, reset to defaults
+    if (factor === undefined && rate === undefined) {
+        factor = 1;
+        rate = -10;
+    }
+    // if brake is called without defined rate, reset to default
+    if (rate === undefined) {
+        rate = -10;
+    }
     // disable on note-off or zero value note/cc
-    engine.spinback(parseInt(group.substring(8,9)), ((status & 0xF0) !== 0x80 && value > 0));
+    engine.spinback(parseInt(group.substring(8,9)), ((status & 0xF0) !== 0x80 && value > 0), factor, rate);
 }
 
 /* -------- ------------------------------------------------------
@@ -319,7 +347,7 @@ script.spinback = function(channel, control, value, status, group) {
    Output:  none
    -------- ------------------------------------------------------ */
 script.brake = function(channel, control, value, status, group, factor) {
-    // set default factor
+    // if brake is called without factor defined, reset to default
     if (factor === undefined) {
         factor = 1;
     }
@@ -329,13 +357,15 @@ script.brake = function(channel, control, value, status, group, factor) {
 
 /* -------- ------------------------------------------------------
      script.softStart
-   Purpose: wrapper around engine.brake() that can be directly mapped
-            from xml for a brake effect
-            e.g: <key>script.brake</key>
+   Purpose: wrapper around engine.softStart() that can be directly mapped
+            from xml to start and accelerate a deck from zero to full rate
+            defined by pitch slider, can also interrupt engine.brake()
+            e.g: <key>script.softStart</key>
    Input:   channel, control, value, status, group, acceleration factor (optional)
    Output:  none
    -------- ------------------------------------------------------ */
 script.softStart = function(channel, control, value, status, group, factor) {
+    // if softStart is called without factor defined, reset to default
     if (factor === undefined) {
         factor = 1;
     }
@@ -388,6 +418,8 @@ script.samplerRegEx = /^\[Sampler(\d+)\]$/ ;
 script.channelRegEx = /^\[Channel(\d+)\]$/ ;
 script.eqRegEx = /^\[EqualizerRack1_(\[.*\])_Effect1\]$/ ;
 script.quickEffectRegEx = /^\[QuickEffectRack1_(\[.*\])\]$/ ;
+script.effectUnitRegEx = /^\[EffectRack1_EffectUnit(\d+)\]$/ ;
+script.individualEffectRegEx = /^\[EffectRack1_EffectUnit(\d+)_Effect(\d+)\]$/ ;
 
 // ----------------- Object definitions --------------------------
 

@@ -14,17 +14,17 @@
 #include "util/sample.h"
 #include "util/types.h"
 
-class LinkwitzRiley8EQEffectGroupState {
+class LinkwitzRiley8EQEffectGroupState : public EffectState {
   public:
-    LinkwitzRiley8EQEffectGroupState();
+    LinkwitzRiley8EQEffectGroupState(const mixxx::EngineParameters& bufferParameters);
     virtual ~LinkwitzRiley8EQEffectGroupState();
 
     void setFilters(int sampleRate, int lowFreq, int highFreq);
 
-    EngineFilterLinkwtzRiley8Low* m_low1;
-    EngineFilterLinkwtzRiley8High* m_high1;
-    EngineFilterLinkwtzRiley8Low* m_low2;
-    EngineFilterLinkwtzRiley8High* m_high2;
+    EngineFilterLinkwitzRiley8Low* m_low1;
+    EngineFilterLinkwitzRiley8High* m_high1;
+    EngineFilterLinkwitzRiley8Low* m_low2;
+    EngineFilterLinkwitzRiley8High* m_high2;
 
     double old_low;
     double old_mid;
@@ -39,21 +39,20 @@ class LinkwitzRiley8EQEffectGroupState {
     int m_hiFreq;
 };
 
-class LinkwitzRiley8EQEffect : public PerChannelEffectProcessor<LinkwitzRiley8EQEffectGroupState> {
+class LinkwitzRiley8EQEffect : public EffectProcessorImpl<LinkwitzRiley8EQEffectGroupState> {
   public:
-    LinkwitzRiley8EQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    LinkwitzRiley8EQEffect(EngineEffect* pEffect);
     virtual ~LinkwitzRiley8EQEffect();
 
     static QString getId();
-    static EffectManifest getManifest();
+    static EffectManifestPointer getManifest();
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,
                         LinkwitzRiley8EQEffectGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
-                        const unsigned int numSamples,
-                        const unsigned int sampleRate,
-                        const EffectProcessor::EnableState enableState,
+                        const mixxx::EngineParameters& bufferParameters,
+                        const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatureState);
 
   private:

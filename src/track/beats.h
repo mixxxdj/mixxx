@@ -104,6 +104,13 @@ class Beats {
     // then dSamples is returned. If no beat can be found, returns -1.
     virtual double findNthBeat(double dSamples, int n) const = 0;
 
+    int numBeatsInRange(double dStartSample, double dEndSample);
+
+    // Find the sample N beats away from dSample. The number of beats may be
+    // negative and does not need to be an integer.
+    double findNBeatsFromSample(double fromSample, double beats) const;
+
+
     // Adds to pBeatsList the position in samples of every beat occuring between
     // startPosition and endPosition. BeatIterator must be iterated while
     // holding a strong references to the Beats object to ensure that the Beats

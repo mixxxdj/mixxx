@@ -87,6 +87,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setZoomSync(bool sync);
     int isZoomSync() const { return m_zoomSync;}
 
+    void setDisplayBeatGrid(bool sync);
+    bool isBeatGridEnabled() const { return m_beatGridEnabled; }
+
     void setVisualGain(FilterIndex index, double gain);
     double getVisualGain(FilterIndex index) const;
 
@@ -148,6 +151,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     bool m_openGLAvailable;
     QString m_openGLVersion;
     bool m_openGLShaderAvailable;
+    bool m_beatGridEnabled;
 
     VSyncThread* m_vsyncThread;
 

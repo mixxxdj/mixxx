@@ -218,7 +218,7 @@ class EngineBuffer : public EngineObject {
     void readToCrossfadeBuffer(const int iBufferSize);
 
     // Reset buffer playpos and set file playpos.
-    void setNewPlaypos(double playpos);
+    void setNewPlaypos(double playpos, bool adjustingPhase);
 
     void processSyncRequests();
     void processSeek(bool paused);
@@ -231,9 +231,12 @@ class EngineBuffer : public EngineObject {
     UserSettingsPointer m_pConfig;
 
     LoopingControl* m_pLoopingControl;
-    FRIEND_TEST(LoopingControlTest, LoopHalveButton_HalvesLoop);
+    FRIEND_TEST(LoopingControlTest, LoopScale_HalvesLoop);
     FRIEND_TEST(LoopingControlTest, LoopMoveTest);
     FRIEND_TEST(LoopingControlTest, LoopResizeSeek);
+    FRIEND_TEST(LoopingControlTest, ReloopToggleButton_DoesNotJumpAhead);
+    FRIEND_TEST(LoopingControlTest, ReloopAndStopButton);
+    FRIEND_TEST(LoopingControlTest, Beatjump_JumpsByBeats);
     FRIEND_TEST(SyncControlTest, TestDetermineBpmMultiplier);
     FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
     FRIEND_TEST(EngineSyncTest, HalfDoubleThenPlay);
@@ -265,6 +268,9 @@ class EngineBuffer : public EngineObject {
     // The previous callback's speed. Used to check if the scaler parameters
     // need updating.
     double m_speed_old;
+
+    // The previous callback's tempo ratio.
+    double m_tempo_ratio_old;
 
     // True if the previous callback was scratching.
     bool m_scratching_old;
@@ -321,6 +327,8 @@ class EngineBuffer : public EngineObject {
     ControlObject* m_visualKey;
     ControlObject* m_pQuantize;
     ControlObject* m_pMasterRate;
+    ControlObject* m_timeElapsed;
+    ControlObject* m_timeRemaining;
     ControlPotmeter* m_playposSlider;
     ControlProxy* m_pSampleRate;
     ControlProxy* m_pKeylockEngine;

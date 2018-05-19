@@ -22,17 +22,22 @@
 // SoundSource will be used 'soon' and so it should be brought into memory by
 // the reader work thread.
 typedef struct Hint {
-    // The sample to ensure is present in memory.
-    int sample;
-    // If a range of samples should be present, use length to indicate that the
-    // range (sample, sample+length) should be present in memory.
-    int length;
+    // The frame to ensure is present in memory.
+    SINT frame;
+    // If a range of frames should be present, use frameCount to indicate that the
+    // range (frame, frame + frameCount) should be present in memory.
+    SINT frameCount;
     // Currently unused -- but in the future could be used to prioritize certain
     // hints over others. A priority of 1 is the highest priority and should be
     // used for samples that will be read imminently. Hints for samples that
     // have the potential to be read (i.e. a cue point) should be issued with
     // priority >10.
     int priority;
+
+    // for the default frame count in forward direction
+    static constexpr SINT kFrameCountForward = 0;
+    static constexpr SINT kFrameCountBackward = -1;
+
 } Hint;
 
 // Note that we use a QVarLengthArray here instead of a QVector. Since this list
@@ -97,8 +102,6 @@ class CachingReader : public QObject {
         m_worker.setScheduler(pScheduler);
     }
 
-    const static int maximumCachingReaderChunksInMemory;
-
   signals:
     // Emitted once a new track is loaded and ready to be read from.
     void trackLoading();
@@ -155,12 +158,10 @@ class CachingReader : public QObject {
     CachingReaderChunkForOwner* m_lruCachingReaderChunk;
 
     // The raw memory buffer which is divided up into chunks.
-    SampleBuffer m_sampleBuffer;
+    mixxx::SampleBuffer m_sampleBuffer;
 
-    // The maximum readable frame index as reported by the worker.
-    // This frame index references the frame that follows the last
-    // frame with sample data.
-    SINT m_maxReadableFrameIndex;
+    // The readable frame index range as reported by the worker.
+    mixxx::IndexRange m_readableFrameIndexRange;
 
     CachingReaderWorker m_worker;
 };

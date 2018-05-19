@@ -49,7 +49,7 @@
      <item>
       <widget class="QPushButton" name="pushButtonShuffle">
        <property name="toolTip">
-        <string>Shuffle the content of the Auto DJ playlist.</string>
+        <string>Shuffle the content of the Auto DJ queue.</string>
        </property>
        <property name="text">
         <string>Shuffle</string>
@@ -62,7 +62,8 @@
      <item>
       <widget class="QPushButton" name="pushButtonAddRandom">
        <property name="toolTip">
-        <string>Add a random track from track sources (crates) or Library to the Auto DJ playlist.</string>
+        <string>Adds a random track from track sources (crates) to the Auto DJ queue.
+If no track sources are configured, the track is added from the library instead.</string>
        </property>
        <property name="text">
         <string>Add Random</string>
@@ -72,7 +73,7 @@
      <item>
       <widget class="QPushButton" name="pushButtonSkipNext">
        <property name="toolTip">
-        <string>Skip the next track in the Auto DJ playlist.</string>
+        <string>Skip the next track in the Auto DJ queue.</string>
        </property>
        <property name="text">
         <string>Skip Track</string>
@@ -115,7 +116,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="labelTransitionAppendix">
        <property name="toolTip">
         <string comment="&quot;sec.&quot; as in seconds">Seconds</string>
        </property>

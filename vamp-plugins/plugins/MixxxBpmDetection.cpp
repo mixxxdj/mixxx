@@ -15,20 +15,20 @@ MixxxBpmDetection::MixxxBpmDetection(float inputSampleRate):
 MixxxBpmDetection::~MixxxBpmDetection() {
 }
 
-string MixxxBpmDetection::getIdentifier() const {
+std::string MixxxBpmDetection::getIdentifier() const {
     return "mixxxbpmdetection";
 }
 
-string MixxxBpmDetection::getName() const {
+std::string MixxxBpmDetection::getName() const {
     return "SoundTouch BPM Detector (Legacy)";
 }
 
-string MixxxBpmDetection::getDescription() const {
+std::string MixxxBpmDetection::getDescription() const {
     // Return something helpful here!
     return "Port of Mixxx BPM Analyzer";
 }
 
-string MixxxBpmDetection::getMaker() const {
+std::string MixxxBpmDetection::getMaker() const {
     return "Olli Parviainen";
 }
 
@@ -38,7 +38,7 @@ int MixxxBpmDetection::getPluginVersion() const {
     return 1;
 }
 
-string MixxxBpmDetection::getCopyright() const {
+std::string MixxxBpmDetection::getCopyright() const {
     // This function is not ideally named.  It does not necessarily
     // need to say who made the plugin -- getMaker does that -- but it
     // should indicate the terms under which it is distributed.  For
@@ -130,7 +130,7 @@ MixxxBpmDetection::ParameterList MixxxBpmDetection::getParameterDescriptors() co
     return list;
 }
 
-float MixxxBpmDetection::getParameter(string identifier) const {
+float MixxxBpmDetection::getParameter(std::string identifier) const {
     if (identifier == "minbpm") {
         return m_fMinBpm; // return the ACTUAL current value of your parameter here!
     }
@@ -147,7 +147,7 @@ float MixxxBpmDetection::getParameter(string identifier) const {
     return 0;
 }
 
-void MixxxBpmDetection::setParameter(string identifier, float value) {
+void MixxxBpmDetection::setParameter(std::string identifier, float value) {
     if (identifier == "minbpm") {
         m_fMinBpm = value; // return the ACTUAL current value of your parameter here!
     }
@@ -171,11 +171,11 @@ MixxxBpmDetection::ProgramList MixxxBpmDetection::getPrograms() const {
     return list;
 }
 
-string MixxxBpmDetection::getCurrentProgram() const {
+std::string MixxxBpmDetection::getCurrentProgram() const {
     return ""; // no programs
 }
 
-void MixxxBpmDetection::selectProgram(string name) {
+void MixxxBpmDetection::selectProgram(std::string name) {
 }
 
 MixxxBpmDetection::OutputList MixxxBpmDetection::getOutputDescriptors() const {

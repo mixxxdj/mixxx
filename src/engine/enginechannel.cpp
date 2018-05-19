@@ -21,8 +21,14 @@
 #include "control/controlpushbutton.h"
 
 EngineChannel::EngineChannel(const ChannelHandleAndGroup& handle_group,
-                             EngineChannel::ChannelOrientation defaultOrientation)
-        : m_group(handle_group) {
+                             EngineChannel::ChannelOrientation defaultOrientation,
+                             EffectsManager* pEffectsManager, bool isTalkoverChannel)
+        : m_group(handle_group),
+          m_pEffectsManager(pEffectsManager),
+          m_vuMeter(getGroup()),
+          m_pSampleRate(new ControlProxy("[Master]", "samplerate")),
+          m_sampleBuffer(nullptr),
+          m_bIsTalkoverChannel(isTalkoverChannel) {
     m_pPFL = new ControlPushButton(ConfigKey(getGroup(), "pfl"));
     m_pPFL->setButtonMode(ControlPushButton::TOGGLE);
     m_pMaster = new ControlPushButton(ConfigKey(getGroup(), "master"));
@@ -42,6 +48,10 @@ EngineChannel::EngineChannel(const ChannelHandleAndGroup& handle_group,
             this, SLOT(slotOrientationCenter(double)), Qt::DirectConnection);
     m_pTalkover = new ControlPushButton(ConfigKey(getGroup(), "talkover"));
     m_pTalkover->setButtonMode(ControlPushButton::POWERWINDOW);
+
+    if (m_pEffectsManager != nullptr) {
+        m_pEffectsManager->registerInputChannel(handle_group);
+    }
 }
 
 EngineChannel::~EngineChannel() {
@@ -51,6 +61,7 @@ EngineChannel::~EngineChannel() {
     delete m_pOrientationLeft;
     delete m_pOrientationRight;
     delete m_pOrientationCenter;
+    delete m_pSampleRate;
     delete m_pTalkover;
 }
 

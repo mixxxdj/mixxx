@@ -5,9 +5,11 @@
 #include <QGLShaderProgram>
 #include <QtOpenGL>
 
+#include "track/track.h"
 #include "waveformrenderersignalbase.h"
 
-class GLSLWaveformRendererSignal : public WaveformRendererSignalBase {
+class GLSLWaveformRendererSignal : public QObject, public WaveformRendererSignalBase {
+    Q_OBJECT
   public:
     explicit GLSLWaveformRendererSignal(
             WaveformWidgetRenderer* waveformWidgetRenderer, bool rgbShader);
@@ -24,6 +26,9 @@ class GLSLWaveformRendererSignal : public WaveformRendererSignalBase {
     bool loadShaders();
     bool loadTexture();
 
+  public slots:
+    void slotWaveformUpdated();
+
   private:
     void createGeometry();
     void createFrameBuffers();
@@ -31,6 +36,7 @@ class GLSLWaveformRendererSignal : public WaveformRendererSignalBase {
     GLint m_unitQuadListId;
     GLuint m_textureId;
 
+    TrackPointer m_loadedTrack;
     int m_loadedWaveform;
 
     //Frame buffer for two pass rendering

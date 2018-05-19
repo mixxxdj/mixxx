@@ -1,16 +1,15 @@
 <!DOCTYPE template>
 <Template>
-
-    <WidgetGroup>
-    <ObjectName>VinylControlsContainer</ObjectName>
-    <Layout>vertical</Layout>
-    <SizePolicy>max,max</SizePolicy>
-    <Connection>
-      <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>
-      <BindProperty>visible</BindProperty>
-    </Connection>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
     <Children>
 
+      <WidgetGroup>
+        <ObjectName>VinylControlsGrid</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
           <Template src="skin:left_2state_button.xml">
             <SetVariable name="TooltipId">vinylcontrol_enabled</SetVariable>
             <SetVariable name="ObjectName">VinylToggleButtonUL</SetVariable>
@@ -20,17 +19,6 @@
             <SetVariable name="state_0_text">Vinyl</SetVariable>
             <SetVariable name="state_1_text">Vinyl</SetVariable>
             <SetVariable name="left_connection_control"><Variable name="group"/>,vinylcontrol_enabled</SetVariable>
-          </Template>
-
-          <Template src="skin:left_2state_button.xml">
-            <SetVariable name="TooltipId">passthrough_enabled</SetVariable>
-            <SetVariable name="ObjectName">VinylToggleButtonLL</SetVariable>
-            <SetVariable name="MinimumSize"><Variable name="WideButtonMinimumSize"/></SetVariable>
-            <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>
-            <SetVariable name="SizePolicy"><Variable name="WideButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text">PASS</SetVariable>
-            <SetVariable name="state_1_text">PASS</SetVariable>
-            <SetVariable name="left_connection_control"><Variable name="group"/>,passthrough</SetVariable>
           </Template>
 
           <Template src="skin:left_3state_button.xml">
@@ -43,6 +31,24 @@
             <SetVariable name="state_2_text">CONST</SetVariable>
             <SetVariable name="left_connection_control"><Variable name="group"/>,vinylcontrol_mode</SetVariable>
           </Template>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>VinylControlsGrid</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:left_2state_button.xml">
+            <SetVariable name="TooltipId">passthrough_enabled</SetVariable>
+            <SetVariable name="ObjectName">VinylToggleButtonLL</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="WideButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="WideButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text">PASS</SetVariable>
+            <SetVariable name="state_1_text">PASS</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,passthrough</SetVariable>
+          </Template>
 
           <Template src="skin:left_3state_button.xml">
             <SetVariable name="ObjectName">VinylCueButton</SetVariable>
@@ -52,10 +58,16 @@
             <SetVariable name="SizePolicy"><Variable name="WideButtonSizePolicy"/></SetVariable>
             <SetVariable name="state_0_text">CUE</SetVariable>
             <SetVariable name="state_1_text">CUE</SetVariable>
-            <SetVariable name="state_2_text">HOTCUE</SetVariable>
+            <SetVariable name="state_2_text">HOT</SetVariable>
             <SetVariable name="left_connection_control"><Variable name="group"/>,vinylcontrol_cueing</SetVariable>
           </Template>
+        </Children>
+      </WidgetGroup>
 
     </Children>
+    <Connection>
+      <ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
   </WidgetGroup>
 </Template>

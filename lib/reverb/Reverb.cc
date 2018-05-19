@@ -438,25 +438,23 @@ void MixxxPlateX2::processBuffer(const sample_t* in, sample_t* out, const uint f
 	// set bandwidth
 	input.bandwidth.set(exp(-M_PI * (1. - (.005 + .994*bandwidthParam))));
 	// set decay
-	sample_t decay = .749*decayParam;
+	sample_t decay = .890*decayParam;
 	// set damping
 	double damp = exp(-M_PI * (.0005+.9995*dampingParam));
 	tank.damping[0].set(damp);
 	tank.damping[1].set(damp);
 	// set blend
 	sample_t blend = pow(blendParam, 1.53);
-	sample_t dry = 1 - blend;
 
 	// the modulated lattices interpolate, which needs truncated float
 	DSP::FPTruncateMode _truncate;
 
 	// loop through the buffer, processing each sample
-	// note (timrae):treat the effect as SEND type instead of INSERT type for smoother parameter changes
 	for (uint i = 0; i + 1 < frames; i += 2) {
-		sample_t mono_sample = blend*(in[i] + in[i + 1]) / 2;
+		sample_t mono_sample = blend * (in[i] + in[i + 1]) / 2;
 		sample_t xl, xr;
 		PlateStub::process(mono_sample, decay, &xl, &xr);
-		out[i] = xl + dry*in[i];
-		out[i + 1] = xr + dry*in[i + 1];
+		out[i] = xl + in[i];
+		out[i + 1] = xr + in[i + 1];
 	}
 }

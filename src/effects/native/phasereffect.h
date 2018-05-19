@@ -11,39 +11,48 @@
 
 #define MAXSTAGES 12
 
-struct PhaserGroupState {
-    PhaserGroupState() :
-        leftPhase(0),
-        rightPhase(0) {
-        SampleUtil::applyGain(oldInLeft, 0, MAXSTAGES);
-        SampleUtil::applyGain(oldOutLeft, 0, MAXSTAGES);
-        SampleUtil::applyGain(oldInRight, 0, MAXSTAGES);
-        SampleUtil::applyGain(oldOutRight, 0, MAXSTAGES);
+class PhaserGroupState final : public EffectState {
+  public:
+    PhaserGroupState(const mixxx::EngineParameters& bufferParameters)
+            : EffectState(bufferParameters) {
+        clear();
     }
+
+    void clear() {
+        leftPhase = 0;
+        rightPhase = 0;
+        oldDepth = 0;
+        SampleUtil::clear(oldInLeft, MAXSTAGES);
+        SampleUtil::clear(oldOutLeft, MAXSTAGES);
+        SampleUtil::clear(oldInRight, MAXSTAGES);
+        SampleUtil::clear(oldOutRight, MAXSTAGES);
+    }
+
     CSAMPLE oldInLeft[MAXSTAGES];
     CSAMPLE oldInRight[MAXSTAGES];
     CSAMPLE oldOutLeft[MAXSTAGES];
     CSAMPLE oldOutRight[MAXSTAGES];
     CSAMPLE leftPhase;
     CSAMPLE rightPhase;
+    CSAMPLE_GAIN oldDepth;
+
 };
 
-class PhaserEffect : public PerChannelEffectProcessor<PhaserGroupState> {
+class PhaserEffect : public EffectProcessorImpl<PhaserGroupState> {
 
   public:
-    PhaserEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    PhaserEffect(EngineEffect* pEffect);
     virtual ~PhaserEffect();
 
     static QString getId();
-    static EffectManifest getManifest();
+    static EffectManifestPointer getManifest();
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,
                         PhaserGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE* pOutput,
-                        const unsigned int numSamples,
-                        const unsigned int sampleRate,
-                        const EffectProcessor::EnableState enableState,
+                        const mixxx::EngineParameters& bufferParameters,
+                        const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatures);
 
   private:
@@ -52,10 +61,11 @@ class PhaserEffect : public PerChannelEffectProcessor<PhaserGroupState> {
     }
 
     EngineEffectParameter* m_pStagesParameter;
-    EngineEffectParameter* m_pLFOFrequencyParameter;
+    EngineEffectParameter* m_pLFOPeriodParameter;
     EngineEffectParameter* m_pDepthParameter;
     EngineEffectParameter* m_pFeedbackParameter;
     EngineEffectParameter* m_pRangeParameter;
+    EngineEffectParameter* m_pTripletParameter;
     EngineEffectParameter* m_pStereoParameter;
 
     //Passing the sample through a series of allpass filters

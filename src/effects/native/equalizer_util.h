@@ -8,72 +8,80 @@
 class EqualizerUtil {
   public:
     // Creates common EQ parameters like low/mid/high gain and kill buttons.
-    static void createCommonParameters(EffectManifest* manifest) {
-        EffectManifestParameter* low = manifest->addParameter();
+    static void createCommonParameters(EffectManifest* pManifest, bool linear) {
+        EffectManifestParameter::ControlHint controlHint =
+                EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC;
+        double maximum = 4.0;
+        if (linear) {
+            controlHint = EffectManifestParameter::ControlHint::KNOB_LINEAR;
+            maximum = 2.0;
+        }
+
+        EffectManifestParameterPointer low = pManifest->addParameter();
         low->setId("low");
         low->setName(QObject::tr("Low"));
         low->setDescription(QObject::tr("Gain for Low Filter"));
-        low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-        low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-        low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+        low->setControlHint(controlHint);
+        low->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+        low->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
         low->setNeutralPointOnScale(0.5);
         low->setDefault(1.0);
         low->setMinimum(0);
-        low->setMaximum(4.0);
+        low->setMaximum(maximum);
 
-        EffectManifestParameter* killLow = manifest->addParameter();
+        EffectManifestParameterPointer killLow = pManifest->addParameter();
         killLow->setId("killLow");
         killLow->setName(QObject::tr("Kill Low"));
         killLow->setDescription(QObject::tr("Kill the Low Filter"));
-        killLow->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
-        killLow->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-        killLow->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+        killLow->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
+        killLow->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+        killLow->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
         killLow->setDefault(0);
         killLow->setMinimum(0);
         killLow->setMaximum(1);
 
-        EffectManifestParameter* mid = manifest->addParameter();
+        EffectManifestParameterPointer mid = pManifest->addParameter();
         mid->setId("mid");
         mid->setName(QObject::tr("Mid"));
         mid->setDescription(QObject::tr("Gain for Mid Filter"));
-        mid->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-        mid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-        mid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+        mid->setControlHint(controlHint);
+        mid->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+        mid->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
         mid->setNeutralPointOnScale(0.5);
         mid->setDefault(1.0);
         mid->setMinimum(0);
-        mid->setMaximum(4.0);
+        mid->setMaximum(maximum);
 
-        EffectManifestParameter* killMid = manifest->addParameter();
+        EffectManifestParameterPointer killMid = pManifest->addParameter();
         killMid->setId("killMid");
         killMid->setName(QObject::tr("Kill Mid"));
         killMid->setDescription(QObject::tr("Kill the Mid Filter"));
-        killMid->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
-        killMid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-        killMid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+        killMid->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
+        killMid->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+        killMid->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
         killMid->setDefault(0);
         killMid->setMinimum(0);
         killMid->setMaximum(1);
 
-        EffectManifestParameter* high = manifest->addParameter();
+        EffectManifestParameterPointer high = pManifest->addParameter();
         high->setId("high");
         high->setName(QObject::tr("High"));
         high->setDescription(QObject::tr("Gain for High Filter"));
-        high->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-        high->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-        high->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+        high->setControlHint(controlHint);
+        high->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+        high->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
         high->setNeutralPointOnScale(0.5);
         high->setDefault(1.0);
         high->setMinimum(0);
-        high->setMaximum(4.0);
+        high->setMaximum(maximum);
 
-        EffectManifestParameter* killHigh = manifest->addParameter();
+        EffectManifestParameterPointer killHigh = pManifest->addParameter();
         killHigh->setId("killHigh");
         killHigh->setName(QObject::tr("Kill High"));
         killHigh->setDescription(QObject::tr("Kill the High Filter"));
-        killHigh->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
-        killHigh->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-        killHigh->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+        killHigh->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
+        killHigh->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+        killHigh->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
         killHigh->setDefault(0);
         killHigh->setMinimum(0);
         killHigh->setMaximum(1);
@@ -81,7 +89,7 @@ class EqualizerUtil {
 
     static QString adjustFrequencyShelvesTip() {
         return QObject::tr(
-            "To adjust frequency shelves see the Equalizer preferences.");
+            "To adjust frequency shelves, go to Preferences -> Equalizers.");
     }
 };
 

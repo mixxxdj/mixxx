@@ -25,14 +25,12 @@ class KeyControl : public EngineControl {
     };
 
     KeyControl(QString group, UserSettingsPointer pConfig);
-    virtual ~KeyControl();
+    ~KeyControl() override;
 
     // Returns a struct, with the results of the last pitch and tempo calculations
     KeyControl::PitchTempoRatio getPitchTempoRatio();
 
     double getKey();
-
-    void collectFeatures(GroupFeatureState* pGroupFeatures) const;
 
   private slots:
     void slotSetEngineKey(double);
@@ -66,6 +64,7 @@ class KeyControl : public EngineControl {
     ControlPushButton* m_pButtonSyncKey;
     ControlPushButton* m_pButtonResetKey;
     ControlPushButton* m_keylockMode;
+    ControlPushButton* m_keyunlockMode;
 
     /** The current loaded file's detected key */
     ControlObject* m_pFileKey;

@@ -12,9 +12,6 @@
 class ControlObject;
 class ControlPushButton;
 
-class EffectParameterSlotBase;
-typedef QSharedPointer<EffectParameterSlotBase> EffectParameterSlotBasePointer;
-
 class EffectParameterSlotBase : public QObject {
     Q_OBJECT
   public:
@@ -24,7 +21,10 @@ class EffectParameterSlotBase : public QObject {
     QString name() const;
     QString shortName() const;
     QString description() const;
-    const EffectManifestParameter getManifest();
+    EffectManifestParameterPointer getManifest();
+
+    virtual QDomElement toXml(QDomDocument* doc) const = 0;
+    virtual void loadParameterSlotFromXml(const QDomElement& parameterElement) = 0;
 
   signals:
     // Signal that indicates that the EffectParameterSlotBase has been updated.

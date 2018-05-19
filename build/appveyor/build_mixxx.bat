@@ -148,8 +148,8 @@ echo.
 echo Building Mixxx failed.
 echo.
 REM For debugging, print the configuration log.
-echo Printing config.log:
-type config.log
+REM echo Printing config.log:
+REM type config.log
 ENDLOCAL
 exit /b 1
 ) else (

@@ -63,6 +63,7 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
           m_pReader(NULL),
           m_filepos_play(0.),
           m_speed_old(0),
+          m_tempo_ratio_old(1.),
           m_scratching_old(false),
           m_reverse_old(false),
           m_pitch_old(0),
@@ -154,6 +155,9 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
     // BPM to display in the UI (updated more slowly than the actual bpm)
     m_visualBpm = new ControlObject(ConfigKey(m_group, "visual_bpm"));
     m_visualKey = new ControlObject(ConfigKey(m_group, "visual_key"));
+
+    m_timeElapsed = new ControlObject(ConfigKey(m_group, "time_elapsed"));
+    m_timeRemaining = new ControlObject(ConfigKey(m_group, "time_remaining"));
 
     m_playposSlider = new ControlLinPotmeter(
         ConfigKey(m_group, "playposition"), 0.0, 1.0, 0, 0, true);
@@ -283,6 +287,9 @@ EngineBuffer::~EngineBuffer() {
     delete m_playButton;
     delete m_playStartButton;
     delete m_stopStartButton;
+
+    delete m_timeElapsed;
+    delete m_timeRemaining;
 
     delete m_startButton;
     delete m_endButton;
@@ -436,7 +443,7 @@ void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
 
 // WARNING: This method is not thread safe and must not be called from outside
 // the engine callback!
-void EngineBuffer::setNewPlaypos(double newpos) {
+void EngineBuffer::setNewPlaypos(double newpos, bool adjustingPhase) {
     //qDebug() << m_group << "engine new pos " << newpos;
 
     m_filepos_play = newpos;
@@ -457,7 +464,7 @@ void EngineBuffer::setNewPlaypos(double newpos) {
     for (QList<EngineControl*>::iterator it = m_engineControls.begin();
          it != m_engineControls.end(); ++it) {
         EngineControl *pControl = *it;
-        pControl->notifySeek(m_filepos_play);
+        pControl->notifySeek(m_filepos_play, adjustingPhase);
     }
 
     verifyPlay(); // verify or update play button and indicator
@@ -559,6 +566,10 @@ void EngineBuffer::ejectTrack() {
     m_playButton->set(0.0);
     m_visualBpm->set(0.0);
     m_visualKey->set(0.0);
+    m_timeElapsed->set(0);
+    m_timeRemaining->set(0);
+    m_playposSlider->set(0);
+    m_pCueControl->updateIndicators();
     doSeekFractional(0.0, SEEK_EXACT);
     m_pause.unlock();
 
@@ -900,7 +911,8 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // scaler. Also, if we have changed scalers then we need to update the
         // scaler.
         if (baserate != m_baserate_old || speed != m_speed_old ||
-                pitchRatio != m_pitch_old || m_bScalerChanged) {
+                pitchRatio != m_pitch_old || tempoRatio != m_tempo_ratio_old ||
+                m_bScalerChanged) {
             // The rate returned by the scale object can be different from the
             // wanted rate!  Make sure new scaler has proper position. This also
             // crossfades between the old scaler and new scaler to prevent
@@ -923,6 +935,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             m_baserate_old = baserate;
             m_speed_old = speed;
             m_pitch_old = pitchRatio;
+            m_tempo_ratio_old = tempoRatio;
             m_reverse_old = is_reverse;
 
             // Now we need to update the scaler with the master sample rate, the
@@ -1148,12 +1161,14 @@ void EngineBuffer::processSeek(bool paused) {
         seekType |= SEEK_PHASE;
     }
 
+    bool adjustingPhase = false;
     switch (seekType) {
         case SEEK_NONE:
             return;
         case SEEK_PHASE:
             // only adjust phase
             position = m_filepos_play;
+            adjustingPhase = true;
             break;
         case SEEK_EXACT:
         case SEEK_STANDARD: // = SEEK_EXACT | SEEK_PHASE
@@ -1165,13 +1180,10 @@ void EngineBuffer::processSeek(bool paused) {
     }
 
     if ((seekType & SEEK_PHASE) && !paused && m_pQuantize->toBool()) {
-        position += m_pBpmControl->getPhaseOffset(position);
+        position = m_pBpmControl->getNearestPositionInPhase(position, true, true);
     }
-
-    double newPlayFrame = position / kSamplesPerFrame;
-    position = round(newPlayFrame) * kSamplesPerFrame;
     if (position != m_filepos_play) {
-        setNewPlaypos(position);
+        setNewPlaypos(position, adjustingPhase);
     }
 }
 
@@ -1216,6 +1228,11 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
     // Update indicators that are only updated after every
     // sampleRate/kiUpdateRate samples processed.  (e.g. playposSlider)
     if (m_iSamplesCalculated > (m_pSampleRate->get() / kiPlaypositionUpdateRate)) {
+        const double samplePositionToSeconds = 1.0 / m_trackSampleRateOld
+                / kSamplesPerFrame / m_tempo_ratio_old;
+        m_timeElapsed->set(m_filepos_play * samplePositionToSeconds);
+        m_timeRemaining->set(std::max(m_trackSamplesOld - m_filepos_play, 0.0) *
+                samplePositionToSeconds);
         m_playposSlider->set(fFractionalPlaypos);
         m_pCueControl->updateIndicators();
 
@@ -1244,15 +1261,17 @@ void EngineBuffer::hintReader(const double dRate) {
     //if slipping, hint about virtual position so we're ready for it
     if (m_bSlipEnabledProcessing) {
         Hint hint;
-        hint.length = 2048; //default length please
-        hint.sample = m_dSlipRate >= 0 ? m_dSlipPosition : m_dSlipPosition - 2048;
+        hint.frame = SampleUtil::floorPlayPosToFrame(m_dSlipPosition);
         hint.priority = 1;
+        if (m_dSlipRate >= 0) {
+            hint.frameCount = Hint::kFrameCountForward;
+        } else {
+            hint.frameCount = Hint::kFrameCountBackward;
+        }
         m_hintList.append(hint);
     }
 
-    QListIterator<EngineControl*> it(m_engineControls);
-    while (it.hasNext()) {
-        EngineControl* pControl = it.next();
+    for (const auto& pControl: m_engineControls) {
         pControl->hintReader(&m_hintList);
     }
     m_pReader->hintAndMaybeWake(m_hintList);
@@ -1340,13 +1359,7 @@ void EngineBuffer::setScalerForTest(EngineBufferScale* pScaleVinyl,
 }
 
 void EngineBuffer::collectFeatures(GroupFeatureState* pGroupFeatures) const {
-    pGroupFeatures->has_current_position = true;
-    pGroupFeatures->current_position = m_filepos_play;
-
     if (m_pBpmControl != NULL) {
         m_pBpmControl->collectFeatures(pGroupFeatures);
-    }
-    if (m_pKeyControl != NULL) {
-        m_pKeyControl->collectFeatures(pGroupFeatures);
     }
 }

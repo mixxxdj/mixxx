@@ -57,6 +57,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     void slotUpdate();
     void slotResetToDefaults();
     void slotUpdateEqAutoReset(int);
+    void slotUpdateGainAutoReset(int);
     void slotBypass(int state);
     // Update the Master EQ
     void slotUpdateMasterEQParameter(int value);
@@ -87,6 +88,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     EffectsManager* m_pEffectsManager;
     EqualizerRackPointer m_pEQEffectRack;
     QuickEffectRackPointer m_pQuickEffectRack;
+    OutputEffectRackPointer m_pOutputEffectRack;
     QLabel* m_firstSelectorLabel;
     QList<QComboBox*> m_deckEqEffectSelectors;
     QList<QComboBox*> m_deckQuickEffectSelectors;
@@ -103,6 +105,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     QWeakPointer<Effect> m_pEffectMasterEQ;
 
     bool m_bEqAutoReset;
+    bool m_bGainAutoReset;
 };
 
 #endif

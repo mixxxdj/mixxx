@@ -15,9 +15,8 @@ class PixmapSource final {
     bool isSVG() const;
     bool isBitmap() const;
     void setSVG(const QByteArray& content);
-    void setPath(const QString& newPath);
-    QString getPath() const;
-    QByteArray getData() const;
+    const QString& getPath() const;
+    const QByteArray& getSvgSourceData() const;
     QString getId() const;
 
   private:
@@ -27,7 +26,7 @@ class PixmapSource final {
     };
 
     QString m_path;
-    QByteArray m_baData;
+    QByteArray m_svgSourceData;
     enum Type m_eType;
 };
 

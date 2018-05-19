@@ -9,29 +9,31 @@ QString GraphicEQEffect::getId() {
 }
 
 // static
-EffectManifest GraphicEQEffect::getManifest() {
-    EffectManifest manifest;
-    manifest.setId(getId());
-    manifest.setName(QObject::tr("Graphic Equalizer"));
-    manifest.setShortName(QObject::tr("Graphic EQ"));
-    manifest.setAuthor("The Mixxx Team");
-    manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr(
+EffectManifestPointer GraphicEQEffect::getManifest() {
+    EffectManifestPointer pManifest(new EffectManifest());
+    pManifest->setId(getId());
+    pManifest->setName(QObject::tr("Graphic Equalizer"));
+    pManifest->setShortName(QObject::tr("Graphic EQ"));
+    pManifest->setAuthor("The Mixxx Team");
+    pManifest->setVersion("1.0");
+    pManifest->setDescription(QObject::tr(
         "An 8-band graphic equalizer based on biquad filters"));
-    manifest.setEffectRampsFromDry(true);
-    manifest.setIsMasterEQ(true);
+    pManifest->setEffectRampsFromDry(true);
+    pManifest->setIsMasterEQ(true);
 
     // Display rounded center frequencies for each filter
     float centerFrequencies[8] = {45, 100, 220, 500, 1100, 2500,
                                   5500, 12000};
 
-    EffectManifestParameter* low = manifest.addParameter();
+    EffectManifestParameterPointer low = pManifest->addParameter();
     low->setId(QString("low"));
     low->setName(QString("%1 Hz").arg(centerFrequencies[0]));
-    low->setDescription(QObject::tr("Gain for Low Filter"));
-    low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    low->setShortName(QString("%1 Hz").arg(centerFrequencies[0]));
+    low->setDescription(QObject::tr(
+        "Gain for Low Filter"));
+    low->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    low->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    low->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     low->setNeutralPointOnScale(0.5);
     low->setDefault(0);
     low->setMinimum(-12);
@@ -45,42 +47,47 @@ EffectManifest GraphicEQEffect::getManifest() {
             paramName = QString("%1 kHz").arg(centerFrequencies[i + 1] / 1000);
         }
 
-        EffectManifestParameter* mid = manifest.addParameter();
+        EffectManifestParameterPointer mid = pManifest->addParameter();
         mid->setId(QString("mid%1").arg(i));
         mid->setName(paramName);
-        mid->setDescription(QObject::tr("Gain for Band Filter %1").arg(i));
-        mid->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-        mid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-        mid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+        mid->setShortName(paramName);
+        mid->setDescription(QObject::tr(
+            "Gain for Band Filter %1").arg(i + 1));
+        mid->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+        mid->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+        mid->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
         mid->setNeutralPointOnScale(0.5);
         mid->setDefault(0);
         mid->setMinimum(-12);
         mid->setMaximum(12);
     }
 
-    EffectManifestParameter* high = manifest.addParameter();
+    EffectManifestParameterPointer high = pManifest->addParameter();
     high->setId(QString("high"));
     high->setName(QString("%1 kHz").arg(centerFrequencies[7] / 1000));
-    high->setDescription(QObject::tr("Gain for High Filter"));
-    high->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    high->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    high->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    high->setDescription(QObject::tr(
+        "Gain for High Filter"));
+    high->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    high->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    high->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     high->setDefault(0);
     high->setMinimum(-12);
     high->setMaximum(12);
 
-    return manifest;
+    return pManifest;
 }
 
-GraphicEQEffectGroupState::GraphicEQEffectGroupState() {
+GraphicEQEffectGroupState::GraphicEQEffectGroupState(
+        const mixxx::EngineParameters& bufferParameters)
+            : EffectState(bufferParameters) {
     m_oldLow = 0;
     for (int i = 0; i < 6; i++) {
         m_oldMid.append(1.0);
     }
     m_oldHigh = 0;
 
-    m_pBufs.append(SampleUtil::alloc(MAX_BUFFER_LEN));
-    m_pBufs.append(SampleUtil::alloc(MAX_BUFFER_LEN));
+    m_pBufs.append(SampleUtil::alloc(bufferParameters.samplesPerBuffer()));
+    m_pBufs.append(SampleUtil::alloc(bufferParameters.samplesPerBuffer()));
 
     // Initialize the default center frequencies
     m_centerFrequencies[0] = 81;
@@ -126,10 +133,8 @@ void GraphicEQEffectGroupState::setFilters(int sampleRate) {
     }
 }
 
-GraphicEQEffect::GraphicEQEffect(EngineEffect* pEffect,
-                                 const EffectManifest& manifest)
+GraphicEQEffect::GraphicEQEffect(EngineEffect* pEffect)
         : m_oldSampleRate(44100) {
-    Q_UNUSED(manifest);
     m_pPotLow = pEffect->getParameterById("low");
     for (int i = 0; i < 6; i++) {
         m_pPotMid.append(pEffect->getParameterById(QString("mid%1").arg(i)));
@@ -143,25 +148,24 @@ GraphicEQEffect::~GraphicEQEffect() {
 void GraphicEQEffect::processChannel(const ChannelHandle& handle,
                                      GraphicEQEffectGroupState* pState,
                                      const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                     const unsigned int numSamples,
-                                     const unsigned int sampleRate,
-                                     const EffectProcessor::EnableState enableState,
+                                     const mixxx::EngineParameters& bufferParameters,
+                                     const EffectEnableState enableState,
                                      const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
 
     // If the sample rate has changed, initialize the filters using the new
     // sample rate
-    if (m_oldSampleRate != sampleRate) {
-        m_oldSampleRate = sampleRate;
-        pState->setFilters(sampleRate);
+    if (m_oldSampleRate != bufferParameters.sampleRate()) {
+        m_oldSampleRate = bufferParameters.sampleRate();
+        pState->setFilters(bufferParameters.sampleRate());
     }
 
     float fLow;
     float fMid[6];
     float fHigh;
 
-    if (enableState == EffectProcessor::DISABLING) {
+    if (enableState == EffectEnableState::Disabling) {
          // Ramp to dry, when disabling, this will ramp from dry when enabling as well
         fLow = 1.0;
         fHigh = 1.0;;
@@ -178,18 +182,18 @@ void GraphicEQEffect::processChannel(const ChannelHandle& handle,
 
 
     if (fLow != pState->m_oldLow) {
-        pState->m_low->setFrequencyCorners(sampleRate,
+        pState->m_low->setFrequencyCorners(bufferParameters.sampleRate(),
                                            pState->m_centerFrequencies[0], Q,
                                            fLow);
     }
     if (fHigh != pState->m_oldHigh) {
-        pState->m_high->setFrequencyCorners(sampleRate,
+        pState->m_high->setFrequencyCorners(bufferParameters.sampleRate(),
                                             pState->m_centerFrequencies[7], Q,
                                             fHigh);
     }
     for (int i = 0; i < 6; i++) {
         if (fMid[i] != pState->m_oldMid[i]) {
-            pState->m_bands[i]->setFrequencyCorners(sampleRate,
+            pState->m_bands[i]->setFrequencyCorners(bufferParameters.sampleRate(),
                                                     pState->m_centerFrequencies[i + 1],
                                                     Q, fMid[i]);
         }
@@ -197,17 +201,17 @@ void GraphicEQEffect::processChannel(const ChannelHandle& handle,
 
     int bufIndex = 0;
     if (fLow) {
-        pState->m_low->process(pInput, pState->m_pBufs[1 - bufIndex], numSamples);
+        pState->m_low->process(pInput, pState->m_pBufs[1 - bufIndex], bufferParameters.samplesPerBuffer());
         bufIndex = 1 - bufIndex;
     } else {
         pState->m_low->pauseFilter();
-        SampleUtil::copy(pState->m_pBufs[bufIndex], pInput, numSamples);
+        SampleUtil::copy(pState->m_pBufs[bufIndex], pInput, bufferParameters.samplesPerBuffer());
     }
 
     for (int i = 0; i < 6; i++) {
         if (fMid[i]) {
             pState->m_bands[i]->process(pState->m_pBufs[bufIndex],
-                                        pState->m_pBufs[1 - bufIndex], numSamples);
+                                        pState->m_pBufs[1 - bufIndex], bufferParameters.samplesPerBuffer());
             bufIndex = 1 - bufIndex;
         } else {
             pState->m_bands[i]->pauseFilter();
@@ -216,10 +220,10 @@ void GraphicEQEffect::processChannel(const ChannelHandle& handle,
 
     if (fHigh) {
         pState->m_high->process(pState->m_pBufs[bufIndex],
-                                pOutput, numSamples);
+                                pOutput, bufferParameters.samplesPerBuffer());
         bufIndex = 1 - bufIndex;
     } else {
-        SampleUtil::copy(pOutput, pState->m_pBufs[bufIndex], numSamples);
+        SampleUtil::copy(pOutput, pState->m_pBufs[bufIndex], bufferParameters.samplesPerBuffer());
         pState->m_high->pauseFilter();
     }
 
@@ -230,7 +234,7 @@ void GraphicEQEffect::processChannel(const ChannelHandle& handle,
         pState->m_oldMid[i] = fMid[i];
     }
 
-    if (enableState == EffectProcessor::DISABLING) {
+    if (enableState == EffectEnableState::Disabling) {
         pState->m_low->pauseFilter();
         pState->m_high->pauseFilter();
         for (int i = 0; i < 6; i++) {

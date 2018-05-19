@@ -49,6 +49,7 @@ public:
     QAction* m_pJoinWithPreviousAction;
     QAction* m_pGetNewPlaylist;
     int m_playlistId;
+    WLibrary* m_libraryWidget;
 };
 
 #endif // SETLOGFEATURE_H

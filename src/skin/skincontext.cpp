@@ -7,6 +7,7 @@
 #include "skin/skincontext.h"
 #include "skin/svgparser.h"
 #include "util/cmdlineargs.h"
+#include "util/math.h"
 
 SkinContext::SkinContext(UserSettingsPointer pConfig,
                          const QString& xmlPath)
@@ -30,11 +31,17 @@ SkinContext::SkinContext(UserSettingsPointer pConfig,
     if (!hooksPattern.isNull()) {
         m_hookRx.setPattern(hooksPattern.toString());
     }
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    // Load the config option once, here, rather than in setupSize.
+    m_scaleFactor = m_pConfig->getValue(ConfigKey("[Config]","ScaleFactor"), 1.0);
+#else
+    m_scaleFactor = 1.0;
+#endif
 }
 
 SkinContext::SkinContext(const SkinContext& parent)
-        : m_xmlPath(parent.m_xmlPath),
-          m_skinBasePath(parent.m_skinBasePath),
+        : m_skinBasePath(parent.m_skinBasePath),
           m_pConfig(parent.m_pConfig),
           m_variables(parent.variables()),
           m_pScriptEngine(parent.m_pScriptEngine),
@@ -42,9 +49,11 @@ SkinContext::SkinContext(const SkinContext& parent)
           m_parentGlobal(m_pScriptEngine->globalObject()),
           m_hookRx(parent.m_hookRx),
           m_pSvgCache(parent.m_pSvgCache),
-          m_pSingletons(parent.m_pSingletons) {
+          m_pSingletons(parent.m_pSingletons),
+          m_scaleFactor(parent.m_scaleFactor) {
     // we generate a new global object to preserve the scope between
     // a context and its children
+    setXmlPath(parent.m_xmlPath);
     QScriptValue context = m_pScriptEngine->pushContext()->activationObject();
     QScriptValue newGlobal = m_pScriptEngine->newObject();
     QScriptValueIterator it(m_parentGlobal);
@@ -158,29 +167,27 @@ QString SkinContext::nodeToString(const QDomNode& node) const {
 }
 
 PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
-    PixmapSource source;
-
-    const SvgParser svgParser(*this);
-
     if (!pixmapNode.isNull()) {
         QDomNode svgNode = selectNode(pixmapNode, "svg");
         if (!svgNode.isNull()) {
             // inline svg
+            SvgParser svgParser(*this);
             const QByteArray rslt = svgParser.saveToQByteArray(
-                svgParser.parseSvgTree(svgNode, m_xmlPath));
+                    svgParser.parseSvgTree(svgNode, m_xmlPath));
+            PixmapSource source;
             source.setSVG(rslt);
+            return source;
         } else {
             // filename.
-            source = getPixmapSourceInner(nodeToString(pixmapNode), svgParser);
+            return getPixmapSourceInner(nodeToString(pixmapNode));
         }
     }
 
-    return source;
+    return PixmapSource();
 }
 
 PixmapSource SkinContext::getPixmapSource(const QString& filename) const {
-    const SvgParser svgParser(*this);
-    return getPixmapSourceInner(filename, svgParser);
+    return getPixmapSourceInner(filename);
 }
 
 QDomElement SkinContext::loadSvg(const QString& filename) const {
@@ -199,19 +206,11 @@ QDomElement SkinContext::loadSvg(const QString& filename) const {
     return cachedSvg;
 }
 
-PixmapSource SkinContext::getPixmapSourceInner(const QString& filename,
-                                               const SvgParser& svgParser) const {
-    PixmapSource source;
+PixmapSource SkinContext::getPixmapSourceInner(const QString& filename) const {
     if (!filename.isEmpty()) {
-        source.setPath(getSkinPath(filename));
-        if (source.isSVG()) {
-            QDomElement svgElement = loadSvg(filename);
-            const QByteArray rslt = svgParser.saveToQByteArray(
-                svgParser.parseSvgTree(svgElement, filename));
-            source.setSVG(rslt);
-        }
+        return PixmapSource(makeSkinPath(filename));
     }
-    return source;
+    return PixmapSource();
 }
 
 /**
@@ -255,4 +254,13 @@ QDebug SkinContext::logWarning(const char* file, const int line,
                                   node.nodeName())
                              .toUtf8()
                              .constData();
+}
+
+int SkinContext::scaleToWidgetSize(QString& size) const {
+    bool widthOk = false;
+    double dSize = size.toDouble(&widthOk);
+    if (widthOk && dSize >= 0) {
+        return static_cast<int>(round(dSize * m_scaleFactor));
+    }
+    return -1;
 }

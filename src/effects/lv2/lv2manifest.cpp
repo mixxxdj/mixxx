@@ -4,22 +4,23 @@
 
 LV2Manifest::LV2Manifest(const LilvPlugin* plug,
                          QHash<QString, LilvNode*>& properties)
-        : m_status(AVAILABLE) {
+        : m_pEffectManifest(new EffectManifest()),
+          m_status(AVAILABLE) {
 
     m_pLV2plugin = plug;
 
     // Get and set the ID
     const LilvNode* id = lilv_plugin_get_uri(m_pLV2plugin);
-    m_effectManifest.setId(lilv_node_as_string(id));
+    m_pEffectManifest->setId(lilv_node_as_string(id));
 
     // Get and set the name
     LilvNode* info = lilv_plugin_get_name(m_pLV2plugin);
-    m_effectManifest.setName(lilv_node_as_string(info));
+    m_pEffectManifest->setName(lilv_node_as_string(info));
     lilv_node_free(info);
 
     // Get and set the author
     info = lilv_plugin_get_author_name(m_pLV2plugin);
-    m_effectManifest.setAuthor(lilv_node_as_string(info));
+    m_pEffectManifest->setAuthor(lilv_node_as_string(info));
     lilv_node_free(info);
 
     int numPorts = lilv_plugin_get_num_ports(plug);
@@ -50,11 +51,11 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             }
         }
 
-        if (lilv_port_is_a(m_pLV2plugin, port, properties["control_port"]) &&
-            !lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"]) &&
-            !lilv_port_has_property(m_pLV2plugin, port, properties["button_port"])) {
+        if (lilv_port_is_a(m_pLV2plugin, port, properties["control_port"])
+                && !lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"])
+                && !lilv_port_has_property(m_pLV2plugin, port, properties["button_port"])) {
             controlPortIndices.append(i);
-            EffectManifestParameter* param = m_effectManifest.addParameter();
+            EffectManifestParameterPointer param = m_pEffectManifest->addParameter();
 
             // Get and set the parameter name
             info = lilv_port_get_name(m_pLV2plugin, port);
@@ -62,25 +63,27 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             param->setName(paramName);
             lilv_node_free(info);
 
-            // Build and set the parameter id from its name
-            // Append its index to avoid duplicate ids
-            param->setId(paramName.trimmed().toLower().replace(' ', '_').append(i + '0'));
-            param->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-            param->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+            const LilvNode* node = lilv_port_get_symbol(m_pLV2plugin, port);
+            QString symbol = lilv_node_as_string(node);
+            param->setId(symbol);
+            // node must not be freed here, it is owned by port
+
+            param->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+            param->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
             param->setDefault(m_default[i]);
             param->setMinimum(m_minimum[i]);
             param->setMaximum(m_maximum[i]);
 
             // Set the appropriate Hints
             if (lilv_port_has_property(m_pLV2plugin, port, properties["button_port"])) {
-                param->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
+                param->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
             } else if (lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"])) {
                 buildEnumerationOptions(port, param);
-                param->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
+                param->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
             } else if (lilv_port_has_property(m_pLV2plugin, port, properties["integer_port"])) {
-                param->setControlHint(EffectManifestParameter::CONTROL_KNOB_STEPPING);
+                param->setControlHint(EffectManifestParameter::ControlHint::KNOB_STEPPING);
             } else {
-                 param->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+                 param->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
             }
         }
     }
@@ -91,9 +94,9 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
 
         if (lilv_port_is_a(m_pLV2plugin, port, properties["control_port"]) &&
                 (lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"]) ||
-                lilv_port_has_property(m_pLV2plugin, port, properties["button_port"]))) {
+                 lilv_port_has_property(m_pLV2plugin, port, properties["button_port"]))) {
             controlPortIndices.append(i);
-            EffectManifestParameter* param = m_effectManifest.addParameter();
+            EffectManifestParameterPointer param = m_pEffectManifest->addParameter();
 
             // Get and set the parameter name
             info = lilv_port_get_name(m_pLV2plugin, port);
@@ -101,13 +104,14 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             param->setName(paramName);
             lilv_node_free(info);
 
-            // Build and set the parameter id from its name
-            // Append its index to avoid duplicate ids
-            // Set the appropriate Hints
-            param->setId(paramName.trimmed().toLower().replace(' ', '_').append(i + '0'));
-            param->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-            param->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-            param->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
+            const LilvNode* node = lilv_port_get_symbol(m_pLV2plugin, port);
+            QString symbol = lilv_node_as_string(node);
+            param->setId(symbol);
+            // info must not be freed here, it is owned by port
+
+            param->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+            param->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+            param->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
             if (lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"])) {
                 buildEnumerationOptions(port, param);
             } else {
@@ -157,12 +161,8 @@ LV2Manifest::~LV2Manifest() {
     delete m_default;
 }
 
-EffectManifest LV2Manifest::getEffectManifest() {
-    return m_effectManifest;
-}
-
-EffectManifest& LV2Manifest::getEffectManifestReference() {
-    return m_effectManifest;
+EffectManifestPointer LV2Manifest::getEffectManifest() const {
+    return m_pEffectManifest;
 }
 
 QList<int> LV2Manifest::getAudioPortIndices() {
@@ -186,7 +186,7 @@ bool LV2Manifest::isValid() {
 }
 
 void LV2Manifest::buildEnumerationOptions(const LilvPort* port,
-                                          EffectManifestParameter* param) {
+                                          EffectManifestParameterPointer param) {
     LilvScalePoints* options = lilv_port_get_scale_points(m_pLV2plugin, port);
     LILV_FOREACH(scale_points, iterator, options) {
         const LilvScalePoint* option = lilv_scale_points_get(options, iterator);

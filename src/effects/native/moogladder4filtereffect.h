@@ -11,10 +11,9 @@
 #include "util/sample.h"
 #include "util/types.h"
 
-
-
-struct MoogLadder4FilterGroupState {
-    MoogLadder4FilterGroupState();
+class MoogLadder4FilterGroupState : public EffectState {
+  public:
+    MoogLadder4FilterGroupState(const mixxx::EngineParameters& bufferParameters);
     ~MoogLadder4FilterGroupState();
     void setFilters(int sampleRate, double lowFreq, double highFreq);
 
@@ -26,24 +25,22 @@ struct MoogLadder4FilterGroupState {
     double m_resonance;
     double m_hiFreq;
     double m_samplerate;
-
 };
 
-class MoogLadder4FilterEffect : public PerChannelEffectProcessor<MoogLadder4FilterGroupState> {
+class MoogLadder4FilterEffect : public EffectProcessorImpl<MoogLadder4FilterGroupState> {
   public:
-    MoogLadder4FilterEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    MoogLadder4FilterEffect(EngineEffect* pEffect);
     virtual ~MoogLadder4FilterEffect();
 
     static QString getId();
-    static EffectManifest getManifest();
+    static EffectManifestPointer getManifest();
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,
                         MoogLadder4FilterGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
-                        const unsigned int numSamples,
-                        const unsigned int sampleRate,
-                        const EffectProcessor::EnableState enableState,
+                        const mixxx::EngineParameters& bufferParameters,
+                        const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatures);
 
   private:

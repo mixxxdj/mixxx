@@ -21,7 +21,6 @@
 #include "engine/enginemaster.h"
 #include "mixer/playermanager.h"
 #include "soundio/soundmanager.h"
-#include "soundio/sounddevice.h"
 #include "util/rlimit.h"
 #include "util/scopedoverridecursor.h"
 #include "control/controlproxy.h"
@@ -37,6 +36,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
           m_pPlayerManager(pPlayerManager),
           m_pConfig(pConfig),
           m_settingsModified(false),
+          m_bLatencyChanged(false),
+          m_bSkipConfigClear(true),
           m_loading(false) {
     setupUi(this);
 
@@ -72,12 +73,53 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     connect(deviceSyncComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(syncBuffersChanged(int)));
 
+    engineClockComboBox->clear();
+    engineClockComboBox->addItem(tr("Soundcard Clock"));
+    engineClockComboBox->addItem(tr("Network Clock"));
+    engineClockComboBox->setCurrentIndex(0);
+    connect(engineClockComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(engineClockChanged(int)));
+
     keylockComboBox->clear();
     for (int i = 0; i < EngineBuffer::KEYLOCK_ENGINE_COUNT; ++i) {
         keylockComboBox->addItem(
                 EngineBuffer::getKeylockEngineName(
                         static_cast<EngineBuffer::KeylockEngine>(i)));
     }
+
+    m_pLatencyCompensation = new ControlProxy("[Master]", "microphoneLatencyCompensation", this);
+    m_pMasterDelay = new ControlProxy("[Master]", "delay", this);
+    m_pHeadDelay = new ControlProxy("[Master]", "headDelay", this);
+    m_pBoothDelay = new ControlProxy("[Master]", "boothDelay", this);
+
+    latencyCompensationSpinBox->setValue(m_pLatencyCompensation->get());
+    latencyCompensationWarningLabel->setWordWrap(true);
+    masterDelaySpinBox->setValue(m_pMasterDelay->get());
+    headDelaySpinBox->setValue(m_pHeadDelay->get());
+    boothDelaySpinBox->setValue(m_pBoothDelay->get());
+
+    connect(latencyCompensationSpinBox, SIGNAL(valueChanged(double)),
+            this, SLOT(latencyCompensationSpinboxChanged(double)));
+    connect(masterDelaySpinBox, SIGNAL(valueChanged(double)),
+            this, SLOT(masterDelaySpinboxChanged(double)));
+    connect(headDelaySpinBox, SIGNAL(valueChanged(double)),
+            this, SLOT(headDelaySpinboxChanged(double)));
+    connect(boothDelaySpinBox, SIGNAL(valueChanged(double)),
+            this, SLOT(boothDelaySpinboxChanged(double)));
+
+    m_pMicMonitorMode = new ControlProxy("[Master]", "talkover_mix", this);
+    micMonitorModeComboBox->addItem(tr("Master output only"),
+        QVariant(static_cast<int>(EngineMaster::MicMonitorMode::MASTER)));
+    micMonitorModeComboBox->addItem(tr("Master and booth outputs"),
+        QVariant(static_cast<int>(EngineMaster::MicMonitorMode::MASTER_AND_BOOTH)));
+    micMonitorModeComboBox->addItem(tr("Direct monitor (recording and broadcasting only)"),
+        QVariant(static_cast<int>(EngineMaster::MicMonitorMode::DIRECT_MONITOR)));
+    int modeIndex = micMonitorModeComboBox->findData(
+        static_cast<int>(m_pMicMonitorMode->get()));
+    micMonitorModeComboBox->setCurrentIndex(modeIndex);
+    micMonitorModeComboBoxChanged(modeIndex);
+    connect(micMonitorModeComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(micMonitorModeComboBoxChanged(int)));
 
     initializePaths();
     loadSettings();
@@ -89,6 +131,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     connect(audioBufferComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(settingChanged()));
     connect(deviceSyncComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(settingChanged()));
+    connect(engineClockComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(settingChanged()));
     connect(keylockComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(settingChanged()));
@@ -113,13 +157,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     m_pMasterLatency = new ControlProxy("[Master]", "latency", this);
     m_pMasterLatency->connectValueChanged(SLOT(masterLatencyChanged(double)));
 
-
-    m_pHeadDelay = new ControlProxy("[Master]", "headDelay", this);
-    m_pMasterDelay = new ControlProxy("[Master]", "delay", this);
-
-    headDelaySpinBox->setValue(m_pHeadDelay->get());
-    masterDelaySpinBox->setValue(m_pMasterDelay->get());
-
+    // TODO: remove this option by automatically disabling/enabling the master mix
+    // when recording, broadcasting, headphone, and master outputs are enabled/disabled
     m_pMasterEnabled = new ControlProxy("[Master]", "enabled", this);
     masterMixComboBox->addItem(tr("Disabled"));
     masterMixComboBox->addItem(tr("Enabled"));
@@ -136,23 +175,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(masterOutputModeComboBoxChanged(int)));
     m_pMasterMonoMixdown->connectValueChanged(SLOT(masterMonoMixdownChanged(double)));
 
-    m_pMasterTalkoverMix = new ControlProxy("[Master]", "talkover_mix", this);
-    micMixComboBox->addItem(tr("Master output"));
-    micMixComboBox->addItem(tr("Broadcast and Recording only"));
-    micMixComboBox->setCurrentIndex((int)m_pMasterTalkoverMix->get());
-    connect(micMixComboBox, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(talkoverMixComboBoxChanged(int)));
-    m_pMasterTalkoverMix->connectValueChanged(SLOT(talkoverMixChanged(double)));
-
-
     m_pKeylockEngine =
             new ControlProxy("[Master]", "keylock_engine", this);
-
-    connect(headDelaySpinBox, SIGNAL(valueChanged(double)),
-            this, SLOT(headDelayChanged(double)));
-    connect(masterDelaySpinBox, SIGNAL(valueChanged(double)),
-            this, SLOT(masterDelayChanged(double)));
-
 
 #ifdef __LINUX__
     qDebug() << "RLimit Cur " << RLimit::getCurRtPrio();
@@ -165,10 +189,10 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     // the limits warning is a Linux only thing
     limitsHint->hide();
 #endif // __LINUX__
-
 }
 
 DlgPrefSound::~DlgPrefSound() {
+    delete m_pLatencyCompensation;
 }
 
 /**
@@ -181,8 +205,10 @@ void DlgPrefSound::slotUpdate() {
     // every time. There's no real way around this, just another argument
     // for a prefs rewrite -- bkgood
     m_settingsModified = false;
+    m_bSkipConfigClear = true;
     loadSettings();
-
+    checkLatencyCompensation();
+    m_bSkipConfigClear = false;
 }
 
 /**
@@ -193,6 +219,10 @@ void DlgPrefSound::slotApply() {
         return;
     }
 
+    m_config.clearInputs();
+    m_config.clearOutputs();
+    emit(writePaths(&m_config));
+
     SoundDeviceError err = SOUNDDEVICE_ERROR_OK;
     {
         ScopedWaitCursor cursor;
@@ -200,9 +230,6 @@ void DlgPrefSound::slotApply() {
         m_pConfig->set(ConfigKey("[Master]", "keylock_engine"),
                        ConfigValue(keylockComboBox->currentIndex()));
 
-        m_config.clearInputs();
-        m_config.clearOutputs();
-        emit(writePaths(&m_config));
         err = m_pSoundManager->setConfig(m_config);
     }
     if (err != SOUNDDEVICE_ERROR_OK) {
@@ -210,8 +237,12 @@ void DlgPrefSound::slotApply() {
         QMessageBox::warning(NULL, tr("Configuration error"), error);
     } else {
         m_settingsModified = false;
+        m_bLatencyChanged = false;
     }
+    m_bSkipConfigClear = true;
     loadSettings(); // in case SM decided to change anything it didn't like
+    checkLatencyCompensation();
+    m_bSkipConfigClear = false;
 }
 
 /**
@@ -258,8 +289,8 @@ void DlgPrefSound::addPath(AudioOutput output) {
         toInsert = new DlgPrefSoundItem(outputTab, type,
             m_outputDevices, false);
     }
-    connect(this, SIGNAL(refreshOutputDevices(const QList<SoundDevice*>&)),
-            toInsert, SLOT(refreshDevices(const QList<SoundDevice*>&)));
+    connect(this, SIGNAL(refreshOutputDevices(const QList<SoundDevicePointer>&)),
+            toInsert, SLOT(refreshDevices(const QList<SoundDevicePointer>&)));
     insertItem(toInsert, outputVLayout);
     connectSoundItem(toInsert);
 }
@@ -289,15 +320,15 @@ void DlgPrefSound::addPath(AudioInput input) {
         toInsert = new DlgPrefSoundItem(inputTab, type,
             m_inputDevices, true);
     }
-    connect(this, SIGNAL(refreshInputDevices(const QList<SoundDevice*>&)),
-            toInsert, SLOT(refreshDevices(const QList<SoundDevice*>&)));
+    connect(this, SIGNAL(refreshInputDevices(const QList<SoundDevicePointer>&)),
+            toInsert, SLOT(refreshDevices(const QList<SoundDevicePointer>&)));
     insertItem(toInsert, inputVLayout);
     connectSoundItem(toInsert);
 }
 
 void DlgPrefSound::connectSoundItem(DlgPrefSoundItem *item) {
     connect(item, SIGNAL(settingChanged()),
-            this, SLOT(settingChanged()));
+            this, SLOT(deviceSettingChanged()));
     connect(this, SIGNAL(loadPaths(const SoundManagerConfig&)),
             item, SLOT(loadPath(const SoundManagerConfig&)));
     connect(this, SIGNAL(writePaths(SoundManagerConfig*)),
@@ -358,6 +389,11 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
         audioBufferComboBox->setCurrentIndex(sizeIndex);
     }
 
+    // Setting the index of audioBufferComboBox here sets m_bLatencyChanged to true,
+    // but m_bLatencyChanged should only be true when the user has edited the
+    // buffer size or sample rate.
+    m_bLatencyChanged = false;
+
     int syncBuffers = m_config.getSyncBuffers();
     if (syncBuffers == 0) {
         // "Experimental (no delay)"))
@@ -368,6 +404,12 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
     } else {
         // "Default (long delay)" = 2 buffer
         deviceSyncComboBox->setCurrentIndex(0);
+    }
+
+    if (m_config.getForceNetworkClock()) {
+        engineClockComboBox->setCurrentIndex(1);
+    } else {
+        engineClockComboBox->setCurrentIndex(0);
     }
 
     // Default keylock is Rubberband.
@@ -389,11 +431,15 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
 void DlgPrefSound::apiChanged(int index) {
     m_config.setAPI(apiComboBox->itemData(index).toString());
     refreshDevices();
-    // JACK sets its own latency
+    // JACK sets its own buffer size and sample rate that Mixxx cannot change.
+    // TODO(Be): Get the buffer size from JACK and update audioBufferComboBox.
+    // PortAudio does not have a way to get the buffer size from JACK as of July 2017.
     if (m_config.getAPI() == MIXXX_PORTAUDIO_JACK_STRING) {
+        sampleRateComboBox->setEnabled(false);
         latencyLabel->setEnabled(false);
         audioBufferComboBox->setEnabled(false);
     } else {
+        sampleRateComboBox->setEnabled(true);
         latencyLabel->setEnabled(true);
         audioBufferComboBox->setEnabled(true);
     }
@@ -426,6 +472,8 @@ void DlgPrefSound::updateAPIs() {
 void DlgPrefSound::sampleRateChanged(int index) {
     m_config.setSampleRate(
             sampleRateComboBox->itemData(index).toUInt());
+    m_bLatencyChanged = true;
+    checkLatencyCompensation();
 }
 
 /**
@@ -435,6 +483,8 @@ void DlgPrefSound::sampleRateChanged(int index) {
 void DlgPrefSound::audioBufferChanged(int index) {
     m_config.setAudioBufferSizeIndex(
             audioBufferComboBox->itemData(index).toUInt());
+    m_bLatencyChanged = true;
+    checkLatencyCompensation();
 }
 
 void DlgPrefSound::syncBuffersChanged(int index) {
@@ -447,6 +497,16 @@ void DlgPrefSound::syncBuffersChanged(int index) {
     } else {
         // "Disabled (short delay)")) = 1 buffer
         m_config.setSyncBuffers(1);
+    }
+}
+
+void DlgPrefSound::engineClockChanged(int index) {
+    if (index == 0) {
+        // "Soundcard Clock"
+        m_config.setForceNetworkClock(false);
+    } else {
+        // "Network Clock"
+        m_config.setForceNetworkClock(true);
     }
 }
 
@@ -511,6 +571,12 @@ void DlgPrefSound::settingChanged() {
     m_settingsModified = true;
 }
 
+void DlgPrefSound::deviceSettingChanged() {
+    if (m_loading) return;
+    checkLatencyCompensation();
+    m_settingsModified = true;
+}
+
 /**
  * Slot called when the "Query Devices" button is clicked.
  */
@@ -539,9 +605,18 @@ void DlgPrefSound::slotResetToDefaults() {
     headDelaySpinBox->setValue(0.0);
     m_pHeadDelay->set(0.0);
 
+    boothDelaySpinBox->setValue(0.0);
+    m_pBoothDelay->set(0.0);
+
     // Enable talkover master output
-    m_pMasterTalkoverMix->set(0.0);
-    micMixComboBox->setCurrentIndex(0);
+    m_pMicMonitorMode->set(
+        static_cast<double>(
+            static_cast<int>(EngineMaster::MicMonitorMode::MASTER)));
+    micMonitorModeComboBox->setCurrentIndex(
+        micMonitorModeComboBox->findData(
+            static_cast<int>(EngineMaster::MicMonitorMode::MASTER)));
+
+    latencyCompensationSpinBox->setValue(latencyCompensationSpinBox->minimum());
 
     settingChanged(); // force the apply button to enable
 }
@@ -556,12 +631,21 @@ void DlgPrefSound::masterLatencyChanged(double latency) {
     update();
 }
 
-void DlgPrefSound::headDelayChanged(double value) {
+void DlgPrefSound::latencyCompensationSpinboxChanged(double value) {
+    m_pLatencyCompensation->set(value);
+    checkLatencyCompensation();
+}
+
+void DlgPrefSound::masterDelaySpinboxChanged(double value) {
+    m_pMasterDelay->set(value);
+}
+
+void DlgPrefSound::headDelaySpinboxChanged(double value) {
     m_pHeadDelay->set(value);
 }
 
-void DlgPrefSound::masterDelayChanged(double value) {
-    m_pMasterDelay->set(value);
+void DlgPrefSound::boothDelaySpinboxChanged(double value) {
+    m_pBoothDelay->set(value);
 }
 
 void DlgPrefSound::masterMixChanged(int value) {
@@ -580,10 +664,60 @@ void DlgPrefSound::masterMonoMixdownChanged(double value) {
     masterOutputModeComboBox->setCurrentIndex(value ? 1 : 0);
 }
 
-void DlgPrefSound::talkoverMixComboBoxChanged(int value) {
-    m_pMasterTalkoverMix->set((double)value);
+void DlgPrefSound::micMonitorModeComboBoxChanged(int value) {
+    EngineMaster::MicMonitorMode newMode =
+        static_cast<EngineMaster::MicMonitorMode>(
+            micMonitorModeComboBox->itemData(value).toInt());
+
+    m_pMicMonitorMode->set(static_cast<double>(newMode));
+
+    checkLatencyCompensation();
 }
 
-void DlgPrefSound::talkoverMixChanged(double value) {
-    micMixComboBox->setCurrentIndex(value ? 1 : 0);
+void DlgPrefSound::checkLatencyCompensation() {
+    EngineMaster::MicMonitorMode configuredMicMonitorMode =
+        static_cast<EngineMaster::MicMonitorMode>(
+            static_cast<int>(m_pMicMonitorMode->get()));
+
+    // Do not clear the SoundManagerConfig on startup, from slotApply, or from slotUpdate
+    if (!m_bSkipConfigClear) {
+        m_config.clearInputs();
+        m_config.clearOutputs();
+    }
+
+    emit(writePaths(&m_config));
+
+    if (m_config.hasMicInputs() && !m_config.hasExternalRecordBroadcast()) {
+        micMonitorModeComboBox->setEnabled(true);
+        if (configuredMicMonitorMode == EngineMaster::MicMonitorMode::DIRECT_MONITOR) {
+            latencyCompensationSpinBox->setEnabled(true);
+            QString warningIcon("<html><img src=':/images/preferences/ic_preferences_warning.png' width='20' height='20'></html> ");
+            QString lineBreak("<br/>");
+            // TODO(Be): Make the "User Manual" text link to the manual.
+            if (m_pLatencyCompensation->get() == 0.0) {
+                latencyCompensationWarningLabel->setText(
+                      warningIcon +
+                      tr("Microphone inputs are out of time in the record & broadcast signal compared to what you hear.") + lineBreak +
+                      tr("Measure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.") + lineBreak +
+                      tr("Refer to the Mixxx User Manual for details.") + "</html>");
+                latencyCompensationWarningLabel->show();
+            } else if (m_bLatencyChanged) {
+                latencyCompensationWarningLabel->setText(
+                  warningIcon +
+                  tr("Configured latency has changed.") + lineBreak +
+                  tr("Remeasure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.") + lineBreak +
+                  tr("Refer to the Mixxx User Manual for details.") + "</html>");
+                latencyCompensationWarningLabel->show();
+            } else {
+                latencyCompensationWarningLabel->hide();
+            }
+        } else {
+            latencyCompensationSpinBox->setEnabled(false);
+            latencyCompensationWarningLabel->hide();
+        }
+    } else {
+        micMonitorModeComboBox->setEnabled(false);
+        latencyCompensationSpinBox->setEnabled(false);
+        latencyCompensationWarningLabel->hide();
+    }
 }

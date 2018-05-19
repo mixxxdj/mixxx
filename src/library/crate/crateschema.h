@@ -9,6 +9,7 @@
 #define CRATE_TRACKS_TABLE "crate_tracks"
 
 const QString CRATETABLE_ID = "id";
+const QString CRATETABLE_NAME = "name";
 
 // TODO(XXX): Fix AutoDJ database design.
 // Crates should have no dependency on AutoDJ stuff. Which

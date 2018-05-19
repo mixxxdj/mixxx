@@ -7,12 +7,13 @@ Variables:
   Effect: the effect
 -->
 <Template>
+  <SetVariable name="EffectGroup">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>]</SetVariable>
   <WidgetGroup>
     <ObjectName>EffectFocusButtonContainer</ObjectName>
-    <Layout>horizontal</Layout>
+    <Layout>vertical</Layout>
     <Children>
       <PushButton>
-        <TooltipId><Variable name="button_TooltipId"/></TooltipId>
+        <TooltipId>EffectSlot_focus</TooltipId>
         <ObjectName>CircleButton</ObjectName>
         <Size>15f,15f</Size>
         <NumberStates>2</NumberStates>
@@ -28,27 +29,23 @@ Variables:
           <Pressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Pressed>
           <Unpressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Unpressed>
         </State>
+        <RightClickIsPushButton>true</RightClickIsPushButton>
         <Connection>
-          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],focused_effect</ConfigKey>
+          <ConfigKey><Variable name="EffectGroup"/>,focused_effect</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
-          <EmitOnPressAndRelease>false</EmitOnPressAndRelease>
-          <Transform>
-            <IsEqual><Variable name="Effect"/></IsEqual>
-          </Transform>
+          <Transform><IsEqual><Variable name="Effect"/></IsEqual></Transform>
         </Connection>
         <Connection>
-          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],focused_effect</ConfigKey>
+          <!-- right click > unfocus -->
+          <ConfigKey><Variable name="EffectGroup"/>,focused_effect</ConfigKey>
           <ButtonState>RightButton</ButtonState>
-          <EmitOnPressAndRelease>false</EmitOnPressAndRelease>
-          <Transform>
-            <IsEqual><Variable name="Effect"/></IsEqual>
-            <Not/>
-          </Transform>
+          <EmitOnDownPress>true</EmitOnDownPress>
+          <Transform><IsEqual><Variable name="Effect"/></IsEqual><Not/></Transform>
         </Connection>
       </PushButton>
     </Children>
     <Connection>
-      <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_focus</ConfigKey>
+      <ConfigKey><Variable name="EffectGroup"/>,show_focus</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

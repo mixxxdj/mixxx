@@ -2,19 +2,29 @@
 
 #include "sources/soundsourcesndfile.h"
 
+#include "util/logger.h"
+
 namespace mixxx {
+
+namespace {
+
+const Logger kLogger("SoundSourceSndFile");
+
+} // anonymous namespace
 
 SoundSourceSndFile::SoundSourceSndFile(const QUrl& url)
         : SoundSource(url),
           m_pSndFile(nullptr),
-          m_curFrameIndex(getMinFrameIndex()) {
+          m_curFrameIndex(0) {
 }
 
 SoundSourceSndFile::~SoundSourceSndFile() {
     close();
 }
 
-SoundSource::OpenResult SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
+SoundSource::OpenResult SoundSourceSndFile::tryOpen(
+        OpenMode /*mode*/,
+        const OpenParams& /*config*/) {
     DEBUG_ASSERT(!m_pSndFile);
     SF_INFO sfInfo;
     memset(&sfInfo, 0, sizeof(sfInfo));
@@ -37,29 +47,29 @@ SoundSource::OpenResult SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*a
         DEBUG_ASSERT(m_pSndFile != nullptr);
         break; // continue
     case SF_ERR_UNRECOGNISED_FORMAT:
-        return OpenResult::ABORTED;
+        return OpenResult::Aborted;
     default:
         const QString errorMsg(sf_strerror(m_pSndFile));
         if (errorMsg.toLower().indexOf("unknown format") != -1) {
             // NOTE(uklotzde 2016-05-11): This actually happens when
             // trying to open a file with a supported file extension
             // that contains data in an unsupported format!
-            return OpenResult::ABORTED;
+            return OpenResult::Aborted;
         } else {
-            qWarning() << "Error opening libsndfile file:"
+            kLogger.warning() << "Error opening libsndfile file:"
                     << getUrlString()
                     << errorMsg;
-            return OpenResult::FAILED;
+            return OpenResult::Failed;
         }
     }
 
     setChannelCount(sfInfo.channels);
-    setSamplingRate(sfInfo.samplerate);
-    setFrameCount(sfInfo.frames);
+    setSampleRate(sfInfo.samplerate);
+    initFrameIndexRangeOnce(IndexRange::forward(0, sfInfo.frames));
 
-    m_curFrameIndex = getMinFrameIndex();
+    m_curFrameIndex = frameIndexMin();
 
-    return OpenResult::SUCCEEDED;
+    return OpenResult::Succeeded;
 }
 
 void SoundSourceSndFile::close() {
@@ -67,70 +77,54 @@ void SoundSourceSndFile::close() {
         const int closeResult = sf_close(m_pSndFile);
         if (0 == closeResult) {
             m_pSndFile = nullptr;
-            m_curFrameIndex = getMinFrameIndex();
+            m_curFrameIndex = frameIndexMin();
         } else {
-            qWarning() << "Failed to close file:" << closeResult
+            kLogger.warning() << "Failed to close file:" << closeResult
                     << sf_strerror(m_pSndFile)
                     << getUrlString();
         }
     }
 }
 
-SINT SoundSourceSndFile::seekSampleFrame(
-        SINT frameIndex) {
-    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
+ReadableSampleFrames SoundSourceSndFile::readSampleFramesClamped(
+        WritableSampleFrames writableSampleFrames) {
 
-    if (frameIndex >= getMaxFrameIndex()) {
-        // EOF
-        m_curFrameIndex = getMaxFrameIndex();
-        return m_curFrameIndex;
-    }
+    const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
-    if (frameIndex == m_curFrameIndex) {
-        return m_curFrameIndex;
+    if (m_curFrameIndex != firstFrameIndex) {
+        const sf_count_t seekResult = sf_seek(m_pSndFile, firstFrameIndex, SEEK_SET);
+        if (seekResult == firstFrameIndex) {
+            m_curFrameIndex = seekResult;
+        } else {
+            kLogger.warning() << "Failed to seek libsnd file:" << seekResult
+                    << sf_strerror(m_pSndFile);
+            m_curFrameIndex = sf_seek(m_pSndFile, 0, SEEK_CUR);
+            return ReadableSampleFrames(IndexRange::between(m_curFrameIndex, m_curFrameIndex));
+        }
     }
+    DEBUG_ASSERT(m_curFrameIndex == firstFrameIndex);
 
-    const sf_count_t seekResult = sf_seek(m_pSndFile, frameIndex, SEEK_SET);
-    if (0 <= seekResult) {
-        m_curFrameIndex = seekResult;
-        return seekResult;
-    } else {
-        qWarning() << "Failed to seek libsnd file:" << seekResult
-                << sf_strerror(m_pSndFile);
-        return sf_seek(m_pSndFile, 0, SEEK_CUR);
-    }
-}
+    const SINT numberOfFramesTotal = writableSampleFrames.frameLength();
 
-SINT SoundSourceSndFile::readSampleFrames(
-        SINT numberOfFrames, CSAMPLE* sampleBuffer) {
-    VERIFY_OR_DEBUG_ASSERT(numberOfFrames >= 0) {
-        return 0;
-    }
-    if (numberOfFrames == 0) {
-        return 0;
-    }
-    if (sampleBuffer == nullptr) {
-        // NOTE(uklotzde): The libsndfile API does not provide any
-        // functions for skipping samples in the audio stream. Calling
-        // API functions with a nullptr buffer does not return. Since
-        // we don't want to read samples into a temporary buffer that
-        // has to be allocated we are seeking to the position after
-        // the skipped samples.
-        SINT curFrameIndexBefore = m_curFrameIndex;
-        SINT curFrameIndexAfter = seekSampleFrame(m_curFrameIndex + numberOfFrames);
-        DEBUG_ASSERT(curFrameIndexBefore <= curFrameIndexAfter);
-        DEBUG_ASSERT(m_curFrameIndex == curFrameIndexAfter);
-        return curFrameIndexAfter - curFrameIndexBefore;
-    }
     const sf_count_t readCount =
-            sf_readf_float(m_pSndFile, sampleBuffer, numberOfFrames);
-    if (0 <= readCount) {
+            sf_readf_float(m_pSndFile, writableSampleFrames.writableData(), numberOfFramesTotal);
+    if (readCount >= 0) {
+        DEBUG_ASSERT(readCount <= numberOfFramesTotal);
+        const auto resultRange = IndexRange::forward(m_curFrameIndex, readCount);
         m_curFrameIndex += readCount;
-        return readCount;
+        return ReadableSampleFrames(
+                resultRange,
+                SampleBuffer::ReadableSlice(
+                        writableSampleFrames.writableData(),
+                        frames2samples(readCount)));
     } else {
-        qWarning() << "Failed to read from libsnd file:" << readCount
+        kLogger.warning() << "Failed to read from libsnd file:"
+                << readCount
                 << sf_strerror(m_pSndFile);
-        return 0;
+        return ReadableSampleFrames(
+                IndexRange::between(
+                        m_curFrameIndex,
+                        m_curFrameIndex));
     }
 }
 

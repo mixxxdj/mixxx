@@ -29,7 +29,7 @@ void PlaylistTableModel::setTableModel(int playlistId) {
         // in the library (mixxx_deleted = 0) from playlists.
         // These invisible tracks, consuming a playlist position number where
         // a source user of confusion in the past.
-    	m_pTrackCollection->getPlaylistDAO().removeHiddenTracks(m_iPlaylistId);
+        m_pTrackCollection->getPlaylistDAO().removeHiddenTracks(m_iPlaylistId);
     }
 
     QString playlistTableName = "playlist_" + QString::number(m_iPlaylistId);
@@ -242,7 +242,7 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
             | TRACKMODELCAPS_REORDER
             | TRACKMODELCAPS_ADDTOCRATE
             | TRACKMODELCAPS_ADDTOPLAYLIST
-            | TRACKMODELCAPS_RELOADMETADATA
+            | TRACKMODELCAPS_IMPORTMETADATA
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOSAMPLER
             | TRACKMODELCAPS_LOADTOPREVIEWDECK
@@ -254,6 +254,10 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
     // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.
     if (m_iPlaylistId != m_pTrackCollection->getPlaylistDAO().getPlaylistIdFromName(AUTODJ_TABLE)) {
         caps |= TRACKMODELCAPS_ADDTOAUTODJ;
+    }
+    // Disable reording tracks for history playlists
+    if (m_pTrackCollection->getPlaylistDAO().getHiddenType(m_iPlaylistId)== PlaylistDAO::PLHT_SET_LOG) {
+        caps &= ~TRACKMODELCAPS_REORDER;
     }
     bool locked = m_pTrackCollection->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId);
     if (locked) {

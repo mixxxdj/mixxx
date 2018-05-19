@@ -6,21 +6,26 @@
 
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "util/logger.h"
 
 
 namespace {
-    QString pixmapCacheKey(quint16 hash, int width) {
-        return QString("CoverArtCache_%1_%2")
-                .arg(QString::number(hash)).arg(width);
-    }
 
-    // The transformation mode when scaling images
-    const Qt::TransformationMode kTransformationMode = Qt::SmoothTransformation;
+mixxx::Logger kLogger("CoverArtCache");
 
-    // Resizes the image (preserving aspect ratio) to width.
-    inline QImage resizeImageWidth(const QImage& image, int width) {
-        return image.scaledToWidth(width, kTransformationMode);
-    }
+QString pixmapCacheKey(quint16 hash, int width) {
+    return QString("CoverArtCache_%1_%2")
+            .arg(QString::number(hash)).arg(width);
+}
+
+// The transformation mode when scaling images
+const Qt::TransformationMode kTransformationMode = Qt::SmoothTransformation;
+
+// Resizes the image (preserving aspect ratio) to width.
+inline QImage resizeImageWidth(const QImage& image, int width) {
+    return image.scaledToWidth(width, kTransformationMode);
+}
+
 } // anonymous namespace
 
 const bool sDebug = false;
@@ -46,7 +51,7 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
                                     const bool onlyCached,
                                     const bool signalWhenDone) {
     if (sDebug) {
-        qDebug() << "CoverArtCache::requestCover"
+        kLogger.debug() << "requestCover"
                  << requestInfo << pRequestor <<
                 desiredWidth << onlyCached << signalWhenDone;
     }
@@ -83,7 +88,7 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
 
     if (onlyCached) {
         if (sDebug) {
-            qDebug() << "CoverArtCache::requestCover cache miss";
+            kLogger.debug() << "requestCover cache miss";
         }
         return QPixmap();
     }
@@ -104,7 +109,7 @@ void CoverArtCache::requestCover(const Track& track,
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache == nullptr) return;
 
-    CoverInfo info = track.getCoverInfo();
+    CoverInfo info = track.getCoverInfoWithLocation();
     pCache->requestCover(info, pRequestor, 0, false, true);
 }
 
@@ -114,7 +119,7 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
         const int desiredWidth,
         const bool signalWhenDone) {
     if (sDebug) {
-        qDebug() << "CoverArtCache::loadCover"
+        kLogger.debug() << "loadCover"
                  << info << desiredWidth << signalWhenDone;
     }
 
@@ -146,7 +151,7 @@ void CoverArtCache::coverLoaded() {
     FutureResult res = watcher->result();
 
     if (sDebug) {
-        qDebug() << "CoverArtCache::coverLoaded" << res.cover;
+        kLogger.debug() << "coverLoaded" << res.cover;
     }
 
     // Don't cache full size covers (resizedToWidth = 0)
@@ -184,13 +189,14 @@ void CoverArtCache::requestGuessCover(TrackPointer pTrack) {
 
 void CoverArtCache::guessCover(TrackPointer pTrack) {
     if (pTrack) {
+        kLogger.debug() << "Guessing cover art for" << pTrack->getLocation();
         CoverInfo cover = CoverArtUtils::guessCoverInfo(*pTrack);
         pTrack->setCoverInfo(cover);
     }
 }
 
 void CoverArtCache::guessCovers(QList<TrackPointer> tracks) {
-    qDebug() << "CoverArtCache::guessCovers guessing covers for"
+    kLogger.debug() << "Guessing cover art for"
              << tracks.size() << "tracks";
     foreach (TrackPointer pTrack, tracks) {
         guessCover(pTrack);

@@ -19,6 +19,7 @@
 #define MIXXX_H
 
 #include <QMainWindow>
+#include <QSharedPointer>
 #include <QString>
 
 #include "preferences/configobject.h"
@@ -27,8 +28,10 @@
 #include "track/track.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
+#include "util/db/dbconnectionpool.h"
 #include "soundio/sounddeviceerror.h"
 
+class ChannelHandleFactory;
 class ControlPushButton;
 class ControllerManager;
 class DlgDeveloperTools;
@@ -48,6 +51,8 @@ class SoundManager;
 class VinylControlManager;
 class WMainMenuBar;
 
+typedef QSharedPointer<SettingsManager> SettingsManagerPointer;
+
 // This Class is the base class for Mixxx. It sets up the main
 // window and providing a menubar.
 // For the main view, an instance of class MixxxView is
@@ -57,14 +62,15 @@ class MixxxMainWindow : public QMainWindow {
   public:
     // Construtor. files is a list of command line arguments
     MixxxMainWindow(QApplication *app, const CmdlineArgs& args);
-    virtual ~MixxxMainWindow();
+    ~MixxxMainWindow() override;
 
-    void initialize(QApplication *app, const CmdlineArgs& args);
     void finalize();
 
     // creates the menu_bar and inserts the file Menu
     void createMenuBar();
     void connectMenuBar();
+    void setInhibitScreensaver(mixxx::ScreenSaverPreference inhibit);
+    mixxx::ScreenSaverPreference getInhibitScreensaver();
 
     void setToolTipsCfg(mixxx::TooltipsPreference tt);
     inline mixxx::TooltipsPreference getToolTipsCfg() { return m_toolTipsCfg; }
@@ -88,6 +94,7 @@ class MixxxMainWindow : public QMainWindow {
     void slotDeveloperToolsClosed();
 
     void slotUpdateWindowTitle(TrackPointer pTrack);
+    void slotChangedPlayingDeck(int deck);
 
     // Warn the user when inputs are not configured.
     void slotNoMicrophoneInputConfigured();
@@ -108,12 +115,18 @@ class MixxxMainWindow : public QMainWindow {
     virtual bool event(QEvent* e);
 
   private:
+    void initialize(QApplication *app, const CmdlineArgs& args);
+
     // progresses the launch image progress bar
     // this must be called from the GUi thread only
     void launchProgress(int progress);
+
     void initializeWindow();
     void initializeKeyboard();
     void checkDirectRendering();
+
+    bool initializeDatabase();
+
     bool confirmExit();
     QDialog::DialogCode soundDeviceErrorDlg(
             const QString &title, const QString &text, bool* retryClicked);
@@ -127,6 +140,8 @@ class MixxxMainWindow : public QMainWindow {
     LaunchImage* m_pLaunchImage;
 
     SettingsManager* m_pSettingsManager;
+
+    ChannelHandleFactory* m_pChannelHandleFactory;
 
     // The effects processing system
     EffectsManager* m_pEffectsManager;
@@ -155,6 +170,10 @@ class MixxxMainWindow : public QMainWindow {
     VinylControlManager* m_pVCManager;
 
     KeyboardEventFilter* m_pKeyboard;
+
+    // The Mixxx database connection pool
+    mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
+
     // The library management object
     Library* m_pLibrary;
 
@@ -175,6 +194,7 @@ class MixxxMainWindow : public QMainWindow {
     const CmdlineArgs& m_cmdLineArgs;
 
     ControlPushButton* m_pTouchShift;
+    mixxx::ScreenSaverPreference m_inhibitScreensaver;
 
     static const int kMicrophoneCount;
     static const int kAuxiliaryCount;

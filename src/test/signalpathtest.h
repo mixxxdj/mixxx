@@ -37,10 +37,14 @@ class TestEngineMaster : public EngineMaster {
     TestEngineMaster(UserSettingsPointer _config,
                      const char* group,
                      EffectsManager* pEffectsManager,
-                     bool bEnableSidechain,
-                     bool bRampingGain)
-        : EngineMaster(_config, group, pEffectsManager,
-                       bEnableSidechain, bRampingGain) { }
+                     ChannelHandleFactory* pChannelHandleFactory,
+                     bool bEnableSidechain)
+        : EngineMaster(_config, group, pEffectsManager, pChannelHandleFactory,
+                       bEnableSidechain) {
+        m_pMasterEnabled->forceSet(1);
+        m_pHeadphoneEnabled->forceSet(1);
+        m_pBoothEnabled->forceSet(1);
+    }
 
     CSAMPLE* masterBuffer() {
         return m_pMaster;
@@ -51,10 +55,12 @@ class BaseSignalPathTest : public MixxxTest {
   protected:
     BaseSignalPathTest() {
         m_pGuiTick = std::make_unique<GuiTick>();
+        m_pChannelHandleFactory = new ChannelHandleFactory();
         m_pNumDecks = new ControlObject(ConfigKey("[Master]", "num_decks"));
-        m_pEffectsManager = new EffectsManager(NULL, config());
+        m_pEffectsManager = new EffectsManager(NULL, config(), m_pChannelHandleFactory);
         m_pEngineMaster = new TestEngineMaster(m_pConfig, "[Master]",
-                                               m_pEffectsManager, false, false);
+                                               m_pEffectsManager, m_pChannelHandleFactory,
+                                               false);
 
         m_pMixerDeck1 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
                                  EngineChannel::CENTER, m_sGroup1);
@@ -127,29 +133,29 @@ class BaseSignalPathTest : public MixxxTest {
         }
     }
 
-    // Asserts that the contents of the output buffer matches a golden example
+    // Asserts that the contents of the output buffer matches a reference
     // data file where each float sample value must be within the delta to pass.
-    // To create a golden file, just run the test. It will fail, but the test
-    // will write out the actual buffers to the testdata/golden_buffers/
+    // To create a reference file, just run the test. It will fail, but the test
+    // will write out the actual buffers to the testdata/reference_buffers/
     // directory. Remove the ".actual" extension to create the file the test
     // will compare against.  On the next run, the test should pass.
-    // Use scripts/AudioPlot.py to look at the golden file and make sure it
+    // Use scripts/AudioPlot.py to look at the reference file and make sure it
     // looks correct.  Each line of the generated file contains the left sample
     // followed by the right sample.
-    void assertBufferMatchesGolden(CSAMPLE* pBuffer, const int iBufferSize,
-                                   QString golden_title, const double delta=.0001) {
-        QFile f(QDir::currentPath() + "/src/test/golden_buffers/" + golden_title);
+    void assertBufferMatchesReference(const CSAMPLE* pBuffer, const int iBufferSize,
+                                   QString reference_title, const double delta=.0001) {
+        QFile f(QDir::currentPath() + "/src/test/reference_buffers/" + reference_title);
         bool pass = true;
         int i = 0;
         // If the file is not there, we will fail and write out the .actual
-        // golden file.
+        // reference file.
         if (f.open(QFile::ReadOnly | QFile::Text)) {
             QTextStream in(&f);
-            // Note: We will only compare as many values as there are in the golden file.
+            // Note: We will only compare as many values as there are in the reference file.
             for (; i < iBufferSize && !in.atEnd(); i += 2) {
                 QStringList line = in.readLine().split(',');
                 if (line.length() != 2) {
-                    qWarning() << "Unexpected line length in golden file";
+                    qWarning() << "Unexpected line length in reference file";
                     pass = false;
                     break;
                 }
@@ -171,11 +177,11 @@ class BaseSignalPathTest : public MixxxTest {
         }
         // Fail if either we didn't pass, or the comparison file was empty.
         if (!pass || i == 0) {
-            QString fname_actual = golden_title + ".actual";
-            qWarning() << "Buffer does not match" << golden_title
+            QString fname_actual = reference_title + ".actual";
+            qWarning() << "Buffer does not match" << reference_title
                        << ", actual buffer written to "
-                       << "golden_buffers/" + fname_actual;
-            QFile actual(QDir::currentPath() + "/src/test/golden_buffers/" + fname_actual);
+                       << "reference_buffers/" + fname_actual;
+            QFile actual(QDir::currentPath() + "/src/test/reference_buffers/" + fname_actual);
             ASSERT_TRUE(actual.open(QFile::WriteOnly | QFile::Text));
             QTextStream out(&actual);
             for (int i = 0; i < iBufferSize; i += 2) {
@@ -195,6 +201,7 @@ class BaseSignalPathTest : public MixxxTest {
         m_pEngineMaster->process(kProcessBufferSize);
     }
 
+    ChannelHandleFactory* m_pChannelHandleFactory;
     ControlObject* m_pNumDecks;
     std::unique_ptr<GuiTick> m_pGuiTick;
     EffectsManager* m_pEffectsManager;

@@ -171,6 +171,8 @@ QString& RecordingManager::getRecordingDir() {
     return m_recordingDir;
 }
 
+
+
 // Only called when recording is active.
 void RecordingManager::slotDurationRecorded(quint64 duration)
 {
@@ -225,23 +227,24 @@ void RecordingManager::slotIsRecording(bool isRecordingActive, bool error) {
         props->setTitle(tr("Recording"));
         props->setText("<html>"+tr("Could not create audio file for recording!")
                        +"<p>"+tr("Ensure there is enough free disk space and you have write permission for the Recordings folder.")
-                       +"<p>"+tr("You can change the location of the Recordings folder in Preferences > Recording.")
+                       +"<p>"+tr("You can change the location of the Recordings folder in Preferences -> Recording.")
                        +"</p></html>");
         ErrorDialogHandler::instance()->requestErrorDialog(props);
     }
 }
 
-bool RecordingManager::isRecordingActive() {
+bool RecordingManager::isRecordingActive() const {
     return m_bRecording;
 }
 
-QString& RecordingManager::getRecordingFile() {
+const QString& RecordingManager::getRecordingFile() const {
     return m_recordingFile;
 }
 
-QString& RecordingManager::getRecordingLocation() {
+const QString& RecordingManager::getRecordingLocation() const {
     return m_recordingLocation;
 }
+
 
 quint64 RecordingManager::getFileSplitSize()
 {

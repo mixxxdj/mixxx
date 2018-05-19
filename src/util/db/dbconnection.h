@@ -3,23 +3,14 @@
 
 
 #include <QSqlDatabase>
+
 #include <QtDebug>
 
 
+namespace mixxx {
+
 class DbConnection final {
   public:
-    explicit DbConnection(
-        const QString& dirPath);
-    ~DbConnection();
-
-    operator bool() const {
-        return m_database.isOpen();
-    }
-
-    QSqlDatabase& database() {
-        return m_database;
-    }
-
     // Order string fields lexicographically with a
     // custom collation function if available (SQLite3).
     // Otherwise the query is returned unmodified.
@@ -31,14 +22,48 @@ class DbConnection final {
         QString* string,
         QChar esc);
 
-    friend QDebug operator<<(
-        QDebug debug,
-        const DbConnection& dbConnection);
+    struct Params {
+        QString type;
+        QString hostName;
+        QString filePath;
+        QString userName;
+        QString password;
+    };
+
+    // All constructors are reserved for DbConnectionPool!!
+    DbConnection(
+            const Params& params,
+            const QString& connectionName);
+    DbConnection(
+            const DbConnection& prototype,
+            const QString& connectionName);
+    ~DbConnection();
+
+    QString name() const {
+        return m_sqlDatabase.connectionName();
+    }
+
+    bool open();
+    void close();
+
+    bool isOpen() const {
+        return m_sqlDatabase.isOpen();
+    }
+
+    operator QSqlDatabase() const {
+        return m_sqlDatabase;
+    }
+
+    friend QDebug operator<<(QDebug debug, const DbConnection& connection);
 
   private:
-    QString m_filePath;
-    QSqlDatabase m_database;
+    DbConnection(const DbConnection&) = delete;
+    DbConnection(const DbConnection&&) = delete;
+
+    QSqlDatabase m_sqlDatabase;
 };
+
+} // namespace mixxx
 
 
 #endif // MIXXX_DBCONNECTION_H

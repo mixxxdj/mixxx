@@ -1,7 +1,6 @@
 #ifndef TRACKCOLLECTION_H
 #define TRACKCOLLECTION_H
 
-#include <QtSql>
 #include <QList>
 #include <QSharedPointer>
 #include <QSqlDatabase>
@@ -15,50 +14,55 @@
 #include "library/dao/analysisdao.h"
 #include "library/dao/directorydao.h"
 #include "library/dao/libraryhashdao.h"
-#include "util/db/dbconnection.h"
+
 
 // forward declaration(s)
 class Track;
 
-#define AUTODJ_TABLE "Auto DJ"
-
-class BpmDetector;
-
 // Manages everything around tracks.
-class TrackCollection : public QObject {
+class TrackCollection : public QObject,
+    public virtual /*implements*/ SqlStorage {
     Q_OBJECT
 
   public:
-    static const int kRequiredSchemaVersion;
-
-    explicit TrackCollection(UserSettingsPointer pConfig);
+    explicit TrackCollection(
+            const UserSettingsPointer& pConfig);
     ~TrackCollection() override;
 
-    bool checkForTables();
+    void repairDatabase(
+            QSqlDatabase database) override;
 
-    void resetLibaryCancellation();
+    void connectDatabase(
+            QSqlDatabase database) override;
+    void disconnectDatabase() override;
 
-    QSqlDatabase& database() {
-        return m_dbConnection.database();
+    QSqlDatabase database() const {
+        return m_database;
     }
 
     const CrateStorage& crates() const {
         return m_crates;
     }
 
-    TrackDAO& getTrackDAO();
-    PlaylistDAO& getPlaylistDAO();
-    DirectoryDAO& getDirectoryDAO();
+    TrackDAO& getTrackDAO() {
+        return m_trackDao;
+    }
+    PlaylistDAO& getPlaylistDAO() {
+        return m_playlistDao;
+    }
+    DirectoryDAO& getDirectoryDAO() {
+        return m_directoryDao;
+    }
     AnalysisDao& getAnalysisDAO() {
         return m_analysisDao;
     }
-    QSharedPointer<BaseTrackCache> getTrackSource();
-    void setTrackSource(QSharedPointer<BaseTrackCache> trackSource);
-    void cancelLibraryScan();
 
-    UserSettingsPointer getConfig() {
-        return m_pConfig;
+    QSharedPointer<BaseTrackCache> getTrackSource() const {
+        return m_pTrackSource;
     }
+    void setTrackSource(QSharedPointer<BaseTrackCache> pTrackSource);
+
+    void cancelLibraryScan();
 
     void relocateDirectory(QString oldDir, QString newDir);
 
@@ -76,6 +80,12 @@ class TrackCollection : public QObject {
 
     bool updateAutoDjCrate(CrateId crateId, bool isAutoDjSource);
 
+    // Might be called from any thread
+    void exportTrackMetadata(Track* pTrack) const;
+
+    // Must be called from the main thread
+    void saveTrack(Track* pTrack);
+
   signals:
     void crateInserted(CrateId id);
     void crateUpdated(CrateId id);
@@ -90,8 +100,9 @@ class TrackCollection : public QObject {
 
   private:
     UserSettingsPointer m_pConfig;
-    DbConnection m_dbConnection;
-    QSharedPointer<BaseTrackCache> m_defaultTrackSource;
+
+    QSqlDatabase m_database;
+
     PlaylistDAO m_playlistDao;
     CrateStorage m_crates;
     CueDAO m_cueDao;
@@ -99,6 +110,8 @@ class TrackCollection : public QObject {
     AnalysisDao m_analysisDao;
     LibraryHashDAO m_libraryHashDao;
     TrackDAO m_trackDao;
+
+    QSharedPointer<BaseTrackCache> m_pTrackSource;
 };
 
 #endif // TRACKCOLLECTION_H

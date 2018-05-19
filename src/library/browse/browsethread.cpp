@@ -8,8 +8,8 @@
 #include <QDirIterator>
 
 #include "library/browse/browsetablemodel.h"
+
 #include "sources/soundsourceproxy.h"
-#include "track/trackmetadata.h"
 #include "util/trace.h"
 
 
@@ -145,122 +145,128 @@ void BrowseThread::populateModel() {
             return populateModel();
         }
 
-        QString filepath = fileIt.next();
-        TrackPointer pTrack(Track::newTemporary(filepath, thisPath.token()));
-        SoundSourceProxy(pTrack).loadTrackMetadata();
-
         QList<QStandardItem*> row_data;
 
         QStandardItem* item = new QStandardItem("0");
         item->setData("0", Qt::UserRole);
         row_data.insert(COLUMN_PREVIEW, item);
 
-        item = new QStandardItem(pTrack->getFileName());
-        item->setToolTip(item->text());
-        item->setData(item->text(), Qt::UserRole);
-        row_data.insert(COLUMN_FILENAME, item);
+        const QString filepath = fileIt.next();
+        {
+            const TrackPointer pTrack =
+                    SoundSourceProxy::importTemporaryTrack(
+                            filepath,
+                            thisPath.token());
 
-        item = new QStandardItem(pTrack->getArtist());
-        item->setToolTip(item->text());
-        item->setData(item->text(), Qt::UserRole);
-        row_data.insert(COLUMN_ARTIST, item);
+            item = new QStandardItem(pTrack->getFileName());
+            item->setToolTip(item->text());
+            item->setData(item->text(), Qt::UserRole);
+            row_data.insert(COLUMN_FILENAME, item);
 
-        item = new QStandardItem(pTrack->getTitle());
-        item->setToolTip(item->text());
-        item->setData(item->text(), Qt::UserRole);
-        row_data.insert(COLUMN_TITLE, item);
+            item = new QStandardItem(pTrack->getArtist());
+            item->setToolTip(item->text());
+            item->setData(item->text(), Qt::UserRole);
+            row_data.insert(COLUMN_ARTIST, item);
 
-        item = new QStandardItem(pTrack->getAlbum());
-        item->setToolTip(item->text());
-        item->setData(item->text(), Qt::UserRole);
-        row_data.insert(COLUMN_ALBUM, item);
+            item = new QStandardItem(pTrack->getTitle());
+            item->setToolTip(item->text());
+            item->setData(item->text(), Qt::UserRole);
+            row_data.insert(COLUMN_TITLE, item);
 
-        item = new QStandardItem(pTrack->getAlbumArtist());
-        item->setToolTip(item->text());
-        item->setData(item->text(), Qt::UserRole);
-        row_data.insert(COLUMN_ALBUMARTIST, item);
+            item = new QStandardItem(pTrack->getAlbum());
+            item->setToolTip(item->text());
+            item->setData(item->text(), Qt::UserRole);
+            row_data.insert(COLUMN_ALBUM, item);
 
-        item = new QStandardItem(pTrack->getTrackNumber());
-        item->setToolTip(item->text());
-        item->setData(item->text().toInt(), Qt::UserRole);
-        row_data.insert(COLUMN_TRACK_NUMBER, item);
+            item = new QStandardItem(pTrack->getAlbumArtist());
+            item->setToolTip(item->text());
+            item->setData(item->text(), Qt::UserRole);
+            row_data.insert(COLUMN_ALBUMARTIST, item);
 
-        const QString year(pTrack->getYear());
-        item = new YearItem(year);
-        item->setToolTip(year);
-        // The year column is sorted according to the numeric calendar year
-        item->setData(mixxx::TrackMetadata::parseCalendarYear(year), Qt::UserRole);
-        row_data.insert(COLUMN_YEAR, item);
+            item = new QStandardItem(pTrack->getTrackNumber());
+            item->setToolTip(item->text());
+            item->setData(item->text().toInt(), Qt::UserRole);
+            row_data.insert(COLUMN_TRACK_NUMBER, item);
 
-        item = new QStandardItem(pTrack->getGenre());
-        item->setToolTip(item->text());
-        item->setData(item->text(), Qt::UserRole);
-        row_data.insert(COLUMN_GENRE, item);
+            const QString year(pTrack->getYear());
+            item = new YearItem(year);
+            item->setToolTip(year);
+            // The year column is sorted according to the numeric calendar year
+            item->setData(mixxx::TrackMetadata::parseCalendarYear(year), Qt::UserRole);
+            row_data.insert(COLUMN_YEAR, item);
 
-        item = new QStandardItem(pTrack->getComposer());
-        item->setToolTip(item->text());
-        item->setData(item->text(), Qt::UserRole);
-        row_data.insert(COLUMN_COMPOSER, item);
+            item = new QStandardItem(pTrack->getGenre());
+            item->setToolTip(item->text());
+            item->setData(item->text(), Qt::UserRole);
+            row_data.insert(COLUMN_GENRE, item);
 
-        item = new QStandardItem(pTrack->getGrouping());
-        item->setToolTip(item->text());
-        item->setData(item->text(), Qt::UserRole);
-        row_data.insert(COLUMN_GROUPING, item);
+            item = new QStandardItem(pTrack->getComposer());
+            item->setToolTip(item->text());
+            item->setData(item->text(), Qt::UserRole);
+            row_data.insert(COLUMN_COMPOSER, item);
 
-        item = new QStandardItem(pTrack->getComment());
-        item->setToolTip(item->text());
-        item->setData(item->text(), Qt::UserRole);
-        row_data.insert(COLUMN_COMMENT, item);
+            item = new QStandardItem(pTrack->getGrouping());
+            item->setToolTip(item->text());
+            item->setData(item->text(), Qt::UserRole);
+            row_data.insert(COLUMN_GROUPING, item);
 
-        QString duration = pTrack->getDurationText(mixxx::Duration::Precision::SECONDS);
-        item = new QStandardItem(duration);
-        item->setToolTip(item->text());
-        item->setData(item->text(), Qt::UserRole);
-        row_data.insert(COLUMN_DURATION, item);
+            item = new QStandardItem(pTrack->getComment());
+            item->setToolTip(item->text());
+            item->setData(item->text(), Qt::UserRole);
+            row_data.insert(COLUMN_COMMENT, item);
 
-        item = new QStandardItem(pTrack->getBpmText());
-        item->setToolTip(item->text());
-        item->setData(pTrack->getBpm(), Qt::UserRole);
-        row_data.insert(COLUMN_BPM, item);
+            QString duration = pTrack->getDurationText(mixxx::Duration::Precision::SECONDS);
+            item = new QStandardItem(duration);
+            item->setToolTip(item->text());
+            item->setData(item->text(), Qt::UserRole);
+            row_data.insert(COLUMN_DURATION, item);
 
-        item = new QStandardItem(pTrack->getKeyText());
-        item->setToolTip(item->text());
-        item->setData(item->text(), Qt::UserRole);
-        row_data.insert(COLUMN_KEY, item);
+            item = new QStandardItem(pTrack->getBpmText());
+            item->setToolTip(item->text());
+            item->setData(pTrack->getBpm(), Qt::UserRole);
+            row_data.insert(COLUMN_BPM, item);
 
-        item = new QStandardItem(pTrack->getType());
-        item->setToolTip(item->text());
-        item->setData(item->text(), Qt::UserRole);
-        row_data.insert(COLUMN_TYPE, item);
+            item = new QStandardItem(pTrack->getKeyText());
+            item->setToolTip(item->text());
+            item->setData(item->text(), Qt::UserRole);
+            row_data.insert(COLUMN_KEY, item);
 
-        item = new QStandardItem(pTrack->getBitrateText());
-        item->setToolTip(item->text());
-        item->setData(pTrack->getBitrate(), Qt::UserRole);
-        row_data.insert(COLUMN_BITRATE, item);
+            item = new QStandardItem(pTrack->getType());
+            item->setToolTip(item->text());
+            item->setData(item->text(), Qt::UserRole);
+            row_data.insert(COLUMN_TYPE, item);
 
-        item = new QStandardItem(pTrack->getLocation());
-        item->setToolTip(item->text());
-        item->setData(item->text(), Qt::UserRole);
-        row_data.insert(COLUMN_LOCATION, item);
+            item = new QStandardItem(pTrack->getBitrateText());
+            item->setToolTip(item->text());
+            item->setData(pTrack->getBitrate(), Qt::UserRole);
+            row_data.insert(COLUMN_BITRATE, item);
 
-        QDateTime modifiedTime = pTrack->getFileModifiedTime().toLocalTime();
-        item = new QStandardItem(modifiedTime.toString(Qt::DefaultLocaleShortDate));
-        item->setToolTip(item->text());
-        item->setData(modifiedTime, Qt::UserRole);
-        row_data.insert(COLUMN_FILE_MODIFIED_TIME, item);
+            QString location = pTrack->getLocation();
+            QString nativeLocation = QDir::toNativeSeparators(location);
+            item = new QStandardItem(nativeLocation);
+            item->setToolTip(nativeLocation);
+            item->setData(location, Qt::UserRole);
+            row_data.insert(COLUMN_NATIVELOCATION, item);
 
-        QDateTime creationTime = pTrack->getFileCreationTime().toLocalTime();
-        item = new QStandardItem(creationTime.toString(Qt::DefaultLocaleShortDate));
-        item->setToolTip(item->text());
-        item->setData(creationTime, Qt::UserRole);
-        row_data.insert(COLUMN_FILE_CREATION_TIME, item);
+            QDateTime modifiedTime = pTrack->getFileModifiedTime().toLocalTime();
+            item = new QStandardItem(modifiedTime.toString(Qt::DefaultLocaleShortDate));
+            item->setToolTip(item->text());
+            item->setData(modifiedTime, Qt::UserRole);
+            row_data.insert(COLUMN_FILE_MODIFIED_TIME, item);
 
-        const mixxx::ReplayGain replayGain(pTrack->getReplayGain());
-        item = new QStandardItem(
-                mixxx::ReplayGain::ratioToString(replayGain.getRatio()));
-        item->setToolTip(item->text());
-        item->setData(item->text(), Qt::UserRole);
-        row_data.insert(COLUMN_REPLAYGAIN, item);
+            QDateTime creationTime = pTrack->getFileCreationTime().toLocalTime();
+            item = new QStandardItem(creationTime.toString(Qt::DefaultLocaleShortDate));
+            item->setToolTip(item->text());
+            item->setData(creationTime, Qt::UserRole);
+            row_data.insert(COLUMN_FILE_CREATION_TIME, item);
+
+            const mixxx::ReplayGain replayGain(pTrack->getReplayGain());
+            item = new QStandardItem(
+                    mixxx::ReplayGain::ratioToString(replayGain.getRatio()));
+            item->setToolTip(item->text());
+            item->setData(item->text(), Qt::UserRole);
+            row_data.insert(COLUMN_REPLAYGAIN, item);
+        } // implicitly release track pointer and unlock cache
 
         rows.append(row_data);
         ++row;

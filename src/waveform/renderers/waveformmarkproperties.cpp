@@ -3,6 +3,7 @@
 #include "widget/wskincolor.h"
 
 #include "waveform/renderers/waveformmarkproperties.h"
+#include "waveform/renderers/waveformmark.h"
 
 Qt::Alignment decodeAlignmentFlags(QString alignString, Qt::Alignment defaultFlags) {
     QStringList stringFlags = alignString.toLower()
@@ -43,7 +44,8 @@ Qt::Alignment decodeAlignmentFlags(QString alignString, Qt::Alignment defaultFla
 
 WaveformMarkProperties::WaveformMarkProperties(const QDomNode& node,
                                                const SkinContext& context,
-                                               const WaveformSignalColors& signalColors) {
+                                               const WaveformSignalColors& signalColors,
+                                               int hotCue) {
     m_color = context.selectString(node, "Color");
     if (!m_color.isValid()) {
         // As a fallback, grab the color from the parent's AxesColor
@@ -63,9 +65,13 @@ WaveformMarkProperties::WaveformMarkProperties(const QDomNode& node,
     QString markAlign = context.selectString(node, "Align");
     m_align = decodeAlignmentFlags(markAlign, Qt::AlignBottom | Qt::AlignHCenter);
 
-    m_text = context.selectString(node, "Text");
+    if (WaveformMark::kNoHotCue != hotCue) {
+        m_text = context.selectString(node, "Text").arg(hotCue + 1);
+    } else {
+        m_text = context.selectString(node, "Text");
+    }
     m_pixmapPath = context.selectString(node, "Pixmap");
     if (!m_pixmapPath.isEmpty()) {
-        m_pixmapPath = context.getSkinPath(m_pixmapPath);
+        m_pixmapPath = context.makeSkinPath(m_pixmapPath);
     }
 }

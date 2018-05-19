@@ -5,6 +5,7 @@
 #include "control/control.h"
 #include "util/cmdlineargs.h"
 #include "util/statsmanager.h"
+#include "util/logging.h"
 
 DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
                                      UserSettingsPointer pConfig)
@@ -81,24 +82,32 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
 
 void DlgDeveloperTools::timerEvent(QTimerEvent* pEvent) {
     Q_UNUSED(pEvent);
-    if (m_logFile.isOpen()) {
-        QStringList newLines;
-
-        while (true) {
-            QByteArray line = m_logFile.readLine();
-            if (line.isEmpty()) {
-                break;
-            }
-            newLines.append(QString::fromLocal8Bit(line));
-        }
-
-        if (!newLines.isEmpty()) {
-            logTextView->append(newLines.join(""));
-        }
+    if (!isVisible()) {
+        // nothing to do if we are not visible
+        return;
     }
 
     // To save on CPU, only update the models when they are visible.
-    if (toolTabWidget->currentWidget() == controlsTab) {
+    if (toolTabWidget->currentWidget() == logTab) {
+        if (m_logFile.isOpen()) {
+            // ensure, everything is in Buffer.
+            mixxx::Logging::flushLogFile();
+
+            QStringList newLines;
+
+            while (true) {
+                QByteArray line = m_logFile.readLine();
+                if (line.isEmpty()) {
+                    break;
+                }
+                newLines.append(QString::fromLocal8Bit(line));
+            }
+
+            if (!newLines.isEmpty()) {
+                logTextView->append(newLines.join(""));
+            }
+        }
+    } else if (toolTabWidget->currentWidget() == controlsTab) {
         //m_controlModel.updateDirtyRows();
         controlsTable->update();
     } else if (toolTabWidget->currentWidget() == statsTab) {

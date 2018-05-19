@@ -31,6 +31,12 @@ union WaveformData {
 
 class Waveform {
   public:
+    enum class SaveState {
+        NotSaved = 0,
+        SavePending, 
+        Saved
+    };
+
     explicit Waveform(const QByteArray pData = QByteArray());
     Waveform(int audioSampleRate, int audioSamples,
              int desiredVisualSampleRate, int maxVisualSamples);
@@ -75,14 +81,14 @@ class Waveform {
         return getDataSize() > 0 && getVisualSampleRate() > 0;
     }
 
-    bool isDirty() const {
-        return m_bDirty;
+    SaveState saveState() const {
+        return m_saveState;
     }
 
-    // AnalysisDAO needs to be able to set the waveform as clean so we mark this
-    // as const and m_bDirty mutable.
-    void setDirty(bool bDirty) const {
-        m_bDirty = bDirty;
+    // AnalysisDAO needs to be able to change the state to savePending when finished 
+    // so we mark this as const and m_saveState mutable.
+    void setSaveState(SaveState eState) const {
+        m_saveState = eState;
     }
 
     // We do not lock the mutex since m_audioVisualRatio is not changed after
@@ -143,8 +149,8 @@ class Waveform {
 
     // If stored in the database, the ID of the waveform.
     int m_id;
-    // AnalysisDAO needs to be able to set the waveform as clean.
-    mutable bool m_bDirty;
+    // mutable since AnalysisDAO needs to be able to set the waveform as saved.
+    mutable SaveState m_saveState;
     QString m_version;
     QString m_description;
 

@@ -2,9 +2,11 @@
 
 #include "control/controleffectknob.h"
 #include "effects/effectbuttonparameterslot.h"
+#include "effects/effectxmlelements.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "util/math.h"
+#include "util/xml.h"
 
 EffectButtonParameterSlot::EffectButtonParameterSlot(const QString& group,
                                                      const unsigned int iParameterSlotNumber)
@@ -31,6 +33,7 @@ EffectButtonParameterSlot::EffectButtonParameterSlot(const QString& group,
 
 EffectButtonParameterSlot::~EffectButtonParameterSlot() {
     //qDebug() << debugString() << "destroyed";
+    // m_pControlLoaded and m_pControlType are deleted by ~EffectParameterSlotBase
     delete m_pControlValue;
 }
 
@@ -47,7 +50,7 @@ void EffectButtonParameterSlot::loadEffect(EffectPointer pEffect) {
 
         if (m_pEffectParameter) {
             // Set the number of states
-            int numStates = math_max(m_pEffectParameter->manifest().getSteps().size(), 2);
+            int numStates = math_max(m_pEffectParameter->manifest()->getSteps().size(), 2);
             m_pControlValue->setStates(numStates);
             //qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();
             double dValue = m_pEffectParameter->getValue();
@@ -105,5 +108,38 @@ void EffectButtonParameterSlot::slotParameterValueChanged(double value) {
 void EffectButtonParameterSlot::slotValueChanged(double v) {
     if (m_pEffectParameter) {
         m_pEffectParameter->setValue(v);
+    }
+}
+
+QDomElement EffectButtonParameterSlot::toXml(QDomDocument* doc) const {
+    QDomElement parameterElement;
+    if (m_pEffectParameter != nullptr) {
+        parameterElement = doc->createElement(EffectXml::Parameter);
+        XmlParse::addElement(*doc, parameterElement,
+                             EffectXml::ParameterValue,
+                             QString::number(m_pControlValue->get()));
+    }
+
+    return parameterElement;
+}
+
+void EffectButtonParameterSlot::loadParameterSlotFromXml(const QDomElement&
+                                                  parameterElement) {
+    if (m_pEffectParameter == nullptr) {
+        return;
+    }
+    if (!parameterElement.hasChildNodes()) {
+        m_pControlValue->reset();
+    } else {
+        bool conversionWorked = false;
+        double value = XmlParse::selectNodeDouble(parameterElement,
+                                                  EffectXml::ParameterValue,
+                                                  &conversionWorked);
+        if (conversionWorked) {
+            // Need to use setParameterFrom(..., nullptr) here to
+            // trigger valueChanged() signal emission and execute slotValueChanged()
+            m_pControlValue->setParameterFrom(value, nullptr);
+        }
+        // If the conversion failed, the default value is kept.
     }
 }

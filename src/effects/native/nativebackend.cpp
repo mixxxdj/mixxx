@@ -4,12 +4,14 @@
 #include "effects/native/nativebackend.h"
 #include "effects/native/flangereffect.h"
 #include "effects/native/bitcrushereffect.h"
+#include "effects/native/balanceeffect.h"
 #include "effects/native/linkwitzriley8eqeffect.h"
 #include "effects/native/bessel8lvmixeqeffect.h"
 #include "effects/native/bessel4lvmixeqeffect.h"
 #include "effects/native/threebandbiquadeqeffect.h"
 #include "effects/native/biquadfullkilleqeffect.h"
 #include "effects/native/graphiceqeffect.h"
+#include "effects/native/parametriceqeffect.h"
 #include "effects/native/filtereffect.h"
 #include "effects/native/moogladder4filtereffect.h"
 #ifndef __MACAPPSTORE__
@@ -19,6 +21,8 @@
 #include "effects/native/autopaneffect.h"
 #include "effects/native/phasereffect.h"
 #include "effects/native/loudnesscontoureffect.h"
+#include "effects/native/metronomeeffect.h"
+#include "effects/native/tremoloeffect.h"
 
 NativeBackend::NativeBackend(QObject* pParent)
         : EffectsBackend(pParent, tr("Native")) {
@@ -31,11 +35,13 @@ NativeBackend::NativeBackend(QObject* pParent)
     registerEffect<BiquadFullKillEQEffect>();
     // Compensations EQs
     registerEffect<GraphicEQEffect>();
+    registerEffect<ParametricEQEffect>();
     registerEffect<LoudnessContourEffect>();
     // Fading Effects
     registerEffect<FilterEffect>();
     registerEffect<MoogLadder4FilterEffect>();
     registerEffect<BitCrusherEffect>();
+    registerEffect<BalanceEffect>();
     // Fancy effects
     registerEffect<FlangerEffect>();
     registerEffect<EchoEffect>();
@@ -44,6 +50,8 @@ NativeBackend::NativeBackend(QObject* pParent)
     registerEffect<ReverbEffect>();
 #endif
     registerEffect<PhaserEffect>();
+    registerEffect<MetronomeEffect>();
+    registerEffect<TremoloEffect>();
 }
 
 NativeBackend::~NativeBackend() {

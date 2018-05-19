@@ -10,10 +10,11 @@
 #include "util/class.h"
 #include "util/types.h"
 
-struct BitCrusherGroupState {
+struct BitCrusherGroupState : public EffectState {
     // Default accumulator to 1 so we immediately pick an input value.
-    BitCrusherGroupState()
-            : hold_l(0),
+    BitCrusherGroupState(const mixxx::EngineParameters& bufferParameters)
+            : EffectState(bufferParameters),
+              hold_l(0),
               hold_r(0),
               accumulator(1) {
     }
@@ -22,21 +23,20 @@ struct BitCrusherGroupState {
     CSAMPLE accumulator;
 };
 
-class BitCrusherEffect : public PerChannelEffectProcessor<BitCrusherGroupState> {
+class BitCrusherEffect : public EffectProcessorImpl<BitCrusherGroupState> {
   public:
-    BitCrusherEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    BitCrusherEffect(EngineEffect* pEffect);
     virtual ~BitCrusherEffect();
 
     static QString getId();
-    static EffectManifest getManifest();
+    static EffectManifestPointer getManifest();
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,
                         BitCrusherGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
-                        const unsigned int numSamples,
-                        const unsigned int sampleRate,
-                        const EffectProcessor::EnableState enableState,
+                        const mixxx::EngineParameters& bufferParameters,
+                        const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatureState);
 
   private:

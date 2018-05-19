@@ -2,6 +2,7 @@
 #define LV2MANIFEST_H
 
 #include "effects/effectmanifest.h"
+#include "effects/defs.h"
 #include <lilv-0/lilv/lilv.h>
 
 class LV2Manifest {
@@ -14,8 +15,7 @@ class LV2Manifest {
 
     LV2Manifest(const LilvPlugin* plug, QHash<QString, LilvNode*>& properties);
     ~LV2Manifest();
-    EffectManifest getEffectManifest();
-    EffectManifest& getEffectManifestReference();
+    EffectManifestPointer getEffectManifest() const;
     QList<int> getAudioPortIndices();
     QList<int> getControlPortIndices();
     const LilvPlugin* getPlugin();
@@ -24,9 +24,9 @@ class LV2Manifest {
 
   private:
     void buildEnumerationOptions(const LilvPort* port,
-                                 EffectManifestParameter* param);
+                                 EffectManifestParameterPointer param);
     const LilvPlugin* m_pLV2plugin;
-    EffectManifest m_effectManifest;
+    EffectManifestPointer m_pEffectManifest;
 
     // This list contains:
     // position 0 -> input_left port index

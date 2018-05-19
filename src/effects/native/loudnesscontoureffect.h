@@ -13,9 +13,9 @@
 #include "util/types.h"
 #include "util/memory.h"
 
-class LoudnessContourEffectGroupState final {
+class LoudnessContourEffectGroupState final : public EffectState {
   public:
-    LoudnessContourEffectGroupState();
+    LoudnessContourEffectGroupState(const mixxx::EngineParameters& bufferParameters);
     ~LoudnessContourEffectGroupState();
 
     void setFilters(int sampleRate, double gain);
@@ -32,23 +32,21 @@ class LoudnessContourEffectGroupState final {
 };
 
 class LoudnessContourEffect
-        : public PerChannelEffectProcessor<LoudnessContourEffectGroupState> {
+        : public EffectProcessorImpl<LoudnessContourEffectGroupState> {
   public:
-    LoudnessContourEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    LoudnessContourEffect(EngineEffect* pEffect);
     ~LoudnessContourEffect() override;
 
     static QString getId();
-    static EffectManifest getManifest();
+    static EffectManifestPointer getManifest();
 
     void setFilters(int sampleRate);
 
-    // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,
                         LoudnessContourEffectGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
-                        const unsigned int numSamples,
-                        const unsigned int sampleRate,
-                        const EffectProcessor::EnableState enableState,
+                        const mixxx::EngineParameters& bufferParameters,
+                        const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatureState);
 
   private:

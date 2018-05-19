@@ -18,29 +18,28 @@ const QString EffectsBackend::getName() const {
 }
 
 void EffectsBackend::registerEffect(const QString& id,
-                                    const EffectManifest& manifest,
+                                    EffectManifestPointer pManifest,
                                     EffectInstantiatorPointer pInstantiator) {
     if (m_registeredEffects.contains(id)) {
         qWarning() << "WARNING: Effect" << id << "already registered";
         return;
     }
 
-    m_registeredEffects[id] = QPair<EffectManifest, EffectInstantiatorPointer>(
-            manifest, pInstantiator);
+    m_registeredEffects[id] = RegisteredEffect(pManifest, pInstantiator);
     m_effectIds.append(id);
-    emit(effectRegistered(manifest));
+    emit(effectRegistered(pManifest));
 }
 
 const QList<QString> EffectsBackend::getEffectIds() const {
     return m_effectIds;
 }
 
-EffectManifest EffectsBackend::getManifest(const QString& effectId) const {
+EffectManifestPointer EffectsBackend::getManifest(const QString& effectId) const {
     if (!m_registeredEffects.contains(effectId)) {
         qWarning() << "WARNING: Effect" << effectId << "is not registered.";
-        return EffectManifest();
+        return EffectManifestPointer();
     }
-    return m_registeredEffects[effectId].first;
+    return m_registeredEffects[effectId].manifest();
 }
 
 bool EffectsBackend::canInstantiateEffect(const QString& effectId) const {
@@ -53,9 +52,9 @@ EffectPointer EffectsBackend::instantiateEffect(EffectsManager* pEffectsManager,
         qWarning() << "WARNING: Effect" << effectId << "is not registered.";
         return EffectPointer();
     }
-    QPair<EffectManifest, EffectInstantiatorPointer>& effectInfo =
-            m_registeredEffects[effectId];
+    RegisteredEffect& effectInfo = m_registeredEffects[effectId];
 
     return EffectPointer(new Effect(pEffectsManager,
-                                    effectInfo.first, effectInfo.second));
+                                    effectInfo.manifest(),
+                                    effectInfo.initiator()));
 }

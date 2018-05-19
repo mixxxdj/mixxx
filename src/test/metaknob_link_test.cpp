@@ -5,7 +5,10 @@
 
 #include "controllers/softtakeover.h"
 #include "effects/effectparameterslot.h"
+#include "effects/effectchainslot.h"
+#include "effects/effectrack.h"
 #include "effects/effect.h"
+#include "effects/effectslot.h"
 #include "mixxxtest.h"
 #include "test/baseeffecttest.h"
 #include "util/time.h"
@@ -18,8 +21,8 @@ class MetaLinkTest : public BaseEffectTest {
               m_headphone(m_factory.getOrCreateHandle("[Headphone]"), "[Headphone]") {
         mixxx::Time::setTestMode(true);
         mixxx::Time::setTestElapsedTime(mixxx::Duration::fromNanos(0));
-        m_pEffectsManager->registerChannel(m_master);
-        m_pEffectsManager->registerChannel(m_headphone);
+        m_pEffectsManager->registerInputChannel(m_master);
+        m_pEffectsManager->registerInputChannel(m_headphone);
         registerTestBackend();
 
         EffectChainPointer pChain(new EffectChain(m_pEffectsManager.data(),
@@ -29,37 +32,36 @@ class MetaLinkTest : public BaseEffectTest {
         int iEffectNumber = 0;
 
         StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
-        m_pChainSlot = pRack->addEffectChainSlot();
-        // StandardEffectRack::addEffectChainSlot automatically adds 4 effect
-        // slots. In the future we will probably remove this so this will just
-        // start segfaulting.
-        m_pEffectSlot = m_pChainSlot->getEffectSlot(0);
+        m_pChainSlot = pRack->getEffectChainSlot(iChainNumber);
+        m_pChainSlot->loadEffectChainToSlot(pChain);
+        m_pEffectSlot = m_pChainSlot->getEffectSlot(iEffectNumber);
 
         QString group = StandardEffectRack::formatEffectSlotGroupString(
             iRackNumber, iChainNumber, iEffectNumber);
 
-        EffectManifest manifest;
-        manifest.setId("org.mixxx.test.effect");
-        manifest.setName("Test Effect");
+        EffectManifestPointer pManifest(new EffectManifest());
+        pManifest->setId("org.mixxx.test.effect");
+        pManifest->setName("Test Effect");
+        pManifest->setMetaknobDefault(0.0);
 
-        EffectManifestParameter* low = manifest.addParameter();
+        EffectManifestParameterPointer low = pManifest->addParameter();
         low->setId("low");
         low->setName(QObject::tr("Low"));
         low->setDescription(QObject::tr("Gain for Low Filter"));
-        low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-        low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-        low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+        low->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+        low->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+        low->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
         low->setNeutralPointOnScale(0.25);
         low->setDefault(1.0);
         low->setMinimum(0);
         low->setMaximum(1.0);
 
-        registerTestEffect(manifest, false);
+        registerTestEffect(pManifest, false);
 
         // Check the controls reflect the state of their loaded effect.
-        EffectPointer pEffect = m_pEffectsManager->instantiateEffect(manifest.id());
+        EffectPointer pEffect = m_pEffectsManager->instantiateEffect(pManifest->id());
 
-        m_pEffectSlot->loadEffect(pEffect);
+        m_pEffectSlot->loadEffect(pEffect, false);
 
         QString itemPrefix = EffectParameterSlot::formatItemPrefix(0);
 
@@ -97,7 +99,8 @@ TEST_F(MetaLinkTest, LinkDefault) {
 
 TEST_F(MetaLinkTest, LinkLinked) {
     m_pEffectSlot->syncSofttakeover();
-    m_pControlLinkType->set(EffectManifestParameter::LINK_LINKED);
+    m_pControlLinkType->set(
+        static_cast<double>(EffectManifestParameter::LinkType::LINKED));
     m_pEffectSlot->slotEffectMetaParameter(1.0);
     EXPECT_EQ(1.0, m_pControlValue->get());
     m_pEffectSlot->slotEffectMetaParameter(0.5);
@@ -106,7 +109,8 @@ TEST_F(MetaLinkTest, LinkLinked) {
 
 TEST_F(MetaLinkTest, LinkLinkedInverse) {
     m_pEffectSlot->syncSofttakeover();
-    m_pControlLinkType->set(EffectManifestParameter::LINK_LINKED);
+    m_pControlLinkType->set(
+        static_cast<double>(EffectManifestParameter::LinkType::LINKED));
     m_pControlLinkInverse->set(1.0);
     m_pEffectSlot->slotEffectMetaParameter(0.0);
     EXPECT_EQ(1.0, m_pControlValue->get());
@@ -115,7 +119,8 @@ TEST_F(MetaLinkTest, LinkLinkedInverse) {
 }
 
 TEST_F(MetaLinkTest, MetaToParameter_Softtakeover_EffectEnabled) {
-    m_pControlLinkType->set(EffectManifestParameter::LINK_LINKED);
+    m_pControlLinkType->set(
+        static_cast<double>(EffectManifestParameter::LinkType::LINKED));
     // Soft takeover should only occur when the effect is enabled.
     m_pEffectSlot->slotEnabled(1.0);
 
@@ -139,7 +144,8 @@ TEST_F(MetaLinkTest, MetaToParameter_Softtakeover_EffectDisabled) {
     // Soft takeover should not occur when the effect is disabled;
     // parameter values should always jump to match the metaknob.
     // Effects are disabled by default.
-    m_pControlLinkType->set(EffectManifestParameter::LINK_LINKED);
+    m_pControlLinkType->set(
+        static_cast<double>(EffectManifestParameter::LinkType::LINKED));
 
     m_pEffectSlot->slotEffectMetaParameter(1.0);
     EXPECT_EQ(1.0, m_pControlValue->get());
@@ -201,24 +207,24 @@ TEST_F(MetaLinkTest, HalfLinkTakeover) {
     // 0 or 1.
     QString group = StandardEffectRack::formatEffectSlotGroupString(
         0, 0, 0);
-    EffectManifest manifest;
-    manifest.setId("org.mixxx.test.effect2");
-    manifest.setName("Test Effect2");
-    EffectManifestParameter* low = manifest.addParameter();
+    EffectManifestPointer pManifest(new EffectManifest());
+    pManifest->setId("org.mixxx.test.effect2");
+    pManifest->setName("Test Effect2");
+    EffectManifestParameterPointer low = pManifest->addParameter();
     low->setId("low");
     low->setName(QObject::tr("Low"));
     low->setDescription(QObject::tr("Gain for Low Filter (neutral at 1.0)"));
-    low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    low->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    low->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
+    low->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     low->setNeutralPointOnScale(1.0);
     low->setDefault(1.0);
     low->setMinimum(0);
     low->setMaximum(1.0);
-    registerTestEffect(manifest, false);
+    registerTestEffect(pManifest, false);
     // Check the controls reflect the state of their loaded effect.
-    EffectPointer pEffect = m_pEffectsManager->instantiateEffect(manifest.id());
-    m_pEffectSlot->loadEffect(pEffect);
+    EffectPointer pEffect = m_pEffectsManager->instantiateEffect(pManifest->id());
+    m_pEffectSlot->loadEffect(pEffect, false);
     QString itemPrefix = EffectParameterSlot::formatItemPrefix(0);
     m_pControlValue.reset(new ControlProxy(group, itemPrefix));
     m_pControlLinkType.reset(new ControlProxy(group,
@@ -239,7 +245,8 @@ TEST_F(MetaLinkTest, HalfLinkTakeover) {
     // we should see the control change as expected.
     m_pEffectSlot->slotEffectMetaParameter(0.5);
     m_pControlValue->set(1.0);
-    m_pControlLinkType->set(EffectManifestParameter::LINK_LINKED_LEFT);
+    m_pControlLinkType->set(
+        static_cast<double>(EffectManifestParameter::LinkType::LINKED_LEFT));
     m_pEffectSlot->syncSofttakeover();
     m_pEffectSlot->slotEffectMetaParameter(newParam);
     EXPECT_EQ(newParam * 2.0, m_pControlValue->get());
@@ -247,7 +254,8 @@ TEST_F(MetaLinkTest, HalfLinkTakeover) {
     // This tolerance change should also work for linked-right controls.
     m_pEffectSlot->slotEffectMetaParameter(0.5);
     m_pControlValue->set(1.0);
-    m_pControlLinkType->set(EffectManifestParameter::LINK_LINKED_RIGHT);
+    m_pControlLinkType->set(
+        static_cast<double>(EffectManifestParameter::LinkType::LINKED_RIGHT));
     m_pEffectSlot->syncSofttakeover();
     newParam = 0.5 + SoftTakeover::kDefaultTakeoverThreshold * 1.5;
     m_pEffectSlot->slotEffectMetaParameter(newParam);

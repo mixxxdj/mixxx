@@ -24,6 +24,7 @@
 #include <QScopedPointer>
 
 #include "preferences/usersettings.h"
+#include "database/mixxxdb.h"
 #include "controllers/defs_controllers.h"
 #include "defs_version.h"
 #include "library/library_preferences.h"
@@ -31,10 +32,11 @@
 #include "track/beat_preferences.h"
 #include "util/cmdlineargs.h"
 #include "util/math.h"
+#include "util/db/dbconnectionpooler.h"
+#include "util/db/dbconnectionpooled.h"
 
 Upgrade::Upgrade()
         : m_bFirstRun(false),
-          m_bUpgraded(false),
           m_bRescanLibrary(false) {
 }
 
@@ -82,7 +84,6 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         if (oldFile->exists()) {
             if (oldFile->copy(newFilePath)) {
                 oldFile->remove();
-                m_bUpgraded = true;
             }
             else {
                 if (oldFile->error()==14) qDebug() << errorText.arg("library", oldFilePath, newFilePath) << "The destination file already exists.";
@@ -348,7 +349,6 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         if (successful) {
             qDebug() << "Upgrade Successful";
             configVersion = "1.11.0";
-            m_bUpgraded = true;
             config->set(ConfigKey("[Config]","Version"),
                         ConfigValue(configVersion));
         } else {
@@ -358,21 +358,34 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 
     if (configVersion.startsWith("1.11")) {
         qDebug() << "Upgrading from v1.11.x...";
+        bool successful = false;
+        {
+            MixxxDb mixxxDb(config);
+            const mixxx::DbConnectionPooler dbConnectionPooler(
+                    mixxxDb.connectionPool());
+            if (dbConnectionPooler.isPooling()) {
+                QSqlDatabase dbConnection = mixxx::DbConnectionPooled(mixxxDb.connectionPool());
+                DEBUG_ASSERT(dbConnection.isOpen());
+                if (MixxxDb::initDatabaseSchema(dbConnection)) {
+                    TrackCollection tc(config);
+                    tc.connectDatabase(dbConnection);
 
-        // upgrade to the multi library folder settings
-        QString currentFolder = config->getValueString(PREF_LEGACY_LIBRARY_DIR);
-        // to migrate the DB just add the current directory to the new
-        // directories table
-        TrackCollection tc(config);
-        DirectoryDAO directoryDAO = tc.getDirectoryDAO();
+                    // upgrade to the multi library folder settings
+                    QString currentFolder = config->getValueString(PREF_LEGACY_LIBRARY_DIR);
+                    // to migrate the DB just add the current directory to the new
+                    // directories table
+                    // NOTE(rryan): We don't have to ask for sandbox permission to this
+                    // directory because the normal startup integrity check in Library will
+                    // notice if we don't have permission and ask for access. Also, the
+                    // Sandbox isn't setup yet at this point in startup because it relies on
+                    // the config settings path and this function is what loads the config
+                    // so it's not ready yet.
+                    successful = tc.getDirectoryDAO().addDirectory(currentFolder);
 
-        // NOTE(rryan): We don't have to ask for sandbox permission to this
-        // directory because the normal startup integrity check in Library will
-        // notice if we don't have permission and ask for access. Also, the
-        // Sandbox isn't setup yet at this point in startup because it relies on
-        // the config settings path and this function is what loads the config
-        // so it's not ready yet.
-        bool successful = directoryDAO.addDirectory(currentFolder);
+                    tc.disconnectDatabase();
+                }
+            }
+        }
 
         // ask for library rescan to activate cover art. We can later ask for
         // this variable when the library scanner is constructed.
@@ -393,7 +406,6 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         // updated
         if (successful) {
             configVersion = MIXXX_VERSION;
-            m_bUpgraded = true;
             config->set(ConfigKey("[Config]","Version"), ConfigValue(MIXXX_VERSION));
         }
         else {
@@ -401,14 +413,16 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         }
     }
 
+    if (configVersion.startsWith("1.12") ||
+        configVersion.startsWith("2.0") ||
+        configVersion.startsWith("2.1.0")) {
+        // No special upgrade required, just update the value.
+        configVersion = MIXXX_VERSION;
+        config->set(ConfigKey("[Config]","Version"), ConfigValue(MIXXX_VERSION));
+    }
+
     if (configVersion == MIXXX_VERSION) qDebug() << "Configuration file is now at the current version" << MIXXX_VERSION;
     else {
-        /* Way too verbose, this confuses the hell out of Linux users when they see this:
-        qWarning() << "Configuration file is at version" << configVersion
-                   << "and I don't know how to upgrade it to the current" << MIXXX_VERSION
-                   << "\n   (That means a function to do this needs to be added to upgrade.cpp.)"
-                   << "\n-> Leaving the configuration file version as-is.";
-        */
         qWarning() << "Configuration file is at version" << configVersion
                    << "instead of the current" << MIXXX_VERSION;
     }
