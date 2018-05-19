@@ -41,6 +41,7 @@
                         <Children>
                           <LibrarySidebarButtons>
                             <SizePolicy>min,me</SizePolicy>
+                            <Id>1</Id>
                           </LibrarySidebarButtons>
                         </Children>
                       </WidgetGroup>
