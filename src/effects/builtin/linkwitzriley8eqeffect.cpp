@@ -87,9 +87,11 @@ void LinkwitzRiley8EQEffect::processChannel(const ChannelHandle& handle,
                                             const CSAMPLE* pInput, CSAMPLE* pOutput,
                                             const mixxx::EngineParameters& bufferParameters,
                                             const EffectEnableState enableState,
-                                            const GroupFeatureState& groupFeatures) {
+                                            const GroupFeatureState& groupFeatures,
+                                            const EffectChainInsertionType insertionType) {
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
+    Q_UNUSED(insertionType);
 
     float fLow = 0.f, fMid = 0.f, fHigh = 0.f;
     if (!m_pKillLow->toBool()) {

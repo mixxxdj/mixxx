@@ -92,7 +92,8 @@ void ReverbEffect::processChannel(const ChannelHandle& handle,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
                                 const mixxx::EngineParameters& bufferParameters,
                                 const EffectEnableState enableState,
-                                const GroupFeatureState& groupFeatures) {
+                                const GroupFeatureState& groupFeatures,
+                                const EffectChainInsertionType insertionType) {
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
 
@@ -105,6 +106,7 @@ void ReverbEffect::processChannel(const ChannelHandle& handle,
     const auto bandwidth = m_pBandWidthParameter->value();
     const auto damping = m_pDampingParameter->value();
     const auto send = m_pSendParameter->value();
+    bool addDry = insertionType == EffectChainInsertionType::Insert;
 
     // Reinitialize the effect when turning it on to prevent replaying the old buffer
     // from the last time the effect was enabled.
@@ -116,5 +118,5 @@ void ReverbEffect::processChannel(const ChannelHandle& handle,
     }
     pState->reverb.processBuffer(pInput, pOutput,
                                  bufferParameters.samplesPerBuffer(),
-                                 bandwidth, decay, damping, send);
+                                 bandwidth, decay, damping, send, addDry);
 }

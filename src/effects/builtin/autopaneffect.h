@@ -90,7 +90,8 @@ class AutoPanEffect : public EffectProcessorImpl<AutoPanGroupState> {
             const CSAMPLE* pInput, CSAMPLE* pOutput,
             const mixxx::EngineParameters& bufferParameters,
             const EffectEnableState enableState,
-            const GroupFeatureState& groupFeatures);
+            const GroupFeatureState& groupFeatures,
+            const EffectChainInsertionType insertionType);
 
     double computeLawCoefficient(double position);
 

@@ -44,7 +44,8 @@ class GraphicEQEffect : public EffectProcessorImpl<GraphicEQEffectGroupState> {
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
                         const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatureState);
+                        const GroupFeatureState& groupFeatureState,
+                        const EffectChainInsertionType insertionType);
 
   private:
     QString debugString() const {

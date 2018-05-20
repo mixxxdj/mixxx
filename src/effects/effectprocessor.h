@@ -81,7 +81,8 @@ class EffectProcessor {
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const mixxx::EngineParameters& bufferParameters,
                          const EffectEnableState enableState,
-                         const GroupFeatureState& groupFeatures) = 0;
+                         const GroupFeatureState& groupFeatures,
+                         const EffectChainInsertionType insertionType) = 0;
 };
 
 // EffectProcessorImpl manages a separate EffectState for every routing of
@@ -135,13 +136,15 @@ class EffectProcessorImpl : public EffectProcessor {
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
                                 const mixxx::EngineParameters& bufferParameters,
                                 const EffectEnableState enableState,
-                                const GroupFeatureState& groupFeatures) = 0;
+                                const GroupFeatureState& groupFeatures,
+                                const EffectChainInsertionType insertionType) = 0;
 
     void process(const ChannelHandle& inputHandle, const ChannelHandle& outputHandle,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const mixxx::EngineParameters& bufferParameters,
                          const EffectEnableState enableState,
-                         const GroupFeatureState& groupFeatures) final {
+                         const GroupFeatureState& groupFeatures,
+                         const EffectChainInsertionType insertionType) final {
         EffectSpecificState* pState = m_channelStateMatrix[inputHandle][outputHandle];
         VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
             if (kEffectDebugOutput) {
@@ -155,7 +158,7 @@ class EffectProcessorImpl : public EffectProcessor {
             m_channelStateMatrix[inputHandle][outputHandle] = pState;
         }
         processChannel(inputHandle, pState, pInput, pOutput, bufferParameters,
-                       enableState, groupFeatures);
+                       enableState, groupFeatures, insertionType);
     }
 
     void initialize(const QSet<ChannelHandleAndGroup>& activeInputChannels,

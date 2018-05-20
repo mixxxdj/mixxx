@@ -134,8 +134,10 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
                                    const CSAMPLE* pInput, CSAMPLE* pOutput,
                                    const mixxx::EngineParameters& bufferParameters,
                                    const EffectEnableState enableState,
-                                   const GroupFeatureState& groupFeatures) {
+                                   const GroupFeatureState& groupFeatures,
+                                   const EffectChainInsertionType insertionType) {
     Q_UNUSED(handle);
+    Q_UNUSED(insertionType);
 
     double lfoPeriodParameter = m_pSpeedParameter->value();
     double lfoPeriodFrames;

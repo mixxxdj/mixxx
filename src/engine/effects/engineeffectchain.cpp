@@ -276,7 +276,8 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
                 if (pEffect->process(inputHandle, outputHandle,
                                      pIntermediateInput, pIntermediateOutput,
                                      numSamples, sampleRate,
-                                     effectiveChainEnableState, groupFeatures)) {
+                                     effectiveChainEnableState, groupFeatures,
+                                     m_insertionType)) {
                     processingOccured = true;
                     // Output of this effect becomes the input of the next effect
                     pIntermediateInput = pIntermediateOutput;

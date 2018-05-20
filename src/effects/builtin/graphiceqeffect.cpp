@@ -150,9 +150,11 @@ void GraphicEQEffect::processChannel(const ChannelHandle& handle,
                                      const CSAMPLE* pInput, CSAMPLE* pOutput,
                                      const mixxx::EngineParameters& bufferParameters,
                                      const EffectEnableState enableState,
-                                     const GroupFeatureState& groupFeatures) {
+                                     const GroupFeatureState& groupFeatures,
+                                     const EffectChainInsertionType insertionType) {
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
+    Q_UNUSED(insertionType);
 
     // If the sample rate has changed, initialize the filters using the new
     // sample rate
