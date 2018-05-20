@@ -681,7 +681,7 @@ WBeatSpinBox,
       define it with same width as hover border, otherwise size jumps */
     width: 18px;
     height: 12px;
-    margin: 0px 0px 0px 0px;
+    margin: 0px;
     padding: 0px;
     border: 0px;
     }
@@ -709,6 +709,7 @@ WBeatSpinBox,
     /* Eliminate overlapping right border for transition time in Auto DJ tab */
     #DlgAutoDJ QSpinBox {
       border-right: 0px;
+      margin: 0px;
     }
 
 #Crossfader {
@@ -1397,7 +1398,7 @@ WEffectSelector {
 }
 
 #LibrarySidebarButtonsContainer {
-  padding: 0px 3px 0px 3px;
+  padding: 0px 5px 0px 3px;
   border: 0px;
   background-color: transparent;
 }
@@ -1405,9 +1406,10 @@ WEffectSelector {
 /* Buttonbar */
 WButtonBar,
 WButtonBar QWidget,
-/* Area behind scrollbars */
-QScrollArea {
-  border: 0px solid #0f0f0f;
+/* Eliminate double border of AutoDJ control pane */
+QScrollArea,
+WBaseLibrary QScrollArea {
+  border: 0px;
   background-color: transparent;
 }
 
@@ -1419,21 +1421,19 @@ WButtonBar QToolButton {
   color: #cfb32c;/*
   background-color: #333;*/
   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #252525, stop:1 #0f0f0f);
-}
+  }
+  WButtonBar QToolButton:hover {
+    border: 1px solid #c9c9c9;
+  }
+  WButtonBar QToolButton:focus {
+    color: #cfb32c;
+    border: 1px solid #ed5e00;
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                        stop:0 #0f0f0f, 
+                                        stop:1 #151515);
+  }
 
-WButtonBar QToolButton:hover {
-  border: 1px solid #c9c9c9;
-}
-
-WButtonBar QToolButton:focus {
-  color: #cfb32c;
-  border: 1px solid #ed5e00;
-  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
-                                      stop:0 #0f0f0f, 
-                                      stop:1 #151515);
-}
-
-#LibrarySidebarExpanded QPushButton {
+WBaseLibrary QPushButton {
   margin: 2px 3px 2px 3px; 
   padding: 0px; 
   min-width: 65px;
@@ -1445,17 +1445,15 @@ WButtonBar QToolButton:focus {
   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                stop:0 #252525, 
                                stop:1 #0f0f0f);
-}
-
-#LibrarySidebarExpanded QPushButton:hover,
-#LibrarySidebarExpanded QPushButton:focus {
-  border: 1px solid #888;
-}
-
-#LibrarySidebarExpanded QPushButton:!enabled,
-#LibrarySidebarExpanded QWidget:!enabled {
-  color: #666666;
-}
+  }
+  WBaseLibrary QPushButton:hover,
+  WBaseLibrary QPushButton:focus {
+    border: 1px solid #888;
+  }
+  WBaseLibrary QPushButton:!enabled,
+  WBaseLibrary QWidget:!enabled {
+    color: #666;
+  }
 
 /* exception for Library buttons that start processes */
 #DlgAutoDJ > QPushButton#pushButtonAutoDJ:hover,
@@ -1488,12 +1486,12 @@ WButtonBar QToolButton:focus {
       stop:1 #D46D00);
   }
 
-#LibrarySidebarExpanded QWidget {
+WBaseLibrary QWidget {
   padding: 0px;
   margin: 0px;
 }
 
-#LibrarySidebarExpanded QScrollArea {
+WBaseLibrary QScrollArea {
   border:none;
   padding: 0px;
   margin: 0px;
@@ -1508,11 +1506,27 @@ WBaseLibrary QLabel {
   padding: 0px;
 }
 
-#LibrarySidebarExpanded QTabWidget,
-#LibrarySidebarExpanded QTabWidget QTreeView,
+/* Revert the above hack for the transition time label in AutoDJ pane */
+#DlgAutoDJ QLabel {
+  min-height: 20px;
+  max-height: 20px;
+  margin-left: 7px;
+  text-transform: none;
+}
+
+/* Revert the above hack for the time in Recording feature */
+#DlgRecording QLabel {
+  min-height: 20px;
+  max-height: 120px;
+  margin-left: 7px;
+  text-transform: none;
+}
+
+WBaseLibrary QTabWidget,
+WBaseLibrary QTabWidget QTreeView,
 #DlgAutoDJ QScrollArea {
-  margin: 0;
-  border: none;
+  margin: 0px;
+  border: 0px;
   background-color: #151515;
 }
 
@@ -1521,35 +1535,18 @@ WBaseLibrary QLabel {
 #DlgAnalysis,
 #DlgHidden,
 #DlgMissing {
-  margin: 0;
-  border: none;
+  margin: 0px;
+  border: 0px;
   background-color: #1e1e1e;
 }
 
-/* revert hack that hides Sidebar title */
-#DlgAutoDJ QLabel {
-  min-height: 20px;
-  max-height: 20px;
-  padding: 3px;
-  background: none; 
-}
-
-/* revert hack that hides Sidebar title for
-   recording info (file name, MB written) */
-#DlgRecording QLabel {
-  padding: 0px 5px 0px 5px;
-  margin: 0px;
-  background: none;
-  color: #eeeeee;
-}
-
-#LibrarySidebarExpanded QTabWidget::pane,
-#LibrarySidebarExpanded #DlgRecording,
-#LibrarySidebarExpanded #DlgAnalysis {
+WBaseLibrary QTabWidget::pane,
+WBaseLibrary #DlgRecording,
+WBaseLibrary #DlgAnalysis {
   border: 1px solid #585858;
 }
 
-#LibrarySidebarExpanded QTabBar::tab {
+WBaseLibrary QTabBar::tab {
   padding: 5px;
   border: 1px solid #252525;
   color: #cfb32c;
@@ -1559,26 +1556,25 @@ WBaseLibrary QLabel {
   border-bottom: 0px;
 }
 
-  #LibrarySidebarExpanded QTabBar::tab:hover {
+  WBaseLibrary QTabBar::tab:hover {
     border-top: 1px solid #585858;
     border-right: 1px solid #585858;
     border-left: 1px solid #585858;
   }
 
-  #LibrarySidebarExpanded QTabBar::tab:!enabled {
+  WBaseLibrary QTabBar::tab:!enabled {
     color: #7A6919;
     background-color: #fff;
   }
 
-
-  #LibrarySidebarExpanded QTabBar::tab:focus {
+  WBaseLibrary QTabBar::tab:focus {
     border-top: 1px solid #8E5C00;
     border-right: 1px solid #8E5C00;
     border-left: 1px solid #8E5C00;
     background-color: #232323;
   }
 
-  #LibrarySidebarExpanded QTabBar::tab:selected {
+  WBaseLibrary QTabBar::tab:selected {
     border: 1px solid #585858;
     border-top-left-radius: 2px;
     border-top-right-radius: 2px;
@@ -1586,21 +1582,22 @@ WBaseLibrary QLabel {
     background-color: #1e1e1e;
   }
 
-  #LibrarySidebarExpanded QTabBar QToolButton {
+  WBaseLibrary QTabBar QToolButton {
     border: 1px solid #585858;
     border-bottom: 0px;
     border-top-left-radius: 2px;
     border-top-right-radius: 2px;
     background-color: #1e1e1e;
     }
-    #LibrarySidebarExpanded QTabBar QToolButton:hover {
+    WBaseLibrary QTabBar QToolButton:hover {
       border-color: #888888;
     }
 
-#LibrarySidebarExpanded > QWidget:focus,
-#LibrarySidebarExpanded QAbstractScrollArea > QWidget:focus,
-WLibrarySidebar:focus, 
-WLibrary:focus,
+/* exclude this to eliminate focus border of AutoDJ Track source view 
+WBaseLibrary > QWidget:focus,
+WBaseLibrary QAbstractScrollArea > QWidget:focus,
+WLibrarySidebar:focus, */
+QTreeView:focus,
 QTableView:focus {
   border: 1px solid #FF6600;
 }
@@ -1628,15 +1625,7 @@ WLibraryBreadCrumb QLabel {
 WLibraryBreadCrumb QToolButton {
   margin-right: 3px;
   background: none;
-  border: none;
-}
-
-WBaseLibrary QLabel {
-  margin: 0px 0px 10px 0px;
-  padding: 4px 4px 10px 4px;
-  font-size: 12px/20px;
-  line-height: 20px;
-  font-weight: bold;
+  border: 0px;
 }
 
 QTreeView::item:selected:active, 
@@ -1734,7 +1723,7 @@ QHeaderView::down-arrow {
   }
 
 
-/* QScrollbar styling is even harder */
+/* QScrollBar styling is even harder */
 QScrollBar {
   border: 1px solid #585858;
   background: #1a1a1a;
@@ -1742,59 +1731,59 @@ QScrollBar {
   padding: 1px;
   color: #999999;
   font-size: 8pt;
-}
-QScrollBar:horizontal {
-  min-width: 12px;
-  height: 15px;
-  border-top-left-radius: 0px;
-  border-top-right-radius: 0px;
-  border-top: 0px;
-  background-color: #0f0f0f;
-}
-QScrollBar:vertical {
-  min-height: 12px;
-  width: 15px;
-  border-top-left-radius: 0px;
-  border-bottom-left-radius: 0px;
-  border-left: 0px;
-  color: #b3b3b3;
-  background-color: #0f0f0f;
-}
+  }
+  QScrollBar:horizontal {
+    min-width: 12px;
+    height: 15px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-top: 0px;
+    background-color: #0f0f0f;
+  }
+  QScrollBar:vertical {
+    min-height: 12px;
+    width: 15px;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-left: 0px;
+    color: #b3b3b3;
+    background-color: #0f0f0f;
+  }
 
-/* "add-page" and "sub-page" are the gutter of the scrollbar */
-QScrollBar::add-page, QScrollBar::sub-page {
-  min-width: 15px;
-  min-height: 15px;
-  background-color: #0f0f0f;
-  border-radius: 3px;
-}
-QScrollBar::handle:horizontal {
-  min-width: 25px;
-  border-radius: 3px;
-  border: 1px solid #725309;
-  background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-    stop:0 #725309,
-    stop:1 #412f05);
-}
-QScrollBar::handle:vertical {
-  min-height: 25px;
-  border-radius: 3px;
-  border: 1px solid #725309;
-  background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-    stop:0 rgba(222, 162, 18, 170),
-    stop:1 rgba(59, 42, 5, 170));
-}
-/* Turn off buttons */
-QScrollBar::add-line, QScrollBar::sub-line {
-  width: 0px;
-  height: 0px;
-  border: 0px solid white;
-}
+  /* "add-page" and "sub-page" are the gutter of the scrollbar */
+  QScrollBar::add-page, QScrollBar::sub-page {
+    min-width: 15px;
+    min-height: 15px;
+    background-color: #0f0f0f;
+    border-radius: 3px;
+  }
+  QScrollBar::handle:horizontal {
+    min-width: 25px;
+    border-radius: 3px;
+    border: 1px solid #725309;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+      stop:0 #725309,
+      stop:1 #412f05);
+  }
+  QScrollBar::handle:vertical {
+    min-height: 25px;
+    border-radius: 3px;
+    border: 1px solid #725309;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+      stop:0 rgba(222, 162, 18, 170),
+      stop:1 rgba(59, 42, 5, 170));
+  }
+  /* Turn off buttons */
+  QScrollBar::add-line, QScrollBar::sub-line {
+    width: 0px;
+    height: 0px;
+    border: 0px;
+  }
 
-/* Corner in between two scrollbars */
-QAbstractScrollArea::corner {
-  background-color: #1e1e1e;
-}
+  /* Corner in between two scrollbars */
+  QAbstractScrollArea::corner {
+    background-color: #1e1e1e;
+  }
 
 /* library search bar */
 WSearchLineEdit { 
@@ -1865,21 +1854,21 @@ QLabel, QRadioButton {
 }
 
 /* Additional space for QRadionButtons */
-#LibrarySidebarExpanded QRadioButton {
+WBaseLibrary QRadioButton {
   margin: 0px 0px 0px 5px;
   padding: 0px;
   color: #c9c9c9;
   }
 
-  #LibrarySidebarExpanded QRadioButton::indicator:checked {
+  WBaseLibrary QRadioButton::indicator:checked {
     background: url(skin:/style/library_radio_button_on.svg);
   }
 
-  #LibrarySidebarExpanded QRadioButton::indicator:unchecked {
+  WBaseLibrary QRadioButton::indicator:unchecked {
     background: url(skin:/style/library_radio_button_off.svg);
   }
 
-  #LibrarySidebarExpanded QRadioButton::indicator:unchecked:hover {
+  WBaseLibrary QRadioButton::indicator:unchecked:hover {
     background: url(skin:/style/library_radio_button_off_hover.svg);
   }
 

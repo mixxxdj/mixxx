@@ -56,7 +56,6 @@
                         <Children>
                           <!--Library Tree View-->
                           <LibrarySidebarExpanded>
-                            <ObjectName>LibrarySidebarExpanded</ObjectName>
                             <Id>1</Id>
                           </LibrarySidebarExpanded>
                           <!--Cover Art-->
