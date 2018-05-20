@@ -356,6 +356,11 @@ WBaseLibrary QLabel {
   border: 0px solid #006596;
 }
 
+QTabBar QToolButton,
+QTabBar QToolButton:hover {
+  border-left: 1px solid #1e1e1e;
+}
+
 /* button in library "Preview" column */
 QPushButton#LibraryPreviewButton {
   width: 23px;
