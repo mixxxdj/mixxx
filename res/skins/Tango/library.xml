@@ -131,8 +131,8 @@ Description:
                       </WidgetGroup>
 
                       <LibrarySidebarButtons>
-                        <SizePolicy>min,me</SizePolicy>
                         <ObjectName>LibrarySidebarButtons</ObjectName>
+                        <SizePolicy>min,me</SizePolicy>
                       </LibrarySidebarButtons>
 
                     </Children>
@@ -163,7 +163,6 @@ Description:
                         <Collapsible>0,0</Collapsible>
                         <Children>
                           <LibrarySidebarExpanded>
-                            <ObjectName>LibrarySidebarExpanded</ObjectName>
                             <Id>1</Id>
                           </LibrarySidebarExpanded>
 
