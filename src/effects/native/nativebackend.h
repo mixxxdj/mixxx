@@ -6,7 +6,7 @@
 class NativeBackend : public EffectsBackend {
     Q_OBJECT
   public:
-    NativeBackend(QObject* pParent=NULL);
+    NativeBackend(UserSettingsPointer pConfig, QObject* pParent = nullptr);
     virtual ~NativeBackend();
 
   private:

@@ -44,14 +44,14 @@ void WEffectSelector::populate() {
     blockSignals(true);
     clear();
 
-    // TODO(xxx): filter out blacklisted effects
-    // https://bugs.launchpad.net/mixxx/+bug/1653140
     const QList<EffectManifestPointer> availableEffectManifests =
             m_pEffectsManager->getAvailableEffectManifests();
     QFontMetrics metrics(font());
 
     for (int i = 0; i < availableEffectManifests.size(); ++i) {
         const EffectManifestPointer pManifest = availableEffectManifests.at(i);
+        if (!pManifest->isVisible())
+            continue;
         QString elidedDisplayName = metrics.elidedText(pManifest->displayName(),
                                                        Qt::ElideMiddle,
                                                        width() - 2);

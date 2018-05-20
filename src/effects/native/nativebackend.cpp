@@ -24,8 +24,8 @@
 #include "effects/native/metronomeeffect.h"
 #include "effects/native/tremoloeffect.h"
 
-NativeBackend::NativeBackend(QObject* pParent)
-        : EffectsBackend(pParent, tr("Native")) {
+NativeBackend::NativeBackend(UserSettingsPointer pConfig, QObject* pParent)
+        : EffectsBackend(pConfig, pParent, tr("Native")) {
     // Keep this list in a reasonable order
     // Mixing EQs
     registerEffect<Bessel4LVMixEQEffect>();

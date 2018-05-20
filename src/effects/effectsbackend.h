@@ -6,6 +6,7 @@
 #include <QSet>
 #include <QString>
 
+#include "preferences/usersettings.h"
 #include "effects/effect.h"
 #include "effects/effectinstantiator.h"
 
@@ -19,7 +20,7 @@ class EffectProcessor;
 class EffectsBackend : public QObject {
     Q_OBJECT
   public:
-    EffectsBackend(QObject* pParent, QString name);
+    EffectsBackend(UserSettingsPointer pConfig, QObject* pParent, QString name);
     virtual ~EffectsBackend();
 
     virtual const QString getName() const;
@@ -47,6 +48,8 @@ class EffectsBackend : public QObject {
                 EffectInstantiatorPointer(
                         new EffectProcessorInstantiator<EffectProcessorImpl>()));
     }
+    
+    UserSettingsPointer m_pConfig;
 
   private:
     class RegisteredEffect {

@@ -1,6 +1,7 @@
 #ifndef LV2BACKEND_H
 #define LV2BACKEND_H
 
+#include "preferences/usersettings.h"
 #include "effects/effectsbackend.h"
 #include "effects/lv2/lv2manifest.h"
 #include <lilv-0/lilv/lilv.h>
@@ -8,7 +9,8 @@
 class LV2Backend : public EffectsBackend {
     Q_OBJECT
   public:
-    LV2Backend(QObject* pParent=NULL);
+    LV2Backend(UserSettingsPointer pConfig,
+               QObject* pParent = nullptr);
     virtual ~LV2Backend();
 
     void enumeratePlugins();

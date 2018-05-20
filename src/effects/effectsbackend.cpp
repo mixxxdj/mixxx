@@ -3,8 +3,11 @@
 #include "effects/effectsbackend.h"
 #include "effects/effectsmanager.h"
 
-EffectsBackend::EffectsBackend(QObject* pParent, QString name)
+EffectsBackend::EffectsBackend(UserSettingsPointer pConfig, 
+                               QObject* pParent, 
+                               QString name)
         : QObject(pParent),
+          m_pConfig(pConfig),
           m_name(name) {
 }
 
@@ -25,8 +28,11 @@ void EffectsBackend::registerEffect(const QString& id,
         return;
     }
 
+    const bool visible = m_pConfig->getValue<bool>(ConfigKey("[Visible Effects]", 
+                                                   pManifest->id()), true);
+    pManifest->setVisibility(visible);
+
     m_registeredEffects[id] = RegisteredEffect(pManifest, pInstantiator);
-    // qDebug() << pManifest->id() << "is " << (pManifest->isVisible() ? "visible" : "hidden");
     m_effectIds.append(id);
     emit(effectRegistered(pManifest));
 }
