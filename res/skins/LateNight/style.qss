@@ -1586,6 +1586,17 @@ WBaseLibrary QLabel {
     background-color: #1e1e1e;
   }
 
+  #LibrarySidebarExpanded QTabBar QToolButton {
+    border: 1px solid #585858;
+    border-bottom: 0px;
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+    background-color: #1e1e1e;
+    }
+    #LibrarySidebarExpanded QTabBar QToolButton:hover {
+      border-color: #888888;
+    }
+
 #LibrarySidebarExpanded > QWidget:focus,
 #LibrarySidebarExpanded QAbstractScrollArea > QWidget:focus,
 WLibrarySidebar:focus, 
