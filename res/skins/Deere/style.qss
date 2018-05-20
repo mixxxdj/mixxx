@@ -277,6 +277,14 @@ WBaseLibrary QLabel {
   text-transform: none;
 }
 
+/* Revert the above hack for the time in Recording feature */
+#DlgRecording QLabel {
+  min-height: 20px;
+  max-height: 120px;
+  margin-left: 7px;
+  text-transform: none;
+}
+
 #LibraryCoverArtSplitter QTabWidget {
   border: none;
 }
