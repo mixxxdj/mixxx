@@ -1488,12 +1488,6 @@ WButtonBar QToolButton:focus {
       stop:1 #D46D00);
   }
 
-
-#LibrarySidebarExpanded {/*
-  margin-top: 8px;
-  padding-top: -17px;*/
-}
-
 #LibrarySidebarExpanded QWidget {
   padding: 0px;
   margin: 0px;
@@ -1505,9 +1499,13 @@ WButtonBar QToolButton:focus {
   margin: 0px;
 }
 
-#LibrarySidebarExpanded QLabel {
-  background-color: #123654;/**/
-  margin-top: -17px;
+/* Hide the library feature label above feature pane when only one
+  library feature is shown. The feature name is also shown in Breadcrumbs. */
+WBaseLibrary QLabel {
+  min-height: 0px;
+  max-height: 0px;
+  margin: 0px;
+  padding: 0px;
 }
 
 #LibrarySidebarExpanded QTabWidget,
@@ -1530,8 +1528,9 @@ WButtonBar QToolButton:focus {
 
 /* revert hack that hides Sidebar title */
 #DlgAutoDJ QLabel {
+  min-height: 20px;
+  max-height: 20px;
   padding: 3px;
-  margin: 0px;
   background: none; 
 }
 
