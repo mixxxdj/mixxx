@@ -6,7 +6,7 @@
 #include <QMutex>
 #include <QObject>
 #include <QElapsedTimer>
-#include <Connection>
+#include <QMetaObject>
 
 #include "library/dao/cue.h"
 #include "track/beats.h"
@@ -24,6 +24,8 @@ class Track;
 
 typedef std::shared_ptr<Track> TrackPointer;
 typedef std::weak_ptr<Track> TrackWeakPointer;
+
+struct Connection;
 
 class Track : public QObject {
     Q_OBJECT
@@ -149,9 +151,9 @@ class Track : public QObject {
 
     void resetPlayedTime();
 
-    void setElapsedTimer(ElapsedTimer *elapsedTimer);
+    void setElapsedTimer(TrackTimers::ElapsedTimer *elapsedTimer);
 
-    void setTimer(Timer *timer);
+    void setTimer(TrackTimers::TrackTimer *timer);
 
     void setMsPlayed(qint64 ms);
 
@@ -403,10 +405,8 @@ class Track : public QObject {
 
     QAtomicInt m_analyzerProgress; // in 0.1%
 
-    ElapsedTimer *m_pElapsedTimer;
-    Timer *m_pTimer;
-
-    QMetaObject::Connection m_timerConnection;
+    std::unique_ptr<TrackTimers::ElapsedTimer> m_pElapsedTimer;
+    std::unique_ptr<TrackTimers::TrackTimer> m_pTimer;    
 
     qint64 m_msPlayed;
 
@@ -416,7 +416,7 @@ class Track : public QObject {
     friend class GlobalTrackCache;
     friend class GlobalTrackCacheResolver;
     friend class SoundSourceProxy;
-  
-  private slots:
-    void slotCheckIfScrobbable();
+
+  public slots:
+    void slotCheckIfScrobbable();    
 };

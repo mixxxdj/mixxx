@@ -1,40 +1,35 @@
 #include "track/trackplaytimers.h"
 
-TimerQt::TimerQt(QObject *parent = nullptr) :
-    m_Timer(parent) 
+TrackTimers::TimerQt::TimerQt()
 {
     connect(&m_Timer,SIGNAL(timeout()),
             this,SIGNAL(timeout()));
 }
 
-TimerQt::~TimerQt() {}
-
-ElapsedTimerQt::~ElapsedTimerQt() {}
-
-void TimerQt::start(int msec) {
+void TrackTimers::TimerQt::start(int msec) {
     m_Timer.start(msec);
 }
 
-bool TimerQt::isActive() {
+bool TrackTimers::TimerQt::isActive() {
     return m_Timer.isActive();
 }
 
-void TimerQt::stop() {
+void TrackTimers::TimerQt::stop() {
     m_Timer.stop();
 }
 
-void ElapsedTimerQt::invalidate() {
+void TrackTimers::ElapsedTimerQt::invalidate() {
     m_elapsedTimer.invalidate();
 }
 
-bool ElapsedTimerQt::isValid() {
+bool TrackTimers::ElapsedTimerQt::isValid() {
     return m_elapsedTimer.isValid();
 }
 
-void ElapsedTimerQt::start() {
+void TrackTimers::ElapsedTimerQt::start() {
     m_elapsedTimer.start();
 }
 
-qint64 ElapsedTimerQt::elapsed() {
+qint64 TrackTimers::ElapsedTimerQt::elapsed() {
     return m_elapsedTimer.elapsed();
 }

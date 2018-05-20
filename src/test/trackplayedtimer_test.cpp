@@ -2,16 +2,11 @@
 #include "gmock/gmock.h"
 #include "track/track.h"
 #include "track/trackplaytimers.h"
+#include "test/trackplayedtimer_test.h"
 
-class TimerMock : public Timer {
+class ElapsedTimerMock : public TrackTimers::ElapsedTimer {
   public:
-    MOCK_METHOD1(start,void(int msec));
-    MOCK_METHOD0(isActive,bool());
-    MOCK_METHOD0(stop,void());
-};
-
-class ElapsedTimerMock : public ElapsedTimer {
-  public:
+    ~ElapsedTimerMock() = default;
     MOCK_METHOD0(invalidate,void());
     MOCK_METHOD0(start,void());
     MOCK_METHOD0(isValid,bool());
@@ -19,18 +14,14 @@ class ElapsedTimerMock : public ElapsedTimer {
 };
 
 
-class TrackTest : public testing::Test, public QObject {
-    Q_OBJECT
+class TrackTest : public testing::Test {
   public:
-    TrackTest() : scrobbled(false) {
+    TrackTest() {
         testTrack = Track::newDummy(QFileInfo(),TrackId());        
     }
+    ~TrackTest() = default;
     TrackPointer testTrack;
   public slots:
-    void slotTrackScrobbable(Track *pTrack) {
-        scrobbled = true;
-    }
-    bool scrobbled;
 };
 
 TEST_F(TrackTest,SendsSignalWhenScrobbable) {
@@ -39,7 +30,17 @@ TEST_F(TrackTest,SendsSignalWhenScrobbable) {
     TimerMock tmock;
     EXPECT_CALL(etmock,invalidate());
     EXPECT_CALL(etmock,isValid())
-        .WillOnce(Return(false));
+        .WillOnce(testing::Return(false))
+        .WillOnce(testing::Return(true));
+    EXPECT_CALL(etmock,start());
+    EXPECT_CALL(tmock,start(1000))
+        .WillOnce(testing::InvokeWithoutArgs(testTrack.get(),
+                  &Track::slotCheckIfScrobbable));
+    EXPECT_CALL(etmock,elapsed())
+        .WillOnce(testing::Return(2500));   
     testTrack->setTimer(&tmock);
     testTrack->setElapsedTimer(&etmock);
+    testTrack->resetPlayedTime();
+    testTrack->resumePlayedTime();
+    ASSERT_TRUE(testTrack->isScrobbable());
 }
