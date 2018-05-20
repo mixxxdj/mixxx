@@ -106,6 +106,15 @@ Variables:
             <SetVariable name="Color">red</SetVariable>
           </Template>
 
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="ObjectName">MixModeButtons</SetVariable>
+            <SetVariable name="TooltipId">EffectUnit_mix_mode</SetVariable>
+            <SetVariable name="Size">35f,20f</SetVariable>
+            <SetVariable name="state_0_text">D/W</SetVariable>
+            <SetVariable name="state_1_text">D+W</SetVariable>
+            <SetVariable name="ConfigKey">[EffectRack1_EffectUnit<Variable name="FxUnit"/>],insertion_type</SetVariable>
+          </Template>
+
           <WidgetGroup>
             <SizePolicy>max,min</SizePolicy>
             <Layout>vertical</Layout>
