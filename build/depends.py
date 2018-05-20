@@ -461,6 +461,12 @@ class Qt(Dependence):
                         os.path.join(build.env['QTDIR'],'plugins/platforms')])
                     build.env.Append(LIBS = 'qwindows')
 
+                # styles (new in Qt5 for Windows)
+                if qt5:
+                    build.env.Append(LIBPATH=[
+                        os.path.join(build.env['QTDIR'],'plugins/styles')])
+                    build.env.Append(LIBS = 'qwindowsvistastyle')
+
                 # sqldrivers (new in Qt5? or did we just start enabling them)
                 if qt5:
                     build.env.Append(LIBPATH=[
