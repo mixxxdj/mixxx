@@ -690,7 +690,9 @@ class MixxxCore(Feature):
                    "preferences/broadcastsettings.cpp",
                    "preferences/broadcastsettings_legacy.cpp",
                    "preferences/broadcastsettingsmodel.cpp",
+                   "preferences/effectsettingsmodel.cpp",
                    "preferences/broadcastprofile.cpp",
+                   "preferences/effectprofile.cpp",
                    "preferences/upgrade.cpp",
                    "preferences/dlgpreferencepage.cpp",
 

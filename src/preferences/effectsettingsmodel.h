@@ -1,0 +1,45 @@
+#ifndef PREFERENCES_EFFECTSETTINGSMODEL_H
+#define PREFERENCES_EFFECTSETTINGSMODEL_H
+
+#include <QAbstractTableModel>
+#include <QAbstractItemDelegate>
+#include <QMap>
+#include <QVariant>
+
+#include "preferences/effectprofile.h"
+#include "effects/effectsmanager.h"
+
+class EffectSettings;
+typedef QSharedPointer<EffectSettings> EffectSettingsPointer;
+
+class EffectSettingsModel : public QAbstractTableModel {
+  Q_OBJECT
+  public:
+    EffectSettingsModel();
+    virtual ~EffectSettingsModel();
+
+    void resetFromEffectManager(EffectsManager* pEffectsManager);
+
+    bool addProfileToModel(EffectProfilePtr profile);
+    void deleteProfileFromModel(EffectProfilePtr profile);
+    QList<EffectProfilePtr> profiles() {
+        return m_profiles.values();
+    }
+
+    int rowCount(const QModelIndex& parent = QModelIndex()) const;
+    int columnCount(const QModelIndex& parent = QModelIndex()) const;
+    QVariant headerData(int section, Qt::Orientation orientation,
+            int role = Qt::DisplayRole) const;
+    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+    Qt::ItemFlags flags(const QModelIndex& index) const;
+    bool setData(const QModelIndex& index, const QVariant& value,
+            int role = Qt::EditRole);
+    QAbstractItemDelegate* delegateForColumn(const int i, QObject* parent);
+
+    bool isEmpty() const;
+
+  private:
+    QMap<QString, EffectProfilePtr> m_profiles;
+};
+
+#endif // PREFERENCES_EFFECTSETTINGSMODEL_H

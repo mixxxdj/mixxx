@@ -3,6 +3,7 @@
 #include "effects/effectsmanager.h"
 #include "effects/effectmanifest.h"
 #include "effects/effectsbackend.h"
+// #include "preferences/effectsettingsmodel.h"
 
 DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
                                UserSettingsPointer pConfig,
@@ -12,39 +13,48 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
           m_pEffectsManager(pEffectsManager) {
     setupUi(this);
 
-    connect(availableEffectsList,
-            SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
+    m_pAvailableEffectsModel = new EffectSettingsModel();
+
+    m_pAvailableEffectsModel->resetFromEffectManager(pEffectsManager);
+    availableEffectsList->setModel(m_pAvailableEffectsModel);
+
+    connect(availableEffectsList->selectionModel(),
+            SIGNAL(currentRowChanged(const QModelIndex&, const QModelIndex&)),
             this,
-            SLOT(slotEffectSelected(QListWidgetItem*, QListWidgetItem*)));
+            SLOT(availableEffectsListItemSelected(const QModelIndex&)));
+
+    // Highlight first row
+    availableEffectsList->selectRow(0);
+
+    availableEffectsList->setColumnWidth(0, 50);
+}
+
+DlgPrefEffects::~DlgPrefEffects() {
+    delete m_pAvailableEffectsModel;
 }
 
 void DlgPrefEffects::slotUpdate() {
     clear();
-    const QList<EffectManifestPointer> availableEffectManifests =
-            m_pEffectsManager->getAvailableEffectManifests();
+    m_pAvailableEffectsModel->resetFromEffectManager(m_pEffectsManager);
 
-    for (const auto& pManifest : availableEffectManifests) {
-        QListWidgetItem* pItem = new QListWidgetItem();
-        pItem->setData(Qt::UserRole, pManifest->id());
-        pItem->setText(pManifest->displayName());
-        availableEffectsList->addItem(pItem);
-    }
-
-    if (!availableEffectManifests.isEmpty()) {
-        availableEffectsList->setCurrentRow(0);
+    if (!m_pAvailableEffectsModel->isEmpty()) {
+        availableEffectsList->selectRow(0);
     }
 }
 
 void DlgPrefEffects::slotApply() {
-    // Nothing to apply.
+    for (EffectProfilePtr profile : m_pAvailableEffectsModel->profiles()) {
+        EffectManifest* pManifest = profile->getManifest();
+        pManifest->setVisibility(profile->isVisible());
+        m_pConfig->set(ConfigKey("[Visible Effects]", pManifest->id()), ConfigValue(profile->isVisible()));
+    }
 }
 
 void DlgPrefEffects::slotResetToDefaults() {
-    // Nothing to reset.
+    slotUpdate();
 }
 
 void DlgPrefEffects::clear() {
-    availableEffectsList->clear();
     effectName->clear();
     effectAuthor->clear();
     effectDescription->clear();
@@ -52,13 +62,12 @@ void DlgPrefEffects::clear() {
     effectType->clear();
 }
 
-void DlgPrefEffects::slotEffectSelected(QListWidgetItem* pCurrent,
-                                        QListWidgetItem* pPrevious) {
-    Q_UNUSED(pPrevious);
-    if (pCurrent == NULL) {
+void DlgPrefEffects::availableEffectsListItemSelected(const QModelIndex& selected) {
+    QString effectId = m_pAvailableEffectsModel->data(selected, Qt::UserRole).toString();
+
+    if (effectId == QVariant().toString())
         return;
-    }
-    QString effectId = pCurrent->data(Qt::UserRole).toString();
+
     EffectManifestPointer pManifest;
     EffectsBackend* pBackend;
     m_pEffectsManager->getEffectManifestAndBackend(effectId, &pManifest, &pBackend);
