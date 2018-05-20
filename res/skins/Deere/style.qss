@@ -551,18 +551,6 @@ QTreeView::branch:open:has-children:has-siblings {
   background-color: #1F1F1F;
   border: 1px solid #1A1A1A;
 }
-/* transition time in Auto DJ tab */
-WBaseLibrary QSpinBox {
-  min-height: 20px;
-  max-height: 20px;
-  min-width: 40px;
-  max-width: 40px;
-}
-
-WBaseLibrary QSpinBox:editable {
-  background: transparent;
-  color:#d2d2d2;
-}
 
 WBaseLibrary QLabel, WBaseLibrary QRadioButton {
   color: #d2d2d2;
@@ -817,7 +805,9 @@ WWidget {
   padding: 0px;
 }
 
-WBeatSpinBox {
+/* Use the same style for beatsize spinboxes and for AutoDJ transition time */ 
+WBeatSpinBox,
+#DlgAutoDJ QSpinBox {
   color: #c1cabe;
   background-color: #1f1e1e;
   border: 1px solid #444342;
@@ -826,11 +816,13 @@ WBeatSpinBox {
   font: 15px;
 }
 
-  WBeatSpinBox:hover {
+  WBeatSpinBox:hover,
+  #DlgAutoDJ QSpinBox:hover {
     border: 1px ridge #015d8d;
   }
 
-  WBeatSpinBox::down-button {
+  WBeatSpinBox::down-button,
+  #DlgAutoDJ QSpinBox::down-button {
     subcontrol-origin: border;
     subcontrol-position: bottom right; /* position at the top right corner */
     padding-right: 4px;
@@ -838,17 +830,20 @@ WBeatSpinBox {
     border: 0;
   }
 
-  WBeatSpinBox::down-arrow {
+  WBeatSpinBox::down-arrow,
+  #DlgAutoDJ QSpinBox::down-arrow {
     width: 9px;
     height: 7px;
     image: url(skin:/icon/ic_chevron_down_selector.svg);
   }
 
-  WBeatSpinBox::down-arrow:hover {
+  WBeatSpinBox::down-arrow:hover,
+  #DlgAutoDJ QSpinBox::down-arrow:hover {
     image: url(skin:/icon/ic_chevron_down_selector_hover.svg);
   }
 
-  WBeatSpinBox::up-button {
+  WBeatSpinBox::up-button,
+  #DlgAutoDJ QSpinBox::up-button {
     subcontrol-origin: border;
     subcontrol-position: top right; /* position at the top right corner */
     padding-right: 4px;
@@ -856,13 +851,15 @@ WBeatSpinBox {
     border: 0;
   }
 
-  WBeatSpinBox::up-arrow {
+  WBeatSpinBox::up-arrow,
+  #DlgAutoDJ QSpinBox::up-arrow {
     width: 9px;
     height: 7px;
     image: url(skin:/icon/ic_chevron_up_selector.svg);
   }
 
-  WBeatSpinBox::up-arrow:hover {
+  WBeatSpinBox::up-arrow:hover,
+  #DlgAutoDJ QSpinBox::up-arrow:hover {
     image: url(skin:/icon/ic_chevron_up_selector_hover.svg);
   }
 
