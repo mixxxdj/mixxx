@@ -16,6 +16,8 @@
 Q_IMPORT_PLUGIN(QSQLiteDriverPlugin)
 // platform plugins
 Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
+// style plugins
+Q_IMPORT_PLUGIN(QWindowsVistaStylePlugin)
 // imageformats plugins
 Q_IMPORT_PLUGIN(QSvgPlugin)
 Q_IMPORT_PLUGIN(QSvgIconPlugin)
