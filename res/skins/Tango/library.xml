@@ -73,7 +73,7 @@ Description:
             <Size>132min,74me</Size>
             <Children>
 
-              <Template src="skin:library_sidebar_tester.xml"/>
+              <Template src="skin:library_sidebar_width_detector.xml"/>
 
               <Template src="skin:preview_deck.xml"/>
 

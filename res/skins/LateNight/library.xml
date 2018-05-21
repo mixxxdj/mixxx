@@ -18,7 +18,7 @@
         <Children>
 
           <Splitter>
-            <ObjectName>VertSplitter</ObjectName>
+            <ObjectName>VerticalSplitter</ObjectName>
             <SizePolicy>me,me</SizePolicy>
             <SplitSizes>1,10</SplitSizes>
             <SplitSizesConfigKey>[LateNight],LibrarySidebarSplitSize</SplitSizesConfigKey>
@@ -47,7 +47,7 @@
                       </WidgetGroup>
 
                       <Splitter>
-                        <ObjectName>HoriSplitter</ObjectName>
+                        <ObjectName>HorizontalSplitter</ObjectName>
                         <Size>me,me</Size>
                         <SplitSizes>1,1</SplitSizes>
                         <SplitSizesConfigKey>[LateNight],CoverArtSplitSize</SplitSizesConfigKey>

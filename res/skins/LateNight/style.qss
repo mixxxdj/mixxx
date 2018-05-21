@@ -1593,7 +1593,7 @@ WBaseLibrary QTabBar::tab {
       border-color: #888888;
     }
 
-/* exclude this to eliminate focus border of AutoDJ Track source view 
+/* exclude this to eliminate focus border of AutoDJ Track source view
 WBaseLibrary > QWidget:focus,
 WBaseLibrary QAbstractScrollArea > QWidget:focus,
 WLibrarySidebar:focus, */
@@ -1811,38 +1811,38 @@ WLibraryPane {
   background-color: 778412;
 }
 
-/* HoriSplitter
+/* HorizontalSplitter
    (the splitter itself is horizontal)
    Used to split
   - Waveforms & Decks/FX/etc  
   - Library feature & Coverart */
-#HoriSplitter {
+#HorizontalSplitter {
   padding: 0px;
   margin: 0px;
 }
 
-#HoriSplitter::handle {
+#HorizontalSplitter::handle {
   image: url(skin:/style/splitter_handle_horizontal_unchecked.png);
   }
-  #HoriSplitter::handle:pressed,
-  #HoriSplitter::handle:hover {
+  #HorizontalSplitter::handle:pressed,
+  #HorizontalSplitter::handle:hover {
     image: url(skin:/style/splitter_handle_horizontal_checked.png);
   }
-#HoriSplitter::handle:vertical {
+#HorizontalSplitter::handle:vertical {
   height: 10px;
 }
 
-/* VertSplitter
+/* VerticalSplitter
    (the splitter itself is vertical)
    Used to split Library sidebar & Tracks table */
-#VertSplitter::handle {
+#VerticalSplitter::handle {
   image: url(skin:/style/splitter_handle_unchecked.png);
 }
-#VertSplitter::handle:pressed,
-#VertSplitter::handle:hover {
+#VerticalSplitter::handle:pressed,
+#VerticalSplitter::handle:hover {
   image: url(skin:/style/splitter_handle_checked.png);
 }
-#VertSplitter::handle:vertical {
+#VerticalSplitter::handle:vertical {
   /* 'height' works although it's actually the width of the handle */
   height: 10px;
 }

@@ -5,13 +5,12 @@ Description:
   a) If the library sidebar is big enough they are shown above the tree view.
   b) If the sidebar is too narrow, they are shown above the tracks table,
      next to the searchbox 
-  Depending on sidebar size, the WidgetStacks flip '[Tango],lib_sidebar_collapsed'
+  Depending on sidebar size, the WidgetStacks flip '[Skin],lib_sidebar_collapsed'
   and visibility is set in library.xml accordingly
 
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>TEST2</ObjectName>
     <Layout>vertical</Layout>
     <Size>1me,0f</Size>
     <Children>

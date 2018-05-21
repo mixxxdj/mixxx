@@ -24,7 +24,7 @@
             <Size>50min,-1me</Size>
             <Children>
 
-              <Template src="skin:library_sidebar_tester.xml"/>
+              <Template src="skin:library_sidebar_width_detector.xml"/>
 
               <WidgetGroup>
                 <ObjectName>PreviewDeckContainer</ObjectName>
