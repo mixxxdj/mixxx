@@ -140,10 +140,10 @@ class BroadcastProfile : public QObject {
     void adoptDefaultValues();
     bool loadValues(const QString& filename);
 
-    bool setSecurePassword(QString login, QString password);
-    QString getSecurePassword(QString login);
+    bool setSecurePassword(const QString& login, const QString& password);
+    QString getSecurePassword(const QString& login);
 
-    void errorDialog(QString text, QString detailedError);
+    void errorDialog(const QString& text, const QString& detailedError);
 
     bool m_secureCredentials;
 

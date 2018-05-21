@@ -403,7 +403,7 @@ bool BroadcastProfile::secureCredentialStorage() {
     return m_secureCredentials;
 }
 
-bool BroadcastProfile::setSecurePassword(QString login, QString password) {
+bool BroadcastProfile::setSecurePassword(const QString& login, const QString& password) {
 #ifdef __QTKEYCHAIN__
     QString serviceName = QString(kKeychainPrefix) + getProfileName();
 
@@ -435,7 +435,7 @@ bool BroadcastProfile::setSecurePassword(QString login, QString password) {
 #endif
 }
 
-QString BroadcastProfile::getSecurePassword(QString login) {
+QString BroadcastProfile::getSecurePassword(const QString& login) {
 #ifdef __QTKEYCHAIN__
     QString serviceName = QString(kKeychainPrefix) + getProfileName();
 
@@ -458,11 +458,13 @@ QString BroadcastProfile::getSecurePassword(QString login) {
         errorDialog(tr("Secure password retrieval unsuccessful: keychain access failed."),
                         readJob.errorString());
     }
+#else
+    Q_UNUSED(login);
 #endif
     return QString();
 }
 
-void BroadcastProfile::errorDialog(QString text, QString detailedError) {
+void BroadcastProfile::errorDialog(const QString& text, const QString& detailedError) {
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_WARNING);
     props->setTitle(tr("Settings error"));
