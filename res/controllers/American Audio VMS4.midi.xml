@@ -715,7 +715,7 @@ Assumes "Post EQ" mode. (See Wiki for full setup instructions.)</description>
             </options>
          </control>
          <control>  <!-- Shifted -->
-            <group>[EffectRack1_EffectUnit1]</group>
+            <group>[Channel1]</group>
             <key>VMS4.strip_fx_dw</key>
             <status>0xB1</status>
             <midino>0x28</midino>
@@ -1421,7 +1421,7 @@ Assumes "Post EQ" mode. (See Wiki for full setup instructions.)</description>
             </options>
          </control>
          <control>  <!-- Shifted -->
-            <group>[EffectRack1_EffectUnit2]</group>
+            <group>[Channel2]</group>
             <key>VMS4.strip_fx_dw</key>
             <status>0xB1</status>
             <midino>0x2D</midino>

@@ -396,7 +396,13 @@ VMS4.jog_move_msb = function(channel, control, value, status, group) {
 }
 
 VMS4.strip_fx_dw = function(channel, control, value, status, group) {
-    engine.setParameter(group,"mix",value/0x7F);
+    var deck = VMS4.GetDeckNum(group);
+    // When the deck is playing, adjust effect dry/wet. When it isn't, do needle drop.
+    if (engine.getValue(group, "play") === 0) {
+        engine.setValue(group, "playposition", value/0x7F);
+    } else {
+        engine.setParameter("[EffectRack1_EffectUnit"+deck+"]","mix",value/0x7F);
+    }
 }
 
 VMS4.strip_touch = function(channel, control, value, status, group) {
