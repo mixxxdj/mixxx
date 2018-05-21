@@ -21,6 +21,15 @@ inline int load_atomic(const QAtomicInt& value) {
 #endif
 }
 
+template <typename T>
+inline T* load_atomic(const QAtomicPointer<T>& p) {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    return p;
+#else
+    return p.load();
+#endif
+}
+
 inline QLocale inputLocale() {
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     return QApplication::keyboardInputLocale();
