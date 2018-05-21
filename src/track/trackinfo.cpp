@@ -5,12 +5,18 @@ namespace mixxx {
 
 void TrackInfo::resetUnsupportedValues() {
     setConductor(QString());
+    setDiscNumber(QString());
+    setDiscTotal(QString());
+    setEncoder(QString());
+    setEncoderSettings(QString());
     setISRC(QString());
     setLanguage(QString());
     setLyricist(QString());
     setMood(QString());
     setMusicBrainzArtistId(QString());
+    setMusicBrainzRecordingId(QString());
     setMusicBrainzReleaseId(QString());
+    setMusicBrainzWorkId(QString());
     setRemixer(QString());
     setSubtitle(QString());
 }
@@ -21,6 +27,10 @@ bool operator==(const TrackInfo& lhs, const TrackInfo& rhs) {
             (lhs.getComment() == rhs.getComment()) &&
             (lhs.getComposer() == rhs.getComposer()) &&
             (lhs.getConductor() == rhs.getConductor()) &&
+            (lhs.getDiscNumber() == rhs.getDiscNumber()) &&
+            (lhs.getDiscTotal() == rhs.getDiscTotal()) &&
+            (lhs.getEncoder() == rhs.getEncoder()) &&
+            (lhs.getEncoderSettings() == rhs.getEncoderSettings()) &&
             (lhs.getGenre() == rhs.getGenre()) &&
             (lhs.getGrouping() == rhs.getGrouping()) &&
             (lhs.getISRC() == rhs.getISRC()) &&
@@ -29,7 +39,9 @@ bool operator==(const TrackInfo& lhs, const TrackInfo& rhs) {
             (lhs.getLyricist() == rhs.getLyricist()) &&
             (lhs.getMood() == rhs.getMood()) &&
             (lhs.getMusicBrainzArtistId() == rhs.getMusicBrainzArtistId()) &&
+            (lhs.getMusicBrainzRecordingId() == rhs.getMusicBrainzRecordingId()) &&
             (lhs.getMusicBrainzReleaseId() == rhs.getMusicBrainzReleaseId()) &&
+            (lhs.getMusicBrainzWorkId() == rhs.getMusicBrainzWorkId()) &&
             (lhs.getRemixer() == rhs.getRemixer()) &&
             (lhs.getReplayGain() == rhs.getReplayGain()) &&
             (lhs.getSubtitle() == rhs.getSubtitle()) &&
@@ -46,6 +58,10 @@ QDebug operator<<(QDebug dbg, const TrackInfo& arg) {
     arg.dbgComment(dbg);
     arg.dbgComposer(dbg);
     arg.dbgConductor(dbg);
+    arg.dbgDiscNumber(dbg);
+    arg.dbgDiscTotal(dbg);
+    arg.dbgEncoder(dbg);
+    arg.dbgEncoderSettings(dbg);
     arg.dbgGenre(dbg);
     arg.dbgGrouping(dbg);
     arg.dbgISRC(dbg);
@@ -54,7 +70,9 @@ QDebug operator<<(QDebug dbg, const TrackInfo& arg) {
     arg.dbgLyricist(dbg);
     arg.dbgMood(dbg);
     arg.dbgMusicBrainzArtistId(dbg);
+    arg.dbgMusicBrainzRecordingId(dbg);
     arg.dbgMusicBrainzReleaseId(dbg);
+    arg.dbgMusicBrainzWorkId(dbg);
     arg.dbgRemixer(dbg);
     arg.dbgReplayGain(dbg);
     arg.dbgSubtitle(dbg);
