@@ -326,9 +326,7 @@ VMS4.effectSelect = function(channel, control, value, status, group) {
 VMS4.effectSelectPress = function(channel, control, value, status, group) {
     var deckNum = VMS4.GetDeckNum(group);
     if (value > 0x40) {
-        engine.setValue("[EffectRack1_EffectUnit"+deckNum+"_Effect1]","enabled",
-                        !engine.getValue("[EffectRack1_EffectUnit"+deckNum+"_Effect1]","enabled")
-        );
+        script.toggleControl("[EffectRack1_EffectUnit"+deckNum+"_Effect1]","enabled");
     }
 }
 
@@ -416,7 +414,7 @@ VMS4.strip_touch = function(channel, control, value, status, group) {
 
 VMS4.strip_scroll = function(channel, control, value, status, group) {
     var side = VMS4.StripToSide[control];
-    if (VMS4.touchStripPos[side] != null) {
+    if (VMS4.touchStripPos[side] !== null) {
         // Higher on the strip gives a higher value, and up is negative on Library
         //  scroll controls
         if (side === "Left") {
