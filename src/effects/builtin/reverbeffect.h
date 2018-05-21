@@ -56,6 +56,7 @@ class ReverbEffect : public EffectProcessorImpl<ReverbGroupState> {
     EngineEffectParameter* m_pBandWidthParameter;
     EngineEffectParameter* m_pDampingParameter;
     EngineEffectParameter* m_pSendParameter;
+    EngineEffectParameter* m_pDryWetParameter;
 
     DISALLOW_COPY_AND_ASSIGN(ReverbEffect);
 };

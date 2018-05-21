@@ -224,7 +224,7 @@ class PlateX2
 class MixxxPlateX2 : public PlateStub {
 	public:
 		void processBuffer(const sample_t* in, sample_t* out, const uint frames, const sample_t bandwidthParam,
-									const sample_t decayParam, const sample_t dampingParam, const sample_t blendParam, bool addDry);
+									const sample_t decayParam, const sample_t dampingParam, const sample_t blendParam, double wet);
 
 		void init(float sampleRate) {
 			fs = sampleRate;
