@@ -11,7 +11,6 @@ void TrackInfo::resetUnsupportedValues() {
     setMood(QString());
     setMusicBrainzArtistId(QString());
     setMusicBrainzReleaseId(QString());
-    setRecordLabel(QString());
     setRemixer(QString());
     setSubtitle(QString());
 }
@@ -22,8 +21,8 @@ bool operator==(const TrackInfo& lhs, const TrackInfo& rhs) {
             (lhs.getComment() == rhs.getComment()) &&
             (lhs.getComposer() == rhs.getComposer()) &&
             (lhs.getConductor() == rhs.getConductor()) &&
-            (lhs.getGrouping() == rhs.getGrouping()) &&
             (lhs.getGenre() == rhs.getGenre()) &&
+            (lhs.getGrouping() == rhs.getGrouping()) &&
             (lhs.getISRC() == rhs.getISRC()) &&
             (lhs.getKey() == rhs.getKey()) &&
             (lhs.getLanguage() == rhs.getLanguage()) &&
@@ -31,7 +30,6 @@ bool operator==(const TrackInfo& lhs, const TrackInfo& rhs) {
             (lhs.getMood() == rhs.getMood()) &&
             (lhs.getMusicBrainzArtistId() == rhs.getMusicBrainzArtistId()) &&
             (lhs.getMusicBrainzReleaseId() == rhs.getMusicBrainzReleaseId()) &&
-            (lhs.getRecordLabel() == rhs.getRecordLabel()) &&
             (lhs.getRemixer() == rhs.getRemixer()) &&
             (lhs.getReplayGain() == rhs.getReplayGain()) &&
             (lhs.getSubtitle() == rhs.getSubtitle()) &&
@@ -48,8 +46,8 @@ QDebug operator<<(QDebug dbg, const TrackInfo& arg) {
     arg.dbgComment(dbg);
     arg.dbgComposer(dbg);
     arg.dbgConductor(dbg);
-    arg.dbgGrouping(dbg);
     arg.dbgGenre(dbg);
+    arg.dbgGrouping(dbg);
     arg.dbgISRC(dbg);
     arg.dbgKey(dbg);
     arg.dbgLanguage(dbg);
@@ -57,7 +55,6 @@ QDebug operator<<(QDebug dbg, const TrackInfo& arg) {
     arg.dbgMood(dbg);
     arg.dbgMusicBrainzArtistId(dbg);
     arg.dbgMusicBrainzReleaseId(dbg);
-    arg.dbgRecordLabel(dbg);
     arg.dbgRemixer(dbg);
     arg.dbgReplayGain(dbg);
     arg.dbgSubtitle(dbg);

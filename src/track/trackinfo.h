@@ -30,7 +30,6 @@ class TrackInfo final {
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    mood,                 Mood)
     PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzArtistId,  MusicBrainzArtistId)
     PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzReleaseId, MusicBrainzReleaseId)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    recordLabel,          RecordLabel)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    remixer,              Remixer)
     PROPERTY_SET_BYVAL_GET_BYREF(ReplayGain, replayGain,           ReplayGain)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    subtitle,             Subtitle)
