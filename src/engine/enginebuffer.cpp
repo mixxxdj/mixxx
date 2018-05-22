@@ -658,7 +658,7 @@ void EngineBuffer::slotControlPlayRequest(double v) {
     bool verifiedPlay = updateIndicatorsAndModifyPlay(v > 0.0);
 
     if (!oldPlay && verifiedPlay) {
-        if (m_pQuantize->get() > 0.0
+        if (m_pQuantize->toBool()
 #ifdef __VINYLCONTROL__
                 && m_pVinylControlControl && !m_pVinylControlControl->isEnabled()
 #endif
@@ -900,7 +900,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // we need to sync phase or we'll be totally out of whack and the sync
         // adjuster will kick in and push the track back in to sync with the
         // master.
-        if (m_scratching_old && !is_scratching && m_pQuantize->get() > 0.0
+        if (m_scratching_old && !is_scratching && m_pQuantize->toBool()
                 && m_pSyncControl->getSyncMode() == SYNC_FOLLOWER && !paused) {
             // TODO() The resulting seek is processed in the following callback
             // That is to late
@@ -1179,7 +1179,7 @@ void EngineBuffer::processSeek(bool paused) {
             return;
     }
 
-    if ((seekType & SEEK_PHASE) && !paused && m_pQuantize->toBool()) {
+    if (!paused && ((seekType & SEEK_PHASE) || m_pQuantize->toBool())) {
         position = m_pBpmControl->getNearestPositionInPhase(position, true, true);
     }
     if (position != m_filepos_play) {
