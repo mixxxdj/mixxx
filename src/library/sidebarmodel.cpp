@@ -72,6 +72,13 @@ void SidebarModel::activateDefaultSelection() {
         emit(selectIndex(getDefaultSelection()));
         // Selecting an index does not activate it.
         m_sFeatures[m_iDefaultSelectedIndex]->activate();
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+        // TODO(XXX)
+        // NOTE(uklotzde, 2018-05-22): When compiled with Qt5 the
+        // track table view only becomes visible after it has been
+        // activated at least twice.
+        m_sFeatures[m_iDefaultSelectedIndex]->activate();
+#endif
     }
 }
 
@@ -275,6 +282,13 @@ void SidebarModel::clicked(const QModelIndex& index) {
                 LibraryFeature* feature = tree_item->feature();
                 DEBUG_ASSERT(feature);
                 feature->activateChild(index);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+                // TODO(XXX)
+                // NOTE(uklotzde, 2018-05-22): When compiled with Qt5 the
+                // child items like crates and playlists only become visible
+                // after one of them has been activated at least twice.
+                feature->activateChild(index);
+#endif
             }
         }
     }
