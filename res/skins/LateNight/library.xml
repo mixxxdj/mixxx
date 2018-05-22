@@ -1,6 +1,5 @@
 <Template>
   <WidgetGroup>
-    <ObjectName>Library</ObjectName>
     <SizePolicy>me,i</SizePolicy>
     <MinimumSize>1270,-</MinimumSize>
     <Layout>vertical</Layout>

@@ -110,21 +110,6 @@ WTime {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
-#LibrarySingleton {
-  /* This doesn't work as expected:
-  it appears LibrarySingleton is displayed twice, so
-  padding/margin would double.
-  Placed a plain spacer in library.xml which works reliably
-  padding-top: 5px;*/
-}
-
-#Library {
-  border-left: 0px solid #585858;
-  background-color: #0e0e0e;
-  padding-bottom: 2px;
-  /*border-top: 1px solid #585858;*/
-}
-
 #DeckRow_1_KeyVinylFx {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   border-bottom: 1px solid #585858;
@@ -1358,13 +1343,30 @@ WEffectSelector {
 
 /* Library styling is hard */
 
+#LibrarySingleton {
+  /* This doesn't work as expected:
+  it appears LibrarySingleton is displayed twice, so
+  padding/margin would double.
+  Placed a plain spacer in library.xml which works reliably
+  padding-top: 5px;*/
+}
+
+#Library {
+  padding-bottom: 2px;
+  /* make a smooth transition from toolbar at the bottom to
+    darker skin background at the top.
+    Splitter handles should be transparent for this to work. */
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #0f0f0f,
+    stop:1 #1e1e1e);
+}
+
 QTableView, QTextBrowser, QTreeView {
   border: 1px solid #585858;
   /*font-size: 15px/18px;*/
   color: #cfb32c;
   background-color: #0f0f0f;
   alternate-background-color: #1a1a1a;
-
   selection-color: #cfb32c;
   selection-background-color: #725309;
 }
@@ -1416,95 +1418,102 @@ QHeaderView {
   font-size: 13px/15px;
   color: #cfb32c;
   font-weight: bold;
-  background-color: #0f0f0f;
-}
-QHeaderView::section {
-  height: 18px;
-  border: 1px solid #585858;
-  border-left: 0px;
-  padding-left: 1px;
+  border-bottom: 1px solid #585858;
   background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #585858,
     stop:1 #0f0f0f);
-}
+  }
+  QHeaderView::section {
+    height: 18px;
+    border: 1px solid #585858;
+    border-left: 0px;
+    padding-left: 1px;
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+      stop:0 #585858,
+      stop:1 #0f0f0f);
+  }
 
-/* QScrollbar styling is even harder */
-QScrollBar:horizontal {
+QHeaderView::up-arrow,
+QHeaderView::down-arrow {
+  background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
+  width: 12px;
+  padding-left: 3px;
+  padding-right: 3px;
+  border-right: 1px solid #585858;
+  }
+  QHeaderView::up-arrow {
+    image: url(skin:/style/library_sort_up.svg);
+    }
+    QHeaderView::up-arrow:hover {
+      image: url(skin:/style/library_sort_down.svg);
+    }
+  QHeaderView::down-arrow:hover {
+    image: url(skin:/style/library_sort_up.svg);
+  }
+
+
+
+/* QScrollBar styling is even harder */
+QScrollBar {
   border: 1px solid #585858;
-  min-width: 12px;
-  height: 15px;
   background: #1a1a1a;
   border-radius: 3px;
   padding: 1px;
-}
-QScrollBar:vertical {
-  border: 1px solid #585858;
-  min-height: 12px;
-  width: 15px;
-  background: #1a1a1a;
-  border-radius: 3px;
-  padding: 1px;
-}
-/* "add-page" and "sub-page" are the gutter of the scrollbar */
-QScrollBar::add-page, QScrollBar::sub-page {
-  min-width: 15px;
-  min-height: 15px;
-  border: 2px;
-  background-color: #1a1a1a;
-  border-radius: 3px;
-}
-QScrollBar::handle:horizontal {
-  min-width: 25px;
-  border-radius: 3px;
-  border: 1px solid #725309;
-  background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-    stop:0 #725309,
-    stop:1 #412f05);
-}
-QScrollBar::handle:vertical {
-  min-height: 25px;
-  border-radius: 3px;
-  border: 1px solid #725309;
-  background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-    stop:0 #725309,
-    stop:1 #412f05);
-}
-/* Turn off buttons */
-QScrollBar::add-line:horizontal, QScrollBar::add-line:vertical {
-  width: 0px;
-  height: 0px;
-  border: 0px solid white;
-}
-QScrollBar::sub-line:horizontal, QScrollBar::sub-line:vertical {
-  width: 0px;
-  height: 0px;
-  border: 0px solid white;
-}
+  color: #999999;
+  font-size: 8pt;
+  }
+  QScrollBar:horizontal {
+    min-width: 12px;
+    height: 15px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-top: 0px;
+    background-color: #0f0f0f;
+  }
+  QScrollBar:vertical {
+    min-height: 12px;
+    width: 15px;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-left: 0px;
+    color: #b3b3b3;
+    background-color: #0f0f0f;
+  }
 
-/* transition time in Auto DJ tab */
-QSpinBox:editable {
-  background: transparent;
-  color: #cfb32c;
-}
-QSpinBox {
-  min-height: 20px;
-  max-height: 20px;
-  min-width: 40px;
-  max-width: 40px;
-}
+  /* "add-page" and "sub-page" are the gutter of the scrollbar */
+  QScrollBar::add-page, QScrollBar::sub-page {
+    min-width: 15px;
+    min-height: 15px;
+    background-color: #0f0f0f;
+    border-radius: 3px;
+  }
+  QScrollBar::handle:horizontal {
+    min-width: 25px;
+    border-radius: 3px;
+    border: 1px solid #725309;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+      stop:0 #725309,
+      stop:1 #412f05);
+  }
+  QScrollBar::handle:vertical {
+    min-height: 25px;
+    border-radius: 3px;
+    border: 1px solid #725309;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+      stop:0 #725309,
+      stop:1 #412f05);
+  }
+  /* Turn off buttons */
+  QScrollBar::add-line, QScrollBar::sub-line {
+    width: 0px;
+    height: 0px;
+    border: 0px;
+  }
 
-/* library search bar */
-WSearchLineEdit {
-  padding: 2px;
-  border: 1px solid #656565;
-  background: #181818;
-  color: #cfb32c;
-}
-WSearchLineEdit:focus {
-  padding: 2px;
-  border: 2px solid #FF6600;
-  background: #0f0f0f;
-}
+  /* Corner in between two scrollbars */
+  QAbstractScrollArea::corner {
+    background-color: #1e1e1e;
+  }
 
 #SidebarContainer{
     margin-top: -5px;
