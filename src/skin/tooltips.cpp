@@ -238,6 +238,9 @@ void Tooltips::addStandardTooltips() {
             << tr("Show Library")
             << tr("Show or hide the track library.");
 
+	add("show_autodj_always")
+			<< tr("Shows the AutoDJ view constantly on a separted tab on the right side of the screen");
+
     add("show_effects")
             << tr("Show Effects")
             << tr("Show or hide the effects.");
