@@ -619,58 +619,73 @@ WEffectButtonParameter*/
       border: 1px solid #eeeeee;
     }
 
-WBeatSpinBox {
+WBeatSpinBox,
+#DlgAutoDJ QSpinBox {
   /* make it 2px smaller in each dimension,
     border is added for final size */
   width: 55px;
   height: 22px;
   border: 1px solid #666;
-  /* size of spinbox: 54x22px
-  incl. up/down button: 70x22px */
   border-radius: 2px;
   color: #cfb32c;
   background-color: #0f0f0f;
   selection-color: #0f0f0f;
   selection-background-color: #d2d2d2;
   font-size: 13px/13px;
-  padding: 0px;
-  padding: 1px 2px 1px 1px;
-  margin: 0px -1px 2px 0px;
-}
-  WBeatSpinBox:hover {
+  }
+  WBeatSpinBox {
+    padding: 1px 2px 1px 1px;
+    margin: 0px -1px 2px 0px;
+  }
+  /* Eliminate overlapping right border for transition time in Auto DJ tab */
+  #DlgAutoDJ QSpinBox {
+    border-right: 0px;
+    margin: 0px 0px 0px 2px;
+    padding: 1px 2px 1px 1px;
+  }
+  WBeatSpinBox:hover,
+  #DlgAutoDJ QSpinBox:hover {
     border-color: #888;
   }
-  WBeatSpinBox:focus {
+  WBeatSpinBox:focus,
+  #DlgAutoDJ QSpinBox:focus {
     border-color: #d2d2d2;
     color: #cfb32c;
   }
 
-  WBeatSpinBox::up-button, WBeatSpinBox::down-button {
+  WBeatSpinBox::up-button,
+  WBeatSpinBox::down-button,
+  #DlgAutoDJ QSpinBox::up-button,
+  #DlgAutoDJ QSpinBox::down-button {
     subcontrol-origin: padding;
     position: relative;
     /* as with spinbox: border is added to size.
       define it with same width as hover border, otherwise size jumps */
     width: 18px;
     height: 12px;
-    margin: 0px 0px 0px 0px;
+    margin: 0px;
     padding: 0px;
     border: 0px;
-    }
+  }
 
-  WBeatSpinBox::up-button {
+  WBeatSpinBox::up-button,
+  #DlgAutoDJ QSpinBox::up-button {
     subcontrol-position: top right;
     margin-top: -1px;
     image: url(skin:/buttons/btn_beatbox_double.svg) no-repeat;
     }
-    WBeatSpinBox::up-button:pressed {
+    WBeatSpinBox::up-button:pressed,
+    #DlgAutoDJ QSpinBox::up-button:pressed {
       image: url(skin:/buttons/btn_beatbox_double_pressed.svg) no-repeat;
     }
-  WBeatSpinBox::down-button {
+  WBeatSpinBox::down-button,
+  #DlgAutoDJ QSpinBox::down-button {
     subcontrol-position: bottom right;
     margin-bottom: -1px;
     image: url(skin:/buttons/btn_beatbox_halve.svg) no-repeat;
     }
-    WBeatSpinBox::down-button:pressed {
+    WBeatSpinBox::down-button:pressed,
+    #DlgAutoDJ QSpinBox::down-button:pressed {
       image: url(skin:/buttons/btn_beatbox_halve_pressed.svg) no-repeat;
     }
 
