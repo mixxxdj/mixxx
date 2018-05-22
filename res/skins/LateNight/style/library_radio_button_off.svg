@@ -15,7 +15,7 @@
    viewBox="0 0 18 18"
    id="svg2"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="btn_lib_radio_button_on.svg">
+   sodipodi:docname="btn_lib_radio_button_off.svg">
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -25,16 +25,16 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="640"
-     inkscape:window-height="480"
-     id="namedview3065"
+     inkscape:window-width="1366"
+     inkscape:window-height="740"
+     id="namedview7"
      showgrid="false"
      inkscape:zoom="13.111111"
-     inkscape:cx="9"
+     inkscape:cx="-3.8898305"
      inkscape:cy="9"
      inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="0"
+     inkscape:window-maximized="1"
      inkscape:current-layer="svg2" />
   <metadata
      id="metadata12">
@@ -44,20 +44,33 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <defs
-     id="defs10" />
+     id="defs10">
+    <linearGradient
+       id="linearGradient3752">
+      <stop
+         style="stop-color:#f60000;stop-opacity:1;"
+         offset="0"
+         id="stop3754" />
+      <stop
+         style="stop-color:#c32b2b;stop-opacity:1;"
+         offset="1"
+         id="stop3756" />
+    </linearGradient>
+  </defs>
   <path
-     d="m 9,5.6381472 c -1.8557428,0 -3.3618528,1.50611 -3.3618528,3.3618528 0,1.855743 1.50611,3.361853 3.3618528,3.361853 1.855743,0 3.361853,-1.50611 3.361853,-3.361853 0,-1.8557428 -1.50611,-3.3618528 -3.361853,-3.3618528 z"
+     d="M 9,1.9771303 C 5.1233758,1.9771303 1.9771303,5.1233758 1.9771303,9 c 0,3.876623 3.1462455,7.02287 7.0228697,7.02287 3.876623,0 7.02287,-3.146247 7.02287,-7.02287 C 16.02287,5.1233758 12.876623,1.9771303 9,1.9771303 z"
      id="path2987"
-     style="fill:#ff8800;fill-opacity:1"
+     style="fill:#050505;fill-opacity:1;stroke:none;stroke-opacity:1"
      inkscape:connector-curvature="0" />
   <path
+     d="M 9,2 C 5.1325,2 2,5.1325 2,9 c 0,3.8675 3.1325,7 7,7 3.8675,0 7,-3.1325 7,-7 C 16,5.1325 12.868,2 9,2 z"
+     id="path2985"
+     style="fill:none;stroke:#5d5d5d;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
      inkscape:connector-curvature="0"
-     style="fill:#999999;fill-opacity:1"
-     d="M 9,4 C 6.2373571,4 4,6.2373571 4,9 c 0,2.762643 2.2373571,5 5,5 2.762643,0 5,-2.237357 5,-5 C 14,6.2373571 11.762857,4 9,4 z m 0,1 c 2.21,0 4,1.79 4,4 0,2.21 -1.79,4 -4,4 C 6.79,13 5,11.21 5,9 5,6.79 6.79,5 9,5 z"
-     id="path2985" />
+     sodipodi:nodetypes="sssss" />
 </svg>

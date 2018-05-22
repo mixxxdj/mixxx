@@ -1,3 +1,4 @@
+/* Shade style sheet */
 #Mixxx {
     background-color: #191919;
     background-repeat:no-repeat;
@@ -81,6 +82,31 @@ WEffectSelector::checked
 
 #EffectUnit { 
 	qproperty-layoutAlignment:AlignTop;
+}
+
+/* Hide the library feature label above feature pane when only one
+  feature is shown. The feature name is also shown in Breadcrumbs. */
+WBaseLibrary QLabel {
+  min-height: 0px;
+  max-height: 0px;
+  margin: 0px;
+  padding: 0px;
+}
+
+/* Revert the above hack for the transition time label in AutoDJ pane */
+#DlgAutoDJ QLabel {
+  min-height: 20px;
+  max-height: 20px;
+  margin-left: 7px;
+  text-transform: none;
+}
+
+/* Revert the above hack for the time in Recording feature */
+#DlgRecording QLabel {
+  min-height: 20px;
+  max-height: 120px;
+  margin-left: 7px;
+  text-transform: none;
 }
 
 QTableView, QTextBrowser, QTreeView {
@@ -182,19 +208,6 @@ WLibrary QRadioButton#radioButtonRecentlyAdded { margin: 9px 3px 6px 12px; }
   padding: 3px 8px;
   min-width: 65px;
 }
-
-/* Additional space for the first QPushButton in the row*/
-#DlgMissing > QPushButton#btnPurge,
-#DlgHidden > QPushButton#btnUnhide,
-#DlgAutoDJ > QPushButton#pushButtonAutoDJ,
-#DlgRecording > QPushButton#pushButtonRecording,
-#DlgAnalysis > QPushButton#pushButtonAnalyze { margin: 9px 12px 6px 3px; }
-
-/* Additional space for the last QPushButton in the row*/
-#DlgAutoDJ > QPushButton#pushButtonShuffle { margin: 9px 3px 6px 12px; }
-
-/* Spacing between treeview and searchbar*/
-QTreeView { margin: 2px 0px 0px 3px; }
 
 /* triangle for closed/opened branches in treeview*/
 QTreeView { show-decoration-selected: 0;} /*  Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588*/

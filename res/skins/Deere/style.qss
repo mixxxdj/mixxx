@@ -1,5 +1,3 @@
-
-
 /*
   Deere , Skin for Mixxx 1.12.x
   www.mixxx.org
@@ -132,6 +130,10 @@ TEST1 {
   qproperty-layoutAlignment: 'AlignRight';
 }
 
+#AlignCenter {
+  qproperty-layoutAlignment: 'AlignCenter';
+}
+
 #SampleDecksContainer {
   border: 0px;
 }
@@ -233,6 +235,7 @@ QTableView::indicator:unchecked {
 
 #LibrarySidebarButtons, WButtonBar {
   background-color: #4B4B4B;
+  margin: 0px 0px 1px 1px;
 }
 
 QToolButton:focus, 
@@ -257,11 +260,29 @@ WLibraryBreadCrumb QToolButton:hover {
   background: none;
 }
 
+/* Hide the library feature label above feature pane when only one
+  library feature is shown. The feature name is also shown in Breadcrumbs. */
 WBaseLibrary QLabel {
-  margin: 4px 4px 0px 4px;
-  font-size: 12px;
-  font-weight: bold;
-  color: #B3B3B3;
+  min-height: 0px;
+  max-height: 0px;
+  margin: 0px;
+  padding: 0px;
+}
+
+/* Revert the above hack for the transition time label in AutoDJ pane */
+#DlgAutoDJ QLabel {
+  min-height: 20px;
+  max-height: 20px;
+  margin-left: 7px;
+  text-transform: none;
+}
+
+/* Revert the above hack for the time in Recording feature */
+#DlgRecording QLabel {
+  min-height: 20px;
+  max-height: 120px;
+  margin-left: 7px;
+  text-transform: none;
 }
 
 #LibraryCoverArtSplitter QTabWidget {
@@ -341,6 +362,11 @@ WBaseLibrary QLabel {
   color: #FDFDFD;
   background-color: #006596;
   border: 0px solid #006596;
+}
+
+QTabBar QToolButton,
+QTabBar QToolButton:hover {
+  border-left: 1px solid #1e1e1e;
 }
 
 /* button in library "Preview" column */
@@ -458,9 +484,9 @@ WSearchLineEdit:focus {
   border: none;
 }
 
-/* Spacing between treeview and preview deck/search bar */
-QTreeView {
-  margin: 4px 0px 0px 0px;
+/* Top margin of feature pane */
+#LibraryCoverArtSplitter {
+  padding: 4px 0px 0px 0px;
 }
 
 /* sidebar, as well as root items for playlists, crates, and history */
@@ -537,18 +563,6 @@ QTreeView::branch:open:has-children:has-siblings {
   padding: 8px 4px 4px 4px;
   background-color: #1F1F1F;
   border: 1px solid #1A1A1A;
-}
-/* transition time in Auto DJ tab */
-WBaseLibrary QSpinBox {
-  min-height: 20px;
-  max-height: 20px;
-  min-width: 40px;
-  max-width: 40px;
-}
-
-WBaseLibrary QSpinBox:editable {
-  background: transparent;
-  color:#d2d2d2;
 }
 
 WBaseLibrary QLabel, WBaseLibrary QRadioButton {
@@ -804,7 +818,9 @@ WWidget {
   padding: 0px;
 }
 
-WBeatSpinBox {
+/* Use the same style for beatsize spinboxes and for AutoDJ transition time */ 
+WBeatSpinBox,
+#DlgAutoDJ QSpinBox {
   color: #c1cabe;
   background-color: #1f1e1e;
   border: 1px solid #444342;
@@ -813,11 +829,13 @@ WBeatSpinBox {
   font: 15px;
 }
 
-  WBeatSpinBox:hover {
+  WBeatSpinBox:hover,
+  #DlgAutoDJ QSpinBox:hover {
     border: 1px ridge #015d8d;
   }
 
-  WBeatSpinBox::down-button {
+  WBeatSpinBox::down-button,
+  #DlgAutoDJ QSpinBox::down-button {
     subcontrol-origin: border;
     subcontrol-position: bottom right; /* position at the top right corner */
     padding-right: 4px;
@@ -825,17 +843,20 @@ WBeatSpinBox {
     border: 0;
   }
 
-  WBeatSpinBox::down-arrow {
+  WBeatSpinBox::down-arrow,
+  #DlgAutoDJ QSpinBox::down-arrow {
     width: 9px;
     height: 7px;
     image: url(skin:/icon/ic_chevron_down_selector.svg);
   }
 
-  WBeatSpinBox::down-arrow:hover {
+  WBeatSpinBox::down-arrow:hover,
+  #DlgAutoDJ QSpinBox::down-arrow:hover {
     image: url(skin:/icon/ic_chevron_down_selector_hover.svg);
   }
 
-  WBeatSpinBox::up-button {
+  WBeatSpinBox::up-button,
+  #DlgAutoDJ QSpinBox::up-button {
     subcontrol-origin: border;
     subcontrol-position: top right; /* position at the top right corner */
     padding-right: 4px;
@@ -843,13 +864,15 @@ WBeatSpinBox {
     border: 0;
   }
 
-  WBeatSpinBox::up-arrow {
+  WBeatSpinBox::up-arrow,
+  #DlgAutoDJ QSpinBox::up-arrow {
     width: 9px;
     height: 7px;
     image: url(skin:/icon/ic_chevron_up_selector.svg);
   }
 
-  WBeatSpinBox::up-arrow:hover {
+  WBeatSpinBox::up-arrow:hover,
+  #DlgAutoDJ QSpinBox::up-arrow:hover {
     image: url(skin:/icon/ic_chevron_up_selector_hover.svg);
   }
 

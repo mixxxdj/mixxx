@@ -51,7 +51,6 @@
       </PushButton>
 
       <WidgetGroup><!-- Expanding spacer to push EQ knob to opposite side -->
-        <ObjectName>TEST1</ObjectName>
         <Size>0me,1min</Size>
         <Children/>
         <Connection>
