@@ -1014,11 +1014,13 @@ WBeatSpinBox,
   selection-color: #0f0f0f;
   selection-background-color: #d2d2d2;
   font-size: 13px/13px;
-  /* Note(ronso0):
-  Apparently, a top and bottom padding needs to be set to make
-  the spinbox expand vertically to available 22px */
-  padding: 1px 0px 1px 3px;
   margin: 0px 15px 0px 0px;
+  }
+  WBeatSpinBox {
+    /* Note(ronso0):
+    Apparently, a top and bottom padding needs to be set to make
+    the spinbox expand vertically to available 22px */
+    padding: 1px 0px 1px 3px;
   }
   #DlgAutoDJ QSpinBox{
     padding: 1px 0px 0px 0px;
@@ -2011,12 +2013,8 @@ QToolTip {
  ######  Library styling is hard  ###############################
 ############################################################### */
 
-#LibraryBreadCrumbSingleton {
-  margin: 3px -90px 2px 0px;
-}
-
 #LibMiniMaxiButton {
-  margin: 4px 3px 5px 3px;/*
+  margin: 0px 3px 1px 3px;/*
   background-color: #446971;*/
   }
   #LibMiniMaxiButton[displayValue="0"] {
@@ -2033,7 +2031,7 @@ QToolTip {
     }
 
 #LibCoverArtButton {
-  margin: 2px;/*
+  margin: 1px;/*
   background-color: #446971;*/
   }
   #LibCoverArtButton[displayValue="0"],
@@ -2067,7 +2065,7 @@ WButtonBar,
 WButtonBar QWidget {
   background-color: transparent;
   border: 0px;
-  margin: 0px 0px 0px 1px;
+  margin: 0px 0px 1px 1px;
 }
 
 /* Eliminate double border of AutoDJ control pane */
@@ -2109,7 +2107,9 @@ WBaseLibrary QLabel {
   padding: 0px;
 }
 
-/* Revert the above hack for the transition time label in AutoDJ pane */
+/* Revert the above hack in AutoDJ pane for
+  - transition time label
+  - track count/total play time */
 #DlgAutoDJ QLabel {
   min-height: 20px;
   max-height: 20px;
@@ -2117,7 +2117,7 @@ WBaseLibrary QLabel {
   text-transform: none;
 }
 
-/* Revert the above hack for the time in Recording feature */
+/* Revert the above hack in Recording pane for recording info */
 #DlgRecording QLabel {
   min-height: 20px;
   max-height: 120px;
@@ -2129,7 +2129,7 @@ WLibraryBreadCrumb QLabel {
   font-size: 14px/14px;
   font-weight: bold;
   color: #B3B3B3;
-  margin: 3px 0px 3px 3px;
+  margin: 4px 0px 1px 3px;
   padding: 0px;
 }
 
@@ -2138,11 +2138,10 @@ WLibraryBreadCrumb QToolButton {
   border: 0px;
   margin: 0px;
   padding: 0px;
-}
-
-WLibraryBreadCrumb QToolButton:hover {
-  background: #669112;
-}
+  }
+  WLibraryBreadCrumb QToolButton:hover {
+    background: #669112;
+  }
 
 /* library search text box */
 WSearchLineEdit {
@@ -2175,6 +2174,20 @@ QRadioButton {	/*
   color: #cfcfcf;
   }
 
+QRadioButton {
+  padding: 1px 3px 3px 1px;
+  color: #cfcfcf;
+  }
+  QRadioButton::indicator:checked {
+    background: url(skin:/buttons/btn_lib_radio_button_on.svg);
+  }
+  QRadioButton::indicator:unchecked {
+    background: url(skin:/buttons/btn_lib_radio_button_off.svg);
+    }
+    QRadioButton::indicator:unchecked:hover {
+      background: url(skin:/buttons/btn_lib_radio_button_off_hover.svg);
+    }
+
 QTableView,
 QTextBrowser,
 QTreeView {
@@ -2206,39 +2219,32 @@ QTreeView {
 /*  Closed branch of tree 	*/
 QTreeView::branch:has-children:!has-siblings:closed,
 QTreeView::branch:closed:has-children:has-siblings {
-  image: url(skin:/graphics/branch_closed.png);
-  }
-  QTreeView::branch:has-children:!has-siblings:closed:selected,
-  QTreeView::branch:closed:has-children:has-siblings:selected {
-    image: url(skin:/graphics/branch_closed.png);
-    background-color: #333;
-  }
-
+  image: url(skin:/graphics/library_branch_closed.png);
+}
 /*  Open branch of tree 	*/
 QTreeView::branch:open:has-children:!has-siblings,
 QTreeView::branch:open:has-children:has-siblings {
-  image: url(skin:/graphics/branch_open.png);
+  image: url(skin:/graphics/library_branch_open.png);
+}
+/* selected branch */
+QTreeView::branch:has-children:!has-siblings:closed:selected,
+QTreeView::branch:closed:has-children:has-siblings:selected,
+QTreeView::branch:open:has-children:!has-siblings:selected,
+QTreeView::branch:open:has-children:has-siblings:selected {
+  background-color: #333;
   }
-  QTreeView::branch:open:has-children:!has-siblings:selected,
-  QTreeView::branch:open:has-children:has-siblings:selected {
+  QTreeView::item:selected {
     border-image: none;
-    image: url(skin:/graphics/branch_open.png);
+    background-image: none;
     background-color: #333;
+    color: #cfcfcf;
   }
   /* space left of selected child item */
   QTreeView::branch:!has-children:!has-siblings:closed:selected,
   QTreeView::branch:closed:!has-children:has-siblings:selected,
   QTreeView::branch:open:!has-children:!has-siblings:selected,
   QTreeView::branch:open:!has-children:has-siblings:selected {
-    border-image: none;
     background-color: #0f0f0f;
-  }
-
-QTreeView::item:selected {
-  border-image: none;
-  background-image: none;
-  background-color: #333;
-  color: #cfcfcf;
   }
 
 QHeaderView {
@@ -2254,17 +2260,17 @@ QHeaderView {
   QHeaderView::section {
     padding-left: 4px;
     padding-top: 1px;
-    /*	set right border so that first column header
-    on the left doesn't have double border on the left	*/
+    /*	set right border so that the left-most column header
+    doesn't have double border on the left	*/
     border-right: 1px solid #585858;
     background-color: #333;
     border-radius: 0px;
     }
-  QHeaderView::section:hover {
-    background-color: #585858;
-    border-radius: 0px;
-  }
-
+    QHeaderView::section:hover {
+      background-color: #585858;
+      border-radius: 0px;
+    }
+  /* libary column sort buttons */
   QHeaderView::up-arrow,
   QHeaderView::down-arrow {
     width: 12px;
@@ -2276,38 +2282,34 @@ QHeaderView {
   QHeaderView::down-arrow:hover {
     background-color: #585858;
   }
-  QHeaderView::up-arrow {
+  QHeaderView::up-arrow,
+  QHeaderView::up-arrow:hover {
     image: url(skin:/graphics/library_sort_up.svg)
-    }
-    QHeaderView::up-arrow:hover {
-      image: url(skin:/graphics/library_sort_down.svg)
-    }
-  QHeaderView::down-arrow {
+  }
+  QHeaderView::down-arrow,
+  QHeaderView::down-arrow:hover {
     image: url(skin:/graphics/library_sort_down.svg)
-    }
-    QHeaderView::down-arrow:hover {
-      image: url(skin:/graphics/library_sort_up.svg)
-    }
+  }
 
 /* Scroll bars */
 QScrollBar:horizontal {
   min-width: 12px;
   height: 8px;
-  background: #000;
-  border-radius: 2px;
+  background-color: transparent;
+  border-radius: 3px;
+  border: 0px;
   }
   QScrollBar:vertical {
     min-height: 12px;
     width: 8px;
-    background: #000;
-    border-radius: 2px;
-    }
-  WLibrarySidebar QScrollBar:vertical {
-    min-height: 12px;
-    width: 15px;
-    background: #000;
+    background-color: transparent;
     border-radius: 3px;
     border: 0px;
+    }
+  WLibrarySidebar QScrollBar:vertical {
+    width: 15px;
+    /* darker background to emphaszie index letters/numbers */
+    background: #000;
     color: #b3b3b3
     }
   /* "add-page" and "sub-page" are the gutter of the scrollbar */
@@ -2316,6 +2318,7 @@ QScrollBar:horizontal {
     min-width: 15px;
     min-height: 15px;
     background-color: #0f0f0f;
+    border-radius: 3px;
     }
   QScrollBar::handle:horizontal {
     min-width: 25px;
@@ -2332,7 +2335,7 @@ QScrollBar:horizontal {
     }
   WLibrarySidebar QScrollBar::handle:vertical {
     min-height: 25px;
-    /* translucent scroll handles to see index letters on scrollbar */
+    /* translucent scroll handles to mkae index letters/numbers shine through */
     background-color: rgba(125, 125, 125, 180);
     border-radius: 3px;
     }
@@ -2554,11 +2557,11 @@ WBaseLibrary QTabBar::tab {
     color: #cfcfcf;
     }
     QTableView::indicator:checked {
-      background: transparent url(skin:/graphics/checkbox_checked.png) no-repeat center center;
+      background: transparent url(skin:/graphics/library_checkbox_checked.png) no-repeat center center;
       color: #cfcfcf;
       }
     QTableView::indicator:unchecked {
-      background: transparent url(skin:/graphics/checkbox_unchecked.png) no-repeat center center;
+      background: transparent url(skin:/graphics/library_checkbox_unchecked.png) no-repeat center center;
       color: #cfcfcf;
       }
   /* selected table row */
@@ -2566,54 +2569,3 @@ WBaseLibrary QTabBar::tab {
     color: #fff;
     background-color: #666;
   }
-
-/* library search text box */
-WSearchLineEdit {
-  padding: 2px;
-  border: 1px solid #656565;
-  font-family: Ubuntu;
-  font-weight: normal;
-  background: #0f0f0f;
-  color: #cfcfcf;
-  selection-background-color: #d2d2d2;
-  selection-color: #0f0f0f;
-  margin-bottom: 5px;
-  }
-  WSearchLineEdit:focus {
-    border: 2px solid #ff6600;
-    color: #eeeeee;
-    padding: 2px;
-  }
-  /* Clear button next to text field */
-  WSearchLineEdit QToolButton {
-    margin-bottom: 4px;
-  }
-
-QLabel,
-QRadioButton {	/*
-  background: none;
-  Extra declaration for QRadioButton otherwise it shows up with
-  wrong colors in Linux with Gnome 	*/
-  color: #cfcfcf;
-}
-
-WBaseLibrary QRadioButton {
-  padding: 1px 3px 3px 1px;
-  color: #cfcfcf;
-  }
-  WBaseLibrary QRadioButton::indicator:checked {
-    background: url(skin:/buttons/btn_lib_radio_button_on.svg);
-  }
-  WBaseLibrary QRadioButton::indicator:unchecked {
-    background: url(skin:/buttons/btn_lib_radio_button_off.svg);
-  }
-  WBaseLibrary QRadioButton::indicator:unchecked:hover {
-    background: url(skin:/buttons/btn_lib_radio_button_off_hover.svg);
-  }
-
-/* Test :: increase font size of WOverview "Ready to play, analyzing..." etc.
-WOverview {
-  font-size: 16px/16px;
-  color: #eeeeee;
-  font-size is considered, color not.
-} */

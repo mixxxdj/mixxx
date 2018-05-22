@@ -19,7 +19,7 @@ Description:
 
           <WidgetStack>
             <SizePolicy>me,f</SizePolicy>
-            <MaximumSize>139,0</MaximumSize>
+            <MaximumSize>133,0</MaximumSize>
             <Children>
               <WidgetGroup trigger="[Skin],lib_sidebar_collapsed"><Size>2f,0f</Size></WidgetGroup>
               <WidgetGroup><Size>2f,0f</Size></WidgetGroup>
@@ -28,7 +28,7 @@ Description:
 
           <WidgetStack>
             <SizePolicy>me,f</SizePolicy>
-            <MinimumSize>140,0</MinimumSize>
+            <MinimumSize>134,0</MinimumSize>
             <Children>
               <WidgetGroup><Size>2f,0f</Size></WidgetGroup>
               <WidgetGroup trigger="[Skin],lib_sidebar_collapsed"><Size>2f,0f</Size></WidgetGroup>

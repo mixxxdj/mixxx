@@ -5,36 +5,21 @@ Description:
   Right: Tracks table.
 -->
 <Template>
-  <SingletonDefinition>
-    <ObjectName>LibraryBreadCrumbSingleton</ObjectName>
-    <Children>
-      <LibraryBreadCrumb>
-        <ObjectName>LibraryBreadCrumb</ObjectName>
-        <SizePolicy>me,min</SizePolicy>
-        <Id>1</Id>
-      </LibraryBreadCrumb>
-    </Children>
-  </SingletonDefinition>
 
   <SingletonDefinition>
-    <ObjectName>LibrarySearchBoxSingleton</ObjectName>
+    <ObjectName>LibMaxiButton_Singleton</ObjectName>
     <Children>
       <WidgetGroup>
-        <SizePolicy>me,min</SizePolicy>
         <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
-
-          <SearchBox>
-            <Id>1</Id>
-          </SearchBox>
-
-          <WidgetGroup>
-            <SizePolicy>min,min</SizePolicy>
-            <Layout>horizontal</Layout>
-            <Children>
-            </Children>
-          </WidgetGroup>
-
+          <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="ObjectName">LibMiniMaxiButton</SetVariable>
+            <SetVariable name="Size">22f,22f</SetVariable>
+            <SetVariable name="ConfigKey">[Master],maximize_library</SetVariable>
+          </Template>
+          <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
         </Children>
       </WidgetGroup>
     </Children>
@@ -94,26 +79,25 @@ Description:
                     <SizePolicy>min,min</SizePolicy>
                     <Layout>vertical</Layout>
                     <Children>
-                      <!-- Show expand toggle above Sidebar buttons
-                      if Sidebar is wide enough (>139px) -->
                       <WidgetGroup>
-                        <Layout>horizontal</Layout>
-                        <SizePolicy>min,min</SizePolicy>
-                        <Children>
-                          <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
-                          <Template src="skin:button_2state_persist.xml">
-                            <SetVariable name="ObjectName">LibMiniMaxiButton</SetVariable>
-                            <SetVariable name="Size">22f,22f</SetVariable>
-                            <SetVariable name="ConfigKey">[Master],maximize_library</SetVariable>
-                          </Template>
-                          <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
-                        </Children>
+                        <Size>0min,3f</Size>
+                        <Connection>
+                          <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
+                          <Transform><Not/></Transform>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
+
+                      <!-- Show expand toggle above Sidebar buttons
+                      if Sidebar is visible (1px wider than its minimum size) -->
+                      <SingletonContainer>
+                        <ObjectName>LibMaxiButton_Singleton</ObjectName>
                         <Connection>
                           <ConfigKey>[Skin],lib_sidebar_collapsed</ConfigKey>
                           <Transform><Not/></Transform>
                           <BindProperty>visible</BindProperty>
                         </Connection>
-                      </WidgetGroup>
+                      </SingletonContainer>
 
                       <WidgetGroup>
                         <Layout>horizontal</Layout>
@@ -123,7 +107,7 @@ Description:
                           <Template src="skin:button_2state_persist.xml">
                             <SetVariable name="ObjectName">LibCoverArtButton</SetVariable>
                             <!-- Icon size is 48x48px (24x24px), margin: left 2px, bottom 4px -->
-                            <SetVariable name="Size">26f,28f</SetVariable>
+                            <SetVariable name="Size">26f,26f</SetVariable>
                             <SetVariable name="ConfigKey">[Library],show_coverart</SetVariable>
                           </Template>
                           <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
@@ -143,17 +127,6 @@ Description:
                     <SizePolicy>min,me</SizePolicy>
                     <Children>
 
-                      <!-- Show BreadCrumbs above tree view
-                      if Sidebar is wide enough (>139px) -->
-                      <SingletonContainer>
-                        <ObjectName>LibraryBreadCrumbSingleton</ObjectName>
-                        <Connection>
-                          <ConfigKey>[Skin],lib_sidebar_collapsed</ConfigKey>
-                          <Transform><Not/></Transform>
-                          <BindProperty>visible</BindProperty>
-                        </Connection>
-                      </SingletonContainer>
-
                       <Splitter><!-- Splitter to make CoverArt resizeable -->
                         <ObjectName>LibrarySplitter</ObjectName>
                         <SizePolicy>me,me</SizePolicy>
@@ -162,17 +135,40 @@ Description:
                         <Orientation>vertical</Orientation>
                         <Collapsible>0,0</Collapsible>
                         <Children>
-                          <LibrarySidebarExpanded>
-                            <Id>1</Id>
-                          </LibrarySidebarExpanded>
 
-                          <CoverArt>
-                            <Size>30min,30min</Size>
+                          <WidgetGroup>
+                            <Layout>vertical</Layout>
+                            <Children>
+                              <WidgetGroup>
+                                <Size>0min,5f</Size>
+                                <Connection>
+                                  <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
+                                  <Transform><Not/></Transform>
+                                  <BindProperty>visible</BindProperty>
+                                </Connection>
+                              </WidgetGroup>
+
+                              <LibrarySidebarExpanded>
+                                <Id>1</Id>
+                              </LibrarySidebarExpanded>
+                            </Children>
+                          </WidgetGroup>
+
+                          <WidgetGroup>
+                            <Layout>vertical</Layout>
+                            <SizePolicy>me,min</SizePolicy>
+                            <Children>
+                              <CoverArt>
+                                <Size>30me,30me</Size>
+                              </CoverArt>
+                              <WidgetGroup><Size>0min,3f</Size></WidgetGroup>
+                            </Children>
                             <Connection>
                               <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
                               <BindProperty>visible</BindProperty>
                             </Connection>
-                          </CoverArt>
+                          </WidgetGroup>
+
                         </Children>
                       </Splitter><!-- /Splitter to make CoverArt resizeable -->
 
@@ -194,41 +190,33 @@ Description:
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <!-- Show expand toggle and BreadCrumbs above tracks table
-                  if Sidebar is too small or collapsed (<140px) -->
-                  <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <Size>180min,-1min</Size>
-                    <Children>
-                      <Template src="skin:button_2state_persist.xml">
-                        <SetVariable name="ObjectName">LibMiniMaxiButton</SetVariable>
-                        <SetVariable name="Size">22f,28f</SetVariable>
-                        <SetVariable name="ConfigKey">[Master],maximize_library</SetVariable>
-                      </Template>
-
-                      <WidgetGroup><Size>5f,0min</Size></WidgetGroup>
-
-                      <SingletonContainer>
-                        <ObjectName>LibraryBreadCrumbSingleton</ObjectName>
-                      </SingletonContainer>
-                    </Children><!-- -->
+                  <!-- Show library expand toggle next to BreadCrumbs
+                  if Sidebar is (almost) collapsed -->
+                  <SingletonContainer>
+                    <ObjectName>LibMaxiButton_Singleton</ObjectName>
                     <Connection>
                       <ConfigKey>[Skin],lib_sidebar_collapsed</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
-                  </WidgetGroup>
-
-                  <SingletonContainer>
-                    <ObjectName>LibrarySearchBoxSingleton</ObjectName>
                   </SingletonContainer>
+
+                  <LibraryBreadCrumb>
+                    <Id>1</Id>
+                  </LibraryBreadCrumb>
+
                 </Children>
               </WidgetGroup>
+
+              <SearchBox>
+                <Id>1</Id>
+              </SearchBox>
 
               <LibraryPane>
                 <BgColor>#585858</BgColor>
                 <FgColor>#eece33</FgColor>
                 <Id>1</Id>
               </LibraryPane>
+
             </Children>
           </WidgetGroup>
 
