@@ -97,6 +97,26 @@
                 </Children>
               </WidgetGroup>
 
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+                  <LibraryBreadCrumb>
+                    <ObjectName>LibraryBreadCrumb</ObjectName>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Id>2</Id>
+                  </LibraryBreadCrumb>
+
+                  <LibraryPane>
+                    <BgColor>#585858</BgColor>
+                    <FgColor>#eece33</FgColor>
+                    <Id>2</Id>
+                  </LibraryPane>
+                </Children>
+		    <Connection>
+		      <ConfigKey persist="true">[Library],show_autodj_always</ConfigKey>
+		      <BindProperty>visible</BindProperty>
+		    </Connection>
+              </WidgetGroup>
             </Children>
           </Splitter>
 
