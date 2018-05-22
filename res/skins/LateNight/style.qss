@@ -1389,10 +1389,10 @@ QTableView::indicator {
 
 /* BPM lock icon in the library "BPM" column. */
 #LibraryBPMButton::indicator:checked {
-  image: url(skin:/style/library_lock_checked.png);
+  image: url(:/images/library/ic_library_checked.png);
 }
 #LibraryBPMButton::indicator:unchecked {
-  image: url(skin:/style/library_lock_unchecked.png);
+  image: url(:/images/library/ic_library_unchecked.png);
 }
 #LibraryBPMButton::item:selected {
   color: #cfb32c;
