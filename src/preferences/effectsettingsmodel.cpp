@@ -4,6 +4,7 @@
 namespace {
 const int kColumnEnabled = 0;
 const int kColumnName = 1;
+const int kColumnType = 2;
 }
 
 EffectSettingsModel::EffectSettingsModel() {
@@ -59,29 +60,31 @@ int EffectSettingsModel::rowCount(const QModelIndex& parent) const {
 
 int EffectSettingsModel::columnCount(const QModelIndex& parent) const {
     Q_UNUSED(parent);
-    return 2;
+    return 3;
 }
 
 QVariant EffectSettingsModel::data(const QModelIndex& index, int role) const {
     int rowIndex = index.row();
-    if (!index.isValid() || rowIndex >= m_profiles.size())
+    if (!index.isValid() || rowIndex >= m_profiles.size()) {
         return QVariant();
+    }
 
     EffectProfilePtr profile = m_profiles.at(rowIndex);
     if (profile) {
-        if (role == Qt::UserRole)
+        if (role == Qt::UserRole) {
             return profile->getEffectId();
+        }
         int column = index.column();
         if (column == kColumnEnabled) {
             if (role == Qt::CheckStateRole) {
                 return (profile->isVisible() == true ? Qt::Checked : Qt::Unchecked);
-            }
-            else if (role == Qt::TextAlignmentRole) {
+            } else if (role == Qt::TextAlignmentRole) {
                 return Qt::AlignCenter;
             }
-        }
-        else if (column == kColumnName && role == Qt::DisplayRole) {
+        } else if (column == kColumnName && role == Qt::DisplayRole) {
             return profile->getDisplayName();
+        } else if (column == kColumnType && role == Qt::DisplayRole) {
+            return profile->getManifest()->backendName();
         }
     }
 
@@ -96,6 +99,8 @@ QVariant EffectSettingsModel::headerData(int section, Qt::Orientation orientatio
                 return tr("Visible");
             } else if(section == kColumnName) {
                 return tr("Name");
+            } else if(section == kColumnType) {
+                return tr("Type");
             }
         }
     }
@@ -107,6 +112,9 @@ Qt::ItemFlags EffectSettingsModel::flags(const QModelIndex& index) const {
         return QAbstractItemModel::flags(index) | Qt::ItemIsUserCheckable;
 
     if(index.column() == kColumnName)
+        return QAbstractItemModel::flags(index) | Qt::ItemIsSelectable;
+
+    if(index.column() == kColumnType)
         return QAbstractItemModel::flags(index) | Qt::ItemIsSelectable;
 
     return QAbstractItemModel::flags(index) | Qt::ItemIsEnabled;

@@ -26,7 +26,9 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
     // Highlight first row
     availableEffectsList->selectRow(0);
 
-    availableEffectsList->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+    availableEffectsList->horizontalHeader()->setResizeMode(0, QHeaderView::ResizeToContents);
+    availableEffectsList->setColumnWidth(1, 200);
+    availableEffectsList->horizontalHeader()->setResizeMode(2, QHeaderView::ResizeToContents);
 }
 
 DlgPrefEffects::~DlgPrefEffects() {
