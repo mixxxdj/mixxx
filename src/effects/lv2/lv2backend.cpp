@@ -31,7 +31,10 @@ void LV2Backend::enumeratePlugins() {
 
         const bool visible = m_pConfig->getValue<bool>(ConfigKey("[Visible Effects]", 
                                                        lv2Manifest->getEffectManifest()->id()), false);
-        lv2Manifest->getEffectManifest()->setVisibility(visible);
+        lv2Manifest->getEffectManifest()->setBackendName(this->getName());
+        if (visible) {
+            addVisibleEffect(lv2Manifest->getEffectManifest()->id());
+        }
 
         m_registeredEffects.insert(lv2Manifest->getEffectManifest()->id(),
                                    lv2Manifest);

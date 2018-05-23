@@ -68,7 +68,11 @@ EffectsManager::~EffectsManager() {
 
 bool alphabetizeEffectManifests(EffectManifestPointer pManifest1,
                                 EffectManifestPointer pManifest2) {
-    return QString::localeAwareCompare(pManifest1->displayName(), pManifest2->displayName()) < 0;
+    
+    int dNameComp = QString::localeAwareCompare(pManifest1->displayName(), pManifest2->displayName());
+    int bNameComp = QString::localeAwareCompare(pManifest1->backendName(), pManifest2->backendName());
+    // Add an exception for "Native" backends, to keep the Native effects in the beginning
+    return (bNameComp ? (bNameComp > 0) : (dNameComp < 0));
 }
 
 void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
@@ -81,6 +85,9 @@ void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
     for (const QString& effectId : backendEffects) {
         const EffectManifestPointer pManifest = pBackend->getManifest(effectId);
         m_availableEffectManifests.append(pManifest);
+        if (pBackend->getVisibility(effectId)) {
+            setEffectVisibility(pManifest, true);
+        }
     }
 
     m_pNumEffectsAvailable->forceSet(m_availableEffectManifests.size());
@@ -96,9 +103,9 @@ void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
 }
 
 void EffectsManager::slotBackendRegisteredEffect(EffectManifestPointer pManifest) {
-    auto insertion_point = qLowerBound(m_availableEffectManifests.begin(),
-                                       m_availableEffectManifests.end(),
-                                       pManifest, alphabetizeEffectManifests);
+    auto insertion_point = std::lower_bound(m_availableEffectManifests.begin(),
+                                            m_availableEffectManifests.end(),
+                                            pManifest, alphabetizeEffectManifests);
     m_availableEffectManifests.insert(insertion_point, pManifest);
     m_pNumEffectsAvailable->forceSet(m_availableEffectManifests.size());
 }
@@ -311,6 +318,22 @@ EffectButtonParameterSlotPointer EffectsManager::getEffectButtonParameterSlot(
     return pParameterSlot;
 }
 
+void EffectsManager::setEffectVisibility(EffectManifestPointer pManifest, bool visible) {
+    if (visible && !m_visibleEffectManifests.contains(pManifest)) {
+        auto insertion_point = std::lower_bound(m_visibleEffectManifests.begin(),
+                                                m_visibleEffectManifests.end(),
+                                                pManifest, alphabetizeEffectManifests);
+        m_visibleEffectManifests.insert(insertion_point, pManifest);
+        emit visibleEffectsUpdated();
+    } else if (!visible) {
+        m_visibleEffectManifests.removeOne(pManifest);
+        emit visibleEffectsUpdated();
+    }
+}
+
+bool EffectsManager::getEffectVisibility(EffectManifestPointer pManifest) {
+    return m_visibleEffectManifests.contains(pManifest);
+}
 
 void EffectsManager::setup() {
     // These controls are used inside EQ Effects

@@ -5,8 +5,9 @@
 #include <QObject>
 #include <QString>
 
-#include "preferences/usersettings.h"
+#include "effects/defs.h"
 #include "effects/effectmanifest.h"
+#include "preferences/usersettings.h"
 
 class EffectProfile;
 typedef QSharedPointer<EffectProfile> EffectProfilePtr;
@@ -16,18 +17,19 @@ class EffectProfile : public QObject {
   Q_OBJECT
 
   public:
-    EffectProfile(EffectManifest &pManifest,
-                                 QObject* parent = NULL);
+    EffectProfile(EffectManifestPointer pManifest,
+                  bool visibility,
+                  QObject* parent = NULL);
 
     QString getEffectId() const;
     QString getDisplayName() const;
     bool isVisible() const;
     void setVisibility(bool value);
-    EffectManifest* getManifest() const;
+    EffectManifestPointer getManifest() const;
 
   private:
+    EffectManifestPointer m_pManifest;
     bool m_isVisible;
-    EffectManifest* m_pManifest;
 };
 
 #endif // EFFECTPROFILE_H

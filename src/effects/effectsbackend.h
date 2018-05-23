@@ -28,6 +28,8 @@ class EffectsBackend : public QObject {
     // returns a list sorted like it should be displayed in the GUI 
     virtual const QList<QString> getEffectIds() const;
     virtual EffectManifestPointer getManifest(const QString& effectId) const;
+    virtual bool getVisibility(const QString& effectId) const;
+    virtual void addVisibleEffect(const QString& effectId);
     virtual bool canInstantiateEffect(const QString& effectId) const;
     virtual EffectPointer instantiateEffect(
             EffectsManager* pEffectsManager, const QString& effectId);
@@ -64,7 +66,6 @@ class EffectsBackend : public QObject {
 
         EffectManifestPointer manifest() const { return m_pManifest; };
         EffectInstantiatorPointer initiator() const { return m_pInitator; };
-
       private:
         EffectManifestPointer m_pManifest;
         EffectInstantiatorPointer m_pInitator;
@@ -73,6 +74,7 @@ class EffectsBackend : public QObject {
     QString m_name;
     QMap<QString, RegisteredEffect> m_registeredEffects;
     QList<QString> m_effectIds;
+    QList<QString> m_visibleEffectIds;
 };
 
 #endif /* EFFECTSBACKEND_H */

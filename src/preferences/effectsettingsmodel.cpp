@@ -1,7 +1,5 @@
 #include <preferences/effectsettingsmodel.h>
 
-// #include <preferences/effectsettings.h>
-#include "effects/effectmanifest.h"
 
 namespace {
 const int kColumnEnabled = 0;
@@ -24,8 +22,8 @@ void EffectSettingsModel::resetFromEffectManager(EffectsManager* pEffectsManager
     m_profiles.clear();
 
     for(EffectManifestPointer pManifest : pEffectsManager->getAvailableEffectManifests()) {
-        // qDebug() << "Manifest: " << pManifest->id();
-        addProfileToModel(EffectProfilePtr(new EffectProfile(*pManifest)));
+        const bool visibility = pEffectsManager->getEffectVisibility(pManifest);
+        addProfileToModel(EffectProfilePtr(new EffectProfile(pManifest, visibility)));
     }
 }
 
@@ -36,7 +34,7 @@ bool EffectSettingsModel::addProfileToModel(EffectProfilePtr profile) {
     int position = m_profiles.size();
     beginInsertRows(QModelIndex(), position, position);
 
-    m_profiles.insert(profile->getEffectId(), EffectProfilePtr(profile));
+    m_profiles.push_back(EffectProfilePtr(profile));
 
     endInsertRows();
     return true;
@@ -46,12 +44,12 @@ void EffectSettingsModel::deleteProfileFromModel(EffectProfilePtr profile) {
     if(!profile)
         return;
 
-    int position = m_profiles.keys().indexOf(profile->getEffectId());
+    int position = m_profiles.indexOf(profile);
     if(position > -1) {
         beginRemoveRows(QModelIndex(), position, position);
         endRemoveRows();
     }
-    m_profiles.remove(profile->getEffectId());
+    m_profiles.removeAll(profile);
 }
 
 int EffectSettingsModel::rowCount(const QModelIndex& parent) const {
@@ -69,7 +67,7 @@ QVariant EffectSettingsModel::data(const QModelIndex& index, int role) const {
     if (!index.isValid() || rowIndex >= m_profiles.size())
         return QVariant();
 
-    EffectProfilePtr profile = m_profiles.values().at(rowIndex);
+    EffectProfilePtr profile = m_profiles.at(rowIndex);
     if (profile) {
         if (role == Qt::UserRole)
             return profile->getEffectId();
@@ -116,7 +114,7 @@ Qt::ItemFlags EffectSettingsModel::flags(const QModelIndex& index) const {
 
 bool EffectSettingsModel::setData(const QModelIndex& index, const QVariant& value, int role) {
     if(index.isValid()) {
-        EffectProfilePtr profile = m_profiles.values().at(index.row());
+        EffectProfilePtr profile = m_profiles.at(index.row());
         if(profile) {
             if(index.column() == kColumnEnabled && role == Qt::CheckStateRole) {
                 profile->setVisibility(value.toBool());

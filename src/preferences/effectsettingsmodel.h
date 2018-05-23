@@ -16,14 +16,14 @@ class EffectSettingsModel : public QAbstractTableModel {
   Q_OBJECT
   public:
     EffectSettingsModel();
-    virtual ~EffectSettingsModel();
+    ~EffectSettingsModel();
 
     void resetFromEffectManager(EffectsManager* pEffectsManager);
 
     bool addProfileToModel(EffectProfilePtr profile);
     void deleteProfileFromModel(EffectProfilePtr profile);
     QList<EffectProfilePtr> profiles() {
-        return m_profiles.values();
+        return m_profiles;
     }
 
     int rowCount(const QModelIndex& parent = QModelIndex()) const;
@@ -39,7 +39,7 @@ class EffectSettingsModel : public QAbstractTableModel {
     bool isEmpty() const;
 
   private:
-    QMap<QString, EffectProfilePtr> m_profiles;
+    QList<EffectProfilePtr> m_profiles;
 };
 
 #endif // PREFERENCES_EFFECTSETTINGSMODEL_H

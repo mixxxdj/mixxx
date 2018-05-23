@@ -26,7 +26,7 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
     // Highlight first row
     availableEffectsList->selectRow(0);
 
-    availableEffectsList->setColumnWidth(0, 50);
+    availableEffectsList->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
 }
 
 DlgPrefEffects::~DlgPrefEffects() {
@@ -44,8 +44,8 @@ void DlgPrefEffects::slotUpdate() {
 
 void DlgPrefEffects::slotApply() {
     for (EffectProfilePtr profile : m_pAvailableEffectsModel->profiles()) {
-        EffectManifest* pManifest = profile->getManifest();
-        pManifest->setVisibility(profile->isVisible());
+        EffectManifestPointer pManifest = profile->getManifest();
+        m_pEffectsManager->setEffectVisibility(pManifest, profile->isVisible());
         m_pConfig->set(ConfigKey("[Visible Effects]", pManifest->id()), ConfigValue(profile->isVisible()));
     }
 }
