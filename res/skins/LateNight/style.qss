@@ -1381,17 +1381,21 @@ WEffectSelector {
 
 /* Library styling is hard */
 
-#LibrarySingleton {/*
-  padding-top: 5px;
-  padding-bottom: 2px;*/
+#LibrarySingleton {
+  /* This doesn't work as expected:
+  it appears LibrarySingleton is displayed twice, so
+  padding/margin would double.
+  Placed a plain spacer in library.xml which works reliably
+  padding-top: 5px;*/
 }
 
 #Library {
   padding: 0px;
   margin-top: 7px;
-  /*border-top: 1px solid #585858;
-  padding-top: 5px;
-  background-color: #123645; */
+  /* make a smooth transition from toolbar at the bottom to
+    darker skin background at the top.
+    Splitter handles and sidebar containers should be transparent
+    for this to work. */
   background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #0f0f0f,
     stop:1 #1e1e1e);
@@ -1439,7 +1443,7 @@ WBaseLibrary QPushButton {
   min-width: 65px;
   min-height: 22px;
   max-height: 22px;
-  color: #eeeeee;
+  color: #d2d2d2;
   border: 1px solid #585858;
   border-radius: 2px;
   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -1669,21 +1673,19 @@ QTableView::indicator {
 }
 
 /* Button in library "Preview" column */
-
 #LibraryPreviewButton {
   width: 23px;
   height: 12px;
   image: url(skin:/style/library_preview_play.png); 
   background-color: transparent;
   border: 0px;
-}
-
-QPushButton#LibraryPreviewButton:!checked{
-  image: url(skin:/style/library_preview_play.png);
-}
-QPushButton#LibraryPreviewButton:checked{
-  image: url(skin:/style/library_preview_pause.png);
-}
+  }
+  QPushButton#LibraryPreviewButton:!checked{
+    image: url(skin:/style/library_preview_play.png);
+  }
+  QPushButton#LibraryPreviewButton:checked{
+    image: url(skin:/style/library_preview_pause.png);
+  }
 
 QHeaderView {
   font-size: 13px/15px;
@@ -1693,16 +1695,16 @@ QHeaderView {
   background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #585858,
     stop:1 #0f0f0f);
-}
-QHeaderView::section {
-  height: 18px;
-  border: 1px solid #585858;
-  border-left: 0px;
-  padding-left: 1px;
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
-    stop:0 #585858,
-    stop:1 #0f0f0f);
-}
+  }
+  QHeaderView::section {
+    height: 18px;
+    border: 1px solid #585858;
+    border-left: 0px;
+    padding-left: 1px;
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+      stop:0 #585858,
+      stop:1 #0f0f0f);
+  }
 
 QHeaderView::up-arrow,
 QHeaderView::down-arrow {
@@ -1721,7 +1723,6 @@ QHeaderView::down-arrow {
   QHeaderView::down-arrow:hover {
     image: url(skin:/style/library_sort_up.svg);
   }
-
 
 /* QScrollBar styling is even harder */
 QScrollBar {
@@ -1792,12 +1793,12 @@ WSearchLineEdit {
   border: 1px solid #656565; 
   background: #181818; 
   color: #cfb32c; 
-}
-WSearchLineEdit:focus {
-  padding: 2px;
-  border: 2px solid #FF6600;
-  background: #0f0f0f;
-}
+  }
+  WSearchLineEdit:focus {
+    padding: 2px;
+    border: 2px solid #FF6600;
+    background: #0f0f0f;
+  }
 
 /* cover art */
 WCoverArt {
@@ -1876,8 +1877,6 @@ QTreeView {
 /* triangle for closed/opened branches in treeview */
   show-decoration-selected: 0;
   background-color: #151515;
-/* Spacing between treeview and searchbar
-  margin: 10px 0px 0px 0px; */
 }
 /*  Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588 */
 QTreeView::branch:has-children:!has-siblings:closed,
