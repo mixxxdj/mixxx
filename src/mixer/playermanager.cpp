@@ -683,10 +683,11 @@ void PlayerManager::slotPlayerEmpty() {
 }
 
 void PlayerManager::resetTrack(Deck *deck) {
-    QMutexLocker locker(&m_mutex);
-    Deck *loadingDeck = qobject_cast<Deck*>(sender());
+    QMutexLocker locker(&m_mutex);    
     foreach (trackDeckPair pair,m_tracksToBeReset) {
-        if (loadingDeck == pair.pDeck) {
+        if (deck == pair.pDeck) {
+            disconnect(pair.pTrack.get(),SIGNAL(readyToBeScrobbled(Track*)),
+                       m_pMetadataBroadcast,SLOT(slotReadyToBeScrobbled(Track*)));
             pair.pTrack->resetPlayedTime();
             break;
         }

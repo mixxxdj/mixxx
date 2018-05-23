@@ -1142,7 +1142,7 @@ void Track::slotCheckIfScrobbable() {
     qint64 msInTimer = 0;
     if (m_pElapsedTimer->isValid())
         msInTimer = m_pElapsedTimer->elapsed();
-    if (static_cast<double>((msInTimer + m_msPlayed) / Q_INT64_C(1000)) >=
+    if (static_cast<double>(msInTimer + m_msPlayed) / 1000.0 >=
         getDuration(DurationRounding::SECONDS) / 2.0) {
             m_isScrobbable = true;
             emit(readyToBeScrobbled(this));
