@@ -3,8 +3,8 @@
 #include "effects/effectsbackend.h"
 #include "effects/effectsmanager.h"
 
-EffectsBackend::EffectsBackend(UserSettingsPointer pConfig, 
-                               QObject* pParent, 
+EffectsBackend::EffectsBackend(QObject* pParent,
+                               UserSettingsPointer pConfig, 
                                QString name)
         : QObject(pParent),
           m_pConfig(pConfig),

@@ -20,7 +20,7 @@ class EffectProcessor;
 class EffectsBackend : public QObject {
     Q_OBJECT
   public:
-    EffectsBackend(UserSettingsPointer pConfig, QObject* pParent, QString name);
+    EffectsBackend(QObject* pParent, UserSettingsPointer pConfig, QString name);
     virtual ~EffectsBackend();
 
     virtual const QString getName() const;
