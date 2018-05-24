@@ -1375,6 +1375,13 @@ QTableView:focus, QTreeView:focus {
   border: 1px solid #FF6600;
 }
 
+/* selected items in Tree and Tracks table */
+QTreeView::item:selected,
+QTableView::item:selected {
+  color: #fff;
+  background-color: #725309;
+}
+
 /* checkbox in library "Played" column */
 QTableView::indicator {
   width: 12px;
@@ -1683,11 +1690,6 @@ QTreeView::branch:open:has-children:has-siblings:selected {
     border-image: none;
     background-color: #151515;
   }
-
-QTreeView::item:selected {
-  color: #fff;
-  background-color: #725309;
-}
 
 QToolTip {
   background-color: #0f0f0f;
