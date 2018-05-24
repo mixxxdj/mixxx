@@ -1,6 +1,7 @@
 #ifndef DLGPREFREPLAYGAIN_H
 #define DLGPREFREPLAYGAIN_H
 
+#include <QButtonGroup>
 #include <QWidget>
 
 #include "preferences/dialog/ui_dlgprefreplaygaindlg.h"
