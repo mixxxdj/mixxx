@@ -1634,7 +1634,7 @@ WLibraryBreadCrumb QToolButton {
 
 QTreeView::item:selected:active, 
 QTableView::item:selected:active {
-  color: #cfb32c;
+  color: #fff;
   background-color: #725309;
 }
 
