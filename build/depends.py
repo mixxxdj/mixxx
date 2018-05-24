@@ -1317,9 +1317,17 @@ class MixxxCore(Feature):
 
             # In a release build we want to disable all Q_ASSERTs in Qt headers
             # that we include. We can't define QT_NO_DEBUG because that would
-            # mean turning off QDebug output. qt_noop() is what Qt defines
-            # Q_ASSERT to be when QT_NO_DEBUG is defined.
-            build.env.Append(CPPDEFINES="'Q_ASSERT(x)=qt_noop()'")
+            # mean turning off QDebug output. qt_noop() is what Qt defined
+            # Q_ASSERT to be when QT_NO_DEBUG is defined in Qt 5.9 and earlier.
+            # Now it is defined as static_cast<void>(false&&(x)) to support use
+            # in constexpr functions. We still use qt_noop on Windows since we
+            # can't specify static_cast<void>(false&&(x)) in a commandline
+            # macro definition, but it seems VS 2015 isn't bothered by the use
+            # qt_noop here, so we can keep it.
+            if build.platform_is_windows:
+                build.env.Append(CPPDEFINES="'Q_ASSERT(x)=qt_noop()'")
+            else:
+                build.env.Append(CPPDEFINES="'Q_ASSERT(x)=static_cast<void>(false&&(x))'")
 
         if int(SCons.ARGUMENTS.get('debug_assertions_fatal', 0)):
             build.env.Append(CPPDEFINES='MIXXX_DEBUG_ASSERTIONS_FATAL')
