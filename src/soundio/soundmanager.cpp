@@ -35,6 +35,7 @@
 #include "soundio/sounddevicenotfound.h"
 #include "soundio/sounddeviceportaudio.h"
 #include "soundio/soundmanagerutil.h"
+#include "util/compatibility.h"
 #include "util/cmdlineargs.h"
 #include "util/defs.h"
 #include "util/sample.h"
@@ -363,8 +364,8 @@ SoundDeviceError SoundManager::setupDevices() {
 
     m_pMasterAudioLatencyOverloadCount->set(0);
 
-    // load with all configured devices. 
-    // all found devices are removed below 
+    // load with all configured devices.
+    // all found devices are removed below
     QSet<QString> devicesNotFound = m_config.getDevices();
 
     // pair is isInput, isOutput
@@ -692,14 +693,14 @@ int SoundManager::getConfiguredDeckCount() const {
 
 void SoundManager::processUnderflowHappened() {
     if (m_underflowUpdateCount == 0) {
-        if (m_underflowHappened) {
+        if (load_atomic(m_underflowHappened)) {
             m_pMasterAudioLatencyOverload->set(1.0);
             m_pMasterAudioLatencyOverloadCount->set(
                     m_pMasterAudioLatencyOverloadCount->get() + 1);
             m_underflowUpdateCount = CPU_OVERLOAD_DURATION * m_config.getSampleRate()
                     / m_config.getFramesPerBuffer() / 1000;
 
-            m_underflowHappened = 0; // reseting her is not thread save,
+            m_underflowHappened = 0; // resetting here is not thread safe,
                                      // but that is OK, because we count only
                                      // 1 underflow each 500 ms
         } else {
