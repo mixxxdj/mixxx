@@ -8,7 +8,8 @@
 WLabel, QLabel,
 WPushButton, QPushButton,
 WEffect, WEffectSelector,
-WBeatSpinBox {/**/
+WBeatSpinBox,
+QSpinBox {
   font-family: Ubuntu;
   text-transform: uppercase;
   font-weight: bold;
