@@ -2028,16 +2028,14 @@ QToolTip {
 #LibCoverArtButton {
   margin: 0px 0px 4px 2px;
   }
+  #LibCoverArtButton:hover {
+    background-color: #0f0f0f;
+  }
   #LibCoverArtButton[displayValue="0"] {
     image: url(skin:/buttons/btn_lib_cover_off.svg) no-repeat center center;
     }
-    #LibCoverArtButton[displayValue="1"],
-    #LibCoverArtButton[displayValue="0"]:hover {
+    #LibCoverArtButton[displayValue="1"] {
       image: url(skin:/buttons/btn_lib_cover_on.svg) no-repeat center center;
-      background-color: #0f0f0f;
-    }
-    #LibCoverArtButton[displayValue="1"]:hover {
-      border: 1px solid #d2d2d2;
     }
 
 QTableView,
