@@ -2284,8 +2284,11 @@ WLibrary QPushButton {
   QPushButton#pushButtonAnalyze:hover {
     border: 1px solid #ff6600;
   }
-  /* 'Start/Stop Recording' button	*/
+  /* Push 'Start/Stop Recording' button and
+    'Enable AutoDJ' button away from skin border	*/
+  QPushButton#pushButtonAutoDJ,
   QPushButton#pushButtonRecording {
+    margin: 1px 9px 5px 1px;
   }
   QPushButton#pushButtonRecording:unchecked {
     color: #888;
@@ -2314,6 +2317,7 @@ WLibrary QPushButton {
       color: #ededed;
       background-color: #666;
       }
+
   #LibraryTimesPlayed::item {
     color: #cfcfcf;
     }
