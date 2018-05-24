@@ -202,52 +202,58 @@ bool PlayerManager::isPreviewDeckGroup(const QString& group, int* number) {
 unsigned int PlayerManager::numDecks() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    if (m_pCOPNumDecks == nullptr) {
-        ControlProxy* pNumCO = new ControlProxy(ConfigKey("[Master]", "num_decks"));
+    ControlProxy* pNumCO;
+    if (load_atomic(m_pCOPNumDecks) == nullptr) {
+        pNumCO = new ControlProxy(ConfigKey("[Master]", "num_decks"));
         if (!pNumCO->valid()) {
             delete pNumCO;
-            pNumCO = NULL;
+            pNumCO = nullptr;
         } else {
             m_pCOPNumDecks = pNumCO;
         }
     }
     // m_pCOPNumDecks->get() fails on MacOs
-    return m_pCOPNumDecks ? (*m_pCOPNumDecks).get() : 0;
+    load_atomic(m_pCOPNumDecks);
+    ControlProxy* pNumDecks = load_atomic(m_pCOPNumDecks);
+    return pNumDecks ? pNumDecks->get() : 0;
 }
 
 // static
 unsigned int PlayerManager::numSamplers() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    if (m_pCOPNumSamplers == nullptr) {
-        ControlProxy* pNumCO = new ControlProxy(ConfigKey("[Master]", "num_samplers"));
+    ControlProxy* pNumCO;
+    if (load_atomic(m_pCOPNumSamplers) == nullptr) {
+        pNumCO = new ControlProxy(ConfigKey("[Master]", "num_samplers"));
         if (!pNumCO->valid()) {
             delete pNumCO;
-            pNumCO = NULL;
         } else {
             m_pCOPNumSamplers = pNumCO;   
         }
     }
     // m_pCOPNumSamplers->get() fails on MacOs
-    return m_pCOPNumSamplers ? (*m_pCOPNumSamplers).get() : 0;
+    pNumCO = load_atomic(m_pCOPNumSamplers);
+    return pNumCO ? pNumCO->get() : 0;
 }
 
 // static
 unsigned int PlayerManager::numPreviewDecks() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    if (m_pCOPNumPreviewDecks == NULL) {
-        ControlProxy* pNumCO = new ControlProxy(
+    ControlProxy* pNumCO;
+    if (load_atomic(m_pCOPNumPreviewDecks) == nullptr) {
+        pNumCO = new ControlProxy(
                 ConfigKey("[Master]", "num_preview_decks"));
         if (!pNumCO->valid()) {
             delete pNumCO;
-            pNumCO = NULL;
+            pNumCO = nullptr;
         } else {
-            m_pCOPNumPreviewDecks = pNumCO;   
+            m_pCOPNumPreviewDecks = pNumCO;
         }
     }
     // m_pCOPNumPreviewDecks->get() fails on MacOs
-    return m_pCOPNumPreviewDecks ? (*m_pCOPNumPreviewDecks).get() : 0;
+    pNumCO = load_atomic(m_pCOPNumPreviewDecks);
+    return pNumCO ? pNumCO->get() : 0;
 }
 
 void PlayerManager::slotNumDecksControlChanged(double v) {
