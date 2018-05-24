@@ -3,6 +3,7 @@
 #include "track/track.h"
 #include "track/trackplaytimers.h"
 #include "test/trackplayedtimer_test.h"
+#include "track/tracktiminginfo.h"
 
 class ElapsedTimerMock : public TrackTimers::ElapsedTimer {
   public:
@@ -14,16 +15,20 @@ class ElapsedTimerMock : public TrackTimers::ElapsedTimer {
 };
 
 
-class TrackTest : public testing::Test {
+class TrackTimingInfoTest : public testing::Test {
   public:
-    TrackTest() {
-        testTrack = Track::newDummy(QFileInfo(),TrackId())        ;        
+    TrackTimingInfoTest() :
+    trackInfo(TrackPointer())
+    {
+        testTrack = Track::newDummy(QFileInfo(),TrackId());
+        trackInfo.setTrackPointer(testTrack);
     }
-    ~TrackTest() = default;
+    ~TrackTimingInfoTest() = default;
     TrackPointer testTrack;
+    TrackTimingInfo trackInfo;
 };
 
-TEST_F(TrackTest,SendsSignalWhenScrobbable) {
+TEST_F(TrackTimingInfoTest,SendsSignalWhenScrobbable) {
     testTrack->setDuration(5);
     //These have to be created in the heap otherwise
     //we're deleting them twice.
@@ -35,13 +40,13 @@ TEST_F(TrackTest,SendsSignalWhenScrobbable) {
         .WillOnce(testing::Return(true));
     EXPECT_CALL(*etmock,start());
     EXPECT_CALL(*tmock,start(1000))
-        .WillOnce(testing::InvokeWithoutArgs(testTrack.get(),
-                  &Track::slotCheckIfScrobbable));
+        .WillOnce(testing::InvokeWithoutArgs(&trackInfo,
+                  &TrackTimingInfo::slotCheckIfScrobbable));
     EXPECT_CALL(*etmock,elapsed())
         .WillOnce(testing::Return(2500));   
-    testTrack->setTimer(tmock);
-    testTrack->setElapsedTimer(etmock);
-    testTrack->resetPlayedTime();
-    testTrack->resumePlayedTime();
-    ASSERT_TRUE(testTrack->isScrobbable());
+    trackInfo.setTimer(tmock);
+    trackInfo.setElapsedTimer(etmock);
+    trackInfo.resetPlayedTime();
+    trackInfo.resumePlayedTime();
+    ASSERT_TRUE(trackInfo.isScrobbable());
 }

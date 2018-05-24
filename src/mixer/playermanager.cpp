@@ -637,25 +637,25 @@ void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack) {
 }
 
 void PlayerManager::slotTrackPaused(TrackPointer pPausedTrack) {
-    if (!pPausedTrack)
-        return;    
-    QMutexLocker locker(&m_mutex);
-    bool allPaused = true;
-    foreach (Deck *deck,m_decks) {
-        if (deck->getLoadedTrack() == pPausedTrack && !deck->isTrackPaused()) {
-            allPaused = false;
-            break;
-        } 
-    }
-    if (allPaused)
-        pPausedTrack->pausePlayedTime();    
+    // if (!pPausedTrack)
+    //     return;    
+    // QMutexLocker locker(&m_mutex);
+    // bool allPaused = true;
+    // foreach (Deck *deck,m_decks) {
+    //     if (deck->getLoadedTrack() == pPausedTrack && !deck->isTrackPaused()) {
+    //         allPaused = false;
+    //         break;
+    //     } 
+    // }
+    // if (allPaused)
+    //     pPausedTrack->pausePlayedTime();    
 }
 
 void PlayerManager::slotTrackResumed(TrackPointer pPausedTrack) {
-    if (!pPausedTrack)
-        return;
-    QMutexLocker locker(&m_mutex);
-    pPausedTrack->resumePlayedTime();
+    // if (!pPausedTrack)
+    //     return;
+    // QMutexLocker locker(&m_mutex);
+    // pPausedTrack->resumePlayedTime();
 }
 
 void PlayerManager::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
@@ -683,13 +683,13 @@ void PlayerManager::slotPlayerEmpty() {
 }
 
 void PlayerManager::resetTrack(Deck *deck) {
-    QMutexLocker locker(&m_mutex);    
-    foreach (trackDeckPair pair,m_tracksToBeReset) {
-        if (deck == pair.pDeck) {
-            disconnect(pair.pTrack.get(),SIGNAL(readyToBeScrobbled(Track*)),
-                       m_pMetadataBroadcast,SLOT(slotReadyToBeScrobbled(Track*)));
-            pair.pTrack->resetPlayedTime();
-            break;
-        }
-    }
+    // QMutexLocker locker(&m_mutex);    
+    // foreach (trackDeckPair pair,m_tracksToBeReset) {
+    //     if (deck == pair.pDeck) {
+    //         disconnect(pair.pTrack.get(),SIGNAL(readyToBeScrobbled(Track*)),
+    //                    m_pMetadataBroadcast,SLOT(slotReadyToBeScrobbled(Track*)));
+    //         pair.pTrack->resetPlayedTime();
+    //         break;
+    //     }
+    // }
 }

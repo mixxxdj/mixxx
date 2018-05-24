@@ -1,21 +1,20 @@
 #include "track/trackplaytimers.h"
 
-TrackTimers::TimerQt::TimerQt()
+TrackTimers::GUITickTimer::GUITickTimer()
 {
-    connect(&m_Timer,SIGNAL(timeout()),
-            this,SIGNAL(timeout()));
+
 }
 
-void TrackTimers::TimerQt::start(int msec) {
-    m_Timer.start(msec);
+void TrackTimers::GUITickTimer::start(int msec) {
+
 }
 
-bool TrackTimers::TimerQt::isActive() {
-    return m_Timer.isActive();
+bool TrackTimers::GUITickTimer::isActive() {
+
 }
 
-void TrackTimers::TimerQt::stop() {
-    m_Timer.stop();
+void TrackTimers::GUITickTimer::stop() {
+
 }
 
 void TrackTimers::ElapsedTimerQt::invalidate() {

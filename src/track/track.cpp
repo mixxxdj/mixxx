@@ -71,11 +71,7 @@ Track::Track(
           m_record(trackId),
           m_bDirty(false),
           m_bMarkedForMetadataExport(false),
-          m_analyzerProgress(-1),          
-          m_pElapsedTimer(new TrackTimers::ElapsedTimerQt()),
-          m_pTimer(new TrackTimers::TimerQt()),
-          m_msPlayed(0),
-          m_isScrobbable(false) {
+          m_analyzerProgress(-1) {
     if (kLogStats && kLogger.debugEnabled()) {
         long numberOfInstancesBefore = s_numberOfInstances.fetch_add(1);
         kLogger.debug()
@@ -1100,60 +1096,5 @@ Track::ExportMetadataResult Track::exportMetadata(
                 << getLocation();
         return ExportMetadataResult::Failed;
     }
-}
-
-void Track::pausePlayedTime() {
-    QMutexLocker locker(&m_qMutex);
-    if (m_pElapsedTimer->isValid()) {
-        m_msPlayed += m_pElapsedTimer->elapsed();
-        m_pElapsedTimer->invalidate();
-        QObject::disconnect(m_pTimer.get(),SIGNAL(timeout()),
-                            this,SLOT(slotCheckIfScrobbable()));
-    }        
-}
-
-void Track::resumePlayedTime() {
-    QMutexLocker locker(&m_qMutex);
-    if (!m_pElapsedTimer->isValid()) {        
-        connect(m_pTimer.get(),SIGNAL(timeout()),
-                SLOT(slotCheckIfScrobbable()));
-        m_pElapsedTimer->start();
-        m_pTimer->start(1000);
-    }
-}
-
-void Track::resetPlayedTime() {
-    QMutexLocker locker(&m_qMutex);
-    m_pElapsedTimer->invalidate();
-    QObject::disconnect(m_pTimer.get(),SIGNAL(timeout()),
-                        this,SLOT(slotCheckIfScrobbable()));
-    m_msPlayed = 0;
-}
-
-void Track::setElapsedTimer(TrackTimers::ElapsedTimer *elapsedTimer) {
-    m_pElapsedTimer.reset(elapsedTimer);
-}
-
-void Track::setTimer(TrackTimers::TrackTimer *timer) {
-    m_pTimer.reset(timer);
-}
-
-void Track::slotCheckIfScrobbable() {
-    qint64 msInTimer = 0;
-    if (m_pElapsedTimer->isValid())
-        msInTimer = m_pElapsedTimer->elapsed();
-    if (static_cast<double>(msInTimer + m_msPlayed) / 1000.0 >=
-        getDuration(DurationRounding::SECONDS) / 2.0) {
-            m_isScrobbable = true;
-            emit(readyToBeScrobbled(this));
-        } 
-}
-
-void Track::setMsPlayed(qint64 ms) {
-    m_msPlayed = ms;
-}
-
-bool Track::isScrobbable() {
-    return m_isScrobbable;
 }
 

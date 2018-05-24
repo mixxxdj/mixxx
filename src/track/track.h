@@ -144,21 +144,7 @@ class Track : public QObject {
     QString getDurationTextMilliseconds() const {
         return getDurationText(mixxx::Duration::Precision::MILLISECONDS);
     }
-
-    void pausePlayedTime();
-
-    void resumePlayedTime();
-
-    void resetPlayedTime();
-
-    void setElapsedTimer(TrackTimers::ElapsedTimer *elapsedTimer);
-
-    void setTimer(TrackTimers::TrackTimer *timer);
-
-    void setMsPlayed(qint64 ms);
-
-    bool isScrobbable();
-
+    
     // Set BPM
     double setBpm(double);
     // Returns BPM
@@ -336,7 +322,6 @@ class Track : public QObject {
     void changed(Track* pTrack);
     void dirty(Track* pTrack);
     void clean(Track* pTrack);
-    void readyToBeScrobbled(Track *pTrack);
 
   private slots:
     void slotCueUpdated();
@@ -405,18 +390,8 @@ class Track : public QObject {
 
     QAtomicInt m_analyzerProgress; // in 0.1%
 
-    std::unique_ptr<TrackTimers::ElapsedTimer> m_pElapsedTimer;
-    std::unique_ptr<TrackTimers::TrackTimer> m_pTimer;    
-
-    qint64 m_msPlayed;
-
-    bool m_isScrobbable;
-
     friend class TrackDAO;
     friend class GlobalTrackCache;
     friend class GlobalTrackCacheResolver;
     friend class SoundSourceProxy;
-
-  public slots:
-    void slotCheckIfScrobbable();    
 };

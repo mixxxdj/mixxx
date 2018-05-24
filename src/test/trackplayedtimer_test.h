@@ -2,7 +2,7 @@
 #include "track/trackplaytimers.h"
 #include "gmock/gmock.h"
 
-class TimerMock : public TrackTimers::TrackTimer {
+class TimerMock : public TrackTimers::RegularTimer {
     Q_OBJECT
   public:
     ~TimerMock() = default;

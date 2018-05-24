@@ -15,11 +15,11 @@ namespace TrackTimers {
       virtual qint64 elapsed() = 0;
   };
 
-  class TrackTimer : public QObject {
+  class RegularTimer : public QObject {
       Q_OBJECT
     public:
-      TrackTimer() = default;
-      virtual ~TrackTimer() = default;
+      RegularTimer() = default;
+      virtual ~RegularTimer() = default;
       virtual void start(int msec) = 0;
       virtual bool isActive() = 0;
     public slots:
@@ -28,16 +28,14 @@ namespace TrackTimers {
       void timeout();
   };
 
-  class TimerQt : public TrackTimer {
+  class GUITickTimer : public RegularTimer {
       Q_OBJECT
     public:
-      TimerQt();
-      ~TimerQt() override = default;
+      GUITickTimer();
+      ~GUITickTimer() override = default;
       void start(int msec) override;
       bool isActive() override;
-      void stop() override;
-    private:
-      QTimer m_Timer;    
+      void stop() override;  
   };
 
   class ElapsedTimerQt : public ElapsedTimer {
