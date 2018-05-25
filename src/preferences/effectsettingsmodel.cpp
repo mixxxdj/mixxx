@@ -5,6 +5,7 @@ namespace {
 const int kColumnEnabled = 0;
 const int kColumnName = 1;
 const int kColumnType = 2;
+const int kNumberOfColumns = 3;
 }
 
 EffectSettingsModel::EffectSettingsModel() {
@@ -14,7 +15,7 @@ EffectSettingsModel::~EffectSettingsModel() {
 }
 
 void EffectSettingsModel::resetFromEffectManager(EffectsManager* pEffectsManager) {
-    if(!pEffectsManager) {
+    if (!pEffectsManager) {
         return;
     }
 
@@ -22,14 +23,14 @@ void EffectSettingsModel::resetFromEffectManager(EffectsManager* pEffectsManager
     endRemoveRows();
     m_profiles.clear();
 
-    for(EffectManifestPointer pManifest : pEffectsManager->getAvailableEffectManifests()) {
+    for (EffectManifestPointer pManifest : pEffectsManager->getAvailableEffectManifests()) {
         const bool visibility = pEffectsManager->getEffectVisibility(pManifest);
         addProfileToModel(EffectProfilePtr(new EffectProfile(pManifest, visibility)));
     }
 }
 
 bool EffectSettingsModel::addProfileToModel(EffectProfilePtr profile) {
-    if(!profile)
+    if (!profile)
         return false;
 
     int position = m_profiles.size();
@@ -42,11 +43,11 @@ bool EffectSettingsModel::addProfileToModel(EffectProfilePtr profile) {
 }
 
 void EffectSettingsModel::deleteProfileFromModel(EffectProfilePtr profile) {
-    if(!profile)
+    if (!profile)
         return;
 
     int position = m_profiles.indexOf(profile);
-    if(position > -1) {
+    if (position > -1) {
         beginRemoveRows(QModelIndex(), position, position);
         endRemoveRows();
     }
@@ -60,7 +61,7 @@ int EffectSettingsModel::rowCount(const QModelIndex& parent) const {
 
 int EffectSettingsModel::columnCount(const QModelIndex& parent) const {
     Q_UNUSED(parent);
-    return 3;
+    return kNumberOfColumns;
 }
 
 QVariant EffectSettingsModel::data(const QModelIndex& index, int role) const {
@@ -93,13 +94,13 @@ QVariant EffectSettingsModel::data(const QModelIndex& index, int role) const {
 
 QVariant EffectSettingsModel::headerData(int section, Qt::Orientation orientation,
         int role) const {
-    if(orientation == Qt::Horizontal) {
-        if(role == Qt::DisplayRole) {
-            if(section == kColumnEnabled) {
+    if (orientation == Qt::Horizontal) {
+        if (role == Qt::DisplayRole) {
+            if (section == kColumnEnabled) {
                 return tr("Visible");
-            } else if(section == kColumnName) {
+            } else if (section == kColumnName) {
                 return tr("Name");
-            } else if(section == kColumnType) {
+            } else if (section == kColumnType) {
                 return tr("Type");
             }
         }
@@ -108,23 +109,23 @@ QVariant EffectSettingsModel::headerData(int section, Qt::Orientation orientatio
 }
 
 Qt::ItemFlags EffectSettingsModel::flags(const QModelIndex& index) const {
-    if(index.column() == kColumnEnabled)
+    if (index.column() == kColumnEnabled)
         return QAbstractItemModel::flags(index) | Qt::ItemIsUserCheckable;
 
-    if(index.column() == kColumnName)
+    if (index.column() == kColumnName)
         return QAbstractItemModel::flags(index) | Qt::ItemIsSelectable;
 
-    if(index.column() == kColumnType)
+    if (index.column() == kColumnType)
         return QAbstractItemModel::flags(index) | Qt::ItemIsSelectable;
 
     return QAbstractItemModel::flags(index) | Qt::ItemIsEnabled;
 }
 
 bool EffectSettingsModel::setData(const QModelIndex& index, const QVariant& value, int role) {
-    if(index.isValid()) {
+    if (index.isValid()) {
         EffectProfilePtr profile = m_profiles.at(index.row());
-        if(profile) {
-            if(index.column() == kColumnEnabled && role == Qt::CheckStateRole) {
+        if (profile) {
+            if (index.column() == kColumnEnabled && role == Qt::CheckStateRole) {
                 profile->setVisibility(value.toBool());
             }
         }
