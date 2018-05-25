@@ -115,6 +115,22 @@ Description:
                 </Children>
               </WidgetGroup>
 
+              <WidgetGroup><!-- BPM Top Bar toogle -->
+                <Layout>stacked</Layout>
+                <MinimumSize>182,13</MinimumSize>
+                <MaximumSize>182,17</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="TooltipId">bmp_top_bar_toogle</SetVariable>
+                    <SetVariable name="state_0_text">      BPM in Top Bar</SetVariable>
+                    <SetVariable name="state_1_text"> &#10004; BPM in Top Bar</SetVariable>
+                    <SetVariable name="width">110</SetVariable>
+                    <SetVariable name="Setting">[Master],show_bpm_in_top_bar</SetVariable>
+                  </Template>
+                  <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+                </Children>
+              </WidgetGroup>
             </Children>
           </WidgetGroup><!-- /Deck / General -->
 

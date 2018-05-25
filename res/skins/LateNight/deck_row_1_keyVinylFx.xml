@@ -94,6 +94,30 @@
 
       <Template src="skin:vinyl_controls.xml"/>
 
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+	 <Children>
+          <NumberBpm>
+            <TooltipId>visual_bpm</TooltipId>
+            <Size>40f,22f</Size>
+            <Channel><Variable name="channum" /></Channel>
+            <NumberOfDigits>2</NumberOfDigits>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+            </Connection>
+          </NumberBpm>
+ 	  <Label>
+            <TooltipId>text</TooltipId>
+            <Size>27f,22f</Size>
+            <Text>BPM</Text>
+          </Label>
+	</Children>
+       <Connection>
+        <ConfigKey persist="false">[Master],show_bpm_in_top_bar</ConfigKey>
+        <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
       <WidgetGroup>  <!-- spacer -->
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
