@@ -98,6 +98,22 @@ Description:
                 </Children>
               </WidgetGroup>
 
+              <WidgetGroup><!-- Rate Control toogle -->
+                <Layout>stacked</Layout>
+                <MinimumSize>182,13</MinimumSize>
+                <MaximumSize>182,17</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="TooltipId">rate_toggle</SetVariable>
+                    <SetVariable name="state_0_text">      Rate Control</SetVariable>
+                    <SetVariable name="state_1_text"> &#10004; Rate Control</SetVariable>
+                    <SetVariable name="width">110</SetVariable>
+                    <SetVariable name="Setting">[Master],show_rate_control</SetVariable>
+                  </Template>
+                  <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+                </Children>
+              </WidgetGroup>
 
             </Children>
           </WidgetGroup><!-- /Deck / General -->
