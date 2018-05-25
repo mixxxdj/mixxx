@@ -1408,12 +1408,13 @@ QTableView::indicator {
 }
 
 /* Button in library "Preview" column */
-#LibraryPreviewButton {
+QPushButton#LibraryPreviewButton {
   width: 23px;
   height: 12px;
-  image: url(skin:/style/library_preview_play.png);
   background-color: transparent;
   border: 0px;
+  margin: 0px;
+  padding: 0px;
   }
   QPushButton#LibraryPreviewButton:!checked{
     image: url(skin:/style/library_preview_play.png);
@@ -1607,8 +1608,15 @@ WLibrary QRadioButton::indicator:unchecked {
   background: url(skin:/buttons/btn_lib_radio_button_off.svg);
 }
 
-/* Library feature pushbuttons */
-WLibrary QPushButton {
+/* Library feature pushbuttons
+  Don't use WLibrary QPushButton here, as this would apply padding
+  to the Preview & BPM lock buttons as well.
+  Define the buttons fore every Library feature instead. */
+#DlgMissing > QPushButton,
+#DlgHidden > QPushButton,
+#DlgAutoDJ > QPushButton,
+#DlgRecording > QPushButton,
+#DlgAnalysis > QPushButton {
   margin: 5px 3px 4px 3px;
   padding: 3px 8px;
   min-width: 65px;
@@ -1619,6 +1627,7 @@ WLibrary QPushButton {
                                stop:0 #252525,
                                stop:1 #0f0f0f);
   }
+  /* Interesting though: this WOULDN'T affect Preview & BPM button */
   WLibrary QPushButton:hover,
   WLibrary QPushButton:focus {
     border: 1px solid #888;
