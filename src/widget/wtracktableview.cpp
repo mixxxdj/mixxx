@@ -358,10 +358,14 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         // Stupid hack that assumes column 0 is never visible, but this is a weak
         // proxy for "there was a saved column sort order"
         if (horizontalHeader()->sortIndicatorSection() > 0) {
-            // Sort by the saved sort section and order. This line sorts the
-            // TrackModel and in turn generates a select()
+            // Sort by the saved sort section and order.
             horizontalHeader()->setSortIndicator(horizontalHeader()->sortIndicatorSection(),
                                                  horizontalHeader()->sortIndicatorOrder());
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+            // in Qt4, the line above emits sortIndicatorChanged
+            // in Qt5, we need to call it manually, which triggers finally the select()
+            doSortByColumn(horizontalHeader()->sortIndicatorSection());
+#endif
         } else {
             // No saved order is present. Use the TrackModel's default sort order.
             int sortColumn = trackModel->defaultSortColumn();
@@ -372,8 +376,13 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
             while (sortColumn < 0 || trackModel->isColumnInternal(sortColumn)) {
                 sortColumn++;
             }
-            // This line sorts the TrackModel and in turn generates a select()
+            // This line sorts the TrackModel
             horizontalHeader()->setSortIndicator(sortColumn, sortOrder);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+            // in Qt4, the line above emits sortIndicatorChanged
+            // in Qt5, we need to call it manually, which triggers finally the select()
+            doSortByColumn(sortColumn);
+#endif
         }
     }
 
