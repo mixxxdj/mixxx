@@ -1395,17 +1395,50 @@ QTableView::indicator {
     background: url(skin:/style/library_checkbox_unchecked.png);
   }
 
-/* BPM lock icon in the library "BPM" column. */
-#LibraryBPMButton::indicator:checked {
-  image: url(:/images/library/ic_library_checked.png);
-}
-#LibraryBPMButton::indicator:unchecked {
-  image: url(:/images/library/ic_library_unchecked.png);
-}
-#LibraryBPMButton::item:selected {
+/* BPM field in tracks table. */
+#LibraryBPMButton::item {
   color: #cfb32c;
-  background-color: #725309;
-}
+  background-color: transparent;
+  margin: 0px;
+  padding: 0px;
+  }
+  #LibraryBPMButton::item:focus {
+    color: #cfb32c;
+    background-color: #0f0f0f;
+    border: none;
+    margin: 0px;
+    padding: 0px;
+  }
+  #LibraryBPMButton::item:selected {
+    color: #fff;
+    background-color: #725309;
+    border: none;
+    margin: 0px;
+    padding: 0px;
+  }
+  #LibraryBPMSpinBox {
+    color: #fff;
+    selection-color: #0f0f0f;
+    background-color: #0f0f0f;
+    selection-background-color: #888;
+    /* This combination of negative top/bottom padding & margin
+      creates a 1px border around the spinbox' text area.
+      Increased left/right padding/margin removes the overlap of
+      text of activated spinbox and left-over text from regular
+      BPM value display. */
+    padding: -1px -8px -1px -4px;
+    margin: -2px 0px -2px -2px;
+    /* As soon as a border is defined, the up/down buttons
+      lose their style & icons
+    border: 0px;*/
+    }
+  /* Lock icon next to BPM value */
+  #LibraryBPMButton::indicator:checked {
+    image: url(:/images/library/ic_library_checked.png);
+  }
+  #LibraryBPMButton::indicator:unchecked {
+    image: url(:/images/library/ic_library_unchecked.png);
+  }
 
 /* Button in library "Preview" column */
 QPushButton#LibraryPreviewButton {
