@@ -123,8 +123,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                   ConfigKey(kAppGroup, QStringLiteral("num_microphones")), true, true)),
           m_pCONumAuxiliaries(std::make_unique<ControlObject>(
                   ConfigKey(kAppGroup, QStringLiteral("num_auxiliaries")), true, true)),
-          m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()),
-          m_pMetadataBroadcast(new MetadataBroadcast()) {
+          m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
     m_pCONumDecks->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("num_decks")));
     m_pCONumDecks->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumDecks, Qt::DirectConnection);
@@ -164,8 +163,6 @@ PlayerManager::~PlayerManager() {
     delete m_pCOPNumDecks.fetchAndStoreAcquire(nullptr);
     delete m_pCOPNumSamplers.fetchAndStoreAcquire(nullptr);
     delete m_pCOPNumPreviewDecks.fetchAndStoreAcquire(nullptr);
-
-    delete m_pMetadataBroadcast;
 
     if (m_pTrackAnalysisScheduler) {
         m_pTrackAnalysisScheduler->stop();
@@ -429,11 +426,11 @@ void PlayerManager::addDeckInner() {
             this,
             &PlayerManager::slotSaveEjectedTrack);
 
-    connect(pDeck, SIGNAL(trackPaused(TrackPointer)), this, SLOT(slotTrackPaused(TrackPointer)));
-    connect(pDeck, SIGNAL(trackResumed(TrackPointer)), this, SLOT(slotTrackResumed(TrackPointer)));
-    connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)), this, SLOT(slotNewTrackLoaded(TrackPointer)));
-    connect(pDeck, SIGNAL(loadingTrack(TrackPointer, TrackPointer)), this, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
-    connect(pDeck, SIGNAL(playerEmpty()), this, SLOT(slotPlayerEmpty()));
+    connect(pDeck, SIGNAL(trackPaused(TrackPointer)), &m_scrobblingManager, SLOT(slotTrackPaused(TrackPointer)));
+    connect(pDeck, SIGNAL(trackResumed(TrackPointer)), &m_scrobblingManager, SLOT(slotTrackResumed(TrackPointer)));
+    connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)), &m_scrobblingManager, SLOT(slotNewTrackLoaded(TrackPointer)));
+    connect(pDeck, SIGNAL(loadingTrack(TrackPointer, TrackPointer)), &m_scrobblingManager, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
+    connect(pDeck, SIGNAL(playerEmpty()), &m_scrobblingManager, SLOT(slotPlayerEmpty()));
 
     if (m_pTrackAnalysisScheduler) {
         connect(pDeck,
@@ -863,62 +860,4 @@ void PlayerManager::onTrackAnalysisProgress(TrackId trackId, AnalyzerProgress an
 
 void PlayerManager::onTrackAnalysisFinished() {
     emit trackAnalyzerIdle();
-}
-
-void PlayerManager::slotTrackPaused(TrackPointer pPausedTrack) {
-    // if (!pPausedTrack)
-    //     return;
-    // QMutexLocker locker(&m_mutex);
-    // bool allPaused = true;
-    // foreach (Deck* deck, m_decks) {
-    //     if (deck->getLoadedTrack() == pPausedTrack && !deck->isTrackPaused()) {
-    //         allPaused = false;
-    //         break;
-    //     }
-    // }
-    // if (allPaused)
-    //     pPausedTrack->pausePlayedTime();
-}
-
-void PlayerManager::slotTrackResumed(TrackPointer pPausedTrack) {
-    // if (!pPausedTrack)
-    //     return;
-    // QMutexLocker locker(&m_mutex);
-    // pPausedTrack->resumePlayedTime();
-}
-
-void PlayerManager::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    QMutexLocker locker(&m_mutex);
-    Deck* loadingDeck = qobject_cast<Deck*>(sender());
-    if (pOldTrack) {
-        bool allUnloaded = true;
-        foreach (Deck* deck, m_decks) {
-            if (deck != loadingDeck && deck->getLoadedTrack() == pOldTrack) {
-                allUnloaded = false;
-                break;
-            }
-        }
-        if (allUnloaded)
-            m_tracksToBeReset.append(trackDeckPair(pOldTrack, loadingDeck));
-    }
-}
-
-void PlayerManager::slotNewTrackLoaded(TrackPointer pNewTrack) {
-    resetTrack(qobject_cast<Deck*>(sender()));
-}
-
-void PlayerManager::slotPlayerEmpty() {
-    resetTrack(qobject_cast<Deck*>(sender()));
-}
-
-void PlayerManager::resetTrack(Deck* pDeck) {
-    // QMutexLocker locker(&m_mutex);
-    // foreach (trackDeckPair pair,m_tracksToBeReset) {
-    //     if (deck == pair.pDeck) {
-    //         disconnect(pair.pTrack.get(),SIGNAL(readyToBeScrobbled(Track*)),
-    //                    m_pMetadataBroadcast,SLOT(slotReadyToBeScrobbled(Track*)));
-    //         pair.pTrack->resetPlayedTime();
-    //         break;
-    //     }
-    // }
 }

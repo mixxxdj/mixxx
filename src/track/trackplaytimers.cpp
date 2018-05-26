@@ -2,17 +2,38 @@
 
 #include "moc_trackplaytimers.cpp"
 
-TrackTimers::GUITickTimer::GUITickTimer() {
+TrackTimers::GUITickTimer::GUITickTimer()
+        : m_CPGuiTimer50ms("[Master]", "guiTick50ms", this),
+          m_msSoFar(0.0),
+          m_msTarget(0.0),
+          m_isActive(false),
+          m_timeoutSent(false) {
+    m_CPGuiTimer50ms.connectValueChanged(this, &TrackTimers::GUITickTimer::slotTick);
 }
 
 void TrackTimers::GUITickTimer::start(int msec) {
+    m_msTarget = static_cast<double>(msec);
+    m_msSoFar = 0.0;
+    m_isActive = true;
+    m_timeoutSent = false;
 }
 
 bool TrackTimers::GUITickTimer::isActive() {
-    return false;
+    return m_isActive;
 }
 
 void TrackTimers::GUITickTimer::stop() {
+    m_isActive = false;
+}
+
+void TrackTimers::GUITickTimer::slotTick(double timeSinceLastTick) {
+    if (not m_timeoutSent) {
+        m_msSoFar += timeSinceLastTick;
+        if (m_msSoFar >= m_msTarget) {
+            m_timeoutSent = true;
+            emit(timeout());
+        }
+    }
 }
 
 void TrackTimers::ElapsedTimerQt::invalidate() {

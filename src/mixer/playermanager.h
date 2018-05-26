@@ -7,6 +7,7 @@
 #include <QObject>
 
 #include "analyzer/trackanalysisscheduler.h"
+#include "broadcast/scrobblingmanager.h"
 #include "engine/channelhandle.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
@@ -263,13 +264,6 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     void trackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
     void trackAnalyzerIdle();
 
-  private slots:
-    void slotTrackPaused(TrackPointer pPausedTrack);
-    void slotTrackResumed(TrackPointer pResumedTrack);
-    void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
-    void slotNewTrackLoaded(TrackPointer pNewTrack);
-    void slotPlayerEmpty();
-
   private:
     TrackPointer lookupTrack(QString location);
     // Must hold m_mutex before calling this method. Internal method that
@@ -287,8 +281,6 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Must hold m_mutex before calling this method. Internal method that
     // creates a new auxiliary.
     void addAuxiliaryInner();
-    //Resets the played timer in the track a just switched.
-    void resetTrack(Deck* deck);
 
     // Used to protect access to PlayerManager state across threads.
     mutable QT_RECURSIVE_MUTEX m_mutex;
@@ -302,6 +294,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     EffectsManager* m_pEffectsManager;
     EngineMixer* m_pEngine;
     SamplerBank* m_pSamplerBank;
+    ScrobblingManager m_scrobblingManager;
     std::unique_ptr<ControlObject> m_pCONumDecks;
     std::unique_ptr<ControlObject> m_pCONumSamplers;
     std::unique_ptr<ControlObject> m_pCONumPreviewDecks;
@@ -320,15 +313,4 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     QList<Microphone*> m_microphones;
     QList<Auxiliary*> m_auxiliaries;
     QMap<ChannelHandle, BaseTrackPlayer*> m_players;
-
-    //Live metadata section
-    MetadataBroadcast* m_pMetadataBroadcast;
-    struct trackDeckPair {
-        TrackPointer pTrack;
-        Deck* pDeck;
-        trackDeckPair(TrackPointer pTrack, Deck* pDeck)
-                : pTrack(pTrack), pDeck(pDeck) {
-        }
-    };
-    QList<trackDeckPair> m_tracksToBeReset;
 };
