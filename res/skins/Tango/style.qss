@@ -2303,18 +2303,34 @@ WLibrary QPushButton {
 
   /* BPM lock icon in the library "BPM" column. */
   #LibraryBPMButton::indicator:checked {
-    image: url(skin:/buttons/btn_bpm_locked.png);
+    image: url(:/images/library/ic_library_checked.png);
     }
     #LibraryBPMButton::indicator:unchecked {
-      image: url(skin:/buttons/btn_bpm_unlocked.png);
+      image: url(:/images/library/ic_library_unchecked.png);
       }
-    #LibraryBPMButton::item {
-      color: #cfcfcf;
-      }
+  #LibraryBPMButton::item {
+    color: #cfcfcf;
+    }
     #LibraryBPMButton::item:selected {
       color: #ededed;
       background-color: #666;
       }
+  #LibraryBPMSpinBox {
+    color: #fff;
+    selection-color: #0f0f0f;
+    background-color: #0f0f0f;
+    selection-background-color: #888;
+    /* This combination of negative top/bottom padding & margin
+      creates a 1px border around the spinbox' text area.
+      Increased left/right padding/margin removes the overlap of
+      text of activated spinbox and left-over text from regular
+      BPM value display. */
+    padding: -1px -8px -1px -4px;
+    margin: -2px 0px -2px -2px;
+    /* As soon as a border is defined, the up/down buttons
+      lose their style & icons
+    border: 0px;*/
+    }
 
   #LibraryTimesPlayed::item {
     color: #cfcfcf;
