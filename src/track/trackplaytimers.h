@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QTimer>
 #include <QElapsedTimer>
+#include "control/controlproxy.h"
 
 namespace TrackTimers {
   class ElapsedTimer {
@@ -35,7 +36,15 @@ namespace TrackTimers {
       ~GUITickTimer() override = default;
       void start(int msec) override;
       bool isActive() override;
-      void stop() override;  
+      void stop() override;
+    private:
+      ControlProxy m_CPGuiTimer50ms;
+      double m_msSoFar;
+      double m_msTarget;
+      bool m_isActive;
+      bool m_timeoutSent;
+    private slots:
+      void slotTick(double timeSinceLastTick);      
   };
 
   class ElapsedTimerQt : public ElapsedTimer {

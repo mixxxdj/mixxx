@@ -11,6 +11,7 @@
 
 #include "preferences/usersettings.h"
 #include "track/track.h"
+#include "broadcast/scrobblingmanager.h"
 
 class AnalyzerQueue;
 class Auxiliary;
@@ -240,13 +241,6 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Used to protect access to PlayerManager state across threads.
     mutable QMutex m_mutex;
 
-  private slots:    
-    void slotTrackPaused(TrackPointer pPausedTrack);
-    void slotTrackResumed(TrackPointer pResumedTrack);
-    void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
-    void slotNewTrackLoaded(TrackPointer pNewTrack);
-    void slotPlayerEmpty();
-
   private:
   
     UserSettingsPointer m_pConfig;
@@ -255,6 +249,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     EngineMaster* m_pEngine;
     SamplerBank* m_pSamplerBank;
     AnalyzerQueue* m_pAnalyzerQueue;
+    ScrobblingManager m_scrobblingManager;
     ControlObject* m_pCONumDecks;
     ControlObject* m_pCONumSamplers;
     ControlObject* m_pCONumPreviewDecks;
@@ -266,17 +261,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     QList<PreviewDeck*> m_preview_decks;
     QList<Microphone*> m_microphones;
     QList<Auxiliary*> m_auxiliaries;
-    QMap<QString, BaseTrackPlayer*> m_players; 
-
-    //Live metadata section
-    MetadataBroadcast *m_pMetadataBroadcast;
-    struct trackDeckPair {
-        TrackPointer pTrack;
-        Deck *pDeck;
-        trackDeckPair(TrackPointer pTrack, Deck *pDeck) :
-        pTrack(pTrack),pDeck(pDeck) {}
-    };
-    QList<trackDeckPair> m_tracksToBeReset;
+    QMap<QString, BaseTrackPlayer*> m_players;         
 };
 
 #endif // MIXER_PLAYERMANAGER_H

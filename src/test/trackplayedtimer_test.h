@@ -1,3 +1,5 @@
+#pragma once
+
 #include <QObject>
 #include "track/trackplaytimers.h"
 #include "gmock/gmock.h"
