@@ -1444,16 +1444,17 @@ QTableView::indicator {
 QPushButton#LibraryPreviewButton {
   width: 23px;
   height: 12px;
-  background-color: transparent;
+  background-color: #0f0f0f;
   border: 0px;
   margin: 0px;
   padding: 0px;
   }
   QPushButton#LibraryPreviewButton:!checked{
-    image: url(skin:/style/library_preview_play.png);
+    image: url(:/images/library/ic_library_preview_play.png);
   }
   QPushButton#LibraryPreviewButton:checked{
-    image: url(skin:/style/library_preview_pause.png);
+    image: url(:/images/library/ic_library_preview_pause.png);
+    background-color: #573F07;
   }
 
 QHeaderView {
