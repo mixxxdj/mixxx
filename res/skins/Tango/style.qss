@@ -2350,11 +2350,11 @@ WLibrary QPushButton {
       border: 1px solid #eeeeee;
     }
     QPushButton#LibraryPreviewButton:!checked {
-      image: url(skin:/graphics/library_preview_play.png);
+      image: url(:/images/library/ic_library_preview_play.png);
       background-color: #0f0f0f;
       }
     QPushButton#LibraryPreviewButton:checked {
-      image: url(skin:/graphics/library_preview_pause.png);
+      image: url(:/images/library/ic_library_preview_pause.png);
       background-color: #333;
       }
 
