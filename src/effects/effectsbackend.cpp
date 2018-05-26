@@ -4,16 +4,13 @@
 #include "effects/effectsmanager.h"
 
 EffectsBackend::EffectsBackend(QObject* pParent,
-                               UserSettingsPointer pConfig, 
                                QString name)
         : QObject(pParent),
-          m_pConfig(pConfig),
           m_name(name) {
 }
 
 EffectsBackend::~EffectsBackend() {
     m_registeredEffects.clear();
-    m_visibleEffectIds.clear();
     m_effectIds.clear();
 }
 
@@ -29,14 +26,9 @@ void EffectsBackend::registerEffect(const QString& id,
         return;
     }
 
-    const bool visible = m_pConfig->getValue<bool>(ConfigKey("[Visible Effects]", 
-                                                   pManifest->id()), true);
     pManifest->setBackendName(m_name);
 
     m_registeredEffects[id] = RegisteredEffect(pManifest, pInstantiator);
-    if (visible) {
-        addVisibleEffect(id);
-    }
     m_effectIds.append(id);
     emit(effectRegistered(pManifest));
 }
@@ -51,14 +43,6 @@ EffectManifestPointer EffectsBackend::getManifest(const QString& effectId) const
         return EffectManifestPointer();
     }
     return m_registeredEffects[effectId].manifest();
-}
-
-bool EffectsBackend::getVisibility(const QString& effectId) const {
-    return m_visibleEffectIds.contains(effectId);
-}
-
-void EffectsBackend::addVisibleEffect(const QString& effectId) {
-    m_visibleEffectIds.append(effectId);
 }
 
 bool EffectsBackend::canInstantiateEffect(const QString& effectId) const {

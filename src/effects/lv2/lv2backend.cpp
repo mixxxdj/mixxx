@@ -1,9 +1,8 @@
 #include "effects/lv2/lv2backend.h"
 #include "effects/lv2/lv2manifest.h"
 
-LV2Backend::LV2Backend(QObject* pParent,
-                       UserSettingsPointer pConfig)
-        : EffectsBackend(pParent, pConfig, tr("LV2")) {
+LV2Backend::LV2Backend(QObject* pParent)
+        : EffectsBackend(pParent, tr("LV2")) {
     m_pWorld = lilv_world_new();
     initializeProperties();
     lilv_world_load_all(m_pWorld);
@@ -28,14 +27,7 @@ void LV2Backend::enumeratePlugins() {
             continue;
         }
         LV2Manifest* lv2Manifest = new LV2Manifest(plug, m_properties);
-
-        const bool visible = m_pConfig->getValue<bool>(ConfigKey("[Visible Effects]", 
-                                                       lv2Manifest->getEffectManifest()->id()), false);
         lv2Manifest->getEffectManifest()->setBackendName(getName());
-        if (visible) {
-            addVisibleEffect(lv2Manifest->getEffectManifest()->id());
-        }
-
         m_registeredEffects.insert(lv2Manifest->getEffectManifest()->id(),
                                    lv2Manifest);
     }

@@ -15,6 +15,16 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
     m_pAvailableEffectsModel = new EffectSettingsModel();
 
     m_pAvailableEffectsModel->resetFromEffectManager(pEffectsManager);
+    for (auto profile : m_pAvailableEffectsModel->profiles()) {
+        EffectManifestPointer pManifest = profile->pManifest;
+
+        // Blacklisted Non-native effects by default
+        bool defaultValue = QString::localeAwareCompare(pManifest->backendName(), tr("Native")) == 0;
+        bool visible = m_pConfig->getValue<bool>(ConfigKey("[Visible Effects]", 
+                                                 pManifest->id()), defaultValue);
+        profile->bIsVisible = visible;
+        m_pEffectsManager->setEffectVisibility(pManifest, visible);
+    }
     availableEffectsList->setModel(m_pAvailableEffectsModel);
 
     connect(availableEffectsList->selectionModel(),
@@ -51,9 +61,9 @@ void DlgPrefEffects::slotUpdate() {
 
 void DlgPrefEffects::slotApply() {
     for (EffectProfilePtr profile : m_pAvailableEffectsModel->profiles()) {
-        EffectManifestPointer pManifest = profile->getManifest();
-        m_pEffectsManager->setEffectVisibility(pManifest, profile->isVisible());
-        m_pConfig->set(ConfigKey("[Visible Effects]", pManifest->id()), ConfigValue(profile->isVisible()));
+        EffectManifestPointer pManifest = profile->pManifest;
+        m_pEffectsManager->setEffectVisibility(pManifest, profile->bIsVisible);
+        m_pConfig->set(ConfigKey("[Visible Effects]", pManifest->id()), ConfigValue(profile->bIsVisible));
     }
 }
 

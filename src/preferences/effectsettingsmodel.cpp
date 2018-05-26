@@ -73,19 +73,19 @@ QVariant EffectSettingsModel::data(const QModelIndex& index, int role) const {
     EffectProfilePtr profile = m_profiles.at(rowIndex);
     if (profile) {
         if (role == Qt::UserRole) {
-            return profile->getEffectId();
+            return profile->pManifest->id();
         }
         int column = index.column();
         if (column == kColumnEnabled) {
             if (role == Qt::CheckStateRole) {
-                return (profile->isVisible() == true ? Qt::Checked : Qt::Unchecked);
+                return (profile->bIsVisible ? Qt::Checked : Qt::Unchecked);
             } else if (role == Qt::TextAlignmentRole) {
                 return Qt::AlignCenter;
             }
         } else if (column == kColumnName && role == Qt::DisplayRole) {
-            return profile->getDisplayName();
+            return profile->pManifest->displayName();
         } else if (column == kColumnType && role == Qt::DisplayRole) {
-            return profile->getManifest()->backendName();
+            return profile->pManifest->backendName();
         }
     }
 
@@ -126,7 +126,7 @@ bool EffectSettingsModel::setData(const QModelIndex& index, const QVariant& valu
         EffectProfilePtr profile = m_profiles.at(index.row());
         if (profile) {
             if (index.column() == kColumnEnabled && role == Qt::CheckStateRole) {
-                profile->setVisibility(value.toBool());
+                profile->bIsVisible = value.toBool();
             }
         }
     }

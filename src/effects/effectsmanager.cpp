@@ -68,7 +68,6 @@ EffectsManager::~EffectsManager() {
 
 bool alphabetizeEffectManifests(EffectManifestPointer pManifest1,
                                 EffectManifestPointer pManifest2) {
-    
     int dNameComp = QString::localeAwareCompare(pManifest1->displayName(), pManifest2->displayName());
     int bNameComp = QString::localeAwareCompare(pManifest1->backendName(), pManifest2->backendName());
     // Add an exception for "Native" backends, to keep the Native effects in the beginning
@@ -83,11 +82,7 @@ void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
 
     QList<QString> backendEffects = pBackend->getEffectIds();
     for (const QString& effectId : backendEffects) {
-        const EffectManifestPointer pManifest = pBackend->getManifest(effectId);
-        m_availableEffectManifests.append(pManifest);
-        if (pBackend->getVisibility(effectId)) {
-            setEffectVisibility(pManifest, true);
-        }
+        m_availableEffectManifests.append(pBackend->getManifest(effectId));
     }
 
     m_pNumEffectsAvailable->forceSet(m_availableEffectManifests.size());

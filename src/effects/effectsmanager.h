@@ -142,8 +142,6 @@ class EffectsManager : public QObject {
 
     bool m_underDestruction;
 
-    UserSettingsPointer m_pConfig;
-
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };
 

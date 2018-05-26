@@ -6,11 +6,19 @@
 #include <QMap>
 #include <QVariant>
 
-#include "preferences/effectprofile.h"
+#include "effects/effectmanifest.h"
 #include "effects/effectsmanager.h"
 
-class EffectSettings;
-typedef QSharedPointer<EffectSettings> EffectSettingsPointer;
+struct EffectProfile {
+    EffectManifestPointer pManifest;
+    bool bIsVisible;
+
+    EffectProfile(EffectManifestPointer _pManifest, bool _bIsVisible) {
+        pManifest = _pManifest;
+        bIsVisible = _bIsVisible;
+    }
+};
+typedef QSharedPointer<EffectProfile> EffectProfilePtr;
 
 class EffectSettingsModel : public QAbstractTableModel {
   Q_OBJECT

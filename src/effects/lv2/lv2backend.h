@@ -9,8 +9,7 @@
 class LV2Backend : public EffectsBackend {
     Q_OBJECT
   public:
-    LV2Backend(QObject* pParent,
-               UserSettingsPointer pConfig);
+    LV2Backend(QObject* pParent);
     virtual ~LV2Backend();
 
     void enumeratePlugins();
