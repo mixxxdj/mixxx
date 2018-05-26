@@ -2355,8 +2355,7 @@ WLibrary QPushButton {
       }
     QPushButton#LibraryPreviewButton:checked {
       image: url(skin:/graphics/library_preview_pause.png);
-      background-color: #000;
-      border: 1px solid #ff6600;
+      background-color: #333;
       }
 
   /* checkbox in library "Played" column */
@@ -2385,11 +2384,6 @@ WLibrary QSpinBox {
   max-height: 22px;
   min-width: 40px;
   max-width: 40px;
-}
-
-WLibrary QSpinBox:editable {
-  background: #0f0f0f;
-  color: #ffa600;
 }
 
 /* library search text box */
