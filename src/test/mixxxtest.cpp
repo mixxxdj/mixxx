@@ -81,7 +81,7 @@ MixxxTest::~MixxxTest() {
         delete pCDP->getCreatorCO();
     }
 
-    // recursivly delete all config files used for the test.
+    // recursively delete all config files used for the test.
     // TODO(kain88) --
     //     switch to use QDir::removeRecursively() once we switched to Qt5.
     QDir_removeRecursively(m_testDataDir);

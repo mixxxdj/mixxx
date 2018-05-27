@@ -34,7 +34,7 @@ class SkinContext {
     QString makeSkinPath(const QString& relativePath) const {
         if (relativePath.isEmpty() || relativePath.startsWith("/")
                 || relativePath.contains(":")) {
-            // This is already an absolut path start with the root folder "/"
+            // This is already an absolute path start with the root folder "/"
             // a windows drive letter e.g. "C:" or a qt search path prefix
             return relativePath;
         }

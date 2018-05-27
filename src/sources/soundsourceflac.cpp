@@ -71,7 +71,6 @@ SoundSourceFLAC::SoundSourceFLAC(const QUrl& url)
           m_decoder(nullptr),
           m_maxBlocksize(0),
           m_bitsPerSample(kBitsPerSampleDefault),
-          m_sampleScaleFactor(CSAMPLE_ZERO),
           m_curFrameIndex(0) {
 }
 
@@ -345,6 +344,29 @@ FLAC__bool SoundSourceFLAC::flacEOF() {
     return m_file.atEnd();
 }
 
+namespace {
+
+// Workaround for improperly encoded FLAC files that may contain
+// garbage in the most significant, unused bits of decoded samples.
+// Required at least for libFLAC 1.3.2. This workaround might become
+// obsolete once libFLAC is taking care of these issues internally.
+// https://bugs.launchpad.net/mixxx/+bug/1769717
+// https://hydrogenaud.io/index.php/topic,61792.msg559045.html#msg559045
+
+// We will shift decoded samples left by (32 - m_bitsPerSample) to
+// get rid of the garbage in the most significant bits before scaling
+// to the range [-CSAMPLE_PEAK, CSAMPLE_PEAK - epsilon] with
+// epsilon = 1 / 2 ^ bitsPerSample.
+constexpr CSAMPLE kSampleScaleFactor = CSAMPLE_PEAK / (static_cast<FLAC__int32>(1) << std::numeric_limits<FLAC__int32>::digits);
+
+inline
+CSAMPLE convertDecodedSample(FLAC__int32 decodedSample, int bitsPerSample) {
+    DEBUG_ASSERT(std::numeric_limits<FLAC__int32>::is_signed);
+    return (decodedSample << ((std::numeric_limits<FLAC__int32>::digits + 1) - bitsPerSample)) * kSampleScaleFactor;
+}
+
+} // anonymous namespace
+
 FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
         const FLAC__Frame* frame, const FLAC__int32* const buffer[]) {
     const SINT numChannels = frame->header.channels;
@@ -391,15 +413,15 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
     case 1: {
         // optimized code for 1 channel (mono)
         for (SINT i = 0; i < numWritableFrames; ++i) {
-            *pSampleBuffer++ = buffer[0][i] * m_sampleScaleFactor;
+            *pSampleBuffer++ = convertDecodedSample(buffer[0][i], m_bitsPerSample);
         }
         break;
     }
     case 2: {
         // optimized code for 2 channels (stereo)
         for (SINT i = 0; i < numWritableFrames; ++i) {
-            *pSampleBuffer++ = buffer[0][i] * m_sampleScaleFactor;
-            *pSampleBuffer++ = buffer[1][i] * m_sampleScaleFactor;
+            *pSampleBuffer++ = convertDecodedSample(buffer[0][i], m_bitsPerSample);
+            *pSampleBuffer++ = convertDecodedSample(buffer[1][i], m_bitsPerSample);
         }
         break;
     }
@@ -407,7 +429,7 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
         // generic code for multiple channels
         for (SINT i = 0; i < numWritableFrames; ++i) {
             for (SINT j = 0; j < channelCount(); ++j) {
-                *pSampleBuffer++ = buffer[j][i] * m_sampleScaleFactor;
+                *pSampleBuffer++ = convertDecodedSample(buffer[j][i], m_bitsPerSample);
             }
         }
     }
@@ -435,9 +457,13 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
         DEBUG_ASSERT(kBitsPerSampleDefault != bitsPerSample);
         if (kBitsPerSampleDefault == m_bitsPerSample) {
             // not set before
-            m_bitsPerSample = bitsPerSample;
-            m_sampleScaleFactor = CSAMPLE_PEAK
-                    / CSAMPLE(FLAC__int32(1) << bitsPerSample);
+            if ((bitsPerSample >= 4) && (bitsPerSample <= 32)) {
+                m_bitsPerSample = bitsPerSample;
+            } else {
+                kLogger.warning()
+                        << "Invalid bits per sample:"
+                        << bitsPerSample;
+            }
         } else {
             // already set before -> check for consistency
             if (bitsPerSample != m_bitsPerSample) {

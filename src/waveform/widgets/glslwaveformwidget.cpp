@@ -87,7 +87,7 @@ mixxx::Duration GLSLWaveformWidget::render() {
 
 void GLSLWaveformWidget::resize(int width, int height) {
     //NOTE: (vrince) this is needed since we allocation buffer on resize
-    //ans the Gl Context should be properly setted
+    //and the Gl Context should be properly set
     makeCurrent();
     WaveformWidgetAbstract::resize(width,height);
 }

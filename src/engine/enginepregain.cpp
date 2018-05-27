@@ -124,7 +124,7 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
     // We have measured -Inf dB at x0, -6 dB at x0.3, 0 dB at x1 and 3.5 dB
     // at 2.5 using a real vinyl.
     // x5 is the maximum physically speed before the needle is starting to
-    // loose contact to teh vinyl.
+    // lose contact to the vinyl.
     // So we apply a curve here that emulates the gain change up to x 2.5 natural
     // to 3.5 dB and then limits the gain towards 5.5 dB at x5.
     // Since the additional gain will lead to undesired clipping,

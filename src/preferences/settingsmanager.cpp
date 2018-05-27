@@ -44,7 +44,7 @@ void SettingsManager::initializeDefaults() {
     // TODO(rryan): this looks unused.
     m_pSettings->set(ConfigKey("[Config]", "Path"), ConfigValue(resourcePath));
 
-    // Intialize default BPM system values.
+    // Initialize default BPM system values.
     // NOTE(rryan): These should be in a better place but they've always been in
     // MixxxMainWindow.
     if (!m_pSettings->exists(ConfigKey("[BPM]", "BPMRangeStart"))) {

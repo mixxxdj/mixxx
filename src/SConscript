@@ -295,7 +295,7 @@ image_files = Glob('#res/images/preferences/*')  # These are compiled in to the 
 # all files on 2+ builds after a clean.
 dll_files = []
 if build.toolchain_is_msvs and not build.static_dependencies:
-        # skip the MSVC DLLs incase they're in there too
+        # skip the MSVC DLLs in case they're in there too
         dll_files.extend(Glob('%s/*.dll' % build.winlib_path))
         dll_files.extend(Glob('%s/lib/*.dll' % build.winlib_path))
 
@@ -445,8 +445,12 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         qt_plugins = (
                 [("iconengines", e) for e in ["libqsvgicon.dylib"]] +
                 [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] +
-                [("sqldrivers", e) for e in sql_dylibs] +
-                [("accessible", e) for e in ["libqtaccessiblewidgets.dylib"]])
+                [("sqldrivers", e) for e in sql_dylibs])
+
+        # In Qt 5, accessibility features are more tightly integrated.
+        if not qt5:
+                qt_plugins.append(("accessible", "libqtaccessiblewidgets.dylib"))
+
         #Left out libqmng and libqtiff to save space.
 
         # Concatenate the SoundSource plugins to our list of plugins (converting

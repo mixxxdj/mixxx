@@ -22,7 +22,7 @@ class LegacyAudioSource {
     // Fills the buffer with samples from each channel starting
     // at the current frame seek position.
     //
-    // The implicit  minimum required capacity of the sampleBuffer is
+    // The implicit minimum required capacity of the sampleBuffer is
     //     sampleBufferSize = frames2samples(numberOfFrames)
     // Samples in the sampleBuffer are stored as consecutive sample
     // frames with samples from each channel interleaved.
