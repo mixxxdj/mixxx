@@ -3,12 +3,10 @@
 #include "moc_trackplaytimers.cpp"
 
 TrackTimers::GUITickTimer::GUITickTimer()
-        : m_CPGuiTimer50ms("[Master]", "guiTick50ms", this),
-          m_msSoFar(0.0),
+        : m_msSoFar(0.0),
           m_msTarget(0.0),
           m_isActive(false),
           m_timeoutSent(false) {
-    m_CPGuiTimer50ms.connectValueChanged(this, &TrackTimers::GUITickTimer::slotTick);
 }
 
 void TrackTimers::GUITickTimer::start(int msec) {
@@ -27,7 +25,7 @@ void TrackTimers::GUITickTimer::stop() {
 }
 
 void TrackTimers::GUITickTimer::slotTick(double timeSinceLastTick) {
-    if (not m_timeoutSent) {
+    if (not m_timeoutSent and m_isActive) {
         m_msSoFar += timeSinceLastTick;
         if (m_msSoFar >= m_msTarget) {
             m_timeoutSent = true;
