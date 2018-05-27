@@ -673,7 +673,6 @@ class MixxxCore(Feature):
                    "preferences/dialog/dlgprefautodj.cpp",
                    "preferences/dialog/dlgprefdeck.cpp",
                    "preferences/dialog/dlgprefcrossfader.cpp",
-                   "preferences/dialog/dlgpreflv2.cpp",
                    "preferences/dialog/dlgprefeffects.cpp",
                    "preferences/dialog/dlgprefeq.cpp",
                    "preferences/dialog/dlgpreferences.cpp",
