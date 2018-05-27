@@ -612,7 +612,7 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
                             kLogger.debug() << "Recoverable MP3 frame decoding error:"
                                     << mad_stream_errorstr(&m_madStream);
                         } else {
-                            kLogger.warning() << "Recoverable MP3 frame decoding error:"
+                            kLogger.info() << "Recoverable MP3 frame decoding error:"
                                     << mad_stream_errorstr(&m_madStream);
                         }
                     }
