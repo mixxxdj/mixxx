@@ -252,11 +252,7 @@ void SidebarModel::slotPressedUntilClickedTimeout() {
 void SidebarModel::pressed(const QModelIndex& index) {
     stopPressedUntilClickedTimer();
     if (index.isValid()) {
-        if (index.internalPointer() == this) {
-            m_sFeatures[index.row()]->activate();
-        } else {
-            startPressedUntilClickedTimer(index);
-        }
+        startPressedUntilClickedTimer(index);
     }
 }
 
