@@ -62,10 +62,17 @@ void TrackTimingInfo::setMsPlayed(qint64 ms) {
     m_playedMs = ms;
 }
 
-bool TrackTimingInfo::isScrobbable() {
+bool TrackTimingInfo::isScrobbable() const {
     return m_isTrackScrobbable;
 }
 
 void TrackTimingInfo::setTrackPointer(TrackPointer pTrack) {
     m_pTrackPtr = pTrack;
+}
+
+void TrackTimingInfo::slotGuiTick(double timeSinceLastTick) {
+    //Can't do qobject_cast because copy constructor is ill formed.
+    TrackTimers::GUITickTimer* timer =
+            dynamic_cast<TrackTimers::GUITickTimer*>(m_pTimer.get());
+    timer->slotTick(timeSinceLastTick);
 }

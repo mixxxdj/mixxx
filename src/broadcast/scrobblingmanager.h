@@ -5,6 +5,7 @@
 #include <QObject>
 
 #include "track/track.h"
+#include "track/tracktiminginfo.h"
 
 class BaseTrackPlayer;
 
@@ -14,22 +15,44 @@ class ScrobblingManager : public QObject {
     ScrobblingManager();
 
   private:
-    struct trackPlayerPair {
-        TrackPointer pTrack;
-        BaseTrackPlayer* pPlayer;
-        trackPlayerPair(TrackPointer pTrack, BaseTrackPlayer* pPlayer)
-                : pTrack(pTrack), pPlayer(pPlayer) {
+    struct TrackInfo {
+        TrackPointer m_pTrack;
+        TrackTimingInfo m_trackInfo;
+        BaseTrackPlayer* m_pPlayer;
+        TrackInfo(TrackPointer pTrack, BaseTrackPlayer* player)
+                : m_pTrack(pTrack), m_trackInfo(pTrack), m_pPlayer(player) {
         }
     };
-    QLinkedList<trackPlayerPair> m_tracksToBeReset;
-    QList<BaseTrackPlayer*> m_players;
+    struct TrackToBeReset {
+        TrackPointer m_pTrack;
+        BaseTrackPlayer* m_pPlayer;
+        TrackToBeReset(TrackPointer pTrack, BaseTrackPlayer* player)
+                : m_pTrack(pTrack), m_pPlayer(player) {
+        }
+    };
     QMutex m_mutex;
-    void resetTrack(BaseTrackPlayer* player);
+    QLinkedList<TrackInfo*> m_trackList;
+    QLinkedList<TrackToBeReset> m_tracksToBeReset;
+    ControlProxy m_CPGuiTick;
+    ControlProxy m_CPCrossfader;
+    ControlProxy m_CPXFaderCurve;
+    ControlProxy m_CPXFaderCalibration;
+    ControlProxy m_CPXFaderMode;
+    ControlProxy m_CPXFaderReverse;
 
-  private slots:
+    void resetTracks();
+    bool isTrackAudible(TrackPointer pTrack, BaseTrackPlayer* pPlayer);
+    double getPlayerVolume(BaseTrackPlayer* pPlayer);
+
+  protected:
+    void timerEvent(QTimerEvent* timerEvent) override;
+  public slots:
     void slotTrackPaused(TrackPointer pPausedTrack);
     void slotTrackResumed(TrackPointer pResumedTrack);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotNewTrackLoaded(TrackPointer pNewTrack);
     void slotPlayerEmpty();
+  private slots:
+    void slotGuiTick(double timeSinceLastTick);
+    void slotReadyToBeScrobbled(TrackPointer pTrack);
 };

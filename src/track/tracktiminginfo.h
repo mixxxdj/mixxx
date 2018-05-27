@@ -9,16 +9,18 @@ class TrackTimingInfo : public QObject {
     Q_OBJECT
   public:
     TrackTimingInfo(TrackPointer pTrack);
+    TrackTimingInfo(const TrackTimingInfo& other) = delete;
     void pausePlayedTime();
     void resumePlayedTime();
     void resetPlayedTime();
     void setElapsedTimer(TrackTimers::ElapsedTimer* elapsedTimer);
     void setTimer(TrackTimers::RegularTimer* timer);
     void setMsPlayed(qint64 ms);
-    bool isScrobbable();
+    bool isScrobbable() const;
     void setTrackPointer(TrackPointer pTrack);
   public slots:
     void slotCheckIfScrobbable();
+    void slotGuiTick(double timeSinceLastTick);
   signals:
     void readyToBeScrobbled(TrackPointer pTrack);
 
