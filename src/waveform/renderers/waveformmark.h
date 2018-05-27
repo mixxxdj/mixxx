@@ -8,6 +8,7 @@
 #include "util/memory.h"
 
 #include "waveform/renderers/waveformmarkproperties.h"
+#include "track/cue.h"
 #include "control/controlobject.h"
 
 class SkinContext;
@@ -15,7 +16,8 @@ class WaveformSignalColors;
 
 class WOverview;
 
-class WaveformMark {
+class WaveformMark : public QObject {
+    Q_OBJECT
   public:
     static const int kNoHotCue = -1;
     WaveformMark(
@@ -51,8 +53,21 @@ class WaveformMark {
     double getSamplePosition() const { return m_pPointCos->get(); }
     QString getItem() const { return m_pPointCos->getKey().item; }
 
+    // The m_pSourceCos related function
+    bool hasSource() const { return m_pSourceCos && m_pSourceCos->valid(); }
+    Cue::CueSource getSource() const {
+        return static_cast<Cue::CueSource>(m_pSourceCos->get());
+    }
+
+  signals:
+    void sourceChanged(WaveformMark* pMark);
+
+  private slots:
+    void slotCueSourceChanged();
+
   private:
     std::unique_ptr<ControlProxy> m_pPointCos;
+    std::unique_ptr<ControlProxy> m_pSourceCos;
     WaveformMarkProperties m_properties;
     int m_iHotCue;
     QImage m_image;

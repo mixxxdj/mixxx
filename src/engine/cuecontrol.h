@@ -148,6 +148,7 @@ class CueControl : public EngineControl {
 
     ControlObject* m_pTrackSamples;
     ControlObject* m_pCuePoint;
+    ControlObject* m_pCueSource;
     ControlObject* m_pCueMode;
     ControlPushButton* m_pCueSet;
     ControlPushButton* m_pCueClear;
@@ -163,10 +164,12 @@ class CueControl : public EngineControl {
     ControlPushButton* m_pCuePreview;
 
     ControlObject* m_pAutoDJStartPosition;
+    ControlObject* m_pAutoDJStartSource;
     ControlPushButton* m_pAutoDJStartSet;
     ControlPushButton* m_pAutoDJStartClear;
 
     ControlObject* m_pAutoDJEndPosition;
+    ControlObject* m_pAutoDJEndSource;
     ControlPushButton* m_pAutoDJEndSet;
     ControlPushButton* m_pAutoDJEndClear;
 

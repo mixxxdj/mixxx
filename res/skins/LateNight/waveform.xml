@@ -51,6 +51,7 @@
 				-->
 				<Mark>
 					<Control>cue_point</Control>
+					<Source>cue_source</Source>
 					<Text>CUE</Text>
 					<Align>top</Align>
 					<Color>#FF001C</Color>
@@ -58,6 +59,7 @@
 				</Mark>
 				<Mark>
 					<Control>autodj_start_position</Control>
+					<Source>autodj_start_source</Source>
 					<Text>BEGIN</Text>
 					<Align>left|vcenter</Align>
 					<Color>#00FF00</Color>
@@ -65,6 +67,7 @@
 				</Mark>
 				<Mark>
 					<Control>autodj_end_position</Control>
+					<Source>autodj_end_source</Source>
 					<Text>END</Text>
 					<Align>right|vcenter</Align>
 					<Color>#00FF00</Color>

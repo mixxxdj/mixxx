@@ -24,6 +24,11 @@ WaveformRenderMark::WaveformRenderMark(
 void WaveformRenderMark::setup(const QDomNode& node, const SkinContext& context) {
     m_marks.setup(m_waveformRenderer->getGroup(), node, context,
                   *m_waveformRenderer->getWaveformSignalColors());
+
+    for (const auto& pMark: m_marks) {
+        connect(pMark.data(), SIGNAL(sourceChanged(WaveformMark*)),
+                this, SLOT(slotCueSourceUpdated(WaveformMark*)));
+    }
 }
 
 void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
@@ -127,6 +132,10 @@ void WaveformRenderMark::slotCuesUpdated() {
     }
 }
 
+void WaveformRenderMark::slotCueSourceUpdated(WaveformMark* pMark) {
+    generateMarkImage(pMark);
+}
+
 void WaveformRenderMark::generateMarkImage(WaveformMark* pMark) {
     const WaveformMarkProperties& markProperties = pMark->getProperties();
 
@@ -157,6 +166,13 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* pMark) {
             label.prepend(QString::number(pMark->getHotCue() + 1));
             if (label.size() > kMaxCueLabelLength) {
                 label = label.left(kMaxCueLabelLength - 3) + "...";
+            }
+        }
+
+        // Visualize cue source (if available)
+        if (pMark->hasSource()) {
+            if (pMark->getSource() != Cue::MANUAL) {
+                label.append("?");
             }
         }
 
