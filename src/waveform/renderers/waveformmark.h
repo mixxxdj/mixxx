@@ -8,7 +8,6 @@
 #include "util/memory.h"
 
 #include "waveform/renderers/waveformmarkproperties.h"
-#include "track/cue.h"
 #include "control/controlobject.h"
 
 class SkinContext;
@@ -55,9 +54,7 @@ class WaveformMark : public QObject {
 
     // The m_pSourceCos related function
     bool hasSource() const { return m_pSourceCos && m_pSourceCos->valid(); }
-    Cue::CueSource getSource() const {
-        return static_cast<Cue::CueSource>(m_pSourceCos->get());
-    }
+    double getSource() const { return m_pSourceCos->get(); }
 
   signals:
     void sourceChanged(WaveformMark* pMark);
