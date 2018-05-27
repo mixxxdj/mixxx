@@ -224,11 +224,11 @@ QTreeView::item:!selected {
     }
     QPushButton#LibraryPreviewButton:!checked {
       image: url(:/images/library/ic_library_preview_play.png);
-      background-color: #0f0f0f;
+
       }
     QPushButton#LibraryPreviewButton:checked {
       image: url(:/images/library/ic_library_preview_pause.png);
-      background-color: #333;
+
       }
 
   /* checkbox in library "Played" column */
