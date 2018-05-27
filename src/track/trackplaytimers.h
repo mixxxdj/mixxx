@@ -38,12 +38,11 @@ namespace TrackTimers {
       bool isActive() override;
       void stop() override;
     private:
-      ControlProxy m_CPGuiTimer50ms;
       double m_msSoFar;
       double m_msTarget;
       bool m_isActive;
       bool m_timeoutSent;
-    private slots:
+    public slots:
       void slotTick(double timeSinceLastTick);      
   };
 

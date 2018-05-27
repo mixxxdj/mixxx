@@ -1,9 +1,9 @@
 #include "track/tracktiminginfo.h"
 
 TrackTimingInfo::TrackTimingInfo(TrackPointer pTrack) :
-        m_pTrackPtr(pTrack), 
         m_pElapsedTimer(new TrackTimers::ElapsedTimerQt()),
         m_pTimer(new TrackTimers::GUITickTimer()),
+        m_pTrackPtr(pTrack), 
         m_playedMs(0),
         m_isTrackScrobbable(false)
 {
@@ -66,10 +66,17 @@ void TrackTimingInfo::setMsPlayed(qint64 ms) {
     m_playedMs = ms;
 }
 
-bool TrackTimingInfo::isScrobbable() {
+bool TrackTimingInfo::isScrobbable() const {
     return m_isTrackScrobbable;
 }
 
 void TrackTimingInfo::setTrackPointer(TrackPointer pTrack) {
     m_pTrackPtr = pTrack;
+}
+
+void TrackTimingInfo::slotGuiTick(double timeSinceLastTick) {
+    //Can't do qobject_cast because copy constructor is ill formed.
+    TrackTimers::GUITickTimer *timer = 
+        dynamic_cast<TrackTimers::GUITickTimer*>(m_pTimer.get());
+    timer->slotTick(timeSinceLastTick);
 }
