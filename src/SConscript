@@ -437,9 +437,10 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         # play nice with)
 
         # NOTE(rryan): Only include the SQLite plugin if we are building Qt in
-        # sqlite_plugin mode.
+        # sqlite_plugin mode or Qt 5 is enabled. In Qt 5, the SQLite driver was
+        # moved out of QtSql and into a plugin.
         sql_dylibs = []
-        if int(flags.get('qt_sqlite_plugin', 0)):
+        if int(flags.get('qt_sqlite_plugin', 0)) or qt5:
                 sql_dylibs = ["libqsqlite.dylib"]
 
         qt_plugins = (
@@ -450,6 +451,8 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         # In Qt 5, accessibility features are more tightly integrated.
         if not qt5:
                 qt_plugins.append(("accessible", "libqtaccessiblewidgets.dylib"))
+        else:
+                qt_plugins.append(("platforms", "qcocoa.dylib"))
 
         #Left out libqmng and libqtiff to save space.
 
