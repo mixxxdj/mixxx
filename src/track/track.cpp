@@ -1007,7 +1007,7 @@ Track::ExportMetadataResult Track::exportMetadata(
             // must be exported explicitly once. This ensures that we don't
             // overwrite existing file tags with completely different
             // information.
-            kLogger.debug()
+            kLogger.info()
                     << "Skip exporting of unsynchronized track metadata:"
                     << getLocation();
             return ExportMetadataResult::Skipped;

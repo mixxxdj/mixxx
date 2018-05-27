@@ -25,7 +25,7 @@ const mixxx::Logger kLogger("DbConnection");
 QSqlDatabase createDatabase(
         const DbConnection::Params& params,
         const QString connectionName) {
-    kLogger.debug()
+    kLogger.info()
         << "Available drivers for database connections:"
         << QSqlDatabase::drivers();
 
@@ -233,7 +233,7 @@ bool initDatabase(QSqlDatabase database) {
 #ifdef __SQLITE3__
     QVariant v = database.driver()->handle();
     VERIFY_OR_DEBUG_ASSERT(v.isValid()) {
-        kLogger.debug() << "Driver handle is invalid";
+        kLogger.warning() << "Driver handle is invalid";
         return false; // abort
     }
     if (strcmp(v.typeName(), "sqlite3*") != 0) {

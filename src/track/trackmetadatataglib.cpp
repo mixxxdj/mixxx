@@ -249,7 +249,7 @@ bool parseReplayGainGain(
         // the replay gain.
         if (ratio == ReplayGain::kRatio0dB) {
             // special case
-            kLogger.debug() << "Ignoring possibly undefined gain:" << dbGain;
+            kLogger.info() << "Ignoring possibly undefined gain:" << dbGain;
             ratio = ReplayGain::kRatioUndefined;
         }
         pReplayGain->setRatio(ratio);

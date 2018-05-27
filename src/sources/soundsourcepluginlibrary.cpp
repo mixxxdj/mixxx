@@ -49,7 +49,7 @@ bool SoundSourcePluginLibrary::init() {
                 << ":" << m_library.errorString();
         return false;
     }
-    kLogger.debug() << "Dynamically loaded plugin library"
+    kLogger.info() << "Dynamically loaded plugin library"
             << m_library.fileName();
 
     SoundSourcePluginAPI_getVersionFunc getVersionFunc = (SoundSourcePluginAPI_getVersionFunc)

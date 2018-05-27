@@ -62,7 +62,7 @@ SoundSource::OpenResult SoundSourceWV::tryOpen(
     m_wpc = WavpackOpenFileInputEx(&s_streamReader, m_pWVFile, m_pWVCFile,
             msg, openFlags, 0);
     if (!m_wpc) {
-        kLogger.debug() << "failed to open file : " << msg;
+        kLogger.warning() << "failed to open file : " << msg;
         return OpenResult::Failed;
     }
 
