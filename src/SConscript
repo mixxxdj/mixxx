@@ -451,8 +451,10 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         # In Qt 5, accessibility features are more tightly integrated.
         if not qt5:
                 qt_plugins.append(("accessible", "libqtaccessiblewidgets.dylib"))
-        else:
-                qt_plugins.append(("platforms", "qcocoa.dylib"))
+
+        # Cocoa support moved to a plugin in Qt 5.
+        if qt5:
+                qt_plugins.append(("platforms", "libqcocoa.dylib"))
 
         #Left out libqmng and libqtiff to save space.
 
