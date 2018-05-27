@@ -402,12 +402,14 @@ void SoundSourceProxy::initSoundSource() {
             // ...and continue loop
             DEBUG_ASSERT(!m_pSoundSource);
         } else {
-            kLogger.debug() << "SoundSourceProvider"
-                     << pProvider->getName()
-                     << "created a SoundSource for file"
-                     << getUrl().toString()
-                     << "of type"
-                     << m_pSoundSource->getType();
+            if (kLogger.debugEnabled()) {
+                kLogger.debug() << "SoundSourceProvider"
+                         << pProvider->getName()
+                         << "created a SoundSource for file"
+                         << getUrl().toString()
+                         << "of type"
+                         << m_pSoundSource->getType();
+            }
         }
     }
 }
@@ -618,12 +620,14 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
     DEBUG_ASSERT(m_pTrack);
     auto openMode = mixxx::SoundSource::OpenMode::Strict;
     while (m_pSoundSource && !m_pAudioSource) {
-        kLogger.debug() << "Opening file"
-                << getUrl().toString()
-                << "with provider"
-                << getSoundSourceProvider()->getName()
-                << "using mode"
-                << openMode;
+        if (kLogger.debugEnabled()) {
+            kLogger.debug() << "Opening file"
+                    << getUrl().toString()
+                    << "with provider"
+                    << getSoundSourceProvider()->getName()
+                    << "using mode"
+                    << openMode;
+        }
         const mixxx::SoundSource::OpenResult openResult =
                 m_pSoundSource->open(openMode, params);
         if ((openResult == mixxx::SoundSource::OpenResult::Aborted) ||
@@ -695,7 +699,9 @@ void SoundSourceProxy::closeAudioSource() {
         DEBUG_ASSERT(m_pSoundSource);
         m_pSoundSource->close();
         m_pAudioSource = mixxx::AudioSourcePointer();
-        kLogger.debug() << "Closed AudioSource for file"
-                 << getUrl().toString();
+        if (kLogger.debugEnabled()) {
+            kLogger.debug() << "Closed AudioSource for file"
+                    << getUrl().toString();
+        }
     }
 }

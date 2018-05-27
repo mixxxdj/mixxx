@@ -313,9 +313,11 @@ DbConnection::~DbConnection() {
 }
 
 bool DbConnection::open() {
-    kLogger.debug()
-            << "Opening database connection"
-            << *this;
+    if (kLogger.debugEnabled()) {
+        kLogger.debug()
+                << "Opening database connection"
+                << *this;
+    }
     if (!m_sqlDatabase.open()) {
         kLogger.warning()
                 << "Failed to open database connection"
@@ -343,9 +345,11 @@ void DbConnection::close() {
                 << "Rolled back open transaction before closing database connection:"
                 << *this;
         }
-        kLogger.debug()
-            << "Closing database connection:"
-            << *this;
+        if (kLogger.debugEnabled()) {
+            kLogger.debug()
+                    << "Closing database connection:"
+                    << *this;
+        }
         m_sqlDatabase.close();
     }
 }
