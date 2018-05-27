@@ -6,6 +6,7 @@
 #include <QStyledItemDelegate>
 #include <QHash>
 #include <QLinkedList>
+#include <QTableView>
 
 #include "library/trackmodel.h"
 
@@ -40,6 +41,7 @@ class CoverArtDelegate : public QStyledItemDelegate {
                         QPixmap pixmap, bool fromCache);
 
   private:
+    QTableView* m_pTableView;
     bool m_bOnlyCachedCover;
     int m_iCoverColumn;
     int m_iCoverSourceColumn;
