@@ -121,7 +121,7 @@ QTreeView {
     border-color: #ff6600;
   }
  QTreeView::item:hover {
-     border: 1px solid #eeeeee;
+     border: 1px solid #898989;
  }
 
 /*  Closed branch of tree 	*/
@@ -185,7 +185,7 @@ QTreeView::item:!selected {
       }
 	#LibraryBPMButton::item:hover,
 	#LibraryBPMButton::item:checked:hover {
-	   border: 1px solid #eeeeee;
+	   border: 1px solid #898989;
 	}
 
   #LibraryBPMSpinBox {
@@ -220,7 +220,7 @@ QTreeView::item:!selected {
     }
     QPushButton#LibraryPreviewButton:hover,
     QPushButton#LibraryPreviewButton:checked:hover {
-      border: 1px solid #eeeeee;
+      border: 1px solid #898989;
     }
     QPushButton#LibraryPreviewButton:!checked {
       image: url(:/images/library/ic_library_preview_play.png);
@@ -254,7 +254,7 @@ QTreeView::item:!selected {
   }
 	QTableView::indicator:hover,
 	QTableView::indicator:checked:hover {
-	   border: 1px solid #eeeeee;
+	   border: 1px solid #898989;
 	}
 
 /* library search text box */
