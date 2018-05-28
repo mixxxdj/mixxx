@@ -686,7 +686,7 @@ int SoundDevicePortAudio::callbackProcessDrift(
     // There is a delay of up to one latency between composing a chunk in the Clock
     // Reference callback and write it to the device. So we need at lest one buffer.
     // Unfortunately this delay is somehow random, an WILL produce a delay slow
-    // shift without we can avoid it. (Thats the price for using a cheap USB soundcard).
+    // shift without we can avoid it. (That's the price for using a cheap USB soundcard).
     //
     // Additional we need an filled chunk and an empty chunk. These are used when on
     // sound card overtakes the other. This always happens, if they are driven form
@@ -694,7 +694,7 @@ int SoundDevicePortAudio::callbackProcessDrift(
     // the drift correction takes place and fills or clears the reserve buffers.
     // If this is finished before another overtake happens, we do not face any
     // dropouts or clicks.
-    // So thats why we need a Fifo of 3 chunks.
+    // So that's why we need a Fifo of 3 chunks.
     //
     // In addition there is a jitter effect. It happens that one callback is delayed,
     // in this case the second one fires two times and then the first one fires two

@@ -9,7 +9,7 @@ Mixxx script file for the **Korg NanoKontrol2** controller.
 
 This script description is a bit more verbose than others, at it tries
 to serve as **tutorial** on how to write your own controller scripts.
-People just interested in the functionallity of the mapping can find
+People just interested in the functionality of the mapping can find
 this in indented bullet points.
 
   ![NanoKontrol2 Layout](http://sinusoid.es/mixco/pic/korg_nanokontrol2.jpg)
@@ -106,7 +106,7 @@ per-deck. We define them here and add the behaviours later.
 
             @loadTrack = c.control(0x2a)
 
-Here are some more controls that get their actual functionallity
+Here are some more controls that get their actual functionality
 defined later.
 
             @sync = c.control(0x29)

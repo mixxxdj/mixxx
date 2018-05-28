@@ -88,7 +88,7 @@ warnings and errors to the console unless this is set properly.\n", stdout);
                 m_logFlushLevel = mixxx::LogLevel::Critical;
             } else {
                 fputs("\nlogFushLevel argument wasn't 'trace', 'debug', 'info', 'warning', or 'critical'! Mixxx will only flush messages to mixxx.log\n\
-when a critical error occours unless this is set properly.\n", stdout);
+when a critical error occurs unless this is set properly.\n", stdout);
             }
             i++;
         } else if (QString::fromLocal8Bit(argv[i]).contains("--midiDebug", Qt::CaseInsensitive) ||

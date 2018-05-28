@@ -25,7 +25,7 @@ void BatteryWindows::read() {
     if (GetSystemPowerStatus(&spsPwr)) {
         // get rest power of battery
         m_dPercentage = static_cast<double>(spsPwr.BatteryLifePercent);
-        // check for unkown flag and reset to default
+        // check for unknown flag and reset to default
         if (m_dPercentage == 255) {
             m_dPercentage = 0;
         }
@@ -43,7 +43,7 @@ void BatteryWindows::read() {
         m_iMinutesLeft = static_cast<int>(spsPwr.BatteryLifeTime) / 60;
     }
 
-    // QString bat = "unkown";
+    // QString bat = "unknown";
     // switch (m_chargingState) {
     // case Battery::CHARGING:
     //     bat = "charging";

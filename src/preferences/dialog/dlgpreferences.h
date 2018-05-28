@@ -49,14 +49,16 @@ class DlgPrefRecord;
 class DlgPrefBeats;
 class DlgPrefKey;
 class DlgPrefReplayGain;
+#ifdef __LILV__
 class DlgPrefLV2;
+#endif /* __LILV__ */
+class LV2Backend;
 class ControllerManager;
 class EffectsManager;
 class SkinLoader;
 class PlayerManager;
 class Library;
 class VinylControlManager;
-class LV2Backend;
 #ifdef __MODPLUG__
 class DlgPrefModplug;
 #endif
@@ -122,7 +124,9 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     DlgPrefBeats* m_beatgridPage;
     DlgPrefKey* m_musicalKeyPage;
     DlgPrefReplayGain* m_replayGainPage;
+#ifdef __LILV__
     DlgPrefLV2* m_lv2Page;
+#endif /* __LILV__ */
 #ifdef __MODPLUG__
     DlgPrefModplug* m_modplugPage;
 #endif
@@ -135,7 +139,9 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     QTreeWidgetItem* m_pWaveformButton;
     QTreeWidgetItem* m_pDecksButton;
     QTreeWidgetItem* m_pEqButton;
+#ifdef __LILV__
     QTreeWidgetItem* m_pLV2Button;
+#endif /* __LILV__ */
     QTreeWidgetItem* m_pEffectsButton;
     QTreeWidgetItem* m_pCrossfaderButton;
     //QTreeWidgetItem* m_pEffectsButton;

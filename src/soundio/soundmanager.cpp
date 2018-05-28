@@ -35,6 +35,7 @@
 #include "soundio/sounddevicenotfound.h"
 #include "soundio/sounddeviceportaudio.h"
 #include "soundio/soundmanagerutil.h"
+#include "util/compatibility.h"
 #include "util/cmdlineargs.h"
 #include "util/defs.h"
 #include "util/sample.h"
@@ -348,7 +349,7 @@ SoundDeviceError SoundManager::setupDevices() {
     // would like to remove the fact that we close all the devices first and
     // then re-open them, I'm with you! The problem is that SoundDevicePortAudio
     // and SoundManager are not thread safe and the way that mutual exclusion
-    // between the Qt main thread and the PortAudio callback thread is acheived
+    // between the Qt main thread and the PortAudio callback thread is achieved
     // is that we shut off the PortAudio callbacks for all devices by closing
     // every device first. We then update all the SoundDevice settings
     // (configured AudioInputs/AudioOutputs) and then we re-open them.
@@ -363,8 +364,8 @@ SoundDeviceError SoundManager::setupDevices() {
 
     m_pMasterAudioLatencyOverloadCount->set(0);
 
-    // load with all configured devices. 
-    // all found devices are removed below 
+    // load with all configured devices.
+    // all found devices are removed below
     QSet<QString> devicesNotFound = m_config.getDevices();
 
     // pair is isInput, isOutput
@@ -492,7 +493,7 @@ SoundDeviceError SoundManager::setupDevices() {
     }
 
     qDebug() << outputDevicesOpened << "output sound devices opened";
-    qDebug() << inputDevicesOpened << "input  sound devices opened";
+    qDebug() << inputDevicesOpened << "input sound devices opened";
     for (const auto& deviceName: devicesNotFound) {
         qWarning() << deviceName << "not found";
     }
@@ -692,14 +693,14 @@ int SoundManager::getConfiguredDeckCount() const {
 
 void SoundManager::processUnderflowHappened() {
     if (m_underflowUpdateCount == 0) {
-        if (m_underflowHappened) {
+        if (load_atomic(m_underflowHappened)) {
             m_pMasterAudioLatencyOverload->set(1.0);
             m_pMasterAudioLatencyOverloadCount->set(
                     m_pMasterAudioLatencyOverloadCount->get() + 1);
             m_underflowUpdateCount = CPU_OVERLOAD_DURATION * m_config.getSampleRate()
                     / m_config.getFramesPerBuffer() / 1000;
 
-            m_underflowHappened = 0; // reseting her is not thread save,
+            m_underflowHappened = 0; // resetting here is not thread safe,
                                      // but that is OK, because we count only
                                      // 1 underflow each 500 ms
         } else {

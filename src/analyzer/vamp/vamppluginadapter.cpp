@@ -1,4 +1,4 @@
-#include "analyzer/vamp/vamppluginloader.h"
+#include "analyzer/vamp/vamppluginadapter.h"
 
 #include <mutex>
 
@@ -6,6 +6,7 @@
 #include <QDesktopServices>
 #include <QDir>
 #include <QStringBuilder>
+#include <QStringList>
 
 #include "util/logger.h"
 
@@ -21,11 +22,7 @@ namespace mixxx {
 
 namespace {
 
-Logger kLogger("VampPluginLoader");
-
-Vamp::HostExt::PluginLoader* s_pPluginLoader = nullptr;
-
-std::once_flag s_initPluginLoaderOnceFlag;
+const Logger kLogger("VampPluginAdapter");
 
 inline
 QString toNativeEnvPath(const QDir& dir) {
@@ -137,37 +134,131 @@ void initPluginPaths() {
 #endif
 }
 
-void initPluginLoader() {
-    initPluginPaths();
-    s_pPluginLoader = Vamp::HostExt::PluginLoader::getInstance();
+std::mutex s_mutex;
+
+Vamp::HostExt::PluginLoader* s_pluginLoader = nullptr;
+
+Vamp::HostExt::PluginLoader* getPluginLoaderLocked() {
+    if (!s_pluginLoader) {
+        initPluginPaths();
+        s_pluginLoader = Vamp::HostExt::PluginLoader::getInstance();
+        VERIFY_OR_DEBUG_ASSERT(s_pluginLoader) {
+            kLogger.critical()
+                    << "Failed to get Vamp::HostExt::PluginLoader instance";
+        }
+    }
+    return s_pluginLoader;
+}
+
+Vamp::Plugin* loadPluginLocked(
+        Vamp::HostExt::PluginLoader::PluginKey key,
+        float inputSampleRate,
+        int adapterFlags) {
+    const auto pluginLoader = getPluginLoaderLocked();
+    if (pluginLoader) {
+        const auto plugin = pluginLoader->loadPlugin(
+            key, inputSampleRate, adapterFlags);
+        if (plugin) {
+            return plugin;
+        }
+    }
+    kLogger.warning()
+            << "Failed to load plugin"
+            << key.c_str()
+            << inputSampleRate
+            << adapterFlags;
+    return nullptr;
 }
 
 } // anonymous namespace
 
-VampPluginLoader::VampPluginLoader() {
-    std::call_once(s_initPluginLoaderOnceFlag, initPluginLoader);
+Vamp::HostExt::PluginLoader::PluginKeyList VampPluginAdapter::listPlugins() {
+    const std::lock_guard<std::mutex> locked(s_mutex);
+    const auto pluginLoader = getPluginLoaderLocked();
+    if (pluginLoader) {
+        return pluginLoader->listPlugins();
+    } else {
+        return Vamp::HostExt::PluginLoader::PluginKeyList();
+    }
 }
 
-Vamp::HostExt::PluginLoader::PluginKey VampPluginLoader::composePluginKey(
-    std::string libraryName, std::string identifier) {
-    return s_pPluginLoader->composePluginKey(
-        libraryName, identifier);
+Vamp::HostExt::PluginLoader::PluginKey VampPluginAdapter::composePluginKey(
+        std::string libraryName,
+        std::string identifier) {
+    const std::lock_guard<std::mutex> locked(s_mutex);
+    const auto pluginLoader = getPluginLoaderLocked();
+    if (pluginLoader) {
+        return pluginLoader->composePluginKey(
+                std::move(libraryName),
+                std::move(identifier));
+    } else {
+        return Vamp::HostExt::PluginLoader::PluginKey();
+    }
 }
 
-Vamp::HostExt::PluginLoader::PluginCategoryHierarchy VampPluginLoader::getPluginCategory(
-    Vamp::HostExt::PluginLoader::PluginKey plugin) {
-    return s_pPluginLoader->getPluginCategory(plugin);
+VampPluginAdapter::VampPluginAdapter()
+        : m_plugin(nullptr),
+          m_preferredBlockSize(0),
+          m_preferredStepSize(0) {
 }
 
-Vamp::HostExt::PluginLoader::PluginKeyList VampPluginLoader::listPlugins() {
-    return s_pPluginLoader->listPlugins();
+VampPluginAdapter::VampPluginAdapter(
+        Vamp::HostExt::PluginLoader::PluginKey key,
+        float inputSampleRate,
+        int adapterFlags)
+        : m_plugin(nullptr),
+          m_preferredBlockSize(0),
+          m_preferredStepSize(0) {
+    loadPlugin(key, inputSampleRate, adapterFlags);
 }
 
-Vamp::Plugin* VampPluginLoader::loadPlugin(
-    Vamp::HostExt::PluginLoader::PluginKey key,
-    float inputSampleRate, int adapterFlags) {
-    return s_pPluginLoader->loadPlugin(
-        key, inputSampleRate, adapterFlags);
+VampPluginAdapter::~VampPluginAdapter() {
+    std::lock_guard<std::mutex> locked(s_mutex);
+    m_plugin.reset();
+}
+
+void VampPluginAdapter::loadPlugin(
+        Vamp::HostExt::PluginLoader::PluginKey key,
+        float inputSampleRate,
+        int adapterFlags) {
+    std::lock_guard<std::mutex> locked(s_mutex);
+    m_plugin.reset();
+    m_plugin.reset(loadPluginLocked(key, inputSampleRate, adapterFlags));
+    if (m_plugin) {
+        m_identifier = m_plugin->getIdentifier();
+        m_name = m_plugin->getName();
+        m_outputDescriptors = m_plugin->getOutputDescriptors();
+        m_preferredBlockSize = m_plugin->getPreferredBlockSize();
+        m_preferredStepSize = m_plugin->getPreferredStepSize();
+    }
+}
+
+bool VampPluginAdapter::initialise(
+            size_t inputChannels,
+            size_t stepSize,
+            size_t blockSize) {
+    DEBUG_ASSERT(m_plugin);
+    std::lock_guard<std::mutex> locked(s_mutex);
+    return m_plugin->initialise(
+            inputChannels,
+            stepSize,
+            blockSize);
+}
+
+Vamp::Plugin::FeatureSet VampPluginAdapter::process(
+        const float* const* inputBuffers,
+        Vamp::RealTime timestamp) {
+    DEBUG_ASSERT(m_plugin);
+    std::lock_guard<std::mutex> locked(s_mutex);
+    return m_plugin->process(
+            inputBuffers,
+            timestamp);
+}
+
+Vamp::Plugin::FeatureSet VampPluginAdapter::getRemainingFeatures() {
+    DEBUG_ASSERT(m_plugin);
+    std::lock_guard<std::mutex> locked(s_mutex);
+    return m_plugin->getRemainingFeatures();
 }
 
 } // namespace mixxx

@@ -7,7 +7,7 @@ script.xponent
 
 Mixxx script file for the **M-Audio Xponent** controller. The numbers
 in the following picture will be used in the script to describe the
-functionallity of the controls.
+functionality of the controls.
 
   ![Xponent Layout](http://sinusoid.es/mixco/pic/maudio_xponent.png)
 
@@ -359,7 +359,7 @@ Initialization
 
 Unlike old Mixxx versions, this script initializes the device properly
 for light feedback.  The trick of holding the two and key button on
-initalization are no longer required.
+initialization are no longer required.
 
         preinit: ->
             msg = [0xF0, 0x00, 0x20, 0x08, 0x00, 0x00, 0x63, 0x0E,

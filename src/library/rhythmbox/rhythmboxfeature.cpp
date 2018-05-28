@@ -112,7 +112,7 @@ void RhythmboxFeature::activate() {
 
     if (!m_isActivated) {
         m_isActivated =  true;
-        // Ususally the maximum number of threads
+        // Usually the maximum number of threads
         // is > 2 depending on the CPU cores
         // Unfortunately, within VirtualBox
         // the maximum number of allowed threads

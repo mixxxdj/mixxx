@@ -10,7 +10,7 @@
 //	Convolves all the filters into a single IIR/FIR pair, and runs
 //	that directly through static code.  Compiled with GCC -O6 on
 //	ix86 this is surprisingly fast -- at worst half the speed of
-//	assember code, at best matching it.  The downside of
+//	assembler code, at best matching it.  The downside of
 //	convolving all the sub-filters together like this is loss of
 //	accuracy and instability in some kinds of filters, especially
 //	high-order ones.  The one big advantage of this approach is

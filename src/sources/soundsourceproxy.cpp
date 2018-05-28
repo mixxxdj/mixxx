@@ -528,20 +528,23 @@ void SoundSourceProxy::updateTrackFromSource(
         // once in the past. Only overwrite this information if
         // new data has actually been imported, otherwise abort
         // and preserve the existing data!
-        if (metadataImported.first == mixxx::MetadataSource::ImportResult::Succeeded) {
-            kLogger.info()
+        if (metadataImported.first != mixxx::MetadataSource::ImportResult::Succeeded) {
+            return; // abort
+        }
+        if (kLogger.debugEnabled()) {
+            kLogger.debug()
                     << "Updating track metadata"
                     << (pCoverImg ? "and embedded cover art" : "")
                     << "from file"
                     << getUrl().toString();
-        } else {
-            return; // abort
         }
     } else {
         DEBUG_ASSERT(pCoverImg);
-        kLogger.info()
-                << "Initializing track metadata and embedded cover art from file"
-                << getUrl().toString();
+        if (kLogger.debugEnabled()) {
+            kLogger.debug()
+                    << "Initializing track metadata and embedded cover art from file"
+                    << getUrl().toString();
+        }
     }
 
     // Fallback: If artist or title fields are blank then try to populate
