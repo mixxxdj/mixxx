@@ -452,9 +452,10 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         if not qt5:
                 qt_plugins.append(("accessible", "libqtaccessiblewidgets.dylib"))
 
-        # Cocoa support moved to a plugin in Qt 5.
         if qt5:
+                # Cocoa support moved to a plugin in Qt 5.
                 qt_plugins.append(("platforms", "libqcocoa.dylib"))
+                qt_plugins.append(("styles", "libqmacstyle.dylib"))
 
         #Left out libqmng and libqtiff to save space.
 
