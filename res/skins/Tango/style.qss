@@ -22,7 +22,8 @@ WLabel,
 WNumber,
 WTrackProperty,
 WBeatSpinBox,
-WEffectSelector, WEffectSelector QAbstractItemView {
+WEffectSelector, WEffectSelector QAbstractItemView,
+WSearchLineEdit {
   font-family: Ubuntu;
   font-weight: normal;
 }
@@ -2354,13 +2355,10 @@ WLibrary QPushButton {
       BPM value display. */
     padding: -1px -8px -1px -4px;
     margin: -2px 0px -2px -2px;
-    /* As soon as a border is defined, the up/down buttons
+    /* As soon as any border property is set, the up/down buttons
       lose their style & icons
-    border: 0px;*/
-    }
-
-  #LibraryTimesPlayed::item {
-    color: #cfcfcf;
+    border: 0px;
+    border-radius: 2px; */
     }
 
   /* Button in library "Preview" column */
@@ -2435,15 +2433,13 @@ WLibrary QSpinBox {
 /* library search text box */
 WSearchLineEdit {
   padding: 2px;
+  margin-bottom: 5px;
   border: 1px solid #656565;
   border-left: 0px;
-  font-family: Ubuntu;
-  font-weight: normal;
-  background: #0f0f0f;
   color: #cfcfcf;
-  selection-background-color: #d2d2d2;
+  background: #0f0f0f;
   selection-color: #0f0f0f;
-  margin-bottom: 5px;
+  selection-background-color: #d2d2d2;
   }
   WSearchLineEdit:focus {
     border: 2px solid #ff6600;

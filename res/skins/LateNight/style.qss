@@ -1439,7 +1439,6 @@ QTableView::indicator {
     background-color: #725309;
     }
 #LibraryBPMSpinBox {
-  border-radius: 2px;
   color: #cfb32c;
   background-color: #0f0f0f;
   selection-color: #0f0f0f;
@@ -1451,9 +1450,10 @@ QTableView::indicator {
     BPM value display. */
   padding: -1px -8px -1px -4px;
   margin: -2px 0px -2px -2px;
-  /* As soon as a border is defined, the up/down buttons
+  /* As soon as any border property is set, the up/down buttons
     lose their style & icons
-  border: 0px;*/
+  border: 0px;
+  border-radius: 2px; */
   }
 
 /* Button in library "Preview" column */
