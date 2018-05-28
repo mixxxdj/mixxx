@@ -370,6 +370,15 @@ QTreeView::branch:open:has-children:has-siblings {
   border-image: none; image: url(skin:/image/style_branch_open.png);
 }
 
+/* space left of selected child item */
+QTreeView::branch:!has-children:!has-siblings:closed:selected,
+QTreeView::branch:closed:!has-children:has-siblings:selected,
+QTreeView::branch:open:!has-children:!has-siblings:selected,
+QTreeView::branch:open:!has-children:has-siblings:selected {
+  border-image: none;
+  background-color: #1F1F1F;
+}
+
 /* QSplitter between LibrarySidebar and Library */
 #LibrarySplitter::handle {
   image: url(skin:/image/style_handle_horizontal_unchecked.svg);
