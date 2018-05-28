@@ -214,7 +214,7 @@ QDomElement EffectRack::toXml(QDomDocument* doc) const {
 
 void EffectRack::refresh() {
     for (const auto& pChainSlot: m_effectChainSlots) {
-        EffectChainPointer pChain = pChainSlot->getEffectChain();
+        EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
         pChain->refreshAllEffects();
     }
 }
