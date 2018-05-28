@@ -188,48 +188,53 @@ QTreeView::item:!selected {
 	   border: 1px solid #898989;
 	}
 
-  #LibraryBPMSpinBox {
-    color: #fff;
-    selection-color: #0f0f0f;
-    background-color: #0f0f0f;
-    selection-background-color: #888;
-    /* This combination of negative top/bottom padding & margin
-      creates a 1px border around the spinbox' text area.
-      Increased left/right padding/margin removes the overlap of
-      text of activated spinbox and left-over text from regular
-      BPM value display. */
-    padding: -1px -8px -1px -4px;
-    margin: -2px 0px -2px -2px;
-    /* As soon as a border is defined, the up/down buttons
-      lose their style & icons
-    border: 0px;*/
-    }
+	#LibraryBPMSpinBox {
+	  color: #fff;
+	  selection-color: #0f0f0f;
+	  background-color: #0f0f0f;
+	  selection-background-color: #888;
+	  /* This combination of negative top/bottom padding & margin
+		creates a 1px border around the spinbox' text area.
+		Increased left/right padding/margin removes the overlap of
+		text of activated spinbox and left-over text from regular
+		BPM value display. */
+	  padding: -1px -8px -1px -4px;
+	  margin: -2px 0px -2px -2px;
+	  /* As soon as any border property is set, the up/down buttons
+		lose their style & icons
+	  border: 0px;
+	  border-radius: 2px; */
+	}
 
   #LibraryTimesPlayed::item {
     color: #cfcfcf;
     }
 
-  /* Button in library "Preview" column */
-  QPushButton#LibraryPreviewButton {
-    width: 23px;
-    height: 12px;
-    background: transparent;
-    border: 1px solid transparent;
-    margin: 0px;
-    padding: 0px;
-    }
-    QPushButton#LibraryPreviewButton:hover,
-    QPushButton#LibraryPreviewButton:checked:hover {
-      border: 1px solid #898989;
-    }
-    QPushButton#LibraryPreviewButton:!checked {
-      image: url(:/images/library/ic_library_preview_play.png);
+	/* Button in library "Preview" column */
+ 	#LibraryPreviewButton {
+		width: 23px;
+		height: 12px;
+		background: transparent;
+		margin: 0px;
+		padding: 0px;
+		border-radius: 2px;
+	}
+	#LibraryPreviewButton:!checked{
+		image: url(:/images/library/ic_library_preview_play.png);
+	}
+	#LibraryPreviewButton:!checked:hover {
+		border: 1px solid #898989;
+	 	background: #0f0f0f;
+	}
+	#LibraryPreviewButton:checked{
+		image: url(:/images/library/ic_library_preview_pause.png);
+		background-color: #000;
+		border: 1px solid #898989;
+	}
+	#LibraryPreviewButton:checked:hover {
+	  	border: 1px solid #888;
+	}
 
-      }
-    QPushButton#LibraryPreviewButton:checked {
-      image: url(:/images/library/ic_library_preview_pause.png);
-
-      }
 
   /* checkbox in library "Played" column */
   QTableView::indicator {
