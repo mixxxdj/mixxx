@@ -59,7 +59,7 @@ class EffectManifest final {
         }
     }
 
-    const BackendType& backendType() const {
+    const EffectBackendType& backendType() const {
         return m_backendType;
     }
     const QString& backendName() const {
@@ -137,25 +137,25 @@ class EffectManifest final {
         m_metaknobDefault = metaknobDefault;
     }
 
-    static QString backendTypeToString(BackendType type) {
+    static QString backendTypeToString(EffectBackendType type) {
         switch (type) {
-            case BackendType::BuiltIn:
+            case EffectBackendType::BuiltIn:
                 //: Used for effects that are built into Mixxx
                 return QObject::tr("Built-in");
-            case BackendType::LV2:
+            case EffectBackendType::LV2:
                 return QObject::tr("LV2");
             default:
                 //: Used for effects from unknown sources
                 return QObject::tr("Unknown");
         }
     }
-    static BackendType backendTypeFromString(const QString& name) {
+    static EffectBackendType backendTypeFromString(const QString& name) {
         if (name == "Built-in") {
-            return BackendType::BuiltIn;
+            return EffectBackendType::BuiltIn;
         } else if (name == "LV2") {
-            return BackendType::LV2;
+            return EffectBackendType::LV2;
         } else {
-            return BackendType::Unknown;
+            return EffectBackendType::Unknown;
         }
     }
 
@@ -167,7 +167,7 @@ class EffectManifest final {
     QString m_id;
     QString m_name;
     QString m_shortName;
-    BackendType m_backendType;
+    EffectBackendType m_backendType;
     QString m_backendName;
     QString m_author;
     QString m_version;

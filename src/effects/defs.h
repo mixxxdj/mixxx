@@ -11,7 +11,7 @@ enum class EffectEnableState {
     Enabling
 };
 
-enum class BackendType {
+enum class EffectBackendType {
     BuiltIn,
     LV2,
     Unknown
