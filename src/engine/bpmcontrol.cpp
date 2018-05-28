@@ -829,7 +829,7 @@ void BpmControl::resetSyncAdjustment() {
 }
 
 void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
-    // Without a beatgrid we can sync it with the master clock.
+    // Without a beatgrid we don't know any beat details.
     if (!m_pBeats) {
         return;
     }

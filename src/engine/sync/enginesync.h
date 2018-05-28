@@ -43,6 +43,7 @@ class EngineSync : public BaseSyncableListener {
     void notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChanged=false);
     void notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm);
     void notifyBeatDistanceChanged(Syncable* pSyncable, double beatDistance);
+    void notifyVolumeChanged(Syncable* pSyncable, double volume);
     void notifyPlaying(Syncable* pSyncable, bool playing);
     void notifyScratching(Syncable* pSyncable, bool scratching);
     void notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm);

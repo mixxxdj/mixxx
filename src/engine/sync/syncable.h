@@ -90,6 +90,9 @@ class SyncableListener {
                                   bool fileChanged=false) = 0;
     virtual void notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) = 0;
 
+    // Notify syncable that the Syncable's volume has changed.
+    virtual void notifyVolumeChanged(Syncable* pSyncable, double volume) = 0;
+
     // Notify Syncable that the Syncable's scratching state changed.
     virtual void notifyScratching(Syncable* pSyncable, bool scratching) = 0;
 

@@ -38,6 +38,7 @@ class BaseSyncableListener : public SyncableListener {
     virtual void notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChanged=false) = 0;
     virtual void notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) = 0;
     virtual void notifyBeatDistanceChanged(Syncable* pSyncable, double beatDistance) = 0;
+    virtual void notifyVolumeChanged(Syncable* pSyncable, double volume) = 0;
     virtual void notifyPlaying(Syncable* pSyncable, bool playing) = 0;
     virtual void notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm) = 0;
 
@@ -85,23 +86,14 @@ class BaseSyncableListener : public SyncableListener {
     // Check if there is only one playing syncable deck, and notify it if so.
     void checkUniquePlayingSyncable();
 
-    // Set the syncable to playing state and sort m_syncables accordingly
-    void setPlayingSyncable(Syncable* pSource);
-
-    // Set the syncable to paused state and sort m_syncables accordingly
-    void setPausedSyncable(Syncable* pSource);
-
     UserSettingsPointer m_pConfig;
     // The InternalClock syncable.
     InternalClock* m_pInternalClock;
     // The current Syncable that is the master.
     Syncable* m_pMasterSyncable;
     // The list of all Syncables registered with BaseSyncableListener via
-    // addSyncableDeck sorted according to the time of playing to keep 
-    // track of the first playing deck.
+    // addSyncableDeck.
     QList<Syncable*> m_syncables;
-    // The earliest playing syncable
-    Syncable* m_pFirstPlayingDeck;
 };
 
 #endif /* BASESYNCABLELISTENER_H */

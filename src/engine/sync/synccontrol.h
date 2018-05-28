@@ -65,6 +65,9 @@ class SyncControl : public EngineControl, public Syncable {
     // Fired by changes in play.
     void slotControlPlay(double v);
 
+    // Fired by changes in play.
+    void slotControlVolume(double v);
+
     // Fired by changes in vinyl control status.
     void slotVinylControlChanged(double v);
 
@@ -126,6 +129,7 @@ class SyncControl : public EngineControl, public Syncable {
     // the Qt object tree. This helps that they are deleted by the creating
     // thread, which is required to avoid segfaults.
     ControlProxy* m_pPlayButton;
+    ControlProxy* m_pVolumeLevel;
     ControlProxy* m_pBpm;
     ControlProxy* m_pLocalBpm;
     ControlProxy* m_pFileBpm;

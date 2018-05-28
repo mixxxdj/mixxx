@@ -181,12 +181,12 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
 void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
     Q_UNUSED(playing);
 
-    playing ? setPlayingSyncable(pSyncable) : setPausedSyncable(pSyncable);
+    // playing ? setPlayingSyncable(pSyncable) : setPausedSyncable(pSyncable);
 
-    if (!syncDeckExists() && m_pFirstPlayingDeck) {
-        setMasterBpm(m_pFirstPlayingDeck, m_pFirstPlayingDeck->getBpm());
-        setMasterBeatDistance(m_pFirstPlayingDeck, m_pFirstPlayingDeck->getBeatDistance());
-    }
+    // if (!syncDeckExists() && m_pFirstPlayingDeck) {
+    //     setMasterBpm(m_pFirstPlayingDeck, m_pFirstPlayingDeck->getBpm());
+    //     setMasterBeatDistance(m_pFirstPlayingDeck, m_pFirstPlayingDeck->getBeatDistance());
+    // }
 
     // For now we don't care if the deck is now playing or stopping.
     if (pSyncable->getSyncMode() == SYNC_NONE) {
@@ -259,11 +259,11 @@ void EngineSync::notifyScratching(Syncable* pSyncable, bool scratching) {
 void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChanged) {
     SyncMode syncMode = pSyncable->getSyncMode();
 
-    if (!syncDeckExists() && pSyncable == m_pFirstPlayingDeck) {
-        setMasterBpm(pSyncable, bpm);
-        setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
-        return;
-    }
+    // if (!syncDeckExists() && pSyncable == m_pFirstPlayingDeck) {
+    //     setMasterBpm(pSyncable, bpm);
+    //     setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
+    //     return;
+    // }
 
     if (syncMode == SYNC_NONE) {
         return;
@@ -291,10 +291,10 @@ void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChan
 }
 
 void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) {
-    if (!syncDeckExists() && pSyncable == m_pFirstPlayingDeck) {
-        setMasterInstantaneousBpm(pSyncable, bpm);
-        return;
-    }
+    // if (!syncDeckExists() && pSyncable == m_pFirstPlayingDeck) {
+    //     setMasterInstantaneousBpm(pSyncable, bpm);
+    //     return;
+    // }
 
     if (pSyncable->getSyncMode() != SYNC_MASTER) {
         return;
@@ -306,16 +306,22 @@ void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) 
 }
 
 void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beat_distance) {
-    if (!syncDeckExists() && pSyncable == m_pFirstPlayingDeck) {
-        setMasterBeatDistance(pSyncable, beat_distance);
-        return;
-    }
+    // if (!syncDeckExists() && pSyncable == m_pFirstPlayingDeck) {
+    //     setMasterBeatDistance(pSyncable, beat_distance);
+    //     return;
+    // }
 
     if (pSyncable->getSyncMode() != SYNC_MASTER) {
         return;
     }
 
     setMasterBeatDistance(pSyncable, beat_distance);
+}
+
+void EngineSync::notifyVolumeChanged(Syncable* pSyncable, double volume) {
+    Q_UNUSED(pSyncable);
+    Q_UNUSED(volume);
+    qDebug() << "Volume changed for " << pSyncable->getGroup() << " to " << volume;
 }
 
 void EngineSync::activateFollower(Syncable* pSyncable) {
