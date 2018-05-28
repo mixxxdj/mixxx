@@ -19,7 +19,7 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
         EffectManifestPointer pManifest = profile->pManifest;
 
         // Blacklisted Non-builtin effects by default
-        bool defaultValue = QString::localeAwareCompare(pManifest->backendName(), tr("Built-in")) == 0;
+        bool defaultValue = (pManifest->backendType() == BackendType::BuiltIn);
         bool visible = m_pConfig->getValue<bool>(ConfigKey("[Visible Effects]", 
                                                  pManifest->id()), defaultValue);
         profile->bIsVisible = visible;

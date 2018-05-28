@@ -2,7 +2,7 @@
 #include "effects/lv2/lv2manifest.h"
 
 LV2Backend::LV2Backend(QObject* pParent)
-        : EffectsBackend(pParent, tr("LV2")) {
+        : EffectsBackend(pParent, "LV2") {
     m_pWorld = lilv_world_new();
     initializeProperties();
     lilv_world_load_all(m_pWorld);
