@@ -1,4 +1,4 @@
-#include "effects/native/bitcrushereffect.h"
+#include "effects/builtin/bitcrushereffect.h"
 
 #include "util/sample.h"
 

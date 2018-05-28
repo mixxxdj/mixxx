@@ -1,6 +1,6 @@
-#include "effects/native/bessel8lvmixeqeffect.h"
+#include "effects/builtin/bessel8lvmixeqeffect.h"
 
-#include "effects/native/equalizer_util.h"
+#include "effects/builtin/equalizer_util.h"
 #include "util/math.h"
 
 // static

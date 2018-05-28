@@ -11,6 +11,11 @@ enum class EffectEnableState {
     Enabling
 };
 
+enum class EffectType {
+    BuiltIn,
+    LV2
+};
+
 enum class SignalProcessingStage {
     Prefader,
     Postfader

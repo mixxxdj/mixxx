@@ -1,4 +1,4 @@
-#include "effects/native/reverbeffect.h"
+#include "effects/builtin/reverbeffect.h"
 
 #include <QtDebug>
 

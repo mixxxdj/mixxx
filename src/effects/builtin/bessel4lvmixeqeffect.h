@@ -1,42 +1,39 @@
-#ifndef BESSEL8LVMIXEQEFFECT_H
-#define BESSEL8LVMIXEQEFFECT_H
-
-#include "effects/native/lvmixeqbase.h"
+#ifndef BESSEL4LVMIXEQEFFECT_H
+#define BESSEL4LVMIXEQEFFECT_H
 
 #include <QMap>
 
 #include "control/controlproxy.h"
 #include "effects/effect.h"
 #include "effects/effectprocessor.h"
+#include "effects/builtin/lvmixeqbase.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
-#include "engine/enginefilterbessel8.h"
+#include "engine/enginefilterbessel4.h"
 #include "engine/enginefilterdelay.h"
 #include "util/class.h"
-#include "util/defs.h"
-#include "util/sample.h"
 #include "util/types.h"
+#include "util/defs.h"
 
-
-class Bessel8LVMixEQEffectGroupState :
-        public LVMixEQEffectGroupState<EngineFilterBessel8Low> {
+class Bessel4LVMixEQEffectGroupState :
+        public LVMixEQEffectGroupState<EngineFilterBessel4Low> {
   public:
-        Bessel8LVMixEQEffectGroupState(const mixxx::EngineParameters& bufferParameters)
-            : LVMixEQEffectGroupState<EngineFilterBessel8Low>(bufferParameters) {
-        }
+      Bessel4LVMixEQEffectGroupState(const mixxx::EngineParameters& bufferParameters)
+          : LVMixEQEffectGroupState<EngineFilterBessel4Low>(bufferParameters) {
+      }
 };
 
-class Bessel8LVMixEQEffect : public EffectProcessorImpl<Bessel8LVMixEQEffectGroupState> {
+class Bessel4LVMixEQEffect : public EffectProcessorImpl<Bessel4LVMixEQEffectGroupState> {
   public:
-    Bessel8LVMixEQEffect(EngineEffect* pEffect);
-    virtual ~Bessel8LVMixEQEffect();
+    Bessel4LVMixEQEffect(EngineEffect* pEffect);
+    virtual ~Bessel4LVMixEQEffect();
 
     static QString getId();
     static EffectManifestPointer getManifest();
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,
-                        Bessel8LVMixEQEffectGroupState* pState,
+                        Bessel4LVMixEQEffectGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE* pOutput,
                         const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
@@ -58,7 +55,7 @@ class Bessel8LVMixEQEffect : public EffectProcessorImpl<Bessel8LVMixEQEffectGrou
     ControlProxy* m_pLoFreqCorner;
     ControlProxy* m_pHiFreqCorner;
 
-    DISALLOW_COPY_AND_ASSIGN(Bessel8LVMixEQEffect);
+    DISALLOW_COPY_AND_ASSIGN(Bessel4LVMixEQEffect);
 };
 
-#endif /* BESSEL8LVMIXEQEFFECT_H */
+#endif /* BESSEL4LVMIXEQEFFECT_H */

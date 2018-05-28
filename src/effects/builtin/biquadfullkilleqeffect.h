@@ -8,7 +8,7 @@
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/enginefilterbiquad1.h"
 #include "engine/enginefilterbessel4.h"
-#include "effects/native/lvmixeqbase.h"
+#include "effects/builtin/lvmixeqbase.h"
 #include "engine/enginefilterdelay.h"
 #include "util/class.h"
 #include "util/defs.h"

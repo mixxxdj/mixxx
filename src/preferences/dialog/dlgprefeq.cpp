@@ -20,8 +20,8 @@
 #include <QHBoxLayout>
 
 #include "preferences/dialog/dlgprefeq.h"
-#include "effects/native/biquadfullkilleqeffect.h"
-#include "effects/native/filtereffect.h"
+#include "effects/builtin/biquadfullkilleqeffect.h"
+#include "effects/builtin/filtereffect.h"
 #include "effects/effectslot.h"
 #include "engine/enginefilterbessel4.h"
 #include "control/controlobject.h"

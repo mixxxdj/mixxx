@@ -1,4 +1,4 @@
-#include "effects/native/flangereffect.h"
+#include "effects/builtin/flangereffect.h"
 
 #include <QtDebug>
 

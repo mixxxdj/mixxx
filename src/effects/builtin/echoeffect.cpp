@@ -1,4 +1,4 @@
-#include "effects/native/echoeffect.h"
+#include "effects/builtin/echoeffect.h"
 
 #include <QtDebug>
 

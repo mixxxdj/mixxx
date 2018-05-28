@@ -1,4 +1,4 @@
-#include "effects/native/autopaneffect.h"
+#include "effects/builtin/autopaneffect.h"
 
 #include <QtDebug>
 

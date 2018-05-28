@@ -1,6 +1,6 @@
-#include "effects/native/threebandbiquadeqeffect.h"
+#include "effects/builtin/threebandbiquadeqeffect.h"
 
-#include "effects/native/equalizer_util.h"
+#include "effects/builtin/equalizer_util.h"
 #include "util/math.h"
 
 namespace {

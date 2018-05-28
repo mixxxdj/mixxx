@@ -7,6 +7,7 @@
 #include <QSharedPointer>
 
 #include "effects/effectmanifestparameter.h"
+#include "effects/defs.h"
 
 // An EffectManifest is a full description of the metadata associated with an
 // effect (e.g. name, author, version, description, etc.) and the parameters of
@@ -141,6 +142,7 @@ class EffectManifest final {
     QString m_name;
     QString m_shortName;
     QString m_backendName;
+    // QString m_backendName;
     QString m_author;
     QString m_version;
     QString m_description;
