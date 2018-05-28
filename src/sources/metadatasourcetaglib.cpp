@@ -749,11 +749,12 @@ class SafelyWritableFile final {
 std::pair<MetadataSource::ExportResult, QDateTime>
 MetadataSourceTagLib::exportTrackMetadata(
         const TrackMetadata& trackMetadata) const {
-    if (kLogger.debugEnabled()) {
-        kLogger.debug() << "Exporting track metadata"
-                << "into file" << m_fileName
-                << "with type" << m_fileType;
-    }
+    // NOTE(uklotzde): Log unconditionally (with debug level) to
+    // identify files in the log file that might have caused a
+    // crash while exporting metadata.
+    kLogger.debug() << "Exporting track metadata"
+            << "into file" << m_fileName
+            << "with type" << m_fileType;
 
     SafelyWritableFile safelyWritableFile(m_fileName, kExportTrackMetadataIntoTemporaryFile);
 
