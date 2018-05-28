@@ -2400,8 +2400,8 @@ WLibrary QPushButton {
 
   /* checkbox in library "Played" column */
   QTableView::indicator {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     margin: 0px;
     padding: 0px;
     color: #cfcfcf;

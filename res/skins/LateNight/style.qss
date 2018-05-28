@@ -25,6 +25,7 @@ QToolTip {/*
 #BpmText,
 #RateText,
 WBeatSpinBox,
+QSpinBox,
 WOverview {
   font-family: "Open Sans";
 }
@@ -1385,77 +1386,100 @@ QTableView::item:selected {
 
 /* checkbox in library "Played" column */
 QTableView::indicator {
-  width: 12px;
-  height: 12px;
-  }
-  QTableView::indicator:checked {
-    background: url(skin:/style/library_checkbox_checked.png);
-  }
-  QTableView::indicator:unchecked {
-    background: url(skin:/style/library_checkbox_unchecked.png);
-  }
-
-/* BPM field in tracks table. */
-#LibraryBPMButton::item {
-  color: #cfb32c;
-  background-color: transparent;
+  width: 10px;
+  height: 10px;
   margin: 0px;
   padding: 0px;
+  color: #cfb32c;
+  /* border is added to size defined above */
+  border: 1px solid transparent;
   }
-  #LibraryBPMButton::item:focus {
-    color: #cfb32c;
-    background-color: #0f0f0f;
-    border: none;
-    margin: 0px;
-    padding: 0px;
+  QTableView::indicator:hover {
+    color: #cfcfcf;
+    border: 1px solid #888;
   }
-  #LibraryBPMButton::item:selected {
-    color: #fff;
-    background-color: #725309;
-    border: none;
-    margin: 0px;
-    padding: 0px;
-  }
-  #LibraryBPMSpinBox {
-    color: #fff;
-    selection-color: #0f0f0f;
-    background-color: #0f0f0f;
-    selection-background-color: #888;
-    /* This combination of negative top/bottom padding & margin
-      creates a 1px border around the spinbox' text area.
-      Increased left/right padding/margin removes the overlap of
-      text of activated spinbox and left-over text from regular
-      BPM value display. */
-    padding: -1px -8px -1px -4px;
-    margin: -2px 0px -2px -2px;
-    /* As soon as a border is defined, the up/down buttons
-      lose their style & icons
-    border: 0px;*/
+  QTableView::indicator:checked,
+  QTableView::indicator:checked:selected {
+    image: url(skin:/style/library_checkbox_checked.png);
+    border: 1px solid #ff6600;
     }
-  /* Lock icon next to BPM value */
-  #LibraryBPMButton::indicator:checked {
-    image: url(:/images/library/ic_library_checked.png);
+    QTableView::indicator:checked:hover {
+      border: 1px solid #aaa;
+    }
+  QTableView::indicator:unchecked {
+    image: url(skin:/style/library_checkbox_unchecked.png);
+    border: 1px solid #444;
+    }
+    QTableView::indicator:unchecked:hover {
+      border: 1px solid #888;
+    }
+  QTableView::indicator:selected {
+    border: 1px solid #888;
+    }
+    QTableView::indicator:selected:hover {
+      border: 1px solid #aaa;
+    }
+
+/* Entire BPM cell */
+/* Lock icon at the left */
+#LibraryBPMButton::indicator:checked {
+  image: url(skin:/style/library_locked.png);
   }
-  #LibraryBPMButton::indicator:unchecked {
-    image: url(:/images/library/ic_library_unchecked.png);
+#LibraryBPMButton::indicator:unchecked {
+  image: url(skin:/style/library_unlocked.png);
+  }
+/* BPM value */
+#LibraryBPMButton::item {
+  color: #cfb32c;
+  }
+  /* BPM value in selected row. Should match 'selection-color' &
+  'selection-background-color' of QTableView */
+  #LibraryBPMButton::item:selected {
+    color: #ededed;
+    background-color: #725309;
+    }
+#LibraryBPMSpinBox {
+  border-radius: 2px;
+  color: #cfb32c;
+  background-color: #0f0f0f;
+  selection-color: #0f0f0f;
+  selection-background-color: #d2d2d2;
+  /* This combination of negative top/bottom padding & margin
+    creates a 1px border around the spinbox' text area.
+    Increased left/right padding/margin removes the overlap of
+    text of activated spinbox and left-over text from regular
+    BPM value display. */
+  padding: -1px -8px -1px -4px;
+  margin: -2px 0px -2px -2px;
+  /* As soon as a border is defined, the up/down buttons
+    lose their style & icons
+  border: 0px;*/
   }
 
 /* Button in library "Preview" column */
-QPushButton#LibraryPreviewButton {
+#LibraryPreviewButton {
   width: 23px;
   height: 12px;
-  background-color: #0f0f0f;
-  border: 0px;
+  background: transparent;
   margin: 0px;
   padding: 0px;
+  border-radius: 2px;
   }
-  QPushButton#LibraryPreviewButton:!checked{
-    image: url(:/images/library/ic_library_preview_play.png);
-  }
-  QPushButton#LibraryPreviewButton:checked{
+  #LibraryPreviewButton:!checked{
+    image: url(skin:/style/library_preview_play.png);
+    }
+    #LibraryPreviewButton:!checked:hover {
+      border: 1px solid #725309;
+      background: #0f0f0f;
+    }
+  #LibraryPreviewButton:checked{
     image: url(:/images/library/ic_library_preview_pause.png);
-    background-color: #573F07;
-  }
+    background-color: #000;
+    border: 1px solid #725309;
+    }
+    #LibraryPreviewButton:checked:hover {
+      border: 1px solid #888;
+    }
 
 QHeaderView {
   font-size: 13px/15px;
