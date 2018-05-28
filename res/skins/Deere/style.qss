@@ -218,16 +218,29 @@ QPushButton#LibraryPreviewButton {
   width: 23px;
   height: 12px;
   border: none;
+  border-radius: 2px;
+  background: transparent;
+  margin: 0px;
+  padding: 0px;
 }
 
 QPushButton#LibraryPreviewButton:!checked {
   image: url(skin:/image/style_library_preview_play.png);
+}
+
+QPushButton#LibraryPreviewButton:!checked:hover {
   background-color: #1A1A1A;
+  border: 1px solid #00ABFD;
 }
 
 QPushButton#LibraryPreviewButton:checked {
   image: url(skin:/image/style_library_preview_pause.png);
-  background-color: #006596;
+  background-color: #0f0f0f;
+  border: 1px solid #006596;
+}
+
+QPushButton#LibraryPreviewButton:checked:hover {
+  border: 1px solid #00ABFD;
 }
 
 /* library header row */
