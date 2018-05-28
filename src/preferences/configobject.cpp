@@ -49,7 +49,7 @@ QString computeResourcePath() {
 #endif
 #ifdef __APPLE__
         else if (mixxxDir.cdUp() && mixxxDir.cd("Resources")) {
-            // Release configuraton
+            // Release configuration
             qResourcePath = mixxxDir.absolutePath();
         } else {
             // TODO(rryan): What should we do here?

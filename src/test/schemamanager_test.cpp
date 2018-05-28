@@ -64,7 +64,6 @@ TEST_F(SchemaManagerTest, BackwardsCompatibleVersion) {
         EXPECT_EQ(SchemaManager::Result::UpgradeSucceeded, result);
 
         SettingsDAO settings(dbConnection());
-        settings.initialize();
 
         // Pretend the database version is one past the required version but
         // min_compatible is the required version.
@@ -90,7 +89,6 @@ TEST_F(SchemaManagerTest, BackwardsIncompatibleVersion) {
         EXPECT_EQ(SchemaManager::Result::UpgradeSucceeded, result);
 
         SettingsDAO settings(dbConnection());
-        settings.initialize();
 
         // Pretend the database version is one past the required version and
         // min_compatible is one past the required version.
@@ -116,7 +114,7 @@ TEST_F(SchemaManagerTest, FailedUpgrade) {
         EXPECT_EQ(SchemaManager::Result::UpgradeSucceeded, result);
     }
 
-    // Add a column that is added in verison 24.
+    // Add a column that is added in version 24.
     QSqlQuery query(dbConnection());
     EXPECT_TRUE(query.exec(
             "ALTER TABLE library ADD COLUMN coverart_source TEXT"));

@@ -350,7 +350,7 @@
         </Directory>
       </Directory>
 
-      <!-- The windows programm menu folder for our main shortcut -->
+      <!-- The windows program menu folder for our main shortcut -->
       <Directory Id="ProgramMenuFolder" Name="Programs" />
 
       <!-- The desktop folder, for desktop shortcut -->

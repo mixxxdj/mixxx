@@ -416,7 +416,7 @@ class Vamp(Feature):
 
     def sources(self, build):
         sources = ['analyzer/vamp/vampanalyzer.cpp',
-                   'analyzer/vamp/vamppluginloader.cpp',
+                   'analyzer/vamp/vamppluginadapter.cpp',
                    'analyzer/analyzerbeats.cpp',
                    'analyzer/analyzerkey.cpp',
                    'preferences/dialog/dlgprefbeats.cpp',
@@ -1131,7 +1131,7 @@ class Optimize(Feature):
                 optimize_level = Optimize.LEVEL_PORTABLE
 
             # Common flags to all optimizations.
-            # -ffast-math will pevent a performance penalty by denormals
+            # -ffast-math will prevent a performance penalty by denormals
             # (floating point values almost Zero are treated as Zero)
             # unfortunately that work only on 64 bit CPUs or with sse2 enabled
 
@@ -1185,11 +1185,11 @@ class Optimize(Feature):
                 # http://en.chys.info/2010/04/what-exactly-marchnative-means/
                 # Note: requires gcc >= 4.2.0
                 # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
-                # are set automaticaly
+                # are set automatically
                 if build.architecture_is_x86 and not build.machine_is_64bit:
                     # For 32 bit builds using gcc < 5.0, the mfpmath=sse is
                     # not set by default (not supported on arm builds)
-                    # If -msse is not implicite set, it falls back to mfpmath=387
+                    # If -msse is not implicitly set, it falls back to mfpmath=387
                     # and a compiler warning is issued (tested with gcc 4.8.4)
                     build.env.Append(CCFLAGS='-mfpmath=sse')
                 elif build.architecture_is_arm:
@@ -1281,7 +1281,11 @@ class Lilv(Feature):
         return False
 
     def add_options(self, build, vars):
-        vars.Add('lilv', 'Set to 1 to enable Lilv library for LV2 support', 1)
+        default = 1
+        # We do not have lilv set up in the Windows build server environment (yet)
+        if build.platform_is_windows:
+            default = 0
+        vars.Add('lilv', 'Set to 1 to enable Lilv library for LV2 support', default)
 
     def configure(self, build, conf):
         if not self.enabled(build):
@@ -1300,7 +1304,8 @@ class Lilv(Feature):
     def sources(self, build):
         return ['effects/lv2/lv2backend.cpp',
                 'effects/lv2/lv2effectprocessor.cpp',
-                'effects/lv2/lv2manifest.cpp']
+                'effects/lv2/lv2manifest.cpp',
+                'preferences/dialog/dlgpreflv2.cpp']
 
 class Battery(Feature):
     def description(self):

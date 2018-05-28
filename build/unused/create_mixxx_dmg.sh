@@ -133,7 +133,7 @@ strip *.dylib #Strip the imageformat plugins
 cd ..
 cd iconengines
 
-for lib in libqsvg.dylib;  #Yeah, theres a libqsvg.dylib iconengine and a libqsvg.dylib imageformat (and they're different)...
+for lib in libqsvg.dylib;  #Yeah, there's a libqsvg.dylib iconengine and a libqsvg.dylib imageformat (and they're different)...
 do
     cp $QT4_PATH/plugins/iconengines/$lib .
 

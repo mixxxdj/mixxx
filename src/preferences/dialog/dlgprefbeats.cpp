@@ -1,14 +1,11 @@
 #include "preferences/dialog/dlgprefbeats.h"
 
-#include "analyzer/vamp/vamppluginloader.h"
+#include "analyzer/vamp/vamppluginadapter.h"
 #include "control/controlobject.h"
 #include "track/beat_preferences.h"
 
 using Vamp::Plugin;
-using Vamp::PluginHostAdapter;
 using Vamp::HostExt::PluginLoader;
-using Vamp::HostExt::PluginWrapper;
-using Vamp::HostExt::PluginInputDomainAdapter;
 
 DlgPrefBeats::DlgPrefBeats(QWidget *parent, UserSettingsPointer _config)
         : DlgPreferencePage(parent),
@@ -221,19 +218,18 @@ void DlgPrefBeats::populate() {
     plugincombo->setDuplicatesEnabled(false);
     connect(plugincombo, SIGNAL(currentIndexChanged(int)),
             this, SLOT(pluginSelected(int)));
-    mixxx::VampPluginLoader vampPluginLoader;
-    std::vector<PluginLoader::PluginKey> plugins = vampPluginLoader.listPlugins();
+    const PluginLoader::PluginKeyList plugins = mixxx::VampPluginAdapter::listPlugins();
     qDebug() << "VampPluginLoader::listPlugins() returned" << plugins.size() << "plugins";
     for (unsigned int iplugin=0; iplugin < plugins.size(); iplugin++) {
         // TODO(XXX): WTF, 48000
-        Plugin *plugin = vampPluginLoader.loadPlugin(plugins[iplugin], 48000);
+        mixxx::VampPluginAdapter pluginAdapter(plugins[iplugin], 48000);
         //TODO: find a way to add beat trackers only
-        if (plugin) {
-            Plugin::OutputList outputs = plugin->getOutputDescriptors();
+        if (pluginAdapter) {
+            const Plugin::OutputList& outputs = pluginAdapter.getOutputDescriptors();
             for (unsigned int ioutput=0; ioutput < outputs.size(); ioutput++) {
-                QString displayname = QString::fromStdString(plugin->getIdentifier()) + ":"
+                QString displayname = QString::fromStdString(pluginAdapter.getIdentifier()) + ":"
                                             + QString::number(ioutput);
-                QString displaynametext = QString::fromStdString(plugin->getName());
+                QString displaynametext = QString::fromStdString(pluginAdapter.getName());
                 qDebug() << "Plugin output displayname:" << displayname << displaynametext;
                 bool goodones = ((displayname.contains("mixxxbpmdetection")||
                                   displayname.contains("qm-tempotracker:0"))||
@@ -244,14 +240,12 @@ void DlgPrefBeats::populate() {
                     m_listName << displaynametext;
                     QString pluginlibrary = QString::fromStdString(plugins[iplugin]).section(":",0,0);
                     m_listLibrary << pluginlibrary;
-                    QString displayname = QString::fromStdString(plugin->getIdentifier()) + ":"
+                    QString displayname = QString::fromStdString(pluginAdapter.getIdentifier()) + ":"
                             + QString::number(ioutput);
                     m_listIdentifier << displayname;
                     plugincombo->addItem(displaynametext, displayname);
                 }
             }
-            delete plugin;
-            plugin = 0;
         }
     }
 }

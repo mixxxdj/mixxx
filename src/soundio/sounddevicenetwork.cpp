@@ -357,7 +357,7 @@ void SoundDeviceNetwork::workerWrite(NetworkOutputStreamWorkerPtr pWorker,
         int writeAvailable = pFifo->writeAvailable();
         int writeRequired = frames * m_iNumOutputChannels;
         if (writeAvailable < writeRequired) {
-            kLogger.warning() << "write: worker buffer full, loosing samples";
+            kLogger.warning() << "write: worker buffer full, losing samples";
             pWorker->incOverflowCount();
         }
 
@@ -384,7 +384,7 @@ void SoundDeviceNetwork::workerWriteSilence(NetworkOutputStreamWorkerPtr pWorker
         int writeAvailable = pFifo->writeAvailable();
         int writeRequired = frames * m_iNumOutputChannels;
         if (writeAvailable < writeRequired) {
-            kLogger.warning() << "writeSilence: worker buffer full, loosing samples";
+            kLogger.warning() << "writeSilence: worker buffer full, losing samples";
             pWorker->incOverflowCount();
         }
 
