@@ -18,7 +18,9 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
     for (auto profile : m_pAvailableEffectsModel->profiles()) {
         EffectManifestPointer pManifest = profile->pManifest;
 
-        // Blacklisted Non-builtin effects by default
+        // Users are likely to have lots of external plugins installed and 
+        // many of them are useless for DJing. To avoid cluttering the list 
+        // shown in WEffectSelector, blacklist external plugins by default.
         bool defaultValue = (pManifest->backendType() == EffectBackendType::BuiltIn);
         bool visible = m_pConfig->getValue<bool>(ConfigKey("[Visible Effects]", 
                                                  pManifest->id()), defaultValue);
