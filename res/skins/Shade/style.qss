@@ -120,9 +120,6 @@ QTreeView {
     In conjuction with [Library],MoveFocusBackward/..Forward, this helps a lot. */
     border-color: #ff6600;
   }
- QTreeView::item:hover {
-     border: 1px solid #898989;
- }
 
 /*  Closed branch of tree 	*/
 QTreeView::branch:has-children:!has-siblings:closed,
