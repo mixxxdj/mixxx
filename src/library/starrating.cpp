@@ -15,6 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <QPainter>
+
 #include "library/starrating.h"
 #include "util/math.h"
 

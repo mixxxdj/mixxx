@@ -19,17 +19,16 @@
 #ifndef STARDELEGATE_H
 #define STARDELEGATE_H
 
-#include <QStyledItemDelegate>
-#include <QTableView>
+#include "library/tableitemdelegate.h"
 
-class StarDelegate : public QStyledItemDelegate {
+class StarDelegate : public TableItemDelegate {
     Q_OBJECT
   public:
-    StarDelegate(QObject* pParent = 0);
+    StarDelegate(QTableView* pTrackTable);
 
     // reimplemented from QItemDelegate and is called whenever the view needs to
     // repaint an item
-    void paint(QPainter* painter, const QStyleOptionViewItem& option,
+    void paintItem(QPainter* painter, const QStyleOptionViewItem& option,
                const QModelIndex& index) const;
 
     // returns an item's preferred size

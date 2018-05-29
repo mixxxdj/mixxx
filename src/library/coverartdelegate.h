@@ -1,24 +1,21 @@
 #ifndef COVERARTDELEGATE_H
 #define COVERARTDELEGATE_H
 
-#include <QObject>
-#include <QPainter>
-#include <QStyledItemDelegate>
 #include <QHash>
 #include <QLinkedList>
-#include <QTableView>
 
+#include "library/tableitemdelegate.h"
 #include "library/trackmodel.h"
 
-class CoverArtDelegate : public QStyledItemDelegate {
+class CoverArtDelegate : public TableItemDelegate {
     Q_OBJECT
   public:
-    explicit CoverArtDelegate(QObject* parent = NULL);
+    explicit CoverArtDelegate(QTableView* pTableView);
     virtual ~CoverArtDelegate();
 
-    void paint(QPainter *painter,
-               const QStyleOptionViewItem &option,
-               const QModelIndex &index) const;
+    void paintItem(QPainter* painter,
+               const QStyleOptionViewItem& option,
+               const QModelIndex& index) const;
 
   signals:
     void coverReadyForCell(int row, int column);

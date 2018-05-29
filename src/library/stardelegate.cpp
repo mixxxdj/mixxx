@@ -18,19 +18,20 @@
 
 #include <QtDebug>
 
+#include "library/tableitemdelegate.h"
 #include "library/stardelegate.h"
 #include "library/stareditor.h"
 #include "library/starrating.h"
 
-StarDelegate::StarDelegate(QObject* pParent)
-        : QStyledItemDelegate(pParent),
-          m_pTableView(qobject_cast<QTableView*>(pParent)),
+StarDelegate::StarDelegate(QTableView* pTableView)
+        : TableItemDelegate(pTableView),
+          m_pTableView(pTableView),
           m_isOneCellInEditMode(false) {
-    connect(pParent, SIGNAL(entered(QModelIndex)),
+    connect(pTableView, SIGNAL(entered(QModelIndex)),
             this, SLOT(cellEntered(QModelIndex)));
 }
 
-void StarDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
+void StarDelegate::paintItem(QPainter* painter, const QStyleOptionViewItem& option,
                          const QModelIndex& index) const {
     // let the editor do the painting if this cell is currently being edited
     if (index == m_currentEditedCellIndex) {

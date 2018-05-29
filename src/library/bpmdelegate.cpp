@@ -3,6 +3,8 @@
 #include <QDoubleSpinBox>
 #include <QRect>
 #include <QPalette>
+#include <QTableView>
+#include <QPainter>
 
 #include "library/bpmdelegate.h"
 #include "library/trackmodel.h"
@@ -30,9 +32,9 @@ class BpmEditorCreator : public QItemEditorCreatorBase {
     }
 };
 
-BPMDelegate::BPMDelegate(QObject* parent)
-        : QStyledItemDelegate(parent),
-          m_pTableView(qobject_cast<QTableView*>(parent)),
+BPMDelegate::BPMDelegate(QTableView* pTableView)
+        : TableItemDelegate(pTableView),
+          m_pTableView(pTableView),
           m_pCheckBox(new QCheckBox(m_pTableView)) {
     m_pCheckBox->setObjectName("LibraryBPMButton");
     // NOTE(rryan): Without ensurePolished the first render of the QTableView
@@ -51,8 +53,8 @@ BPMDelegate::~BPMDelegate() {
     delete m_pFactory;
 }
 
-void BPMDelegate::paint(QPainter* painter,const QStyleOptionViewItem &option,
-                        const QModelIndex &index) const {
+void BPMDelegate::paintItem(QPainter* painter,const QStyleOptionViewItem &option,
+                        const QModelIndex& index) const {
     // NOTE(rryan): Qt has a built-in limitation that we cannot style multiple
     // CheckState indicators in the same QAbstractItemView. The CSS rule
     // QTableView::indicator:checked applies to all columns with a
@@ -75,6 +77,21 @@ void BPMDelegate::paint(QPainter* painter,const QStyleOptionViewItem &option,
     QStyleOptionViewItemV4 opt = option;
     initStyleOption(&opt, index);
 
+    // Set the palette appropriately based on whether the row is selected or
+    // not. We also have to check if it is inactive or not and use the
+    // appropriate ColorGroup.
+    QPalette::ColorGroup cg = option.state & QStyle::State_Enabled
+            ? QPalette::Normal : QPalette::Disabled;
+    if (cg == QPalette::Normal && !(option.state & QStyle::State_Active))
+        cg = QPalette::Inactive;
+
+    if (option.state & QStyle::State_Selected) {
+        painter->setBrush(option.palette.color(cg, QPalette::HighlightedText));
+    } else {
+        painter->setBrush(option.palette.color(cg, QPalette::Text));
+    }
+
+
     if (m_pTableView != NULL) {
         QStyle* style = m_pTableView->style();
         if (style != NULL) {
@@ -82,4 +99,34 @@ void BPMDelegate::paint(QPainter* painter,const QStyleOptionViewItem &option,
                                m_pCheckBox);
         }
     }
+
+
+    /*
+
+    painter->save();
+    painter->setClipRect(option.rect);
+
+    if (m_pTableView != NULL) {
+        QStyle* style = m_pTableView->style();
+        if (style != NULL) {
+            style->drawControl(QStyle::CE_ItemViewItem, &option, painter,
+                    m_pTableView);
+        }
+    }
+
+    // Set the palette appropriately based on whether the row is selected or
+    // not. We also have to check if it is inactive or not and use the
+    // appropriate ColorGroup.
+    QPalette::ColorGroup cg = option.state & QStyle::State_Enabled
+            ? QPalette::Normal : QPalette::Disabled;
+    if (cg == QPalette::Normal && !(option.state & QStyle::State_Active))
+        cg = QPalette::Inactive;
+
+    if (option.state & QStyle::State_Selected) {
+        painter->setBrush(option.palette.color(cg, QPalette::HighlightedText));
+    } else {
+        painter->setBrush(option.palette.color(cg, QPalette::Text));
+    }
+    */
+
 }

@@ -1,13 +1,14 @@
 #include <QTableView>
+#include <QPainter>
 
 #include "library/coverartdelegate.h"
 #include "library/coverartcache.h"
 #include "library/dao/trackschema.h"
 #include "util/math.h"
 
-CoverArtDelegate::CoverArtDelegate(QObject *parent)
-        : QStyledItemDelegate(parent),
-          m_pTableView(qobject_cast<QTableView*>(parent)),
+CoverArtDelegate::CoverArtDelegate(QTableView* parent)
+        : TableItemDelegate(parent),
+          m_pTableView(parent),
           m_bOnlyCachedCover(false),
           m_iCoverColumn(-1),
           m_iCoverSourceColumn(-1),
@@ -82,7 +83,7 @@ void CoverArtDelegate::slotCoverFound(const QObject* pRequestor,
     }
 }
 
-void CoverArtDelegate::paint(QPainter *painter,
+void CoverArtDelegate::paintItem(QPainter *painter,
                              const QStyleOptionViewItem &option,
                              const QModelIndex &index) const {
 
