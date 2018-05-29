@@ -2,7 +2,7 @@
 #include "effects/lv2/lv2manifest.h"
 
 LV2Backend::LV2Backend(QObject* pParent)
-        : EffectsBackend(pParent, "LV2") {
+        : EffectsBackend(pParent, EffectBackendType::LV2) {
     m_pWorld = lilv_world_new();
     initializeProperties();
     lilv_world_load_all(m_pWorld);
@@ -27,7 +27,7 @@ void LV2Backend::enumeratePlugins() {
             continue;
         }
         LV2Manifest* lv2Manifest = new LV2Manifest(plug, m_properties);
-        lv2Manifest->getEffectManifest()->setBackendName(getName());
+        lv2Manifest->getEffectManifest()->setBackendType(getType());
         m_registeredEffects.insert(lv2Manifest->getEffectManifest()->id(),
                                    lv2Manifest);
     }

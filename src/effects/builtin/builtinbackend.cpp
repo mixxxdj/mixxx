@@ -25,7 +25,7 @@
 #include "effects/builtin/tremoloeffect.h"
 
 BuiltInBackend::BuiltInBackend(QObject* pParent)
-        : EffectsBackend(pParent, "Built-in") {
+        : EffectsBackend(pParent, EffectBackendType::BuiltIn) {
     // Keep this list in a reasonable order
     // Mixing EQs
     registerEffect<Bessel4LVMixEQEffect>();

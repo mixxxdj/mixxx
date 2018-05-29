@@ -24,7 +24,8 @@
 class EffectManifest final {
   public:
     EffectManifest()
-        : m_isMixingEQ(false),
+        : m_backendType(EffectBackendType::Unknown),
+          m_isMixingEQ(false),
           m_isMasterEQ(false),
           m_effectRampsFromDry(false),
           m_metaknobDefault(0.5) {
@@ -62,12 +63,8 @@ class EffectManifest final {
     const EffectBackendType& backendType() const {
         return m_backendType;
     }
-    const QString& backendName() const {
-        return m_backendName;
-    }
-    void setBackendName(const QString& name) {
-        m_backendType = backendTypeFromString(name);
-        m_backendName = backendTypeToString(m_backendType);
+    void setBackendType(const EffectBackendType& type) {
+        m_backendType = type;
     }
 
     const QString& author() const {
@@ -137,16 +134,15 @@ class EffectManifest final {
         m_metaknobDefault = metaknobDefault;
     }
 
-    static QString backendTypeToString(EffectBackendType type) {
+    static QString backendTypeToTranslatedString(EffectBackendType type) {
         switch (type) {
             case EffectBackendType::BuiltIn:
                 //: Used for effects that are built into Mixxx
                 return QObject::tr("Built-in");
             case EffectBackendType::LV2:
-                return QObject::tr("LV2");
+                return QString("LV2");
             default:
-                //: Used for effects from unknown sources
-                return QObject::tr("Unknown");
+                return QString("");
         }
     }
     static EffectBackendType backendTypeFromString(const QString& name) {
@@ -168,7 +164,6 @@ class EffectManifest final {
     QString m_name;
     QString m_shortName;
     EffectBackendType m_backendType;
-    QString m_backendName;
     QString m_author;
     QString m_version;
     QString m_description;

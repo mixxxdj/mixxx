@@ -1,6 +1,7 @@
 #ifndef BUILTINBACKEND_H
 #define BUILTINBACKEND_H
 
+#include "effects/defs.h"
 #include "effects/effectsbackend.h"
 
 class BuiltInBackend : public EffectsBackend {

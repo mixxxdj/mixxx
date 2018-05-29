@@ -26,6 +26,7 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
   private:
     void clear();
 
+    EffectSettingsModel m_availableEffectsModel;
     UserSettingsPointer m_pConfig;
     EffectsManager* m_pEffectsManager;
     EffectSettingsModel* m_pAvailableEffectsModel;

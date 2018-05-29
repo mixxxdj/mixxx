@@ -69,7 +69,9 @@ EffectsManager::~EffectsManager() {
 bool alphabetizeEffectManifests(EffectManifestPointer pManifest1,
                                 EffectManifestPointer pManifest2) {
     int dNameComp = QString::localeAwareCompare(pManifest1->displayName(), pManifest2->displayName());
-    int bNameComp = QString::localeAwareCompare(pManifest1->backendName(), pManifest2->backendName());
+    int bNameComp = QString::localeAwareCompare(
+                        EffectManifest::backendTypeToTranslatedString(pManifest1->backendType()), 
+                        EffectManifest::backendTypeToTranslatedString(pManifest2->backendType()));
     // Add an exception for "Built-in" backends, to keep the Built-in effects in the beginning
     return (bNameComp ? (bNameComp < 0) : (dNameComp < 0));
 }
