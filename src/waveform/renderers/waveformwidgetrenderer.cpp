@@ -27,7 +27,6 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
       m_rateAdjust(0.0),
       m_visualSamplePerPixel(1.0),
       m_audioSamplePerPixel(1.0),
-      m_enableBeatGrid(true),
       m_alphaBeatGrid(90),
       // Really create some to manage those;
       m_visualPlayPosition(NULL),
@@ -273,10 +272,6 @@ void WaveformWidgetRenderer::setup(
 void WaveformWidgetRenderer::setZoom(int zoom) {
     //qDebug() << "WaveformWidgetRenderer::setZoom" << zoom;
     m_zoomFactor = math_clamp<double>(zoom, s_waveformMinZoom, s_waveformMaxZoom);
-}
-
-void WaveformWidgetRenderer::setDisplayBeatGrid(bool set) {
-    m_enableBeatGrid = set;
 }
 
 void WaveformWidgetRenderer::setDisplayBeatGridAlpha(int alpha) {

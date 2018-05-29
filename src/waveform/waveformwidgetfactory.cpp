@@ -300,7 +300,6 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
     }
 
     viewer->setZoom(m_defaultZoom);
-    viewer->setDisplayBeatGrid(m_beatGridEnabled);
     viewer->setDisplayBeatGridAlpha(m_beatGridAlpha);
     viewer->update();
 

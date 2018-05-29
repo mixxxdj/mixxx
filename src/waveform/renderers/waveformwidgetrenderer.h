@@ -74,7 +74,6 @@ class WaveformWidgetRenderer {
     double getGain() const { return m_gain;}
     int getTrackSamples() const { return m_trackSamples;}
 
-    bool isBeatGridEnabled() const { return m_enableBeatGrid; }
     int beatGridAlpha() const { return m_alphaBeatGrid; }
 
     void resize(int width, int height);
@@ -112,7 +111,6 @@ class WaveformWidgetRenderer {
     double m_visualSamplePerPixel;
     double m_audioSamplePerPixel;
 
-    bool m_enableBeatGrid;
     int m_alphaBeatGrid;
 
     //TODO: vRince create some class to manage control/value

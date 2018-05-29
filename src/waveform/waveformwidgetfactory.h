@@ -151,7 +151,6 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     bool m_openGLAvailable;
     QString m_openGLVersion;
     bool m_openGLShaderAvailable;
-    bool m_beatGridEnabled;
     int m_beatGridAlpha;
 
     VSyncThread* m_vsyncThread;
