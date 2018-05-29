@@ -378,6 +378,9 @@ Select from different types of displays for the waveform, which differ primarily
        <property name="toolTip">
         <string/>
        </property>
+       <property name="suffix">
+        <string> fps</string>
+       </property>
        <property name="minimum">
         <number>10</number>
        </property>
@@ -472,8 +475,11 @@ Select from different types of displays for the waveform, which differ primarily
        <property name="toolTip">
         <string/>
        </property>
+       <property name="midLineWidth">
+        <number>6</number>
+       </property>
        <property name="text">
-        <string>Beat Grid Opacity</string>
+        <string>Beat grid opacity</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -497,6 +503,9 @@ Select from different types of displays for the waveform, which differ primarily
       <widget class="QSpinBox" name="beatGridAlphaSpinBox">
        <property name="toolTip">
         <string>Set amount of opacity on beat grid lines.</string>
+       </property>
+       <property name="suffix">
+        <string>%</string>
        </property>
        <property name="maximum">
         <number>100</number>
