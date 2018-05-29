@@ -8,6 +8,7 @@
 #include "control/controlobject.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
+#include "effects/effectrack.h"
 #include "engine/enginedeck.h"
 #include "engine/enginemaster.h"
 #include "library/library.h"

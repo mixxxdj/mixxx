@@ -111,8 +111,8 @@ EffectChainPointer EffectChain::clone(EffectChainPointer pChain) {
             // Insert empty effect to preserve chain order
             pClonedEffect = EffectPointer();
         } else {
-            pClonedEffect = pChain->m_pEffectsManager
-                    ->instantiateEffect(pEffect->getManifest().id());
+            pClonedEffect = pChain->m_pEffectsManager->instantiateEffect(
+                    pEffect->getManifest()->id());
         }
         pClone->addEffect(pClonedEffect);
     }
@@ -299,6 +299,12 @@ void EffectChain::replaceEffect(unsigned int effectSlotNumber,
 
 void EffectChain::removeEffect(unsigned int effectSlotNumber) {
     replaceEffect(effectSlotNumber, EffectPointer());
+}
+
+void EffectChain::refreshAllEffects() {
+    for (int i = 0; i < m_effects.size(); ++i) {
+        emit(effectChanged(i));
+    }
 }
 
 unsigned int EffectChain::numEffects() const {

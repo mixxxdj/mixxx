@@ -2,8 +2,10 @@
 
 #include "effects/effectrack.h"
 #include "effects/effectxmlelements.h"
+#include "effects/effectslot.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
+#include "control/controlencoder.h"
 #include "mixer/playermanager.h"
 #include "util/math.h"
 #include "util/xml.h"
@@ -184,8 +186,8 @@ void EffectChainSlot::slotChainEffectChanged(unsigned int effectSlotNumber,
         }
 
         m_pControlNumEffects->forceSet(math_min(
-            static_cast<unsigned int>(m_slots.size()),
-            m_pEffectChain->numEffects()));
+                static_cast<unsigned int>(m_slots.size()),
+                m_pEffectChain->numEffects()));
 
         if (shouldEmit) {
             emit(updated());

@@ -1270,6 +1270,43 @@ class LocaleCompare(Feature):
             raise Exception('Missing libsqlite3 -- exiting!')
         build.env.Append(CPPDEFINES='__SQLITE3__')
 
+class Lilv(Feature):
+    def description(self):
+        return "Lilv library for LV2 support"
+
+    def enabled(self, build):
+        build.flags['lilv'] = util.get_flags(build.env, 'lilv', 0)
+        if int(build.flags['lilv']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        default = 1
+        # We do not have lilv set up in the Windows build server environment (yet)
+        if build.platform_is_windows:
+            default = 0
+        vars.Add('lilv', 'Set to 1 to enable Lilv library for LV2 support', default)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+
+        if build.platform_is_linux or build.platform_is_osx \
+                or build.platform_is_bsd:
+            # Check for liblilv-0
+            if not conf.CheckForPKG('lilv-0', '0.5'):
+                raise Exception('Missing liblilv-0 (needs at least 0.5)')
+
+            build.env.Append(CPPDEFINES='__LILV__')
+	    build.env.ParseConfig('pkg-config lilv-0 --silence-errors \
+                                  --cflags --libs')
+
+    def sources(self, build):
+        return ['effects/lv2/lv2backend.cpp',
+                'effects/lv2/lv2effectprocessor.cpp',
+                'effects/lv2/lv2manifest.cpp',
+                'preferences/dialog/dlgpreflv2.cpp']
+
 class Battery(Feature):
     def description(self):
         return "Battery meter support."

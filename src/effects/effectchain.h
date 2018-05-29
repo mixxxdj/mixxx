@@ -7,8 +7,8 @@
 #include <QDomDocument>
 
 #include "effects/defs.h"
-#include "effects/effect.h"
 #include "engine/channelhandle.h"
+#include "effects/effect.h"
 #include "util/class.h"
 
 class EffectsManager;
@@ -83,6 +83,8 @@ class EffectChain : public QObject {
     void addEffect(EffectPointer pEffect);
     void replaceEffect(unsigned int effectSlotNumber, EffectPointer pEffect);
     void removeEffect(unsigned int effectSlotNumber);
+    void refreshAllEffects();
+
     const QList<EffectPointer>& effects() const;
     unsigned int numEffects() const;
 

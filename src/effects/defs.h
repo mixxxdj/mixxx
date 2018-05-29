@@ -2,12 +2,19 @@
 #include "util/memory.h"
 #include "engine/channelhandle.h"
 #include <array>
+#include <QSharedPointer>
 
 enum class EffectEnableState {
     Disabled,
     Enabled,
     Disabling,
     Enabling
+};
+
+enum class EffectBackendType {
+    BuiltIn,
+    LV2,
+    Unknown
 };
 
 enum class SignalProcessingStage {
@@ -37,3 +44,39 @@ class EffectState;
 // For sending EffectStates along the MessagePipe
 typedef ChannelHandleMap<EffectState*> EffectStatesMap;
 typedef std::array<EffectStatesMap, kNumEffectsPerUnit> EffectStatesMapArray;
+
+class EffectRack;
+typedef QSharedPointer<EffectRack> EffectRackPointer;
+
+class StandardEffectRack;
+typedef QSharedPointer<StandardEffectRack> StandardEffectRackPointer;
+
+class EqualizerRack;
+typedef QSharedPointer<EqualizerRack> EqualizerRackPointer;
+
+class QuickEffectRack;
+typedef QSharedPointer<QuickEffectRack> QuickEffectRackPointer;
+
+class OutputEffectRack;
+typedef QSharedPointer<OutputEffectRack> OutputEffectRackPointer;
+
+class EffectSlot;
+typedef QSharedPointer<EffectSlot> EffectSlotPointer;
+
+class EffectParameterSlot;
+typedef QSharedPointer<EffectParameterSlot> EffectParameterSlotPointer;
+
+class EffectButtonParameterSlot;
+typedef QSharedPointer<EffectButtonParameterSlot> EffectButtonParameterSlotPointer;
+
+class EffectManifest;
+typedef QSharedPointer<EffectManifest> EffectManifestPointer;
+
+class Effect;
+typedef QSharedPointer<Effect> EffectPointer;
+
+class EffectParameterSlotBase;
+typedef QSharedPointer<EffectParameterSlotBase> EffectParameterSlotBasePointer;
+
+class EffectChainSlot;
+typedef QSharedPointer<EffectChainSlot> EffectChainSlotPointer;

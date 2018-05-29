@@ -6,17 +6,14 @@
 #include <QList>
 #include <QSignalMapper>
 
-#include "effects/effect.h"
-#include "effects/effectslot.h"
-#include "effects/effectchain.h"
 #include "engine/channelhandle.h"
 #include "util/class.h"
+#include "effects/effectchain.h"
 
 class ControlObject;
 class ControlPushButton;
+class ControlEncoder;
 class EffectChainSlot;
-class EffectRack;
-typedef QSharedPointer<EffectChainSlot> EffectChainSlotPointer;
 
 class EffectChainSlot : public QObject {
     Q_OBJECT

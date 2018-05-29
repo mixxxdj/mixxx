@@ -4,8 +4,10 @@
 #include <QList>
 #include <QString>
 #include <QtDebug>
+#include <QSharedPointer>
 
 #include "effects/effectmanifestparameter.h"
+#include "effects/defs.h"
 
 // An EffectManifest is a full description of the metadata associated with an
 // effect (e.g. name, author, version, description, etc.) and the parameters of
@@ -22,7 +24,8 @@
 class EffectManifest final {
   public:
     EffectManifest()
-        : m_isMixingEQ(false),
+        : m_backendType(EffectBackendType::Unknown),
+          m_isMixingEQ(false),
           m_isMasterEQ(false),
           m_effectRampsFromDry(false),
           m_metaknobDefault(0.5) {
@@ -55,6 +58,13 @@ class EffectManifest final {
         } else {
             return m_name;
         }
+    }
+
+    const EffectBackendType& backendType() const {
+        return m_backendType;
+    }
+    void setBackendType(const EffectBackendType& type) {
+        m_backendType = type;
     }
 
     const QString& author() const {
@@ -95,17 +105,19 @@ class EffectManifest final {
         m_description = description;
     }
 
-    const QList<EffectManifestParameter>& parameters() const {
+    const QList<EffectManifestParameterPointer>& parameters() const {
         return m_parameters;
     }
 
-    QList<EffectManifestParameter>& parameters() {
-        return m_parameters;
+    EffectManifestParameterPointer addParameter() {
+        EffectManifestParameterPointer effectManifestParameterPointer(
+                new EffectManifestParameter());
+        m_parameters.append(effectManifestParameterPointer);
+        return effectManifestParameterPointer;
     }
 
-    EffectManifestParameter* addParameter() {
-        m_parameters.append(EffectManifestParameter());
-        return &m_parameters.last();
+    EffectManifestParameterPointer parameter(int i) {
+        return m_parameters[i];
     }
 
     bool effectRampsFromDry() const {
@@ -122,6 +134,39 @@ class EffectManifest final {
         m_metaknobDefault = metaknobDefault;
     }
 
+    QString backendName() {
+        switch (m_backendType) {
+            case EffectBackendType::BuiltIn:
+                return QString("Built-in");
+            case EffectBackendType::LV2:
+                return QString("LV2");
+            default:
+                return QString("Unknown");
+        }
+    }
+
+    // Use this when showing the string in the GUI
+    QString translatedBackendName() {
+        switch (m_backendType) {
+            case EffectBackendType::BuiltIn:
+                //: Used for effects that are built into Mixxx
+                return QObject::tr("Built-in");
+            case EffectBackendType::LV2:
+                return QString("LV2");
+            default:
+                return QString();
+        }
+    }
+    static EffectBackendType backendTypeFromString(const QString& name) {
+        if (name == "Built-in") {
+            return EffectBackendType::BuiltIn;
+        } else if (name == "LV2") {
+            return EffectBackendType::LV2;
+        } else {
+            return EffectBackendType::Unknown;
+        }
+    }
+
   private:
     QString debugString() const {
         return QString("EffectManifest(%1)").arg(m_id);
@@ -130,13 +175,14 @@ class EffectManifest final {
     QString m_id;
     QString m_name;
     QString m_shortName;
+    EffectBackendType m_backendType;
     QString m_author;
     QString m_version;
     QString m_description;
     // This helps us at DlgPrefEQ's basic selection of Equalizers
     bool m_isMixingEQ;
     bool m_isMasterEQ;
-    QList<EffectManifestParameter> m_parameters;
+    QList<EffectManifestParameterPointer> m_parameters;
     bool m_effectRampsFromDry;
     double m_metaknobDefault;
 };
