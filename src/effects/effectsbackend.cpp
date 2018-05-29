@@ -14,10 +14,6 @@ EffectsBackend::~EffectsBackend() {
     m_effectIds.clear();
 }
 
-const EffectBackendType EffectsBackend::getType() const {
-    return m_type;
-}
-
 void EffectsBackend::registerEffect(const QString& id,
                                     EffectManifestPointer pManifest,
                                     EffectInstantiatorPointer pInstantiator) {

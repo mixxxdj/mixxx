@@ -13,14 +13,14 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
     setupUi(this);
 
     m_availableEffectsModel.resetFromEffectManager(pEffectsManager);
-    for (auto profile : m_availableEffectsModel.profiles()) {
+    for (auto& profile : m_availableEffectsModel.profiles()) {
         EffectManifestPointer pManifest = profile->pManifest;
 
         // Users are likely to have lots of external plugins installed and 
         // many of them are useless for DJing. To avoid cluttering the list 
         // shown in WEffectSelector, blacklist external plugins by default.
         bool defaultValue = (pManifest->backendType() == EffectBackendType::BuiltIn);
-        bool visible = m_pConfig->getValue<bool>(ConfigKey("[Visible Effects]", 
+        bool visible = m_pConfig->getValue<bool>(ConfigKey("[Visible " + pManifest->backendName() + " Effects]", 
                                                  pManifest->id()), defaultValue);
         profile->bIsVisible = visible;
         m_pEffectsManager->setEffectVisibility(pManifest, visible);
@@ -62,7 +62,8 @@ void DlgPrefEffects::slotApply() {
     for (EffectProfilePtr profile : m_availableEffectsModel.profiles()) {
         EffectManifestPointer pManifest = profile->pManifest;
         m_pEffectsManager->setEffectVisibility(pManifest, profile->bIsVisible);
-        m_pConfig->set(ConfigKey("[Visible Effects]", pManifest->id()), ConfigValue(profile->bIsVisible));
+        m_pConfig->set(ConfigKey("[Visible " + pManifest->backendName() + " Effects]", pManifest->id()), 
+                       ConfigValue(profile->bIsVisible));
     }
 }
 
@@ -90,5 +91,5 @@ void DlgPrefEffects::availableEffectsListItemSelected(const QModelIndex& selecte
     effectAuthor->setText(pManifest->author());
     effectDescription->setText(pManifest->description());
     effectVersion->setText(pManifest->version());
-    effectType->setText(EffectManifest::backendTypeToTranslatedString(pManifest->backendType()));
+    effectType->setText(pManifest->translatedBackendName());
 }

@@ -3,6 +3,8 @@
 #include <QMetaType>
 #include <QtAlgorithms>
 
+#include <algorithm>
+
 #include "engine/effects/engineeffectsmanager.h"
 #include "effects/effectchainmanager.h"
 #include "effects/effectsbackend.h"
@@ -69,10 +71,7 @@ EffectsManager::~EffectsManager() {
 bool alphabetizeEffectManifests(EffectManifestPointer pManifest1,
                                 EffectManifestPointer pManifest2) {
     int dNameComp = QString::localeAwareCompare(pManifest1->displayName(), pManifest2->displayName());
-    int bNameComp = QString::localeAwareCompare(
-                        EffectManifest::backendTypeToTranslatedString(pManifest1->backendType()), 
-                        EffectManifest::backendTypeToTranslatedString(pManifest2->backendType()));
-    // Add an exception for "Built-in" backends, to keep the Built-in effects in the beginning
+    int bNameComp = static_cast<int>(pManifest1->backendType()) - static_cast<int>(pManifest2->backendType());
     return (bNameComp ? (bNameComp < 0) : (dNameComp < 0));
 }
 

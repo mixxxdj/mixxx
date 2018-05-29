@@ -85,7 +85,7 @@ QVariant EffectSettingsModel::data(const QModelIndex& index, int role) const {
         } else if (column == kColumnName && role == Qt::DisplayRole) {
             return profile->pManifest->displayName();
         } else if (column == kColumnType && role == Qt::DisplayRole) {
-            return EffectManifest::backendTypeToTranslatedString(profile->pManifest->backendType());
+            return profile->pManifest->translatedBackendName();
         }
     }
 

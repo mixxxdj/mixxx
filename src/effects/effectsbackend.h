@@ -24,8 +24,6 @@ class EffectsBackend : public QObject {
     EffectsBackend(QObject* pParent, EffectBackendType type);
     virtual ~EffectsBackend();
 
-    virtual const EffectBackendType getType() const;
-
     // returns a list sorted like it should be displayed in the GUI 
     virtual const QList<QString> getEffectIds() const;
     virtual EffectManifestPointer getManifest(const QString& effectId) const;
@@ -50,6 +48,8 @@ class EffectsBackend : public QObject {
                         new EffectProcessorInstantiator<EffectProcessorImpl>()));
     }
 
+    EffectBackendType m_type;
+
   private:
     class RegisteredEffect {
       public:
@@ -69,7 +69,6 @@ class EffectsBackend : public QObject {
         EffectInstantiatorPointer m_pInitator;
     };
 
-    EffectBackendType m_type;
     QMap<QString, RegisteredEffect> m_registeredEffects;
     QList<QString> m_effectIds;
 };

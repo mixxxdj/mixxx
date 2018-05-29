@@ -27,7 +27,7 @@ void LV2Backend::enumeratePlugins() {
             continue;
         }
         LV2Manifest* lv2Manifest = new LV2Manifest(plug, m_properties);
-        lv2Manifest->getEffectManifest()->setBackendType(getType());
+        lv2Manifest->getEffectManifest()->setBackendType(m_type);
         m_registeredEffects.insert(lv2Manifest->getEffectManifest()->id(),
                                    lv2Manifest);
     }

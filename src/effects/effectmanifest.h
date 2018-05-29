@@ -134,15 +134,25 @@ class EffectManifest final {
         m_metaknobDefault = metaknobDefault;
     }
 
-    static QString backendTypeToTranslatedString(EffectBackendType type) {
-        switch (type) {
+    QString backendName() {
+        switch (m_backendType) {
+            case EffectBackendType::BuiltIn:
+                return QString("Built-in");
+            case EffectBackendType::LV2:
+                return QString("LV2");
+            default:
+                return QString("Unknown");
+        }
+    }
+    QString translatedBackendName() {
+        switch (m_backendType) {
             case EffectBackendType::BuiltIn:
                 //: Used for effects that are built into Mixxx
                 return QObject::tr("Built-in");
             case EffectBackendType::LV2:
                 return QString("LV2");
             default:
-                return QString("");
+                return QString();
         }
     }
     static EffectBackendType backendTypeFromString(const QString& name) {
