@@ -38,6 +38,17 @@ namespace {
 
 Logger kLogger("TagLib");
 
+bool checkID3v2HeaderVersion(const TagLib::ID3v2::Header& header) {
+    if (header.majorVersion() < 3) {
+        kLogger.warning() << QString("ID3v2.%1 is not supported")
+                                     .arg(QString::number(header.majorVersion()))
+                                     .toLatin1();
+        return false;
+    } else {
+        return true;
+    }
+}
+
 } // anonymous namespace
 
 namespace taglib {
@@ -1113,6 +1124,12 @@ void importTrackMetadataFromID3v2Tag(
         return; // nothing to do
     }
 
+    const TagLib::ID3v2::Header* pHeader = tag.header();
+    DEBUG_ASSERT(pHeader);
+    if (!checkID3v2HeaderVersion(*pHeader)) {
+        return; // abort
+    }
+
     // Omit to read comments with the default implementation provided by
     // TagLib. We are only interested in a CommentsFrame with an empty
     // description (see below). If no such CommentsFrame exists TagLib
@@ -1837,8 +1854,8 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
     }
 
     const TagLib::ID3v2::Header* pHeader = pTag->header();
-    if (!pHeader || (3 > pHeader->majorVersion())) {
-        // only ID3v2.3.x and higher (currently only ID3v2.4.x) are supported
+    DEBUG_ASSERT(pHeader);
+    if (!checkID3v2HeaderVersion(*pHeader)) {
         return false;
     }
 
