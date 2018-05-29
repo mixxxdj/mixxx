@@ -62,6 +62,10 @@ void DlgPrefEffects::slotApply() {
     for (EffectProfilePtr profile : m_availableEffectsModel.profiles()) {
         EffectManifestPointer pManifest = profile->pManifest;
         m_pEffectsManager->setEffectVisibility(pManifest, profile->bIsVisible);
+        
+        // Effects from different backends can have same Effect IDs.
+        // Add backend name to group to uniquely identify those effects.
+        // Use untranslated value to keep the group language independent.
         m_pConfig->set(ConfigKey("[Visible " + pManifest->backendName() + " Effects]", pManifest->id()), 
                        ConfigValue(profile->bIsVisible));
     }

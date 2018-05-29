@@ -8,8 +8,6 @@
 #include <QScopedPointer>
 #include <QPair>
 
-#include <algorithm>
-
 #include "preferences/usersettings.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"

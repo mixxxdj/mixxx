@@ -70,9 +70,10 @@ EffectsManager::~EffectsManager() {
 
 bool alphabetizeEffectManifests(EffectManifestPointer pManifest1,
                                 EffectManifestPointer pManifest2) {
-    int dNameComp = QString::localeAwareCompare(pManifest1->displayName(), pManifest2->displayName());
-    int bNameComp = static_cast<int>(pManifest1->backendType()) - static_cast<int>(pManifest2->backendType());
-    return (bNameComp ? (bNameComp < 0) : (dNameComp < 0));
+    // Sort built-in effects first before external plugins
+    int backendNameComparision = static_cast<int>(pManifest1->backendType()) - static_cast<int>(pManifest2->backendType());
+    int displayNameComparision = QString::localeAwareCompare(pManifest1->displayName(), pManifest2->displayName());
+    return (backendNameComparision ? (backendNameComparision < 0) : (displayNameComparision < 0));
 }
 
 void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {

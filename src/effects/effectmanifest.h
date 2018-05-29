@@ -144,6 +144,8 @@ class EffectManifest final {
                 return QString("Unknown");
         }
     }
+
+    // Use this when showing the string in the GUI
     QString translatedBackendName() {
         switch (m_backendType) {
             case EffectBackendType::BuiltIn:
