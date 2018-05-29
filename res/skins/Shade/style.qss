@@ -296,7 +296,7 @@ QHeaderView::section {
   padding: 2px;
   /*	set right border so that first column header
   on the left doesn't have double border on the left	*/
-  border-right: 1px solid #626F87;
+  border-right: 1px solid #0f0f0f;
   background-color: #8D98A3;
   border-radius: 0px;
 }
@@ -312,6 +312,50 @@ QHeaderView::up-arrow {
 }
 QHeaderView::down-arrow {
   image: url(skin:/btn_lib_sort_down.png)
+}
+
+/* Scroll bars */
+QScrollBar:horizontal {
+  min-width: 40px;
+  height: 18px;
+  padding: 1px;
+  background-color: #5C5B5D;
+}
+QScrollBar:vertical {
+  min-height: 40px;
+  width: 18px;
+  padding: 1px;
+  background-color: #5C5B5D;
+}
+/* "add-page" and "sub-page" are the gutter of the scrollbar */
+QScrollBar::add-page,
+QScrollBar::sub-page {
+  min-width: 14px;
+  min-height: 14px;
+  background-color: #191919;
+}
+QScrollBar::handle:vertical,
+QScrollBar::handle:horizontal {
+  background: #8D98A3;
+  border: 1px solid #1e1e1e;
+  border-radius: 1px;
+}
+QScrollBar::handle:horizontal {
+  min-width: 40px;
+}
+QScrollBar::handle:vertical {
+  min-height: 40px;
+}
+/* Turn off scroll buttons */
+QScrollBar::add-line:horizontal,
+QScrollBar::add-line:vertical {
+  width: 0px;
+  height: 0px;
+}
+QScrollBar::sub-line:horizontal,
+QScrollBar::sub-line:vertical {
+  width: 0px;
+  height: 0px;
 }
 
 /* Styling a QSpinbox is complex and it took ages to figure out how to remove the surrounding frame and make the background transparent without affecting the subcontrols (up/down-buttons).

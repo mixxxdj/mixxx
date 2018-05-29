@@ -1,3 +1,4 @@
+/* Summer Sunset */
 WBeatSpinBox {
 	color: #101307;
 	background-color: #ad9e4f;
@@ -20,7 +21,7 @@ QHeaderView {
 }
 /*	Library header 'buttons'	*/
 QHeaderView::section {
-  border-right: 1px solid #626F87;
+  border-right: 1px solid #0f0f0f;
   background-color: #998A3D;
   border-radius: 0px;
 }
@@ -33,5 +34,17 @@ QHeaderView::up-arrow {
 }
 QHeaderView::down-arrow {
   image: url(skin:/btn_lib_sort_down_summer.png)
+}
+
+/* Scroll bars */
+/* "add-page" and "sub-page" are the gutter of the scrollbar */
+QScrollBar::add-page,
+QScrollBar::sub-page {
+  background-color: #000;
+}
+QScrollBar::handle:vertical,
+QScrollBar::handle:horizontal {
+  background: #998A3C;
+  border: 1px solid #524A20;
 }
 
