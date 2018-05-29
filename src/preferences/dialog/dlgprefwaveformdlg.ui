@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1032</width>
-    <height>836</height>
+    <width>677</width>
+    <height>528</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -154,7 +154,7 @@
         <string extracomment="The big waveform summary shows the waveform envelope of the track near the current playback position."/>
        </property>
        <property name="text">
-        <string>Summary type</string>
+        <string>Waveform type</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -299,14 +299,16 @@
      <item row="1" column="1" colspan="3">
       <widget class="QComboBox" name="waveformOverviewComboBox">
        <property name="toolTip">
-        <string extracomment="The main waveforms">Select from different types of displays for the waveform, which differ primarily in the level of detail shown in the waveform.</string>
+        <string>The waveform overview shows the waveform envelope of the entire track.
+Select from different types of displays for the waveform overview, which differ primarily in the level of detail shown in the waveform.</string>
        </property>
       </widget>
      </item>
      <item row="0" column="1" colspan="3">
       <widget class="QComboBox" name="waveformTypeComboBox">
        <property name="toolTip">
-        <string>Select from different types of displays for the waveform, which differ primarily in the level of detail shown in the waveform.</string>
+        <string>The waveform shows the waveform envelope of the track near the current playback position.
+Select from different types of displays for the waveform, which differ primarily in the level of detail shown in the waveform.</string>
        </property>
       </widget>
      </item>
@@ -316,7 +318,7 @@
         <string extracomment="The smaller, zoomed-out version of the waveform shows the various markers within the track as well as the waveform envelope of the entire track."/>
        </property>
        <property name="text">
-        <string>Overview type</string>
+        <string>Waveform overview type</string>
        </property>
       </widget>
      </item>

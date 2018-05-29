@@ -20,7 +20,7 @@ class BpmControl : public EngineControl {
 
   public:
     BpmControl(QString group, UserSettingsPointer pConfig);
-    virtual ~BpmControl();
+    ~BpmControl() override;
 
     double getBpm() const;
     double getLocalBpm() const { return m_pLocalBpm ? m_pLocalBpm->get() : 0.0; }
@@ -36,13 +36,7 @@ class BpmControl : public EngineControl {
     double getNearestPositionInPhase(double dThisPosition, bool respectLoops, bool playing);
     double getPhaseOffset(double dThisPosition);
     double getBeatDistance(double dThisPosition) const;
-    double getPreviousSample() const { return m_dPreviousSample; }
 
-    void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
-    double process(const double dRate,
-                   const double dCurrentSample,
-                   const double dTotalSamples,
-                   const int iBufferSize);
     void setTargetBeatDistance(double beatDistance);
     void setInstantaneousBpm(double instantaneousBpm);
     void resetSyncAdjustment();
@@ -151,8 +145,6 @@ class BpmControl : public EngineControl {
     ControlPushButton* m_pTranslateBeats;
     // Button that translates beats to match another playing deck
     ControlPushButton* m_pBeatsTranslateMatchAlignment;
-
-    double m_dPreviousSample;
 
     // Master Sync objects and values.
     ControlObject* m_pSyncMode;

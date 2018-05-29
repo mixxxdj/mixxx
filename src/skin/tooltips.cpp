@@ -32,12 +32,12 @@ void Tooltips::addStandardTooltips() {
     QString scrollWheel = tr("Scroll-wheel");
     QString loopActive = "(" + tr("loop active") + ")";
     QString loopInactive = "(" + tr("loop inactive") + ")";
-    QString effectsWithinChain = tr("Effects within the chain must be enabled to hear them.");
+    QString effectsWithinUnit = tr("Effects within the chain must be enabled to hear them.");
 
     add("waveform_overview")
             << tr("Waveform Overview")
             << tr("Shows information about the track currently loaded in this channel.")
-            << tr("Jump around in the track by clicking somewhere on the waveform.")
+            << tr("Jump around in the track by clicking anywhere on the waveform.")
             << dropTracksHere;
 
     QString scratchMouse = tr("Use the mouse to scratch, spin-back or throw tracks.");
@@ -63,6 +63,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Spinning Vinyl")
             << tr("Rotates during playback and shows the position of a track.")
             << scratchMouse
+            << tr("Right click to show cover art of loaded track.")
             << dropTracksHere
             << tr("If Vinyl control is enabled, displays time-coded vinyl signal quality (see Preferences -> Vinyl Control).");
 
@@ -165,6 +166,11 @@ void Tooltips::addStandardTooltips() {
             << tr("Adjusts the master output gain.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
+    add("booth_gain")
+            << tr("Booth Gain")
+            << tr("Adjusts the booth output gain.")
+            << QString("%1: %2").arg(rightClick, resetToDefault);
+
     add("crossfader")
             << tr("Crossfader")
             << tr("Determines the master output by fading between the left and right channels.")
@@ -189,7 +195,7 @@ void Tooltips::addStandardTooltips() {
 
     add("headMix")
             << tr("Headphone Mix")
-            << tr("Controls what you hear on the headphone output.")
+            << tr("Crossfades the headphone output between the master mix and cueing (PFL or Pre-Fader Listening) signal.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("headSplit")
@@ -198,12 +204,10 @@ void Tooltips::addStandardTooltips() {
                   "plays in the left channel.")
             << tr("Adjust the Headphone Mix so in the left channel is not the pure cueing signal.");
 
-    // Note, this is used for samplers and microphone only currently (that's why
-    // center is the default).
     add("orientation")
-            << tr("Mix Orientation")
-            << tr("Set the channel's mix orientation.")
-            << tr("Either to the left side of crossfader, to the right side or to the center (default).");
+            << tr("Crossfader Orientation")
+            << tr("Set the channel's crossfader orientation.")
+            << tr("Either to the left side of crossfader, to the right side or to the center (unaffected by crossfader)");
 
     add("show_microphone")
             << tr("Microphone")
@@ -235,8 +239,8 @@ void Tooltips::addStandardTooltips() {
             << tr("Show or hide the track library.");
 
     add("show_effects")
-            << tr("Show Effect Rack")
-            << tr("Show or hide the effect rack.");
+            << tr("Show Effects")
+            << tr("Show or hide the effects.");
 
     add("maximize_library")
             << tr("Maximize Library")
@@ -260,6 +264,19 @@ void Tooltips::addStandardTooltips() {
             << tr("Microphone Talk-Over")
             << tr("Hold-to-talk or short click for latching to")
             << tr("mix microphone input into the master output.");
+
+    add("talkover_duck_mode")
+            << tr("Microphone Talkover Mode")
+            << tr("Off: Do not reduce music volume")
+            << tr("Auto: Automatically reduce music volume when microphones are in use. Adjust the amount the music volume is reduced with the Strength knob.")
+            << tr("Manual: Reduce music volume by a fixed amount set by the Strength knob.");
+
+    add("talkover_duck_strength")
+            << tr("Microphone Talkover Ducking Strength")
+            << tr("Behavior depends on Microphone Talkover Mode:")
+            << tr("Off: Does nothing")
+            << tr("Auto: Sets how much to reduce the music volume when microphones are in use.")
+            << tr("Manual: Sets how much to reduce the music volume, regardless of volume of microphone inputs.");
 
     QString changeAmount = tr("Change the step-size in the Preferences -> Interface menu.");
     add("rate_perm_up_rate_perm_up_small")
@@ -699,24 +716,24 @@ void Tooltips::addStandardTooltips() {
 
     // Effect Unit Controls
     add("EffectUnit_clear")
-            << tr("Clear Chain")
-            << tr("Clear effect chain.");
+            << tr("Clear Unit")
+            << tr("Clear effect unit.");
 
     add("EffectUnit_show_parameters")
             << tr("Show Effect Parameters")
-            << tr("Show/hide parameters for effects in this chain.");
+            << tr("Show/hide parameters for effects in this unit.");
 
     add("EffectUnit_enabled")
-            << tr("Toggle Chain")
-            << tr("Enable or disable this whole effect chain.");
+            << tr("Toggle Unit")
+            << tr("Enable or disable this whole effect unit.");
     add("EffectUnit_mix")
             << tr("Dry/Wet")
-            << tr("Adjust the balance between the original (dry) and processed (wet) signal for the whole effect chain.")
+            << tr("Adjust the balance between the original (dry) and processed (wet) signal for the whole effect unit.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("EffectUnit_super1")
             << tr("Super Knob")
-            << tr("Controls the Meta Knob of all effects in this chain together.")
+            << tr("Controls the Meta Knob of all effects in this unit together.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("EffectUnit_insertion_type")
@@ -725,50 +742,60 @@ void Tooltips::addStandardTooltips() {
 
     add("EffectUnit_next_chain")
             << tr("Next Chain")
-            << tr("Next effect chain preset.");
+            << tr("Load next effect chain preset into this effect unit.");
 
     add("EffectUnit_prev_chain")
             << tr("Previous Chain")
-            << tr("Previous effect chain preset.");
+            << tr("Load previous effect chain preset into this effect unit.");
 
     add("EffectUnit_chain_selector")
             << tr("Next/Previous Chain")
-            << tr("Next or previous effect chain preset.");
+            << tr("Load next or previous effect chain preset into this effect unit.");
 
     add("EffectUnit_group_enabled")
-            << tr("Assign Effect Chain")
-            << tr("Assign this effect chain to the channel output.")
-            << effectsWithinChain;
+            << tr("Assign Effect Unit")
+            << tr("Assign this effect unit to the channel output.")
+            << effectsWithinUnit;
 
     add("EffectUnit_headphones_enabled")
-            << tr("Assign Effect Chain")
-            << tr("Route the headphone channel through this effect chain.")
-            << effectsWithinChain;
+            << tr("Assign Effect Unit")
+            << tr("Route the headphone channel through this effect unit.")
+            << effectsWithinUnit;
 
     add("EffectUnit_master_enabled")
-            << tr("Assign Effect Chain")
-            << tr("Route the master mix through this effect chain.")
-            << effectsWithinChain;
+            << tr("Assign Effect Unit")
+            << tr("Route the master mix through this effect unit.")
+            << effectsWithinUnit;
+
+    add("EffectUnit_BusLeft_enabled")
+            << tr("Assign Effect Unit")
+            << tr("Route the left crossfader bus through this effect unit.")
+            << effectsWithinUnit;
+
+    add("EffectUnit_BusRight_enabled")
+            << tr("Assign Effect Unit")
+            << tr("Route the right crossfader bus through this effect unit.")
+            << effectsWithinUnit;
 
     add("EffectUnit_deck_enabled")
-            << tr("Assign Effect Chain")
-            << tr("Route this deck through the indicated effect chain.")
-            << effectsWithinChain;
+            << tr("Assign Effect Unit")
+            << tr("Route this deck through the indicated effect unit.")
+            << effectsWithinUnit;
 
     add("EffectUnit_sampler_enabled")
-            << tr("Assign Effect Chain")
-            << tr("Route this sampler through the indicated effect chain.")
-            << effectsWithinChain;
+            << tr("Assign Effect Unit")
+            << tr("Route this sampler through the indicated effect unit.")
+            << effectsWithinUnit;
 
     add("EffectUnit_microphone_enabled")
-            << tr("Assign Effect Chain")
-            << tr("Route this microphone through the indicated effect chain.")
-            << effectsWithinChain;
+            << tr("Assign Effect Unit")
+            << tr("Route this microphone through the indicated effect unit.")
+            << effectsWithinUnit;
 
     add("EffectUnit_auxiliary_enabled")
-            << tr("Assign Effect Chain")
-            << tr("Route this auxiliary input through the indicated effect chain.")
-            << effectsWithinChain;
+            << tr("Assign Effect Unit")
+            << tr("Route this auxiliary input through the indicated effect unit.")
+            << effectsWithinUnit;
 
     // Effect Slot Controls
     add("EffectSlot_clear")
@@ -777,7 +804,7 @@ void Tooltips::addStandardTooltips() {
 
     add("EffectSlot_enabled")
             << tr("Enable Effect")
-            << tr("This effect chain must also be assigned to a deck or other sound source to hear the effect.");
+            << tr("The effect unit must also be assigned to a deck or other sound source to hear the effect.");
 
     add("EffectSlot_next_effect")
             << tr("Next")
@@ -810,11 +837,11 @@ void Tooltips::addStandardTooltips() {
     add("EffectSlot_parameter_link_type")
             << tr("Meta Knob Link")
             << tr("Set how this parameter is linked to the effect's Meta Knob.")
-            << tr("Empty bar: not linked")
-            << tr("Solid bar: moves with Meta Knob")
-            << tr("Left side: moves with left half of Meta Knob")
-            << tr("Right side: moves with right half of Meta Knob")
-            << tr("Left and right: moves across range with half of Meta Knob and back with the other half");
+            << tr("Inactive: parameter not linked")
+            << tr("Active: parameter moves with Meta Knob")
+            << tr("Left side active: parameter moves with left half of Meta Knob turn")
+            << tr("Right side active: parameter moves with right half of Meta Knob turn")
+            << tr("Left and right side active: parameter moves across range with half of Meta Knob turn and back with the other half");
 
     add("EffectSlot_parameter_inversion")
             << tr("Meta Knob Link Inversion")
@@ -848,4 +875,17 @@ void Tooltips::addStandardTooltips() {
             << tr("Equalizer Parameter Kill")
             << tr("Holds the gain of the EQ to zero while active.")
             << eqKillLatch;
+
+    add("skin_settings")
+            << tr("Skin Settings Menu")
+            << tr("Show/hide skin settings menu");
+
+    // Sampler Bank Controls
+    add("SaveSamplerBank")
+            << tr("Save Sampler Bank")
+            << tr("Save the collection of samples loaded in the samplers.");
+    
+    add("LoadSamplerBank")
+            << tr("Load Sampler Bank")
+            << tr("Load a previously saved collection of samples into the samplers.");
 }

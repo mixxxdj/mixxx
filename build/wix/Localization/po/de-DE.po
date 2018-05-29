@@ -2,14 +2,14 @@
 # Translators:
 # Inpromtu <kmbredt@gmail.com>, 2016
 # Inpromtu <kmbredt@gmail.com>, 2016
-# S.Brandt <s.brandt@mixxx.org>, 2017
+# S.Brandt <s.brandt@mixxx.org>, 2017-2018
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016-2017
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2017-07-15 15:08+0000\n"
-"Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
+"PO-Revision-Date: 2018-03-22 21:11+0000\n"
+"Last-Translator: S.Brandt <s.brandt@mixxx.org>\n"
 "Language-Team: German (Germany) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/de_DE/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -63,7 +63,7 @@ msgid ""
 "You are about to install the 32-bit version on a 64-bit operating system.\r\n"
 "We recommend using the 64-bit version for better performance.\r\n"
 "You can download the 64-bit installation package from http://mixxx.org/download/"
-msgstr "Sie sind dabei, die 32-Bit-Version auf einem 64-Bit-Betriebssystem zu installieren.\nWir empfehlen mit der 64-Bit-Version für bessere Performance.\nSie können das der 64-Bit-Installationspaket von http://mixxx.org/download/ herunterladen."
+msgstr "Sie installieren gerade die 32-Bit-Version auf einem 64-Bit-Betriebssystem. Wir empfehlen stattdessen die 64-Bit-Version für eine bessere Performance zu installieren. Sie können das 64-Bit-Installationspaket hier herunterladen: http://mixxx.org/download/"
 
 msgctxt "XPWarning"
 msgid ""
@@ -92,7 +92,7 @@ msgid ""
 "An older version of Mixxx has been detected. As we changed installer, we can"
 " not smoothly upgrade. Please uninstall older version before installing this"
 " one."
-msgstr "Eine ältere Version von Mixxx wurde erkannt. Da wir die Installer-Software geändert haben, können wir nicht problemlos aktualisieren. Bitte deinstallieren Sie ältere Version vor der Installation dieser neuen Version."
+msgstr "Eine ältere Version von Mixxx wurde erkannt. Da wir die Installer-Software geändert haben, können wir nicht problemlos aktualisieren. Bitte deinstallieren Sie die ältere Version vor der Installation dieser neuen Version."
 
 msgctxt "VCredistNotFound"
 msgid ""

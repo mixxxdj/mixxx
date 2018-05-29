@@ -9,8 +9,8 @@
 
 namespace mixxx {
 
-class SoundSourceOpus: public mixxx::SoundSource {
-public:
+class SoundSourceOpus: public SoundSource {
+  public:
     // According to the API documentation of op_pcm_seek():
     // "...decoding after seeking may not return exactly the same
     // values as would be obtained by decoding the stream straight
@@ -25,21 +25,20 @@ public:
     explicit SoundSourceOpus(const QUrl& url);
     ~SoundSourceOpus() override;
 
-    Result parseTrackMetadataAndCoverArt(
+    std::pair<ImportResult, QDateTime> importTrackMetadataAndCoverImage(
             TrackMetadata* pTrackMetadata,
             QImage* pCoverArt) const override;
 
     void close() override;
 
-    SINT seekSampleFrame(SINT frameIndex) override;
+  protected:
+    ReadableSampleFrames readSampleFramesClamped(
+            WritableSampleFrames sampleFrames) override;
 
-    SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) override;
-    SINT readSampleFramesStereo(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer, SINT sampleBufferSize) override;
-
-private:
-    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+  private:
+    OpenResult tryOpen(
+            OpenMode mode,
+            const OpenParams& params) override;
 
     OggOpusFile *m_pOggOpusFile;
 
@@ -49,7 +48,7 @@ private:
 };
 
 class SoundSourceProviderOpus: public SoundSourceProvider {
-public:
+  public:
     QString getName() const override;
 
     QStringList getSupportedFileExtensions() const override;

@@ -1,0 +1,401 @@
+<!--
+    Tango * a flat nightime skin for mixxx
+
+    This skin is supposed to be an extension for your controller, in a way that
+    almost all duplicate controls can be removed from screen.
+    Toggle skin settings menu with the gear icon at the top right screen corner
+    to find all options.
+
+    Main focus was to make every control easily and quickly recognizable,
+    especially when your eyes are mostly on your controller and your hands.
+
+    Special feature: Comment row
+    Display first line of track's comment below track overview (read from metadata tag,
+    editable in tracks table or Properties window).
+    How to use:
+    - add your notes on cue points, moods, whatever to the beginning of track comment
+    - for a line break in comment, press <shift> + <enter>
+    - to push down iTunes info and other info irrelevant when playing, insert a blank line:
+      <space> then <shift> + <enter>
+
+    Enjoy!
+
+-->
+
+<skin>
+  <manifest>
+    <title>Tango</title>
+    <author>ronso0</author>
+    <version>2.1.0.01</version>
+    <description>A controller-focused nightime skin. Almost all controls can be hidden with skin menu.</description>
+    <language>en</language>
+    <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
+
+  <!--    ################################################################
+          Control Objects  ##############################################
+        ###############################################################
+  -->
+    <attributes>
+      <!-- Set skin defaults. -->
+      <attribute config_key="[Master],num_decks">4</attribute>
+      <attribute config_key="[Master],num_samplers">64</attribute>
+      <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
+      <attribute persist="true" config_key="[Master],show_eqs">1</attribute>
+      <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
+      <attribute config_key="[Library],show_library">1</attribute>
+      <attribute config_key="[Master],maximize_library">0</attribute>
+      <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
+      <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
+      <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
+      <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
+      <!-- item index in skin_settings_sampler_rows.xml, '1' enables 2 sampler rows -->
+      <attribute persist="true" config_key="[Tango],sampler_rows">1</attribute>
+      <attribute persist="true" config_key="[SamplerRow1],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow2],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow3],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow4],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow5],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow6],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow7],expanded">0</attribute>
+      <attribute persist="true" config_key="[SamplerRow8],expanded">0</attribute>
+      <!-- [Tango] specific defaults -->
+      <attribute persist="true" config_key="[Tango],master_mixer">1</attribute>
+      <attribute persist="true" config_key="[Tango],4_FxUnits">0</attribute>
+      <!--attribute persist="true" config_key="[Tango],sampler_fx_buttons">1</attribute-->
+      <attribute persist="true" config_key="[Tango],beatgrid_buttons">0</attribute>
+      <attribute persist="true" config_key="[Tango],deck_controls_expanded">0</attribute>
+      <attribute persist="true" config_key="[Tango],colorLogo">0</attribute>
+      <attribute persist="true" config_key="[Tango],crossfader">1</attribute>
+      <attribute persist="true" config_key="[Tango],always_visible_keylock">1</attribute>
+      <attribute persist="true" config_key="[Tango],always_visible_eject">0</attribute>
+      <attribute persist="true" config_key="[Tango],always_visible_slipMode">1</attribute>
+      <attribute persist="true" config_key="[Tango],always_visible_repeat">0</attribute>
+      <attribute persist="true" config_key="[Tango],always_visible_orientation">0</attribute>
+      <attribute persist="true" config_key="[Tango],always_visible_quantize">1</attribute>
+      <attribute persist="true" config_key="[Tango],separate_cue_button">1</attribute>
+      <attribute persist="true" config_key="[Tango],hotcues">1</attribute>
+      <attribute persist="true" config_key="[Tango],8_hotcues">0</attribute>
+      <attribute persist="true" config_key="[Tango],key_display_match">1</attribute>
+      <attribute persist="true" config_key="[Tango],rate_key_controls">0</attribute>
+      <attribute persist="true" config_key="[Tango],loop_beatjump_controls">1</attribute>
+      <attribute persist="true" config_key="[Tango],loop_sizes">0</attribute>
+      <attribute persist="true" config_key="[Tango],pitch_fader">1</attribute>
+      <attribute persist="true" config_key="[Tango],symmetric_overviews">0</attribute>
+      <attribute persist="true" config_key="[Tango],symmetric_time">0</attribute>
+      <attribute persist="true" config_key="[Tango],stacked_waveforms">1</attribute>
+      <attribute persist="true" config_key="[Tango],stars">1</attribute>
+      <attribute persist="true" config_key="[Tango],trackComment">1</attribute>
+      <attribute persist="true" config_key="[Tango],show_spinny_cover">1</attribute>
+      <attribute persist="true" config_key="[Tango],spinny_or_cover">1</attribute>
+      <attribute persist="true" config_key="[Tango],spinnyCoverBIG">1</attribute>
+      <attribute persist="true" config_key="[Tango],spinnyWithCoverArt">1</attribute>
+      <attribute persist="true" config_key="[Tango],vinylControlsDeck1">0</attribute>
+      <attribute persist="true" config_key="[Tango],vinylControlsDeck2">0</attribute>
+      <attribute persist="true" config_key="[Tango],vinylControlsDeck3">0</attribute>
+      <attribute persist="true" config_key="[Tango],vinylControlsDeck4">0</attribute>
+      <attribute persist="true" config_key="[Tango],vumeter">1</attribute>
+      <!--Disable hidden effect routing Buttons-->
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusLeft]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusCenter]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusRight]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusTalkover]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusLeft]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusCenter]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusRight]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusTalkover]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusLeft]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusCenter]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusRight]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusTalkover]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusLeft]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusCenter]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusRight]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusTalkover]_enable">0</attribute>
+    </attributes>
+  </manifest>
+
+  <ObjectName>Mixxx</ObjectName>
+  <Style src="skin:../Tango/style.qss"/>
+  <MinimumSize>1008,500</MinimumSize>
+  <SizePolicy>me,me</SizePolicy>
+  <Layout>vertical</Layout>
+
+<!--  ################################################################
+       Launch Image  ################################################
+     ###############################################################
+-->
+  <LaunchImageStyle>
+    LaunchImage {
+      background-color: #0f0f0f;
+    }
+    QLabel {
+      image: url(skin:../Tango//graphics/logo_160x40.svg);
+      padding: 0;
+      margin: 0px 2px 0px 2px;
+      border: none;
+      min-width: 160px;
+      min-height: 40px;
+      max-width: 160px;
+      max-height: 40px;
+    }
+    QProgressBar {
+      background-color: #333333;
+      border: none;
+      min-width: 164px;
+      min-height: 3px;
+      max-width: 164px;
+      max-height: 3px;
+    }
+    QProgressBar::chunk {
+      background-color: #FF6100;
+    }
+  </LaunchImageStyle>
+  <Children>
+
+<!--  ################################################################
+      Variables #####################################################
+     ###############################################################
+      Put these variable definitions at the beginning in order to have
+      have all variables available for SingletonDefinitions -->
+
+<!--  Knob range in degrees, 0-360
+      Initially I was trying to match the responsive area on Reloop TerminalMix 2,
+      but tweak to your liking.
+      Values beyond -150/150 might interfere with some knob labels -->
+    <SetVariable name="PotiMinAngle">-130</SetVariable>
+    <SetVariable name="PotiMaxAngle">130</SetVariable>
+
+    <SetVariable name="SignalBgColor_1">#001D33</SetVariable>
+    <SetVariable name="SignalBgColor_2">#001D33</SetVariable>
+    <SetVariable name="SignalBgColor_3">#3A0440</SetVariable>
+    <SetVariable name="SignalBgColor_4">#3A0440</SetVariable>
+
+    <SetVariable name="SignalColor_1">#5EBAFF</SetVariable>
+    <SetVariable name="SignalColor_2">#5EBAFF</SetVariable>
+    <SetVariable name="SignalColor_3">#DF4DF0</SetVariable>
+    <SetVariable name="SignalColor_4">#DF4DF0</SetVariable>
+
+    <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
+    <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
+    <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
+
+    <SetVariable name="PlayedOverlayColor">#99000000</SetVariable>
+
+<!--################################################################
+     Singleton definitions  #######################################
+   ############################################################### -->
+    <SingletonDefinition>
+      <ObjectName>Waveforms_Singleton</ObjectName>
+      <Children>
+        <Template src="skin:../Tango/waveforms_container.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+
+    <SingletonDefinition>
+      <ObjectName>Library_Singleton</ObjectName>
+      <Children>
+        <Template src="skin:../Tango/library.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+    <!-- FX units 1 & 2 show up at different places, depending on the number
+    of units enabled (2 or 4). -->
+    <SingletonDefinition>
+      <ObjectName>FxUnits_12_Singleton</ObjectName>
+      <Children>
+        <Template src="skin:../Tango/fx_units_12.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SamplerRowsButton_Singleton</ObjectName>
+      <Children>
+        <Template src="skin:/skin_settings_sampler_rows_64.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+<!--  ################################################################
+       SkinContainer  ###############################################
+     ############################################################### -->
+    <WidgetGroup>
+      <ObjectName>SkinContainer</ObjectName>
+      <Layout>vertical</Layout>
+      <SizePolicy>me,me</SizePolicy>
+      <Children>
+      <!-- [
+            1 [
+                [ topbar ]
+                [ stacked scrolling waveforms ]
+                [ decks ]
+                [ fx units ]
+                [ samplers ]
+                [ mic/aux ]
+                [ Library ]
+              ]
+            2 [
+                [ maximized Library ]
+              ]
+            ]
+            screen width detector
+            ]
+         -->
+
+        <WidgetGroup><!-- All skin elements + Skin menu -->
+          <Layout>horizontal</Layout>
+          <SizePolicy>me,me</SizePolicy>
+          <Children>
+            <WidgetGroup><!-- topbar, stacked  waveforms, decks, FX, samplers, Mic/Aux, Lib normal-->
+              <Layout>vertical</Layout>
+              <SizePolicy>me,me</SizePolicy>
+              <Children>
+
+                <Template src="skin:../Tango/topbar.xml"/>
+
+                <Splitter>
+                  <ObjectName>WaveformSplitter</ObjectName>
+                  <SizePolicy>me,me</SizePolicy>
+                  <Orientation>vertical</Orientation>
+                  <SplitSizes>100,10000</SplitSizes>
+                  <SplitSizesConfigKey>[Tango],waveform_splitSize</SplitSizesConfigKey>
+                  <Collapsible>0,0</Collapsible>
+                  <Children>
+
+                    <WidgetGroup>
+                      <Layout>vertical</Layout>
+                      <SizePolicy>me,max</SizePolicy>
+                      <Children>
+                        <SingletonContainer>
+                          <ObjectName>Waveforms_Singleton</ObjectName>
+                        </SingletonContainer>
+                      </Children>
+                      <Connection>
+                        <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
+                        <BindProperty>visible</BindProperty>
+                      </Connection>
+                    </WidgetGroup>
+
+                    <WidgetGroup><!-- Decks + FX + Samplers + Library -->
+                      <Layout>vertical</Layout>
+                      <SizePolicy>me,min</SizePolicy>
+                      <Children>
+
+                        <Template src="skin:../Tango/decks_12.xml"/>
+
+                    <!-- Load scrolling waveforms Singleton here if the waveforms
+                        in the waveforms/decks Splitter are collapsed.
+                        Otherwise the end-of-track warning would not show up
+                        in overview waveforms. -->
+                        <WidgetGroup>
+                          <Layout>vertical</Layout>
+                          <Size>0me,0f</Size>
+                          <Children>
+                            <SingletonContainer>
+                              <ObjectName>Waveforms_Singleton</ObjectName>
+                            </SingletonContainer>
+                          </Children>
+                          <Connection>
+                            <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
+                            <Transform><Not/></Transform>
+                            <BindProperty>visible</BindProperty>
+                          </Connection>
+                        </WidgetGroup>
+
+                        <WidgetGroup>
+                          <Layout>vertical</Layout>
+                          <SizePolicy>me,min</SizePolicy>
+                          <Children>
+                            <SingletonContainer>
+                              <ObjectName>FxUnits_12_Singleton</ObjectName>
+                            </SingletonContainer>
+                          </Children>
+                          <Connection>
+                            <ConfigKey persist="true">[Tango],4_FxUnits</ConfigKey>
+                            <BindProperty>visible</BindProperty>
+                          </Connection>
+                        </WidgetGroup>
+
+                        <Template src="skin:../Tango/decks_34.xml"/>
+
+                        <WidgetGroup>
+                          <Layout>vertical</Layout>
+                          <SizePolicy>me,min</SizePolicy>
+                          <Children>
+                            <Template src="skin:../Tango/fx_units_34.xml"/>
+                          </Children>
+                          <Connection>
+                            <ConfigKey persist="true">[Tango],4_FxUnits</ConfigKey>
+                            <BindProperty>visible</BindProperty>
+                          </Connection>
+                        </WidgetGroup>
+
+                        <WidgetGroup>
+                          <Layout>vertical</Layout>
+                          <Children>
+                            <SingletonContainer>
+                              <ObjectName>FxUnits_12_Singleton</ObjectName>
+                            </SingletonContainer>
+                          </Children>
+                          <Connection>
+                            <ConfigKey persist="true">[Tango],4_FxUnits</ConfigKey>
+                            <Transform><Not/></Transform>
+                            <BindProperty>visible</BindProperty>
+                          </Connection>
+                        </WidgetGroup>
+
+                        <Template src="skin:/sample_decks.xml"/>
+
+                        <Template src="skin:../Tango/mic_aux.xml"/>
+
+                        <SingletonContainer>
+                          <ObjectName>Library_Singleton</ObjectName>
+                        </SingletonContainer>
+
+                      </Children>
+                    </WidgetGroup><!-- Decks + FX + Samplers + Library -->
+                  </Children>
+                </Splitter>
+
+              </Children>
+              <Connection>
+                <ConfigKey>[Master],maximize_library</ConfigKey>
+                <Transform><Not/></Transform>
+                <BindProperty>visible</BindProperty>
+              </Connection>
+            </WidgetGroup><!-- /topbar, stacked  waveforms, decks, FX, samplers, Mic/Aux, Lib normal-->
+
+            <WidgetGroup><!-- Lib maximized -->
+              <Layout>vertical</Layout>
+              <SizePolicy>me,me</SizePolicy>
+              <Children>
+                <SingletonContainer>
+                  <ObjectName>Library_Singleton</ObjectName>
+                </SingletonContainer>
+              </Children>
+              <Connection>
+                <ConfigKey>[Master],maximize_library</ConfigKey>
+                <BindProperty>visible</BindProperty>
+              </Connection>
+            </WidgetGroup>
+
+            <Template src="skin:../Tango/skin_settings.xml"/>
+
+          </Children>
+        </WidgetGroup><!-- /All skin elements + Skin menu -->
+
+        <!-- Detect if screen (window) size is netbook-like.
+            Center spacer in top bar will adapt to size. -->
+        <Template src="skin:../Tango/size_detector_screen.xml"/>
+
+        <!-- Detect if Star rating fits into deck buttons row.
+            Do this here, so it doesn't interfere with expanded skin menu -->
+        <Template src="skin:../Tango/size_detector_stars.xml"/>
+
+      </Children>
+    </WidgetGroup><!-- /SkinContainer -->
+  </Children>
+</skin>

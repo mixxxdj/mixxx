@@ -6,7 +6,21 @@ Build-Depends: debhelper (>= 9),
                pkg-config,
                docbook-to-man,
                libglu1-mesa-dev,
-               libqt4-opengl-dev | libqt4-dev (>= 4.6.0),
+# qt5-default depends on qtbase5-dev, which includes headers for
+# QtConcurrent
+# QtCore
+# QtGui
+# QtNetwork
+# QtPlatformHeaders
+# QtPrintSupport
+# QtSql
+# QtWidgets
+# QtXml
+               qt5-default (>= 5.2.0),
+# We additionally need headers for QtOpenGL, QtScript, and QtSvg.
+               qtscript5-dev,
+               libqt5opengl5-dev,
+               libqt5svg5-dev,
                scons,
                libjack-dev,
                portaudio19-dev,
@@ -40,11 +54,11 @@ Section: sound
 Architecture: linux-any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         libqt4-opengl,
-         libqt4-svg,
-         libqt4-xmlpatterns,
-         libqt4-sql,
-         libqt4-sql-sqlite
+         libqt5opengl5,
+         libqt5svg5,
+         libqt5xml5,
+         libqt5sql5,
+         libqt5sql5-sqlite
 Recommends: libmp3lame0
 Suggests: pdf-viewer
 Replaces: mixxx-data

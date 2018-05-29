@@ -61,7 +61,7 @@ function convert_xml($file)
     // get the control children
     $oldControls = $old->children();
 
-    // Here we perfom the actual conversion and moving of the values to the
+    // Here we perform the actual conversion and moving of the values to the
     // new file.
     foreach( $oldControls->children() as $oldControl ) {
         $control = $controls->addChild("control");

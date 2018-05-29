@@ -21,7 +21,8 @@
 namespace mixxx {
 
 // Initialize the log level with the default value
-LogLevel Logging::s_logLevel = LogLevel::Default;
+LogLevel Logging::s_logLevel = kLogLevelDefault;
+LogLevel Logging::s_logFlushLevel = kLogFlushLevelDefault;
 
 namespace {
 
@@ -37,7 +38,7 @@ bool g_debugAssertBreak = false;
 inline void writeToLog(const QByteArray& message, bool shouldPrint,
                        bool shouldFlush) {
     if (shouldPrint) {
-        fwrite(message.constData(), sizeof(char), message.size() + 1, stderr);
+        fwrite(message.constData(), sizeof(char), message.size(), stderr);
     }
 
     QMutexLocker locker(&g_mutexLogfile);
@@ -79,18 +80,21 @@ void MessageHandler(QtMsgType type,
 #endif
             shouldPrint = Logging::enabled(LogLevel::Debug) ||
                     isControllerDebug;
+            shouldFlush = Logging::flushing(LogLevel::Debug);
             break;
 #if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
         case QtInfoMsg:
             tag = "Info [";
             baSize += strlen(tag);
             shouldPrint = Logging::enabled(LogLevel::Info);
+            shouldFlush = Logging::flushing(LogLevel::Info);
             break;
 #endif
         case QtWarningMsg:
             tag = "Warning [";
             baSize += strlen(tag);
             shouldPrint = Logging::enabled(LogLevel::Warning);
+            shouldFlush = Logging::flushing(LogLevel::Warning);
             break;
         case QtCriticalMsg:
             tag = "Critical [";
@@ -176,7 +180,9 @@ void MessageHandler(QtMsgType type,
 }  // namespace
 
 // static
-void Logging::initialize(const QDir& settingsDir, LogLevel logLevel,
+void Logging::initialize(const QDir& settingsDir,
+                         LogLevel logLevel,
+                         LogLevel logFlushLevel,
                          bool debugAssertBreak) {
     VERIFY_OR_DEBUG_ASSERT(!g_logfile.isOpen()) {
         // Somebody already called Logging::initialize.
@@ -184,6 +190,7 @@ void Logging::initialize(const QDir& settingsDir, LogLevel logLevel,
     }
 
     s_logLevel = logLevel;
+    s_logFlushLevel = logFlushLevel;
 
     QString logFileName;
 
@@ -237,6 +244,14 @@ void Logging::shutdown() {
     QMutexLocker locker(&g_mutexLogfile);
     if (g_logfile.isOpen()) {
         g_logfile.close();
+    }
+}
+
+// static
+void Logging::flushLogFile() {
+    QMutexLocker locker(&g_mutexLogfile);
+    if (g_logfile.isOpen()) {
+        g_logfile.flush();
     }
 }
 

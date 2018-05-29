@@ -3,64 +3,69 @@ Description:
   An EQ knob with a Kill button next to it.
   A 'button' underneath the knob turns grey when EQ range is killed.
 Variables:
-  group     : [ChannelN]
-  parameter : EQ parameter number
+  PotiMinAngle: -135°, see skin.xml
+  PotiMaxAngle: 135°, see skin.xml
+  group       : affected group
+  parameter   : 1, 2, 3 (low, mid, high)
 -->
 <Template>
-  <SetVariable name="EqualizerNumber">1</SetVariable>
-  <SetVariable name="EffectNumber">1</SetVariable>
-  <SetVariable name="EqualizerRackGroup">[EqualizerRack<Variable name="EqualizerNumber"/>]</SetVariable>
-  <SetVariable name="EqualizerEffectUnitGroup">[EqualizerRack<Variable name="EqualizerNumber"/>_<Variable name="group"/>]</SetVariable>
-  <SetVariable name="EqualizerEffectGroup">[EqualizerRack<Variable name="EqualizerNumber"/>_<Variable name="group"/>_Effect<Variable name="EffectNumber"/>]</SetVariable>
+  <SetVariable name="FxRack">EqualizerRack1</SetVariable>
+  <SetVariable name="FxNum">1</SetVariable>
+  <SetVariable name="FxRack_FxUnit_FxNum">[EqualizerRack1_<Variable name="group"/>_Effect1]</SetVariable>
+
   <WidgetGroup>
-    <Layout>horizontal</Layout>
+    <ObjectName>EQKnobContainerRight</ObjectName>
     <SizePolicy>min,min</SizePolicy>
+    <Layout>vertical</Layout>
     <Children>
-
-      <WidgetGroup><!-- create margin when Filter knob is visible -->
-        <Size>6f,1min</Size>
-        <Connection>
-          <ConfigKey persist="true">[Tango],filter_knob</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
-
       <WidgetGroup><!-- EQ knob + Kill button -->
-        <ObjectName>EQKnobRight</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
         <Layout>horizontal</Layout>
-        <Size>54f,34f</Size><!-- 42f,30f + [4 0 0 12] margin -->
         <Children>
-          <Template src="skin:button_2state.xml">
+          <!-- Kill button -->
+          <Template src="skin:fx_button.xml">
             <SetVariable name="ObjectName">EQKillButton</SetVariable>
-            <SetVariable name="TooltipId"><Variable name="TooltipId"/>Kill</SetVariable>
             <SetVariable name="Size">12f,30f</SetVariable>
-            <SetVariable name="ConfigKey"><Variable name="EqualizerEffectGroup"/>,button_parameter<Variable name="parameter"/></SetVariable>
-          </Template><!-- Kill button -->
+            <SetVariable name="FxParameter">button_parameter<Variable name="FxParameter"/></SetVariable>
+          </Template>
 
-          <WidgetGroup><!-- EQ knob + Kill indicator underneath -->
+          <!-- EQ knob + Kill indicator underneath -->
+          <WidgetGroup>
             <SizePolicy>min,min</SizePolicy>
             <Layout>stacked</Layout>
             <Children>
               <EffectParameterKnobComposed>
-                  <Size>30f,30f</Size>
-                  <Knob>skin:/knobs_sliders/knob_white.svg</Knob>
-                  <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
-                  <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
-                  <Connection>
-                      <ConfigKey><Variable name="EqualizerEffectGroup"/>,parameter<Variable name="parameter"/></ConfigKey>
-                  </Connection>
+                <Size>30f,30f</Size>
+                <Knob>knobs_sliders/knob_white.svg</Knob>
+                <BackPath>knobs_sliders/knob_bg.svg</BackPath>
+                <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+                <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+                <Connection>
+                  <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/></ConfigKey>
+                </Connection>
               </EffectParameterKnobComposed>
-              <Template src="skin:button_2state.xml">
-                <SetVariable name="ObjectName">EQKillButtonUnderlayRight</SetVariable>
+
+              <Template src="skin:fx_button.xml">
+                <SetVariable name="ObjectName">EQKillUnderlayRight</SetVariable>
                 <SetVariable name="Size">30f,30f</SetVariable>
-                <SetVariable name="ConfigKey"><Variable name="EqualizerEffectGroup"/>,button_parameter<Variable name="parameter"/></SetVariable>
+                <SetVariable name="FxParameter">button_parameter<Variable name="FxParameter"/></SetVariable>
               </Template>
             </Children>
           </WidgetGroup><!-- /EQ knob + Kill indicator underneath -->
-
         </Children>
+        <Connection>
+          <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,loaded</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
       </WidgetGroup><!-- /EQ knob + Kill button -->
-
+      <WidgetGroup><!-- Spacer when no EQ plugin is loaded -->
+        <Size>42me,30f</Size>
+        <Connection>
+          <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,loaded</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Spacer -->
     </Children>
   </WidgetGroup>
 </Template>

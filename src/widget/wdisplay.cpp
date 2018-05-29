@@ -58,7 +58,7 @@ void WDisplay::setup(const QDomNode& node, const SkinContext& context) {
     Paintable::DrawMode pathMode =
             context.selectScaleMode(pathNode, Paintable::FIXED);
     for (int i = 0; i < m_pixmaps.size(); ++i) {
-        setPixmap(&m_pixmaps, i, context.getSkinPath(path.arg(i)),
+        setPixmap(&m_pixmaps, i, context.makeSkinPath(path.arg(i)),
                   pathMode, context.getScaleFactor());
     }
 
@@ -72,7 +72,7 @@ void WDisplay::setup(const QDomNode& node, const SkinContext& context) {
             context.selectScaleMode(disabledNode, Paintable::FIXED);
         for (int i = 0; i < m_disabledPixmaps.size(); ++i) {
             setPixmap(&m_disabledPixmaps, i,
-                      context.getSkinPath(disabledPath.arg(i)),
+                      context.makeSkinPath(disabledPath.arg(i)),
                       disabledMode, context.getScaleFactor());
         }
         m_bDisabledLoaded = true;

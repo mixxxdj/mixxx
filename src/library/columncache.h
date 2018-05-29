@@ -6,9 +6,8 @@
 #include <QStringList>
 
 #include "track/keyutils.h"
+#include "control/controlproxy.h"
 #include "preferences/usersettings.h"
-
-class ControlProxy;
 
 // Caches the index of frequently used columns and provides a lookup-table of
 // column name to index.
@@ -107,6 +106,11 @@ class ColumnCache : public QObject {
     QMap<QString, int> m_columnIndexByName;
     // A mapping from column enum to logical index.
     int m_columnIndexByEnum[NUM_COLUMNS];
+
+    KeyUtils::KeyNotation keyNotation() const {
+        return KeyUtils::keyNotationFromNumericValue(
+                m_pKeyNotationCP->get());
+    }
 
   private:
     ControlProxy* m_pKeyNotationCP;

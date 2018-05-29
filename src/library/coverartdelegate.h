@@ -28,7 +28,7 @@ class CoverArtDelegate : public QStyledItemDelegate {
     // It means that in this cases it will just draw
     // covers which are already in the pixmapcache.
     //
-    // It is useful to handle cases when the user scoll down
+    // It is useful to handle cases when the user scroll down
     // very fast or when they hold an arrow key, because
     // in these cases 'paint()' would be called very often
     // and it might make CoverDelegate starts many searches,
@@ -36,7 +36,7 @@ class CoverArtDelegate : public QStyledItemDelegate {
     void slotOnlyCachedCoverArt(bool b);
 
     void slotCoverFound(const QObject* pRequestor,
-                        const CoverInfo& info,
+                        const CoverInfoRelative& info,
                         QPixmap pixmap, bool fromCache);
 
   private:

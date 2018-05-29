@@ -49,7 +49,7 @@ QString computeResourcePath() {
 #endif
 #ifdef __APPLE__
         else if (mixxxDir.cdUp() && mixxxDir.cd("Resources")) {
-            // Release configuraton
+            // Release configuration
             qResourcePath = mixxxDir.absolutePath();
         } else {
             // TODO(rryan): What should we do here?
@@ -73,8 +73,11 @@ QString computeResourcePath() {
 }
 
 QString computeSettingsPath(const QString& configFilename) {
-    QFileInfo configFileInfo(configFilename);
-    return configFileInfo.absoluteDir().absolutePath();
+    if (!configFilename.isEmpty()) {
+        QFileInfo configFileInfo(configFilename);
+        return configFileInfo.absoluteDir().absolutePath();
+    }
+    return QString();
 }
 
 }  // namespace

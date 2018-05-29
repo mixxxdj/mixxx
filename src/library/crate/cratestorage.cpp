@@ -81,6 +81,26 @@ class CrateQueryBinder {
     FwdSqlQuery& m_query;
 };
 
+const QChar kSqlListSeparator(',');
+
+// It is not possible to bind multiple values as a list to a query.
+// The list of track ids has to be transformed into a single list
+// string before it can be used in an SQL query.
+QString joinSqlStringList(const QList<TrackId>& trackIds) {
+    QString joinedTrackIds;
+    // Reserve memory up front to prevent reallocation. Here we
+    // assume that all track ids fit into 6 decimal digits and
+    // add 1 character for the list separator.
+    joinedTrackIds.reserve((6 + 1) * trackIds.size());
+    for (const auto& trackId: trackIds) {
+        if (!joinedTrackIds.isEmpty()) {
+            joinedTrackIds += kSqlListSeparator;
+        }
+        joinedTrackIds += trackId.toString();
+    }
+    return joinedTrackIds;
+}
+
 } // anonymous namespace
 
 
@@ -468,6 +488,29 @@ CrateTrackSelectResult CrateStorage::selectTrackCratesSorted(TrackId trackId) co
     }
 }
 
+CrateSummarySelectResult CrateStorage::selectCratesWithTrackCount(const QList<TrackId>& trackIds) const {
+    FwdSqlQuery query(m_database, QString(
+        "SELECT *, ("
+        "    SELECT COUNT(*) FROM %1 WHERE %2.%3 = %1.%4 and %1.%5 in (%9)"
+        " ) AS %6, 0 as %7 FROM %2 ORDER BY %8").arg(
+                CRATE_TRACKS_TABLE,
+                CRATE_TABLE,
+                CRATETABLE_ID,
+                CRATETRACKSTABLE_CRATEID,
+                CRATETRACKSTABLE_TRACKID,
+                CRATESUMMARY_TRACK_COUNT,
+                CRATESUMMARY_TRACK_DURATION,
+                CRATETABLE_NAME,
+                joinSqlStringList(trackIds)));
+
+    if (query.execPrepared()) {
+        return CrateSummarySelectResult(std::move(query));
+    } else {
+        return CrateSummarySelectResult();
+    }
+}
+
+
 
 CrateTrackSelectResult CrateStorage::selectTracksSortedByCrateNameLike(const QString& crateNameLike) const {
     FwdSqlQuery query(m_database, QString(
@@ -495,7 +538,7 @@ QSet<CrateId> CrateStorage::collectCrateIdsOfTracks(const QList<TrackId>& trackI
     QSet<CrateId> trackCrates;
     for (const auto& trackId: trackIds) {
         // NOTE(uklotzde): The query result does not need to be sorted by crate id
-        // here. But since the coresponding FK column is indexed the impact on the
+        // here. But since the corresponding FK column is indexed the impact on the
         // performance should be negligible. By reusing an existing query we reduce
         // the amount of code and the number of prepared SQL queries.
         CrateTrackSelectResult crateTracks(selectTrackCratesSorted(trackId));

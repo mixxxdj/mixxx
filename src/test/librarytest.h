@@ -7,19 +7,33 @@
 #include "library/trackcollection.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/db/dbconnectionpooled.h"
+#include "track/globaltrackcache.h"
 
+namespace {
+    const bool kInMemoryDbConnection = true;
+} // anonymous namespace
 
-class LibraryTest : public MixxxTest {
+class LibraryTest : public MixxxTest,
+    public virtual /*implements*/ GlobalTrackCacheSaver {
+
+  public:
+    void saveCachedTrack(Track* pTrack) noexcept override {
+        m_trackCollection.exportTrackMetadata(pTrack);
+        m_trackCollection.saveTrack(pTrack);
+    }
+
   protected:
     LibraryTest()
-        : m_mixxxDb(config()),
+        : m_mixxxDb(config(), kInMemoryDbConnection),
           m_dbConnectionPooler(m_mixxxDb.connectionPool()),
           m_dbConnection(mixxx::DbConnectionPooled(m_mixxxDb.connectionPool())),
           m_trackCollection(config()) {
         MixxxDb::initDatabaseSchema(m_dbConnection);
         m_trackCollection.connectDatabase(m_dbConnection);
+        GlobalTrackCache::createInstance(this);
     }
     ~LibraryTest() override {
+        GlobalTrackCache::destroyInstance();
         m_trackCollection.disconnectDatabase();
     }
 

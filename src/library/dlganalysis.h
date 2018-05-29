@@ -1,6 +1,7 @@
 #ifndef DLGANALYSIS_H
 #define DLGANALYSIS_H
 
+#include <QButtonGroup>
 #include <QItemSelection>
 
 #include "preferences/usersettings.h"
@@ -11,12 +12,14 @@
 
 class AnalysisLibraryTableModel;
 class WAnalysisLibraryTableView;
+class Library;
 
 class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual LibraryView {
     Q_OBJECT
   public:
     DlgAnalysis(QWidget *parent,
                UserSettingsPointer pConfig,
+               Library* pLibrary,
                TrackCollection* pTrackCollection);
     ~DlgAnalysis() override;
 

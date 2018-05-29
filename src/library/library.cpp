@@ -52,7 +52,7 @@ const QString Library::kConfigGroup("[Library]");
 //static
 const ConfigKey Library::kConfigKeyRepairDatabaseOnNextRestart(kConfigGroup, "RepairDatabaseOnNextRestart");
 
-// This is is the name which we use to register the WTrackTableView with the
+// This is the name which we use to register the WTrackTableView with the
 // WLibrary
 const QString Library::m_sTrackViewName = QString("WTrackTableView");
 
@@ -172,6 +172,10 @@ Library::Library(
     } else {
         m_trackTableFont = QApplication::font();
     }
+
+    m_editMetadataSelectedClick = m_pConfig->getValue(
+            ConfigKey(kConfigGroup, "EditMetadataSelectedClick"),
+            PREF_LIBRARY_EDIT_METADATA_DEFAULT);
 }
 
 Library::~Library() {
@@ -206,6 +210,8 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     connect(m_pSidebarModel, SIGNAL(selectIndex(const QModelIndex&)),
             pSidebarWidget, SLOT(selectIndex(const QModelIndex&)));
     connect(pSidebarWidget, SIGNAL(pressed(const QModelIndex&)),
+            m_pSidebarModel, SLOT(pressed(const QModelIndex&)));
+    connect(pSidebarWidget, SIGNAL(clicked(const QModelIndex&)),
             m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
     // Lazy model: Let triangle symbol increment the model
     connect(pSidebarWidget, SIGNAL(expanded(const QModelIndex&)),
@@ -242,6 +248,8 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
             pTrackTableView, SLOT(setTrackTableFont(QFont)));
     connect(this, SIGNAL(setTrackTableRowHeight(int)),
             pTrackTableView, SLOT(setTrackTableRowHeight(int)));
+    connect(this, SIGNAL(setSelectedClick(bool)),
+            pTrackTableView, SLOT(setSelectedClick(bool)));
 
     connect(this, SIGNAL(searchStarting()),
             pTrackTableView, SLOT(onSearchStarting()));
@@ -260,6 +268,7 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
     // just connected to us.
     emit(setTrackTableFont(m_trackTableFont));
     emit(setTrackTableRowHeight(m_iTrackTableRowHeight));
+    emit(setSelectedClick(m_editMetadataSelectedClick));
 }
 
 void Library::addFeature(LibraryFeature* feature) {
@@ -412,12 +421,38 @@ QStringList Library::getDirs() {
     return m_pTrackCollection->getDirectoryDAO().getDirs();
 }
 
-void Library::slotSetTrackTableFont(const QFont& font) {
+void Library::setFont(const QFont& font) {
     m_trackTableFont = font;
     emit(setTrackTableFont(font));
 }
 
-void Library::slotSetTrackTableRowHeight(int rowHeight) {
+void Library::setRowHeight(int rowHeight) {
     m_iTrackTableRowHeight = rowHeight;
     emit(setTrackTableRowHeight(rowHeight));
+}
+
+void Library::setEditMedatataSelectedClick(bool enabled) {
+    m_editMetadataSelectedClick = enabled;
+    emit(setSelectedClick(enabled));
+}
+
+void Library::saveCachedTrack(Track* pTrack) noexcept {
+    // It can produce dangerous signal loops if the track is still
+    // sending signals while being saved!
+    // See: https://bugs.launchpad.net/mixxx/+bug/1365708
+    // NOTE(uklotzde, 2018-02-03): Simply disconnecting all receivers
+    // doesn't seem to work reliably. Emitting the clean() signal from
+    // a track that is about to deleted may cause access violations!!
+    pTrack->blockSignals(true);
+
+    // The metadata must be exported while the cache is locked to
+    // ensure that we have exclusive (write) access on the file
+    // and not reader or writer is accessing the same file
+    // concurrently.
+    m_pTrackCollection->exportTrackMetadata(pTrack);
+
+    // The track must be saved while the cache is locked to
+    // prevent that a new track is created from the outdated
+    // metadata that is is the database before saving is finished.
+    m_pTrackCollection->saveTrack(pTrack);
 }

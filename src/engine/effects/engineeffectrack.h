@@ -6,20 +6,23 @@
 #include "engine/channelhandle.h"
 #include "engine/effects/message.h"
 #include "engine/effects/groupfeaturestate.h"
+#include "util/samplebuffer.h"
 
 class EngineEffectChain;
 
+//TODO(Be): Remove this superfluous class.
 class EngineEffectRack : public EffectsRequestHandler {
   public:
     EngineEffectRack(int iRackNumber);
     virtual ~EngineEffectRack();
 
     bool processEffectsRequest(
-        const EffectsRequest& message,
+        EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe);
 
-    void process(const ChannelHandle& handle,
-                 CSAMPLE* pInOut,
+    bool process(const ChannelHandle& inputHandle,
+                 const ChannelHandle& outputHandle,
+                 CSAMPLE* pIn, CSAMPLE* pOut,
                  const unsigned int numSamples,
                  const unsigned int sampleRate,
                  const GroupFeatureState& groupFeatures);
@@ -38,6 +41,9 @@ class EngineEffectRack : public EffectsRequestHandler {
 
     int m_iRackNumber;
     QList<EngineEffectChain*> m_chains;
+
+    mixxx::SampleBuffer m_buffer1;
+    mixxx::SampleBuffer m_buffer2;
 
     DISALLOW_COPY_AND_ASSIGN(EngineEffectRack);
 };

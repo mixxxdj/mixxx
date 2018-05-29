@@ -12,7 +12,7 @@
    version="1.1"
    viewBox="0 0 31.999999 31.999998"
    id="svg2"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.48.4 r9939"
    sodipodi:docname="ic_vinylcontrol_32px.svg">
   <metadata
      id="metadata12">
@@ -37,19 +37,20 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:window-width="1366"
-     inkscape:window-height="702"
+     inkscape:window-height="746"
      id="namedview8"
      showgrid="false"
      inkscape:zoom="7.375"
-     inkscape:cx="16.813559"
+     inkscape:cx="-6.1016952"
      inkscape:cy="16.542373"
      inkscape:window-x="0"
-     inkscape:window-y="27"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg2" />
+     inkscape:current-layer="svg2"
+     inkscape:snap-page="true" />
   <path
      inkscape:connector-curvature="0"
      id="path6"
-     d="M 16,2 C 8.32,2 2,8.32 2,16 2,23.6801 8.32,30 16,30 23.68,30 30,23.6801 30,16 30,8.32 23.68,2 16,2 Z m 0,8.7773 c 2.9365,0 5.2227,2.2862 5.2227,5.2227 0,2.9366 -2.2861,5.2227 -5.2227,5.2227 -2.9365,0 -5.2227,-2.2861 -5.2227,-5.2227 0,-2.9365 2.2861,-5.2227 5.2227,-5.2227 z m 0,2.5528 c -1.4665,0 -2.6699,1.2035 -2.6699,2.6699 0,1.4665 1.2034,2.6699 2.6699,2.6699 1.4665,0 2.6699,-1.2034 2.6699,-2.6699 0,-1.4664 -1.2035,-2.6699 -2.6699,-2.6699 z"
-     style="color:#000000;text-indent:0;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;text-transform:none;block-progression:tb;white-space:normal;isolation:auto;mix-blend-mode:normal;solid-color:#000000;fill:#d2d2d2;color-rendering:auto;image-rendering:auto;shape-rendering:auto;fill-opacity:1" />
+     d="m 16,3.7499994 c -6.7200002,0 -12.2500002,5.5299998 -12.2500002,12.2499996 0,6.720088 5.53,12.25 12.2500002,12.25 6.719999,0 12.249999,-5.529912 12.249999,-12.25 0,-6.7199998 -5.53,-12.2499996 -12.249999,-12.2499996 z m 0,7.6801376 c 2.569437,0 4.569862,2.000425 4.569862,4.569862 0,2.569525 -2.000338,4.569863 -4.569862,4.569863 -2.569438,0 -4.569863,-2.000338 -4.569863,-4.569863 0,-2.569437 2.000338,-4.569862 4.569863,-4.569862 z m 0,2.2337 c -1.283188,0 -2.336163,1.053062 -2.336163,2.336162 0,1.283188 1.052975,2.336163 2.336163,2.336163 1.283187,0 2.336162,-1.052975 2.336162,-2.336163 0,-1.2831 -1.053062,-2.336162 -2.336162,-2.336162 z"
+     style="text-indent:0;text-decoration:none;text-transform:none;block-progression:tb;color:#000000;fill:#d2d2d2;fill-opacity:1" />
 </svg>

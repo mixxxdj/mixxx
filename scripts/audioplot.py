@@ -66,7 +66,7 @@ of mixxx-test with the golden sample files.
                    '--columns',
                    type=str,
                    default='all',
-                   help='lines to plot seperated by a comma, default "all"')
+                   help='lines to plot separated by a comma, default "all"')
     return p.parse_args()
 
 

@@ -43,7 +43,7 @@ CSAMPLE* SampleUtil::alloc(SINT size) {
     // true start of the buffer in the slack space as well so that we can free
     // it correctly.
     // TODO(XXX): Replace with C++11 aligned_alloc.
-    // TODO(XXX): consider 32 byte alignement to optimize for AVX builds
+    // TODO(XXX): consider 32 byte alignment to optimize for AVX builds
     if (useAlignedAlloc()) {
 #ifdef _MSC_VER
         return static_cast<CSAMPLE*>(_aligned_malloc(sizeof(CSAMPLE) * size, 16));
@@ -189,6 +189,16 @@ void SampleUtil::applyRampingAlternatingGain(CSAMPLE* pBuffer,
         for (int i = 0; i < numSamples; ++i) {
             pBuffer[i * 2 + 1] *= gain2Old;
         }
+    }
+}
+
+// static
+void SampleUtil::add(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc,
+        SINT numSamples) {
+    // note: LOOP VECTORIZED.
+    for (SINT i = 0; i < numSamples; ++i) {
+        pDest[i] += pSrc[i];
     }
 }
 
@@ -484,8 +494,11 @@ void SampleUtil::addMonoToStereo(CSAMPLE* M_RESTRICT pDest,
 }
 
 // static
-void SampleUtil::stripMultiToStereo(CSAMPLE* pBuffer, SINT numFrames,
+void SampleUtil::stripMultiToStereo(
+        CSAMPLE* pBuffer,
+        SINT numFrames,
         int numChannels) {
+    DEBUG_ASSERT(numChannels > 2);
     // forward loop
     for (SINT i = 0; i < numFrames; ++i) {
         pBuffer[i * 2] = pBuffer[i * numChannels];
@@ -494,9 +507,12 @@ void SampleUtil::stripMultiToStereo(CSAMPLE* pBuffer, SINT numFrames,
 }
 
 // static
-void SampleUtil::copyMultiToStereo(CSAMPLE* M_RESTRICT pDest,
+void SampleUtil::copyMultiToStereo(
+        CSAMPLE* M_RESTRICT pDest,
         const CSAMPLE* M_RESTRICT pSrc,
-        SINT numFrames, int numChannels) {
+        SINT numFrames,
+        int numChannels) {
+    DEBUG_ASSERT(numChannels > 2);
     // forward loop
     for (SINT i = 0; i < numFrames; ++i) {
         pDest[i * 2] = pSrc[i * numChannels];

@@ -10,6 +10,13 @@
 #include "util/math.h"
 #include "util/sample.h"
 
+namespace {
+    constexpr double kSpeedGainMultiplyer = 4.0; // Bends the speed to gain curve for a natural vinyl sound
+    constexpr double kMaxTotalGainBySpeed = 0.9; // -1 dB to not risk any clipping even for lossy track that may
+                                                 // have samples above 1.0
+    const double kSpeedOneDiv = log10((1 * kSpeedGainMultiplyer) + 1); // value to normalize gain to 1 at speed one
+} // anonymous namespace
+
 ControlPotmeter* EnginePregain::s_pReplayGainBoost = NULL;
 ControlPotmeter* EnginePregain::s_pDefaultBoost = NULL;
 ControlObject* EnginePregain::s_pEnableReplayGain = NULL;
@@ -114,15 +121,26 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
 
     // Vinylsoundemu:
     // Apply Gain change depending on the speed.
-    // We have -Inf dB at x0, -6 dB at x0.3 and 0 dB at x1.
-    // For faster speeds it is hard to measure it, but it looks like we had an
-    // increasing gain there which would lead to undesired clipping.
-    // This is ignored here, to avoid that.
-    // It also turns out that it is physically not possible to scratch faster
-    // then x5 without the needle loosing contact, our threshold for the effect.
+    // We have measured -Inf dB at x0, -6 dB at x0.3, 0 dB at x1 and 3.5 dB
+    // at 2.5 using a real vinyl.
+    // x5 is the maximum physically speed before the needle is starting to
+    // lose contact to the vinyl.
     // So we apply a curve here that emulates the gain change up to x 2.5 natural
-    // to 3.5 dB and then limits the gain towards <= 5.5 dB at am maximum of x5.
-    totalGain *= log10((math_min(fabs(m_dSpeed), 5.0) * 4) + 1) / log10((1 * 4) + 1);
+    // to 3.5 dB and then limits the gain towards 5.5 dB at x5.
+    // Since the additional gain will lead to undesired clipping,
+    // we do not add more gain then we found in the original track.
+    // This compensates a negative ReplayGain or PreGain setting.
+
+    double speedGain = log10((fabs(m_dSpeed) * kSpeedGainMultiplyer) + 1) / kSpeedOneDiv;
+    // Limit speed Gain to 0 dB if totalGain is already > 0.9 or Limit the
+    // resulting totalGain to 0.9 for all other cases. This should avoid clipping even
+    // if the source track has some samples above 1.0 due to lossy codecs.
+    if (totalGain > kMaxTotalGainBySpeed) {
+        speedGain = math_min(1.0, speedGain);
+    } else {
+        speedGain = math_min(kMaxTotalGainBySpeed / totalGain, speedGain);
+    }
+    totalGain *= speedGain;
 
     if ((m_dSpeed * m_dOldSpeed < 0) && m_scratching) {
         // direction changed, go though zero if scratching

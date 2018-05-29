@@ -3,7 +3,7 @@
 
 #include "sources/soundsourceplugin.h"
 
-#include "util/singularsamplebuffer.h"
+#include "util/readaheadsamplebuffer.h"
 
 #ifdef __MP4V2__
 #include <mp4v2/mp4v2.h>
@@ -18,19 +18,20 @@
 namespace mixxx {
 
 class SoundSourceM4A: public SoundSourcePlugin {
-public:
+  public:
     explicit SoundSourceM4A(const QUrl& url);
     ~SoundSourceM4A() override;
 
     void close() override;
 
-    SINT seekSampleFrame(SINT frameIndex) override;
+  protected:
+    ReadableSampleFrames readSampleFramesClamped(
+            WritableSampleFrames sampleFrames) override;
 
-    SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) override;
-
-private:
-    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+  private:
+    OpenResult tryOpen(
+            OpenMode mode,
+            const OpenParams& params) override;
 
     bool openDecoder();
     void closeDecoder();
@@ -50,13 +51,13 @@ private:
     SINT m_inputBufferLength;
     SINT m_inputBufferOffset;
 
-    AudioSourceConfig m_audioSrcCfg;
+    OpenParams m_openParams;
 
     NeAACDecHandle m_hDecoder;
     SINT m_numberOfPrefetchSampleBlocks;
     MP4SampleId m_curSampleBlockId;
 
-    SingularSampleBuffer m_sampleBuffer;
+    ReadAheadSampleBuffer m_sampleBuffer;
 
     SINT m_curFrameIndex;
 };
