@@ -19,8 +19,8 @@
 
 #define MIXXX_WEBSITE_URL       "https://www.mixxx.org"
 #define MIXXX_SUPPORT_URL       "https://www.mixxx.org/support/"
-#define MIXXX_FEEDBACK_URL      "https://docs.google.com/forms/d/14pLA_aeK0TZUgpfEa6uVLknRX2CBPBPf99gHNHkYgUc/viewform"
 #define MIXXX_TRANSLATION_URL   "https://www.transifex.com/projects/p/mixxxdj/"
+#define MIXXX_FEEDBACK_URL      "https://goo.gl/forms/IHf3JK7Q9DXmExXc2"
 #define MIXXX_MANUAL_URL        "https://mixxx.org/manual/2.1"
 #define MIXXX_SHORTCUTS_URL     "https://mixxx.org/manual/2.1/chapters/appendix.html#keyboard-mapping-table"
 #define MIXXX_MANUAL_FILENAME   "Mixxx-Manual.pdf"
