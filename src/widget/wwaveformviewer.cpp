@@ -219,8 +219,8 @@ void WWaveformViewer::setDisplayBeatGrid(bool set) {
     m_waveformWidget->setDisplayBeatGrid(set);
 }
 
-void WWaveformViewer::setDisplayBeatGridAlpha(bool set) {
-    m_waveformWidget->setDisplayBeatGridAlpha(set);
+void WWaveformViewer::setDisplayBeatGridAlpha(int alpha) {
+    m_waveformWidget->setDisplayBeatGridAlpha(alpha);
 }
 
 void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) {

@@ -34,14 +34,10 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     if (!trackBeats)
         return;
 
-    if (!m_waveformRenderer->isBeatGridEnabled())
+    int alpha = m_waveformRenderer->beatGridAlpha();
+    if (alpha == 0)
         return;
-
-    if(m_waveformRenderer->isBeatGridAlpha()){
-        m_beatColor.setAlphaF(0.3);
-    } else {
-        m_beatColor.setAlphaF(0.9);
-    }
+    m_beatColor.setAlphaF(alpha/100.0);
 
     const int trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
