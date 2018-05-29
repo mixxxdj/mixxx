@@ -52,9 +52,11 @@ TEST_F(AnalyzerSilenceTest, SilenceTrack) {
 
     CuePointer pBeginCue = pTrack->findCueByType(Cue::BEGIN);
     EXPECT_EQ(pBeginCue->getPosition(), 0.0);
+    EXPECT_EQ(pBeginCue->getSource(), Cue::AUTOMATIC);
 
     CuePointer pEndCue = pTrack->findCueByType(Cue::END);
     EXPECT_EQ(pEndCue->getPosition(), nTrackSampleDataLength);
+    EXPECT_EQ(pEndCue->getSource(), Cue::AUTOMATIC);
 }
 
 TEST_F(AnalyzerSilenceTest, EndToEndToneTrack) {
@@ -68,9 +70,11 @@ TEST_F(AnalyzerSilenceTest, EndToEndToneTrack) {
 
     CuePointer pBeginCue = pTrack->findCueByType(Cue::BEGIN);
     EXPECT_EQ(pBeginCue->getPosition(), 0.0);
+    EXPECT_EQ(pBeginCue->getSource(), Cue::AUTOMATIC);
 
     CuePointer pEndCue = pTrack->findCueByType(Cue::END);
     EXPECT_EQ(pEndCue->getPosition(), nTrackSampleDataLength);
+    EXPECT_EQ(pEndCue->getSource(), Cue::AUTOMATIC);
 }
 
 TEST_F(AnalyzerSilenceTest, ToneTrackWithSilence) {
@@ -94,9 +98,11 @@ TEST_F(AnalyzerSilenceTest, ToneTrackWithSilence) {
 
     CuePointer pBeginCue = pTrack->findCueByType(Cue::BEGIN);
     EXPECT_EQ(pBeginCue->getPosition(), nTrackSampleDataLength / 4);
+    EXPECT_EQ(pBeginCue->getSource(), Cue::AUTOMATIC);
 
     CuePointer pEndCue = pTrack->findCueByType(Cue::END);
     EXPECT_EQ(pEndCue->getPosition(), 3 * nTrackSampleDataLength / 4);
+    EXPECT_EQ(pEndCue->getSource(), Cue::AUTOMATIC);
 }
 
 TEST_F(AnalyzerSilenceTest, ToneTrackWithSilenceInTheMiddle) {
@@ -132,9 +138,11 @@ TEST_F(AnalyzerSilenceTest, ToneTrackWithSilenceInTheMiddle) {
 
     CuePointer pBeginCue = pTrack->findCueByType(Cue::BEGIN);
     EXPECT_EQ(pBeginCue->getPosition(), oneFifthOfTrackLength);
+    EXPECT_EQ(pBeginCue->getSource(), Cue::AUTOMATIC);
 
     CuePointer pEndCue = pTrack->findCueByType(Cue::END);
     EXPECT_EQ(pEndCue->getPosition(), 4 * oneFifthOfTrackLength);
+    EXPECT_EQ(pEndCue->getSource(), Cue::AUTOMATIC);
 }
 
 }
