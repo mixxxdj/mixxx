@@ -13,12 +13,14 @@ void TrackInfo::resetUnsupportedValues() {
     setLanguage(QString());
     setLyricist(QString());
     setMood(QString());
+    setMovement(QString());
     setMusicBrainzArtistId(QString());
     setMusicBrainzRecordingId(QString());
     setMusicBrainzReleaseId(QString());
     setMusicBrainzWorkId(QString());
     setRemixer(QString());
     setSubtitle(QString());
+    setWork(QString());
 }
 
 bool operator==(const TrackInfo& lhs, const TrackInfo& rhs) {
@@ -38,6 +40,7 @@ bool operator==(const TrackInfo& lhs, const TrackInfo& rhs) {
             (lhs.getLanguage() == rhs.getLanguage()) &&
             (lhs.getLyricist() == rhs.getLyricist()) &&
             (lhs.getMood() == rhs.getMood()) &&
+            (lhs.getMovement() == rhs.getMovement()) &&
             (lhs.getMusicBrainzArtistId() == rhs.getMusicBrainzArtistId()) &&
             (lhs.getMusicBrainzRecordingId() == rhs.getMusicBrainzRecordingId()) &&
             (lhs.getMusicBrainzReleaseId() == rhs.getMusicBrainzReleaseId()) &&
@@ -48,6 +51,7 @@ bool operator==(const TrackInfo& lhs, const TrackInfo& rhs) {
             (lhs.getTitle() == rhs.getTitle()) &&
             (lhs.getTrackNumber() == rhs.getTrackNumber()) &&
             (lhs.getTrackTotal() == rhs.getTrackTotal()) &&
+            (lhs.getWork() == rhs.getWork()) &&
             (lhs.getYear() == rhs.getYear());
 }
 
@@ -69,6 +73,7 @@ QDebug operator<<(QDebug dbg, const TrackInfo& arg) {
     arg.dbgLanguage(dbg);
     arg.dbgLyricist(dbg);
     arg.dbgMood(dbg);
+    arg.dbgMovement(dbg);
     arg.dbgMusicBrainzArtistId(dbg);
     arg.dbgMusicBrainzRecordingId(dbg);
     arg.dbgMusicBrainzReleaseId(dbg);
@@ -79,6 +84,7 @@ QDebug operator<<(QDebug dbg, const TrackInfo& arg) {
     arg.dbgTitle(dbg);
     arg.dbgTrackNumber(dbg);
     arg.dbgTrackTotal(dbg);
+    arg.dbgWork(dbg);
     arg.dbgYear(dbg);
     dbg << '}';
     return dbg;

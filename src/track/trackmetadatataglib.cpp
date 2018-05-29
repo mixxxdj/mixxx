@@ -29,6 +29,7 @@
 #include <taglib/uniquefileidentifierframe.h>
 #include <taglib/attachedpictureframe.h>
 #include <taglib/flacpicture.h>
+#include <taglib/unknownframe.h>
 
 #include <array>
 
@@ -202,9 +203,15 @@ QString toQStringFirstNotEmpty(
         const TagLib::ID3v2::FrameList& frameList) {
     for (const TagLib::ID3v2::Frame* pFrame: frameList) {
         if (pFrame) {
-            TagLib::String str(pFrame->toString());
+            TagLib::String str = pFrame->toString();
             if (!str.isEmpty()) {
                 return toQString(str);
+            }
+            auto pUnknownFrame = dynamic_cast<const TagLib::ID3v2::UnknownFrame*>(pFrame);
+            if (pUnknownFrame) {
+                kLogger.warning()
+                        << "Unsupported ID3v2 frame"
+                        << pUnknownFrame->frameID().data();
             }
         }
     }
@@ -1264,9 +1271,28 @@ void importTrackMetadataFromID3v2Tag(
         pTrackMetadata->refTrackInfo().setComposer(toQStringFirstNotEmpty(composerFrame));
     }
 
-    const TagLib::ID3v2::FrameList groupingFrame(tag.frameListMap()["TIT1"]);
-    if (!groupingFrame.isEmpty()) {
-        pTrackMetadata->refTrackInfo().setGrouping(toQStringFirstNotEmpty(groupingFrame));
+    // Apple decided to store the Work in the traditional ID3v2 Content Group
+    // frame (TIT1) and introduced new Grouping (GRP1) and Movement Name (MVNM)
+    // frames.
+    // https://discussions.apple.com/thread/7900430
+    // http://blog.jthink.net/2016/11/the-reason-why-is-grouping-field-no.html
+    const TagLib::ID3v2::FrameList appleGroupingFrames = tag.frameListMap()["GRP1"];
+    if (appleGroupingFrames.isEmpty()) {
+        // No Apple grouping frame found -> Use the traditional mapping
+        const TagLib::ID3v2::FrameList traditionalGroupingFrames = tag.frameListMap()["TIT1"];
+        if (!traditionalGroupingFrames.isEmpty()) {
+            pTrackMetadata->refTrackInfo().setGrouping(toQStringFirstNotEmpty(traditionalGroupingFrames));
+        }
+    } else {
+        pTrackMetadata->refTrackInfo().setGrouping(toQStringFirstNotEmpty(appleGroupingFrames));
+        const TagLib::ID3v2::FrameList workFrames = tag.frameListMap()["TIT1"];
+        if (!workFrames.isEmpty()) {
+            pTrackMetadata->refTrackInfo().setWork(toQStringFirstNotEmpty(workFrames));
+        }
+        const TagLib::ID3v2::FrameList movementFrames = tag.frameListMap()["MVNM"];
+        if (!movementFrames.isEmpty()) {
+            pTrackMetadata->refTrackInfo().setMovement(toQStringFirstNotEmpty(movementFrames));
+        }
     }
 
     // ID3v2.4.0: TDRC replaces TYER + TDAT
@@ -1890,6 +1916,15 @@ void importTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::
         pTrackMetadata->refTrackInfo().setGrouping(grouping);
     }
 
+    QString work;
+    if (readMP4Atom(tag, "\251wrk", &work)) {
+        pTrackMetadata->refTrackInfo().setWork(work);
+    }
+    QString movement;
+    if (readMP4Atom(tag, "\251mvn", &movement)) {
+        pTrackMetadata->refTrackInfo().setMovement(movement);
+    }
+
     QString year;
     if (readMP4Atom(tag, "\251day", &year)) {
         pTrackMetadata->refTrackInfo().setYear(year);
@@ -2147,8 +2182,35 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
             trackMetadata.getAlbumInfo().getArtist());
     writeID3v2TextIdentificationFrame(pTag, "TCOM",
             trackMetadata.getTrackInfo().getComposer());
-    writeID3v2TextIdentificationFrame(pTag, "TIT1",
-            trackMetadata.getTrackInfo().getGrouping());
+
+    // We can use the TIT1 frame only once, either for storing the Work
+    // like Apple decided to do or traditionally for the Content Group.
+    // Rationale: If the the file already has one or more GRP1 frames
+    // or if the track has a Work field then store the Grouping in a
+    // GRP1 frame instead of using TIT1.
+    // See also: importTrackMetadataFromID3v2Tag()
+    if (trackMetadata.getTrackInfo().getWork().isNull() &&
+            pTag->frameListMap()["GRP1"].isEmpty()) {
+        // Traditional mapping
+        writeID3v2TextIdentificationFrame(
+                pTag,
+                "TIT1",
+                trackMetadata.getTrackInfo().getGrouping());
+    } else {
+        // New mapping
+        writeID3v2TextIdentificationFrame(
+                pTag,
+                "GRP1",
+                trackMetadata.getTrackInfo().getGrouping());
+        writeID3v2TextIdentificationFrameStringIfNotNull(
+                pTag,
+                "TIT1",
+                trackMetadata.getTrackInfo().getWork());
+    }
+    writeID3v2TextIdentificationFrameStringIfNotNull(
+            pTag,
+            "MVNM",
+            trackMetadata.getTrackInfo().getMovement());
 
     // According to the specification "The 'TBPM' frame contains the number
     // of beats per minute in the mainpart of the audio. The BPM is an
@@ -2807,6 +2869,12 @@ bool exportTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& 
     if (!trackMetadata.getTrackInfo().getEncoder().isNull()) {
         writeMP4Atom(pTag, "\251too",
                 toTagLibString(trackMetadata.getTrackInfo().getEncoder()));
+    }
+    if (!trackMetadata.getTrackInfo().getWork().isNull()) {
+        writeMP4Atom(pTag, "\251wrk", toTagLibString(trackMetadata.getTrackInfo().getWork()));
+    }
+    if (!trackMetadata.getTrackInfo().getMovement().isNull()) {
+        writeMP4Atom(pTag, "\251mvn", toTagLibString(trackMetadata.getTrackInfo().getMovement()));
     }
 
     return true;

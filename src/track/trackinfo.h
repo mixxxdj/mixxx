@@ -32,6 +32,7 @@ class TrackInfo final {
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    language,             Language)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    lyricist,             Lyricist)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    mood,                 Mood)
+    PROPERTY_SET_BYVAL_GET_BYREF(QString,    movement,             Movement)
     PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzArtistId,  MusicBrainzArtistId)
     PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzRecordingId, MusicBrainzRecordingId)
     PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzReleaseId, MusicBrainzReleaseId)
@@ -42,6 +43,7 @@ class TrackInfo final {
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    title,                Title)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    trackNumber,          TrackNumber)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    trackTotal,           TrackTotal)
+    PROPERTY_SET_BYVAL_GET_BYREF(QString,    work,                 Work)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    year,                 Year) // = release date
 
 public:
