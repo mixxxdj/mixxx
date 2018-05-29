@@ -15,3 +15,23 @@ WEffectSelector {
 	border: 0px solid #f8ba54;  
 }
 
+QHeaderView {
+  color: #0f0f0f;
+}
+/*	Library header 'buttons'	*/
+QHeaderView::section {
+  border-right: 1px solid #626F87;
+  background-color: #998A3D;
+  border-radius: 0px;
+}
+QHeaderView::up-arrow,
+QHeaderView::down-arrow {
+  background-color: rgba(153,138,60,160);
+}
+QHeaderView::up-arrow {
+  image: url(skin:/btn_lib_sort_up_summer.png)
+}
+QHeaderView::down-arrow {
+  image: url(skin:/btn_lib_sort_down_summer.png)
+}
+
