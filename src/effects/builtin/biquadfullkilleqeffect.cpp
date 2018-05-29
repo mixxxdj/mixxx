@@ -1,6 +1,6 @@
-#include "effects/native/biquadfullkilleqeffect.h"
+#include "effects/builtin/biquadfullkilleqeffect.h"
 
-#include "effects/native/equalizer_util.h"
+#include "effects/builtin/equalizer_util.h"
 #include "util/math.h"
 
 namespace {

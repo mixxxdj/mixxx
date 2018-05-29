@@ -1,4 +1,4 @@
-#include "effects/native/filtereffect.h"
+#include "effects/builtin/filtereffect.h"
 #include "util/math.h"
 
 namespace {

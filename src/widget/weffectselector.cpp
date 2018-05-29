@@ -27,6 +27,8 @@ void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
             node, context, m_pChainSlot);
 
     if (m_pEffectSlot != nullptr) {
+        connect(m_pEffectsManager, SIGNAL(visibleEffectsUpdated()),
+                this, SLOT(populate()));
         connect(m_pEffectSlot.data(), SIGNAL(updated()),
                 this, SLOT(slotEffectUpdated()));
         connect(this, SIGNAL(currentIndexChanged(int)),
@@ -44,14 +46,12 @@ void WEffectSelector::populate() {
     blockSignals(true);
     clear();
 
-    // TODO(xxx): filter out blacklisted effects
-    // https://bugs.launchpad.net/mixxx/+bug/1653140
-    const QList<EffectManifestPointer> availableEffectManifests =
-            m_pEffectsManager->getAvailableEffectManifests();
+    const QList<EffectManifestPointer> visibleEffectManifests =
+            m_pEffectsManager->getVisibleEffectManifests();
     QFontMetrics metrics(font());
 
-    for (int i = 0; i < availableEffectManifests.size(); ++i) {
-        const EffectManifestPointer pManifest = availableEffectManifests.at(i);
+    for (int i = 0; i < visibleEffectManifests.size(); ++i) {
+        const EffectManifestPointer pManifest = visibleEffectManifests.at(i);
         QString elidedDisplayName = metrics.elidedText(pManifest->displayName(),
                                                        Qt::ElideMiddle,
                                                        width() - 2);
@@ -70,7 +70,7 @@ void WEffectSelector::populate() {
 
     //: Displayed when no effect is loaded
     addItem(tr("None"), QVariant());
-    setItemData(availableEffectManifests.size(), QVariant(tr("No effect loaded.")),
+    setItemData(visibleEffectManifests.size(), QVariant(tr("No effect loaded.")),
                 Qt::ToolTipRole);
 
     slotEffectUpdated();

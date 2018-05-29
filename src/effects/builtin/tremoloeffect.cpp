@@ -1,4 +1,4 @@
-#include "effects/native/tremoloeffect.h"
+#include "effects/builtin/tremoloeffect.h"
 
 namespace {
 //  Used to avoid gain discontinuities when changing parameters too fast

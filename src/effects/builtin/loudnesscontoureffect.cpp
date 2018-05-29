@@ -1,4 +1,4 @@
-#include "effects/native/loudnesscontoureffect.h"
+#include "effects/builtin/loudnesscontoureffect.h"
 #include "util/math.h"
 
 namespace {

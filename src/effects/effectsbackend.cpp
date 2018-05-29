@@ -3,18 +3,15 @@
 #include "effects/effectsbackend.h"
 #include "effects/effectsmanager.h"
 
-EffectsBackend::EffectsBackend(QObject* pParent, QString name)
+EffectsBackend::EffectsBackend(QObject* pParent,
+                               EffectBackendType type)
         : QObject(pParent),
-          m_name(name) {
+          m_type(type) {
 }
 
 EffectsBackend::~EffectsBackend() {
     m_registeredEffects.clear();
     m_effectIds.clear();
-}
-
-const QString EffectsBackend::getName() const {
-    return m_name;
 }
 
 void EffectsBackend::registerEffect(const QString& id,
@@ -24,6 +21,8 @@ void EffectsBackend::registerEffect(const QString& id,
         qWarning() << "WARNING: Effect" << id << "already registered";
         return;
     }
+
+    pManifest->setBackendType(m_type);
 
     m_registeredEffects[id] = RegisteredEffect(pManifest, pInstantiator);
     m_effectIds.append(id);

@@ -32,7 +32,7 @@
 #include "dialog/dlgdevelopertools.h"
 #include "engine/enginemaster.h"
 #include "effects/effectsmanager.h"
-#include "effects/native/nativebackend.h"
+#include "effects/builtin/builtinbackend.h"
 #ifdef __LILV__
 #include "effects/lv2/lv2backend.h"
 #endif
@@ -198,8 +198,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     // Create effect backends. We do this after creating EngineMaster to allow
     // effect backends to refer to controls that are produced by the engine.
-    NativeBackend* pNativeBackend = new NativeBackend(m_pEffectsManager);
-    m_pEffectsManager->addEffectsBackend(pNativeBackend);
+    BuiltInBackend* pBuiltInBackend = new BuiltInBackend(m_pEffectsManager);
+    m_pEffectsManager->addEffectsBackend(pBuiltInBackend);
 #ifdef __LILV__
     LV2Backend* pLV2Backend = new LV2Backend(m_pEffectsManager);
     m_pEffectsManager->addEffectsBackend(pLV2Backend);

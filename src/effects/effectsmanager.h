@@ -79,6 +79,9 @@ class EffectsManager : public QObject {
     inline const QList<EffectManifestPointer>& getAvailableEffectManifests() const {
         return m_availableEffectManifests;
     };
+    inline const QList<EffectManifestPointer>& getVisibleEffectManifests() const {
+        return m_visibleEffectManifests;
+    };
     const QList<EffectManifestPointer> getAvailableEffectManifestsFiltered(
         EffectManifestFilterFnc filter) const;
     bool isEQ(const QString& effectId) const;
@@ -87,6 +90,9 @@ class EffectsManager : public QObject {
             EffectManifestPointer* ppManifest, EffectsBackend** ppBackend) const;
     EffectManifestPointer getEffectManifest(const QString& effectId) const;
     EffectPointer instantiateEffect(const QString& effectId);
+
+    void setEffectVisibility(EffectManifestPointer pManifest, bool visibility);
+    bool getEffectVisibility(EffectManifestPointer pManifest); 
 
     // Temporary, but for setting up all the default EffectChains and EffectRacks
     void setup();
@@ -101,6 +107,7 @@ class EffectsManager : public QObject {
   signals:
     // TODO() Not connected. Can be used when we implement effect PlugIn loading at runtime
     void availableEffectsUpdated(EffectManifestPointer);
+    void visibleEffectsUpdated();
 
   private slots:
     void slotBackendRegisteredEffect(EffectManifestPointer pManifest);
@@ -118,6 +125,7 @@ class EffectsManager : public QObject {
     EffectChainManager* m_pEffectChainManager;
     QList<EffectsBackend*> m_effectsBackends;
     QList<EffectManifestPointer> m_availableEffectManifests;
+    QList<EffectManifestPointer> m_visibleEffectManifests;
 
     EngineEffectsManager* m_pEngineEffectsManager;
 

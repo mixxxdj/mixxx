@@ -6,8 +6,10 @@
 #include <QSet>
 #include <QString>
 
+#include "effects/defs.h"
 #include "effects/effect.h"
 #include "effects/effectinstantiator.h"
+#include "preferences/usersettings.h"
 
 class EffectsManager;
 class EffectsBackend;
@@ -19,10 +21,8 @@ class EffectProcessor;
 class EffectsBackend : public QObject {
     Q_OBJECT
   public:
-    EffectsBackend(QObject* pParent, QString name);
+    EffectsBackend(QObject* pParent, EffectBackendType type);
     virtual ~EffectsBackend();
-
-    virtual const QString getName() const;
 
     // returns a list sorted like it should be displayed in the GUI 
     virtual const QList<QString> getEffectIds() const;
@@ -48,6 +48,8 @@ class EffectsBackend : public QObject {
                         new EffectProcessorInstantiator<EffectProcessorImpl>()));
     }
 
+    EffectBackendType m_type;
+
   private:
     class RegisteredEffect {
       public:
@@ -67,7 +69,6 @@ class EffectsBackend : public QObject {
         EffectInstantiatorPointer m_pInitator;
     };
 
-    QString m_name;
     QMap<QString, RegisteredEffect> m_registeredEffects;
     QList<QString> m_effectIds;
 };

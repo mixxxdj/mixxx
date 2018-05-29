@@ -1,4 +1,4 @@
-#include "effects/native/parametriceqeffect.h"
+#include "effects/builtin/parametriceqeffect.h"
 #include "util/math.h"
 
 namespace {

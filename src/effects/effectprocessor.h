@@ -127,7 +127,7 @@ class EffectProcessorImpl : public EffectProcessor {
     // static EffectManifest getManifest();
 
     // This is the only non-static method that subclasses need to implement.
-    // TODO(Be): remove ChannelHandle& argument? No (native) effects use it. Why should
+    // TODO(Be): remove ChannelHandle& argument? No (built-in) effects use it. Why should
     // effects be concerned with the ChannelHandle& when process() takes care of giving
     // it the appropriate ChannelStateHolder?
     virtual void processChannel(const ChannelHandle& handle,

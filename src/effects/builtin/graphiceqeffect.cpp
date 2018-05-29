@@ -1,4 +1,4 @@
-#include "effects/native/graphiceqeffect.h"
+#include "effects/builtin/graphiceqeffect.h"
 #include "util/math.h"
 
 #define Q 1.2247449

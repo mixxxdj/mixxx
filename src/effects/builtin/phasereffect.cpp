@@ -1,4 +1,4 @@
-#include "effects/native/phasereffect.h"
+#include "effects/builtin/phasereffect.h"
 
 #include <QDebug>
 

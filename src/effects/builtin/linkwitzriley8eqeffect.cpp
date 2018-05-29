@@ -1,6 +1,6 @@
-#include "effects/native/linkwitzriley8eqeffect.h"
+#include "effects/builtin/linkwitzriley8eqeffect.h"
 
-#include "effects/native/equalizer_util.h"
+#include "effects/builtin/equalizer_util.h"
 #include "util/math.h"
 
 static const unsigned int kStartupSamplerate = 44100;

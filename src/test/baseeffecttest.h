@@ -19,7 +19,7 @@
 
 class TestEffectBackend : public EffectsBackend {
   public:
-    TestEffectBackend() : EffectsBackend(NULL, "TestBackend") {
+    TestEffectBackend() : EffectsBackend(NULL, EffectBackendType::Unknown) {
     }
 
     // Expose as public
