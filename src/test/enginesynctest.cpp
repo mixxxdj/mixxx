@@ -1429,3 +1429,52 @@ TEST_F(EngineSyncTest, ZeroBpmNaturalRate) {
     EXPECT_EQ(0.0,
               ControlObject::getControl(ConfigKey(m_sGroup1, "local_bpm"))->get());
 }
+
+TEST_F(EngineSyncTest, SyncPhaseToIfQuantize) {
+    auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
+    ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->set(0.2);
+    pFileBpm1->set(130.0);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 130, 0.0);
+    m_pTrack1->setBeats(pBeats1);
+
+    auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
+    ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->set(0.8);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.0));
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 100, 0.0);
+    m_pTrack2->setBeats(pBeats2);
+    pFileBpm2->set(100.0);
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+    ProcessBuffer();
+
+    // first test without quantisation
+    pButtonSyncEnabled1->set(1.0);
+    ProcessBuffer();
+    // 0.02 where set after testing both cases.
+    EXPECT_LT(0.02, ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get());
+    pButtonSyncEnabled1->set(0.0);
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
+    ProcessBuffer();
+
+    pButtonSyncEnabled1->set(1.0);
+    ProcessBuffer();
+
+    // 0.07 where set by after testing both cases.
+    EXPECT_LT(0.07, ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get());
+    pButtonSyncEnabled1->set(0.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(0.0);
+    ProcessBuffer();
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "beatsync_phase"))->set(1.0);
+    ProcessBuffer();
+
+    // 0.1162 where set by after testing both cases.
+    EXPECT_LT(0.1162, ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get());
+}
+
+
+
