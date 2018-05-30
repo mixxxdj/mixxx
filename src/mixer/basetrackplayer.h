@@ -55,6 +55,7 @@ class BaseTrackPlayer : public BasePlayer {
     void trackUnloaded(TrackPointer pUnloadedTrack);
     void loadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerEmpty();
+    void trackLoadFailed(TrackPointer pFailedTrack);
     void noVinylControlInputConfigured();
     void trackRatingChanged(int rating);
     void trackMenuChangeRequest(bool show);
