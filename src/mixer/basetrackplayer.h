@@ -71,6 +71,7 @@ class BaseTrackPlayer : public BasePlayer {
     void selectedStems(mixxx::StemChannelSelection stemMask);
 #endif
     void playerEmpty();
+    void trackLoadFailed(TrackPointer pFailedTrack);
     void noVinylControlInputConfigured();
     void trackRatingChanged(int rating);
     void trackMenuChangeRequest(bool show);

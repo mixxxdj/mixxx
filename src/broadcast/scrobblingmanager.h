@@ -18,16 +18,16 @@ class ScrobblingManager : public QObject {
     struct TrackInfo {
         TrackPointer m_pTrack;
         TrackTimingInfo m_trackInfo;
-        BaseTrackPlayer* m_pPlayer;
-        TrackInfo(TrackPointer pTrack, BaseTrackPlayer* player)
-                : m_pTrack(pTrack), m_trackInfo(pTrack), m_pPlayer(player) {
-        }
+        QLinkedList<BaseTrackPlayer*> m_players;
+        TrackInfo(TrackPointer pTrack, BaseTrackPlayer* pPlayer) :
+        m_pTrack(pTrack), m_trackInfo(pTrack)
+        {} 
     };
     struct TrackToBeReset {
         TrackPointer m_pTrack;
         BaseTrackPlayer* m_pPlayer;
-        TrackToBeReset(TrackPointer pTrack, BaseTrackPlayer* player)
-                : m_pTrack(pTrack), m_pPlayer(player) {
+        TrackToBeReset(TrackPointer pTrack, BaseTrackPlayer* pPlayer)
+                : m_pTrack(pTrack), m_pPlayer(pPlayer) {
         }
     };
     QMutex m_mutex;
