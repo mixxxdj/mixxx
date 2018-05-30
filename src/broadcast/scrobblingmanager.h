@@ -18,9 +18,9 @@ class ScrobblingManager : public QObject {
     struct TrackInfo {
         TrackPointer m_pTrack;
         TrackTimingInfo m_trackInfo;
-        BaseTrackPlayer *m_pPlayer;
+        QLinkedList<BaseTrackPlayer*> m_players;
         TrackInfo(TrackPointer pTrack, BaseTrackPlayer *player) : 
-        m_pTrack(pTrack), m_trackInfo(pTrack), m_pPlayer(player)
+        m_pTrack(pTrack), m_trackInfo(pTrack)
         {} 
     };
     struct TrackToBeReset {
