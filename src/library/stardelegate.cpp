@@ -31,6 +31,15 @@ StarDelegate::StarDelegate(QTableView* pTableView)
             this, SLOT(cellEntered(QModelIndex)));
 }
 
+void StarDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
+                         const QModelIndex& index) const {
+    // let the editor do the painting if this cell is currently being edited
+    if (index == m_currentEditedCellIndex) {
+        return;
+    }
+    TableItemDelegate::paint(painter, option, index);
+}
+
 void StarDelegate::paintItem(QPainter* painter, const QStyleOptionViewItem& option,
                          const QModelIndex& index) const {
     // let the editor do the painting if this cell is currently being edited
@@ -43,7 +52,7 @@ void StarDelegate::paintItem(QPainter* painter, const QStyleOptionViewItem& opti
     initStyleOption(&newOption, index);
 
     StarRating starRating = qVariantValue<StarRating>(index.data());
-    StarEditor::renderHelper(painter, m_pTableView, option, &starRating);
+    starRating.paint(painter, option.rect);
 }
 
 QSize StarDelegate::sizeHint(const QStyleOptionViewItem& option,

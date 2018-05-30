@@ -28,6 +28,9 @@ class StarDelegate : public TableItemDelegate {
 
     // reimplemented from QItemDelegate and is called whenever the view needs to
     // repaint an item
+    void paint(QPainter* painter, const QStyleOptionViewItem& option,
+               const QModelIndex& index) const;
+
     void paintItem(QPainter* painter, const QStyleOptionViewItem& option,
                const QModelIndex& index) const;
 
