@@ -12,6 +12,7 @@
 const int WaveformWidgetRenderer::s_waveformMinZoom = 1;
 const int WaveformWidgetRenderer::s_waveformMaxZoom = 10;
 const int WaveformWidgetRenderer::s_waveformDefaultZoom = 3;
+const double WaveformWidgetRenderer::s_DefaultPlayMarkerPosition = 0.5;
 
 WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
     : m_group(group),
@@ -43,9 +44,11 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
       m_gain(1.0),
       m_pTrackSamplesControlObject(NULL),
       m_trackSamples(0.0),
-      m_scaleFactor(1.0) {
+      m_scaleFactor(1.0),
+      // m_pPlayMarkerPositionControlObject(NULL),
+      m_playMarkerPosition(s_DefaultPlayMarkerPosition) {
 
-    //qDebug() << "WaveformWidgetRenderer";
+    // qDebug() << "WaveformWidgetRenderer";
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
     m_timer = new QTime();
@@ -62,7 +65,7 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
 }
 
 WaveformWidgetRenderer::~WaveformWidgetRenderer() {
-    //qDebug() << "~WaveformWidgetRenderer";
+    // qDebug() << "~WaveformWidgetRenderer";
 
     for (int i = 0; i < m_rendererStack.size(); ++i)
         delete m_rendererStack[i];
@@ -72,6 +75,7 @@ WaveformWidgetRenderer::~WaveformWidgetRenderer() {
     delete m_pRateDirControlObject;
     delete m_pGainControlObject;
     delete m_pTrackSamplesControlObject;
+    // delete m_pPlayMarkerPositionControlObject;
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
     delete m_timer;
@@ -80,7 +84,8 @@ WaveformWidgetRenderer::~WaveformWidgetRenderer() {
 
 bool WaveformWidgetRenderer::init() {
 
-    //qDebug() << "WaveformWidgetRenderer::init";
+    // qDebug() << "WaveformWidgetRenderer::init, m_group=" << m_group;
+    
     m_visualPlayPosition = VisualPlayPosition::getVisualPlayPosition(m_group);
 
     m_pRateControlObject = new ControlProxy(
@@ -93,7 +98,10 @@ bool WaveformWidgetRenderer::init() {
             m_group, "total_gain");
     m_pTrackSamplesControlObject = new ControlProxy(
             m_group, "track_samples");
+    //m_pPlayMarkerPositionControlObject = new ControlProxy(
+    //        m_group, "play_marker_position");
 
+    // qDebug() << "m_pPlayMarkerPositionControlObject->get()=" << m_pPlayMarkerPositionControlObject->get();
     for (int i = 0; i < m_rendererStack.size(); ++i) {
         if (!m_rendererStack[i]->init()) {
             return false;
@@ -113,6 +121,12 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     m_rate = m_pRateControlObject->get();
     m_rateDir = m_pRateDirControlObject->get();
     m_rateRange = m_pRateRangeControlObject->get();
+
+    // Make sure the value is within range
+    //double playMarkerPosition = m_pPlayMarkerPositionControlObject->get();
+    //setPlayMarkerPosition(playMarkerPosition);
+    // qDebug() << "m_playMarkerPosition=" << m_playMarkerPosition;
+
     // This gain adjustment compensates for an arbitrary /2 gain chop in
     // EnginePregain. See the comment there.
     m_gain = m_pGainControlObject->get() * 2;
@@ -145,14 +159,28 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
 
         // Ratio of half the length of the renderer to the track length in
         // pixels. Percent of the track shown in half the waveform widget.
-        double displayedLengthHalf = static_cast<double>(getLength()) / m_trackPixelCount / 2.0;
+        // double displayedLengthHalf = static_cast<double>(getLength()) / m_trackPixelCount / 2.0;
+
         // Avoid pixel jitter in play position by rounding to the nearest track
         // pixel.
         m_playPos = round(truePlayPos * m_trackPixelCount) / m_trackPixelCount; // Avoid pixel jitter in play position
         m_playPosVSample = m_playPos * m_trackPixelCount * m_visualSamplePerPixel;
 
-        m_firstDisplayedPosition = m_playPos - displayedLengthHalf;
-        m_lastDisplayedPosition = m_playPos + displayedLengthHalf;
+        double leftOffset = m_playMarkerPosition;
+        double rightOffset = 1.0 - m_playMarkerPosition;
+
+        double displayedLengthLeft = (static_cast<double>(getLength()) / m_trackPixelCount) * leftOffset;
+        double displayedLengthRight = (static_cast<double>(getLength()) / m_trackPixelCount) * rightOffset;
+/*
+        qDebug() << 
+        "m_playMarkerPosition=" << m_playMarkerPosition <<
+        "leftOffset=" << leftOffset <<
+        "rightOffset=" << rightOffset <<
+        "displayedLengthLeft=" << displayedLengthLeft <<
+        "displayedLengthRight=" << displayedLengthRight;
+*/
+        m_firstDisplayedPosition = m_playPos - displayedLengthLeft;
+        m_lastDisplayedPosition = m_playPos + displayedLengthRight;
     } else {
         m_playPos = -1; // disable renderers
     }
@@ -191,22 +219,25 @@ void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {
             m_rendererStack.at(i)->draw(painter, event);
             // qDebug() << i << " e " << timer.restart().formatNanosWithUnit();
         }
+       
+        const int lineX = m_width * m_playMarkerPosition;
+        const int lineY = m_height * m_playMarkerPosition;
 
         painter->setPen(m_colors.getPlayPosColor());
         if (m_orientation == Qt::Horizontal) {
-            painter->drawLine(m_width / 2, 0, m_width / 2, m_height);
+            painter->drawLine(lineX, 0, lineX, m_height);
         } else {
-            painter->drawLine(0, m_height / 2, m_width, m_height / 2);
+            painter->drawLine(0, lineY, m_width, lineY);
         }
         painter->setOpacity(0.5);
         painter->setPen(m_colors.getBgColor());
         if (m_orientation == Qt::Horizontal) {
-            painter->drawLine(m_width / 2 + 1, 0, m_width / 2 + 1, m_height);
-            painter->drawLine(m_width / 2 - 1, 0, m_width / 2 - 1, m_height);
+            painter->drawLine(lineX + 1, 0, lineX + 1, m_height);
+            painter->drawLine(lineX - 1, 0, lineX - 1, m_height);
         } else {
-            painter->drawLine(0, m_height / 2 + 1, m_width, m_height / 2 + 1);
-            painter->drawLine(0, m_height / 2 - 1, m_width, m_height / 2 - 1);
-        }
+            painter->drawLine(0, lineY + 1, m_width, lineY + 1);
+            painter->drawLine(0, lineY - 1, m_width, lineY - 1);
+        } 
     }
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG

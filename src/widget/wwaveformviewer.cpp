@@ -219,6 +219,12 @@ void WWaveformViewer::setDisplayBeatGrid(bool set) {
     m_waveformWidget->setDisplayBeatGrid(set);
 }
 
+void WWaveformViewer::setPlayMarkerPosition(double position) {
+    if (m_waveformWidget) {
+        m_waveformWidget->setPlayMarkerPosition(position);
+    }
+}
+
 void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) {
     if (m_waveformWidget) {
         QWidget* pWidget = m_waveformWidget->getWidget();

@@ -37,7 +37,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotWaveformMeasured(float frameRate, int droppedFrames);
     void slotClearCachedWaveforms();
     void slotSetGridLines(bool displayGrid);
-
+    void slotSetPlayMarkerPosition(int position);
   private:
     void initWaveformControl();
     void calculateCachedWaveformDiskUsage();
