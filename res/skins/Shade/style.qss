@@ -281,6 +281,9 @@ QHeaderView {
   font-size: 10pt;
   font-weight: bold;
   color: #0f0f0f;
+  border-right: 1px solid #0f0f0f;
+  background-color: #8D98A3;
+  border-radius: 0px;
 }
 /*	Library header 'buttons'	*/
 QHeaderView::section {
