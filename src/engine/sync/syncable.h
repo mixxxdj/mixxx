@@ -37,7 +37,7 @@ class Syncable {
     virtual void notifyOnlyPlayingSyncable() = 0;
 
     // Notify a Syncable that they should sync phase.
-    virtual void requestSyncPhase() = 0;
+    virtual void requestSync() = 0;
 
     // Must NEVER return a mode that was not set directly via
     // notifySyncModeChanged.
