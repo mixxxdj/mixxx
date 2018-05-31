@@ -118,7 +118,7 @@ QTreeView::branch:closed:has-children:has-siblings {
   QTreeView::branch:has-children:!has-siblings:closed:selected,
   QTreeView::branch:closed:has-children:has-siblings:selected {
     image: url(skin:/style/style_branch_closed.png);
-    background-color: #666;
+    background-color: #0f0f0f;
   }
 
 /*  Open branch of tree 	*/
@@ -130,7 +130,7 @@ QTreeView::branch:open:has-children:has-siblings {
   QTreeView::branch:open:has-children:has-siblings:selected {
     border-image: none;
     image: url(skin:/style/style_branch_open.png);
-    background-color: #666;
+    background-color: #0f0f0f;
   }
   /* space left of selected child item */
   QTreeView::branch:!has-children:!has-siblings:closed:selected,
@@ -154,6 +154,10 @@ QTreeView::item:!selected {
   background-color: #0f0f0f;
   color: #999;
   }
+
+QTreeView:item:hover {
+		background: #454545;
+}
 
   /* BPM lock icon in the library "BPM" column. */
   #LibraryBPMButton::indicator:checked {
