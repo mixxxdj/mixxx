@@ -106,7 +106,6 @@ QTreeView {
 QTreeView {
   min-height: 90px;
   min-width: 90px;
-  border-width: 1px 1px 1px 0px;
   border-style: solid;
   border-color: #585858;
   show-decoration-selected: 0;
@@ -129,8 +128,8 @@ QTreeView::branch:closed:has-children:has-siblings {
   }
   QTreeView::branch:has-children:!has-siblings:closed:selected,
   QTreeView::branch:closed:has-children:has-siblings:selected {
-    image: url(skin:/style/style_branch_closed.png);
-    background-color: #333;
+    image: url(skin:/style/style_branch_closed_selected.png);
+    background-color: #666;
   }
 
 /*  Open branch of tree 	*/
@@ -141,8 +140,8 @@ QTreeView::branch:open:has-children:has-siblings {
   QTreeView::branch:open:has-children:!has-siblings:selected,
   QTreeView::branch:open:has-children:has-siblings:selected {
     border-image: none;
-    image: url(skin:/style/style_branch_open.png);
-    background-color: #333;
+    image: url(skin:/style/style_branch_open_selected.png);
+    background-color: #666;
   }
   /* space left of selected child item */
   QTreeView::branch:!has-children:!has-siblings:closed:selected,
@@ -153,11 +152,12 @@ QTreeView::branch:open:has-children:has-siblings {
     background-color: #0f0f0f;
   }
 
-QTreeView::item:selected {
+QTreeView::item:selected,
+QTableView::item:selected {
   border-image: none;
   background-image: none;
-  background-color: #333;
-  color: #d2d2d2;
+  color: #fff;
+  background-color: #666;
   }
 
 QTreeView::item:!selected {
@@ -245,17 +245,11 @@ QTreeView::item:!selected {
       background: transparent url(skin:/style/style_checkbox_unchecked.png) no-repeat center center;
       color: #cfcfcf;
       }
-  /* selected table row */
-  QTableView::item:selected {
-    color: #fff;
-    background-color: #666;
-  }
 
 /* library search text box */
 WSearchLineEdit {
   padding: 2px;
   border: 1px solid #656565;
-  border-left: 0px;
   font-size: 10pt;
   font-family: "Open Sans";
   background: #0f0f0f;
