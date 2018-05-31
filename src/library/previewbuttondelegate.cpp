@@ -90,11 +90,32 @@ void PreviewButtonDelegate::paint(QPainter *painter,
     // it's playing.
     m_pButton->setChecked(index.data().toBool() && playing);
 
-    if (option.state == QStyle::State_Selected) {
-        painter->fillRect(option.rect, option.palette.base());
+    painter->save();
+
+    painter->setClipRect(option.rect);
+
+    if (m_pTableView != NULL) {
+        QStyle* style = m_pTableView->style();
+        if (style != NULL) {
+            style->drawControl(QStyle::CE_ItemViewItem, &option, painter,
+                    m_pTableView);
+        }
     }
 
-    painter->save();
+    // Set the palette appropriately based on whether the row is selected or
+    // not. We also have to check if it is inactive or not and use the
+    // appropriate ColorGroup.
+    QPalette::ColorGroup cg = option.state & QStyle::State_Enabled
+            ? QPalette::Normal : QPalette::Disabled;
+    if (cg == QPalette::Normal && !(option.state & QStyle::State_Active))
+        cg = QPalette::Inactive;
+
+    if (option.state & QStyle::State_Selected) {
+        painter->setBrush(option.palette.color(cg, QPalette::HighlightedText));
+    } else {
+        painter->setBrush(option.palette.color(cg, QPalette::Text));
+    }
+
     // Render button at the desired position
     painter->translate(option.rect.topLeft());
     m_pButton->render(painter);

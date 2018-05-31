@@ -1,4 +1,4 @@
-
+/* Dark */
 WBeatSpinBox {
 	color: #000000;
 	background-color: #717171;
@@ -22,6 +22,39 @@ QTableView:focus, QTreeView:focus {
 
 WSearchLineEdit:focus {
   border: 2px solid #78C70B;
+}
+
+QHeaderView {
+  color: #000;
+  background-color: #5C5B5D;
+}
+/*	Library header 'buttons'	*/
+QHeaderView::section {
+  border-right: 1px solid #3F3041;
+  background-color: #5C5B5D;
+  border-radius: 0px;
+}
+QHeaderView::up-arrow,
+QHeaderView::down-arrow {
+  background-color: rgba(92,91,93,160);
+}
+QHeaderView::up-arrow {
+  image: url(skin:/btn_lib_sort_up_dark.png)
+}
+QHeaderView::down-arrow {
+  image: url(skin:/btn_lib_sort_down_dark.png)
+}
+
+/* Scroll bars */
+/* "add-page" and "sub-page" are the gutter of the scrollbar */
+QScrollBar::add-page,
+QScrollBar::sub-page {
+  background-color: #000;
+}
+QScrollBar::handle:vertical,
+QScrollBar::handle:horizontal {
+  background: #5C5B5D;
+  border: 1px solid #3F3041;
 }
 
 

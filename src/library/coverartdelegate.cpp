@@ -7,6 +7,7 @@
 
 CoverArtDelegate::CoverArtDelegate(QObject *parent)
         : QStyledItemDelegate(parent),
+          m_pTableView(qobject_cast<QTableView*>(parent)),
           m_bOnlyCachedCover(false),
           m_iCoverColumn(-1),
           m_iCoverSourceColumn(-1),
@@ -84,14 +85,37 @@ void CoverArtDelegate::slotCoverFound(const QObject* pRequestor,
 void CoverArtDelegate::paint(QPainter *painter,
                              const QStyleOptionViewItem &option,
                              const QModelIndex &index) const {
+
+    painter->save();
+    painter->setClipRect(option.rect);
+
+    if (m_pTableView != NULL) {
+        QStyle* style = m_pTableView->style();
+        if (style != NULL) {
+            style->drawControl(QStyle::CE_ItemViewItem, &option, painter,
+                    m_pTableView);
+        }
+    }
+
+    // Set the palette appropriately based on whether the row is selected or
+    // not. We also have to check if it is inactive or not and use the
+    // appropriate ColorGroup.
+    QPalette::ColorGroup cg = option.state & QStyle::State_Enabled
+            ? QPalette::Normal : QPalette::Disabled;
+    if (cg == QPalette::Normal && !(option.state & QStyle::State_Active))
+        cg = QPalette::Inactive;
+
     if (option.state & QStyle::State_Selected) {
-        painter->fillRect(option.rect, option.palette.highlight());
+        painter->setBrush(option.palette.color(cg, QPalette::HighlightedText));
+    } else {
+        painter->setBrush(option.palette.color(cg, QPalette::Text));
     }
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache == NULL || m_iIdColumn == -1 || m_iCoverSourceColumn == -1 ||
             m_iCoverTypeColumn == -1 || m_iCoverLocationColumn == -1 ||
             m_iCoverHashColumn == -1) {
+        painter->restore();
         return;
     }
 
@@ -101,6 +125,7 @@ void CoverArtDelegate::paint(QPainter *painter,
 
     // We don't support types other than METADATA or FILE currently.
     if (info.type != CoverInfo::METADATA && info.type != CoverInfo::FILE) {
+        painter->restore();
         return;
     }
 
@@ -131,4 +156,5 @@ void CoverArtDelegate::paint(QPainter *painter,
         // we can request an update.
         m_cacheMissRows.append(index.row());
     }
+    painter->restore();
 }
