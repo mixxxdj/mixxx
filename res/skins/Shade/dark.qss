@@ -57,6 +57,23 @@ QScrollBar::handle:horizontal {
   border: 1px solid #3F3041;
 }
 
+WLibrary QPushButton {
+  background-color: #717171;
+  }
+  WLibrary QPushButton:!enabled {
+    background-color: #4C4B4D;
+    }
+  WLibrary QPushButton:checked {
+    color: #000;
+    background-color: #B79E00;
+    }
+  /* 'Enable AutoDJ' button	*/
+  QPushButton#pushButtonAutoDJ:hover,
+  QPushButton#pushButtonRecording:hover,
+  QPushButton#pushButtonAnalyze:hover {
+    border: 1px solid #B79E00;
+  }
+
 
 
 

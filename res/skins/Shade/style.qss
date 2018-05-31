@@ -389,23 +389,46 @@ WLibrary QRadioButton, WLibrary QLabel { margin: 9px 3px 6px 3px; }
 /* Additional space for the first QRadionButton in the row*/
 WLibrary QRadioButton#radioButtonRecentlyAdded { margin: 9px 3px 6px 12px; }
 
-/* Additional space for the QPushButtons*/
-#DlgMissing > QPushButton,
-#DlgHidden > QPushButton,
-#DlgAutoDJ > QPushButton,
-#DlgRecording > QPushButton,
-#DlgAnalysis > QPushButton {
-  margin: 9px 3px 6px 3px;
-  padding: 3px 8px;
-  min-width: 65px;
-}
-
-
-/* Additional space for the first QPushButton in the row*/
-#DlgMissing > QPushButton#btnPurge,
-#DlgHidden > QPushButton#btnUnhide,
-#DlgAutoDJ > QPushButton#pushButtonAutoDJ,
-#DlgRecording > QPushButton#pushButtonRecording,
-#DlgAnalysis > QPushButton#pushButtonAnalyze { margin: 9px 12px 6px 3px; }
+WLibrary QPushButton {
+  text-align: center;
+  font-size: 9pt;
+  font-weight: normal;
+  /* Note(ronso0)
+  Interferes with skin scaling, system font size respectively
+  font-size: 14px/14px;
+  Setting height/width here will prevent the buttons being scaled properly
+  min-height: 22px;
+  max-height: 22px;
+  height: 22px;	*/
+  color: #0f0f0f;
+  margin: 1px 2px 3px 1px;
+  padding: 2px 4px 2px 4px;
+  background-color: #99A0A4;
+  background-position: center;
+  border: 0px;
+  }
+  WLibrary QPushButton:!enabled {
+    background-color: #72777A;
+    }
+  WLibrary QPushButton:unchecked {
+    color: #888;
+    background-color: #444;
+    }
+  WLibrary QPushButton:checked {
+    color: #000;
+    background-color: #F90562;
+    }
+  /* 'Enable AutoDJ' button	*/
+  QPushButton#pushButtonAutoDJ:hover,
+  QPushButton#pushButtonRecording:hover,
+  QPushButton#pushButtonAnalyze:hover {
+    border: 1px solid #F90562;
+  }
+  /* Push 'Start/Stop Recording' button and
+    'Enable AutoDJ' button away from skin border	*/
+  QPushButton#pushButtonAutoDJ,
+  QPushButton#pushButtonRecording {
+    margin: 1px 20px 3px 1px;
+  }
 
 
