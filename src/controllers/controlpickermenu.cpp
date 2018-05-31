@@ -115,6 +115,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                              tr("Sync mode 3-state toggle (OFF, FOLLOWER, MASTER)"), syncMenu);
     addDeckAndSamplerControl("beatsync", tr("Beat Sync One-Shot"),
                              tr("One-time beat sync (tempo and phase)"), syncMenu);
+    // TODO: phase depends on quantize
     addDeckAndSamplerControl("beatsync_tempo", tr("Sync Tempo One-Shot"),
                              tr("One-time beat sync (tempo only)"), syncMenu);
     addDeckAndSamplerControl("beatsync_phase", tr("Sync Phase One-Shot"),

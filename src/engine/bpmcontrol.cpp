@@ -234,10 +234,15 @@ void BpmControl::slotControlBeatSyncTempo(double v) {
 
 void BpmControl::slotControlBeatSync(double v) {
     if (!v) return;
+    if (!syncTempo()) {
+        // syncTempo failed, nothing else to do
+        return;
+    }
 
-    // If the player is playing, and adjusting its tempo succeeded, adjust its
-    // phase so that it plays in sync.
-    if (syncTempo() && m_pPlayButton->get() > 0) {
+    // Also sync phase if quantize is enabled.
+    // this is used from controller scripts, where the latching behaviour of
+    // the sync_enable CO cannot be used
+    if (m_pPlayButton->toBool() && m_pQuantize->toBool()) {
         getEngineBuffer()->requestSyncPhase();
     }
 }
