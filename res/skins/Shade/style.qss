@@ -118,7 +118,7 @@ QTreeView::branch:closed:has-children:has-siblings {
   QTreeView::branch:has-children:!has-siblings:closed:selected,
   QTreeView::branch:closed:has-children:has-siblings:selected {
     image: url(skin:/style/style_branch_closed.png);
-    background-color: #333;
+    background-color: #666;
   }
 
 /*  Open branch of tree 	*/
@@ -130,7 +130,7 @@ QTreeView::branch:open:has-children:has-siblings {
   QTreeView::branch:open:has-children:has-siblings:selected {
     border-image: none;
     image: url(skin:/style/style_branch_open.png);
-    background-color: #333;
+    background-color: #666;
   }
   /* space left of selected child item */
   QTreeView::branch:!has-children:!has-siblings:closed:selected,
@@ -144,8 +144,8 @@ QTreeView::branch:open:has-children:has-siblings {
 QTreeView::item:selected {
   border-image: none;
   background-image: none;
-  background-color: #333;
-  color: #d2d2d2;
+    color: #fff;
+    background-color: #666;
   }
 
 QTreeView::item:!selected {
@@ -166,9 +166,13 @@ QTreeView::item:!selected {
     color: #cfcfcf;
     }
     #LibraryBPMButton::item:selected {
-      color: #ededed;
-      background-color: #666;
+    color: #fff;
+    background-color: #666;
       }
+   #LibraryBPMButton::item:hover,
+   #LibraryBPMButton::item:checked:hover{
+	background: #454545;
+}
 
 	#LibraryBPMSpinBox {
 	  color: #fff;
