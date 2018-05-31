@@ -305,13 +305,13 @@ QHeaderView::down-arrow {
 QScrollBar:horizontal {
   min-width: 40px;
   height: 18px;
-  padding: 1px;
+  padding: 0px 1px 1px 1px;
   background-color: #5C5B5D;
 }
 QScrollBar:vertical {
   min-height: 40px;
   width: 18px;
-  padding: 1px;
+  padding: 1px 1px 1px 0px;
   background-color: #5C5B5D;
 }
 /* "add-page" and "sub-page" are the gutter of the scrollbar */
