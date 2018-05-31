@@ -761,6 +761,7 @@ class MixxxCore(Feature):
                    "src/dialog/dlgabout.cpp",
                    "src/dialog/dlgdevelopertools.cpp",
                    "src/dialog/dlgreplacecuecolor.cpp",
+                   "src/dialog/dlgkeywheel.cpp",
 
                    "src/preferences/configobject.cpp",
                    "src/preferences/dialog/dlgprefautodj.cpp",
@@ -1364,6 +1365,7 @@ class MixxxCore(Feature):
             'src/controllers/dlgprefcontrollerdlg.ui',
             'src/controllers/dlgprefcontrollersdlg.ui',
             'src/dialog/dlgaboutdlg.ui',
+            'src/dialog/dlgkeywheel.ui',
             'src/dialog/dlgdevelopertoolsdlg.ui',
             'src/dialog/dlgreplacecuecolordlg.ui',
             'src/library/autodj/dlgautodj.ui',

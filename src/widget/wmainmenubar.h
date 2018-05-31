@@ -5,6 +5,7 @@
 #include <QList>
 #include <QMenuBar>
 #include <QObject>
+#include <QAction>
 #include <QScopedPointer>
 
 #include "control/controlproxy.h"
@@ -47,6 +48,7 @@ class WMainMenuBar : public QMenuBar {
     void onFullScreenStateChange(bool fullscreen);
     void onVinylControlDeckEnabledStateChange(int deck, bool enabled);
     void onNumberOfDecksChanged(int decks);
+    void onKeywheelChange(int state);
 
   signals:
     void createCrate();
@@ -55,6 +57,7 @@ class WMainMenuBar : public QMenuBar {
     void reloadSkin();
     void rescanLibrary();
     void showAbout();
+    void showKeywheel(bool visible);
     void showPreferences();
     void toggleDeveloperTools(bool toggle);
     void toggleFullScreen(bool toggle);
@@ -70,6 +73,7 @@ class WMainMenuBar : public QMenuBar {
     void internalFullScreenStateChange(bool fullscreen);
     void internalLibraryScanActive(bool active);
     void internalDeveloperToolsStateChange(bool visible);
+    void internalKeywheelStateChanged(int state);
     void internalOnNewSkinLoaded();
     void internalOnNewSkinAboutToLoad();
 
@@ -84,6 +88,7 @@ class WMainMenuBar : public QMenuBar {
     void createVisibilityControl(QAction* pAction, const ConfigKey& key);
 
     UserSettingsPointer m_pConfig;
+    QAction *m_pViewKeywheel;
     ConfigObject<ConfigValueKbd>* m_pKbdConfig;
     QList<QAction*> m_loadToDeckActions;
     QList<QAction*> m_vinylControlEnabledActions;

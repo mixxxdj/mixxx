@@ -258,6 +258,21 @@ void WMainMenuBar::initialize() {
     createVisibilityControl(pViewMaximizeLibrary, ConfigKey("[Master]", "maximize_library"));
     pViewMenu->addAction(pViewMaximizeLibrary);
 
+    QString keywheelTitle = tr("Show Keywheel");
+    QString keywheelText = tr("Show keywheel");
+    m_pViewKeywheel = new QAction(keywheelTitle, this);
+    m_pViewKeywheel->setCheckable(true);
+    m_pViewKeywheel->setShortcut(
+        QKeySequence(m_pKbdConfig->getValue(
+                ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowKeywheel"),
+                tr("F12", "Menubar|View|Show Keywheel"))));
+    m_pViewKeywheel->setStatusTip(keywheelText);
+    m_pViewKeywheel->setWhatsThis(buildWhatsThis(keywheelTitle, keywheelText));
+    connect(m_pViewKeywheel, SIGNAL(triggered(bool)),
+            this, SIGNAL(showKeywheel(bool)));
+    //connect(this, SIGNAL(internalKeywheelStateChanged(bool)),
+    //        pViewKeywheel, SLOT(setChecked(bool)));
+    pViewMenu->addAction(m_pViewKeywheel);
 
     pViewMenu->addSeparator();
 
@@ -597,6 +612,11 @@ void WMainMenuBar::initialize() {
 
     pHelpMenu->addAction(pHelpAboutApp);
     addMenu(pHelpMenu);
+}
+
+void WMainMenuBar::onKeywheelChange(int state) {
+    Q_UNUSED(state);
+    m_pViewKeywheel->setChecked(false);
 }
 
 void WMainMenuBar::onLibraryScanStarted() {

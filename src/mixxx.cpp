@@ -12,6 +12,7 @@
 #include <QtDebug>
 
 #include "dialog/dlgabout.h"
+#include "dialog/dlgkeywheel.h"
 #include "dialog/dlgdevelopertools.h"
 #include "effects/builtin/builtinbackend.h"
 #include "effects/effectsmanager.h"
@@ -142,6 +143,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_pLibrary(nullptr),
           m_pDeveloperToolsDlg(nullptr),
           m_pPrefDlg(nullptr),
+          m_pKeywheel(nullptr),
           m_pKbdConfig(nullptr),
           m_pKbdConfigEmpty(nullptr),
           m_toolTipsCfg(mixxx::TooltipsPreference::TOOLTIPS_ON),
@@ -1105,6 +1107,9 @@ void MixxxMainWindow::connectMenuBar() {
             this,
             &MixxxMainWindow::slotFileLoadSongPlayer);
 
+    connect(m_pMenuBar, SIGNAL(showKeywheel(bool)),
+            this, SLOT(slotShowKeywheel(bool)));
+
     // Fullscreen
     connect(m_pMenuBar,
             &WMainMenuBar::toggleFullScreen,
@@ -1396,6 +1401,22 @@ void MixxxMainWindow::slotHelpAbout() {
     DlgAbout* about = new DlgAbout(this);
     about->show();
 }
+
+void MixxxMainWindow::slotShowKeywheel(bool toggle) {
+    if (m_pKeywheel == nullptr) {
+        UserSettingsPointer pConfig = m_pSettingsManager->settings();
+        m_pKeywheel = new DlgKeywheel(this, pConfig);
+        connect(m_pKeywheel, SIGNAL(finished(int)),
+                m_pMenuBar, SLOT(onKeywheelChange(int)));
+    }
+    if (toggle) {
+        m_pKeywheel->show();
+        m_pKeywheel->raise();
+    } else {
+        m_pKeywheel->hide();
+    }
+}
+
 
 void MixxxMainWindow::setToolTipsCfg(mixxx::TooltipsPreference tt) {
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
